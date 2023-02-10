@@ -1,0 +1,18 @@
+include MANIFEST.in
+include requirements.txt
+include *.json
+include *.md
+include *.py
+include *.txt
+recursive-include raven *.css
+recursive-include raven *.csv
+recursive-include raven *.html
+recursive-include raven *.ico
+recursive-include raven *.js
+recursive-include raven *.json
+recursive-include raven *.md
+recursive-include raven *.png
+recursive-include raven *.py
+recursive-include raven *.svg
+recursive-include raven *.txt
+recursive-exclude raven *.pyc
