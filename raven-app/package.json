@@ -19,6 +19,7 @@
     "react-dom": "^18.2.0",
     "react-hook-form": "^7.43.1",
     "react-icons": "^4.7.1",
+    "react-quill": "^2.0.0",
     "react-router-dom": "^6.8.1",
     "socket.io-client": "^2.4.0",
     "timeago-react": "^3.0.5"
