@@ -1,0 +1,14 @@
+{
+  "name": "raven",
+  "version": "1.0.0",
+  "description": "Messaging Application",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "cd raven-app && yarn dev",
+    "build": "cd raven-app && yarn build"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}

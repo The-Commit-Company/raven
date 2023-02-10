@@ -1,0 +1,25 @@
+{
+  "name": "raven-app",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build --base=/assets/raven/raven-app/ && yarn copy-html-entry",
+    "preview": "vite preview",
+    "copy-html-entry": "cp ../raven/public/raven-app/index.html ../raven/www/raven-app.html"
+  },
+  "dependencies": {
+    "frappe-react-sdk": "^1.0.25",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "socket.io-client": "^2.4.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.0.27",
+    "@types/react-dom": "^18.0.10",
+    "@vitejs/plugin-react": "^3.1.0",
+    "typescript": "^4.9.3",
+    "vite": "^4.1.0"
+  }
+}

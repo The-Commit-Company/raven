@@ -190,3 +190,5 @@ app_license = "MIT"
 # auth_hooks = [
 #	"raven.auth.validate"
 # ]
+
+website_route_rules = [{'from_route': '/raven-app/<path:app_path>', 'to_route': 'raven-app'},]
