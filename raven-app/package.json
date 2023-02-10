@@ -17,6 +17,7 @@
     "frappe-react-sdk": "^1.0.25",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-hook-form": "^7.43.1",
     "react-router-dom": "^6.8.1",
     "socket.io-client": "^2.4.0"
   },
