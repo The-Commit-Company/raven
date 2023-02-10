@@ -10,9 +10,14 @@
     "copy-html-entry": "cp ../raven/public/raven-app/index.html ../raven/www/raven-app.html"
   },
   "dependencies": {
+    "@chakra-ui/react": "^2.4.9",
+    "@emotion/react": "^11.10.5",
+    "@emotion/styled": "^11.10.5",
+    "framer-motion": "^9.0.2",
     "frappe-react-sdk": "^1.0.25",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-router-dom": "^6.8.1",
     "socket.io-client": "^2.4.0"
   },
   "devDependencies": {
