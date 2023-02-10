@@ -14,7 +14,7 @@ export const ChatInput = ({ addMessage }: ChatInputProps) => {
 
     const { handleSubmit } = methods
 
-    console.log("text", text)
+    // console.log("text", text)
 
     const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setText(event.target.value)
