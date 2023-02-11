@@ -4,6 +4,7 @@ import { useContext, useState } from "react"
 import { FormProvider, useForm } from "react-hook-form"
 import { RiSendPlaneFill } from "react-icons/ri"
 import { UserContext } from "../../../utils/auth/UserProvider"
+import { ChannelContext } from "../../../utils/channel/ChannelContext"
 
 interface ChatInputProps {
     addMessage: (text: string, user: string) => Promise<void>
@@ -11,7 +12,7 @@ interface ChatInputProps {
 
 export const ChatInput = ({ addMessage }: ChatInputProps) => {
     const { currentUser } = useContext(UserContext)
-    const channel_id = "862bf4d1ce"
+    const { channelID } = useContext(ChannelContext)
 
     const { call, loading, error, reset } = useFrappePostCall('raven.messaging.doctype.message.message.send_message')
 
@@ -29,7 +30,7 @@ export const ChatInput = ({ addMessage }: ChatInputProps) => {
     const onSubmit = () => {
         call({
             user_id: currentUser,
-            channel_id: channel_id,
+            channel_id: channelID,
             text: text
         }).then(() =>
             addMessage(text, currentUser)
