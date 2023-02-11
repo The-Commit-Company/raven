@@ -8,10 +8,12 @@ import { useFrappePostCall } from "frappe-react-sdk"
 import { UserContext } from "../../../utils/auth/UserProvider"
 import { useHotkeys } from "react-hotkeys-hook"
 
+interface ChatInputProps {
+    channelID: string
+}
 
-export const ChatInput = () => {
+export const ChatInput = ({ channelID }: ChatInputProps) => {
 
-    const channelID = 'test'
     const { currentUser } = useContext(UserContext)
 
     const { call } = useFrappePostCall('raven.messaging.doctype.message.message.send_message')
