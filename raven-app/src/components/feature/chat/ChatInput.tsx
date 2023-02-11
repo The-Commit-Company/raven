@@ -1,4 +1,4 @@
-import { Box, IconButton, Stack } from "@chakra-ui/react"
+import { Box, IconButton, Stack, useColorMode } from "@chakra-ui/react"
 import { useState, useContext } from "react"
 import { RiSendPlaneFill } from "react-icons/ri"
 import ReactQuill from "react-quill"
@@ -61,8 +61,10 @@ export const ChatInput = ({ channelID }: ChatInputProps) => {
         'link'
     ]
 
+    const { colorMode } = useColorMode()
+
     return (
-        <Box border='1px' borderColor={'gray.500'} rounded='lg' boxShadow='base' position='relative'>
+        <Box border='1px' borderColor={'gray.500'} rounded='lg' bottom='2' maxH='40vh' boxShadow='base' position='fixed' w='calc(98vw - var(--sidebar-width))' bg={colorMode === "light" ? "white" : "gray.800"}>
             <ReactQuill
                 className="my-quill-editor"
                 onChange={handleChange}

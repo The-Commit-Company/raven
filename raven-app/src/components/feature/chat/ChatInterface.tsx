@@ -1,4 +1,4 @@
-import { Box } from "@chakra-ui/react"
+import { Box, Stack } from "@chakra-ui/react"
 import { useFrappeGetDocList } from "frappe-react-sdk"
 import { useMemo } from "react"
 import { useFrappeEventListener } from "../../../hooks/useFrappeEventListener"
@@ -17,11 +17,11 @@ export const ChatInterface = () => {
 
     const channelID = '862bf4d1ce'
     const { data, error, mutate } = useFrappeGetDocList<Message>('Message', {
-        fields: ["text", "creation", "name", "user_id"],
+        fields: ["text", "creation", "name"],
         filters: [["channel_id", "=", channelID]],
         orderBy: {
             field: "creation",
-            order: 'asc'
+            order: 'desc'
         }
     })
 
@@ -32,25 +32,14 @@ export const ChatInterface = () => {
         }
     })
 
-    const messages: Message[] = useMemo(() => {
-        if (data) {
-            return data.map((message) => ({
-                name: message.name,
-                text: message.text,
-                user_id: message.user_id,
-                creation: message.creation
-            }))
-        } else {
-            return []
-        }
-    }, [data]);
-
     if (error) {
         return <AlertBanner status='error' heading={error.message}>{error.httpStatus}: {error.httpStatusText}</AlertBanner>
     } else return (
-        <Box p={4}>
-            <ChatHistory messages={messages} />
+        <Stack h='100vh' justify={'space-between'} p={4} overflow='hidden'>
+            {data &&
+                <ChatHistory messages={data} />
+            }
             <ChatInput channelID={channelID} />
-        </Box>
+        </Stack>
     )
 }
