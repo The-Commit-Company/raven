@@ -1,1 +1,0 @@
-export { HeadingBar } from "./HeadingBar";
