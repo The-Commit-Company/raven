@@ -1,12 +1,14 @@
 import { Divider, HStack, IconButton, useColorMode, Text, Stack, Avatar } from "@chakra-ui/react";
-import { PropsWithChildren } from "react";
+import { PropsWithChildren, useContext } from "react";
 import { HiOutlineMoon, HiOutlineSun } from "react-icons/hi"
 import { FiEdit } from "react-icons/fi";
-import { SidebarGroup, SidebarGroupList, SidebarItem, SidebarItemLabel } from "./SidebarComp";
+import { ChannelList } from "../../feature/channels/ChannelList";
+import { UserDataContext } from "../../../utils/user/UserDataProvider"
 
 export const Sidebar = ({ children }: PropsWithChildren<{}>) => {
 
     const { colorMode, toggleColorMode } = useColorMode()
+    const userData = useContext(UserDataContext)
 
     return (
         <Stack justify={'space-between'} h='100vh'>
@@ -20,26 +22,18 @@ export const Sidebar = ({ children }: PropsWithChildren<{}>) => {
                     />
                 </HStack>
                 <Divider />
-
-                <SidebarGroup>
-                    <SidebarGroupList>
-                        <SidebarItem to="channel">
-                            <SidebarItemLabel>Channels</SidebarItemLabel>
-                        </SidebarItem>
-                        <SidebarItem to="message">
-                            <SidebarItemLabel>Direct Messages</SidebarItemLabel>
-                        </SidebarItem>
-                    </SidebarGroupList>
-                </SidebarGroup>
+                <ChannelList />
             </Stack>
 
             <Stack>
                 <Divider borderColor={colorMode === "light" ? "gray.300" : "gray.600"} />
                 <HStack justifyContent={"space-between"} px='1'>
-                    <HStack>
-                        <Avatar size="2xs" />
-                        <Text fontSize="sm">User Name</Text>
-                    </HStack>
+                    {userData &&
+                        <HStack>
+                            <Avatar size="2xs" src={userData.user_image} />
+                            <Text fontSize="sm">{userData?.full_name}</Text>
+                        </HStack>
+                    }
                     <IconButton
                         size={"xs"}
                         aria-label="Toggle theme"
