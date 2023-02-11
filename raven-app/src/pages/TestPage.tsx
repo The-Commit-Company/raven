@@ -6,7 +6,6 @@ type Props = {}
 
 export const TestPage = (props: Props) => {
     const { currentUser } = useContext(UserContext)
-    console.log(currentUser)
     return (
         <ChatInterface />
     )
