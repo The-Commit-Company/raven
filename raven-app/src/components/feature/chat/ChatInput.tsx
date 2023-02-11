@@ -9,12 +9,8 @@ import { UserContext } from "../../../utils/auth/UserProvider"
 import { ChannelContext } from "../../../utils/channel/ChannelContext"
 import { useHotkeys } from "react-hotkeys-hook"
 
-interface ChatInputProps {
-    addMessage: (text: string, user: string) => Promise<void>
-}
 
-export const ChatInput = ({ addMessage }: ChatInputProps) => {
-
+export const ChatInput = () => {
     const { currentUser } = useContext(UserContext)
     const { channelID } = useContext(ChannelContext)
 
@@ -44,9 +40,7 @@ export const ChatInput = ({ addMessage }: ChatInputProps) => {
             user_id: currentUser,
             channel_id: channelID,
             text: text
-        }).then(() =>
-            addMessage(text, currentUser)
-        ).then(() => {
+        }).then(() => {
             setText("")
         })
     }

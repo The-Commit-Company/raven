@@ -1,32 +1,54 @@
 import { Box } from "@chakra-ui/react"
-import { useState } from "react"
+import { useFrappeGetDocList } from "frappe-react-sdk"
+import { useContext, useMemo } from "react"
+import { useFrappeEventListener } from "../../../hooks/useFrappeEventListener"
+import { ChannelContext } from "../../../utils/channel/ChannelContext"
 import { ChatHistory } from "./ChatHistory"
 import { ChatInput } from "./ChatInput"
 
+interface Message {
+    text: string
+    user_id: string
+    creation: string
+    name: string
+}
+
 export const ChatInterface = () => {
+    const { channelID } = useContext(ChannelContext)
 
-    const [messages, setMessages] = useState([
-        { text: "Hello!", user: "User 1", timestamp: "2023-02-01T12:00:00Z" },
-        { text: "Hi there!", user: "User 2", timestamp: "2023-02-01T12:00:00Z" },
-        { text: "Ugh, not you guys again...", user: "User 3", timestamp: "2023-02-01T12:00:00Z" },
-        { text: "Um, hi everyone", user: "User 4", timestamp: "2023-02-01T12:00:00Z" },
-    ])
+    const { data, error, mutate } = useFrappeGetDocList<Message>('Message', {
+        fields: ["text", "creation", "name", "user_id"],
+        filters: [["channel_id", "=", channelID]],
+        orderBy: {
+            field: "creation",
+            order: 'asc'
+        }
+    })
 
-    const addMessage = (text: string, user: string) => {
-        // console.log("called")
-        return new Promise<void>(resolve => {
-            // console.log("addMessage", text, user)
-            setTimeout(() => {
-                setMessages([...messages, { text, user, timestamp: new Date().toISOString() }])
-                resolve()
-            })
-        })
-    }
+    useFrappeEventListener('message_received', (data) => {
+        if (data.channel_id === channelID) {
+            mutate()
+            console.log('message received')
+        }
+    })
+
+    const messages: Message[] = useMemo(() => {
+        if (data) {
+            return data.map((message) => ({
+                name: message.name,
+                text: message.text,
+                user_id: message.user_id,
+                creation: message.creation
+            }))
+        } else {
+            return []
+        }
+    }, [data]);
 
     return (
         <Box p={4}>
             <ChatHistory messages={messages} />
-            <ChatInput addMessage={addMessage} />
+            <ChatInput />
         </Box>
     )
 }

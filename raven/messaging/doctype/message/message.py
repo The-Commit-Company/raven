@@ -18,5 +18,8 @@ def send_message(channel_id, user_id, text):
         'user_id': user_id
     })
     doc.insert()
+    frappe.publish_realtime('message_received', {
+            'channel_id': channel_id
+        })
     frappe.db.commit()
     return "message sent"
