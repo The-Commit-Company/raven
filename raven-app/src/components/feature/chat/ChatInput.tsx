@@ -5,7 +5,6 @@ import ReactQuill from "react-quill"
 import 'react-quill/dist/quill.snow.css'
 import './styles.css'
 import { useFrappePostCall } from "frappe-react-sdk"
-import { RiSendPlaneFill } from "react-icons/ri"
 import { UserContext } from "../../../utils/auth/UserProvider"
 import { ChannelContext } from "../../../utils/channel/ChannelContext"
 import { useHotkeys } from "react-hotkeys-hook"
@@ -19,7 +18,7 @@ export const ChatInput = ({ addMessage }: ChatInputProps) => {
     const { currentUser } = useContext(UserContext)
     const { channelID } = useContext(ChannelContext)
 
-    const { call, loading, error, reset } = useFrappePostCall('raven.messaging.doctype.message.message.send_message')
+    const { call } = useFrappePostCall('raven.messaging.doctype.message.message.send_message')
 
     const [text, setText] = useState("")
 
@@ -50,7 +49,8 @@ export const ChatInput = ({ addMessage }: ChatInputProps) => {
             ['bold', 'italic', 'underline', 'strike', 'blockquote'],
             [{ 'list': 'ordered' }, { 'list': 'bullet' }],
             ['link']
-        ],
+        ]
+    }
 
     const formats = [
         'bold', 'italic', 'underline', 'strike', 'blockquote',
