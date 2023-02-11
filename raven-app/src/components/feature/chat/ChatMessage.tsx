@@ -11,10 +11,10 @@ interface ChatMessageProps {
 export const ChatMessage = ({ text, user, timestamp }: ChatMessageProps) => {
 
     return (
-        <Box p={4}>
-            <HStack spacing={4}>
-                <Avatar name={user} rounded='md' />
-                <Box ml={2}>
+        <Box py={4} px='2'>
+            <HStack spacing={4} alignItems='start'>
+                <Avatar name={user} rounded='4px' boxSize='40px' />
+                <Box>
                     <HStack divider={<StackDivider />}>
                         <Text fontWeight="bold">{user}</Text>
                         <Text fontSize="xs" color="gray.500"><TimeAgo datetime={new Date(timestamp)} opts={{ minInterval: 60 }} /></Text>
