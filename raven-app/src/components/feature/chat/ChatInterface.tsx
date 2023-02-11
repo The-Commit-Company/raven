@@ -13,9 +13,9 @@ export const ChatInterface = () => {
     ])
 
     const addMessage = (text: string, user: string) => {
-        console.log("called")
+        // console.log("called")
         return new Promise<void>(resolve => {
-            console.log("addMessage", text, user)
+            // console.log("addMessage", text, user)
             setTimeout(() => {
                 setMessages([...messages, { text, user, timestamp: new Date().toISOString() }])
                 resolve()

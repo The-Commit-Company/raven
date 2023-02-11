@@ -1,9 +1,14 @@
 import { Box, IconButton, Stack } from "@chakra-ui/react"
-import { useState } from "react"
+import { useState, useContext } from "react"
 import { RiSendPlaneFill } from "react-icons/ri"
 import ReactQuill from "react-quill"
 import 'react-quill/dist/quill.snow.css'
 import './styles.css'
+import { useFrappePostCall } from "frappe-react-sdk"
+import { RiSendPlaneFill } from "react-icons/ri"
+import { UserContext } from "../../../utils/auth/UserProvider"
+import { ChannelContext } from "../../../utils/channel/ChannelContext"
+import { useHotkeys } from "react-hotkeys-hook"
 
 interface ChatInputProps {
     addMessage: (text: string, user: string) => Promise<void>
@@ -11,15 +16,33 @@ interface ChatInputProps {
 
 export const ChatInput = ({ addMessage }: ChatInputProps) => {
 
+    const { currentUser } = useContext(UserContext)
+    const { channelID } = useContext(ChannelContext)
+
+    const { call, loading, error, reset } = useFrappePostCall('raven.messaging.doctype.message.message.send_message')
+
     const [text, setText] = useState("")
 
     const handleChange = (value: string) => {
         setText(value)
     }
 
-    const onSubmit = async () => {
-        await addMessage(text, "User 1")
-        setText("")
+    useHotkeys('enter', () => onSubmit(), {
+        enabled: true,
+        preventDefault: true,
+        enableOnFormTags: true,
+    })
+
+    const onSubmit = () => {
+        call({
+            user_id: currentUser,
+            channel_id: channelID,
+            text: text
+        }).then(() =>
+            addMessage(text, currentUser)
+        ).then(() => {
+            setText("")
+        })
     }
 
     const modules = {
@@ -28,7 +51,6 @@ export const ChatInput = ({ addMessage }: ChatInputProps) => {
             [{ 'list': 'ordered' }, { 'list': 'bullet' }],
             ['link']
         ],
-    }
 
     const formats = [
         'bold', 'italic', 'underline', 'strike', 'blockquote',
