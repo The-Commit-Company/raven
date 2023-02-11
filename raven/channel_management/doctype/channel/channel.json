@@ -8,7 +8,8 @@
  "engine": "InnoDB",
  "field_order": [
   "type",
-  "channel_name"
+  "channel_name",
+  "is_direct_message"
  ],
  "fields": [
   {
@@ -28,11 +29,17 @@
    "in_standard_filter": 1,
    "label": "Channel Name",
    "reqd": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "is_direct_message",
+   "fieldtype": "Check",
+   "label": "Is Direct Message"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-02-11 16:05:55.454311",
+ "modified": "2023-02-11 20:56:41.015024",
  "modified_by": "Administrator",
  "module": "Channel Management",
  "name": "Channel",
@@ -54,5 +61,6 @@
  ],
  "sort_field": "modified",
  "sort_order": "DESC",
- "states": []
+ "states": [],
+ "title_field": "channel_name"
 }
