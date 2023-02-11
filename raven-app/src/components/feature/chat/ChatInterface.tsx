@@ -2,6 +2,7 @@ import { Box, Stack } from "@chakra-ui/react"
 import { useFrappeGetDocList } from "frappe-react-sdk"
 import { useParams } from "react-router-dom"
 import { useFrappeEventListener } from "../../../hooks/useFrappeEventListener"
+import { ChannelProvider } from "../../../utils/channel/ChannelProvider"
 import { AlertBanner } from "../../layout/AlertBanner"
 import { ChatHistory } from "./ChatHistory"
 import { ChatInput } from "./ChatInput"
@@ -15,7 +16,7 @@ interface Message {
 
 export const ChatInterface = () => {
 
-    const { channelID } = useParams<{channelID: string}>()
+    const { channelID } = useParams<{ channelID: string }>()
     const { data, error, mutate } = useFrappeGetDocList<Message>('Message', {
         fields: ["text", "creation", "name", "owner"],
         filters: [["channel_id", "=", channelID ?? null]],
@@ -39,11 +40,13 @@ export const ChatInterface = () => {
             </Box>
         )
     } else return (
-        <Stack h='100vh' justify={'space-between'} p={4} overflow='hidden'>
-            {data &&
-                <ChatHistory messages={data} />
-            }
-            <ChatInput channelID={channelID ?? ''} />
-        </Stack>
+        <ChannelProvider>
+            <Stack h='100vh' justify={'space-between'} p={4} overflow='hidden'>
+                {data &&
+                    <ChatHistory messages={data} />
+                }
+                <ChatInput channelID={channelID ?? ''} />
+            </Stack>
+        </ChannelProvider>
     )
 }

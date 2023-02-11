@@ -22,13 +22,13 @@
   },
   {
    "fieldname": "text",
-   "fieldtype": "Data",
+   "fieldtype": "Long Text",
    "label": "Text"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-02-11 22:45:49.935128",
+ "modified": "2023-02-12 03:18:33.597741",
  "modified_by": "Administrator",
  "module": "Messaging",
  "name": "Message",
