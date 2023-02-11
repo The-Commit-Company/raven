@@ -1,5 +1,6 @@
 import { Avatar, Box, HStack, StackDivider, Text } from "@chakra-ui/react"
 import TimeAgo from 'timeago-react'
+import { HtmlRenderer } from "../markdown-viewer/HTMLRenderer"
 
 interface ChatMessageProps {
     text: string,
@@ -18,7 +19,7 @@ export const ChatMessage = ({ text, user, timestamp }: ChatMessageProps) => {
                         <Text fontWeight="bold">{user}</Text>
                         <Text fontSize="xs" color="gray.500"><TimeAgo datetime={new Date(timestamp)} opts={{ minInterval: 60 }} /></Text>
                     </HStack>
-                    <Text fontSize="sm">{text}</Text>
+                    <HtmlRenderer htmlString={text} />
                 </Box>
             </HStack>
         </Box>

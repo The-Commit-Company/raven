@@ -1,7 +1,9 @@
-import { chakra, Flex, IconButton, Input } from "@chakra-ui/react"
+import { Box, IconButton, Stack } from "@chakra-ui/react"
 import { useState } from "react"
-import { FormProvider, useForm } from "react-hook-form"
 import { RiSendPlaneFill } from "react-icons/ri"
+import ReactQuill from "react-quill"
+import 'react-quill/dist/quill.snow.css'
+import './styles.css'
 
 interface ChatInputProps {
     addMessage: (text: string, user: string) => Promise<void>
@@ -10,40 +12,47 @@ interface ChatInputProps {
 export const ChatInput = ({ addMessage }: ChatInputProps) => {
 
     const [text, setText] = useState("")
-    const methods = useForm()
 
-    const { handleSubmit } = methods
-
-    console.log("text", text)
-
-    const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setText(event.target.value)
+    const handleChange = (value: string) => {
+        setText(value)
     }
 
-    const onSubmit = () => {
-        addMessage(text, "User 1").then(() => {
-            setText("")
-        })
+    const onSubmit = async () => {
+        await addMessage(text, "User 1")
+        setText("")
     }
+
+    const modules = {
+        toolbar: [
+            ['bold', 'italic', 'underline', 'strike', 'blockquote'],
+            [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+            ['link']
+        ],
+    }
+
+    const formats = [
+        'bold', 'italic', 'underline', 'strike', 'blockquote',
+        'list', 'bullet',
+        'link'
+    ]
 
     return (
-        <FormProvider {...methods}>
-            <chakra.form onSubmit={handleSubmit(onSubmit)}>
-                <Flex mt={4}>
-                    <Input
-                        value={text}
-                        onChange={onChange}
-                        placeholder="Type your message here..."
-                        size="md"
-                        px={4}
-                        py={2}
-                        mr={2}
-                        w="100%"
-                        maxW="sm"
-                    />
-                    <IconButton type="submit" size="md" isDisabled={text.length === 0} aria-label={"send message"} icon={<RiSendPlaneFill />} />
-                </Flex>
-            </chakra.form>
-        </FormProvider>
+        <Box border='1px' borderColor={'gray.500'} rounded='lg' boxShadow='base' position='relative'>
+            <ReactQuill
+                className="my-quill-editor"
+                onChange={handleChange}
+                value={text}
+                placeholder={"Type a message..."}
+                modules={modules}
+                formats={formats} />
+            <IconButton
+                isDisabled={text.length === 0}
+                style={{ position: 'absolute', bottom: '10px', right: '10px' }}
+                colorScheme='blue'
+                onClick={onSubmit}
+                aria-label={"send message"}
+                icon={<RiSendPlaneFill />}
+                size='xs' />
+        </Box>
     )
 }
