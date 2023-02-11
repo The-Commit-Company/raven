@@ -7,7 +7,8 @@
  "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
-  "type"
+  "type",
+  "channel_name"
  ],
  "fields": [
   {
@@ -17,11 +18,21 @@
    "label": "Type",
    "options": "Private\nPublic",
    "reqd": 1
+  },
+  {
+   "fieldname": "channel_name",
+   "fieldtype": "Data",
+   "in_filter": 1,
+   "in_list_view": 1,
+   "in_preview": 1,
+   "in_standard_filter": 1,
+   "label": "Channel Name",
+   "reqd": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-02-10 19:20:35.304551",
+ "modified": "2023-02-11 16:05:55.454311",
  "modified_by": "Administrator",
  "module": "Channel Management",
  "name": "Channel",
