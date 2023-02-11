@@ -26,6 +26,13 @@ export const ChatInput = ({ addMessage }: ChatInputProps) => {
         setText(value)
     }
 
+    const handleKeyDown = (event: React.KeyboardEvent) => {
+        if (event.key === 'Enter' && !event.shiftKey) {
+            event.preventDefault()
+            onSubmit();
+        }
+    }
+
     useHotkeys('enter', () => onSubmit(), {
         enabled: true,
         preventDefault: true,
@@ -66,7 +73,8 @@ export const ChatInput = ({ addMessage }: ChatInputProps) => {
                 value={text}
                 placeholder={"Type a message..."}
                 modules={modules}
-                formats={formats} />
+                formats={formats}
+                onKeyDown={handleKeyDown} />
             <IconButton
                 isDisabled={text.length === 0}
                 style={{ position: 'absolute', bottom: '10px', right: '10px' }}
