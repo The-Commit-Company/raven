@@ -1,24 +1,24 @@
 import { Box, Stack } from "@chakra-ui/react"
 import { useFrappeGetDocList } from "frappe-react-sdk"
-import { useMemo } from "react"
+import { useParams } from "react-router-dom"
 import { useFrappeEventListener } from "../../../hooks/useFrappeEventListener"
 import { AlertBanner } from "../../layout/AlertBanner"
 import { ChatHistory } from "./ChatHistory"
 import { ChatInput } from "./ChatInput"
 
 interface Message {
-    text: string
-    user_id: string
-    creation: string
-    name: string
+    text: string,
+    creation: string,
+    name: string,
+    owner: string
 }
 
 export const ChatInterface = () => {
 
-    const channelID = '862bf4d1ce'
+    const { channelID } = useParams<{channelID: string}>()
     const { data, error, mutate } = useFrappeGetDocList<Message>('Message', {
-        fields: ["text", "creation", "name"],
-        filters: [["channel_id", "=", channelID]],
+        fields: ["text", "creation", "name", "owner"],
+        filters: [["channel_id", "=", channelID ?? null]],
         orderBy: {
             field: "creation",
             order: 'desc'
@@ -33,13 +33,17 @@ export const ChatInterface = () => {
     })
 
     if (error) {
-        return <AlertBanner status='error' heading={error.message}>{error.httpStatus}: {error.httpStatusText}</AlertBanner>
+        return (
+            <Box p={4}>
+                <AlertBanner status='error' heading={error.message}>{error.httpStatus}: {error.httpStatusText}</AlertBanner>
+            </Box>
+        )
     } else return (
         <Stack h='100vh' justify={'space-between'} p={4} overflow='hidden'>
             {data &&
                 <ChatHistory messages={data} />
             }
-            <ChatInput channelID={channelID} />
+            <ChatInput channelID={channelID ?? ''} />
         </Stack>
     )
 }
