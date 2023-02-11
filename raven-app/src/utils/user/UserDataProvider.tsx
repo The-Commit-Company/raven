@@ -6,11 +6,12 @@ import { FullPageLoader } from '../../components/layout/Loaders'
 import { User } from '../../types/User/User'
 import { UserContext } from '../auth/UserProvider'
 
-const UserDataContext = createContext<User | null>(null)
+export const UserDataContext = createContext<User | null>(null)
+
 export const UserDataProvider = ({ children }: PropsWithChildren) => {
 
     const { currentUser } = useContext(UserContext)
-    const { data, error } = useFrappeGetCall<User>('frappe.client.get_value', {
+    const { data, error } = useFrappeGetCall<{ message: User }>('frappe.client.get_value', {
         doctype: "User",
         docname: currentUser,
         fieldname: JSON.stringify(["name", "first_name", "full_name", "user_image"])
@@ -28,7 +29,7 @@ export const UserDataProvider = ({ children }: PropsWithChildren) => {
         )
     }
     return (
-        <UserDataContext.Provider value={data ?? null}>
+        <UserDataContext.Provider value={data?.message ?? null}>
             {children}
         </UserDataContext.Provider>
     )
