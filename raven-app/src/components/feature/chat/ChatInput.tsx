@@ -6,13 +6,13 @@ import 'react-quill/dist/quill.snow.css'
 import './styles.css'
 import { useFrappePostCall } from "frappe-react-sdk"
 import { UserContext } from "../../../utils/auth/UserProvider"
-import { ChannelContext } from "../../../utils/channel/ChannelContext"
 import { useHotkeys } from "react-hotkeys-hook"
 
 
 export const ChatInput = () => {
+
+    const channelID = 'test'
     const { currentUser } = useContext(UserContext)
-    const { channelID } = useContext(ChannelContext)
 
     const { call } = useFrappePostCall('raven.messaging.doctype.message.message.send_message')
 

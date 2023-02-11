@@ -2,7 +2,6 @@ import { Box } from "@chakra-ui/react"
 import { useFrappeGetDocList } from "frappe-react-sdk"
 import { useContext, useMemo } from "react"
 import { useFrappeEventListener } from "../../../hooks/useFrappeEventListener"
-import { ChannelContext } from "../../../utils/channel/ChannelContext"
 import { AlertBanner } from "../../layout/AlertBanner"
 import { ChatHistory } from "./ChatHistory"
 import { ChatInput } from "./ChatInput"
@@ -15,8 +14,8 @@ interface Message {
 }
 
 export const ChatInterface = () => {
-    const { channelID } = useContext(ChannelContext)
 
+    const channelID = 'test'
     const { data, error, mutate } = useFrappeGetDocList<Message>('Message', {
         fields: ["text", "creation", "name", "user_id"],
         filters: [["channel_id", "=", channelID]],
