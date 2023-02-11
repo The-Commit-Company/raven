@@ -1,31 +1,53 @@
-import { Flex, Box, Stack, StackProps, useColorMode } from '@chakra-ui/react'
-import { Outlet } from 'react-router-dom'
+import { Divider, HStack, IconButton, useColorMode, Text, Stack, Avatar } from "@chakra-ui/react";
+import { PropsWithChildren } from "react";
+import { HiOutlineMoon, HiOutlineSun } from "react-icons/hi"
+import { FiEdit } from "react-icons/fi";
+import { SidebarGroup, SidebarGroupList, SidebarItem, SidebarItemLabel } from "./SidebarComp";
 
-interface Props extends StackProps {
-    children: React.ReactNode,
-    sidebarWidth?: string
-}
+export const Sidebar = ({ children }: PropsWithChildren<{}>) => {
 
-export const Sidebar = ({ children, sidebarWidth, ...props }: Props) => {
-
-    const { colorMode } = useColorMode()
+    const { colorMode, toggleColorMode } = useColorMode()
 
     return (
-        <Flex height="100vh" sx={{ '--sidebar-width': sidebarWidth ?? '16rem' }} >
-            <Box bg={colorMode === "light" ? "gray.50" : "gray.900"} h="100vh" fontSize="sm" width="var(--sidebar-width)" left="0" position="fixed" zIndex="999">
-                <Stack h="full" direction="column" py="4" spacing="4" overflow="auto" px="3" {...props}>
-                    {children}
-                </Stack>
-            </Box>
-            <Box
-                overflow="auto"
-                w='calc(100vw - var(--sidebar-width))'
-                position="relative"
-                left='var(--sidebar-width)'
-            >
-                <Outlet />
-            </Box>
-        </Flex>
-    )
+        <Stack justify={'space-between'} h='100vh'>
+            <Stack>
+                <HStack justifyContent="space-between" spacing="3" h='33px'>
+                    <Text fontSize="xl" fontWeight="semibold" ml='3'>Raven</Text>
+                    <IconButton
+                        size={"sm"}
+                        aria-label="Send message"
+                        icon={<FiEdit />}
+                    />
+                </HStack>
+                <Divider />
 
+                <SidebarGroup>
+                    <SidebarGroupList>
+                        <SidebarItem to="channel">
+                            <SidebarItemLabel>Channels</SidebarItemLabel>
+                        </SidebarItem>
+                        <SidebarItem to="message">
+                            <SidebarItemLabel>Direct Messages</SidebarItemLabel>
+                        </SidebarItem>
+                    </SidebarGroupList>
+                </SidebarGroup>
+            </Stack>
+
+            <Stack>
+                <Divider borderColor={colorMode === "light" ? "gray.300" : "gray.600"} />
+                <HStack justifyContent={"space-between"} px='1'>
+                    <HStack>
+                        <Avatar size="2xs" />
+                        <Text fontSize="sm">User Name</Text>
+                    </HStack>
+                    <IconButton
+                        size={"xs"}
+                        aria-label="Toggle theme"
+                        icon={colorMode === "light" ? <HiOutlineMoon /> : <HiOutlineSun />}
+                        onClick={toggleColorMode}
+                    />
+                </HStack>
+            </Stack>
+        </Stack>
+    )
 }
