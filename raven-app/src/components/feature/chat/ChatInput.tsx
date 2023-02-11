@@ -1,7 +1,10 @@
-import { chakra, Flex, IconButton, Input } from "@chakra-ui/react"
+import { Box, IconButton, Stack } from "@chakra-ui/react"
+import { useState, useContext } from "react"
+import { RiSendPlaneFill } from "react-icons/ri"
+import ReactQuill from "react-quill"
+import 'react-quill/dist/quill.snow.css'
+import './styles.css'
 import { useFrappePostCall } from "frappe-react-sdk"
-import { useContext, useState } from "react"
-import { FormProvider, useForm } from "react-hook-form"
 import { RiSendPlaneFill } from "react-icons/ri"
 import { UserContext } from "../../../utils/auth/UserProvider"
 import { ChannelContext } from "../../../utils/channel/ChannelContext"
@@ -12,27 +15,23 @@ interface ChatInputProps {
 }
 
 export const ChatInput = ({ addMessage }: ChatInputProps) => {
+
     const { currentUser } = useContext(UserContext)
     const { channelID } = useContext(ChannelContext)
 
     const { call, loading, error, reset } = useFrappePostCall('raven.messaging.doctype.message.message.send_message')
 
     const [text, setText] = useState("")
-    const methods = useForm()
 
-    const { handleSubmit } = methods
+    const handleChange = (value: string) => {
+        setText(value)
+    }
 
     useHotkeys('enter', () => onSubmit(), {
         enabled: true,
         preventDefault: true,
         enableOnFormTags: true,
     })
-
-    // console.log("text", text)
-
-    const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setText(event.target.value)
-    }
 
     const onSubmit = () => {
         call({
@@ -46,24 +45,36 @@ export const ChatInput = ({ addMessage }: ChatInputProps) => {
         })
     }
 
+    const modules = {
+        toolbar: [
+            ['bold', 'italic', 'underline', 'strike', 'blockquote'],
+            [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+            ['link']
+        ],
+
+    const formats = [
+        'bold', 'italic', 'underline', 'strike', 'blockquote',
+        'list', 'bullet',
+        'link'
+    ]
+
     return (
-        <FormProvider {...methods}>
-            <chakra.form onSubmit={handleSubmit(onSubmit)}>
-                <Flex mt={4}>
-                    <Input
-                        value={text}
-                        onChange={onChange}
-                        placeholder="Type your message here..."
-                        size="md"
-                        px={4}
-                        py={2}
-                        mr={2}
-                        w="100%"
-                        maxW="sm"
-                    />
-                    <IconButton type="submit" size="md" isDisabled={text.length === 0} aria-label={"send message"} icon={<RiSendPlaneFill />} />
-                </Flex>
-            </chakra.form>
-        </FormProvider>
+        <Box border='1px' borderColor={'gray.500'} rounded='lg' boxShadow='base' position='relative'>
+            <ReactQuill
+                className="my-quill-editor"
+                onChange={handleChange}
+                value={text}
+                placeholder={"Type a message..."}
+                modules={modules}
+                formats={formats} />
+            <IconButton
+                isDisabled={text.length === 0}
+                style={{ position: 'absolute', bottom: '10px', right: '10px' }}
+                colorScheme='blue'
+                onClick={onSubmit}
+                aria-label={"send message"}
+                icon={<RiSendPlaneFill />}
+                size='xs' />
+        </Box>
     )
 }

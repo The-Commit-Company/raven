@@ -1,0 +1,40 @@
+.my-quill-editor .ql-container {
+    border: none;
+}
+
+.my-quill-editor .ql-editor {
+    border: none;
+}
+
+.my-quill-editor .ql-toolbar.ql-snow .ql-formats>button:hover {
+    background-color: #2D3748;
+    border-radius: 4px;
+}
+
+.ql-toolbar {
+    border: none !important;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+}
+
+.ql-formats button.ql-active {
+    background-color: #2D3748;
+    border-radius: 4px;
+    z-index: 2;
+}
+
+.ql-snow.ql-toolbar button.ql-active .ql-fill,
+.ql-snow.ql-toolbar button:hover .ql-fill {
+    fill: #1a97c0;
+}
+
+.ql-snow.ql-toolbar button.ql-active .ql-stroke,
+.ql-snow.ql-toolbar button:hover .ql-stroke {
+    stroke: #1a97c0;
+}
+
+.quill>.ql-container>.ql-editor.ql-blank::before {
+    font-size: 14px;
+    font-style: normal;
+    color: #718096;
+}
