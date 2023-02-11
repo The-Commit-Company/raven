@@ -1,6 +1,8 @@
 import { useFrappeAuth } from 'frappe-react-sdk'
 import { FC, PropsWithChildren } from 'react'
 import { createContext } from 'react'
+import { Outlet } from 'react-router-dom'
+import { UserSidebar } from '../../components/layout/Sidebar/UserSidebar'
 
 interface UserContextProps {
     isLoading: boolean,
@@ -25,7 +27,9 @@ export const UserProvider: FC<PropsWithChildren> = ({ children }) => {
     const isLoading = (currentUser === undefined || currentUser === null) && (error === null || error === undefined);
     return (
         <UserContext.Provider value={{ isLoading, updateCurrentUser, login, logout, currentUser: currentUser ?? "", isValidating }}>
-            {children}
+            <UserSidebar>
+                <Outlet />
+            </UserSidebar>
         </UserContext.Provider>
     )
 }

@@ -1,5 +1,5 @@
 import React, { ReactNode } from 'react'
-import { Stack, Box, Text, HStack, BoxProps, StackProps, TextProps } from '@chakra-ui/react'
+import { Stack, Box, Text, HStack, BoxProps, StackProps, TextProps, useColorMode } from '@chakra-ui/react'
 import { NavLink } from 'react-router-dom'
 
 interface SidebarGroupProps extends StackProps {
@@ -20,8 +20,10 @@ interface SidebarGroupItemProps extends StackProps {
 }
 export const SidebarGroupItem = ({ children, ...props }: SidebarGroupItemProps) => {
 
+    const { colorMode } = useColorMode()
+
     return (
-        <HStack w="full" color="gray.500" {...props} >
+        <HStack w="full" color={colorMode === "light" ? "gray.500" : "gray.200"} {...props} >
             {children}
         </HStack>
     )
@@ -30,10 +32,13 @@ export const SidebarGroupItem = ({ children, ...props }: SidebarGroupItemProps) 
 interface SidebarGroupLabelProps extends TextProps {
     children: ReactNode
 }
+
 export const SidebarGroupLabel = ({ children, ...props }: SidebarGroupLabelProps) => {
 
+    const { colorMode } = useColorMode()
+
     return (
-        <Text fontSize="xs" color="gray.500" my='1' {...props}>
+        <Text fontSize="xs" color={colorMode === "light" ? "gray.500" : "gray.200"} my='1' {...props}>
             {children}
         </Text>
     )
@@ -59,16 +64,24 @@ interface SidebarItemProps extends StackProps {
     active?: boolean,
     activeStyles?: Record<string, string>
 }
+
 export const SidebarItem = ({ to, children, subtle, end, active = false, activeStyles, ...props }: SidebarItemProps) => {
 
-    const isActiveStyle = {
+    const { colorMode } = useColorMode()
+
+    const isActiveStyleLight = {
         backgroundColor: "var(--chakra-colors-gray-200)",
+        borderRadius: 'var(--chakra-radii-md)'
+    }
+
+    const isActiveStyleDark = {
+        backgroundColor: "var(--chakra-colors-gray-700)",
         borderRadius: 'var(--chakra-radii-md)'
     }
 
     return (
         <NavLink
-            style={({ isActive }) => (isActive ? isActiveStyle : {})}
+            style={({ isActive }) => (isActive ? activeStyles ?? (colorMode === "light" ? isActiveStyleLight : isActiveStyleDark) : {})}
             to={to}
             end={end}
         >
@@ -80,9 +93,9 @@ export const SidebarItem = ({ to, children, subtle, end, active = false, activeS
                 userSelect="none"
                 rounded="md"
                 transition="all 0.2s"
-                _hover={{ bg: "gray.100" }}
-                color={subtle ? "gray.500" : "gray.700"}
-                bg={active ? "gray.100" : ""}
+                _hover={{ bg: colorMode === "light" ? "gray.100" : "gray.600" }}
+                color={subtle ? (colorMode === "light" ? "gray.500" : "gray.200") : (colorMode === "light" ? "gray.700" : "gray.100")}
+                bg={active ? (colorMode === "light" ? "gray.100" : "gray.700") : "transparent"}
                 {...props}
             >
                 {children}
