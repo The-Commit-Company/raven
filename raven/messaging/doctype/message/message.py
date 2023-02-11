@@ -10,12 +10,11 @@ class Message(Document):
 
 
 @frappe.whitelist(methods=['POST'])
-def send_message(channel_id, user_id, text):
+def send_message(channel_id, text):
     doc = frappe.get_doc({
         'doctype': 'Message',
         'channel_id': channel_id,
-        'text': text,
-        'user_id': user_id
+        'text': text
     })
     doc.insert()
     frappe.publish_realtime('message_received', {
