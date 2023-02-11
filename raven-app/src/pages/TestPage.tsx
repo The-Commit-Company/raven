@@ -5,7 +5,6 @@ import { UserContext } from "../utils/auth/UserProvider"
 type Props = {}
 
 export const TestPage = (props: Props) => {
-    const { currentUser } = useContext(UserContext)
     return (
         <ChatInterface />
     )

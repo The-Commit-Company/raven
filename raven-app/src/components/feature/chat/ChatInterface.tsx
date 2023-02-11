@@ -3,6 +3,7 @@ import { useFrappeGetDocList } from "frappe-react-sdk"
 import { useContext, useMemo } from "react"
 import { useFrappeEventListener } from "../../../hooks/useFrappeEventListener"
 import { ChannelContext } from "../../../utils/channel/ChannelContext"
+import { AlertBanner } from "../../layout/AlertBanner"
 import { ChatHistory } from "./ChatHistory"
 import { ChatInput } from "./ChatInput"
 
@@ -45,7 +46,9 @@ export const ChatInterface = () => {
         }
     }, [data]);
 
-    return (
+    if (error) {
+        return <AlertBanner status='error' heading={error.message}>{error.httpStatus}: {error.httpStatusText}</AlertBanner>
+    } else return (
         <Box p={4}>
             <ChatHistory messages={messages} />
             <ChatInput />
