@@ -1,36 +1,55 @@
-import { Sidebar, SidebarItem, SidebarIcon, SidebarItemLabel, SidebarGroupList, SidebarGroup, SidebarGroupItem, SidebarGroupLabel } from '.'
-import { Divider, HStack, Text } from '@chakra-ui/react'
-import { GiCheckboxTree } from 'react-icons/gi'
-import { IoGridOutline } from 'react-icons/io5'
+import { Divider, HStack, IconButton, useColorMode, Text, Stack, Avatar } from "@chakra-ui/react";
+import { PropsWithChildren } from "react";
+import { HiOutlineMoon, HiOutlineSun } from "react-icons/hi"
+import { FiEdit } from "react-icons/fi";
+import { Sidebar } from "./Sidebar";
+import { SidebarGroup, SidebarGroupList, SidebarItem, SidebarItemLabel } from "./SidebarComp";
 
-interface Props {
+export const UserSidebar = ({ children }: PropsWithChildren<{}>) => {
 
-}
-
-export const UserSidebar = (props: Props) => {
+    const { colorMode, toggleColorMode } = useColorMode()
 
     return (
-        <Sidebar>
-            <HStack justifyContent='space-between' spacing='3' h='33px' py='3'>
-                <Text overflow='hidden' textOverflow='ellipsis' fontSize='md'>user</Text>
-            </HStack>
-            <Divider />
-            <SidebarItem to='' end>
-                <SidebarIcon><IoGridOutline /></SidebarIcon>
-                <SidebarItemLabel>Channels</SidebarItemLabel>
-            </SidebarItem>
+        <Sidebar display='flex' justifyContent={'space-between'}>
 
-            <SidebarGroup>
-                <SidebarGroupItem>
-                    <SidebarGroupLabel>Direct Messages</SidebarGroupLabel>
-                </SidebarGroupItem>
-                <SidebarGroupList>
-                    <SidebarItem to="">
-                        <SidebarIcon><GiCheckboxTree /></SidebarIcon>
-                        <SidebarItemLabel>user 1</SidebarItemLabel>
-                    </SidebarItem>
-                </SidebarGroupList>
-            </SidebarGroup>
+            <Stack>
+                <HStack justifyContent="space-between" spacing="3" h='33px'>
+                    <Text fontSize="xl" fontWeight="semibold" ml='3'>Raven</Text>
+                    <IconButton
+                        size={"sm"}
+                        aria-label="Send message"
+                        icon={<FiEdit />}
+                    />
+                </HStack>
+                <Divider />
+
+                <SidebarGroup>
+                    <SidebarGroupList>
+                        <SidebarItem to="channel">
+                            <SidebarItemLabel>Channels</SidebarItemLabel>
+                        </SidebarItem>
+                        <SidebarItem to="message">
+                            <SidebarItemLabel>Direct Messages</SidebarItemLabel>
+                        </SidebarItem>
+                    </SidebarGroupList>
+                </SidebarGroup>
+            </Stack>
+
+            <Stack>
+                <Divider borderColor={colorMode === "light" ? "gray.300" : "gray.600"} />
+                <HStack justifyContent={"space-between"} px='1'>
+                    <HStack>
+                        <Avatar size="2xs" />
+                        <Text fontSize="sm">User Name</Text>
+                    </HStack>
+                    <IconButton
+                        size={"xs"}
+                        aria-label="Toggle theme"
+                        icon={colorMode === "light" ? <HiOutlineMoon /> : <HiOutlineSun />}
+                        onClick={toggleColorMode}
+                    />
+                </HStack>
+            </Stack>
 
         </Sidebar>
     )
