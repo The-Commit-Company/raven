@@ -1,11 +1,10 @@
-import { Box, IconButton, Stack, useColorMode } from "@chakra-ui/react"
-import { useState, useContext } from "react"
+import { Box, IconButton, useColorMode } from "@chakra-ui/react"
+import { useState } from "react"
 import { RiSendPlaneFill } from "react-icons/ri"
 import ReactQuill from "react-quill"
 import 'react-quill/dist/quill.snow.css'
 import './styles.css'
 import { useFrappePostCall } from "frappe-react-sdk"
-import { UserContext } from "../../../utils/auth/UserProvider"
 import { useHotkeys } from "react-hotkeys-hook"
 
 interface ChatInputProps {
@@ -13,8 +12,6 @@ interface ChatInputProps {
 }
 
 export const ChatInput = ({ channelID }: ChatInputProps) => {
-
-    const { currentUser } = useContext(UserContext)
 
     const { call } = useFrappePostCall('raven.raven_messaging.doctype.raven_message.raven_message.send_message')
 
@@ -39,7 +36,6 @@ export const ChatInput = ({ channelID }: ChatInputProps) => {
 
     const onSubmit = () => {
         call({
-            user_id: currentUser,
             channel_id: channelID,
             text: text
         }).then(() => {

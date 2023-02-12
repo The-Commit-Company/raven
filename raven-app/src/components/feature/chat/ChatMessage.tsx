@@ -11,9 +11,9 @@ interface ChatMessageProps {
 }
 
 export const ChatMessage = ({ text, user, timestamp }: ChatMessageProps) => {
+
     const channelMembers = useContext(ChannelContext)
 
-    console.log(channelMembers)
     return (
         <Box py={4} px='2'>
             <HStack spacing={2} alignItems='flex-start'>
