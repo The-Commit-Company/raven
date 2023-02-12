@@ -4,8 +4,10 @@
 import frappe
 from frappe.model.document import Document
 
+
 class RavenMessage(Document):
-	pass
+    pass
+
 
 @frappe.whitelist(methods=['POST'])
 def send_message(channel_id, text):
@@ -15,5 +17,7 @@ def send_message(channel_id, text):
         'text': text
     })
     doc.insert()
+    frappe.publish_realtime('message_received', {
+                            'channel_id': channel_id}, after_commit=True)
     frappe.db.commit()
     return "message sent"

@@ -29,7 +29,6 @@ export const ChatInterface = () => {
     useFrappeEventListener('message_received', (data) => {
         if (data.channel_id === channelID) {
             mutate()
-            console.log('message received')
         }
     })
 

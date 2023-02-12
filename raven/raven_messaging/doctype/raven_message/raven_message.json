@@ -17,7 +17,7 @@
    "fieldtype": "Link",
    "in_list_view": 1,
    "label": "Channel ID",
-   "options": "Channel",
+   "options": "Raven Channel",
    "reqd": 1
   },
   {
@@ -28,7 +28,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-02-12 17:29:25.498988",
+ "modified": "2023-02-12 18:52:54.869767",
  "modified_by": "Administrator",
  "module": "Raven Messaging",
  "name": "Raven Message",
