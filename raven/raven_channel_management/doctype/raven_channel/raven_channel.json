@@ -1,7 +1,7 @@
 {
  "actions": [],
  "autoname": "hash",
- "creation": "2023-02-10 19:17:49.467257",
+ "creation": "2023-02-12 17:30:30.847618",
  "default_view": "List",
  "doctype": "DocType",
  "editable_grid": 1,
@@ -39,10 +39,10 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-02-11 20:56:41.015024",
+ "modified": "2023-02-12 17:30:30.847618",
  "modified_by": "Administrator",
- "module": "Channel Management",
- "name": "Channel",
+ "module": "Raven Channel Management",
+ "name": "Raven Channel",
  "naming_rule": "Random",
  "owner": "Administrator",
  "permissions": [

@@ -5,5 +5,5 @@
 from frappe.tests.utils import FrappeTestCase
 
 
-class TestMessage(FrappeTestCase):
+class TestRavenChannelMember(FrappeTestCase):
 	pass

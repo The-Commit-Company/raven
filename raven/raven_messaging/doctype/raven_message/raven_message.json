@@ -2,7 +2,7 @@
  "actions": [],
  "allow_rename": 1,
  "autoname": "hash",
- "creation": "2023-02-10 19:39:01.794739",
+ "creation": "2023-02-12 17:29:25.498988",
  "default_view": "List",
  "doctype": "DocType",
  "editable_grid": 1,
@@ -28,10 +28,10 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-02-12 03:18:33.597741",
+ "modified": "2023-02-12 17:29:25.498988",
  "modified_by": "Administrator",
- "module": "Messaging",
- "name": "Message",
+ "module": "Raven Messaging",
+ "name": "Raven Message",
  "naming_rule": "Random",
  "owner": "Administrator",
  "permissions": [
@@ -59,6 +59,10 @@
    "role": "Raven User",
    "share": 1,
    "write": 1
+  },
+  {
+   "read": 1,
+   "role": "Raven User"
   }
  ],
  "sort_field": "modified",

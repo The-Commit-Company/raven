@@ -2,7 +2,7 @@
  "actions": [],
  "allow_rename": 1,
  "autoname": "format:{channel_id}-{user_id}",
- "creation": "2023-02-11 20:55:25.105584",
+ "creation": "2023-02-12 17:31:23.807704",
  "default_view": "List",
  "doctype": "DocType",
  "editable_grid": 1,
@@ -17,7 +17,7 @@
    "fieldtype": "Link",
    "in_list_view": 1,
    "label": "Channel",
-   "options": "Channel",
+   "options": "Raven Channel",
    "reqd": 1
   },
   {
@@ -31,10 +31,10 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-02-11 20:55:25.105584",
+ "modified": "2023-02-12 17:31:23.807704",
  "modified_by": "Administrator",
- "module": "Channel Management",
- "name": "Channel Member",
+ "module": "Raven Channel Management",
+ "name": "Raven Channel Member",
  "naming_rule": "Expression",
  "owner": "Administrator",
  "permissions": [
