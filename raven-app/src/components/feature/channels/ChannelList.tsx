@@ -13,7 +13,7 @@ type ChannelListForUser = {
 
 export const ChannelList = () => {
 
-    const { data, error } = useFrappeGetCall<{ message: ChannelListForUser[] }>("raven.channel_management.doctype.channel.channel.get_channel_list")
+    const { data, error } = useFrappeGetCall<{ message: ChannelListForUser[] }>("raven.raven_channel_management.doctype.raven_channel.raven_channel.get_channel_list")
 
     if (error) {
         <AlertBanner status="error" heading={error.message}>{error.httpStatus} - {error.httpStatusText}</AlertBanner>

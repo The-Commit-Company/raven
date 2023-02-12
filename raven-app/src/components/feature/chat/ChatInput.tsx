@@ -16,7 +16,7 @@ export const ChatInput = ({ channelID }: ChatInputProps) => {
 
     const { currentUser } = useContext(UserContext)
 
-    const { call } = useFrappePostCall('raven.messaging.doctype.message.message.send_message')
+    const { call } = useFrappePostCall('raven.raven_messaging.doctype.raven_message.raven_message.send_message')
 
     const [text, setText] = useState("")
 

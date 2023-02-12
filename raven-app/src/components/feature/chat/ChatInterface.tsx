@@ -17,7 +17,7 @@ interface Message {
 export const ChatInterface = () => {
 
     const { channelID } = useParams<{ channelID: string }>()
-    const { data, error, mutate } = useFrappeGetDocList<Message>('Message', {
+    const { data, error, mutate } = useFrappeGetDocList<Message>('Raven Message', {
         fields: ["text", "creation", "name", "owner"],
         filters: [["channel_id", "=", channelID ?? null]],
         orderBy: {
