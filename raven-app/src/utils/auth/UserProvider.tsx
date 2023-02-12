@@ -29,18 +29,6 @@ export const UserProvider: FC<PropsWithChildren> = ({ children }) => {
 
     const isLoading = (currentUser === undefined || currentUser === null) && (error === null || error === undefined);
 
-    if (isValidating) {
-        return <FullPageLoader />
-    }
-
-    if (error) {
-        return (
-            <Center width='100vw' height='100vh'>
-                <AlertBanner status='error' heading={error.message}>{error.httpStatusText} - {error.httpStatus}</AlertBanner>
-            </Center>
-        )
-    }
-
     return (
         <UserContext.Provider value={{ isLoading, updateCurrentUser, login, logout, currentUser: currentUser ?? "", isValidating }}>
             {children}
