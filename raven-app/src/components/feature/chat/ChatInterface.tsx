@@ -4,6 +4,8 @@ import { useParams } from "react-router-dom"
 import { useFrappeEventListener } from "../../../hooks/useFrappeEventListener"
 import { ChannelProvider } from "../../../utils/channel/ChannelProvider"
 import { AlertBanner } from "../../layout/AlertBanner"
+import { PageHeader } from "../../layout/Heading/PageHeader"
+import { PageHeading } from "../../layout/Heading/PageHeading"
 import { ChatHistory } from "./ChatHistory"
 import { ChatInput } from "./ChatInput"
 
@@ -40,7 +42,10 @@ export const ChatInterface = () => {
         )
     } else return (
         <ChannelProvider>
-            <Stack h='100vh' justify={'space-between'} p={4} overflow='hidden'>
+            <PageHeader>
+                <PageHeading>{channelID}</PageHeading>
+            </PageHeader>
+            <Stack h='100vh' justify={'space-between'} p={4} overflow='hidden' mt='16'>
                 {data &&
                     <ChatHistory messages={data} />
                 }
