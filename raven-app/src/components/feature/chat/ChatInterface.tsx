@@ -1,9 +1,10 @@
 import { Box, HStack, Stack, Text } from "@chakra-ui/react"
 import { useFrappeGetDocList } from "frappe-react-sdk"
+import { useContext } from "react"
 import { BiHash, BiLockAlt } from "react-icons/bi"
 import { useParams } from "react-router-dom"
 import { useFrappeEventListener } from "../../../hooks/useFrappeEventListener"
-import { ChannelProvider } from "../../../utils/channel/ChannelProvider"
+import { ChannelContext } from "../../../utils/channel/ChannelProvider"
 import { AlertBanner } from "../../layout/AlertBanner"
 import { PageHeader } from "../../layout/Heading/PageHeader"
 import { PageHeading } from "../../layout/Heading/PageHeading"
@@ -17,14 +18,10 @@ interface Message {
     owner: string
 }
 
-interface Channel {
-    channel_name: string,
-    type: string
-}
-
 export const ChatInterface = () => {
 
     const { channelID } = useParams<{ channelID: string }>()
+    const { channelData } = useContext(ChannelContext)
     const { data, error, mutate } = useFrappeGetDocList<Message>('Raven Message', {
         fields: ["text", "creation", "name", "owner"],
         filters: [["channel_id", "=", channelID ?? null]],
@@ -34,24 +31,11 @@ export const ChatInterface = () => {
         }
     })
 
-    const { data: channelData, error: channelError } = useFrappeGetDocList<Channel>('Raven Channel', {
-        fields: ["channel_name", "type"],
-        filters: [["name", "=", channelID ?? '']]
-    })
-
     useFrappeEventListener('message_received', (data) => {
         if (data.channel_id === channelID) {
             mutate()
         }
     })
-
-    if (channelError) {
-        return (
-            <Box p={4}>
-                <AlertBanner status='error' heading={channelError.message}>{channelError.httpStatus}: {channelError.httpStatusText}</AlertBanner>
-            </Box>
-        )
-    }
 
     if (error) {
         return (
@@ -62,13 +46,13 @@ export const ChatInterface = () => {
     }
 
     else return (
-        <ChannelProvider>
+        <>
             <PageHeader>
-                {channelData && channelData[0] &&
+                {channelData &&
                     <PageHeading>
                         <HStack>
-                            {channelData[0].type === 'Private' ? <BiLockAlt /> : <BiHash />}
-                            <Text>{channelData[0].channel_name}</Text>
+                            {channelData[0]?.type === 'Private' ? <BiLockAlt /> : <BiHash />}
+                            <Text>{channelData[0]?.channel_name}</Text>
                         </HStack>
                     </PageHeading>
                 }
@@ -79,6 +63,6 @@ export const ChatInterface = () => {
                 }
                 <ChatInput channelID={channelID ?? ''} />
             </Stack>
-        </ChannelProvider>
+        </>
     )
 }

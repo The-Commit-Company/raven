@@ -1,10 +1,13 @@
 import { ChatInterface } from "../components/feature/chat"
+import { ChannelProvider } from "../utils/channel/ChannelProvider"
 
 type Props = {}
 
 export const ChatSpace = (props: Props) => {
 
     return (
-        <ChatInterface />
+        <ChannelProvider>
+            <ChatInterface />
+        </ChannelProvider>
     )
 }
