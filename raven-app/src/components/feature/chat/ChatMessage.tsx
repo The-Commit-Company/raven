@@ -2,7 +2,7 @@ import { Avatar, Box, HStack, Stack, StackDivider, Text } from "@chakra-ui/react
 import { useContext } from "react"
 import TimeAgo from 'timeago-react'
 import { ChannelContext } from "../../../utils/channel/ChannelProvider"
-import { HtmlRenderer } from "../markdown-viewer/HTMLRenderer"
+import { MarkdownRenderer } from "../markdown-viewer/MarkdownRenderer.tsx";
 
 interface ChatMessageProps {
     text: string,
@@ -23,7 +23,7 @@ export const ChatMessage = ({ text, user, timestamp }: ChatMessageProps) => {
                         <Text fontSize='sm' lineHeight={'0.9'} fontWeight="bold" as='span'>{channelMembers?.[user]?.full_name ?? user}</Text>
                         <Text fontSize="xs" lineHeight={'0.9'} color="gray.500"><TimeAgo datetime={new Date(timestamp)} opts={{ minInterval: 60 }} /></Text>
                     </HStack>
-                    <HtmlRenderer htmlString={text} />
+                    <MarkdownRenderer content={text} />
                 </Stack>
             </HStack>
         </Box>
