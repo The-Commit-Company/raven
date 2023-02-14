@@ -12,7 +12,7 @@ interface ChatMessageProps {
 
 export const ChatMessage = ({ text, user, timestamp }: ChatMessageProps) => {
 
-    const channelMembers = useContext(ChannelContext)
+    const { channelMembers } = useContext(ChannelContext)
 
     return (
         <Box py={4} px='2'>
