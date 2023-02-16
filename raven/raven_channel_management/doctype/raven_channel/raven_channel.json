@@ -9,6 +9,7 @@
  "field_order": [
   "type",
   "channel_name",
+  "channel_description",
   "is_direct_message"
  ],
  "fields": [
@@ -22,7 +23,7 @@
   },
   {
    "fieldname": "channel_name",
-   "fieldtype": "Data",
+   "fieldtype": "Small Text",
    "in_filter": 1,
    "in_list_view": 1,
    "in_preview": 1,
@@ -35,11 +36,16 @@
    "fieldname": "is_direct_message",
    "fieldtype": "Check",
    "label": "Is Direct Message"
+  },
+  {
+   "fieldname": "channel_description",
+   "fieldtype": "Data",
+   "label": "Channel Description"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-02-12 17:30:30.847618",
+ "modified": "2023-02-16 13:21:15.785428",
  "modified_by": "Administrator",
  "module": "Raven Channel Management",
  "name": "Raven Channel",

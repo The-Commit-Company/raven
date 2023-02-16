@@ -148,3 +148,33 @@ export const NestedChild = ({ children, ...props }: NestedChildProps) => {
         </Box>
     )
 }
+
+
+interface SidebarButtonItemProps extends StackProps {
+    children: React.ReactNode,
+    subtle?: boolean,
+    onClick?: () => void
+}
+
+export const SidebarButtonItem = ({ children, subtle, onClick, ...props }: SidebarButtonItemProps) => {
+
+    const { colorMode } = useColorMode()
+
+    return (
+        <HStack
+            w="full"
+            px="3"
+            py="1.5"
+            cursor="pointer"
+            userSelect="none"
+            rounded="md"
+            transition="all 0.2s"
+            onClick={onClick}
+            _hover={{ bg: colorMode === "light" ? "gray.100" : "gray.600" }}
+            color={subtle ? (colorMode === "light" ? "gray.500" : "gray.200") : (colorMode === "light" ? "gray.700" : "gray.100")}
+            {...props}
+        >
+            {children}
+        </HStack>
+    )
+}
