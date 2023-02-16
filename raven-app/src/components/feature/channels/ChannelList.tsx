@@ -1,15 +1,9 @@
 import { useFrappeGetCall } from "frappe-react-sdk"
 import { BiHash } from "react-icons/bi"
 import { BiLockAlt } from "react-icons/bi"
+import { ChannelListForUser } from "../../../types/Channel/Channel"
 import { AlertBanner } from "../../layout/AlertBanner"
 import { SidebarGroup, SidebarGroupItem, SidebarGroupLabel, SidebarGroupList, SidebarIcon, SidebarItem, SidebarItemLabel } from "../../layout/Sidebar"
-
-type ChannelListForUser = {
-    name: string,
-    channel_name: string,
-    type: string,
-    is_direct_message: boolean
-}
 
 export const ChannelList = () => {
 

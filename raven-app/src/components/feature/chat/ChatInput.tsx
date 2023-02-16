@@ -1,17 +1,20 @@
 import { Box, IconButton, useColorMode } from "@chakra-ui/react"
-import { useState } from "react"
+import { useCallback, useState } from "react"
 import { RiSendPlaneFill } from "react-icons/ri"
 import ReactQuill from "react-quill"
 import 'react-quill/dist/quill.snow.css'
 import './styles.css'
 import { useFrappePostCall } from "frappe-react-sdk"
 import { useHotkeys } from "react-hotkeys-hook"
-
+import "quill-mention";
+import 'quill-mention/dist/quill.mention.css';
 interface ChatInputProps {
-    channelID: string
+    channelID: string,
+    allMembers: { id: string; value: string; }[],
+    allChannels: { id: string; value: string; }[]
 }
 
-export const ChatInput = ({ channelID }: ChatInputProps) => {
+export const ChatInput = ({ channelID, allMembers, allChannels }: ChatInputProps) => {
 
     const { call } = useFrappePostCall('raven.raven_messaging.doctype.raven_message.raven_message.send_message')
 
@@ -43,18 +46,38 @@ export const ChatInput = ({ channelID }: ChatInputProps) => {
         })
     }
 
-    const modules = {
-        toolbar: [
-            ['bold', 'italic', 'underline', 'strike', 'blockquote'],
-            [{ 'list': 'ordered' }, { 'list': 'bullet' }],
-            ['link']
-        ]
+    const mention = {
+        allowedChars: /^[A-Za-z\sÅÄÖåäö]*$/,
+        mentionDenotationChars: ["@", "#"],
+        source: useCallback((searchTerm: string, renderList: any, mentionChar: string) => {
+
+            let values;
+
+            if (mentionChar === "@") {
+                values = allMembers;
+            } else {
+                values = allChannels;
+            }
+
+            if (searchTerm.length === 0) {
+                renderList(values, searchTerm);
+            } else {
+                const matches = [];
+                if (values)
+                    for (let i = 0; i < values.length; i++)
+                        if (
+                            ~values[i].value.toLowerCase().indexOf(searchTerm.toLowerCase())
+                        )
+                            matches.push(values[i]);
+                renderList(matches, searchTerm);
+            }
+        }, [])
     }
 
     const formats = [
         'bold', 'italic', 'underline', 'strike', 'blockquote',
         'list', 'bullet',
-        'link'
+        'link', 'mention'
     ]
 
     const { colorMode } = useColorMode()
@@ -66,7 +89,14 @@ export const ChatInput = ({ channelID }: ChatInputProps) => {
                 onChange={handleChange}
                 value={text}
                 placeholder={"Type a message..."}
-                modules={modules}
+                modules={{
+                    toolbar: [
+                        ['bold', 'italic', 'underline', 'strike', 'blockquote'],
+                        [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+                        ['link']
+                    ],
+                    mention
+                }}
                 formats={formats}
                 onKeyDown={handleKeyDown} />
             <IconButton
