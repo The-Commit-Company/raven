@@ -17,7 +17,16 @@ type ChannelListForUser = {
 
 export const ChannelList = () => {
 
-    const { data, error } = useFrappeGetCall<{ message: ChannelListForUser[] }>("raven.raven_channel_management.doctype.raven_channel.raven_channel.get_channel_list")
+    const { data, error, mutate } = useFrappeGetCall<{ message: ChannelListForUser[] }>("raven.raven_channel_management.doctype.raven_channel.raven_channel.get_channel_list")
+
+    const handleClose = (refresh?: boolean) => {
+        if (refresh) {
+            mutate()
+            onClose()
+        } else {
+            onClose()
+        }
+    }
 
     const { isOpen, onOpen, onClose } = useDisclosure()
 
@@ -44,7 +53,7 @@ export const ChannelList = () => {
                     </SidebarButtonItem>
                 </SidebarGroupList>
             </SidebarGroup>
-            <CreateChannelModal isOpen={isOpen} onClose={onClose} />
+            <CreateChannelModal isOpen={isOpen} onClose={handleClose} />
         </>
     )
 }

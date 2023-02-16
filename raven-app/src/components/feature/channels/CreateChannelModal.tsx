@@ -1,4 +1,4 @@
-import { Button, ButtonGroup, chakra, FormControl, FormErrorMessage, FormLabel, HStack, Input, InputGroup, InputLeftElement, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Stack, Switch, Text, useToast } from '@chakra-ui/react'
+import { Button, ButtonGroup, chakra, FormControl, FormErrorMessage, FormHelperText, FormLabel, HStack, Input, InputGroup, InputLeftElement, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Stack, Switch, Text, useToast } from '@chakra-ui/react'
 import { useFrappeCreateDoc } from 'frappe-react-sdk'
 import { useEffect } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
@@ -104,6 +104,7 @@ export const CreateChannelModal = ({ isOpen, onClose }: ChannelModalProps) => {
                                             </HStack>
                                         </FormLabel>
                                         <Input {...register('channel_description', { maxLength: 200 })} />
+                                        <FormHelperText>What is this channel about?</FormHelperText>
                                         <FormErrorMessage>{errors.channel_description?.message}</FormErrorMessage>
                                     </FormControl>
 
