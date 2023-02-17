@@ -59,14 +59,6 @@ def create_initial_direct_message_channels_for_all():
                     })
                     channel.insert()
                     channel.add_members([user.name, user2.name])
-                else:
-                    channel = frappe.get_doc({
-                        "doctype": "Raven Channel",
-                        "channel_name": user.name + " _ " + all_users[6].name,
-                        "is_direct_message": 1,
-                    })
-                    channel.insert()
-                    channel.add_members([user.name, all_users[6].name])
 
 
 def create_initial_direct_message_channels_for_user(doc, method):
