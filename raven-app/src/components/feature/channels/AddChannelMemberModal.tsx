@@ -1,4 +1,4 @@
-import { Button, ButtonGroup, chakra, FormControl, HStack, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Text } from '@chakra-ui/react'
+import { Button, ButtonGroup, chakra, FormControl, HStack, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Stack, Text } from '@chakra-ui/react'
 import { useEffect } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
 import { BiHash, BiLockAlt } from 'react-icons/bi'
@@ -40,7 +40,7 @@ export const AddChannelMemberModal = ({ isOpen, onClose, channel_name, type, cha
   }
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose}>
+    <Modal isOpen={isOpen} onClose={onClose} size='xl'>
 
       <ModalOverlay />
       <ModalContent>
@@ -50,9 +50,10 @@ export const AddChannelMemberModal = ({ isOpen, onClose, channel_name, type, cha
             <Text>Add members to </Text>
             {type === 'Public'
               ?
-              <Text><BiHash /> {channel_name}</Text>
+              <HStack><BiHash /><Text>{channel_name}</Text></HStack>
               :
-              <Text><BiLockAlt /> {channel_name}</Text>}
+              <HStack><BiLockAlt /><Text>{channel_name}</Text></HStack>
+            }
           </HStack>
         </ModalHeader>
         <ModalCloseButton />
@@ -61,9 +62,17 @@ export const AddChannelMemberModal = ({ isOpen, onClose, channel_name, type, cha
           <chakra.form onSubmit={handleSubmit(onSubmit)}>
 
             <ModalBody>
-              <FormControl>
-                <AddMembersDropdown autoFocus name="add_members" chakraStyles={customStyles} />
-              </FormControl>
+              <Stack spacing={4}>
+
+                <Text>Anyone you add will be able to see all of the channel’s contents</Text>
+
+                <FormControl>
+                  <AddMembersDropdown autoFocus name="add_members" chakraStyles={customStyles} />
+                </FormControl>
+
+                <Text fontSize='sm' color='gray.500'>New members will be able to see all of <strong>{channel_name}</strong>'s history, including any files that have been shared in the channel.</Text>
+
+              </Stack>
             </ModalBody>
 
             <ModalFooter>

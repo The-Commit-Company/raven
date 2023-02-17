@@ -1,4 +1,4 @@
-import { Box, Button, HStack, Stack, Text, useDisclosure } from "@chakra-ui/react"
+import { Box, HStack, Stack, Text, useDisclosure } from "@chakra-ui/react"
 import { useFrappeGetCall, useFrappeGetDocList } from "frappe-react-sdk"
 import { useContext } from "react"
 import { BiHash, BiLockAlt } from "react-icons/bi"
@@ -11,6 +11,7 @@ import { PageHeader } from "../../layout/Heading/PageHeader"
 import { PageHeading } from "../../layout/Heading/PageHeading"
 import { FullPageLoader } from "../../layout/Loaders"
 import { AddChannelMemberModal } from "../channels/AddChannelMemberModal"
+import { ViewOrAddMembersButton } from "../view-or-add-members/ViewOrAddMembersButton"
 import { ChatHistory } from "./ChatHistory"
 import { ChatInput } from "./ChatInput"
 
@@ -74,9 +75,9 @@ export const ChatInterface = () => {
                             {channelData[0]?.type === 'Private' ? <BiLockAlt /> : <BiHash />}
                             <Text>{channelData[0]?.channel_name}</Text>
                         </HStack>
-                        <Button onClick={onOpen}>add members</Button>
                     </PageHeading>
                 }
+                <ViewOrAddMembersButton onClickViewMembers={onOpen} onClickAddMembers={onOpen} />
             </PageHeader>
             <Stack h='100vh' justify={'space-between'} p={4} overflow='hidden' mt='16'>
                 {data &&

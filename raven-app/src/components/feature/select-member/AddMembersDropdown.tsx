@@ -17,7 +17,7 @@ interface Member {
     full_name: string
 }
 
-export const AddMembersDropdown = ({ name, chakraStyles, ...props }: Props<MemberOption, false, GroupBase<MemberOption>>) => {
+export const AddMembersDropdown = ({ name, chakraStyles, ...props }: Props<MemberOption, true, GroupBase<MemberOption>>) => {
 
     const { data }: SWRResponse = useFrappeGetCall<{ message: Member[] }>('User', {
         fields: ['name', 'user_image', 'full_name'], filters: { enabled: 1 }
@@ -41,16 +41,17 @@ export const AddMembersDropdown = ({ name, chakraStyles, ...props }: Props<Membe
     return (
         <Controller
             control={control}
-            name={name ?? 'users'}
+            name={name ?? 'members'}
             render={({
                 field: { onChange, onBlur, value, name, ref }
             }) => {
                 const memberValue = memberOptions.find((u) => u.id === value)
                 return (
-                    <Select<MemberOption, false, GroupBase<MemberOption>>
+                    <Select<MemberOption, true, GroupBase<MemberOption>>
                         name={name}
                         ref={ref}
-                        onChange={(v) => onChange(v?.id)}
+                        isMulti
+                        onChange={(value) => { onChange(value?.map((v) => v.id)) }}
                         onBlur={onBlur}
                         value={memberValue}
                         chakraStyles={{ ...defaultStyles, ...chakraStyles }}
