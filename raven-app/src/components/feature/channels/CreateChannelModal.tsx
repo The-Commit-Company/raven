@@ -3,6 +3,7 @@ import { useFrappeCreateDoc } from 'frappe-react-sdk'
 import { useEffect } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
 import { BiHash, BiLockAlt } from 'react-icons/bi'
+import { useNavigate } from 'react-router-dom'
 
 interface ChannelModalProps {
     isOpen: boolean,
@@ -32,19 +33,22 @@ export const CreateChannelModal = ({ isOpen, onClose }: ChannelModalProps) => {
     }, [isOpen, reset])
 
     const channelType = watch('type')
+    let navigate = useNavigate()
 
     const onSubmit = (data: ChannelCreationForm) => {
-        console.log(data)
+        let docname = ""
         createDoc('Raven Channel', {
             ...data
-        }).then(() => {
-            onClose(true)
+        }).then((d) => {
+            docname = d.name
+            navigate('/channel/' + docname)
             toast({
                 title: "Channel Created",
                 status: "success",
                 duration: 2000,
                 isClosable: true
             })
+            onClose(true)
         }).catch((err) => {
             toast({
                 title: "Error creating channel",
