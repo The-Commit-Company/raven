@@ -41,24 +41,26 @@ def create_initial_direct_message_channels_for_all():
     query = frappe.qb.from_(user).select(
         user.name).where(user.user_type == "System User")
     all_users = query.run(as_dict=True)
-    first_five_users = all_users[:5]
 
     # create direct message channels for each user with 5 other users
     for user in all_users:
-        for user2 in first_five_users:
-            dm_channel_between_users = frappe.db.count("Raven Channel", filters={
-                "is_direct_message": 1,
-                "channel_name": user.name + " _ " + user2.name
-            })
-            if dm_channel_between_users == 0:
-                if user.name != user2.name:
-                    channel = frappe.get_doc({
-                        "doctype": "Raven Channel",
-                        "channel_name": user.name + " _ " + user2.name,
-                        "is_direct_message": 1
-                    })
-                    channel.insert()
-                    channel.add_members([user.name, user2.name])
+        for index, user2 in enumerate(all_users):
+            if index < 5:
+                dm_channel_between_users = frappe.db.count("Raven Channel", filters={
+                    "is_direct_message": 1,
+                    "channel_name": user.name + " _ " + user2.name
+                })
+                if dm_channel_between_users == 0:
+                    if user.name != user2.name:
+                        channel = frappe.get_doc({
+                            "doctype": "Raven Channel",
+                            "channel_name": user.name + " _ " + user2.name,
+                            "is_direct_message": 1
+                        })
+                        channel.insert()
+                        channel.add_members([user.name, user2.name])
+            else:
+                break
 
 
 def create_initial_direct_message_channels_for_user(doc, method):
