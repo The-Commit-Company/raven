@@ -1,4 +1,4 @@
-import { Box, HStack, Stack, Text } from "@chakra-ui/react"
+import { Box, Button, HStack, Stack, Text, useDisclosure } from "@chakra-ui/react"
 import { useFrappeGetCall, useFrappeGetDocList } from "frappe-react-sdk"
 import { useContext } from "react"
 import { BiHash, BiLockAlt } from "react-icons/bi"
@@ -10,6 +10,7 @@ import { AlertBanner } from "../../layout/AlertBanner"
 import { PageHeader } from "../../layout/Heading/PageHeader"
 import { PageHeading } from "../../layout/Heading/PageHeading"
 import { FullPageLoader } from "../../layout/Loaders"
+import { AddChannelMemberModal } from "../channels/AddChannelMemberModal"
 import { ChatHistory } from "./ChatHistory"
 import { ChatInput } from "./ChatInput"
 
@@ -54,6 +55,8 @@ export const ChatInterface = () => {
         }
     })
 
+    const { isOpen, onOpen, onClose } = useDisclosure()
+
     if (error) {
         return (
             <Box p={4}>
@@ -71,6 +74,7 @@ export const ChatInterface = () => {
                             {channelData[0]?.type === 'Private' ? <BiLockAlt /> : <BiHash />}
                             <Text>{channelData[0]?.channel_name}</Text>
                         </HStack>
+                        <Button onClick={onOpen}>add members</Button>
                     </PageHeading>
                 }
             </PageHeader>
@@ -80,6 +84,7 @@ export const ChatInterface = () => {
                 }
                 <ChatInput channelID={channelID ?? ''} allChannels={allChannels} allMembers={allMembers} />
             </Stack>
+            <AddChannelMemberModal isOpen={isOpen} onClose={onClose} channel_name={channelData[0]?.channel_name} type={channelData[0]?.type} channel_id={channelID ?? ''} />
         </>
     )
 

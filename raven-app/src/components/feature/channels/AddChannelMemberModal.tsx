@@ -2,15 +2,15 @@ import { Button, ButtonGroup, chakra, FormControl, HStack, Modal, ModalBody, Mod
 import { useEffect } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
 import { BiHash, BiLockAlt } from 'react-icons/bi'
-import { AddMembersDropdown } from '../select-user/AddMembersDropdown'
+import { AddMembersDropdown } from '../select-member/AddMembersDropdown'
 import { ChakraStylesConfig } from "chakra-react-select"
-import { fallbackPfp, pfp, MemberOption } from "../select-user/AddMembersDropdown"
+import { fallbackPfp, pfp, MemberOption } from "../select-member/AddMembersDropdown"
 
 interface AddChannelMemberModalProps {
   isOpen: boolean,
   onClose: () => void,
   channel_name: string,
-  type: 'Public' | 'Private',
+  type: string,
   channel_id: string
 }
 
