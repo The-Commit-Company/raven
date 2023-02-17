@@ -30,8 +30,8 @@ export const Sidebar = ({ children }: PropsWithChildren<{}>) => {
                 <HStack justifyContent={"space-between"} px='1'>
                     {userData &&
                         <HStack>
-                            <Avatar size="2xs" src={userData.user_image} />
-                            <Text fontSize="sm">{userData?.full_name}</Text>
+                            <Avatar size="2xs" src={userData.user_image} name={userData.full_name} />
+                            <Text fontSize="sm">{userData.full_name}</Text>
                         </HStack>
                     }
                     <IconButton
