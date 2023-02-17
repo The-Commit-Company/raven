@@ -1,6 +1,6 @@
 import { Select, ChakraStylesConfig, OptionBase, Props, GroupBase } from 'chakra-react-select'
 import { Controller, useFormContext } from 'react-hook-form'
-import { SWRResponse, useFrappeGetCall } from 'frappe-react-sdk'
+import { useFrappeGetDocList } from 'frappe-react-sdk'
 import { useMemo } from 'react'
 import { generateColorHsl } from './GenerateAvatarColor'
 
@@ -19,17 +19,17 @@ interface Member {
 
 export const AddMembersDropdown = ({ name, chakraStyles, ...props }: Props<MemberOption, true, GroupBase<MemberOption>>) => {
 
-    const { data }: SWRResponse = useFrappeGetCall<{ message: Member[] }>('User', {
-        fields: ['name', 'user_image', 'full_name'], filters: { enabled: 1 }
+    const { data } = useFrappeGetDocList<{ name: string, user_image: string, full_name: string }>('User', {
+        fields: ["name", "user_image", "full_name"]
     })
 
     const memberOptions: MemberOption[] = useMemo(() => {
         if (data) {
-            return data.message.map((user: Member) => ({
-                value: user.name,
-                label: user.full_name,
-                image: user.user_image,
-                id: user.name
+            return data.map((m: Member) => ({
+                value: m.name,
+                label: m.full_name,
+                image: m.user_image,
+                id: m.name
             }))
         } else {
             return []
@@ -112,7 +112,7 @@ export const fallbackPfp = (name: string) => ({
 })
 
 const defaultStyles: ChakraStylesConfig<MemberOption> = {
-    control: (chakraStyles) => ({ ...chakraStyles, backgroundColor: 'white', width: '12rem', fontSize: 'sm' }),
+    control: (chakraStyles) => ({ ...chakraStyles, backgroundColor: 'transparent', width: '12rem', fontSize: 'sm' }),
     menu: (chakraStyles) => ({ ...chakraStyles, borderRadius: 'md', width: '12rem', borderWidth: '1px' }),
     menuList: (chakraStyles) => ({ ...chakraStyles, borderColor: 'transparent' }),
     dropdownIndicator: (chakraStyles) => ({ ...chakraStyles, bg: "transparent", cursor: "inherit", width: '2rem' }),

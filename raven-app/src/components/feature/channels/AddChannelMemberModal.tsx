@@ -91,7 +91,7 @@ export const AddChannelMemberModal = ({ isOpen, onClose, channel_name, type, cha
 }
 
 const customStyles: ChakraStylesConfig<MemberOption> = {
-  control: (chakraStyles) => ({ ...chakraStyles, backgroundColor: 'white', width: '100%', fontSize: 'sm' }),
+  control: (chakraStyles) => ({ ...chakraStyles, backgroundColor: 'transparent', width: '100%', fontSize: 'sm' }),
   menu: (chakraStyles) => ({ ...chakraStyles, borderRadius: 'md', width: '100%', borderWidth: '1px' }),
   option: (chakraStyles, { isSelected, data }) => ({
     ...chakraStyles, ...((data.image && { ...pfp(data.image) }) || { ...fallbackPfp(data.label) }), width: '100%', fontSize: 'sm', ...(isSelected && {
