@@ -46,8 +46,10 @@ export const ChannelProvider = ({ children }: PropsWithChildren) => {
     }, [channelMembers, channelData])
 
     return (
-        <ChannelContext.Provider value={channelInfo}>
-            {children}
-        </ChannelContext.Provider>
+        <>
+            {Object.keys(channelMembers).length > 0 && <ChannelContext.Provider value={channelInfo}>
+                {children}
+            </ChannelContext.Provider>}
+        </>
     )
 }
