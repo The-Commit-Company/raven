@@ -15,6 +15,7 @@
     "@emotion/react": "^11.10.5",
     "@emotion/styled": "^11.10.5",
     "@types/unist": "^2.0.6",
+    "chakra-react-select": "^4.4.3",
     "framer-motion": "^9.0.2",
     "frappe-react-sdk": "^1.0.25",
     "quill-mention": "^3.1.0",
