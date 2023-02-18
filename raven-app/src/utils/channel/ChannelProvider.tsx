@@ -1,6 +1,7 @@
 import { useFrappeGetCall } from 'frappe-react-sdk'
 import { createContext, PropsWithChildren, useMemo } from 'react'
 import { useParams } from 'react-router-dom'
+import { ChannelData } from '../../types/Channel/Channel'
 
 type ChannelInfo = {
     channel_members: ChannelMembersDetails[],
@@ -12,14 +13,6 @@ type ChannelMembersDetails = {
     first_name: string,
     full_name: string,
     user_image: string
-}
-
-type ChannelData = {
-    channel_name: string,
-    type: string,
-    channel_description: string,
-    creation: string,
-    owner: string
 }
 
 export const ChannelContext = createContext<{ channelMembers: Record<string, ChannelMembersDetails>; channelData: Record<string, ChannelData> }>({ channelMembers: {}, channelData: {} })

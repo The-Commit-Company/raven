@@ -4,6 +4,7 @@ import { HiOutlineMoon, HiOutlineSun } from "react-icons/hi"
 import { FiEdit } from "react-icons/fi";
 import { ChannelList } from "../../feature/channels/ChannelList";
 import { UserDataContext } from "../../../utils/user/UserDataProvider"
+import { DirectMessageList } from "../../feature/channels/DirectMessageList";
 
 export const Sidebar = ({ children }: PropsWithChildren<{}>) => {
 
@@ -23,6 +24,7 @@ export const Sidebar = ({ children }: PropsWithChildren<{}>) => {
                 </HStack>
                 <Divider />
                 <ChannelList />
+                <DirectMessageList userData={userData} />
             </Stack>
 
             <Stack>
