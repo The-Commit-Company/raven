@@ -16,7 +16,10 @@ type ChannelMembersDetails = {
 
 type ChannelData = {
     channel_name: string,
-    type: string
+    type: string,
+    channel_description: string,
+    creation: string,
+    owner: string
 }
 
 export const ChannelContext = createContext<{ channelMembers: Record<string, ChannelMembersDetails>; channelData: Record<string, ChannelData> }>({ channelMembers: {}, channelData: {} })
