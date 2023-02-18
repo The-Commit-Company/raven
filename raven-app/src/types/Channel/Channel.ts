@@ -1,6 +1,6 @@
-export type ChannelListForUser = {
+export type ChannelData = {
     name: string,
     channel_name: string,
     type: string,
-    is_direct_message: boolean
+    is_direct_message: number
 }

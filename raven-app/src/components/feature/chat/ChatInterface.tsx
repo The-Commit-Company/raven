@@ -1,11 +1,12 @@
-import { Box, HStack, Stack, Text } from "@chakra-ui/react"
+import { Avatar, Box, HStack, Stack, Text } from "@chakra-ui/react"
 import { useFrappeGetCall, useFrappeGetDocList } from "frappe-react-sdk"
 import { useContext } from "react"
 import { BiHash, BiLockAlt } from "react-icons/bi"
 import { useParams } from "react-router-dom"
 import { useFrappeEventListener } from "../../../hooks/useFrappeEventListener"
-import { ChannelListForUser } from "../../../types/Channel/Channel"
+import { ChannelData } from "../../../types/Channel/Channel"
 import { ChannelContext } from "../../../utils/channel/ChannelProvider"
+import { UserDataContext } from "../../../utils/user/UserDataProvider"
 import { AlertBanner } from "../../layout/AlertBanner"
 import { PageHeader } from "../../layout/Heading/PageHeader"
 import { PageHeading } from "../../layout/Heading/PageHeading"
@@ -24,7 +25,10 @@ export const ChatInterface = () => {
 
     const { channelID } = useParams<{ channelID: string }>()
     const { channelData, channelMembers } = useContext(ChannelContext)
-    const { data: channelList, error: channelListError } = useFrappeGetCall<{ message: ChannelListForUser[] }>("raven.raven_channel_management.doctype.raven_channel.raven_channel.get_channel_list")
+    const userData = useContext(UserDataContext)
+    const user = userData?.name
+    const peer = Object.keys(channelMembers).filter((member) => member !== user)[0]
+    const { data: channelList, error: channelListError } = useFrappeGetCall<{ message: ChannelData[] }>("raven.raven_channel_management.doctype.raven_channel.raven_channel.get_channel_list")
     const { data, error, mutate } = useFrappeGetDocList<Message>('Raven Message', {
         fields: ["text", "creation", "name", "owner"],
         filters: [["channel_id", "=", channelID ?? null]],
@@ -68,8 +72,9 @@ export const ChatInterface = () => {
                 {channelData &&
                     <PageHeading>
                         <HStack>
-                            {channelData[0]?.type === 'Private' ? <BiLockAlt /> : <BiHash />}
-                            <Text>{channelData[0]?.channel_name}</Text>
+                            {channelData[0]?.is_direct_message === 0 ? ((channelData[0]?.type === 'Private' && <BiLockAlt />) || <BiHash />) :
+                                <Avatar name={channelMembers?.[peer]?.full_name} src={channelMembers?.[peer]?.user_image} borderRadius={'md'} boxSize='30px' />}
+                            <Text>{channelMembers?.[peer]?.full_name}</Text>
                         </HStack>
                     </PageHeading>
                 }
