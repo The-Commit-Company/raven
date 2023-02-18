@@ -1,4 +1,4 @@
-import { Divider, HStack, IconButton, useColorMode, Text, Stack, Avatar } from "@chakra-ui/react";
+import { Divider, HStack, IconButton, useColorMode, Text, Stack, Avatar, AvatarBadge } from "@chakra-ui/react";
 import { PropsWithChildren, useContext } from "react";
 import { HiOutlineMoon, HiOutlineSun } from "react-icons/hi"
 import { FiEdit } from "react-icons/fi";
@@ -30,7 +30,9 @@ export const Sidebar = ({ children }: PropsWithChildren<{}>) => {
                 <HStack justifyContent={"space-between"} px='1'>
                     {userData &&
                         <HStack>
-                            <Avatar size="2xs" src={userData.user_image} name={userData.full_name} />
+                            <Avatar size="xs" src={userData.user_image} name={userData.full_name} borderRadius='md'>
+                                <AvatarBadge boxSize='1.0em' bg='green.500' />
+                            </Avatar>
                             <Text fontSize="sm">{userData.full_name}</Text>
                         </HStack>
                     }

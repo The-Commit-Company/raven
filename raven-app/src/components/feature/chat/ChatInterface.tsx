@@ -11,6 +11,7 @@ import { PageHeader } from "../../layout/Heading/PageHeader"
 import { PageHeading } from "../../layout/Heading/PageHeading"
 import { FullPageLoader } from "../../layout/Loaders"
 import { AddChannelMemberModal } from "../channels/AddChannelMemberModal"
+import { ViewChannelDetailsModal } from "../channels/ViewChannelDetailsModal"
 import { ViewOrAddMembersButton } from "../view-or-add-members/ViewOrAddMembersButton"
 import { ChatHistory } from "./ChatHistory"
 import { ChatInput } from "./ChatInput"
@@ -56,6 +57,7 @@ export const ChatInterface = () => {
         }
     })
 
+    const { isOpen: isViewDetailsModalOpen, onOpen: onViewDetailsModalOpen, onClose: onViewDetailsModalClose } = useDisclosure()
     const { isOpen, onOpen, onClose } = useDisclosure()
 
     if (error) {
@@ -77,7 +79,7 @@ export const ChatInterface = () => {
                         </HStack>
                     </PageHeading>
                 }
-                <ViewOrAddMembersButton onClickViewMembers={onOpen} onClickAddMembers={onOpen} />
+                <ViewOrAddMembersButton onClickViewMembers={onViewDetailsModalOpen} onClickAddMembers={onOpen} />
             </PageHeader>
             <Stack h='100vh' justify={'space-between'} p={4} overflow='hidden' mt='16'>
                 {data &&
@@ -85,6 +87,7 @@ export const ChatInterface = () => {
                 }
                 <ChatInput channelID={channelID ?? ''} allChannels={allChannels} allMembers={allMembers} />
             </Stack>
+            <ViewChannelDetailsModal isOpen={isViewDetailsModalOpen} onClose={onViewDetailsModalClose} channel_name={channelData[0]?.channel_name} type={channelData[0]?.type} />
             <AddChannelMemberModal isOpen={isOpen} onClose={onClose} channel_name={channelData[0]?.channel_name} type={channelData[0]?.type} channel_id={channelID ?? ''} />
         </>
     )
