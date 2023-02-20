@@ -25,9 +25,12 @@ def get_channel_members_and_data(channel_id):
     data_query = (frappe.qb.from_(channel_data)
                   .select(channel_data.name,
                           channel_data.channel_name,
-                          channel_data.type, channel_data.creation,
+                          channel_data.type, 
+                          channel_data.creation,
                           channel_data.owner,
-                          channel_data.channel_description)
+                          channel_data.channel_description,
+                          channel_data.is_direct_message,
+                          channel_data.is_self_message)
                   .where(channel_data.name == channel_id))
 
     return {"channel_members": member_query.run(as_dict=True), "channel_data": data_query.run(as_dict=True)}
