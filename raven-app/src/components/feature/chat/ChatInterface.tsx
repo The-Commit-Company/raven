@@ -37,6 +37,8 @@ export const ChatInterface = () => {
             order: 'desc'
         }
     })
+    console.log(channelData)
+    console.log(channelMembers)
 
     useFrappeEventListener('message_received', (data) => {
         if (data.channel_id === channelID) {
@@ -72,9 +74,16 @@ export const ChatInterface = () => {
                 {channelData &&
                     <PageHeading>
                         <HStack>
-                            {channelData[0]?.is_direct_message === 0 ? ((channelData[0]?.type === 'Private' && <BiLockAlt />) || <BiHash />) :
-                                <Avatar name={channelMembers?.[peer]?.full_name} src={channelMembers?.[peer]?.user_image} borderRadius={'md'} boxSize='30px' />}
-                            <Text>{channelMembers?.[peer]?.full_name}</Text>
+                            {channelData[0]?.is_direct_message == 1
+                                ?
+                                <HStack>
+                                    <Avatar name={channelMembers?.[peer]?.full_name} src={channelMembers?.[peer]?.user_image} borderRadius={'md'} boxSize='30px' />
+                                    <Text>{channelMembers?.[peer]?.full_name}</Text>
+                                </HStack>
+                                : <>
+                                    {channelData[0]?.type === 'Private' ? <BiLockAlt /> : <BiHash />}
+                                    <Text>{channelData[0]?.channel_name}</Text>
+                                </>}
                         </HStack>
                     </PageHeading>
                 }
