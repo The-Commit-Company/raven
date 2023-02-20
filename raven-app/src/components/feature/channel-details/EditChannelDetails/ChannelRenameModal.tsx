@@ -89,7 +89,7 @@ export const ChannelRenameModal = ({ isOpen, onClose }: RenameChannelModalProps)
                                             <Input {...register('channel_name', { required: "Please add a new channel name", maxLength: 80 })} />
                                         </InputGroup>
                                     </Stack>
-                                    <FormHelperText fontSize='xs'>Names must be lowercase, without spaces or periods, and cannot be longer than 80 characters.</FormHelperText>
+                                    <FormHelperText fontSize='xs'>Names cannot be longer than 80 characters.</FormHelperText>
                                     <FormErrorMessage>{errors?.channel_name?.message}</FormErrorMessage>
                                 </FormControl>
 
