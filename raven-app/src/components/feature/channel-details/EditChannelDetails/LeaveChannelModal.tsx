@@ -2,27 +2,28 @@ import { Text, AlertDialog, AlertDialogBody, AlertDialogCloseButton, AlertDialog
 import { useFrappeDeleteDoc } from 'frappe-react-sdk'
 import { useContext, useRef } from 'react'
 import { BiHash, BiLockAlt } from 'react-icons/bi'
+import { UserContext } from '../../../../utils/auth/UserProvider'
 import { ChannelContext } from '../../../../utils/channel/ChannelProvider'
 import { AlertBanner } from '../../../layout/AlertBanner'
 
-interface RemoveChannelMemberModalProps {
+interface LeaveChannelModalProps {
     isOpen: boolean,
-    onClose: (refresh?: boolean) => void,
-    user_id: string
+    onClose: (refresh?: boolean) => void
 }
 
-export const RemoveChannelMemberModal = ({ isOpen, onClose, user_id }: RemoveChannelMemberModalProps) => {
+export const LeaveChannelModal = ({ isOpen, onClose }: LeaveChannelModalProps) => {
 
-    const { channelData, channelMembers } = useContext(ChannelContext)
+    const { channelData } = useContext(ChannelContext)
+    const { currentUser } = useContext(UserContext)
     const cancelRef = useRef<HTMLButtonElement | null>(null)
     const { deleteDoc, error } = useFrappeDeleteDoc()
     const toast = useToast()
 
     const onSubmit = () => {
-        let member_id = channelData[0].name + '-' + user_id
+        let member_id = channelData[0].name + '-' + currentUser
         return deleteDoc('Raven Channel Member', member_id).then(() => {
             toast({
-                title: 'Member removed successfully',
+                title: 'channel left successfully',
                 status: 'success',
                 duration: 1500,
                 position: 'bottom',
@@ -33,7 +34,7 @@ export const RemoveChannelMemberModal = ({ isOpen, onClose, user_id }: RemoveCha
         })
             .catch((e) => {
                 toast({
-                    title: 'Error: could not remove member.',
+                    title: 'Error: could not leave channel.',
                     status: 'error',
                     duration: 3000,
                     position: 'bottom',
@@ -50,7 +51,7 @@ export const RemoveChannelMemberModal = ({ isOpen, onClose, user_id }: RemoveCha
             <AlertDialogContent>
                 <AlertDialogHeader>
                     <HStack>
-                        <Text>Remove {user_id && channelMembers[user_id].full_name} from </Text>
+                        <Text>Leave </Text>
                         {channelData[0].type === 'Public' ? <BiHash /> : <BiLockAlt />}
                         <Text>{channelData[0].channel_name}?</Text>
                     </HStack>
@@ -58,12 +59,12 @@ export const RemoveChannelMemberModal = ({ isOpen, onClose, user_id }: RemoveCha
                 <AlertDialogCloseButton />
                 <AlertDialogBody>
                     {error && <AlertBanner status='error' heading={error.message}>{error.exception} - HTTP {error.httpStatus}</AlertBanner>}
-                    <Text fontSize='sm'>This person will no longer have access to the channel and can only rejoin by invitation.</Text>
+                    <Text fontSize='sm'>When you leave a channel, you’ll no longer be able to see any of its messages. To rejoin this channel later, you’ll need to be invited.</Text>
                 </AlertDialogBody>
                 <AlertDialogFooter>
                     <ButtonGroup>
                         <Button ref={cancelRef} variant='ghost' onClick={() => onClose(false)}>Cancel</Button>
-                        <Button colorScheme='red' onClick={onSubmit}>Remove</Button>
+                        <Button colorScheme='red' onClick={onSubmit}>Leave</Button>
                     </ButtonGroup>
                 </AlertDialogFooter>
             </AlertDialogContent>

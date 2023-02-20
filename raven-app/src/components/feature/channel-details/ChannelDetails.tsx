@@ -5,6 +5,7 @@ import { ChannelContext } from "../../../utils/channel/ChannelProvider"
 import { DateObjectToFormattedDateString } from "../../../utils/operations"
 import { AddOrEditChannelDescriptionModal } from "./EditChannelDetails/AddOrEditChannelDescriptionModal"
 import { ChannelRenameModal } from "./EditChannelDetails/ChannelRenameModal"
+import { LeaveChannelModal } from "./EditChannelDetails/LeaveChannelModal"
 
 export const ChannelDetails = () => {
 
@@ -20,6 +21,7 @@ export const ChannelDetails = () => {
 
     const { isOpen: isChannelRenameModalOpen, onOpen: onChannelRenameModalOpen, onClose: onChannelRenameModalClose } = useDisclosure()
     const { isOpen: isChannelDescriptionModalOpen, onOpen: onChannelDescriptionModalOpen, onClose: onChannelDescriptionModalClose } = useDisclosure()
+    const { isOpen: isLeaveChannelModalOpen, onOpen: onLeaveChannelModalOpen, onClose: onLeaveChannelModalClose } = useDisclosure()
 
     return (
         <Stack spacing='4'>
@@ -66,7 +68,7 @@ export const ChannelDetails = () => {
 
                     <Divider />
 
-                    <Button colorScheme='red' variant='link' size='sm' w='fit-content'>
+                    <Button colorScheme='red' variant='link' size='sm' w='fit-content' onClick={onLeaveChannelModalOpen}>
                         Leave channel
                     </Button>
 
@@ -74,6 +76,7 @@ export const ChannelDetails = () => {
             </Box>
             <ChannelRenameModal isOpen={isChannelRenameModalOpen} onClose={onChannelRenameModalClose} />
             <AddOrEditChannelDescriptionModal isOpen={isChannelDescriptionModalOpen} onClose={onChannelDescriptionModalClose} />
+            <LeaveChannelModal isOpen={isLeaveChannelModalOpen} onClose={onLeaveChannelModalClose} />
         </Stack>
     )
 }
