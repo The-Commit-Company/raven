@@ -17,8 +17,6 @@ export const DirectMessageList = (userData: { userData: User | null }) => {
         <AlertBanner status="error" heading={channelError.message}>{channelError.httpStatus} - {channelError.httpStatusText}</AlertBanner>
     }
 
-    console.log(channelData)
-
     return (
         <SidebarGroup>
             <SidebarGroupItem>

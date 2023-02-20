@@ -35,7 +35,6 @@ export const AddChannelMemberModal = ({ isOpen, onClose, channel_name, type, cha
   const members = methods.watch('add_members')
 
   const onSubmit = (data: FormProps) => {
-    console.log(data, members)
     onClose()
   }
 
