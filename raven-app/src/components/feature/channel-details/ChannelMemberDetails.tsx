@@ -1,9 +1,10 @@
 import { SearchIcon } from "@chakra-ui/icons"
-import { Text, Avatar, HStack, Icon, IconButton, Input, InputGroup, InputLeftElement, List, ListItem, Stack, useColorMode } from "@chakra-ui/react"
+import { Text, Avatar, HStack, Icon, IconButton, Input, InputGroup, InputLeftElement, List, ListItem, Stack, useColorMode, useDisclosure } from "@chakra-ui/react"
 import { useState } from "react"
 import { GoPrimitiveDot } from "react-icons/go"
 import { RiUserAddLine } from "react-icons/ri"
 import { useDebounce } from "../../../hooks/useDebounce"
+import { AddChannelMemberModal } from "../channels/AddChannelMemberModal"
 
 interface MemberDetailsProps {
     members: {
@@ -30,6 +31,8 @@ export const ChannelMemberDetails = ({ members }: MemberDetailsProps) => {
         cursor: 'pointer'
     }
 
+    const { isOpen, onOpen, onClose } = useDisclosure()
+
     return (
         <Stack spacing={4}>
 
@@ -46,9 +49,14 @@ export const ChannelMemberDetails = ({ members }: MemberDetailsProps) => {
 
             <List spacing={2}>
 
-                <ListItem _hover={{ ...LISTHOVERSTYLE }} rounded='md'>
+                <ListItem _hover={{ ...LISTHOVERSTYLE }} rounded='md' onClick={onOpen}>
                     <HStack p='2' spacing={3}>
-                        <IconButton size='sm' aria-label={"add members"} icon={<RiUserAddLine />} colorScheme='blue' variant='outline' />
+                        <IconButton
+                            size='sm'
+                            aria-label={"add members"}
+                            icon={<RiUserAddLine />}
+                            colorScheme='blue'
+                            variant='outline' />
                         <Text>Add members</Text>
                     </HStack>
                 </ListItem>
@@ -69,6 +77,7 @@ export const ChannelMemberDetails = ({ members }: MemberDetailsProps) => {
                 })}
 
             </List>
+            <AddChannelMemberModal isOpen={isOpen} onClose={onClose} />
         </Stack>
     )
 }
