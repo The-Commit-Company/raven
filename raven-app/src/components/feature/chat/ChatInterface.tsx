@@ -40,8 +40,7 @@ export const ChatInterface = () => {
             order: 'desc'
         }
     })
-    console.log(channelData)
-    console.log(channelMembers)
+
 
     useFrappeEventListener('message_received', (data) => {
         if (data.channel_id === channelID) {

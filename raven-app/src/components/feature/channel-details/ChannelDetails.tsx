@@ -8,8 +8,6 @@ export const ChannelDetails = () => {
     const { colorMode } = useColorMode()
     const { channelData } = useContext(ChannelContext)
 
-    console.log(channelData)
-
     const BOXSTYLE = {
         p: '4',
         rounded: 'md',
