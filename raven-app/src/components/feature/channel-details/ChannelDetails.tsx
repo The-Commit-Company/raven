@@ -9,7 +9,7 @@ import { ChannelRenameModal } from "./EditChannelDetails/ChannelRenameModal"
 export const ChannelDetails = () => {
 
     const { colorMode } = useColorMode()
-    const { channelData } = useContext(ChannelContext)
+    const { channelData, channelMembers } = useContext(ChannelContext)
 
     const BOXSTYLE = {
         p: '4',
@@ -55,7 +55,11 @@ export const ChannelDetails = () => {
                     <Stack>
                         <Text fontWeight='semibold' fontSize='sm'>Created by</Text>
                         <HStack>
-                            <Text fontSize='sm'>@{channelData[0].owner}</Text>
+                            {channelData[0].owner === 'Administrator'
+                                ?
+                                <Text fontSize='sm'>Administrator</Text>
+                                :
+                                channelData[0].owner && <Text fontSize='sm'>{channelMembers[channelData[0].owner].full_name}</Text>}
                             <Text fontSize='sm' color='gray.500'>on {DateObjectToFormattedDateString(new Date(channelData[0].creation))}</Text>
                         </HStack>
                     </Stack>
