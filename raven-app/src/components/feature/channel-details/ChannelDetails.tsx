@@ -2,6 +2,7 @@ import { Box, HStack, Stack, useColorMode, Text, Button, Divider } from "@chakra
 import { useContext } from "react"
 import { BiHash, BiLockAlt } from "react-icons/bi"
 import { ChannelContext } from "../../../utils/channel/ChannelProvider"
+import { DateObjectToFormattedDateString } from "../../../utils/operations"
 
 export const ChannelDetails = () => {
 
@@ -52,7 +53,7 @@ export const ChannelDetails = () => {
                         <Text fontWeight='semibold' fontSize='sm'>Created by</Text>
                         <HStack>
                             <Text fontSize='sm'>@{channelData[0].owner}</Text>
-                            <Text fontSize='sm' color='gray.500'>on {channelData[0].creation}</Text>
+                            <Text fontSize='sm' color='gray.500'>on {DateObjectToFormattedDateString(new Date(channelData[0].creation))}</Text>
                         </HStack>
                     </Stack>
 

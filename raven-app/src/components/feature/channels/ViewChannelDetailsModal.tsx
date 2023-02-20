@@ -35,7 +35,7 @@ export const ViewChannelDetailsModal = ({ isOpen, onClose, channel_name, type }:
 
                 <ModalBody>
 
-                    <Tabs h='60vh'>
+                    <Tabs h='60vh' defaultIndex={1}>
                         <TabList>
                             <Tab>About</Tab>
                             <Tab>
