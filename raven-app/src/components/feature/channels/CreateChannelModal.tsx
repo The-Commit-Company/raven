@@ -4,6 +4,7 @@ import { useEffect } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
 import { BiHash, BiLockAlt } from 'react-icons/bi'
 import { useNavigate } from 'react-router-dom'
+import { AlertBanner } from '../../layout/AlertBanner'
 
 interface ChannelModalProps {
     isOpen: boolean,
@@ -25,11 +26,12 @@ export const CreateChannelModal = ({ isOpen, onClose }: ChannelModalProps) => {
     })
 
     const { register, handleSubmit, watch, reset, formState: { errors } } = methods
-    const { createDoc } = useFrappeCreateDoc()
+    const { createDoc, error, loading: creatingDoc, reset: resetCreate } = useFrappeCreateDoc()
     const toast = useToast()
 
     useEffect(() => {
         reset()
+        resetCreate()
     }, [isOpen, reset])
 
     const channelType = watch('type')
@@ -75,18 +77,22 @@ export const CreateChannelModal = ({ isOpen, onClose }: ChannelModalProps) => {
             <ModalOverlay />
             <ModalContent>
                 <ModalHeader fontSize='2xl'>{channelType === 'Private' ? "Create a private channel" : "Create a channel"}</ModalHeader>
-                <ModalCloseButton />
+                <ModalCloseButton isDisabled={creatingDoc} />
 
                 <FormProvider {...methods}>
                     <chakra.form onSubmit={handleSubmit(onSubmit)}>
 
                         <ModalBody>
                             <Stack spacing={8}>
+
                                 <Text fontSize='sm' fontWeight='light'>
                                     Channels are where your team communicates. They are best when organized around a topic - #development, for example.
                                 </Text>
 
                                 <Stack spacing={6}>
+
+                                    {error ? <AlertBanner status='error' heading={error.message}>{error.httpStatus} - {error.httpStatusText}</AlertBanner> : null}
+
                                     <FormControl isRequired isInvalid={!!errors.channel_name}>
                                         <FormLabel>Name</FormLabel>
                                         <InputGroup>
@@ -139,8 +145,8 @@ export const CreateChannelModal = ({ isOpen, onClose }: ChannelModalProps) => {
 
                         <ModalFooter>
                             <ButtonGroup>
-                                <Button variant='ghost' onClick={handleClose}>Cancel</Button>
-                                <Button colorScheme='blue' type='submit'>Save</Button>
+                                <Button variant='ghost' onClick={handleClose} isDisabled={creatingDoc}>Cancel</Button>
+                                <Button colorScheme='blue' type='submit' isLoading={creatingDoc}>Save</Button>
                             </ButtonGroup>
                         </ModalFooter>
 

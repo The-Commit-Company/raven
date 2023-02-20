@@ -2,7 +2,6 @@ import { Avatar, Box, HStack, Stack, Text, useDisclosure } from "@chakra-ui/reac
 import { useFrappeGetCall, useFrappeGetDocList } from "frappe-react-sdk"
 import { useContext } from "react"
 import { BiHash, BiLockAlt } from "react-icons/bi"
-import { useParams } from "react-router-dom"
 import { useFrappeEventListener } from "../../../hooks/useFrappeEventListener"
 import { ChannelData } from "../../../types/Channel/Channel"
 import { ChannelContext } from "../../../utils/channel/ChannelProvider"
@@ -26,7 +25,6 @@ interface Message {
 
 export const ChatInterface = () => {
 
-    const { channelID } = useParams<{ channelID: string }>()
     const { channelData, channelMembers } = useContext(ChannelContext)
     const userData = useContext(UserDataContext)
     const user = userData?.name
@@ -34,7 +32,7 @@ export const ChatInterface = () => {
     const { data: channelList, error: channelListError } = useFrappeGetCall<{ message: ChannelData[] }>("raven.raven_channel_management.doctype.raven_channel.raven_channel.get_channel_list")
     const { data, error, mutate } = useFrappeGetDocList<Message>('Raven Message', {
         fields: ["text", "creation", "name", "owner"],
-        filters: [["channel_id", "=", channelID ?? null]],
+        filters: [["channel_id", "=", channelData[0].name ?? null]],
         orderBy: {
             field: "creation",
             order: 'desc'
@@ -43,7 +41,7 @@ export const ChatInterface = () => {
 
 
     useFrappeEventListener('message_received', (data) => {
-        if (data.channel_id === channelID) {
+        if (data.channel_id === channelData[0].name) {
             mutate()
         }
     })
@@ -101,10 +99,10 @@ export const ChatInterface = () => {
                 {data &&
                     <ChatHistory messages={data} />
                 }
-                <ChatInput channelID={channelID ?? ''} allChannels={allChannels} allMembers={allMembers} />
+                <ChatInput channelID={channelData[0].name ?? ''} allChannels={allChannels} allMembers={allMembers} />
             </Stack>
-            <ViewChannelDetailsModal isOpen={isViewDetailsModalOpen} onClose={onViewDetailsModalClose} channel_name={channelData[0]?.channel_name} type={channelData[0]?.type} />
-            <AddChannelMemberModal isOpen={isOpen} onClose={onClose} channel_name={channelData[0]?.channel_name} type={channelData[0]?.type} channel_id={channelID ?? ''} />
+            <ViewChannelDetailsModal isOpen={isViewDetailsModalOpen} onClose={onViewDetailsModalClose} />
+            <AddChannelMemberModal isOpen={isOpen} onClose={onClose} />
         </>
     )
 
