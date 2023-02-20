@@ -27,13 +27,13 @@ export const DirectMessageList = (userData: { userData: User | null }) => {
             <SidebarGroupList>
                 {channelData?.message.filter((channel) => channel.is_self_message === 1).map((channel) => (
                     <SidebarItem to={channel.name} key={channel.name}>
-                        <SidebarIcon><Avatar name={userData.userData?.full_name} src={userData.userData?.user_image} borderRadius={'md'} boxSize='20px' /></SidebarIcon>
+                        <SidebarIcon><Avatar name={userData.userData?.full_name} src={userData.userData?.user_image} borderRadius={'md'} size="xs" /></SidebarIcon>
                         <SidebarItemLabel>{userData.userData?.full_name} (You)</SidebarItemLabel>
                     </SidebarItem>
                 ))}
                 {directMessageData?.message.map((direct_message) =>
                     <SidebarItem to={direct_message.channel_id} key={direct_message.channel_id}>
-                        <SidebarIcon><Avatar name={direct_message.full_name} src={direct_message.user_image} borderRadius={'md'} boxSize='20px' /></SidebarIcon>
+                        <SidebarIcon><Avatar name={direct_message.full_name} src={direct_message.user_image} borderRadius={'md'} size="xs" /></SidebarIcon>
                         <SidebarItemLabel>{direct_message.full_name}</SidebarItemLabel>
                     </SidebarItem>
                 )}

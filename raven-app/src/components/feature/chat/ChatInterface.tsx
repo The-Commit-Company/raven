@@ -77,19 +77,22 @@ export const ChatInterface = () => {
     else if (allChannels && allMembers) return (
         <>
             <PageHeader>
-                {channelData &&
+                {channelData && user &&
                     <PageHeading>
                         <HStack>
-                            {channelData[0]?.is_direct_message == 1
-                                ?
-                                <HStack>
-                                    <Avatar name={channelMembers?.[peer]?.full_name} src={channelMembers?.[peer]?.user_image} borderRadius={'md'} boxSize='30px' />
-                                    <Text>{channelMembers?.[peer]?.full_name}</Text>
-                                </HStack>
-                                : <>
-                                    {channelData[0]?.type === 'Private' ? <BiLockAlt /> : <BiHash />}
-                                    <Text>{channelData[0]?.channel_name}</Text>
-                                </>}
+                            {channelData[0]?.is_direct_message == 1 ?
+                                (channelData[0]?.is_self_message == 0 ?
+                                    <HStack>
+                                        <Avatar name={channelMembers?.[peer]?.full_name} src={channelMembers?.[peer]?.user_image} borderRadius={'lg'} size="sm" />
+                                        <Text>{channelMembers?.[peer]?.full_name}</Text>
+                                    </HStack> :
+                                    <HStack>
+                                        <Avatar name={channelMembers?.[user]?.full_name} src={channelMembers?.[user]?.user_image} borderRadius={'lg'} size="sm" />
+                                        <Text>{channelMembers?.[user]?.full_name} (You)</Text>
+                                    </HStack>) :
+                                (channelData[0]?.type === 'Private' ?
+                                    <HStack><BiLockAlt /><Text>{channelData[0]?.channel_name}</Text></HStack> :
+                                    <HStack><BiHash /><Text>{channelData[0]?.channel_name}</Text></HStack>)}
                         </HStack>
                     </PageHeading>
                 }
