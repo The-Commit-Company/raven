@@ -1,24 +1,24 @@
 import { Button, ButtonGroup, chakra, FormControl, HStack, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Stack, Text } from '@chakra-ui/react'
-import { useEffect } from 'react'
+import { useContext, useEffect } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
 import { BiHash, BiLockAlt } from 'react-icons/bi'
 import { AddMembersDropdown } from '../select-member/AddMembersDropdown'
 import { ChakraStylesConfig } from "chakra-react-select"
 import { fallbackPfp, pfp, MemberOption } from "../select-member/AddMembersDropdown"
+import { ChannelContext } from '../../../utils/channel/ChannelProvider'
 
 interface AddChannelMemberModalProps {
   isOpen: boolean,
-  onClose: () => void,
-  channel_name: string,
-  type: string,
-  channel_id: string
+  onClose: () => void
 }
 
 interface FormProps {
   add_members: string[] | null
 }
 
-export const AddChannelMemberModal = ({ isOpen, onClose, channel_name, type, channel_id }: AddChannelMemberModalProps) => {
+export const AddChannelMemberModal = ({ isOpen, onClose }: AddChannelMemberModalProps) => {
+
+  const { channelData } = useContext(ChannelContext)
 
   const methods = useForm<FormProps>({
     defaultValues: {
@@ -48,11 +48,11 @@ export const AddChannelMemberModal = ({ isOpen, onClose, channel_name, type, cha
         <ModalHeader>
           <HStack>
             <Text>Add members to </Text>
-            {type === 'Public'
+            {channelData[0].type === 'Public'
               ?
-              <HStack><BiHash /><Text>{channel_name}</Text></HStack>
+              <HStack><BiHash /><Text>{channelData[0].channel_name}</Text></HStack>
               :
-              <HStack><BiLockAlt /><Text>{channel_name}</Text></HStack>
+              <HStack><BiLockAlt /><Text>{channelData[0].channel_name}</Text></HStack>
             }
           </HStack>
         </ModalHeader>
@@ -70,7 +70,7 @@ export const AddChannelMemberModal = ({ isOpen, onClose, channel_name, type, cha
                   <AddMembersDropdown autoFocus name="add_members" chakraStyles={customStyles} />
                 </FormControl>
 
-                <Text fontSize='sm' color='gray.500'>New members will be able to see all of <strong>{channel_name}</strong>'s history, including any files that have been shared in the channel.</Text>
+                <Text fontSize='sm' color='gray.500'>New members will be able to see all of <strong>{channelData[0].channel_name}</strong>'s history, including any files that have been shared in the channel.</Text>
 
               </Stack>
             </ModalBody>

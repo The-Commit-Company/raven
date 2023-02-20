@@ -7,14 +7,12 @@ import { ChannelMemberDetails } from "../channel-details/ChannelMemberDetails"
 
 interface ViewChannelDetailsModalProps {
     isOpen: boolean,
-    onClose: () => void,
-    channel_name: string,
-    type: string,
+    onClose: () => void
 }
 
-export const ViewChannelDetailsModal = ({ isOpen, onClose, channel_name, type }: ViewChannelDetailsModalProps) => {
+export const ViewChannelDetailsModal = ({ isOpen, onClose }: ViewChannelDetailsModalProps) => {
 
-    const { channelMembers } = useContext(ChannelContext)
+    const { channelMembers, channelData } = useContext(ChannelContext)
     const members = Object.values(channelMembers)
     const memberCount = members.length
 
@@ -24,11 +22,11 @@ export const ViewChannelDetailsModal = ({ isOpen, onClose, channel_name, type }:
             <ModalContent>
 
                 <ModalHeader>
-                    {type === 'Public'
+                    {channelData[0].type === 'Public'
                         ?
-                        <HStack><BiHash /><Text>{channel_name}</Text></HStack>
+                        <HStack><BiHash /><Text>{channelData[0].channel_name}</Text></HStack>
                         :
-                        <HStack><BiLockAlt /><Text>{channel_name}</Text></HStack>
+                        <HStack><BiLockAlt /><Text>{channelData[0].channel_name}</Text></HStack>
                     }
                 </ModalHeader>
                 <ModalCloseButton mt='2' />

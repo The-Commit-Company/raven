@@ -1,15 +1,14 @@
-import { Box, HStack, Stack, useColorMode, Text, Button, Divider } from "@chakra-ui/react"
+import { Box, HStack, Stack, useColorMode, Text, Button, Divider, useDisclosure } from "@chakra-ui/react"
 import { useContext } from "react"
 import { BiHash, BiLockAlt } from "react-icons/bi"
 import { ChannelContext } from "../../../utils/channel/ChannelProvider"
 import { DateObjectToFormattedDateString } from "../../../utils/operations"
+import { ChannelRenameModal } from "./EditChannelDetails/ChannelRenameModal"
 
 export const ChannelDetails = () => {
 
     const { colorMode } = useColorMode()
     const { channelData } = useContext(ChannelContext)
-
-    console.log(channelData)
 
     const BOXSTYLE = {
         p: '4',
@@ -17,6 +16,8 @@ export const ChannelDetails = () => {
         border: '1px solid',
         borderColor: colorMode === 'light' ? 'gray.200' : 'gray.600'
     }
+
+    const { isOpen: isChannelRenameModalOpen, onOpen: onChannelRenameModalOpen, onClose: onChannelRenameModalClose } = useDisclosure()
 
     return (
         <Stack spacing='4'>
@@ -29,7 +30,7 @@ export const ChannelDetails = () => {
                             <Text fontSize='sm'>{channelData[0].channel_name}</Text>
                         </HStack>
                     </Stack>
-                    <Button colorScheme='blue' variant='link' size='sm'>Edit</Button>
+                    <Button colorScheme='blue' variant='link' size='sm' onClick={onChannelRenameModalOpen}>Edit</Button>
                 </HStack>
             </Box>
             <Box {...BOXSTYLE}>
@@ -65,6 +66,7 @@ export const ChannelDetails = () => {
 
                 </Stack>
             </Box>
+            <ChannelRenameModal isOpen={isChannelRenameModalOpen} onClose={onChannelRenameModalClose} />
         </Stack>
     )
 }

@@ -92,8 +92,8 @@ export const ChatInterface = () => {
                 }
                 <ChatInput channelID={channelID ?? ''} allChannels={allChannels} allMembers={allMembers} />
             </Stack>
-            <ViewChannelDetailsModal isOpen={isViewDetailsModalOpen} onClose={onViewDetailsModalClose} channel_name={channelData[0]?.channel_name} type={channelData[0]?.type} />
-            <AddChannelMemberModal isOpen={isOpen} onClose={onClose} channel_name={channelData[0]?.channel_name} type={channelData[0]?.type} channel_id={channelID ?? ''} />
+            <ViewChannelDetailsModal isOpen={isViewDetailsModalOpen} onClose={onViewDetailsModalClose} />
+            <AddChannelMemberModal isOpen={isOpen} onClose={onClose} />
         </>
     )
 
