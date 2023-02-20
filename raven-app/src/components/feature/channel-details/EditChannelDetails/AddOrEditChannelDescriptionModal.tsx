@@ -2,7 +2,6 @@ import { Button, ButtonGroup, chakra, FormControl, FormErrorMessage, FormHelperT
 import { useFrappeUpdateDoc } from "frappe-react-sdk"
 import { useContext, useEffect } from "react"
 import { FormProvider, useForm } from "react-hook-form"
-import { useParams } from "react-router-dom"
 import { ChannelContext } from "../../../../utils/channel/ChannelProvider"
 import { AlertBanner } from "../../../layout/AlertBanner"
 
@@ -18,8 +17,6 @@ interface RenameChannelForm {
 export const AddOrEditChannelDescriptionModal = ({ isOpen, onClose }: RenameChannelModalProps) => {
 
     const { channelData } = useContext(ChannelContext)
-    const { channelID } = useParams()
-
     const methods = useForm<RenameChannelForm>({
         defaultValues: {
             channel_description: channelData[0]?.channel_description
@@ -35,7 +32,7 @@ export const AddOrEditChannelDescriptionModal = ({ isOpen, onClose }: RenameChan
     }, [isOpen, reset])
 
     const onSubmit = (data: RenameChannelForm) => {
-        updateDoc("Raven Channel", channelID ?? null, {
+        updateDoc("Raven Channel", channelData[0].name ?? null, {
             channel_description: data.channel_description
         }).then(() => {
             toast({

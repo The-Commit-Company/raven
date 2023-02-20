@@ -1,7 +1,6 @@
 import { Text, Modal, ModalBody, ModalCloseButton, ModalContent, ModalHeader, ModalOverlay, HStack, Tabs, TabList, Tab, TabPanels, TabPanel } from "@chakra-ui/react"
 import { useContext } from "react"
 import { BiHash, BiLockAlt } from "react-icons/bi"
-import { useParams } from "react-router-dom"
 import { ChannelContext } from "../../../utils/channel/ChannelProvider"
 import { ChannelDetails } from "../channel-details/ChannelDetails"
 import { ChannelMemberDetails } from "../channel-details/ChannelMemberDetails"
@@ -14,7 +13,6 @@ interface ViewChannelDetailsModalProps {
 export const ViewChannelDetailsModal = ({ isOpen, onClose }: ViewChannelDetailsModalProps) => {
 
     const { channelMembers, channelData } = useContext(ChannelContext)
-    const { channelID } = useParams()
     const members = Object.values(channelMembers)
     const memberCount = members.length
 
@@ -55,7 +53,7 @@ export const ViewChannelDetailsModal = ({ isOpen, onClose }: ViewChannelDetailsM
                         </TabPanels>
                     </Tabs>
 
-                    <Text fontSize='xs' color='gray.500' pl='3' pb='4'>Channel ID: {channelID}</Text>
+                    <Text fontSize='xs' color='gray.500' pl='3' pb='4'>Channel ID: {channelData[0].name}</Text>
 
                 </ModalBody>
 

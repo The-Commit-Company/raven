@@ -3,7 +3,6 @@ import { useFrappeUpdateDoc } from "frappe-react-sdk"
 import { useContext, useEffect } from "react"
 import { FormProvider, useForm } from "react-hook-form"
 import { BiHash, BiLockAlt } from "react-icons/bi"
-import { useParams } from "react-router-dom"
 import { ChannelContext } from "../../../../utils/channel/ChannelProvider"
 import { AlertBanner } from "../../../layout/AlertBanner"
 
@@ -19,8 +18,6 @@ interface RenameChannelForm {
 export const ChannelRenameModal = ({ isOpen, onClose }: RenameChannelModalProps) => {
 
     const { channelData } = useContext(ChannelContext)
-    const { channelID } = useParams()
-
     const methods = useForm<RenameChannelForm>({
         defaultValues: {
             channel_name: channelData[0]?.channel_name
@@ -36,7 +33,7 @@ export const ChannelRenameModal = ({ isOpen, onClose }: RenameChannelModalProps)
     }, [isOpen, reset])
 
     const onSubmit = (data: RenameChannelForm) => {
-        updateDoc("Raven Channel", channelID ?? null, {
+        updateDoc("Raven Channel", channelData[0].name ?? null, {
             channel_name: data.channel_name
         }).then(() => {
             toast({

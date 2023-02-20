@@ -6,6 +6,7 @@ import { AddMembersDropdown } from '../select-member/AddMembersDropdown'
 import { ChakraStylesConfig } from "chakra-react-select"
 import { fallbackPfp, pfp, MemberOption } from "../select-member/AddMembersDropdown"
 import { ChannelContext } from '../../../utils/channel/ChannelProvider'
+import { useFrappeCreateDoc } from 'frappe-react-sdk'
 
 interface AddChannelMemberModalProps {
   isOpen: boolean,
@@ -19,7 +20,9 @@ interface FormProps {
 export const AddChannelMemberModal = ({ isOpen, onClose }: AddChannelMemberModalProps) => {
 
   const { channelData } = useContext(ChannelContext)
+  const { createDoc, error, loading: creatingDoc, reset: resetCreate } = useFrappeCreateDoc()
 
+  console.log(channelData)
   const methods = useForm<FormProps>({
     defaultValues: {
       add_members: null
@@ -35,7 +38,14 @@ export const AddChannelMemberModal = ({ isOpen, onClose }: AddChannelMemberModal
   const members = methods.watch('add_members')
 
   const onSubmit = (data: FormProps) => {
-    console.log(data, members)
+    createDoc('Raven Channel Member', {
+      channel: channelData[0].name,
+      members: members
+    }).then((d) => {
+      console.log(d)
+    }).catch((err) => {
+      console.log(err)
+    })
     onClose()
   }
 
