@@ -3,6 +3,7 @@ import { useContext } from "react"
 import { BiHash, BiLockAlt } from "react-icons/bi"
 import { ChannelContext } from "../../../utils/channel/ChannelProvider"
 import { DateObjectToFormattedDateString } from "../../../utils/operations"
+import { AddOrEditChannelDescriptionModal } from "./EditChannelDetails/AddOrEditChannelDescriptionModal"
 import { ChannelRenameModal } from "./EditChannelDetails/ChannelRenameModal"
 
 export const ChannelDetails = () => {
@@ -18,6 +19,7 @@ export const ChannelDetails = () => {
     }
 
     const { isOpen: isChannelRenameModalOpen, onOpen: onChannelRenameModalOpen, onClose: onChannelRenameModalClose } = useDisclosure()
+    const { isOpen: isChannelDescriptionModalOpen, onOpen: onChannelDescriptionModalOpen, onClose: onChannelDescriptionModalClose } = useDisclosure()
 
     return (
         <Stack spacing='4'>
@@ -40,11 +42,11 @@ export const ChannelDetails = () => {
                         <Stack>
                             <Text fontWeight='semibold' fontSize='sm'>Channel description</Text>
                             <Text fontSize='sm' color='gray.500'>
-                                {channelData[0].channel_description ? channelData[0].channel_description : 'No description'}
+                                {channelData && channelData[0].channel_description && channelData[0].channel_description.length > 0 ? channelData[0].channel_description : 'No description'}
                             </Text>
                         </Stack>
-                        <Button colorScheme='blue' variant='link' size='sm'>
-                            {channelData[0].channel_description ? 'Edit' : 'Add'}
+                        <Button colorScheme='blue' variant='link' size='sm' onClick={onChannelDescriptionModalOpen}>
+                            {channelData && channelData[0].channel_description && channelData[0].channel_description.length > 0 ? 'Edit' : 'Add'}
                         </Button>
                     </HStack>
 
@@ -67,6 +69,7 @@ export const ChannelDetails = () => {
                 </Stack>
             </Box>
             <ChannelRenameModal isOpen={isChannelRenameModalOpen} onClose={onChannelRenameModalClose} />
+            <AddOrEditChannelDescriptionModal isOpen={isChannelDescriptionModalOpen} onClose={onChannelDescriptionModalClose} />
         </Stack>
     )
 }
