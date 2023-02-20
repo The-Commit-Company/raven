@@ -98,7 +98,7 @@ export const ChannelRenameModal = ({ isOpen, onClose }: RenameChannelModalProps)
 
                         <ModalFooter>
                             <ButtonGroup>
-                                <Button variant='outline' onClick={handleClose} isDisabled={updatingDoc}>Cancel</Button>
+                                <Button variant='ghost' onClick={handleClose} isDisabled={updatingDoc}>Cancel</Button>
                                 <Button colorScheme='blue' type='submit' isLoading={updatingDoc}>Save Changes</Button>
                             </ButtonGroup>
                         </ModalFooter>
