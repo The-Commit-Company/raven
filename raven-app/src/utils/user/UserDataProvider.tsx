@@ -13,7 +13,7 @@ export const UserDataProvider = ({ children }: PropsWithChildren) => {
     const { currentUser } = useContext(UserContext)
     const { data, error } = useFrappeGetCall<{ message: User }>('frappe.client.get_value', {
         doctype: "User",
-        docname: currentUser,
+        filters: JSON.stringify({ name: currentUser }),
         fieldname: JSON.stringify(["name", "first_name", "full_name", "user_image"])
     })
 

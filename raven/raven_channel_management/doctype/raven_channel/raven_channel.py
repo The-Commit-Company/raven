@@ -6,6 +6,16 @@ from frappe.model.document import Document
 
 
 class RavenChannel(Document):
+
+    def after_insert(self):
+        # add current user as channel member
+        frappe.get_doc({"doctype": "Raven Channel Member",
+                       "channel_id": self.name, "user_id": frappe.session.user}).insert()
+
+    def on_trash(self):
+        # delete all members when channel is deleted
+        frappe.db.delete("Raven Channel Member", {"channel_id": self.name})
+
     def before_insert(self):
         if self.is_direct_message == 1:
             self.type == "Private"
