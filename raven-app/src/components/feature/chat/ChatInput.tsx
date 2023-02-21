@@ -85,7 +85,7 @@ export const ChatInput = ({ channelID, allMembers, allChannels }: ChatInputProps
     return (
         <Box border='1px' borderColor={'gray.500'} rounded='lg' bottom='2' maxH='40vh' boxShadow='base' position='fixed' w='calc(98vw - var(--sidebar-width))' bg={colorMode === "light" ? "white" : "gray.800"}>
             <ReactQuill
-                className="my-quill-editor"
+                className={colorMode === 'light' ? 'my-quill-editor light-theme' : 'my-quill-editor dark-theme'}
                 onChange={handleChange}
                 value={text}
                 placeholder={"Type a message..."}
