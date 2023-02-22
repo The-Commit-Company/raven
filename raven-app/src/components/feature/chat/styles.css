@@ -1,3 +1,11 @@
+.light-theme {
+    --gray: var(--chakra-colors-gray-100);
+}
+
+.dark-theme {
+    --gray: var(--chakra-colors-gray-700);
+}
+
 .my-quill-editor .ql-container {
     border: none;
 }
@@ -7,7 +15,7 @@
 }
 
 .my-quill-editor .ql-toolbar.ql-snow .ql-formats>button:hover {
-    background-color: #2D3748;
+    background-color: var(--gray);
     border-radius: 4px;
 }
 
@@ -18,7 +26,7 @@
 }
 
 .ql-formats button.ql-active {
-    background-color: #2D3748;
+    background-color: var(--gray);
     border-radius: 4px;
     z-index: 2;
 }

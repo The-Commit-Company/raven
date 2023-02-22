@@ -1,4 +1,4 @@
-import { Box, IconButton, useColorMode } from "@chakra-ui/react"
+import { Box, HStack, IconButton, Popover, PopoverContent, PopoverTrigger, Stack, useColorMode, useDisclosure } from "@chakra-ui/react"
 import { useCallback, useState } from "react"
 import { RiSendPlaneFill } from "react-icons/ri"
 import ReactQuill from "react-quill"
@@ -8,6 +8,9 @@ import { useFrappePostCall } from "frappe-react-sdk"
 import { useHotkeys } from "react-hotkeys-hook"
 import "quill-mention";
 import 'quill-mention/dist/quill.mention.css';
+import EmojiPicker, { EmojiClickData } from 'emoji-picker-react';
+import { FaRegSmile } from 'react-icons/fa'
+
 interface ChatInputProps {
     channelID: string,
     allMembers: { id: string; value: string; }[],
@@ -82,31 +85,62 @@ export const ChatInput = ({ channelID, allMembers, allChannels }: ChatInputProps
 
     const { colorMode } = useColorMode()
 
+    const { isOpen: showEmojiPicker, onToggle: onEmojiPickerToggle, onClose: onEmojiPickerClose } = useDisclosure()
+
+    const onEmojiClick = (emojiObject: EmojiClickData) => {
+        setText(text + emojiObject.emoji)
+        onEmojiPickerClose()
+    }
+
     return (
-        <Box border='1px' borderColor={'gray.500'} rounded='lg' bottom='2' maxH='40vh' boxShadow='base' position='fixed' w='calc(98vw - var(--sidebar-width))' bg={colorMode === "light" ? "white" : "gray.800"}>
-            <ReactQuill
-                className="my-quill-editor"
-                onChange={handleChange}
-                value={text}
-                placeholder={"Type a message..."}
-                modules={{
-                    toolbar: [
-                        ['bold', 'italic', 'underline', 'strike', 'blockquote'],
-                        [{ 'list': 'ordered' }, { 'list': 'bullet' }],
-                        ['link']
-                    ],
-                    mention
-                }}
-                formats={formats}
-                onKeyDown={handleKeyDown} />
-            <IconButton
-                isDisabled={text.length === 0}
-                style={{ position: 'absolute', bottom: '10px', right: '10px' }}
-                colorScheme='blue'
-                onClick={onSubmit}
-                aria-label={"send message"}
-                icon={<RiSendPlaneFill />}
-                size='xs' />
+        <Box>
+
+            <Stack border='1px' borderColor={'gray.500'} rounded='lg' bottom='2' maxH='40vh' boxShadow='base' position='fixed' w='calc(98vw - var(--sidebar-width))' bg={colorMode === "light" ? "white" : "gray.800"}>
+                <ReactQuill
+                    className={colorMode === 'light' ? 'my-quill-editor light-theme' : 'my-quill-editor dark-theme'}
+                    onChange={handleChange}
+                    value={text}
+                    placeholder={"Type a message..."}
+                    modules={{
+                        toolbar: [
+                            ['bold', 'italic', 'underline', 'strike', 'blockquote'],
+                            [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+                            ['link']
+                        ],
+                        mention
+                    }}
+                    formats={formats}
+                    onKeyDown={handleKeyDown} />
+                <HStack w='full' justify={'space-between'} px='2' pb='2'>
+                    <Box>
+                        <Popover
+                            isOpen={showEmojiPicker}
+                            onClose={onEmojiPickerClose}
+                            placement='top-end'
+                            isLazy
+                            lazyBehavior="unmount"
+                            gutter={48}
+                            closeOnBlur={false}>
+                            <PopoverTrigger>
+                                <IconButton size='xs' aria-label={"pick emoji"} icon={<FaRegSmile />} onClick={onEmojiPickerToggle} />
+                            </PopoverTrigger>
+                            <PopoverContent>
+                                <EmojiPicker onEmojiClick={onEmojiClick} lazyLoadEmojis />
+                            </PopoverContent>
+                        </Popover>
+                    </Box>
+                    <IconButton
+                        isDisabled={text.length === 0}
+                        colorScheme='blue'
+                        onClick={onSubmit}
+                        mx='4'
+                        aria-label={"send message"}
+                        icon={<RiSendPlaneFill />}
+                        size='xs' />
+                </HStack>
+
+            </Stack>
+
         </Box>
     )
 }
