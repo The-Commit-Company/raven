@@ -1,5 +1,5 @@
 import { Text, AlertDialog, AlertDialogBody, AlertDialogCloseButton, AlertDialogContent, AlertDialogFooter, AlertDialogHeader, AlertDialogOverlay, Button, ButtonGroup, HStack, useToast } from '@chakra-ui/react'
-import { useFrappeDeleteDoc } from 'frappe-react-sdk'
+import { useFrappeDeleteDoc, useFrappeGetCall } from 'frappe-react-sdk'
 import { useContext, useRef } from 'react'
 import { BiHash, BiLockAlt } from 'react-icons/bi'
 import { ChannelContext } from '../../../../utils/channel/ChannelProvider'
@@ -18,9 +18,14 @@ export const RemoveChannelMemberModal = ({ isOpen, onClose, user_id }: RemoveCha
     const { deleteDoc, error } = useFrappeDeleteDoc()
     const toast = useToast()
 
+    const { data: channelMember, error: errorFetchingChannelMember } = useFrappeGetCall<{ message: { name: string } }>('frappe.client.get_value', {
+        doctype: "Raven Channel Member",
+        filters: JSON.stringify({ channel_id: channelData[0].name, user_id: user_id }),
+        fieldname: JSON.stringify(["name"])
+    })
+
     const onSubmit = () => {
-        let member_id = channelData[0].name + '-' + user_id
-        return deleteDoc('Raven Channel Member', member_id).then(() => {
+        return deleteDoc('Raven Channel Member', channelMember?.message.name).then(() => {
             toast({
                 title: 'Member removed successfully',
                 status: 'success',

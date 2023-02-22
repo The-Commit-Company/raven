@@ -1,5 +1,5 @@
-import { Avatar, Box, HStack, Stack, Text, useDisclosure } from "@chakra-ui/react"
-import { useFrappeGetCall, useFrappeGetDocList } from "frappe-react-sdk"
+import { Avatar, Box, Button, HStack, Stack, Text, useColorMode, useDisclosure, useToast } from "@chakra-ui/react"
+import { useFrappeCreateDoc, useFrappeGetCall, useFrappeGetDocList } from "frappe-react-sdk"
 import { useContext } from "react"
 import { BiHash, BiLockAlt } from "react-icons/bi"
 import { useFrappeEventListener } from "../../../hooks/useFrappeEventListener"
@@ -38,7 +38,7 @@ export const ChatInterface = () => {
             order: 'desc'
         }
     })
-
+    const { colorMode } = useColorMode()
 
     useFrappeEventListener('message_received', (data) => {
         if (data.channel_id === channelData[0].name) {
@@ -62,6 +62,35 @@ export const ChatInterface = () => {
 
     const { isOpen: isViewDetailsModalOpen, onOpen: onViewDetailsModalOpen, onClose: onViewDetailsModalClose } = useDisclosure()
     const { isOpen, onOpen, onClose } = useDisclosure()
+    const { createDoc, error: joinError } = useFrappeCreateDoc()
+    const toast = useToast()
+
+    const joinChannel = () => {
+        return createDoc('Raven Channel Member', {
+            channel_id: channelData[0].name,
+            user_id: user
+        }).then(() => {
+            toast({
+                title: 'Channel joined successfully',
+                status: 'success',
+                duration: 1000,
+                position: 'bottom',
+                variant: 'solid',
+                isClosable: true
+            })
+        })
+            .catch((e) => {
+                toast({
+                    title: 'Error: could not join channel.',
+                    status: 'error',
+                    duration: 3000,
+                    position: 'bottom',
+                    variant: 'solid',
+                    isClosable: true,
+                    description: `${e.message}`
+                })
+            })
+    }
 
     if (error) {
         return (
@@ -93,13 +122,18 @@ export const ChatInterface = () => {
                         </HStack>
                     </PageHeading>
                 }
-                <ViewOrAddMembersButton onClickViewMembers={onViewDetailsModalOpen} onClickAddMembers={onOpen} />
+                {channelData[0]?.is_direct_message == 0 &&
+                    <ViewOrAddMembersButton onClickViewMembers={onViewDetailsModalOpen} onClickAddMembers={onOpen} />}
             </PageHeader>
             <Stack h='100vh' justify={'space-between'} p={4} overflow='hidden' mt='16'>
                 {data &&
                     <ChatHistory messages={data} />
                 }
-                <ChatInput channelID={channelData[0].name ?? ''} allChannels={allChannels} allMembers={allMembers} />
+                {user && user in channelMembers ?
+                    <ChatInput channelID={channelData[0].name ?? ''} allChannels={allChannels} allMembers={allMembers} /> :
+                    <Box border='1px' borderColor={'gray.500'} rounded='lg' bottom='2' boxShadow='base' position='fixed' w='calc(98vw - var(--sidebar-width))' bg={colorMode === "light" ? "white" : "gray.800"} p={4}>
+                        <HStack justify='center' align='center' pb={4}><BiHash /><Text>{channelData[0]?.channel_name}</Text></HStack>
+                        <HStack justify='center' align='center' spacing={4}><Button colorScheme='blue' variant='outline' size='sm' onClick={onViewDetailsModalOpen}>Details</Button><Button colorScheme='blue' variant='solid' size='sm' onClick={joinChannel}>Join Channel</Button></HStack></Box>}
             </Stack>
             <ViewChannelDetailsModal isOpen={isViewDetailsModalOpen} onClose={onViewDetailsModalClose} />
             <AddChannelMemberModal isOpen={isOpen} onClose={onClose} />
