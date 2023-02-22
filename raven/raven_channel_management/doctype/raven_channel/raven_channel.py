@@ -35,13 +35,17 @@ def get_channel_list():
     # get channel list where channel member is current user
     channel = frappe.qb.DocType("Raven Channel")
     channel_member = frappe.qb.DocType("Raven Channel Member")
-    query = (frappe.qb.from_(channel)
-             .select(channel.name, channel.channel_name, channel.type, channel.is_direct_message, channel.is_self_message)
-             .join(channel_member)
-             .on(channel.name == channel_member.channel_id)
-             .where(channel_member.user_id == frappe.session.user))
+    private_query = (frappe.qb.from_(channel)
+                     .select(channel.name, channel.channel_name, channel.type, channel.is_direct_message, channel.is_self_message)
+                     .join(channel_member)
+                     .on(channel.name == channel_member.channel_id)
+                     .where(channel_member.user_id == frappe.session.user)
+                     .where(channel.type == "Private"))
+    public_query = (frappe.qb.from_(channel)
+                    .select(channel.name, channel.channel_name, channel.type, channel.is_direct_message, channel.is_self_message)
+                    .where(channel.type == "Public"))
 
-    return query.run(as_dict=True)
+    return private_query.run(as_dict=True) + public_query.run(as_dict=True)
 
 
 @frappe.whitelist()

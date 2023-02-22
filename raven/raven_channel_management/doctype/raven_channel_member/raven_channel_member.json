@@ -1,7 +1,7 @@
 {
  "actions": [],
  "allow_rename": 1,
- "autoname": "format:{channel_id}-{user_id}",
+ "autoname": "hash",
  "creation": "2023-02-12 17:31:23.807704",
  "default_view": "List",
  "doctype": "DocType",
@@ -31,11 +31,11 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-02-12 17:31:23.807704",
+ "modified": "2023-02-20 16:58:29.160295",
  "modified_by": "Administrator",
  "module": "Raven Channel Management",
  "name": "Raven Channel Member",
- "naming_rule": "Expression",
+ "naming_rule": "Random",
  "owner": "Administrator",
  "permissions": [
   {
