@@ -8,11 +8,3 @@ export type ChannelData = {
     owner: string,
     channel_description: string
 }
-
-export type DirectMessage = {
-    channel_id: string,
-    first_name: string,
-    full_name: string,
-    user_id: string,
-    user_image: string,
-}
