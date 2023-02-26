@@ -65,7 +65,6 @@ app_license = "MIT"
 
 # before_install = "raven.install.before_install"
 # after_install = "raven.install.after_install"
-after_sync = "raven.raven_channel_management.doctype.raven_channel.raven_channel.create_initial_direct_message_channels_for_all"
 
 # Uninstallation
 # ------------
@@ -103,11 +102,11 @@ after_sync = "raven.raven_channel_management.doctype.raven_channel.raven_channel
 # ---------------
 # Hook on document methods and events
 
-doc_events = {
-    "User": {
-        "after_insert": "raven.raven_channel_management.doctype.raven_channel.raven_channel.create_initial_direct_message_channels_for_user"
-    }
-}
+# doc_events = {
+#     "User": {
+#         "after_insert": "raven.raven_channel_management.doctype.raven_channel.raven_channel.create_initial_direct_message_channels_for_user"
+#     }
+# }
 
 # Scheduled Tasks
 # ---------------

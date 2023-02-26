@@ -85,7 +85,7 @@ export const ChannelMemberDetails = ({ members }: MemberDetailsProps) => {
 
             </List>
             <AddChannelMemberModal isOpen={isAddMembersModalOpen} onClose={onAddMembersModalClose} />
-            <RemoveChannelMemberModal isOpen={isRemoveMembersModalOpen} onClose={onRemoveMembersModalClose} user_id={selectedMember} />
+            {selectedMember && <RemoveChannelMemberModal isOpen={isRemoveMembersModalOpen} onClose={onRemoveMembersModalClose} user_id={selectedMember} />}
         </Stack>
     )
 }

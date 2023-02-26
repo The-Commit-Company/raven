@@ -1,5 +1,5 @@
 import { Text, AlertDialog, AlertDialogBody, AlertDialogCloseButton, AlertDialogContent, AlertDialogFooter, AlertDialogHeader, AlertDialogOverlay, Button, ButtonGroup, HStack, useToast } from '@chakra-ui/react'
-import { useFrappeDeleteDoc } from 'frappe-react-sdk'
+import { useFrappeDeleteDoc, useFrappeGetCall } from 'frappe-react-sdk'
 import { useContext, useRef } from 'react'
 import { BiHash, BiLockAlt } from 'react-icons/bi'
 import { UserContext } from '../../../../utils/auth/UserProvider'
@@ -19,11 +19,16 @@ export const LeaveChannelModal = ({ isOpen, onClose }: LeaveChannelModalProps) =
     const { deleteDoc, error } = useFrappeDeleteDoc()
     const toast = useToast()
 
+    const { data: channelMember, error: errorFetchingChannelMember } = useFrappeGetCall<{ message: { name: string } }>('frappe.client.get_value', {
+        doctype: "Raven Channel Member",
+        filters: JSON.stringify({ channel_id: channelData[0].name, user_id: currentUser }),
+        fieldname: JSON.stringify(["name"])
+    })
+
     const onSubmit = () => {
-        let member_id = channelData[0].name + '-' + currentUser
-        return deleteDoc('Raven Channel Member', member_id).then(() => {
+        return deleteDoc('Raven Channel Member', channelMember?.message.name).then(() => {
             toast({
-                title: 'channel left successfully',
+                title: 'Channel left successfully',
                 status: 'success',
                 duration: 1500,
                 position: 'bottom',
@@ -34,7 +39,7 @@ export const LeaveChannelModal = ({ isOpen, onClose }: LeaveChannelModalProps) =
         })
             .catch((e) => {
                 toast({
-                    title: 'Error: could not leave channel.',
+                    title: 'Error: could leave channel.',
                     status: 'error',
                     duration: 3000,
                     position: 'bottom',

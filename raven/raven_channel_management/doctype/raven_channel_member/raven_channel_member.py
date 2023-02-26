@@ -7,7 +7,15 @@ from pypika import JoinType
 
 
 class RavenChannelMember(Document):
-    pass
+    def after_insert(self):
+        frappe.publish_realtime('member_added', {
+            'channel_id': self.channel_id}, after_commit=True)
+        frappe.db.commit()
+
+    def after_delete(self):
+        frappe.publish_realtime('member_removed', {
+            'channel_id': self.channel_id}, after_commit=True)
+        frappe.db.commit()
 
 
 @frappe.whitelist()
@@ -25,7 +33,7 @@ def get_channel_members_and_data(channel_id):
     data_query = (frappe.qb.from_(channel_data)
                   .select(channel_data.name,
                           channel_data.channel_name,
-                          channel_data.type, 
+                          channel_data.type,
                           channel_data.creation,
                           channel_data.owner,
                           channel_data.channel_description,

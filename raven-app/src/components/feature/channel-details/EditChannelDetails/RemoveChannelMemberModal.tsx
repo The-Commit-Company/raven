@@ -55,7 +55,7 @@ export const RemoveChannelMemberModal = ({ isOpen, onClose, user_id }: RemoveCha
             <AlertDialogContent>
                 <AlertDialogHeader>
                     <HStack>
-                        <Text>Remove {user_id && channelMembers[user_id].full_name} from </Text>
+                        <Text>Remove {user_id && channelMembers[user_id]?.full_name} from </Text>
                         {channelData[0].type === 'Public' ? <BiHash /> : <BiLockAlt />}
                         <Text>{channelData[0].channel_name}?</Text>
                     </HStack>
