@@ -153,10 +153,11 @@ export const NestedChild = ({ children, ...props }: NestedChildProps) => {
 interface SidebarButtonItemProps extends StackProps {
     children: React.ReactNode,
     subtle?: boolean,
-    onClick?: () => void
+    onClick?: () => void,
+    isLoading?: boolean
 }
 
-export const SidebarButtonItem = ({ children, subtle, onClick, ...props }: SidebarButtonItemProps) => {
+export const SidebarButtonItem = ({ children, subtle, onClick, isLoading, ...props }: SidebarButtonItemProps) => {
 
     const { colorMode } = useColorMode()
 
@@ -165,7 +166,7 @@ export const SidebarButtonItem = ({ children, subtle, onClick, ...props }: Sideb
             w="full"
             px="3"
             py="1.5"
-            cursor="pointer"
+            cursor={isLoading ? "progress" : "pointer"}
             userSelect="none"
             rounded="md"
             transition="all 0.2s"
