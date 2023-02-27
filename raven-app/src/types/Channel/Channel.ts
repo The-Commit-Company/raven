@@ -6,5 +6,6 @@ export type ChannelData = {
     is_self_message: number,
     creation: string,
     owner: string,
-    channel_description: string
+    channel_description: string,
+    owner_full_name: string
 }
