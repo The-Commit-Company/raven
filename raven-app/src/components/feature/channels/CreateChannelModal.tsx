@@ -109,7 +109,8 @@ export const CreateChannelModal = ({ isOpen, onClose }: ChannelModalProps) => {
                                                 maxLength: 50,
                                                 pattern: {
                                                     // no special characters allowed
-                                                    value: /^[a-zA-Z0-9\s]*$/,
+                                                    // cannot start with a space
+                                                    value: /^[a-zA-Z0-9][a-zA-Z0-9 ]*$/,
                                                     message: "Channel name can only contain letters and numbers"
                                                 }
                                              })}
