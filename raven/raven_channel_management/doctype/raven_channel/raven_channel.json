@@ -20,7 +20,8 @@
    "in_list_view": 1,
    "label": "Type",
    "options": "Private\nPublic\nOpen",
-   "reqd": 1
+   "reqd": 1,
+   "set_only_once": 1
   },
   {
    "fieldname": "channel_name",
@@ -52,7 +53,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-02-27 11:03:46.686224",
+ "modified": "2023-02-27 19:43:43.508023",
  "modified_by": "Administrator",
  "module": "Raven Channel Management",
  "name": "Raven Channel",
