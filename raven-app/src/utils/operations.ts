@@ -20,3 +20,14 @@ const MonthNames = ["January", "February", "March", "April", "May", "June",
 export const DateObjectToFormattedDateString = (date: Date): string => {
     return date.getDate() + " " + MonthNames[date.getMonth()] + " " + date.getFullYear()
 }
+
+/**
+ * Utility to convert Date-Time object to hour:minute format
+ * @param date takes Javascript Date object
+ * @returns Time string in hour:minute format
+ * @example 08:15 PM or 12:00 AM
+ */
+export const DateObjectToTimeString = (date: Date): string => {
+    var date = new Date(date)
+    return date.toLocaleTimeString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true })
+}
