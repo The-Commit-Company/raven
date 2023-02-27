@@ -9,9 +9,11 @@
  "field_order": [
   "type",
   "channel_name",
+  "channel_description",
+  "section_break_evg4",
   "is_direct_message",
-  "is_self_message",
-  "channel_description"
+  "column_break_puci",
+  "is_self_message"
  ],
  "fields": [
   {
@@ -24,7 +26,7 @@
   },
   {
    "fieldname": "channel_name",
-   "fieldtype": "Small Text",
+   "fieldtype": "Data",
    "in_filter": 1,
    "in_list_view": 1,
    "in_preview": 1,
@@ -48,11 +50,19 @@
    "fieldname": "channel_description",
    "fieldtype": "Data",
    "label": "Channel Description"
+  },
+  {
+   "fieldname": "column_break_puci",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "section_break_evg4",
+   "fieldtype": "Section Break"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-02-27 11:03:46.686224",
+ "modified": "2023-02-27 19:29:16.635876",
  "modified_by": "Administrator",
  "module": "Raven Channel Management",
  "name": "Raven Channel",

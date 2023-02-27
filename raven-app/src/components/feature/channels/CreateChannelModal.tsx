@@ -1,4 +1,4 @@
-import { Button, ButtonGroup, chakra, FormControl, FormErrorMessage, FormHelperText, FormLabel, HStack, Input, InputGroup, InputLeftElement, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Stack, Switch, Text, useToast } from '@chakra-ui/react'
+import { Button, ButtonGroup, chakra, FormControl, FormErrorMessage, FormHelperText, FormLabel, HStack, Input, InputGroup, InputLeftElement, InputRightElement, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Stack, Switch, Text, useToast } from '@chakra-ui/react'
 import { useFrappeCreateDoc } from 'frappe-react-sdk'
 import { useEffect } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
@@ -35,6 +35,8 @@ export const CreateChannelModal = ({ isOpen, onClose }: ChannelModalProps) => {
     }, [isOpen, reset])
 
     const channelType = watch('type')
+    const channel_name = watch('channel_name')
+    
     let navigate = useNavigate()
 
     const onSubmit = (data: ChannelCreationForm) => {
@@ -100,8 +102,21 @@ export const CreateChannelModal = ({ isOpen, onClose }: ChannelModalProps) => {
                                                 pointerEvents='none'
                                                 children={channelType === 'Private' ? <BiLockAlt /> : <BiHash />}
                                             />
-                                            <Input autoFocus {...register('channel_name', { required: "Please add channel name", maxLength: 80 })}
+                                            <Input 
+                                            maxLength={50}
+                                            autoFocus {...register('channel_name', { 
+                                                required: "Please add channel name", 
+                                                maxLength: 50,
+                                                pattern: {
+                                                    // no special characters allowed
+                                                    value: /^[a-zA-Z0-9\s]*$/,
+                                                    message: "Channel name can only contain letters and numbers"
+                                                }
+                                             })}
                                                 placeholder='e.g. testing' fontSize='sm' />
+                                            <InputRightElement>
+                                                <Text fontSize='sm' fontWeight='light' color='gray.500'>{50 - channel_name?.length}</Text>
+                                            </InputRightElement>
                                         </InputGroup>
                                         <FormErrorMessage>{errors.channel_name?.message}</FormErrorMessage>
                                     </FormControl>
