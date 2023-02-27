@@ -7,7 +7,10 @@ import { SidebarGroup, SidebarGroupItem, SidebarGroupLabel, SidebarGroupList, Si
 
 export const DirectMessageList = (userData: { userData: User | null }) => {
 
-    const { data: users, error: usersError } = useFrappeGetDocList<User>("User", { fields: ["full_name", "user_image", "name"] })
+    const { data: users, error: usersError } = useFrappeGetDocList<User>("User", {
+        fields: ["full_name", "user_image", "name"],
+        filters: [["name", "!=", "Guest"]]
+    })
     const { call, error: channelError, loading, reset } = useFrappePostCall<{ message: string }>("raven.raven_channel_management.doctype.raven_channel.raven_channel.create_direct_message_channel")
     const navigate = useNavigate()
 
