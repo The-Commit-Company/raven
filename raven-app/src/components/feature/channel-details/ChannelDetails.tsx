@@ -1,6 +1,7 @@
 import { Box, HStack, Stack, useColorMode, Text, Button, Divider, useDisclosure } from "@chakra-ui/react"
 import { useContext } from "react"
 import { BiHash, BiLockAlt } from "react-icons/bi"
+import { UserContext } from "../../../utils/auth/UserProvider"
 import { ChannelContext } from "../../../utils/channel/ChannelProvider"
 import { DateObjectToFormattedDateString } from "../../../utils/operations"
 import { AddOrEditChannelDescriptionModal } from "./EditChannelDetails/AddOrEditChannelDescriptionModal"
@@ -11,6 +12,8 @@ export const ChannelDetails = () => {
 
     const { colorMode } = useColorMode()
     const { channelData, channelMembers } = useContext(ChannelContext)
+    const { currentUser } = useContext(UserContext)
+
 
     const BOXSTYLE = {
         p: '4',
@@ -66,11 +69,11 @@ export const ChannelDetails = () => {
                         </HStack>
                     </Stack>
 
-                    <Divider />
 
-                    <Button colorScheme='red' variant='link' size='sm' w='fit-content' onClick={onLeaveChannelModalOpen}>
-                        Leave channel
-                    </Button>
+                    {channelMembers[currentUser] &&
+                        <><Divider /><Button colorScheme='red' variant='link' size='sm' w='fit-content' onClick={onLeaveChannelModalOpen}>
+                            Leave channel
+                        </Button></>}
 
                 </Stack>
             </Box>

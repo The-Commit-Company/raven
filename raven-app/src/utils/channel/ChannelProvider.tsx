@@ -1,6 +1,7 @@
 import { useFrappeGetCall } from 'frappe-react-sdk'
 import { createContext, PropsWithChildren, useMemo } from 'react'
 import { useParams } from 'react-router-dom'
+import { useFrappeEventListener } from '../../hooks/useFrappeEventListener'
 import { ChannelData } from '../../types/Channel/Channel'
 
 type ChannelInfo = {
@@ -20,8 +21,20 @@ export const ChannelContext = createContext<{ channelMembers: Record<string, Cha
 export const ChannelProvider = ({ children }: PropsWithChildren) => {
 
     const { channelID } = useParams()
-    const { data, error } = useFrappeGetCall<{ message: ChannelInfo }>('raven.raven_channel_management.doctype.raven_channel_member.raven_channel_member.get_channel_members_and_data', {
+    const { data, error, mutate } = useFrappeGetCall<{ message: ChannelInfo }>('raven.raven_channel_management.doctype.raven_channel_member.raven_channel_member.get_channel_members_and_data', {
         channel_id: channelID
+    })
+
+    useFrappeEventListener('member_added', (data) => {
+        if (data.channel_id === channelID) {
+            mutate()
+        }
+    })
+
+    useFrappeEventListener('member_removed', (data) => {
+        if (data.channel_id === channelID) {
+            mutate()
+        }
     })
 
     const channelMembers = useMemo(() => {
