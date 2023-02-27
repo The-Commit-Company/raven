@@ -8,7 +8,7 @@ from frappe.model.document import Document
 class RavenMessage(Document):
 
     def validate(self):
-        # If the user is not the owner of the message, do not allow them to modify it
+        # If the user is not the owner of the message, do not allow them to create/modify it
         if self.owner != frappe.session.user:
             frappe.throw("You don't have permission to modify this message", frappe.PermissionError)
     pass

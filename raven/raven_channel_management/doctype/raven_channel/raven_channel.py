@@ -29,7 +29,7 @@ class RavenChannel(Document):
     def validate(self):
         # If the user trying to modify the channel is not the owner or channel member, then don't allow
         if self.type == "Private" or self.type == "Public":
-            if self.owner == frappe.session.user:
+            if self.owner == frappe.session.user and frappe.db.count("Raven Channel Member", {"channel_id": self.name}) <= 1:
                 pass
             elif frappe.db.exists("Raven Channel Member", {"channel_id": self.name, "user_id": frappe.session.user}):
                 pass
