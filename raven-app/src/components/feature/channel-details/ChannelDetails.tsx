@@ -33,7 +33,7 @@ export const ChannelDetails = () => {
                     <Stack>
                         <Text fontWeight='semibold' fontSize='sm'>Channel name</Text>
                         <HStack spacing={1}>
-                            {channelData[0].type === 'Public' ? <BiHash /> : <BiLockAlt />}
+                            {channelData[0].type === 'Private' ? <BiLockAlt /> : <BiHash />}
                             <Text fontSize='sm'>{channelData[0].channel_name}</Text>
                         </HStack>
                     </Stack>
@@ -70,7 +70,7 @@ export const ChannelDetails = () => {
                     </Stack>
 
 
-                    {channelMembers[currentUser] &&
+                    {channelMembers[currentUser] && channelData[0].type != 'Open' &&
                         <><Divider /><Button colorScheme='red' variant='link' size='sm' w='fit-content' onClick={onLeaveChannelModalOpen}>
                             Leave channel
                         </Button></>}

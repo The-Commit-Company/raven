@@ -4,6 +4,9 @@
 import frappe
 from frappe.model.document import Document
 
+all_users = [member['name'] for member in frappe.get_all(
+    "User", filters={"user_type": "System User"}, fields=["name"])]
+
 
 class RavenChannel(Document):
 
@@ -11,6 +14,8 @@ class RavenChannel(Document):
         # add current user as channel member
         frappe.get_doc({"doctype": "Raven Channel Member",
                        "channel_id": self.name, "user_id": frappe.session.user}).insert()
+        if self.type == "Open":
+            self.add_members(all_users)
 
     def on_trash(self):
         # delete all members when channel is deleted
@@ -22,12 +27,19 @@ class RavenChannel(Document):
 
     def add_members(self, members):
         for member in members:
-            channel_member = frappe.get_doc({
-                "doctype": "Raven Channel Member",
+            doc = frappe.db.get_value("Raven Channel Member", filters={
                 "channel_id": self.name,
                 "user_id": member
-            })
-            channel_member.insert()
+            }, fieldname="name")
+            if doc:
+                continue
+            else:
+                channel_member = frappe.get_doc({
+                    "doctype": "Raven Channel Member",
+                    "channel_id": self.name,
+                    "user_id": member
+                })
+                channel_member.insert()
 
 
 @frappe.whitelist()
@@ -44,8 +56,11 @@ def get_channel_list():
     public_query = (frappe.qb.from_(channel)
                     .select(channel.name, channel.channel_name, channel.type, channel.is_direct_message, channel.is_self_message)
                     .where(channel.type == "Public"))
+    open_query = (frappe.qb.from_(channel)
+                  .select(channel.name, channel.channel_name, channel.type, channel.is_direct_message, channel.is_self_message)
+                  .where(channel.type == "Open"))
 
-    return private_query.run(as_dict=True) + public_query.run(as_dict=True)
+    return private_query.run(as_dict=True) + public_query.run(as_dict=True) + open_query.run(as_dict=True)
 
 
 @frappe.whitelist()
@@ -83,3 +98,37 @@ def create_direct_message_channel(user_id):
             channel.insert()
             channel.add_members([frappe.session.user, user_id])
             return channel.name
+
+
+def create_general_channel(doc, method):
+    # create general channel and add all users as members
+    channel = frappe.db.get_value("Raven Channel", filters={
+        "is_direct_message": 0,
+        "channel_name": "general",
+        "type": "Open"
+    }, fieldname="name")
+    if channel:
+        channel = frappe.get_doc("Raven Channel", channel)
+    else:
+        channel = frappe.get_doc({
+            "doctype": "Raven Channel",
+            "channel_name": "general",
+            "is_direct_message": 0,
+            "type": "Open"
+        })
+        channel.insert()
+    channel.add_members(all_users)
+
+
+def add_user_to_open_channel(doc, method):
+    # add new user to all open channels
+    if doc.user_type == "System User":
+        open_channels = frappe.get_all("Raven Channel", filters={
+            "type": "Open"
+        }, fields=["name"])
+        for channel in open_channels:
+            frappe.get_doc({
+                "doctype": "Raven Channel Member",
+                "channel_id": channel.name,
+                "user_id": doc.name
+            }).insert()
