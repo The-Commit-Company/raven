@@ -192,3 +192,9 @@ doc_events = {
 
 website_route_rules = [
     {'from_route': '/raven-app/<path:app_path>', 'to_route': 'raven-app'},]
+
+has_permission = {
+    "Raven Channel": "raven.permissions.channel_has_permission",
+    "Raven Channel Member": "raven.permissions.channel_member_has_permission",
+    "Raven Message": "raven.permissions.message_has_permission",
+}
