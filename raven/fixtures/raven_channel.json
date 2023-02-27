@@ -1,0 +1,13 @@
+[
+ {
+  "channel_description": null,
+  "channel_name": "general",
+  "docstatus": 0,
+  "doctype": "Raven Channel",
+  "is_direct_message": 0,
+  "is_self_message": 0,
+  "modified": "2023-02-27 20:52:06.128003",
+  "name": "general",
+  "type": "Open"
+ }
+]
