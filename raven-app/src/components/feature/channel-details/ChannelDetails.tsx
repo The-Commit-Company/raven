@@ -64,7 +64,7 @@ export const ChannelDetails = () => {
                                 ?
                                 <Text fontSize='sm'>Administrator</Text>
                                 :
-                                channelData[0].owner && <Text fontSize='sm'>{channelMembers[channelData[0].owner].full_name}</Text>}
+                                channelData[0].owner && <Text fontSize='sm'>{channelData[0].owner_full_name}</Text>}
                             <Text fontSize='sm' color='gray.500'>on {DateObjectToFormattedDateString(new Date(channelData[0].creation))}</Text>
                         </HStack>
                     </Stack>

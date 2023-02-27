@@ -39,6 +39,9 @@ def get_channel_members_and_data(channel_id):
                           channel_data.channel_description,
                           channel_data.is_direct_message,
                           channel_data.is_self_message)
+                  .join(user, JoinType.left)
+                  .on(channel_data.owner == user.name)
+                  .select((user.full_name).as_('owner_full_name'))
                   .where(channel_data.name == channel_id))
 
     return {"channel_members": member_query.run(as_dict=True), "channel_data": data_query.run(as_dict=True)}
