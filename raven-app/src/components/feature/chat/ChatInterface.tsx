@@ -1,4 +1,4 @@
-import { Avatar, Box, Button, HStack, Stack, Text, useColorMode, useDisclosure, useToast } from "@chakra-ui/react"
+import { Avatar, AvatarBadge, Box, Button, HStack, Stack, Text, useColorMode, useDisclosure, useToast } from "@chakra-ui/react"
 import { useFrappeCreateDoc, useFrappeGetCall, useFrappeGetDocList } from "frappe-react-sdk"
 import { useContext } from "react"
 import { BiHash, BiLockAlt } from "react-icons/bi"
@@ -106,19 +106,23 @@ export const ChatInterface = () => {
                 {channelData && user &&
                     <PageHeading>
                         <HStack>
-                            {channelData[0]?.is_direct_message == 1 ?
-                                (channelData[0]?.is_self_message == 0 ?
+                            {channelData[0]?.is_direct_message == 1
+                                ?
+                                <HStack>
+                                    <Avatar name={channelMembers?.[user]?.full_name} src={channelMembers?.[user]?.user_image} borderRadius={'lg'} size="sm">
+                                        {channelData[0]?.is_self_message == 1 && <AvatarBadge boxSize='0.88em' bg='green.500' />}
+                                    </Avatar>
                                     <HStack>
-                                        <Avatar name={channelMembers?.[peer]?.full_name} src={channelMembers?.[peer]?.user_image} borderRadius={'lg'} size="sm" />
-                                        <Text>{channelMembers?.[peer]?.full_name}</Text>
-                                    </HStack> :
-                                    <HStack>
-                                        <Avatar name={channelMembers?.[user]?.full_name} src={channelMembers?.[user]?.user_image} borderRadius={'lg'} size="sm" />
-                                        <Text>{channelMembers?.[user]?.full_name} (You)</Text>
-                                    </HStack>) :
-                                (channelData[0]?.type === 'Private' ?
-                                    <HStack><BiLockAlt /><Text>{channelData[0]?.channel_name}</Text></HStack> :
-                                    <HStack><BiHash /><Text>{channelData[0]?.channel_name}</Text></HStack>)}
+                                        <Text>{channelMembers?.[user]?.full_name}</Text>
+                                        {channelData[0]?.is_self_message == 1 && <Text fontSize='sm' color='gray.500'>(You)</Text>}
+                                    </HStack>
+                                </HStack>
+                                :
+                                (channelData[0]?.type === 'Private'
+                                    ?
+                                    <HStack alignItems='center'><BiLockAlt /><Text>{channelData[0]?.channel_name}</Text></HStack>
+                                    :
+                                    <HStack alignItems='center'><BiHash /><Text>{channelData[0]?.channel_name}</Text></HStack>)}
                         </HStack>
                     </PageHeading>
                 }
