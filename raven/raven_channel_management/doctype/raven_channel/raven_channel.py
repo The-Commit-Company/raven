@@ -14,7 +14,7 @@ class RavenChannel(Document):
         # add current user as channel member
         frappe.get_doc({"doctype": "Raven Channel Member",
                        "channel_id": self.name, "user_id": frappe.session.user}).insert()
-        
+
         # TODO: This should be removed since it's not needed (#57)
         if self.type == "Open":
             self.add_members(all_users)
@@ -25,7 +25,7 @@ class RavenChannel(Document):
 
         # delete all messages when channel is deleted
         frappe.db.delete("Raven Message", {"channel_id": self.name})
-    
+
     def validate(self):
         # If the user trying to modify the channel is not the owner or channel member, then don't allow
         if self.type == "Private" or self.type == "Public":
@@ -34,8 +34,8 @@ class RavenChannel(Document):
             elif frappe.db.exists("Raven Channel Member", {"channel_id": self.name, "user_id": frappe.session.user}):
                 pass
             else:
-                frappe.throw("You don't have permission to modify this channel", frappe.PermissionError)
-
+                frappe.throw(
+                    "You don't have permission to modify this channel", frappe.PermissionError)
 
     def before_validate(self):
         if self.is_direct_message == 1:
@@ -114,37 +114,3 @@ def create_direct_message_channel(user_id):
             channel.insert()
             channel.add_members([frappe.session.user, user_id])
             return channel.name
-
-
-def create_general_channel(doc, method):
-    # create general channel and add all users as members
-    channel = frappe.db.get_value("Raven Channel", filters={
-        "is_direct_message": 0,
-        "channel_name": "general",
-        "type": "Open"
-    }, fieldname="name")
-    if channel:
-        channel = frappe.get_doc("Raven Channel", channel)
-    else:
-        channel = frappe.get_doc({
-            "doctype": "Raven Channel",
-            "channel_name": "general",
-            "is_direct_message": 0,
-            "type": "Open"
-        })
-        channel.insert()
-    channel.add_members(all_users)
-
-
-def add_user_to_open_channel(doc, method):
-    # add new user to all open channels
-    if doc.user_type == "System User":
-        open_channels = frappe.get_all("Raven Channel", filters={
-            "type": "Open"
-        }, fields=["name"])
-        for channel in open_channels:
-            frappe.get_doc({
-                "doctype": "Raven Channel Member",
-                "channel_id": channel.name,
-                "user_id": doc.name
-            }).insert()
