@@ -1,4 +1,4 @@
-import { Box, HStack, IconButton, Popover, PopoverContent, PopoverTrigger, Stack, useColorMode, useDisclosure } from "@chakra-ui/react"
+import { Box, HStack, IconButton, Popover, PopoverContent, PopoverTrigger, Stack, StackDivider, useColorMode, useDisclosure } from "@chakra-ui/react"
 import { useCallback, useState } from "react"
 import { RiSendPlaneFill } from "react-icons/ri"
 import ReactQuill from "react-quill"
@@ -10,6 +10,8 @@ import "quill-mention";
 import 'quill-mention/dist/quill.mention.css';
 import EmojiPicker, { EmojiClickData } from 'emoji-picker-react';
 import { FaRegSmile } from 'react-icons/fa'
+import { IoMdAdd } from 'react-icons/io'
+import { VscMention } from 'react-icons/vsc'
 
 interface ChatInputProps {
     channelID: string,
@@ -112,23 +114,29 @@ export const ChatInput = ({ channelID, allMembers, allChannels }: ChatInputProps
                     formats={formats}
                     onKeyDown={handleKeyDown} />
                 <HStack w='full' justify={'space-between'} px='2' pb='2'>
-                    <Box>
-                        <Popover
-                            isOpen={showEmojiPicker}
-                            onClose={onEmojiPickerClose}
-                            placement='top-end'
-                            isLazy
-                            lazyBehavior="unmount"
-                            gutter={48}
-                            closeOnBlur={false}>
-                            <PopoverTrigger>
-                                <IconButton size='xs' aria-label={"pick emoji"} icon={<FaRegSmile />} onClick={onEmojiPickerToggle} />
-                            </PopoverTrigger>
-                            <PopoverContent>
-                                <EmojiPicker onEmojiClick={onEmojiClick} lazyLoadEmojis />
-                            </PopoverContent>
-                        </Popover>
-                    </Box>
+                    <HStack alignItems='flex-end'>
+                        <HStack divider={<StackDivider />}>
+                            <IconButton size='xs' aria-label={"add file"} icon={<IoMdAdd />} rounded='xl' />
+                            <Box>
+                                <Popover
+                                    isOpen={showEmojiPicker}
+                                    onClose={onEmojiPickerClose}
+                                    placement='top-end'
+                                    isLazy
+                                    lazyBehavior="unmount"
+                                    gutter={48}
+                                    closeOnBlur={false}>
+                                    <PopoverTrigger>
+                                        <IconButton size='xs' variant='ghost' aria-label={"pick emoji"} icon={<FaRegSmile fontSize='1.0rem' />} onClick={onEmojiPickerToggle} />
+                                    </PopoverTrigger>
+                                    <PopoverContent>
+                                        <EmojiPicker onEmojiClick={onEmojiClick} lazyLoadEmojis />
+                                    </PopoverContent>
+                                </Popover>
+                            </Box>
+                        </HStack>
+                        <IconButton size='xs' variant='ghost' aria-label={"mention channel member"} icon={<VscMention fontSize='1.5rem' />} />
+                    </HStack>
                     <IconButton
                         isDisabled={text.length === 0}
                         colorScheme='blue'
