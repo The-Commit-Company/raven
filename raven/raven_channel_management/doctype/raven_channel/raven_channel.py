@@ -14,6 +14,8 @@ class RavenChannel(Document):
         # add current user as channel member
         frappe.get_doc({"doctype": "Raven Channel Member",
                        "channel_id": self.name, "user_id": frappe.session.user}).insert()
+        
+        # TODO: This should be removed since it's not needed (#57)
         if self.type == "Open":
             self.add_members(all_users)
 
@@ -21,7 +23,21 @@ class RavenChannel(Document):
         # delete all members when channel is deleted
         frappe.db.delete("Raven Channel Member", {"channel_id": self.name})
 
-    def before_insert(self):
+        # delete all messages when channel is deleted
+        frappe.db.delete("Raven Message", {"channel_id": self.name})
+    
+    def validate(self):
+        # If the user trying to modify the channel is not the owner or channel member, then don't allow
+        if self.type == "Private" or self.type == "Public":
+            if self.owner == frappe.session.user and frappe.db.count("Raven Channel Member", {"channel_id": self.name}) <= 1:
+                pass
+            elif frappe.db.exists("Raven Channel Member", {"channel_id": self.name, "user_id": frappe.session.user}):
+                pass
+            else:
+                frappe.throw("You don't have permission to modify this channel", frappe.PermissionError)
+
+
+    def before_validate(self):
         if self.is_direct_message == 1:
             self.type == "Private"
 

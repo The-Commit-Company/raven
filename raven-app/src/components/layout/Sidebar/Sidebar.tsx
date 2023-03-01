@@ -1,14 +1,16 @@
-import { Divider, HStack, IconButton, useColorMode, Text, Stack, Avatar, AvatarBadge } from "@chakra-ui/react";
+import { Divider, HStack, IconButton, useColorMode, Text, Stack, Avatar, AvatarBadge, Menu, MenuButton, MenuList, MenuItem, Link } from "@chakra-ui/react";
 import { PropsWithChildren, useContext } from "react";
 import { HiOutlineMoon, HiOutlineSun } from "react-icons/hi"
-import { FiEdit } from "react-icons/fi";
 import { ChannelList } from "../../feature/channels/ChannelList";
 import { UserDataContext } from "../../../utils/user/UserDataProvider"
 import { DirectMessageList } from "../../feature/channels/DirectMessageList";
+import { UserContext } from "../../../utils/auth/UserProvider";
+import { RxExit } from "react-icons/rx";
 
 export const Sidebar = ({ children }: PropsWithChildren<{}>) => {
 
     const { colorMode, toggleColorMode } = useColorMode()
+    const { logout } = useContext(UserContext)
     const userData = useContext(UserDataContext)
 
     return (
@@ -17,9 +19,10 @@ export const Sidebar = ({ children }: PropsWithChildren<{}>) => {
                 <HStack justifyContent="space-between" spacing="3" h='33px'>
                     <Text fontSize="xl" fontWeight="semibold" ml='3'>Raven</Text>
                     <IconButton
-                        size={"sm"}
-                        aria-label="Send message"
-                        icon={<FiEdit />}
+                        size={"xs"}
+                        aria-label="Toggle theme"
+                        icon={colorMode === "light" ? <HiOutlineMoon /> : <HiOutlineSun />}
+                        onClick={toggleColorMode}
                     />
                 </HStack>
                 <Divider />
@@ -38,12 +41,18 @@ export const Sidebar = ({ children }: PropsWithChildren<{}>) => {
                             <Text fontSize="sm">{userData.full_name}</Text>
                         </HStack>
                     }
-                    <IconButton
-                        size={"xs"}
-                        aria-label="Toggle theme"
-                        icon={colorMode === "light" ? <HiOutlineMoon /> : <HiOutlineSun />}
-                        onClick={toggleColorMode}
-                    />
+                    <Menu>
+                        <MenuButton
+                            as={IconButton}
+                            aria-label="Exit Options"
+                            icon={<RxExit />}
+                            size="xs"
+                        />
+                        <MenuList fontSize="sm" zIndex={999}>
+                            <MenuItem as={Link} href="/app">Desk Interface</MenuItem>
+                            <MenuItem onClick={logout}>Log Out</MenuItem>
+                        </MenuList>
+                    </Menu>x
                 </HStack>
             </Stack>
         </Stack>
