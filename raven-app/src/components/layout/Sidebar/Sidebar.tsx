@@ -36,7 +36,7 @@ export const Sidebar = ({ children }: PropsWithChildren<{}>) => {
                     {userData &&
                         <HStack>
                             <Avatar size="xs" src={userData.user_image} name={userData.full_name} borderRadius='md'>
-                                <AvatarBadge boxSize='1.0em' bg='green.500' />
+                                <AvatarBadge boxSize='0.88em' bg='green.500' />
                             </Avatar>
                             <Text fontSize="sm">{userData.full_name}</Text>
                         </HStack>

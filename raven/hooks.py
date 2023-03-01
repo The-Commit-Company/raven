@@ -65,7 +65,7 @@ app_license = "MIT"
 
 # before_install = "raven.install.before_install"
 # after_install = "raven.install.after_install"
-after_sync = "raven.raven_channel_management.doctype.raven_channel.raven_channel.create_general_channel"
+# after_sync = ""
 
 # Uninstallation
 # ------------
@@ -103,11 +103,11 @@ after_sync = "raven.raven_channel_management.doctype.raven_channel.raven_channel
 # ---------------
 # Hook on document methods and events
 
-doc_events = {
-    "User": {
-        "on_change": "raven.raven_channel_management.doctype.raven_channel.raven_channel.add_user_to_open_channel"
-    }
-}
+# doc_events = {
+#     "User": {
+#         "on_change": "raven.raven_channel_management.doctype.raven_channel.raven_channel.add_user_to_open_channel"
+#     }
+# }
 
 # Scheduled Tasks
 # ---------------
@@ -191,7 +191,7 @@ doc_events = {
 # ]
 
 website_route_rules = [
-    {'from_route': '/raven-app/<path:app_path>', 'to_route': 'raven-app'},]
+    {'from_route': '/raven-app/<path:app_path>', 'to_route': 'raven-app'}, ]
 
 has_permission = {
     "Raven Channel": "raven.permissions.channel_has_permission",

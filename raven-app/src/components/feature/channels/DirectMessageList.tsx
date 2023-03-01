@@ -1,4 +1,4 @@
-import { Avatar, Button, HStack, useColorMode } from "@chakra-ui/react"
+import { Avatar, HStack } from "@chakra-ui/react"
 import { useFrappeGetDocList, useFrappePostCall } from "frappe-react-sdk"
 import { useNavigate } from "react-router-dom"
 import { User } from "../../../types/User/User"
@@ -19,9 +19,6 @@ export const DirectMessageList = (userData: { userData: User | null }) => {
         const result = await call({ user_id: user })
         navigate(`/channel/${result?.message}`)
     }
-
-    const { colorMode } = useColorMode()
-
 
     if (usersError) {
         <AlertBanner status="error" heading={usersError.message}>{usersError.httpStatus} - {usersError.httpStatusText}</AlertBanner>
