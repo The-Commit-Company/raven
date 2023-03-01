@@ -82,7 +82,8 @@ export const ChatInput = ({ channelID, allMembers, allChannels }: ChatInputProps
     const formats = [
         'bold', 'italic', 'underline', 'strike', 'blockquote',
         'list', 'bullet',
-        'link', 'mention'
+        'link', 'mention',
+        'code-block'
     ]
 
     const { colorMode } = useColorMode()
@@ -107,7 +108,7 @@ export const ChatInput = ({ channelID, allMembers, allChannels }: ChatInputProps
                         toolbar: [
                             ['bold', 'italic', 'underline', 'strike', 'blockquote'],
                             [{ 'list': 'ordered' }, { 'list': 'bullet' }],
-                            ['link']
+                            ['link', 'code-block']
                         ],
                         mention
                     }}
@@ -146,7 +147,6 @@ export const ChatInput = ({ channelID, allMembers, allChannels }: ChatInputProps
                         icon={<RiSendPlaneFill />}
                         size='xs' />
                 </HStack>
-
             </Stack>
 
         </Box>
