@@ -1,6 +1,5 @@
-import { Box, BoxProps, HStack, List, Stack, StackDivider, Text, useToast } from "@chakra-ui/react"
+import { Box, BoxProps, Stack, Text, useToast } from "@chakra-ui/react"
 import { Accept, useDropzone } from "react-dropzone"
-import { FileListItem } from "./FileListItem"
 
 export interface CustomFile extends File {
     fileID: string,
@@ -13,8 +12,6 @@ export interface FileDropProps extends BoxProps {
     files: CustomFile[],
     /** Function to set files in parent */
     onFileChange: (files: CustomFile[]) => void,
-    /** Option to show the list of files below the dropzone, Default: true */
-    showList?: boolean,
     /** Maximum no. of files that can be selected */
     maxFiles?: number,
     /** Takes input MIME type as 'key' & array of extensions as 'value'; empty array - all extensions supported */
@@ -27,7 +24,7 @@ export interface FileDropProps extends BoxProps {
  * File uploader component that allows users to drag and drop files or select files from their computer.
  * It encompasses Box component, so all Box props can be used.
  */
-export const FileDrop = ({ files, onFileChange, maxFiles, accept, showList = true, maxFileSize, ...props }: FileDropProps) => {
+export const FileDrop = ({ files, onFileChange, maxFiles, accept, maxFileSize, ...props }: FileDropProps) => {
 
     const toast = useToast()
 
@@ -68,11 +65,6 @@ export const FileDrop = ({ files, onFileChange, maxFiles, accept, showList = tru
         validator: fileSizeValidator
     })
 
-    const removeFile = (id: string) => {
-        let newFiles = files.filter(file => file.fileID !== id)
-        onFileChange(newFiles)
-    }
-
     return (
         <Stack>
             {(maxFiles === undefined || files.length < maxFiles) &&
@@ -89,11 +81,6 @@ export const FileDrop = ({ files, onFileChange, maxFiles, accept, showList = tru
                     <input type='file' {...getInputProps()} />
                     <Text fontSize="sm" color="gray.500">Drag 'n' drop your files here, or click to select files</Text>
                 </Box>
-            }
-            {showList && files.length > 0 &&
-                <List size="sm" as={HStack} divider={<StackDivider />}>
-                    {files.map((f: CustomFile) => <FileListItem key={f.fileID} file={f} isUploading={f.uploading} uploadProgress={f.uploadProgress} removeFile={() => removeFile(f.fileID)} />)}
-                </List>
             }
         </Stack>
     )
