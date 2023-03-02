@@ -51,6 +51,10 @@ export const ChatInput = ({ channelID, allMembers, allChannels }: ChatInputProps
         })
     }
 
+    const onMentionIconClick = () => {
+        setText(text + "@")
+    }
+
     const mention = {
         allowedChars: /^[A-Za-z\sÅÄÖåäö]*$/,
         mentionDenotationChars: ["@", "#"],
@@ -136,7 +140,12 @@ export const ChatInput = ({ channelID, allMembers, allChannels }: ChatInputProps
                                 </Popover>
                             </Box>
                         </HStack>
-                        <IconButton size='xs' variant='ghost' aria-label={"mention channel member"} icon={<VscMention fontSize='1.5rem' />} />
+                        <IconButton 
+                        size='xs' 
+                        variant='ghost' 
+                        aria-label={"mention channel member"} 
+                        icon={<VscMention fontSize='1.5rem' />}
+                        onClick={onMentionIconClick} />
                     </HStack>
                     <IconButton
                         isDisabled={text.length === 0}
