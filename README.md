@@ -4,4 +4,4 @@ Messaging Application
 
 #### License
 
-MIT
+AGPLv3
