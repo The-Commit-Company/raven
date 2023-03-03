@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="RAVEN-logo.png" alt="Raven logo" height="100" />
+  <img src="RAVEN-Logo.png" alt="Raven logo" height="100" />
   <p align="center">Simple, open source team messaging platform</p>
 </p>
 
