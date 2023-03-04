@@ -5,6 +5,7 @@ import { ChannelContext } from "../../../utils/channel/ChannelProvider"
 import { DateObjectToTimeString } from "../../../utils/operations";
 import { MarkdownRenderer } from "../markdown-viewer/MarkdownRenderer.tsx";
 import { DeleteMessageModal } from "../message-details/DeleteMessageModal";
+import { EditMessageModal } from "../message-details/EditMessageModal";
 
 interface ChatMessageProps {
     name: string,
@@ -19,12 +20,17 @@ export const ChatMessage = ({ name, text, user, timestamp }: ChatMessageProps) =
     const { channelMembers } = useContext(ChannelContext)
     const [showButtons, setShowButtons] = useState({ display: 'none' })
     const { isOpen: isDeleteMessageModalOpen, onOpen: onDeleteMessageModalOpen, onClose: onDeleteMessageModalClose } = useDisclosure()
+    const { isOpen: isEditMessageModalOpen, onOpen: onEditMessageModalOpen, onClose: onEditMessageModalClose } = useDisclosure()
 
     return (
         <Box
             py={4}
             px='2'
-            _hover={{ bg: colorMode === 'light' ? 'gray.50' : 'gray.700' }}
+            _hover={{
+                bg: colorMode === 'light' && 'gray.50' || 'gray.700',
+                cursor: 'pointer',
+                borderRadius: 'md'
+            }}
             rounded='md'
             onMouseEnter={e => {
                 setShowButtons({ display: 'block' });
@@ -48,6 +54,7 @@ export const ChatMessage = ({ name, text, user, timestamp }: ChatMessageProps) =
                 <ButtonGroup style={showButtons}>
                     <Tooltip hasArrow label='edit' size='xs' placement='top'>
                         <IconButton
+                            onClick={onEditMessageModalOpen}
                             aria-label="edit message"
                             icon={<RiEdit2Line />}
                             size='xs' />
@@ -62,6 +69,7 @@ export const ChatMessage = ({ name, text, user, timestamp }: ChatMessageProps) =
                 </ButtonGroup>
             </HStack>
             <DeleteMessageModal isOpen={isDeleteMessageModalOpen} onClose={onDeleteMessageModalClose} channelMessageID={name} />
+            <EditMessageModal isOpen={isEditMessageModalOpen} onClose={onEditMessageModalClose} channelMessageID={name} />
         </Box>
     )
 }
