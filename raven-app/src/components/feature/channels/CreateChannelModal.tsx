@@ -2,8 +2,7 @@ import { Button, ButtonGroup, chakra, FormControl, FormErrorMessage, FormHelperT
 import { useFrappeCreateDoc } from 'frappe-react-sdk'
 import { useEffect, useState } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
-import { BiHash, BiLockAlt } from 'react-icons/bi'
-import { HiSpeakerWave } from 'react-icons/hi2'
+import { BiGlobe, BiHash, BiLockAlt } from 'react-icons/bi'
 import { useNavigate } from 'react-router-dom'
 import { AlertBanner } from '../../layout/AlertBanner'
 
@@ -107,7 +106,7 @@ export const CreateChannelModal = ({ isOpen, onClose }: ChannelModalProps) => {
                                         <InputGroup>
                                             <InputLeftElement
                                                 pointerEvents='none'
-                                                children={channelType === 'Private' && <BiLockAlt /> || channelType === 'Open' && <HiSpeakerWave /> || channelType === 'Public' && <BiHash />}
+                                                children={channelType === 'Private' && <BiLockAlt /> || channelType === 'Open' && <BiGlobe /> || channelType === 'Public' && <BiHash />}
                                             />
                                             <Input
                                                 maxLength={50}
