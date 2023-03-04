@@ -2,7 +2,6 @@ import { Avatar, Box, ButtonGroup, HStack, Icon, IconButton, Image, Link, Stack,
 import { useFrappeGetCall } from "frappe-react-sdk";
 import { useContext, useState } from "react"
 import { BsDownload } from "react-icons/bs";
-import { FaFile } from "react-icons/fa";
 import { RiDeleteBinLine, RiEdit2Line } from "react-icons/ri";
 import { ChannelData } from "../../../types/Channel/Channel";
 import { ChannelContext } from "../../../utils/channel/ChannelProvider"
@@ -79,7 +78,7 @@ export const ChatMessage = ({ name, user, timestamp, text, image, file }: ChatMe
                         }
                         {file && <HStack>
                             <Icon as={getFileExtensionIcon(file.split('.')[1])} />
-                            <Text as={Link} href={file}>{file.split('/')[3]}</Text>
+                            <Text as={Link} href={file} isExternal>{file.split('/')[3]}</Text>
                         </HStack>}
                     </Stack>
                 </HStack>
@@ -87,7 +86,9 @@ export const ChatMessage = ({ name, user, timestamp, text, image, file }: ChatMe
                     {image &&
                         <Tooltip hasArrow label='download' size='xs' placement='top'>
                             <IconButton
-                                onClick={() => window.open(image, '_blank')}
+                                as={Link}
+                                href={image}
+                                isExternal
                                 aria-label="download file"
                                 icon={<BsDownload />}
                                 size='xs' />
@@ -96,7 +97,9 @@ export const ChatMessage = ({ name, user, timestamp, text, image, file }: ChatMe
                     {file &&
                         <Tooltip hasArrow label='download' size='xs' placement='top'>
                             <IconButton
-                                onClick={() => window.open(file, '_blank')}
+                                as={Link}
+                                href={file}
+                                isExternal
                                 aria-label="download file"
                                 icon={<BsDownload />}
                                 size='xs' />
