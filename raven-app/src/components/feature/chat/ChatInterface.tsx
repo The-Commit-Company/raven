@@ -46,6 +46,18 @@ export const ChatInterface = () => {
         }
     })
 
+    useFrappeEventListener('message_deleted', (data) => {
+        if (data.channel_id === channelData[0].name) {
+            mutate()
+        }
+    })
+
+    useFrappeEventListener('message_updated', (data) => {
+        if (data.channel_id === channelData[0].name) {
+            mutate()
+        }
+    })
+
     const allMembers = Object.values(channelMembers).map((member) => {
         return {
             id: member.name,

@@ -10,8 +10,18 @@ class RavenMessage(Document):
     def validate(self):
         # If the user is not the owner of the message, do not allow them to create/modify it
         if self.owner != frappe.session.user:
-            frappe.throw("You don't have permission to modify this message", frappe.PermissionError)
-    pass
+            frappe.throw(
+                "You don't have permission to modify this message", frappe.PermissionError)
+
+    def after_delete(self):
+        frappe.publish_realtime('message_deleted', {
+            'channel_id': self.channel_id}, after_commit=True)
+        frappe.db.commit()
+
+    def on_update(self):
+        frappe.publish_realtime('message_updated', {
+            'channel_id': self.channel_id}, after_commit=True)
+        frappe.db.commit()
 
 
 @frappe.whitelist(methods=['POST'])

@@ -1,5 +1,5 @@
 import { Button, ButtonGroup, chakra, FormControl, FormErrorMessage, FormHelperText, FormLabel, HStack, Input, InputGroup, InputLeftElement, InputRightElement, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Stack, Switch, Text, useToast } from '@chakra-ui/react'
-import { useFrappeCreateDoc } from 'frappe-react-sdk'
+import { useFrappePostCall } from 'frappe-react-sdk'
 import { useEffect } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
 import { BiHash, BiLockAlt } from 'react-icons/bi'
@@ -26,33 +26,35 @@ export const CreateChannelModal = ({ isOpen, onClose }: ChannelModalProps) => {
     })
 
     const { register, handleSubmit, watch, reset, formState: { errors } } = methods
-    const { createDoc, error, loading: creatingDoc, reset: resetCreate } = useFrappeCreateDoc()
+    const { call: callChannelCreation, loading: creatingChannel, error: channelCreationError, reset: resetChannelCreation, result: resultantChannel } = useFrappePostCall<{ message: string }>('raven.raven_channel_management.doctype.raven_channel.raven_channel.create_channel')
     const toast = useToast()
 
     useEffect(() => {
         reset()
-        resetCreate()
+        resetChannelCreation()
     }, [isOpen, reset])
 
     const channelType = watch('type')
     const channel_name = watch('channel_name')
-    
+
     let navigate = useNavigate()
 
     const onSubmit = (data: ChannelCreationForm) => {
-        let docname = ""
-        createDoc('Raven Channel', {
-            ...data
-        }).then((d) => {
-            docname = d.name
-            navigate('/channel/' + docname)
-            toast({
-                title: "Channel Created",
-                status: "success",
-                duration: 2000,
-                isClosable: true
-            })
-            onClose(true)
+        callChannelCreation({
+            channel_name: data.channel_name,
+            channel_description: data.channel_description,
+            type: data.type
+        }).then(result => {
+            if (result) {
+                toast({
+                    title: "Channel Created",
+                    status: "success",
+                    duration: 2000,
+                    isClosable: true
+                })
+                onClose(true)
+                navigate(`/channel/${result.message}`)
+            }
         }).catch((err) => {
             toast({
                 title: "Error creating channel",
@@ -63,6 +65,7 @@ export const CreateChannelModal = ({ isOpen, onClose }: ChannelModalProps) => {
             })
         })
     }
+
 
     const handleClose = () => {
         //reset form on close
@@ -79,7 +82,7 @@ export const CreateChannelModal = ({ isOpen, onClose }: ChannelModalProps) => {
             <ModalOverlay />
             <ModalContent>
                 <ModalHeader fontSize='2xl'>{channelType === 'Private' ? "Create a private channel" : "Create a channel"}</ModalHeader>
-                <ModalCloseButton isDisabled={creatingDoc} />
+                <ModalCloseButton isDisabled={creatingChannel} />
 
                 <FormProvider {...methods}>
                     <chakra.form onSubmit={handleSubmit(onSubmit)}>
@@ -93,7 +96,7 @@ export const CreateChannelModal = ({ isOpen, onClose }: ChannelModalProps) => {
 
                                 <Stack spacing={6}>
 
-                                    {error ? <AlertBanner status='error' heading={error.message}>{error.httpStatus} - {error.httpStatusText}</AlertBanner> : null}
+                                    {channelCreationError ? <AlertBanner status='error' heading={channelCreationError.message}>A channel with same name already exists.</AlertBanner> : null}
 
                                     <FormControl isRequired isInvalid={!!errors.channel_name}>
                                         <FormLabel>Name</FormLabel>
@@ -102,18 +105,19 @@ export const CreateChannelModal = ({ isOpen, onClose }: ChannelModalProps) => {
                                                 pointerEvents='none'
                                                 children={channelType === 'Private' ? <BiLockAlt /> : <BiHash />}
                                             />
-                                            <Input 
-                                            maxLength={50}
-                                            autoFocus {...register('channel_name', { 
-                                                required: "Please add channel name", 
-                                                maxLength: 50,
-                                                pattern: {
-                                                    // no special characters allowed
-                                                    // cannot start with a space
-                                                    value: /^[a-zA-Z0-9][a-zA-Z0-9 ]*$/,
-                                                    message: "Channel name can only contain letters and numbers"
-                                                }
-                                             })}
+                                            <Input
+                                                maxLength={50}
+                                                autoFocus {...register('channel_name', {
+                                                    required: "Please add channel name",
+                                                    maxLength: 50,
+                                                    pattern: {
+                                                        // no special characters allowed
+                                                        // cannot start with a space
+                                                        value: /^[a-zA-Z0-9][a-zA-Z0-9]|-*$/,
+                                                        message: "Channel name can only contain letters, numbers and hyphens."
+                                                    }
+                                                })}
+
                                                 placeholder='e.g. testing' fontSize='sm' />
                                             <InputRightElement>
                                                 <Text fontSize='sm' fontWeight='light' color='gray.500'>{50 - channel_name?.length}</Text>
@@ -161,8 +165,8 @@ export const CreateChannelModal = ({ isOpen, onClose }: ChannelModalProps) => {
 
                         <ModalFooter>
                             <ButtonGroup>
-                                <Button variant='ghost' onClick={handleClose} isDisabled={creatingDoc}>Cancel</Button>
-                                <Button colorScheme='blue' type='submit' isLoading={creatingDoc}>Save</Button>
+                                <Button variant='ghost' onClick={handleClose} isDisabled={creatingChannel}>Cancel</Button>
+                                <Button colorScheme='blue' type='submit' isLoading={creatingChannel}>Save</Button>
                             </ButtonGroup>
                         </ModalFooter>
 

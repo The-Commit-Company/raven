@@ -37,6 +37,20 @@ class RavenChannel(Document):
                 frappe.throw(
                     "You don't have permission to modify this channel", frappe.PermissionError)
 
+    def on_update(self):
+        frappe.publish_realtime('channel_updated', {
+            'channel_id': self.name}, after_commit=True)
+        frappe.publish_realtime('channel_list_updated', {
+            'channel_id': self.name}, after_commit=True)
+        frappe.db.commit()
+
+    def after_delete(self):
+        frappe.publish_realtime('channel_deleted', {
+            'channel_id': self.name}, after_commit=True)
+        frappe.publish_realtime('channel_list_updated', {
+            'channel_id': self.name}, after_commit=True)
+        frappe.db.commit()
+
     def before_validate(self):
         if self.is_direct_message == 1:
             self.type == "Private"
@@ -114,3 +128,21 @@ def create_direct_message_channel(user_id):
             channel.insert()
             channel.add_members([frappe.session.user, user_id])
             return channel.name
+
+
+@frappe.whitelist()
+def create_channel(channel_name, type, channel_description=None):
+    # create channel with channel name and channel type if it doesn't exist else return error
+    channel_name = channel_name.lower()
+    channel = frappe.db.exists("Raven Channel", {"channel_name": channel_name})
+    if channel:
+        frappe.throw("Channel name already exists", frappe.DuplicateEntryError)
+    else:
+        channel = frappe.get_doc({
+            "doctype": "Raven Channel",
+            "channel_name": channel_name,
+            "type": type,
+            "channel_description": channel_description
+        })
+        channel.insert()
+        return channel.name
