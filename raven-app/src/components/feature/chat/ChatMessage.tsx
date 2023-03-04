@@ -1,4 +1,4 @@
-import { Avatar, Box, ButtonGroup, HStack, IconButton, Stack, StackDivider, Text, useDisclosure } from "@chakra-ui/react"
+import { Avatar, Box, ButtonGroup, HStack, IconButton, Stack, StackDivider, Text, Tooltip, useDisclosure } from "@chakra-ui/react"
 import { useContext, useState } from "react"
 import { RiDeleteBinLine, RiEdit2Line } from "react-icons/ri";
 import { ChannelContext } from "../../../utils/channel/ChannelProvider"
@@ -36,12 +36,16 @@ export const ChatMessage = ({ name, text, user, timestamp }: ChatMessageProps) =
                             <Text fontSize="xs" lineHeight={'0.9'} color="gray.500">{DateObjectToTimeString(timestamp)}</Text>
                         </HStack>
                         <ButtonGroup style={showButtons}>
-                            <IconButton aria-label="edit message" icon={<RiEdit2Line />} size='xs' />
-                            <IconButton
-                                onClick={onDeleteMessageModalOpen}
-                                aria-label="delete message"
-                                icon={<RiDeleteBinLine />}
-                                size='xs' />
+                            <Tooltip hasArrow label='edit' size='xs' placement='top'>
+                                <IconButton aria-label="edit message" icon={<RiEdit2Line />} size='xs' />
+                            </Tooltip>
+                            <Tooltip hasArrow label='delete' size='xs' placement='top'>
+                                <IconButton
+                                    onClick={onDeleteMessageModalOpen}
+                                    aria-label="delete message"
+                                    icon={<RiDeleteBinLine />}
+                                    size='xs' />
+                            </Tooltip>
                         </ButtonGroup>
                     </HStack>
                     <MarkdownRenderer content={text} />
