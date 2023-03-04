@@ -1,7 +1,6 @@
-import { Text, AlertDialog, AlertDialogBody, AlertDialogCloseButton, AlertDialogContent, AlertDialogFooter, AlertDialogHeader, AlertDialogOverlay, Button, ButtonGroup, useToast, HStack } from "@chakra-ui/react"
+import { Text, AlertDialog, AlertDialogBody, AlertDialogCloseButton, AlertDialogContent, AlertDialogFooter, AlertDialogHeader, AlertDialogOverlay, Button, ButtonGroup, useToast, HStack, Stack } from "@chakra-ui/react"
 import { useFrappeDeleteDoc } from "frappe-react-sdk"
 import { useRef } from "react"
-import { BsExclamationTriangle } from "react-icons/bs"
 import { AlertBanner } from "../../layout/AlertBanner"
 
 interface DeleteMessageModalProps {
@@ -50,9 +49,11 @@ export const DeleteMessageModal = ({ isOpen, onClose, channelMessageID }: Delete
                 </AlertDialogHeader>
                 <AlertDialogCloseButton />
                 <AlertDialogBody>
-                    {error && <AlertBanner status='error' heading={error.message}>{error.exception} - HTTP {error.httpStatus}</AlertBanner>}
-                    <HStack><BsExclamationTriangle fontSize='0.8rem' /><Text fontSize='sm'><strong>This action is permanent.</strong></Text></HStack>
-                    <Text fontSize='sm'>Are you sure you want to delete this message? It will be deleted for all users.</Text>
+                    <Stack>
+                        {error && <AlertBanner status='error' heading={error.message}>{error.exception} - HTTP {error.httpStatus}</AlertBanner>}
+                        <AlertBanner status='warning' heading='This action is permanent.' />
+                        <Text fontSize='sm'>Are you sure you want to delete this message? It will be deleted for all users.</Text>
+                    </Stack>
                 </AlertDialogBody>
                 <AlertDialogFooter>
                     <ButtonGroup>
