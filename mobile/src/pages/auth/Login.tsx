@@ -1,8 +1,9 @@
-import { IonButton, IonContent, IonHeader, IonInput, IonItem, IonLabel, IonList, IonNote, IonPage, IonSpinner, IonText, IonTitle, IonToolbar, useIonAlert } from '@ionic/react'
-import { FrappeConfig, FrappeContext, FrappeError, useFrappeAuth } from 'frappe-react-sdk'
-import React, { useContext, useState } from 'react'
+import { IonButton, IonContent, IonHeader, IonInput, IonItem, IonLabel, IonList, IonNote, IonPage, IonSpinner, IonText, IonTitle, IonToolbar } from '@ionic/react'
+import { FrappeConfig, FrappeContext, FrappeError } from 'frappe-react-sdk'
+import { useContext, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { store } from '../../App'
+import { ErrorBanner } from '../../components/common'
 import { UserContext } from '../../utils/UserProvider'
 
 type Props = {
@@ -25,19 +26,17 @@ export const Login = ({ refreshFrappeURL }: Props) => {
     })
 
     const [loading, setLoading] = useState(false)
-
-    const [presentAlert] = useIonAlert();
+    const [error, setError] = useState<FrappeError | null>(null)
     const { login } = useContext(UserContext)
     const onSubmit = (data: LoginFormFields) => {
         setLoading(true)
+        setError(null)
         store.set('frappeURL', data.frappeURL)
             .then(() => refreshFrappeURL())
             .then(() => login(data.email, data.password))
-            .catch(err => presentAlert({
-                header: 'Uh oh! There was an error.',
-                message: err?.message,
-                buttons: ['Ok'],
-            }))
+            .catch(err => {
+                setError(err)
+            })
             .finally(() => setLoading(false))
     }
     return (
@@ -54,6 +53,8 @@ export const Login = ({ refreshFrappeURL }: Props) => {
                     </IonToolbar>
                 </IonHeader>
 
+                {error && <ErrorBanner heading={error.message}>
+                </ErrorBanner>}
                 <form onSubmit={handleSubmit(onSubmit)}>
                     <IonList className="ion-margin-vertical">
                         <IonItem className={errors?.frappeURL ? 'ion-invalid' : 'ion-valid'}>
