@@ -4,6 +4,7 @@ import { useContext } from "react"
 import { BiGlobe, BiHash, BiLockAlt } from "react-icons/bi"
 import { useFrappeEventListener } from "../../../hooks/useFrappeEventListener"
 import { ChannelData } from "../../../types/Channel/Channel"
+import { Message } from "../../../types/Messaging/Message"
 import { ChannelContext } from "../../../utils/channel/ChannelProvider"
 import { UserDataContext } from "../../../utils/user/UserDataProvider"
 import { AlertBanner } from "../../layout/AlertBanner"
@@ -16,13 +17,6 @@ import { ViewOrAddMembersButton } from "../view-or-add-members/ViewOrAddMembersB
 import { ChatHistory } from "./ChatHistory"
 import { ChatInput } from "./ChatInput"
 
-interface Message {
-    text: string,
-    creation: Date,
-    name: string,
-    owner: string
-}
-
 export const ChatInterface = () => {
 
     const { channelData, channelMembers } = useContext(ChannelContext)
@@ -31,7 +25,7 @@ export const ChatInterface = () => {
     const peer = Object.keys(channelMembers).filter((member) => member !== user)[0]
     const { data: channelList, error: channelListError } = useFrappeGetCall<{ message: ChannelData[] }>("raven.raven_channel_management.doctype.raven_channel.raven_channel.get_channel_list")
     const { data, error, mutate } = useFrappeGetDocList<Message>('Raven Message', {
-        fields: ["text", "creation", "name", "owner"],
+        fields: ["text", "creation", "name", "owner", "message_type", "file", "image"],
         filters: [["channel_id", "=", channelData[0].name ?? null]],
         orderBy: {
             field: "creation",
