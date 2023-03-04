@@ -19,7 +19,7 @@ export const AddOrEditChannelDescriptionModal = ({ isOpen, onClose }: RenameChan
     const { channelData } = useContext(ChannelContext)
     const methods = useForm<RenameChannelForm>({
         defaultValues: {
-            channel_description: channelData[0]?.channel_description
+            channel_description: channelData?.channel_description
         }
     })
     const { register, handleSubmit, reset, formState: { errors } } = methods
@@ -32,7 +32,7 @@ export const AddOrEditChannelDescriptionModal = ({ isOpen, onClose }: RenameChan
     }, [isOpen, reset])
 
     const onSubmit = (data: RenameChannelForm) => {
-        updateDoc("Raven Channel", channelData[0].name ?? null, {
+        updateDoc("Raven Channel", channelData?.name ?? null, {
             channel_description: data.channel_description
         }).then(() => {
             toast({
@@ -64,7 +64,7 @@ export const AddOrEditChannelDescriptionModal = ({ isOpen, onClose }: RenameChan
             <ModalOverlay />
             <ModalContent>
 
-                <ModalHeader>{channelData && channelData[0].channel_description && channelData[0].channel_description.length > 0 ? 'Edit description' : 'Add description'}</ModalHeader>
+                <ModalHeader>{channelData && channelData?.channel_description && channelData?.channel_description.length > 0 ? 'Edit description' : 'Add description'}</ModalHeader>
                 <ModalCloseButton isDisabled={updatingDoc} />
 
                 <FormProvider {...methods}>

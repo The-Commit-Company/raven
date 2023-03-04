@@ -20,7 +20,7 @@ export const RemoveChannelMemberModal = ({ isOpen, onClose, user_id }: RemoveCha
 
     const { data: channelMember, error: errorFetchingChannelMember } = useFrappeGetCall<{ message: { name: string } }>('frappe.client.get_value', {
         doctype: "Raven Channel Member",
-        filters: JSON.stringify({ channel_id: channelData[0].name, user_id: user_id }),
+        filters: JSON.stringify({ channel_id: channelData?.name, user_id: user_id }),
         fieldname: JSON.stringify(["name"])
     })
 
@@ -56,8 +56,8 @@ export const RemoveChannelMemberModal = ({ isOpen, onClose, user_id }: RemoveCha
                 <AlertDialogHeader>
                     <HStack>
                         <Text>Remove {user_id && channelMembers[user_id]?.full_name} from </Text>
-                        {channelData[0].type === 'Public' ? <BiHash /> : <BiLockAlt />}
-                        <Text>{channelData[0].channel_name}?</Text>
+                        {channelData?.type === 'Public' ? <BiHash /> : <BiLockAlt />}
+                        <Text>{channelData?.channel_name}?</Text>
                     </HStack>
                 </AlertDialogHeader>
                 <AlertDialogCloseButton />

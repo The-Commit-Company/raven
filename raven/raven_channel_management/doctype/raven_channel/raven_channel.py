@@ -82,28 +82,19 @@ def get_channel_list():
                      .where(channel.is_direct_message == 0))
     public_query = (frappe.qb.from_(channel)
                     .select(channel.name, channel.channel_name, channel.type, channel.is_direct_message, channel.is_self_message)
-                    .where(channel.type == "Public"))
-    open_query = (frappe.qb.from_(channel)
-                  .select(channel.name, channel.channel_name, channel.type, channel.is_direct_message, channel.is_self_message)
-                  .where(channel.type == "Open"))
+                    .where(channel.type != "Private"))
 
-    return private_query.run(as_dict=True) + public_query.run(as_dict=True) + open_query.run(as_dict=True)
+    return private_query.run(as_dict=True) + public_query.run(as_dict=True)
 
-@frappe.whitelist()
+@frappe.whitelist(methods=['POST'])
 def create_direct_message_channel(user_id):
     # create direct message channel with user and current user
     channel = frappe.db.get_value("Raven Channel", filters={
         "is_direct_message": 1,
-        "channel_name": frappe.session.user + " _ " + user_id
-    }, fieldname="name")
-    alt_channel = frappe.db.get_value("Raven Channel", filters={
-        "is_direct_message": 1,
-        "channel_name": user_id + " _ " + frappe.session.user
+        "channel_name": ["in", [frappe.session.user + " _ " + user_id, user_id + " _ " + frappe.session.user]]
     }, fieldname="name")
     if channel:
         return channel
-    elif alt_channel:
-        return alt_channel
     else:
         if frappe.session.user == user_id:
             channel = frappe.get_doc({

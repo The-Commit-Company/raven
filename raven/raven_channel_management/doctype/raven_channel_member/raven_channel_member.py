@@ -63,18 +63,9 @@ def get_channel_members_and_data(channel_id):
                     .select(user.name, user.full_name, user.user_image, user.first_name)
                     .where(channel_member.channel_id == channel_id)
                     .where(channel_member.user_id != "administrator"))
-    data_query = (frappe.qb.from_(channel_data)
-                  .select(channel_data.name,
-                          channel_data.channel_name,
-                          channel_data.type,
-                          channel_data.creation,
-                          channel_data.owner,
-                          channel_data.channel_description,
-                          channel_data.is_direct_message,
-                          channel_data.is_self_message)
-                  .join(user, JoinType.left)
-                  .on(channel_data.owner == user.name)
-                  .select((user.full_name).as_('owner_full_name'))
-                  .where(channel_data.name == channel_id))
+    
+    channel_data = frappe.db.get_value("Raven Channel", channel_id, ["name", "channel_name", "type", "creation", "owner", "channel_description", "is_direct_message", "is_self_message"], as_dict=True)
 
-    return {"channel_members": member_query.run(as_dict=True), "channel_data": data_query.run(as_dict=True)}
+    channel_data["owner_full_name"] = frappe.db.get_value("User", channel_data["owner"], "full_name")
+
+    return {"channel_members": member_query.run(as_dict=True), "channel_data": channel_data}
