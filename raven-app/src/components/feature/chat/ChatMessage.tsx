@@ -4,6 +4,7 @@ import { useContext, useState } from "react"
 import { BsDownload } from "react-icons/bs";
 import { RiDeleteBinLine, RiEdit2Line } from "react-icons/ri";
 import { ChannelData } from "../../../types/Channel/Channel";
+import { UserContext } from "../../../utils/auth/UserProvider";
 import { ChannelContext } from "../../../utils/channel/ChannelProvider"
 import { getFileExtensionIcon } from "../../../utils/layout/fileExtensionIcon";
 import { DateObjectToTimeString } from "../../../utils/operations";
@@ -22,6 +23,7 @@ interface ChatMessageProps {
 
 export const ChatMessage = ({ name, user, timestamp, text, image, file }: ChatMessageProps) => {
 
+    const { currentUser } = useContext(UserContext)
     const { colorMode } = useColorMode()
     const { channelMembers } = useContext(ChannelContext)
     const [showButtons, setShowButtons] = useState({ display: 'none' })
@@ -82,7 +84,7 @@ export const ChatMessage = ({ name, user, timestamp, text, image, file }: ChatMe
                         </HStack>}
                     </Stack>
                 </HStack>
-                <ButtonGroup style={showButtons}>
+                {user == currentUser && <ButtonGroup style={showButtons}>
                     {image &&
                         <Tooltip hasArrow label='download' size='xs' placement='top'>
                             <IconButton
@@ -121,7 +123,7 @@ export const ChatMessage = ({ name, user, timestamp, text, image, file }: ChatMe
                             icon={<RiDeleteBinLine />}
                             size='xs' />
                     </Tooltip>
-                </ButtonGroup>
+                </ButtonGroup>}
             </HStack>
             <DeleteMessageModal isOpen={isDeleteMessageModalOpen} onClose={onDeleteMessageModalClose} channelMessageID={name} />
             <EditMessageModal isOpen={isEditMessageModalOpen} onClose={onEditMessageModalClose} channelMessageID={name} allMembers={allMembers} allChannels={allChannels ?? []} />
