@@ -151,7 +151,6 @@ export const ChatInput = ({ channelID, allMembers, allChannels }: ChatInputProps
                         <HStack alignItems='flex-end'>
                             <HStack divider={<StackDivider />}>
                                 <IconButton size='xs' aria-label={"add file"} onClick={fileButtonClicked} icon={<IoMdAdd />} rounded='xl' />
-                                {/* <input type='file' ref={fileInputRef} style={{ display: 'none' }} onChange={onFileChange} /> */}
                                 <Box>
                                     <Popover
                                         isOpen={showEmojiPicker}
