@@ -1,6 +1,5 @@
 import { Avatar, Box, HStack, Stack, StackDivider, Text } from "@chakra-ui/react"
 import { useContext } from "react"
-import TimeAgo from 'timeago-react'
 import { ChannelContext } from "../../../utils/channel/ChannelProvider"
 import { DateObjectToTimeString } from "../../../utils/operations";
 import { MarkdownRenderer } from "../markdown-viewer/MarkdownRenderer.tsx";
