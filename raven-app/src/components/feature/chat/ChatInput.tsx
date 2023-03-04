@@ -154,8 +154,9 @@ export const ChatInput = ({ channelID, allMembers, allChannels }: ChatInputProps
                                         <PopoverTrigger>
                                             <IconButton size='xs' variant='ghost' aria-label={"pick emoji"} icon={<FaRegSmile fontSize='1.0rem' />} onClick={onEmojiPickerToggle} />
                                         </PopoverTrigger>
-                                        <PopoverContent>
-                                            <EmojiPicker onEmojiClick={onEmojiClick} lazyLoadEmojis />
+                                        <PopoverContent border={'none'} rounded='lg'>
+                                            {/* @ts-ignore */}
+                                            <EmojiPicker onEmojiClick={onEmojiClick} lazyLoadEmojis theme={colorMode === 'light' ? 'light' : 'dark'} />
                                         </PopoverContent>
                                     </Popover>
                                 </Box>

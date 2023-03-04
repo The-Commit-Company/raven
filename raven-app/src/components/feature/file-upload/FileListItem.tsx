@@ -1,5 +1,4 @@
 import { ListItem, Text, Stack, IconButton, HStack, ListIcon, ListItemProps, Image, Center, CircularProgress, CircularProgressLabel, useColorMode } from '@chakra-ui/react'
-import { FiFile } from 'react-icons/fi'
 import { TbTrash } from 'react-icons/tb'
 import { useGetFilePreviewUrl } from '../../../hooks/useGetFilePreviewUrl'
 import { getFileExtensionIcon } from '../../../utils/layout/fileExtensionIcon'
