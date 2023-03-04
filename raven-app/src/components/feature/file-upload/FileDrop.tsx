@@ -47,7 +47,8 @@ export const FileDrop = ({ files, onFileChange, maxFiles, accept, maxFileSize, .
     const { getRootProps, getInputProps } = useDropzone({
         onDrop: (receivedFiles, fileRejections) => {
             onFileChange([...files, ...receivedFiles.map((file) => Object.assign(file, {
-                fileID: file.name + Date.now()
+                fileID: file.name + Date.now(),
+                uploadProgress: 0
             }))])
 
             if (maxFiles && maxFiles < fileRejections.length) {

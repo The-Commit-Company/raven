@@ -108,14 +108,15 @@ export const ChatInput = ({ channelID, allMembers, allChannels }: ChatInputProps
     }
 
     return (
-        <Box w='full' h='full' position='relative'>
+        <Box w='full' h='full'>
+
             <FileDrop
                 files={files}
                 onFileChange={setFiles}
                 maxFiles={10}
                 maxFileSize={10000000} />
-            <Box>
 
+            <Box>
                 <Stack border='1px' borderColor={'gray.500'} rounded='lg' bottom='2' maxH='40vh' boxShadow='base' position='fixed' w='calc(98vw - var(--sidebar-width))' bg={colorMode === "light" ? "white" : "gray.800"}>
                     <ReactQuill
                         className={colorMode === 'light' ? 'my-quill-editor light-theme' : 'my-quill-editor dark-theme'}
@@ -176,7 +177,6 @@ export const ChatInput = ({ channelID, allMembers, allChannels }: ChatInputProps
                             size='xs' />
                     </HStack>
                 </Stack>
-
             </Box>
         </Box>
     )
