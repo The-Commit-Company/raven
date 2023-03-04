@@ -1,20 +1,23 @@
-import { Avatar, Box, ButtonGroup, HStack, IconButton, Stack, StackDivider, Text } from "@chakra-ui/react"
+import { Avatar, Box, ButtonGroup, HStack, IconButton, Stack, StackDivider, Text, useDisclosure } from "@chakra-ui/react"
 import { useContext, useState } from "react"
 import { RiDeleteBinLine, RiEdit2Line } from "react-icons/ri";
 import { ChannelContext } from "../../../utils/channel/ChannelProvider"
 import { DateObjectToTimeString } from "../../../utils/operations";
 import { MarkdownRenderer } from "../markdown-viewer/MarkdownRenderer.tsx";
+import { DeleteMessageModal } from "../message-details/DeleteMessageModal";
 
 interface ChatMessageProps {
+    name: string,
     text: string,
     user: string,
     timestamp: Date
 }
 
-export const ChatMessage = ({ text, user, timestamp }: ChatMessageProps) => {
+export const ChatMessage = ({ name, text, user, timestamp }: ChatMessageProps) => {
 
     const { channelMembers } = useContext(ChannelContext)
-    const [showButtons, setShowButtons] = useState({ display: 'none' });
+    const [showButtons, setShowButtons] = useState({ display: 'none' })
+    const { isOpen: isDeleteMessageModalOpen, onOpen: onDeleteMessageModalOpen, onClose: onDeleteMessageModalClose } = useDisclosure()
 
     return (
         <Box py={4} px='2'>
@@ -34,12 +37,17 @@ export const ChatMessage = ({ text, user, timestamp }: ChatMessageProps) => {
                         </HStack>
                         <ButtonGroup style={showButtons}>
                             <IconButton aria-label="edit message" icon={<RiEdit2Line />} size='xs' />
-                            <IconButton aria-label="delete message" icon={<RiDeleteBinLine />} size='xs' />
+                            <IconButton
+                                onClick={onDeleteMessageModalOpen}
+                                aria-label="delete message"
+                                icon={<RiDeleteBinLine />}
+                                size='xs' />
                         </ButtonGroup>
                     </HStack>
                     <MarkdownRenderer content={text} />
                 </Stack>
             </HStack>
+            <DeleteMessageModal isOpen={isDeleteMessageModalOpen} onClose={onDeleteMessageModalClose} channelMessageID={name} />
         </Box>
     )
 }
