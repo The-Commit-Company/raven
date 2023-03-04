@@ -15,10 +15,6 @@ class RavenChannel(Document):
         frappe.get_doc({"doctype": "Raven Channel Member",
                        "channel_id": self.name, "user_id": frappe.session.user}).insert()
 
-        # TODO: This should be removed since it's not needed (#57)
-        if self.type == "Open":
-            self.add_members(all_users)
-
     def on_trash(self):
         # delete all members when channel is deleted
         frappe.db.delete("Raven Channel Member", {"channel_id": self.name})
