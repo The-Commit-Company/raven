@@ -15,10 +15,6 @@ class RavenChannel(Document):
         frappe.get_doc({"doctype": "Raven Channel Member",
                        "channel_id": self.name, "user_id": frappe.session.user}).insert()
 
-        # TODO: This should be removed since it's not needed (#57)
-        if self.type == "Open":
-            self.add_members(all_users)
-
     def on_trash(self):
         # delete all members when channel is deleted
         frappe.db.delete("Raven Channel Member", {"channel_id": self.name})
@@ -80,9 +76,10 @@ def get_channel_list():
     private_query = (frappe.qb.from_(channel)
                      .select(channel.name, channel.channel_name, channel.type, channel.is_direct_message, channel.is_self_message)
                      .join(channel_member)
-                     .on(channel.name == channel_member.channel_id)
+                    .on(channel.name == channel_member.channel_id)
                      .where(channel_member.user_id == frappe.session.user)
-                     .where(channel.type == "Private"))
+                     .where(channel.type == "Private")
+                     .where(channel.is_direct_message == 0))
     public_query = (frappe.qb.from_(channel)
                     .select(channel.name, channel.channel_name, channel.type, channel.is_direct_message, channel.is_self_message)
                     .where(channel.type == "Public"))
@@ -91,7 +88,6 @@ def get_channel_list():
                   .where(channel.type == "Open"))
 
     return private_query.run(as_dict=True) + public_query.run(as_dict=True) + open_query.run(as_dict=True)
-
 
 @frappe.whitelist()
 def create_direct_message_channel(user_id):

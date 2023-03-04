@@ -7,6 +7,7 @@ import { personCircleOutline, homeOutline } from 'ionicons/icons';
 import { Login } from '../pages/auth'
 import { Profile } from '../pages/profile'
 import { FullPageLoader } from '../components/common'
+import { ChannelList } from '../pages/channels'
 type Props = {
     refreshFrappeURL: () => Promise<void>
 }
@@ -21,31 +22,41 @@ export const AppRouter = ({ refreshFrappeURL }: Props) => {
     if (currentUser) {
         {/* @ts-ignore */ }
         return <IonReactRouter>
-            <IonTabs>
-                <IonRouterOutlet>
-                    <Route exact path="/channels">
-                    </Route>
-                    <Route exact path="/profile">
-                        <Profile />
-                    </Route>
-                    <Route exact path="/">
-                        <Redirect to="/channels" />
-                    </Route>
-                </IonRouterOutlet>
-                <IonTabBar slot="bottom">
-                    <IonTabButton tab="tab1" href="/channels">
-                        <IonIcon aria-hidden="true" icon={homeOutline} />
-                        <IonLabel>Home</IonLabel>
-                    </IonTabButton>
-                    <IonTabButton tab="tab2" href="/profile">
-                        <IonIcon aria-hidden="true" icon={personCircleOutline} />
-                        <IonLabel>Profile</IonLabel>
-                    </IonTabButton>
-                </IonTabBar>
-            </IonTabs>
+            <IonRouterOutlet animated>
+                <Route exact path="/channels" component={Tabs} />
+                <Route exact path="/profile" component={Tabs} />
+                <Route exact path="/">
+                    <Redirect to="/channels" />
+                </Route>
+                <Route exact path="/channel/:channelID">
+                </Route>
+            </IonRouterOutlet>
         </IonReactRouter>
     }
     return (
         <Login refreshFrappeURL={refreshFrappeURL} />
     )
+}
+
+const Tabs = () => {
+    return <IonTabs>
+        <IonRouterOutlet animated>
+            <Route exact path="/:tab(channels)">
+                <ChannelList />
+            </Route>
+            <Route exact path="/:tab(profile)">
+                <Profile />
+            </Route>
+        </IonRouterOutlet>
+        <IonTabBar slot="bottom">
+            <IonTabButton tab="channels" href="/channels">
+                <IonIcon aria-hidden="true" icon={homeOutline} />
+                <IonLabel>Home</IonLabel>
+            </IonTabButton>
+            <IonTabButton tab="profile" href="/profile">
+                <IonIcon aria-hidden="true" icon={personCircleOutline} />
+                <IonLabel>Profile</IonLabel>
+            </IonTabButton>
+        </IonTabBar>
+    </IonTabs>
 }

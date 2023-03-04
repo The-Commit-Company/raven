@@ -46,6 +46,7 @@ export const ChatMessage = ({ name, text, user, timestamp }: ChatMessageProps) =
         <Box
             py={4}
             px='2'
+            zIndex={1}
             _hover={{
                 bg: colorMode === 'light' && 'gray.50' || 'gray.700',
                 cursor: 'pointer',
