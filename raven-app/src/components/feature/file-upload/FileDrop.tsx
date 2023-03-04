@@ -1,4 +1,5 @@
 import { Box, BoxProps, Stack, Text, useToast } from "@chakra-ui/react"
+import { forwardRef, useImperativeHandle, useState } from "react"
 import { Accept, useDropzone } from "react-dropzone"
 
 export interface CustomFile extends File {
@@ -24,9 +25,12 @@ export interface FileDropProps extends BoxProps {
  * File uploader component that allows users to drag and drop files or select files from their computer.
  * It encompasses Box component, so all Box props can be used.
  */
-export const FileDrop = ({ files, onFileChange, maxFiles, accept, maxFileSize, ...props }: FileDropProps) => {
+export const FileDrop = forwardRef((props: FileDropProps, ref) => {
 
+    const { files, onFileChange, maxFiles, accept, maxFileSize, ...compProps } = props
     const toast = useToast()
+
+    const [onDragEnter, setOnDragEnter] = useState(false)
 
     const fileSizeValidator = (file: any) => {
         if (maxFileSize && file.size > maxFileSize * 1000000) {
@@ -44,7 +48,7 @@ export const FileDrop = ({ files, onFileChange, maxFiles, accept, maxFileSize, .
         } else return null
     }
 
-    const { getRootProps, getInputProps } = useDropzone({
+    const { getRootProps, getInputProps, open } = useDropzone({
         onDrop: (receivedFiles, fileRejections) => {
             onFileChange([...files, ...receivedFiles.map((file) => Object.assign(file, {
                 fileID: file.name + Date.now(),
@@ -63,26 +67,41 @@ export const FileDrop = ({ files, onFileChange, maxFiles, accept, maxFileSize, .
         },
         maxFiles: maxFiles ? maxFiles : 0,
         accept: accept ? accept : undefined,
-        validator: fileSizeValidator
+        validator: fileSizeValidator,
+        noClick: true,
+        noKeyboard: true,
+        onDragEnter: () => setOnDragEnter(true),
+        onDragLeave: () => setOnDragEnter(false),
+        onDropAccepted: () => setOnDragEnter(false),
+        onDropRejected: () => setOnDragEnter(false)
     })
 
+    useImperativeHandle(ref, () => ({
+        openFileInput() {
+            open()
+        }
+    }));
+
     return (
-        <Stack>
+        <Stack pos='fixed' top='75px' w='full' h='70vh' maxW='calc(100vw - var(--sidebar-width) - 30px)'>
             {(maxFiles === undefined || files.length < maxFiles) &&
                 <Box
                     display="flex"
+                    w='full'
+                    h='full'
                     justifyContent="center"
                     alignItems="center"
                     border="2px dashed"
+                    borderColor="gray.300"
                     borderRadius="lg"
-                    cursor="pointer"
+                    opacity={onDragEnter ? 1 : 0}
                     p={4}
                     {...getRootProps()}
-                    {...props}>
+                    {...compProps}>
                     <input type='file' {...getInputProps()} />
                     <Text fontSize="sm" color="gray.500">Drag 'n' drop your files here, or click to select files</Text>
                 </Box>
             }
         </Stack>
     )
-}
+})

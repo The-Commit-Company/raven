@@ -1,5 +1,5 @@
 import { Box, HStack, IconButton, List, Popover, PopoverContent, PopoverTrigger, Stack, StackDivider, useColorMode, useDisclosure } from "@chakra-ui/react"
-import { useCallback, useState } from "react"
+import { useCallback, useRef, useState } from "react"
 import { RiSendPlaneFill } from "react-icons/ri"
 import ReactQuill from "react-quill"
 import 'react-quill/dist/quill.snow.css'
@@ -101,17 +101,26 @@ export const ChatInput = ({ channelID, allMembers, allChannels }: ChatInputProps
         onEmojiPickerClose()
     }
 
+    const fileInputRef = useRef<any>(null)
+
+    const fileButtonClicked = () => {
+        if (fileInputRef.current) {
+            fileInputRef.current.openFileInput()
+        }
+    }
     const [files, setFiles] = useState<CustomFile[]>([])
+
     const removeFile = (id: string) => {
         let newFiles = files.filter(file => file.fileID !== id)
         setFiles(newFiles)
     }
 
     return (
-        <Box w='full' h='full'>
+        <Box>
 
             <FileDrop
                 files={files}
+                ref={fileInputRef}
                 onFileChange={setFiles}
                 maxFiles={10}
                 maxFileSize={10000000} />
@@ -141,7 +150,8 @@ export const ChatInput = ({ channelID, allMembers, allChannels }: ChatInputProps
                     <HStack w='full' justify={'space-between'} px='2' pb='2'>
                         <HStack alignItems='flex-end'>
                             <HStack divider={<StackDivider />}>
-                                <IconButton size='xs' aria-label={"add file"} icon={<IoMdAdd />} rounded='xl' />
+                                <IconButton size='xs' aria-label={"add file"} onClick={fileButtonClicked} icon={<IoMdAdd />} rounded='xl' />
+                                {/* <input type='file' ref={fileInputRef} style={{ display: 'none' }} onChange={onFileChange} /> */}
                                 <Box>
                                     <Popover
                                         isOpen={showEmojiPicker}
