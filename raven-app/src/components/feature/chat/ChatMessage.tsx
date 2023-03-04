@@ -1,6 +1,8 @@
 import { Avatar, Box, ButtonGroup, HStack, IconButton, Stack, StackDivider, Text, Tooltip, useColorMode, useDisclosure } from "@chakra-ui/react"
+import { useFrappeGetCall } from "frappe-react-sdk";
 import { useContext, useState } from "react"
 import { RiDeleteBinLine, RiEdit2Line } from "react-icons/ri";
+import { ChannelData } from "../../../types/Channel/Channel";
 import { ChannelContext } from "../../../utils/channel/ChannelProvider"
 import { DateObjectToTimeString } from "../../../utils/operations";
 import { MarkdownRenderer } from "../markdown-viewer/MarkdownRenderer.tsx";
@@ -21,6 +23,22 @@ export const ChatMessage = ({ name, text, user, timestamp }: ChatMessageProps) =
     const [showButtons, setShowButtons] = useState({ display: 'none' })
     const { isOpen: isDeleteMessageModalOpen, onOpen: onDeleteMessageModalOpen, onClose: onDeleteMessageModalClose } = useDisclosure()
     const { isOpen: isEditMessageModalOpen, onOpen: onEditMessageModalOpen, onClose: onEditMessageModalClose } = useDisclosure()
+    const { data: channelList, error: channelListError } = useFrappeGetCall<{ message: ChannelData[] }>("raven.raven_channel_management.doctype.raven_channel.raven_channel.get_channel_list")
+
+
+    const allMembers = Object.values(channelMembers).map((member) => {
+        return {
+            id: member.name,
+            value: member.full_name
+        }
+    })
+
+    const allChannels = channelList?.message.map((channel) => {
+        return {
+            id: channel.name,
+            value: channel.channel_name
+        }
+    })
 
     return (
         <Box
@@ -69,7 +87,7 @@ export const ChatMessage = ({ name, text, user, timestamp }: ChatMessageProps) =
                 </ButtonGroup>
             </HStack>
             <DeleteMessageModal isOpen={isDeleteMessageModalOpen} onClose={onDeleteMessageModalClose} channelMessageID={name} />
-            <EditMessageModal isOpen={isEditMessageModalOpen} onClose={onEditMessageModalClose} channelMessageID={name} />
+            <EditMessageModal isOpen={isEditMessageModalOpen} onClose={onEditMessageModalClose} channelMessageID={name} allMembers={allMembers} allChannels={allChannels ?? []} />
         </Box>
     )
 }
