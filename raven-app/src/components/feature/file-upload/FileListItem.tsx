@@ -1,7 +1,8 @@
-import { ListItem, Text, Stack, IconButton, HStack, ListIcon, ListItemProps, Image, Center, CircularProgress, CircularProgressLabel } from '@chakra-ui/react'
+import { ListItem, Text, Stack, IconButton, HStack, ListIcon, ListItemProps, Image, Center, CircularProgress, CircularProgressLabel, useColorMode } from '@chakra-ui/react'
 import { FiFile } from 'react-icons/fi'
 import { TbTrash } from 'react-icons/tb'
 import { useGetFilePreviewUrl } from '../../../hooks/useGetFilePreviewUrl'
+import { getFileExtensionIcon } from '../../../utils/layout/fileExtensionIcon'
 import { CustomFile } from './FileDrop'
 
 interface FileListItemProps extends ListItemProps {
@@ -13,14 +14,15 @@ interface FileListItemProps extends ListItemProps {
 
 export const FileListItem = ({ file, removeFile, isUploading, uploadProgress, ...props }: FileListItemProps) => {
 
+    const { colorMode } = useColorMode()
     const previewURL = useGetFilePreviewUrl(file)
     const fileSizeString = getFileSize(file)
 
     return (
         <ListItem fontSize="sm" {...props}>
-            <HStack w='full' justify={'flex-start'} border={'1px'} p='2' rounded='md'>
+            <HStack w='full' justify={'flex-start'} border={'1px'} borderColor={colorMode === 'light' ? 'gray.300' : 'gray.600'} p='2' rounded='md'>
                 <Center maxW='50px'>
-                    {previewURL ? <Image src={previewURL} alt='File preview' boxSize={'30px'} rounded='md' /> : <ListIcon as={FiFile} boxSize="6" />}
+                    {previewURL ? <Image src={previewURL} alt='File preview' boxSize={'30px'} rounded='md' /> : <ListIcon as={getFileExtensionIcon(getFileExtension(file) ?? '')} boxSize="6" />}
                 </Center>
                 <HStack justify="space-between" width="calc(100% - 50px)">
                     <Stack spacing={0} w='full' whiteSpace="nowrap" overflow="hidden">
@@ -51,4 +53,8 @@ export const FileListItem = ({ file, removeFile, isUploading, uploadProgress, ..
 
 export const getFileSize = (file: CustomFile) => {
     return file.size / 1000 > 1000 ? <>{(file.size / 1000000).toFixed(2)} MB</> : <>{(file.size / 1000).toFixed(2)} KB</>
+}
+
+export const getFileExtension = (file: CustomFile) => {
+    return file.name.split('.').pop()
 }
