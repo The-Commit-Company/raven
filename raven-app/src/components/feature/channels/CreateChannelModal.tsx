@@ -88,7 +88,7 @@ export const CreateChannelModal = ({ isOpen, onClose }: ChannelModalProps) => {
                     {channelType === 'Open' && "Create an open channel"}
                     {channelType === 'Public' && "Create a public channel"}
                 </ModalHeader>
-                <ModalCloseButton isDisabled={creatingDoc} />
+                <ModalCloseButton isDisabled={creatingChannel} />
                 <FormProvider {...methods}>
                     <chakra.form onSubmit={handleSubmit(onSubmit)}>
 

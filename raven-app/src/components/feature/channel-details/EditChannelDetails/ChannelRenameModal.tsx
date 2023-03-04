@@ -95,7 +95,7 @@ export const ChannelRenameModal = ({ isOpen, onClose }: RenameChannelModalProps)
                                                     pattern: {
                                                         // no special characters allowed
                                                         // cannot start with a space
-                                                        value: /^[a-zA-Z0-9][a-zA-Z0-9 ]*$/,
+                                                        value: /^[a-zA-Z0-9][a-zA-Z0-9]|-*$/,
                                                         message: "Channel name can only contain letters and numbers"
                                                     }
                                                 })} />
