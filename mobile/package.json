@@ -27,9 +27,11 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-hook-form": "^7.43.4",
+    "react-icons": "^4.8.0",
     "react-quill": "^2.0.0",
     "react-router": "5.2.0",
-    "react-router-dom": "5.2.0"
+    "react-router-dom": "5.2.0",
+    "socket.io-client": "4.6.0"
   },
   "devDependencies": {
     "@capacitor/cli": "^4.7.0",
