@@ -401,7 +401,7 @@
     debug "^4.0.0"
     tslib "^2.0.1"
 
-"@ionic/core@6.6.0", "@ionic/core@^6.6.0":
+"@ionic/core@6.6.0":
   version "6.6.0"
   resolved "https://registry.yarnpkg.com/@ionic/core/-/core-6.6.0.tgz#a81c7df6101496496671e1bd068a6651dad7bfa3"
   integrity sha512-1X0b2/ziKhCwSO665tSpG32FOuMyjhyGDLFTJUKoDfQB0j/gIBv1d2okUzAk6GKHdnAPUZQHZFhUHcSIclW9cg==
@@ -426,6 +426,13 @@
     "@ionic/core" "6.6.0"
     ionicons "^6.1.3"
     tslib "*"
+
+"@ionic/storage@^3.0.6":
+  version "3.0.6"
+  resolved "https://registry.yarnpkg.com/@ionic/storage/-/storage-3.0.6.tgz#77affcf39afffa86536c97b388ad9c8ecc56d6d1"
+  integrity sha512-sw+zSJINIpbQCGZR9mEtb9N0WmZLuhcMVqOZJBqLuDACAMdXqG39zmp5nSVqhGI1/9X3nd0K5gVn6icyVfUnUg==
+  dependencies:
+    localforage "^1.9.0"
 
 "@ionic/utils-array@2.1.5":
   version "2.1.5"
@@ -1246,6 +1253,11 @@ hoist-non-react-statics@^3.1.0:
   dependencies:
     react-is "^16.7.0"
 
+immediate@~3.0.5:
+  version "3.0.6"
+  resolved "https://registry.yarnpkg.com/immediate/-/immediate-3.0.6.tgz#9db1dbd0faf8de6fbe0f5dd5e56bb606280de69b"
+  integrity sha512-XXOFtyqDjNDAQxVfYxuF7g9Il/IbWmmlQg2MYKOH8ExIT1qg6xc4zyS3HaEEATgs1btfzxq15ciUiY7gjSXRGQ==
+
 inflight@^1.0.4:
   version "1.0.6"
   resolved "https://registry.yarnpkg.com/inflight/-/inflight-1.0.6.tgz#49bd6331d7d02d0c09bc910a1075ba8165b56df9"
@@ -1386,10 +1398,24 @@ kleur@^4.1.4:
   resolved "https://registry.yarnpkg.com/kleur/-/kleur-4.1.5.tgz#95106101795f7050c6c650f350c683febddb1780"
   integrity sha512-o+NO+8WrRiQEE4/7nwRJhN1HWpVmJm511pBHUxPLtp0BUISzlBplORYSmTclCnJvQq2tKu/sgl3xVpkc7ZWuQQ==
 
+lie@3.1.1:
+  version "3.1.1"
+  resolved "https://registry.yarnpkg.com/lie/-/lie-3.1.1.tgz#9a436b2cc7746ca59de7a41fa469b3efb76bd87e"
+  integrity sha512-RiNhHysUjhrDQntfYSfY4MU24coXXdEOgw9WGcKHNeEwffDYbF//u87M1EWaMGzuFoSbqW0C9C6lEEhDOAswfw==
+  dependencies:
+    immediate "~3.0.5"
+
 lilconfig@^2.0.5, lilconfig@^2.0.6:
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/lilconfig/-/lilconfig-2.1.0.tgz#78e23ac89ebb7e1bfbf25b18043de756548e7f52"
   integrity sha512-utWOt/GHzuUxnLKxB6dk81RoOeoNeHgbrXiuGk4yyF5qlRz+iIVWu56E2fqGHFrXz0QNUhLB/8nKqvRH66JKGQ==
+
+localforage@^1.9.0:
+  version "1.10.0"
+  resolved "https://registry.yarnpkg.com/localforage/-/localforage-1.10.0.tgz#5c465dc5f62b2807c3a84c0c6a1b1b3212781dd4"
+  integrity sha512-14/H1aX7hzBBmmh7sGPd+AOMkkIrHM3Z1PAyGgZigA1H1p5O5ANnMyWzvpAETtG68/dC4pC0ncy3+PPGzXZHPg==
+  dependencies:
+    lie "3.1.1"
 
 lodash@^4.17.4:
   version "4.17.21"

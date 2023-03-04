@@ -9,7 +9,6 @@ import {
   IonTabs,
   setupIonicReact
 } from '@ionic/react';
-import { ellipse, square, triangle } from 'ionicons/icons';
 
 import 'tailwindcss/tailwind.css';
 /* Core CSS required for Ionic components to work properly */
@@ -31,46 +30,58 @@ import '@ionic/react/css/display.css';
 import './styles/global.css';
 import './styles/variables.css';
 import { IonReactRouter } from '@ionic/react-router';
+import { Login } from './pages/auth';
+import { FrappeProvider } from 'frappe-react-sdk';
+import { Storage } from '@ionic/storage';
+import { useEffect, useState } from 'react';
+import { UserProvider } from './utils/UserProvider';
+import { AppRouter } from './utils/Router';
 
-setupIonicReact({});
+export const store = new Storage();
+await store.create();
+setupIonicReact({
+  mode: 'ios',
+});
 
 function App() {
 
+  const [loading, setLoading] = useState<boolean>(true)
+  const [frappeURL, setFrappeURL] = useState<string | undefined>(undefined)
+  /** 
+   * Fetch the Frappe URL from the storage and set it in the context.
+   * If no Frappe URL is found, redirect to the login page.
+   */
+  useEffect(() => {
+    store.get('frappeURL').then(url => {
+      if (url) {
+        setFrappeURL(url)
+        setLoading(false)
+      } else {
+        setFrappeURL(undefined)
+        setLoading(false)
+      }
+    })
+  }, [])
+
+  const refreshFrappeURL = async () => {
+    return store.get('frappeURL').then(url => {
+      if (url) {
+        setFrappeURL(url)
+      } else {
+        setFrappeURL(undefined)
+      }
+    })
+  }
+
   return (
     <IonApp>
-      {/* @ts-ignore */}
-      <IonReactRouter>
-        <IonTabs>
-          <IonRouterOutlet>
-            <Route exact path="/tab1">
-              {/* <Tab1 /> */}
-            </Route>
-            <Route exact path="/tab2">
-              {/* <Tab2 /> */}
-            </Route>
-            <Route path="/tab3">
-              {/* <Tab3 /> */}
-            </Route>
-            <Route exact path="/">
-              <Redirect to="/tab1" />
-            </Route>
-          </IonRouterOutlet>
-          <IonTabBar slot="bottom">
-            <IonTabButton tab="tab1" href="/tab1">
-              <IonIcon aria-hidden="true" icon={triangle} />
-              <IonLabel>Tab 1</IonLabel>
-            </IonTabButton>
-            <IonTabButton tab="tab2" href="/tab2">
-              <IonIcon aria-hidden="true" icon={ellipse} />
-              <IonLabel>Tab 2</IonLabel>
-            </IonTabButton>
-            <IonTabButton tab="tab3" href="/tab3">
-              <IonIcon aria-hidden="true" icon={square} />
-              <IonLabel>Tab 3</IonLabel>
-            </IonTabButton>
-          </IonTabBar>
-        </IonTabs>
-      </IonReactRouter>
+      {!loading &&
+        <FrappeProvider url={frappeURL}>
+          <UserProvider>
+            <AppRouter refreshFrappeURL={refreshFrappeURL} />
+          </UserProvider>
+        </FrappeProvider>
+      }
     </IonApp>
   )
 }
