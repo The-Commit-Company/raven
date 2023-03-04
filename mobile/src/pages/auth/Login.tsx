@@ -5,6 +5,7 @@ import { useForm } from 'react-hook-form'
 import { store } from '../../App'
 import { ErrorBanner } from '../../components/common'
 import { UserContext } from '../../utils/UserProvider'
+import LoginGraphic from '../../assets/login.svg'
 
 type Props = {
     refreshFrappeURL: () => Promise<void>
@@ -53,6 +54,9 @@ export const Login = ({ refreshFrappeURL }: Props) => {
                     </IonToolbar>
                 </IonHeader>
 
+                <div className='text-center my-8'>
+                    <img src={LoginGraphic} alt="" width='200px' className='mx-auto' />
+                </div>
                 {error && <ErrorBanner heading={error.message}>
                 </ErrorBanner>}
                 <form onSubmit={handleSubmit(onSubmit)}>
