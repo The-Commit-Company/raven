@@ -1,4 +1,4 @@
-import { IonIcon, IonLabel, IonRouterOutlet, IonSpinner, IonTabBar, IonTabButton, IonTabs } from '@ionic/react'
+import { IonIcon, IonLabel, IonRouterOutlet, IonSpinner, IonTabBar, IonTabButton, IonTabs, IonText } from '@ionic/react'
 import { IonReactRouter } from '@ionic/react-router'
 import { useContext } from 'react'
 import { Route } from 'react-router-dom'
@@ -14,8 +14,9 @@ export const AppRouter = ({ refreshFrappeURL }: Props) => {
     const { currentUser, isLoading } = useContext(UserContext)
 
     if (isLoading) {
-        return <div className='h-screen w-screen flex justify-center items-center'>
-            <IonSpinner />
+        return <div className='h-screen w-screen flex justify-center items-center flex-col'>
+            <IonSpinner color={'dark'} name='crescent' />
+            <IonText color='medium' className='text-sm mt-3'>Ravens are finding their way to you...</IonText>
         </div>
     }
     if (currentUser) {
