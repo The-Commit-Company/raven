@@ -1,6 +1,6 @@
 import { useDisclosure } from "@chakra-ui/react"
 import { useFrappeGetCall } from "frappe-react-sdk"
-import { BiHash } from "react-icons/bi"
+import { BiGlobe, BiHash } from "react-icons/bi"
 import { BiLockAlt } from "react-icons/bi"
 import { IoAdd } from "react-icons/io5"
 import { useFrappeEventListener } from "../../../hooks/useFrappeEventListener"
@@ -42,7 +42,7 @@ export const ChannelList = () => {
                 <SidebarGroupList>
                     {data?.message.filter((channel) => channel.is_direct_message === 0).map((channel) => (
                         <SidebarItem to={channel.name} key={channel.name}>
-                            <SidebarIcon>{channel.type === "Private" ? <BiLockAlt /> : <BiHash />}</SidebarIcon>
+                            <SidebarIcon>{channel.type === "Private" && <BiLockAlt /> || channel.type === "Public" && <BiHash /> || channel.type === "Open" && <BiGlobe />}</SidebarIcon>
                             <SidebarItemLabel>{channel.channel_name}</SidebarItemLabel>
                         </SidebarItem>
                     ))}

@@ -10,7 +10,7 @@ interface ViewOrAddMembersButtonProps {
 
 export const ViewOrAddMembersButton = ({ onClickViewMembers, onClickAddMembers }: ViewOrAddMembersButtonProps) => {
 
-    const { channelMembers } = useContext(ChannelContext)
+    const { channelData, channelMembers } = useContext(ChannelContext)
     const members = Object.values(channelMembers)
 
     return (
@@ -22,11 +22,13 @@ export const ViewOrAddMembersButton = ({ onClickViewMembers, onClickAddMembers }
                     ))}
                 </AvatarGroup>
             </Button>
-            <IconButton
-                onClick={onClickAddMembers}
-                aria-label={"add members to channel"}
-                icon={<RiUserAddLine />}
-            />
+            {(channelData[0].type === 'Private' || channelData[0].type === 'Public') &&
+                <IconButton
+                    onClick={onClickAddMembers}
+                    aria-label={"add members to channel"}
+                    icon={<RiUserAddLine />}
+                />
+            }
         </ButtonGroup>
     )
 }

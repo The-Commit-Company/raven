@@ -1,7 +1,7 @@
 import { Avatar, AvatarBadge, Box, Button, HStack, Stack, Text, useColorMode, useDisclosure, useToast } from "@chakra-ui/react"
 import { useFrappeCreateDoc, useFrappeGetCall, useFrappeGetDocList } from "frappe-react-sdk"
 import { useContext } from "react"
-import { BiHash, BiLockAlt } from "react-icons/bi"
+import { BiGlobe, BiHash, BiLockAlt } from "react-icons/bi"
 import { useFrappeEventListener } from "../../../hooks/useFrappeEventListener"
 import { ChannelData } from "../../../types/Channel/Channel"
 import { ChannelContext } from "../../../utils/channel/ChannelProvider"
@@ -131,9 +131,13 @@ export const ChatInterface = () => {
                                         </Avatar>
                                         <Text>{channelMembers?.[user]?.full_name}</Text><Text fontSize='sm' color='gray.500'>(You)</Text>
                                     </HStack>) :
-                                (channelData[0]?.type === 'Private' ?
-                                    <HStack><BiLockAlt /><Text>{channelData[0]?.channel_name}</Text></HStack> :
-                                    <HStack><BiHash /><Text>{channelData[0]?.channel_name}</Text></HStack>)}
+                                (channelData[0]?.type === 'Private' &&
+                                    <HStack><BiLockAlt /><Text>{channelData[0]?.channel_name}</Text></HStack> ||
+                                    channelData[0]?.type === 'Public' &&
+                                    <HStack><BiHash /><Text>{channelData[0]?.channel_name}</Text></HStack> ||
+                                    channelData[0]?.type === 'Open' &&
+                                    <HStack><BiGlobe /><Text>{channelData[0]?.channel_name}</Text></HStack>
+                                )}
                         </HStack>
                     </PageHeading>
                 }

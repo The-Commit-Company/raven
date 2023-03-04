@@ -1,6 +1,6 @@
 import { Box, HStack, Stack, useColorMode, Text, Button, Divider, useDisclosure } from "@chakra-ui/react"
 import { useContext } from "react"
-import { BiHash, BiLockAlt } from "react-icons/bi"
+import { BiGlobe, BiHash, BiLockAlt } from "react-icons/bi"
 import { UserContext } from "../../../utils/auth/UserProvider"
 import { ChannelContext } from "../../../utils/channel/ChannelProvider"
 import { DateObjectToFormattedDateString } from "../../../utils/operations"
@@ -33,7 +33,9 @@ export const ChannelDetails = () => {
                     <Stack>
                         <Text fontWeight='semibold' fontSize='sm'>Channel name</Text>
                         <HStack spacing={1}>
-                            {channelData[0].type === 'Private' ? <BiLockAlt /> : <BiHash />}
+                            {channelData[0].type === 'Private' && <BiLockAlt /> ||
+                                channelData[0].type === 'Public' && <BiHash /> ||
+                                channelData[0].type === 'Open' && <BiGlobe />}
                             <Text fontSize='sm'>{channelData[0].channel_name}</Text>
                         </HStack>
                     </Stack>

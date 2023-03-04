@@ -1,8 +1,8 @@
-import { Button, ButtonGroup, chakra, FormControl, FormErrorMessage, FormHelperText, FormLabel, HStack, Input, InputGroup, InputLeftElement, InputRightElement, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Stack, Switch, Text, useToast } from '@chakra-ui/react'
-import { useFrappePostCall } from 'frappe-react-sdk'
-import { useEffect } from 'react'
+import { Button, ButtonGroup, chakra, FormControl, FormErrorMessage, FormHelperText, FormLabel, HStack, Input, InputGroup, InputLeftElement, InputRightElement, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Radio, RadioGroup, Stack, Switch, Text, useToast } from '@chakra-ui/react'
+import { useFrappePostCall, useFrappeCreateDoc } from 'frappe-react-sdk'
+import { useEffect, useState } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
-import { BiHash, BiLockAlt } from 'react-icons/bi'
+import { BiGlobe, BiHash, BiLockAlt } from 'react-icons/bi'
 import { useNavigate } from 'react-router-dom'
 import { AlertBanner } from '../../layout/AlertBanner'
 
@@ -14,7 +14,7 @@ interface ChannelModalProps {
 interface ChannelCreationForm {
     channel_name: string,
     channel_description: string
-    type: 'Public' | 'Private'
+    type: 'Public' | 'Private' | 'Open'
 }
 
 export const CreateChannelModal = ({ isOpen, onClose }: ChannelModalProps) => {
@@ -73,17 +73,22 @@ export const CreateChannelModal = ({ isOpen, onClose }: ChannelModalProps) => {
         onClose()
     }
 
-    const onChannelTypeToggle = () => {
-        methods.setValue('type', channelType === 'Private' ? 'Public' : 'Private')
+    const [channelTypeValue, setChannelTypeValue] = useState<'Public' | 'Private' | 'Open'>('Public')
+    const setChannelType = (value: 'Public' | 'Private' | 'Open') => {
+        setChannelTypeValue(value)
+        methods.setValue('type', value)
     }
 
     return (
         <Modal isOpen={isOpen} onClose={onClose} size='lg'>
             <ModalOverlay />
             <ModalContent>
-                <ModalHeader fontSize='2xl'>{channelType === 'Private' ? "Create a private channel" : "Create a channel"}</ModalHeader>
-                <ModalCloseButton isDisabled={creatingChannel} />
-
+                <ModalHeader fontSize='2xl'>
+                    {channelType === 'Private' && "Create a private channel"}
+                    {channelType === 'Open' && "Create an open channel"}
+                    {channelType === 'Public' && "Create a public channel"}
+                </ModalHeader>
+                <ModalCloseButton isDisabled={creatingDoc} />
                 <FormProvider {...methods}>
                     <chakra.form onSubmit={handleSubmit(onSubmit)}>
 
@@ -103,7 +108,7 @@ export const CreateChannelModal = ({ isOpen, onClose }: ChannelModalProps) => {
                                         <InputGroup>
                                             <InputLeftElement
                                                 pointerEvents='none'
-                                                children={channelType === 'Private' ? <BiLockAlt /> : <BiHash />}
+                                                children={channelType === 'Private' && <BiLockAlt /> || channelType === 'Open' && <BiGlobe /> || channelType === 'Public' && <BiHash />}
                                             />
                                             <Input
                                                 maxLength={50}
@@ -117,7 +122,6 @@ export const CreateChannelModal = ({ isOpen, onClose }: ChannelModalProps) => {
                                                         message: "Channel name can only contain letters, numbers and hyphens."
                                                     }
                                                 })}
-
                                                 placeholder='e.g. testing' fontSize='sm' />
                                             <InputRightElement>
                                                 <Text fontSize='sm' fontWeight='light' color='gray.500'>{50 - channel_name?.length}</Text>
@@ -139,24 +143,35 @@ export const CreateChannelModal = ({ isOpen, onClose }: ChannelModalProps) => {
                                     </FormControl>
 
                                     <FormControl>
-                                        <HStack spacing={8} alignItems='center'>
-                                            <Stack>
-                                                <FormLabel htmlFor='email-alerts' mb='0'>
-                                                    Make private?
-                                                </FormLabel>
-                                                {channelType === 'Private'
-                                                    ?
-                                                    <Text fontSize='sm' fontWeight='light'>
-                                                        <strong>This cannot be undone.</strong> A private channel cannot be made public later on.
-                                                    </Text>
-                                                    :
-                                                    <Text fontSize='sm' fontWeight='light'>
-                                                        When a channel is set to private, it can only be viewed or joined by invitation.
-                                                    </Text>
-                                                }
-                                            </Stack>
-                                            <Switch id='type' pt='4' checked={channelType === 'Private'} onChange={onChannelTypeToggle} />
-                                        </HStack>
+                                        <Stack>
+                                            <FormLabel htmlFor='email-alerts' mb='0'>
+                                                Channel Type
+                                            </FormLabel>
+                                            <RadioGroup id='type' onChange={setChannelType} value={channelTypeValue}>
+                                                <Stack direction='row'>
+                                                    <Radio value='Public'>Public</Radio>
+                                                    <Radio value='Private'>Private</Radio>
+                                                    <Radio value='Open'>Open</Radio>
+                                                </Stack>
+                                            </RadioGroup>
+                                            {channelType === 'Private' &&
+                                                <Text fontSize='xs' fontWeight='light'>
+                                                    <strong>This cannot be undone.</strong>
+                                                    When a channel is set to private, it can only be viewed or joined by invitation.
+                                                    A private channel cannot be made public later on.
+                                                </Text>
+                                            }
+                                            {channelType === 'Public' &&
+                                                <Text fontSize='xs' fontWeight='light'>
+                                                    When a channel is set to public, anyone can join the channel and read messages, but only members can post messages.
+                                                </Text>
+                                            }
+                                            {channelType === 'Open' &&
+                                                <Text fontSize='xs' fontWeight='light'>
+                                                    When a channel is set to open, everyone is a member.
+                                                </Text>
+                                            }
+                                        </Stack>
                                     </FormControl>
                                 </Stack>
                             </Stack>

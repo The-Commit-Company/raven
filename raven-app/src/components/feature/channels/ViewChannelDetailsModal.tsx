@@ -1,6 +1,6 @@
 import { Text, Modal, ModalBody, ModalCloseButton, ModalContent, ModalHeader, ModalOverlay, HStack, Tabs, TabList, Tab, TabPanels, TabPanel } from "@chakra-ui/react"
 import { useContext } from "react"
-import { BiHash, BiLockAlt } from "react-icons/bi"
+import { BiGlobe, BiHash, BiLockAlt } from "react-icons/bi"
 import { ChannelContext } from "../../../utils/channel/ChannelProvider"
 import { ChannelDetails } from "../channel-details/ChannelDetails"
 import { ChannelMemberDetails } from "../channel-details/ChannelMemberDetails"
@@ -22,11 +22,9 @@ export const ViewChannelDetailsModal = ({ isOpen, onClose }: ViewChannelDetailsM
             <ModalContent>
 
                 <ModalHeader>
-                    {channelData[0].type === 'Public'
-                        ?
-                        <HStack><BiHash /><Text>{channelData[0].channel_name}</Text></HStack>
-                        :
-                        <HStack><BiLockAlt /><Text>{channelData[0].channel_name}</Text></HStack>
+                    {channelData[0].type === 'Public' && <HStack><BiHash /><Text>{channelData[0].channel_name}</Text></HStack> ||
+                        channelData[0].type === 'Private' && <HStack><BiLockAlt /><Text>{channelData[0].channel_name}</Text></HStack> ||
+                        channelData[0].type === 'Open' && <HStack><BiGlobe /><Text>{channelData[0].channel_name}</Text></HStack>
                     }
                 </ModalHeader>
                 <ModalCloseButton mt='2' />
