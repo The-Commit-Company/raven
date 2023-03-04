@@ -3,6 +3,7 @@ import { useFrappeGetCall } from "frappe-react-sdk";
 import { useContext, useState } from "react"
 import { RiDeleteBinLine, RiEdit2Line } from "react-icons/ri";
 import { ChannelData } from "../../../types/Channel/Channel";
+import { UserContext } from "../../../utils/auth/UserProvider";
 import { ChannelContext } from "../../../utils/channel/ChannelProvider"
 import { DateObjectToTimeString } from "../../../utils/operations";
 import { MarkdownRenderer } from "../markdown-viewer/MarkdownRenderer.tsx";
@@ -18,6 +19,7 @@ interface ChatMessageProps {
 
 export const ChatMessage = ({ name, text, user, timestamp }: ChatMessageProps) => {
 
+    const { currentUser } = useContext(UserContext)
     const { colorMode } = useColorMode()
     const { channelMembers } = useContext(ChannelContext)
     const [showButtons, setShowButtons] = useState({ display: 'none' })
@@ -69,7 +71,7 @@ export const ChatMessage = ({ name, text, user, timestamp }: ChatMessageProps) =
                         <MarkdownRenderer content={text} />
                     </Stack>
                 </HStack>
-                <ButtonGroup style={showButtons}>
+                {user == currentUser && <ButtonGroup style={showButtons}>
                     <Tooltip hasArrow label='edit' size='xs' placement='top'>
                         <IconButton
                             onClick={onEditMessageModalOpen}
@@ -84,7 +86,7 @@ export const ChatMessage = ({ name, text, user, timestamp }: ChatMessageProps) =
                             icon={<RiDeleteBinLine />}
                             size='xs' />
                     </Tooltip>
-                </ButtonGroup>
+                </ButtonGroup>}
             </HStack>
             <DeleteMessageModal isOpen={isDeleteMessageModalOpen} onClose={onDeleteMessageModalClose} channelMessageID={name} />
             <EditMessageModal isOpen={isEditMessageModalOpen} onClose={onEditMessageModalClose} channelMessageID={name} allMembers={allMembers} allChannels={allChannels ?? []} />
