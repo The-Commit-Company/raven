@@ -3,6 +3,7 @@ import { useFrappeGetCall } from "frappe-react-sdk"
 import { BiGlobe, BiHash } from "react-icons/bi"
 import { BiLockAlt } from "react-icons/bi"
 import { IoAdd } from "react-icons/io5"
+import { useFrappeEventListener } from "../../../hooks/useFrappeEventListener"
 import { ChannelData } from "../../../types/Channel/Channel"
 import { AlertBanner } from "../../layout/AlertBanner"
 import { SidebarGroup, SidebarGroupItem, SidebarGroupLabel, SidebarGroupList, SidebarIcon, SidebarItem, SidebarItemLabel } from "../../layout/Sidebar"
@@ -21,6 +22,10 @@ export const ChannelList = () => {
             onClose()
         }
     }
+
+    useFrappeEventListener('channel_list_updated', () => {
+        mutate()
+    })
 
     const { isOpen, onOpen, onClose } = useDisclosure()
 
