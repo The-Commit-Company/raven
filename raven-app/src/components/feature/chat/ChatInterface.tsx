@@ -1,7 +1,7 @@
 import { Avatar, AvatarBadge, Box, Button, HStack, Stack, Text, useColorMode, useDisclosure, useToast } from "@chakra-ui/react"
 import { useFrappeCreateDoc, useFrappeGetCall, useFrappeGetDocList } from "frappe-react-sdk"
 import { useContext } from "react"
-import { BiHash, BiLockAlt } from "react-icons/bi"
+import { BiGlobe, BiHash, BiLockAlt } from "react-icons/bi"
 import { useFrappeEventListener } from "../../../hooks/useFrappeEventListener"
 import { ChannelData } from "../../../types/Channel/Channel"
 import { ChannelContext } from "../../../utils/channel/ChannelProvider"
@@ -18,7 +18,7 @@ import { ChatInput } from "./ChatInput"
 
 interface Message {
     text: string,
-    creation: string,
+    creation: Date,
     name: string,
     owner: string
 }
@@ -41,6 +41,18 @@ export const ChatInterface = () => {
     const { colorMode } = useColorMode()
 
     useFrappeEventListener('message_received', (data) => {
+        if (data.channel_id === channelData[0].name) {
+            mutate()
+        }
+    })
+
+    useFrappeEventListener('message_deleted', (data) => {
+        if (data.channel_id === channelData[0].name) {
+            mutate()
+        }
+    })
+
+    useFrappeEventListener('message_updated', (data) => {
         if (data.channel_id === channelData[0].name) {
             mutate()
         }
@@ -108,21 +120,24 @@ export const ChatInterface = () => {
                         <HStack>
                             {channelData[0]?.is_direct_message == 1
                                 ?
-                                <HStack>
-                                    <Avatar name={channelMembers?.[user]?.full_name} src={channelMembers?.[user]?.user_image} borderRadius={'lg'} size="sm">
-                                        {channelData[0]?.is_self_message == 1 && <AvatarBadge boxSize='0.88em' bg='green.500' />}
-                                    </Avatar>
+                                (channelData[0]?.is_self_message == 0 ?
                                     <HStack>
-                                        <Text>{channelMembers?.[user]?.full_name}</Text>
-                                        {channelData[0]?.is_self_message == 1 && <Text fontSize='sm' color='gray.500'>(You)</Text>}
-                                    </HStack>
-                                </HStack>
-                                :
-                                (channelData[0]?.type === 'Private'
-                                    ?
-                                    <HStack alignItems='center'><BiLockAlt /><Text>{channelData[0]?.channel_name}</Text></HStack>
-                                    :
-                                    <HStack alignItems='center'><BiHash /><Text>{channelData[0]?.channel_name}</Text></HStack>)}
+                                        <Avatar name={channelMembers?.[peer]?.full_name} src={channelMembers?.[peer]?.user_image} borderRadius={'lg'} size="sm" />
+                                        <Text>{channelMembers?.[peer]?.full_name}</Text>
+                                    </HStack> :
+                                    <HStack>
+                                        <Avatar name={channelMembers?.[user]?.full_name} src={channelMembers?.[user]?.user_image} borderRadius={'lg'} size="sm">
+                                            <AvatarBadge boxSize='0.88em' bg='green.500' />
+                                        </Avatar>
+                                        <Text>{channelMembers?.[user]?.full_name}</Text><Text fontSize='sm' color='gray.500'>(You)</Text>
+                                    </HStack>) :
+                                (channelData[0]?.type === 'Private' &&
+                                    <HStack><BiLockAlt /><Text>{channelData[0]?.channel_name}</Text></HStack> ||
+                                    channelData[0]?.type === 'Public' &&
+                                    <HStack><BiHash /><Text>{channelData[0]?.channel_name}</Text></HStack> ||
+                                    channelData[0]?.type === 'Open' &&
+                                    <HStack><BiGlobe /><Text>{channelData[0]?.channel_name}</Text></HStack>
+                                )}
                         </HStack>
                     </PageHeading>
                 }

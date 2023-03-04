@@ -37,6 +37,12 @@ export const ChannelProvider = ({ children }: PropsWithChildren) => {
         }
     })
 
+    useFrappeEventListener('channel_updated', (data) => {
+        if (data.channel_id === channelID) {
+            mutate()
+        }
+    })
+
     const channelMembers = useMemo(() => {
         const cm: Record<string, ChannelMembersDetails> = {}
         data?.message.channel_members.forEach((member: ChannelMembersDetails) => {

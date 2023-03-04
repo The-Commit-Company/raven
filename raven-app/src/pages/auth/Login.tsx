@@ -40,11 +40,11 @@ export const Login = () => {
         </Flex>
     }
     return (
-        <Box minH="100vh" bg="black" >
+        <Box minH="100vh" >
             <Flex justify="center" align="center" height="100vh" width="full">
                 <Box w="full" maxW="lg" mx="auto">
                     <Box w="full" maxW="lg" mx="auto">
-                        <Stack bg="gray.800" spacing="8" rounded={{ md: "2xl" }} p={{ base: "4", md: "10" }} borderWidth={{ md: "1px" }} shadow={{ lg: "inner" }}>
+                        <Stack spacing="8" rounded={{ md: "2xl" }} p={{ base: "4", md: "10" }} borderWidth={{ md: "1px" }} shadow={{ lg: "inner" }}>
                             <Link to="/" tabIndex={-1}>
                                 <Text>Raven logo here</Text>
                             </Link>

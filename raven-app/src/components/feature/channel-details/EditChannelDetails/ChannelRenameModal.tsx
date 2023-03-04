@@ -1,8 +1,8 @@
-import { Button, ButtonGroup, chakra, FormControl, FormErrorMessage, FormHelperText, FormLabel, Input, InputGroup, InputLeftElement, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Stack, useToast } from "@chakra-ui/react"
+import { Text, Button, ButtonGroup, chakra, FormControl, FormErrorMessage, FormHelperText, FormLabel, Input, InputGroup, InputLeftElement, InputRightElement, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Stack, useToast } from "@chakra-ui/react"
 import { useFrappeUpdateDoc } from "frappe-react-sdk"
 import { useContext, useEffect } from "react"
 import { FormProvider, useForm } from "react-hook-form"
-import { BiHash, BiLockAlt } from "react-icons/bi"
+import { BiGlobe, BiHash, BiLockAlt } from "react-icons/bi"
 import { ChannelContext } from "../../../../utils/channel/ChannelProvider"
 import { AlertBanner } from "../../../layout/AlertBanner"
 
@@ -23,9 +23,10 @@ export const ChannelRenameModal = ({ isOpen, onClose }: RenameChannelModalProps)
             channel_name: channelData[0]?.channel_name
         }
     })
-    const { register, handleSubmit, reset, formState: { errors } } = methods
+    const { register, handleSubmit, reset, watch, formState: { errors } } = methods
     const { updateDoc, loading: updatingDoc, error, reset: resetUpdate } = useFrappeUpdateDoc()
     const toast = useToast()
+    const channel_name = watch('channel_name')
 
     useEffect(() => {
         reset()
@@ -82,11 +83,28 @@ export const ChannelRenameModal = ({ isOpen, onClose }: RenameChannelModalProps)
                                         <InputGroup fontSize='sm'>
                                             <InputLeftElement
                                                 pointerEvents='none'
-                                                children={channelData[0].type === 'Private' ? <BiLockAlt /> : <BiHash />} />
-                                            <Input {...register('channel_name', { required: "Please add a new channel name", maxLength: 80 })} />
+                                                children={channelData[0].type === 'Private' && <BiLockAlt /> ||
+                                                    channelData[0].type === 'Public' && <BiHash /> ||
+                                                    channelData[0].type === 'Open' && <BiGlobe />} />
+                                            {/* <Input {...register('channel_name', { required: "Please add a new channel name", maxLength: 80 })} /> */}
+                                            <Input
+                                                maxLength={50}
+                                                autoFocus {...register('channel_name', {
+                                                    required: "Please add channel name",
+                                                    maxLength: 50,
+                                                    pattern: {
+                                                        // no special characters allowed
+                                                        // cannot start with a space
+                                                        value: /^[a-zA-Z0-9][a-zA-Z0-9]|-*$/,
+                                                        message: "Channel name can only contain letters and numbers"
+                                                    }
+                                                })} />
+                                            <InputRightElement>
+                                                <Text fontSize='sm' fontWeight='light' color='gray.500'>{50 - channel_name?.length}</Text>
+                                            </InputRightElement>
                                         </InputGroup>
                                     </Stack>
-                                    <FormHelperText fontSize='xs'>Names cannot be longer than 80 characters.</FormHelperText>
+                                    <FormHelperText fontSize='xs'>Names cannot be longer than 50 characters.</FormHelperText>
                                     <FormErrorMessage>{errors?.channel_name?.message}</FormErrorMessage>
                                 </FormControl>
 
