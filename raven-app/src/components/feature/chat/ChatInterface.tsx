@@ -18,7 +18,7 @@ import { ChatInput } from "./ChatInput"
 
 interface Message {
     text: string,
-    creation: string,
+    creation: Date,
     name: string,
     owner: string
 }
