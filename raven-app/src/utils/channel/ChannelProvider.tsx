@@ -16,7 +16,7 @@ type ChannelMembersDetails = {
     user_image: string
 }
 
-export const ChannelContext = createContext<{ channelMembers: Record<string, ChannelMembersDetails>; channelData: Record<string, ChannelData> }>({ channelMembers: {}, channelData: {} })
+export const ChannelContext = createContext<{ channelMembers: Record<string, ChannelMembersDetails>; channelData?: ChannelData }>({ channelMembers: {} })
 
 export const ChannelProvider = ({ children }: PropsWithChildren) => {
 
@@ -43,26 +43,20 @@ export const ChannelProvider = ({ children }: PropsWithChildren) => {
         }
     })
 
-    const channelMembers = useMemo(() => {
+    const channelInfo = useMemo(() => {
         const cm: Record<string, ChannelMembersDetails> = {}
         data?.message.channel_members.forEach((member: ChannelMembersDetails) => {
             cm[member.name] = member
         })
-        return cm
-    }, [data])
-
-    const channelData = data?.message.channel_data ?? {}
-
-    const channelInfo = useMemo(() => {
         return {
-            channelMembers,
-            channelData
+            channelMembers: cm,
+            channelData: data?.message.channel_data
         }
-    }, [channelMembers, channelData])
+    }, [data])
 
     return (
         <>
-            {Object.keys(channelMembers).length > 0 && <ChannelContext.Provider value={channelInfo}>
+            {data?.message?.channel_members && data?.message?.channel_members?.length > 0 && <ChannelContext.Provider value={channelInfo}>
                 {children}
             </ChannelContext.Provider>}
         </>

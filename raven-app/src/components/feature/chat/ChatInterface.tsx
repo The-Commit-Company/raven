@@ -26,28 +26,29 @@ export const ChatInterface = () => {
     const { data: channelList, error: channelListError } = useFrappeGetCall<{ message: ChannelData[] }>("raven.raven_channel_management.doctype.raven_channel.raven_channel.get_channel_list")
     const { data, error, mutate } = useFrappeGetDocList<Message>('Raven Message', {
         fields: ["text", "creation", "name", "owner", "message_type", "file"],
-        filters: [["channel_id", "=", channelData[0].name ?? null]],
+        filters: [["channel_id", "=", channelData.name ?? null]],
         orderBy: {
             field: "creation",
             order: 'desc'
-        }
+        },
+        limit: 500
     })
     const { colorMode } = useColorMode()
 
     useFrappeEventListener('message_received', (data) => {
-        if (data.channel_id === channelData[0].name) {
+        if (data.channel_id === channelData?.name) {
             mutate()
         }
     })
 
     useFrappeEventListener('message_deleted', (data) => {
-        if (data.channel_id === channelData[0].name) {
+        if (data.channel_id === channelData?.name) {
             mutate()
         }
     })
 
     useFrappeEventListener('message_updated', (data) => {
-        if (data.channel_id === channelData[0].name) {
+        if (data.channel_id === channelData?.name) {
             mutate()
         }
     })
@@ -73,7 +74,7 @@ export const ChatInterface = () => {
 
     const joinChannel = () => {
         return createDoc('Raven Channel Member', {
-            channel_id: channelData[0].name,
+            channel_id: channelData?.name,
             user_id: user
         }).then(() => {
             toast({
@@ -112,9 +113,9 @@ export const ChatInterface = () => {
                 {channelData && user &&
                     <PageHeading>
                         <HStack>
-                            {channelData[0]?.is_direct_message == 1
+                            {channelData.is_direct_message == 1
                                 ?
-                                (channelData[0]?.is_self_message == 0 ?
+                                (channelData.is_self_message == 0 ?
                                     <HStack>
                                         <Avatar name={channelMembers?.[peer]?.full_name} src={channelMembers?.[peer]?.user_image} borderRadius={'lg'} size="sm" />
                                         <Text>{channelMembers?.[peer]?.full_name}</Text>
@@ -125,17 +126,17 @@ export const ChatInterface = () => {
                                         </Avatar>
                                         <Text>{channelMembers?.[user]?.full_name}</Text><Text fontSize='sm' color='gray.500'>(You)</Text>
                                     </HStack>) :
-                                (channelData[0]?.type === 'Private' &&
-                                    <HStack><BiLockAlt /><Text>{channelData[0]?.channel_name}</Text></HStack> ||
-                                    channelData[0]?.type === 'Public' &&
-                                    <HStack><BiHash /><Text>{channelData[0]?.channel_name}</Text></HStack> ||
-                                    channelData[0]?.type === 'Open' &&
-                                    <HStack><BiGlobe /><Text>{channelData[0]?.channel_name}</Text></HStack>
+                                (channelData?.type === 'Private' &&
+                                    <HStack><BiLockAlt /><Text>{channelData?.channel_name}</Text></HStack> ||
+                                    channelData?.type === 'Public' &&
+                                    <HStack><BiHash /><Text>{channelData?.channel_name}</Text></HStack> ||
+                                    channelData?.type === 'Open' &&
+                                    <HStack><BiGlobe /><Text>{channelData?.channel_name}</Text></HStack>
                                 )}
                         </HStack>
                     </PageHeading>
                 }
-                {channelData[0]?.is_direct_message == 0 &&
+                {channelData?.is_direct_message == 0 &&
                     <ViewOrAddMembersButton onClickViewMembers={onViewDetailsModalOpen} onClickAddMembers={onOpen} />}
             </PageHeader>
             <Stack h='calc(100vh - 54px)' justify={'flex-end'} p={4} overflow='hidden' mt='16'>
@@ -143,9 +144,9 @@ export const ChatInterface = () => {
                     <ChatHistory messages={data} />
                 }
                 {user && user in channelMembers ?
-                    <ChatInput channelID={channelData[0].name ?? ''} allChannels={allChannels} allMembers={allMembers} /> :
+                    <ChatInput channelID={channelData?.name ?? ''} allChannels={allChannels} allMembers={allMembers} /> :
                     <Box border='1px' borderColor={'gray.500'} rounded='lg' bottom='2' boxShadow='base' position='fixed' w='calc(98vw - var(--sidebar-width))' bg={colorMode === "light" ? "white" : "gray.800"} p={4}>
-                        <HStack justify='center' align='center' pb={4}><BiHash /><Text>{channelData[0]?.channel_name}</Text></HStack>
+                        <HStack justify='center' align='center' pb={4}><BiHash /><Text>{channelData?.channel_name}</Text></HStack>
                         <HStack justify='center' align='center' spacing={4}><Button colorScheme='blue' variant='outline' size='sm' onClick={onViewDetailsModalOpen}>Details</Button><Button colorScheme='blue' variant='solid' size='sm' onClick={joinChannel}>Join Channel</Button></HStack></Box>}
             </Stack>
             <ViewChannelDetailsModal isOpen={isViewDetailsModalOpen} onClose={onViewDetailsModalClose} />

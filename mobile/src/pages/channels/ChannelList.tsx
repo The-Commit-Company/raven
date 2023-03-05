@@ -2,7 +2,7 @@ import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonAccordionGroup
 import { addOutline } from 'ionicons/icons';
 import { IoAdd } from 'react-icons/io5'
 import React, { useEffect, useRef } from 'react'
-import { Channels } from '../../components/features/ChannelList';
+import { Channels, PrivateMessages } from '../../components/features/ChannelList';
 
 type Props = {}
 
@@ -25,7 +25,7 @@ export const ChannelList = (props: Props) => {
                     <IonLabel className='text-sm font-medium' color='medium'>Channels</IonLabel>
                 </div>
                 <Channels />
-                <IonItem>
+                <IonItem lines='none'>
                     <div slot='start'>
                         <IoAdd size='24' color='var(--ion-color-medium)' />
                     </div>
@@ -33,9 +33,7 @@ export const ChannelList = (props: Props) => {
                         Add Channel
                     </IonLabel>
                 </IonItem>
-                <div className='ion-padding-horizontal py-4'>
-                    <IonLabel className='text-sm font-medium' color='medium'>Private Messages</IonLabel>
-                </div>
+                <PrivateMessages />
             </IonContent>
         </IonPage>
     )

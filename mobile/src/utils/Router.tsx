@@ -7,7 +7,7 @@ import { personCircleOutline, homeOutline } from 'ionicons/icons';
 import { Login } from '../pages/auth'
 import { Profile } from '../pages/profile'
 import { FullPageLoader } from '../components/common'
-import { ChannelList } from '../pages/channels'
+import { ChannelList, ViewChannel } from '../pages/channels'
 type Props = {
     refreshFrappeURL: () => Promise<void>
 }
@@ -28,8 +28,7 @@ export const AppRouter = ({ refreshFrappeURL }: Props) => {
                 <Route exact path="/">
                     <Redirect to="/channels" />
                 </Route>
-                <Route exact path="/channel/:channelID">
-                </Route>
+                <Route exact path="/channel/:channelID" component={ViewChannel} />
             </IonRouterOutlet>
         </IonReactRouter>
     }

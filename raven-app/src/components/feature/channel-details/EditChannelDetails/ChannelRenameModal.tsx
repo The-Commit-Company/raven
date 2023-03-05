@@ -20,7 +20,7 @@ export const ChannelRenameModal = ({ isOpen, onClose }: RenameChannelModalProps)
     const { channelData } = useContext(ChannelContext)
     const methods = useForm<RenameChannelForm>({
         defaultValues: {
-            channel_name: channelData[0]?.channel_name
+            channel_name: channelData?.channel_name
         }
     })
     const { register, handleSubmit, reset, watch, formState: { errors } } = methods
@@ -34,7 +34,7 @@ export const ChannelRenameModal = ({ isOpen, onClose }: RenameChannelModalProps)
     }, [isOpen, reset])
 
     const onSubmit = (data: RenameChannelForm) => {
-        updateDoc("Raven Channel", channelData[0].name ?? null, {
+        updateDoc("Raven Channel", channelData?.name ?? null, {
             channel_name: data.channel_name
         }).then(() => {
             toast({
@@ -83,9 +83,9 @@ export const ChannelRenameModal = ({ isOpen, onClose }: RenameChannelModalProps)
                                         <InputGroup fontSize='sm'>
                                             <InputLeftElement
                                                 pointerEvents='none'
-                                                children={channelData[0].type === 'Private' && <BiLockAlt /> ||
-                                                    channelData[0].type === 'Public' && <BiHash /> ||
-                                                    channelData[0].type === 'Open' && <BiGlobe />} />
+                                                children={channelData?.type === 'Private' && <BiLockAlt /> ||
+                                                    channelData?.type === 'Public' && <BiHash /> ||
+                                                    channelData?.type === 'Open' && <BiGlobe />} />
                                             {/* <Input {...register('channel_name', { required: "Please add a new channel name", maxLength: 80 })} /> */}
                                             <Input
                                                 maxLength={50}

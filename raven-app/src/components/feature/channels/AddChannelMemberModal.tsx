@@ -42,7 +42,7 @@ export const AddChannelMemberModal = ({ isOpen, onClose }: AddChannelMemberModal
     if (members && members.length > 0) {
       const promises = members.map(async (member) => {
         return createDoc('Raven Channel Member', {
-          channel_id: channelData[0].name,
+          channel_id: channelData?.name,
           user_id: member
         })
       })
@@ -81,11 +81,11 @@ export const AddChannelMemberModal = ({ isOpen, onClose }: AddChannelMemberModal
         <ModalHeader>
           <HStack>
             <Text>Add members to </Text>
-            {channelData[0].type === 'Public'
+            {channelData?.type === 'Public'
               ?
-              <HStack><BiHash /><Text>{channelData[0].channel_name}</Text></HStack>
+              <HStack><BiHash /><Text>{channelData?.channel_name}</Text></HStack>
               :
-              <HStack><BiLockAlt /><Text>{channelData[0].channel_name}</Text></HStack>
+              <HStack><BiLockAlt /><Text>{channelData?.channel_name}</Text></HStack>
             }
           </HStack>
         </ModalHeader>
@@ -105,7 +105,7 @@ export const AddChannelMemberModal = ({ isOpen, onClose }: AddChannelMemberModal
                   <AddMembersDropdown autoFocus name="add_members" chakraStyles={customStyles} />
                 </FormControl>
 
-                <Text fontSize='sm' color='gray.500'>New members will be able to see all of <strong>{channelData[0].channel_name}</strong>'s history, including any files that have been shared in the channel.</Text>
+                <Text fontSize='sm' color='gray.500'>New members will be able to see all of <strong>{channelData?.channel_name}</strong>'s history, including any files that have been shared in the channel.</Text>
 
               </Stack>
             </ModalBody>
