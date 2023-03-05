@@ -138,7 +138,7 @@ export const ChatInterface = () => {
                 {channelData[0]?.is_direct_message == 0 &&
                     <ViewOrAddMembersButton onClickViewMembers={onViewDetailsModalOpen} onClickAddMembers={onOpen} />}
             </PageHeader>
-            <Stack h='100vh' justify={'space-between'} p={4} overflow='hidden' mt='16'>
+            <Stack h='calc(100vh - 54px)' justify={'flex-end'} p={4} overflow='hidden' mt='16'>
                 {data &&
                     <ChatHistory messages={data} />
                 }

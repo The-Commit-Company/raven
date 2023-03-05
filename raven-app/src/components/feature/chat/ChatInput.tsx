@@ -1,4 +1,4 @@
-import { Box, HStack, IconButton, List, Popover, PopoverContent, PopoverTrigger, Stack, StackDivider, useColorMode, useDisclosure } from "@chakra-ui/react"
+import { Box, HStack, IconButton, Popover, PopoverContent, PopoverTrigger, Stack, StackDivider, useColorMode, useDisclosure, Wrap, WrapItem } from "@chakra-ui/react"
 import { useCallback, useRef, useState } from "react"
 import { RiSendPlaneFill } from "react-icons/ri"
 import ReactQuill from "react-quill"
@@ -32,6 +32,7 @@ export const ChatInput = ({ channelID, allMembers, allChannels }: ChatInputProps
     const { upload, loading: uploadingFile, progress, error: errorUploadingDoc, reset: resetUploadDoc } = useFrappeFileUpload()
     const { updateDoc, loading: updatingDoc, error: errorUpdatingDoc, reset: resetUpdateDoc } = useFrappeUpdateDoc()
 
+    const reactQuillRef = useRef<ReactQuill>(null)
     const [text, setText] = useState("")
 
     const handleChange = (value: string) => {
@@ -52,10 +53,15 @@ export const ChatInput = ({ channelID, allMembers, allChannels }: ChatInputProps
     })
 
     const onSubmit = () => {
-        if (text.length > 0) {
+
+        const editor = reactQuillRef.current?.getEditor()
+        const textWithoutHTML = editor?.getText()
+
+        if (textWithoutHTML && textWithoutHTML?.trim()?.length > 0) {
+            //Remove trailing newline and <br>
             call({
                 channel_id: channelID,
-                text: text
+                text: text.replace(/(<p><br><\/p>\s*)+$/, '')
             }).then(() => {
                 setText("")
             })
@@ -97,7 +103,11 @@ export const ChatInput = ({ channelID, allMembers, allChannels }: ChatInputProps
     }
 
     const onMentionIconClick = () => {
-        setText(text + "@")
+        if (reactQuillRef.current) {
+            console.log("@ pressed")
+            const editor = reactQuillRef.current?.getEditor()
+            editor.getModule('mention').openMenu("@");
+        }
     }
 
     const mention = {
@@ -173,11 +183,12 @@ export const ChatInput = ({ channelID, allMembers, allChannels }: ChatInputProps
             {errorUpdatingDoc ? <AlertBanner status='error' heading='Error updating doctype with selected file information.'>{errorUpdatingDoc.message} - {errorUpdatingDoc.httpStatus}</AlertBanner> : null}
 
             <Box>
-                <Stack border='1px' borderColor={'gray.500'} rounded='lg' bottom='2' maxH='40vh' boxShadow='base' position='fixed' w='calc(98vw - var(--sidebar-width))' bg={colorMode === "light" ? "white" : "gray.800"}>
+                <Stack border='1px' borderColor={'gray.500'} rounded='lg' bottom='2' boxShadow='base' w='calc(98vw - var(--sidebar-width))' bg={colorMode === "light" ? "white" : "gray.800"}>
                     <ReactQuill
                         className={colorMode === 'light' ? 'my-quill-editor light-theme' : 'my-quill-editor dark-theme'}
                         onChange={handleChange}
                         value={text}
+                        ref={reactQuillRef}
                         placeholder={"Type a message..."}
                         modules={{
                             toolbar: [
@@ -190,9 +201,9 @@ export const ChatInput = ({ channelID, allMembers, allChannels }: ChatInputProps
                         formats={formats}
                         onKeyDown={handleKeyDown} />
                     {files.length > 0 &&
-                        <List size="sm" as={HStack} spacing='0' alignItems='flex-end' px='2' pb='1'>
-                            {files.map((f: CustomFile) => <FileListItem key={f.fileID} file={f} isUploading={f.uploading} uploadProgress={f.uploadProgress} removeFile={() => removeFile(f.fileID)} />)}
-                        </List>
+                        <Wrap spacingX={'2'} spacingY='2' w='full' spacing='0' alignItems='flex-end' px='2' pb='1'>
+                            {files.map((f: CustomFile) => <WrapItem key={f.fileID}><FileListItem file={f} isUploading={f.uploading} uploadProgress={f.uploadProgress} removeFile={() => removeFile(f.fileID)} /></WrapItem>)}
+                        </Wrap>
                     }
                     <HStack w='full' justify={'space-between'} px='2' pb='2'>
                         <HStack alignItems='flex-end'>

@@ -8,7 +8,7 @@ interface ChatHistoryProps {
 
 export const ChatHistory = ({ messages }: ChatHistoryProps) => {
     return (
-        <Stack spacing={4} justify='end' direction={'column-reverse'} h='70vh' overflow={'scroll'}>
+        <Stack spacing={4} justify='end' direction={'column-reverse'} overflow={'scroll'}>
             {messages.map((message) => {
                 if (message.message_type === 'Text') {
                     return <ChatMessage
