@@ -15,6 +15,7 @@ import { VscMention } from 'react-icons/vsc'
 import { CustomFile, FileDrop } from "../file-upload/FileDrop"
 import { FileListItem } from "../file-upload/FileListItem"
 import { getFileExtension } from "../../../utils/operations"
+import { AlertBanner } from "../../layout/AlertBanner"
 
 interface ChatInputProps {
     channelID: string,
@@ -66,6 +67,8 @@ export const ChatInput = ({ channelID, allMembers, allChannels }: ChatInputProps
                     channel_id: channelID
                 }).then((d) => {
                     docname = d.name
+                    f.uploading = true
+                    f.uploadProgress = progress
                     return upload(f, {
                         isPrivate: true,
                         doctype: 'Raven Message',
@@ -73,6 +76,7 @@ export const ChatInput = ({ channelID, allMembers, allChannels }: ChatInputProps
                         fieldname: 'file',
                     })
                 }).then((r) => {
+                    f.uploading = false
                     return updateDoc("Raven Message", docname, {
                         file: r.file_url,
                         message_type: fileExt.includes(getFileExtension(f.name)) ? "Image" : "File",
@@ -83,6 +87,9 @@ export const ChatInput = ({ channelID, allMembers, allChannels }: ChatInputProps
             Promise.all(promises)
                 .then(() => {
                     setFiles([])
+                    resetCreateDoc()
+                    resetUploadDoc()
+                    resetUpdateDoc()
                 }).catch((e) => {
                     console.log(e)
                 })
@@ -161,6 +168,10 @@ export const ChatInput = ({ channelID, allMembers, allChannels }: ChatInputProps
                 maxFiles={10}
                 maxFileSize={10000000} />
 
+            {errorCreatingDoc?.httpStatus === 409 ? <AlertBanner status='error' heading='File already exists.'>{errorCreatingDoc.message} - {errorCreatingDoc.httpStatus}</AlertBanner> : null}
+            {errorUploadingDoc ? <AlertBanner status='error' heading='Error uploading file'>{errorUploadingDoc.message} - {errorUploadingDoc.httpStatus}</AlertBanner> : null}
+            {errorUpdatingDoc ? <AlertBanner status='error' heading='Error updating doctype with selected file information.'>{errorUpdatingDoc.message} - {errorUpdatingDoc.httpStatus}</AlertBanner> : null}
+
             <Box>
                 <Stack border='1px' borderColor={'gray.500'} rounded='lg' bottom='2' maxH='40vh' boxShadow='base' position='fixed' w='calc(98vw - var(--sidebar-width))' bg={colorMode === "light" ? "white" : "gray.800"}>
                     <ReactQuill
@@ -215,6 +226,7 @@ export const ChatInput = ({ channelID, allMembers, allChannels }: ChatInputProps
                         </HStack>
                         <IconButton
                             isDisabled={text.length === 0 && files.length === 0}
+                            isLoading={creatingDoc || uploadingFile || updatingDoc}
                             colorScheme='blue'
                             onClick={onSubmit}
                             mx='4'

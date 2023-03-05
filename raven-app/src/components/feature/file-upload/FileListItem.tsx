@@ -33,7 +33,7 @@ export const FileListItem = ({ file, removeFile, isUploading, uploadProgress, ..
                     </Stack>
                     {isUploading
                         ?
-                        <CircularProgress size='40px' thickness='8px' color='green.500' value={uploadProgress}>
+                        <CircularProgress size='30px' thickness='6px' color='green.500' value={uploadProgress}>
                             <CircularProgressLabel>{uploadProgress}%</CircularProgressLabel>
                         </CircularProgress>
                         :
