@@ -45,12 +45,14 @@ export const ChatInput = ({ channelID, allMembers, allChannels }: ChatInputProps
     })
 
     const onSubmit = () => {
-        call({
-            channel_id: channelID,
-            text: text
-        }).then(() => {
-            setText("")
-        })
+        if (text.length > 0 || files.length > 0) {
+            call({
+                channel_id: channelID,
+                text: text
+            }).then(() => {
+                setText("")
+            })
+        }
     }
 
     const onMentionIconClick = () => {
@@ -178,7 +180,7 @@ export const ChatInput = ({ channelID, allMembers, allChannels }: ChatInputProps
                                 onClick={onMentionIconClick} />
                         </HStack>
                         <IconButton
-                            isDisabled={text.length === 0}
+                            isDisabled={text.length === 0 && files.length === 0}
                             colorScheme='blue'
                             onClick={onSubmit}
                             mx='4'
