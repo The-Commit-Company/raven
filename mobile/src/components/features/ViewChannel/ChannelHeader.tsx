@@ -40,17 +40,12 @@ export const ChannelHeader = (props: Props) => {
 
 const DirectMessageChannelHeader = ({ name, image }: { name: string, image?: string }) => {
 
-    const { currentUser } = useContext(UserContext)
-    const { channelData, channelMembers } = useContext(ChannelContext)
-
-
-
     return (<IonTitle>
         <div className='flex flex-col items-center justify-start'>
             <div className='flex items-center justify-start'>
                 {image ?
                     <div>
-                        <img style={{ height: 32 }} src={image} alt={name} />
+                        <img style={{ height: 32, borderRadius: 4 }} src={image} alt={name} />
                     </div>
                     : <BiHash />}
                 <h1 className='ml-2'>

@@ -56,7 +56,7 @@ export const Profile = () => {
                 <IonList>
                     {data &&
                         <div className="my-8 flex justify-center flex-col items-center ion-text-center space-y-2">
-                            <img alt={data.full_name} src={data.user_image ?? ""} className='w-100 h-auto mb-2 rounded-full' />
+                            <img alt={data.full_name} src={url + data.user_image ?? ""} className='w-100 h-auto mb-2 rounded-full' />
                             <h2 className='font-bold h2 text-2xl'>{data.full_name}</h2>
                             <span><IonText color="primary">{data.email}</IonText></span>
                         </div>

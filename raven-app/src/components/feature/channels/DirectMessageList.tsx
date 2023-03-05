@@ -1,5 +1,6 @@
 import { Avatar, HStack } from "@chakra-ui/react"
-import { useFrappeGetDocList, useFrappePostCall } from "frappe-react-sdk"
+import { FrappeConfig, FrappeContext, useFrappeGetDocList, useFrappePostCall } from "frappe-react-sdk"
+import { useContext } from "react"
 import { useNavigate } from "react-router-dom"
 import { User } from "../../../types/User/User"
 import { AlertBanner } from "../../layout/AlertBanner"
@@ -7,6 +8,7 @@ import { SidebarGroup, SidebarGroupItem, SidebarGroupLabel, SidebarGroupList, Si
 
 export const DirectMessageList = (userData: { userData: User | null }) => {
 
+    const { url } = useContext(FrappeContext) as FrappeConfig
     const { data: users, error: usersError } = useFrappeGetDocList<User>("User", {
         fields: ["full_name", "user_image", "name"],
         filters: [["name", "!=", "Guest"]]
@@ -36,7 +38,7 @@ export const DirectMessageList = (userData: { userData: User | null }) => {
                 {users?.map((user) =>
                     <SidebarButtonItem onClick={() => gotoDMChannel(user.name)} isLoading={loading} key={user.name}>
                         <HStack>
-                            <SidebarIcon><Avatar name={user.full_name} src={user.user_image} borderRadius={'md'} size="xs" /></SidebarIcon>
+                            <SidebarIcon><Avatar name={user.full_name} src={url + user.user_image} borderRadius={'md'} size="xs" /></SidebarIcon>
                             <SidebarItemLabel>{(user.name !== userData.userData?.name) ? user.full_name : user.full_name + ' (You)'}</SidebarItemLabel>
                         </HStack>
                     </SidebarButtonItem>

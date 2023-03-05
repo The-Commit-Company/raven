@@ -1,5 +1,5 @@
 import { IonAvatar, IonIcon, IonItem, IonLabel } from '@ionic/react';
-import { useFrappeGetDocList, useFrappePostCall } from 'frappe-react-sdk'
+import { useFrappeGetDocList, useFrappePostCall, FrappeContext, FrappeConfig } from 'frappe-react-sdk'
 import { personCircleOutline } from 'ionicons/icons';
 import { useContext } from 'react';
 import { useHistory } from 'react-router-dom';
@@ -13,6 +13,7 @@ type User = {
 
 export const PrivateMessages = () => {
 
+    const { url } = useContext(FrappeContext) as FrappeConfig
     const { currentUser } = useContext(UserContext)
     const { data: users, error: usersError } = useFrappeGetDocList<User>("User", {
         fields: ["full_name", "user_image", "name"],
@@ -35,7 +36,7 @@ export const PrivateMessages = () => {
             {users.map((user) => <IonItem key={user.name} onClick={() => gotoDMChannel(user.name)} lines='none' detail={false}>
                 {user.user_image ?
                     <IonAvatar slot='start' style={{ borderRadius: 2, "--border-radius": "4px" }}>
-                        <img src={user.user_image} alt={user.full_name} />
+                        <img src={url + user.user_image} alt={user.full_name} />
                     </IonAvatar>
                     :
                     <IonIcon slot='start' icon={personCircleOutline} color='medium' />
@@ -45,7 +46,5 @@ export const PrivateMessages = () => {
 
         </div>)
     }
-    return (
-        <div>PrivateMessages</div>
-    )
+    return null
 }

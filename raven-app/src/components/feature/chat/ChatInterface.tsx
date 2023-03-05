@@ -26,7 +26,7 @@ export const ChatInterface = () => {
     const { data: channelList, error: channelListError } = useFrappeGetCall<{ message: ChannelData[] }>("raven.raven_channel_management.doctype.raven_channel.raven_channel.get_channel_list")
     const { data, error, mutate } = useFrappeGetDocList<Message>('Raven Message', {
         fields: ["text", "creation", "name", "owner", "message_type", "file"],
-        filters: [["channel_id", "=", channelData.name ?? null]],
+        filters: [["channel_id", "=", channelData?.name ?? null]],
         orderBy: {
             field: "creation",
             order: 'desc'
