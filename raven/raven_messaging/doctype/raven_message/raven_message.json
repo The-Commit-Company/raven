@@ -9,7 +9,9 @@
  "engine": "InnoDB",
  "field_order": [
   "channel_id",
-  "text"
+  "text",
+  "file",
+  "message_type"
  ],
  "fields": [
   {
@@ -24,11 +26,22 @@
    "fieldname": "text",
    "fieldtype": "Long Text",
    "label": "Text"
+  },
+  {
+   "fieldname": "file",
+   "fieldtype": "Attach",
+   "label": "File"
+  },
+  {
+   "fieldname": "message_type",
+   "fieldtype": "Select",
+   "label": "Message Type",
+   "options": "Text\nImage\nFile"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-02-12 18:52:54.869767",
+ "modified": "2023-03-05 08:00:05.858737",
  "modified_by": "Administrator",
  "module": "Raven Messaging",
  "name": "Raven Message",
@@ -61,8 +74,13 @@
    "write": 1
   },
   {
+   "email": 1,
+   "export": 1,
+   "print": 1,
    "read": 1,
-   "role": "Raven User"
+   "report": 1,
+   "role": "Raven User",
+   "share": 1
   }
  ],
  "sort_field": "modified",

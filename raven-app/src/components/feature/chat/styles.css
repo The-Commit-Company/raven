@@ -12,6 +12,8 @@
 
 .my-quill-editor .ql-editor {
     border: none;
+    max-height: 40vh;
+    overflow-y: scroll;
 }
 
 .my-quill-editor .ql-toolbar.ql-snow .ql-formats>button:hover {
