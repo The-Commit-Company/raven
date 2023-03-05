@@ -28,7 +28,7 @@ export const ChatHistory = ({ messages }: ChatHistoryProps) => {
                     return <ChatMessage
                         key={message.name}
                         name={message.name}
-                        image={message.image}
+                        image={message.file}
                         user={message.owner}
                         timestamp={new Date(message.creation)} />
                 }

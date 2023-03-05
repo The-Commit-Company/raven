@@ -4,7 +4,7 @@ import { RiSendPlaneFill } from "react-icons/ri"
 import ReactQuill from "react-quill"
 import 'react-quill/dist/quill.snow.css'
 import './styles.css'
-import { useFrappePostCall } from "frappe-react-sdk"
+import { useFrappeCreateDoc, useFrappeFileUpload, useFrappePostCall, useFrappeUpdateDoc } from "frappe-react-sdk"
 import { useHotkeys } from "react-hotkeys-hook"
 import "quill-mention";
 import 'quill-mention/dist/quill.mention.css';
@@ -14,6 +14,8 @@ import { IoMdAdd } from 'react-icons/io'
 import { VscMention } from 'react-icons/vsc'
 import { CustomFile, FileDrop } from "../file-upload/FileDrop"
 import { FileListItem } from "../file-upload/FileListItem"
+import { getFileExtension } from "../../../utils/operations"
+import { AlertBanner } from "../../layout/AlertBanner"
 
 interface ChatInputProps {
     channelID: string,
@@ -21,9 +23,14 @@ interface ChatInputProps {
     allChannels: { id: string; value: string; }[]
 }
 
+export const fileExt = ['jpg', 'JPG', 'jpeg', 'JPEG', 'png', 'PNG', 'gif', 'GIF']
+
 export const ChatInput = ({ channelID, allMembers, allChannels }: ChatInputProps) => {
 
     const { call } = useFrappePostCall('raven.raven_messaging.doctype.raven_message.raven_message.send_message')
+    const { createDoc, loading: creatingDoc, error: errorCreatingDoc, reset: resetCreateDoc } = useFrappeCreateDoc()
+    const { upload, loading: uploadingFile, progress, error: errorUploadingDoc, reset: resetUploadDoc } = useFrappeFileUpload()
+    const { updateDoc, loading: updatingDoc, error: errorUpdatingDoc, reset: resetUpdateDoc } = useFrappeUpdateDoc()
 
     const [text, setText] = useState("")
 
@@ -45,12 +52,48 @@ export const ChatInput = ({ channelID, allMembers, allChannels }: ChatInputProps
     })
 
     const onSubmit = () => {
-        call({
-            channel_id: channelID,
-            text: text
-        }).then(() => {
-            setText("")
-        })
+        if (text.length > 0) {
+            call({
+                channel_id: channelID,
+                text: text
+            }).then(() => {
+                setText("")
+            })
+        }
+        if (files.length > 0) {
+            const promises = files.map(async (f: CustomFile) => {
+                let docname = ''
+                return createDoc('Raven Message', {
+                    channel_id: channelID
+                }).then((d) => {
+                    docname = d.name
+                    f.uploading = true
+                    f.uploadProgress = progress
+                    return upload(f, {
+                        isPrivate: true,
+                        doctype: 'Raven Message',
+                        docname: d.name,
+                        fieldname: 'file',
+                    })
+                }).then((r) => {
+                    f.uploading = false
+                    return updateDoc("Raven Message", docname, {
+                        file: r.file_url,
+                        message_type: fileExt.includes(getFileExtension(f.name)) ? "Image" : "File",
+                    })
+                })
+            })
+
+            Promise.all(promises)
+                .then(() => {
+                    setFiles([])
+                    resetCreateDoc()
+                    resetUploadDoc()
+                    resetUpdateDoc()
+                }).catch((e) => {
+                    console.log(e)
+                })
+        }
     }
 
     const onMentionIconClick = () => {
@@ -125,6 +168,10 @@ export const ChatInput = ({ channelID, allMembers, allChannels }: ChatInputProps
                 maxFiles={10}
                 maxFileSize={10000000} />
 
+            {errorCreatingDoc?.httpStatus === 409 ? <AlertBanner status='error' heading='File already exists.'>{errorCreatingDoc.message} - {errorCreatingDoc.httpStatus}</AlertBanner> : null}
+            {errorUploadingDoc ? <AlertBanner status='error' heading='Error uploading file'>{errorUploadingDoc.message} - {errorUploadingDoc.httpStatus}</AlertBanner> : null}
+            {errorUpdatingDoc ? <AlertBanner status='error' heading='Error updating doctype with selected file information.'>{errorUpdatingDoc.message} - {errorUpdatingDoc.httpStatus}</AlertBanner> : null}
+
             <Box>
                 <Stack border='1px' borderColor={'gray.500'} rounded='lg' bottom='2' maxH='40vh' boxShadow='base' position='fixed' w='calc(98vw - var(--sidebar-width))' bg={colorMode === "light" ? "white" : "gray.800"}>
                     <ReactQuill
@@ -178,7 +225,8 @@ export const ChatInput = ({ channelID, allMembers, allChannels }: ChatInputProps
                                 onClick={onMentionIconClick} />
                         </HStack>
                         <IconButton
-                            isDisabled={text.length === 0}
+                            isDisabled={text.length === 0 && files.length === 0}
+                            isLoading={creatingDoc || uploadingFile || updatingDoc}
                             colorScheme='blue'
                             onClick={onSubmit}
                             mx='4'
