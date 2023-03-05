@@ -143,7 +143,7 @@ export const ChatInterface = () => {
                 {data &&
                     <ChatHistory messages={data} />
                 }
-                {user && user in channelMembers ?
+                {(user && user in channelMembers) || channelData?.type === 'Open' ?
                     <ChatInput channelID={channelData?.name ?? ''} allChannels={allChannels} allMembers={allMembers} /> :
                     <Box border='1px' borderColor={'gray.500'} rounded='lg' bottom='2' boxShadow='base' position='fixed' w='calc(98vw - var(--sidebar-width))' bg={colorMode === "light" ? "white" : "gray.800"} p={4}>
                         <HStack justify='center' align='center' pb={4}><BiHash /><Text>{channelData?.channel_name}</Text></HStack>
