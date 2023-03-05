@@ -3,6 +3,62 @@
   <p align="center">Simple, open source team messaging platform</p>
 </p>
 
+
+### FOSS Hack 3.0
+
+#### Before the Hackathon
+
+The web app had the following features:
+
+1. Authentication
+2. Creating a channel
+3. Joining a channel
+4. Adding and removing a member
+5. Sending messages (only text based) in channels and private messages.
+
+<hr>
+
+#### During the Hackathon
+
+The mobile app was set up using Capacitor, Ionic and React:
+1. Set up authentication on the mobile app
+2. View all channels, private messages and profile on mobile app
+3. View a channel's messages (text, images and files) on the mobile app
+4. Send a message on a channel.
+
+New features were added to the web app:
+1. Ability to create an "Open" channel - where all users are members by default.
+2. Ability to delete a message previously sent
+3. Ability to edit a message
+4. Ability to send images and files by clicking on the file "plus" button
+5. Ability to send images and files by dragging and dropping them into the chat interface
+6. Image previews in the chat interface
+7. Ability to download files from the chat interface
+8. Styling improvements: dark mode for emoji picker, highlight for mentions in messages (@user), dark mode support for Quill mentions menu
+9. General channel is created when app is installed.
+10. Bug fix: empty messages cannot be sent
+11. Bug fix: duplicate channel names cannot be created (added validation)
+12. Bug fix: design issues fixed on the chat interface to make the chat messages responsive according to height of input.
+
+<hr>
+
+#### What's not working (yet)
+
+Mobile app:
+1. Channels cannot be created and channel details cannot be viewed
+2. Members cannot be added to or removed from channels
+3. Files and images cannot be sent.
+
+Moreover, the mobile app authentication needs to be updated to use Bearer tokens because of a cookie issue on iOS. The mobile app works on Android.
+
+Web app:
+1. Improvements to be made on direct message listing.
+2. Lazy loading and scroll to load for older messages.
+
+
+<hr>
+<br>
+
 <p align="center">
   <a href="https://github.com/janhvipatil/Raven/blob/main/LICENSE">
     <img alt="license" src="https://img.shields.io/badge/license-AGPLv3-blue">
@@ -50,6 +106,19 @@
             <b>Light mode</b>
         </figcaption>
     </figure>
+
+<figure>
+        <img width="1402" src="screenshots/files-images.png" alt="Send files and images" />
+         <figcaption align="center">
+            <b>Send files and images</b>
+        </figcaption>
+    </figure>
+<figure>
+        <img width="1402" src="screenshots/mobile-app.png" alt="Mobile app" />
+         <figcaption align="center">
+            <b>Mobile app (work in progress)</b>
+        </figcaption>
+    </figure>
 </details>
 
 <br/>
@@ -72,10 +141,10 @@ Raven was born out of a need to have a simple work communication tool that could
 
 1. Send messages to all members in your organization (in an "open" channel), or just in your team in a private channel. 
 2. Create new channels for your team and your team members.
-3. Send text messages 💬, code blocks 💻, emojis 😆, files 📑 and images 📸 (file support coming soon).
+3. Send text messages 💬, code blocks 💻, emojis 😆, files 📑 and images 📸.
 4. Mention users in your messages with "@"
 5. Don't strain your eyes 👀 - Raven supports dark mode 🌙
-5. Collaborate on the go with the Raven mobile app 📱 (coming soon).
+5. Collaborate on the go with the Raven mobile app 📱 (in progress).
 
 <hr>
 
@@ -96,7 +165,7 @@ The frontend is built using React and the following tools:
 4. [Framer Motion](https://www.framer.com/motion/) - Animations
 5. [react-quill](https://www.npmjs.com/package/react-quill)
 
-We plan to build a mobile app using [Ionic](https://ionicframework.com), [Tailwind CSS](tailwindcss.com) and [Capacitor](https://capacitorjs.com).
+The mobile app is built using [Ionic](https://ionicframework.com), [Tailwind CSS](tailwindcss.com) and [Capacitor](https://capacitorjs.com).
 
 <hr>
 
@@ -131,6 +200,13 @@ yarn dev
 
 Your local dev server would be running at `http://localhost:8080`.
 
+You can also run the mobile app on your browser by:
+
+```bash
+cd frappe-bench/apps/raven/mobile
+yarn install
+yarn dev
+```
 
 <hr>
 
