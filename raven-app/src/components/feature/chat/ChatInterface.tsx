@@ -26,7 +26,7 @@ export const ChatInterface = () => {
     const { data: channelList, error: channelListError } = useFrappeGetCall<{ message: ChannelData[] }>("raven.raven_channel_management.doctype.raven_channel.raven_channel.get_channel_list")
     const { data, error, mutate } = useFrappeGetDocList<Message>('Raven Message', {
         fields: ["text", "creation", "name", "owner", "message_type", "file"],
-        filters: [["channel_id", "=", channelData.name ?? null]],
+        filters: [["channel_id", "=", channelData?.name ?? null]],
         orderBy: {
             field: "creation",
             order: 'desc'
@@ -143,7 +143,7 @@ export const ChatInterface = () => {
                 {data &&
                     <ChatHistory messages={data} />
                 }
-                {user && user in channelMembers ?
+                {(user && user in channelMembers) || channelData?.type === 'Open' ?
                     <ChatInput channelID={channelData?.name ?? ''} allChannels={allChannels} allMembers={allMembers} /> :
                     <Box border='1px' borderColor={'gray.500'} rounded='lg' bottom='2' boxShadow='base' position='fixed' w='calc(98vw - var(--sidebar-width))' bg={colorMode === "light" ? "white" : "gray.800"} p={4}>
                         <HStack justify='center' align='center' pb={4}><BiHash /><Text>{channelData?.channel_name}</Text></HStack>
