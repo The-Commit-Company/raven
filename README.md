@@ -183,7 +183,7 @@ bench --site yoursite.name install-app raven
 
 Post this, you can access Raven on your Frappe site at the `/raven-app` endpoint (e.g. https://yoursite.com/raven-app). 
 
-We plan to publish Raven to the [Frappe Cloud Marketplace](https://https://frappecloud.com/marketplace/apps) soon.
+We plan to publish Raven to the [Frappe Cloud Marketplace](https://frappecloud.com/marketplace/apps) soon.
 
 ### Local development setup
 
