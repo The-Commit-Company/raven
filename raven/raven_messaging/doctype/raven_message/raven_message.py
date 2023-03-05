@@ -29,7 +29,8 @@ def send_message(channel_id, text):
     doc = frappe.get_doc({
         'doctype': 'Raven Message',
         'channel_id': channel_id,
-        'text': text
+        'text': text,
+        'message_type': 'Text'
     })
     doc.insert()
     frappe.publish_realtime('message_received', {

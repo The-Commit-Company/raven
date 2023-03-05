@@ -31,3 +31,14 @@ export const DateObjectToTimeString = (date: Date): string => {
     var date = new Date(date)
     return date.toLocaleTimeString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true })
 }
+
+/**
+ * Function to return extension of a file
+ * @param filename name of the file with extension
+ * @returns extension
+ */
+export const getFileExtension = (filename: string) => {
+
+    const extension = filename.substring(filename.lastIndexOf('.') + 1, filename.length);
+    return extension;
+}
