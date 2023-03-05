@@ -4,7 +4,7 @@ import { RiSendPlaneFill } from "react-icons/ri"
 import ReactQuill from "react-quill"
 import 'react-quill/dist/quill.snow.css'
 import './styles.css'
-import { useFrappePostCall } from "frappe-react-sdk"
+import { useFrappeCreateDoc, useFrappeFileUpload, useFrappePostCall, useFrappeUpdateDoc } from "frappe-react-sdk"
 import { useHotkeys } from "react-hotkeys-hook"
 import "quill-mention";
 import 'quill-mention/dist/quill.mention.css';
@@ -24,6 +24,9 @@ interface ChatInputProps {
 export const ChatInput = ({ channelID, allMembers, allChannels }: ChatInputProps) => {
 
     const { call } = useFrappePostCall('raven.raven_messaging.doctype.raven_message.raven_message.send_message')
+    const { createDoc, loading: creatingDoc, error: errorCreatingDoc, reset: resetCreateDoc } = useFrappeCreateDoc()
+    const { upload, loading: uploadingFile, progress, error: errorUploadingDoc, reset: resetUploadDoc } = useFrappeFileUpload()
+    const { updateDoc, loading: updatingDoc, error: errorUpdatingDoc, reset: resetUpdateDoc } = useFrappeUpdateDoc()
 
     const [text, setText] = useState("")
 
@@ -45,12 +48,43 @@ export const ChatInput = ({ channelID, allMembers, allChannels }: ChatInputProps
     })
 
     const onSubmit = () => {
-        call({
-            channel_id: channelID,
-            text: text
-        }).then(() => {
-            setText("")
-        })
+        if (text.length > 0) {
+            call({
+                channel_id: channelID,
+                text: text
+            }).then(() => {
+                setText("")
+            })
+        }
+        if (files.length > 0) {
+            console.log(files)
+            const promises = files.map(async (f: CustomFile) => {
+                let docname = ''
+                return createDoc('Raven Message', {
+                    channel_id: channelID
+                }).then((d) => {
+                    docname = d.name
+                    return upload(f, {
+                        isPrivate: true,
+                        doctype: 'Raven Message',
+                        docname: d.name,
+                        fieldname: 'file',
+                    })
+                }).then((r) => {
+                    return updateDoc("Raven Message", docname, {
+                        file: r.file_url,
+                        message_type: r.file_url.split('.')[-1] in ['jpg', 'JPG', 'jpeg', 'JPEG', 'png', 'PNG', 'gif', 'GIF'] ? 'Image' : 'File'
+                    })
+                })
+            })
+
+            Promise.all(promises)
+                .then(() => {
+                    setFiles([])
+                }).catch((e) => {
+                    console.log(e)
+                })
+        }
     }
 
     const onMentionIconClick = () => {
