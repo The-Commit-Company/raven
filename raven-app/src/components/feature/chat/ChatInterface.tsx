@@ -36,7 +36,8 @@ export const ChatInterface = () => {
         orderBy: {
             field: "creation",
             order: 'desc'
-        }
+        },
+        limit: 500
     })
     const { colorMode } = useColorMode()
 
