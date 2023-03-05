@@ -1,9 +1,11 @@
 .light-theme {
     --gray: var(--chakra-colors-gray-100);
+    --bg-gray: var(--chakra-colors-white);
 }
 
 .dark-theme {
     --gray: var(--chakra-colors-gray-700);
+    --bg-gray: var(--chakra-colors-gray-800);
 }
 
 .my-quill-editor .ql-container {
@@ -47,4 +49,23 @@
     font-size: 14px;
     font-style: normal;
     color: #718096;
+}
+
+.mention {
+    background-color: var(--gray) !important;
+    border-radius: 4px;
+    color: #1a97c0;
+}
+
+.ql-mention-list {
+    background-color: var(--bg-gray) !important;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+}
+
+.ql-mention-list-container {
+    border-color: var(--gray) !important;
+}
+
+.ql-mention-list-item.selected {
+    background-color: var(--gray) !important;
 }
