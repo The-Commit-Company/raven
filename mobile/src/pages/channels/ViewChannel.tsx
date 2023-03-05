@@ -22,6 +22,8 @@ export type ChannelData = {
 export interface Message {
     text: string,
     creation: Date,
+    message_type: "Text" | "Image" | "File",
+    file?: string,
     name: string,
     owner: string
 }
@@ -48,7 +50,7 @@ export const ViewChannel = (props: RouteComponentProps<IdentityParam>): ReactEle
 
     const contentRef = createRef<HTMLIonContentElement>();
     const { data: messages, error: messagesError, mutate: refreshMessages, isLoading: isMessageLoading } = useFrappeGetDocList<Message>('Raven Message', {
-        fields: ["text", "creation", "name", "owner"],
+        fields: ["text", "creation", "name", "owner", "message_type", "file"],
         filters: [["channel_id", "=", channelID]],
         orderBy: {
             field: "creation",
@@ -144,8 +146,8 @@ export const ViewChannel = (props: RouteComponentProps<IdentityParam>): ReactEle
                 </IonHeader>
                 <IonContent fullscreen ref={contentRef}>
                     {isMessageLoading && <FullPageLoader />}
-                    {messagesError && <ErrorBanner heading="There was an error while fetching the messages">
-                        {messagesError.exception}
+                    {messagesError && <ErrorBanner heading="There was an error while fetching the messages.">
+                        {messagesError.exception} - {messagesError.httpStatus}
                     </ErrorBanner>}
                     {messages && <ChannelContent messages={messages} />}
                 </IonContent>
