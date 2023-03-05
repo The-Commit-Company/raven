@@ -10,7 +10,6 @@
  "field_order": [
   "channel_id",
   "text",
-  "image",
   "file",
   "message_type"
  ],
@@ -29,11 +28,6 @@
    "label": "Text"
   },
   {
-   "fieldname": "image",
-   "fieldtype": "Attach Image",
-   "label": "Image"
-  },
-  {
    "fieldname": "file",
    "fieldtype": "Attach",
    "label": "File"
@@ -47,7 +41,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-03-04 21:07:18.620929",
+ "modified": "2023-03-05 08:00:05.858737",
  "modified_by": "Administrator",
  "module": "Raven Messaging",
  "name": "Raven Message",
@@ -80,8 +74,13 @@
    "write": 1
   },
   {
+   "email": 1,
+   "export": 1,
+   "print": 1,
    "read": 1,
-   "role": "Raven User"
+   "report": 1,
+   "role": "Raven User",
+   "share": 1
   }
  ],
  "sort_field": "modified",

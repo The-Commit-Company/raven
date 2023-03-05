@@ -12,10 +12,11 @@ interface EditMessageModalProps {
     onClose: (refresh?: boolean) => void,
     channelMessageID: string,
     allMembers: { id: string; value: string; }[],
-    allChannels: { id: string; value: string; }[]
+    allChannels: { id: string; value: string; }[],
+    originalText: string
 }
 
-export const EditMessageModal = ({ isOpen, onClose, channelMessageID, allMembers, allChannels }: EditMessageModalProps) => {
+export const EditMessageModal = ({ isOpen, onClose, channelMessageID, allMembers, allChannels, originalText }: EditMessageModalProps) => {
 
     const toast = useToast()
     const { updateDoc, error, loading, reset } = useFrappeUpdateDoc()
@@ -24,7 +25,7 @@ export const EditMessageModal = ({ isOpen, onClose, channelMessageID, allMembers
         reset()
     }, [isOpen, reset])
 
-    const [text, setText] = useState("")
+    const [text, setText] = useState(originalText)
 
     const handleChange = (value: string) => {
         setText(value)
@@ -46,7 +47,6 @@ export const EditMessageModal = ({ isOpen, onClose, channelMessageID, allMembers
     const onSubmit = () => {
         updateDoc('Raven Message', channelMessageID,
             { text: text }).then(() => {
-                setText("")
                 onClose(true)
                 toast({
                     title: "Message updated",
