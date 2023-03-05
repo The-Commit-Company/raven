@@ -64,7 +64,7 @@ app_license = "MIT"
 # ------------
 
 # before_install = "raven.install.before_install"
-# after_install = "raven.install.after_install"
+after_install = "raven.install.after_install"
 # after_sync = ""
 
 # Uninstallation
