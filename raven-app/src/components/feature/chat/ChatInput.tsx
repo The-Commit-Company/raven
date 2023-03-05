@@ -52,7 +52,7 @@ export const ChatInput = ({ channelID, allMembers, allChannels }: ChatInputProps
     })
 
     const onSubmit = () => {
-        if (text.length > 0 || files.length > 0) {
+        if (text.length > 0) {
             call({
                 channel_id: channelID,
                 text: text
