@@ -14,12 +14,15 @@ import { IoMdAdd } from 'react-icons/io'
 import { VscMention } from 'react-icons/vsc'
 import { CustomFile, FileDrop } from "../file-upload/FileDrop"
 import { FileListItem } from "../file-upload/FileListItem"
+import { getFileExtension } from "../../../utils/operations"
 
 interface ChatInputProps {
     channelID: string,
     allMembers: { id: string; value: string; }[],
     allChannels: { id: string; value: string; }[]
 }
+
+export const fileExt = ['jpg', 'JPG', 'jpeg', 'JPEG', 'png', 'PNG', 'gif', 'GIF']
 
 export const ChatInput = ({ channelID, allMembers, allChannels }: ChatInputProps) => {
 
@@ -57,7 +60,6 @@ export const ChatInput = ({ channelID, allMembers, allChannels }: ChatInputProps
             })
         }
         if (files.length > 0) {
-            console.log(files)
             const promises = files.map(async (f: CustomFile) => {
                 let docname = ''
                 return createDoc('Raven Message', {
@@ -73,7 +75,7 @@ export const ChatInput = ({ channelID, allMembers, allChannels }: ChatInputProps
                 }).then((r) => {
                     return updateDoc("Raven Message", docname, {
                         file: r.file_url,
-                        message_type: r.file_url.split('.')[-1] in ['jpg', 'JPG', 'jpeg', 'JPEG', 'png', 'PNG', 'gif', 'GIF'] ? 'Image' : 'File'
+                        message_type: fileExt.includes(getFileExtension(f.name)) ? "Image" : "File",
                     })
                 })
             })
@@ -212,7 +214,7 @@ export const ChatInput = ({ channelID, allMembers, allChannels }: ChatInputProps
                                 onClick={onMentionIconClick} />
                         </HStack>
                         <IconButton
-                            isDisabled={text.length === 0}
+                            isDisabled={text.length === 0 && files.length === 0}
                             colorScheme='blue'
                             onClick={onSubmit}
                             mx='4'
