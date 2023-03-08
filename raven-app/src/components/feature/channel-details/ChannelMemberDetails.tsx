@@ -56,7 +56,7 @@ export const ChannelMemberDetails = ({ members }: MemberDetailsProps) => {
             </InputGroup>
 
             <List spacing={2}>
-                {members.some(member => member.name === currentUser) && channelData[0].type != 'Open' &&
+                {members.some(member => member.name === currentUser) && channelData?.type != 'Open' &&
                     <ListItem _hover={{ ...LISTHOVERSTYLE }} rounded='md' onClick={onAddMembersModalOpen}>
                         <HStack p='2' spacing={3}>
                             <IconButton
@@ -81,7 +81,7 @@ export const ChannelMemberDetails = ({ members }: MemberDetailsProps) => {
                                         <Text fontWeight='light'>{member.full_name}</Text>
                                     </HStack>
                                 </HStack>
-                                {members.some(member => member.name === currentUser) && member.name != currentUser && member.name != channelData[0].owner && channelData[0].type != 'Open' &&
+                                {members.some(member => member.name === currentUser) && member.name != currentUser && member.name != channelData?.owner && channelData?.type != 'Open' &&
                                     <Button colorScheme='blue' variant='link' size='xs' onClick={() => onMemberSelect(member)}>Remove</Button>}
                             </HStack>
                         </ListItem>

@@ -22,9 +22,9 @@ export const ViewChannelDetailsModal = ({ isOpen, onClose }: ViewChannelDetailsM
             <ModalContent>
 
                 <ModalHeader>
-                    {channelData[0].type === 'Public' && <HStack><BiHash /><Text>{channelData[0].channel_name}</Text></HStack> ||
-                        channelData[0].type === 'Private' && <HStack><BiLockAlt /><Text>{channelData[0].channel_name}</Text></HStack> ||
-                        channelData[0].type === 'Open' && <HStack><BiGlobe /><Text>{channelData[0].channel_name}</Text></HStack>
+                    {channelData?.type === 'Public' && <HStack><BiHash /><Text>{channelData?.channel_name}</Text></HStack> ||
+                        channelData?.type === 'Private' && <HStack><BiLockAlt /><Text>{channelData?.channel_name}</Text></HStack> ||
+                        channelData?.type === 'Open' && <HStack><BiGlobe /><Text>{channelData?.channel_name}</Text></HStack>
                     }
                 </ModalHeader>
                 <ModalCloseButton mt='2' />
@@ -51,7 +51,7 @@ export const ViewChannelDetailsModal = ({ isOpen, onClose }: ViewChannelDetailsM
                         </TabPanels>
                     </Tabs>
 
-                    <Text fontSize='xs' color='gray.500' pl='3' pb='4'>Channel ID: {channelData[0].name}</Text>
+                    <Text fontSize='xs' color='gray.500' pl='3' pb='4'>Channel ID: {channelData?.name}</Text>
 
                 </ModalBody>
 

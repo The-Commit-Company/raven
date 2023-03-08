@@ -46,16 +46,16 @@ export const Login = () => {
                     <Box w="full" maxW="lg" mx="auto">
                         <Stack spacing="8" rounded={{ md: "2xl" }} p={{ base: "4", md: "10" }} borderWidth={{ md: "1px" }} shadow={{ lg: "inner" }}>
                             <Link to="/" tabIndex={-1}>
-                                <Text>Raven logo here</Text>
+                                <Heading>Raven</Heading>
                             </Link>
-                            <Box textAlign={{ base: "center", md: "start" }}>
+                            {/* <Box textAlign={{ base: "center", md: "start" }}>
                                 <Heading size="lg" mb="2" fontWeight="extrabold">
                                     Welcome
                                 </Heading>
                                 <Text fontSize="lg" fontWeight="medium">
                                     Login
                                 </Text>
-                            </Box>
+                            </Box> */}
                             <chakra.form onSubmit={handleSubmit(onSubmit)}>
                                 {error != null &&
                                     <AlertBanner status="error" mb="3">{error.message}</AlertBanner>

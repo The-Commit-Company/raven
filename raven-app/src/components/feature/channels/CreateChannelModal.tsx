@@ -101,7 +101,7 @@ export const CreateChannelModal = ({ isOpen, onClose }: ChannelModalProps) => {
 
                                 <Stack spacing={6}>
 
-                                    {channelCreationError ? <AlertBanner status='error' heading={channelCreationError.message}>A channel with same name already exists.</AlertBanner> : null}
+                                    {channelCreationError ? <AlertBanner status='error' heading={channelCreationError.message}>{channelCreationError.exception}.</AlertBanner> : null}
 
                                     <FormControl isRequired isInvalid={!!errors.channel_name}>
                                         <FormLabel>Name</FormLabel>

@@ -6,7 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "cd raven-app && yarn dev",
-    "build": "cd raven-app && yarn build"
+    "build": "cd raven-app && yarn build",
+    "postinstall": "cd raven-app && yarn install"
   },
   "keywords": [],
   "author": "",

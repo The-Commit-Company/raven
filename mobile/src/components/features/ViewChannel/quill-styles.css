@@ -1,0 +1,43 @@
+.my-quill-editor {
+    width: 100%;
+    height: 100%;
+    padding: 0px;
+}
+
+.my-quill-editor .ql-container.ql-snow {
+    border: 1px solid transparent;
+    border-radius: 4px;
+}
+
+.my-quill-editor .ql-container.ql-snow:focus-within {
+    border: 0px solid var(--ion-color-light);
+}
+
+.quill>.ql-container>.ql-editor.ql-blank::before {
+    font-size: 14px;
+    font-style: normal;
+    color: var(--ion-color-medium);
+}
+
+.ql-mention-list-container {
+    z-index: 9999;
+    position: absolute !important;
+    overflow: visible;
+    background-color: var(--ion-color-light-shade);
+    border: 1px solid var(--ion-color-light);
+}
+
+.ql-mention-list-item.selected {
+    background-color: var(--ion-color-light-tint);
+    color: var(--ion-color-dark);
+}
+
+.mention {
+    background-color: var(--ion-color-light-shade);
+    color: var(--ion-color-primary-tint)
+}
+
+.chat-input {
+    border-top: 1px solid var(--ion-color-light);
+    background: var(--ion-background-color);
+}

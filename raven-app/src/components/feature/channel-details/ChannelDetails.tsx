@@ -33,10 +33,10 @@ export const ChannelDetails = () => {
                     <Stack>
                         <Text fontWeight='semibold' fontSize='sm'>Channel name</Text>
                         <HStack spacing={1}>
-                            {channelData[0].type === 'Private' && <BiLockAlt /> ||
-                                channelData[0].type === 'Public' && <BiHash /> ||
-                                channelData[0].type === 'Open' && <BiGlobe />}
-                            <Text fontSize='sm'>{channelData[0].channel_name}</Text>
+                            {channelData?.type === 'Private' && <BiLockAlt /> ||
+                                channelData?.type === 'Public' && <BiHash /> ||
+                                channelData?.type === 'Open' && <BiGlobe />}
+                            <Text fontSize='sm'>{channelData?.channel_name}</Text>
                         </HStack>
                     </Stack>
                     <Button colorScheme='blue' variant='link' size='sm' onClick={onChannelRenameModalOpen}>Edit</Button>
@@ -49,11 +49,11 @@ export const ChannelDetails = () => {
                         <Stack>
                             <Text fontWeight='semibold' fontSize='sm'>Channel description</Text>
                             <Text fontSize='sm' color='gray.500'>
-                                {channelData && channelData[0].channel_description && channelData[0].channel_description.length > 0 ? channelData[0].channel_description : 'No description'}
+                                {channelData && channelData.channel_description && channelData.channel_description.length > 0 ? channelData.channel_description : 'No description'}
                             </Text>
                         </Stack>
                         <Button colorScheme='blue' variant='link' size='sm' onClick={onChannelDescriptionModalOpen}>
-                            {channelData && channelData[0].channel_description && channelData[0].channel_description.length > 0 ? 'Edit' : 'Add'}
+                            {channelData && channelData.channel_description && channelData.channel_description.length > 0 ? 'Edit' : 'Add'}
                         </Button>
                     </HStack>
 
@@ -62,17 +62,17 @@ export const ChannelDetails = () => {
                     <Stack>
                         <Text fontWeight='semibold' fontSize='sm'>Created by</Text>
                         <HStack>
-                            {channelData[0].owner === 'Administrator'
+                            {channelData?.owner === 'Administrator'
                                 ?
                                 <Text fontSize='sm'>Administrator</Text>
                                 :
-                                channelData[0].owner && <Text fontSize='sm'>{channelData[0].owner_full_name}</Text>}
-                            <Text fontSize='sm' color='gray.500'>on {DateObjectToFormattedDateString(new Date(channelData[0].creation))}</Text>
+                                channelData?.owner && <Text fontSize='sm'>{channelData?.owner_full_name}</Text>}
+                            <Text fontSize='sm' color='gray.500'>on {DateObjectToFormattedDateString(new Date(channelData?.creation ?? ''))}</Text>
                         </HStack>
                     </Stack>
 
 
-                    {channelMembers[currentUser] && channelData[0].type != 'Open' &&
+                    {channelMembers[currentUser] && channelData?.type != 'Open' &&
                         <><Divider /><Button colorScheme='red' variant='link' size='sm' w='fit-content' onClick={onLeaveChannelModalOpen}>
                             Leave channel
                         </Button></>}

@@ -22,7 +22,7 @@ export const ViewOrAddMembersButton = ({ onClickViewMembers, onClickAddMembers }
                     ))}
                 </AvatarGroup>
             </Button>
-            {(channelData[0].type === 'Private' || channelData[0].type === 'Public') &&
+            {(channelData?.type === 'Private' || channelData?.type === 'Public') &&
                 <IconButton
                     onClick={onClickAddMembers}
                     aria-label={"add members to channel"}

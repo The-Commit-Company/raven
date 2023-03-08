@@ -21,7 +21,7 @@ export const LeaveChannelModal = ({ isOpen, onClose }: LeaveChannelModalProps) =
 
     const { data: channelMember, error: errorFetchingChannelMember } = useFrappeGetCall<{ message: { name: string } }>('frappe.client.get_value', {
         doctype: "Raven Channel Member",
-        filters: JSON.stringify({ channel_id: channelData[0].name, user_id: currentUser }),
+        filters: JSON.stringify({ channel_id: channelData?.name, user_id: currentUser }),
         fieldname: JSON.stringify(["name"])
     })
 
@@ -57,8 +57,8 @@ export const LeaveChannelModal = ({ isOpen, onClose }: LeaveChannelModalProps) =
                 <AlertDialogHeader>
                     <HStack>
                         <Text>Leave </Text>
-                        {channelData[0].type === 'Public' ? <BiHash /> : <BiLockAlt />}
-                        <Text>{channelData[0].channel_name}?</Text>
+                        {channelData?.type === 'Public' ? <BiHash /> : <BiLockAlt />}
+                        <Text>{channelData?.channel_name}?</Text>
                     </HStack>
                 </AlertDialogHeader>
                 <AlertDialogCloseButton />
