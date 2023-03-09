@@ -72,8 +72,6 @@
 
 .ql-syntax {
     border-width: 0.05em;
-    background-color: var(--bg-gray) !important;
-    border-color: var(--gray) !important;
     font-family: "Roboto Mono", monospace;
     font-size: 14px;
     line-height: 1.5;
