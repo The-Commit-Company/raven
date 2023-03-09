@@ -8,30 +8,20 @@ interface ChatHistoryProps {
 
 export const ChatHistory = ({ messages }: ChatHistoryProps) => {
     return (
-        <Stack spacing={4} justify='end' direction={'column-reverse'} overflow={'scroll'}>
+        <Stack spacing={4} justify='end' direction='column-reverse' overflow='scroll'>
             {messages.map((message) => {
-                if (message.message_type === 'Text') {
-                    return <ChatMessage
-                        key={message.name}
-                        name={message.name}
-                        text={message.text}
-                        user={message.owner}
-                        timestamp={new Date(message.creation)} />
-                } else if (message.message_type === 'File') {
-                    return <ChatMessage
-                        key={message.name}
-                        name={message.name}
-                        file={message.file}
-                        user={message.owner}
-                        timestamp={new Date(message.creation)} />
-                } else if (message.message_type === 'Image') {
-                    return <ChatMessage
-                        key={message.name}
-                        name={message.name}
-                        image={message.file}
-                        user={message.owner}
-                        timestamp={new Date(message.creation)} />
-                }
+                const { name, owner, creation, message_type, text, file } = message
+                return (
+                    <ChatMessage
+                        key={name}
+                        name={name}
+                        user={owner}
+                        timestamp={new Date(creation)}
+                        text={message_type === 'Text' ? text : undefined}
+                        file={message_type === 'File' ? file : undefined}
+                        image={message_type === 'Image' ? file : undefined}
+                    />
+                )
             })}
         </Stack>
     )
