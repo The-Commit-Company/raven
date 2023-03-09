@@ -36,7 +36,7 @@ export const UserProfileDrawer = ({ isOpen, onClose, user }: UserProfileDrawerPr
                                 <Text fontWeight='normal'>Active</Text>
                             </HStack>
                         </HStack>
-                        <Button variant='outline' colorScheme='blue' leftIcon={<BiMessage />}>
+                        <Button variant='outline' colorScheme='blue' leftIcon={<BiMessage />} onClick={() => console.log("message user")}>
                             Message
                         </Button>
                         <Divider />
@@ -45,8 +45,8 @@ export const UserProfileDrawer = ({ isOpen, onClose, user }: UserProfileDrawerPr
                             <HStack>
                                 <IconButton aria-label='Email' icon={<EmailIcon />} />
                                 <Stack spacing={0}>
-                                    <Text fontSize='sm' fontWeight='medium' as='span'>Email Address</Text>
-                                    <Text fontSize='sm' as='span' color={textColor}>{user.name}</Text>
+                                    <Text fontSize='sm' fontWeight='medium'>Email Address</Text>
+                                    <Text fontSize='sm' color={textColor}>{user.name}</Text>
                                 </Stack>
                             </HStack>
                         </Stack>
