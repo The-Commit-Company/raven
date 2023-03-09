@@ -1,9 +1,10 @@
-import { Avatar, Box, ButtonGroup, HStack, Icon, IconButton, Image, Link, Stack, StackDivider, Text, Tooltip, useColorMode, useDisclosure } from "@chakra-ui/react"
+import { Avatar, Box, Button, ButtonGroup, HStack, Icon, IconButton, Image, Link, Stack, StackDivider, Text, Tooltip, useColorMode, useDisclosure } from "@chakra-ui/react"
 import { useFrappeGetCall } from "frappe-react-sdk";
 import { useContext, useState } from "react"
 import { BsDownload } from "react-icons/bs";
 import { RiDeleteBinLine, RiEdit2Line } from "react-icons/ri";
 import { ChannelData } from "../../../types/Channel/Channel";
+import { User } from "../../../types/User/User";
 import { UserContext } from "../../../utils/auth/UserProvider";
 import { ChannelContext } from "../../../utils/channel/ChannelProvider"
 import { getFileExtensionIcon } from "../../../utils/layout/fileExtensionIcon";
@@ -11,6 +12,7 @@ import { DateObjectToTimeString } from "../../../utils/operations";
 import { MarkdownRenderer } from "../markdown-viewer/MarkdownRenderer.tsx";
 import { DeleteMessageModal } from "../message-details/DeleteMessageModal";
 import { EditMessageModal } from "../message-details/EditMessageModal";
+import { UserProfileDrawer } from "../user-details/UserProfileDrawer";
 
 interface ChatMessageProps {
     name: string,
@@ -29,8 +31,11 @@ export const ChatMessage = ({ name, user, timestamp, text, image, file }: ChatMe
     const [showButtons, setShowButtons] = useState({ display: 'none' })
     const { isOpen: isDeleteMessageModalOpen, onOpen: onDeleteMessageModalOpen, onClose: onDeleteMessageModalClose } = useDisclosure()
     const { isOpen: isEditMessageModalOpen, onOpen: onEditMessageModalOpen, onClose: onEditMessageModalClose } = useDisclosure()
+    const { isOpen: isUserProfileDetailsDrawerOpen, onOpen: onUserProfileDetailsDrawerOpen, onClose: onUserProfileDetailsDrawerClose } = useDisclosure()
     const { data: channelList, error: channelListError } = useFrappeGetCall<{ message: ChannelData[] }>("raven.raven_channel_management.doctype.raven_channel.raven_channel.get_channel_list")
 
+    const [selectedUser, setSelectedUser] = useState<User | null>(null)
+    const textColor = colorMode === 'light' ? 'gray.800' : 'gray.50'
 
     const allMembers = Object.values(channelMembers).map((member) => {
         return {
@@ -58,7 +63,7 @@ export const ChatMessage = ({ name, user, timestamp, text, image, file }: ChatMe
             }}
             rounded='md'
             onMouseEnter={e => {
-                setShowButtons({ display: 'block' });
+                setShowButtons({ display: 'block' })
             }}
             onMouseLeave={e => {
                 setShowButtons({ display: 'none' })
@@ -69,7 +74,12 @@ export const ChatMessage = ({ name, user, timestamp, text, image, file }: ChatMe
                     <Stack spacing='1'>
                         <HStack>
                             <HStack divider={<StackDivider />} align='flex-start'>
-                                <Text fontSize='sm' lineHeight={'0.9'} fontWeight="bold" as='span'>{channelMembers?.[user]?.full_name ?? user}</Text>
+                                <Button variant='link' onClick={() => {
+                                    setSelectedUser(channelMembers?.[user])
+                                    onUserProfileDetailsDrawerOpen()
+                                }}>
+                                    <Text fontSize='sm' lineHeight={'0.9'} fontWeight="bold" as='span' color={textColor}>{channelMembers?.[user]?.full_name ?? user}</Text>
+                                </Button>
                                 <Text fontSize="xs" lineHeight={'0.9'} color="gray.500">{DateObjectToTimeString(timestamp)}</Text>
                             </HStack>
                         </HStack>
@@ -126,6 +136,7 @@ export const ChatMessage = ({ name, user, timestamp, text, image, file }: ChatMe
                 </ButtonGroup>}
             </HStack>
             <DeleteMessageModal isOpen={isDeleteMessageModalOpen} onClose={onDeleteMessageModalClose} channelMessageID={name} />
+            {selectedUser && <UserProfileDrawer isOpen={isUserProfileDetailsDrawerOpen} onClose={onUserProfileDetailsDrawerClose} user={selectedUser} />}
             {text && <EditMessageModal isOpen={isEditMessageModalOpen} onClose={onEditMessageModalClose} channelMessageID={name} allMembers={allMembers} allChannels={allChannels ?? []} originalText={text} />}
         </Box>
     )

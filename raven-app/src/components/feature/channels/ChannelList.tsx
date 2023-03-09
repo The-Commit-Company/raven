@@ -29,7 +29,6 @@ export const ChannelList = () => {
 
     const { isOpen, onOpen, onClose } = useDisclosure()
 
-    console.log(data)
     if (error) {
         <AlertBanner status="error" heading={error.message}>{error.httpStatus} - {error.httpStatusText}</AlertBanner>
     }
