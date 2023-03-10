@@ -1,19 +1,24 @@
 import { EmailIcon } from "@chakra-ui/icons"
-import { Text, Avatar, Divider, Drawer, DrawerBody, DrawerCloseButton, DrawerContent, DrawerHeader, DrawerOverlay, Stack, HStack, IconButton, Button, Icon, useColorMode } from "@chakra-ui/react"
+import { Text, Avatar, Divider, Drawer, DrawerBody, DrawerCloseButton, DrawerContent, DrawerHeader, DrawerOverlay, Stack, HStack, IconButton, Button, Icon, useColorMode, useDisclosure } from "@chakra-ui/react"
+import { useContext } from "react"
 import { BiMessage } from "react-icons/bi"
 import { BsFillCircleFill } from "react-icons/bs"
 import { User } from "../../../types/User/User"
+import { UserDataContext } from "../../../utils/user/UserDataProvider"
+import { AiOutlineEdit } from "react-icons/ai"
 
 interface UserProfileDrawerProps {
     isOpen: boolean
     onClose: () => void,
-    user: User
+    user: User,
+    openSetStatusModal: () => void
 }
 
-export const UserProfileDrawer = ({ isOpen, onClose, user }: UserProfileDrawerProps) => {
+export const UserProfileDrawer = ({ isOpen, onClose, user, openSetStatusModal }: UserProfileDrawerProps) => {
 
     const { colorMode } = useColorMode()
     const textColor = colorMode === 'light' ? 'blue.500' : 'blue.300'
+    const userData = useContext(UserDataContext)
 
     return (
         <Drawer
@@ -36,14 +41,23 @@ export const UserProfileDrawer = ({ isOpen, onClose, user }: UserProfileDrawerPr
                                 <Text fontWeight='normal'>Active</Text>
                             </HStack>
                         </HStack>
-                        <Button variant='outline' colorScheme='blue' leftIcon={<BiMessage />} onClick={() => console.log("message user")}>
-                            Message
-                        </Button>
+
+                        {userData && (user.name !== userData?.name)
+                            ?
+                            <Button variant='outline' colorScheme='blue' leftIcon={<BiMessage />} onClick={() => console.log("message user")}>
+                                Message
+                            </Button>
+                            :
+                            <Button variant='outline' colorScheme='blue' leftIcon={<AiOutlineEdit />} onClick={openSetStatusModal}>
+                                Set Status
+                            </Button>
+                        }
+
                         <Divider />
                         <Stack spacing={4}>
                             <Text fontWeight='semibold'>Contact Information</Text>
                             <HStack>
-                                <IconButton aria-label='Email' icon={<EmailIcon />} />
+                                <IconButton aria-label='Email' icon={<EmailIcon />} cursor='initial' />
                                 <Stack spacing={0}>
                                     <Text fontSize='sm' fontWeight='medium'>Email Address</Text>
                                     <Text fontSize='sm' color={textColor}>{user.name}</Text>
