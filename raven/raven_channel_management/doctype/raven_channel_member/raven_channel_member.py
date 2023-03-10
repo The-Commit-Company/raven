@@ -59,14 +59,14 @@ def get_channel_members_and_data(channel_id):
     user = frappe.qb.DocType('User')
     if frappe.db.get_value("Raven Channel", channel_id, "type") == "Open":
         member_query = (frappe.qb.from_(user)
-                        .select(user.name, user.full_name, user.user_image, user.first_name)
+                        .select(user.name, user.full_name, user.user_image, user.first_name, user.last_active)
                         .where(user.name != "administrator")
                         .where(user.name != "guest"))
     else:
         member_query = (frappe.qb.from_(channel_member)
                         .join(user, JoinType.left)
                         .on(channel_member.user_id == user.name)
-                        .select(user.name, user.full_name, user.user_image, user.first_name)
+                        .select(user.name, user.full_name, user.user_image, user.first_name, user.last_active)
                         .where(channel_member.channel_id == channel_id)
                         .where(channel_member.user_id != "administrator"))
 

@@ -1,8 +1,9 @@
-import { Avatar, HStack } from "@chakra-ui/react"
+import { Avatar, AvatarBadge, HStack } from "@chakra-ui/react"
 import { FrappeConfig, FrappeContext, useFrappeGetDocList, useFrappePostCall } from "frappe-react-sdk"
 import { useContext } from "react"
 import { useNavigate } from "react-router-dom"
 import { User } from "../../../types/User/User"
+import { isLessThan15MinutesAgo } from "../../../utils/operations"
 import { AlertBanner } from "../../layout/AlertBanner"
 import { SidebarGroup, SidebarGroupItem, SidebarGroupLabel, SidebarGroupList, SidebarIcon, SidebarItemLabel, SidebarButtonItem } from "../../layout/Sidebar"
 
@@ -10,7 +11,7 @@ export const DirectMessageList = (userData: { userData: User | null }) => {
 
     const { url } = useContext(FrappeContext) as FrappeConfig
     const { data: users, error: usersError } = useFrappeGetDocList<User>("User", {
-        fields: ["full_name", "user_image", "name"],
+        fields: ["full_name", "user_image", "name", "last_active"],
         filters: [["name", "!=", "Guest"]]
     })
     const { call, error: channelError, loading, reset } = useFrappePostCall<{ message: string }>("raven.raven_channel_management.doctype.raven_channel.raven_channel.create_direct_message_channel")
@@ -38,7 +39,10 @@ export const DirectMessageList = (userData: { userData: User | null }) => {
                 {users?.map((user) =>
                     <SidebarButtonItem onClick={() => gotoDMChannel(user.name)} isLoading={loading} key={user.name}>
                         <HStack>
-                            <SidebarIcon><Avatar name={user.full_name} src={url + user.user_image} borderRadius={'md'} size="xs" /></SidebarIcon>
+                            <SidebarIcon><Avatar name={user.full_name} src={url + user.user_image} borderRadius={'md'} size="xs">
+                                {isLessThan15MinutesAgo(user.last_active) && <AvatarBadge boxSize='0.88em' bg='green.500' />}
+                            </Avatar>
+                            </SidebarIcon>
                             <SidebarItemLabel>{(user.name !== userData.userData?.name) ? user.full_name : user.full_name + ' (You)'}</SidebarItemLabel>
                         </HStack>
                     </SidebarButtonItem>
