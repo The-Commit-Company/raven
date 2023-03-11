@@ -42,3 +42,14 @@ export const getFileExtension = (filename: string) => {
     const extension = filename.substring(filename.lastIndexOf('.') + 1, filename.length);
     return extension;
 }
+
+/**
+ * Function to check if given date is less than 15 minutes ago
+ * @param date takes string date
+ * @returns boolean
+ */
+export const isLessThan15MinutesAgo = (date: string) => {
+    const time = new Date(date).getTime()
+    const currentTime = new Date().getTime()
+    return currentTime - time < 900000
+}
