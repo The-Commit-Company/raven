@@ -52,7 +52,7 @@ export const UserProfileDrawer = ({ isOpen, onClose, user, openSetStatusModal }:
                 <DrawerBody>
                     <Stack spacing={6} mt='4'>
                         <Avatar size='3xl' borderRadius={'md'} src={user.user_image} />
-                        <HStack>
+                        <Stack>
                             <HStack justifyContent='space-between'>
                                 <Text fontSize='xl' fontWeight='bold'>{user.full_name}</Text>
                                 {isLessThan15MinutesAgo(user.last_active) ? <HStack spacing={1}>
@@ -68,7 +68,7 @@ export const UserProfileDrawer = ({ isOpen, onClose, user, openSetStatusModal }:
                                 <Icon as={BsClock} />
                                 <Text fontWeight='normal' fontSize={15}>{DateObjectToTimeString(new Date())} local time</Text>
                             </HStack>
-                        </HStack>
+                        </Stack>
 
                         {userData && (user.name !== userData?.name)
                             ?
