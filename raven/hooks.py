@@ -198,3 +198,6 @@ has_permission = {
     "Raven Channel Member": "raven.permissions.channel_member_has_permission",
     "Raven Message": "raven.permissions.message_has_permission",
 }
+
+on_session_creation = "raven.api.user_status.set_user_logged_in"
+on_logout = "raven.api.user_status.set_user_logged_out"

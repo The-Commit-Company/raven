@@ -1,11 +1,12 @@
 import { EmailIcon } from "@chakra-ui/icons"
 import { Text, Avatar, Divider, Drawer, DrawerBody, DrawerCloseButton, DrawerContent, DrawerHeader, DrawerOverlay, Stack, HStack, IconButton, Button, Icon, useColorMode } from "@chakra-ui/react"
 import { useFrappePostCall } from "frappe-react-sdk"
+import { useEffect } from "react"
 import { BiMessage } from "react-icons/bi"
 import { BsFillCircleFill, BsCircle, BsClock } from "react-icons/bs"
 import { useNavigate } from "react-router-dom"
 import { User } from "../../../types/User/User"
-import { DateObjectToTimeString, isLessThan15MinutesAgo } from "../../../utils/operations"
+import { DateObjectToTimeString } from "../../../utils/operations"
 import { AlertBanner } from "../../layout/AlertBanner"
 
 interface UserProfileDrawerProps {
@@ -20,6 +21,13 @@ export const UserProfileDrawer = ({ isOpen, onClose, user }: UserProfileDrawerPr
     const textColor = colorMode === 'light' ? 'blue.500' : 'blue.300'
     const navigate = useNavigate()
     const { call, error: channelError, loading, reset } = useFrappePostCall<{ message: string }>("raven.raven_channel_management.doctype.raven_channel.raven_channel.create_direct_message_channel")
+    const { call: isLoggedin, error: isLoggedinError, result, reset: isLoggedinReset } = useFrappePostCall<{ message: string }>('raven.api.user_status.is_user_logged_in')
+
+    useEffect(() => {
+        isLoggedinReset()
+        isLoggedin({ user_id: user.name })
+    }, [user])
+
 
     const gotoDMChannel = async (user: string) => {
         reset()
@@ -48,7 +56,7 @@ export const UserProfileDrawer = ({ isOpen, onClose, user }: UserProfileDrawerPr
                         <Stack>
                             <HStack justifyContent='space-between'>
                                 <Text fontSize='xl' fontWeight='bold'>{user.full_name}</Text>
-                                {isLessThan15MinutesAgo(user.last_active) ? <HStack spacing={1}>
+                                {(result?.message && !!!isLoggedinError) ? <HStack spacing={1}>
                                     <Icon as={BsFillCircleFill} color='green.500' h='10px' />
                                     <Text fontWeight='normal'>Active</Text>
                                 </HStack> :

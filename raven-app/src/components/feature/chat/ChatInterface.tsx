@@ -1,12 +1,11 @@
 import { Avatar, AvatarBadge, Box, Button, HStack, Stack, Text, useColorMode, useDisclosure, useToast } from "@chakra-ui/react"
-import { useFrappeCreateDoc, useFrappeGetCall, useFrappeGetDocList } from "frappe-react-sdk"
-import { useContext } from "react"
+import { useFrappeCreateDoc, useFrappeGetCall, useFrappeGetDocList, useFrappePostCall } from "frappe-react-sdk"
+import { useContext, useEffect } from "react"
 import { BiGlobe, BiHash, BiLockAlt } from "react-icons/bi"
 import { useFrappeEventListener } from "../../../hooks/useFrappeEventListener"
 import { ChannelData } from "../../../types/Channel/Channel"
 import { Message } from "../../../types/Messaging/Message"
 import { ChannelContext } from "../../../utils/channel/ChannelProvider"
-import { isLessThan15MinutesAgo } from "../../../utils/operations"
 import { UserDataContext } from "../../../utils/user/UserDataProvider"
 import { AlertBanner } from "../../layout/AlertBanner"
 import { PageHeader } from "../../layout/Heading/PageHeader"
@@ -72,6 +71,12 @@ export const ChatInterface = () => {
     const { isOpen, onOpen, onClose } = useDisclosure()
     const { createDoc, error: joinError } = useFrappeCreateDoc()
     const toast = useToast()
+    const { call: isLoggedin, error: isLoggedinError, result, reset: isLoggedinReset } = useFrappePostCall<{ message: string }>('raven.api.user_status.is_user_logged_in')
+
+    useEffect(() => {
+        isLoggedinReset()
+        isLoggedin({ user_id: peer })
+    }, [peer])
 
     const joinChannel = () => {
         return createDoc('Raven Channel Member', {
@@ -119,7 +124,7 @@ export const ChatInterface = () => {
                                 (channelData.is_self_message == 0 ?
                                     <HStack>
                                         <Avatar name={channelMembers?.[peer]?.full_name} src={channelMembers?.[peer]?.user_image} borderRadius={'lg'} size="sm" >
-                                            {isLessThan15MinutesAgo(channelMembers?.[peer]?.last_active) && <AvatarBadge boxSize='0.88em' bg='green.500' />}
+                                            {result?.message && !!!isLoggedinError && <AvatarBadge boxSize='0.88em' bg='green.500' />}
                                         </Avatar>
                                         <Text>{channelMembers?.[peer]?.full_name}</Text>
                                     </HStack> :
