@@ -1,9 +1,8 @@
 import { Avatar, AvatarBadge, HStack } from "@chakra-ui/react"
-import { FrappeConfig, FrappeContext, useFrappeGetDocList, useFrappePostCall } from "frappe-react-sdk"
+import { FrappeConfig, FrappeContext, useFrappeGetCall, useFrappeGetDocList, useFrappePostCall } from "frappe-react-sdk"
 import { useContext } from "react"
 import { useNavigate } from "react-router-dom"
 import { User } from "../../../types/User/User"
-import { isLessThan15MinutesAgo } from "../../../utils/operations"
 import { AlertBanner } from "../../layout/AlertBanner"
 import { SidebarGroup, SidebarGroupItem, SidebarGroupLabel, SidebarGroupList, SidebarIcon, SidebarItemLabel, SidebarButtonItem } from "../../layout/Sidebar"
 
@@ -23,6 +22,8 @@ export const DirectMessageList = (userData: { userData: User | null }) => {
         navigate(`/channel/${result?.message}`)
     }
 
+    const { data, error } = useFrappeGetCall<{ message: string }>('raven.api.user_status.get_logged_in_users')
+
     if (usersError) {
         <AlertBanner status="error" heading={usersError.message}>{usersError.httpStatus} - {usersError.httpStatusText}</AlertBanner>
     }
@@ -40,7 +41,7 @@ export const DirectMessageList = (userData: { userData: User | null }) => {
                     <SidebarButtonItem onClick={() => gotoDMChannel(user.name)} isLoading={loading} key={user.name}>
                         <HStack>
                             <SidebarIcon><Avatar name={user.full_name} src={url + user.user_image} borderRadius={'md'} size="xs">
-                                {isLessThan15MinutesAgo(user.last_active) && <AvatarBadge boxSize='0.88em' bg='green.500' />}
+                                {data?.message.includes(user.name) && !!!error && <AvatarBadge boxSize='0.88em' bg='green.500' />}
                             </Avatar>
                             </SidebarIcon>
                             <SidebarItemLabel>{(user.name !== userData.userData?.name) ? user.full_name : user.full_name + ' (You)'}</SidebarItemLabel>

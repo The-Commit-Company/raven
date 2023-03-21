@@ -14,9 +14,15 @@ def set_user_logged_out(login_manager):
 
 
 @frappe.whitelist()
-def is_user_logged_in(user_id):
-    # Check if the user's session ID exists in the cache
-    return frappe.cache().get_value(f'user_session_{user_id}') is not None
+def get_logged_in_users():
+    # Get all the cache keys that match the pattern 'user_session_*'
+    user_session_keys = frappe.cache().get_keys('user_session_*')
+
+    # Decode the byte strings and extract the user IDs
+    user_ids = [key.decode('utf-8').split('_')[-1]
+                for key in user_session_keys]
+
+    return user_ids
 
 
 @frappe.whitelist()

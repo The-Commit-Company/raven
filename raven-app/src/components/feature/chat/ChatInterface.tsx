@@ -1,6 +1,6 @@
 import { Avatar, AvatarBadge, Box, Button, HStack, Stack, Text, useColorMode, useDisclosure, useToast } from "@chakra-ui/react"
-import { useFrappeCreateDoc, useFrappeGetCall, useFrappeGetDocList, useFrappePostCall } from "frappe-react-sdk"
-import { useContext, useEffect } from "react"
+import { useFrappeCreateDoc, useFrappeGetCall, useFrappeGetDocList } from "frappe-react-sdk"
+import { useContext } from "react"
 import { BiGlobe, BiHash, BiLockAlt } from "react-icons/bi"
 import { useFrappeEventListener } from "../../../hooks/useFrappeEventListener"
 import { ChannelData } from "../../../types/Channel/Channel"
@@ -71,12 +71,7 @@ export const ChatInterface = () => {
     const { isOpen, onOpen, onClose } = useDisclosure()
     const { createDoc, error: joinError } = useFrappeCreateDoc()
     const toast = useToast()
-    const { call: isLoggedin, error: isLoggedinError, result, reset: isLoggedinReset } = useFrappePostCall<{ message: string }>('raven.api.user_status.is_user_logged_in')
-
-    useEffect(() => {
-        isLoggedinReset()
-        isLoggedin({ user_id: peer })
-    }, [peer])
+    const { data: loggedinUsers, error: loggedinUsersError } = useFrappeGetCall<{ message: string[] }>('raven.api.user_status.get_logged_in_users')
 
     const joinChannel = () => {
         return createDoc('Raven Channel Member', {
@@ -124,7 +119,7 @@ export const ChatInterface = () => {
                                 (channelData.is_self_message == 0 ?
                                     <HStack>
                                         <Avatar name={channelMembers?.[peer]?.full_name} src={channelMembers?.[peer]?.user_image} borderRadius={'lg'} size="sm" >
-                                            {result?.message && !!!isLoggedinError && <AvatarBadge boxSize='0.88em' bg='green.500' />}
+                                            {loggedinUsers?.message.includes(peer) && !!!loggedinUsersError && <AvatarBadge boxSize='0.88em' bg='green.500' />}
                                         </Avatar>
                                         <Text>{channelMembers?.[peer]?.full_name}</Text>
                                     </HStack> :
@@ -144,8 +139,8 @@ export const ChatInterface = () => {
                         </HStack>
                     </PageHeading>
                 }
-                {channelData?.is_direct_message == 0 &&
-                    <ViewOrAddMembersButton onClickViewMembers={onViewDetailsModalOpen} onClickAddMembers={onOpen} />}
+                {channelData?.is_direct_message == 0 && loggedinUsers?.message &&
+                    <ViewOrAddMembersButton onClickViewMembers={onViewDetailsModalOpen} onClickAddMembers={onOpen} loggedinUsers={loggedinUsers.message} />}
             </PageHeader>
             <Stack h='calc(100vh - 54px)' justify={'flex-end'} p={4} overflow='hidden' mt='16'>
                 {data &&
@@ -157,7 +152,8 @@ export const ChatInterface = () => {
                         <HStack justify='center' align='center' pb={4}><BiHash /><Text>{channelData?.channel_name}</Text></HStack>
                         <HStack justify='center' align='center' spacing={4}><Button colorScheme='blue' variant='outline' size='sm' onClick={onViewDetailsModalOpen}>Details</Button><Button colorScheme='blue' variant='solid' size='sm' onClick={joinChannel}>Join Channel</Button></HStack></Box>}
             </Stack>
-            <ViewChannelDetailsModal isOpen={isViewDetailsModalOpen} onClose={onViewDetailsModalClose} />
+            {loggedinUsers?.message &&
+                <ViewChannelDetailsModal isOpen={isViewDetailsModalOpen} onClose={onViewDetailsModalClose} loggedinUsers={loggedinUsers.message} />}
             <AddChannelMemberModal isOpen={isOpen} onClose={onClose} />
         </>
     )
