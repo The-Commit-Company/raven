@@ -17,10 +17,11 @@ def set_user_logged_out(login_manager):
 def get_logged_in_users():
     # Get all the cache keys that match the pattern 'user_session_*'
     user_session_keys = frappe.cache().get_keys('user_session_*')
-
-    # Decode the byte strings and extract the user IDs
-    user_ids = [key.decode('utf-8').split('_')[-1]
-                for key in user_session_keys]
+    # Decode the keys and split them to get the key name
+    decoded_keys = [key.decode('utf-8').split('|')[1]
+                    for key in user_session_keys]
+    # Get the user IDs from the cache
+    user_ids = [frappe.cache().get_value(key) for key in decoded_keys]
 
     return user_ids
 
