@@ -22,7 +22,7 @@ export const DirectMessageList = (userData: { userData: User | null }) => {
         navigate(`/channel/${result?.message}`)
     }
 
-    const { data, error } = useFrappeGetCall<{ message: string }>('raven.api.user_status.get_logged_in_users')
+    const { data, error } = useFrappeGetCall<{ message: string }>('raven.api.user_availability.get_logged_in_users')
 
     if (usersError) {
         <AlertBanner status="error" heading={usersError.message}>{usersError.httpStatus} - {usersError.httpStatusText}</AlertBanner>

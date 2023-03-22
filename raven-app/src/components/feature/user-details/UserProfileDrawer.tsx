@@ -25,7 +25,7 @@ export const UserProfileDrawer = ({ isOpen, onClose, user, openSetStatusModal }:
 
     const navigate = useNavigate()
     const { call, error: channelError, loading, reset } = useFrappePostCall<{ message: string }>("raven.raven_channel_management.doctype.raven_channel.raven_channel.create_direct_message_channel")
-    const { data: loggedinUsers, error: loggedinUsersError } = useFrappeGetCall<{ message: string[] }>('raven.api.user_status.get_logged_in_users')
+    const { data: loggedinUsers, error: loggedinUsersError } = useFrappeGetCall<{ message: string[] }>('raven.api.user_availability.get_logged_in_users')
 
 
     const gotoDMChannel = async (user: string) => {

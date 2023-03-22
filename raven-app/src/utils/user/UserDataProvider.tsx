@@ -16,11 +16,6 @@ export const UserDataProvider = ({ children }: PropsWithChildren) => {
         filters: JSON.stringify({ name: currentUser }),
         fieldname: JSON.stringify(["name", "first_name", "full_name", "user_image", "last_active"])
     })
-    const { data: refreshLoggedinStatus, error: refreshLoggedinStatusError } = useFrappeGetCall('raven.api.user_status.refresh_logged_in_status')
-
-    setInterval(() => {
-        refreshLoggedinStatus
-    }, 1000 * 60 * 15)
 
     if (!data && !error) {
         return <FullPageLoader />

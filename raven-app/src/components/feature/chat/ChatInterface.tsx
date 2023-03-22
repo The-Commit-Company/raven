@@ -71,7 +71,7 @@ export const ChatInterface = () => {
     const { isOpen, onOpen, onClose } = useDisclosure()
     const { createDoc, error: joinError } = useFrappeCreateDoc()
     const toast = useToast()
-    const { data: loggedinUsers, error: loggedinUsersError } = useFrappeGetCall<{ message: string[] }>('raven.api.user_status.get_logged_in_users')
+    const { data: loggedinUsers, error: loggedinUsersError } = useFrappeGetCall<{ message: string[] }>('raven.api.user_availability.get_logged_in_users')
 
     const joinChannel = () => {
         return createDoc('Raven Channel Member', {
