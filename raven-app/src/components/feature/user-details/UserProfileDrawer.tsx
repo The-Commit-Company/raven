@@ -25,7 +25,7 @@ export const UserProfileDrawer = ({ isOpen, onClose, user, openSetStatusModal }:
 
     const navigate = useNavigate()
     const { call, error: channelError, loading, reset } = useFrappePostCall<{ message: string }>("raven.raven_channel_management.doctype.raven_channel.raven_channel.create_direct_message_channel")
-    const { data: loggedinUsers, error: loggedinUsersError } = useFrappeGetCall<{ message: string[] }>('raven.api.user_availability.get_logged_in_users')
+    const { data: activeUsers, error: activeUsersError } = useFrappeGetCall<{ message: string[] }>('raven.api.user_availability.get_active_users')
 
 
     const gotoDMChannel = async (user: string) => {
@@ -57,7 +57,7 @@ export const UserProfileDrawer = ({ isOpen, onClose, user, openSetStatusModal }:
                         <Stack>
                             <HStack justifyContent='space-between'>
                                 <Text fontSize='xl' fontWeight='bold'>{user.full_name}</Text>
-                                {(loggedinUsers?.message.includes(user.name) && !!!loggedinUsersError) ? <HStack spacing={1}>
+                                {(activeUsers?.message.includes(user.name) && !!!activeUsersError) ? <HStack spacing={1}>
                                     <Icon as={BsFillCircleFill} color='green.500' h='10px' />
                                     <Text fontWeight='normal'>Active</Text>
                                 </HStack> :

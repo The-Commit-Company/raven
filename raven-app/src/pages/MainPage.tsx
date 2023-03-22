@@ -11,15 +11,15 @@ type Props = {}
 
 export const MainPage = (props: Props) => {
 
-    const { call: refreshLoggedInState, error } = useFrappePostCall('raven.api.user_availability.refresh_user_active_state')
+    const { call: refreshUserActiveState, error, reset } = useFrappePostCall('raven.api.user_availability.refresh_user_active_state')
 
     const [isUserActive, setIsUserActive] = useState(true)
     const toast = useToast()
 
     const onPresenceChange = (presence: PresenceType) => {
+        reset()
         if (presence.type === 'active') {
-            refreshLoggedInState({})
-            setIsUserActive(true)
+            refreshUserActiveState({}).then(() => setIsUserActive(true))
         }
         else if (presence.type === 'idle') {
             setIsUserActive(false)

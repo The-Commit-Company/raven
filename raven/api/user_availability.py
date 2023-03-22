@@ -2,19 +2,19 @@ import redis
 import frappe
 
 
-def set_user_logged_in(login_manager):
+def set_user_active(login_manager):
     # Set the user's session ID in the cache
     frappe.cache().set_value(
         f'user_session_{frappe.session.user}', frappe.session.user, expires_in_sec=900)
 
 
-def set_user_logged_out(login_manager):
+def set_user_inactive(login_manager):
     # Remove the user's session ID from the cache
     frappe.cache().delete_key(f'user_session_{frappe.session.user}')
 
 
 @frappe.whitelist()
-def get_logged_in_users():
+def get_active_users():
     # Get all the cache keys that match the pattern 'user_session_*'
     user_session_keys = frappe.cache().get_keys('user_session_*')
     # Decode the keys and split them to get the key name

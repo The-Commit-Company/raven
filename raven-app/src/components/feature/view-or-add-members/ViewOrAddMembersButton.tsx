@@ -6,10 +6,10 @@ import { ChannelContext } from "../../../utils/channel/ChannelProvider"
 interface ViewOrAddMembersButtonProps {
     onClickViewMembers: () => void,
     onClickAddMembers: () => void,
-    loggedinUsers: string[]
+    activeUsers: string[]
 }
 
-export const ViewOrAddMembersButton = ({ onClickViewMembers, onClickAddMembers, loggedinUsers }: ViewOrAddMembersButtonProps) => {
+export const ViewOrAddMembersButton = ({ onClickViewMembers, onClickAddMembers, activeUsers }: ViewOrAddMembersButtonProps) => {
 
     const { channelData, channelMembers } = useContext(ChannelContext)
     const members = Object.values(channelMembers)
@@ -20,7 +20,7 @@ export const ViewOrAddMembersButton = ({ onClickViewMembers, onClickAddMembers, 
                 <AvatarGroup size='xs' max={2} borderRadius='md' spacing={-1} fontSize='2xs'>
                     {members.map((member) => (
                         <Avatar key={member.name} name={member.full_name} src={member.user_image} borderRadius='md'>
-                            {loggedinUsers.includes(member.name) && <AvatarBadge boxSize='0.88em' bg='green.500' />}
+                            {activeUsers.includes(member.name) && <AvatarBadge boxSize='0.88em' bg='green.500' />}
                         </Avatar>
                     ))}
                 </AvatarGroup>

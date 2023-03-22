@@ -14,7 +14,7 @@ export const UserDataProvider = ({ children }: PropsWithChildren) => {
     const { data, error } = useFrappeGetCall<{ message: User }>('frappe.client.get_value', {
         doctype: "User",
         filters: JSON.stringify({ name: currentUser }),
-        fieldname: JSON.stringify(["name", "first_name", "full_name", "user_image", "last_active"])
+        fieldname: JSON.stringify(["name", "first_name", "full_name", "user_image"])
     })
 
     if (!data && !error) {

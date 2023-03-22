@@ -10,7 +10,7 @@ export const DirectMessageList = (userData: { userData: User | null }) => {
 
     const { url } = useContext(FrappeContext) as FrappeConfig
     const { data: users, error: usersError } = useFrappeGetDocList<User>("User", {
-        fields: ["full_name", "user_image", "name", "last_active"],
+        fields: ["full_name", "user_image", "name"],
         filters: [["name", "!=", "Guest"]]
     })
     const { call, error: channelError, loading, reset } = useFrappePostCall<{ message: string }>("raven.raven_channel_management.doctype.raven_channel.raven_channel.create_direct_message_channel")
@@ -22,7 +22,7 @@ export const DirectMessageList = (userData: { userData: User | null }) => {
         navigate(`/channel/${result?.message}`)
     }
 
-    const { data, error } = useFrappeGetCall<{ message: string }>('raven.api.user_availability.get_logged_in_users')
+    const { data, error } = useFrappeGetCall<{ message: string }>('raven.api.user_availability.get_active_users')
 
     if (usersError) {
         <AlertBanner status="error" heading={usersError.message}>{usersError.httpStatus} - {usersError.httpStatusText}</AlertBanner>
