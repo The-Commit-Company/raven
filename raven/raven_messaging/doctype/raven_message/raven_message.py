@@ -1,6 +1,5 @@
 # Copyright (c) 2023, Janhvi Patil and contributors
 # For license information, please see license.txt
-import raven
 import frappe
 from frappe.model.document import Document
 
@@ -24,7 +23,6 @@ class RavenMessage(Document):
         frappe.db.commit()
 
 
-@raven.set_availability()
 @frappe.whitelist(methods=['POST'])
 def send_message(channel_id, text):
     doc = frappe.get_doc({

@@ -27,7 +27,7 @@ def get_logged_in_users():
 
 
 @frappe.whitelist()
-def refresh_logged_in_state():
+def refresh_user_active_state():
 
     # Set the key again with a new expiry time
     frappe.cache().set_value(
