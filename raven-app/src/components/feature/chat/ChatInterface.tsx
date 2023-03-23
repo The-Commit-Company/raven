@@ -6,7 +6,6 @@ import { useFrappeEventListener } from "../../../hooks/useFrappeEventListener"
 import { ChannelData } from "../../../types/Channel/Channel"
 import { Message } from "../../../types/Messaging/Message"
 import { ChannelContext } from "../../../utils/channel/ChannelProvider"
-import { isLessThan15MinutesAgo } from "../../../utils/operations"
 import { UserDataContext } from "../../../utils/user/UserDataProvider"
 import { AlertBanner } from "../../layout/AlertBanner"
 import { PageHeader } from "../../layout/Heading/PageHeader"
@@ -72,6 +71,7 @@ export const ChatInterface = () => {
     const { isOpen, onOpen, onClose } = useDisclosure()
     const { createDoc, error: joinError } = useFrappeCreateDoc()
     const toast = useToast()
+    const { data: activeUsers, error: activeUsersError } = useFrappeGetCall<{ message: string[] }>('raven.api.user_availability.get_active_users')
 
     const joinChannel = () => {
         return createDoc('Raven Channel Member', {
@@ -119,7 +119,7 @@ export const ChatInterface = () => {
                                 (channelData.is_self_message == 0 ?
                                     <HStack>
                                         <Avatar name={channelMembers?.[peer]?.full_name} src={channelMembers?.[peer]?.user_image} borderRadius={'lg'} size="sm" >
-                                            {isLessThan15MinutesAgo(channelMembers?.[peer]?.last_active) && <AvatarBadge boxSize='0.88em' bg='green.500' />}
+                                            {activeUsers?.message.includes(peer) && !!!activeUsersError && <AvatarBadge boxSize='0.88em' bg='green.500' />}
                                         </Avatar>
                                         <Text>{channelMembers?.[peer]?.full_name}</Text>
                                     </HStack> :
@@ -139,8 +139,8 @@ export const ChatInterface = () => {
                         </HStack>
                     </PageHeading>
                 }
-                {channelData?.is_direct_message == 0 &&
-                    <ViewOrAddMembersButton onClickViewMembers={onViewDetailsModalOpen} onClickAddMembers={onOpen} />}
+                {channelData?.is_direct_message == 0 && activeUsers?.message &&
+                    <ViewOrAddMembersButton onClickViewMembers={onViewDetailsModalOpen} onClickAddMembers={onOpen} activeUsers={activeUsers.message} />}
             </PageHeader>
             <Stack h='calc(100vh - 54px)' justify={'flex-end'} p={4} overflow='hidden' mt='16'>
                 {data &&
@@ -152,7 +152,8 @@ export const ChatInterface = () => {
                         <HStack justify='center' align='center' pb={4}><BiHash /><Text>{channelData?.channel_name}</Text></HStack>
                         <HStack justify='center' align='center' spacing={4}><Button colorScheme='blue' variant='outline' size='sm' onClick={onViewDetailsModalOpen}>Details</Button><Button colorScheme='blue' variant='solid' size='sm' onClick={joinChannel}>Join Channel</Button></HStack></Box>}
             </Stack>
-            <ViewChannelDetailsModal isOpen={isViewDetailsModalOpen} onClose={onViewDetailsModalClose} />
+            {activeUsers?.message &&
+                <ViewChannelDetailsModal isOpen={isViewDetailsModalOpen} onClose={onViewDetailsModalClose} activeUsers={activeUsers.message} />}
             <AddChannelMemberModal isOpen={isOpen} onClose={onClose} />
         </>
     )

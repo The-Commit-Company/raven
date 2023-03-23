@@ -1,7 +1,7 @@
 import { SearchIcon } from "@chakra-ui/icons"
 import { Text, Avatar, HStack, Icon, IconButton, Input, InputGroup, InputLeftElement, List, ListItem, Stack, useColorMode, useDisclosure, Button } from "@chakra-ui/react"
 import { useContext, useState } from "react"
-import { GoPrimitiveDot } from "react-icons/go"
+import { BsFillCircleFill, BsCircle } from "react-icons/bs"
 import { RiUserAddLine } from "react-icons/ri"
 import { useDebounce } from "../../../hooks/useDebounce"
 import { AddChannelMemberModal } from "../channels/AddChannelMemberModal"
@@ -12,9 +12,10 @@ import { ChannelContext } from "../../../utils/channel/ChannelProvider"
 
 interface MemberDetailsProps {
     members: User[]
+    activeUsers: string[]
 }
 
-export const ChannelMemberDetails = ({ members }: MemberDetailsProps) => {
+export const ChannelMemberDetails = ({ members, activeUsers }: MemberDetailsProps) => {
 
     const [searchText, setSearchText] = useState("")
     const debouncedText = useDebounce(searchText, 50)
@@ -77,7 +78,10 @@ export const ChannelMemberDetails = ({ members }: MemberDetailsProps) => {
                                     <Avatar size='sm' src={member.user_image} name={member.full_name} borderRadius='md' />
                                     <HStack spacing={1}>
                                         <Text fontWeight='semibold'>{member.first_name}</Text>
-                                        <Icon as={GoPrimitiveDot} color='green.600' />
+                                        {activeUsers.includes(member.name) ?
+                                            <Icon as={BsFillCircleFill} color='green.500' h='8px' /> :
+                                            <Icon as={BsCircle} h='8px' />
+                                        }
                                         <Text fontWeight='light'>{member.full_name}</Text>
                                     </HStack>
                                 </HStack>

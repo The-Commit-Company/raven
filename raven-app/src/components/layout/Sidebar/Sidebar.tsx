@@ -7,7 +7,11 @@ import { DirectMessageList } from "../../feature/channels/DirectMessageList";
 import { UserContext } from "../../../utils/auth/UserProvider";
 import { RxExit } from "react-icons/rx";
 
-export const Sidebar = ({ children }: PropsWithChildren<{}>) => {
+interface SidebarProps extends PropsWithChildren<{}> {
+    isUserActive: boolean
+}
+
+export const Sidebar = ({ children, isUserActive }: SidebarProps) => {
 
     const { colorMode, toggleColorMode } = useColorMode()
     const { logout } = useContext(UserContext)
@@ -36,7 +40,7 @@ export const Sidebar = ({ children }: PropsWithChildren<{}>) => {
                     {userData &&
                         <HStack>
                             <Avatar size="xs" src={userData.user_image} name={userData.full_name} borderRadius='md'>
-                                <AvatarBadge boxSize='0.88em' bg='green.500' />
+                                {isUserActive && <AvatarBadge boxSize='0.88em' bg='green.500' />}
                             </Avatar>
                             <Text fontSize="sm">{userData.full_name}</Text>
                         </HStack>
@@ -52,7 +56,7 @@ export const Sidebar = ({ children }: PropsWithChildren<{}>) => {
                             <MenuItem as={Link} href="/app">Desk Interface</MenuItem>
                             <MenuItem onClick={logout}>Log Out</MenuItem>
                         </MenuList>
-                    </Menu>x
+                    </Menu>
                 </HStack>
             </Stack>
         </Stack>

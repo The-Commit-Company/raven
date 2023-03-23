@@ -13,8 +13,7 @@ type ChannelMembersDetails = {
     name: string,
     first_name: string,
     full_name: string,
-    user_image: string,
-    last_active: string
+    user_image: string
 }
 
 export const ChannelContext = createContext<{ channelMembers: Record<string, ChannelMembersDetails>; channelData?: ChannelData }>({ channelMembers: {} })

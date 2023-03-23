@@ -104,7 +104,6 @@ export const ChatInput = ({ channelID, allMembers, allChannels }: ChatInputProps
 
     const onMentionIconClick = () => {
         if (reactQuillRef.current) {
-            console.log("@ pressed")
             const editor = reactQuillRef.current?.getEditor()
             editor.getModule('mention').openMenu("@");
         }

@@ -7,10 +7,11 @@ import { ChannelMemberDetails } from "../channel-details/ChannelMemberDetails"
 
 interface ViewChannelDetailsModalProps {
     isOpen: boolean,
-    onClose: () => void
+    onClose: () => void,
+    activeUsers: string[]
 }
 
-export const ViewChannelDetailsModal = ({ isOpen, onClose }: ViewChannelDetailsModalProps) => {
+export const ViewChannelDetailsModal = ({ isOpen, onClose, activeUsers }: ViewChannelDetailsModalProps) => {
 
     const { channelMembers, channelData } = useContext(ChannelContext)
     const members = Object.values(channelMembers)
@@ -46,7 +47,7 @@ export const ViewChannelDetailsModal = ({ isOpen, onClose }: ViewChannelDetailsM
                                 <ChannelDetails />
                             </TabPanel>
                             <TabPanel px={0}>
-                                <ChannelMemberDetails members={members} />
+                                <ChannelMemberDetails members={members} activeUsers={activeUsers} />
                             </TabPanel>
                         </TabPanels>
                     </Tabs>
