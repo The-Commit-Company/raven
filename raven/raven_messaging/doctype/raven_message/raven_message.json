@@ -41,7 +41,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-03-05 08:00:05.858737",
+ "modified": "2023-04-12 16:44:29.314755",
  "modified_by": "Administrator",
  "module": "Raven Messaging",
  "name": "Raven Message",
@@ -83,6 +83,7 @@
    "share": 1
   }
  ],
+ "search_fields": "text",
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": []

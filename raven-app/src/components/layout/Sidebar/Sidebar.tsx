@@ -1,13 +1,11 @@
-import { Divider, HStack, IconButton, useColorMode, Text, Stack, Avatar, AvatarBadge, Menu, MenuButton, MenuList, MenuItem, Link, useDisclosure } from "@chakra-ui/react";
+import { Divider, HStack, IconButton, useColorMode, Text, Stack, Avatar, AvatarBadge, Menu, MenuButton, MenuList, MenuItem, Link } from "@chakra-ui/react";
 import { PropsWithChildren, useContext } from "react";
-import { HiOutlineMoon, HiOutlineSun, HiOutlineSearch } from "react-icons/hi"
+import { HiOutlineMoon, HiOutlineSun } from "react-icons/hi"
 import { ChannelList } from "../../feature/channels/ChannelList";
 import { UserDataContext } from "../../../utils/user/UserDataProvider"
 import { DirectMessageList } from "../../feature/channels/DirectMessageList";
 import { UserContext } from "../../../utils/auth/UserProvider";
 import { RxExit } from "react-icons/rx";
-import { GlobalSearchModal } from "../../feature/global-search/GlobalSearchModal";
-import { CommandPalette } from "../../feature/command-palette";
 
 interface SidebarProps extends PropsWithChildren<{}> {
     isUserActive: boolean

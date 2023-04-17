@@ -1,17 +1,26 @@
-import { Box, Button, Center, HStack, Spinner, Text, useModalContext } from "@chakra-ui/react"
+import { Avatar, Box, Button, Center, HStack, Icon, Spinner, Text, useModalContext } from "@chakra-ui/react"
 import { Command } from "cmdk"
-import { Filter, useFrappeGetDocList, useSearch } from "frappe-react-sdk"
+import { Filter, useSearch } from "frappe-react-sdk"
 import { useContext } from "react"
-import { IoFileTrayFullOutline } from "react-icons/io5"
-import { MdOutlineDashboard } from "react-icons/md"
-import { TbFiles, TbFileSearch, TbHash, TbListSearch, TbMessages, TbReportSearch, TbUsers } from "react-icons/tb"
+import { BsFillCircleFill, BsCircle } from "react-icons/bs"
+import { TbFiles, TbHash, TbListSearch, TbMessages, TbUsers } from "react-icons/tb"
 import { useNavigate } from "react-router-dom"
+import { User } from "../../../types/User/User"
 import { UserContext } from "../../../utils/auth/UserProvider"
 import { ChannelContext } from "../../../utils/channel/ChannelProvider"
+import { MarkdownRenderer } from "../markdown-viewer/MarkdownRenderer.tsx"
 
 interface Props {
     searchChange: Function
     input: string
+}
+
+interface PeopleProps {
+    users: User[]
+    input: string
+    activeUsers: string[]
+    gotoDMChannel: Function
+    currentUser: string
 }
 
 export const Home = ({ searchChange, input }: Props) => {
@@ -138,8 +147,26 @@ export const Channels = ({ input }: { input: string }) => {
     return <LoadOptions doctype='Raven Channel' input={input} filters={[["is_direct_message", "=", 0]]} />
 }
 
-export const People = ({ input }: { input: string }) => {
-    return <LoadOptions doctype='User' input={input} filters={[["name", "!=", "administrator"]]} />
+export const People = ({ input, users, activeUsers, gotoDMChannel, currentUser }: PeopleProps) => {
+    return <Command.List>{users.map(user => {
+        return (
+            user.full_name.toLowerCase().includes(input.toLowerCase()) &&
+            <Item
+                onSelect={() => {
+                    gotoDMChannel(user.name)
+                }}>
+                <HStack p='2' spacing={3}>
+                    <Avatar size='sm' src={user.user_image} name={user.full_name} borderRadius='md' />
+                    <HStack spacing={2}>
+                        {user.name === currentUser ? <Text>{user.full_name} (you)</Text> : <Text>{user.full_name}</Text>}
+                        {activeUsers.includes(user.name) ?
+                            <Icon as={BsFillCircleFill} color='green.500' h='8px' /> :
+                            <Icon as={BsCircle} h='8px' />
+                        }
+                    </HStack>
+                </HStack>
+            </Item>)
+    })}</Command.List>
 }
 
 export const FindIn = ({ input }: { input: string }) => {
@@ -179,6 +206,7 @@ export const LoadOptions = ({ doctype, input, filters }: { doctype: string, inpu
     const { data, isValidating } = useSearch(doctype, input, filters, 20)
     const navigate = useNavigate()
     const { channelData } = useContext(ChannelContext)
+    console.log(data)
 
     const { onClose } = useModalContext()
 
@@ -192,16 +220,16 @@ export const LoadOptions = ({ doctype, input, filters }: { doctype: string, inpu
             </Command.Loading>}
             {data?.results?.map(r => <Item key={r.value} value={r.value} onSelect={() => {
                 switch (doctype) {
-                    case 'Messages':
+                    case 'Raven Message':
                         navigate(`/channel/`)
                         break
-                    case 'Files':
+                    case 'Raven Message':
                         navigate(`/channel/`)
                         break
-                    case 'Channels':
-                        navigate(`/channel/`)
+                    case 'Raven Channel':
+                        navigate(`/channel/${r.value}`)
                         break
-                    case 'People':
+                    case 'User':
                         navigate(`/channel/`)
                         break
                     default:
@@ -209,7 +237,7 @@ export const LoadOptions = ({ doctype, input, filters }: { doctype: string, inpu
                 }
                 onClose()
 
-            }}>{r.label ? r.label : r.description}</Item>)}
+            }}>{doctype == "Raven Message" ? <MarkdownRenderer content={r.description} /> : (r.label ? r.label : r.description)}</Item>)}
         </Command.List>
     )
 }

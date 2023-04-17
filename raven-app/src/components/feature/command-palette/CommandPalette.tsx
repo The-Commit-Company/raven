@@ -1,10 +1,15 @@
-import React, { useEffect } from 'react'
+import React, { useContext, useEffect } from 'react'
 import { Command } from 'cmdk'
-import { Box, Button, CloseButton, HStack, Modal, ModalCloseButton, ModalContent, ModalOverlay, useDisclosure } from '@chakra-ui/react'
+import { Box, CloseButton, HStack, Modal, ModalCloseButton, ModalContent, ModalOverlay } from '@chakra-ui/react'
 import './styles.css'
 import { Home, Messages, Files, Channels, People, FindIn } from './CommandPaletteActions'
 import { useHotkeys } from 'react-hotkeys-hook'
 import { useDebounce } from '../../../hooks/useDebounce'
+import { ChannelContext } from '../../../utils/channel/ChannelProvider'
+import { useFrappeGetCall, useFrappeGetDocList, useFrappePostCall } from 'frappe-react-sdk'
+import { useNavigate } from 'react-router-dom'
+import { User } from '../../../types/User/User'
+import { UserContext } from '../../../utils/auth/UserProvider'
 
 interface CommandPaletteProps {
     isOpen: boolean,
@@ -19,6 +24,22 @@ export const CommandPalette = ({ isOpen, onClose, onToggle }: CommandPaletteProp
     const activePage = pages[pages.length - 1]
     const isHome = activePage === ''
     const debouncedText = useDebounce(inputValue, 200)
+    const { channelMembers } = useContext(ChannelContext)
+    const { currentUser } = useContext(UserContext)
+    const members = Object.values(channelMembers)
+    const { data: activeUsers, error: activeUsersError } = useFrappeGetCall<{ message: string[] }>('raven.api.user_availability.get_active_users')
+    const { call, error: channelError, loading, reset } = useFrappePostCall<{ message: string }>("raven.raven_channel_management.doctype.raven_channel.raven_channel.create_direct_message_channel")
+    let navigate = useNavigate()
+    const gotoDMChannel = async (user: string) => {
+        reset()
+        const result = await call({ user_id: user })
+        navigate(`/channel/${result?.message}`)
+    }
+    const { data: users, error: usersError } = useFrappeGetDocList<User>("User", {
+        fields: ["full_name", "user_image", "name"],
+        filters: [["name", "!=", "Guest"]]
+    })
+
 
 
     const popPage = React.useCallback(() => {
@@ -69,7 +90,20 @@ export const CommandPalette = ({ isOpen, onClose, onToggle }: CommandPaletteProp
                             </Box>
                         ))}
                         <Command.Input autoFocus
-                            placeholder="Search messages, files, people, etc."
+                            placeholder={function () {
+                                switch (activePage) {
+                                    case 'messages':
+                                        return "Search messages";
+                                    case 'files':
+                                        return "Search files";
+                                    case 'channels':
+                                        return "Search channels";
+                                    case 'people':
+                                        return "Search people";
+                                    default:
+                                        return "Search messages, files, people, etc.";
+                                }
+                            }()}
                             value={debouncedText}
                             onValueChange={setInputValue} /></HStack>
 
@@ -77,7 +111,7 @@ export const CommandPalette = ({ isOpen, onClose, onToggle }: CommandPaletteProp
                     {activePage === 'messages' && <Messages input={debouncedText} />}
                     {activePage === 'files' && <Files input={debouncedText} />}
                     {activePage === 'channels' && <Channels input={debouncedText} />}
-                    {activePage === 'people' && <People input={debouncedText} />}
+                    {activePage === 'people' && activeUsers && users && <People input={debouncedText} users={users} activeUsers={activeUsers?.message} gotoDMChannel={gotoDMChannel} currentUser={currentUser} />}
                     {activePage === 'find in' && <FindIn input={debouncedText} />}
 
                 </Command>
