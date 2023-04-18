@@ -2,7 +2,7 @@ import React, { useContext, useEffect } from 'react'
 import { Command } from 'cmdk'
 import { Box, CloseButton, HStack, Modal, ModalCloseButton, ModalContent, ModalOverlay } from '@chakra-ui/react'
 import './styles.css'
-import { Home, Messages, Files, Channels, People, FindIn } from './CommandPaletteActions'
+import { Home, Messages, Files, Channels, People, FindIn, FindFrom } from './CommandPaletteActions'
 import { useHotkeys } from 'react-hotkeys-hook'
 import { useDebounce } from '../../../hooks/useDebounce'
 import { ChannelContext } from '../../../utils/channel/ChannelProvider'
@@ -24,7 +24,7 @@ export const CommandPalette = ({ isOpen, onClose, onToggle }: CommandPaletteProp
     const activePage = pages[pages.length - 1]
     const isHome = activePage === ''
     const debouncedText = useDebounce(inputValue, 200)
-    const { channelMembers } = useContext(ChannelContext)
+    const { channelMembers, channelData } = useContext(ChannelContext)
     const { currentUser } = useContext(UserContext)
     const members = Object.values(channelMembers)
     const { data: activeUsers, error: activeUsersError } = useFrappeGetCall<{ message: string[] }>('raven.api.user_availability.get_active_users')
@@ -100,6 +100,10 @@ export const CommandPalette = ({ isOpen, onClose, onToggle }: CommandPaletteProp
                                         return "Search channels";
                                     case 'people':
                                         return "Search people";
+                                    case 'in':
+                                        return "Search in";
+                                    case 'from':
+                                        return "Search from";
                                     default:
                                         return "Search messages, files, people, etc.";
                                 }
@@ -108,11 +112,13 @@ export const CommandPalette = ({ isOpen, onClose, onToggle }: CommandPaletteProp
                             onValueChange={setInputValue} /></HStack>
 
                     {activePage === '' && <Home input={debouncedText} searchChange={(pageChange: string) => { setInputValue(""); setPages([...pages, pageChange]) }} />}
-                    {activePage === 'messages' && <Messages input={debouncedText} />}
-                    {activePage === 'files' && <Files input={debouncedText} />}
+                    {activePage === 'messages' && <Messages input={debouncedText} searchChange={(pageChange: string) => { setInputValue(""); setPages([...pages, pageChange]) }} />}
+                    {activePage === 'files' && <Files input={debouncedText} searchChange={(pageChange: string) => { setInputValue(""); setPages([...pages, pageChange]) }} />}
                     {activePage === 'channels' && <Channels input={debouncedText} />}
                     {activePage === 'people' && activeUsers && users && <People input={debouncedText} users={users} activeUsers={activeUsers?.message} gotoDMChannel={gotoDMChannel} currentUser={currentUser} />}
-                    {activePage === 'find in' && <FindIn input={debouncedText} />}
+                    {activePage === 'in' && <FindIn input={debouncedText} />}
+                    {activePage === 'from' && <FindFrom input={debouncedText} />}
+                    {activePage === 'find in' && channelData?.name && <FindIn input={debouncedText} filters={[["name", "=", channelData?.name]]} />}
 
                 </Command>
             </ModalContent>

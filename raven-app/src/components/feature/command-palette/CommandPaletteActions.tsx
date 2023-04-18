@@ -42,52 +42,6 @@ export const Home = ({ searchChange, input }: Props) => {
             <Command.Empty>
                 <Button w='full' fontWeight="light" variant='ghost' alignContent='end'>{input} - Search messages, files and more</Button>
             </Command.Empty>
-            {/* 
-            <Command.Group heading="Messages" style={style}>
-                <Item
-                    // shortcut="⌘ S M"
-                    onSelect={() => {
-                        searchChange('messages')
-                    }}
-                >
-                    <TbReportSearch fontSize={20} />
-                    Search Messages...
-                </Item>
-            </Command.Group>
-            <Command.Group heading="Files" style={style}>
-                <Item
-                    // shortcut="⌘ S T"
-                    onSelect={() => {
-                        searchChange('files')
-                    }}
-                >
-                    <TbListSearch fontSize={20} />
-                    Search Files...
-                </Item>
-            </Command.Group>
-            <Command.Group heading='Channels' style={style}>
-                <Item
-                    // shortcut="⌘ D"
-                    onSelect={() => {
-                        searchChange('channels')
-                    }}
-                >
-                    <MdOutlineDashboard fontSize={20} />
-                    Search Channels...
-                </Item>
-            </Command.Group>
-
-            <Command.Group heading="People" style={style}>
-                <Item
-                    // shortcut="⌘ S P"
-                    onSelect={() => {
-                        searchChange('people')
-                    }}
-                >
-                    <TbFileSearch fontSize={20} />
-                    Search People...
-                </Item>
-            </Command.Group> */}
             <Command.Group style={style}>
                 {channelData && <Item
                     // shortcut="⌘ S T"
@@ -136,24 +90,45 @@ export const Home = ({ searchChange, input }: Props) => {
     )
 }
 
-export const Messages = ({ input }: { input: string }) => {
-    return <LoadOptions doctype='Raven Message' input={input} filters={[["message_type", "=", "Text"]]} />
+export const Messages = ({ searchChange, input }: Props) => {
+    return (
+        <Command.List>
+            <Command.Empty>
+                <Button w='full' fontWeight="light" variant='ghost' alignContent='end'>{input} - Search messages</Button>
+            </Command.Empty>
+            {!input && <Command.Group heading="Narrow your search">
+                <Item onSelect={() => {
+                    searchChange('in')
+                }}>in a channel or direct message</Item>
+                <Item onSelect={() => {
+                    searchChange('from')
+                }}>from anyone on Slack</Item>
+            </Command.Group>}
+        </Command.List>
+    )
 }
 
-export const Files = ({ input }: { input: string }) => {
-    return <LoadOptions doctype='Raven Message' input={input} filters={[["message_type", "=", "File"]]} />
-}
-
-export const Channels = ({ input }: { input: string }) => {
-    const { data, isValidating } = useSearch('Raven Channel', input, [["is_direct_message", "=", "0"]], 20)
+export const Files = ({ searchChange, input }: Props) => {
+    const { data, isValidating } = useSearch('Raven Message', input, [["file", "!=", ""]], 5)
     const navigate = useNavigate()
     console.log(data)
 
     const { onClose } = useModalContext()
 
     return (
-        <Command.Group heading={data?.results?.length ? "Recent channels" : ""} >
-            <Command.List>
+        <Command.List>
+            <Command.Empty>
+                <Button w='full' fontWeight="light" variant='ghost' alignContent='end'>{input} - Search files</Button>
+            </Command.Empty>
+            {!input && <Command.Group heading="Narrow your search">
+                <Item onSelect={() => {
+                    searchChange('in')
+                }}>in a channel or direct message</Item>
+                <Item onSelect={() => {
+                    searchChange('from')
+                }}>from anyone on Slack</Item>
+            </Command.Group>}
+            <Command.Group heading={data?.results?.length ? "Recent files" : ""}>
                 {isValidating && !data?.results?.length && <Text py='4' color='gray.500' textAlign='center' fontSize='sm'>No results found.</Text>}
                 {isValidating && <Command.Loading>
                     <Center px='4' pb='2'>
@@ -164,8 +139,35 @@ export const Channels = ({ input }: { input: string }) => {
                     navigate(`/channel/${r.value}`)
                     onClose()
                 }}>{r.description.includes("Private") && <BiLockAlt /> || r.description.includes("Public") && <BiHash /> || r.description.includes("Open") && <BiGlobe />}{r.label}</Item>)}
-            </Command.List>
-        </Command.Group>
+            </Command.Group>
+        </Command.List>
+    )
+}
+
+export const Channels = ({ input }: { input: string }) => {
+    const { data, isValidating } = useSearch('Raven Channel', input, [["is_direct_message", "=", "0"]], 20)
+    const navigate = useNavigate()
+
+    const { onClose } = useModalContext()
+
+    return (
+        <Command.List>
+            <Command.Empty>
+                <Button w='full' fontWeight="light" variant='ghost' alignContent='end'>{input} - Search channels</Button>
+            </Command.Empty>
+            <Command.Group heading={data?.results?.length ? "Recent channels" : ""} >
+                {isValidating && !data?.results?.length && <Text py='4' color='gray.500' textAlign='center' fontSize='sm'>No results found.</Text>}
+                {isValidating && <Command.Loading>
+                    <Center px='4' pb='2'>
+                        <Box><Spinner size={'xs'} color='gray.400' /></Box>
+                    </Center>
+                </Command.Loading>}
+                {data?.results?.map(r => <Item key={r.value} value={r.value} onSelect={() => {
+                    navigate(`/channel/${r.value}`)
+                    onClose()
+                }}>{r.description.includes("Private") && <BiLockAlt /> || r.description.includes("Public") && <BiHash /> || r.description.includes("Open") && <BiGlobe />}{r.label}</Item>)}
+            </Command.Group>
+        </Command.List>
     )
 }
 
@@ -176,33 +178,41 @@ export const People = ({ input, users, activeUsers, gotoDMChannel, currentUser }
         }
         return count;
     }, 0)
-    return <Command.Group heading={results_count > 0 ? "Recent direct messages" : ""} >
-        <Command.List>{users.map(user => {
-            if (user.full_name.toLowerCase().includes(input.toLowerCase())) {
-                return (
-                    <Item key={user.name}
-                        onSelect={() => {
-                            gotoDMChannel(user.name)
-                        }}>
-                        <HStack p='2' spacing={3}>
-                            <Avatar size='sm' src={user.user_image} name={user.full_name} borderRadius='md' />
-                            <HStack spacing={2}>
-                                {user.name === currentUser ? <Text>{user.full_name} (you)</Text> : <Text>{user.full_name}</Text>}
-                                {activeUsers.includes(user.name) ?
-                                    <Icon as={BsFillCircleFill} color='green.500' h='8px' /> :
-                                    <Icon as={BsCircle} h='8px' />}
+    return <Command.List>
+        <Command.Empty>
+            <Button w='full' fontWeight="light" variant='ghost' alignContent='end'>{input} - Search people</Button>
+        </Command.Empty>
+        <Command.Group heading={results_count > 0 ? "Recent direct messages" : ""} >
+            {users.map(user => {
+                if (user.full_name.toLowerCase().includes(input.toLowerCase())) {
+                    return (
+                        <Item key={user.name}
+                            onSelect={() => {
+                                gotoDMChannel(user.name)
+                            }}>
+                            <HStack p='2' spacing={3}>
+                                <Avatar size='sm' src={user.user_image} name={user.full_name} borderRadius='md' />
+                                <HStack spacing={2}>
+                                    {user.name === currentUser ? <Text>{user.full_name} (you)</Text> : <Text>{user.full_name}</Text>}
+                                    {activeUsers.includes(user.name) ?
+                                        <Icon as={BsFillCircleFill} color='green.500' h='8px' /> :
+                                        <Icon as={BsCircle} h='8px' />}
+                                </HStack>
                             </HStack>
-                        </HStack>
-                    </Item>)
-            }
-        })}</Command.List>
-    </Command.Group>
+                        </Item>)
+                }
+            })}
+        </Command.Group>
+    </Command.List>
 }
 
-export const FindIn = ({ input }: { input: string }) => {
-    return <LoadOptions doctype='Raven Message' input={input} />
+export const FindIn = ({ input, filters }: { input: string, filters?: Filter[] }) => {
+    return <LoadOptions doctype='Raven Channel' input={input} filters={filters} />
 }
 
+export const FindFrom = ({ input }: { input: string }) => {
+    return <LoadOptions doctype='User' input={input} />
+}
 
 export const Item = ({
     children,
@@ -235,8 +245,6 @@ export const LoadOptions = ({ doctype, input, filters }: { doctype: string, inpu
 
     const { data, isValidating } = useSearch(doctype, input, filters, 20)
     const navigate = useNavigate()
-    const { channelData } = useContext(ChannelContext)
-    console.log(data)
 
     const { onClose } = useModalContext()
 
