@@ -152,7 +152,7 @@ export const Channels = ({ input }: { input: string }) => {
     const { onClose } = useModalContext()
 
     return (
-        <Command.Group heading="Recent channels" >
+        <Command.Group heading={data?.results?.length ? "Recent channels" : ""} >
             <Command.List>
                 {isValidating && !data?.results?.length && <Text py='4' color='gray.500' textAlign='center' fontSize='sm'>No results found.</Text>}
                 {isValidating && <Command.Loading>
@@ -170,24 +170,31 @@ export const Channels = ({ input }: { input: string }) => {
 }
 
 export const People = ({ input, users, activeUsers, gotoDMChannel, currentUser }: PeopleProps) => {
-    return <Command.Group heading="Recent direct messages" >
+    const results_count = users.reduce((count, user) => {
+        if (user.full_name.toLowerCase().includes(input.toLowerCase())) {
+            return count + 1;
+        }
+        return count;
+    }, 0)
+    return <Command.Group heading={results_count > 0 ? "Recent direct messages" : ""} >
         <Command.List>{users.map(user => {
-            return (
-                user.full_name.toLowerCase().includes(input.toLowerCase()) &&
-                <Item
-                    onSelect={() => {
-                        gotoDMChannel(user.name)
-                    }}>
-                    <HStack p='2' spacing={3}>
-                        <Avatar size='sm' src={user.user_image} name={user.full_name} borderRadius='md' />
-                        <HStack spacing={2}>
-                            {user.name === currentUser ? <Text>{user.full_name} (you)</Text> : <Text>{user.full_name}</Text>}
-                            {activeUsers.includes(user.name) ?
-                                <Icon as={BsFillCircleFill} color='green.500' h='8px' /> :
-                                <Icon as={BsCircle} h='8px' />}
+            if (user.full_name.toLowerCase().includes(input.toLowerCase())) {
+                return (
+                    <Item key={user.name}
+                        onSelect={() => {
+                            gotoDMChannel(user.name)
+                        }}>
+                        <HStack p='2' spacing={3}>
+                            <Avatar size='sm' src={user.user_image} name={user.full_name} borderRadius='md' />
+                            <HStack spacing={2}>
+                                {user.name === currentUser ? <Text>{user.full_name} (you)</Text> : <Text>{user.full_name}</Text>}
+                                {activeUsers.includes(user.name) ?
+                                    <Icon as={BsFillCircleFill} color='green.500' h='8px' /> :
+                                    <Icon as={BsCircle} h='8px' />}
+                            </HStack>
                         </HStack>
-                    </HStack>
-                </Item>)
+                    </Item>)
+            }
         })}</Command.List>
     </Command.Group>
 }
