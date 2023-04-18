@@ -2,6 +2,7 @@ import { Avatar, Box, Button, Center, HStack, Icon, Spinner, Text, useModalConte
 import { Command } from "cmdk"
 import { Filter, useSearch } from "frappe-react-sdk"
 import { useContext } from "react"
+import { BiGlobe, BiHash, BiLockAlt } from "react-icons/bi"
 import { BsFillCircleFill, BsCircle } from "react-icons/bs"
 import { TbFiles, TbHash, TbListSearch, TbMessages, TbUsers } from "react-icons/tb"
 import { useNavigate } from "react-router-dom"
@@ -144,29 +145,51 @@ export const Files = ({ input }: { input: string }) => {
 }
 
 export const Channels = ({ input }: { input: string }) => {
-    return <LoadOptions doctype='Raven Channel' input={input} filters={[["is_direct_message", "=", 0]]} />
+    const { data, isValidating } = useSearch('Raven Channel', input, [["is_direct_message", "=", "0"]], 20)
+    const navigate = useNavigate()
+    console.log(data)
+
+    const { onClose } = useModalContext()
+
+    return (
+        <Command.Group heading="Recent channels" >
+            <Command.List>
+                {isValidating && !data?.results?.length && <Text py='4' color='gray.500' textAlign='center' fontSize='sm'>No results found.</Text>}
+                {isValidating && <Command.Loading>
+                    <Center px='4' pb='2'>
+                        <Box><Spinner size={'xs'} color='gray.400' /></Box>
+                    </Center>
+                </Command.Loading>}
+                {data?.results?.map(r => <Item key={r.value} value={r.value} onSelect={() => {
+                    navigate(`/channel/${r.value}`)
+                    onClose()
+                }}>{r.description.includes("Private") && <BiLockAlt /> || r.description.includes("Public") && <BiHash /> || r.description.includes("Open") && <BiGlobe />}{r.label}</Item>)}
+            </Command.List>
+        </Command.Group>
+    )
 }
 
 export const People = ({ input, users, activeUsers, gotoDMChannel, currentUser }: PeopleProps) => {
-    return <Command.List>{users.map(user => {
-        return (
-            user.full_name.toLowerCase().includes(input.toLowerCase()) &&
-            <Item
-                onSelect={() => {
-                    gotoDMChannel(user.name)
-                }}>
-                <HStack p='2' spacing={3}>
-                    <Avatar size='sm' src={user.user_image} name={user.full_name} borderRadius='md' />
-                    <HStack spacing={2}>
-                        {user.name === currentUser ? <Text>{user.full_name} (you)</Text> : <Text>{user.full_name}</Text>}
-                        {activeUsers.includes(user.name) ?
-                            <Icon as={BsFillCircleFill} color='green.500' h='8px' /> :
-                            <Icon as={BsCircle} h='8px' />
-                        }
+    return <Command.Group heading="Recent direct messages" >
+        <Command.List>{users.map(user => {
+            return (
+                user.full_name.toLowerCase().includes(input.toLowerCase()) &&
+                <Item
+                    onSelect={() => {
+                        gotoDMChannel(user.name)
+                    }}>
+                    <HStack p='2' spacing={3}>
+                        <Avatar size='sm' src={user.user_image} name={user.full_name} borderRadius='md' />
+                        <HStack spacing={2}>
+                            {user.name === currentUser ? <Text>{user.full_name} (you)</Text> : <Text>{user.full_name}</Text>}
+                            {activeUsers.includes(user.name) ?
+                                <Icon as={BsFillCircleFill} color='green.500' h='8px' /> :
+                                <Icon as={BsCircle} h='8px' />}
+                        </HStack>
                     </HStack>
-                </HStack>
-            </Item>)
-    })}</Command.List>
+                </Item>)
+        })}</Command.List>
+    </Command.Group>
 }
 
 export const FindIn = ({ input }: { input: string }) => {
