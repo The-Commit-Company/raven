@@ -1,6 +1,6 @@
 import React, { useContext, useEffect } from 'react'
 import { Command } from 'cmdk'
-import { Box, CloseButton, HStack, Modal, ModalCloseButton, ModalContent, ModalOverlay } from '@chakra-ui/react'
+import { Box, CloseButton, HStack, Modal, ModalCloseButton, ModalContent, ModalOverlay, useColorMode } from '@chakra-ui/react'
 import './styles.css'
 import { Home, Messages, Files, Channels, People, FindIn, FindFrom } from './CommandPaletteActions'
 import { useHotkeys } from 'react-hotkeys-hook'
@@ -10,6 +10,7 @@ import { useFrappeGetCall, useFrappeGetDocList, useFrappePostCall } from 'frappe
 import { useNavigate } from 'react-router-dom'
 import { User } from '../../../types/User/User'
 import { UserContext } from '../../../utils/auth/UserProvider'
+import { TbSearch } from 'react-icons/tb'
 
 interface CommandPaletteProps {
     isOpen: boolean,
@@ -61,12 +62,14 @@ export const CommandPalette = ({ isOpen, onClose, onToggle }: CommandPaletteProp
         setPages([''])
     }, [isOpen])
 
+    const { colorMode } = useColorMode()
+
     return (
         <Modal isOpen={isOpen} onClose={onClose}>
             <ModalOverlay bg='rgba(0,0,0,0.1)' />
-            <ModalContent p={2} rounded='xl' shadow='xl' minW={600}>
+            <ModalContent p={2} rounded='xl' shadow='xl' minW={600} bg={colorMode === 'light' ? 'white' : 'gray.800'}>
                 <ModalCloseButton />
-                <Command aria-label="Command menu" className='palette' ref={ref}
+                <Command aria-label="Command menu" className={colorMode === 'light' ? 'palette light-theme' : 'palette dark-theme'} ref={ref}
                     onKeyDown={(e: React.KeyboardEvent) => {
 
                         if (isHome || debouncedText.length) {
@@ -78,7 +81,7 @@ export const CommandPalette = ({ isOpen, onClose, onToggle }: CommandPaletteProp
                             popPage()
                         }
                     }} shouldFilter={activePage === ""}>
-                    <HStack>
+                    <HStack cmdk-search="">
                         {pages.map((p) => (p &&
                             <Box key={p} cmdk-badge="">
                                 {p}
@@ -89,6 +92,7 @@ export const CommandPalette = ({ isOpen, onClose, onToggle }: CommandPaletteProp
                                 })} />
                             </Box>
                         ))}
+                        {!activePage && <TbSearch size={20} />}
                         <Command.Input autoFocus
                             placeholder={function () {
                                 switch (activePage) {
@@ -109,7 +113,8 @@ export const CommandPalette = ({ isOpen, onClose, onToggle }: CommandPaletteProp
                                 }
                             }()}
                             value={debouncedText}
-                            onValueChange={setInputValue} /></HStack>
+                            onValueChange={setInputValue} />
+                    </HStack>
 
                     {activePage === '' && <Home input={debouncedText} searchChange={(pageChange: string) => { setInputValue(""); setPages([...pages, pageChange]) }} />}
                     {activePage === 'messages' && <Messages input={debouncedText} searchChange={(pageChange: string) => { setInputValue(""); setPages([...pages, pageChange]) }} />}
@@ -118,8 +123,9 @@ export const CommandPalette = ({ isOpen, onClose, onToggle }: CommandPaletteProp
                     {activePage === 'people' && activeUsers && users && <People input={debouncedText} users={users} activeUsers={activeUsers?.message} gotoDMChannel={gotoDMChannel} currentUser={currentUser} />}
                     {activePage === 'in' && <FindIn input={debouncedText} />}
                     {activePage === 'from' && <FindFrom input={debouncedText} />}
-                    {activePage === 'find in' && channelData?.name && <FindIn input={debouncedText} filters={[["name", "=", channelData?.name]]} />}
-
+                    <Box cmdk-footer="">
+                        Not the result that you expected? Deal with it.
+                    </Box>
                 </Command>
             </ModalContent>
         </Modal>

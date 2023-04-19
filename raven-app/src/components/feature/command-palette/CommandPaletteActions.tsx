@@ -4,7 +4,7 @@ import { Filter, useSearch } from "frappe-react-sdk"
 import { useContext } from "react"
 import { BiGlobe, BiHash, BiLockAlt } from "react-icons/bi"
 import { BsFillCircleFill, BsCircle } from "react-icons/bs"
-import { TbFiles, TbHash, TbListSearch, TbMessages, TbUsers } from "react-icons/tb"
+import { TbFiles, TbHash, TbListSearch, TbMessages, TbSearch, TbUsers } from "react-icons/tb"
 import { useNavigate } from "react-router-dom"
 import { User } from "../../../types/User/User"
 import { UserContext } from "../../../utils/auth/UserProvider"
@@ -41,12 +41,13 @@ export const Home = ({ searchChange, input }: Props) => {
         <Command.List>
             <Command.Empty>
                 <Button w='full' fontWeight="light" variant='ghost' alignContent='end'>{input} - Search messages, files and more</Button>
+
             </Command.Empty>
             <Command.Group style={style}>
                 {channelData && <Item
                     // shortcut="⌘ S T"
                     onSelect={() => {
-                        searchChange('find in')
+                        // searchChange('find in')
                     }}
                 >
                     <TbListSearch fontSize={20} />
@@ -99,10 +100,10 @@ export const Messages = ({ searchChange, input }: Props) => {
             {!input && <Command.Group heading="Narrow your search">
                 <Item onSelect={() => {
                     searchChange('in')
-                }}>in a channel or direct message</Item>
+                }}><TbSearch />in a channel or direct message</Item>
                 <Item onSelect={() => {
                     searchChange('from')
-                }}>from anyone on Slack</Item>
+                }}><TbSearch />from anyone on Slack</Item>
             </Command.Group>}
         </Command.List>
     )
@@ -123,10 +124,10 @@ export const Files = ({ searchChange, input }: Props) => {
             {!input && <Command.Group heading="Narrow your search">
                 <Item onSelect={() => {
                     searchChange('in')
-                }}>in a channel or direct message</Item>
+                }}><TbSearch />in a channel or direct message</Item>
                 <Item onSelect={() => {
                     searchChange('from')
-                }}>from anyone on Slack</Item>
+                }}><TbSearch />from anyone on Slack</Item>
             </Command.Group>}
             <Command.Group heading={data?.results?.length ? "Recent files" : ""}>
                 {isValidating && !data?.results?.length && <Text py='4' color='gray.500' textAlign='center' fontSize='sm'>No results found.</Text>}

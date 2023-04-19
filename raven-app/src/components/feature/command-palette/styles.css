@@ -1,12 +1,34 @@
+.light-theme {
+    --gray: var(--chakra-colors-gray-100);
+    --bg-gray: var(--chakra-colors-white);
+    --box-shadow: var(--chakra-shadows-md);
+    --border: var(--chakra-borders-1);
+    --item: var(--chakra-colors-gray-100);
+    --item-hover: var(--chakra-colors-gray-100);
+    --text: var(--chakra-colors-gray-900);
+    --text-alt: var(--chakra-colors-gray-500);
+}
+
+.dark-theme {
+    --gray: var(--chakra-colors-gray-700);
+    --bg-gray: var(--chakra-colors-gray-800);
+    --box-shadow: var(--chakra-shadows-md);
+    --border: var(--chakra-borders-1);
+    --item: var(--chakra-colors-gray-700);
+    --item-hover: var(--chakra-colors-gray-700);
+    --text: var(--chakra-colors-gray-100);
+    --text-alt: var(--chakra-colors-gray-500);
+}
+
 .palette [cmdk-root] {
     max-width: 640px;
     width: 100%;
     padding: 8px;
-    background: #ffffff;
+    background: var(--bg-gray);
     border-radius: 12px;
     overflow: hidden;
-    border: 1px solid hsl(0, 0%, 88.7%);
-    box-shadow: 0 16px 70px rgb(0 0 0 / 20%);
+    border: 1px solid var(--border);
+    box-shadow: 0 16px 70px var(--box-shadow);
     transition: transform 100ms ease;
 }
 
@@ -21,7 +43,7 @@
     align-items: center;
     gap: 8px;
     padding: 0 12px;
-    color: hsl(0, 0%, 43.5%);
+    color: var(--text);
     user-select: none;
     will-change: background, color;
     transition: all 150ms ease;
@@ -29,33 +51,43 @@
 }
 
 .palette [cmdk-item][aria-selected='true'] {
-    background: hsla(0, 0%, 0%, 0.047);
-    color: hsl(0, 0%, 9%);
+    background: var(--item-hover);
+    color: var(--text);
 }
 
 .palette [cmdk-item][aria-disabled='true'] {
-    color: hsl(0, 0%, 78%);
+    color: var(--item);
     cursor: not-allowed;
 }
 
-.palette [cmdk-item]:active {
+.palette [cmdk-item]:hover {
     transition-property: background;
-    background: hsl(0, 0%, 93%);
+    background: var(--item-hover);
 }
 
 .palette [cmdk-item]+[cmdk-item] {
     margin-top: 4px;
 }
 
+.palette [cmdk-search] {
+    border: none;
+    width: 100%;
+    font-size: 14px;
+    padding: 0 0 0 8px;
+    outline: none;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 8px;
+    border-radius: 0;
+}
+
 .palette [cmdk-input] {
     border: none;
     width: 100%;
     font-size: 14px;
-    padding: 16px 8px 8px 8px;
+    padding: 8px 8px 8px 8px;
+    background: var(--bg-gray);
     outline: none;
-    color: hsl(0, 0%, 9%);
-    border-bottom: 1px solid hsl(0, 0%, 88.7%);
-    margin-bottom: 16px;
+    color: var(--text-alt);
     border-radius: 0;
 }
 
@@ -71,15 +103,15 @@
 .palette [cmdk-separator] {
     height: 1px;
     width: 100%;
-    background: hsl(0, 0%, 90.9%);
+    background: var(--item);
     margin: 4px 0;
 }
 
 .palette [cmdk-group-heading] {
     user-select: none;
     font-size: 12px;
-    color: hsl(0, 0%, 43.5%);
-    padding: 0 8px;
+    color: var(--text-alt);
+    padding: 2px;
     display: flex;
     align-items: center;
     margin-bottom: 8px;
@@ -92,22 +124,33 @@
     justify-content: center;
     height: 48px;
     white-space: pre-wrap;
-    color: hsl(0, 0%, 43.5%);
+    color: var(--text);
 }
 
 .palette [cmdk-badge] {
     height: 32px;
-    background: hsla(0, 0%, 0%, 0.047);
+    background: var(--gray);
     display: inline-flex;
     align-items: center;
     padding: 0 8px;
     font-size: 12px;
-    color: hsla(0, 0%, 0%, 0.565);
+    color: var(--text);
     border-radius: 4px;
-    margin: 4px 0 16px 4px;
     user-select: none;
     text-transform: capitalize;
     font-weight: 500;
+}
+
+.palette [cmdk-footer] {
+    display: flex;
+    justify-content: right;
+    margin-top: 4px;
+    padding: 8px 12px;
+    font-size: 12px;
+    color: var(--text);
+    border-top: 1px solid var(--border);
+    background: var(--gray);
+    border-radius: 0 0 10px 10px;
 }
 
 .palette [cmdk-shortcuts] {
@@ -122,8 +165,8 @@
     padding: 4px;
     height: 20px;
     border-radius: 4px;
-    color: hsl(0, 0%, 43.5%);
-    background: hsl(0, 0%, 93%);
+    color: var(--text);
+    background: var(--bg-gray);
     display: inline-flex;
     align-items: center;
     justify-content: center;
