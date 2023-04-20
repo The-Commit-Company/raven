@@ -1,4 +1,5 @@
 import { Box, Button, CloseButton, Flex, HStack, Select, Stack, Tab, TabList, TabPanel, TabPanels, Tabs, Text, useDisclosure, VStack } from "@chakra-ui/react"
+import { useNavigate } from "react-router-dom"
 import { PageHeader } from "../../layout/Heading/PageHeader"
 import { PageHeading } from "../../layout/Heading/PageHeading"
 
@@ -7,12 +8,17 @@ type Props = {}
 export default function GlobalSearch({ }: Props) {
     const { onToggle: onToggleOtherChannels, isOpen: isOpenOtherChannels } = useDisclosure()
     const { onToggle: onToggleMyChannels, isOpen: isOpenMyChannels } = useDisclosure()
+    const navigate = useNavigate()
+
+    const handleClose = () => {
+        navigate(-1)
+    }
     return (
         <><PageHeader>
             <PageHeading>
                 Search Results
             </PageHeading>
-            <CloseButton />
+            <CloseButton onClick={handleClose} />
         </PageHeader>
             <Stack mt={16}>
                 <Tabs h='60vh' defaultIndex={1}>
