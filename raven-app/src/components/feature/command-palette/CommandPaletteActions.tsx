@@ -47,7 +47,7 @@ export const Home = ({ searchChange, input }: Props) => {
                 {channelData && <Item
                     // shortcut="⌘ S T"
                     onSelect={() => {
-                        // searchChange('find in')
+                        navigate('/channel/global-search')
                     }}
                 >
                     <TbListSearch fontSize={20} />

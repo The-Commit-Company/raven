@@ -124,7 +124,7 @@ export const CommandPalette = ({ isOpen, onClose, onToggle }: CommandPaletteProp
                     {activePage === 'in' && <FindIn input={debouncedText} />}
                     {activePage === 'from' && <FindFrom input={debouncedText} />}
                     <Box cmdk-footer="">
-                        Not the result that you expected? Deal with it.
+                        Not the results that you expected? Deal with it.
                     </Box>
                 </Command>
             </ModalContent>
