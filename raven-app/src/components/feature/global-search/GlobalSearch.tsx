@@ -1,5 +1,6 @@
-import { Box, Button, CloseButton, Flex, HStack, Select, Stack, Tab, TabList, TabPanel, TabPanels, Tabs, Text, useDisclosure, VStack } from "@chakra-ui/react"
+import { Button, CloseButton, Flex, HStack, Select, Stack, Tab, TabList, TabPanel, TabPanels, Tabs, Text, useDisclosure, VStack } from "@chakra-ui/react"
 import { useNavigate } from "react-router-dom"
+import { EmptyStateForSearch } from "../../layout/EmptyState/EmptyState"
 import { PageHeader } from "../../layout/Heading/PageHeader"
 import { PageHeading } from "../../layout/Heading/PageHeading"
 
@@ -58,12 +59,7 @@ export default function GlobalSearch({ }: Props) {
                                 <Button onClick={onToggleMyChannels} isActive={isOpenMyChannels} size='sm' w="9rem">Only my channels</Button>
                                 <Button variant="link" size='sm' >More filters</Button>
                             </HStack>
-                            <Flex justify="center" align="center" height="70vh" width="full">
-                                <VStack>
-                                    <Text fontWeight="bold" align="center">Nothing turned up</Text>
-                                    <Text align="center" w="30vw">You may want to try using different keywords, checking for typos or adjusting your filters.</Text>
-                                </VStack>
-                            </Flex>
+                            <EmptyStateForSearch />
                         </TabPanel>
                         <TabPanel px={0}>
                             <HStack pl={4}>
@@ -94,12 +90,7 @@ export default function GlobalSearch({ }: Props) {
                                 <Button onClick={onToggleMyChannels} isActive={isOpenMyChannels} size='sm' w="9rem">Only my channels</Button>
                                 <Button variant="link" size='sm' >More filters</Button>
                             </HStack>
-                            <Flex justify="center" align="center" height="70vh" width="full">
-                                <VStack>
-                                    <Text fontWeight="bold" align="center">Nothing turned up</Text>
-                                    <Text align="center" w="30vw">You may want to try using different keywords, checking for typos or adjusting your filters.</Text>
-                                </VStack>
-                            </Flex>
+                            <EmptyStateForSearch />
                         </TabPanel>
                         <TabPanel px={0}>
                             <HStack pl={4}>
@@ -112,20 +103,10 @@ export default function GlobalSearch({ }: Props) {
                                 <Button onClick={onToggleOtherChannels} isActive={isOpenOtherChannels} size='sm' w="15rem">Exclude the channels that I'm in</Button>
                                 <Button onClick={onToggleMyChannels} isActive={isOpenMyChannels} size='sm' w="9rem">Only my channels</Button>
                             </HStack>
-                            <Flex justify="center" align="center" height="70vh" width="full">
-                                <VStack>
-                                    <Text fontWeight="bold" align="center">Nothing turned up</Text>
-                                    <Text align="center" w="30vw">You may want to try using different keywords, checking for typos or adjusting your filters.</Text>
-                                </VStack>
-                            </Flex>
+                            <EmptyStateForSearch />
                         </TabPanel>
                         <TabPanel px={0}>
-                            <Flex justify="center" align="center" height="70vh" width="full">
-                                <VStack>
-                                    <Text fontWeight="bold" align="center">Nothing turned up</Text>
-                                    <Text align="center" w="30vw">You may want to try using different keywords, checking for typos or adjusting your filters.</Text>
-                                </VStack>
-                            </Flex>
+                            <EmptyStateForSearch />
                         </TabPanel>
                     </TabPanels>
                 </Tabs>

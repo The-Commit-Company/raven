@@ -56,7 +56,7 @@ export const Home = ({ searchChange, input }: Props) => {
             </Command.Group>
             {!input &&
                 <Command.Group heading="I'm looking for..." style={style}>
-                    <HStack spacing={3}>
+                    <HStack spacing={2} pl={2}>
                         <Item
                             onSelect={() => {
                                 searchChange('messages')

@@ -1,6 +1,6 @@
 import React, { useContext, useEffect } from 'react'
 import { Command } from 'cmdk'
-import { Box, CloseButton, HStack, Modal, ModalCloseButton, ModalContent, ModalOverlay, useColorMode } from '@chakra-ui/react'
+import { Box, CloseButton, HStack, Link, Modal, ModalCloseButton, ModalContent, ModalOverlay, useColorMode, Text } from '@chakra-ui/react'
 import './styles.css'
 import { Home, Messages, Files, Channels, People, FindIn, FindFrom } from './CommandPaletteActions'
 import { useHotkeys } from 'react-hotkeys-hook'
@@ -124,7 +124,12 @@ export const CommandPalette = ({ isOpen, onClose, onToggle }: CommandPaletteProp
                     {activePage === 'in' && <FindIn input={debouncedText} />}
                     {activePage === 'from' && <FindFrom input={debouncedText} />}
                     <Box cmdk-footer="">
-                        Not the results that you expected? Deal with it.
+                        <HStack spacing={1}>
+                            <Text color='gray.500'>Not the results that you expected? File an issue on</Text>
+                            <Link href="https://github.com/The-Commit-Company/Raven" target="_blank" rel="noreferrer">
+                                <Text color='blue.500'>GitHub.</Text>
+                            </Link>.
+                        </HStack>
                     </Box>
                 </Command>
             </ModalContent>
