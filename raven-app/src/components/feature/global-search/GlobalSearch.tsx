@@ -1,4 +1,5 @@
 import { Button, CloseButton, Flex, HStack, Select, Stack, Tab, TabList, TabPanel, TabPanels, Tabs, Text, useDisclosure, VStack } from "@chakra-ui/react"
+import { useFrappeGetCall } from "frappe-react-sdk"
 import { useNavigate } from "react-router-dom"
 import { EmptyStateForSearch } from "../../layout/EmptyState/EmptyState"
 import { PageHeader } from "../../layout/Heading/PageHeader"
@@ -14,6 +15,20 @@ export default function GlobalSearch({ }: Props) {
     const handleClose = () => {
         navigate(-1)
     }
+
+    const { data, error, mutate } = useFrappeGetCall("raven.api.search.get_search_result", {
+        doctype: 'Raven Message',
+        // search_text: 'yo',
+        // from_user: ,
+        // in_channel:,
+        // date:,
+        // file_type:,
+        // channel_type:,
+        // my_channel_only:,
+        // other_channel_only:,
+    })
+
+    console.log(data)
     return (
         <><PageHeader>
             <PageHeading>
