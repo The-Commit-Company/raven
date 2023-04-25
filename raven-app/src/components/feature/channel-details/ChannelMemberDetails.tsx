@@ -1,5 +1,5 @@
 import { SearchIcon } from "@chakra-ui/icons"
-import { Text, Avatar, HStack, Icon, IconButton, Input, InputGroup, InputLeftElement, List, ListItem, Stack, useColorMode, useDisclosure, Button, Box } from "@chakra-ui/react"
+import { Text, Avatar, HStack, Icon, IconButton, Input, InputGroup, InputLeftElement, List, ListItem, Stack, useColorMode, useDisclosure, Button, Box, Center } from "@chakra-ui/react"
 import { useContext, useState } from "react"
 import { BsFillCircleFill, BsCircle } from "react-icons/bs"
 import { RiUserAddLine } from "react-icons/ri"
@@ -98,9 +98,11 @@ export const ChannelMemberDetails = ({ members, activeUsers }: MemberDetailsProp
                             ))}
                         </List>
                     ) : (
-                        <Text textAlign='center' fontSize='sm' py={4}>
-                            No matches found for <strong>{searchText}</strong>
-                        </Text>
+                        <Center h='10vh'>
+                            <Text textAlign='center' fontSize='sm'>
+                                No matches found for <strong>{searchText}</strong>
+                            </Text>
+                        </Center>
                     )}
                 </List>
             </Box>
