@@ -14,6 +14,7 @@ import { DeleteMessageModal } from "../message-details/DeleteMessageModal";
 import { EditMessageModal } from "../message-details/EditMessageModal";
 import { SetUserStatus } from "../user-details/SetUserStatus";
 import { UserProfileDrawer } from "../user-details/UserProfileDrawer";
+import { ImagePreviewModal } from "../file-preview/ImagePreviewModal";
 
 interface ChatMessageProps {
     name: string,
@@ -34,6 +35,7 @@ export const ChatMessage = ({ name, user, timestamp, text, image, file }: ChatMe
     const { isOpen: isEditMessageModalOpen, onOpen: onEditMessageModalOpen, onClose: onEditMessageModalClose } = useDisclosure()
     const { isOpen: isUserProfileDetailsDrawerOpen, onOpen: onUserProfileDetailsDrawerOpen, onClose: onUserProfileDetailsDrawerClose } = useDisclosure()
     const { isOpen: isSetUserStatusModalOpen, onOpen: onSetUserStatusModalOpen, onClose: onSetUserStatusModalClose } = useDisclosure()
+    const { isOpen: isImagePreviewModalOpen, onOpen: onImagePreviewModalOpen, onClose: onImagePreviewModalClose } = useDisclosure()
     const { data: channelList, error: channelListError } = useFrappeGetCall<{ message: ChannelData[] }>("raven.raven_channel_management.doctype.raven_channel.raven_channel.get_channel_list")
 
     const [selectedUser, setSelectedUser] = useState<User | null>(null)
@@ -86,10 +88,7 @@ export const ChatMessage = ({ name, user, timestamp, text, image, file }: ChatMe
                             </HStack>
                         </HStack>
                         {text && <MarkdownRenderer content={text} />}
-                        {image && <Box>
-                            <Image src={image} height='200px' />
-                        </Box>
-                        }
+                        {image && <Image src={image} height='360px' rounded={'md'} onClick={onImagePreviewModalOpen} />}
                         {file && <HStack>
                             <Icon as={getFileExtensionIcon(file.split('.')[1])} />
                             <Text as={Link} href={file} isExternal>{file.split('/')[3]}</Text>
@@ -139,6 +138,7 @@ export const ChatMessage = ({ name, user, timestamp, text, image, file }: ChatMe
             </HStack>
             <DeleteMessageModal isOpen={isDeleteMessageModalOpen} onClose={onDeleteMessageModalClose} channelMessageID={name} />
             <SetUserStatus isOpen={isSetUserStatusModalOpen} onClose={onSetUserStatusModalClose} />
+            {image && <ImagePreviewModal isOpen={isImagePreviewModalOpen} onClose={onImagePreviewModalClose} file_owner={channelMembers?.[user].name} file_url={image} />}
             {selectedUser && <UserProfileDrawer isOpen={isUserProfileDetailsDrawerOpen} onClose={onUserProfileDetailsDrawerClose} user={selectedUser} openSetStatusModal={onSetUserStatusModalOpen} />}
             {text && <EditMessageModal isOpen={isEditMessageModalOpen} onClose={onEditMessageModalClose} channelMessageID={name} allMembers={allMembers} allChannels={allChannels ?? []} originalText={text} />}
         </Box>
