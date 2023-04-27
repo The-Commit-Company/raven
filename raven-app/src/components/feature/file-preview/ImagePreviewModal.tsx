@@ -1,7 +1,9 @@
-import { Avatar, HStack, Modal, ModalBody, ModalCloseButton, ModalContent, ModalHeader, ModalOverlay, Stack, Text, useColorMode, Image, Center, ModalFooter, StackDivider } from "@chakra-ui/react"
+import { Avatar, HStack, Modal, ModalBody, ModalCloseButton, ModalContent, ModalHeader, ModalOverlay, Stack, Text, useColorMode, ModalFooter, StackDivider, Center, Button, Link } from "@chakra-ui/react"
 import { useContext } from "react"
 import { ChannelContext } from "../../../utils/channel/ChannelProvider"
 import { DateObjectToTimeString } from "../../../utils/operations"
+import ReactPanZoom from "react-image-pan-zoom-rotate"
+import { BsDownload } from "react-icons/bs"
 
 interface ImagePreviewProps {
     isOpen: boolean,
@@ -37,11 +39,31 @@ export const ImagePreviewModal = ({ isOpen, onClose, file_url, file_owner, times
 
                 <ModalBody>
                     <Center>
-                        <Image src={file_url} maxH='80vh' />
+                        <div
+                            style={{
+                                width: '40vw',
+                                position: "relative",
+                                overflow: "hidden"
+                            }}>
+                            <ReactPanZoom
+                                alt="uploaded image"
+                                image={file_url}
+                            />
+                        </div>
                     </Center>
                 </ModalBody>
 
-                <ModalFooter></ModalFooter>
+                <ModalFooter>
+                    <Button
+                        as={Link}
+                        href={file_url}
+                        isExternal
+                        aria-label="download file"
+                        size='xs'
+                        rightIcon={<BsDownload />}>
+                        Download
+                    </Button>
+                </ModalFooter>
 
             </ModalContent>
         </Modal>

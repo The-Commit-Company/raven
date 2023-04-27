@@ -27,6 +27,7 @@
     "react-hotkeys-hook": "^4.3.5",
     "react-icons": "^4.7.1",
     "react-idle-timer": "^5.5.3",
+    "react-image-pan-zoom-rotate": "^1.6.0",
     "react-markdown": "^8.0.5",
     "react-quill": "^2.0.0",
     "react-router-dom": "^6.8.1",

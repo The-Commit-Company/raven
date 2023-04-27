@@ -2801,6 +2801,11 @@ react-idle-timer@^5.5.3:
   resolved "https://registry.yarnpkg.com/react-idle-timer/-/react-idle-timer-5.5.3.tgz#e1428095e124dea9277f45b68fa4f856a448a6d9"
   integrity sha512-fn2kNPz4BVEN/U05IzBQGPIfFlkjk0ekj8uKQaHAH/uBbATJDFmyxK0k36hv4kmzN8oFr8pe+C4zU5NJDBnfBQ==
 
+react-image-pan-zoom-rotate@^1.6.0:
+  version "1.6.0"
+  resolved "https://registry.yarnpkg.com/react-image-pan-zoom-rotate/-/react-image-pan-zoom-rotate-1.6.0.tgz#4b79dd5a160e61e1ec8d5481541e37ade4c28c6f"
+  integrity sha512-YpuMjhA9TlcyuC1vcKeTGnECAial0uEsjXUHcCk3GTeznwtnfpgLfMDhejCrilUud/hxueXrr9SJiQiycWjYVA==
+
 react-is@^16.13.1, react-is@^16.7.0:
   version "16.13.1"
   resolved "https://registry.yarnpkg.com/react-is/-/react-is-16.13.1.tgz#789729a4dc36de2999dc156dd6c1d9c18cea56a4"
