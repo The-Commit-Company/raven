@@ -1,4 +1,4 @@
-import { Text, HStack, Icon, Stack, Link, Box, useColorMode, IconButton, Center, Image } from "@chakra-ui/react"
+import { Text, HStack, Icon, Stack, Link, Box, useColorMode, IconButton, Center, Image, Button, useDisclosure, Flex } from "@chakra-ui/react"
 import { getFileExtensionIcon } from "../../../utils/layout/fileExtensionIcon";
 import { useFrappeGetCall } from "frappe-react-sdk";
 import { useParams } from "react-router-dom";
@@ -7,6 +7,7 @@ import { DateObjectToFormattedDateString } from "../../../utils/operations";
 import { useContext } from "react";
 import { ChannelContext } from "../../../utils/channel/ChannelProvider";
 import { BsDownload } from "react-icons/bs";
+import GlobalSearch from "../global-search/GlobalSearch";
 
 type ChannelFile = {
     name: string,
@@ -23,6 +24,7 @@ export const FilesSharedInChannel = () => {
     const { data, error } = useFrappeGetCall<{ message: ChannelFile[] }>("raven.raven_messaging.doctype.raven_message.raven_message.fetch_recent_files", {
         channel_id: channelID
     })
+    const { isOpen: isGlobalSearchModalOpen, onOpen: onGlobalSearchModalOpen, onClose: onGlobalSearchModalClose } = useDisclosure()
 
     const { colorMode } = useColorMode()
     const BOXSTYLE = {
@@ -32,11 +34,17 @@ export const FilesSharedInChannel = () => {
         borderColor: colorMode === 'light' ? 'gray.200' : 'gray.600'
     }
 
+    const handleClick = () => {
+        onGlobalSearchModalOpen()
+    }
+
     return (
-        <Stack>
-            <Text fontWeight={'semibold'} fontSize={'sm'}>Recent shared files</Text>
+        <Stack spacing={4}>
+            {data?.message && data.message.length > 0 &&
+                <Text fontWeight={'semibold'} fontSize={'sm'}>Recent shared files</Text>
+            }
             {error && <AlertBanner status='error' heading={error.message}>{error.httpStatus} - {error.httpStatusText}</AlertBanner>}
-            <Box maxH='400px' overflow='hidden' overflowY='scroll'>
+            <Box maxH='320px' overflow='hidden' overflowY='scroll'>
                 <Stack>
                     {data?.message && data.message.length > 0 && data.message.map((f) => {
                         return (
@@ -66,6 +74,24 @@ export const FilesSharedInChannel = () => {
                     })}
                 </Stack>
             </Box>
-        </Stack>
+            {data?.message && data.message.length === 0 &&
+                <Flex>
+                    <Text fontSize='sm' color='gray.500' textAlign={'center'}>
+                        No files have been shared in this channel yet. Drag and drop any file into the message pane to add it to this conversation.
+                    </Text>
+                </Flex>}
+            {data?.message && data.message.length > 0 &&
+                <Button
+                    width={'fit-content'}
+                    variant='link'
+                    onClick={handleClick}
+                    color='blue.500'
+                    size={'sm'}
+                >
+                    Show more
+                </Button>
+            }
+            <GlobalSearch isOpen={isGlobalSearchModalOpen} onClose={onGlobalSearchModalClose} />
+        </Stack >
     )
 }

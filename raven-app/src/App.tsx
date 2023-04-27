@@ -19,7 +19,6 @@ function App() {
             <Route path="channel" element={<MainPage />} >
               <Route path=":channelID" element={<ChatSpace />} />
               <Route path="*" element={<Navigate to="general" replace />} />
-              <Route path="global-search" element={<GlobalSearch />} />
             </Route>
             <Route path="*" element={<Navigate to="channel/general" replace />} />
             <Route path="" element={<Navigate to="channel/general" replace />} />

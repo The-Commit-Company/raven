@@ -58,7 +58,7 @@ export const ChannelMemberDetails = ({ members, activeUsers }: MemberDetailsProp
                     value={debouncedText} />
             </InputGroup>
 
-            <Box maxH='380px' overflow='hidden' overflowY='scroll'>
+            <Box maxH='340px' overflow='hidden' overflowY='scroll'>
                 <List spacing={2}>
                     {members.some(member => member.name === currentUser) && channelData?.type != 'Open' &&
                         <ListItem _hover={{ ...LISTHOVERSTYLE }} rounded='md' onClick={onAddMembersModalOpen}>
