@@ -4,6 +4,7 @@ import { BiGlobe, BiHash, BiLockAlt } from "react-icons/bi"
 import { ChannelContext } from "../../../utils/channel/ChannelProvider"
 import { ChannelDetails } from "../channel-details/ChannelDetails"
 import { ChannelMemberDetails } from "../channel-details/ChannelMemberDetails"
+import { FilesSharedInChannel } from '../files/FilesSharedInChannel'
 
 interface ViewChannelDetailsModalProps {
     isOpen: boolean,
@@ -32,7 +33,7 @@ export const ViewChannelDetailsModal = ({ isOpen, onClose, activeUsers }: ViewCh
 
                 <ModalBody>
 
-                    <Tabs h='60vh' defaultIndex={1}>
+                    <Tabs h='62vh' defaultIndex={1}>
                         <TabList>
                             <Tab>About</Tab>
                             <Tab>
@@ -41,6 +42,7 @@ export const ViewChannelDetailsModal = ({ isOpen, onClose, activeUsers }: ViewCh
                                     <Text>{memberCount}</Text>
                                 </HStack>
                             </Tab>
+                            <Tab>Files</Tab>
                         </TabList>
                         <TabPanels>
                             <TabPanel px={0}>
@@ -48,6 +50,9 @@ export const ViewChannelDetailsModal = ({ isOpen, onClose, activeUsers }: ViewCh
                             </TabPanel>
                             <TabPanel px={0}>
                                 <ChannelMemberDetails members={members} activeUsers={activeUsers} />
+                            </TabPanel>
+                            <TabPanel px={0}>
+                                <FilesSharedInChannel />
                             </TabPanel>
                         </TabPanels>
                     </Tabs>

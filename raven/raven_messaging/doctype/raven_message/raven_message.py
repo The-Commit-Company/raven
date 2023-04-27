@@ -2,6 +2,7 @@
 # For license information, please see license.txt
 import frappe
 from frappe.model.document import Document
+from pypika import Order
 
 
 class RavenMessage(Document):
@@ -36,3 +37,16 @@ def send_message(channel_id, text):
                             'channel_id': channel_id}, after_commit=True)
     frappe.db.commit()
     return "message sent"
+
+
+@frappe.whitelist()
+def fetch_recent_files(channel_id):
+    raven_message = frappe.qb.DocType('Raven Message')
+
+    query = (frappe.qb.from_(raven_message)
+             .select(raven_message.name, raven_message.file, raven_message.owner, raven_message.creation, raven_message.message_type)
+             .where(raven_message.channel_id == channel_id)
+             .where((raven_message.message_type == 'Image') | (raven_message.message_type == 'File'))
+             .orderby(raven_message.creation, order=Order.desc))
+    
+    return query.run(as_dict=True)
