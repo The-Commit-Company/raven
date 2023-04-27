@@ -33,7 +33,7 @@ export const ViewChannelDetailsModal = ({ isOpen, onClose, activeUsers }: ViewCh
 
                 <ModalBody>
 
-                    <Tabs h='62vh' defaultIndex={1}>
+                    <Tabs h='60vh' defaultIndex={1}>
                         <TabList>
                             <Tab>About</Tab>
                             <Tab>
