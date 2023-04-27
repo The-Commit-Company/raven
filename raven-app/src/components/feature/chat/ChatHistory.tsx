@@ -8,7 +8,7 @@ interface ChatHistoryProps {
 
 export const ChatHistory = ({ messages }: ChatHistoryProps) => {
     return (
-        <Stack spacing={4} justify='end' direction='column-reverse' overflow='scroll'>
+        <Stack spacing={4} justify='end' direction='column-reverse' overflowY='scroll'>
             {messages.map((message) => {
                 const { name, owner, creation, message_type, text, file } = message
                 return (
