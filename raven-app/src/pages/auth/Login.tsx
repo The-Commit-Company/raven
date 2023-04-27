@@ -101,5 +101,5 @@ export const Login = () => {
                 </Box>
             </Flex>
         </Box>
-    );
+    )
 }

@@ -47,6 +47,6 @@ def fetch_recent_files(channel_id):
              .select(raven_message.name, raven_message.file, raven_message.owner, raven_message.creation, raven_message.message_type)
              .where(raven_message.channel_id == channel_id)
              .where((raven_message.message_type == 'Image') | (raven_message.message_type == 'File'))
-             .orderby(raven_message.creation, order=Order.desc))
-    
+             .orderby(raven_message.creation, order=Order.desc).limit(10))
+
     return query.run(as_dict=True)

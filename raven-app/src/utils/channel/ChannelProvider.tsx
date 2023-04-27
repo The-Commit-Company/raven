@@ -9,7 +9,7 @@ type ChannelInfo = {
     channel_data: ChannelData
 }
 
-type ChannelMembersDetails = {
+export type ChannelMembersDetails = {
     name: string,
     first_name: string,
     full_name: string,

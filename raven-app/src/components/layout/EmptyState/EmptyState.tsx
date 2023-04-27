@@ -1,20 +1,19 @@
-import Lottie, { LottieProps } from 'react-lottie'
+import { Flex, VStack, Text, HStack, Link } from "@chakra-ui/react"
 
-export const EmptyState = ({ ...props }: LottieProps) => {
-
-    const defaultOptions = {
-        loop: false,
-        autoplay: true,
-        rendererSettings: {
-            preserveAspectRatio: "xMidYMid slice"
-        }
-    };
+export const EmptyStateForSearch = () => {
 
     return (
-        <Lottie
-            options={{ ...defaultOptions, ...props.options }}
-            height={props.height ?? 200}
-            width={props.height ?? 200}
-        />
+        <Flex justify="center" align="center" height="50vh" width="full">
+            <VStack>
+                <Text fontWeight="bold" align="center" fontSize='md'>Nothing turned up</Text>
+                <Text align="center" w="30vw" fontSize='sm'>You may want to try using different keywords, checking for typos or adjusting your filters.</Text>
+                <HStack spacing={1}>
+                    <Text fontSize='xs'>Not the results that you expected? File an issue on</Text>
+                    <Link href="https://github.com/The-Commit-Company/Raven" target="_blank" rel="noreferrer">
+                        <Text color='blue.500' fontSize='xs'>GitHub.</Text>
+                    </Link>.
+                </HStack>
+            </VStack>
+        </Flex>
     )
 }
