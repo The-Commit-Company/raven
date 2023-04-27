@@ -22,14 +22,12 @@ export const Sidebar = ({ children, isUserActive }: SidebarProps) => {
             <Stack>
                 <HStack justifyContent="space-between" spacing="3" h='33px'>
                     <Text fontSize="xl" fontWeight="semibold" ml='3'>Raven</Text>
-                    <HStack spacing={2}>
-                        <IconButton
-                            size={"xs"}
-                            aria-label="Toggle theme"
-                            icon={colorMode === "light" ? <HiOutlineMoon /> : <HiOutlineSun />}
-                            onClick={toggleColorMode}
-                        />
-                    </HStack>
+                    <IconButton
+                        size={"xs"}
+                        aria-label="Toggle theme"
+                        icon={colorMode === "light" ? <HiOutlineMoon /> : <HiOutlineSun />}
+                        onClick={toggleColorMode}
+                    />
                 </HStack>
                 <Divider />
                 <ChannelList />
@@ -61,7 +59,6 @@ export const Sidebar = ({ children, isUserActive }: SidebarProps) => {
                     </Menu>
                 </HStack>
             </Stack>
-            {/* <GlobalSearchModal isOpen={isOpen} onClose={onClose} /> */}
         </Stack>
     )
 }

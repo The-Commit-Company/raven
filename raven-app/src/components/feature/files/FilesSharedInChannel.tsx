@@ -34,10 +34,6 @@ export const FilesSharedInChannel = () => {
         borderColor: colorMode === 'light' ? 'gray.200' : 'gray.600'
     }
 
-    const handleClick = () => {
-        onGlobalSearchModalOpen()
-    }
-
     return (
         <Stack spacing={4}>
             {data?.message && data.message.length > 0 &&
@@ -84,7 +80,7 @@ export const FilesSharedInChannel = () => {
                 <Button
                     width={'fit-content'}
                     variant='link'
-                    onClick={handleClick}
+                    onClick={onGlobalSearchModalOpen}
                     color='blue.500'
                     size={'sm'}
                 >
