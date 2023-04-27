@@ -28,24 +28,14 @@ export const Home = ({ searchChange, input }: Props) => {
     let navigate = useNavigate()
     const { channelData, channelMembers } = useContext(ChannelContext)
     const { currentUser } = useContext(UserContext)
-    const { onClose } = useModalContext()
     const peer = Object.keys(channelMembers).filter((member) => member !== currentUser)[0]
     const style = { paddingBottom: 2, paddingTop: 2 }
 
-    const onNavigate = (path: string) => {
-        navigate(path)
-        onClose()
-    }
-
     return (
         <Command.List>
-            <Command.Empty>
-                <Button w='full' fontWeight="light" variant='ghost' alignContent='end'>{input} - Search messages, files and more</Button>
-
-            </Command.Empty>
+            <CommandPaletteEmptyState input={input} placeholder='messages, files, people and more' />
             <Command.Group style={style}>
                 {channelData && <Item
-                    // shortcut="⌘ S T"
                     onSelect={() => {
                         navigate('/channel/global-search')
                     }}
@@ -94,40 +84,35 @@ export const Home = ({ searchChange, input }: Props) => {
 export const Messages = ({ searchChange, input }: Props) => {
     return (
         <Command.List>
-            <Command.Empty>
-                <Button w='full' fontWeight="light" variant='ghost' alignContent='end'>{input} - Search messages</Button>
-            </Command.Empty>
+            <CommandPaletteEmptyState input={input} placeholder='messages' />
             {!input && <Command.Group heading="Narrow your search">
                 <Item onSelect={() => {
                     searchChange('in')
                 }}><TbSearch />in a channel or direct message</Item>
                 <Item onSelect={() => {
                     searchChange('from')
-                }}><TbSearch />from anyone on Slack</Item>
+                }}><TbSearch />from anyone on Raven</Item>
             </Command.Group>}
         </Command.List>
     )
 }
 
 export const Files = ({ searchChange, input }: Props) => {
+
     const { data, isValidating } = useSearch('Raven Message', input, [["file", "!=", ""]], 5)
     const navigate = useNavigate()
-    console.log(data)
-
     const { onClose } = useModalContext()
 
     return (
         <Command.List>
-            <Command.Empty>
-                <Button w='full' fontWeight="light" variant='ghost' alignContent='end'>{input} - Search files</Button>
-            </Command.Empty>
+            <CommandPaletteEmptyState input={input} placeholder='files' />
             {!input && <Command.Group heading="Narrow your search">
                 <Item onSelect={() => {
                     searchChange('in')
                 }}><TbSearch />in a channel or direct message</Item>
                 <Item onSelect={() => {
                     searchChange('from')
-                }}><TbSearch />from anyone on Slack</Item>
+                }}><TbSearch />from anyone on Raven</Item>
             </Command.Group>}
             <Command.Group heading={data?.results?.length ? "Recent files" : ""}>
                 {isValidating && !data?.results?.length && <Text py='4' color='gray.500' textAlign='center' fontSize='sm'>No results found.</Text>}
@@ -146,16 +131,14 @@ export const Files = ({ searchChange, input }: Props) => {
 }
 
 export const Channels = ({ input }: { input: string }) => {
+
     const { data, isValidating } = useSearch('Raven Channel', input, [["is_direct_message", "=", "0"]], 20)
     const navigate = useNavigate()
-
     const { onClose } = useModalContext()
 
     return (
         <Command.List>
-            <Command.Empty>
-                <Button w='full' fontWeight="light" variant='ghost' alignContent='end'>{input} - Search channels</Button>
-            </Command.Empty>
+            <CommandPaletteEmptyState input={input} placeholder='channels' />
             <Command.Group heading={data?.results?.length ? "Recent channels" : ""} >
                 {isValidating && !data?.results?.length && <Text py='4' color='gray.500' textAlign='center' fontSize='sm'>No results found.</Text>}
                 {isValidating && <Command.Loading>
@@ -180,9 +163,7 @@ export const People = ({ input, users, activeUsers, gotoDMChannel, currentUser }
         return count;
     }, 0)
     return <Command.List>
-        <Command.Empty>
-            <Button w='full' fontWeight="light" variant='ghost' alignContent='end'>{input} - Search people</Button>
-        </Command.Empty>
+        <CommandPaletteEmptyState input={input} placeholder='people' />
         <Command.Group heading={results_count > 0 ? "Recent direct messages" : ""} >
             {users.map(user => {
                 if (user.full_name.toLowerCase().includes(input.toLowerCase())) {
@@ -246,7 +227,6 @@ export const LoadOptions = ({ doctype, input, filters }: { doctype: string, inpu
 
     const { data, isValidating } = useSearch(doctype, input, filters, 20)
     const navigate = useNavigate()
-
     const { onClose } = useModalContext()
 
     return (
@@ -259,12 +239,6 @@ export const LoadOptions = ({ doctype, input, filters }: { doctype: string, inpu
             </Command.Loading>}
             {data?.results?.map(r => <Item key={r.value} value={r.value} onSelect={() => {
                 switch (doctype) {
-                    case 'Raven Message':
-                        navigate(`/channel/`)
-                        break
-                    case 'Raven Message':
-                        navigate(`/channel/`)
-                        break
                     case 'Raven Channel':
                         navigate(`/channel/${r.value}`)
                         break
@@ -272,11 +246,18 @@ export const LoadOptions = ({ doctype, input, filters }: { doctype: string, inpu
                         navigate(`/channel/`)
                         break
                     default:
-
+                        break
                 }
                 onClose()
-
             }}>{doctype == "Raven Message" ? <MarkdownRenderer content={r.description} /> : (r.label ? r.label : r.description)}</Item>)}
         </Command.List>
+    )
+}
+
+export const CommandPaletteEmptyState = ({ input, placeholder }: { input: string, placeholder: string }) => {
+    return (
+        <Command.Empty>
+            <Button w='full' fontWeight="light" variant='ghost' alignContent='end'>{input} - Search {placeholder}</Button>
+        </Command.Empty>
     )
 }
