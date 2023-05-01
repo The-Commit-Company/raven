@@ -1,5 +1,5 @@
 import React from "react"
-import { Stack, Text } from "@chakra-ui/react"
+import { Stack } from "@chakra-ui/react"
 import { Message } from "../../../types/Messaging/Message"
 import { ChatMessage } from "./ChatMessage"
 import { DividerWithText } from "../../layout/Divider/DividerWithText"
@@ -40,9 +40,7 @@ export const ChatHistory = ({ messages }: ChatHistoryProps) => {
                         )
                     })}
                     <DividerWithText>
-                        <Text fontSize="sm" color="gray.500">
-                            {DateObjectToFormattedDateString(new Date(date))}
-                        </Text>
+                        {DateObjectToFormattedDateString(new Date(date))}
                     </DividerWithText>
                 </React.Fragment>
             ))}
