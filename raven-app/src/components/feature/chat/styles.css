@@ -80,3 +80,17 @@
     overflow: scroll;
     max-width: 70vw;
 }
+
+a:link {
+    color: #00A3C4;
+}
+
+/* visited link */
+a:visited {
+    color: #805AD5;
+}
+
+/* mouse over link */
+a:hover {
+    color: #3182CE;
+}
