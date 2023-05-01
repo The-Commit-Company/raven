@@ -1,5 +1,6 @@
 import { FrappeProvider } from 'frappe-react-sdk'
 import { Navigate, Route, Routes } from 'react-router-dom'
+import GlobalSearch from './components/feature/global-search/GlobalSearch'
 import { Login } from './pages/auth'
 import { ChatSpace } from './pages/ChatSpace'
 import { MainPage } from './pages/MainPage'

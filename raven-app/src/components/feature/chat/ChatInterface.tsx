@@ -2,6 +2,7 @@ import { Avatar, AvatarBadge, Box, Button, HStack, Stack, Text, useColorMode, us
 import { useFrappeCreateDoc, useFrappeGetCall, useFrappeGetDocList } from "frappe-react-sdk"
 import { useContext } from "react"
 import { BiGlobe, BiHash, BiLockAlt } from "react-icons/bi"
+import { HiOutlineSearch } from "react-icons/hi"
 import { useFrappeEventListener } from "../../../hooks/useFrappeEventListener"
 import { ChannelData } from "../../../types/Channel/Channel"
 import { Message } from "../../../types/Messaging/Message"
@@ -13,6 +14,7 @@ import { PageHeading } from "../../layout/Heading/PageHeading"
 import { FullPageLoader } from "../../layout/Loaders"
 import { AddChannelMemberModal } from "../channels/AddChannelMemberModal"
 import { ViewChannelDetailsModal } from "../channels/ViewChannelDetailsModal"
+import { CommandPalette } from "../command-palette"
 import { ViewOrAddMembersButton } from "../view-or-add-members/ViewOrAddMembersButton"
 import { ChatHistory } from "./ChatHistory"
 import { ChatInput } from "./ChatInput"
@@ -69,6 +71,7 @@ export const ChatInterface = () => {
 
     const { isOpen: isViewDetailsModalOpen, onOpen: onViewDetailsModalOpen, onClose: onViewDetailsModalClose } = useDisclosure()
     const { isOpen, onOpen, onClose } = useDisclosure()
+    const { isOpen: isCommandPaletteOpen, onClose: onCommandPaletteClose, onToggle: onCommandPaletteToggle } = useDisclosure()
     const { createDoc, error: joinError } = useFrappeCreateDoc()
     const toast = useToast()
     const { data: activeUsers, error: activeUsersError } = useFrappeGetCall<{ message: string[] }>('raven.api.user_availability.get_active_users')
@@ -139,8 +142,18 @@ export const ChatInterface = () => {
                         </HStack>
                     </PageHeading>
                 }
-                {channelData?.is_direct_message == 0 && activeUsers?.message &&
-                    <ViewOrAddMembersButton onClickViewMembers={onViewDetailsModalOpen} onClickAddMembers={onOpen} activeUsers={activeUsers.message} />}
+                <HStack>
+                    <Button
+                        size={"sm"}
+                        aria-label="Toggle theme"
+                        leftIcon={<HiOutlineSearch />}
+                        onClick={onCommandPaletteToggle}
+                        fontWeight='light'
+                    >Search
+                    </Button>
+                    {channelData?.is_direct_message == 0 && activeUsers?.message &&
+                        <ViewOrAddMembersButton onClickViewMembers={onViewDetailsModalOpen} onClickAddMembers={onOpen} activeUsers={activeUsers.message} />}
+                </HStack>
             </PageHeader>
             <Stack h='calc(100vh - 54px)' justify={'flex-end'} p={4} overflow='hidden' mt='16'>
                 {data &&
@@ -155,6 +168,7 @@ export const ChatInterface = () => {
             {activeUsers?.message &&
                 <ViewChannelDetailsModal isOpen={isViewDetailsModalOpen} onClose={onViewDetailsModalClose} activeUsers={activeUsers.message} />}
             <AddChannelMemberModal isOpen={isOpen} onClose={onClose} />
+            <CommandPalette isOpen={isCommandPaletteOpen} onClose={onCommandPaletteClose} onToggle={onCommandPaletteToggle} />
         </>
     )
 
