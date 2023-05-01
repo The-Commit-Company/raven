@@ -37,14 +37,14 @@ export const FilesSharedInChannel = () => {
     return (
         <Stack spacing={4}>
             {data?.message && data.message.length > 0 &&
-                <Text fontWeight={'semibold'} fontSize={'sm'}>Recent shared files</Text>
+                <Text fontWeight={'semibold'} fontSize={'sm'}>Recently shared files</Text>
             }
             {error && <AlertBanner status='error' heading={error.message}>{error.httpStatus} - {error.httpStatusText}</AlertBanner>}
             <Box maxH='320px' overflow='hidden' overflowY='scroll'>
                 <Stack>
                     {data?.message && data.message.length > 0 && data.message.map((f) => {
                         return (
-                            <Box {...BOXSTYLE}>
+                            <Box {...BOXSTYLE} key={f.name}>
                                 <HStack justifyContent='space-between'>
                                     <HStack spacing={3}>
                                         <Center maxW='50px'>
