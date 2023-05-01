@@ -10,7 +10,7 @@ export const DividerWithText = (props: FlexProps) => {
             <Box flex="1">
                 <Divider borderColor={BORDERCOLOR} />
             </Box>
-            <Text as="span" px="2" fontSize={'xs'} border={'1px'} borderColor={BORDERCOLOR} rounded='md' color={'gray.500'} fontWeight="medium">
+            <Text as="span" px="2" fontSize={'xs'} border={'1px'} borderColor={BORDERCOLOR} boxShadow={'sm'} rounded='md' color={'gray.500'} fontWeight="medium">
                 {children}
             </Text>
             <Box flex="1">
