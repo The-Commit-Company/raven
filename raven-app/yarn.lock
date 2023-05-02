@@ -2890,6 +2890,11 @@ quill-delta@^3.6.2:
     extend "^3.0.2"
     fast-diff "1.1.2"
 
+quill-linkify@^0.3.0:
+  version "0.3.0"
+  resolved "https://registry.yarnpkg.com/quill-linkify/-/quill-linkify-0.3.0.tgz#ebafd88bf4deed3a0985e8e7636cc5b083dcdfb1"
+  integrity sha512-ln5qkC/nTaurxeu8IecURVClHe2Q1uNfnSAvneRmtPl1rYfPws4sG6/oMSzgl4xxyWxTyyvNTtpl+ZxJDem53A==
+
 quill-mention@^3.1.0:
   version "3.1.0"
   resolved "https://registry.yarnpkg.com/quill-mention/-/quill-mention-3.1.0.tgz#acf0bf21524b627e9304f63534e6d2b8c59ab4fd"
