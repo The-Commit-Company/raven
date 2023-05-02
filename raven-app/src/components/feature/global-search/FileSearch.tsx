@@ -1,10 +1,9 @@
 import { SearchIcon } from '@chakra-ui/icons'
-import { Avatar, Box, Button, Center, chakra, FormControl, HStack, Icon, IconButton, Input, InputGroup, InputLeftElement, Link, Stack, TabPanel, Text, Image } from '@chakra-ui/react'
+import { Avatar, Button, Center, chakra, FormControl, HStack, Icon, Input, InputGroup, InputLeftElement, Link, Stack, TabPanel, Text, Image } from '@chakra-ui/react'
 import { FrappeConfig, FrappeContext, useFrappeGetCall, useFrappeGetDocList } from 'frappe-react-sdk'
 import { useMemo, useState, useContext } from 'react'
 import { Controller, FormProvider, useForm } from 'react-hook-form'
 import { BiGlobe, BiHash, BiLockAlt } from 'react-icons/bi'
-import { BsDownload } from 'react-icons/bs'
 import { FiImage, FiFile } from "react-icons/fi";
 import { useDebounce } from '../../../hooks/useDebounce'
 import { ChannelData } from '../../../types/Channel/Channel'
@@ -12,8 +11,11 @@ import { GetFileSearchResult } from '../../../types/Search/FileSearch'
 import { User } from '../../../types/User/User'
 import { getFileExtensionIcon } from '../../../utils/layout/fileExtensionIcon'
 import { DateObjectToFormattedDateString } from '../../../utils/operations'
+import { AlertBanner } from '../../layout/AlertBanner'
 import { EmptyStateForSearch } from '../../layout/EmptyState/EmptyState'
+import { FullPageLoader } from '../../layout/Loaders'
 import { SelectInput, SelectOption } from '../search-filters/SelectInput'
+import { Sort } from '../sorting'
 
 interface Props {
     onToggleMyChannels: () => void,
@@ -21,15 +23,17 @@ interface Props {
 }
 
 export const FileSearch = ({ onToggleMyChannels, isOpenMyChannels }: Props) => {
+
     const { url } = useContext(FrappeContext) as FrappeConfig
-    const onSubmit = (data: any) => console.log(data)
     const methods = useForm()
-    const { handleSubmit, watch, control } = methods
+    const { watch, control } = methods
     const [searchText, setSearchText] = useState("")
     const debouncedText = useDebounce(searchText, 50)
+
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setSearchText(e.target.value)
     }
+
     const watchFileType = watch('file-type-filter')
     const watchChannel = watch('channel-filter')
     const watchUser = watch('user-filter')
@@ -40,6 +44,9 @@ export const FileSearch = ({ onToggleMyChannels, isOpenMyChannels }: Props) => {
         fields: ["full_name", "user_image", "name"],
         filters: [["name", "!=", "Guest"]]
     })
+
+    const [sortOrder, setSortOrder] = useState("desc")
+    const [sortByField, setSortByField] = useState<string>('creation')
 
     const { data: channels, error: channelsError } = useFrappeGetCall<{ message: ChannelData[] }>("raven.raven_channel_management.doctype.raven_channel.raven_channel.get_channel_list")
 
@@ -65,7 +72,7 @@ export const FileSearch = ({ onToggleMyChannels, isOpenMyChannels }: Props) => {
         }
     }, [channels])
 
-    const { data, error, mutate } = useFrappeGetCall<{ message: GetFileSearchResult[] }>("raven.api.search.get_search_result", {
+    const { data, error, isLoading, isValidating } = useFrappeGetCall<{ message: GetFileSearchResult[] }>("raven.api.search.get_search_result", {
         doctype: 'Raven Message',
         search_text: debouncedText,
         file_type: watchFileType ? watchFileType.map((fileType: { value: string, label: string }) => (fileType.value)) : undefined,
@@ -73,15 +80,15 @@ export const FileSearch = ({ onToggleMyChannels, isOpenMyChannels }: Props) => {
         from_user: watchUser ? watchUser.map((fromUser: { value: string, label: string }) => (fromUser.value)) : undefined,
         date: watchDate ? watchDate?.value : undefined,
         my_channel_only: watchMyChannels ? watchMyChannels : undefined,
+        sort_order: sortOrder,
+        sort_field: sortByField
     })
 
-    console.log(data)
-    { watchFileType && console.log(watchFileType.map((fileType: { value: string, label: string }) => (fileType.value))) }
-
+    console.log(users)
 
     return (
         <TabPanel px={0}>
-            <Stack p={4}>
+            <Stack px={4}>
                 <InputGroup>
                     <InputLeftElement
                         pointerEvents='none'
@@ -93,71 +100,75 @@ export const FileSearch = ({ onToggleMyChannels, isOpenMyChannels }: Props) => {
                         placeholder='Search by file name or keyword'
                         value={debouncedText} />
                 </InputGroup>
-                <FormProvider {...methods}>
-                    <chakra.form onSubmit={handleSubmit(onSubmit)}>
-                        <HStack>
-                            <FormControl id="user-filter" w='fit-content'>
-                                <SelectInput placeholder="From" size='sm' options={userOptions} name='user-filter' isMulti={true} />
-                            </FormControl>
-                            <FormControl id="channel-filter" w='fit-content'>
-                                <SelectInput placeholder="In" size='sm' options={channelOption} name='channel-filter' isMulti={true} />
-                            </FormControl>
-                            <FormControl id="date-filter" w='fit-content'>
-                                <SelectInput placeholder="Date" size='sm' options={dateOption} name='date-filter' isClearable={true} />
-                            </FormControl>
-                            <FormControl id="file-type-filter" w='fit-content'>
-                                <SelectInput placeholder="File type" size='sm' options={fileOption} name='file-type-filter' isMulti={true} />
-                            </FormControl>
-                            <FormControl id="my-channels-filter" w='fit-content'>
-                                <Controller
-                                    name="my-channels-filter"
-                                    control={control}
-                                    render={({ field: { onChange, value } }) => (
-                                        <Button
-                                            size="sm"
-                                            w="9rem"
-                                            isActive={value = isOpenMyChannels}
-                                            onClick={() => {
-                                                onToggleMyChannels()
-                                                onChange(!value)
-                                            }}
-                                        >
-                                            Only my channels
-                                        </Button>
-                                    )}
-                                />
-                            </FormControl>
-                        </HStack>
-                    </chakra.form>
-                </FormProvider>
-            </Stack>
-            <Stack>
-                {data?.message && data.message.length > 0 ? data.message.map((f) => {
-                    return (
-                        <Box>
-                            <HStack justifyContent='space-between'>
-                                <HStack spacing={3}>
-                                    <Center maxW='50px'>
-                                        {f.message_type === 'File' && <Icon as={getFileExtensionIcon(f.file.split('.')[1])} boxSize="6" />}
-                                        {f.message_type === 'Image' && <Image src={f.file} alt='File preview' boxSize={'36px'} rounded='md' fit='cover' />}
-                                    </Center>
-                                    <Stack spacing={0}>
-                                        {f.file && <Text fontSize='sm' as={Link} href={f.file} isExternal>{f.file.split('/')[3]}</Text>}
-                                        <Text fontSize='xs' color='gray.500'>Shared by {f.owner} on {DateObjectToFormattedDateString(new Date(f.creation ?? ''))}</Text>
-                                    </Stack>
-                                </HStack>
-                                <IconButton
-                                    as={Link}
-                                    href={f.file}
-                                    isExternal
-                                    aria-label="download file"
-                                    size='xs'
-                                    variant='ghost'
-                                    icon={<Icon as={BsDownload} />} />
+                {!!!usersError && !!!channelsError &&
+                    <FormProvider {...methods}>
+                        <chakra.form>
+                            <HStack justifyContent={'space-between'}>
+                                <FormControl id="user-filter" w='fit-content'>
+                                    <SelectInput placeholder="From" size='sm' options={userOptions} name='user-filter' isMulti={true} />
+                                </FormControl>
+                                <FormControl id="channel-filter" w='fit-content'>
+                                    <SelectInput placeholder="In" size='sm' options={channelOption} name='channel-filter' isMulti={true} />
+                                </FormControl>
+                                <FormControl id="date-filter" w='fit-content'>
+                                    <SelectInput placeholder="Date" size='sm' options={dateOption} name='date-filter' isClearable={true} />
+                                </FormControl>
+                                <FormControl id="file-type-filter" w='fit-content'>
+                                    <SelectInput placeholder="File type" size='sm' options={fileOption} name='file-type-filter' isMulti={true} />
+                                </FormControl>
+                                <FormControl id="my-channels-filter" w='fit-content'>
+                                    <Controller
+                                        name="my-channels-filter"
+                                        control={control}
+                                        render={({ field: { onChange, value } }) => (
+                                            <Button
+                                                size="sm"
+                                                w="9rem"
+                                                isActive={value = isOpenMyChannels}
+                                                onClick={() => {
+                                                    onToggleMyChannels()
+                                                    onChange(!value)
+                                                }}
+                                            >
+                                                Only my channels
+                                            </Button>
+                                        )}
+                                    />
+                                </FormControl>
                             </HStack>
-                        </Box>
-                    )
-                }) : <EmptyStateForSearch />}
+                        </chakra.form>
+                    </FormProvider>}
+            </Stack>
+            <Stack h='420px' p={4}>
+
+                {error && <AlertBanner status='error' heading={error.message}>{error.httpStatus} - {error.httpStatusText}</AlertBanner>}
+                {isLoading && isValidating ? <FullPageLoader /> :
+                    (!!!error && data?.message && data.message.length > 0 ?
+                        <><Sort
+                            sortingFields={[{ label: 'Created on', field: 'creation' }]}
+                            onSortFieldSelect={(selField) => setSortByField(selField)}
+                            sortOrder={sortOrder}
+                            sortField={sortByField}
+                            onSortOrderChange={(order) => setSortOrder(order)} />
+                            <Stack spacing={4} overflowY='scroll'>
+
+                                {data.message.map((f) => {
+                                    return (
+                                        f.message_type != 'Text' &&
+                                        <HStack spacing={3}>
+                                            <Center maxW='50px'>
+                                                {f.message_type === 'File' && <Icon as={getFileExtensionIcon(f.file.split('.')[1])} boxSize="9" />}
+                                                {f.message_type === 'Image' && <Image src={f.file} alt='File preview' boxSize={'36px'} rounded='md' fit='cover' />}
+                                            </Center>
+                                            <Stack spacing={0}>
+                                                {f.file && <Text fontSize='sm' as={Link} href={f.file} isExternal>{f.file.split('/')[3]}</Text>}
+                                                {users && <Text fontSize='xs' color='gray.500'>Shared by {users.find((user) => user.name === f.owner)?.full_name} on {DateObjectToFormattedDateString(new Date(f.creation ?? ''))}</Text>}
+                                            </Stack>
+                                        </HStack>
+                                    )
+                                }
+                                )}
+                            </Stack></> : <EmptyStateForSearch />)}
             </Stack>
         </TabPanel>
     )

@@ -48,7 +48,7 @@ export const FilesSharedInChannel = () => {
                                 <HStack justifyContent='space-between'>
                                     <HStack spacing={3}>
                                         <Center maxW='50px'>
-                                            {f.message_type === 'File' && <Icon as={getFileExtensionIcon(f.file.split('.')[1])} boxSize="6" />}
+                                            {f.message_type === 'File' && <Icon as={getFileExtensionIcon(f.file.split('.')[1])} boxSize="9" />}
                                             {f.message_type === 'Image' && <Image src={f.file} alt='File preview' boxSize={'36px'} rounded='md' fit='cover' />}
                                         </Center>
                                         <Stack spacing={0}>

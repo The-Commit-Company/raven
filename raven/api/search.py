@@ -9,7 +9,7 @@ def get_search_result(doctype, search_text=None, from_user=None, in_channel=None
     channel = frappe.qb.DocType("Raven Channel")
 
     query = frappe.qb.from_(doctype).select(
-        doctype.name, doctype.file, doctype.owner, doctype.creation, doctype.message_type, doctype.channel_id)
+        doctype.name, doctype.file, doctype.owner, doctype.creation, doctype.message_type, doctype.channel_id).where(doctype.message_type != 'Text')
 
     if search_text:
         query = query.where(doctype.file.like(
@@ -25,7 +25,7 @@ def get_search_result(doctype, search_text=None, from_user=None, in_channel=None
         query = query.where(doctype.creation > date)
 
     if file_type:
-        query = query.where(doctype.message_type.isin(file_type))
+        query = query.where(doctype.message_type.isin(tuple(file_type)))
 
     if channel_type and doctype.doctype == "Raven Channel":
         query = query.where(doctype.type.isin(channel_type))
