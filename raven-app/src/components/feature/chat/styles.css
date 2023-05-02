@@ -91,6 +91,7 @@
 .ql-snow .ql-tooltip {
     position: relative;
     transform: none;
+    border-radius: 4px;
 }
 
 .ql-tooltip.ql-editing input[type="text"] {
@@ -107,8 +108,5 @@
 .dark-theme .ql-tooltip.ql-editing input[type="text"]:valid {
     color: white;
     background-color: #1A202C;
-}
-
-.ql-tooltip.ql-editing.ql-snow a {
-    color: white;
+    border-color: #1A202C;
 }
