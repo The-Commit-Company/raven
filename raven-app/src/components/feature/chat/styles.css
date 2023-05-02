@@ -81,14 +81,18 @@
     max-width: 70vw;
 }
 
-/* a:link {
-    color: #00A3C4;
+.ql-tooltip.ql-editing {
+    margin-left: 10px;
+    left: auto !important;
+    top: auto !important;
+    width: 50%;
 }
 
-a:visited {
-    color: #805AD5;
+.ql-snow .ql-tooltip {
+    position: relative;
+    transform: none;
 }
 
-a:hover {
-    color: #3182CE;
-} */
+.ql-tooltip.ql-editing input[type="text"] {
+    width: 80%;
+}
