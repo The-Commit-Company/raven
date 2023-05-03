@@ -8,6 +8,8 @@ import { useFrappeCreateDoc, useFrappeFileUpload, useFrappePostCall, useFrappeUp
 import { useHotkeys } from "react-hotkeys-hook"
 import "quill-mention";
 import 'quill-mention/dist/quill.mention.css';
+import Quill from 'quill';
+import { Linkify, Options } from 'quill-linkify';
 import EmojiPicker, { EmojiClickData } from 'emoji-picker-react';
 import { FaRegSmile } from 'react-icons/fa'
 import { IoMdAdd } from 'react-icons/io'
@@ -26,6 +28,8 @@ interface ChatInputProps {
 export const fileExt = ['jpg', 'JPG', 'jpeg', 'JPEG', 'png', 'PNG', 'gif', 'GIF']
 
 export const ChatInput = ({ channelID, allMembers, allChannels }: ChatInputProps) => {
+
+    Quill.register('modules/linkify', Linkify)
 
     const { call } = useFrappePostCall('raven.raven_messaging.doctype.raven_message.raven_message.send_message')
     const { createDoc, loading: creatingDoc, error: errorCreatingDoc, reset: resetCreateDoc } = useFrappeCreateDoc()
@@ -137,6 +141,12 @@ export const ChatInput = ({ channelID, allMembers, allChannels }: ChatInputProps
         }, [])
     }
 
+    const linkifyOptions: Options = {
+        url: true,
+        mail: true,
+        phoneNumber: false
+    }
+
     const formats = [
         'bold', 'italic', 'underline', 'strike', 'blockquote',
         'list', 'bullet',
@@ -195,6 +205,7 @@ export const ChatInput = ({ channelID, allMembers, allChannels }: ChatInputProps
                                 [{ 'list': 'ordered' }, { 'list': 'bullet' }],
                                 ['link', 'code-block']
                             ],
+                            linkify: linkifyOptions,
                             mention
                         }}
                         formats={formats}

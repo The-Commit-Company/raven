@@ -80,3 +80,59 @@
     overflow: scroll;
     max-width: 70vw;
 }
+
+.ql-tooltip.ql-editing {
+    margin-left: 10px;
+    left: auto !important;
+    top: auto !important;
+    width: 50%;
+}
+
+.ql-snow .ql-tooltip {
+    position: relative;
+    transform: none;
+    border-radius: 4px;
+}
+
+.ql-tooltip.ql-editing input[type="text"] {
+    width: 80%;
+}
+
+.dark-theme .ql-tooltip.ql-editing {
+    background-color: #2D3748;
+    color: white;
+    box-shadow: none;
+    border-color: #718096;
+}
+
+.dark-theme .ql-tooltip.ql-editing input[type="text"]:valid {
+    color: white;
+    background-color: #1A202C;
+    border-color: #1A202C;
+}
+
+.ql-tooltip {
+    margin-left: 10px;
+    left: auto !important;
+    top: auto !important;
+    width: fit-content;
+}
+
+.dark-theme .ql-tooltip {
+    color: white;
+    box-shadow: none;
+    background-color: #1A202C;
+    border-color: #718096;
+}
+
+.ql-snow a {
+    color: #2B6CB0;
+}
+
+.ql-action {
+    color: #4299E1 !important;
+}
+
+.ql-remove {
+    color: #F56565 !important;
+}
