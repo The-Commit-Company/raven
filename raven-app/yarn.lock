@@ -1753,10 +1753,10 @@ ccount@^2.0.0:
   resolved "https://registry.yarnpkg.com/ccount/-/ccount-2.0.1.tgz#17a3bf82302e0870d6da43a01311a8bc02a3ecf5"
   integrity sha512-eyrF0jiFpY+3drT6383f1qhkbGsLSifNAjA61IUjZjmLCWjItY6LB9ft9YhoDgwfmclB2zhu51Lc7+95b8NRAg==
 
-chakra-react-select@^4.4.3:
-  version "4.4.3"
-  resolved "https://registry.yarnpkg.com/chakra-react-select/-/chakra-react-select-4.4.3.tgz#678fcb25b90b9f977628694d1a9d49d072e01128"
-  integrity sha512-anDgJyYUpIapTmUbgXB+Iw5hJ90hOPvgoUPUaYdO5q9zY2VBFhQ1L0gBMqWAQxiKUmuHpwQypf8sPoVtd0b3KA==
+chakra-react-select@^4.6.0:
+  version "4.6.0"
+  resolved "https://registry.yarnpkg.com/chakra-react-select/-/chakra-react-select-4.6.0.tgz#a1a35ee7c531db47ac9c8bd412fb0a3745e77321"
+  integrity sha512-Ckcs+ofX5LxCc0oOz4SorDIRqF/afd5tAQOa694JVJiIckYorUmZASEUSSDdXaZltsUAtJE11CUmEZgVVsk9Eg==
   dependencies:
     react-select "5.7.0"
 

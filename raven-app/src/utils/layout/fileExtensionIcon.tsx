@@ -1,6 +1,5 @@
 import { IconType } from "react-icons";
-import { FaRegFileExcel, FaRegFileImage, FaRegFilePdf, FaRegFileWord } from "react-icons/fa";
-import { HiOutlineMail } from "react-icons/hi";
+import { AiFillFileExcel, AiFillFileImage, AiFillFileMarkdown, AiFillFilePdf, AiFillFileWord } from "react-icons/ai";
 
 export const imageExt = ["jpeg", "jpg", "png"]
 
@@ -10,10 +9,10 @@ export const wordExt = ['doc', 'docx']
 
 export const getFileExtensionIcon = (ext: string): IconType => {
 
-    if (excelExt.includes(ext)) return FaRegFileExcel
-    else if (imageExt.includes(ext)) return FaRegFileImage
-    else if (wordExt.includes(ext)) return FaRegFileWord
-    else if (ext === "pdf") return FaRegFilePdf
-    else if (ext === "eml") return HiOutlineMail
-    else return FaRegFilePdf
+    if (excelExt.includes(ext)) return AiFillFileExcel
+    else if (imageExt.includes(ext)) return AiFillFileImage
+    else if (wordExt.includes(ext)) return AiFillFileWord
+    else if (ext === "pdf") return AiFillFilePdf
+    else if (ext === "eml") return AiFillFileMarkdown
+    else return AiFillFilePdf
 }
