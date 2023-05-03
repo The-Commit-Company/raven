@@ -47,11 +47,11 @@ export const MarkdownRenderer: React.FC<Props> = ({ content }) => {
       {content}
     </ReactMarkdown>
 
-    {data && data.message && <Box py={3}>
+    {data && data.message && (data.message.image || data.message.absolute_image) && <Box py={3}>
       <Box px={3} maxW="50vw" borderLeft="2px" borderColor={borderColor} borderRadius="sm">
         <HStack alignItems="self-start">
           <Image
-            src={data.message.image}
+            src={data.message.image ? data.message.image : data.message.absolute_image}
             alt={`${data.message.title} website image`}
             boxSize="8rem"
             objectFit="cover"
