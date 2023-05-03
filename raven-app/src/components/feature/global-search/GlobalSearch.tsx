@@ -14,19 +14,6 @@ export default function GlobalSearch({ isOpen, onClose }: GlobalSearchModalProps
     const { onToggle: onToggleOtherChannels, isOpen: isOpenOtherChannels } = useDisclosure()
     const { onToggle: onToggleMyChannels, isOpen: isOpenMyChannels } = useDisclosure()
 
-    // const { data, error, mutate } = useFrappeGetCall("raven.api.search.get_search_result", {
-    //     doctype: 'Raven Message',
-    //     search_text: 'yo',
-    //     from_user: ,
-    //     in_channel:,
-    //     date:,
-    //     file_type:,
-    //     channel_type:,
-    //     my_channel_only:,
-    //     other_channel_only:,
-    // })
-
-    // console.log(data)
     return (
         <Modal isOpen={isOpen} onClose={onClose} size='6xl'>
             <ModalContent>

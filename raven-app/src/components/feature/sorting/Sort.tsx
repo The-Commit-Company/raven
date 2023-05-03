@@ -33,12 +33,12 @@ export const Sort = ({ sortingFields, onSortFieldSelect, sortOrder, onSortOrderC
                     onClick={handleSortOrder}
                     aria-label='Add to fields'
                     icon={sortOrder === "asc" ? <HiSortAscending /> : <HiSortDescending />} />
-                <Button as={MenuButton} fontSize="x-small">
+                {/* <Button as={MenuButton} fontSize="x-small">
                     {sortField === '' ? "Sort by" : sortingFields.find(f => f.field === sortField)?.label}
-                </Button>
+                </Button> */}
             </ButtonGroup>
 
-            <SortMenu sortingFields={sortingFields} selectedField={onSortFieldSelect} />
+            {/* <SortMenu sortingFields={sortingFields} selectedField={onSortFieldSelect} /> */}
 
         </Menu>
     )

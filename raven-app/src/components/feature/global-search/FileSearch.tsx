@@ -39,6 +39,11 @@ export const FileSearch = ({ onToggleMyChannels, isOpenMyChannels }: Props) => {
     const watchUser = watch('user-filter')
     const watchDate = watch('date-filter')
     const watchMyChannels = watch('my-channels-filter')
+    const file_type: string[] = watchFileType ? watchFileType.map((fileType: { value: string, label: string }) => fileType.value) : []
+    const in_channel: string[] = watchChannel ? watchChannel.map((channel: { value: string, label: string }) => (channel.value)) : []
+    const from_user: string[] = watchUser ? watchUser.map((user: { value: string, label: string }) => (user.value)) : []
+    const date = watchDate ? watchDate.value : null
+    const my_channel_only: boolean = watchMyChannels ? watchMyChannels : null
 
     const { data: users, error: usersError } = useFrappeGetDocList<User>("User", {
         fields: ["full_name", "user_image", "name"],
@@ -75,16 +80,14 @@ export const FileSearch = ({ onToggleMyChannels, isOpenMyChannels }: Props) => {
     const { data, error, isLoading, isValidating } = useFrappeGetCall<{ message: GetFileSearchResult[] }>("raven.api.search.get_search_result", {
         doctype: 'Raven Message',
         search_text: debouncedText,
-        file_type: watchFileType ? watchFileType.map((fileType: { value: string, label: string }) => (fileType.value)) : undefined,
-        in_channel: watchChannel ? watchChannel.map((inChannel: { value: string, label: string }) => (inChannel.value)) : undefined,
-        from_user: watchUser ? watchUser.map((fromUser: { value: string, label: string }) => (fromUser.value)) : undefined,
-        date: watchDate ? watchDate?.value : undefined,
-        my_channel_only: watchMyChannels ? watchMyChannels : undefined,
+        file_type: JSON.stringify(file_type),
+        in_channel: JSON.stringify(in_channel),
+        from_user: JSON.stringify(from_user),
+        date: date,
+        my_channel_only: my_channel_only,
         sort_order: sortOrder,
         sort_field: sortByField
     })
-
-    console.log(users)
 
     return (
         <TabPanel px={0}>
@@ -105,7 +108,9 @@ export const FileSearch = ({ onToggleMyChannels, isOpenMyChannels }: Props) => {
                         <chakra.form>
                             <HStack justifyContent={'space-between'}>
                                 <FormControl id="user-filter" w='fit-content'>
-                                    <SelectInput placeholder="From" size='sm' options={userOptions} name='user-filter' isMulti={true} />
+                                    <SelectInput placeholder="From" size='sm' options={userOptions} name='user-filter' isMulti={true} chakraStyles={{
+                                        multiValue: (chakraStyles) => ({ ...chakraStyles, display: 'flex', alignItems: 'center', overflow: 'hidden', padding: '0rem 0.2rem 0rem 0rem' }),
+                                    }} />
                                 </FormControl>
                                 <FormControl id="channel-filter" w='fit-content'>
                                     <SelectInput placeholder="In" size='sm' options={channelOption} name='channel-filter' isMulti={true} />
@@ -141,34 +146,34 @@ export const FileSearch = ({ onToggleMyChannels, isOpenMyChannels }: Props) => {
             </Stack>
             <Stack h='420px' p={4}>
 
-                {error && <AlertBanner status='error' heading={error.message}>{error.httpStatus} - {error.httpStatusText}</AlertBanner>}
-                {isLoading && isValidating ? <FullPageLoader /> :
-                    (!!!error && data?.message && data.message.length > 0 ?
-                        <><Sort
-                            sortingFields={[{ label: 'Created on', field: 'creation' }]}
-                            onSortFieldSelect={(selField) => setSortByField(selField)}
-                            sortOrder={sortOrder}
-                            sortField={sortByField}
-                            onSortOrderChange={(order) => setSortOrder(order)} />
-                            <Stack spacing={4} overflowY='scroll'>
+                {error ? <AlertBanner status='error' heading={error.message}>{error.httpStatus} - {error.httpStatusText}</AlertBanner> :
+                    (isLoading && isValidating ? <FullPageLoader /> :
+                        (!!!error && data?.message && data.message.length > 0 ?
+                            <><Sort
+                                sortingFields={[{ label: 'Created on', field: 'creation' }]}
+                                onSortFieldSelect={(selField) => setSortByField(selField)}
+                                sortOrder={sortOrder}
+                                sortField={sortByField}
+                                onSortOrderChange={(order) => setSortOrder(order)} />
+                                <Stack spacing={4} overflowY='scroll'>
 
-                                {data.message.map((f) => {
-                                    return (
-                                        f.message_type != 'Text' &&
-                                        <HStack spacing={3}>
-                                            <Center maxW='50px'>
-                                                {f.message_type === 'File' && <Icon as={getFileExtensionIcon(f.file.split('.')[1])} boxSize="9" />}
-                                                {f.message_type === 'Image' && <Image src={f.file} alt='File preview' boxSize={'36px'} rounded='md' fit='cover' />}
-                                            </Center>
-                                            <Stack spacing={0}>
-                                                {f.file && <Text fontSize='sm' as={Link} href={f.file} isExternal>{f.file.split('/')[3]}</Text>}
-                                                {users && <Text fontSize='xs' color='gray.500'>Shared by {users.find((user) => user.name === f.owner)?.full_name} on {DateObjectToFormattedDateString(new Date(f.creation ?? ''))}</Text>}
-                                            </Stack>
-                                        </HStack>
-                                    )
-                                }
-                                )}
-                            </Stack></> : <EmptyStateForSearch />)}
+                                    {data.message.map((f) => {
+                                        return (
+                                            f.message_type != 'Text' &&
+                                            <HStack spacing={3}>
+                                                <Center maxW='50px'>
+                                                    {f.message_type === 'File' && <Icon as={getFileExtensionIcon(f.file.split('.')[1])} boxSize="9" />}
+                                                    {f.message_type === 'Image' && <Image src={f.file} alt='File preview' boxSize={'36px'} rounded='md' fit='cover' />}
+                                                </Center>
+                                                <Stack spacing={0}>
+                                                    {f.file && <Text fontSize='sm' as={Link} href={f.file} isExternal>{f.file.split('/')[3]}</Text>}
+                                                    {users && <Text fontSize='xs' color='gray.500'>Shared by {users.find((user) => user.name === f.owner)?.full_name} on {DateObjectToFormattedDateString(new Date(f.creation ?? ''))}</Text>}
+                                                </Stack>
+                                            </HStack>
+                                        )
+                                    }
+                                    )}
+                                </Stack></> : <EmptyStateForSearch />))}
             </Stack>
         </TabPanel>
     )

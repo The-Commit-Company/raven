@@ -12,7 +12,7 @@ interface SelectInputProps extends Props<SelectOption, true, GroupBase<SelectOpt
     options: any[]
 }
 
-export const SelectInput = ({ requiredRule, options, ...props }: SelectInputProps) => {
+export const SelectInput = ({ requiredRule, options, chakraStyles, ...props }: SelectInputProps) => {
     const { control } = useFormContext()
     return (
         <Controller
@@ -31,19 +31,10 @@ export const SelectInput = ({ requiredRule, options, ...props }: SelectInputProp
                         value={value}
                         chakraStyles={{
                             ...defaultStyles,
-                            dropdownIndicator: (provided) => ({
-                                ...provided,
-                                bg: "transparent",
-                                px: 2,
-                                cursor: "inherit"
-                            }),
-                            indicatorSeparator: (provided) => ({
-                                ...provided,
-                                display: "none"
-                            }),
-                            ...props.chakraStyles
+                            ...chakraStyles
                         }}
-                        selectedOptionStyle="check"
+                        selectedOptionStyle='color'
+                        hideSelectedOptions={false}
                         options={options}
                         placeholder={props.placeholder ?? "Select ..."}
                         {...props}
@@ -54,7 +45,7 @@ export const SelectInput = ({ requiredRule, options, ...props }: SelectInputProp
 }
 
 const defaultStyles: ChakraStylesConfig<SelectOption> = {
-    control: (chakraStyles) => ({ ...chakraStyles, width: '14rem', fontSize: 'sm' }),
+    control: (chakraStyles) => ({ ...chakraStyles, width: '14rem', fontSize: 'sm', maxHeight: '2rem', position: 'relative' }),
     menu: (chakraStyles) => ({ ...chakraStyles, borderRadius: 'md', width: '14rem', borderWidth: '1px' }),
     menuList: (chakraStyles) => ({ ...chakraStyles, borderColor: 'transparent' }),
     dropdownIndicator: (chakraStyles) => ({ ...chakraStyles, bg: "transparent", cursor: "inherit", width: '2rem' }),
@@ -65,5 +56,8 @@ const defaultStyles: ChakraStylesConfig<SelectOption> = {
     }),
     indicatorSeparator: (chakraStyles) => ({ ...chakraStyles, display: "none" }),
     input: (chakraStyles) => ({ ...chakraStyles }),
-    noOptionsMessage: (chakraStyles) => ({ ...chakraStyles, width: '14rem', fontSize: 'sm' })
+    noOptionsMessage: (chakraStyles) => ({ ...chakraStyles, width: '14rem', fontSize: 'sm' }),
+    indicatorsContainer: (chakraStyles) => ({ ...chakraStyles, bg: "transparent", cursor: "inherit", width: '2rem', maxHeight: '2rem', position: 'absolute', right: '0', top: '50%', transform: 'translateY(-50%)', }),
+    multiValue: (chakraStyles) => ({ ...chakraStyles, display: 'flex', alignItems: 'center', overflow: 'hidden', padding: '0rem 0.2rem 0rem 0.2rem' }),
+    valueContainer: (chakraStyles) => ({ ...chakraStyles, display: 'flex', flexWrap: 'nowrap', overflowX: 'auto' }),
 }
