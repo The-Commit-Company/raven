@@ -11,9 +11,35 @@ interface ChatHistoryProps {
 
 export const ChatHistory = ({ messages }: ChatHistoryProps) => {
 
+    // If two consecutive messages are from the same user and are text messages,
+    // then the second message is a continuation of the first message
+    // if sent within 2 minutes of the first message
+    const messagesWithContinuation = messages.reverse().map((message, index) => {
+        if (index === 0) {
+            return {
+                ...message,
+                isContinuation: false
+            }
+        }
+        const previousMessage = messages[index - 1]
+        if (message.owner === previousMessage.owner && message.message_type === 'Text' && previousMessage.message_type === 'Text') {
+            const timeDifference = new Date(message.creation).getTime() - new Date(previousMessage.creation).getTime()
+            if (timeDifference < 120000) {
+                return {
+                    ...message,
+                    isContinuation: true
+                }
+            }
+        }
+        return {
+            ...message,
+            isContinuation: false
+        }
+    })
+
     // Group the messages by date
     const messageGroups: Record<string, Message[]> = {};
-    messages.forEach((message) => {
+    messagesWithContinuation.forEach((message) => {
         const date = new Date(message.creation).toDateString()
         if (!messageGroups[date]) {
             messageGroups[date] = []
