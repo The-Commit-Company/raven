@@ -60,7 +60,7 @@ export const MarkdownRenderer: React.FC<Props> = ({ content }) => {
           />
           <Stack spacing={1}>
             <Text fontWeight="bold">{data.message.title}</Text>
-            <Text fontSize="sm" fontWeight="normal">
+            <Text fontSize="sm" fontWeight="normal" color={'gray.500'}>
               {data.message.description}
             </Text>
           </Stack>
