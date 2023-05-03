@@ -9,7 +9,7 @@ import { UserContext } from "../../../utils/auth/UserProvider";
 import { ChannelContext } from "../../../utils/channel/ChannelProvider"
 import { getFileExtensionIcon } from "../../../utils/layout/fileExtensionIcon";
 import { DateObjectToTimeString } from "../../../utils/operations";
-import { MarkdownRenderer } from "../markdown-viewer/MarkdownRenderer.tsx";
+import { MarkdownRenderer } from "../markdown-viewer/MarkdownRenderer";
 import { DeleteMessageModal } from "../message-details/DeleteMessageModal";
 import { EditMessageModal } from "../message-details/EditMessageModal";
 import { SetUserStatus } from "../user-details/SetUserStatus";
