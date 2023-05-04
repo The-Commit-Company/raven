@@ -1,9 +1,8 @@
-import React from "react"
 import { Stack } from "@chakra-ui/react"
-import { Message } from "../../../types/Messaging/Message"
 import { ChatMessage } from "./ChatMessage"
 import { DividerWithText } from "../../layout/Divider/DividerWithText"
 import { DateObjectToFormattedDateString } from "../../../utils/operations"
+import { Message, MessageWithContinuationCheck } from "../../../types/Messaging/Message"
 
 interface ChatHistoryProps {
     messages: Message[]
@@ -11,49 +10,51 @@ interface ChatHistoryProps {
 
 export const ChatHistory = ({ messages }: ChatHistoryProps) => {
 
+    // Sort the messages by creation date
+    messages.sort((a, b) => {
+        const timeA = new Date(a.creation).getTime()
+        const timeB = new Date(b.creation).getTime()
+        return timeA - timeB
+    })
+
     // If two consecutive messages are from the same user and are text messages,
     // then the second message is a continuation of the first message
     // if sent within 2 minutes of the first message
-    const messagesWithContinuation = messages.reverse().map((message, index) => {
-        if (index === 0) {
-            return {
-                ...message,
-                isContinuation: false
-            }
-        }
-        const previousMessage = messages[index - 1]
-        if (message.owner === previousMessage.owner && message.message_type === 'Text' && previousMessage.message_type === 'Text') {
-            const timeDifference = new Date(message.creation).getTime() - new Date(previousMessage.creation).getTime()
-            if (timeDifference < 120000) {
-                return {
-                    ...message,
-                    isContinuation: true
-                }
-            }
-        }
-        return {
+    const messagesWithContinuation = []
+    for (let i = 0; i < messages.length; i++) {
+        const message = messages[i]
+        const previousMessage = messages[i - 1]
+        const isContinuation = (
+            previousMessage &&
+            message.owner === previousMessage.owner &&
+            message.message_type === previousMessage.message_type &&
+            new Date(message.creation).getTime() - new Date(previousMessage.creation).getTime() < 120000
+        )
+        messagesWithContinuation.push({
             ...message,
-            isContinuation: false
-        }
-    })
+            isContinuation
+        })
+    }
 
     // Group the messages by date
-    const messageGroups: Record<string, Message[]> = {};
-    messagesWithContinuation.forEach((message) => {
+    const messageGroups: Record<string, MessageWithContinuationCheck[]> = {}
+    for (const message of messagesWithContinuation) {
         const date = new Date(message.creation).toDateString()
         if (!messageGroups[date]) {
             messageGroups[date] = []
         }
         messageGroups[date].push(message)
-    })
+    }
 
     return (
-        <Stack spacing={4} justify="end" direction="column-reverse" overflowY="scroll">
-            {Object.entries(messageGroups).map(([date, messages]) => (
-                <React.Fragment key={date}>
-                    {messages.map((message) => {
-                        const { name, owner, creation, message_type, text, file } = message
-                        return (
+        <Stack spacing={4} justify="end" direction={"column-reverse"} overflowY="scroll">
+            {Object.entries(messageGroups).reverse().map(([date, messages]) => (
+                <Stack spacing={4} key={date}>
+                    <DividerWithText>
+                        {DateObjectToFormattedDateString(new Date(date))}
+                    </DividerWithText>
+                    <Stack spacing={0}>
+                        {messages.map(({ name, owner, creation, message_type, text, file, isContinuation }) => (
                             <ChatMessage
                                 key={name}
                                 name={name}
@@ -62,13 +63,11 @@ export const ChatHistory = ({ messages }: ChatHistoryProps) => {
                                 text={message_type === 'Text' ? text : undefined}
                                 file={message_type === 'File' ? file : undefined}
                                 image={message_type === 'Image' ? file : undefined}
+                                isContinuation={isContinuation}
                             />
-                        )
-                    })}
-                    <DividerWithText>
-                        {DateObjectToFormattedDateString(new Date(date))}
-                    </DividerWithText>
-                </React.Fragment>
+                        ))}
+                    </Stack>
+                </Stack>
             ))}
         </Stack>
     )

@@ -22,15 +22,16 @@ interface ChatMessageProps {
     timestamp: Date,
     text?: string,
     image?: string,
-    file?: string
+    file?: string,
+    isContinuation?: boolean
 }
 
-export const ChatMessage = ({ name, user, timestamp, text, image, file }: ChatMessageProps) => {
+export const ChatMessage = ({ name, user, timestamp, text, image, file, isContinuation }: ChatMessageProps) => {
 
     const { currentUser } = useContext(UserContext)
     const { colorMode } = useColorMode()
     const { channelMembers } = useContext(ChannelContext)
-    const [showButtons, setShowButtons] = useState({ display: 'none' })
+    const [showButtons, setShowButtons] = useState<{}>({ visibility: 'hidden' })
     const { isOpen: isDeleteMessageModalOpen, onOpen: onDeleteMessageModalOpen, onClose: onDeleteMessageModalClose } = useDisclosure()
     const { isOpen: isEditMessageModalOpen, onOpen: onEditMessageModalOpen, onClose: onEditMessageModalClose } = useDisclosure()
     const { isOpen: isUserProfileDetailsDrawerOpen, onOpen: onUserProfileDetailsDrawerOpen, onClose: onUserProfileDetailsDrawerClose } = useDisclosure()
@@ -57,44 +58,57 @@ export const ChatMessage = ({ name, user, timestamp, text, image, file }: ChatMe
 
     return (
         <Box
-            py={4}
+            pt={isContinuation ? 2 : 4}
+            pb={2}
             px='2'
             zIndex={1}
             _hover={{
                 bg: colorMode === 'light' && 'gray.50' || 'gray.800',
-                cursor: 'pointer',
                 borderRadius: 'md'
             }}
             rounded='md'
             onMouseEnter={e => {
-                setShowButtons({ display: 'block' })
+                setShowButtons({ visibility: 'visible' })
             }}
             onMouseLeave={e => {
-                setShowButtons({ display: 'none' })
+                setShowButtons({ visibility: 'hidden' })
             }}>
             <HStack justifyContent='space-between' alignItems='flex-start'>
-                <HStack spacing={2} alignItems='flex-start'>
-                    <Avatar name={channelMembers?.[user]?.full_name ?? user} src={channelMembers?.[user]?.user_image} borderRadius={'md'} boxSize='40px' />
-                    <Stack spacing='1'>
-                        <HStack>
-                            <HStack divider={<StackDivider />} align='flex-start'>
-                                <Button variant='link' onClick={() => {
-                                    setSelectedUser(channelMembers?.[user])
-                                    onUserProfileDetailsDrawerOpen()
-                                }}>
-                                    <Text fontSize='sm' lineHeight={'0.9'} fontWeight="bold" as='span' color={textColor}>{channelMembers?.[user]?.full_name ?? user}</Text>
-                                </Button>
-                                <Text fontSize="xs" lineHeight={'0.9'} color="gray.500">{DateObjectToTimeString(timestamp)}</Text>
-                            </HStack>
-                        </HStack>
+                {isContinuation &&
+                    <HStack spacing={3}>
+                        <Text pl='1' style={showButtons} fontSize={'xs'} color="gray.500">{DateObjectToTimeString(timestamp).split(' ')[0]}</Text>
                         {text && <MarkdownRenderer content={text} />}
                         {image && <Image src={image} height='360px' rounded={'md'} onClick={onImagePreviewModalOpen} />}
                         {file && <HStack>
                             <Icon as={getFileExtensionIcon(file.split('.')[1])} />
                             <Text as={Link} href={file} isExternal>{file.split('/')[3]}</Text>
                         </HStack>}
-                    </Stack>
-                </HStack>
+                    </HStack>
+                }
+                {!isContinuation &&
+                    <HStack spacing={2} alignItems='flex-start'>
+                        <Avatar name={channelMembers?.[user]?.full_name ?? user} src={channelMembers?.[user]?.user_image} borderRadius={'md'} boxSize='36px' />
+                        <Stack spacing='1'>
+                            <HStack>
+                                <HStack divider={<StackDivider />} align='flex-start'>
+                                    <Button variant='link' onClick={() => {
+                                        setSelectedUser(channelMembers?.[user])
+                                        onUserProfileDetailsDrawerOpen()
+                                    }}>
+                                        <Text fontSize='sm' lineHeight={'0.9'} fontWeight="bold" as='span' color={textColor}>{channelMembers?.[user]?.full_name ?? user}</Text>
+                                    </Button>
+                                    <Text fontSize="xs" lineHeight={'0.9'} color="gray.500">{DateObjectToTimeString(timestamp)}</Text>
+                                </HStack>
+                            </HStack>
+                            {text && <MarkdownRenderer content={text} />}
+                            {image && <Image src={image} height='360px' rounded={'md'} onClick={onImagePreviewModalOpen} />}
+                            {file && <HStack>
+                                <Icon as={getFileExtensionIcon(file.split('.')[1])} />
+                                <Text as={Link} href={file} isExternal>{file.split('/')[3]}</Text>
+                            </HStack>}
+                        </Stack>
+                    </HStack>
+                }
                 {user == currentUser && <ButtonGroup style={showButtons}>
                     {image &&
                         <Tooltip hasArrow label='download' size='xs' placement='top'>
