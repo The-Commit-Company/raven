@@ -3,7 +3,6 @@ import { Avatar, Button, Center, chakra, FormControl, HStack, Icon, Input, Input
 import { FrappeConfig, FrappeContext, useFrappeGetCall, useFrappeGetDocList } from 'frappe-react-sdk'
 import { useMemo, useState, useContext, useEffect } from 'react'
 import { Controller, FormProvider, useForm } from 'react-hook-form'
-import { GoFilePdf, GoFileMedia, GoFile } from "react-icons/go";
 import { BiGlobe, BiHash, BiLockAlt } from 'react-icons/bi'
 import { useDebounce } from '../../../hooks/useDebounce'
 import { ChannelData } from '../../../types/Channel/Channel'
@@ -16,7 +15,7 @@ import { EmptyStateForSearch } from '../../layout/EmptyState/EmptyState'
 import { FullPageLoader } from '../../layout/Loaders'
 import { SelectInput, SelectOption } from '../search-filters/SelectInput'
 import { Sort } from '../sorting'
-import { AiFillFileExcel, AiOutlineFilePpt } from 'react-icons/ai'
+import { AiOutlineFileExcel, AiOutlineFileImage, AiOutlineFilePdf, AiOutlineFilePpt, AiOutlineFileText } from 'react-icons/ai'
 
 interface Props {
     onToggleMyChannels: () => void,
@@ -206,11 +205,11 @@ export const FileSearch = ({ onToggleMyChannels, isOpenMyChannels }: Props) => {
 }
 
 const fileOption: SelectOption[] = [
-    { label: <HStack><GoFilePdf /><Text>PDFs</Text></HStack>, value: "pdf" },
-    { label: <HStack><GoFile /><Text>Documents</Text></HStack>, value: "doc" },
+    { label: <HStack><AiOutlineFilePdf /><Text>PDFs</Text></HStack>, value: "pdf" },
+    { label: <HStack><AiOutlineFileText /><Text>Documents</Text></HStack>, value: "doc" },
     { label: <HStack><AiOutlineFilePpt /><Text>Presentations</Text></HStack>, value: "ppt" },
-    { label: <HStack><AiFillFileExcel /><Text>Spreadsheets</Text></HStack>, value: "xls" },
-    { label: <HStack><GoFileMedia /><Text>Image</Text></HStack>, value: "image" }
+    { label: <HStack><AiOutlineFileExcel /><Text>Spreadsheets</Text></HStack>, value: "xls" },
+    { label: <HStack><AiOutlineFileImage /><Text>Image</Text></HStack>, value: "image" }
 ]
 
 const dateOption: SelectOption[] = [
