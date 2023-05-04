@@ -1,10 +1,9 @@
 import { SearchIcon } from '@chakra-ui/icons'
 import { Avatar, Button, Center, chakra, FormControl, HStack, Icon, Input, InputGroup, InputLeftElement, Link, Stack, TabPanel, Text, Image } from '@chakra-ui/react'
 import { FrappeConfig, FrappeContext, useFrappeGetCall, useFrappeGetDocList } from 'frappe-react-sdk'
-import { useMemo, useState, useContext } from 'react'
+import { useMemo, useState, useContext, useEffect } from 'react'
 import { Controller, FormProvider, useForm } from 'react-hook-form'
 import { BiGlobe, BiHash, BiLockAlt } from 'react-icons/bi'
-import { FiImage, FiFile } from "react-icons/fi";
 import { useDebounce } from '../../../hooks/useDebounce'
 import { ChannelData } from '../../../types/Channel/Channel'
 import { GetFileSearchResult } from '../../../types/Search/FileSearch'
@@ -16,6 +15,7 @@ import { EmptyStateForSearch } from '../../layout/EmptyState/EmptyState'
 import { FullPageLoader } from '../../layout/Loaders'
 import { SelectInput, SelectOption } from '../search-filters/SelectInput'
 import { Sort } from '../sorting'
+import { AiOutlineFileExcel, AiOutlineFileImage, AiOutlineFilePdf, AiOutlineFilePpt, AiOutlineFileText } from 'react-icons/ai'
 
 interface Props {
     onToggleMyChannels: () => void,
@@ -44,6 +44,30 @@ export const FileSearch = ({ onToggleMyChannels, isOpenMyChannels }: Props) => {
     const from_user: string[] = watchUser ? watchUser.map((user: { value: string, label: string }) => (user.value)) : []
     const date = watchDate ? watchDate.value : null
     const my_channel_only: boolean = watchMyChannels ? watchMyChannels : null
+    const extensions: string[] = ['pdf', 'doc', 'docx']
+    const [message_type, setMessageType] = useState<string[]>([])
+
+    useEffect(() => {
+        if (file_type.some(item => extensions.includes(item))) {
+            setMessageType(prevState => {
+                const newState = prevState.filter(item => item !== 'File');
+                return [...newState, 'File'];
+            });
+        } else {
+            setMessageType(prevState => prevState.filter(item => item !== 'File'));
+        }
+
+        if (file_type.some(item => item === 'image')) {
+            setMessageType(prevState => {
+                const newState = prevState.filter(item => item !== 'Image');
+                return [...newState, 'Image'];
+            });
+        } else {
+            setMessageType(prevState => prevState.filter(item => item !== 'Image'));
+        }
+
+        setMessageType(prevState => [...new Set(prevState)]);
+    }, [file_type]);
 
     const { data: users, error: usersError } = useFrappeGetDocList<User>("User", {
         fields: ["full_name", "user_image", "name"],
@@ -80,6 +104,7 @@ export const FileSearch = ({ onToggleMyChannels, isOpenMyChannels }: Props) => {
     const { data, error, isLoading, isValidating } = useFrappeGetCall<{ message: GetFileSearchResult[] }>("raven.api.search.get_search_result", {
         doctype: 'Raven Message',
         search_text: debouncedText,
+        message_type: JSON.stringify(message_type),
         file_type: JSON.stringify(file_type),
         in_channel: JSON.stringify(in_channel),
         from_user: JSON.stringify(from_user),
@@ -180,8 +205,11 @@ export const FileSearch = ({ onToggleMyChannels, isOpenMyChannels }: Props) => {
 }
 
 const fileOption: SelectOption[] = [
-    { label: <HStack><FiFile /><Text>File</Text></HStack>, value: "File" },
-    { label: <HStack><FiImage /><Text>Image</Text></HStack>, value: "Image" }
+    { label: <HStack><AiOutlineFilePdf /><Text>PDFs</Text></HStack>, value: "pdf" },
+    { label: <HStack><AiOutlineFileText /><Text>Documents</Text></HStack>, value: "doc" },
+    { label: <HStack><AiOutlineFilePpt /><Text>Presentations</Text></HStack>, value: "ppt" },
+    { label: <HStack><AiOutlineFileExcel /><Text>Spreadsheets</Text></HStack>, value: "xls" },
+    { label: <HStack><AiOutlineFileImage /><Text>Image</Text></HStack>, value: "image" }
 ]
 
 const dateOption: SelectOption[] = [
