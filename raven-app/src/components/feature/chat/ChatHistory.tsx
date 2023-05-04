@@ -17,7 +17,7 @@ export const ChatHistory = ({ messages }: ChatHistoryProps) => {
         return timeA - timeB
     })
 
-    // If two consecutive messages are from the same user and are text messages,
+    // If two consecutive messages are from the same user and are of the same type,
     // then the second message is a continuation of the first message
     // if sent within 2 minutes of the first message
     const messagesWithContinuation = []
