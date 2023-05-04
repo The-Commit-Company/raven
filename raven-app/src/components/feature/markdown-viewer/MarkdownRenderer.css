@@ -6,3 +6,11 @@
 .markdown a:hover {
     color: #2B6CB0;
 }
+
+.markdown ol {
+    padding-left: 20px;
+}
+
+.markdown ul {
+    padding-left: 20px;
+}
