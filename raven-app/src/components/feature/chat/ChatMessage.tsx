@@ -1,4 +1,4 @@
-import { Avatar, Box, Button, ButtonGroup, HStack, Icon, IconButton, Image, Link, Stack, StackDivider, Text, Tooltip, useColorMode, useDisclosure } from "@chakra-ui/react"
+import { Avatar, Box, Button, ButtonGroup, HStack, Icon, IconButton, Image, Link, Stack, StackDivider, Text, Tooltip, textDecoration, useColorMode, useDisclosure } from "@chakra-ui/react"
 import { useFrappeGetCall } from "frappe-react-sdk";
 import { useContext, useState } from "react"
 import { BsDownload } from "react-icons/bs";
@@ -15,6 +15,7 @@ import { EditMessageModal } from "../message-details/EditMessageModal";
 import { SetUserStatus } from "../user-details/SetUserStatus";
 import { UserProfileDrawer } from "../user-details/UserProfileDrawer";
 import { ImagePreviewModal } from "../file-preview/ImagePreviewModal";
+import { PDFPreviewModal } from "../file-preview/PDFPreviewModal";
 
 interface ChatMessageProps {
     name: string,
@@ -37,6 +38,7 @@ export const ChatMessage = ({ name, user, timestamp, text, image, file, isContin
     const { isOpen: isUserProfileDetailsDrawerOpen, onOpen: onUserProfileDetailsDrawerOpen, onClose: onUserProfileDetailsDrawerClose } = useDisclosure()
     const { isOpen: isSetUserStatusModalOpen, onOpen: onSetUserStatusModalOpen, onClose: onSetUserStatusModalClose } = useDisclosure()
     const { isOpen: isImagePreviewModalOpen, onOpen: onImagePreviewModalOpen, onClose: onImagePreviewModalClose } = useDisclosure()
+    const { isOpen: isPDFPreviewModalOpen, onOpen: onPDFPreviewModalOpen, onClose: onPDFPreviewModalClose } = useDisclosure()
     const { data: channelList, error: channelListError } = useFrappeGetCall<{ message: ChannelData[] }>("raven.raven_channel_management.doctype.raven_channel.raven_channel.get_channel_list")
 
     const [selectedUser, setSelectedUser] = useState<User | null>(null)
@@ -81,7 +83,10 @@ export const ChatMessage = ({ name, user, timestamp, text, image, file, isContin
                         {image && <Image src={image} height='360px' rounded={'md'} onClick={onImagePreviewModalOpen} />}
                         {file && <HStack>
                             <Icon as={getFileExtensionIcon(file.split('.')[1])} />
-                            <Text as={Link} href={file} isExternal>{file.split('/')[3]}</Text>
+                            {file.split('.')[1].toLowerCase() === 'pdf' ?
+                                <Text onClick={onPDFPreviewModalOpen} style={{ cursor: 'pointer' }} _hover={{ textDecoration: 'underline' }}>{file.split('/')[3]}</Text> :
+                                <Text as={Link} href={file} isExternal>{file.split('/')[3]}</Text>
+                            }
                         </HStack>}
                     </HStack>
                 }
@@ -104,7 +109,10 @@ export const ChatMessage = ({ name, user, timestamp, text, image, file, isContin
                             {image && <Image src={image} height='360px' rounded={'md'} onClick={onImagePreviewModalOpen} />}
                             {file && <HStack>
                                 <Icon as={getFileExtensionIcon(file.split('.')[1])} />
-                                <Text as={Link} href={file} isExternal>{file.split('/')[3]}</Text>
+                                {file.split('.')[1].toLowerCase() === 'pdf' ?
+                                    <Text onClick={onPDFPreviewModalOpen} style={{ cursor: 'pointer' }} _hover={{ textDecoration: 'underline' }}>{file.split('/')[3]}</Text> :
+                                    <Text as={Link} href={file} isExternal>{file.split('/')[3]}</Text>
+                                }
                             </HStack>}
                         </Stack>
                     </HStack>
@@ -153,6 +161,7 @@ export const ChatMessage = ({ name, user, timestamp, text, image, file, isContin
             <DeleteMessageModal isOpen={isDeleteMessageModalOpen} onClose={onDeleteMessageModalClose} channelMessageID={name} />
             <SetUserStatus isOpen={isSetUserStatusModalOpen} onClose={onSetUserStatusModalClose} />
             {image && <ImagePreviewModal isOpen={isImagePreviewModalOpen} onClose={onImagePreviewModalClose} file_owner={channelMembers?.[user].name} file_url={image} timestamp={timestamp} />}
+            {file && <PDFPreviewModal isOpen={isPDFPreviewModalOpen} onClose={onPDFPreviewModalClose} file_owner={channelMembers?.[user].name} file_url={file} timestamp={timestamp} />}
             {selectedUser && <UserProfileDrawer isOpen={isUserProfileDetailsDrawerOpen} onClose={onUserProfileDetailsDrawerClose} user={selectedUser} openSetStatusModal={onSetUserStatusModalOpen} />}
             {text && <EditMessageModal isOpen={isEditMessageModalOpen} onClose={onEditMessageModalClose} channelMessageID={name} allMembers={allMembers} allChannels={allChannels ?? []} originalText={text} />}
         </Box>
