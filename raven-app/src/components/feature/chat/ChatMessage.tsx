@@ -45,6 +45,7 @@ export const ChatMessage = ({ name, user, timestamp, text, image, file, isContin
             pb={2}
             px='2'
             zIndex={1}
+            position={'relative'}
             _hover={{
                 bg: colorMode === 'light' && 'gray.50' || 'gray.800',
                 borderRadius: 'md'
@@ -57,32 +58,30 @@ export const ChatMessage = ({ name, user, timestamp, text, image, file, isContin
                 setShowButtons({ visibility: 'hidden' })
             }}>
             {isSearchResult && creation && <HStack pb='8px'><Text fontWeight='bold' fontSize='md'>{channelData?.channel_name}</Text><Text fontSize='sm'>- {new Date(creation).toDateString()}</Text><Button variant='link' style={showButtons} fontWeight='light' size='sm' onClick={() => navigate(`/channel/${channelData?.name}`)}>View Channel</Button></HStack>}
-            <HStack justifyContent='space-between' alignItems='flex-start'>
-                {isContinuation ?
-                    <HStack spacing={3}>
-                        <Text pl='1' style={showButtons} fontSize={'xs'} color="gray.500">{DateObjectToTimeString(timestamp).split(' ')[0]}</Text>
-                        <DisplayMessageContent text={text} image={image} file={file} onImagePreviewModalOpen={onImagePreviewModalOpen} onPDFPreviewModalOpen={onPDFPreviewModalOpen} />
-                    </HStack>
-                    : <HStack spacing={2} alignItems='flex-start'>
-                        <Avatar name={channelMembers?.[user]?.full_name ?? user} src={channelMembers?.[user]?.user_image} borderRadius={'md'} boxSize='36px' />
-                        <Stack spacing='1'>
-                            <HStack>
-                                <HStack divider={<StackDivider />} align='flex-start'>
-                                    <Button variant='link' onClick={() => {
-                                        setSelectedUser(channelMembers?.[user])
-                                        onUserProfileDetailsDrawerOpen()
-                                    }}>
-                                        <Text fontSize='sm' lineHeight={'0.9'} fontWeight="bold" as='span' color={textColor}>{channelMembers?.[user]?.full_name ?? user}</Text>
-                                    </Button>
-                                    <Text fontSize="xs" lineHeight={'0.9'} color="gray.500">{DateObjectToTimeString(timestamp)}</Text>
-                                </HStack>
+            {isContinuation ?
+                <HStack spacing={3}>
+                    <Text pl='1' style={showButtons} fontSize={'xs'} color="gray.500">{DateObjectToTimeString(timestamp).split(' ')[0]}</Text>
+                    <DisplayMessageContent text={text} image={image} file={file} onImagePreviewModalOpen={onImagePreviewModalOpen} onPDFPreviewModalOpen={onPDFPreviewModalOpen} />
+                </HStack>
+                : <HStack spacing={2} alignItems='flex-start'>
+                    <Avatar name={channelMembers?.[user]?.full_name ?? user} src={channelMembers?.[user]?.user_image} borderRadius={'md'} boxSize='36px' />
+                    <Stack spacing='1'>
+                        <HStack>
+                            <HStack divider={<StackDivider />} align='flex-start'>
+                                <Button variant='link' onClick={() => {
+                                    setSelectedUser(channelMembers?.[user])
+                                    onUserProfileDetailsDrawerOpen()
+                                }}>
+                                    <Text fontSize='sm' lineHeight={'0.9'} fontWeight="bold" as='span' color={textColor}>{channelMembers?.[user]?.full_name ?? user}</Text>
+                                </Button>
+                                <Text fontSize="xs" lineHeight={'0.9'} color="gray.500">{DateObjectToTimeString(timestamp)}</Text>
                             </HStack>
-                            <DisplayMessageContent text={text} image={image} file={file} onImagePreviewModalOpen={onImagePreviewModalOpen} onPDFPreviewModalOpen={onPDFPreviewModalOpen} />
-                        </Stack>
-                    </HStack>
-                }
-                {user == currentUser && <ActionsPalette name={name} text={text} image={image} file={file} showButtons={showButtons} />}
-            </HStack>
+                        </HStack>
+                        <DisplayMessageContent text={text} image={image} file={file} onImagePreviewModalOpen={onImagePreviewModalOpen} onPDFPreviewModalOpen={onPDFPreviewModalOpen} />
+                    </Stack>
+                </HStack>
+            }
+            {user == currentUser && <ActionsPalette name={name} text={text} image={image} file={file} showButtons={showButtons} />}
             <SetUserStatus isOpen={isSetUserStatusModalOpen} onClose={onSetUserStatusModalClose} />
             {image && <ImagePreviewModal isOpen={isImagePreviewModalOpen} onClose={onImagePreviewModalClose} file_owner={channelMembers?.[user].name} file_url={image} timestamp={timestamp} />}
             {file && <PDFPreviewModal isOpen={isPDFPreviewModalOpen} onClose={onPDFPreviewModalClose} file_owner={channelMembers?.[user].name} file_url={file} timestamp={timestamp} />}
