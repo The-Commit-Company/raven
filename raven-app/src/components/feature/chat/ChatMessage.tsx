@@ -11,6 +11,7 @@ import { UserProfileDrawer } from "../user-details/UserProfileDrawer"
 import { ImagePreviewModal } from "../file-preview/ImagePreviewModal"
 import { PDFPreviewModal } from "../file-preview/PDFPreviewModal"
 import { ActionsPalette } from "../message-action-palette/ActionsPalette"
+import { useNavigate } from "react-router-dom";
 
 interface ChatMessageProps {
     name: string,
@@ -20,19 +21,21 @@ interface ChatMessageProps {
     image?: string,
     file?: string,
     isContinuation?: boolean
+    isSearchResult?: boolean
+    creation?: string
 }
 
-export const ChatMessage = ({ name, user, timestamp, text, image, file, isContinuation }: ChatMessageProps) => {
+export const ChatMessage = ({ name, user, timestamp, text, image, file, isContinuation, isSearchResult, creation }: ChatMessageProps) => {
 
     const { currentUser } = useContext(UserContext)
     const { colorMode } = useColorMode()
-    const { channelMembers } = useContext(ChannelContext)
+    const { channelMembers, channelData } = useContext(ChannelContext)
     const [showButtons, setShowButtons] = useState<{}>({ visibility: 'hidden' })
     const { isOpen: isUserProfileDetailsDrawerOpen, onOpen: onUserProfileDetailsDrawerOpen, onClose: onUserProfileDetailsDrawerClose } = useDisclosure()
     const { isOpen: isSetUserStatusModalOpen, onOpen: onSetUserStatusModalOpen, onClose: onSetUserStatusModalClose } = useDisclosure()
     const { isOpen: isImagePreviewModalOpen, onOpen: onImagePreviewModalOpen, onClose: onImagePreviewModalClose } = useDisclosure()
     const { isOpen: isPDFPreviewModalOpen, onOpen: onPDFPreviewModalOpen, onClose: onPDFPreviewModalClose } = useDisclosure()
-
+    const navigate = useNavigate()
     const [selectedUser, setSelectedUser] = useState<User | null>(null)
     const textColor = colorMode === 'light' ? 'gray.800' : 'gray.50'
 
@@ -53,6 +56,7 @@ export const ChatMessage = ({ name, user, timestamp, text, image, file, isContin
             onMouseLeave={e => {
                 setShowButtons({ visibility: 'hidden' })
             }}>
+            {isSearchResult && creation && <HStack pb='8px'><Text fontWeight='bold' fontSize='md'>{channelData?.channel_name}</Text><Text fontSize='sm'>- {new Date(creation).toDateString()}</Text><Button variant='link' style={showButtons} fontWeight='light' size='sm' onClick={() => navigate(`/channel/${channelData?.name}`)}>View Channel</Button></HStack>}
             <HStack justifyContent='space-between' alignItems='flex-start'>
                 {isContinuation ?
                     <HStack spacing={3}>
