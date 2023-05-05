@@ -23,9 +23,11 @@ interface ChatMessageProps {
     isContinuation?: boolean
     isSearchResult?: boolean
     creation?: string
+    channelName?: string
+    channelID?: string
 }
 
-export const ChatMessage = ({ name, user, timestamp, text, image, file, isContinuation, isSearchResult, creation }: ChatMessageProps) => {
+export const ChatMessage = ({ name, user, timestamp, text, image, file, isContinuation, isSearchResult, creation, channelName, channelID }: ChatMessageProps) => {
 
     const { currentUser } = useContext(UserContext)
     const { colorMode } = useColorMode()
@@ -56,7 +58,7 @@ export const ChatMessage = ({ name, user, timestamp, text, image, file, isContin
             onMouseLeave={e => {
                 setShowButtons({ visibility: 'hidden' })
             }}>
-            {isSearchResult && creation && <HStack pb='8px'><Text fontWeight='bold' fontSize='md'>{channelData?.channel_name}</Text><Text fontSize='sm'>- {new Date(creation).toDateString()}</Text><Button variant='link' style={showButtons} fontWeight='light' size='sm' onClick={() => navigate(`/channel/${channelData?.name}`)}>View Channel</Button></HStack>}
+            {isSearchResult && creation && <HStack pb='8px'><Text fontWeight='bold' fontSize='md'>{channelName}</Text><Text fontSize='sm'>- {new Date(creation).toDateString()}</Text><Button variant='link' style={showButtons} fontWeight='light' size='sm' onClick={() => navigate(`/channel/${channelID}`)}>View Channel</Button></HStack>}
             <HStack justifyContent='space-between' alignItems='flex-start'>
                 {isContinuation ?
                     <HStack spacing={3}>

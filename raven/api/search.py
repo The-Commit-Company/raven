@@ -29,8 +29,11 @@ def get_search_result(filter_type, doctype, search_text=None, from_user=None, in
         query = query.where(doctype.message_type == 'Text')
 
     if search_text:
-        query = query.where(doctype.file.like(
-            "/private/files/%" + search_text + "%"))
+        if filter_type == 'File':
+            query = query.where(doctype.file.like(
+                "/private/files/%" + search_text + "%"))
+        elif filter_type == 'Message':
+            query = query.where(doctype.text.like("%" + search_text + "%"))
 
     if from_user and from_user != '[]':
         from_user = json.loads(from_user)

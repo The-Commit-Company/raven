@@ -1,7 +1,7 @@
 import { SearchIcon } from '@chakra-ui/icons'
 import { Avatar, Button, chakra, FormControl, HStack, Input, InputGroup, InputLeftElement, Stack, TabPanel, Text } from '@chakra-ui/react'
 import { FrappeContext, FrappeConfig, useFrappeGetDocList, useFrappeGetCall } from 'frappe-react-sdk'
-import { useContext, useState, useMemo } from 'react'
+import { useContext, useState, useMemo, useEffect } from 'react'
 import { FormProvider, Controller, useForm } from 'react-hook-form'
 import { BiLockAlt, BiHash, BiGlobe } from 'react-icons/bi'
 import { useDebounce } from '../../../hooks/useDebounce'
@@ -49,6 +49,7 @@ export const MessageSearch = ({ onToggleMyChannels, isOpenMyChannels, dateOption
 
     const [sortOrder, setSortOrder] = useState("desc")
     const [sortByField, setSortByField] = useState<string>('creation')
+    const [showResults, setShowResults] = useState<boolean>(false)
 
     const { data: channels, error: channelsError } = useFrappeGetCall<{ message: ChannelData[] }>("raven.raven_channel_management.doctype.raven_channel.raven_channel.get_channel_list")
 
@@ -85,8 +86,9 @@ export const MessageSearch = ({ onToggleMyChannels, isOpenMyChannels, dateOption
         sort_order: sortOrder,
         sort_field: sortByField
     })
-
-    console.log(data)
+    useEffect(() => {
+        setShowResults(debouncedText.length > 2 || in_channel?.length > 0 || from_user?.length > 0 || date?.length > 0 || my_channel_only === true)
+    }, [debouncedText, in_channel, from_user, date, my_channel_only])
 
     return (
         <TabPanel px={0}>
@@ -99,13 +101,13 @@ export const MessageSearch = ({ onToggleMyChannels, isOpenMyChannels, dateOption
                         autoFocus
                         onChange={handleChange}
                         type='text'
-                        placeholder='Search by file name or keyword'
+                        placeholder='Search messages'
                         value={debouncedText} />
                 </InputGroup>
                 {!!!usersError && !!!channelsError &&
                     <FormProvider {...methods}>
                         <chakra.form>
-                            <HStack justifyContent={'space-between'}>
+                            <HStack>
                                 <FormControl id="user-filter" w='fit-content'>
                                     <SelectInput placeholder="From" size='sm' options={userOptions} name='user-filter' isMulti={true} chakraStyles={{
                                         multiValue: (chakraStyles) => ({ ...chakraStyles, display: 'flex', alignItems: 'center', overflow: 'hidden', padding: '0rem 0.2rem 0rem 0rem' }),
@@ -144,7 +146,7 @@ export const MessageSearch = ({ onToggleMyChannels, isOpenMyChannels, dateOption
 
                 {error ? <AlertBanner status='error' heading={error.message}>{error.httpStatus} - {error.httpStatusText}</AlertBanner> :
                     (isLoading && isValidating ? <FullPageLoader /> :
-                        (!!!error && data?.message && data.message.length > 0 ?
+                        (!!!error && data?.message && data.message.length > 0 && showResults ?
                             <><Sort
                                 sortingFields={[{ label: 'Created on', field: 'creation' }]}
                                 onSortFieldSelect={(selField) => setSortByField(selField)}
@@ -153,7 +155,8 @@ export const MessageSearch = ({ onToggleMyChannels, isOpenMyChannels, dateOption
                                 onSortOrderChange={(order) => setSortOrder(order)} />
                                 <Stack spacing={4} overflowY='scroll'>
 
-                                    {data.message.map(({ name, owner, creation, text }) => {
+                                    {data.message.map(({ name, owner, creation, text, channel_id }) => {
+                                        const channelName: any = channelOption.find((channel) => channel.value === channel_id)?.label
                                         return (
                                             <ChatMessage
                                                 key={name}
@@ -163,6 +166,8 @@ export const MessageSearch = ({ onToggleMyChannels, isOpenMyChannels, dateOption
                                                 text={text}
                                                 creation={creation}
                                                 isSearchResult={true}
+                                                channelName={channelName}
+                                                channelID={channel_id}
                                             />
                                         )
                                     }
