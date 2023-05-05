@@ -6,3 +6,11 @@ export interface GetFileSearchResult {
     name: string
     owner: string
 }
+
+export interface GetMessageSearchResult {
+    channel_id: string
+    creation: string
+    text: string
+    name: string
+    owner: string
+}

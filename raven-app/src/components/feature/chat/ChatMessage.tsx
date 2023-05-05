@@ -15,6 +15,7 @@ import { EditMessageModal } from "../message-details/EditMessageModal";
 import { SetUserStatus } from "../user-details/SetUserStatus";
 import { UserProfileDrawer } from "../user-details/UserProfileDrawer";
 import { ImagePreviewModal } from "../file-preview/ImagePreviewModal";
+import { useNavigate } from "react-router-dom";
 
 interface ChatMessageProps {
     name: string,
@@ -24,13 +25,15 @@ interface ChatMessageProps {
     image?: string,
     file?: string,
     isContinuation?: boolean
+    isSearchResult?: boolean
+    creation?: string
 }
 
-export const ChatMessage = ({ name, user, timestamp, text, image, file, isContinuation }: ChatMessageProps) => {
+export const ChatMessage = ({ name, user, timestamp, text, image, file, isContinuation, isSearchResult, creation }: ChatMessageProps) => {
 
     const { currentUser } = useContext(UserContext)
     const { colorMode } = useColorMode()
-    const { channelMembers } = useContext(ChannelContext)
+    const { channelMembers, channelData } = useContext(ChannelContext)
     const [showButtons, setShowButtons] = useState<{}>({ visibility: 'hidden' })
     const { isOpen: isDeleteMessageModalOpen, onOpen: onDeleteMessageModalOpen, onClose: onDeleteMessageModalClose } = useDisclosure()
     const { isOpen: isEditMessageModalOpen, onOpen: onEditMessageModalOpen, onClose: onEditMessageModalClose } = useDisclosure()
@@ -38,7 +41,7 @@ export const ChatMessage = ({ name, user, timestamp, text, image, file, isContin
     const { isOpen: isSetUserStatusModalOpen, onOpen: onSetUserStatusModalOpen, onClose: onSetUserStatusModalClose } = useDisclosure()
     const { isOpen: isImagePreviewModalOpen, onOpen: onImagePreviewModalOpen, onClose: onImagePreviewModalClose } = useDisclosure()
     const { data: channelList, error: channelListError } = useFrappeGetCall<{ message: ChannelData[] }>("raven.raven_channel_management.doctype.raven_channel.raven_channel.get_channel_list")
-
+    const navigate = useNavigate()
     const [selectedUser, setSelectedUser] = useState<User | null>(null)
     const textColor = colorMode === 'light' ? 'gray.800' : 'gray.50'
 
@@ -73,6 +76,7 @@ export const ChatMessage = ({ name, user, timestamp, text, image, file, isContin
             onMouseLeave={e => {
                 setShowButtons({ visibility: 'hidden' })
             }}>
+            {isSearchResult && creation && <HStack pb='8px'><Text fontWeight='bold' fontSize='md'>{channelData?.channel_name}</Text><Text fontSize='sm'>- {new Date(creation).toDateString()}</Text><Button variant='link' style={showButtons} fontWeight='light' size='sm' onClick={() => navigate(`/channel/${channelData?.name}`)}>View Channel</Button></HStack>}
             <HStack justifyContent='space-between' alignItems='flex-start'>
                 {isContinuation &&
                     <HStack spacing={3}>
