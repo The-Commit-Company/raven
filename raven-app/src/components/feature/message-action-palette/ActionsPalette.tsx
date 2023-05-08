@@ -2,13 +2,14 @@ import { Box, Button, ButtonGroup, IconButton, Link, Tooltip, useColorMode, useD
 import { BsDownload, BsEmojiSmile } from 'react-icons/bs'
 import { DeleteMessageModal } from '../message-details/DeleteMessageModal'
 import { EditMessageModal } from '../message-details/EditMessageModal'
-import { useFrappeGetCall } from 'frappe-react-sdk'
+import { useFrappeGetCall, useFrappePostCall } from 'frappe-react-sdk'
 import { ChannelData } from '../../../types/Channel/Channel'
 import { useContext } from 'react'
 import { ChannelContext } from '../../../utils/channel/ChannelProvider'
 import { AiOutlineEdit } from 'react-icons/ai'
 import { VscTrash } from 'react-icons/vsc'
 import { IoBookmarkOutline } from 'react-icons/io5'
+import { UserContext } from '../../../utils/auth/UserProvider'
 
 interface ActionButtonPaletteProps {
     name: string
@@ -44,6 +45,21 @@ export const ActionsPalette = ({ name, image, file, text, showButtons }: ActionB
     const BGCOLOR = colorMode === 'light' ? 'white' : 'black'
     const BORDERCOLOR = colorMode === 'light' ? 'gray.200' : 'gray.700'
 
+    const { currentUser } = useContext(UserContext)
+    const { call } = useFrappePostCall('raven.raven_messaging.doctype.raven_message_reaction.raven_message_reaction.add_reaction')
+
+    const saveReaction = (emoji: string) => {
+        if (name) return call({
+            message_id: name,
+            reaction: emoji,
+            user_id: currentUser
+        }).then(() => {
+            console.log('reaction saved')
+        }).catch((error) => {
+            console.log(error)
+        })
+    }
+
     return (
         <Box
             rounded='md'
@@ -59,9 +75,9 @@ export const ActionsPalette = ({ name, image, file, text, showButtons }: ActionB
             top={-4}
             right={2}>
             <ButtonGroup spacing={1}>
-                <EmojiButton emoji={'✅'} label={'done'} />
-                <EmojiButton emoji={'👀'} label={'looking into this...'} />
-                <EmojiButton emoji={'🎉'} label={'great job!'} />
+                <EmojiButton emoji={'✅'} label={'done'} onClick={() => saveReaction('✅')} />
+                <EmojiButton emoji={'👀'} label={'looking into this...'} onClick={() => saveReaction('👀')} />
+                <EmojiButton emoji={'🎉'} label={'great job!'} onClick={() => saveReaction('🎉')} />
                 <Tooltip hasArrow label='find another reaction' size='xs' placement='top' rounded='md'>
                     <IconButton aria-label="message reaction" icon={<BsEmojiSmile />} size='xs' />
                 </Tooltip>
@@ -117,14 +133,15 @@ export const ActionsPalette = ({ name, image, file, text, showButtons }: ActionB
 }
 
 interface EmojiButtonProps {
-    emoji: string
-    label: string
+    emoji: string,
+    label: string,
+    onClick?: () => void
 }
 
-const EmojiButton = ({ emoji, label }: EmojiButtonProps) => {
+const EmojiButton = ({ emoji, label, onClick }: EmojiButtonProps) => {
     return (
         <Tooltip hasArrow label={label} size='xs' placement='top' rounded='md'>
-            <Button size='xs' fontSize='md'>
+            <Button size='xs' fontSize='md' onClick={onClick}>
                 {emoji}
             </Button>
         </Tooltip>

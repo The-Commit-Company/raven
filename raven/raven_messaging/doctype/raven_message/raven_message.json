@@ -11,7 +11,8 @@
   "channel_id",
   "text",
   "file",
-  "message_type"
+  "message_type",
+  "message_reaction"
  ],
  "fields": [
   {
@@ -37,11 +38,17 @@
    "fieldtype": "Select",
    "label": "Message Type",
    "options": "Text\nImage\nFile"
+  },
+  {
+   "fieldname": "message_reaction",
+   "fieldtype": "Table",
+   "label": "Message Reaction",
+   "options": "Raven Message Reaction"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-04-18 15:26:19.159851",
+ "modified": "2023-05-08 12:39:12.399340",
  "modified_by": "Administrator",
  "module": "Raven Messaging",
  "name": "Raven Message",
