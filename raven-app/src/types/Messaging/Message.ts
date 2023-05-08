@@ -5,10 +5,7 @@ export type Message = {
     creation: Date,
     name: string,
     owner: string,
-    message_reaction: {
-        reaction: string,
-        user: string
-    }[]
+    message_reactions: string
 }
 
 export type MessageWithContinuationCheck = {
@@ -18,9 +15,6 @@ export type MessageWithContinuationCheck = {
     creation: Date,
     name: string,
     owner: string,
-    message_reaction: {
-        reaction: string,
-        user: string
-    }[],
+    message_reactions: string,
     isContinuation: boolean
 }
