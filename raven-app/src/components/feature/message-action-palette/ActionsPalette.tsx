@@ -16,10 +16,11 @@ interface ActionButtonPaletteProps {
     image?: string
     file?: string
     text?: string
+    user: string
     showButtons: {}
 }
 
-export const ActionsPalette = ({ name, image, file, text, showButtons }: ActionButtonPaletteProps) => {
+export const ActionsPalette = ({ name, image, file, text, user, showButtons }: ActionButtonPaletteProps) => {
 
     const { channelMembers } = useContext(ChannelContext)
     const { data: channelList, error: channelListError } = useFrappeGetCall<{ message: ChannelData[] }>("raven.raven_channel_management.doctype.raven_channel.raven_channel.get_channel_list")
@@ -81,7 +82,7 @@ export const ActionsPalette = ({ name, image, file, text, showButtons }: ActionB
                 <Tooltip hasArrow label='find another reaction' size='xs' placement='top' rounded='md'>
                     <IconButton aria-label="message reaction" icon={<BsEmojiSmile />} size='xs' />
                 </Tooltip>
-                {text &&
+                {(user === currentUser) && text &&
                     <Tooltip hasArrow label='edit' size='xs' placement='top' rounded='md'>
                         <IconButton
                             onClick={onEditMessageModalOpen}
@@ -118,13 +119,15 @@ export const ActionsPalette = ({ name, image, file, text, showButtons }: ActionB
                             size='xs' />
                     </Tooltip>
                 }
-                <Tooltip hasArrow label='delete' size='xs' placement='top' rounded='md'>
-                    <IconButton
-                        onClick={onDeleteMessageModalOpen}
-                        aria-label="delete message"
-                        icon={<VscTrash fontSize={'0.9rem'} />}
-                        size='xs' />
-                </Tooltip>
+                {(user === currentUser) &&
+                    <Tooltip hasArrow label='delete' size='xs' placement='top' rounded='md'>
+                        <IconButton
+                            onClick={onDeleteMessageModalOpen}
+                            aria-label="delete message"
+                            icon={<VscTrash fontSize={'0.9rem'} />}
+                            size='xs' />
+                    </Tooltip>
+                }
             </ButtonGroup>
             <DeleteMessageModal isOpen={isDeleteMessageModalOpen} onClose={onDeleteMessageModalClose} channelMessageID={name} />
             {text && <EditMessageModal isOpen={isEditMessageModalOpen} onClose={onEditMessageModalClose} channelMessageID={name} allMembers={allMembers} allChannels={allChannels ?? []} originalText={text} />}

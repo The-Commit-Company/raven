@@ -1,7 +1,6 @@
 import { Avatar, Box, Button, HStack, Icon, Image, Link, Stack, StackDivider, Text, useColorMode, useDisclosure } from "@chakra-ui/react"
 import { useContext, useState } from "react"
 import { User } from "../../../types/User/User"
-import { UserContext } from "../../../utils/auth/UserProvider"
 import { ChannelContext } from "../../../utils/channel/ChannelProvider"
 import { getFileExtensionIcon } from "../../../utils/layout/fileExtensionIcon"
 import { DateObjectToTimeString } from "../../../utils/operations"
@@ -27,7 +26,6 @@ interface ChatMessageProps {
 
 export const ChatMessage = ({ name, user, timestamp, text, image, file, isContinuation, isSearchResult, creation }: ChatMessageProps) => {
 
-    const { currentUser } = useContext(UserContext)
     const { colorMode } = useColorMode()
     const { channelMembers, channelData } = useContext(ChannelContext)
     const [showButtons, setShowButtons] = useState<{}>({ visibility: 'hidden' })
@@ -81,7 +79,7 @@ export const ChatMessage = ({ name, user, timestamp, text, image, file, isContin
                     </Stack>
                 </HStack>
             }
-            {user == currentUser && <ActionsPalette name={name} text={text} image={image} file={file} showButtons={showButtons} />}
+            <ActionsPalette name={name} text={text} image={image} file={file} user={user} showButtons={showButtons} />
             <SetUserStatus isOpen={isSetUserStatusModalOpen} onClose={onSetUserStatusModalClose} />
             {image && <ImagePreviewModal isOpen={isImagePreviewModalOpen} onClose={onImagePreviewModalClose} file_owner={channelMembers?.[user].name} file_url={image} timestamp={timestamp} />}
             {file && <PDFPreviewModal isOpen={isPDFPreviewModalOpen} onClose={onPDFPreviewModalClose} file_owner={channelMembers?.[user].name} file_url={file} timestamp={timestamp} />}
