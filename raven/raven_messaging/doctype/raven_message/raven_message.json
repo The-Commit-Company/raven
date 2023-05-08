@@ -12,7 +12,7 @@
   "text",
   "file",
   "message_type",
-  "message_reaction"
+  "message_reactions"
  ],
  "fields": [
   {
@@ -40,15 +40,14 @@
    "options": "Text\nImage\nFile"
   },
   {
-   "fieldname": "message_reaction",
-   "fieldtype": "Table",
-   "label": "Message Reaction",
-   "options": "Raven Message Reaction"
+   "fieldname": "message_reactions",
+   "fieldtype": "JSON",
+   "label": "Message Reactions"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-05-08 12:39:12.399340",
+ "modified": "2023-05-08 18:51:53.012429",
  "modified_by": "Administrator",
  "module": "Raven Messaging",
  "name": "Raven Message",

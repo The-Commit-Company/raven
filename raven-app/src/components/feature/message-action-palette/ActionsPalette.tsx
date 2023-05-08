@@ -1,8 +1,8 @@
-import { Box, Button, ButtonGroup, IconButton, Link, Tooltip, useColorMode, useDisclosure } from '@chakra-ui/react'
+import { Box, Button, ButtonGroup, IconButton, Link, Tooltip, useColorMode, useDisclosure, useToast } from '@chakra-ui/react'
 import { BsDownload, BsEmojiSmile } from 'react-icons/bs'
 import { DeleteMessageModal } from '../message-details/DeleteMessageModal'
 import { EditMessageModal } from '../message-details/EditMessageModal'
-import { useFrappeGetCall, useFrappePostCall } from 'frappe-react-sdk'
+import { useFrappeCreateDoc, useFrappeGetCall } from 'frappe-react-sdk'
 import { ChannelData } from '../../../types/Channel/Channel'
 import { useContext } from 'react'
 import { ChannelContext } from '../../../utils/channel/ChannelProvider'
@@ -47,17 +47,24 @@ export const ActionsPalette = ({ name, image, file, text, user, showButtons }: A
     const BORDERCOLOR = colorMode === 'light' ? 'gray.200' : 'gray.700'
 
     const { currentUser } = useContext(UserContext)
-    const { call } = useFrappePostCall('raven.raven_messaging.doctype.raven_message_reaction.raven_message_reaction.add_reaction')
+
+    const { createDoc } = useFrappeCreateDoc()
+    const toast = useToast()
 
     const saveReaction = (emoji: string) => {
-        if (name) return call({
-            message_id: name,
+        if (name) return createDoc('Raven Message Reaction', {
             reaction: emoji,
-            user_id: currentUser
+            user: currentUser,
+            message: name
         }).then(() => {
             console.log('reaction saved')
         }).catch((error) => {
-            console.log(error)
+            toast({
+                title: `Error reacting to message - ${error}`,
+                status: 'error',
+                duration: 1000,
+                isClosable: true,
+            })
         })
     }
 
