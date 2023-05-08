@@ -8,9 +8,10 @@ import { PeopleSearch } from "./PeopleSearch"
 interface GlobalSearchModalProps {
     isOpen: boolean,
     onClose: () => void,
+    tabIndex?: number
 }
 
-export default function GlobalSearch({ isOpen, onClose }: GlobalSearchModalProps) {
+export default function GlobalSearch({ isOpen, onClose, tabIndex }: GlobalSearchModalProps) {
     const { onToggle: onToggleOtherChannels, isOpen: isOpenOtherChannels } = useDisclosure()
     const { onToggle: onToggleMyChannels, isOpen: isOpenMyChannels } = useDisclosure()
 
@@ -23,7 +24,7 @@ export default function GlobalSearch({ isOpen, onClose }: GlobalSearchModalProps
                 </ModalHeader>
                 <ModalBody>
                     <Stack>
-                        <Tabs defaultIndex={1}>
+                        <Tabs defaultIndex={tabIndex}>
                             <TabList>
                                 <Tab>Messages</Tab>
                                 <Tab>Files</Tab>

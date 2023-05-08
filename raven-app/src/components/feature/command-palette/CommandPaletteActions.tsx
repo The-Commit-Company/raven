@@ -1,4 +1,4 @@
-import { Avatar, Box, Button, Center, HStack, Icon, Spinner, Text, useModalContext } from "@chakra-ui/react"
+import { Avatar, Box, Button, Center, HStack, Icon, Spinner, Text, useDisclosure, useModalContext } from "@chakra-ui/react"
 import { Command } from "cmdk"
 import { Filter, useSearch } from "frappe-react-sdk"
 import { useContext } from "react"
@@ -9,7 +9,8 @@ import { useNavigate } from "react-router-dom"
 import { User } from "../../../types/User/User"
 import { UserContext } from "../../../utils/auth/UserProvider"
 import { ChannelContext } from "../../../utils/channel/ChannelProvider"
-import { MarkdownRenderer } from "../markdown-viewer/MarkdownRenderer.tsx"
+import GlobalSearch from "../global-search/GlobalSearch"
+import { MarkdownRenderer } from "../markdown-viewer/MarkdownRenderer"
 
 interface Props {
     searchChange: Function
@@ -30,6 +31,7 @@ export const Home = ({ searchChange, input }: Props) => {
     const { currentUser } = useContext(UserContext)
     const peer = Object.keys(channelMembers).filter((member) => member !== currentUser)[0]
     const style = { paddingBottom: 2, paddingTop: 2 }
+    const { isOpen: isGlobalSearchModalOpen, onOpen: onGlobalSearchModalOpen, onClose: onGlobalSearchModalClose } = useDisclosure()
 
     return (
         <Command.List>
@@ -37,7 +39,7 @@ export const Home = ({ searchChange, input }: Props) => {
             <Command.Group style={style}>
                 {channelData && <Item
                     onSelect={() => {
-                        navigate('/channel/global-search')
+                        onGlobalSearchModalOpen()
                     }}
                 >
                     <TbListSearch fontSize={20} />
@@ -77,6 +79,7 @@ export const Home = ({ searchChange, input }: Props) => {
                         </Item>
                     </HStack>
                 </Command.Group>}
+            <GlobalSearch isOpen={isGlobalSearchModalOpen} onClose={onGlobalSearchModalClose} tabIndex={0} />
         </Command.List>
     )
 }

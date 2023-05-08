@@ -6,7 +6,7 @@ import { FormProvider, Controller, useForm } from 'react-hook-form'
 import { BiLockAlt, BiHash, BiGlobe } from 'react-icons/bi'
 import { useDebounce } from '../../../hooks/useDebounce'
 import { ChannelData } from '../../../types/Channel/Channel'
-import { GetMessageSearchResult } from '../../../types/Search/FileSearch'
+import { GetMessageSearchResult } from '../../../types/Search/Search'
 import { User } from '../../../types/User/User'
 import { AlertBanner } from '../../layout/AlertBanner'
 import { EmptyStateForSearch } from '../../layout/EmptyState/EmptyState'
@@ -34,11 +34,13 @@ export const MessageSearch = ({ onToggleMyChannels, isOpenMyChannels, dateOption
     }
 
     const watchChannel = watch('channel-filter')
-    const watchUser = watch('user-filter')
+    const watchFromUser = watch('from-user-filter')
     const watchDate = watch('date-filter')
     const watchMyChannels = watch('my-channels-filter')
+    const watchWithUser = watch('with-user-filter')
     const in_channel: string[] = watchChannel ? watchChannel.map((channel: { value: string, label: string }) => (channel.value)) : []
-    const from_user: string[] = watchUser ? watchUser.map((user: { value: string, label: string }) => (user.value)) : []
+    const from_user: string[] = watchFromUser ? watchFromUser.map((user: { value: string, label: string }) => (user.value)) : []
+    const with_user: string[] = watchWithUser ? watchWithUser.map((user: { value: string, label: string }) => (user.value)) : []
     const date = watchDate ? watchDate.value : null
     const my_channel_only: boolean = watchMyChannels ? watchMyChannels : null
 
@@ -81,14 +83,16 @@ export const MessageSearch = ({ onToggleMyChannels, isOpenMyChannels, dateOption
         search_text: debouncedText,
         in_channel: JSON.stringify(in_channel),
         from_user: JSON.stringify(from_user),
+        with_user: JSON.stringify(with_user),
         date: date,
         my_channel_only: my_channel_only,
         sort_order: sortOrder,
         sort_field: sortByField
     })
+
     useEffect(() => {
-        setShowResults(debouncedText.length > 2 || in_channel?.length > 0 || from_user?.length > 0 || date?.length > 0 || my_channel_only === true)
-    }, [debouncedText, in_channel, from_user, date, my_channel_only])
+        setShowResults(debouncedText.length > 2 || in_channel?.length > 0 || from_user?.length > 0 || with_user?.length > 0 || date?.length > 0 || my_channel_only === true)
+    }, [debouncedText, in_channel, from_user, with_user, date, my_channel_only])
 
     return (
         <TabPanel px={0}>
@@ -108,13 +112,18 @@ export const MessageSearch = ({ onToggleMyChannels, isOpenMyChannels, dateOption
                     <FormProvider {...methods}>
                         <chakra.form>
                             <HStack>
-                                <FormControl id="user-filter" w='fit-content'>
-                                    <SelectInput placeholder="From" size='sm' options={userOptions} name='user-filter' isMulti={true} chakraStyles={{
+                                <FormControl id="from-user-filter" w='fit-content'>
+                                    <SelectInput placeholder="From" size='sm' options={userOptions} name='from-user-filter' isMulti={true} chakraStyles={{
                                         multiValue: (chakraStyles) => ({ ...chakraStyles, display: 'flex', alignItems: 'center', overflow: 'hidden', padding: '0rem 0.2rem 0rem 0rem' }),
                                     }} />
                                 </FormControl>
                                 <FormControl id="channel-filter" w='fit-content'>
                                     <SelectInput placeholder="In" size='sm' options={channelOption} name='channel-filter' isMulti={true} />
+                                </FormControl>
+                                <FormControl id="with-user-filter" w="fit-content">
+                                    <SelectInput placeholder="With" size='sm' options={userOptions} name='with-user-filter' isMulti={true} chakraStyles={{
+                                        multiValue: (chakraStyles) => ({ ...chakraStyles, display: 'flex', alignItems: 'center', overflow: 'hidden', padding: '0rem 0.2rem 0rem 0rem' }),
+                                    }} />
                                 </FormControl>
                                 <FormControl id="date-filter" w='fit-content'>
                                     <SelectInput placeholder="Date" size='sm' options={dateOption} name='date-filter' isClearable={true} />

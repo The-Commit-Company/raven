@@ -6,7 +6,7 @@ import { Controller, FormProvider, useForm } from 'react-hook-form'
 import { BiGlobe, BiHash, BiLockAlt } from 'react-icons/bi'
 import { useDebounce } from '../../../hooks/useDebounce'
 import { ChannelData } from '../../../types/Channel/Channel'
-import { GetFileSearchResult } from '../../../types/Search/FileSearch'
+import { GetFileSearchResult } from '../../../types/Search/Search'
 import { User } from '../../../types/User/User'
 import { getFileExtensionIcon } from '../../../utils/layout/fileExtensionIcon'
 import { DateObjectToFormattedDateString } from '../../../utils/operations'
@@ -38,12 +38,12 @@ export const FileSearch = ({ onToggleMyChannels, isOpenMyChannels, dateOption }:
 
     const watchFileType = watch('file-type-filter')
     const watchChannel = watch('channel-filter')
-    const watchUser = watch('user-filter')
+    const watchFromUser = watch('from-user-filter')
     const watchDate = watch('date-filter')
     const watchMyChannels = watch('my-channels-filter')
     const file_type: string[] = watchFileType ? watchFileType.map((fileType: { value: string, label: string }) => fileType.value) : []
     const in_channel: string[] = watchChannel ? watchChannel.map((channel: { value: string, label: string }) => (channel.value)) : []
-    const from_user: string[] = watchUser ? watchUser.map((user: { value: string, label: string }) => (user.value)) : []
+    const from_user: string[] = watchFromUser ? watchFromUser.map((user: { value: string, label: string }) => (user.value)) : []
     const date = watchDate ? watchDate.value : null
     const my_channel_only: boolean = watchMyChannels ? watchMyChannels : null
     const extensions: string[] = ['pdf', 'doc', 'ppt', 'xls']
@@ -135,8 +135,8 @@ export const FileSearch = ({ onToggleMyChannels, isOpenMyChannels, dateOption }:
                     <FormProvider {...methods}>
                         <chakra.form>
                             <HStack justifyContent={'space-between'}>
-                                <FormControl id="user-filter" w='fit-content'>
-                                    <SelectInput placeholder="From" size='sm' options={userOptions} name='user-filter' isMulti={true} chakraStyles={{
+                                <FormControl id="from-user-filter" w='fit-content'>
+                                    <SelectInput placeholder="From" size='sm' options={userOptions} name='from-user-filter' isMulti={true} chakraStyles={{
                                         multiValue: (chakraStyles) => ({ ...chakraStyles, display: 'flex', alignItems: 'center', overflow: 'hidden', padding: '0rem 0.2rem 0rem 0rem' }),
                                     }} />
                                 </FormControl>
