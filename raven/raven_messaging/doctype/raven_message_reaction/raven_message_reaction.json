@@ -8,6 +8,7 @@
  "engine": "InnoDB",
  "field_order": [
   "reaction",
+  "reaction_escaped",
   "user",
   "message"
  ],
@@ -17,8 +18,7 @@
    "fieldtype": "Data",
    "in_list_view": 1,
    "label": "Reaction",
-   "reqd": 1,
-   "search_index": 1
+   "reqd": 1
   },
   {
    "fieldname": "user",
@@ -35,11 +35,17 @@
    "options": "Raven Message",
    "reqd": 1,
    "search_index": 1
+  },
+  {
+   "fieldname": "reaction_escaped",
+   "fieldtype": "Data",
+   "label": "Reaction Escaped",
+   "search_index": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-05-09 16:13:28.732665",
+ "modified": "2023-05-09 18:14:33.555150",
  "modified_by": "Administrator",
  "module": "Raven Messaging",
  "name": "Raven Message Reaction",

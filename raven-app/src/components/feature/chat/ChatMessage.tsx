@@ -1,9 +1,9 @@
-import { Avatar, Box, Button, HStack, Icon, Image, Link, Stack, StackDivider, Tag, Text, useColorMode, useDisclosure } from "@chakra-ui/react"
+import { Avatar, Box, Button, HStack, Icon, Image, Link, Stack, StackDivider, Tag, Text, Tooltip, useColorMode, useDisclosure } from "@chakra-ui/react"
 import { useContext, useState } from "react"
 import { User } from "../../../types/User/User"
 import { ChannelContext } from "../../../utils/channel/ChannelProvider"
 import { getFileExtensionIcon } from "../../../utils/layout/fileExtensionIcon"
-import { DateObjectToTimeString } from "../../../utils/operations"
+import { DateObjectToFormattedDateStringWithoutYear, DateObjectToTimeString } from "../../../utils/operations"
 import { MarkdownRenderer } from "../markdown-viewer/MarkdownRenderer"
 import { SetUserStatus } from "../user-details/SetUserStatus"
 import { UserProfileDrawer } from "../user-details/UserProfileDrawer"
@@ -59,9 +59,13 @@ export const ChatMessage = ({ name, user, timestamp, text, image, file, message_
             {isSearchResult && creation && <HStack pb='8px'><Text fontWeight='bold' fontSize='md'>{channelData?.channel_name}</Text><Text fontSize='sm'>- {new Date(creation).toDateString()}</Text><Button variant='link' style={showButtons} fontWeight='light' size='sm' onClick={() => navigate(`/channel/${channelData?.name}`)}>View Channel</Button></HStack>}
             {isContinuation ?
                 <HStack spacing={3}>
-                    <Text pl='1' style={showButtons} fontSize={'xs'} color="gray.500">{DateObjectToTimeString(timestamp).split(' ')[0]}</Text>
-                    <DisplayMessageContent text={text} image={image} file={file} onImagePreviewModalOpen={onImagePreviewModalOpen} onPDFPreviewModalOpen={onPDFPreviewModalOpen} />
-                    <DisplayReactions message_reactions={message_reactions} />
+                    <Tooltip hasArrow label={`${DateObjectToFormattedDateStringWithoutYear(timestamp)} at ${DateObjectToTimeString(timestamp)}`} placement='top' rounded='md'>
+                        <Text pl='1' style={showButtons} fontSize={'xs'} color="gray.500" _hover={{ textDecoration: 'underline' }}>{DateObjectToTimeString(timestamp).split(' ')[0]}</Text>
+                    </Tooltip>
+                    <Stack spacing='1'>
+                        <DisplayMessageContent text={text} image={image} file={file} onImagePreviewModalOpen={onImagePreviewModalOpen} onPDFPreviewModalOpen={onPDFPreviewModalOpen} />
+                        <DisplayReactions message_reactions={message_reactions} />
+                    </Stack>
                 </HStack>
                 : <HStack spacing={2} alignItems='flex-start'>
                     <Avatar name={channelMembers?.[user]?.full_name ?? user} src={channelMembers?.[user]?.user_image} borderRadius={'md'} boxSize='36px' />
@@ -74,7 +78,9 @@ export const ChatMessage = ({ name, user, timestamp, text, image, file, message_
                                 }}>
                                     <Text fontSize='sm' lineHeight={'0.9'} fontWeight="bold" as='span' color={textColor}>{channelMembers?.[user]?.full_name ?? user}</Text>
                                 </Button>
-                                <Text fontSize="xs" lineHeight={'0.9'} color="gray.500">{DateObjectToTimeString(timestamp)}</Text>
+                                <Tooltip hasArrow label={`${DateObjectToFormattedDateStringWithoutYear(timestamp)} at ${DateObjectToTimeString(timestamp)}`} placement='top' rounded='md'>
+                                    <Text fontSize="xs" lineHeight={'0.9'} color="gray.500" _hover={{ textDecoration: 'underline' }}>{DateObjectToTimeString(timestamp)}</Text>
+                                </Tooltip>
                             </HStack>
                         </HStack>
                         <DisplayMessageContent text={text} image={image} file={file} onImagePreviewModalOpen={onImagePreviewModalOpen} onPDFPreviewModalOpen={onPDFPreviewModalOpen} />

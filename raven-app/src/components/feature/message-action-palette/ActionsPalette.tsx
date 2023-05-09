@@ -68,9 +68,9 @@ export const ActionsPalette = ({ name, image, file, text, user, showButtons }: A
             console.log('reaction saved')
         }).catch((error) => {
             toast({
-                title: `Error reacting to message - ${error}`,
+                title: `Error reacting to message`,
                 status: 'error',
-                duration: 1000,
+                duration: 1500,
                 isClosable: true,
             })
         })
