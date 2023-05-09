@@ -6,7 +6,7 @@ from functools import reduce
 
 
 @frappe.whitelist()
-def get_search_result(doctype, search_text=None, from_user=None, in_channel=None, date=None, file_type=None, message_type=None, channel_type=None, my_channel_only=False, other_channel_only=False, sort_field="creation", sort_order="desc", page_length=10, start_after=0):
+def get_search_result(filter_type, doctype, search_text=None, from_user=None, in_channel=None, date=None, file_type=None, message_type=None, channel_type=None, my_channel_only=False, other_channel_only=False, sort_field="creation", sort_order="desc", page_length=10, start_after=0):
     doctype = frappe.qb.DocType(doctype)
     channel_member = frappe.qb.DocType("Raven Channel Member")
     channel = frappe.qb.DocType("Raven Channel")
@@ -19,8 +19,14 @@ def get_search_result(doctype, search_text=None, from_user=None, in_channel=None
     }
 
     query = frappe.qb.from_(doctype).select(
-        doctype.name, doctype.file, doctype.owner, doctype.creation, doctype.message_type, doctype.channel_id).where(doctype.message_type != 'Text').join(channel, JoinType.left).on(doctype.channel_id == channel.name).join(channel_member, JoinType.left).on(
+        doctype.name, doctype.file, doctype.owner, doctype.creation, doctype.message_type, doctype.channel_id, doctype.text).join(channel, JoinType.left).on(doctype.channel_id == channel.name).join(channel_member, JoinType.left).on(
             channel_member.channel_id == doctype.channel_id).where((channel.type != 'Private') | (channel_member.user_id == frappe.session.user))
+
+    if filter_type == 'File':
+        query = query.where(doctype.message_type != 'Text')
+
+    if filter_type == 'Message':
+        query = query.where(doctype.message_type == 'Text')
 
     if search_text:
         query = query.where(doctype.file.like(

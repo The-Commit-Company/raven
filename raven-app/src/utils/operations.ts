@@ -22,6 +22,16 @@ export const DateObjectToFormattedDateString = (date: Date): string => {
 }
 
 /**
+ * Utility to convert Date object to DD MonthName YYYY format
+ * @param date takes Javascript Date object
+ * @returns Date string in DD MonthName YYYY format
+ * @example 1 January 2021
+ */
+export const DateObjectToFormattedDateStringWithoutYear = (date: Date): string => {
+    return date.getDate() + " " + MonthNames[date.getMonth()]
+}
+
+/**
  * Utility to convert Date-Time object to hour:minute format
  * @param date takes Javascript Date object
  * @returns Time string in hour:minute format

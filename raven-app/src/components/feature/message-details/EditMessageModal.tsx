@@ -125,7 +125,7 @@ export const EditMessageModal = ({ isOpen, onClose, channelMessageID, allMembers
                 <ModalBody>
                     <Box>
                         {error && <AlertBanner status='error' heading={error.message}>{error.httpStatus} - {error.httpStatusText}</AlertBanner>}
-                        <Stack border='1px' borderColor={'gray.500'} rounded='lg' maxH='40vh' boxShadow='base' bg={colorMode === "light" ? "white" : "gray.800"}>
+                        <Stack border='1px' borderColor={'gray.500'} rounded='lg' maxH='40vh' boxShadow='base' bg={colorMode === "light" ? "white" : "gray.800"} overflowY={'scroll'}>
                             <ReactQuill
                                 className={colorMode === 'light' ? 'my-quill-editor light-theme' : 'my-quill-editor dark-theme'}
                                 onChange={handleChange}
