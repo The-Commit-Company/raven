@@ -1,4 +1,4 @@
-import { Box, Button, HStack, IconButton, Link, Popover, PopoverContent, PopoverTrigger, Tooltip, useColorMode, useDisclosure, useToast } from '@chakra-ui/react'
+import { Box, Button, HStack, IconButton, Link, Popover, PopoverContent, PopoverTrigger, Tooltip, useColorMode, useDisclosure } from '@chakra-ui/react'
 import { BsDownload, BsEmojiSmile } from 'react-icons/bs'
 import { DeleteMessageModal } from '../message-details/DeleteMessageModal'
 import { EditMessageModal } from '../message-details/EditMessageModal'
@@ -57,22 +57,12 @@ export const ActionsPalette = ({ name, image, file, text, user, showButtons }: A
     const { currentUser } = useContext(UserContext)
 
     const { createDoc } = useFrappeCreateDoc()
-    const toast = useToast()
 
     const saveReaction = (emoji: string) => {
         if (name) return createDoc('Raven Message Reaction', {
             reaction: emoji,
             user: currentUser,
             message: name
-        }).then(() => {
-            console.log('reaction saved')
-        }).catch((error) => {
-            toast({
-                title: `Error reacting to message`,
-                status: 'error',
-                duration: 1500,
-                isClosable: true,
-            })
         })
     }
 

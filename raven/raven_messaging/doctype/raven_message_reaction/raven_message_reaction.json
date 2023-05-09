@@ -9,7 +9,6 @@
  "field_order": [
   "reaction",
   "reaction_escaped",
-  "user",
   "message"
  ],
  "fields": [
@@ -18,14 +17,6 @@
    "fieldtype": "Data",
    "in_list_view": 1,
    "label": "Reaction",
-   "reqd": 1
-  },
-  {
-   "fieldname": "user",
-   "fieldtype": "Link",
-   "in_list_view": 1,
-   "label": "User",
-   "options": "User",
    "reqd": 1
   },
   {
@@ -45,7 +36,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-05-09 18:14:33.555150",
+ "modified": "2023-05-09 18:38:24.333333",
  "modified_by": "Administrator",
  "module": "Raven Messaging",
  "name": "Raven Message Reaction",

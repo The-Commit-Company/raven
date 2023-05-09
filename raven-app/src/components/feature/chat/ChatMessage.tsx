@@ -11,6 +11,8 @@ import { ImagePreviewModal } from "../file-preview/ImagePreviewModal"
 import { PDFPreviewModal } from "../file-preview/PDFPreviewModal"
 import { ActionsPalette } from "../message-action-palette/ActionsPalette"
 import { useNavigate } from "react-router-dom";
+import { useFrappeCreateDoc } from "frappe-react-sdk"
+import { UserContext } from "../../../utils/auth/UserProvider"
 
 interface ChatMessageProps {
     name: string,
@@ -64,7 +66,7 @@ export const ChatMessage = ({ name, user, timestamp, text, image, file, message_
                     </Tooltip>
                     <Stack spacing='1'>
                         <DisplayMessageContent text={text} image={image} file={file} onImagePreviewModalOpen={onImagePreviewModalOpen} onPDFPreviewModalOpen={onPDFPreviewModalOpen} />
-                        <DisplayReactions message_reactions={message_reactions} />
+                        <DisplayReactions name={name} message_reactions={message_reactions} />
                     </Stack>
                 </HStack>
                 : <HStack spacing={2} alignItems='flex-start'>
@@ -84,7 +86,7 @@ export const ChatMessage = ({ name, user, timestamp, text, image, file, message_
                             </HStack>
                         </HStack>
                         <DisplayMessageContent text={text} image={image} file={file} onImagePreviewModalOpen={onImagePreviewModalOpen} onPDFPreviewModalOpen={onPDFPreviewModalOpen} />
-                        <DisplayReactions message_reactions={message_reactions} />
+                        <DisplayReactions name={name} message_reactions={message_reactions} />
                     </Stack>
                 </HStack>
             }
@@ -122,10 +124,21 @@ const DisplayMessageContent = ({ text, image, file, onImagePreviewModalOpen, onP
     return <></>
 }
 
-const DisplayReactions = ({ message_reactions }: { message_reactions?: string }) => {
+const DisplayReactions = ({ name, message_reactions }: { name: string, message_reactions?: string }) => {
 
     const { colorMode } = useColorMode()
     const bgColor = colorMode === 'light' ? 'white' : 'gray.700'
+
+    const { createDoc } = useFrappeCreateDoc()
+    const { currentUser } = useContext(UserContext)
+
+    const saveReaction = (emoji: string) => {
+        if (name) return createDoc('Raven Message Reaction', {
+            reaction: emoji,
+            user: currentUser,
+            message: name
+        })
+    }
 
     if (message_reactions) {
         const reactions = JSON.parse(message_reactions)
@@ -135,7 +148,8 @@ const DisplayReactions = ({ message_reactions }: { message_reactions?: string })
                     fontSize='xs'
                     variant='subtle'
                     _hover={{ cursor: 'pointer', border: '1px', borderColor: 'blue.500', backgroundColor: bgColor }}
-                    key={index}>
+                    key={index}
+                    onClick={() => saveReaction(reaction)}>
                     {reaction} {reactions[reaction]}
                 </Tag>
             })}

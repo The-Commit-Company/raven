@@ -11,6 +11,21 @@ class RavenMessageReaction(Document):
 		""" Escape the reaction to UTF-8 (XXXX) """
 		self.reaction_escaped = self.reaction.encode('unicode-escape').decode('utf-8').replace('\\u', '')
 
+		# Check if the reaction already exists
+		existing_reaction = frappe.db.exists({
+			'doctype': 'Raven Message Reaction',
+			'reaction_escaped': self.reaction_escaped,
+			'message': self.message,
+			'owner': self.owner
+		})
+
+		if existing_reaction:
+			# Delete the existing reaction
+			frappe.delete_doc('Raven Message Reaction', existing_reaction, ignore_permissions=True)
+			frappe.db.commit()
+			# Do not create a new reaction
+			frappe.throw('Reaction already exists')
+
 	def after_insert(self):
 		# Update the count for the current reaction
 		calculate_message_reaction(self.message)
