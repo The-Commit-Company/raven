@@ -1,9 +1,10 @@
 import { SearchIcon } from '@chakra-ui/icons'
-import { Button, Center, chakra, FormControl, HStack, Input, InputGroup, InputLeftElement, Text, Stack, TabPanel } from '@chakra-ui/react'
+import { Button, Center, chakra, FormControl, HStack, Input, InputGroup, InputLeftElement, Text, Stack, TabPanel, Box, useColorMode } from '@chakra-ui/react'
 import { useFrappeGetCall } from 'frappe-react-sdk'
 import { useState } from 'react'
 import { FormProvider, Controller, useForm } from 'react-hook-form'
 import { BiGlobe, BiHash, BiLockAlt } from 'react-icons/bi'
+import { useNavigate } from 'react-router-dom'
 import { useDebounce } from '../../../hooks/useDebounce'
 import { GetChannelSearchResult } from '../../../types/Search/Search'
 import { AlertBanner } from '../../layout/AlertBanner'
@@ -32,23 +33,23 @@ export const ChannelSearch = ({ onToggleMyChannels, isOpenMyChannels, onToggleOt
 
     const [sortOrder, setSortOrder] = useState("desc")
     const [sortByField, setSortByField] = useState<string>('creation')
+    const navigate = useNavigate()
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setSearchText(e.target.value)
     }
+    const { colorMode } = useColorMode()
 
     const { data, error, isLoading, isValidating } = useFrappeGetCall<{ message: GetChannelSearchResult[] }>("raven.api.search.get_search_result", {
         filter_type: 'Channel',
         doctype: 'Raven Channel',
         search_text: debouncedText,
-        channel_type: channel_type,
+        channel_type: JSON.stringify(channel_type),
         my_channel_only: my_channel_only,
         other_channel_only: other_channel_only,
         sort_order: sortOrder,
         sort_field: sortByField
     })
-
-    console.log(channel_type)
 
     return (
         <TabPanel px={0}>
@@ -123,16 +124,24 @@ export const ChannelSearch = ({ onToggleMyChannels, isOpenMyChannels, onToggleOt
                                 sortOrder={sortOrder}
                                 sortField={sortByField}
                                 onSortOrderChange={(order) => setSortOrder(order)} />
-                                <Stack spacing={4} overflowY='scroll'>
+                                <Stack spacing={2} overflowY='scroll'>
 
                                     {data.message.map((channel) => {
                                         return (
-                                            <HStack spacing={3}>
-                                                <Center maxW='50px'>
-                                                    {channel.type === "Private" && <BiLockAlt /> || channel.type === "Public" && <BiHash /> || channel.type === "Open" && <BiGlobe />}
-                                                </Center>
-                                                <Text>{channel.channel_name}</Text>
-                                            </HStack>
+                                            <Box p={2}
+                                                _hover={{
+                                                    bg: colorMode === 'light' && 'gray.50' || 'gray.800',
+                                                    borderRadius: 'md'
+                                                }}
+                                                rounded='md'
+                                                onClick={() => navigate(`/channel/${channel.name}`)}>
+                                                <HStack spacing={3}>
+                                                    <Center maxW='50px'>
+                                                        {channel.type === "Private" && <BiLockAlt /> || channel.type === "Public" && <BiHash /> || channel.type === "Open" && <BiGlobe />}
+                                                    </Center>
+                                                    <Text>{channel.channel_name}</Text>
+                                                </HStack>
+                                            </Box>
                                         )
                                     }
                                     )}

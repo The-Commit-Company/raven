@@ -41,35 +41,23 @@ export const FileSearch = ({ onToggleMyChannels, isOpenMyChannels, dateOption }:
     const watchFromUser = watch('from-user-filter')
     const watchDate = watch('date-filter')
     const watchMyChannels = watch('my-channels-filter')
-    const file_type: string[] = watchFileType ? watchFileType.map((fileType: { value: string, label: string }) => fileType.value) : []
+    const file_type: string[] = useMemo(() => watchFileType ? watchFileType.map((fileType: { value: string, label: string }) => fileType.value) : [], [watchFileType]);
     const in_channel: string[] = watchChannel ? watchChannel.map((channel: { value: string, label: string }) => (channel.value)) : []
     const from_user: string[] = watchFromUser ? watchFromUser.map((user: { value: string, label: string }) => (user.value)) : []
     const date = watchDate ? watchDate.value : null
     const my_channel_only: boolean = watchMyChannels ? watchMyChannels : null
     const extensions: string[] = ['pdf', 'doc', 'ppt', 'xls']
-    const [message_type, setMessageType] = useState<string[]>([])
 
-    useEffect(() => {
+    const message_type = useMemo(() => {
+        const newMessageType = [];
         if (file_type.some(item => extensions.includes(item))) {
-            setMessageType(prevState => {
-                const newState = prevState.filter(item => item !== 'File');
-                return [...newState, 'File'];
-            });
-        } else {
-            setMessageType(prevState => prevState.filter(item => item !== 'File'));
+            newMessageType.push('File');
         }
-
         if (file_type.some(item => item === 'image')) {
-            setMessageType(prevState => {
-                const newState = prevState.filter(item => item !== 'Image');
-                return [...newState, 'Image'];
-            });
-        } else {
-            setMessageType(prevState => prevState.filter(item => item !== 'Image'));
+            newMessageType.push('Image');
         }
-
-        setMessageType(prevState => [...new Set(prevState)]);
-    }, [file_type]);
+        return newMessageType;
+    }, [file_type, extensions]);
 
     const { data: users, error: usersError } = useFrappeGetDocList<User>("User", {
         fields: ["full_name", "user_image", "name"],

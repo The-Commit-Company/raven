@@ -3,7 +3,6 @@ import { SelectOption } from "../search-filters/SelectInput"
 import { ChannelSearch } from "./ChannelSearch"
 import { FileSearch } from "./FileSearch"
 import { MessageSearch } from "./MessageSearch"
-import { PeopleSearch } from "./PeopleSearch"
 
 interface GlobalSearchModalProps {
     isOpen: boolean,
@@ -29,13 +28,11 @@ export default function GlobalSearch({ isOpen, onClose, tabIndex }: GlobalSearch
                                 <Tab>Messages</Tab>
                                 <Tab>Files</Tab>
                                 <Tab>Channels</Tab>
-                                <Tab>People</Tab>
                             </TabList>
                             <TabPanels>
                                 <MessageSearch onToggleMyChannels={onToggleMyChannels} isOpenMyChannels={isOpenMyChannels} dateOption={dateOption} />
                                 <FileSearch onToggleMyChannels={onToggleMyChannels} isOpenMyChannels={isOpenMyChannels} dateOption={dateOption} />
                                 <ChannelSearch onToggleMyChannels={onToggleMyChannels} isOpenMyChannels={isOpenMyChannels} onToggleOtherChannels={onToggleOtherChannels} isOpenOtherChannels={isOpenOtherChannels} />
-                                <PeopleSearch onToggleMyChannels={onToggleMyChannels} isOpenMyChannels={isOpenMyChannels} />
                             </TabPanels>
                         </Tabs>
                     </Stack>

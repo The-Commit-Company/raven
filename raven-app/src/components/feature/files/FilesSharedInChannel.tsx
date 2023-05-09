@@ -53,7 +53,7 @@ export const FilesSharedInChannel = () => {
                                         </Center>
                                         <Stack spacing={0}>
                                             <Text fontSize='sm' as={Link} href={f.file} isExternal>{f.file.split('/')[3]}</Text>
-                                            <Text fontSize='xs' color='gray.500'>Shared by {channelMembers[f.owner].full_name} on {DateObjectToFormattedDateString(new Date(f.creation ?? ''))}</Text>
+                                            <Text fontSize='xs' color='gray.500'>Shared by {channelMembers[f.owner]?.full_name} on {DateObjectToFormattedDateString(new Date(f.creation ?? ''))}</Text>
                                         </Stack>
                                     </HStack>
                                     <IconButton
@@ -87,7 +87,7 @@ export const FilesSharedInChannel = () => {
                     Show more
                 </Button>
             }
-            <GlobalSearch isOpen={isGlobalSearchModalOpen} onClose={onGlobalSearchModalClose} />
+            <GlobalSearch isOpen={isGlobalSearchModalOpen} onClose={onGlobalSearchModalClose} tabIndex={1} />
         </Stack >
     )
 }

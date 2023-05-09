@@ -32,7 +32,7 @@ def get_search_result(filter_type, doctype, search_text=None, from_user=None, wi
         channel = doctype
         query = frappe.qb.from_(doctype).select(
             doctype.name, doctype.owner, doctype.creation, doctype.type, doctype.channel_name, doctype.channel_description).join(channel_member, JoinType.left).on(
-            channel_member.channel_id == doctype.name).where(doctype.is_direct_message == 0).where((doctype.type != 'Private') | (channel_member.user_id == frappe.session.user))
+            channel_member.channel_id == doctype.name).where(doctype.is_direct_message == 0).where((doctype.type != 'Private') | (channel_member.user_id == frappe.session.user)).distinct()
 
     if search_text:
         if filter_type == 'File':
@@ -89,6 +89,7 @@ def get_search_result(filter_type, doctype, search_text=None, from_user=None, wi
                 query = query.where(reduce(operator.or_, filters))
 
     if channel_type and channel_type != '[]':
+        channel_type = json.loads(channel_type)
         query = query.where(doctype.type.isin(channel_type))
 
     if my_channel_only:
@@ -96,7 +97,6 @@ def get_search_result(filter_type, doctype, search_text=None, from_user=None, wi
             channel_member.user_id == frappe.session.user))
 
     if other_channel_only:
-        query = query.where((channel.type == 'Open') | (
-            channel_member.user_id != frappe.session.user))
+        query = query.where(~channel_member.user_id == frappe.session.user)
 
     return query.orderby(doctype[sort_field], order=Order[sort_order]).limit(page_length).offset(start_after).run(as_dict=True)
