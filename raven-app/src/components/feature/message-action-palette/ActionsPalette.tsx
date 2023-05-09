@@ -1,4 +1,4 @@
-import { Box, Button, ButtonGroup, IconButton, Link, Tooltip, useColorMode, useDisclosure, useToast } from '@chakra-ui/react'
+import { Box, Button, HStack, IconButton, Link, Popover, PopoverContent, PopoverTrigger, Tooltip, useColorMode, useDisclosure, useToast } from '@chakra-ui/react'
 import { BsDownload, BsEmojiSmile } from 'react-icons/bs'
 import { DeleteMessageModal } from '../message-details/DeleteMessageModal'
 import { EditMessageModal } from '../message-details/EditMessageModal'
@@ -10,6 +10,7 @@ import { AiOutlineEdit } from 'react-icons/ai'
 import { VscTrash } from 'react-icons/vsc'
 import { IoBookmarkOutline } from 'react-icons/io5'
 import { UserContext } from '../../../utils/auth/UserProvider'
+import EmojiPicker, { EmojiClickData } from 'emoji-picker-react';
 
 interface ActionButtonPaletteProps {
     name: string
@@ -41,6 +42,13 @@ export const ActionsPalette = ({ name, image, file, text, user, showButtons }: A
 
     const { isOpen: isDeleteMessageModalOpen, onOpen: onDeleteMessageModalOpen, onClose: onDeleteMessageModalClose } = useDisclosure()
     const { isOpen: isEditMessageModalOpen, onOpen: onEditMessageModalOpen, onClose: onEditMessageModalClose } = useDisclosure()
+
+    const { isOpen: showEmojiPicker, onToggle: onEmojiPickerToggle, onClose: onEmojiPickerClose } = useDisclosure()
+
+    const onEmojiClick = (emojiObject: EmojiClickData) => {
+        saveReaction(emojiObject.emoji)
+        onEmojiPickerClose()
+    }
 
     const { colorMode } = useColorMode()
     const BGCOLOR = colorMode === 'light' ? 'white' : 'black'
@@ -82,13 +90,30 @@ export const ActionsPalette = ({ name, image, file, text, user, showButtons }: A
             position='absolute'
             top={-4}
             right={2}>
-            <ButtonGroup spacing={1}>
+            <HStack spacing={1}>
                 <EmojiButton emoji={'✅'} label={'done'} onClick={() => saveReaction('✅')} />
                 <EmojiButton emoji={'👀'} label={'looking into this...'} onClick={() => saveReaction('👀')} />
                 <EmojiButton emoji={'🎉'} label={'great job!'} onClick={() => saveReaction('🎉')} />
-                <Tooltip hasArrow label='find another reaction' size='xs' placement='top' rounded='md'>
-                    <IconButton aria-label="message reaction" icon={<BsEmojiSmile />} size='xs' />
-                </Tooltip>
+                <Box>
+                    <Popover
+                        isOpen={showEmojiPicker}
+                        onClose={onEmojiPickerClose}
+                        placement='top-end'
+                        isLazy
+                        lazyBehavior="unmount"
+                        gutter={48}
+                        closeOnBlur={false}>
+                        <PopoverTrigger>
+                            <Tooltip hasArrow label='find another reaction' size='xs' placement='top' rounded='md'>
+                                <IconButton size='xs' aria-label={"pick emoji"} icon={<BsEmojiSmile />} onClick={onEmojiPickerToggle} />
+                            </Tooltip>
+                        </PopoverTrigger>
+                        <PopoverContent border={'none'} rounded='lg'>
+                            {/* @ts-ignore */}
+                            <EmojiPicker onEmojiClick={onEmojiClick} lazyLoadEmojis theme={colorMode === 'light' ? 'light' : 'dark'} />
+                        </PopoverContent>
+                    </Popover>
+                </Box>
                 {(user === currentUser) && text &&
                     <Tooltip hasArrow label='edit' size='xs' placement='top' rounded='md'>
                         <IconButton
@@ -135,7 +160,7 @@ export const ActionsPalette = ({ name, image, file, text, user, showButtons }: A
                             size='xs' />
                     </Tooltip>
                 }
-            </ButtonGroup>
+            </HStack>
             <DeleteMessageModal isOpen={isDeleteMessageModalOpen} onClose={onDeleteMessageModalClose} channelMessageID={name} />
             {text && <EditMessageModal isOpen={isEditMessageModalOpen} onClose={onEditMessageModalClose} channelMessageID={name} allMembers={allMembers} allChannels={allChannels ?? []} originalText={text} />}
         </Box>

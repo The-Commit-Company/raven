@@ -2,8 +2,7 @@
 # For license information, please see license.txt
 import frappe
 from frappe.model.document import Document
-from frappe.query_builder.functions import Count
-from pypika import JoinType, Order, Case
+from pypika import JoinType, Order
 
 
 class RavenMessage(Document):
@@ -22,6 +21,11 @@ class RavenMessage(Document):
     def on_update(self):
         frappe.publish_realtime('message_updated', {
             'channel_id': self.channel_id}, after_commit=True)
+        frappe.db.commit()
+    
+    def on_trash(self):
+        # delete all the reactions for the message
+        frappe.db.sql("DELETE FROM `tabRaven Message Reaction` WHERE message = %s", self.name)
         frappe.db.commit()
 
 
