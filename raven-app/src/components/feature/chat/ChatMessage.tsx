@@ -1,4 +1,4 @@
-import { Avatar, Box, Button, HStack, Icon, Image, Link, Stack, StackDivider, Text, useColorMode, useDisclosure } from "@chakra-ui/react"
+import { Avatar, Box, Button, HStack, Icon, Image, Link, Stack, StackDivider, Tag, Text, useColorMode, useDisclosure } from "@chakra-ui/react"
 import { useContext, useState } from "react"
 import { User } from "../../../types/User/User"
 import { ChannelContext } from "../../../utils/channel/ChannelProvider"
@@ -19,12 +19,13 @@ interface ChatMessageProps {
     text?: string,
     image?: string,
     file?: string,
-    isContinuation?: boolean
-    isSearchResult?: boolean
+    message_reactions?: string,
+    isContinuation?: boolean,
+    isSearchResult?: boolean,
     creation?: string
 }
 
-export const ChatMessage = ({ name, user, timestamp, text, image, file, isContinuation, isSearchResult, creation }: ChatMessageProps) => {
+export const ChatMessage = ({ name, user, timestamp, text, image, file, message_reactions, isContinuation, isSearchResult, creation }: ChatMessageProps) => {
 
     const { colorMode } = useColorMode()
     const { channelMembers, channelData } = useContext(ChannelContext)
@@ -60,6 +61,7 @@ export const ChatMessage = ({ name, user, timestamp, text, image, file, isContin
                 <HStack spacing={3}>
                     <Text pl='1' style={showButtons} fontSize={'xs'} color="gray.500">{DateObjectToTimeString(timestamp).split(' ')[0]}</Text>
                     <DisplayMessageContent text={text} image={image} file={file} onImagePreviewModalOpen={onImagePreviewModalOpen} onPDFPreviewModalOpen={onPDFPreviewModalOpen} />
+                    <DisplayReactions message_reactions={message_reactions} />
                 </HStack>
                 : <HStack spacing={2} alignItems='flex-start'>
                     <Avatar name={channelMembers?.[user]?.full_name ?? user} src={channelMembers?.[user]?.user_image} borderRadius={'md'} boxSize='36px' />
@@ -76,6 +78,7 @@ export const ChatMessage = ({ name, user, timestamp, text, image, file, isContin
                             </HStack>
                         </HStack>
                         <DisplayMessageContent text={text} image={image} file={file} onImagePreviewModalOpen={onImagePreviewModalOpen} onPDFPreviewModalOpen={onPDFPreviewModalOpen} />
+                        <DisplayReactions message_reactions={message_reactions} />
                     </Stack>
                 </HStack>
             }
@@ -100,14 +103,36 @@ const DisplayMessageContent = ({ text, image, file, onImagePreviewModalOpen, onP
     if (text) {
         return <MarkdownRenderer content={text} />
     } else if (image) {
-        return <Image src={image} height='360px' rounded={'md'} onClick={onImagePreviewModalOpen} />
+        return <Image src={image} height='360px' rounded={'md'} onClick={onImagePreviewModalOpen} _hover={{ cursor: 'pointer' }} />
     } else if (file) {
         return <HStack>
             <Icon as={getFileExtensionIcon(file.split('.')[1])} />
             {file.split('.')[1].toLowerCase() === 'pdf' ?
-                <Text onClick={onPDFPreviewModalOpen} style={{ cursor: 'pointer' }} _hover={{ textDecoration: 'underline' }}>{file.split('/')[3]}</Text> :
+                <Text onClick={onPDFPreviewModalOpen} _hover={{ cursor: 'pointer', textDecoration: 'underline' }}>{file.split('/')[3]}</Text> :
                 <Text as={Link} href={file} isExternal>{file.split('/')[3]}</Text>
             }
+        </HStack>
+    }
+    return <></>
+}
+
+const DisplayReactions = ({ message_reactions }: { message_reactions?: string }) => {
+
+    const { colorMode } = useColorMode()
+    const bgColor = colorMode === 'light' ? 'white' : 'gray.700'
+
+    if (message_reactions) {
+        const reactions = JSON.parse(message_reactions)
+        return <HStack>
+            {Object.keys(reactions).map((reaction, index) => {
+                return <Tag
+                    fontSize='xs'
+                    variant='subtle'
+                    _hover={{ cursor: 'pointer', border: '1px', borderColor: 'blue.500', backgroundColor: bgColor }}
+                    key={index}>
+                    {reaction} {reactions[reaction]}
+                </Tag>
+            })}
         </HStack>
     }
     return <></>
