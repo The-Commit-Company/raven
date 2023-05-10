@@ -6,12 +6,15 @@ import { UserDataContext } from "../../../utils/user/UserDataProvider"
 import { DirectMessageList } from "../../feature/channels/DirectMessageList";
 import { UserContext } from "../../../utils/auth/UserProvider";
 import { RxExit } from "react-icons/rx";
+import { SidebarGroup, SidebarGroupList, SidebarIcon, SidebarItem, SidebarItemLabel } from "./SidebarComp";
+import { VscDebugDisconnect, VscSettings } from "react-icons/vsc";
+import { BsPeople } from "react-icons/bs";
 
 interface SidebarProps extends PropsWithChildren<{}> {
     isUserActive: boolean
 }
 
-export const Sidebar = ({ children, isUserActive }: SidebarProps) => {
+export const Sidebar = ({ isUserActive }: SidebarProps) => {
 
     const { colorMode, toggleColorMode } = useColorMode()
     const { logout } = useContext(UserContext)
@@ -32,6 +35,22 @@ export const Sidebar = ({ children, isUserActive }: SidebarProps) => {
                 <Divider />
                 <ChannelList />
                 <DirectMessageList userData={userData} />
+                <SidebarGroup>
+                    <SidebarGroupList>
+                        <SidebarItem to={"integrations"}>
+                            <SidebarIcon><VscDebugDisconnect /></SidebarIcon>
+                            <SidebarItemLabel>Integrations</SidebarItemLabel>
+                        </SidebarItem>
+                        <SidebarItem to={"users"}>
+                            <SidebarIcon><BsPeople /></SidebarIcon>
+                            <SidebarItemLabel>Users</SidebarItemLabel>
+                        </SidebarItem>
+                        <SidebarItem to={"settings"}>
+                            <SidebarIcon><VscSettings /></SidebarIcon>
+                            <SidebarItemLabel>Settings</SidebarItemLabel>
+                        </SidebarItem>
+                    </SidebarGroupList>
+                </SidebarGroup>
             </Stack>
 
             <Stack>
