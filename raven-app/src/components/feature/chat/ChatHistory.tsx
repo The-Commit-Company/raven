@@ -3,12 +3,14 @@ import { ChatMessage } from "./ChatMessage"
 import { DividerWithText } from "../../layout/Divider/DividerWithText"
 import { DateObjectToFormattedDateString } from "../../../utils/operations"
 import { Message, MessageWithContinuationCheck } from "../../../types/Messaging/Message"
+import { EmptyStateForChannel, EmptyStateForDM } from "../../layout/EmptyState/EmptyState"
 
 interface ChatHistoryProps {
-    messages: Message[]
+    messages: Message[],
+    isDM: number
 }
 
-export const ChatHistory = ({ messages }: ChatHistoryProps) => {
+export const ChatHistory = ({ messages, isDM }: ChatHistoryProps) => {
 
     // Sort the messages by creation date
     messages.sort((a, b) => {
@@ -70,6 +72,7 @@ export const ChatHistory = ({ messages }: ChatHistoryProps) => {
                     </Stack>
                 </Stack>
             ))}
+            {isDM === 1 ? <EmptyStateForDM /> : <EmptyStateForChannel />}
         </Stack>
     )
 
