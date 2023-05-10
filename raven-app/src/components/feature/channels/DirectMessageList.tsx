@@ -1,10 +1,11 @@
 import { Avatar, AvatarBadge, HStack } from "@chakra-ui/react"
 import { FrappeConfig, FrappeContext, useFrappeGetCall, useFrappeGetDocList, useFrappePostCall } from "frappe-react-sdk"
-import { useContext } from "react"
+import { useContext, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { User } from "../../../types/User/User"
 import { AlertBanner } from "../../layout/AlertBanner"
 import { SidebarGroup, SidebarGroupItem, SidebarGroupLabel, SidebarGroupList, SidebarIcon, SidebarItemLabel, SidebarButtonItem } from "../../layout/Sidebar"
+import { SidebarViewMoreButton } from "../../layout/Sidebar/SidebarComp"
 
 export const DirectMessageList = (userData: { userData: User | null }) => {
 
@@ -31,24 +32,29 @@ export const DirectMessageList = (userData: { userData: User | null }) => {
         <AlertBanner status="error" heading={channelError.message}>{channelError.httpStatus} - {channelError.httpStatusText}</AlertBanner>
     }
 
+    const [showData, setShowData] = useState(true)
+
     return (
-        <SidebarGroup>
-            <SidebarGroupItem>
+        <SidebarGroup spacing={1}>
+            <SidebarGroupItem ml='2'>
+                <SidebarViewMoreButton onClick={() => setShowData(!showData)} />
                 <SidebarGroupLabel>Direct Messages</SidebarGroupLabel>
             </SidebarGroupItem>
-            <SidebarGroupList>
-                {users?.map((user) =>
-                    <SidebarButtonItem onClick={() => gotoDMChannel(user.name)} isLoading={loading} key={user.name}>
-                        <HStack>
-                            <SidebarIcon><Avatar name={user.full_name} src={url + user.user_image} borderRadius={'md'} size="xs">
-                                {data?.message.includes(user.name) && !!!error && <AvatarBadge boxSize='0.88em' bg='green.500' />}
-                            </Avatar>
-                            </SidebarIcon>
-                            <SidebarItemLabel>{(user.name !== userData.userData?.name) ? user.full_name : user.full_name + ' (You)'}</SidebarItemLabel>
-                        </HStack>
-                    </SidebarButtonItem>
-                )}
-            </SidebarGroupList>
+            <SidebarGroup>
+                <SidebarGroupList maxH={'32vh'} overflowY={'scroll'}>
+                    {showData && users?.map((user) =>
+                        <SidebarButtonItem onClick={() => gotoDMChannel(user.name)} isLoading={loading} key={user.name}>
+                            <HStack>
+                                <SidebarIcon><Avatar name={user.full_name} src={url + user.user_image} borderRadius={'md'} size="xs">
+                                    {data?.message.includes(user.name) && !!!error && <AvatarBadge boxSize='0.88em' bg='green.500' />}
+                                </Avatar>
+                                </SidebarIcon>
+                                <SidebarItemLabel>{(user.name !== userData.userData?.name) ? user.full_name : user.full_name + ' (You)'}</SidebarItemLabel>
+                            </HStack>
+                        </SidebarButtonItem>
+                    )}
+                </SidebarGroupList>
+            </SidebarGroup>
         </SidebarGroup>
     )
 }
