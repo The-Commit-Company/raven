@@ -35,22 +35,10 @@ export const Sidebar = ({ isUserActive }: SidebarProps) => {
                 <Divider />
                 <ChannelList />
                 <DirectMessageList userData={userData} />
-                <SidebarGroup>
-                    <SidebarGroupList>
-                        <SidebarItem to={"integrations"}>
-                            <SidebarIcon><VscDebugDisconnect /></SidebarIcon>
-                            <SidebarItemLabel>Integrations</SidebarItemLabel>
-                        </SidebarItem>
-                        <SidebarItem to={"users"}>
-                            <SidebarIcon><BsPeople /></SidebarIcon>
-                            <SidebarItemLabel>Users</SidebarItemLabel>
-                        </SidebarItem>
-                        <SidebarItem to={"settings"}>
-                            <SidebarIcon><VscSettings /></SidebarIcon>
-                            <SidebarItemLabel>Settings</SidebarItemLabel>
-                        </SidebarItem>
-                    </SidebarGroupList>
-                </SidebarGroup>
+                <SidebarItem to={"settings"}>
+                    <SidebarIcon><VscSettings /></SidebarIcon>
+                    <SidebarItemLabel>Settings</SidebarItemLabel>
+                </SidebarItem>
             </Stack>
 
             <Stack>
