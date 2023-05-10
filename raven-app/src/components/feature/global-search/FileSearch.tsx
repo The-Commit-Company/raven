@@ -18,6 +18,16 @@ import { Sort } from '../sorting'
 import { AiOutlineFileExcel, AiOutlineFileImage, AiOutlineFilePdf, AiOutlineFilePpt, AiOutlineFileText } from 'react-icons/ai'
 import './styles.css'
 
+interface FilterInput {
+    'from-user-filter': SelectOption[],
+    'date-filter': SelectOption,
+    'channel-filter': SelectOption[],
+    'my-channels-filter': boolean,
+    'other-channels-filter': boolean,
+    'with-user-filter': SelectOption[],
+    'file-type-filter': SelectOption[],
+}
+
 interface Props {
     onToggleMyChannels: () => void,
     isOpenMyChannels: boolean,
@@ -30,47 +40,12 @@ interface Props {
 export const FileSearch = ({ onToggleMyChannels, isOpenMyChannels, dateOption, input, fromFilter, inFilter }: Props) => {
 
     const { url } = useContext(FrappeContext) as FrappeConfig
-    const methods = useForm()
-    const { watch, control } = methods
-    const [searchText, setSearchText] = useState(input)
-    const debouncedText = useDebounce(searchText, 50)
-
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setSearchText(e.target.value)
-    }
-
-    const watchFileType = watch('file-type-filter')
-    const watchChannel = watch('channel-filter')
-    const watchFromUser = watch('from-user-filter')
-    const watchDate = watch('date-filter')
-    const watchMyChannels = watch('my-channels-filter')
-    const file_type: string[] = useMemo(() => watchFileType ? watchFileType.map((fileType: { value: string, label: string }) => fileType.value) : [], [watchFileType]);
-    const in_channel: string[] = watchChannel ? watchChannel.map((channel: { value: string, label: string }) => (channel.value)) : []
-    const from_user: string[] = watchFromUser ? watchFromUser.map((user: { value: string, label: string }) => (user.value)) : []
-    const date = watchDate ? watchDate.value : null
-    const my_channel_only: boolean = watchMyChannels ? watchMyChannels : null
-    const extensions: string[] = ['pdf', 'doc', 'ppt', 'xls']
-
-    const message_type = useMemo(() => {
-        const newMessageType = [];
-        if (file_type.some(item => extensions.includes(item))) {
-            newMessageType.push('File');
-        }
-        if (file_type.some(item => item === 'image')) {
-            newMessageType.push('Image');
-        }
-        return newMessageType;
-    }, [file_type, extensions]);
+    const { data: channels, error: channelsError } = useFrappeGetCall<{ message: ChannelData[] }>("raven.raven_channel_management.doctype.raven_channel.raven_channel.get_channel_list")
 
     const { data: users, error: usersError } = useFrappeGetDocList<User>("User", {
         fields: ["full_name", "user_image", "name"],
         filters: [["name", "!=", "Guest"]]
     })
-
-    const [sortOrder, setSortOrder] = useState("desc")
-    const [sortByField, setSortByField] = useState<string>('creation')
-
-    const { data: channels, error: channelsError } = useFrappeGetCall<{ message: ChannelData[] }>("raven.raven_channel_management.doctype.raven_channel.raven_channel.get_channel_list")
 
     const userOptions: SelectOption[] = useMemo(() => {
         if (users) {
@@ -93,6 +68,48 @@ export const FileSearch = ({ onToggleMyChannels, isOpenMyChannels, dateOption, i
             return []
         }
     }, [channels])
+
+    const methods = useForm<FilterInput>({
+        defaultValues: {
+            'from-user-filter': userOptions && fromFilter ? [userOptions.find((option) => option.value == fromFilter)] : [],
+            'channel-filter': channelOption && inFilter ? [channelOption.find((option) => option.value == inFilter)] : []
+        }
+    })
+    const { watch, control } = methods
+    const [searchText, setSearchText] = useState(input)
+    const debouncedText = useDebounce(searchText, 50)
+
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setSearchText(e.target.value)
+    }
+
+    const watchFileType = watch('file-type-filter')
+    const watchChannel = watch('channel-filter')
+    const watchFromUser = watch('from-user-filter')
+    const watchDate = watch('date-filter')
+    const watchMyChannels = watch('my-channels-filter')
+    const file_type: string[] = useMemo(() => watchFileType ? watchFileType.map((fileType: SelectOption) => fileType.value) : [], [watchFileType]);
+    const in_channel: string[] = watchChannel ? watchChannel.map((channel: SelectOption) => (channel.value)) : []
+    const from_user: string[] = watchFromUser ? watchFromUser.map((user: SelectOption) => (user.value)) : []
+    const date = watchDate ? watchDate.value : null
+    const my_channel_only: boolean = watchMyChannels ? watchMyChannels : false
+    const extensions: string[] = ['pdf', 'doc', 'ppt', 'xls']
+
+    const message_type = useMemo(() => {
+        const newMessageType = [];
+        if (file_type.some(item => extensions.includes(item))) {
+            newMessageType.push('File');
+        }
+        if (file_type.some(item => item === 'image')) {
+            newMessageType.push('Image');
+        }
+        return newMessageType;
+    }, [file_type, extensions]);
+
+
+    const [sortOrder, setSortOrder] = useState("desc")
+    const [sortByField, setSortByField] = useState<string>('creation')
+
 
     const { data, error, isLoading, isValidating } = useFrappeGetCall<{ message: GetFileSearchResult[] }>("raven.api.search.get_search_result", {
         filter_type: 'File',

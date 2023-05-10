@@ -62,7 +62,7 @@ export const ChatMessage = ({ name, user, timestamp, text, image, file, isContin
             {isSearchResult && creation && <HStack pb={1.5} spacing={1}>
                 <Text fontWeight='semibold' fontSize='sm'>{channelName ?? "Direct message"}</Text>
                 <Text fontSize='small'>- {new Date(creation).toDateString()}</Text>
-                <Link style={showButtons} onClick={() => navigate(`/channel/${channelID}`)} pl={1}><Text fontSize={'small'}>View Channel</Text></Link>
+                <Link style={showButtons} onClick={() => navigate(`/channel/${channelID}`)} pl={1}>{channelName ? <Text fontSize={'small'}>View Channel</Text> : <Text fontSize={'small'}>View Chat</Text>}</Link>
             </HStack>}
             <HStack justifyContent='space-between' alignItems='flex-start'>
                 {isContinuation ?

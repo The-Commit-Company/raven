@@ -15,6 +15,14 @@ import { ChatMessage } from '../chat'
 import { SelectInput, SelectOption } from '../search-filters/SelectInput'
 import { Sort } from '../sorting'
 
+interface FilterInput {
+    'from-user-filter': SelectOption[],
+    'date-filter': SelectOption,
+    'channel-filter': SelectOption[],
+    'my-channels-filter': boolean,
+    'other-channels-filter': boolean,
+    'with-user-filter': SelectOption[],
+}
 interface Props {
     onToggleMyChannels: () => void,
     isOpenMyChannels: boolean,
@@ -27,34 +35,10 @@ interface Props {
 export const MessageSearch = ({ onToggleMyChannels, isOpenMyChannels, dateOption, input, fromFilter, inFilter }: Props) => {
 
     const { url } = useContext(FrappeContext) as FrappeConfig
-    const methods = useForm()
-    const { watch, control } = methods
-    const [searchText, setSearchText] = useState(input)
-    const debouncedText = useDebounce(searchText, 50)
-
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setSearchText(e.target.value)
-    }
-
-    const watchChannel = watch('channel-filter')
-    const watchFromUser = watch('from-user-filter')
-    const watchDate = watch('date-filter')
-    const watchMyChannels = watch('my-channels-filter')
-    const watchWithUser = watch('with-user-filter')
-    const in_channel: string[] = watchChannel ? watchChannel.map((channel: { value: string, label: string }) => (channel.value)) : []
-    const from_user: string[] = watchFromUser ? watchFromUser.map((user: { value: string, label: string }) => (user.value)) : []
-    const with_user: string[] = watchWithUser ? watchWithUser.map((user: { value: string, label: string }) => (user.value)) : []
-    const date = watchDate ? watchDate.value : null
-    const my_channel_only: boolean = watchMyChannels ? watchMyChannels : null
-
     const { data: users, error: usersError } = useFrappeGetDocList<User>("User", {
         fields: ["full_name", "user_image", "name"],
         filters: [["name", "!=", "Guest"]]
     })
-
-    const [sortOrder, setSortOrder] = useState("desc")
-    const [sortByField, setSortByField] = useState<string>('creation')
-    const [showResults, setShowResults] = useState<boolean>(false)
 
     const { data: channels, error: channelsError } = useFrappeGetCall<{ message: ChannelData[] }>("raven.raven_channel_management.doctype.raven_channel.raven_channel.get_channel_list")
 
@@ -80,6 +64,36 @@ export const MessageSearch = ({ onToggleMyChannels, isOpenMyChannels, dateOption
         }
     }, [channels])
 
+    const methods = useForm<FilterInput>({
+        defaultValues: {
+            'from-user-filter': userOptions && fromFilter ? [userOptions.find((option) => option.value == fromFilter)] : [],
+            'channel-filter': channelOption && inFilter ? [channelOption.find((option) => option.value == inFilter)] : []
+        }
+    })
+    const { watch, control } = methods
+    const [searchText, setSearchText] = useState(input)
+    const debouncedText = useDebounce(searchText, 50)
+
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setSearchText(e.target.value)
+    }
+
+    const watchChannel = watch('channel-filter')
+    const watchFromUser = watch('from-user-filter')
+    const watchDate = watch('date-filter')
+    const watchMyChannels = watch('my-channels-filter')
+    const watchWithUser = watch('with-user-filter')
+    const in_channel: string[] = watchChannel ? watchChannel.map((channel: SelectOption) => (channel.value)) : []
+    const from_user: string[] = watchFromUser ? watchFromUser.map((user: SelectOption) => (user.value)) : []
+    const with_user: string[] = watchWithUser ? watchWithUser.map((user: SelectOption) => (user.value)) : []
+    const date = watchDate ? watchDate.value : null
+    const my_channel_only: boolean = watchMyChannels ? watchMyChannels : false
+
+
+    const [sortOrder, setSortOrder] = useState("desc")
+    const [sortByField, setSortByField] = useState<string>('creation')
+    const [showResults, setShowResults] = useState<boolean>(false)
+
     const { data, error, isLoading, isValidating } = useFrappeGetCall<{ message: GetMessageSearchResult[] }>("raven.api.search.get_search_result", {
         filter_type: 'Message',
         doctype: 'Raven Message',
@@ -94,7 +108,7 @@ export const MessageSearch = ({ onToggleMyChannels, isOpenMyChannels, dateOption
     })
 
     useEffect(() => {
-        setShowResults(debouncedText.length > 2 || in_channel?.length > 0 || from_user?.length > 0 || with_user?.length > 0 || date?.length > 0 || my_channel_only === true)
+        setShowResults(debouncedText.length > 2 || in_channel?.length > 0 || from_user?.length > 0 || with_user?.length > 0 || date !== null || my_channel_only === true)
     }, [debouncedText, in_channel, from_user, with_user, date, my_channel_only])
 
     return (
@@ -116,7 +130,7 @@ export const MessageSearch = ({ onToggleMyChannels, isOpenMyChannels, dateOption
                         <chakra.form>
                             <HStack>
                                 <FormControl id="from-user-filter" w='fit-content'>
-                                    <SelectInput placeholder="From" size='sm' options={userOptions} name='from-user-filter' isMulti={true} defaultValue={userOptions.find((option) => option.value == fromFilter)} chakraStyles={{
+                                    <SelectInput placeholder="From" size='sm' options={userOptions} name='from-user-filter' isMulti={true} chakraStyles={{
                                         multiValue: (chakraStyles) => ({ ...chakraStyles, display: 'flex', alignItems: 'center', overflow: 'hidden', padding: '0rem 0.2rem 0rem 0rem' }),
                                     }} />
                                 </FormControl>
@@ -181,6 +195,7 @@ export const MessageSearch = ({ onToggleMyChannels, isOpenMyChannels, dateOption
                                                 channelName={channelName}
                                                 channelID={channel_id}
                                                 py={1}
+                                                zIndex={0}
                                             />
                                         )
                                     }
