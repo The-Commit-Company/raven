@@ -1,4 +1,4 @@
-import { Avatar, Box, Button, HStack, Icon, Image, Link, Stack, StackDivider, Tag, Text, Tooltip, useColorMode, useDisclosure } from "@chakra-ui/react"
+import { Avatar, Box, Button, HStack, Icon, IconButton, Image, Link, Stack, StackDivider, Tag, Text, Tooltip, useColorMode, useDisclosure } from "@chakra-ui/react"
 import { useContext, useState } from "react"
 import { User } from "../../../types/User/User"
 import { ChannelContext } from "../../../utils/channel/ChannelProvider"
@@ -13,6 +13,7 @@ import { ActionsPalette } from "../message-action-palette/ActionsPalette"
 import { useNavigate } from "react-router-dom";
 import { useFrappeCreateDoc } from "frappe-react-sdk"
 import { UserContext } from "../../../utils/auth/UserProvider"
+import { BsFillCaretDownFill, BsFillCaretRightFill } from "react-icons/bs"
 
 interface ChatMessageProps {
     name: string,
@@ -108,10 +109,20 @@ interface DisplayMessageContentProps {
 }
 
 const DisplayMessageContent = ({ text, image, file, onImagePreviewModalOpen, onPDFPreviewModalOpen }: DisplayMessageContentProps) => {
+
+    const [showImage, setShowImage] = useState<boolean>(true)
+
     if (text) {
         return <MarkdownRenderer content={text} />
     } else if (image) {
-        return <Image src={image} height='360px' rounded={'md'} onClick={onImagePreviewModalOpen} _hover={{ cursor: 'pointer' }} />
+        return <Stack spacing={0}>
+            <HStack spacing={1}>
+                <Text fontSize={'sm'} color={'gray.500'}>{image.split('/')[3]}</Text>
+                <IconButton aria-label={"view"} size='xs' onClick={() => { setShowImage(!showImage) }} variant={'unstyled'}
+                    icon={showImage ? <BsFillCaretDownFill fontSize={'0.6rem'} /> : <BsFillCaretRightFill fontSize={'0.6rem'} />} />
+            </HStack>
+            {showImage && <Image src={image} height='360px' rounded={'md'} onClick={onImagePreviewModalOpen} _hover={{ cursor: 'pointer' }} />}
+        </Stack>
     } else if (file) {
         return <HStack>
             <Icon as={getFileExtensionIcon(file.split('.')[1])} />
