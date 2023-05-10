@@ -7,8 +7,10 @@ import { useFrappeEventListener } from "../../../hooks/useFrappeEventListener"
 import { ChannelData } from "../../../types/Channel/Channel"
 import { AlertBanner } from "../../layout/AlertBanner"
 import { SidebarGroup, SidebarGroupItem, SidebarGroupLabel, SidebarGroupList, SidebarIcon, SidebarItem, SidebarItemLabel } from "../../layout/Sidebar"
-import { SidebarButtonItem } from "../../layout/Sidebar/SidebarComp"
+import { SidebarButtonItem, SidebarViewMoreButton } from "../../layout/Sidebar/SidebarComp"
 import { CreateChannelModal } from "./CreateChannelModal"
+import { useState } from "react"
+
 
 export const ChannelList = () => {
 
@@ -33,24 +35,31 @@ export const ChannelList = () => {
         <AlertBanner status="error" heading={error.message}>{error.httpStatus} - {error.httpStatusText}</AlertBanner>
     }
 
+    const [showData, setShowData] = useState(true)
+
     return (
         <>
-            <SidebarGroup>
-                <SidebarGroupItem>
+            <SidebarGroup spacing={1}>
+                <SidebarGroupItem ml='2'>
+                    <SidebarViewMoreButton onClick={() => setShowData(!showData)} />
                     <SidebarGroupLabel>Channels</SidebarGroupLabel>
                 </SidebarGroupItem>
-                <SidebarGroupList>
-                    {data?.message.filter((channel) => channel.is_direct_message === 0).map((channel) => (
-                        <SidebarItem to={channel.name} key={channel.name}>
-                            <SidebarIcon>{channel.type === "Private" && <BiLockAlt /> || channel.type === "Public" && <BiHash /> || channel.type === "Open" && <BiGlobe />}</SidebarIcon>
-                            <SidebarItemLabel>{channel.channel_name}</SidebarItemLabel>
-                        </SidebarItem>
-                    ))}
-                    <SidebarButtonItem key={'create-channel'} onClick={onOpen}>
-                        <SidebarIcon><IoAdd /></SidebarIcon>
-                        <SidebarItemLabel>Add channel</SidebarItemLabel>
-                    </SidebarButtonItem>
-                </SidebarGroupList>
+                <SidebarGroup>
+                    <SidebarGroupList>
+                        <SidebarGroupList maxH={'28vh'} overflowY={'scroll'}>
+                            {showData && data?.message.filter((channel) => channel.is_direct_message === 0).map((channel) => (
+                                <SidebarItem to={channel.name} key={channel.name}>
+                                    <SidebarIcon>{channel.type === "Private" && <BiLockAlt /> || channel.type === "Public" && <BiHash /> || channel.type === "Open" && <BiGlobe />}</SidebarIcon>
+                                    <SidebarItemLabel>{channel.channel_name}</SidebarItemLabel>
+                                </SidebarItem>
+                            ))}
+                        </SidebarGroupList>
+                        <SidebarButtonItem key={'create-channel'} onClick={onOpen}>
+                            <SidebarIcon><IoAdd /></SidebarIcon>
+                            <SidebarItemLabel>Add channel</SidebarItemLabel>
+                        </SidebarButtonItem>
+                    </SidebarGroupList>
+                </SidebarGroup>
             </SidebarGroup>
             <CreateChannelModal isOpen={isOpen} onClose={handleClose} />
         </>

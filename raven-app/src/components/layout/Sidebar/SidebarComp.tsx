@@ -1,6 +1,7 @@
-import React, { ReactNode } from 'react'
-import { Stack, Box, Text, HStack, BoxProps, StackProps, TextProps, useColorMode } from '@chakra-ui/react'
+import React, { ReactNode, useState } from 'react'
+import { Stack, Box, Text, HStack, BoxProps, StackProps, TextProps, useColorMode, IconButton, ButtonProps } from '@chakra-ui/react'
 import { NavLink } from 'react-router-dom'
+import { BsFillCaretDownFill, BsFillCaretRightFill } from 'react-icons/bs';
 
 interface SidebarGroupProps extends StackProps {
     children: ReactNode;
@@ -20,10 +21,8 @@ interface SidebarGroupItemProps extends StackProps {
 }
 export const SidebarGroupItem = ({ children, ...props }: SidebarGroupItemProps) => {
 
-    const { colorMode } = useColorMode()
-
     return (
-        <HStack w="full" color={colorMode === "light" ? "gray.500" : "gray.200"} {...props} >
+        <HStack w="full" {...props}>
             {children}
         </HStack>
     )
@@ -35,10 +34,8 @@ interface SidebarGroupLabelProps extends TextProps {
 
 export const SidebarGroupLabel = ({ children, ...props }: SidebarGroupLabelProps) => {
 
-    const { colorMode } = useColorMode()
-
     return (
-        <Text fontSize="xs" color={colorMode === "light" ? "gray.500" : "gray.200"} my='1' {...props}>
+        <Text fontSize={'sm'} fontWeight={'medium'} {...props}>
             {children}
         </Text>
     )
@@ -111,7 +108,7 @@ interface SidebarIconProps extends BoxProps {
 export const SidebarIcon = ({ subtle, children, ...props }: SidebarIconProps) => {
 
     return (
-        <Box fontSize="md" {...props} >
+        <Box fontSize="md" {...props}>
             {children}
         </Box>
     )
@@ -177,5 +174,27 @@ export const SidebarButtonItem = ({ children, subtle, onClick, isLoading, ...pro
         >
             {children}
         </HStack>
+    )
+}
+
+interface SidebarViewMoreButtonProps extends ButtonProps {
+    onClick: () => void
+}
+
+export const SidebarViewMoreButton = ({ onClick, ...props }: SidebarViewMoreButtonProps) => {
+
+    const [isViewMore, setIsViewMore] = useState(false)
+
+    return (
+        <IconButton
+            aria-label={"view"}
+            size='xs'
+            onClick={() => {
+                setIsViewMore(!isViewMore)
+                onClick()
+            }}
+            {...props}
+            icon={isViewMore ? <BsFillCaretRightFill fontSize={'0.8rem'} /> : <BsFillCaretDownFill fontSize={'0.8rem'} />}
+        />
     )
 }
