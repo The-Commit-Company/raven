@@ -1,4 +1,4 @@
-import { Avatar, Box, Button, HStack, Icon, Image, Link, Stack, StackDivider, Text, useColorMode, useDisclosure } from "@chakra-ui/react"
+import { Avatar, Box, BoxProps, Button, HStack, Icon, Image, Link, Stack, StackDivider, Text, useColorMode, useDisclosure } from "@chakra-ui/react"
 import { useContext, useState } from "react"
 import { User } from "../../../types/User/User"
 import { UserContext } from "../../../utils/auth/UserProvider"
@@ -13,7 +13,7 @@ import { PDFPreviewModal } from "../file-preview/PDFPreviewModal"
 import { ActionsPalette } from "../message-action-palette/ActionsPalette"
 import { useNavigate } from "react-router-dom";
 
-interface ChatMessageProps {
+interface ChatMessageProps extends BoxProps {
     name: string,
     user: string,
     timestamp: Date,
@@ -27,11 +27,11 @@ interface ChatMessageProps {
     channelID?: string
 }
 
-export const ChatMessage = ({ name, user, timestamp, text, image, file, isContinuation, isSearchResult, creation, channelName, channelID }: ChatMessageProps) => {
+export const ChatMessage = ({ name, user, timestamp, text, image, file, isContinuation, isSearchResult, creation, channelName, channelID, ...props }: ChatMessageProps) => {
 
     const { currentUser } = useContext(UserContext)
     const { colorMode } = useColorMode()
-    const { channelMembers, channelData } = useContext(ChannelContext)
+    const { channelMembers } = useContext(ChannelContext)
     const [showButtons, setShowButtons] = useState<{}>({ visibility: 'hidden' })
     const { isOpen: isUserProfileDetailsDrawerOpen, onOpen: onUserProfileDetailsDrawerOpen, onClose: onUserProfileDetailsDrawerClose } = useDisclosure()
     const { isOpen: isSetUserStatusModalOpen, onOpen: onSetUserStatusModalOpen, onClose: onSetUserStatusModalClose } = useDisclosure()
@@ -57,8 +57,13 @@ export const ChatMessage = ({ name, user, timestamp, text, image, file, isContin
             }}
             onMouseLeave={e => {
                 setShowButtons({ visibility: 'hidden' })
-            }}>
-            {isSearchResult && creation && <HStack pb='8px'><Text fontWeight='bold' fontSize='md'>{channelName}</Text><Text fontSize='sm'>- {new Date(creation).toDateString()}</Text><Button variant='link' style={showButtons} fontWeight='light' size='sm' onClick={() => navigate(`/channel/${channelID}`)}>View Channel</Button></HStack>}
+            }}
+            {...props}>
+            {isSearchResult && creation && <HStack pb={1.5} spacing={1}>
+                <Text fontWeight='semibold' fontSize='sm'>{channelName ?? "Direct message"}</Text>
+                <Text fontSize='small'>- {new Date(creation).toDateString()}</Text>
+                <Link style={showButtons} onClick={() => navigate(`/channel/${channelID}`)} pl={1}><Text fontSize={'small'}>View Channel</Text></Link>
+            </HStack>}
             <HStack justifyContent='space-between' alignItems='flex-start'>
                 {isContinuation ?
                     <HStack spacing={3}>

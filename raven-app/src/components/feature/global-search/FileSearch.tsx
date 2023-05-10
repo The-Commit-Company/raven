@@ -1,7 +1,7 @@
 import { SearchIcon } from '@chakra-ui/icons'
 import { Avatar, Button, Center, chakra, FormControl, HStack, Icon, Input, InputGroup, InputLeftElement, Link, Stack, TabPanel, Text, Image } from '@chakra-ui/react'
 import { FrappeConfig, FrappeContext, useFrappeGetCall, useFrappeGetDocList } from 'frappe-react-sdk'
-import { useMemo, useState, useContext, useEffect } from 'react'
+import { useMemo, useState, useContext } from 'react'
 import { Controller, FormProvider, useForm } from 'react-hook-form'
 import { BiGlobe, BiHash, BiLockAlt } from 'react-icons/bi'
 import { useDebounce } from '../../../hooks/useDebounce'
@@ -21,15 +21,18 @@ import './styles.css'
 interface Props {
     onToggleMyChannels: () => void,
     isOpenMyChannels: boolean,
-    dateOption: SelectOption[]
+    dateOption: SelectOption[],
+    input: string,
+    fromFilter?: string,
+    inFilter?: string
 }
 
-export const FileSearch = ({ onToggleMyChannels, isOpenMyChannels, dateOption }: Props) => {
+export const FileSearch = ({ onToggleMyChannels, isOpenMyChannels, dateOption, input, fromFilter, inFilter }: Props) => {
 
     const { url } = useContext(FrappeContext) as FrappeConfig
     const methods = useForm()
     const { watch, control } = methods
-    const [searchText, setSearchText] = useState("")
+    const [searchText, setSearchText] = useState(input)
     const debouncedText = useDebounce(searchText, 50)
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -124,12 +127,12 @@ export const FileSearch = ({ onToggleMyChannels, isOpenMyChannels, dateOption }:
                         <chakra.form>
                             <HStack justifyContent={'space-between'}>
                                 <FormControl id="from-user-filter" w='fit-content'>
-                                    <SelectInput placeholder="From" size='sm' options={userOptions} name='from-user-filter' isMulti={true} chakraStyles={{
+                                    <SelectInput placeholder="From" size='sm' options={userOptions} name='from-user-filter' defaultValue={userOptions.find((option) => option.value == fromFilter)} isMulti={true} chakraStyles={{
                                         multiValue: (chakraStyles) => ({ ...chakraStyles, display: 'flex', alignItems: 'center', overflow: 'hidden', padding: '0rem 0.2rem 0rem 0rem' }),
                                     }} />
                                 </FormControl>
                                 <FormControl id="channel-filter" w='fit-content'>
-                                    <SelectInput placeholder="In" size='sm' options={channelOption} name='channel-filter' isMulti={true} />
+                                    <SelectInput placeholder="In" size='sm' options={channelOption} name='channel-filter' defaultValue={channelOption.find((option) => option.value == inFilter)} isMulti={true} />
                                 </FormControl>
                                 <FormControl id="date-filter" w='fit-content'>
                                     <SelectInput placeholder="Date" size='sm' options={dateOption} name='date-filter' isClearable={true} />

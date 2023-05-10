@@ -19,14 +19,17 @@ interface Props {
     onToggleMyChannels: () => void,
     isOpenMyChannels: boolean,
     dateOption: SelectOption[],
+    input: string,
+    fromFilter?: string,
+    inFilter?: string
 }
 
-export const MessageSearch = ({ onToggleMyChannels, isOpenMyChannels, dateOption }: Props) => {
+export const MessageSearch = ({ onToggleMyChannels, isOpenMyChannels, dateOption, input, fromFilter, inFilter }: Props) => {
 
     const { url } = useContext(FrappeContext) as FrappeConfig
     const methods = useForm()
     const { watch, control } = methods
-    const [searchText, setSearchText] = useState("")
+    const [searchText, setSearchText] = useState(input)
     const debouncedText = useDebounce(searchText, 50)
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -113,12 +116,12 @@ export const MessageSearch = ({ onToggleMyChannels, isOpenMyChannels, dateOption
                         <chakra.form>
                             <HStack>
                                 <FormControl id="from-user-filter" w='fit-content'>
-                                    <SelectInput placeholder="From" size='sm' options={userOptions} name='from-user-filter' isMulti={true} chakraStyles={{
+                                    <SelectInput placeholder="From" size='sm' options={userOptions} name='from-user-filter' isMulti={true} defaultValue={userOptions.find((option) => option.value == fromFilter)} chakraStyles={{
                                         multiValue: (chakraStyles) => ({ ...chakraStyles, display: 'flex', alignItems: 'center', overflow: 'hidden', padding: '0rem 0.2rem 0rem 0rem' }),
                                     }} />
                                 </FormControl>
                                 <FormControl id="channel-filter" w='fit-content'>
-                                    <SelectInput placeholder="In" size='sm' options={channelOption} name='channel-filter' isMulti={true} />
+                                    <SelectInput placeholder="In" size='sm' options={channelOption} name='channel-filter' isMulti={true} defaultValue={channelOption.find((option) => option.value == inFilter)} />
                                 </FormControl>
                                 <FormControl id="with-user-filter" w="fit-content">
                                     <SelectInput placeholder="With" size='sm' options={userOptions} name='with-user-filter' isMulti={true} chakraStyles={{
@@ -162,7 +165,7 @@ export const MessageSearch = ({ onToggleMyChannels, isOpenMyChannels, dateOption
                                 sortOrder={sortOrder}
                                 sortField={sortByField}
                                 onSortOrderChange={(order) => setSortOrder(order)} />
-                                <Stack spacing={4} overflowY='scroll'>
+                                <Stack overflowY='scroll'>
 
                                     {data.message.map(({ name, owner, creation, text, channel_id }) => {
                                         const channelName: any = channelOption.find((channel) => channel.value === channel_id)?.label
@@ -177,6 +180,7 @@ export const MessageSearch = ({ onToggleMyChannels, isOpenMyChannels, dateOption
                                                 isSearchResult={true}
                                                 channelName={channelName}
                                                 channelID={channel_id}
+                                                py={1}
                                             />
                                         )
                                     }

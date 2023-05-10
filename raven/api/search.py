@@ -40,6 +40,9 @@ def get_search_result(filter_type, doctype, search_text=None, from_user=None, wi
                 "/private/files/%" + search_text + "%"))
         elif filter_type == 'Message':
             query = query.where(doctype.text.like("%" + search_text + "%"))
+        elif filter_type == 'Channel':
+            query = query.where(
+                doctype.channel_name.like("%" + search_text + "%"))
 
     if from_user and from_user != '[]':
         from_user = json.loads(from_user)

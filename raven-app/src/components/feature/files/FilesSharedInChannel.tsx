@@ -87,7 +87,7 @@ export const FilesSharedInChannel = () => {
                     Show more
                 </Button>
             }
-            <GlobalSearch isOpen={isGlobalSearchModalOpen} onClose={onGlobalSearchModalClose} tabIndex={1} />
+            <GlobalSearch isOpen={isGlobalSearchModalOpen} onClose={onGlobalSearchModalClose} tabIndex={1} input={""} />
         </Stack >
     )
 }

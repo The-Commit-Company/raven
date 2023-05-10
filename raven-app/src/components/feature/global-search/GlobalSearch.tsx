@@ -7,10 +7,13 @@ import { MessageSearch } from "./MessageSearch"
 interface GlobalSearchModalProps {
     isOpen: boolean,
     onClose: () => void,
-    tabIndex?: number
+    tabIndex: number,
+    input: string,
+    fromFilter?: string,
+    inFilter?: string,
 }
 
-export default function GlobalSearch({ isOpen, onClose, tabIndex }: GlobalSearchModalProps) {
+export default function GlobalSearch({ isOpen, onClose, tabIndex, input, fromFilter, inFilter }: GlobalSearchModalProps) {
     const { onToggle: onToggleOtherChannels, isOpen: isOpenOtherChannels } = useDisclosure()
     const { onToggle: onToggleMyChannels, isOpen: isOpenMyChannels } = useDisclosure()
 
@@ -30,9 +33,9 @@ export default function GlobalSearch({ isOpen, onClose, tabIndex }: GlobalSearch
                                 <Tab>Channels</Tab>
                             </TabList>
                             <TabPanels>
-                                <MessageSearch onToggleMyChannels={onToggleMyChannels} isOpenMyChannels={isOpenMyChannels} dateOption={dateOption} />
-                                <FileSearch onToggleMyChannels={onToggleMyChannels} isOpenMyChannels={isOpenMyChannels} dateOption={dateOption} />
-                                <ChannelSearch onToggleMyChannels={onToggleMyChannels} isOpenMyChannels={isOpenMyChannels} onToggleOtherChannels={onToggleOtherChannels} isOpenOtherChannels={isOpenOtherChannels} />
+                                <MessageSearch onToggleMyChannels={onToggleMyChannels} isOpenMyChannels={isOpenMyChannels} dateOption={dateOption} input={input} fromFilter={fromFilter} inFilter={inFilter} />
+                                <FileSearch onToggleMyChannels={onToggleMyChannels} isOpenMyChannels={isOpenMyChannels} dateOption={dateOption} input={input} fromFilter={fromFilter} inFilter={inFilter} />
+                                <ChannelSearch onToggleMyChannels={onToggleMyChannels} isOpenMyChannels={isOpenMyChannels} onToggleOtherChannels={onToggleOtherChannels} isOpenOtherChannels={isOpenOtherChannels} input={input} />
                             </TabPanels>
                         </Tabs>
                     </Stack>

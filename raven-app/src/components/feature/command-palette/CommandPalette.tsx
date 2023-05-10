@@ -122,7 +122,7 @@ export const CommandPalette = ({ isOpen, onClose, onToggle }: CommandPaletteProp
                     {activePage === 'channels' && <Channels input={debouncedText} />}
                     {activePage === 'people' && activeUsers && users && <People input={debouncedText} users={users} activeUsers={activeUsers?.message} gotoDMChannel={gotoDMChannel} currentUser={currentUser} />}
                     {activePage === 'in' && <FindIn input={debouncedText} />}
-                    {activePage === 'from' && <FindFrom input={debouncedText} />}
+                    {activePage === 'from' && users && <FindFrom input={debouncedText} users={users} />}
                     <Box cmdk-footer="">
                         <HStack spacing={1}>
                             <Text color='gray.500'>Not the results that you expected? File an issue on</Text>

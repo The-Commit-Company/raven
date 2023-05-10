@@ -17,12 +17,13 @@ interface Props {
     isOpenMyChannels: boolean,
     onToggleOtherChannels: () => void,
     isOpenOtherChannels: boolean,
+    input: string
 }
 
-export const ChannelSearch = ({ onToggleMyChannels, isOpenMyChannels, onToggleOtherChannels, isOpenOtherChannels }: Props) => {
+export const ChannelSearch = ({ onToggleMyChannels, isOpenMyChannels, onToggleOtherChannels, isOpenOtherChannels, input }: Props) => {
     const methods = useForm()
     const { watch, control } = methods
-    const [searchText, setSearchText] = useState("")
+    const [searchText, setSearchText] = useState(input)
     const debouncedText = useDebounce(searchText, 50)
     const watchChannelType = watch('channel-type-filter')
     const channel_type: string[] = watchChannelType ? watchChannelType.map((type: { value: string, label: string }) => (type.value)) : []
