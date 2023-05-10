@@ -7,12 +7,6 @@ from pypika import Order
 
 class RavenMessage(Document):
 
-    def validate(self):
-        # If the user is not the owner of the message, do not allow them to create/modify it
-        if self.owner != frappe.session.user:
-            frappe.throw(
-                "You don't have permission to modify this message", frappe.PermissionError)
-
     def after_delete(self):
         frappe.publish_realtime('message_deleted', {
             'channel_id': self.channel_id}, after_commit=True)
@@ -21,6 +15,11 @@ class RavenMessage(Document):
     def on_update(self):
         frappe.publish_realtime('message_updated', {
             'channel_id': self.channel_id}, after_commit=True)
+        frappe.db.commit()
+    
+    def on_trash(self):
+        # delete all the reactions for the message
+        frappe.db.sql("DELETE FROM `tabRaven Message Reaction` WHERE message = %s", self.name)
         frappe.db.commit()
 
 

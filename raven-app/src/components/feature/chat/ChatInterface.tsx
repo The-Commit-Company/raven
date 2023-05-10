@@ -27,7 +27,7 @@ export const ChatInterface = () => {
     const peer = Object.keys(channelMembers).filter((member) => member !== user)[0]
     const { data: channelList, error: channelListError } = useFrappeGetCall<{ message: ChannelData[] }>("raven.raven_channel_management.doctype.raven_channel.raven_channel.get_channel_list")
     const { data, error, mutate } = useFrappeGetDocList<Message>('Raven Message', {
-        fields: ["text", "creation", "name", "owner", "message_type", "file"],
+        fields: ["text", "creation", "name", "owner", "message_type", "file", "message_reactions"],
         filters: [["channel_id", "=", channelData?.name ?? null]],
         orderBy: {
             field: "creation",

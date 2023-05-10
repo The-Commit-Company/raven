@@ -54,7 +54,7 @@ export const ChatHistory = ({ messages }: ChatHistoryProps) => {
                         {DateObjectToFormattedDateString(new Date(date))}
                     </DividerWithText>
                     <Stack spacing={0}>
-                        {messages.map(({ name, owner, creation, message_type, text, file, isContinuation }) => (
+                        {messages.map(({ name, owner, creation, message_type, text, file, message_reactions, isContinuation }) => (
                             <ChatMessage
                                 key={name}
                                 name={name}
@@ -62,6 +62,7 @@ export const ChatHistory = ({ messages }: ChatHistoryProps) => {
                                 timestamp={new Date(creation)}
                                 text={message_type === 'Text' ? text : undefined}
                                 file={message_type === 'File' ? file : undefined}
+                                message_reactions={message_reactions}
                                 image={message_type === 'Image' ? file : undefined}
                                 isContinuation={isContinuation}
                             />
