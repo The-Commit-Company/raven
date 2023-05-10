@@ -16,13 +16,15 @@ import { FullPageLoader } from '../../layout/Loaders'
 import { SelectInput, SelectOption } from '../search-filters/SelectInput'
 import { Sort } from '../sorting'
 import { AiOutlineFileExcel, AiOutlineFileImage, AiOutlineFilePdf, AiOutlineFilePpt, AiOutlineFileText } from 'react-icons/ai'
+import './styles.css'
 
 interface Props {
     onToggleMyChannels: () => void,
     isOpenMyChannels: boolean,
+    dateOption: SelectOption[]
 }
 
-export const FileSearch = ({ onToggleMyChannels, isOpenMyChannels }: Props) => {
+export const FileSearch = ({ onToggleMyChannels, isOpenMyChannels, dateOption }: Props) => {
 
     const { url } = useContext(FrappeContext) as FrappeConfig
     const methods = useForm()
@@ -44,7 +46,7 @@ export const FileSearch = ({ onToggleMyChannels, isOpenMyChannels }: Props) => {
     const from_user: string[] = watchUser ? watchUser.map((user: { value: string, label: string }) => (user.value)) : []
     const date = watchDate ? watchDate.value : null
     const my_channel_only: boolean = watchMyChannels ? watchMyChannels : null
-    const extensions: string[] = ['pdf', 'doc', 'docx']
+    const extensions: string[] = ['pdf', 'doc', 'ppt', 'xls']
     const [message_type, setMessageType] = useState<string[]>([])
 
     useEffect(() => {
@@ -102,6 +104,7 @@ export const FileSearch = ({ onToggleMyChannels, isOpenMyChannels }: Props) => {
     }, [channels])
 
     const { data, error, isLoading, isValidating } = useFrappeGetCall<{ message: GetFileSearchResult[] }>("raven.api.search.get_search_result", {
+        filter_type: 'File',
         doctype: 'Raven Message',
         search_text: debouncedText,
         message_type: JSON.stringify(message_type),
@@ -205,27 +208,9 @@ export const FileSearch = ({ onToggleMyChannels, isOpenMyChannels }: Props) => {
 }
 
 const fileOption: SelectOption[] = [
-    { label: <HStack><AiOutlineFilePdf /><Text>PDFs</Text></HStack>, value: "pdf" },
-    { label: <HStack><AiOutlineFileText /><Text>Documents</Text></HStack>, value: "doc" },
-    { label: <HStack><AiOutlineFilePpt /><Text>Presentations</Text></HStack>, value: "ppt" },
-    { label: <HStack><AiOutlineFileExcel /><Text>Spreadsheets</Text></HStack>, value: "xls" },
-    { label: <HStack><AiOutlineFileImage /><Text>Image</Text></HStack>, value: "image" }
+    { label: <HStack><div className="icon-container"><AiOutlineFilePdf /></div><Text>PDFs</Text></HStack>, value: "pdf" },
+    { label: <HStack><div className="icon-container"><AiOutlineFileText /></div><Text>Documents</Text></HStack>, value: "doc" },
+    { label: <HStack><div className="icon-container"><AiOutlineFilePpt /></div><Text>Presentations</Text></HStack>, value: "ppt" },
+    { label: <HStack><div className="icon-container"><AiOutlineFileExcel /></div><Text>Spreadsheets</Text></HStack>, value: "xls" },
+    { label: <HStack><div className="icon-container"><AiOutlineFileImage /></div><Text>Image</Text></HStack>, value: "image" }
 ]
-
-const dateOption: SelectOption[] = [
-    { label: "Today", value: getDateString(0) },
-    { label: "Yesterday", value: getDateString(-1) },
-    { label: "Last 7 days", value: getDateString(-6) },
-    { label: "Last 30 days", value: getDateString(-29) },
-    { label: "Last three months", value: getDateString(-89) },
-    { label: "Last 12 months", value: getDateString(-364) }
-]
-
-function getDateString(offset: number): string {
-    const date = new Date();
-    date.setDate(date.getDate() + offset);
-    const year = date.getFullYear();
-    const month = (date.getMonth() + 1).toString().padStart(2, "0");
-    const day = date.getDate().toString().padStart(2, "0");
-    return `${year}-${month}-${day} 00:00:00`;
-}

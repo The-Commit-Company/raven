@@ -32,7 +32,7 @@ export const MarkdownRenderer: React.FC<Props> = ({ content }) => {
   const LinkURL = urls[0]
 
   const { data } = useFrappeGetCall<{ message: LinkPreviewDetails }>('raven.api.preview_links.get_preview_link', {
-    url: LinkURL
+    url: LinkURL ? LinkURL : ''
   })
 
   const { colorMode } = useColorMode()

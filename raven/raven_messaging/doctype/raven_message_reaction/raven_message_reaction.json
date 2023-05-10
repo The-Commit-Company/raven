@@ -1,0 +1,62 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "hash",
+ "creation": "2023-05-08 12:00:26.094736",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "reaction",
+  "reaction_escaped",
+  "message"
+ ],
+ "fields": [
+  {
+   "fieldname": "reaction",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Reaction",
+   "reqd": 1
+  },
+  {
+   "fieldname": "message",
+   "fieldtype": "Link",
+   "label": "Message",
+   "options": "Raven Message",
+   "reqd": 1,
+   "search_index": 1
+  },
+  {
+   "fieldname": "reaction_escaped",
+   "fieldtype": "Data",
+   "label": "Reaction Escaped",
+   "search_index": 1
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2023-05-09 18:38:24.333333",
+ "modified_by": "Administrator",
+ "module": "Raven Messaging",
+ "name": "Raven Message Reaction",
+ "naming_rule": "Random",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}
