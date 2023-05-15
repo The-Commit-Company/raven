@@ -145,20 +145,18 @@ export const ChatInterface = () => {
                 <HStack>
                     <Button
                         size={"sm"}
-                        aria-label="Toggle theme"
+                        aria-label="search"
                         leftIcon={<HiOutlineSearch />}
                         onClick={onCommandPaletteToggle}
-                        fontWeight='light'
-                    >Search
+                        fontWeight='light'>
+                        Search
                     </Button>
                     {channelData?.is_direct_message == 0 && activeUsers?.message &&
                         <ViewOrAddMembersButton onClickViewMembers={onViewDetailsModalOpen} onClickAddMembers={onOpen} activeUsers={activeUsers.message} />}
                 </HStack>
             </PageHeader>
             <Stack h='calc(100vh - 54px)' justify={'flex-end'} p={4} overflow='hidden' mt='16'>
-                {data &&
-                    <ChatHistory messages={data} />
-                }
+                {data && channelData && <ChatHistory messages={data} isDM={channelData?.is_direct_message} />}
                 {(user && user in channelMembers) || channelData?.type === 'Open' ?
                     <ChatInput channelID={channelData?.name ?? ''} allChannels={allChannels} allMembers={allMembers} /> :
                     <Box border='1px' borderColor={'gray.500'} rounded='lg' bottom='2' boxShadow='base' position='fixed' w='calc(98vw - var(--sidebar-width))' bg={colorMode === "light" ? "white" : "gray.800"} p={4}>
