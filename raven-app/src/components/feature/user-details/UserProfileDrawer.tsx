@@ -15,7 +15,7 @@ interface UserProfileDrawerProps {
     isOpen: boolean
     onClose: () => void,
     user: User,
-    openSetStatusModal: () => void
+    openSetStatusModal?: () => void
 }
 
 export const UserProfileDrawer = ({ isOpen, onClose, user, openSetStatusModal }: UserProfileDrawerProps) => {
@@ -74,11 +74,21 @@ export const UserProfileDrawer = ({ isOpen, onClose, user, openSetStatusModal }:
 
                         {userData && (user.name !== userData?.name)
                             ?
-                            <Button variant='outline' colorScheme='blue' leftIcon={<BiMessage />} onClick={() => gotoDMChannel(user.name)} isLoading={loading}>
+                            <Button variant='outline'
+                                colorScheme='blue'
+                                leftIcon={<BiMessage />}
+                                onClick={() => {
+                                    gotoDMChannel(user.name)
+                                    onClose()
+                                }}
+                                isLoading={loading}>
                                 Message
                             </Button>
                             :
-                            <Button variant='outline' colorScheme='blue' leftIcon={<AiOutlineEdit />} onClick={openSetStatusModal}>
+                            <Button variant='outline'
+                                colorScheme='blue'
+                                leftIcon={<AiOutlineEdit />}
+                                onClick={openSetStatusModal}>
                                 Set Status
                             </Button>
                         }

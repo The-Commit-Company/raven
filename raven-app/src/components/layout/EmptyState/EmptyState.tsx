@@ -7,6 +7,7 @@ import { TbEdit } from "react-icons/tb"
 import { AddOrEditChannelDescriptionModal } from "../../feature/channel-details/EditChannelDetails/AddOrEditChannelDescriptionModal"
 import { AddChannelMemberModal } from "../../feature/channels/AddChannelMemberModal"
 import { UserDataContext } from "../../../utils/user/UserDataProvider"
+import { UserProfileDrawer } from "../../feature/user-details/UserProfileDrawer"
 
 export const EmptyStateForSearch = () => {
 
@@ -45,7 +46,7 @@ export const EmptyStateForChannel = () => {
                     <Text>{channelData?.owner_full_name} created this channel on {DateObjectToFormattedDateString(new Date(channelData?.creation ?? ''))}. This is the very beginning of the <strong>{channelData?.channel_name}</strong> channel.</Text>
                     {channelData?.channel_description && <Text fontSize={'sm'} color={'gray.500'}>{channelData?.channel_description}</Text>}
                 </Stack>
-                <ButtonGroup size={'xs'} colorScheme="blue" variant={'link'} spacing={4}>
+                <ButtonGroup size={'xs'} colorScheme="blue" variant={'link'} spacing={4} zIndex={1}>
                     <Button leftIcon={<TbEdit fontSize={'1rem'} />} onClick={onChannelDescriptionModalOpen}>{channelData?.channel_description ? 'Edit' : 'Add'} description</Button>
                     <Button leftIcon={<BiUserPlus fontSize={'1.1rem'} />} onClick={onAddMembersModalOpen}>Add people</Button>
                 </ButtonGroup>
@@ -64,6 +65,7 @@ export const EmptyStateForDM = () => {
     const userData = useContext(UserDataContext)
     const user = userData?.name
     const peer = Object.keys(channelMembers).filter((member) => member !== user)[0]
+    const { isOpen: isUserProfileDetailsDrawerOpen, onOpen: onUserProfileDetailsDrawerOpen, onClose: onUserProfileDetailsDrawerClose } = useDisclosure()
 
     const { colorMode } = useColorMode()
     const textColor = colorMode === 'light' ? 'gray.600' : 'gray.400'
@@ -81,8 +83,9 @@ export const EmptyStateForDM = () => {
                     </HStack>
                     <HStack spacing={1}>
                         <Text>This is a Direct Message channel between you and <strong>{channelMembers?.[peer]?.full_name ?? peer}</strong>. Check out their profile to learn more about them.</Text>
-                        <Text as={Link} color={'blue.500'}>View Profile</Text>
+                        <Button variant='link' colorScheme="blue" zIndex={1} onClick={() => onUserProfileDetailsDrawerOpen()}>View profile</Button>
                     </HStack>
+                    <UserProfileDrawer isOpen={isUserProfileDetailsDrawerOpen} onClose={onUserProfileDetailsDrawerClose} user={channelMembers?.[peer]} />
                 </Stack>
             }
             {channelData?.is_self_message == 1 && user &&
