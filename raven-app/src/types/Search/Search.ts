@@ -14,3 +14,9 @@ export interface GetMessageSearchResult {
     name: string
     owner: string
 }
+
+export interface GetChannelSearchResult {
+    type: string
+    name: string
+    channel_name: string
+}

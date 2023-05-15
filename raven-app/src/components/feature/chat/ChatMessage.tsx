@@ -1,9 +1,9 @@
-import { Avatar, Box, Button, HStack, Icon, IconButton, Image, Link, Stack, StackDivider, Tag, Text, Tooltip, useColorMode, useDisclosure } from "@chakra-ui/react"
+import { Avatar, Box, BoxProps, Button, HStack, Icon, IconButton, Image, Link, Stack, StackDivider, Tag, Text, Tooltip, useColorMode, useDisclosure } from "@chakra-ui/react"
 import { useContext, useState } from "react"
 import { User } from "../../../types/User/User"
 import { ChannelContext } from "../../../utils/channel/ChannelProvider"
 import { getFileExtensionIcon } from "../../../utils/layout/fileExtensionIcon"
-import { DateObjectToFormattedDateStringWithoutYear, DateObjectToTimeString } from "../../../utils/operations"
+import { DateObjectToTimeString, DateObjectToFormattedDateStringWithoutYear } from "../../../utils/operations"
 import { MarkdownRenderer } from "../markdown-viewer/MarkdownRenderer"
 import { SetUserStatus } from "../user-details/SetUserStatus"
 import { UserProfileDrawer } from "../user-details/UserProfileDrawer"
@@ -15,7 +15,7 @@ import { useFrappeCreateDoc } from "frappe-react-sdk"
 import { UserContext } from "../../../utils/auth/UserProvider"
 import { BsFillCaretDownFill, BsFillCaretRightFill } from "react-icons/bs"
 
-interface ChatMessageProps {
+interface ChatMessageProps extends BoxProps {
     name: string,
     user: string,
     timestamp: Date,
@@ -26,12 +26,14 @@ interface ChatMessageProps {
     isContinuation?: boolean,
     isSearchResult?: boolean,
     creation?: string
+    channelName?: string
+    channelID?: string
 }
 
-export const ChatMessage = ({ name, user, timestamp, text, image, file, message_reactions, isContinuation, isSearchResult, creation }: ChatMessageProps) => {
+export const ChatMessage = ({ name, user, timestamp, text, image, file, isContinuation, isSearchResult, creation, channelName, channelID, message_reactions, ...props }: ChatMessageProps) => {
 
     const { colorMode } = useColorMode()
-    const { channelMembers, channelData } = useContext(ChannelContext)
+    const { channelMembers, users } = useContext(ChannelContext)
     const [showButtons, setShowButtons] = useState<{}>({ visibility: 'hidden' })
     const { isOpen: isUserProfileDetailsDrawerOpen, onOpen: onUserProfileDetailsDrawerOpen, onClose: onUserProfileDetailsDrawerClose } = useDisclosure()
     const { isOpen: isSetUserStatusModalOpen, onOpen: onSetUserStatusModalOpen, onClose: onSetUserStatusModalClose } = useDisclosure()
@@ -58,8 +60,13 @@ export const ChatMessage = ({ name, user, timestamp, text, image, file, message_
             }}
             onMouseLeave={e => {
                 setShowButtons({ visibility: 'hidden' })
-            }}>
-            {isSearchResult && creation && <HStack pb='8px'><Text fontWeight='bold' fontSize='md'>{channelData?.channel_name}</Text><Text fontSize='sm'>- {new Date(creation).toDateString()}</Text><Button variant='link' style={showButtons} fontWeight='light' size='sm' onClick={() => navigate(`/channel/${channelData?.name}`)}>View Channel</Button></HStack>}
+            }}
+            {...props}>
+            {isSearchResult && creation && <HStack pb={1.5} spacing={1}>
+                <Text fontWeight='semibold' fontSize='sm'>{channelName ?? "Direct message"}</Text>
+                <Text fontSize='small'>- {new Date(creation).toDateString()}</Text>
+                <Link style={showButtons} color='blue.500' onClick={() => navigate(`/channel/${channelID}`)} pl={1}>{channelName ? <Text fontSize={'small'}>View Channel</Text> : <Text fontSize={'small'}>View Chat</Text>}</Link>
+            </HStack>}
             {isContinuation ?
                 <HStack spacing={3}>
                     <Tooltip hasArrow label={`${DateObjectToFormattedDateStringWithoutYear(timestamp)} at ${DateObjectToTimeString(timestamp)}`} placement='top' rounded='md'>
@@ -71,7 +78,7 @@ export const ChatMessage = ({ name, user, timestamp, text, image, file, message_
                     </Stack>
                 </HStack>
                 : <HStack spacing={2} alignItems='flex-start'>
-                    <Avatar name={channelMembers?.[user]?.full_name ?? user} src={channelMembers?.[user]?.user_image} borderRadius={'md'} boxSize='36px' />
+                    <Avatar name={channelMembers?.[user]?.full_name ?? users?.[user]?.full_name ?? user} src={channelMembers?.[user]?.user_image ?? users?.[user]?.user_image} borderRadius={'md'} boxSize='36px' />
                     <Stack spacing='1'>
                         <HStack>
                             <HStack divider={<StackDivider />} align='flex-start'>
@@ -79,7 +86,7 @@ export const ChatMessage = ({ name, user, timestamp, text, image, file, message_
                                     setSelectedUser(channelMembers?.[user])
                                     onUserProfileDetailsDrawerOpen()
                                 }}>
-                                    <Text fontSize='sm' lineHeight={'0.9'} fontWeight="bold" as='span' color={textColor}>{channelMembers?.[user]?.full_name ?? user}</Text>
+                                    <Text fontSize='sm' lineHeight={'0.9'} fontWeight="bold" as='span' color={textColor}>{channelMembers?.[user]?.full_name ?? users?.[user]?.full_name ?? user}</Text>
                                 </Button>
                                 <Tooltip hasArrow label={`${DateObjectToFormattedDateStringWithoutYear(timestamp)} at ${DateObjectToTimeString(timestamp)}`} placement='top' rounded='md'>
                                     <Text fontSize="xs" lineHeight={'0.9'} color="gray.500" _hover={{ textDecoration: 'underline' }}>{DateObjectToTimeString(timestamp)}</Text>
@@ -93,8 +100,8 @@ export const ChatMessage = ({ name, user, timestamp, text, image, file, message_
             }
             <ActionsPalette name={name} text={text} image={image} file={file} user={user} showButtons={showButtons} />
             <SetUserStatus isOpen={isSetUserStatusModalOpen} onClose={onSetUserStatusModalClose} />
-            {image && <ImagePreviewModal isOpen={isImagePreviewModalOpen} onClose={onImagePreviewModalClose} file_owner={channelMembers?.[user].name} file_url={image} timestamp={timestamp} />}
-            {file && <PDFPreviewModal isOpen={isPDFPreviewModalOpen} onClose={onPDFPreviewModalClose} file_owner={channelMembers?.[user].name} file_url={file} timestamp={timestamp} />}
+            {image && <ImagePreviewModal isOpen={isImagePreviewModalOpen} onClose={onImagePreviewModalClose} file_owner={channelMembers?.[user]?.name} file_url={image} timestamp={timestamp} />}
+            {file && <PDFPreviewModal isOpen={isPDFPreviewModalOpen} onClose={onPDFPreviewModalClose} file_owner={channelMembers?.[user]?.name} file_url={file} timestamp={timestamp} />}
             {selectedUser && <UserProfileDrawer isOpen={isUserProfileDetailsDrawerOpen} onClose={onUserProfileDetailsDrawerClose} user={selectedUser} openSetStatusModal={onSetUserStatusModalOpen} />}
         </Box>
     )
