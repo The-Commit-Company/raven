@@ -42,11 +42,7 @@ export const EmptyStateForChannel = () => {
                         {channelData?.type === 'Open' && <BiGlobe fontSize={'1.4rem'} />}
                         <Heading size={'md'}>{channelData?.channel_name}</Heading>
                     </HStack>
-                    <HStack spacing={1}>
-                        <Text>{channelData?.owner_full_name} created this channel on {DateObjectToFormattedDateString(new Date(channelData?.creation ?? ''))}. This is the very beginning of the </Text>
-                        <Text fontWeight={'bold'}>{channelData?.channel_name}</Text>
-                        <Text>channel.</Text>
-                    </HStack>
+                    <Text>{channelData?.owner_full_name} created this channel on {DateObjectToFormattedDateString(new Date(channelData?.creation ?? ''))}. This is the very beginning of the <strong>{channelData?.channel_name}</strong> channel.</Text>
                     {channelData?.channel_description && <Text fontSize={'sm'} color={'gray.500'}>{channelData?.channel_description}</Text>}
                 </Stack>
                 <ButtonGroup size={'xs'} colorScheme="blue" variant={'link'} spacing={4}>
