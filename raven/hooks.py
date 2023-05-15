@@ -191,7 +191,7 @@ after_install = "raven.install.after_install"
 # ]
 
 website_route_rules = [
-    {'from_route': '/raven-app/<path:app_path>', 'to_route': 'raven-app'}, ]
+    {'from_route': '/raven_app/<path:app_path>', 'to_route': 'raven_app'}, ]
 
 has_permission = {
     "Raven Channel": "raven.permissions.channel_has_permission",
