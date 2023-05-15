@@ -1,10 +1,10 @@
-import { Box, Button, HStack, IconButton, Link, Popover, PopoverContent, PopoverTrigger, Tooltip, useColorMode, useDisclosure } from '@chakra-ui/react'
+import { Box, Button, HStack, IconButton, Link, Popover, PopoverContent, PopoverTrigger, Portal, Tooltip, useColorMode, useDisclosure } from '@chakra-ui/react'
 import { BsDownload, BsEmojiSmile } from 'react-icons/bs'
 import { DeleteMessageModal } from '../message-details/DeleteMessageModal'
 import { EditMessageModal } from '../message-details/EditMessageModal'
 import { useFrappeCreateDoc, useFrappeGetCall } from 'frappe-react-sdk'
 import { ChannelData } from '../../../types/Channel/Channel'
-import { useContext } from 'react'
+import { useContext, useEffect } from 'react'
 import { ChannelContext } from '../../../utils/channel/ChannelProvider'
 import { AiOutlineEdit } from 'react-icons/ai'
 import { VscTrash } from 'react-icons/vsc'
@@ -19,9 +19,10 @@ interface ActionButtonPaletteProps {
     text?: string
     user: string
     showButtons: {}
+    handleScroll: (newState: boolean) => void
 }
 
-export const ActionsPalette = ({ name, image, file, text, user, showButtons }: ActionButtonPaletteProps) => {
+export const ActionsPalette = ({ name, image, file, text, user, showButtons, handleScroll }: ActionButtonPaletteProps) => {
 
     const { channelMembers } = useContext(ChannelContext)
     const { data: channelList, error: channelListError } = useFrappeGetCall<{ message: ChannelData[] }>("raven.raven_channel_management.doctype.raven_channel.raven_channel.get_channel_list")
@@ -66,6 +67,10 @@ export const ActionsPalette = ({ name, image, file, text, user, showButtons }: A
         })
     }
 
+    useEffect(() => {
+        handleScroll(!showEmojiPicker)
+    }, [showEmojiPicker])
+
     return (
         <Box
             rounded='md'
@@ -88,20 +93,23 @@ export const ActionsPalette = ({ name, image, file, text, user, showButtons }: A
                     <Popover
                         isOpen={showEmojiPicker}
                         onClose={onEmojiPickerClose}
-                        placement='top-end'
+                        placement='auto-end'
                         isLazy
                         lazyBehavior="unmount"
-                        gutter={48}
-                        closeOnBlur={false}>
+                        gutter={48}>
                         <PopoverTrigger>
                             <Tooltip hasArrow label='find another reaction' size='xs' placement='top' rounded='md'>
                                 <IconButton size='xs' aria-label={"pick emoji"} icon={<BsEmojiSmile />} onClick={onEmojiPickerToggle} />
                             </Tooltip>
                         </PopoverTrigger>
-                        <PopoverContent border={'none'} rounded='lg'>
-                            {/* @ts-ignore */}
-                            <EmojiPicker onEmojiClick={onEmojiClick} lazyLoadEmojis theme={colorMode === 'light' ? 'light' : 'dark'} />
-                        </PopoverContent>
+                        <Portal>
+                            <Box zIndex={10}>
+                                <PopoverContent border={'none'} rounded='lg'>
+                                    {/* @ts-ignore */}
+                                    <EmojiPicker onEmojiClick={onEmojiClick} lazyLoadEmojis theme={colorMode === 'light' ? 'light' : 'dark'} />
+                                </PopoverContent>
+                            </Box>
+                        </Portal>
                     </Popover>
                 </Box>
                 {(user === currentUser) && text &&

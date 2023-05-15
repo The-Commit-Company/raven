@@ -226,8 +226,7 @@ export const ChatInput = ({ channelID, allMembers, allChannels }: ChatInputProps
                                         placement='top-end'
                                         isLazy
                                         lazyBehavior="unmount"
-                                        gutter={48}
-                                        closeOnBlur={false}>
+                                        gutter={48}>
                                         <PopoverTrigger>
                                             <IconButton size='xs' variant='ghost' aria-label={"pick emoji"} icon={<FaRegSmile fontSize='1.0rem' />} onClick={onEmojiPickerToggle} />
                                         </PopoverTrigger>

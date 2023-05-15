@@ -28,9 +28,10 @@ interface ChatMessageProps extends BoxProps {
     creation?: string
     channelName?: string
     channelID?: string
+    handleScroll?: (newState: boolean) => void
 }
 
-export const ChatMessage = ({ name, user, timestamp, text, image, file, isContinuation, isSearchResult, creation, channelName, channelID, message_reactions, ...props }: ChatMessageProps) => {
+export const ChatMessage = ({ name, user, timestamp, text, image, file, isContinuation, isSearchResult, creation, channelName, channelID, message_reactions, handleScroll, ...props }: ChatMessageProps) => {
 
     const { colorMode } = useColorMode()
     const { channelMembers, users } = useContext(ChannelContext)
@@ -98,7 +99,7 @@ export const ChatMessage = ({ name, user, timestamp, text, image, file, isContin
                     </Stack>
                 </HStack>
             }
-            <ActionsPalette name={name} text={text} image={image} file={file} user={user} showButtons={showButtons} />
+            {handleScroll && <ActionsPalette name={name} text={text} image={image} file={file} user={user} showButtons={showButtons} handleScroll={handleScroll} />}
             <SetUserStatus isOpen={isSetUserStatusModalOpen} onClose={onSetUserStatusModalClose} />
             {image && <ImagePreviewModal isOpen={isImagePreviewModalOpen} onClose={onImagePreviewModalClose} file_owner={channelMembers?.[user]?.name} file_url={image} timestamp={timestamp} />}
             {file && <PDFPreviewModal isOpen={isPDFPreviewModalOpen} onClose={onPDFPreviewModalClose} file_owner={channelMembers?.[user]?.name} file_url={file} timestamp={timestamp} />}
@@ -128,7 +129,7 @@ const DisplayMessageContent = ({ text, image, file, onImagePreviewModalOpen, onP
                 <IconButton aria-label={"view"} size='xs' onClick={() => { setShowImage(!showImage) }} variant={'unstyled'}
                     icon={showImage ? <BsFillCaretDownFill fontSize={'0.6rem'} /> : <BsFillCaretRightFill fontSize={'0.6rem'} />} />
             </HStack>
-            {showImage && <Image src={image} height='360px' rounded={'md'} onClick={onImagePreviewModalOpen} _hover={{ cursor: 'pointer' }} />}
+            {showImage && <Image src={image} height='360px' rounded={'md'} onClick={onImagePreviewModalOpen} _hover={{ cursor: 'pointer' }} objectFit='cover' />}
         </Stack>
     } else if (file) {
         return <HStack>
