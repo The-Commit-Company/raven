@@ -70,56 +70,48 @@ The mobile app is built using [Ionic](https://ionicframework.com), [Tailwind CSS
 
 <details>
   <summary>Show more screenshots</summary>
-
-    <figure>
-        <img width="1402" src="screenshots/channel-members.png" alt="Channel Members" />
-         <figcaption align="center">
-            <b>Channel details and members</b>
-        </figcaption>
-    </figure>
-    <figure>
-        <img width="1402" src="screenshots/adding-members.png" alt="Adding Members to a channel" />
-         <figcaption align="center">
-            <b>Adding members to a channel</b>
-        </figcaption>
-    </figure>
-    <figure>
-        <img width="1402" src="screenshots/search.png" alt="Search" />
-         <figcaption align="center">
-            <b>Search</b>
-        </figcaption>
-    </figure>
-    <figure>
-        <img width="1402" src="screenshots/emoji-picker.png" alt="Emoji picker" />
-         <figcaption align="center">
-            <b>Emoji picker</b>
-        </figcaption>
-    </figure>
-    <figure>
-        <img width="1402" src="screenshots/link-preview.png" alt="Link Previews" />
-         <figcaption align="center">
-            <b>Preview Links</b>
-        </figcaption>
-    </figure>
-    <figure>
-        <img width="1402" src="screenshots/image-preview.png" alt="Send files and images" />
-         <figcaption align="center">
-            <b>Send files and images</b>
-        </figcaption>
-    </figure>
-    <figure>
-        <img width="1402" src="screenshots/channel-light.png" alt="Raven is also available in light mode" />
-         <figcaption align="center">
-            <b>Light mode</b>
-        </figcaption>
-    </figure>
   
-    <figure>
-        <img width="1402" src="screenshots/mobile-app.png" alt="Mobile app" />
-         <figcaption align="center">
-            <b>Mobile app</b>
-        </figcaption>
-    </figure>
+
+  <figure>
+      <img width="1402" src="screenshots/channel-members.png" alt="Channel Members" />
+      <figcaption align="center"><b>Channel details and members</b></figcaption>
+  </figure>
+  
+  <figure>
+      <img width="1402" src="screenshots/adding-members.png" alt="Adding Members to a channel" />
+      <figcaption align="center"><b>Adding members to a channel</b></figcaption>
+  </figure>
+  
+  <figure>
+      <img width="1402" src="screenshots/search.png" alt="Search" />
+      <figcaption align="center"><b>Search</b></figcaption>
+  </figure>
+  
+  <figure>
+      <img width="1402" src="screenshots/emoji-picker.png" alt="Emoji picker" />
+      <figcaption align="center"><b>Emoji picker</b></figcaption>
+  </figure>
+  
+  <figure>
+      <img width="1402" src="screenshots/link-preview.png" alt="Link Previews" />
+      <figcaption align="center"><b>Preview Links</b></figcaption>
+  </figure>
+  
+  <figure>
+      <img width="1402" src="screenshots/image-preview.png" alt="Send files and images" />
+      <figcaption align="center"><b>Send files and images</b></figcaption>
+  </figure>
+  
+  <figure>
+      <img width="1402" src="screenshots/channel-light.png" alt="Raven is also available in light mode" />
+      <figcaption align="center"><b>Light mode</b></figcaption>
+  </figure>
+  
+  <figure>
+      <img width="1402" src="screenshots/mobile-app.png" alt="Mobile app" />
+      <figcaption align="center"><b>Mobile app</b></figcaption>
+  </figure>
+  
 </details>
 
 <br/>
