@@ -163,7 +163,7 @@ Since Raven is a Frappe app, it can be installed via [frappe-bench](https://frap
 Once you have [setup your bench](https://frappeframework.com/docs/v14/user/en/installation) and your [site](https://frappeframework.com/docs/v14/user/en/tutorial/install-and-setup-bench), you can install the app via the following commands:
 
 ```bash
-bench get-app https://github.com/janhvipatil/Raven.git
+bench get-app https://github.com/The-Commit-Company/Raven.git
 bench --site yoursite.name install-app raven
 ```
 
