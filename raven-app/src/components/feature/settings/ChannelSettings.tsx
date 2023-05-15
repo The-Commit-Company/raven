@@ -1,8 +1,9 @@
-import { Box, Stack, useColorMode, Divider, Button } from "@chakra-ui/react"
+import { Box, Stack, useColorMode, Divider, Button, useDisclosure } from "@chakra-ui/react"
 import { useContext } from "react"
 import { ChannelContext } from "../../../utils/channel/ChannelProvider"
 import { BiHash, BiLockAlt } from "react-icons/bi"
 import { BsTrash, BsArchive } from "react-icons/bs"
+import { ChangeChannelType } from "./ChangeChannelType"
 
 type Props = {}
 
@@ -29,18 +30,22 @@ export const ChannelSettings = (props: Props) => {
         rounded: 'none'
     }
 
+    const { isOpen: isChannelTypeChangeModalOpen, onOpen: onChannelTypeChangeModalOpen, onClose: onChannelTypeChangeModalClose } = useDisclosure()
+
     return (
         <Stack spacing='4'>
             <Box {...BOXSTYLE}>
                 <Stack spacing='0'>
                     {channelData?.type === 'Private' && <Button {...BUTTONSTYLE}
                         leftIcon={<BiHash fontSize={'1rem'} />}
-                        colorScheme="black">
+                        colorScheme="black"
+                        onClick={onChannelTypeChangeModalOpen}>
                         Change to a public channel
                     </Button>}
                     {channelData?.type === 'Public' && <Button {...BUTTONSTYLE}
                         leftIcon={<BiLockAlt fontSize={'1rem'} />}
-                        colorScheme="black">
+                        colorScheme="black"
+                        onClick={onChannelTypeChangeModalOpen}>
                         Change to a private channel
                     </Button>}
                     <Divider />
@@ -57,6 +62,7 @@ export const ChannelSettings = (props: Props) => {
                     </Button>
                 </Stack>
             </Box>
+            <ChangeChannelType isOpen={isChannelTypeChangeModalOpen} onClose={onChannelTypeChangeModalClose} />
         </Stack>
     )
 }
