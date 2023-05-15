@@ -23,10 +23,10 @@ def get_search_result(filter_type, doctype, search_text=None, from_user=None, wi
             channel_member.channel_id == doctype.channel_id).where((channel.type != 'Private') | (channel_member.user_id == frappe.session.user))
 
     if filter_type == 'File':
-        query = query.where(doctype.message_type != 'Text')
+        query = query.where(doctype.message_type != 'Text').distinct()
 
     if filter_type == 'Message':
-        query = query.where(doctype.message_type == 'Text')
+        query = query.where(doctype.message_type == 'Text').distinct()
 
     if filter_type == 'Channel':
         channel = doctype

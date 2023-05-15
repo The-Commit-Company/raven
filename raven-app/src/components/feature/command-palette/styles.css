@@ -144,7 +144,7 @@
 .palette [cmdk-footer] {
     display: flex;
     justify-content: right;
-    margin-top: 16px;
+    margin-top: 10px;
     padding: 8px 12px;
     font-size: 12px;
     color: var(--text);

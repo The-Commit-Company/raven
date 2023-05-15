@@ -32,7 +32,7 @@ interface ChatMessageProps extends BoxProps {
 export const ChatMessage = ({ name, user, timestamp, text, image, file, isContinuation, isSearchResult, creation, channelName, channelID, message_reactions, ...props }: ChatMessageProps) => {
 
     const { colorMode } = useColorMode()
-    const { channelMembers } = useContext(ChannelContext)
+    const { channelMembers, users } = useContext(ChannelContext)
     const [showButtons, setShowButtons] = useState<{}>({ visibility: 'hidden' })
     const { isOpen: isUserProfileDetailsDrawerOpen, onOpen: onUserProfileDetailsDrawerOpen, onClose: onUserProfileDetailsDrawerClose } = useDisclosure()
     const { isOpen: isSetUserStatusModalOpen, onOpen: onSetUserStatusModalOpen, onClose: onSetUserStatusModalClose } = useDisclosure()
@@ -64,7 +64,7 @@ export const ChatMessage = ({ name, user, timestamp, text, image, file, isContin
             {isSearchResult && creation && <HStack pb={1.5} spacing={1}>
                 <Text fontWeight='semibold' fontSize='sm'>{channelName ?? "Direct message"}</Text>
                 <Text fontSize='small'>- {new Date(creation).toDateString()}</Text>
-                <Link style={showButtons} onClick={() => navigate(`/channel/${channelID}`)} pl={1}>{channelName ? <Text fontSize={'small'}>View Channel</Text> : <Text fontSize={'small'}>View Chat</Text>}</Link>
+                <Link style={showButtons} color='blue.500' onClick={() => navigate(`/channel/${channelID}`)} pl={1}>{channelName ? <Text fontSize={'small'}>View Channel</Text> : <Text fontSize={'small'}>View Chat</Text>}</Link>
             </HStack>}
             {isContinuation ?
                 <HStack spacing={3}>
@@ -77,7 +77,7 @@ export const ChatMessage = ({ name, user, timestamp, text, image, file, isContin
                     </Stack>
                 </HStack>
                 : <HStack spacing={2} alignItems='flex-start'>
-                    <Avatar name={channelMembers?.[user]?.full_name ?? user} src={channelMembers?.[user]?.user_image} borderRadius={'md'} boxSize='36px' />
+                    <Avatar name={channelMembers?.[user]?.full_name ?? users?.[user]?.full_name ?? user} src={channelMembers?.[user]?.user_image ?? users?.[user]?.user_image} borderRadius={'md'} boxSize='36px' />
                     <Stack spacing='1'>
                         <HStack>
                             <HStack divider={<StackDivider />} align='flex-start'>
@@ -85,7 +85,7 @@ export const ChatMessage = ({ name, user, timestamp, text, image, file, isContin
                                     setSelectedUser(channelMembers?.[user])
                                     onUserProfileDetailsDrawerOpen()
                                 }}>
-                                    <Text fontSize='sm' lineHeight={'0.9'} fontWeight="bold" as='span' color={textColor}>{channelMembers?.[user]?.full_name ?? user}</Text>
+                                    <Text fontSize='sm' lineHeight={'0.9'} fontWeight="bold" as='span' color={textColor}>{channelMembers?.[user]?.full_name ?? users?.[user]?.full_name ?? user}</Text>
                                 </Button>
                                 <Tooltip hasArrow label={`${DateObjectToFormattedDateStringWithoutYear(timestamp)} at ${DateObjectToTimeString(timestamp)}`} placement='top' rounded='md'>
                                     <Text fontSize="xs" lineHeight={'0.9'} color="gray.500" _hover={{ textDecoration: 'underline' }}>{DateObjectToTimeString(timestamp)}</Text>

@@ -78,12 +78,16 @@ export const ChannelSearch = ({ onToggleMyChannels, isOpenMyChannels, onToggleOt
                                     control={control}
                                     render={({ field: { onChange, value } }) => (
                                         <Button
+                                            borderRadius={3}
                                             size="sm"
-                                            w="15rem"
+                                            w="fit-content"
                                             isActive={value = isOpenOtherChannels}
                                             onClick={() => {
                                                 onToggleOtherChannels()
                                                 onChange(!value)
+                                            }}
+                                            _active={{
+                                                border: "2px solid #3182CE"
                                             }}
                                         >
                                             Exclude the channels that I'm in
@@ -97,12 +101,16 @@ export const ChannelSearch = ({ onToggleMyChannels, isOpenMyChannels, onToggleOt
                                     control={control}
                                     render={({ field: { onChange, value } }) => (
                                         <Button
+                                            borderRadius={3}
                                             size="sm"
-                                            w="9rem"
+                                            w="fit-content"
                                             isActive={value = isOpenMyChannels}
                                             onClick={() => {
                                                 onToggleMyChannels()
                                                 onChange(!value)
+                                            }}
+                                            _active={{
+                                                border: "2px solid #3182CE"
                                             }}
                                         >
                                             Only my channels

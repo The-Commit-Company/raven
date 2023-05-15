@@ -23,11 +23,10 @@ export const CommandPalette = ({ isOpen, onClose, onToggle }: CommandPaletteProp
     const [inputValue, setInputValue] = React.useState('')
     const [pages, setPages] = React.useState<string[]>([''])
     const activePage = pages[pages.length - 1]
+    const lastPage = pages[pages.length - 2]
     const isHome = activePage === ''
     const debouncedText = useDebounce(inputValue, 200)
-    const { channelMembers, channelData } = useContext(ChannelContext)
     const { currentUser } = useContext(UserContext)
-    const members = Object.values(channelMembers)
     const { data: activeUsers, error: activeUsersError } = useFrappeGetCall<{ message: string[] }>('raven.api.user_availability.get_active_users')
     const { call, error: channelError, loading, reset } = useFrappePostCall<{ message: string }>("raven.raven_channel_management.doctype.raven_channel.raven_channel.create_direct_message_channel")
     let navigate = useNavigate()
@@ -40,7 +39,6 @@ export const CommandPalette = ({ isOpen, onClose, onToggle }: CommandPaletteProp
         fields: ["full_name", "user_image", "name"],
         filters: [["name", "!=", "Guest"]]
     })
-
 
 
     const popPage = React.useCallback(() => {
@@ -121,8 +119,8 @@ export const CommandPalette = ({ isOpen, onClose, onToggle }: CommandPaletteProp
                     {activePage === 'files' && <Files input={debouncedText} searchChange={(pageChange: string) => { setInputValue(""); setPages([...pages, pageChange]) }} />}
                     {activePage === 'channels' && <Channels input={debouncedText} />}
                     {activePage === 'people' && activeUsers && users && <People input={debouncedText} users={users} activeUsers={activeUsers?.message} gotoDMChannel={gotoDMChannel} currentUser={currentUser} />}
-                    {activePage === 'in' && <FindIn input={debouncedText} />}
-                    {activePage === 'from' && users && <FindFrom input={debouncedText} users={users} />}
+                    {activePage === 'in' && lastPage && (lastPage === 'messages' ? <FindIn input={debouncedText} tabIndex={0} /> : <FindIn input={debouncedText} tabIndex={1} />)}
+                    {activePage === 'from' && users && lastPage && (lastPage === 'messages' ? <FindFrom input={debouncedText} users={users} tabIndex={0} /> : <FindFrom input={debouncedText} users={users} tabIndex={1} />)}
                     <Box cmdk-footer="">
                         <HStack spacing={1}>
                             <Text color='gray.500'>Not the results that you expected? File an issue on</Text>

@@ -97,7 +97,7 @@ export const fallbackPfp = (name: string) => ({
     display: 'flex',
     ':before': {
         content: `"${initials(name)}"`,
-        fontSize: '0.7rem',
+        fontSize: '0.6rem',
         padding: '0.2rem',
         backgroundPosition: 'center',
         backgroundColor: `${generateColorHsl(name, saturationRange, lightnessRange)}`,
@@ -105,9 +105,10 @@ export const fallbackPfp = (name: string) => ({
         borderRadius: '50%',
         display: 'flex',
         justifyContent: 'center',
+        alignItems: 'center',
         marginRight: 3,
-        height: 6,
-        width: 6,
+        height: 4,
+        width: 4,
     },
 })
 

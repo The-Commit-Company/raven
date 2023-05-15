@@ -14,6 +14,7 @@ import { FullPageLoader } from '../../layout/Loaders'
 import { ChatMessage } from '../chat'
 import { SelectInput, SelectOption } from '../search-filters/SelectInput'
 import { Sort } from '../sorting'
+import { ChannelContext } from "../../../utils/channel/ChannelProvider"
 
 interface FilterInput {
     'from-user-filter': SelectOption[],
@@ -35,16 +36,13 @@ interface Props {
 export const MessageSearch = ({ onToggleMyChannels, isOpenMyChannels, dateOption, input, fromFilter, inFilter }: Props) => {
 
     const { url } = useContext(FrappeContext) as FrappeConfig
-    const { data: users, error: usersError } = useFrappeGetDocList<User>("User", {
-        fields: ["full_name", "user_image", "name"],
-        filters: [["name", "!=", "Guest"]]
-    })
+    const { users } = useContext(ChannelContext)
 
     const { data: channels, error: channelsError } = useFrappeGetCall<{ message: ChannelData[] }>("raven.raven_channel_management.doctype.raven_channel.raven_channel.get_channel_list")
 
     const userOptions: SelectOption[] = useMemo(() => {
         if (users) {
-            return users.map((user: User) => ({
+            return Object.values(users).map((user: User) => ({
                 value: user.name,
                 label: <HStack><Avatar name={user.full_name} src={url + user.user_image} borderRadius={'md'} size="xs" /><Text>{user.full_name}</Text></HStack>
             }))
@@ -125,7 +123,7 @@ export const MessageSearch = ({ onToggleMyChannels, isOpenMyChannels, dateOption
                         placeholder='Search messages'
                         value={debouncedText} />
                 </InputGroup>
-                {!!!usersError && !!!channelsError &&
+                {!!!channelsError &&
                     <FormProvider {...methods}>
                         <chakra.form>
                             <HStack>
@@ -151,12 +149,16 @@ export const MessageSearch = ({ onToggleMyChannels, isOpenMyChannels, dateOption
                                         control={control}
                                         render={({ field: { onChange, value } }) => (
                                             <Button
+                                                borderRadius={3}
                                                 size="sm"
-                                                w="9rem"
+                                                w="fit-content"
                                                 isActive={value = isOpenMyChannels}
                                                 onClick={() => {
                                                     onToggleMyChannels()
                                                     onChange(!value)
+                                                }}
+                                                _active={{
+                                                    border: "2px solid #3182CE"
                                                 }}
                                             >
                                                 Only my channels
@@ -169,7 +171,6 @@ export const MessageSearch = ({ onToggleMyChannels, isOpenMyChannels, dateOption
                     </FormProvider>}
             </Stack>
             <Stack h='420px' p={4}>
-
                 {error ? <AlertBanner status='error' heading={error.message}>{error.httpStatus} - {error.httpStatusText}</AlertBanner> :
                     (isLoading && isValidating ? <FullPageLoader /> :
                         (!!!error && data?.message && data.message.length > 0 && showResults ?
@@ -179,7 +180,7 @@ export const MessageSearch = ({ onToggleMyChannels, isOpenMyChannels, dateOption
                                 sortOrder={sortOrder}
                                 sortField={sortByField}
                                 onSortOrderChange={(order) => setSortOrder(order)} />
-                                <Stack overflowY='scroll'>
+                                <Stack overflowY='scroll' pt={4}>
 
                                     {data.message.map(({ name, owner, creation, text, channel_id }) => {
                                         const channelName: any = channelOption.find((channel) => channel.value === channel_id)?.label

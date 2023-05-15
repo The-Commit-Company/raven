@@ -163,12 +163,16 @@ export const FileSearch = ({ onToggleMyChannels, isOpenMyChannels, dateOption, i
                                         control={control}
                                         render={({ field: { onChange, value } }) => (
                                             <Button
+                                                borderRadius={3}
                                                 size="sm"
-                                                w="9rem"
+                                                w="fit-content"
                                                 isActive={value = isOpenMyChannels}
                                                 onClick={() => {
                                                     onToggleMyChannels()
                                                     onChange(!value)
+                                                }}
+                                                _active={{
+                                                    border: "2px solid #3182CE"
                                                 }}
                                             >
                                                 Only my channels

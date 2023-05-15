@@ -25,6 +25,7 @@ interface PeopleProps {
     activeUsers?: string[]
     gotoDMChannel?: Function
     currentUser?: string
+    tabIndex?: number
 }
 
 export const Home = ({ searchChange, input }: Props) => {
@@ -94,7 +95,7 @@ export const Messages = ({ searchChange, input }: Props) => {
             {!input && <Command.Group heading="Narrow your search">
                 <Item onSelect={() => {
                     searchChange('in')
-                }}><TbSearch />in a channel or direct message</Item>
+                }}><TbSearch />in a channel</Item>
                 <Item onSelect={() => {
                     searchChange('from')
                 }}><TbSearch />from anyone on Raven</Item>
@@ -118,7 +119,7 @@ export const Files = ({ searchChange, input }: Props) => {
             {!input && <Command.Group heading="Narrow your search">
                 <Item onSelect={() => {
                     searchChange('in')
-                }}><TbSearch />in a channel or direct message</Item>
+                }}><TbSearch />in a channel</Item>
                 <Item onSelect={() => {
                     searchChange('from')
                 }}><TbSearch />from anyone on Raven</Item>
@@ -133,8 +134,8 @@ export const Files = ({ searchChange, input }: Props) => {
                 {data?.message?.map(f => <Item key={f.name}
                 ><HStack spacing={3}>
                         <Center maxW='50px'>
-                            {f.message_type === 'File' && <Icon as={getFileExtensionIcon(f.file.split('.')[1])} boxSize="9" />}
-                            {f.message_type === 'Image' && <Image src={f.file} alt='File preview' boxSize={'36px'} rounded='md' fit='cover' />}
+                            {f.message_type === 'File' && <Icon as={getFileExtensionIcon(f.file.split('.')[1])} boxSize="6" />}
+                            {f.message_type === 'Image' && <Image src={f.file} alt='File preview' boxSize={6} rounded='md' fit='cover' />}
                         </Center>
                         <Stack spacing={0}>
                             {f.file && <Link fontSize='sm' href={f.file} isExternal>{f.file.split('/')[3]}</Link>}
@@ -206,7 +207,7 @@ export const People = ({ input, users, activeUsers, gotoDMChannel, currentUser }
     </Command.List>
 }
 
-export const FindIn = ({ input }: { input: string }) => {
+export const FindIn = ({ input, tabIndex }: { input: string, tabIndex: number }) => {
     const { data, isValidating } = useSearch('Raven Channel', input, [["is_direct_message", "=", "0"]], 20)
     const { isOpen: isGlobalSearchModalOpen, onOpen: onGlobalSearchModalOpen, onClose: onGlobalSearchModalClose } = useDisclosure()
     const [inFilter, setInFilter] = useState<string>()
@@ -225,12 +226,12 @@ export const FindIn = ({ input }: { input: string }) => {
                     setInFilter(r.value)
                 }}>{r.description.includes("Private") && <BiLockAlt /> || r.description.includes("Public") && <BiHash /> || r.description.includes("Open") && <BiGlobe />}{r.label}</Item>)}
             </Command.Group>
-            <GlobalSearch isOpen={isGlobalSearchModalOpen} onClose={onGlobalSearchModalClose} tabIndex={0} input={""} inFilter={inFilter} />
+            <GlobalSearch isOpen={isGlobalSearchModalOpen} onClose={onGlobalSearchModalClose} tabIndex={tabIndex} input={""} inFilter={inFilter} />
         </Command.List>
     )
 }
 
-export const FindFrom = ({ input, users }: PeopleProps) => {
+export const FindFrom = ({ input, users, tabIndex }: PeopleProps) => {
     const { isOpen: isGlobalSearchModalOpen, onOpen: onGlobalSearchModalOpen, onClose: onGlobalSearchModalClose } = useDisclosure()
     const results_count = users.reduce((count, user) => {
         if (user.full_name.toLowerCase().includes(input.toLowerCase())) {
@@ -241,7 +242,7 @@ export const FindFrom = ({ input, users }: PeopleProps) => {
     const [fromFilter, setFromFilter] = useState<string>()
     return (
         <Command.List>
-            <CommandPaletteEmptyState input={input} placeholder='people' tabIndex={0} />
+            <CommandPaletteEmptyState input={input} placeholder='messages' tabIndex={0} />
             <Command.Group heading={results_count > 0 ? "Recent direct messages" : ""} >
                 {users.map(user => {
                     if (user.full_name.toLowerCase().includes(input.toLowerCase())) {
@@ -259,7 +260,7 @@ export const FindFrom = ({ input, users }: PeopleProps) => {
                     }
                 })}
             </Command.Group>
-            <GlobalSearch isOpen={isGlobalSearchModalOpen} onClose={onGlobalSearchModalClose} tabIndex={0} input={""} fromFilter={fromFilter} />
+            {tabIndex != undefined && <GlobalSearch isOpen={isGlobalSearchModalOpen} onClose={onGlobalSearchModalClose} tabIndex={tabIndex} input={""} fromFilter={fromFilter} />}
         </Command.List>
     )
 }
