@@ -2,72 +2,66 @@
   <img src="RAVEN-Logo.png" alt="Raven logo" height="100" />
   <p align="center">Simple, open source team messaging platform</p>
 </p>
-
-
-### FOSS Hack 3.0
-
-#### Before the Hackathon
-
-The web app had the following features:
-
-1. Authentication
-2. Creating a channel
-3. Joining a channel
-4. Adding and removing a member
-5. Sending messages (only text based) in channels and private messages.
-
-<hr>
-
-#### During the Hackathon
-
-The mobile app was set up using Capacitor, Ionic and React:
-1. Set up authentication on the mobile app
-2. View all channels, private messages and profile on mobile app
-3. View a channel's messages (text, images and files) on the mobile app
-4. Send a message on a channel.
-
-New features were added to the web app:
-1. Ability to create an "Open" channel - where all users are members by default.
-2. Ability to delete a message previously sent
-3. Ability to edit a message
-4. Ability to send images and files by clicking on the file "plus" button
-5. Ability to send images and files by dragging and dropping them into the chat interface
-6. Image previews in the chat interface
-7. Ability to download files from the chat interface
-8. Styling improvements: dark mode for emoji picker, highlight for mentions in messages (@user), dark mode support for Quill mentions menu
-9. General channel is created when app is installed.
-10. Bug fix: empty messages cannot be sent
-11. Bug fix: duplicate channel names cannot be created (added validation)
-12. Bug fix: design issues fixed on the chat interface to make the chat messages responsive according to height of input.
-
-<hr>
-
-#### What's not working (yet)
-
-Mobile app:
-1. Channels cannot be created and channel details cannot be viewed
-2. Members cannot be added to or removed from channels
-3. Files and images cannot be sent.
-
-Moreover, the mobile app authentication needs to be updated to use Bearer tokens because of a cookie issue on iOS. The mobile app works on Android.
-
-Web app:
-1. Improvements to be made on direct message listing.
-2. Lazy loading and scroll to load for older messages.
-
-
-<hr>
-<br>
-
 <p align="center">
   <a href="https://github.com/janhvipatil/Raven/blob/main/LICENSE">
     <img alt="license" src="https://img.shields.io/badge/license-AGPLv3-blue">
   </a>
 </p>
 
+<br>
+
+Raven is a simple work messaging tool that is built using [Frappe Framework](https://frappeframework.com) and can be installed on any new or existing Frappe site (e.g. in addition to ERPNext or [Gameplan](https://github.com/frappe/gameplan)). It is designed to help teams collaborate and communicate with each other and get work done. Teams can create their own channels (publically viewable or private) and send messages, emojis, files and images. 
+
+<hr>
+
+## Motivation
+
+Raven was born out of a need to have a simple work communication tool that could replace Slack for us at The Commit Company. Most work communication tools in the market had the following problems:
+
+1. They include many features like video calling, audio sharing on top of work messaging which are not required for small teams. However, these features are expensive to build and run. 
+2. Hence, they require payments for every user every month - regardless of how much time a user uses the tool or how many messages they send. This meant that we would have to pay for "mostly inactive" users as well.
+3. We were already using [ERPNext](https://erpnext.com) hosted on [Frappe Cloud](https://frappecloud.com) for our operations. Since all our users were already on ERPNext and we were paying for the server, we thought that a simple Frappe app can solve our work communication problem - and we feel there are many other teams and organizations who would benefit in a similar way.
+
+<hr>
+
+## Features
+
+1. Send messages to all members in your organization (in an "open" channel), or just in your team in a private channel
+2. Create new channels for your team and your team members
+3. Send text messages 💬, code blocks 💻, emojis 😆, files 📑 and images 📸
+4. Mention users in your messages with "@"
+5. React to messages with emojis 🎉
+6. Preview image/PDF files 📁
+7. Comprehensive search 🔍 functionality for all your messages, files, channels and users
+8. Don't strain your eyes 👀 - Raven supports dark mode 🌙
+9. Collaborate on the go with the Raven mobile app 📱 (in progress)
+
+<hr>
+
+## Tech Stack
+
+Raven is built using the [Frappe Framework](https://frappeframework.com) - an open-source full stack development framework. 
+
+These are some of the tools it's built on:
+- [Python](https://www.python.org)
+- [Redis](https://redis.io/)
+- [MariaDB](https://mariadb.org/)
+- [Socket.io](https://socket.io/)
+
+The frontend is built using React and the following tools:
+1. [ChakraUI](https://chakra-ui.com) - UI components
+2. [frappe-react-sdk](https://github.com/nikkothari22/frappe-react-sdk) - simple React hooks to interface with a Frappe framework backend - built and maintained by us at The Commit Company.
+3. [react-icons](https://react-icons.github.io) - Icon set
+4. [Framer Motion](https://www.framer.com/motion/) - Animations
+5. [react-quill](https://www.npmjs.com/package/react-quill)
+
+The mobile app is built using [Ionic](https://ionicframework.com), [Tailwind CSS](tailwindcss.com) and [Capacitor](https://capacitorjs.com).
+
+<br>
+
 <p align="center">
     <figure>
-        <img width="1402" src="screenshots/channel-dark.png" alt="Channel in Raven" />
+        <img width="1402" src="screenshots/private-channel.png" alt="Private Channel" />
          <figcaption align="center">
             <b>Private channels in Raven</b>
         </figcaption>
@@ -108,64 +102,64 @@ Web app:
     </figure>
 
 <figure>
-        <img width="1402" src="screenshots/files-images.png" alt="Send files and images" />
+        <img width="1402" src="screenshots/link-preview.png" alt="Link Previews" />
+         <figcaption align="center">
+            <b>Preview Links</b>
+        </figcaption>
+</figure>
+<figure>
+        <img width="1402" src="screenshots/image-preview.png" alt="Send files and images" />
          <figcaption align="center">
             <b>Send files and images</b>
         </figcaption>
     </figure>
+  
 <figure>
         <img width="1402" src="screenshots/mobile-app.png" alt="Mobile app" />
          <figcaption align="center">
-            <b>Mobile app (work in progress)</b>
+            <b>Mobile app</b>
         </figcaption>
     </figure>
 </details>
 
 <br/>
 
-Raven is a simple work messaging tool that is built using [Frappe Framework](https://frappeframework.com) and can be installed on any new or existing Frappe site (e.g. in addition to ERPNext or [Gameplan](https://github.com/frappe/gameplan)). It is designed to help teams collaborate and communicate with each other and get work done. Teams can create their own channels (publically viewable or private) and send messages, emojis, files and images. 
+#### Work in progress 🚧
+
+The mobile app was set up using Capacitor, Ionic and React:
+1. Set up authentication on the mobile app
+2. View all channels, private messages and profile on mobile app
+3. View a channel's messages (text, images and files) on the mobile app
+4. Send a message on a channel.
+
+New features were added to the web app:
+1. Ability to create an "Open" channel - where all users are members by default.
+2. Ability to delete a message previously sent
+3. Ability to edit a message
+4. Ability to send images and files by clicking on the file "plus" button
+5. Ability to send images and files by dragging and dropping them into the chat interface
+6. Image previews in the chat interface
+7. Ability to download files from the chat interface
+8. Styling improvements: dark mode for emoji picker, highlight for mentions in messages (@user), dark mode support for Quill mentions menu
+9. General channel is created when app is installed.
+10. Bug fix: empty messages cannot be sent
+11. Bug fix: duplicate channel names cannot be created (added validation)
+12. Bug fix: design issues fixed on the chat interface to make the chat messages responsive according to height of input.
 
 <hr>
 
-## Motivation
+#### What's not working (yet)
 
-Raven was born out of a need to have a simple work communication tool that could replace Slack for us at The Commit Company. Most work communication tools in the market had the following problems:
+Mobile app:
+1. Channels cannot be created and channel details cannot be viewed
+2. Members cannot be added to or removed from channels
+3. Files and images cannot be sent.
 
-1. They include many features like video calling, audio sharing on top of work messaging which are not required for small teams. However, these features are expensive to build and run. 
-2. Hence, they require payments for every user every month - regardless of how much time a user uses the tool or how many messages they send. This meant that we would have to pay for "mostly inactive" users as well.
-3. We were already using [ERPNext](https://erpnext.com) hosted on [Frappe Cloud](https://frappecloud.com) for our operations. Since all our users were already on ERPNext and we were paying for the server, we thought that a simple Frappe app can solve our work communication problem - and we feel there are many other teams and organizations who would benefit in a similar way.
+Moreover, the mobile app authentication needs to be updated to use Bearer tokens because of a cookie issue on iOS. The mobile app works on Android.
 
-<hr>
-
-## Features
-
-1. Send messages to all members in your organization (in an "open" channel), or just in your team in a private channel. 
-2. Create new channels for your team and your team members.
-3. Send text messages 💬, code blocks 💻, emojis 😆, files 📑 and images 📸.
-4. Mention users in your messages with "@"
-5. Don't strain your eyes 👀 - Raven supports dark mode 🌙
-5. Collaborate on the go with the Raven mobile app 📱 (in progress).
-
-<hr>
-
-## Tech Stack
-
-Raven is built using the [Frappe Framework](https://frappeframework.com) - an open-source full stack development framework. 
-
-These are some of the tools it's built on:
-- [Python](https://www.python.org)
-- [Redis](https://redis.io/)
-- [MariaDB](https://mariadb.org/)
-- [Socket.io](https://socket.io/)
-
-The frontend is built using React and the following tools:
-1. [ChakraUI](https://chakra-ui.com) - UI components
-2. [frappe-react-sdk](https://github.com/nikkothari22/frappe-react-sdk) - simple React hooks to interface with a Frappe framework backend - built and maintained by us at The Commit Company.
-3. [react-icons](https://react-icons.github.io) - Icon set
-4. [Framer Motion](https://www.framer.com/motion/) - Animations
-5. [react-quill](https://www.npmjs.com/package/react-quill)
-
-The mobile app is built using [Ionic](https://ionicframework.com), [Tailwind CSS](tailwindcss.com) and [Capacitor](https://capacitorjs.com).
+Web app:
+1. Improvements to be made on direct message listing.
+2. Lazy loading and scroll to load for older messages.
 
 <hr>
 
@@ -240,6 +234,6 @@ AGPLv3
 
 | Maintainer     | GitHub                                          | Social                                                       |
 | -------------- | ----------------------------------------------- | ------------------------------------------------------------ |
-| Janhvi Patil   | [janhvipatil](https://github.com/janhvipatil)   | [@janhvipatil\_](https://twitter.com/janhvipatil_)   |
-| Aditya Patil     | [TITANiumRox](https://github.com/TITANiumRox) |  |
+| Janhvi Patil   | [janhvipatil](https://github.com/janhvipatil)   | [@janhvipatil\_](https://twitter.com/janhvipatil_)           |
+| Aditya Patil   | [TITANiumRox](https://github.com/TITANiumRox) | |                                                              |
 | Nikhil Kothari | [nikkothari22](https://github.com/nikkothari22) | [@nik_kothari22](https://twitter.com/nik_kothari22)          |
