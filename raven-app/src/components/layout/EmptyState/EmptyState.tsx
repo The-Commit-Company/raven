@@ -48,7 +48,7 @@ export const EmptyStateForChannel = () => {
                 </Stack>
                 <ButtonGroup size={'xs'} colorScheme="blue" variant={'link'} spacing={4} zIndex={1}>
                     <Button leftIcon={<TbEdit fontSize={'1rem'} />} onClick={onChannelDescriptionModalOpen}>{channelData?.channel_description ? 'Edit' : 'Add'} description</Button>
-                    <Button leftIcon={<BiUserPlus fontSize={'1.1rem'} />} onClick={onAddMembersModalOpen}>Add people</Button>
+                    {channelData?.type !== 'Open' && <Button leftIcon={<BiUserPlus fontSize={'1.1rem'} />} onClick={onAddMembersModalOpen}>Add people</Button>}
                 </ButtonGroup>
             </Stack>
             <AddOrEditChannelDescriptionModal isOpen={isChannelDescriptionModalOpen} onClose={onChannelDescriptionModalClose} />
