@@ -8,9 +8,10 @@ import { useNavigate } from 'react-router-dom'
 interface ArchiveChannelProps {
     isOpen: boolean,
     onClose: () => void
+    onCloseViewDetails: () => void
 }
 
-export const ArchiveChannel = ({ isOpen, onClose }: ArchiveChannelProps) => {
+export const ArchiveChannel = ({ isOpen, onClose, onCloseViewDetails }: ArchiveChannelProps) => {
 
     const { channelData } = useContext(ChannelContext)
     const toast = useToast()
@@ -22,6 +23,7 @@ export const ArchiveChannel = ({ isOpen, onClose }: ArchiveChannelProps) => {
             is_archived: 1
         }).then(() => {
             onClose()
+            onCloseViewDetails()
             navigate('/channel/general')
             toast({
                 title: "Channel archived",
