@@ -10,7 +10,6 @@ interface lastChannel {
 
 export const ChannelRedirect = () => {
     const { data, error } = useFrappeGetCall<{ message: lastChannel }>('raven.raven_messaging.doctype.raven_message.raven_message.get_last_channel')
-    console.log(data)
     if (!data && !error) {
         return <FullPageLoader />
     }
