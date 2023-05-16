@@ -4,6 +4,7 @@ import { DividerWithText } from "../../layout/Divider/DividerWithText"
 import { DateObjectToFormattedDateString } from "../../../utils/operations"
 import { Message, MessageWithContinuationCheck } from "../../../types/Messaging/Message"
 import { EmptyStateForChannel, EmptyStateForDM } from "../../layout/EmptyState/EmptyState"
+import { useState } from "react"
 
 interface ChatHistoryProps {
     messages: Message[],
@@ -48,8 +49,14 @@ export const ChatHistory = ({ messages, isDM }: ChatHistoryProps) => {
         messageGroups[date].push(message)
     }
 
+    const [isScrollable, setScrollable] = useState<Boolean>(true)
+
+    const handleScroll = (newState: boolean) => {
+        setScrollable(newState);
+    };
+
     return (
-        <Stack spacing={4} justify="end" direction={"column-reverse"} overflowY="scroll">
+        <Stack spacing={4} justify="end" direction={"column-reverse"} overflowY={isScrollable ? "scroll" : "hidden"}>
             {Object.entries(messageGroups).reverse().map(([date, messages]) => (
                 <Stack spacing={4} key={date}>
                     <DividerWithText>
@@ -67,6 +74,7 @@ export const ChatHistory = ({ messages, isDM }: ChatHistoryProps) => {
                                 message_reactions={message_reactions}
                                 image={message_type === 'Image' ? file : undefined}
                                 isContinuation={isContinuation}
+                                handleScroll={handleScroll}
                             />
                         ))}
                     </Stack>

@@ -47,7 +47,13 @@ export const Home = ({ searchChange, input }: Props) => {
                     }}
                 >
                     <TbListSearch fontSize={20} />
-                    {channelData.is_direct_message ? `Find in direct messages with ${channelMembers[peer].first_name}` : `Find in ${channelData.channel_name}`}
+                    {channelData.is_direct_message ?
+                        (channelData.is_self_message ?
+                            `Find in direct messages with ${channelMembers[currentUser].first_name}` :
+                            `Find in direct messages with ${channelMembers[peer].first_name}`
+                        ) :
+                        `Find in ${channelData.channel_name}`
+                    }
                 </Item>}
             </Command.Group>
             {!input &&
