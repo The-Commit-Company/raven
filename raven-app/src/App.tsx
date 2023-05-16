@@ -1,11 +1,11 @@
 import { FrappeProvider } from 'frappe-react-sdk'
-import { Navigate, Route, Routes } from 'react-router-dom'
-import GlobalSearch from './components/feature/global-search/GlobalSearch'
+import { Route, Routes } from 'react-router-dom'
 import { Login } from './pages/auth'
 import { ChatSpace } from './pages/ChatSpace'
 import { MainPage } from './pages/MainPage'
 import { ProtectedRoute } from './utils/auth/ProtectedRoute'
 import { UserProvider } from './utils/auth/UserProvider'
+import { ChannelRedirect } from './utils/channel/ChannelRedirect'
 
 function App() {
 
@@ -15,13 +15,10 @@ function App() {
         <Routes>
           <Route path='/login' element={<Login />} />
           <Route path="/" element={<ProtectedRoute />}>
-            <Route index element={<Navigate to="channel/general" replace />} />
+            <Route index element={<ChannelRedirect />} />
             <Route path="channel" element={<MainPage />} >
               <Route path=":channelID" element={<ChatSpace />} />
-              <Route path="*" element={<Navigate to="general" replace />} />
             </Route>
-            <Route path="*" element={<Navigate to="channel/general" replace />} />
-            <Route path="" element={<Navigate to="channel/general" replace />} />
           </Route>
         </Routes>
       </UserProvider>

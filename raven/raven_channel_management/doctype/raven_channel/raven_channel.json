@@ -1,5 +1,6 @@
 {
  "actions": [],
+ "allow_rename": 1,
  "autoname": "hash",
  "creation": "2023-02-12 17:30:30.847618",
  "default_view": "List",
@@ -63,7 +64,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-04-18 12:50:05.941500",
+ "modified": "2023-05-16 15:08:04.488994",
  "modified_by": "Administrator",
  "module": "Raven Channel Management",
  "name": "Raven Channel",
