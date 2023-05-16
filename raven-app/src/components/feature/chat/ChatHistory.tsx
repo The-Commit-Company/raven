@@ -30,7 +30,6 @@ export const ChatHistory = ({ messages, isDM }: ChatHistoryProps) => {
         const isContinuation = (
             previousMessage &&
             message.owner === previousMessage.owner &&
-            message.message_type === previousMessage.message_type &&
             new Date(message.creation).getTime() - new Date(previousMessage.creation).getTime() < 120000
         )
         messagesWithContinuation.push({
