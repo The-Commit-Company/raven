@@ -1,5 +1,6 @@
 {
  "actions": [],
+ "allow_rename": 1,
  "autoname": "hash",
  "creation": "2023-02-12 17:30:30.847618",
  "default_view": "List",
@@ -7,9 +8,9 @@
  "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
-  "type",
   "channel_name",
   "channel_description",
+  "type",
   "section_break_evg4",
   "is_direct_message",
   "column_break_puci",
@@ -24,8 +25,7 @@
    "in_list_view": 1,
    "label": "Type",
    "options": "Private\nPublic\nOpen",
-   "reqd": 1,
-   "set_only_once": 1
+   "reqd": 1
   },
   {
    "fieldname": "channel_name",
@@ -75,7 +75,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-05-16 12:57:57.793444",
+ "modified": "2023-05-16 15:45:09.366489",
  "modified_by": "Administrator",
  "module": "Raven Channel Management",
  "name": "Raven Channel",

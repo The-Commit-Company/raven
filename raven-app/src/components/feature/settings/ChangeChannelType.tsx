@@ -11,30 +11,31 @@ interface ChangeChannelTypeProps {
 
 export const ChangeChannelType = ({ isOpen, onClose }: ChangeChannelTypeProps) => {
 
-    const { channelData } = useContext(ChannelContext)
     const toast = useToast()
     const { updateDoc, error } = useFrappeUpdateDoc()
+    const { channelData } = useContext(ChannelContext)
     const new_channel_type = channelData?.type === 'Public' ? 'Private' : 'Public'
 
-    const changeChannelType = () => {
-        updateDoc('Raven Channel', channelData?.name ?? '',
-            { type: new_channel_type }).then(() => {
-                onClose()
-                toast({
-                    title: "Channel type updated to " + new_channel_type + " channel",
-                    status: "success",
-                    duration: 3000,
-                    isClosable: true
-                })
-            }).catch((e) => {
-                toast({
-                    title: "Error",
-                    description: e.message,
-                    status: "error",
-                    duration: 3000,
-                    isClosable: true
-                })
+    const changeChannelType = (new_channel_type: 'Public' | 'Private') => {
+        updateDoc("Raven Channel", channelData?.name ?? null, {
+            type: new_channel_type
+        }).then(() => {
+            toast({
+                title: "Channel type updated",
+                status: "success",
+                duration: 2000,
+                isClosable: true
             })
+            onClose()
+        }).catch((err) => {
+            toast({
+                title: "Error updating channel type",
+                description: err.message,
+                status: "error",
+                duration: 2000,
+                isClosable: true
+            })
+        })
     }
 
     return (
@@ -48,7 +49,7 @@ export const ChangeChannelType = ({ isOpen, onClose }: ChangeChannelTypeProps) =
                     <Stack>
                         {error && <AlertBanner status='error' heading={error.message}>{error.httpStatus} - {error.httpStatusText}</AlertBanner>}
                         {channelData?.type === 'Private' && <Stack spacing={4}>
-                            <Text>Please understand that when you make <strong>{channelData.channel_name}</strong> a public channel:</Text>
+                            <Text>Please understand that when you make <strong>{channelData?.channel_name}</strong> a public channel:</Text>
                             <UnorderedList px='4' spacing={2}>
                                 <ListItem>Anyone from your organisation can join this channel and view its message history.</ListItem>
                                 <ListItem>If you make this channel private again, it willbe visible to anyone who has joined the channel up until that point.</ListItem>
@@ -56,7 +57,7 @@ export const ChangeChannelType = ({ isOpen, onClose }: ChangeChannelTypeProps) =
                         </Stack>
                         }
                         {channelData?.type === 'Public' && <Stack spacing={4}>
-                            <Text>Please understand that when you make <strong>{channelData.channel_name}</strong> a private channel:</Text>
+                            <Text>Please understand that when you make <strong>{channelData?.channel_name}</strong> a private channel:</Text>
                             <UnorderedList px='4' spacing={2}>
                                 <ListItem>No changes will be made to the channel's history or members</ListItem>
                                 <ListItem>All files shared in this channel will become private and will be accessible only to the channel members</ListItem>
@@ -69,7 +70,7 @@ export const ChangeChannelType = ({ isOpen, onClose }: ChangeChannelTypeProps) =
                 <ModalFooter>
                     <ButtonGroup>
                         <Button variant='ghost' onClick={onClose}>Cancel</Button>
-                        <Button colorScheme='blue' type='submit' onClick={changeChannelType}>Change to {new_channel_type.toLocaleLowerCase()}</Button>
+                        <Button colorScheme='blue' type='submit' onClick={() => changeChannelType(new_channel_type)}>Change to {new_channel_type.toLocaleLowerCase()}</Button>
                     </ButtonGroup>
                 </ModalFooter>
 
