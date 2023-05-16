@@ -1,5 +1,5 @@
 import { useState, useEffect, useContext } from "react";
-import { Box, Button, Flex, FormControl, FormLabel, Heading, IconButton, Image, Input, InputGroup, InputRightElement, Stack, Text, useDisclosure, chakra, FormErrorMessage, CircularProgress, Icon, Center } from "@chakra-ui/react";
+import { Box, Button, Flex, FormControl, FormLabel, Heading, IconButton, Input, InputGroup, InputRightElement, Stack, useDisclosure, chakra, FormErrorMessage, CircularProgress } from "@chakra-ui/react";
 import { useForm } from "react-hook-form";
 import { HiEye, HiEyeOff } from "react-icons/hi";
 import { Link, useNavigate } from "react-router-dom";
@@ -23,7 +23,7 @@ export const Login = () => {
 
     useEffect(() => {
         if (currentUser) {
-            navigate('/channel', { replace: true })
+            navigate('/', { replace: true })
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [currentUser])

@@ -16,10 +16,11 @@ class RavenMessage(Document):
         frappe.publish_realtime('message_updated', {
             'channel_id': self.channel_id}, after_commit=True)
         frappe.db.commit()
-    
+
     def on_trash(self):
         # delete all the reactions for the message
-        frappe.db.sql("DELETE FROM `tabRaven Message Reaction` WHERE message = %s", self.name)
+        frappe.db.sql(
+            "DELETE FROM `tabRaven Message Reaction` WHERE message = %s", self.name)
         frappe.db.commit()
 
 
@@ -49,3 +50,19 @@ def fetch_recent_files(channel_id):
              .orderby(raven_message.creation, order=Order.desc).limit(10))
 
     return query.run(as_dict=True)
+
+
+@frappe.whitelist()
+def get_last_channel():
+    query = frappe.get_all(
+        'Raven Message',
+        filters={'owner': frappe.session.user},
+        fields=['channel_id'],
+        order_by='creation DESC',
+        limit_page_length=1
+    )
+
+    if query:
+        return query[0]['channel_id']
+    else:
+        return 'general'
