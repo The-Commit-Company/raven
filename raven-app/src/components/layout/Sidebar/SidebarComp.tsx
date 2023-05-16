@@ -152,9 +152,10 @@ interface SidebarButtonItemProps extends StackProps {
     subtle?: boolean,
     onClick?: () => void,
     isLoading?: boolean
+    active?: boolean
 }
 
-export const SidebarButtonItem = ({ children, subtle, onClick, isLoading, ...props }: SidebarButtonItemProps) => {
+export const SidebarButtonItem = ({ children, subtle, onClick, isLoading, active, ...props }: SidebarButtonItemProps) => {
 
     const { colorMode } = useColorMode()
 
@@ -170,6 +171,7 @@ export const SidebarButtonItem = ({ children, subtle, onClick, isLoading, ...pro
             onClick={onClick}
             _hover={{ bg: colorMode === "light" ? "gray.100" : "gray.600" }}
             color={subtle ? (colorMode === "light" ? "gray.500" : "gray.200") : (colorMode === "light" ? "gray.700" : "gray.100")}
+            bg={active ? (colorMode === "light" ? "gray.100" : "gray.700") : "transparent"}
             {...props}
         >
             {children}

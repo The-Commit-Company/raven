@@ -31,7 +31,7 @@ def get_search_result(filter_type, doctype, search_text=None, from_user=None, wi
     if filter_type == 'Channel':
         channel = doctype
         query = frappe.qb.from_(doctype).select(
-            doctype.name, doctype.owner, doctype.creation, doctype.type, doctype.channel_name, doctype.channel_description).join(channel_member, JoinType.left).on(
+            doctype.name, doctype.owner, doctype.creation, doctype.type, doctype.channel_name, doctype.channel_description, doctype.is_archived).join(channel_member, JoinType.left).on(
             channel_member.channel_id == doctype.name).where(doctype.is_direct_message == 0).where((doctype.type != 'Private') | (channel_member.user_id == frappe.session.user)).distinct()
 
     if search_text:

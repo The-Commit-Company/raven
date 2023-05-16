@@ -53,19 +53,17 @@ export const ChannelSettings = (props: Props) => {
                         Change to a private channel
                     </Button>}
                     <Divider />
-                    <Button {...BUTTONSTYLE}
+                    {channelData?.name != 'general' && <><Button {...BUTTONSTYLE}
                         leftIcon={<BsArchive />}
                         colorScheme="red"
                         onClick={onArchiveChannelModalOpen}>
                         Archive channel
-                    </Button>
-                    <Divider />
-                    <Button {...BUTTONSTYLE}
+                    </Button><Divider /><Button {...BUTTONSTYLE}
                         leftIcon={<BsTrash fontSize={'1rem'} />}
                         colorScheme="red"
                         onClick={onDeleteChannelModalOpen}>
-                        Delete channel
-                    </Button>
+                            Delete channel
+                        </Button></>}
                 </Stack>
             </Box>
             <ChangeChannelType isOpen={isChannelTypeChangeModalOpen} onClose={onChannelTypeChangeModalClose} />

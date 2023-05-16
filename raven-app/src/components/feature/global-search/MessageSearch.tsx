@@ -1,6 +1,6 @@
 import { SearchIcon } from '@chakra-ui/icons'
 import { Avatar, Button, chakra, FormControl, HStack, Input, InputGroup, InputLeftElement, Stack, TabPanel, Text } from '@chakra-ui/react'
-import { FrappeContext, FrappeConfig, useFrappeGetDocList, useFrappeGetCall } from 'frappe-react-sdk'
+import { FrappeContext, FrappeConfig, useFrappeGetCall } from 'frappe-react-sdk'
 import { useContext, useState, useMemo, useEffect } from 'react'
 import { FormProvider, Controller, useForm } from 'react-hook-form'
 import { BiLockAlt, BiHash, BiGlobe } from 'react-icons/bi'
@@ -55,7 +55,8 @@ export const MessageSearch = ({ onToggleMyChannels, isOpenMyChannels, dateOption
         if (channels) {
             return channels.message.map((channel: ChannelData) => ({
                 value: channel.name,
-                label: <HStack>{channel.type === "Private" && <BiLockAlt /> || channel.type === "Public" && <BiHash /> || channel.type === "Open" && <BiGlobe />}<Text>{channel.channel_name}</Text></HStack>
+                label: <HStack>{channel.type === "Private" && <BiLockAlt /> || channel.type === "Public" && <BiHash /> || channel.type === "Open" && <BiGlobe />}<Text>{channel.channel_name}</Text></HStack>,
+                is_archived: channel.is_archived
             }))
         } else {
             return []
@@ -184,6 +185,7 @@ export const MessageSearch = ({ onToggleMyChannels, isOpenMyChannels, dateOption
 
                                     {data.message.map(({ name, owner, creation, text, channel_id }) => {
                                         const channelName: any = channelOption.find((channel) => channel.value === channel_id)?.label
+                                        const isArchived: number = channelOption.find((channel) => channel.value === channel_id)?.is_archived as number
                                         return (
                                             <ChatMessage
                                                 key={name}
@@ -193,6 +195,7 @@ export const MessageSearch = ({ onToggleMyChannels, isOpenMyChannels, dateOption
                                                 text={text}
                                                 creation={creation}
                                                 isSearchResult={true}
+                                                isArchived={isArchived}
                                                 channelName={channelName}
                                                 channelID={channel_id}
                                                 py={1}
