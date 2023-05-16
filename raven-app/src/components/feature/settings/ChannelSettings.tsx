@@ -4,6 +4,8 @@ import { ChannelContext } from "../../../utils/channel/ChannelProvider"
 import { BiHash, BiLockAlt } from "react-icons/bi"
 import { BsTrash, BsArchive } from "react-icons/bs"
 import { ChangeChannelType } from "./ChangeChannelType"
+import { ArchiveChannel } from "./ArchiveChannel"
+import { DeleteChannel } from "./DeleteChannel"
 
 type Props = {}
 
@@ -31,6 +33,8 @@ export const ChannelSettings = (props: Props) => {
     }
 
     const { isOpen: isChannelTypeChangeModalOpen, onOpen: onChannelTypeChangeModalOpen, onClose: onChannelTypeChangeModalClose } = useDisclosure()
+    const { isOpen: isArchiveChannelModalOpen, onOpen: onArchiveChannelModalOpen, onClose: onArchiveChannelModalClose } = useDisclosure()
+    const { isOpen: isDeleteChannelModalOpen, onOpen: onDeleteChannelModalOpen, onClose: onDeleteChannelModalClose } = useDisclosure()
 
     return (
         <Stack spacing='4'>
@@ -51,18 +55,22 @@ export const ChannelSettings = (props: Props) => {
                     <Divider />
                     <Button {...BUTTONSTYLE}
                         leftIcon={<BsArchive />}
-                        colorScheme="red">
+                        colorScheme="red"
+                        onClick={onArchiveChannelModalOpen}>
                         Archive channel
                     </Button>
                     <Divider />
                     <Button {...BUTTONSTYLE}
                         leftIcon={<BsTrash fontSize={'1rem'} />}
-                        colorScheme="red">
+                        colorScheme="red"
+                        onClick={onDeleteChannelModalOpen}>
                         Delete channel
                     </Button>
                 </Stack>
             </Box>
             <ChangeChannelType isOpen={isChannelTypeChangeModalOpen} onClose={onChannelTypeChangeModalClose} />
+            <ArchiveChannel isOpen={isArchiveChannelModalOpen} onClose={onArchiveChannelModalClose} />
+            <DeleteChannel isOpen={isDeleteChannelModalOpen} onClose={onDeleteChannelModalClose} />
         </Stack>
     )
 }
