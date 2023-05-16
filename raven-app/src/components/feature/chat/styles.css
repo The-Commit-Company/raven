@@ -70,17 +70,6 @@
     background-color: var(--gray) !important;
 }
 
-.ql-syntax {
-    border-width: 0.05em;
-    font-family: "Roboto Mono", monospace;
-    font-size: 14px;
-    line-height: 1.5;
-    padding: 8px;
-    border-radius: 4px;
-    overflow: scroll;
-    max-width: 70vw;
-}
-
 .ql-tooltip.ql-editing {
     margin-left: 10px;
     left: auto !important;
@@ -135,4 +124,17 @@
 
 .ql-remove {
     color: #F56565 !important;
+}
+
+.ql-syntax {
+    border-width: 0.05em;
+    font-family: "Roboto Mono", monospace;
+    font-size: 14px;
+    line-height: 1.5;
+    padding: 8px;
+    border-radius: 4px;
+    overflow: scroll;
+    width: 75vw;
+    color: white;
+    background-color: #1A202C;
 }
