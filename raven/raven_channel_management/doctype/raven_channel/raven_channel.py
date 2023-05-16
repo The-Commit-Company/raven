@@ -135,3 +135,14 @@ def create_channel(channel_name, type, channel_description=None):
         })
         channel.insert()
         return channel.name
+    
+@frappe.whitelist()
+#TODO: enqueue this function
+def delete_channel(channel_id):
+    channel = frappe.get_doc("Raven Channel", channel_id)
+    # delete all messages in the channel
+    frappe.db.delete("Raven Message", {"channel_id": channel_id})
+    # delete all channel members
+    frappe.db.delete("Raven Channel Member", {"channel_id": channel_id})
+    # delete channel
+    channel.delete()

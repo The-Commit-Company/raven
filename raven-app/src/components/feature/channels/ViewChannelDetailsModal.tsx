@@ -5,6 +5,8 @@ import { ChannelContext } from "../../../utils/channel/ChannelProvider"
 import { ChannelDetails } from "../channel-details/ChannelDetails"
 import { ChannelMemberDetails } from "../channel-details/ChannelMemberDetails"
 import { FilesSharedInChannel } from '../files/FilesSharedInChannel'
+import { ChannelSettings } from "../settings/ChannelSettings"
+import { UserContext } from "../../../utils/auth/UserProvider"
 
 interface ViewChannelDetailsModalProps {
     isOpen: boolean,
@@ -17,6 +19,7 @@ export const ViewChannelDetailsModal = ({ isOpen, onClose, activeUsers }: ViewCh
     const { channelMembers, channelData } = useContext(ChannelContext)
     const members = Object.values(channelMembers)
     const memberCount = members.length
+    const { currentUser } = useContext(UserContext)
 
     return (
         <Modal isOpen={isOpen} onClose={onClose} size='lg'>
@@ -43,6 +46,7 @@ export const ViewChannelDetailsModal = ({ isOpen, onClose, activeUsers }: ViewCh
                                 </HStack>
                             </Tab>
                             <Tab>Files</Tab>
+                            {channelData?.owner === currentUser && <Tab>Settings</Tab>}
                         </TabList>
                         <TabPanels>
                             <TabPanel px={0}>
@@ -53,6 +57,9 @@ export const ViewChannelDetailsModal = ({ isOpen, onClose, activeUsers }: ViewCh
                             </TabPanel>
                             <TabPanel px={0}>
                                 <FilesSharedInChannel />
+                            </TabPanel>
+                            <TabPanel px={0}>
+                                <ChannelSettings />
                             </TabPanel>
                         </TabPanels>
                     </Tabs>
