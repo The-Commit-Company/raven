@@ -50,8 +50,15 @@ def get_search_result(filter_type, doctype, search_text=None, from_user=None, wi
 
     if with_user and with_user != '[]':
         with_user = json.loads(with_user)
-        query = query.where(((doctype.owner.isin(with_user)) | (
-            doctype.owner == frappe.session.user)) & (channel.is_direct_message == 1))
+        query = query.where(
+            (
+                (((doctype.owner.isin(with_user)) & (channel_member.user_id == frappe.session.user)) | ((doctype.owner == frappe.session.user) & reduce(operator.or_, [
+                    channel.channel_name.like(f"%{user}%")
+                    for user in with_user
+                ]))) &
+                (channel.is_direct_message == 1)
+            )
+        )
 
     if in_channel and in_channel != '[]':
         in_channel = json.loads(in_channel)
