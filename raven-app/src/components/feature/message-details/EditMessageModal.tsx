@@ -1,4 +1,4 @@
-import { Box, Button, ButtonGroup, HStack, IconButton, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Popover, PopoverContent, PopoverTrigger, Stack, StackDivider, useColorMode, useDisclosure, useToast } from "@chakra-ui/react"
+import { Box, Button, ButtonGroup, HStack, IconButton, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Popover, PopoverContent, PopoverTrigger, Stack, useColorMode, useDisclosure, useToast } from "@chakra-ui/react"
 import EmojiPicker, { EmojiClickData } from "emoji-picker-react"
 import { useFrappeUpdateDoc } from "frappe-react-sdk"
 import { useCallback, useEffect, useState } from "react"
@@ -116,7 +116,7 @@ export const EditMessageModal = ({ isOpen, onClose, channelMessageID, allMembers
     }
 
     return (
-        <Modal isOpen={isOpen} onClose={onClose}>
+        <Modal isOpen={isOpen} onClose={onClose} size={'4xl'}>
             <ModalOverlay />
             <ModalContent>
                 <ModalHeader>Edit Message</ModalHeader>

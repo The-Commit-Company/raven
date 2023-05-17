@@ -48,7 +48,7 @@ export const ChatHistory = ({ messages, isDM }: ChatHistoryProps) => {
         messageGroups[date].push(message)
     }
 
-    const [isScrollable, setScrollable] = useState<Boolean>(true)
+    const [isScrollable, setScrollable] = useState<boolean>(true)
 
     const handleScroll = (newState: boolean) => {
         setScrollable(newState);

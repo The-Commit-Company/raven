@@ -155,7 +155,7 @@ export const ChatInterface = () => {
                         <ViewOrAddMembersButton onClickViewMembers={onViewDetailsModalOpen} onClickAddMembers={onOpen} activeUsers={activeUsers.message} />}
                 </HStack>
             </PageHeader>
-            <Stack h='calc(100vh - 54px)' justify={'flex-end'} p={4} overflow='hidden' mt='16'>
+            <Stack h='calc(100vh)' justify={'flex-end'} p={4} overflow='hidden' pt='16'>
                 {data && channelData && <ChatHistory messages={data} isDM={channelData?.is_direct_message} />}
                 {(user && user in channelMembers) || channelData?.type === 'Open' ?
                     <ChatInput channelID={channelData?.name ?? ''} allChannels={allChannels} allMembers={allMembers} /> :
