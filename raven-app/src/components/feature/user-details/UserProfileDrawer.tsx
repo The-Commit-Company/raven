@@ -1,5 +1,5 @@
 import { EmailIcon } from "@chakra-ui/icons"
-import { Text, Avatar, Divider, Drawer, DrawerBody, DrawerCloseButton, DrawerContent, DrawerHeader, DrawerOverlay, Stack, HStack, IconButton, Button, Icon, useColorMode } from "@chakra-ui/react"
+import { Text, Avatar, Divider, Drawer, DrawerBody, DrawerCloseButton, DrawerContent, DrawerHeader, DrawerOverlay, Stack, HStack, IconButton, Button, Icon, useColorMode, useDisclosure } from "@chakra-ui/react"
 import { useFrappeGetCall, useFrappePostCall } from "frappe-react-sdk"
 import { useContext } from "react"
 import { BiMessage } from "react-icons/bi"
@@ -10,15 +10,15 @@ import { DateObjectToTimeString } from "../../../utils/operations"
 import { AlertBanner } from "../../layout/AlertBanner"
 import { UserDataContext } from "../../../utils/user/UserDataProvider"
 import { AiOutlineEdit } from "react-icons/ai"
+import { SetUserStatus } from "./SetUserStatus"
 
 interface UserProfileDrawerProps {
     isOpen: boolean
     onClose: () => void,
-    user: User,
-    openSetStatusModal?: () => void
+    user: User
 }
 
-export const UserProfileDrawer = ({ isOpen, onClose, user, openSetStatusModal }: UserProfileDrawerProps) => {
+export const UserProfileDrawer = ({ isOpen, onClose, user }: UserProfileDrawerProps) => {
 
     const { colorMode } = useColorMode()
     const textColor = colorMode === 'light' ? 'blue.500' : 'blue.300'
@@ -39,6 +39,7 @@ export const UserProfileDrawer = ({ isOpen, onClose, user, openSetStatusModal }:
     }
 
     const userData = useContext(UserDataContext)
+    const { isOpen: isSetUserStatusModalOpen, onOpen: onSetUserStatusModalOpen, onClose: onSetUserStatusModalClose } = useDisclosure()
 
     return (
         <Drawer
@@ -88,7 +89,7 @@ export const UserProfileDrawer = ({ isOpen, onClose, user, openSetStatusModal }:
                             <Button variant='outline'
                                 colorScheme='blue'
                                 leftIcon={<AiOutlineEdit />}
-                                onClick={openSetStatusModal}>
+                                onClick={onSetUserStatusModalOpen}>
                                 Set Status
                             </Button>
                         }
@@ -106,7 +107,7 @@ export const UserProfileDrawer = ({ isOpen, onClose, user, openSetStatusModal }:
                         </Stack>
                     </Stack>
                 </DrawerBody>
-
+                <SetUserStatus isOpen={isSetUserStatusModalOpen} onClose={onSetUserStatusModalClose} />
             </DrawerContent>
         </Drawer>
     )

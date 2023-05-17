@@ -14,9 +14,9 @@ import EmojiPicker, { EmojiClickData } from 'emoji-picker-react';
 
 interface ActionButtonPaletteProps {
     name: string
-    image?: string
-    file?: string
-    text?: string
+    image?: string | null
+    file?: string | null
+    text?: string | null
     user: string
     showButtons: {}
     handleScroll: (newState: boolean) => void

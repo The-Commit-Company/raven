@@ -1,11 +1,11 @@
 import { Avatar, AvatarBadge, Box, Button, ButtonGroup, Center, HStack, Stack, Text, useColorMode, useDisclosure, useToast } from "@chakra-ui/react"
-import { useFrappeCreateDoc, useFrappeGetCall, useFrappeGetDocList } from "frappe-react-sdk"
+import { useFrappeCreateDoc, useFrappeGetCall } from "frappe-react-sdk"
 import { useContext } from "react"
 import { BiGlobe, BiHash, BiLockAlt } from "react-icons/bi"
 import { HiOutlineSearch } from "react-icons/hi"
 import { useFrappeEventListener } from "../../../hooks/useFrappeEventListener"
 import { ChannelData } from "../../../types/Channel/Channel"
-import { Message } from "../../../types/Messaging/Message"
+import { MessagesWithDate } from "../../../types/Messaging/Message"
 import { ChannelContext } from "../../../utils/channel/ChannelProvider"
 import { UserDataContext } from "../../../utils/user/UserDataProvider"
 import { AlertBanner } from "../../layout/AlertBanner"
@@ -26,15 +26,12 @@ export const ChatInterface = () => {
     const user = userData?.name
     const peer = Object.keys(channelMembers).filter((member) => member !== user)[0]
     const { data: channelList, error: channelListError } = useFrappeGetCall<{ message: ChannelData[] }>("raven.raven_channel_management.doctype.raven_channel.raven_channel.get_channel_list")
-    const { data, error, mutate } = useFrappeGetDocList<Message>('Raven Message', {
-        fields: ["text", "creation", "name", "owner", "message_type", "file", "message_reactions"],
-        filters: [["channel_id", "=", channelData?.name ?? null]],
-        orderBy: {
-            field: "creation",
-            order: 'desc'
-        },
-        limit: 500
+    const { data, error, mutate } = useFrappeGetCall<{ message: MessagesWithDate }>("raven.raven_messaging.doctype.raven_message.raven_message.get_messages_by_date", {
+        channel_id: channelData?.name ?? null,
+        start: 0,
+        limit: 20
     })
+
     const { colorMode } = useColorMode()
 
     useFrappeEventListener('message_received', (data) => {
@@ -155,8 +152,8 @@ export const ChatInterface = () => {
                         <ViewOrAddMembersButton onClickViewMembers={onViewDetailsModalOpen} onClickAddMembers={onOpen} activeUsers={activeUsers.message} />}
                 </HStack>
             </PageHeader>
-            <Stack h='calc(100vh - 54px)' justify={'flex-end'} p={4} overflow='hidden' mt='16'>
-                {data && channelData && <ChatHistory messages={data} isDM={channelData?.is_direct_message} />}
+            <Stack h='calc(100vh)' justify={'flex-end'} p={4} overflow='hidden' pt='16'>
+                {data && channelData && <ChatHistory parsed_messages={data.message} isDM={channelData?.is_direct_message} />}
                 {channelData?.is_archived == 0 && ((user && user in channelMembers) || channelData?.type === 'Open' ?
                     <ChatInput channelID={channelData?.name ?? ''} allChannels={allChannels} allMembers={allMembers} /> :
                     <Box>
