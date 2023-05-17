@@ -14,7 +14,9 @@ import { useState } from "react"
 
 export const ChannelList = () => {
 
-    const { data, error, mutate } = useFrappeGetCall<{ message: ChannelData[] }>("raven.raven_channel_management.doctype.raven_channel.raven_channel.get_channel_list")
+    const { data, error, mutate } = useFrappeGetCall<{ message: ChannelData[] }>("raven.raven_channel_management.doctype.raven_channel.raven_channel.get_channel_list", {
+        hide_archived: true
+    })
 
     const handleClose = (refresh?: boolean) => {
         if (refresh) {

@@ -7,9 +7,11 @@ import { ChangeChannelType } from "./ChangeChannelType"
 import { ArchiveChannel } from "./ArchiveChannel"
 import { DeleteChannel } from "./DeleteChannel"
 
-type Props = {}
+type Props = {
+    onClose: () => void
+}
 
-export const ChannelSettings = (props: Props) => {
+export const ChannelSettings = ({ onClose }: Props) => {
 
     const { colorMode } = useColorMode()
     const { channelData } = useContext(ChannelContext)
@@ -58,9 +60,7 @@ export const ChannelSettings = (props: Props) => {
                         colorScheme="red"
                         onClick={onArchiveChannelModalOpen}>
                         Archive channel
-                    </Button>
-                    <Divider />
-                    <Button {...BUTTONSTYLE}
+                    </Button><Divider /><Button {...BUTTONSTYLE}
                         leftIcon={<BsTrash fontSize={'1rem'} />}
                         colorScheme="red"
                         onClick={onDeleteChannelModalOpen}>
@@ -69,7 +69,7 @@ export const ChannelSettings = (props: Props) => {
                 </Stack>
             </Box>
             <ChangeChannelType isOpen={isChannelTypeChangeModalOpen} onClose={onChannelTypeChangeModalClose} />
-            <ArchiveChannel isOpen={isArchiveChannelModalOpen} onClose={onArchiveChannelModalClose} />
+            <ArchiveChannel isOpen={isArchiveChannelModalOpen} onClose={onArchiveChannelModalClose} onCloseViewDetails={onClose} />
             <DeleteChannel isOpen={isDeleteChannelModalOpen} onClose={onDeleteChannelModalClose} />
         </Stack>
     )

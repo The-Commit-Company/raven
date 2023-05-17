@@ -46,7 +46,7 @@ export const ViewChannelDetailsModal = ({ isOpen, onClose, activeUsers }: ViewCh
                                 </HStack>
                             </Tab>
                             <Tab>Files</Tab>
-                            {channelData?.owner === currentUser && <Tab>Settings</Tab>}
+                            {channelData?.owner === currentUser && channelData?.name != 'general' && <Tab>Settings</Tab>}
                         </TabList>
                         <TabPanels>
                             <TabPanel px={0}>
@@ -58,9 +58,9 @@ export const ViewChannelDetailsModal = ({ isOpen, onClose, activeUsers }: ViewCh
                             <TabPanel px={0}>
                                 <FilesSharedInChannel />
                             </TabPanel>
-                            <TabPanel px={0}>
-                                <ChannelSettings />
-                            </TabPanel>
+                            {channelData?.name != 'general' && <TabPanel px={0}>
+                                <ChannelSettings onClose={onClose} />
+                            </TabPanel>}
                         </TabPanels>
                     </Tabs>
 
