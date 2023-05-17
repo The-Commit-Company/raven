@@ -25,13 +25,14 @@ interface ChatMessageProps extends BoxProps {
     message_reactions?: string,
     isContinuation?: boolean,
     isSearchResult?: boolean,
+    isArchived?: number,
     creation?: string
     channelName?: string
     channelID?: string
     handleScroll?: (newState: boolean) => void
 }
 
-export const ChatMessage = ({ name, user, timestamp, text, image, file, isContinuation, isSearchResult, creation, channelName, channelID, message_reactions, handleScroll, ...props }: ChatMessageProps) => {
+export const ChatMessage = ({ name, user, timestamp, text, image, file, isContinuation, isSearchResult, isArchived, creation, channelName, channelID, message_reactions, handleScroll, ...props }: ChatMessageProps) => {
 
     const { colorMode } = useColorMode()
     const { channelMembers, users } = useContext(ChannelContext)
@@ -65,6 +66,7 @@ export const ChatMessage = ({ name, user, timestamp, text, image, file, isContin
             {...props}>
             {isSearchResult && creation && <HStack pb={1.5} spacing={1}>
                 <Text fontWeight='semibold' fontSize='sm'>{channelName ?? "Direct message"}</Text>
+                {isArchived == 1 && <Text fontSize='small'>(archived)</Text>}
                 <Text fontSize='small'>- {new Date(creation).toDateString()}</Text>
                 <Link style={showButtons} color='blue.500' onClick={() => navigate(`/channel/${channelID}`)} pl={1}>{channelName ? <Text fontSize={'small'}>View Channel</Text> : <Text fontSize={'small'}>View Chat</Text>}</Link>
             </HStack>}

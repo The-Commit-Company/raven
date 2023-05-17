@@ -157,7 +157,7 @@ export const ChatInterface = () => {
             </PageHeader>
             <Stack h='calc(100vh - 54px)' justify={'flex-end'} p={4} overflow='hidden' mt='16'>
                 {data && channelData && <ChatHistory messages={data} isDM={channelData?.is_direct_message} />}
-                {(user && user in channelMembers) || channelData?.type === 'Open' ?
+                {channelData?.is_archived == 0 && ((user && user in channelMembers) || channelData?.type === 'Open' ?
                     <ChatInput channelID={channelData?.name ?? ''} allChannels={allChannels} allMembers={allMembers} /> :
                     <Box>
                         <Stack border='1px' borderColor={'gray.500'} rounded='lg' bottom='2' boxShadow='base' w='calc(98vw - var(--sidebar-width))' bg={colorMode === "light" ? "white" : "gray.800"} p={4}>
@@ -169,7 +169,15 @@ export const ChatInterface = () => {
                                 </ButtonGroup>
                             </Center>
                         </Stack>
-                    </Box>}
+                    </Box>)}
+                {channelData && channelData.is_archived == 1 && <Box>
+                    <Stack border='1px' borderColor={'gray.500'} rounded='lg' bottom='2' boxShadow='base' w='calc(98vw - var(--sidebar-width))' bg={colorMode === "light" ? "white" : "gray.800"} p={4}>
+                        <HStack justify='center' align='center' pb={4}><BiHash /><Text>{channelData?.channel_name}</Text></HStack>
+                        <Center>
+                            <Text>This channel has been archived.</Text>
+                        </Center>
+                    </Stack>
+                </Box>}
             </Stack>
             {activeUsers?.message &&
                 <ViewChannelDetailsModal isOpen={isViewDetailsModalOpen} onClose={onViewDetailsModalClose} activeUsers={activeUsers.message} />}

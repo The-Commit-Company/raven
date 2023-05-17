@@ -5,7 +5,6 @@ import './styles.css'
 import { Home, Messages, Files, Channels, People, FindIn, FindFrom } from './CommandPaletteActions'
 import { useHotkeys } from 'react-hotkeys-hook'
 import { useDebounce } from '../../../hooks/useDebounce'
-import { ChannelContext } from '../../../utils/channel/ChannelProvider'
 import { useFrappeGetCall, useFrappeGetDocList, useFrappePostCall } from 'frappe-react-sdk'
 import { useNavigate } from 'react-router-dom'
 import { User } from '../../../types/User/User'
@@ -39,7 +38,6 @@ export const CommandPalette = ({ isOpen, onClose, onToggle }: CommandPaletteProp
         fields: ["full_name", "user_image", "name"],
         filters: [["name", "!=", "Guest"]]
     })
-
 
     const popPage = React.useCallback(() => {
         setPages((pages) => {

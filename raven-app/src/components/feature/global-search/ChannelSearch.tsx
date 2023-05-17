@@ -17,10 +17,11 @@ interface Props {
     isOpenMyChannels: boolean,
     onToggleOtherChannels: () => void,
     isOpenOtherChannels: boolean,
-    input: string
+    input: string,
+    onClose: () => void
 }
 
-export const ChannelSearch = ({ onToggleMyChannels, isOpenMyChannels, onToggleOtherChannels, isOpenOtherChannels, input }: Props) => {
+export const ChannelSearch = ({ onToggleMyChannels, isOpenMyChannels, onToggleOtherChannels, isOpenOtherChannels, input, onClose }: Props) => {
     const methods = useForm()
     const { watch, control } = methods
     const [searchText, setSearchText] = useState(input)
@@ -143,12 +144,18 @@ export const ChannelSearch = ({ onToggleMyChannels, isOpenMyChannels, onToggleOt
                                                     borderRadius: 'md'
                                                 }}
                                                 rounded='md'
-                                                onClick={() => navigate(`/channel/${channel.name}`)}>
+                                                onClick={() => {
+                                                    navigate(`/channel/${channel.name}`)
+                                                    onClose()
+                                                }}>
                                                 <HStack spacing={3}>
                                                     <Center maxW='50px'>
                                                         {channel.type === "Private" && <BiLockAlt /> || channel.type === "Public" && <BiHash /> || channel.type === "Open" && <BiGlobe />}
                                                     </Center>
-                                                    <Text>{channel.channel_name}</Text>
+                                                    <HStack spacing={1}>
+                                                        <Text>{channel.channel_name}</Text>
+                                                        {channel.is_archived && <Text>(archived)</Text>}
+                                                    </HStack>
                                                 </HStack>
                                             </Box>
                                         )

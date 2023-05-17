@@ -35,7 +35,7 @@ export default function GlobalSearch({ isOpen, onClose, tabIndex, input, fromFil
                             <TabPanels>
                                 <MessageSearch onToggleMyChannels={onToggleMyChannels} isOpenMyChannels={isOpenMyChannels} dateOption={dateOption} input={input} fromFilter={fromFilter} inFilter={inFilter} />
                                 <FileSearch onToggleMyChannels={onToggleMyChannels} isOpenMyChannels={isOpenMyChannels} dateOption={dateOption} input={input} fromFilter={fromFilter} inFilter={inFilter} />
-                                <ChannelSearch onToggleMyChannels={onToggleMyChannels} isOpenMyChannels={isOpenMyChannels} onToggleOtherChannels={onToggleOtherChannels} isOpenOtherChannels={isOpenOtherChannels} input={input} />
+                                <ChannelSearch onToggleMyChannels={onToggleMyChannels} isOpenMyChannels={isOpenMyChannels} onToggleOtherChannels={onToggleOtherChannels} isOpenOtherChannels={isOpenOtherChannels} input={input} onClose={onClose} />
                             </TabPanels>
                         </Tabs>
                     </Stack>

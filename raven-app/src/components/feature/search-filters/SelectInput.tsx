@@ -4,7 +4,8 @@ import { Controller, useFormContext } from 'react-hook-form';
 
 export interface SelectOption extends OptionBase {
     value: string,
-    label: ReactNode
+    label: ReactNode,
+    is_archived?: number
 }
 
 interface SelectInputProps extends Props<SelectOption, true, GroupBase<SelectOption>> {

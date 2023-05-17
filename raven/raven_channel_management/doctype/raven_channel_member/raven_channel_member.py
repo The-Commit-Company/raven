@@ -71,7 +71,7 @@ def get_channel_members_and_data(channel_id):
                         .where(channel_member.user_id != "administrator"))
 
     channel_data = frappe.db.get_value("Raven Channel", channel_id, [
-                                       "name", "channel_name", "type", "creation", "owner", "channel_description", "is_direct_message", "is_self_message"], as_dict=True)
+                                       "name", "channel_name", "type", "creation", "owner", "channel_description", "is_direct_message", "is_self_message", "is_archived"], as_dict=True)
 
     channel_data["owner_full_name"] = frappe.db.get_value(
         "User", channel_data["owner"], "full_name")

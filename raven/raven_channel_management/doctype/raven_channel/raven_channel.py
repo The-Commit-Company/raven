@@ -70,20 +70,24 @@ class RavenChannel(Document):
 
 
 @frappe.whitelist()
-def get_channel_list():
+def get_channel_list(hide_archived=False):
     # get channel list where channel member is current user
     channel = frappe.qb.DocType("Raven Channel")
     channel_member = frappe.qb.DocType("Raven Channel Member")
     private_query = (frappe.qb.from_(channel)
-                     .select(channel.name, channel.channel_name, channel.type, channel.is_direct_message, channel.is_self_message)
+                     .select(channel.name, channel.channel_name, channel.type, channel.is_direct_message, channel.is_self_message, channel.is_archived)
                      .join(channel_member)
                      .on(channel.name == channel_member.channel_id)
                      .where(channel_member.user_id == frappe.session.user)
                      .where(channel.type == "Private")
                      .where(channel.is_direct_message == 0))
     public_query = (frappe.qb.from_(channel)
-                    .select(channel.name, channel.channel_name, channel.type, channel.is_direct_message, channel.is_self_message)
+                    .select(channel.name, channel.channel_name, channel.type, channel.is_direct_message, channel.is_self_message, channel.is_archived)
                     .where(channel.type != "Private"))
+
+    if hide_archived:
+        private_query = private_query.where(channel.is_archived == 0)
+        public_query = public_query.where(channel.is_archived == 0)
 
     return private_query.run(as_dict=True) + public_query.run(as_dict=True)
 
@@ -135,9 +139,10 @@ def create_channel(channel_name, type, channel_description=None):
         })
         channel.insert()
         return channel.name
-    
+
+
 @frappe.whitelist()
-#TODO: enqueue this function
+# TODO: enqueue this function
 def delete_channel(channel_id):
     channel = frappe.get_doc("Raven Channel", channel_id)
     # delete all messages in the channel
