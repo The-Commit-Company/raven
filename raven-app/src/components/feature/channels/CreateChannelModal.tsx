@@ -1,5 +1,5 @@
-import { Button, ButtonGroup, chakra, FormControl, FormErrorMessage, FormHelperText, FormLabel, HStack, Input, InputGroup, InputLeftElement, InputRightElement, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Radio, RadioGroup, Stack, Switch, Text, useToast } from '@chakra-ui/react'
-import { useFrappePostCall, useFrappeCreateDoc } from 'frappe-react-sdk'
+import { Button, ButtonGroup, chakra, FormControl, FormErrorMessage, FormHelperText, FormLabel, HStack, Input, InputGroup, InputLeftElement, InputRightElement, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Radio, RadioGroup, Stack, Text, useToast } from '@chakra-ui/react'
+import { useFrappePostCall } from 'frappe-react-sdk'
 import { useEffect, useState } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
 import { BiGlobe, BiHash, BiLockAlt } from 'react-icons/bi'
@@ -156,9 +156,7 @@ export const CreateChannelModal = ({ isOpen, onClose }: ChannelModalProps) => {
                                             </RadioGroup>
                                             {channelType === 'Private' &&
                                                 <Text fontSize='xs' fontWeight='light'>
-                                                    <strong>This cannot be undone.</strong>
                                                     When a channel is set to private, it can only be viewed or joined by invitation.
-                                                    A private channel cannot be made public later on.
                                                 </Text>
                                             }
                                             {channelType === 'Public' &&

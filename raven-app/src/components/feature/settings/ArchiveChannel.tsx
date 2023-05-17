@@ -3,23 +3,28 @@ import { Button, ButtonGroup, ListItem, Modal, ModalBody, ModalCloseButton, Moda
 import { useFrappeUpdateDoc } from 'frappe-react-sdk'
 import { AlertBanner } from '../../layout/AlertBanner'
 import { ChannelContext } from '../../../utils/channel/ChannelProvider'
+import { useNavigate } from 'react-router-dom'
 
 interface ArchiveChannelProps {
     isOpen: boolean,
     onClose: () => void
+    onCloseViewDetails: () => void
 }
 
-export const ArchiveChannel = ({ isOpen, onClose }: ArchiveChannelProps) => {
+export const ArchiveChannel = ({ isOpen, onClose, onCloseViewDetails }: ArchiveChannelProps) => {
 
     const { channelData } = useContext(ChannelContext)
     const toast = useToast()
     const { updateDoc, error } = useFrappeUpdateDoc()
+    const navigate = useNavigate()
 
     const archiveChannel = () => {
         updateDoc('Raven Channel', channelData?.name ?? '', {
             is_archived: 1
         }).then(() => {
             onClose()
+            onCloseViewDetails()
+            navigate('/channel/general')
             toast({
                 title: "Channel archived",
                 status: "success",
