@@ -39,7 +39,7 @@ export const EditMessageModal = ({ isOpen, onClose, channelMessageID, allMembers
     }
 
     useHotkeys('enter', () => onSubmit(), {
-        enabled: true,
+        enabled: isOpen,
         preventDefault: true,
         enableOnFormTags: true,
     })
