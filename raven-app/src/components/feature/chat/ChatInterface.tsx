@@ -1,12 +1,13 @@
 import { Avatar, AvatarBadge, Box, Button, ButtonGroup, Center, HStack, Stack, Text, useColorMode, useDisclosure, useToast } from "@chakra-ui/react"
 import { useFrappeCreateDoc, useFrappeGetCall } from "frappe-react-sdk"
-import { useContext } from "react"
+import { useContext, useEffect, useMemo, useState } from "react"
 import { BiGlobe, BiHash, BiLockAlt } from "react-icons/bi"
 import { HiOutlineSearch } from "react-icons/hi"
 import { useFrappeEventListener } from "../../../hooks/useFrappeEventListener"
 import { ChannelData } from "../../../types/Channel/Channel"
 import { MessagesWithDate } from "../../../types/Messaging/Message"
 import { ChannelContext } from "../../../utils/channel/ChannelProvider"
+import ScrollToTop from "../../../utils/layout/scrollToTop"
 import { UserDataContext } from "../../../utils/user/UserDataProvider"
 import { AlertBanner } from "../../layout/AlertBanner"
 import { PageHeader } from "../../layout/Heading/PageHeader"
@@ -26,11 +27,25 @@ export const ChatInterface = () => {
     const user = userData?.name
     const peer = Object.keys(channelMembers).filter((member) => member !== user)[0]
     const { data: channelList, error: channelListError } = useFrappeGetCall<{ message: ChannelData[] }>("raven.raven_channel_management.doctype.raven_channel.raven_channel.get_channel_list")
+    const [oldestMessageCreation, setOldestMessageCreation] = useState<string | null>(null)
     const { data, error, mutate } = useFrappeGetCall<{ message: MessagesWithDate }>("raven.raven_messaging.doctype.raven_message.raven_message.get_messages_by_date", {
         channel_id: channelData?.name ?? null,
-        start: 0,
-        limit: 20
+        start_after: oldestMessageCreation,
+        limit: 10
     })
+    const lastMessage = useMemo(() => {
+        if (data) {
+            return Object.keys(data.message)[0]
+        } else {
+            return null
+        }
+    }, [data])
+
+    console.log(data)
+
+    const handleScrollToTop = () => {
+        console.log('Scroll reached the top!')
+    }
 
     const { colorMode } = useColorMode()
 
@@ -180,6 +195,8 @@ export const ChatInterface = () => {
                 <ViewChannelDetailsModal isOpen={isViewDetailsModalOpen} onClose={onViewDetailsModalClose} activeUsers={activeUsers.message} />}
             <AddChannelMemberModal isOpen={isOpen} onClose={onClose} />
             <CommandPalette isOpen={isCommandPaletteOpen} onClose={onCommandPaletteClose} onToggle={onCommandPaletteToggle} />
+            <ScrollToTop onScrollToTop={handleScrollToTop} />
+
         </>
     )
 
