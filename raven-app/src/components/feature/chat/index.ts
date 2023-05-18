@@ -1,4 +1,4 @@
 export { ChatInput } from './ChatInput';
-export { ChatMessage } from './ChatMessage/ChatMessage';
+export { ChatMessageBox } from './ChatMessage/ChatMessageBox';
 export { ChatHistory } from './ChatHistory';
 export { ChatInterface } from './ChatInterface';

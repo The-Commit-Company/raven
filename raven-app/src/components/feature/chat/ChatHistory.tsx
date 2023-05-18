@@ -1,10 +1,10 @@
 import { Stack } from "@chakra-ui/react"
-import { ChatMessage } from "./ChatMessage/ChatMessage"
 import { DividerWithText } from "../../layout/Divider/DividerWithText"
 import { DateObjectToFormattedDateString } from "../../../utils/operations"
 import { Message, MessagesWithDate } from "../../../types/Messaging/Message"
 import { EmptyStateForChannel, EmptyStateForDM } from "../../layout/EmptyState/EmptyState"
 import { useState } from "react"
+import { ChatMessageBox } from "./ChatMessage/ChatMessageBox"
 
 interface ChatHistoryProps {
     parsed_messages: MessagesWithDate,
@@ -14,7 +14,6 @@ interface ChatHistoryProps {
 export const ChatHistory = ({ parsed_messages, isDM }: ChatHistoryProps) => {
 
     const [isScrollable, setScrollable] = useState<boolean>(true)
-
     const handleScroll = (newState: boolean) => {
         setScrollable(newState)
     }
@@ -27,17 +26,10 @@ export const ChatHistory = ({ parsed_messages, isDM }: ChatHistoryProps) => {
                         {DateObjectToFormattedDateString(new Date(date))}
                     </DividerWithText>
                     <Stack spacing={0}>
-                        {messages.map(({ name, owner, creation, message_type, text, file, message_reactions, isContinuation }: Message) => (
-                            <ChatMessage
-                                key={name}
-                                name={name}
-                                user={owner}
-                                timestamp={new Date(creation)}
-                                text={message_type === 'Text' ? text : null}
-                                file={message_type === 'File' ? file : null}
-                                message_reactions={message_reactions}
-                                image={message_type === 'Image' ? file : null}
-                                isContinuation={isContinuation}
+                        {messages.map((message: Message) => (
+                            <ChatMessageBox
+                                key={message.name}
+                                message={message}
                                 handleScroll={handleScroll}
                             />
                         ))}

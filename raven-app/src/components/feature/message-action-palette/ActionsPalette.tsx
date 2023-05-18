@@ -13,7 +13,6 @@ import { ModalTypes, useModalManager } from '../../../hooks/useModalManager'
 
 interface ActionButtonPaletteProps {
     name: string
-    image?: string | null
     file?: string | null
     text?: string | null
     user: string
@@ -21,7 +20,7 @@ interface ActionButtonPaletteProps {
     handleScroll: (newState: boolean) => void
 }
 
-export const ActionsPalette = ({ name, image, file, text, user, showButtons, handleScroll }: ActionButtonPaletteProps) => {
+export const ActionsPalette = ({ name, file, text, user, showButtons, handleScroll }: ActionButtonPaletteProps) => {
 
     const modalManager = useModalManager()
 
@@ -117,17 +116,6 @@ export const ActionsPalette = ({ name, image, file, text, user, showButtons, han
                         icon={<IoBookmarkOutline fontSize={'0.8rem'} />}
                         size='xs' />
                 </Tooltip>
-                {image &&
-                    <Tooltip hasArrow label='download' size='xs' placement='top' rounded='md'>
-                        <IconButton
-                            as={Link}
-                            href={image}
-                            isExternal
-                            aria-label="download file"
-                            icon={<BsDownload />}
-                            size='xs' />
-                    </Tooltip>
-                }
                 {file &&
                     <Tooltip hasArrow label='download' size='xs' placement='top' rounded='md'>
                         <IconButton
