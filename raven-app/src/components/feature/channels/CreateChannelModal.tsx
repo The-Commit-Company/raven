@@ -66,7 +66,6 @@ export const CreateChannelModal = ({ isOpen, onClose }: ChannelModalProps) => {
         })
     }
 
-
     const handleClose = () => {
         //reset form on close
         reset()
@@ -104,7 +103,7 @@ export const CreateChannelModal = ({ isOpen, onClose }: ChannelModalProps) => {
                                     {channelCreationError ? <AlertBanner status='error' heading={channelCreationError.message}>{channelCreationError.exception}.</AlertBanner> : null}
 
                                     <FormControl isRequired isInvalid={!!errors.channel_name}>
-                                        <FormLabel>Name</FormLabel>
+                                        <FormLabel htmlFor='channel_name'>Name</FormLabel>
                                         <InputGroup>
                                             <InputLeftElement
                                                 pointerEvents='none'
@@ -131,7 +130,7 @@ export const CreateChannelModal = ({ isOpen, onClose }: ChannelModalProps) => {
                                     </FormControl>
 
                                     <FormControl isInvalid={!!errors.channel_description}>
-                                        <FormLabel>
+                                        <FormLabel htmlFor='channel_description'>
                                             <HStack>
                                                 <Text>Description</Text>
                                                 <Text fontWeight='light' fontSize='sm'>(optional)</Text>
@@ -144,7 +143,7 @@ export const CreateChannelModal = ({ isOpen, onClose }: ChannelModalProps) => {
 
                                     <FormControl>
                                         <Stack>
-                                            <FormLabel htmlFor='email-alerts' mb='0'>
+                                            <FormLabel htmlFor='channel_type' mb='0'>
                                                 Channel Type
                                             </FormLabel>
                                             <RadioGroup id='type' onChange={setChannelType} value={channelTypeValue}>
