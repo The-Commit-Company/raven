@@ -7,8 +7,6 @@ import { MarkdownRenderer } from "../../markdown-viewer/MarkdownRenderer"
 import { UserProfileDrawer } from "../../user-details/UserProfileDrawer"
 import { ActionsPalette } from "../../message-action-palette/ActionsPalette"
 import { useNavigate } from "react-router-dom";
-import { ImageMessage } from "./ImageMessage"
-import { FileMessage } from "./FileMessage"
 import { MessageReactions } from "./MessageReactions"
 
 interface ChatMessageProps extends BoxProps {
@@ -16,19 +14,20 @@ interface ChatMessageProps extends BoxProps {
     user: string,
     timestamp: Date,
     text?: string | null,
-    image?: string | null,
     file?: string | null,
+    image?: string | null,
     message_reactions?: string | null,
     isContinuation?: boolean | null,
     isSearchResult?: boolean,
     isArchived?: number
     creation?: string
     channelName?: string
-    channelID?: string
+    channelID?: string,
     handleScroll?: (newState: boolean) => void
 }
 
-export const ChatMessage = ({ name, user, timestamp, text, image, file, isContinuation, isSearchResult, isArchived, creation, channelName, channelID, message_reactions, handleScroll, ...props }: ChatMessageProps) => {
+
+export const ChatMessage = ({ name, user, timestamp, text, isContinuation, isSearchResult, isArchived, creation, channelName, channelID, message_reactions, handleScroll, ...props }: ChatMessageProps) => {
 
     const { colorMode } = useColorMode()
     const textColor = colorMode === 'light' ? 'gray.800' : 'gray.50'
@@ -65,17 +64,19 @@ export const ChatMessage = ({ name, user, timestamp, text, image, file, isContin
                 <Text fontSize='small'>- {new Date(creation).toDateString()}</Text>
                 <Link style={showButtons} color='blue.500' onClick={() => navigate(`/channel/${channelID}`)} pl={1}>{channelName ? <Text fontSize={'small'}>View Channel</Text> : <Text fontSize={'small'}>View Chat</Text>}</Link>
             </HStack>}
-            {isContinuation ?
+            {isContinuation
+                ?
                 <HStack spacing={3}>
                     <Tooltip hasArrow label={`${DateObjectToFormattedDateStringWithoutYear(timestamp)} at ${DateObjectToTimeString(timestamp)}`} placement='top' rounded='md'>
                         <Text pl='1' style={showButtons} fontSize={'xs'} color="gray.500" _hover={{ textDecoration: 'underline' }}>{DateObjectToTimeString(timestamp).split(' ')[0]}</Text>
                     </Tooltip>
                     <Stack spacing='1'>
-                        <DisplayMessageContent text={text} image={image} file={file} user={user} timestamp={timestamp} />
+                        {text && <MarkdownRenderer content={text} />}
                         <MessageReactions name={name} message_reactions={message_reactions} />
                     </Stack>
                 </HStack>
-                : <HStack spacing={2} alignItems='flex-start'>
+                :
+                <HStack spacing={2} alignItems='flex-start'>
                     <Avatar name={channelMembers?.[user]?.full_name ?? users?.[user]?.full_name ?? user} src={channelMembers?.[user]?.user_image ?? users?.[user]?.user_image} borderRadius={'md'} boxSize='36px' />
                     <Stack spacing='1'>
                         <HStack>
@@ -91,34 +92,13 @@ export const ChatMessage = ({ name, user, timestamp, text, image, file, isContin
                                 </Tooltip>
                             </HStack>
                         </HStack>
-                        <DisplayMessageContent text={text} image={image} file={file} user={user} timestamp={timestamp} />
+                        {text && <MarkdownRenderer content={text} />}
                         {message_reactions && <MessageReactions name={name} message_reactions={message_reactions} />}
                     </Stack>
                 </HStack>
             }
-            {handleScroll && <ActionsPalette name={name} text={text} image={image} file={file} user={user} showButtons={showButtons} handleScroll={handleScroll} />}
+            {handleScroll && <ActionsPalette name={name} text={text} user={user} showButtons={showButtons} handleScroll={handleScroll} />}
             {selectedUser && <UserProfileDrawer isOpen={isUserProfileDetailsDrawerOpen} onClose={onUserProfileDetailsDrawerClose} user={selectedUser} />}
         </Box>
     )
-}
-
-interface DisplayMessageContentProps {
-    text?: string | null,
-    image?: string | null,
-    file?: string | null,
-    user: string,
-    timestamp: Date,
-}
-
-const DisplayMessageContent = ({ text, image, file, user, timestamp }: DisplayMessageContentProps) => {
-    if (text) {
-        return <MarkdownRenderer content={text} />
-    }
-    else if (image) {
-        return <ImageMessage image={image} user={user} timestamp={timestamp} />
-    }
-    else if (file) {
-        return <FileMessage file={file} user={user} timestamp={timestamp} />
-    }
-    return null
 }

@@ -1,18 +1,20 @@
-import { Text, Avatar, Button, HStack, Link, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Stack, StackDivider, useColorMode } from "@chakra-ui/react"
+import { Avatar, Button, Center, HStack, Link, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Stack, StackDivider, Text, useColorMode } from "@chakra-ui/react"
+import { DateObjectToTimeString } from "../../../utils/operations"
 import { useContext } from "react"
 import { ChannelContext } from "../../../utils/channel/ChannelProvider"
-import { DateObjectToTimeString } from "../../../utils/operations"
 import { BsDownload } from "react-icons/bs"
+import ReactPanZoom from "react-image-pan-zoom-rotate"
 
-interface PDFPreviewProps {
+interface FilePreviewModalProps {
     isOpen: boolean,
     onClose: () => void,
     file_url: string,
     file_owner: string,
-    timestamp: Date
+    timestamp: Date,
+    message_type: 'File' | 'Image'
 }
 
-export const PDFPreviewModal = ({ isOpen, onClose, file_url, file_owner, timestamp }: PDFPreviewProps) => {
+export const FilePreviewModal = ({ isOpen, onClose, file_url, file_owner, timestamp, message_type }: FilePreviewModalProps) => {
 
     const { channelMembers } = useContext(ChannelContext)
     const { colorMode } = useColorMode()
@@ -37,7 +39,21 @@ export const PDFPreviewModal = ({ isOpen, onClose, file_url, file_owner, timesta
                 <ModalCloseButton />
 
                 <ModalBody>
-                    <iframe src={file_url} width="100%" height={'550px'} />
+                    {message_type === 'Image' && <Center>
+                        <div
+                            style={{
+                                width: '40vw',
+                                position: "relative",
+                                overflow: "hidden"
+                            }}>
+                            <ReactPanZoom
+                                alt="uploaded image"
+                                image={file_url}
+                            />
+                        </div>
+                    </Center>
+                    }
+                    {message_type === 'File' && <iframe src={file_url} width="100%" height={'550px'} />}
                 </ModalBody>
 
                 <ModalFooter>
