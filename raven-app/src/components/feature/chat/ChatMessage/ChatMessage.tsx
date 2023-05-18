@@ -21,13 +21,14 @@ interface ChatMessageProps extends BoxProps {
     message_reactions?: string | null,
     isContinuation?: boolean | null,
     isSearchResult?: boolean,
+    isArchived?: number
     creation?: string
     channelName?: string
     channelID?: string
     handleScroll?: (newState: boolean) => void
 }
 
-export const ChatMessage = ({ name, user, timestamp, text, image, file, isContinuation, isSearchResult, creation, channelName, channelID, message_reactions, handleScroll, ...props }: ChatMessageProps) => {
+export const ChatMessage = ({ name, user, timestamp, text, image, file, isContinuation, isSearchResult, isArchived, creation, channelName, channelID, message_reactions, handleScroll, ...props }: ChatMessageProps) => {
 
     const { colorMode } = useColorMode()
     const textColor = colorMode === 'light' ? 'gray.800' : 'gray.50'
