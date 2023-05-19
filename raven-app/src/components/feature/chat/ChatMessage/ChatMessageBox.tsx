@@ -1,9 +1,8 @@
-import { Avatar, Box, BoxProps, Button, HStack, Link, Stack, StackDivider, Text, Tooltip, useColorMode, useDisclosure } from "@chakra-ui/react"
+import { Avatar, Box, BoxProps, Button, HStack, Link, Stack, StackDivider, Text, Tooltip, useColorMode } from "@chakra-ui/react"
 import { useContext, useState } from "react"
 import { User } from "../../../../types/User/User"
 import { ChannelContext } from "../../../../utils/channel/ChannelProvider"
 import { DateObjectToTimeString, DateObjectToFormattedDateStringWithoutYear } from "../../../../utils/operations"
-import { UserProfileDrawer } from "../../user-details/UserProfileDrawer"
 import { ActionsPalette } from "../../message-action-palette/ActionsPalette"
 import { useNavigate } from "react-router-dom";
 import { Message } from "../../../../types/Messaging/Message"
@@ -17,21 +16,17 @@ interface ChatMessageBoxProps extends BoxProps {
     channelName?: string
     channelID?: string,
     handleScroll?: (newState: boolean) => void,
-    children?: React.ReactNode
+    children?: React.ReactNode,
+    onOpenUserDetailsDrawer?: (selectedUser: User) => void
 }
 
-export const ChatMessageBox = ({ message, isSearchResult, isArchived, creation, channelName, channelID, handleScroll, children, ...props }: ChatMessageBoxProps) => {
+export const ChatMessageBox = ({ message, isSearchResult, isArchived, creation, channelName, channelID, onOpenUserDetailsDrawer, handleScroll, children, ...props }: ChatMessageBoxProps) => {
 
     const { colorMode } = useColorMode()
     const textColor = colorMode === 'light' ? 'gray.800' : 'gray.50'
     const [showButtons, setShowButtons] = useState<{}>({ visibility: 'hidden' })
-
     const { channelMembers, users } = useContext(ChannelContext)
-    const [selectedUser, setSelectedUser] = useState<User | null>(null)
-    const { isOpen: isUserProfileDetailsDrawerOpen, onOpen: onUserProfileDetailsDrawerOpen, onClose: onUserProfileDetailsDrawerClose } = useDisclosure()
-
     const navigate = useNavigate()
-
     const { name, text, file, owner: user, creation: timestamp, message_reactions, isContinuation } = message
 
     return (
@@ -79,10 +74,7 @@ export const ChatMessageBox = ({ message, isSearchResult, isArchived, creation, 
                     <Stack spacing='1'>
                         <HStack>
                             <HStack divider={<StackDivider />} align='flex-start'>
-                                <Button variant='link' onClick={() => {
-                                    setSelectedUser(channelMembers?.[user])
-                                    onUserProfileDetailsDrawerOpen()
-                                }}>
+                                <Button variant='link' onClick={() => onOpenUserDetailsDrawer?.(channelMembers?.[user])}>
                                     <Text fontSize='sm' lineHeight={'0.9'} fontWeight="bold" as='span' color={textColor}>{channelMembers?.[user]?.full_name ?? users?.[user]?.full_name ?? user}</Text>
                                 </Button>
                                 <Tooltip hasArrow label={`${DateObjectToFormattedDateStringWithoutYear(new Date(timestamp))} at ${DateObjectToTimeString(new Date(timestamp))}`} placement='top' rounded='md'>
@@ -96,7 +88,6 @@ export const ChatMessageBox = ({ message, isSearchResult, isArchived, creation, 
                 </HStack>
             }
             {message && handleScroll && <ActionsPalette name={name} file={file} text={text} user={user} showButtons={showButtons} handleScroll={handleScroll} />}
-            {selectedUser && <UserProfileDrawer isOpen={isUserProfileDetailsDrawerOpen} onClose={onUserProfileDetailsDrawerClose} user={selectedUser} />}
         </Box>
     )
 }

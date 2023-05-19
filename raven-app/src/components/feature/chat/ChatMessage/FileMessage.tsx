@@ -1,31 +1,29 @@
-import { HStack, Icon, Link, Text, useDisclosure } from "@chakra-ui/react"
+import { HStack, Icon, Link, Text } from "@chakra-ui/react"
 import { getFileExtensionIcon } from "../../../../utils/layout/fileExtensionIcon"
-import { FilePreviewModal } from "../../file-preview/FilePreviewModal"
+import { Message } from "../../../../types/Messaging/Message"
 
 interface FileMessageProps {
-    file: string,
-    owner: string,
-    timestamp: Date
+    message: Message,
+    onFilePreviewModalOpen: (message: Message) => void
 }
 
-export const FileMessage = ({ file, owner, timestamp }: FileMessageProps) => {
-
-    const { isOpen, onOpen, onClose } = useDisclosure()
-
+export const FileMessage = ({ message, onFilePreviewModalOpen }: FileMessageProps) => {
     return (
         <HStack>
-            <Icon as={getFileExtensionIcon(file.split('.')[1])} />
-            {file.split('.')[1].toLowerCase() === 'pdf' ?
-                <Text onClick={onOpen} _hover={{ cursor: 'pointer', textDecoration: 'underline' }}>{file.split('/')[3]}</Text> :
-                <Text as={Link} href={file} isExternal>{file.split('/')[3]}</Text>
+            {message.file && <Icon as={getFileExtensionIcon(message.file.split('.')[1])} />}
+            {message && message.file ?
+                message.file.split('.')[1].toLowerCase() === 'pdf'
+                    ?
+                    <Text
+                        onClick={() => onFilePreviewModalOpen(message)}
+                        _hover={{ cursor: 'pointer', textDecoration: 'underline' }}>
+                        {message.file.split('/')[3]}
+                    </Text>
+                    :
+                    <Text as={Link} href={message.file} isExternal>{message.file.split('/')[3]}</Text>
+                :
+                <Text>File not found</Text>
             }
-            <FilePreviewModal
-                isOpen={isOpen}
-                onClose={onClose}
-                file_url={file}
-                file_owner={owner}
-                timestamp={timestamp}
-                message_type={"File"} />
         </HStack>
     )
 }

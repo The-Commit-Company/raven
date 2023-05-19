@@ -8,7 +8,6 @@ import { useState } from "react"
  * openModal: Function to open a modal
  * closeModal: Function to close a modal
  */
-
 export enum ModalTypes {
     None,
     DeleteMessage,
@@ -21,25 +20,32 @@ export enum ModalTypes {
     RemoveChannelMember,
     DeleteChannel,
     ArchiveChannel,
-    ChangeChannelType
+    ChangeChannelType,
+    UserDetails,
+    FilePreview
 }
 
 interface ModalManager {
-    modalType: ModalTypes
-    openModal: (type: ModalTypes) => void
+    modalType: ModalTypes,
+    modalContext: any,
+    openModal: (type: ModalTypes, context?: any) => void,
     closeModal: () => void
 }
 
 export const useModalManager = (): ModalManager => {
-    const [modalType, setModalType] = useState(ModalTypes.None)
 
-    const openModal = (type: ModalTypes) => {
+    const [modalType, setModalType] = useState(ModalTypes.None)
+    const [modalContext, setModalContext] = useState(null)
+
+    const openModal = (type: ModalTypes, context?: any) => {
         setModalType(type)
+        setModalContext(context)
     }
 
     const closeModal = () => {
         setModalType(ModalTypes.None)
+        setModalContext(null)
     }
 
-    return { modalType, openModal, closeModal }
+    return { modalType, modalContext, openModal, closeModal }
 }
