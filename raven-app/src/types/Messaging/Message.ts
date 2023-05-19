@@ -5,10 +5,10 @@ export type Message = {
     text: string | null,
     file: string | null,
     message_type: 'Text' | 'File' | 'Image',
-    message_reactions: string | null,
+    message_reactions?: string | null,
+    isContinuation?: boolean | null
 }
 
 export type MessagesWithDate = {
-    messages: Message[],
-    date: string
-}[]
+    [date: string]: Message[]
+}

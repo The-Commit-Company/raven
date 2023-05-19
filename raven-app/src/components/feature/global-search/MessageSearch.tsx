@@ -11,10 +11,11 @@ import { User } from '../../../types/User/User'
 import { AlertBanner } from '../../layout/AlertBanner'
 import { EmptyStateForSearch } from '../../layout/EmptyState/EmptyState'
 import { FullPageLoader } from '../../layout/Loaders'
-import { ChatMessage } from '../chat'
 import { SelectInput, SelectOption } from '../search-filters/SelectInput'
 import { Sort } from '../sorting'
 import { ChannelContext } from "../../../utils/channel/ChannelProvider"
+import { ChatMessageBox } from '../chat'
+import { MarkdownRenderer } from '../markdown-viewer/MarkdownRenderer'
 
 interface FilterInput {
     'from-user-filter': SelectOption[],
@@ -87,7 +88,6 @@ export const MessageSearch = ({ onToggleMyChannels, isOpenMyChannels, dateOption
     const with_user: string[] = watchWithUser ? watchWithUser.map((user: SelectOption) => (user.value)) : []
     const date = watchDate ? watchDate.value : null
     const my_channel_only: boolean = watchMyChannels ? watchMyChannels : false
-
 
     const [sortOrder, setSortOrder] = useState("desc")
     const [sortByField, setSortByField] = useState<string>('creation')
@@ -182,25 +182,29 @@ export const MessageSearch = ({ onToggleMyChannels, isOpenMyChannels, dateOption
                                 sortField={sortByField}
                                 onSortOrderChange={(order) => setSortOrder(order)} />
                                 <Stack overflowY='scroll' pt={4}>
-
-                                    {data.message.map(({ name, owner, creation, text, channel_id }) => {
+                                    {data.message.map(({ name, text, owner, creation, channel_id }) => {
                                         const channelName: any = channelOption.find((channel) => channel.value === channel_id)?.label
                                         const isArchived: number = channelOption.find((channel) => channel.value === channel_id)?.is_archived as number
                                         return (
-                                            <ChatMessage
+                                            <ChatMessageBox
                                                 key={name}
-                                                name={name}
-                                                user={owner}
-                                                timestamp={new Date(creation)}
-                                                text={text}
-                                                creation={creation}
+                                                message={{
+                                                    name: name,
+                                                    text: text,
+                                                    file: null,
+                                                    message_type: 'Text',
+                                                    owner: owner,
+                                                    creation: creation
+                                                }}
                                                 isSearchResult={true}
                                                 isArchived={isArchived}
                                                 channelName={channelName}
                                                 channelID={channel_id}
                                                 py={1}
                                                 zIndex={0}
-                                            />
+                                            >
+                                                {text && <MarkdownRenderer content={text} />}
+                                            </ChatMessageBox>
                                         )
                                     }
                                     )}

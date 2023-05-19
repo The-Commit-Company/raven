@@ -13,7 +13,15 @@ export enum ModalTypes {
     None,
     DeleteMessage,
     EditMessage,
-    EmojiPicker
+    EmojiPicker,
+    RenameChannel,
+    EditChannelDescription,
+    LeaveChannel,
+    AddChannelMember,
+    RemoveChannelMember,
+    DeleteChannel,
+    ArchiveChannel,
+    ChangeChannelType
 }
 
 interface ModalManager {

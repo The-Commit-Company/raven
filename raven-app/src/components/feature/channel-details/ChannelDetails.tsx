@@ -1,4 +1,4 @@
-import { Box, HStack, Stack, useColorMode, Text, Button, Divider, useDisclosure } from "@chakra-ui/react"
+import { Box, HStack, Stack, useColorMode, Text, Button, Divider } from "@chakra-ui/react"
 import { useContext } from "react"
 import { BiGlobe, BiHash, BiLockAlt } from "react-icons/bi"
 import { UserContext } from "../../../utils/auth/UserProvider"
@@ -7,13 +7,13 @@ import { DateObjectToFormattedDateString } from "../../../utils/operations"
 import { AddOrEditChannelDescriptionModal } from "./EditChannelDetails/AddOrEditChannelDescriptionModal"
 import { ChannelRenameModal } from "./EditChannelDetails/ChannelRenameModal"
 import { LeaveChannelModal } from "./EditChannelDetails/LeaveChannelModal"
+import { ModalTypes, useModalManager } from "../../../hooks/useModalManager"
 
 export const ChannelDetails = () => {
 
     const { colorMode } = useColorMode()
     const { channelData, channelMembers } = useContext(ChannelContext)
     const { currentUser } = useContext(UserContext)
-
 
     const BOXSTYLE = {
         p: '4',
@@ -22,12 +22,23 @@ export const ChannelDetails = () => {
         borderColor: colorMode === 'light' ? 'gray.200' : 'gray.600'
     }
 
-    const { isOpen: isChannelRenameModalOpen, onOpen: onChannelRenameModalOpen, onClose: onChannelRenameModalClose } = useDisclosure()
-    const { isOpen: isChannelDescriptionModalOpen, onOpen: onChannelDescriptionModalOpen, onClose: onChannelDescriptionModalClose } = useDisclosure()
-    const { isOpen: isLeaveChannelModalOpen, onOpen: onLeaveChannelModalOpen, onClose: onLeaveChannelModalClose } = useDisclosure()
+    const modalManager = useModalManager()
+
+    const onChannelRenameModalOpen = () => {
+        modalManager.openModal(ModalTypes.RenameChannel)
+    }
+
+    const onChannelDescriptionModalOpen = () => {
+        modalManager.openModal(ModalTypes.EditChannelDescription)
+    }
+
+    const onLeaveChannelModalOpen = () => {
+        modalManager.openModal(ModalTypes.LeaveChannel)
+    }
 
     return (
         <Stack spacing='4'>
+
             <Box {...BOXSTYLE}>
                 <HStack justifyContent='space-between' alignItems='self-start'>
                     <Stack>
@@ -42,6 +53,7 @@ export const ChannelDetails = () => {
                     <Button colorScheme='blue' variant='link' size='sm' onClick={onChannelRenameModalOpen}>Edit</Button>
                 </HStack>
             </Box>
+
             <Box {...BOXSTYLE}>
                 <Stack spacing='4'>
 
@@ -71,17 +83,26 @@ export const ChannelDetails = () => {
                         </HStack>
                     </Stack>
 
-
                     {channelMembers[currentUser] && channelData?.type != 'Open' &&
-                        <><Divider /><Button colorScheme='red' variant='link' size='sm' w='fit-content' onClick={onLeaveChannelModalOpen}>
-                            Leave channel
-                        </Button></>}
+                        <>
+                            <Divider />
+                            <Button colorScheme='red' variant='link' size='sm' w='fit-content' onClick={onLeaveChannelModalOpen}>
+                                Leave channel
+                            </Button>
+                        </>
+                    }
 
                 </Stack>
             </Box>
-            <ChannelRenameModal isOpen={isChannelRenameModalOpen} onClose={onChannelRenameModalClose} />
-            <AddOrEditChannelDescriptionModal isOpen={isChannelDescriptionModalOpen} onClose={onChannelDescriptionModalClose} />
-            <LeaveChannelModal isOpen={isLeaveChannelModalOpen} onClose={onLeaveChannelModalClose} />
+            <ChannelRenameModal
+                isOpen={modalManager.modalType === ModalTypes.RenameChannel}
+                onClose={modalManager.closeModal} />
+            <AddOrEditChannelDescriptionModal
+                isOpen={modalManager.modalType === ModalTypes.EditChannelDescription}
+                onClose={modalManager.closeModal} />
+            <LeaveChannelModal
+                isOpen={modalManager.modalType === ModalTypes.LeaveChannel}
+                onClose={modalManager.closeModal} />
         </Stack>
     )
 }

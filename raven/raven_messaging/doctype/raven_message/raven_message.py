@@ -71,7 +71,7 @@ def get_last_channel():
         return 'general'
 
 
-def get_messages(channel_id, start_after, limit):
+def get_messages(channel_id, start, limit):
     raven_message = frappe.qb.DocType('Raven Message')
 
     query = (frappe.qb.from_(raven_message)
@@ -82,37 +82,39 @@ def get_messages(channel_id, start_after, limit):
                      raven_message.file,
                      raven_message.message_type,
                      raven_message.message_reactions)
-             .where((raven_message.channel_id == channel_id) & (raven_message.creation < start_after))
-             .orderby(raven_message.creation, order=Order.desc).limit(limit))
+             .where(raven_message.channel_id == channel_id)
+             .orderby(raven_message.creation, order=Order.desc).limit(limit).offset(start))
 
     return query.run(as_dict=True)
 
-
 def parse_messages(messages):
-    message_list = []
-    message_group = []
-    last_message = None
-    for message in messages:
-        # if message is from the same user,
-        # then the second message is a continuation of the first message
-        # if sent within 2 minutes of the first message
-        if last_message and message_group != []:
-            if message['owner'] == last_message['owner'] and ((last_message['creation'] - message['creation']) < timedelta(minutes=2)):
-                message_group.append(message)
-            elif message['creation'].date() != last_message['creation'].date():
-                message_list.append(message_group)
-                message_list.append({'date': last_message['creation'].date()})
-                message_group = [message]
-            else:
-                message_list.append(message_group)
-                message_group = [message]
-        else:
-            message_group = [message]
-        last_message = message
-    return message_list
+    # Sort the messages by creation date
+    messages.sort(key=lambda x: x['creation'])
+
+    # If two consecutive messages are from the same user
+    # then the second message is a continuation of the first message
+    # if sent within 2 minutes of the first message
+    messages_with_continuation = []
+    for i in range(len(messages)):
+        message = messages[i]
+        previous_message = messages[i - 1] if i > 0 else None
+        is_continuation = (
+            previous_message and
+            message['owner'] == previous_message['owner'] and
+            (message['creation'] - previous_message['creation']) < timedelta(minutes=2)
+        )
+        message['isContinuation'] = is_continuation
+        messages_with_continuation.append(message)
+
+    # Group the messages by date
+    message_groups = {}
+    for date, group in groupby(messages_with_continuation, key=lambda x: x['creation'].date()):
+        message_groups[date.isoformat()] = list(group)
+
+    return message_groups
 
 
 @frappe.whitelist()
-def get_messages_by_date(channel_id, start_after=datetime.now(), limit=10):
-    messages = get_messages(channel_id, start_after, limit)
+def get_messages_by_date(channel_id, start, limit):
+    messages = get_messages(channel_id, start, limit)
     return parse_messages(messages)

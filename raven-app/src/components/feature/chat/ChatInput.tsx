@@ -18,6 +18,7 @@ import { CustomFile, FileDrop } from "../file-upload/FileDrop"
 import { FileListItem } from "../file-upload/FileListItem"
 import { getFileExtension } from "../../../utils/operations"
 import { AlertBanner } from "../../layout/AlertBanner"
+import { ModalTypes, useModalManager } from "../../../hooks/useModalManager"
 
 interface ChatInputProps {
     channelID: string,
@@ -109,7 +110,7 @@ export const ChatInput = ({ channelID, allMembers, allChannels }: ChatInputProps
     const onMentionIconClick = () => {
         if (reactQuillRef.current) {
             const editor = reactQuillRef.current?.getEditor()
-            editor.getModule('mention').openMenu("@");
+            editor.getModule('mention').openMenu("@")
         }
     }
 
@@ -156,11 +157,15 @@ export const ChatInput = ({ channelID, allMembers, allChannels }: ChatInputProps
 
     const { colorMode } = useColorMode()
 
-    const { isOpen: showEmojiPicker, onToggle: onEmojiPickerToggle, onClose: onEmojiPickerClose } = useDisclosure()
+    const modalManager = useModalManager()
+
+    const onEmojiPickerOpen = () => {
+        modalManager.openModal(ModalTypes.EmojiPicker)
+    }
 
     const onEmojiClick = (emojiObject: EmojiClickData) => {
         setText(text + emojiObject.emoji)
-        onEmojiPickerClose()
+        modalManager.closeModal()
     }
 
     const fileInputRef = useRef<any>(null)
@@ -221,14 +226,14 @@ export const ChatInput = ({ channelID, allMembers, allChannels }: ChatInputProps
                                 <IconButton size='xs' aria-label={"add file"} onClick={fileButtonClicked} icon={<IoMdAdd />} rounded='xl' />
                                 <Box>
                                     <Popover
-                                        isOpen={showEmojiPicker}
-                                        onClose={onEmojiPickerClose}
+                                        isOpen={modalManager.modalType === ModalTypes.EmojiPicker}
+                                        onClose={modalManager.closeModal}
                                         placement='top-end'
                                         isLazy
                                         lazyBehavior="unmount"
                                         gutter={48}>
                                         <PopoverTrigger>
-                                            <IconButton size='xs' variant='ghost' aria-label={"pick emoji"} icon={<FaRegSmile fontSize='1.0rem' />} onClick={onEmojiPickerToggle} />
+                                            <IconButton size='xs' variant='ghost' aria-label={"pick emoji"} icon={<FaRegSmile fontSize='1.0rem' />} onClick={onEmojiPickerOpen} />
                                         </PopoverTrigger>
                                         <PopoverContent border={'none'} rounded='lg'>
                                             {/* @ts-ignore */}

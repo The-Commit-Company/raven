@@ -16,10 +16,11 @@ interface ChatMessageBoxProps extends BoxProps {
     creation?: string
     channelName?: string
     channelID?: string,
-    handleScroll?: (newState: boolean) => void
+    handleScroll?: (newState: boolean) => void,
+    children?: React.ReactNode
 }
 
-export const ChatMessageBox = ({ message, isSearchResult, isArchived, creation, channelName, channelID, handleScroll, ...props }: ChatMessageBoxProps) => {
+export const ChatMessageBox = ({ message, isSearchResult, isArchived, creation, channelName, channelID, handleScroll, children, ...props }: ChatMessageBoxProps) => {
 
     const { colorMode } = useColorMode()
     const textColor = colorMode === 'light' ? 'gray.800' : 'gray.50'
@@ -31,11 +32,13 @@ export const ChatMessageBox = ({ message, isSearchResult, isArchived, creation, 
 
     const navigate = useNavigate()
 
-    const { name, text, file, owner: user, creation: timestamp, message_type, message_reactions } = message
+    const { name, text, file, owner: user, creation: timestamp, message_reactions, isContinuation } = message
 
     return (
         <Box
-            p='2'
+            pt={isContinuation ? 1 : 2}
+            pb={1}
+            px='2'
             zIndex={1}
             position={'relative'}
             _hover={{
@@ -53,6 +56,7 @@ export const ChatMessageBox = ({ message, isSearchResult, isArchived, creation, 
 
             {isSearchResult && creation && <HStack pb={1.5} spacing={1}>
                 <Text fontWeight='semibold' fontSize='sm'>{channelName ?? "Direct message"}</Text>
+                {isArchived && <Text fontSize={'small'}>(archived)</Text>}
                 <Text fontSize='small'>- {new Date(creation).toDateString()}</Text>
                 <Link style={showButtons} color='blue.500' onClick={() => navigate(`/channel/${channelID}`)} pl={1}>
                     {channelName ? <Text fontSize={'small'}>View Channel</Text> : <Text fontSize={'small'}>View Chat</Text>}
@@ -60,36 +64,37 @@ export const ChatMessageBox = ({ message, isSearchResult, isArchived, creation, 
             </HStack>
             }
 
-            <HStack spacing={2} alignItems='flex-start'>
-                <Avatar
-                    name={channelMembers?.[user]?.full_name ?? users?.[user]?.full_name ?? user}
-                    src={channelMembers?.[user]?.user_image ?? users?.[user]?.user_image}
-                    borderRadius={'md'} boxSize='36px' />
-                <Stack spacing='1'>
-                    <HStack>
-                        <HStack divider={<StackDivider />} align='flex-start'>
-                            <Button variant='link' onClick={() => {
-                                setSelectedUser(channelMembers?.[user])
-                                onUserProfileDetailsDrawerOpen()
-                            }}>
-                                <Text fontSize='sm' lineHeight={'0.9'} fontWeight="bold" as='span' color={textColor}>
-                                    {channelMembers?.[user]?.full_name ?? users?.[user]?.full_name ?? user}
-                                </Text>
-                            </Button>
-                            <Tooltip
-                                hasArrow
-                                label={`${DateObjectToFormattedDateStringWithoutYear(timestamp)} at ${DateObjectToTimeString(timestamp)}`}
-                                placement='top' rounded='md'>
-                                <Text fontSize="xs" lineHeight={'0.9'} color="gray.500" _hover={{ textDecoration: 'underline' }}>
-                                    {DateObjectToTimeString(timestamp)}
-                                </Text>
-                            </Tooltip>
+            {isContinuation ?
+                <HStack spacing={3.5}>
+                    <Tooltip hasArrow label={`${DateObjectToFormattedDateStringWithoutYear(new Date(timestamp))} at ${DateObjectToTimeString(new Date(timestamp))}`} placement='top' rounded='md'>
+                        <Text pl='1' style={showButtons} fontSize={'xs'} color="gray.500" _hover={{ textDecoration: 'underline' }}>{DateObjectToTimeString(new Date(timestamp)).split(' ')[0]}</Text>
+                    </Tooltip>
+                    <Stack spacing='1'>
+                        {children}
+                        <MessageReactions name={name} message_reactions={message_reactions} />
+                    </Stack>
+                </HStack>
+                : <HStack spacing={2} alignItems='flex-start'>
+                    <Avatar name={channelMembers?.[user]?.full_name ?? users?.[user]?.full_name ?? user} src={channelMembers?.[user]?.user_image ?? users?.[user]?.user_image} borderRadius={'md'} boxSize='36px' />
+                    <Stack spacing='1'>
+                        <HStack>
+                            <HStack divider={<StackDivider />} align='flex-start'>
+                                <Button variant='link' onClick={() => {
+                                    setSelectedUser(channelMembers?.[user])
+                                    onUserProfileDetailsDrawerOpen()
+                                }}>
+                                    <Text fontSize='sm' lineHeight={'0.9'} fontWeight="bold" as='span' color={textColor}>{channelMembers?.[user]?.full_name ?? users?.[user]?.full_name ?? user}</Text>
+                                </Button>
+                                <Tooltip hasArrow label={`${DateObjectToFormattedDateStringWithoutYear(new Date(timestamp))} at ${DateObjectToTimeString(new Date(timestamp))}`} placement='top' rounded='md'>
+                                    <Text fontSize="xs" lineHeight={'0.9'} color="gray.500" _hover={{ textDecoration: 'underline' }}>{DateObjectToTimeString(new Date(timestamp))}</Text>
+                                </Tooltip>
+                            </HStack>
                         </HStack>
-                    </HStack>
-                </Stack>
-            </HStack>
-
-            <MessageReactions message_reactions={message_reactions} name={name} />
+                        {children}
+                        <MessageReactions message_reactions={message_reactions} name={name} />
+                    </Stack>
+                </HStack>
+            }
             {message && handleScroll && <ActionsPalette name={name} file={file} text={text} user={user} showButtons={showButtons} handleScroll={handleScroll} />}
             {selectedUser && <UserProfileDrawer isOpen={isUserProfileDetailsDrawerOpen} onClose={onUserProfileDetailsDrawerClose} user={selectedUser} />}
         </Box>

@@ -14,6 +14,7 @@ interface GlobalSearchModalProps {
 }
 
 export default function GlobalSearch({ isOpen, onClose, tabIndex, input, fromFilter, inFilter }: GlobalSearchModalProps) {
+
     const { onToggle: onToggleOtherChannels, isOpen: isOpenOtherChannels } = useDisclosure()
     const { onToggle: onToggleMyChannels, isOpen: isOpenMyChannels } = useDisclosure()
 
