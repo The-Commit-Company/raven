@@ -34,6 +34,37 @@ export const ChatInterface = () => {
         limit: 20
     })
 
+    const lastMessage = useMemo(() => {
+        if (data) {
+            return Object.keys(data.message)[0]
+        } else {
+            return null
+        }
+    }, [data])
+
+    console.log(data)
+
+    const handelInfiniteScroll = async () => {
+        var scrollHeight = document.getElementById('scrollable-stack')?.scrollHeight
+        var innerHeight = document.getElementById('scrollable-stack')?.clientHeight
+        var scrollTop = document.getElementById('scrollable-stack')?.scrollTop
+        try {
+            if (scrollHeight && innerHeight && scrollTop &&
+                scrollHeight - innerHeight + scrollTop <= 10
+            ) {
+                setOldestMessageCreation(lastMessage)
+                await mutate()
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
+    useEffect(() => {
+        document.getElementById('scrollable-stack')?.addEventListener("scroll", handelInfiniteScroll)
+        return () => document.getElementById('scrollable-stack')?.removeEventListener("scroll", handelInfiniteScroll)
+    }, [])
+
     const { colorMode } = useColorMode()
 
     useFrappeEventListener('message_received', (data) => {

@@ -3011,6 +3011,11 @@ react-markdown@^8.0.5:
     unist-util-visit "^4.0.0"
     vfile "^5.0.0"
 
+react-perf-devtool@^3.1.8:
+  version "3.1.8"
+  resolved "https://registry.yarnpkg.com/react-perf-devtool/-/react-perf-devtool-3.1.8.tgz#ae5c369b3b73f5c71de8afb5257ae6f90c953440"
+  integrity sha512-jBnIr+jPcXTLyWLkGjxoAyB7/n7ojYLG3Az2y6FHEWu6eol9J3Ujx/aVMfY5qqrm2W3cVC/pmEC376Pjdi3f4g==
+
 react-quill@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/react-quill/-/react-quill-2.0.0.tgz#67a0100f58f96a246af240c9fa6841b363b3e017"
