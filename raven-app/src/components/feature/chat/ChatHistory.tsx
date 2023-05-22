@@ -56,13 +56,14 @@ export const ChatHistory = ({ parsed_messages, isDM }: ChatHistoryProps) => {
                             return block.data.map((message: Message, index: number) => {
                                 const isLastMessage = index === block.data.length - 1
                                 const ChatMessageComponent = isLastMessage ? ChatMessageBox : ContinuationChatMessageBox
+                                const commonProps = {
+                                    key: message.name,
+                                    message: message,
+                                    handleScroll: handleScroll,
+                                }
+                                const additionalProps = isLastMessage ? { onOpenUserDetailsDrawer } : {}
                                 return (
-                                    <ChatMessageComponent
-                                        key={message.name}
-                                        message={message}
-                                        handleScroll={handleScroll}
-                                        onOpenUserDetailsDrawer={onOpenUserDetailsDrawer}
-                                    >
+                                    <ChatMessageComponent {...commonProps} {...additionalProps}>
                                         {message.message_type === 'Text' && message.text && <MarkdownRenderer content={message.text} />}
                                         {message.message_type === 'File' && message.file && <FileMessage message={message} onFilePreviewModalOpen={onFilePreviewModalOpen} />}
                                         {message.message_type === 'Image' && message.file && <ImageMessage message={message} onFilePreviewModalOpen={onFilePreviewModalOpen} />}
