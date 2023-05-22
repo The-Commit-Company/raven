@@ -47,7 +47,7 @@ export const ChatHistory = ({ parsed_messages, isDM }: ChatHistoryProps) => {
                     switch (block.block_type) {
                         case 'date':
                             return (
-                                <Box p={4} key={block.data}>
+                                <Box p={4} key={block.data} zIndex={1}>
                                     <DividerWithText>{DateObjectToFormattedDateString(new Date(block.data))}</DividerWithText>
                                 </Box>
                             )
