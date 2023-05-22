@@ -7,7 +7,6 @@ import { useFrappeEventListener } from "../../../hooks/useFrappeEventListener"
 import { ChannelData } from "../../../types/Channel/Channel"
 import { MessagesWithDate } from "../../../types/Messaging/Message"
 import { ChannelContext } from "../../../utils/channel/ChannelProvider"
-import ScrollToTop from "../../../utils/layout/scrollToTop"
 import { UserDataContext } from "../../../utils/user/UserDataProvider"
 import { AlertBanner } from "../../layout/AlertBanner"
 import { PageHeader } from "../../layout/Heading/PageHeader"
@@ -43,9 +42,26 @@ export const ChatInterface = () => {
 
     console.log(data)
 
-    const handleScrollToTop = () => {
-        console.log('Scroll reached the top!')
-    }
+    const handelInfiniteScroll = async () => {
+        var scrollHeight = document.getElementById('scrollable-stack')?.scrollHeight
+        var innerHeight = document.getElementById('scrollable-stack')?.clientHeight
+        var scrollTop = document.getElementById('scrollable-stack')?.scrollTop
+        try {
+            if (scrollHeight && innerHeight && scrollTop &&
+                scrollHeight - innerHeight + scrollTop <= 10
+            ) {
+                setOldestMessageCreation(lastMessage)
+                await mutate()
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
+    useEffect(() => {
+        document.getElementById('scrollable-stack')?.addEventListener("scroll", handelInfiniteScroll)
+        return () => document.getElementById('scrollable-stack')?.removeEventListener("scroll", handelInfiniteScroll)
+    }, [])
 
     const { colorMode } = useColorMode()
 
@@ -195,8 +211,6 @@ export const ChatInterface = () => {
                 <ViewChannelDetailsModal isOpen={isViewDetailsModalOpen} onClose={onViewDetailsModalClose} activeUsers={activeUsers.message} />}
             <AddChannelMemberModal isOpen={isOpen} onClose={onClose} />
             <CommandPalette isOpen={isCommandPaletteOpen} onClose={onCommandPaletteClose} onToggle={onCommandPaletteToggle} />
-            <ScrollToTop onScrollToTop={handleScrollToTop} />
-
         </>
     )
 

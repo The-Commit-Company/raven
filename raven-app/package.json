@@ -31,6 +31,7 @@
     "react-idle-timer": "^5.5.3",
     "react-image-pan-zoom-rotate": "^1.6.0",
     "react-markdown": "^8.0.5",
+    "react-perf-devtool": "^3.1.8",
     "react-quill": "^2.0.0",
     "react-router-dom": "^6.8.1",
     "rehype-raw": "^6.1.1",

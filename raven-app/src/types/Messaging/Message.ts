@@ -9,6 +9,6 @@ export type Message = {
 }
 
 export type MessagesWithDate = {
-    messages: Message[],
-    date: string
-}[]
+    block_type: string,
+    data: Message[]
+}
