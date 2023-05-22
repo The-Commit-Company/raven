@@ -30,7 +30,7 @@ export const ChatInterface = () => {
 
     const { data, error, mutate } = useFrappeGetCall<{ message: MessagesWithDate }>("raven.raven_messaging.doctype.raven_message.raven_message.get_messages_by_date", {
         channel_id: channelData?.name ?? null,
-        start: 0,
+        start_after: 0,
         limit: 20
     })
 

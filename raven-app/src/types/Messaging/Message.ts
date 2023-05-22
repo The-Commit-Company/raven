@@ -6,9 +6,9 @@ export type Message = {
     file: string | null,
     message_type: 'Text' | 'File' | 'Image',
     message_reactions?: string | null,
-    isContinuation?: boolean | null
 }
 
 export type MessagesWithDate = {
-    [date: string]: Message[]
-}
+    block_type: string,
+    data: any,
+}[]
