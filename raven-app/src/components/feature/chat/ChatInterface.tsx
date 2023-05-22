@@ -1,6 +1,6 @@
 import { Avatar, AvatarBadge, Box, Button, ButtonGroup, Center, HStack, Stack, Text, useColorMode, useDisclosure, useToast } from "@chakra-ui/react"
 import { useFrappeCreateDoc, useFrappeGetCall } from "frappe-react-sdk"
-import { useContext } from "react"
+import { useContext, useEffect, useMemo, useState } from "react"
 import { BiGlobe, BiHash, BiLockAlt } from "react-icons/bi"
 import { HiOutlineSearch } from "react-icons/hi"
 import { useFrappeEventListener } from "../../../hooks/useFrappeEventListener"
@@ -26,6 +26,7 @@ export const ChatInterface = () => {
     const userData = useContext(UserDataContext)
     const user = userData?.name
     const peer = Object.keys(channelMembers).filter((member) => member !== user)[0]
+    const [oldestMessageCreation, setOldestMessageCreation] = useState<string | null>(null)
     const { data: channelList, error: channelListError } = useFrappeGetCall<{ message: ChannelData[] }>("raven.raven_channel_management.doctype.raven_channel.raven_channel.get_channel_list")
 
     const { data, error, mutate } = useFrappeGetCall<{ message: MessagesWithDate }>("raven.raven_messaging.doctype.raven_message.raven_message.get_messages_by_date", {
@@ -41,8 +42,6 @@ export const ChatInterface = () => {
             return null
         }
     }, [data])
-
-    console.log(data)
 
     const handelInfiniteScroll = async () => {
         var scrollHeight = document.getElementById('scrollable-stack')?.scrollHeight

@@ -6,11 +6,8 @@ import { MainPage } from './pages/MainPage'
 import { ProtectedRoute } from './utils/auth/ProtectedRoute'
 import { UserProvider } from './utils/auth/UserProvider'
 import { ChannelRedirect } from './utils/channel/ChannelRedirect'
-import { registerObserver } from 'react-perf-devtool'
 
 function App() {
-
-  registerObserver()
 
   return (
     <FrappeProvider url={import.meta.env.VITE_FRAPPE_PATH ?? ''}>
