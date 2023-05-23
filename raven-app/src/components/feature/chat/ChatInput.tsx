@@ -1,4 +1,4 @@
-import { Box, HStack, IconButton, Popover, PopoverContent, PopoverTrigger, Stack, StackDivider, useColorMode, useDisclosure, Wrap, WrapItem } from "@chakra-ui/react"
+import { Box, HStack, IconButton, Popover, PopoverContent, PopoverTrigger, Stack, StackDivider, useColorMode, Wrap, WrapItem } from "@chakra-ui/react"
 import { useCallback, useRef, useState } from "react"
 import { RiSendPlaneFill } from "react-icons/ri"
 import ReactQuill from "react-quill"
@@ -47,7 +47,7 @@ export const ChatInput = ({ channelID, allMembers, allChannels }: ChatInputProps
     const handleKeyDown = (event: React.KeyboardEvent) => {
         if (event.key === 'Enter' && !event.shiftKey) {
             event.preventDefault()
-            onSubmit();
+            onSubmit()
         }
     }
 
@@ -58,19 +58,12 @@ export const ChatInput = ({ channelID, allMembers, allChannels }: ChatInputProps
     })
 
     const onSubmit = () => {
-
-        const editor = reactQuillRef.current?.getEditor()
-        const textWithoutHTML = editor?.getText()
-
-        if (textWithoutHTML && textWithoutHTML?.trim()?.length > 0) {
-            //Remove trailing newline and <br>
-            call({
-                channel_id: channelID,
-                text: text.replace(/(<p><br><\/p>\s*)+$/, '')
-            }).then(() => {
-                setText("")
-            })
-        }
+        call({
+            channel_id: channelID,
+            text: text
+        }).then(() => {
+            setText("")
+        })
         if (files.length > 0) {
             const promises = files.map(async (f: CustomFile) => {
                 let docname = ''
@@ -211,7 +204,10 @@ export const ChatInput = ({ channelID, allMembers, allChannels }: ChatInputProps
                                 ['link', 'code-block']
                             ],
                             linkify: linkifyOptions,
-                            mention
+                            mention,
+                            clipboard: {
+                                matchVisual: false
+                            }
                         }}
                         formats={formats}
                         onKeyDown={handleKeyDown} />

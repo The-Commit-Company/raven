@@ -27,17 +27,24 @@ class RavenMessage(Document):
 
 @frappe.whitelist(methods=['POST'])
 def send_message(channel_id, text):
-    doc = frappe.get_doc({
-        'doctype': 'Raven Message',
-        'channel_id': channel_id,
-        'text': text,
-        'message_type': 'Text'
-    })
-    doc.insert()
-    frappe.publish_realtime('message_received', {
-                            'channel_id': channel_id}, after_commit=True)
-    frappe.db.commit()
-    return "message sent"
+
+    # remove empty paragraphs
+    clean_text = text.replace('<p><br></p>', '').strip()
+    # remove empty list items
+    clean_text = clean_text.replace('<li><br></li>', '').strip()
+
+    if clean_text:
+        doc = frappe.get_doc({
+            'doctype': 'Raven Message',
+            'channel_id': channel_id,
+            'text': clean_text,
+            'message_type': 'Text'
+        })
+        doc.insert()
+        frappe.publish_realtime('message_received', {
+                                'channel_id': channel_id}, after_commit=True)
+        frappe.db.commit()
+        return "message sent"
 
 
 @frappe.whitelist()
