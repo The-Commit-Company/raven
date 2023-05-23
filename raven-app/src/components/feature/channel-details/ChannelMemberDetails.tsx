@@ -1,5 +1,5 @@
 import { SearchIcon } from "@chakra-ui/icons"
-import { Text, Avatar, HStack, Icon, IconButton, Input, InputGroup, InputLeftElement, List, ListItem, Stack, useColorMode, useDisclosure, Button, Box, Center } from "@chakra-ui/react"
+import { Text, Avatar, HStack, Icon, IconButton, Input, InputGroup, InputLeftElement, List, ListItem, Stack, useColorMode, Button, Box, Center } from "@chakra-ui/react"
 import { useContext, useState } from "react"
 import { BsFillCircleFill, BsCircle } from "react-icons/bs"
 import { RiUserAddLine } from "react-icons/ri"
@@ -9,6 +9,7 @@ import { RemoveChannelMemberModal } from "./EditChannelDetails/RemoveChannelMemb
 import { User } from "../../../types/User/User"
 import { UserContext } from "../../../utils/auth/UserProvider"
 import { ChannelContext } from "../../../utils/channel/ChannelProvider"
+import { ModalTypes, useModalManager } from "../../../hooks/useModalManager"
 
 interface MemberDetailsProps {
     members: User[]
@@ -33,10 +34,18 @@ export const ChannelMemberDetails = ({ members, activeUsers }: MemberDetailsProp
         cursor: 'pointer'
     }
 
-    const { isOpen: isAddMembersModalOpen, onOpen: onAddMembersModalOpen, onClose: onAddMembersModalClose } = useDisclosure()
-    const { isOpen: isRemoveMembersModalOpen, onOpen: onRemoveMembersModalOpen, onClose: onRemoveMembersModalClose } = useDisclosure()
+    const modalManager = useModalManager()
+
+    const onAddMembersModalOpen = () => {
+        modalManager.openModal(ModalTypes.AddChannelMember)
+    }
+
+    const onRemoveMembersModalOpen = () => {
+        modalManager.openModal(ModalTypes.RemoveChannelMember)
+    }
+
     const [selectedMember, setSelectedMember] = useState('')
-    const filteredMembers = members.filter(member => member.full_name.toLowerCase().includes(debouncedText.toLowerCase()));
+    const filteredMembers = members.filter(member => member.full_name.toLowerCase().includes(debouncedText.toLowerCase()))
 
     const onMemberSelect = (member: User) => {
         setSelectedMember(member.name)
@@ -71,7 +80,8 @@ export const ChannelMemberDetails = ({ members, activeUsers }: MemberDetailsProp
                                     variant='outline' />
                                 <Text>Add members</Text>
                             </HStack>
-                        </ListItem>}
+                        </ListItem>
+                    }
 
                     {filteredMembers.length > 0 ? (
                         <List>
@@ -106,8 +116,13 @@ export const ChannelMemberDetails = ({ members, activeUsers }: MemberDetailsProp
                     )}
                 </List>
             </Box>
-            <AddChannelMemberModal isOpen={isAddMembersModalOpen} onClose={onAddMembersModalClose} />
-            {selectedMember && <RemoveChannelMemberModal isOpen={isRemoveMembersModalOpen} onClose={onRemoveMembersModalClose} user_id={selectedMember} />}
+            <AddChannelMemberModal
+                isOpen={modalManager.modalType === ModalTypes.AddChannelMember}
+                onClose={modalManager.closeModal} />
+            {selectedMember && <RemoveChannelMemberModal
+                isOpen={modalManager.modalType === ModalTypes.RemoveChannelMember}
+                onClose={modalManager.closeModal}
+                user_id={selectedMember} />}
         </Stack>
     )
 }

@@ -1,4 +1,4 @@
-import { Box, Stack, useColorMode, Divider, Button, useDisclosure } from "@chakra-ui/react"
+import { Box, Stack, useColorMode, Divider, Button } from "@chakra-ui/react"
 import { useContext } from "react"
 import { ChannelContext } from "../../../utils/channel/ChannelProvider"
 import { BiHash, BiLockAlt } from "react-icons/bi"
@@ -6,12 +6,27 @@ import { BsTrash, BsArchive } from "react-icons/bs"
 import { ChangeChannelType } from "./ChangeChannelType"
 import { ArchiveChannel } from "./ArchiveChannel"
 import { DeleteChannel } from "./DeleteChannel"
+import { ModalTypes, useModalManager } from "../../../hooks/useModalManager"
 
 type Props = {
     onClose: () => void
 }
 
 export const ChannelSettings = ({ onClose }: Props) => {
+
+    const modalManager = useModalManager()
+
+    const onDeleteChannelModalOpen = () => {
+        modalManager.openModal(ModalTypes.DeleteChannel)
+    }
+
+    const onArchiveChannelModalOpen = () => {
+        modalManager.openModal(ModalTypes.ArchiveChannel)
+    }
+
+    const onChannelTypeChangeModalOpen = () => {
+        modalManager.openModal(ModalTypes.ChangeChannelType)
+    }
 
     const { colorMode } = useColorMode()
     const { channelData } = useContext(ChannelContext)
@@ -33,10 +48,6 @@ export const ChannelSettings = ({ onClose }: Props) => {
         },
         rounded: 'none'
     }
-
-    const { isOpen: isChannelTypeChangeModalOpen, onOpen: onChannelTypeChangeModalOpen, onClose: onChannelTypeChangeModalClose } = useDisclosure()
-    const { isOpen: isArchiveChannelModalOpen, onOpen: onArchiveChannelModalOpen, onClose: onArchiveChannelModalClose } = useDisclosure()
-    const { isOpen: isDeleteChannelModalOpen, onOpen: onDeleteChannelModalOpen, onClose: onDeleteChannelModalClose } = useDisclosure()
 
     return (
         <Stack spacing='4'>
@@ -68,9 +79,16 @@ export const ChannelSettings = ({ onClose }: Props) => {
                     </Button>
                 </Stack>
             </Box>
-            <ChangeChannelType isOpen={isChannelTypeChangeModalOpen} onClose={onChannelTypeChangeModalClose} />
-            <ArchiveChannel isOpen={isArchiveChannelModalOpen} onClose={onArchiveChannelModalClose} onCloseViewDetails={onClose} />
-            <DeleteChannel isOpen={isDeleteChannelModalOpen} onClose={onDeleteChannelModalClose} />
+            <ChangeChannelType
+                isOpen={modalManager.modalType === ModalTypes.ChangeChannelType}
+                onClose={modalManager.closeModal} />
+            <ArchiveChannel
+                isOpen={modalManager.modalType === ModalTypes.ArchiveChannel}
+                onClose={modalManager.closeModal}
+                onCloseViewDetails={onClose} />
+            <DeleteChannel
+                isOpen={modalManager.modalType === ModalTypes.DeleteChannel}
+                onClose={modalManager.closeModal} />
         </Stack>
     )
 }

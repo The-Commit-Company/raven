@@ -8,9 +8,9 @@ import { AddOrEditChannelDescriptionModal } from "../../feature/channel-details/
 import { AddChannelMemberModal } from "../../feature/channels/AddChannelMemberModal"
 import { UserDataContext } from "../../../utils/user/UserDataProvider"
 import { UserProfileDrawer } from "../../feature/user-details/UserProfileDrawer"
+import { ModalTypes, useModalManager } from "../../../hooks/useModalManager"
 
 export const EmptyStateForSearch = () => {
-
     return (
         <Flex justify="center" align="center" height="50vh" width="full">
             <VStack>
@@ -30,8 +30,16 @@ export const EmptyStateForSearch = () => {
 export const EmptyStateForChannel = () => {
 
     const { channelData } = useContext(ChannelContext)
-    const { isOpen: isChannelDescriptionModalOpen, onOpen: onChannelDescriptionModalOpen, onClose: onChannelDescriptionModalClose } = useDisclosure()
-    const { isOpen: isAddMembersModalOpen, onOpen: onAddMembersModalOpen, onClose: onAddMembersModalClose } = useDisclosure()
+
+    const modalManager = useModalManager()
+
+    const onChannelDescriptionModalOpen = () => {
+        modalManager.openModal(ModalTypes.EditChannelDescription)
+    }
+
+    const onAddMembersModalOpen = () => {
+        modalManager.openModal(ModalTypes.AddChannelMember)
+    }
 
     return (
         <>
@@ -51,8 +59,12 @@ export const EmptyStateForChannel = () => {
                     {channelData?.type !== 'Open' && <Button leftIcon={<BiUserPlus fontSize={'1.1rem'} />} onClick={onAddMembersModalOpen}>Add people</Button>}
                 </ButtonGroup>
             </Stack>
-            <AddOrEditChannelDescriptionModal isOpen={isChannelDescriptionModalOpen} onClose={onChannelDescriptionModalClose} />
-            <AddChannelMemberModal isOpen={isAddMembersModalOpen} onClose={onAddMembersModalClose} />
+            <AddOrEditChannelDescriptionModal
+                isOpen={modalManager.modalType === ModalTypes.EditChannelDescription}
+                onClose={modalManager.closeModal} />
+            <AddChannelMemberModal
+                isOpen={modalManager.modalType === ModalTypes.AddChannelMember}
+                onClose={modalManager.closeModal} />
         </>
     )
 }

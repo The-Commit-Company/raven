@@ -16,6 +16,7 @@ interface CommandPaletteProps {
     onClose: () => void,
     onToggle: () => void
 }
+
 export const CommandPalette = ({ isOpen, onClose, onToggle }: CommandPaletteProps) => {
 
     const ref = React.useRef<HTMLDivElement | null>(null)
@@ -29,11 +30,13 @@ export const CommandPalette = ({ isOpen, onClose, onToggle }: CommandPaletteProp
     const { data: activeUsers, error: activeUsersError } = useFrappeGetCall<{ message: string[] }>('raven.api.user_availability.get_active_users')
     const { call, error: channelError, loading, reset } = useFrappePostCall<{ message: string }>("raven.raven_channel_management.doctype.raven_channel.raven_channel.create_direct_message_channel")
     let navigate = useNavigate()
+
     const gotoDMChannel = async (user: string) => {
         reset()
         const result = await call({ user_id: user })
         navigate(`/channel/${result?.message}`)
     }
+
     const { data: users, error: usersError } = useFrappeGetDocList<User>("User", {
         fields: ["full_name", "user_image", "name"],
         filters: [["name", "!=", "Guest"]]
@@ -119,6 +122,7 @@ export const CommandPalette = ({ isOpen, onClose, onToggle }: CommandPaletteProp
                     {activePage === 'people' && activeUsers && users && <People input={debouncedText} users={users} activeUsers={activeUsers?.message} gotoDMChannel={gotoDMChannel} currentUser={currentUser} />}
                     {activePage === 'in' && lastPage && (lastPage === 'messages' ? <FindIn input={debouncedText} tabIndex={0} /> : <FindIn input={debouncedText} tabIndex={1} />)}
                     {activePage === 'from' && users && lastPage && (lastPage === 'messages' ? <FindFrom input={debouncedText} users={users} tabIndex={0} /> : <FindFrom input={debouncedText} users={users} tabIndex={1} />)}
+
                     <Box cmdk-footer="">
                         <HStack spacing={1}>
                             <Text color='gray.500'>Not the results that you expected? File an issue on</Text>
@@ -127,6 +131,7 @@ export const CommandPalette = ({ isOpen, onClose, onToggle }: CommandPaletteProp
                             </Link>.
                         </HStack>
                     </Box>
+
                 </Command>
             </ModalContent>
         </Modal>
