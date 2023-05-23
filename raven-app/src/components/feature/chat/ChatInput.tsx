@@ -157,7 +157,12 @@ export const ChatInput = ({ channelID, allMembers, allChannels }: ChatInputProps
     }
 
     const onEmojiClick = (emojiObject: EmojiClickData) => {
-        setText(text + emojiObject.emoji)
+        // remove html tags from text
+        const textWithoutHTML = text.replace(/(<([^>]+)>)/gi, "")
+        // add emoji to text
+        const newText = `${textWithoutHTML} ${emojiObject.emoji}`
+        // set text
+        setText(newText)
         modalManager.closeModal()
     }
 
