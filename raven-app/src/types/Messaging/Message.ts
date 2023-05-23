@@ -1,20 +1,14 @@
 export type Message = {
-    text: string,
-    file: string,
-    message_type: string,
-    creation: Date,
     name: string,
     owner: string,
-    message_reactions: string
+    creation: Date,
+    text: string | null,
+    file: string | null,
+    message_type: 'Text' | 'File' | 'Image',
+    message_reactions?: string | null,
 }
 
-export type MessageWithContinuationCheck = {
-    text: string,
-    file: string,
-    message_type: string,
-    creation: Date,
-    name: string,
-    owner: string,
-    message_reactions: string,
-    isContinuation: boolean
-}
+export type MessagesWithDate = {
+    block_type: string,
+    data: any,
+}[]

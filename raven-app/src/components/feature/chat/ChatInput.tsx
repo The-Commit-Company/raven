@@ -1,4 +1,4 @@
-import { Box, HStack, IconButton, Popover, PopoverContent, PopoverTrigger, Stack, StackDivider, useColorMode, useDisclosure, Wrap, WrapItem } from "@chakra-ui/react"
+import { Box, HStack, IconButton, Popover, PopoverContent, PopoverTrigger, Stack, StackDivider, useColorMode, Wrap, WrapItem } from "@chakra-ui/react"
 import { useCallback, useRef, useState } from "react"
 import { RiSendPlaneFill } from "react-icons/ri"
 import ReactQuill from "react-quill"
@@ -18,6 +18,7 @@ import { CustomFile, FileDrop } from "../file-upload/FileDrop"
 import { FileListItem } from "../file-upload/FileListItem"
 import { getFileExtension } from "../../../utils/operations"
 import { AlertBanner } from "../../layout/AlertBanner"
+import { ModalTypes, useModalManager } from "../../../hooks/useModalManager"
 
 interface ChatInputProps {
     channelID: string,
@@ -46,7 +47,7 @@ export const ChatInput = ({ channelID, allMembers, allChannels }: ChatInputProps
     const handleKeyDown = (event: React.KeyboardEvent) => {
         if (event.key === 'Enter' && !event.shiftKey) {
             event.preventDefault()
-            onSubmit();
+            onSubmit()
         }
     }
 
@@ -57,19 +58,12 @@ export const ChatInput = ({ channelID, allMembers, allChannels }: ChatInputProps
     })
 
     const onSubmit = () => {
-
-        const editor = reactQuillRef.current?.getEditor()
-        const textWithoutHTML = editor?.getText()
-
-        if (textWithoutHTML && textWithoutHTML?.trim()?.length > 0) {
-            //Remove trailing newline and <br>
-            call({
-                channel_id: channelID,
-                text: text.replace(/(<p><br><\/p>\s*)+$/, '')
-            }).then(() => {
-                setText("")
-            })
-        }
+        call({
+            channel_id: channelID,
+            text: text
+        }).then(() => {
+            setText("")
+        })
         if (files.length > 0) {
             const promises = files.map(async (f: CustomFile) => {
                 let docname = ''
@@ -109,7 +103,7 @@ export const ChatInput = ({ channelID, allMembers, allChannels }: ChatInputProps
     const onMentionIconClick = () => {
         if (reactQuillRef.current) {
             const editor = reactQuillRef.current?.getEditor()
-            editor.getModule('mention').openMenu("@");
+            editor.getModule('mention').openMenu("@")
         }
     }
 
@@ -156,11 +150,20 @@ export const ChatInput = ({ channelID, allMembers, allChannels }: ChatInputProps
 
     const { colorMode } = useColorMode()
 
-    const { isOpen: showEmojiPicker, onToggle: onEmojiPickerToggle, onClose: onEmojiPickerClose } = useDisclosure()
+    const modalManager = useModalManager()
+
+    const onEmojiPickerOpen = () => {
+        modalManager.openModal(ModalTypes.EmojiPicker)
+    }
 
     const onEmojiClick = (emojiObject: EmojiClickData) => {
-        setText(text + emojiObject.emoji)
-        onEmojiPickerClose()
+        // remove html tags from text
+        const textWithoutHTML = text.replace(/(<([^>]+)>)/gi, "")
+        // add emoji to text
+        const newText = `${textWithoutHTML} ${emojiObject.emoji}`
+        // set text
+        setText(newText)
+        modalManager.closeModal()
     }
 
     const fileInputRef = useRef<any>(null)
@@ -206,7 +209,10 @@ export const ChatInput = ({ channelID, allMembers, allChannels }: ChatInputProps
                                 ['link', 'code-block']
                             ],
                             linkify: linkifyOptions,
-                            mention
+                            mention,
+                            clipboard: {
+                                matchVisual: false
+                            }
                         }}
                         formats={formats}
                         onKeyDown={handleKeyDown} />
@@ -221,14 +227,14 @@ export const ChatInput = ({ channelID, allMembers, allChannels }: ChatInputProps
                                 <IconButton size='xs' aria-label={"add file"} onClick={fileButtonClicked} icon={<IoMdAdd />} rounded='xl' />
                                 <Box>
                                     <Popover
-                                        isOpen={showEmojiPicker}
-                                        onClose={onEmojiPickerClose}
+                                        isOpen={modalManager.modalType === ModalTypes.EmojiPicker}
+                                        onClose={modalManager.closeModal}
                                         placement='top-end'
                                         isLazy
                                         lazyBehavior="unmount"
                                         gutter={48}>
                                         <PopoverTrigger>
-                                            <IconButton size='xs' variant='ghost' aria-label={"pick emoji"} icon={<FaRegSmile fontSize='1.0rem' />} onClick={onEmojiPickerToggle} />
+                                            <IconButton size='xs' variant='ghost' aria-label={"pick emoji"} icon={<FaRegSmile fontSize='1.0rem' />} onClick={onEmojiPickerOpen} />
                                         </PopoverTrigger>
                                         <PopoverContent border={'none'} rounded='lg'>
                                             {/* @ts-ignore */}

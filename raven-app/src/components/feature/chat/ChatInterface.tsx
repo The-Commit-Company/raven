@@ -1,11 +1,11 @@
 import { Avatar, AvatarBadge, Box, Button, ButtonGroup, Center, HStack, Stack, Text, useColorMode, useDisclosure, useToast } from "@chakra-ui/react"
-import { useFrappeCreateDoc, useFrappeGetCall, useFrappeGetDocList } from "frappe-react-sdk"
-import { useContext } from "react"
+import { useFrappeCreateDoc, useFrappeGetCall } from "frappe-react-sdk"
+import { useContext, useEffect, useMemo, useState } from "react"
 import { BiGlobe, BiHash, BiLockAlt } from "react-icons/bi"
 import { HiOutlineSearch } from "react-icons/hi"
 import { useFrappeEventListener } from "../../../hooks/useFrappeEventListener"
 import { ChannelData } from "../../../types/Channel/Channel"
-import { Message } from "../../../types/Messaging/Message"
+import { MessagesWithDate } from "../../../types/Messaging/Message"
 import { ChannelContext } from "../../../utils/channel/ChannelProvider"
 import { UserDataContext } from "../../../utils/user/UserDataProvider"
 import { AlertBanner } from "../../layout/AlertBanner"
@@ -18,6 +18,7 @@ import { CommandPalette } from "../command-palette"
 import { ViewOrAddMembersButton } from "../view-or-add-members/ViewOrAddMembersButton"
 import { ChatHistory } from "./ChatHistory"
 import { ChatInput } from "./ChatInput"
+import { ModalTypes, useModalManager } from "../../../hooks/useModalManager"
 
 export const ChatInterface = () => {
 
@@ -25,16 +26,44 @@ export const ChatInterface = () => {
     const userData = useContext(UserDataContext)
     const user = userData?.name
     const peer = Object.keys(channelMembers).filter((member) => member !== user)[0]
+    const [oldestMessageCreation, setOldestMessageCreation] = useState<string | null>(null)
     const { data: channelList, error: channelListError } = useFrappeGetCall<{ message: ChannelData[] }>("raven.raven_channel_management.doctype.raven_channel.raven_channel.get_channel_list")
-    const { data, error, mutate } = useFrappeGetDocList<Message>('Raven Message', {
-        fields: ["text", "creation", "name", "owner", "message_type", "file", "message_reactions"],
-        filters: [["channel_id", "=", channelData?.name ?? null]],
-        orderBy: {
-            field: "creation",
-            order: 'desc'
-        },
-        limit: 500
+
+    const { data, error, mutate } = useFrappeGetCall<{ message: MessagesWithDate }>("raven.raven_messaging.doctype.raven_message.raven_message.get_messages_by_date", {
+        channel_id: channelData?.name ?? null,
+        start_after: 0,
+        limit: 20
     })
+
+    const lastMessage = useMemo(() => {
+        if (data) {
+            return Object.keys(data.message)[0]
+        } else {
+            return null
+        }
+    }, [data])
+
+    const handelInfiniteScroll = async () => {
+        var scrollHeight = document.getElementById('scrollable-stack')?.scrollHeight
+        var innerHeight = document.getElementById('scrollable-stack')?.clientHeight
+        var scrollTop = document.getElementById('scrollable-stack')?.scrollTop
+        try {
+            if (scrollHeight && innerHeight && scrollTop &&
+                scrollHeight - innerHeight + scrollTop <= 10
+            ) {
+                setOldestMessageCreation(lastMessage)
+                await mutate()
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
+    useEffect(() => {
+        document.getElementById('scrollable-stack')?.addEventListener("scroll", handelInfiniteScroll)
+        return () => document.getElementById('scrollable-stack')?.removeEventListener("scroll", handelInfiniteScroll)
+    }, [])
+
     const { colorMode } = useColorMode()
 
     useFrappeEventListener('message_received', (data) => {
@@ -69,9 +98,15 @@ export const ChatInterface = () => {
         }
     })
 
+    const modalManager = useModalManager()
+
+    const onAddMemberModalOpen = () => {
+        modalManager.openModal(ModalTypes.AddChannelMember)
+    }
+
     const { isOpen: isViewDetailsModalOpen, onOpen: onViewDetailsModalOpen, onClose: onViewDetailsModalClose } = useDisclosure()
-    const { isOpen, onOpen, onClose } = useDisclosure()
     const { isOpen: isCommandPaletteOpen, onClose: onCommandPaletteClose, onToggle: onCommandPaletteToggle } = useDisclosure()
+
     const { createDoc, error: joinError } = useFrappeCreateDoc()
     const toast = useToast()
     const { data: activeUsers, error: activeUsersError } = useFrappeGetCall<{ message: string[] }>('raven.api.user_availability.get_active_users')
@@ -89,18 +124,17 @@ export const ChatInterface = () => {
                 variant: 'solid',
                 isClosable: true
             })
-        })
-            .catch((e) => {
-                toast({
-                    title: 'Error: could not join channel.',
-                    status: 'error',
-                    duration: 3000,
-                    position: 'bottom',
-                    variant: 'solid',
-                    isClosable: true,
-                    description: `${e.message}`
-                })
+        }).catch((e) => {
+            toast({
+                title: 'Error: could not join channel.',
+                status: 'error',
+                duration: 3000,
+                position: 'bottom',
+                variant: 'solid',
+                isClosable: true,
+                description: `${e.message}`
             })
+        })
     }
 
     if (error) {
@@ -152,11 +186,11 @@ export const ChatInterface = () => {
                         Search
                     </Button>
                     {channelData?.is_direct_message == 0 && activeUsers?.message &&
-                        <ViewOrAddMembersButton onClickViewMembers={onViewDetailsModalOpen} onClickAddMembers={onOpen} activeUsers={activeUsers.message} />}
+                        <ViewOrAddMembersButton onClickViewMembers={onViewDetailsModalOpen} onClickAddMembers={onAddMemberModalOpen} activeUsers={activeUsers.message} />}
                 </HStack>
             </PageHeader>
-            <Stack h='calc(100vh - 54px)' justify={'flex-end'} p={4} overflow='hidden' mt='16'>
-                {data && channelData && <ChatHistory messages={data} isDM={channelData?.is_direct_message} />}
+            <Stack h='calc(100vh)' justify={'flex-end'} p={4} overflow='hidden' pt='16'>
+                {data && channelData && <ChatHistory parsed_messages={data.message} isDM={channelData?.is_direct_message} />}
                 {channelData?.is_archived == 0 && ((user && user in channelMembers) || channelData?.type === 'Open' ?
                     <ChatInput channelID={channelData?.name ?? ''} allChannels={allChannels} allMembers={allMembers} /> :
                     <Box>
@@ -179,10 +213,17 @@ export const ChatInterface = () => {
                     </Stack>
                 </Box>}
             </Stack>
-            {activeUsers?.message &&
-                <ViewChannelDetailsModal isOpen={isViewDetailsModalOpen} onClose={onViewDetailsModalClose} activeUsers={activeUsers.message} />}
-            <AddChannelMemberModal isOpen={isOpen} onClose={onClose} />
-            <CommandPalette isOpen={isCommandPaletteOpen} onClose={onCommandPaletteClose} onToggle={onCommandPaletteToggle} />
+            {activeUsers?.message && <ViewChannelDetailsModal
+                isOpen={isViewDetailsModalOpen}
+                onClose={onViewDetailsModalClose}
+                activeUsers={activeUsers.message} />}
+            <AddChannelMemberModal
+                isOpen={modalManager.modalType === ModalTypes.AddChannelMember}
+                onClose={modalManager.closeModal} />
+            <CommandPalette
+                isOpen={isCommandPaletteOpen}
+                onClose={onCommandPaletteClose}
+                onToggle={onCommandPaletteToggle} />
         </>
     )
 

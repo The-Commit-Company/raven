@@ -9,7 +9,7 @@ export interface GetFileSearchResult {
 
 export interface GetMessageSearchResult {
     channel_id: string
-    creation: string
+    creation: Date
     text: string
     name: string
     owner: string

@@ -1,22 +1,39 @@
-import { Box, Button, ButtonGroup, HStack, IconButton, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Popover, PopoverContent, PopoverTrigger, Stack, StackDivider, useColorMode, useDisclosure, useToast } from "@chakra-ui/react"
+import { Box, Button, ButtonGroup, HStack, IconButton, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Popover, PopoverContent, PopoverTrigger, Stack, useColorMode, useDisclosure, useToast } from "@chakra-ui/react"
 import EmojiPicker, { EmojiClickData } from "emoji-picker-react"
-import { useFrappeUpdateDoc } from "frappe-react-sdk"
-import { useCallback, useEffect, useState } from "react"
+import { useFrappeGetCall, useFrappeUpdateDoc } from "frappe-react-sdk"
+import { useCallback, useContext, useEffect, useState } from "react"
 import { useHotkeys } from "react-hotkeys-hook"
 import { FaRegSmile } from "react-icons/fa"
 import ReactQuill from "react-quill"
 import { AlertBanner } from "../../layout/AlertBanner"
+import { ChannelContext } from "../../../utils/channel/ChannelProvider"
+import { ChannelData } from "../../../types/Channel/Channel"
 
 interface EditMessageModalProps {
     isOpen: boolean,
     onClose: (refresh?: boolean) => void,
     channelMessageID: string,
-    allMembers: { id: string; value: string; }[],
-    allChannels: { id: string; value: string; }[],
     originalText: string
 }
 
-export const EditMessageModal = ({ isOpen, onClose, channelMessageID, allMembers, allChannels, originalText }: EditMessageModalProps) => {
+export const EditMessageModal = ({ isOpen, onClose, channelMessageID, originalText }: EditMessageModalProps) => {
+
+    const { channelMembers } = useContext(ChannelContext)
+    const { data: channelList, error: channelListError } = useFrappeGetCall<{ message: ChannelData[] }>("raven.raven_channel_management.doctype.raven_channel.raven_channel.get_channel_list")
+
+    const allMembers = Object.values(channelMembers).map((member) => {
+        return {
+            id: member.name,
+            value: member.full_name
+        }
+    })
+
+    const allChannels = channelList?.message.map((channel) => {
+        return {
+            id: channel.name,
+            value: channel.channel_name
+        }
+    })
 
     const toast = useToast()
     const { updateDoc, error, loading, reset } = useFrappeUpdateDoc()
@@ -116,7 +133,7 @@ export const EditMessageModal = ({ isOpen, onClose, channelMessageID, allMembers
     }
 
     return (
-        <Modal isOpen={isOpen} onClose={onClose}>
+        <Modal isOpen={isOpen} onClose={onClose} size={'4xl'}>
             <ModalOverlay />
             <ModalContent>
                 <ModalHeader>Edit Message</ModalHeader>

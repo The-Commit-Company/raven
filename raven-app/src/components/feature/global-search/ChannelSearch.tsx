@@ -40,6 +40,7 @@ export const ChannelSearch = ({ onToggleMyChannels, isOpenMyChannels, onToggleOt
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setSearchText(e.target.value)
     }
+
     const { colorMode } = useColorMode()
 
     const { data, error, isLoading, isValidating } = useFrappeGetCall<{ message: GetChannelSearchResult[] }>("raven.api.search.get_search_result", {

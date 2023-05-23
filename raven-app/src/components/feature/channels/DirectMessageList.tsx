@@ -27,7 +27,6 @@ export const DirectMessageList = (userData: { userData: User | null }) => {
         setSelectedUser([user, `/channel/${result?.message}`])
     }
 
-
     const { data, error } = useFrappeGetCall<{ message: string }>('raven.api.user_availability.get_active_users')
 
     if (usersError) {

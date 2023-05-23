@@ -1,54 +1,44 @@
-import { Box, Button, HStack, IconButton, Link, Popover, PopoverContent, PopoverTrigger, Portal, Tooltip, useColorMode, useDisclosure } from '@chakra-ui/react'
+import { Box, Button, HStack, IconButton, Link, Popover, PopoverContent, PopoverTrigger, Portal, Tooltip, useColorMode } from '@chakra-ui/react'
 import { BsDownload, BsEmojiSmile } from 'react-icons/bs'
-import { DeleteMessageModal } from '../message-details/DeleteMessageModal'
-import { EditMessageModal } from '../message-details/EditMessageModal'
-import { useFrappeCreateDoc, useFrappeGetCall } from 'frappe-react-sdk'
-import { ChannelData } from '../../../types/Channel/Channel'
+import { useFrappeCreateDoc } from 'frappe-react-sdk'
 import { useContext, useEffect } from 'react'
-import { ChannelContext } from '../../../utils/channel/ChannelProvider'
 import { AiOutlineEdit } from 'react-icons/ai'
 import { VscTrash } from 'react-icons/vsc'
 import { IoBookmarkOutline } from 'react-icons/io5'
 import { UserContext } from '../../../utils/auth/UserProvider'
-import EmojiPicker, { EmojiClickData } from 'emoji-picker-react';
+import { DeleteMessageModal } from '../message-details/DeleteMessageModal'
+import { EditMessageModal } from '../message-details/EditMessageModal'
+import EmojiPicker, { EmojiClickData } from 'emoji-picker-react'
+import { ModalTypes, useModalManager } from '../../../hooks/useModalManager'
 
 interface ActionButtonPaletteProps {
     name: string
-    image?: string
-    file?: string
-    text?: string
+    file?: string | null
+    text?: string | null
     user: string
     showButtons: {}
     handleScroll: (newState: boolean) => void
 }
 
-export const ActionsPalette = ({ name, image, file, text, user, showButtons, handleScroll }: ActionButtonPaletteProps) => {
+export const ActionsPalette = ({ name, file, text, user, showButtons, handleScroll }: ActionButtonPaletteProps) => {
 
-    const { channelMembers } = useContext(ChannelContext)
-    const { data: channelList, error: channelListError } = useFrappeGetCall<{ message: ChannelData[] }>("raven.raven_channel_management.doctype.raven_channel.raven_channel.get_channel_list")
+    const modalManager = useModalManager()
 
-    const allMembers = Object.values(channelMembers).map((member) => {
-        return {
-            id: member.name,
-            value: member.full_name
-        }
-    })
+    const onDeleteMessageModalOpen = () => {
+        modalManager.openModal(ModalTypes.DeleteMessage)
+    }
 
-    const allChannels = channelList?.message.map((channel) => {
-        return {
-            id: channel.name,
-            value: channel.channel_name
-        }
-    })
+    const onEditMessageModalOpen = () => {
+        text && modalManager.openModal(ModalTypes.EditMessage)
+    }
 
-    const { isOpen: isDeleteMessageModalOpen, onOpen: onDeleteMessageModalOpen, onClose: onDeleteMessageModalClose } = useDisclosure()
-    const { isOpen: isEditMessageModalOpen, onOpen: onEditMessageModalOpen, onClose: onEditMessageModalClose } = useDisclosure()
-
-    const { isOpen: showEmojiPicker, onToggle: onEmojiPickerToggle, onClose: onEmojiPickerClose } = useDisclosure()
+    const onEmojiPickerOpen = () => {
+        modalManager.openModal(ModalTypes.EmojiPicker)
+    }
 
     const onEmojiClick = (emojiObject: EmojiClickData) => {
         saveReaction(emojiObject.emoji)
-        onEmojiPickerClose()
+        modalManager.closeModal()
     }
 
     const { colorMode } = useColorMode()
@@ -56,7 +46,6 @@ export const ActionsPalette = ({ name, image, file, text, user, showButtons, han
     const BORDERCOLOR = colorMode === 'light' ? 'gray.200' : 'gray.700'
 
     const { currentUser } = useContext(UserContext)
-
     const { createDoc } = useFrappeCreateDoc()
 
     const saveReaction = (emoji: string) => {
@@ -68,8 +57,8 @@ export const ActionsPalette = ({ name, image, file, text, user, showButtons, han
     }
 
     useEffect(() => {
-        handleScroll(!showEmojiPicker)
-    }, [showEmojiPicker])
+        handleScroll(modalManager.modalType !== ModalTypes.EmojiPicker)
+    }, [modalManager.modalType])
 
     return (
         <Box
@@ -91,15 +80,15 @@ export const ActionsPalette = ({ name, image, file, text, user, showButtons, han
                 <EmojiButton emoji={'🎉'} label={'great job!'} onClick={() => saveReaction('🎉')} />
                 <Box>
                     <Popover
-                        isOpen={showEmojiPicker}
-                        onClose={onEmojiPickerClose}
+                        isOpen={modalManager.modalType === ModalTypes.EmojiPicker}
+                        onClose={modalManager.closeModal}
                         placement='auto-end'
                         isLazy
                         lazyBehavior="unmount"
                         gutter={48}>
                         <PopoverTrigger>
                             <Tooltip hasArrow label='find another reaction' size='xs' placement='top' rounded='md'>
-                                <IconButton size='xs' aria-label={"pick emoji"} icon={<BsEmojiSmile />} onClick={onEmojiPickerToggle} />
+                                <IconButton size='xs' aria-label={"pick emoji"} icon={<BsEmojiSmile />} onClick={onEmojiPickerOpen} />
                             </Tooltip>
                         </PopoverTrigger>
                         <Portal>
@@ -127,17 +116,6 @@ export const ActionsPalette = ({ name, image, file, text, user, showButtons, han
                         icon={<IoBookmarkOutline fontSize={'0.8rem'} />}
                         size='xs' />
                 </Tooltip>
-                {image &&
-                    <Tooltip hasArrow label='download' size='xs' placement='top' rounded='md'>
-                        <IconButton
-                            as={Link}
-                            href={image}
-                            isExternal
-                            aria-label="download file"
-                            icon={<BsDownload />}
-                            size='xs' />
-                    </Tooltip>
-                }
                 {file &&
                     <Tooltip hasArrow label='download' size='xs' placement='top' rounded='md'>
                         <IconButton
@@ -159,8 +137,19 @@ export const ActionsPalette = ({ name, image, file, text, user, showButtons, han
                     </Tooltip>
                 }
             </HStack>
-            <DeleteMessageModal isOpen={isDeleteMessageModalOpen} onClose={onDeleteMessageModalClose} channelMessageID={name} />
-            {text && <EditMessageModal isOpen={isEditMessageModalOpen} onClose={onEditMessageModalClose} channelMessageID={name} allMembers={allMembers} allChannels={allChannels ?? []} originalText={text} />}
+            <DeleteMessageModal
+                isOpen={modalManager.modalType === ModalTypes.DeleteMessage}
+                onClose={modalManager.closeModal}
+                channelMessageID={name}
+            />
+            {text &&
+                <EditMessageModal
+                    isOpen={modalManager.modalType === ModalTypes.EditMessage}
+                    onClose={modalManager.closeModal}
+                    channelMessageID={name}
+                    originalText={text}
+                />
+            }
         </Box>
     )
 }
