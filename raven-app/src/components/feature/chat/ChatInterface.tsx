@@ -33,6 +33,8 @@ export const ChatInterface = () => {
         channel_id: channelData?.name ?? null,
         start_after: 0,
         limit: 500,
+    }, undefined, {
+        revalidateOnFocus: false
     })
 
     const { colorMode } = useColorMode()
