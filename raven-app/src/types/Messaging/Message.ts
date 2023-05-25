@@ -9,6 +9,6 @@ export type Message = {
 }
 
 export type MessagesWithDate = {
-    block_type: string,
+    block_type: 'date' | 'message_group',
     data: any,
 }[]
