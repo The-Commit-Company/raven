@@ -46,7 +46,7 @@ export const DirectMessageList = (userData: { userData: User | null }) => {
                 <SidebarGroupLabel>Direct Messages</SidebarGroupLabel>
             </SidebarGroupItem>
             <SidebarGroup>
-                <SidebarGroupList maxH={'32vh'} overflowY={'scroll'}>
+                <SidebarGroupList maxH={'38vh'} overflowY={'scroll'}>
                     {showData && users?.map((user) =>
                         <SidebarButtonItem onClick={() => gotoDMChannel(user.name)} isLoading={loading} key={user.name} active={selectedUser.toString() == [user.name, currentAddress].toString()} py={1}>
                             <HStack>

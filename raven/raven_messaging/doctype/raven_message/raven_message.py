@@ -92,6 +92,7 @@ def get_messages(channel_id, start_after, limit):
 
     return query.run(as_dict=True)
 
+
 def parse_messages(messages):
     message_list = []
     message_group = {
@@ -110,27 +111,24 @@ def parse_messages(messages):
             ):
                 message_group['data'].append(message)
             elif message['creation'].date() != last_message['creation'].date():
-                if len(message_group['data']) > 1:
-                    message_group['block_type'] = 'message_group'
-                else:
-                    message_group['block_type'] = 'message'
+                message_group['block_type'] = 'message_group'
                 message_list.append(message_group)
                 message_list.append(
                     {'block_type': 'date', 'data': [last_message['creation'].date()]})
                 message_group = {
                     'block_type': 'message_group', 'data': [message]}
             else:
-                if len(message_group['data']) > 1:
-                    message_group['block_type'] = 'message_group'
-                else:
-                    message_group['block_type'] = 'message'
+                message_group['block_type'] = 'message_group'
                 message_list.append(message_group)
                 message_group = {
                     'block_type': 'message_group', 'data': [message]}
         else:
             message_group = {'block_type': 'message_group', 'data': [message]}
         last_message = message
+    message_list.append({'block_type': 'date', 'data': [
+        messages[len(messages) - 1]['creation'].date()]})
     return message_list
+
 
 @frappe.whitelist()
 def get_messages_by_date(channel_id, start_after, limit):

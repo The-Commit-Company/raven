@@ -51,7 +51,6 @@ export const ChatHistory = ({ parsed_messages, isDM }: ChatHistoryProps) => {
                                     <DividerWithText>{DateObjectToFormattedDateString(new Date(block.data))}</DividerWithText>
                                 </Box>
                             )
-                        case 'message':
                         case 'message_group':
                             return block.data.map((message: Message, index: number) => {
                                 const isLastMessage = index === block.data.length - 1
