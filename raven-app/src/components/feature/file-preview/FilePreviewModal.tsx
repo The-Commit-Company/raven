@@ -1,9 +1,8 @@
-import { Avatar, Button, Center, HStack, Link, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Stack, StackDivider, Text, useColorMode } from "@chakra-ui/react"
+import { Avatar, Center, HStack, Link, Modal, ModalBody, Image, ModalFooter, ModalCloseButton, ModalContent, ModalHeader, ModalOverlay, Stack, StackDivider, Text, useColorMode } from "@chakra-ui/react"
 import { DateObjectToTimeString } from "../../../utils/operations"
 import { useContext } from "react"
 import { ChannelContext } from "../../../utils/channel/ChannelProvider"
 import { BsDownload } from "react-icons/bs"
-import ReactPanZoom from "react-image-pan-zoom-rotate"
 import { Message } from "../../../types/Messaging/Message"
 
 interface FilePreviewModalProps {
@@ -19,7 +18,7 @@ export const FilePreviewModal = ({ isOpen, onClose, message }: FilePreviewModalP
     const textColor = colorMode === 'light' ? 'gray.800' : 'gray.50'
 
     return (
-        <Modal isOpen={isOpen} onClose={onClose} size='6xl'>
+        <Modal isOpen={isOpen} onClose={onClose} size='6xl' scrollBehavior="inside">
             <ModalOverlay />
             <ModalContent>
                 <ModalHeader>
@@ -31,7 +30,11 @@ export const FilePreviewModal = ({ isOpen, onClose, message }: FilePreviewModalP
                                     <Text fontSize='md' lineHeight={'0.9'} fontWeight="bold" as='span' color={textColor}>{channelMembers?.[message.owner]?.full_name ?? message.owner}</Text>
                                     <Text fontSize="xs" lineHeight={'0.9'} color="gray.500">{DateObjectToTimeString(message.creation)}</Text>
                                 </HStack>
-                                <Text fontSize='xs'>File: "{message.file?.split('/')[3]}"</Text>
+                                {message.file &&
+                                    <HStack spacing='1' align='center'><BsDownload size='12' />
+                                        <Link textDecor='underline' _hover={{ color: 'blue.500' }} isExternal fontSize='xs' href={message.file}>{message.file?.split('/')[3]}</Link>
+                                    </HStack>
+                                }
                             </Stack>
                         </HStack>
                     }
@@ -40,36 +43,12 @@ export const FilePreviewModal = ({ isOpen, onClose, message }: FilePreviewModalP
 
                 <ModalBody>
                     {message && message.message_type === 'Image' && message.file && <Center>
-                        <div
-                            style={{
-                                width: '40vw',
-                                position: "relative",
-                                overflow: "hidden"
-                            }}>
-                            <ReactPanZoom
-                                alt="uploaded image"
-                                image={message.file}
-                            />
-                        </div>
+                        <Image src={message.file} alt="uploaded image" maxH={"70vh"} maxW="full" objectFit={'contain'} objectPosition={'center'} />
                     </Center>
                     }
                     {message && message.message_type === 'File' && message.file && <iframe src={message.file} width="100%" height={'550px'} />}
                 </ModalBody>
-
-                {message && message.file &&
-                    <ModalFooter>
-                        <Button
-                            as={Link}
-                            href={message.file}
-                            isExternal
-                            aria-label="download file"
-                            size='xs'
-                            rightIcon={<BsDownload />}>
-                            Download
-                        </Button>
-                    </ModalFooter>
-                }
-
+                <ModalFooter></ModalFooter>
             </ModalContent>
         </Modal>
     )

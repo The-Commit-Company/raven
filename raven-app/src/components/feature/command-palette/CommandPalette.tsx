@@ -111,7 +111,7 @@ export const CommandPalette = ({ isOpen, onClose, onToggle }: CommandPaletteProp
                                         return "Search messages, files, people, etc.";
                                 }
                             }()}
-                            value={debouncedText}
+                            value={inputValue}
                             onValueChange={setInputValue} />
                     </HStack>
 

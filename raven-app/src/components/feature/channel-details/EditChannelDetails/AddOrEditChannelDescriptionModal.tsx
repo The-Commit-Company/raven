@@ -27,9 +27,11 @@ export const AddOrEditChannelDescriptionModal = ({ isOpen, onClose }: RenameChan
     const toast = useToast()
 
     useEffect(() => {
-        reset()
+        reset({
+            channel_description: channelData?.channel_description
+        })
         resetUpdate()
-    }, [isOpen, reset])
+    }, [isOpen, reset, channelData])
 
     const onSubmit = (data: RenameChannelForm) => {
         updateDoc("Raven Channel", channelData?.name ?? null, {
