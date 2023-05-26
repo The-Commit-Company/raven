@@ -94,7 +94,7 @@ def get_messages(channel_id):
 
 
 def parse_messages(messages):
-    
+
     message_list = []
     message_group = {
         'block_type': 'message_group',
@@ -112,20 +112,24 @@ def parse_messages(messages):
             elif message['creation'].date() != last_message['creation'].date():
                 message_group['block_type'] = 'message_group'
                 message_list.append(message_group)
-                message_list.append({'block_type': 'date', 'data': [last_message['creation'].date()]})
-                message_group = {'block_type': 'message_group', 'data': [message]}
+                message_list.append({'block_type': 'date', 'data': [
+                                    last_message['creation'].date()]})
+                message_group = {
+                    'block_type': 'message_group', 'data': [message]}
             else:
                 message_group['block_type'] = 'message_group'
                 message_list.append(message_group)
-                message_group = {'block_type': 'message_group', 'data': [message]}
+                message_group = {
+                    'block_type': 'message_group', 'data': [message]}
         else:
             message_group = {'block_type': 'message_group', 'data': [message]}
         last_message = message
 
     message_group['block_type'] = 'message_group'
     message_list.append(message_group)
-    message_list.append({'block_type': 'date', 'data': [messages[len(messages) - 1]['creation'].date()]})
-
+    if len(messages) > 0:
+        message_list.append({'block_type': 'date', 'data': [
+                            messages[len(messages) - 1]['creation'].date()]})
     return message_list
 
 
