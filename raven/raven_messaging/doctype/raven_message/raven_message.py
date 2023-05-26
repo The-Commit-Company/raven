@@ -76,7 +76,7 @@ def get_last_channel():
         return 'general'
 
 
-def get_messages(channel_id, start_after, limit):
+def get_messages(channel_id):
     raven_message = frappe.qb.DocType('Raven Message')
 
     query = (frappe.qb.from_(raven_message)
@@ -88,22 +88,21 @@ def get_messages(channel_id, start_after, limit):
                      raven_message.message_type,
                      raven_message.message_reactions)
              .where(raven_message.channel_id == channel_id)
-             .orderby(raven_message.creation, order=Order.desc).limit(limit).offset(start_after))
+             .orderby(raven_message.creation, order=Order.desc))
 
     return query.run(as_dict=True)
 
 
 def parse_messages(messages):
+    
     message_list = []
     message_group = {
         'block_type': 'message_group',
         'data': []
     }
     last_message = None
+
     for message in messages:
-        # if message is from the same user,
-        # then the second message is a continuation of the first message
-        # if sent within 2 minutes of the first message
         if last_message and message_group['data'] != []:
             if (
                 message['owner'] == last_message['owner']
@@ -113,24 +112,24 @@ def parse_messages(messages):
             elif message['creation'].date() != last_message['creation'].date():
                 message_group['block_type'] = 'message_group'
                 message_list.append(message_group)
-                message_list.append(
-                    {'block_type': 'date', 'data': [last_message['creation'].date()]})
-                message_group = {
-                    'block_type': 'message_group', 'data': [message]}
+                message_list.append({'block_type': 'date', 'data': [last_message['creation'].date()]})
+                message_group = {'block_type': 'message_group', 'data': [message]}
             else:
                 message_group['block_type'] = 'message_group'
                 message_list.append(message_group)
-                message_group = {
-                    'block_type': 'message_group', 'data': [message]}
+                message_group = {'block_type': 'message_group', 'data': [message]}
         else:
             message_group = {'block_type': 'message_group', 'data': [message]}
         last_message = message
-    message_list.append({'block_type': 'date', 'data': [
-        messages[len(messages) - 1]['creation'].date()]})
+
+    message_group['block_type'] = 'message_group'
+    message_list.append(message_group)
+    message_list.append({'block_type': 'date', 'data': [messages[len(messages) - 1]['creation'].date()]})
+
     return message_list
 
 
 @frappe.whitelist()
-def get_messages_by_date(channel_id, start_after, limit):
-    messages = get_messages(channel_id, start_after, limit)
+def get_messages_by_date(channel_id):
+    messages = get_messages(channel_id)
     return parse_messages(messages)
