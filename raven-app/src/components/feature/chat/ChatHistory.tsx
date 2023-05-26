@@ -81,6 +81,8 @@ export const ChatHistory = ({ parsed_messages, isDM }: ChatHistoryProps) => {
                 components={{
                     Header: () => (isDM === 1 ? <EmptyStateForDM /> : <EmptyStateForChannel />),
                 }}
+                alignToBottom={true}
+                followOutput={'smooth'}
             />
 
             <UserProfileDrawer
