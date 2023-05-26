@@ -88,7 +88,7 @@ def get_messages(channel_id):
                      raven_message.message_type,
                      raven_message.message_reactions)
              .where(raven_message.channel_id == channel_id)
-             .orderby(raven_message.creation, order=Order.desc))
+             .orderby(raven_message.creation, order=Order.asc))
 
     return query.run(as_dict=True)
 
@@ -102,18 +102,22 @@ def parse_messages(messages):
     }
     last_message = None
 
+    if messages:
+        first_message_date = messages[0]['creation'].date()
+        message_list.append({'block_type': 'date', 'data': [first_message_date]})
+
     for message in messages:
         if last_message and message_group['data'] != []:
             if (
                 message['owner'] == last_message['owner']
-                and (last_message['creation'] - message['creation']) < timedelta(minutes=2)
+                and (message['creation'] - last_message['creation']) < timedelta(minutes=2)
             ):
                 message_group['data'].append(message)
             elif message['creation'].date() != last_message['creation'].date():
                 message_group['block_type'] = 'message_group'
                 message_list.append(message_group)
-                message_list.append({'block_type': 'date', 'data': [last_message['creation'].date()]})
                 message_group = {'block_type': 'message_group', 'data': [message]}
+                message_list.append({'block_type': 'date', 'data': [message['creation'].date()]})
             else:
                 message_group['block_type'] = 'message_group'
                 message_list.append(message_group)
@@ -124,7 +128,6 @@ def parse_messages(messages):
 
     message_group['block_type'] = 'message_group'
     message_list.append(message_group)
-    message_list.append({'block_type': 'date', 'data': [messages[len(messages) - 1]['creation'].date()]})
 
     return message_list
 

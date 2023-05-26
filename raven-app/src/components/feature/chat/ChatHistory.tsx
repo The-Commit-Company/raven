@@ -50,14 +50,14 @@ export const ChatHistory = ({ parsed_messages, isDM }: ChatHistoryProps) => {
                 )
             case 'message_group':
                 return block.data.map((message: Message, messageIndex: number) => {
-                    const isLastMessage = messageIndex === block.data.length - 1
-                    const ChatMessageComponent = isLastMessage ? ChatMessageBox : ContinuationChatMessageBox
+                    const isFirstMessage = messageIndex === 0
+                    const ChatMessageComponent = isFirstMessage ? ChatMessageBox : ContinuationChatMessageBox
                     const commonProps = {
                         key: message.name,
                         message: message,
                         handleScroll: handleScroll,
                     }
-                    const additionalProps = isLastMessage ? { onOpenUserDetailsDrawer } : {}
+                    const additionalProps = isFirstMessage ? { onOpenUserDetailsDrawer } : {}
                     return (
                         <ChatMessageComponent {...commonProps} {...additionalProps}>
                             {message.message_type === 'Text' && message.text && <MarkdownRenderer content={message.text} />}
