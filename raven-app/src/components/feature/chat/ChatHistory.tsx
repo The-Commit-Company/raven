@@ -73,13 +73,14 @@ export const ChatHistory = ({ parsed_messages, isDM }: ChatHistoryProps) => {
 
     return (
         <>
-            {isDM === 1 ? <EmptyStateForDM /> : <EmptyStateForChannel />}
-
             <Virtuoso
                 style={{ height: '100%', overflowY: isScrollable ? 'scroll' : 'hidden' }}
                 totalCount={parsed_messages.length}
                 itemContent={index => renderItem(parsed_messages[index])}
                 initialTopMostItemIndex={parsed_messages.length - 1}
+                components={{
+                    Header: () => (isDM === 1 ? <EmptyStateForDM /> : <EmptyStateForChannel />),
+                }}
             />
 
             <UserProfileDrawer
