@@ -41,11 +41,10 @@ export const ChatHistory = ({ parsed_messages, isDM }: ChatHistoryProps) => {
     }
 
     const renderItem = (block: { block_type: 'date' | 'message_group', data: any }) => {
-
         switch (block.block_type) {
             case 'date':
                 return (
-                    <Box p={4} key={block.data} zIndex={1}>
+                    <Box p={4} key={block.data} zIndex={1} position={'relative'}>
                         <DividerWithText>{DateObjectToFormattedDateString(new Date(block.data))}</DividerWithText>
                     </Box>
                 )
@@ -80,6 +79,7 @@ export const ChatHistory = ({ parsed_messages, isDM }: ChatHistoryProps) => {
                 style={{ height: '100%', overflowY: isScrollable ? 'scroll' : 'hidden' }}
                 totalCount={parsed_messages.length}
                 itemContent={index => renderItem(parsed_messages[index])}
+                initialTopMostItemIndex={parsed_messages.length - 1}
             />
 
             <UserProfileDrawer
