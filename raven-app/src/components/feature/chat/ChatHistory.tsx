@@ -13,6 +13,7 @@ import { ModalTypes, useModalManager } from "../../../hooks/useModalManager";
 import { User } from "../../../types/User/User";
 import { FilePreviewModal } from "../file-preview/FilePreviewModal";
 import { ContinuationChatMessageBox } from "./ChatMessage/ContinuationChatMessage";
+import { Virtuoso } from 'react-virtuoso';
 
 interface ChatHistoryProps {
     parsed_messages: MessagesWithDate,
