@@ -198,7 +198,7 @@ export const People = ({ input, users, activeUsers, gotoDMChannel, currentUser }
                                 gotoDMChannel(user.name)
                             }}>
                             <HStack p='2' spacing={3}>
-                                <Avatar size='sm' src={user.user_image} name={user.full_name} borderRadius='md' />
+                                <Avatar size='xs' src={user.user_image} name={user.full_name} borderRadius='md' />
                                 <HStack spacing={2}>
                                     {user.name === currentUser ? <Text>{user.full_name} (you)</Text> : <Text>{user.full_name}</Text>}
                                     {activeUsers.includes(user.name) ?
