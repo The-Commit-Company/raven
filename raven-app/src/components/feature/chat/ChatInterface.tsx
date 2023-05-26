@@ -30,9 +30,7 @@ export const ChatInterface = () => {
     const { data: channelList, error: channelListError } = useFrappeGetCall<{ message: ChannelData[] }>("raven.raven_channel_management.doctype.raven_channel.raven_channel.get_channel_list")
 
     const { data, error, mutate } = useFrappeGetCall<{ message: MessagesWithDate }>("raven.raven_messaging.doctype.raven_message.raven_message.get_messages_by_date", {
-        channel_id: channelData?.name ?? null,
-        start_after: 0,
-        limit: 500,
+        channel_id: channelData?.name ?? null
     }, undefined, {
         revalidateOnFocus: false
     })
