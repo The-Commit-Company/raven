@@ -1,4 +1,4 @@
-import { Stack, Box } from "@chakra-ui/react";
+import { Box } from "@chakra-ui/react";
 import { DividerWithText } from "../../layout/Divider/DividerWithText";
 import { DateObjectToFormattedDateString } from "../../../utils/operations";
 import { Message, MessagesWithDate } from "../../../types/Messaging/Message";
@@ -16,12 +16,11 @@ import { ContinuationChatMessageBox } from "./ChatMessage/ContinuationChatMessag
 import { Virtuoso } from 'react-virtuoso';
 
 interface ChatHistoryProps {
-    parsed_messages: MessagesWithDate,
-    isDM: number,
+    parsed_messages: MessagesWithDate
+    isDM: number
 }
 
 export const ChatHistory = ({ parsed_messages, isDM }: ChatHistoryProps) => {
-
     const [isScrollable, setScrollable] = useState<boolean>(true)
     const handleScroll = (newState: boolean) => {
         setScrollable(newState)
@@ -41,46 +40,54 @@ export const ChatHistory = ({ parsed_messages, isDM }: ChatHistoryProps) => {
         }
     }
 
+    const renderItem = (block: { block_type: 'date' | 'message_group', data: any }) => {
+
+        switch (block.block_type) {
+            case 'date':
+                return (
+                    <Box p={4} key={block.data} zIndex={1}>
+                        <DividerWithText>{DateObjectToFormattedDateString(new Date(block.data))}</DividerWithText>
+                    </Box>
+                )
+            case 'message_group':
+                return block.data.map((message: Message, messageIndex: number) => {
+                    const isLastMessage = messageIndex === block.data.length - 1
+                    const ChatMessageComponent = isLastMessage ? ChatMessageBox : ContinuationChatMessageBox
+                    const commonProps = {
+                        key: message.name,
+                        message: message,
+                        handleScroll: handleScroll,
+                    }
+                    const additionalProps = isLastMessage ? { onOpenUserDetailsDrawer } : {}
+                    return (
+                        <ChatMessageComponent {...commonProps} {...additionalProps}>
+                            {message.message_type === 'Text' && message.text && <MarkdownRenderer content={message.text} />}
+                            {message.message_type === 'File' && message.file && <FileMessage message={message} onFilePreviewModalOpen={onFilePreviewModalOpen} />}
+                            {message.message_type === 'Image' && message.file && <ImageMessage message={message} onFilePreviewModalOpen={onFilePreviewModalOpen} />}
+                        </ChatMessageComponent>
+                    )
+                })
+            default:
+                return null
+        }
+    }
+
     return (
         <>
-            <Stack spacing={0} justify="end" direction="column-reverse" overflowY={isScrollable ? "scroll" : "hidden"}>
-                {parsed_messages.map((block) => {
-                    switch (block.block_type) {
-                        case 'date':
-                            return (
-                                <Box p={4} key={block.data} zIndex={1}>
-                                    <DividerWithText>{DateObjectToFormattedDateString(new Date(block.data))}</DividerWithText>
-                                </Box>
-                            )
-                        case 'message_group':
-                            return block.data.map((message: Message, index: number) => {
-                                const isLastMessage = index === block.data.length - 1
-                                const ChatMessageComponent = isLastMessage ? ChatMessageBox : ContinuationChatMessageBox
-                                const commonProps = {
-                                    key: message.name,
-                                    message: message,
-                                    handleScroll: handleScroll,
-                                }
-                                const additionalProps = isLastMessage ? { onOpenUserDetailsDrawer } : {}
-                                return (
-                                    <ChatMessageComponent {...commonProps} {...additionalProps}>
-                                        {message.message_type === 'Text' && message.text && <MarkdownRenderer content={message.text} />}
-                                        {message.message_type === 'File' && message.file && <FileMessage message={message} onFilePreviewModalOpen={onFilePreviewModalOpen} />}
-                                        {message.message_type === 'Image' && message.file && <ImageMessage message={message} onFilePreviewModalOpen={onFilePreviewModalOpen} />}
-                                    </ChatMessageComponent>
-                                )
-                            })
-                        default:
-                            return null
-                    }
-                })}
-                {isDM === 1 ? <EmptyStateForDM /> : <EmptyStateForChannel />}
-            </Stack>
+            {isDM === 1 ? <EmptyStateForDM /> : <EmptyStateForChannel />}
+
+            <Virtuoso
+                style={{ height: '100%', overflowY: isScrollable ? 'scroll' : 'hidden' }}
+                totalCount={parsed_messages.length}
+                itemContent={index => renderItem(parsed_messages[index])}
+            />
+
             <UserProfileDrawer
                 isOpen={modalManager.modalType === ModalTypes.UserDetails}
                 onClose={modalManager.closeModal}
                 user={modalManager.modalContext}
             />
+
             <FilePreviewModal
                 isOpen={modalManager.modalType === ModalTypes.FilePreview}
                 onClose={modalManager.closeModal}
