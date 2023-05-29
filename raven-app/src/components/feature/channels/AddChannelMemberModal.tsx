@@ -59,15 +59,29 @@ export const AddChannelMemberModal = ({ isOpen, onClose }: AddChannelMemberModal
           })
           onClose()
         }).catch((e) => {
-          toast({
-            duration: 3000,
-            position: 'bottom',
-            variant: 'solid',
-            isClosable: true,
-            status: 'error',
-            title: 'Error: could not add the members to the channel',
-            description: `${e.message}`
-          })
+          if (e.httpStatus === 409) {
+            toast({
+              duration: 4000,
+              position: 'bottom',
+              variant: 'solid',
+              isClosable: true,
+              status: 'warning',
+              title: `${e.httpStatus} - skipped pre-existing members`,
+              description: 'One or more members already exist in this channel'
+            })
+            onClose()
+          }
+          else {
+            toast({
+              duration: 3000,
+              position: 'bottom',
+              variant: 'solid',
+              isClosable: true,
+              status: 'error',
+              title: 'An error occurred',
+              description: `${e.httpStatus} - ${e.httpStatusText}`
+            })
+          }
         })
     }
   }
