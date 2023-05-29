@@ -26,11 +26,11 @@ interface ChatInputProps {
     allChannels: { id: string; value: string; }[]
 }
 
+Quill.register('modules/linkify', Linkify)
+
 export const fileExt = ['jpg', 'JPG', 'jpeg', 'JPEG', 'png', 'PNG', 'gif', 'GIF']
 
 export const ChatInput = ({ channelID, allMembers, allChannels }: ChatInputProps) => {
-
-    Quill.register('modules/linkify', Linkify)
 
     const { call } = useFrappePostCall('raven.raven_messaging.doctype.raven_message.raven_message.send_message')
     const { createDoc, loading: creatingDoc, error: errorCreatingDoc, reset: resetCreateDoc } = useFrappeCreateDoc()

@@ -28,7 +28,7 @@ export const EditMessageModal = ({ isOpen, onClose, channelMessageID, originalTe
         }
     })
 
-    const allChannels = channelList?.message.map((channel) => {
+    const allChannels = channelList?.message.map((channel: ChannelData) => {
         return {
             id: channel.name,
             value: channel.channel_name

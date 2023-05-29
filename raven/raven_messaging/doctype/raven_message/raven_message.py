@@ -94,45 +94,36 @@ def get_messages(channel_id):
 
 
 def parse_messages(messages):
-    
-    message_list = []
-    message_group = {
-        'block_type': 'message_group',
-        'data': []
-    }
-    last_message = None
 
-    if messages:
-        first_message_date = messages[0]['creation'].date()
-        message_list.append({'block_type': 'date', 'data': [first_message_date]})
+    messages_with_date_header = []
+    previous_message = None 
 
-    for message in messages:
-        if last_message and message_group['data'] != []:
-            if (
-                message['owner'] == last_message['owner']
-                and (message['creation'] - last_message['creation']) < timedelta(minutes=2)
-            ):
-                message_group['data'].append(message)
-            elif message['creation'].date() != last_message['creation'].date():
-                message_group['block_type'] = 'message_group'
-                message_list.append(message_group)
-                message_group = {'block_type': 'message_group', 'data': [message]}
-                message_list.append({'block_type': 'date', 'data': [message['creation'].date()]})
-            else:
-                message_group['block_type'] = 'message_group'
-                message_list.append(message_group)
-                message_group = {'block_type': 'message_group', 'data': [message]}
-        else:
-            message_group = {'block_type': 'message_group', 'data': [message]}
-        last_message = message
+    for i in range(len(messages)):
+        message = messages[i]
+        is_continuation = (
+            previous_message and
+            message['owner'] == previous_message['owner'] and
+            (message['creation'] - previous_message['creation']) < timedelta(minutes=2)
+        )
+        message['is_continuation'] = int(bool(is_continuation))
 
-    message_group['block_type'] = 'message_group'
-    message_list.append(message_group)
+        if i == 0 or message['creation'].date() != previous_message['creation'].date():
+            messages_with_date_header.append({
+                'block_type': 'date',
+                'data': message['creation'].date()
+            })
 
-    return message_list
+        messages_with_date_header.append({
+            'block_type': 'message',
+            'data': message
+        })
+
+        previous_message = message 
+
+    return messages_with_date_header
 
 
 @frappe.whitelist()
-def get_messages_by_date(channel_id):
+def get_messages_with_dates(channel_id):
     messages = get_messages(channel_id)
     return parse_messages(messages)

@@ -27,7 +27,7 @@ export const EmptyStateForSearch = () => {
     )
 }
 
-export const EmptyStateForChannel = () => {
+const EmptyStateForChannel = () => {
 
     const { channelData } = useContext(ChannelContext)
 
@@ -70,7 +70,7 @@ export const EmptyStateForChannel = () => {
 }
 
 
-export const EmptyStateForDM = () => {
+const EmptyStateForDM = () => {
 
     const { channelMembers } = useContext(ChannelContext)
     const { channelData } = useContext(ChannelContext)
@@ -119,4 +119,20 @@ export const EmptyStateForDM = () => {
             }
         </Box>
     )
+}
+
+interface ChannelHistoryFirstMessageProps {
+    isDM: 1 | 0
+}
+
+export const ChannelHistoryFirstMessage = ({ isDM }: ChannelHistoryFirstMessageProps) => {
+    if (isDM === 1) {
+        return (
+            <EmptyStateForDM />
+        )
+    } else {
+        return (
+            <EmptyStateForChannel />
+        )
+    }
 }

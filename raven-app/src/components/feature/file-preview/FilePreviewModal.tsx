@@ -3,12 +3,12 @@ import { DateObjectToTimeString } from "../../../utils/operations"
 import { useContext } from "react"
 import { ChannelContext } from "../../../utils/channel/ChannelProvider"
 import { BsDownload } from "react-icons/bs"
-import { Message } from "../../../types/Messaging/Message"
+import { FileMessage } from "../../../types/Messaging/Message"
 
 interface FilePreviewModalProps {
     isOpen: boolean,
     onClose: () => void,
-    message: Message
+    message: FileMessage
 }
 
 export const FilePreviewModal = ({ isOpen, onClose, message }: FilePreviewModalProps) => {
