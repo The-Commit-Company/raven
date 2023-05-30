@@ -17,6 +17,7 @@ import { SelectInput, SelectOption } from '../search-filters/SelectInput'
 import { Sort } from '../sorting'
 import { AiOutlineFileExcel, AiOutlineFileImage, AiOutlineFilePdf, AiOutlineFilePpt, AiOutlineFileText } from 'react-icons/ai'
 import './styles.css'
+import { FileMessage } from '../../../types/Messaging/Message'
 
 interface FilterInput {
     'from-user-filter': SelectOption[],
@@ -197,9 +198,8 @@ export const FileSearch = ({ onToggleMyChannels, isOpenMyChannels, dateOption, i
                                 onSortOrderChange={(order) => setSortOrder(order)} />
                                 <Stack spacing={4} overflowY='scroll'>
 
-                                    {data.message.map((f) => {
+                                    {data.message.map((f: FileMessage) => {
                                         return (
-                                            f.message_type != 'Text' &&
                                             <HStack spacing={3}>
                                                 <Center maxW='50px'>
                                                     {f.message_type === 'File' && <Icon as={getFileExtensionIcon(f.file.split('.')[1])} boxSize="9" />}
@@ -207,7 +207,7 @@ export const FileSearch = ({ onToggleMyChannels, isOpenMyChannels, dateOption, i
                                                 </Center>
                                                 <Stack spacing={0}>
                                                     {f.file && <Text fontSize='sm' as={Link} href={f.file} isExternal>{f.file.split('/')[3]}</Text>}
-                                                    {users && <Text fontSize='xs' color='gray.500'>Shared by {users.find((user) => user.name === f.owner)?.full_name} on {DateObjectToFormattedDateString(new Date(f.creation ?? ''))}</Text>}
+                                                    {users && <Text fontSize='xs' color='gray.500'>Shared by {users.find((user: User) => user.name === f.owner)?.full_name} on {DateObjectToFormattedDateString(new Date(f.creation ?? ''))}</Text>}
                                                 </Stack>
                                             </HStack>
                                         )

@@ -13,6 +13,8 @@ import { ChannelContext } from "../../../utils/channel/ChannelProvider"
 import { getFileExtensionIcon } from "../../../utils/layout/fileExtensionIcon"
 import GlobalSearch from "../global-search/GlobalSearch"
 import { MarkdownRenderer } from "../markdown-viewer/MarkdownRenderer"
+import { FileMessage } from "../../../types/Messaging/Message"
+import { ChannelData } from "../../../types/Channel/Channel"
 
 interface Props {
     searchChange: Function
@@ -158,7 +160,7 @@ export const Files = ({ searchChange, input, isGlobalSearchModalOpen, onGlobalSe
                         <Box><Spinner size={'xs'} color='gray.400' /></Box>
                     </Center>
                 </Command.Loading>}
-                {data?.message?.map(f => <Item key={f.name}
+                {data?.message?.map((f: FileMessage) => <Item key={f.name}
                 ><HStack spacing={3}>
                         <Center maxW='50px'>
                             {f.message_type === 'File' && <Icon as={getFileExtensionIcon(f.file.split('.')[1])} boxSize="6" />}
@@ -189,7 +191,7 @@ export const Channels = ({ input, isGlobalSearchModalOpen, onGlobalSearchModalOp
                         <Box><Spinner size={'xs'} color='gray.400' /></Box>
                     </Center>
                 </Command.Loading>}
-                {data?.results?.map(r => <Item key={r.value} value={r.value} onSelect={() => {
+                {data?.results?.map((r: { value: string, description: string, label: string }) => <Item key={r.value} value={r.value} onSelect={() => {
                     navigate(`/channel/${r.value}`)
                     onClose()
                 }}>{r.description.includes("Private") && <BiLockAlt /> || r.description.includes("Public") && <BiHash /> || r.description.includes("Open") && <BiGlobe />}{r.label}</Item>)}
@@ -247,7 +249,7 @@ export const FindIn = ({ input, tabIndex, isGlobalSearchModalOpen, onGlobalSearc
                         <Box><Spinner size={'xs'} color='gray.400' /></Box>
                     </Center>
                 </Command.Loading>}
-                {data?.results?.map(r => <Item key={r.value} value={r.value} onSelect={() => {
+                {data?.results?.map((r: { value: string, description: string, label: string }) => <Item key={r.value} value={r.value} onSelect={() => {
                     onGlobalSearchModalOpen()
                     setInFilter(r.value)
                 }}>{r.description.includes("Private") && <BiLockAlt /> || r.description.includes("Public") && <BiHash /> || r.description.includes("Open") && <BiGlobe />}{r.label}</Item>)}
@@ -331,7 +333,7 @@ export const LoadOptions = ({ doctype, input, filters }: { doctype: string, inpu
                     <Box><Spinner size={'xs'} color='gray.400' /></Box>
                 </Center>
             </Command.Loading>}
-            {data?.results?.map(r => <Item key={r.value} value={r.value} onSelect={() => {
+            {data?.results?.map((r: { value: string, description: string, label: string }) => <Item key={r.value} value={r.value} onSelect={() => {
                 switch (doctype) {
                     case 'Raven Channel':
                         navigate(`/channel/${r.value}`)
