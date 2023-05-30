@@ -52,3 +52,14 @@ export const getFileExtension = (filename: string) => {
     const extension = filename.substring(filename.lastIndexOf('.') + 1, filename.length);
     return extension;
 }
+
+/**
+ * Function to return name of a file name without extension
+ * @param filename name of the file with extension
+ * @returns name of the file without extension
+ */
+export const getFileName = (filename: string) => {
+
+    const name = filename.substring(0, filename.lastIndexOf('.'));
+    return name;
+}

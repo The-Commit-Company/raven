@@ -3,7 +3,7 @@ import { DividerWithText } from "../../layout/Divider/DividerWithText";
 import { DateObjectToFormattedDateString } from "../../../utils/operations";
 import { DateBlock, FileMessage, MessageBlock, MessagesWithDate } from "../../../types/Messaging/Message";
 import { ChannelHistoryFirstMessage } from "../../layout/EmptyState/EmptyState";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { ChatMessageBox } from "./ChatMessage/ChatMessageBox";
 import { MarkdownRenderer } from "../markdown-viewer/MarkdownRenderer";
 import { FileMessageBlock } from "./ChatMessage/FileMessage";
@@ -12,9 +12,10 @@ import { ModalTypes, useModalManager } from "../../../hooks/useModalManager";
 import { User } from "../../../types/User/User";
 import { FilePreviewModal } from "../file-preview/FilePreviewModal";
 import { Virtuoso } from 'react-virtuoso';
+import { AnimatePresence, motion } from "framer-motion";
 
 interface ChatHistoryProps {
-    parsed_messages: MessagesWithDate
+    parsed_messages: MessagesWithDate,
     isDM: 1 | 0
 }
 
@@ -38,7 +39,8 @@ export const ChatHistory = ({ parsed_messages, isDM }: ChatHistoryProps) => {
             modalManager.openModal(ModalTypes.FilePreview, {
                 file: message.file,
                 owner: message.owner,
-                creation: message.creation
+                creation: message.creation,
+                message_type: message.message_type
             })
         }
     }
@@ -53,16 +55,20 @@ export const ChatHistory = ({ parsed_messages, isDM }: ChatHistoryProps) => {
         }
         if (block.block_type === 'message') {
             return (
-                <div key={block.data.name}>
-                    <ChatMessageBox message={block.data} handleScroll={handleScroll} onOpenUserDetailsDrawer={onOpenUserDetailsDrawer}>
-                        {block.data.message_type === 'Text' && <MarkdownRenderer content={block.data.text} />}
-                        {block.data.message_type === 'File' || block.data.message_type === 'Image' && <FileMessageBlock {...block.data} onFilePreviewModalOpen={onFilePreviewModalOpen} />}
-                    </ChatMessageBox>
-                </div>
+                <AnimatePresence>
+                    <motion.div key={block.data.name} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.4 }}>
+                        <ChatMessageBox message={block.data} handleScroll={handleScroll} onOpenUserDetailsDrawer={onOpenUserDetailsDrawer}>
+                            {block.data.message_type === 'Text' && <MarkdownRenderer content={block.data.text} />}
+                            {block.data.message_type === 'File' || block.data.message_type === 'Image' && <FileMessageBlock {...block.data} onFilePreviewModalOpen={onFilePreviewModalOpen} />}
+                        </ChatMessageBox>
+                    </motion.div>
+                </AnimatePresence>
             )
         }
         return null
     }
+
+    const virtuosoRef = useRef(null)
 
     return (
         <>
@@ -74,6 +80,7 @@ export const ChatHistory = ({ parsed_messages, isDM }: ChatHistoryProps) => {
                 components={{
                     Header: () => <ChannelHistoryFirstMessage isDM={isDM} />,
                 }}
+                ref={virtuosoRef}
                 alignToBottom={true}
                 followOutput={'auto'}
             />
@@ -87,7 +94,7 @@ export const ChatHistory = ({ parsed_messages, isDM }: ChatHistoryProps) => {
             <FilePreviewModal
                 isOpen={modalManager.modalType === ModalTypes.FilePreview}
                 onClose={modalManager.closeModal}
-                message={modalManager.modalContent}
+                {...modalManager.modalContent}
             />
         </>
     )

@@ -14,7 +14,7 @@ import { getFileExtensionIcon } from "../../../utils/layout/fileExtensionIcon"
 import GlobalSearch from "../global-search/GlobalSearch"
 import { MarkdownRenderer } from "../markdown-viewer/MarkdownRenderer"
 import { FileMessage } from "../../../types/Messaging/Message"
-import { ChannelData } from "../../../types/Channel/Channel"
+import { getFileExtension, getFileName } from "../../../utils/operations"
 
 interface Props {
     searchChange: Function
@@ -163,11 +163,11 @@ export const Files = ({ searchChange, input, isGlobalSearchModalOpen, onGlobalSe
                 {data?.message?.map((f: FileMessage) => <Item key={f.name}
                 ><HStack spacing={3}>
                         <Center maxW='50px'>
-                            {f.message_type === 'File' && <Icon as={getFileExtensionIcon(f.file.split('.')[1])} boxSize="6" />}
+                            {f.message_type === 'File' && <Icon as={getFileExtensionIcon(getFileExtension(f.file))} boxSize="6" />}
                             {f.message_type === 'Image' && <Image src={f.file} alt='File preview' boxSize={6} rounded='md' fit='cover' />}
                         </Center>
                         <Stack spacing={0}>
-                            {f.file && <Link fontSize='sm' href={f.file} isExternal>{f.file.split('/')[3]}</Link>}
+                            {f.file && <Link fontSize='sm' href={f.file} isExternal>{getFileName(f.file)}</Link>}
                         </Stack>
                     </HStack></Item>)}
             </Command.Group>
