@@ -10,17 +10,28 @@ import { DeleteMessageModal } from '../message-details/DeleteMessageModal'
 import { EditMessageModal } from '../message-details/EditMessageModal'
 import EmojiPicker, { EmojiClickData } from 'emoji-picker-react'
 import { ModalTypes, useModalManager } from '../../../hooks/useModalManager'
+import { FileMessage, Message, TextMessage } from '../../../types/Messaging/Message'
 
 interface ActionButtonPaletteProps {
-    name: string
-    file?: string | null
-    text?: string | null
-    user: string
+    message: Message,
     showButtons: {}
     handleScroll: (newState: boolean) => void
 }
 
-export const ActionsPalette = ({ name, file, text, user, showButtons, handleScroll }: ActionButtonPaletteProps) => {
+export const ActionsPalette = ({ message, showButtons, handleScroll }: ActionButtonPaletteProps) => {
+
+    const { name, owner, message_type } = message
+
+    let text = ''
+    let file = ''
+
+    if (message_type === 'File' || message_type === 'Image') {
+        const { file: fileValue } = message as FileMessage
+        file = fileValue
+    } else if (message_type === 'Text') {
+        const { text: textValue } = message as TextMessage
+        text = textValue
+    }
 
     const modalManager = useModalManager()
 
@@ -101,7 +112,7 @@ export const ActionsPalette = ({ name, file, text, user, showButtons, handleScro
                         </Portal>
                     </Popover>
                 </Box>
-                {(user === currentUser) && text &&
+                {(owner === currentUser) && text &&
                     <Tooltip hasArrow label='edit' size='xs' placement='top' rounded='md'>
                         <IconButton
                             onClick={onEditMessageModalOpen}
@@ -127,7 +138,7 @@ export const ActionsPalette = ({ name, file, text, user, showButtons, handleScro
                             size='xs' />
                     </Tooltip>
                 }
-                {(user === currentUser) &&
+                {(owner === currentUser) &&
                     <Tooltip hasArrow label='delete' size='xs' placement='top' rounded='md'>
                         <IconButton
                             onClick={onDeleteMessageModalOpen}

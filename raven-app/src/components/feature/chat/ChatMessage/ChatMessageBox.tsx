@@ -5,14 +5,14 @@ import { ChannelContext } from "../../../../utils/channel/ChannelProvider"
 import { DateObjectToTimeString, DateObjectToFormattedDateStringWithoutYear } from "../../../../utils/operations"
 import { ActionsPalette } from "../../message-action-palette/ActionsPalette"
 import { useNavigate } from "react-router-dom";
-import { Message } from "../../../../types/Messaging/Message"
 import { MessageReactions } from "./MessageReactions"
+import { Message } from "../../../../types/Messaging/Message"
 
 interface ChatMessageBoxProps extends BoxProps {
     message: Message,
     isSearchResult?: boolean,
     isArchived?: number
-    creation?: string
+    creation?: Date
     channelName?: string
     channelID?: string,
     handleScroll?: (newState: boolean) => void,
@@ -27,11 +27,11 @@ export const ChatMessageBox = ({ message, isSearchResult, isArchived, creation, 
     const [showButtons, setShowButtons] = useState<{}>({ visibility: 'hidden' })
     const { channelMembers, users } = useContext(ChannelContext)
     const navigate = useNavigate()
-    const { name, text, file, owner: user, creation: timestamp, message_reactions } = message
+    const { name, owner: user, creation: timestamp, message_reactions, is_continuation } = message
 
     return (
         <Box
-            pt='2'
+            pt={is_continuation === 0 ? '2' : '1'}
             pb='1'
             px='2'
             zIndex={1}
@@ -58,24 +58,45 @@ export const ChatMessageBox = ({ message, isSearchResult, isArchived, creation, 
                 </Link>
             </HStack>
             }
-            <HStack spacing={2} alignItems='flex-start'>
-                <Avatar name={channelMembers?.[user]?.full_name ?? users?.[user]?.full_name ?? user} src={channelMembers?.[user]?.user_image ?? users?.[user]?.user_image} borderRadius={'md'} boxSize='36px' />
-                <Stack spacing='1'>
-                    <HStack>
-                        <HStack divider={<StackDivider />} align='flex-start'>
-                            <Button variant='link' onClick={() => onOpenUserDetailsDrawer?.(channelMembers?.[user])}>
-                                <Text fontSize='sm' lineHeight={'0.9'} fontWeight="bold" as='span' color={textColor}>{channelMembers?.[user]?.full_name ?? users?.[user]?.full_name ?? user}</Text>
-                            </Button>
-                            <Tooltip hasArrow label={`${DateObjectToFormattedDateStringWithoutYear(new Date(timestamp))} at ${DateObjectToTimeString(new Date(timestamp))}`} placement='top' rounded='md'>
-                                <Text fontSize="xs" lineHeight={'0.9'} color="gray.500" _hover={{ textDecoration: 'underline' }}>{DateObjectToTimeString(new Date(timestamp))}</Text>
-                            </Tooltip>
+
+            {is_continuation === 0 &&
+                <HStack spacing={2} alignItems='flex-start'>
+                    <Avatar name={channelMembers?.[user]?.full_name ?? users?.[user]?.full_name ?? user} src={channelMembers?.[user]?.user_image ?? users?.[user]?.user_image} borderRadius={'md'} boxSize='36px' />
+                    <Stack spacing='1'>
+                        <HStack>
+                            <HStack divider={<StackDivider />} align='flex-start'>
+                                <Button variant='link' onClick={() => onOpenUserDetailsDrawer?.(channelMembers?.[user])}>
+                                    <Text fontSize='sm' lineHeight={'0.9'} fontWeight="bold" as='span' color={textColor}>{channelMembers?.[user]?.full_name ?? users?.[user]?.full_name ?? user}</Text>
+                                </Button>
+                                <Tooltip hasArrow label={`${DateObjectToFormattedDateStringWithoutYear(new Date(timestamp))} at ${DateObjectToTimeString(new Date(timestamp))}`} placement='top' rounded='md'>
+                                    <Text fontSize="xs" lineHeight={'0.9'} color="gray.500" _hover={{ textDecoration: 'underline' }}>{DateObjectToTimeString(new Date(timestamp))}</Text>
+                                </Tooltip>
+                            </HStack>
                         </HStack>
-                    </HStack>
-                    {children}
-                    <MessageReactions message_reactions={message_reactions} name={name} />
-                </Stack>
-            </HStack>
-            {message && handleScroll && <ActionsPalette name={name} file={file} text={text} user={user} showButtons={showButtons} handleScroll={handleScroll} />}
+                        {children}
+                        <MessageReactions message_reactions={message_reactions} name={name} />
+                    </Stack>
+                </HStack>
+            }
+
+            {is_continuation === 1 &&
+                <HStack spacing={3.5}>
+                    <Tooltip hasArrow label={`${DateObjectToFormattedDateStringWithoutYear(new Date(timestamp))} at ${DateObjectToTimeString(new Date(timestamp))}`} placement='top' rounded='md'>
+                        <Text pl='1' style={showButtons} fontSize={'xs'} color="gray.500" _hover={{ textDecoration: 'underline' }}>{DateObjectToTimeString(new Date(timestamp)).split(' ')[0]}</Text>
+                    </Tooltip>
+                    <Stack spacing='1' pt='0.5'>
+                        {children}
+                        <MessageReactions name={name} message_reactions={message_reactions} />
+                    </Stack>
+                </HStack>
+            }
+
+            {message && handleScroll && <ActionsPalette
+                message={message}
+                showButtons={showButtons}
+                handleScroll={handleScroll} />
+            }
+
         </Box>
     )
 }

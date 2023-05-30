@@ -34,10 +34,10 @@ export const Sidebar = ({ isUserActive }: SidebarProps) => {
                 <Divider />
                 <ChannelList />
                 <DirectMessageList userData={userData} />
-                <SidebarItem to={"settings"}>
+                {/* <SidebarItem to={"settings"}>
                     <SidebarIcon><VscSettings /></SidebarIcon>
                     <SidebarItemLabel>Settings</SidebarItemLabel>
-                </SidebarItem>
+                </SidebarItem> */}
             </Stack>
 
             <Stack>

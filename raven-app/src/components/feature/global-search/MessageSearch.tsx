@@ -14,8 +14,9 @@ import { FullPageLoader } from '../../layout/Loaders'
 import { SelectInput, SelectOption } from '../search-filters/SelectInput'
 import { Sort } from '../sorting'
 import { ChannelContext } from "../../../utils/channel/ChannelProvider"
-import { ChatMessageBox } from '../chat'
 import { MarkdownRenderer } from '../markdown-viewer/MarkdownRenderer'
+import { TextMessage } from '../../../types/Messaging/Message'
+import { ChatMessageBox } from '../chat/ChatMessage/ChatMessageBox'
 
 interface FilterInput {
     'from-user-filter': SelectOption[],
@@ -32,6 +33,10 @@ interface Props {
     input: string,
     fromFilter?: string,
     inFilter?: string
+}
+
+interface MessageSearchResult extends TextMessage {
+    channel_id: string
 }
 
 export const MessageSearch = ({ onToggleMyChannels, isOpenMyChannels, dateOption, input, fromFilter, inFilter }: Props) => {
@@ -182,19 +187,19 @@ export const MessageSearch = ({ onToggleMyChannels, isOpenMyChannels, dateOption
                                 sortField={sortByField}
                                 onSortOrderChange={(order) => setSortOrder(order)} />
                                 <Stack overflowY='scroll' pt={4}>
-                                    {data.message.map(({ name, text, owner, creation, channel_id }) => {
+                                    {data.message.map(({ name, text, owner, creation, channel_id }: MessageSearchResult) => {
                                         const channelName: any = channelOption.find((channel) => channel.value === channel_id)?.label
                                         const isArchived: number = channelOption.find((channel) => channel.value === channel_id)?.is_archived as number
                                         return (
                                             <ChatMessageBox
                                                 key={name}
                                                 message={{
-                                                    name: name,
-                                                    text: text,
-                                                    file: null,
+                                                    name,
+                                                    text,
+                                                    owner,
+                                                    creation,
                                                     message_type: 'Text',
-                                                    owner: owner,
-                                                    creation: creation
+                                                    is_continuation: 0
                                                 }}
                                                 isSearchResult={true}
                                                 isArchived={isArchived}
@@ -202,7 +207,7 @@ export const MessageSearch = ({ onToggleMyChannels, isOpenMyChannels, dateOption
                                                 channelID={channel_id}
                                                 py={1}
                                                 zIndex={0}
-                                            >
+                                                creation={creation}                                            >
                                                 {text && <MarkdownRenderer content={text} />}
                                             </ChatMessageBox>
                                         )

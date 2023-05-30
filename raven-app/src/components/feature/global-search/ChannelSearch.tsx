@@ -12,6 +12,7 @@ import { EmptyStateForSearch } from '../../layout/EmptyState/EmptyState'
 import { FullPageLoader } from '../../layout/Loaders'
 import { SelectInput, SelectOption } from '../search-filters/SelectInput'
 import { Sort } from '../sorting'
+import { ChannelData } from '../../../types/Channel/Channel'
 interface Props {
     onToggleMyChannels: () => void,
     isOpenMyChannels: boolean,
@@ -137,7 +138,7 @@ export const ChannelSearch = ({ onToggleMyChannels, isOpenMyChannels, onToggleOt
                                 onSortOrderChange={(order) => setSortOrder(order)} />
                                 <Stack spacing={2} overflowY='scroll'>
 
-                                    {data.message.map((channel) => {
+                                    {data.message.map((channel: ChannelData) => {
                                         return (
                                             <Box p={2}
                                                 _hover={{

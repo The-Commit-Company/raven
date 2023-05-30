@@ -51,7 +51,7 @@ export const LeaveChannelModal = ({ isOpen, onClose }: LeaveChannelModalProps) =
     }
 
     return (
-        <AlertDialog isOpen={isOpen} onClose={onClose} leastDestructiveRef={cancelRef} >
+        <AlertDialog isOpen={isOpen} onClose={onClose} leastDestructiveRef={cancelRef} size='2xl'>
             <AlertDialogOverlay />
             <AlertDialogContent>
                 <AlertDialogHeader>
