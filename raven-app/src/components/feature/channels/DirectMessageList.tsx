@@ -7,12 +7,6 @@ import { AlertBanner } from "../../layout/AlertBanner"
 import { SidebarGroup, SidebarGroupItem, SidebarGroupLabel, SidebarGroupList, SidebarIcon, SidebarItemLabel, SidebarButtonItem } from "../../layout/Sidebar"
 import { SidebarViewMoreButton } from "../../layout/Sidebar/SidebarComp"
 
-type ChannelCache = {
-    [user: string]: string;
-}
-
-const channelCache: ChannelCache = {}
-
 export const DirectMessageList = ({ userData }: { userData: User | null }) => {
     const { url } = useContext(FrappeContext) as FrappeConfig
     const { data: users, error: usersError } = useFrappeGetDocList<User>("User", {
@@ -20,6 +14,7 @@ export const DirectMessageList = ({ userData }: { userData: User | null }) => {
         filters: [["name", "!=", "Guest"]]
     })
     const { call, error: channelError, loading, reset } = useFrappePostCall<{ message: string }>("raven.raven_channel_management.doctype.raven_channel.raven_channel.create_direct_message_channel")
+    const { data: DMChannels, error: DMChannelsError } = useFrappeGetCall<{ message: string }>('raven.raven_channel_management.doctype.raven_channel.raven_channel.get_direct_message_channels_list')
     const navigate = useNavigate()
     const location = useLocation();
     const currentAddress = location.pathname
@@ -32,13 +27,13 @@ export const DirectMessageList = ({ userData }: { userData: User | null }) => {
     }, [])
 
     const gotoDMChannel = async (user: string) => {
-        if (channelCache[user]) {
-            // Use the cached channel name if available
-            navigate(`/channel/${channelCache[user]}`);
+        const DMChannel = DMChannels?.message.find((channel: { name: string, channel_name: string, full_name: string, user_id: string }) => channel.user_id === user)
+        if (DMChannel) {
+            navigate(`/channel/${DMChannel.name}`)
+            setSelectedUser([user, `/channel/${DMChannel.name}`])
         }
         else {
             const result = await call({ user_id: user })
-            channelCache[user] = result?.message
             navigate(`/channel/${result?.message}`)
             setSelectedUser([user, `/channel/${result?.message}`])
         }
@@ -62,6 +57,11 @@ export const DirectMessageList = ({ userData }: { userData: User | null }) => {
                     {channelError && (
                         <AlertBanner status="error" heading={channelError.message}>
                             {channelError.httpStatus} - {channelError.httpStatusText}
+                        </AlertBanner>
+                    )}
+                    {DMChannelsError && (
+                        <AlertBanner status="error" heading={DMChannelsError.message}>
+                            {DMChannelsError.httpStatus} - {DMChannelsError.httpStatusText}
                         </AlertBanner>
                     )}
                     {users && users.map((user: User) => (
