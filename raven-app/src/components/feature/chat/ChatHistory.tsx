@@ -3,7 +3,7 @@ import { DividerWithText } from "../../layout/Divider/DividerWithText";
 import { DateObjectToFormattedDateString } from "../../../utils/operations";
 import { DateBlock, FileMessage, MessageBlock, MessagesWithDate } from "../../../types/Messaging/Message";
 import { ChannelHistoryFirstMessage } from "../../layout/EmptyState/EmptyState";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { ChatMessageBox } from "./ChatMessage/ChatMessageBox";
 import { MarkdownRenderer } from "../markdown-viewer/MarkdownRenderer";
 import { FileMessageBlock } from "./ChatMessage/FileMessage";
@@ -14,7 +14,7 @@ import { FilePreviewModal } from "../file-preview/FilePreviewModal";
 import { Virtuoso } from 'react-virtuoso';
 
 interface ChatHistoryProps {
-    parsed_messages: MessagesWithDate
+    parsed_messages: MessagesWithDate,
     isDM: 1 | 0
 }
 
@@ -38,7 +38,8 @@ export const ChatHistory = ({ parsed_messages, isDM }: ChatHistoryProps) => {
             modalManager.openModal(ModalTypes.FilePreview, {
                 file: message.file,
                 owner: message.owner,
-                creation: message.creation
+                creation: message.creation,
+                message_type: message.message_type
             })
         }
     }
@@ -64,6 +65,8 @@ export const ChatHistory = ({ parsed_messages, isDM }: ChatHistoryProps) => {
         return null
     }
 
+    const virtuosoRef = useRef(null)
+
     return (
         <>
             <Virtuoso
@@ -74,6 +77,7 @@ export const ChatHistory = ({ parsed_messages, isDM }: ChatHistoryProps) => {
                 components={{
                     Header: () => <ChannelHistoryFirstMessage isDM={isDM} />,
                 }}
+                ref={virtuosoRef}
                 alignToBottom={true}
                 followOutput={'auto'}
             />
@@ -87,7 +91,7 @@ export const ChatHistory = ({ parsed_messages, isDM }: ChatHistoryProps) => {
             <FilePreviewModal
                 isOpen={modalManager.modalType === ModalTypes.FilePreview}
                 onClose={modalManager.closeModal}
-                message={modalManager.modalContent}
+                {...modalManager.modalContent}
             />
         </>
     )

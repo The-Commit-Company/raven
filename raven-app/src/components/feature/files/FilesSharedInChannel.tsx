@@ -3,7 +3,7 @@ import { getFileExtensionIcon } from "../../../utils/layout/fileExtensionIcon";
 import { useFrappeGetCall } from "frappe-react-sdk";
 import { useParams } from "react-router-dom";
 import { AlertBanner } from "../../layout/AlertBanner";
-import { DateObjectToFormattedDateString } from "../../../utils/operations";
+import { DateObjectToFormattedDateString, getFileExtension, getFileName } from "../../../utils/operations";
 import { useContext } from "react";
 import { ChannelContext } from "../../../utils/channel/ChannelProvider";
 import { BsDownload } from "react-icons/bs";
@@ -49,11 +49,11 @@ export const FilesSharedInChannel = () => {
                                 <HStack justifyContent='space-between'>
                                     <HStack spacing={3}>
                                         <Center maxW='50px'>
-                                            {f.message_type === 'File' && <Icon as={getFileExtensionIcon(f.file.split('.')[1])} boxSize="9" />}
+                                            {f.message_type === 'File' && <Icon as={getFileExtensionIcon(getFileExtension(f.file))} boxSize="9" />}
                                             {f.message_type === 'Image' && <Image src={f.file} alt='File preview' boxSize={'36px'} rounded='md' fit='cover' />}
                                         </Center>
                                         <Stack spacing={0}>
-                                            <Text fontSize='sm' as={Link} href={f.file} isExternal>{f.file.split('/')[3]}</Text>
+                                            <Text fontSize='sm' as={Link} href={f.file} isExternal>{getFileName(f.file)}</Text>
                                             <Text fontSize='xs' color='gray.500'>Shared by {channelMembers[f.owner]?.full_name} on {DateObjectToFormattedDateString(new Date(f.creation ?? ''))}</Text>
                                         </Stack>
                                     </HStack>
