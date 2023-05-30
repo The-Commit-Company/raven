@@ -12,6 +12,7 @@ import { ModalTypes, useModalManager } from "../../../hooks/useModalManager";
 import { User } from "../../../types/User/User";
 import { FilePreviewModal } from "../file-preview/FilePreviewModal";
 import { Virtuoso } from 'react-virtuoso';
+import { AnimatePresence, motion } from "framer-motion";
 
 interface ChatHistoryProps {
     parsed_messages: MessagesWithDate,
@@ -54,12 +55,14 @@ export const ChatHistory = ({ parsed_messages, isDM }: ChatHistoryProps) => {
         }
         if (block.block_type === 'message') {
             return (
-                <div key={block.data.name}>
-                    <ChatMessageBox message={block.data} handleScroll={handleScroll} onOpenUserDetailsDrawer={onOpenUserDetailsDrawer}>
-                        {block.data.message_type === 'Text' && <MarkdownRenderer content={block.data.text} />}
-                        {block.data.message_type === 'File' || block.data.message_type === 'Image' && <FileMessageBlock {...block.data} onFilePreviewModalOpen={onFilePreviewModalOpen} />}
-                    </ChatMessageBox>
-                </div>
+                <AnimatePresence>
+                    <motion.div key={block.data.name} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.4 }}>
+                        <ChatMessageBox message={block.data} handleScroll={handleScroll} onOpenUserDetailsDrawer={onOpenUserDetailsDrawer}>
+                            {block.data.message_type === 'Text' && <MarkdownRenderer content={block.data.text} />}
+                            {block.data.message_type === 'File' || block.data.message_type === 'Image' && <FileMessageBlock {...block.data} onFilePreviewModalOpen={onFilePreviewModalOpen} />}
+                        </ChatMessageBox>
+                    </motion.div>
+                </AnimatePresence>
             )
         }
         return null
