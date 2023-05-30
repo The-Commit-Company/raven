@@ -16,7 +16,7 @@ import { AnimatePresence, motion } from "framer-motion";
 
 interface ChatHistoryProps {
     parsed_messages: MessagesWithDate,
-    isDM: 1 | 0
+    isDM: number
 }
 
 export const ChatHistory = ({ parsed_messages, isDM }: ChatHistoryProps) => {
