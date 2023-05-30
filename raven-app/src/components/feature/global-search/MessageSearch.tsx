@@ -14,9 +14,9 @@ import { FullPageLoader } from '../../layout/Loaders'
 import { SelectInput, SelectOption } from '../search-filters/SelectInput'
 import { Sort } from '../sorting'
 import { ChannelContext } from "../../../utils/channel/ChannelProvider"
-import { ChatMessageBox } from '../chat'
 import { MarkdownRenderer } from '../markdown-viewer/MarkdownRenderer'
 import { TextMessage } from '../../../types/Messaging/Message'
+import { ChatMessageBox } from '../chat/ChatMessage/ChatMessageBox'
 
 interface FilterInput {
     'from-user-filter': SelectOption[],
@@ -207,7 +207,7 @@ export const MessageSearch = ({ onToggleMyChannels, isOpenMyChannels, dateOption
                                                 channelID={channel_id}
                                                 py={1}
                                                 zIndex={0}
-                                            >
+                                                creation={creation}                                            >
                                                 {text && <MarkdownRenderer content={text} />}
                                             </ChatMessageBox>
                                         )

@@ -19,6 +19,9 @@ import { ChannelData } from "../../../types/Channel/Channel"
 interface Props {
     searchChange: Function
     input: string
+    isGlobalSearchModalOpen: boolean
+    onGlobalSearchModalOpen: () => void
+    onGlobalSearchModalClose: () => void
 }
 
 interface PeopleProps {
@@ -28,19 +31,37 @@ interface PeopleProps {
     gotoDMChannel?: Function
     currentUser?: string
     tabIndex?: number
+    isGlobalSearchModalOpen: boolean
+    onGlobalSearchModalOpen: () => void
+    onGlobalSearchModalClose: () => void
 }
 
-export const Home = ({ searchChange, input }: Props) => {
+interface ChannelsProps {
+    input: string
+    isGlobalSearchModalOpen: boolean
+    onGlobalSearchModalOpen: () => void
+    onGlobalSearchModalClose: () => void
+}
+
+interface FindInProps {
+    input: string
+    tabIndex: number
+    placeholder?: string
+    isGlobalSearchModalOpen: boolean
+    onGlobalSearchModalOpen: () => void
+    onGlobalSearchModalClose: () => void
+}
+
+export const Home = ({ searchChange, input, isGlobalSearchModalOpen, onGlobalSearchModalOpen, onGlobalSearchModalClose }: Props) => {
     const { channelData, channelMembers } = useContext(ChannelContext)
     const { currentUser } = useContext(UserContext)
     const peer = Object.keys(channelMembers).filter((member) => member !== currentUser)[0]
     const style = { paddingBottom: 2, paddingTop: 2 }
-    const { isOpen: isGlobalSearchModalOpen, onOpen: onGlobalSearchModalOpen, onClose: onGlobalSearchModalClose } = useDisclosure()
     const [inFilter, setInFilter] = useState<string>()
 
     return (
         <Command.List>
-            <CommandPaletteEmptyState input={input} placeholder='messages, files, people and more' tabIndex={0} />
+            <CommandPaletteEmptyState input={input} placeholder='messages, files, people and more' tabIndex={0} isGlobalSearchModalOpen={isGlobalSearchModalOpen} onGlobalSearchModalOpen={onGlobalSearchModalOpen} onGlobalSearchModalClose={onGlobalSearchModalClose} />
             <Command.Group style={style}>
                 {channelData && <Item
                     onSelect={() => {
@@ -96,10 +117,10 @@ export const Home = ({ searchChange, input }: Props) => {
     )
 }
 
-export const Messages = ({ searchChange, input }: Props) => {
+export const Messages = ({ searchChange, input, isGlobalSearchModalOpen, onGlobalSearchModalOpen, onGlobalSearchModalClose }: Props) => {
     return (
         <Command.List>
-            <CommandPaletteEmptyState input={input} placeholder='messages' tabIndex={0} />
+            <CommandPaletteEmptyState input={input} placeholder='messages' tabIndex={0} isGlobalSearchModalOpen={isGlobalSearchModalOpen} onGlobalSearchModalOpen={onGlobalSearchModalOpen} onGlobalSearchModalClose={onGlobalSearchModalClose} />
             {!input && <Command.Group heading="Narrow your search">
                 <Item onSelect={() => {
                     searchChange('in')
@@ -112,7 +133,7 @@ export const Messages = ({ searchChange, input }: Props) => {
     )
 }
 
-export const Files = ({ searchChange, input }: Props) => {
+export const Files = ({ searchChange, input, isGlobalSearchModalOpen, onGlobalSearchModalOpen, onGlobalSearchModalClose }: Props) => {
 
     const { data, isValidating } = useFrappeGetCall<{ message: GetFileSearchResult[] }>("raven.api.search.get_search_result", {
         filter_type: 'File',
@@ -123,7 +144,7 @@ export const Files = ({ searchChange, input }: Props) => {
 
     return (
         <Command.List>
-            <CommandPaletteEmptyState input={input} placeholder='files' tabIndex={1} />
+            <CommandPaletteEmptyState input={input} placeholder='files' tabIndex={1} isGlobalSearchModalOpen={isGlobalSearchModalOpen} onGlobalSearchModalOpen={onGlobalSearchModalOpen} onGlobalSearchModalClose={onGlobalSearchModalClose} />
             {!input && <Command.Group heading="Narrow your search">
                 <Item onSelect={() => {
                     searchChange('in')
@@ -154,7 +175,7 @@ export const Files = ({ searchChange, input }: Props) => {
     )
 }
 
-export const Channels = ({ input }: { input: string }) => {
+export const Channels = ({ input, isGlobalSearchModalOpen, onGlobalSearchModalOpen, onGlobalSearchModalClose }: ChannelsProps) => {
 
     const { data, isValidating } = useSearch('Raven Channel', input, [["is_direct_message", "=", "0"]], 20)
     const navigate = useNavigate()
@@ -162,7 +183,7 @@ export const Channels = ({ input }: { input: string }) => {
 
     return (
         <Command.List>
-            <CommandPaletteEmptyState input={input} placeholder='channels' tabIndex={2} />
+            <CommandPaletteEmptyState input={input} placeholder='channels' tabIndex={2} isGlobalSearchModalOpen={isGlobalSearchModalOpen} onGlobalSearchModalOpen={onGlobalSearchModalOpen} onGlobalSearchModalClose={onGlobalSearchModalClose} />
             <Command.Group heading={data?.results?.length ? "Recent channels" : ""} >
                 {isValidating && !data?.results?.length && <Text py='4' color='gray.500' textAlign='center' fontSize='sm'>No results found.</Text>}
                 {isValidating && <Command.Loading>
@@ -200,7 +221,7 @@ export const People = ({ input, users, activeUsers, gotoDMChannel, currentUser }
                                 gotoDMChannel(user.name)
                             }}>
                             <HStack p='2' spacing={3}>
-                                <Avatar size='sm' src={user.user_image} name={user.full_name} borderRadius='md' />
+                                <Avatar size='xs' src={user.user_image} name={user.full_name} borderRadius='md' />
                                 <HStack spacing={2}>
                                     {user.name === currentUser ? <Text>{user.full_name} (you)</Text> : <Text>{user.full_name}</Text>}
                                     {activeUsers.includes(user.name) ?
@@ -215,13 +236,12 @@ export const People = ({ input, users, activeUsers, gotoDMChannel, currentUser }
     </Command.List>
 }
 
-export const FindIn = ({ input, tabIndex }: { input: string, tabIndex: number }) => {
+export const FindIn = ({ input, tabIndex, isGlobalSearchModalOpen, onGlobalSearchModalOpen, onGlobalSearchModalClose }: FindInProps) => {
     const { data, isValidating } = useSearch('Raven Channel', input, [["is_direct_message", "=", "0"]], 20)
-    const { isOpen: isGlobalSearchModalOpen, onOpen: onGlobalSearchModalOpen, onClose: onGlobalSearchModalClose } = useDisclosure()
     const [inFilter, setInFilter] = useState<string>()
     return (
         <Command.List>
-            <CommandPaletteEmptyState input={input} placeholder='messages' tabIndex={0} />
+            <CommandPaletteEmptyState input={input} placeholder='messages' tabIndex={0} isGlobalSearchModalOpen={isGlobalSearchModalOpen} onGlobalSearchModalOpen={onGlobalSearchModalOpen} onGlobalSearchModalClose={onGlobalSearchModalClose} />
             <Command.Group heading={data?.results?.length ? "Recent channels" : ""} >
                 {isValidating && !data?.results?.length && <Text py='4' color='gray.500' textAlign='center' fontSize='sm'>No results found.</Text>}
                 {isValidating && <Command.Loading>
@@ -239,8 +259,7 @@ export const FindIn = ({ input, tabIndex }: { input: string, tabIndex: number })
     )
 }
 
-export const FindFrom = ({ input, users, tabIndex }: PeopleProps) => {
-    const { isOpen: isGlobalSearchModalOpen, onOpen: onGlobalSearchModalOpen, onClose: onGlobalSearchModalClose } = useDisclosure()
+export const FindFrom = ({ input, users, tabIndex, isGlobalSearchModalOpen, onGlobalSearchModalOpen, onGlobalSearchModalClose }: PeopleProps) => {
     const results_count = users.reduce((count, user) => {
         if (user.full_name.toLowerCase().includes(input.toLowerCase())) {
             return count + 1;
@@ -250,7 +269,7 @@ export const FindFrom = ({ input, users, tabIndex }: PeopleProps) => {
     const [fromFilter, setFromFilter] = useState<string>()
     return (
         <Command.List>
-            <CommandPaletteEmptyState input={input} placeholder='messages' tabIndex={0} />
+            <CommandPaletteEmptyState input={input} placeholder='messages' tabIndex={0} isGlobalSearchModalOpen={isGlobalSearchModalOpen} onGlobalSearchModalOpen={onGlobalSearchModalOpen} onGlobalSearchModalClose={onGlobalSearchModalClose} />
             <Command.Group heading={results_count > 0 ? "Recent direct messages" : ""} >
                 {users.map(user => {
                     if (user.full_name.toLowerCase().includes(input.toLowerCase())) {
@@ -331,8 +350,7 @@ export const LoadOptions = ({ doctype, input, filters }: { doctype: string, inpu
     )
 }
 
-export const CommandPaletteEmptyState = ({ input, placeholder, tabIndex }: { input: string, placeholder: string, tabIndex: number }) => {
-    const { isOpen: isGlobalSearchModalOpen, onOpen: onGlobalSearchModalOpen, onClose: onGlobalSearchModalClose } = useDisclosure()
+export const CommandPaletteEmptyState = ({ input, placeholder, tabIndex, isGlobalSearchModalOpen, onGlobalSearchModalOpen, onGlobalSearchModalClose }: FindInProps) => {
     return (
         <Command.Empty>
             <Button w='full' fontWeight="light" variant='ghost' alignContent='end' onClick={() => {

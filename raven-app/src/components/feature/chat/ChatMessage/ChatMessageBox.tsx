@@ -11,9 +11,9 @@ import { Message } from "../../../../types/Messaging/Message"
 interface ChatMessageBoxProps extends BoxProps {
     message: Message,
     isSearchResult?: boolean,
-    isArchived?: number,
-    creation?: string,
-    channelName?: string,
+    isArchived?: number
+    creation?: Date
+    channelName?: string
     channelID?: string,
     handleScroll?: (newState: boolean) => void,
     children?: React.ReactNode,
