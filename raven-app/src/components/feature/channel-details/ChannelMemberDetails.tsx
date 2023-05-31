@@ -10,6 +10,7 @@ import { User } from "../../../types/User/User"
 import { UserContext } from "../../../utils/auth/UserProvider"
 import { ChannelContext } from "../../../utils/channel/ChannelProvider"
 import { ModalTypes, useModalManager } from "../../../hooks/useModalManager"
+import { RiVipCrownFill } from "react-icons/ri"
 
 interface MemberDetailsProps {
     members: User[]
@@ -27,7 +28,7 @@ export const ChannelMemberDetails = ({ members, activeUsers }: MemberDetailsProp
 
     const { colorMode } = useColorMode()
     const { currentUser } = useContext(UserContext)
-    const { channelData } = useContext(ChannelContext)
+    const { channelData, channelMembers } = useContext(ChannelContext)
 
     const LISTHOVERSTYLE = {
         bg: colorMode === 'light' ? 'gray.100' : 'gray.600',
@@ -98,9 +99,11 @@ export const ChannelMemberDetails = ({ members, activeUsers }: MemberDetailsProp
                                                     <Icon as={BsCircle} h='8px' />
                                                 )}
                                                 <Text fontWeight='light'>{member.full_name}</Text>
+                                                {member.name === currentUser && <Text fontWeight='light'>(You)</Text>}
+                                                {channelMembers[member.name].is_admin == 1 && <Icon as={RiVipCrownFill} color='yellow.400' h='14px' />}
                                             </HStack>
                                         </HStack>
-                                        {members.some(member => member.name === currentUser) && member.name != currentUser && member.name != channelData?.owner && channelData?.type != 'Open' && (
+                                        {members.some(member => member.name === currentUser) && channelMembers[currentUser].is_admin == 1 && member.name != currentUser && channelData?.type != 'Open' && (
                                             <Button colorScheme='blue' variant='link' size='xs' onClick={() => onMemberSelect(member)}>Remove</Button>
                                         )}
                                     </HStack>

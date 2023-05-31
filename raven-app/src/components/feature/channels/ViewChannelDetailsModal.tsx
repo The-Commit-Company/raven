@@ -46,7 +46,7 @@ export const ViewChannelDetailsModal = ({ isOpen, onClose, activeUsers }: ViewCh
                                 </HStack>
                             </Tab>
                             <Tab>Files</Tab>
-                            {channelData?.owner === currentUser && channelData?.name != 'general' && <Tab>Settings</Tab>}
+                            {channelMembers[currentUser].is_admin == 1 && channelData?.name != 'general' && <Tab>Settings</Tab>}
                         </TabList>
                         <TabPanels>
                             <TabPanel px={0}>
