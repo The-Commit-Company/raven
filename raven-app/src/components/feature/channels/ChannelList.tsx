@@ -27,6 +27,8 @@ export const ChannelList = () => {
         }
     }
 
+    console.log(data)
+
     useFrappeEventListener('channel_list_updated', () => {
         mutate()
     })

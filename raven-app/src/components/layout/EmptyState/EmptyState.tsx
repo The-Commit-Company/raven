@@ -54,10 +54,10 @@ export const EmptyStateForChannel = () => {
                     <Text>{channelData?.owner_full_name} created this channel on {DateObjectToFormattedDateString(new Date(channelData?.creation ?? ''))}. This is the very beginning of the <strong>{channelData?.channel_name}</strong> channel.</Text>
                     {channelData?.channel_description && <Text fontSize={'sm'} color={'gray.500'}>{channelData?.channel_description}</Text>}
                 </Stack>
-                <ButtonGroup size={'xs'} colorScheme="blue" variant={'link'} spacing={4} zIndex={1}>
+                {channelData?.is_archived == 0 && <ButtonGroup size={'xs'} colorScheme="blue" variant={'link'} spacing={4} zIndex={1}>
                     <Button leftIcon={<TbEdit fontSize={'1rem'} />} onClick={onChannelDescriptionModalOpen}>{channelData?.channel_description ? 'Edit' : 'Add'} description</Button>
                     {channelData?.type !== 'Open' && <Button leftIcon={<BiUserPlus fontSize={'1.1rem'} />} onClick={onAddMembersModalOpen}>Add people</Button>}
-                </ButtonGroup>
+                </ButtonGroup>}
             </Stack>
             <AddOrEditChannelDescriptionModal
                 isOpen={modalManager.modalType === ModalTypes.EditChannelDescription}

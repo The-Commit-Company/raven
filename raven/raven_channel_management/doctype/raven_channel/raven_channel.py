@@ -30,6 +30,8 @@ class RavenChannel(Document):
                 pass
             elif frappe.db.exists("Raven Channel Member", {"channel_id": self.name, "user_id": frappe.session.user}):
                 pass
+            elif frappe.session.user == "Administrator":
+                pass
             else:
                 frappe.throw(
                     "You don't have permission to modify this channel", frappe.PermissionError)
@@ -138,6 +140,10 @@ def create_channel(channel_name, type, channel_description=None):
             "channel_description": channel_description
         })
         channel.insert()
+        first_member = frappe.db.get_value(
+            "Raven Channel Member", {'channel_id': channel.name}, 'name')
+        frappe.db.set_value("Raven Channel Member",
+                            first_member, "is_admin", 1)
         return channel.name
 
 

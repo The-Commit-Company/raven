@@ -14,7 +14,8 @@ export type ChannelMembersDetails = {
     name: string,
     first_name: string,
     full_name: string,
-    user_image: string
+    user_image: string,
+    is_admin: 1 | 0
 }
 
 export const ChannelContext = createContext<{ channelMembers: Record<string, ChannelMembersDetails>; channelData?: ChannelData, users: Record<string, User> }>({ channelMembers: {}, users: {} })
@@ -66,7 +67,7 @@ export const ChannelProvider = ({ children }: PropsWithChildren) => {
 
     return (
         <>
-            {data?.message?.channel_members && data?.message?.channel_members?.length > 0 && <ChannelContext.Provider value={channelInfo}>
+            {data?.message?.channel_members && <ChannelContext.Provider value={channelInfo}>
                 {children}
             </ChannelContext.Provider>}
         </>
