@@ -39,7 +39,10 @@ def calculate_message_reaction(message_id):
 	
     reactions = frappe.db.get_list('Raven Message Reaction',
         fields=['count(reaction_escaped) as count', 'reaction', 'reaction_escaped'],
-        group_by='reaction_escaped'
+        group_by='reaction_escaped',
+        filters={
+            'message': message_id
+        }
     )
 
     total_reactions = {}
