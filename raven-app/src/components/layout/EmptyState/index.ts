@@ -1,1 +1,2 @@
-export { EmptyState } from './EmptyState'
+export { ChannelHistoryFirstMessage } from './EmptyState'
+export { EmptyStateForSearch } from './EmptyState'

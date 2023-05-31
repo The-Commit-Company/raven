@@ -1,3 +1,5 @@
+import { User } from "../types/User/User"
+
 /**
  * Utility to convert Date object to DD-MM-YYYY format
  * @param date takes Javascript Date object
@@ -51,4 +53,64 @@ export const getFileExtension = (filename: string) => {
 
     const extension = filename.substring(filename.lastIndexOf('.') + 1, filename.length);
     return extension;
+}
+
+/**
+ * Function to return name of a file name without extension
+ * @param filename name of the file with extension
+ * @returns name of the file without extension
+ */
+export const getFileName = (filename: string) => {
+
+    const name = filename.substring(0, filename.lastIndexOf('.'));
+    return name;
+}
+
+/**
+ * Function to return user names for reactions in a message
+ * @param usersList list of users who reacted
+ * @param count number of users who reacted
+ * @param currentUser current user
+ * @param allUsers list of all users
+ * @returns string of user names with count for reactions
+ */
+
+export const getUsers = (usersList: string[], count: number, currentUser: string, allUsers: Record<string, User>) => {
+
+    if (usersList) {
+
+        const currentUserIndex = usersList.indexOf(currentUser)
+        const currentUserInList = currentUserIndex !== -1
+
+        const userArray = Object.values(allUsers) as User[]
+
+        if (count === 1) {
+            return currentUserInList ? 'You' : userArray.find((user) => user.name == usersList[0])?.full_name
+        } else if (count === 2) {
+            if (currentUserInList) {
+                const otherUser = usersList.find((user, index) => index !== currentUserIndex)
+                return `You and ${userArray.find((user) => user.name == otherUser)?.full_name ?? otherUser}`
+            } else {
+                return usersList.join(' and ')
+            }
+        } else if (count === 3) {
+            if (currentUserInList) {
+                const otherUsers = usersList.filter((user, index) => index !== currentUserIndex)
+                return `You, ${userArray.find((user) => user.name == otherUsers[0])?.full_name} and ${userArray.find((user) => user.name == otherUsers[1])?.full_name}`
+            } else {
+                return usersList.join(', ')
+            }
+        } else if (count > 3) {
+            if (currentUserInList) {
+                const otherUsers = usersList.filter((user, index) => index !== currentUserIndex)
+                return `You, ${userArray.find((user) => user.name == otherUsers[0])?.full_name},
+                ${userArray.find((user) => user.name == otherUsers[1])?.full_name} and ${count - 3} other${count - 3 > 1 ? 's' : ''}`
+            }
+            else {
+                return `${userArray.find((user) => user.name == usersList[0])?.full_name},
+                ${userArray.find((user) => user.name == usersList[1])?.full_name},
+                ${userArray.find((user) => user.name == usersList[2])?.full_name} and ${count - 3} other${count - 3 > 1 ? 's' : ''}`
+            }
+        }
+    }
 }

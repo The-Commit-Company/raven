@@ -29,7 +29,7 @@ export const ChatInterface = () => {
 
     const { data: channelList, error: channelListError } = useFrappeGetCall<{ message: ChannelData[] }>("raven.raven_channel_management.doctype.raven_channel.raven_channel.get_channel_list")
 
-    const { data, error, mutate } = useFrappeGetCall<{ message: MessagesWithDate }>("raven.raven_messaging.doctype.raven_message.raven_message.get_messages_by_date", {
+    const { data, error, mutate } = useFrappeGetCall<{ message: MessagesWithDate }>("raven.raven_messaging.doctype.raven_message.raven_message.get_messages_with_dates", {
         channel_id: channelData?.name ?? null
     }, undefined, {
         revalidateOnFocus: false
@@ -62,7 +62,7 @@ export const ChatInterface = () => {
         }
     })
 
-    const allChannels = channelList?.message.map((channel) => {
+    const allChannels = channelList?.message.map((channel: ChannelData) => {
         return {
             id: channel.name,
             value: channel.channel_name
