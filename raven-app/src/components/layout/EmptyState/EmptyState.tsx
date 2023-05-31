@@ -122,7 +122,7 @@ const EmptyStateForDM = () => {
 }
 
 interface ChannelHistoryFirstMessageProps {
-    isDM: 1 | 0
+    isDM: number
 }
 
 export const ChannelHistoryFirstMessage = ({ isDM }: ChannelHistoryFirstMessageProps) => {
