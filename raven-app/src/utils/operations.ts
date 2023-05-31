@@ -104,12 +104,12 @@ export const getUsers = (usersList: string[], count: number, currentUser: string
             if (currentUserInList) {
                 const otherUsers = usersList.filter((user, index) => index !== currentUserIndex)
                 return `You, ${userArray.find((user) => user.name == otherUsers[0])?.full_name},
-                ${userArray.find((user) => user.name == otherUsers[1])?.full_name} and ${count - 3} others`
+                ${userArray.find((user) => user.name == otherUsers[1])?.full_name} and ${count - 3} other${count - 3 > 1 ? 's' : ''}`
             }
             else {
                 return `${userArray.find((user) => user.name == usersList[0])?.full_name},
                 ${userArray.find((user) => user.name == usersList[1])?.full_name},
-                ${userArray.find((user) => user.name == usersList[2])?.full_name} and ${count - 3} others`
+                ${userArray.find((user) => user.name == usersList[2])?.full_name} and ${count - 3} other${count - 3 > 1 ? 's' : ''}`
             }
         }
     }

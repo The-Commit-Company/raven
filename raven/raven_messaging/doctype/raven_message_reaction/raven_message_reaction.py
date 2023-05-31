@@ -36,40 +36,36 @@ class RavenMessageReaction(Document):
 
 
 def calculate_message_reaction(message_id):
-    '''
-    Calculates the total number of reactions for a message
-    '''
-    message = frappe.get_doc('Raven Message', message_id)
-    raven_message_reaction = frappe.qb.DocType('Raven Message Reaction')
-
-    result = (
-        frappe.qb.from_(raven_message_reaction)
-        .select(
-            raven_message_reaction.reaction,
-            raven_message_reaction.reaction_escaped,
-            raven_message_reaction.owner,
-            Count(raven_message_reaction.reaction_escaped).as_('count')
-        )
-        .where(raven_message_reaction.message == message_id)
-        .groupby(raven_message_reaction.reaction_escaped)
-    ).run(as_dict=True)
+	
+    reactions = frappe.db.get_list('Raven Message Reaction',
+        fields=['count(reaction_escaped) as count', 'reaction', 'reaction_escaped'],
+        group_by='reaction_escaped'
+    )
 
     total_reactions = {}
 
-    if result:
-        for row in result:
-            reaction_escaped = row.reaction_escaped
-            reaction = row.reaction
-            owner = row.owner
-            count = row.count
-
-            if reaction_escaped not in total_reactions:
-                total_reactions[reaction_escaped] = {'reaction': reaction, 'users': [], 'count': 0}
-
-            total_reactions[reaction_escaped]['users'].append(owner)
-            total_reactions[reaction_escaped]['count'] += count
-
-    # Save the reaction data in the message
+    if reactions:
+        for reaction in reactions:
+            total_reactions[reaction.reaction] = {
+                'count': reaction.count,
+                'users': get_users_for_each_reaction(message_id, reaction.reaction_escaped),
+                'reaction': reaction.reaction
+            }
+	    
+    message = frappe.get_doc('Raven Message', message_id)
     message.message_reactions = total_reactions
     message.save(ignore_permissions=True)
     frappe.db.commit()
+
+
+def get_users_for_each_reaction(message_id, reaction=None):
+	
+    users = frappe.db.get_list('Raven Message Reaction',
+        fields=['owner'],
+        filters={
+            'message': message_id,
+            'reaction_escaped': reaction
+        }
+    )
+
+    return [user.owner for user in users]
