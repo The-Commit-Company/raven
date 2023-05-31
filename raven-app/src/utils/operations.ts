@@ -51,7 +51,7 @@ export const DateObjectToTimeString = (date: Date): string => {
  */
 export const getFileExtension = (filename: string) => {
 
-    const extension = filename.substring(filename.lastIndexOf('.') + 1, filename.length);
+    const extension = filename.split('.')[1]
     return extension;
 }
 
@@ -62,7 +62,7 @@ export const getFileExtension = (filename: string) => {
  */
 export const getFileName = (filename: string) => {
 
-    const name = filename.substring(0, filename.lastIndexOf('.'));
+    const name = filename.split('/')[3]
     return name;
 }
 
