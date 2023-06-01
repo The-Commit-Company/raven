@@ -35,6 +35,7 @@ export const ChannelDetails = () => {
     const onLeaveChannelModalOpen = () => {
         modalManager.openModal(ModalTypes.LeaveChannel)
     }
+    const admin = Object.values(channelMembers).find(user => user.is_admin === 1)
 
     return (
         <Stack spacing='4'>
@@ -82,6 +83,16 @@ export const ChannelDetails = () => {
                             <Text fontSize='sm' color='gray.500'>on {DateObjectToFormattedDateString(new Date(channelData?.creation ?? ''))}</Text>
                         </HStack>
                     </Stack>
+
+                    {channelData?.type != 'Open' && <><Divider /><Stack>
+                        <Text fontWeight='semibold' fontSize='sm'>Administrator</Text>
+                        <HStack>
+                            {admin ? <Text fontSize='sm'>{admin.full_name}</Text> :
+                                <Text fontSize='sm' color='gray.500'>No administrator</Text>}
+                        </HStack>
+
+
+                    </Stack></>}
 
                     {channelMembers[currentUser] && channelData?.type != 'Open' &&
                         <>
