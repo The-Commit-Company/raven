@@ -64,7 +64,7 @@ export const DirectMessageList = ({ userData }: { userData: User | null }) => {
                             {DMChannelsError.httpStatus} - {DMChannelsError.httpStatusText}
                         </AlertBanner>
                     )}
-                    {users && users.map((user: User) => (
+                    {showData && users && users.map((user: User) => (
                         <SidebarButtonItem
                             onClick={() => gotoDMChannel(user.name)}
                             isLoading={loading}
