@@ -11,7 +11,7 @@ import { Message } from "../../../../types/Messaging/Message"
 interface ChatMessageBoxProps extends BoxProps {
     message: Message,
     isSearchResult?: boolean,
-    isArchived?: number
+    isArchived?: 1 | 0,
     creation?: Date
     channelName?: string
     channelID?: string,

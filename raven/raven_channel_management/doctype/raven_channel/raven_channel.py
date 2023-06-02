@@ -30,6 +30,8 @@ class RavenChannel(Document):
                 pass
             elif frappe.db.exists("Raven Channel Member", {"channel_id": self.name, "user_id": frappe.session.user}):
                 pass
+            elif frappe.session.user == "Administrator":
+                pass
             else:
                 frappe.throw(
                     "You don't have permission to modify this channel", frappe.PermissionError)
@@ -94,13 +96,13 @@ def get_channel_list(hide_archived=False):
 
 @frappe.whitelist(methods=['POST'])
 def create_direct_message_channel(user_id):
-    # create direct message channel with user and current user
-    channel = frappe.db.get_value("Raven Channel", filters={
+    channel_name = frappe.db.get_value("Raven Channel", filters={
         "is_direct_message": 1,
         "channel_name": ["in", [frappe.session.user + " _ " + user_id, user_id + " _ " + frappe.session.user]]
     }, fieldname="name")
-    if channel:
-        return channel
+    if channel_name:
+        return channel_name
+    # create direct message channel with user and current user
     else:
         if frappe.session.user == user_id:
             channel = frappe.get_doc({
@@ -138,6 +140,10 @@ def create_channel(channel_name, type, channel_description=None):
             "channel_description": channel_description
         })
         channel.insert()
+        first_member = frappe.db.get_value(
+            "Raven Channel Member", {'channel_id': channel.name}, 'name')
+        frappe.db.set_value("Raven Channel Member",
+                            first_member, "is_admin", 1)
         return channel.name
 
 
@@ -151,3 +157,23 @@ def delete_channel(channel_id):
     frappe.db.delete("Raven Channel Member", {"channel_id": channel_id})
     # delete channel
     channel.delete()
+
+
+@frappe.whitelist()
+def get_direct_message_channels_list():
+    # get all direct message channels of user
+    channel = frappe.qb.DocType("Raven Channel")
+    channel_member = frappe.qb.DocType("Raven Channel Member")
+    user = frappe.qb.DocType("User")
+    query = (
+        frappe.qb
+        .from_(channel)
+        .join(channel_member).on(channel.name == channel_member.channel_id)
+        .join(user).on(channel_member.user_id == user.name)
+        .where((channel_member.user_id != frappe.session.user) | (channel.is_self_message == 1)).distinct()
+        .where(channel.is_direct_message == 1)
+        .where(channel.channel_name.like(f"%{frappe.session.user}%"))
+        .select(channel.name, channel.channel_name, user.full_name, (user.name).as_('user_id'))
+    )
+
+    return query.run(as_dict=True)

@@ -189,7 +189,7 @@ export const MessageSearch = ({ onToggleMyChannels, isOpenMyChannels, dateOption
                                 <Stack overflowY='scroll' pt={4}>
                                     {data.message.map(({ name, text, owner, creation, channel_id }: MessageSearchResult) => {
                                         const channelName: any = channelOption.find((channel) => channel.value === channel_id)?.label
-                                        const isArchived: number = channelOption.find((channel) => channel.value === channel_id)?.is_archived as number
+                                        const isArchived: 1 | 0 = channelOption.find((channel) => channel.value === channel_id)?.is_archived as 1 | 0;
                                         return (
                                             <ChatMessageBox
                                                 key={name}

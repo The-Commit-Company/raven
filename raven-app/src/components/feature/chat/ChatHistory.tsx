@@ -16,7 +16,7 @@ import { AnimatePresence, motion } from "framer-motion";
 
 interface ChatHistoryProps {
     parsed_messages: MessagesWithDate,
-    isDM: 1 | 0
+    isDM: number
 }
 
 export const ChatHistory = ({ parsed_messages, isDM }: ChatHistoryProps) => {
@@ -59,7 +59,7 @@ export const ChatHistory = ({ parsed_messages, isDM }: ChatHistoryProps) => {
                     <motion.div key={block.data.name} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.4 }}>
                         <ChatMessageBox message={block.data} handleScroll={handleScroll} onOpenUserDetailsDrawer={onOpenUserDetailsDrawer}>
                             {block.data.message_type === 'Text' && <MarkdownRenderer content={block.data.text} />}
-                            {block.data.message_type === 'File' || block.data.message_type === 'Image' && <FileMessageBlock {...block.data} onFilePreviewModalOpen={onFilePreviewModalOpen} />}
+                            {(block.data.message_type === 'File' || block.data.message_type === 'Image') && <FileMessageBlock {...block.data} onFilePreviewModalOpen={onFilePreviewModalOpen} />}
                         </ChatMessageBox>
                     </motion.div>
                 </AnimatePresence>

@@ -9,7 +9,8 @@
  "engine": "InnoDB",
  "field_order": [
   "channel_id",
-  "user_id"
+  "user_id",
+  "is_admin"
  ],
  "fields": [
   {
@@ -27,11 +28,17 @@
    "label": "User",
    "options": "User",
    "reqd": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "is_admin",
+   "fieldtype": "Check",
+   "label": "Is Admin"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-02-20 16:58:29.160295",
+ "modified": "2023-06-01 14:06:18.548687",
  "modified_by": "Administrator",
  "module": "Raven Channel Management",
  "name": "Raven Channel Member",
