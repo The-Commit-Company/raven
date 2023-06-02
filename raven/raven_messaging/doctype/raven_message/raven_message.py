@@ -56,8 +56,7 @@ def fetch_recent_files(channel_id):
         },
         fields=['name', 'file', 'owner', 'creation', 'message_type'],
         order_by='creation desc',
-        limit_page_length=10,
-        as_list=True
+        limit_page_length=10
     )
 
     return files
@@ -65,12 +64,16 @@ def fetch_recent_files(channel_id):
 
 @frappe.whitelist()
 def get_last_channel():
-    last_message = frappe.get_last_doc('Raven Message', 
-                                       filters={'owner': frappe.session.user},
-                                       fields=['channel_id'],
-                                       order_by='creation DESC')
+
+    last_message = frappe.db.get_list('Raven Message',
+        filters={'owner': frappe.session.user},
+        fields=['channel_id'],
+        order_by='creation DESC',
+        limit_page_length=1
+    )
+    
     if last_message:
-        return last_message['channel_id']
+        return last_message
     else:
         return 'general'
 
@@ -80,8 +83,7 @@ def get_messages(channel_id):
     messages = frappe.db.get_list('Raven Message',
         filters={'channel_id': channel_id},
         fields=['name', 'owner', 'creation', 'text', 'file', 'message_type', 'message_reactions'],
-        order_by='creation asc',
-        as_list=True
+        order_by='creation asc'
     )
 
     return messages
