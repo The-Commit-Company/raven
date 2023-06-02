@@ -2,7 +2,6 @@
 # For license information, please see license.txt
 import frappe
 from frappe.model.document import Document
-from pypika import Order
 from datetime import timedelta
 
 
@@ -49,48 +48,43 @@ def send_message(channel_id, text):
 
 @frappe.whitelist()
 def fetch_recent_files(channel_id):
-    raven_message = frappe.qb.DocType('Raven Message')
 
-    query = (frappe.qb.from_(raven_message)
-             .select(raven_message.name, raven_message.file, raven_message.owner, raven_message.creation, raven_message.message_type)
-             .where(raven_message.channel_id == channel_id)
-             .where((raven_message.message_type == 'Image') | (raven_message.message_type == 'File'))
-             .orderby(raven_message.creation, order=Order.desc).limit(10))
+    files = frappe.db.get_list('Raven Message',
+        filters={
+            'channel_id': channel_id,
+            'message_type': ['in', ['Image', 'File']]
+        },
+        fields=['name', 'file', 'owner', 'creation', 'message_type'],
+        order_by='creation desc',
+        limit_page_length=10,
+        as_list=True
+    )
 
-    return query.run(as_dict=True)
+    return files
 
 
 @frappe.whitelist()
 def get_last_channel():
-    query = frappe.get_all(
-        'Raven Message',
-        filters={'owner': frappe.session.user},
-        fields=['channel_id'],
-        order_by='creation DESC',
-        limit_page_length=1
-    )
-
-    if query:
-        return query[0]['channel_id']
+    last_message = frappe.get_last_doc('Raven Message', 
+                                       filters={'owner': frappe.session.user},
+                                       fields=['channel_id'],
+                                       order_by='creation DESC')
+    if last_message:
+        return last_message['channel_id']
     else:
         return 'general'
 
 
 def get_messages(channel_id):
-    raven_message = frappe.qb.DocType('Raven Message')
 
-    query = (frappe.qb.from_(raven_message)
-             .select(raven_message.name,
-                     raven_message.owner,
-                     raven_message.creation,
-                     raven_message.text,
-                     raven_message.file,
-                     raven_message.message_type,
-                     raven_message.message_reactions)
-             .where(raven_message.channel_id == channel_id)
-             .orderby(raven_message.creation, order=Order.asc))
+    messages = frappe.db.get_list('Raven Message',
+        filters={'channel_id': channel_id},
+        fields=['name', 'owner', 'creation', 'text', 'file', 'message_type', 'message_reactions'],
+        order_by='creation asc',
+        as_list=True
+    )
 
-    return query.run(as_dict=True)
+    return messages
 
 
 def parse_messages(messages):
