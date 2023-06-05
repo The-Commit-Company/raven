@@ -54,7 +54,6 @@ export const ChatInterface = () => {
             mutate()
         }
     })
-    console.log(users)
 
     const allUsers = Object.values(users).map((user) => {
         return {
