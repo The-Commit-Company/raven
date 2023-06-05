@@ -8,6 +8,7 @@ import ReactQuill from "react-quill"
 import { AlertBanner } from "../../layout/AlertBanner"
 import { ChannelContext } from "../../../utils/channel/ChannelProvider"
 import { ChannelData } from "../../../types/Channel/Channel"
+import { ModalTypes, useModalManager } from "../../../hooks/useModalManager"
 
 interface EditMessageModalProps {
     isOpen: boolean,
@@ -18,13 +19,13 @@ interface EditMessageModalProps {
 
 export const EditMessageModal = ({ isOpen, onClose, channelMessageID, originalText }: EditMessageModalProps) => {
 
-    const { channelMembers } = useContext(ChannelContext)
+    const { users } = useContext(ChannelContext)
     const { data: channelList, error: channelListError } = useFrappeGetCall<{ message: ChannelData[] }>("raven.raven_channel_management.doctype.raven_channel.raven_channel.get_channel_list")
 
-    const allMembers = Object.values(channelMembers).map((member) => {
+    const allUsers = Object.values(users).map((user) => {
         return {
-            id: member.name,
-            value: member.full_name
+            id: user.name,
+            value: user.full_name
         }
     })
 
@@ -96,7 +97,7 @@ export const EditMessageModal = ({ isOpen, onClose, channelMessageID, originalTe
             let values;
 
             if (mentionChar === "@") {
-                values = allMembers;
+                values = allUsers;
             } else {
                 values = allChannels;
             }
@@ -125,11 +126,20 @@ export const EditMessageModal = ({ isOpen, onClose, channelMessageID, originalTe
 
     const { colorMode } = useColorMode()
 
-    const { isOpen: showEmojiPicker, onToggle: onEmojiPickerToggle, onClose: onEmojiPickerClose } = useDisclosure()
+    const modalManager = useModalManager()
+
+    const onEmojiPickerOpen = () => {
+        modalManager.openModal(ModalTypes.EmojiPicker)
+    }
 
     const onEmojiClick = (emojiObject: EmojiClickData) => {
-        setText(text + emojiObject.emoji)
-        onEmojiPickerClose()
+        // remove html tags from text but do not remove span with class mention
+        const textWithoutHTML = text.replace(/<(?!\/?span)[^>]+>/gi, "")
+        // add emoji to text
+        const newText = `${textWithoutHTML} ${emojiObject.emoji}`
+        // set text
+        setText(newText)
+        modalManager.closeModal()
     }
 
     return (
@@ -160,15 +170,15 @@ export const EditMessageModal = ({ isOpen, onClose, channelMessageID, originalTe
                             <HStack w='full' justify={'space-between'} px='2' pb='2'>
                                 <Box>
                                     <Popover
-                                        isOpen={showEmojiPicker}
-                                        onClose={onEmojiPickerClose}
+                                        isOpen={modalManager.modalType === ModalTypes.EmojiPicker}
+                                        onClose={modalManager.closeModal}
                                         placement='top-end'
                                         isLazy
                                         lazyBehavior="unmount"
                                         gutter={48}
                                         closeOnBlur={false}>
                                         <PopoverTrigger>
-                                            <IconButton size='xs' variant='ghost' aria-label={"pick emoji"} icon={<FaRegSmile fontSize='1.0rem' />} onClick={onEmojiPickerToggle} />
+                                            <IconButton size='xs' variant='ghost' aria-label={"pick emoji"} icon={<FaRegSmile fontSize='1.0rem' />} onClick={onEmojiPickerOpen} />
                                         </PopoverTrigger>
                                         <PopoverContent>
                                             <EmojiPicker onEmojiClick={onEmojiClick} lazyLoadEmojis />

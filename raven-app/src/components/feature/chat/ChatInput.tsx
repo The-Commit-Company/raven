@@ -158,7 +158,7 @@ export const ChatInput = ({ channelID, allUsers, allChannels }: ChatInputProps) 
 
     const onEmojiClick = (emojiObject: EmojiClickData) => {
         // remove html tags from text
-        const textWithoutHTML = text.replace(/(<([^>]+)>)/gi, "")
+        const textWithoutHTML = text.replace(/<(?!\/?span)[^>]+>/gi, "")
         // add emoji to text
         const newText = `${textWithoutHTML} ${emojiObject.emoji}`
         // set text
