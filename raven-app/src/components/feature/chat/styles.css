@@ -64,6 +64,8 @@
 
 .ql-mention-list-container {
     border-color: var(--gray) !important;
+    max-height: 400px;
+    overflow-y: scroll;
 }
 
 .ql-mention-list-item.selected {
