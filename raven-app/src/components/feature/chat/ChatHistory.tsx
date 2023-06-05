@@ -3,7 +3,7 @@ import { DividerWithText } from "../../layout/Divider/DividerWithText";
 import { DateObjectToFormattedDateString } from "../../../utils/operations";
 import { DateBlock, FileMessage, MessageBlock, MessagesWithDate } from "../../../types/Messaging/Message";
 import { ChannelHistoryFirstMessage } from "../../layout/EmptyState/EmptyState";
-import { useRef, useState } from "react";
+import { useState } from "react";
 import { ChatMessageBox } from "./ChatMessage/ChatMessageBox";
 import { MarkdownRenderer } from "../markdown-viewer/MarkdownRenderer";
 import { FileMessageBlock } from "./ChatMessage/FileMessage";
@@ -11,15 +11,17 @@ import { UserProfileDrawer } from "../user-details/UserProfileDrawer";
 import { ModalTypes, useModalManager } from "../../../hooks/useModalManager";
 import { User } from "../../../types/User/User";
 import { FilePreviewModal } from "../file-preview/FilePreviewModal";
-import { Virtuoso } from 'react-virtuoso';
+import { Virtuoso, VirtuosoHandle } from 'react-virtuoso';
 import { AnimatePresence, motion } from "framer-motion";
 
 interface ChatHistoryProps {
     parsed_messages: MessagesWithDate,
-    isDM: number
+    isDM: number,
+    virtuosoRef: React.RefObject<VirtuosoHandle>
 }
 
-export const ChatHistory = ({ parsed_messages, isDM }: ChatHistoryProps) => {
+
+export const ChatHistory = ({ parsed_messages, isDM, virtuosoRef }: ChatHistoryProps) => {
 
     const [isScrollable, setScrollable] = useState<boolean>(true)
     const handleScroll = (newState: boolean) => {
@@ -67,8 +69,6 @@ export const ChatHistory = ({ parsed_messages, isDM }: ChatHistoryProps) => {
         }
         return null
     }
-
-    const virtuosoRef = useRef(null)
 
     return (
         <>

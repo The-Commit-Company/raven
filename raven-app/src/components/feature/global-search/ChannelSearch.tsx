@@ -149,7 +149,8 @@ export const ChannelSearch = ({ onToggleMyChannels, isOpenMyChannels, onToggleOt
                                                 onClick={() => {
                                                     navigate(`/channel/${channel.name}`)
                                                     onClose()
-                                                }}>
+                                                }}
+                                                key={channel.name}>
                                                 <HStack spacing={3}>
                                                     <Center maxW='50px'>
                                                         {channel.type === "Private" && <BiLockAlt /> || channel.type === "Public" && <BiHash /> || channel.type === "Open" && <BiGlobe />}
