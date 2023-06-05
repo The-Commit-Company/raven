@@ -22,7 +22,7 @@ import { ModalTypes, useModalManager } from "../../../hooks/useModalManager"
 
 export const ChatInterface = () => {
 
-    const { channelData, channelMembers } = useContext(ChannelContext)
+    const { channelData, channelMembers, users } = useContext(ChannelContext)
     const userData = useContext(UserDataContext)
     const user = userData?.name
     const peer = Object.keys(channelMembers).filter((member) => member !== user)[0]
@@ -55,10 +55,10 @@ export const ChatInterface = () => {
         }
     })
 
-    const allMembers = Object.values(channelMembers).map((member) => {
+    const allUsers = Object.values(users).map((user) => {
         return {
-            id: member.name,
-            value: member.full_name
+            id: user.name,
+            value: user.full_name
         }
     })
 
@@ -116,7 +116,7 @@ export const ChatInterface = () => {
         )
     }
 
-    else if (allChannels && allMembers) return (
+    else if (allChannels && allUsers) return (
         <>
             <PageHeader>
                 {channelData && user &&
@@ -163,7 +163,7 @@ export const ChatInterface = () => {
             <Stack h='calc(100vh)' justify={'flex-end'} p={4} overflow='hidden' pt='16'>
                 {data && channelData && <ChatHistory parsed_messages={data.message} isDM={channelData?.is_direct_message} />}
                 {channelData?.is_archived == 0 && ((user && user in channelMembers) || channelData?.type === 'Open' ?
-                    <ChatInput channelID={channelData?.name ?? ''} allChannels={allChannels} allMembers={allMembers} /> :
+                    <ChatInput channelID={channelData?.name ?? ''} allChannels={allChannels} allUsers={allUsers} /> :
                     <Box>
                         <Stack border='1px' borderColor={'gray.500'} rounded='lg' bottom='2' boxShadow='base' w='calc(98vw - var(--sidebar-width))' bg={colorMode === "light" ? "white" : "gray.800"} p={4}>
                             <HStack justify='center' align='center' pb={4}><BiHash /><Text>{channelData?.channel_name}</Text></HStack>
