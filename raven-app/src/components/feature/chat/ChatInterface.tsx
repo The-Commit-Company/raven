@@ -27,7 +27,9 @@ export const ChatInterface = () => {
     const user = userData?.name
     const peer = Object.keys(channelMembers).filter((member) => member !== user)[0]
 
-    const { data: channelList, error: channelListError } = useFrappeGetCall<{ message: ChannelData[] }>("raven.raven_channel_management.doctype.raven_channel.raven_channel.get_channel_list")
+    const { data: channelList, error: channelListError } = useFrappeGetCall<{ message: ChannelData[] }>("raven.raven_channel_management.doctype.raven_channel.raven_channel.get_channel_list", undefined, undefined, {
+        revalidateOnFocus: false
+    })
 
     const { data, error, mutate } = useFrappeGetCall<{ message: MessagesWithDate }>("raven.raven_messaging.doctype.raven_message.raven_message.get_messages_with_dates", {
         channel_id: channelData?.name ?? null
@@ -80,7 +82,9 @@ export const ChatInterface = () => {
 
     const { createDoc, error: joinError } = useFrappeCreateDoc()
     const toast = useToast()
-    const { data: activeUsers, error: activeUsersError } = useFrappeGetCall<{ message: string[] }>('raven.api.user_availability.get_active_users')
+    const { data: activeUsers, error: activeUsersError } = useFrappeGetCall<{ message: string[] }>('raven.api.user_availability.get_active_users', undefined, undefined, {
+        revalidateOnFocus: false
+    })
 
     const joinChannel = () => {
         return createDoc('Raven Channel Member', {

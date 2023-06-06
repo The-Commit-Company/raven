@@ -16,6 +16,8 @@ export const ChannelList = () => {
 
     const { data, error, mutate } = useFrappeGetCall<{ message: ChannelData[] }>("raven.raven_channel_management.doctype.raven_channel.raven_channel.get_channel_list", {
         hide_archived: true
+    }, undefined, {
+        revalidateOnFocus: false
     })
 
     const handleClose = (refresh?: boolean) => {

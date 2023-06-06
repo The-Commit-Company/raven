@@ -12,9 +12,13 @@ export const DirectMessageList = ({ userData }: { userData: User | null }) => {
     const { data: users, error: usersError } = useFrappeGetDocList<User>("User", {
         fields: ["full_name", "user_image", "name"],
         filters: [["name", "!=", "Guest"]]
+    }, undefined, {
+        revalidateOnFocus: false
     })
     const { call, error: channelError, loading, reset } = useFrappePostCall<{ message: string }>("raven.raven_channel_management.doctype.raven_channel.raven_channel.create_direct_message_channel")
-    const { data: DMChannels, error: DMChannelsError } = useFrappeGetCall<{ message: string }>('raven.raven_channel_management.doctype.raven_channel.raven_channel.get_direct_message_channels_list')
+    const { data: DMChannels, error: DMChannelsError } = useFrappeGetCall<{ message: string }>('raven.raven_channel_management.doctype.raven_channel.raven_channel.get_direct_message_channels_list', undefined, undefined, {
+        revalidateOnFocus: false
+    })
     const navigate = useNavigate()
     const location = useLocation();
     const currentAddress = location.pathname
@@ -39,7 +43,9 @@ export const DirectMessageList = ({ userData }: { userData: User | null }) => {
         }
     }
 
-    const { data, error } = useFrappeGetCall<{ message: string }>('raven.api.user_availability.get_active_users')
+    const { data, error } = useFrappeGetCall<{ message: string }>('raven.api.user_availability.get_active_users', undefined, undefined, {
+        revalidateOnFocus: false
+    })
 
     return (
         <SidebarGroup spacing={1}>

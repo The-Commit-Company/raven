@@ -6,8 +6,8 @@ import { UserDataContext } from "../../../utils/user/UserDataProvider"
 import { DirectMessageList } from "../../feature/channels/DirectMessageList";
 import { UserContext } from "../../../utils/auth/UserProvider";
 import { RxExit } from "react-icons/rx";
-import { SidebarIcon, SidebarItem, SidebarItemLabel } from "./SidebarComp";
-import { VscSettings } from "react-icons/vsc";
+// import { SidebarIcon, SidebarItem, SidebarItemLabel } from "./SidebarComp";
+// import { VscSettings } from "react-icons/vsc";
 
 interface SidebarProps extends PropsWithChildren<{}> {
     isUserActive: boolean

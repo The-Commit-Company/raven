@@ -44,7 +44,9 @@ export const MessageSearch = ({ onToggleMyChannels, isOpenMyChannels, dateOption
     const { url } = useContext(FrappeContext) as FrappeConfig
     const { users } = useContext(ChannelContext)
 
-    const { data: channels, error: channelsError } = useFrappeGetCall<{ message: ChannelData[] }>("raven.raven_channel_management.doctype.raven_channel.raven_channel.get_channel_list")
+    const { data: channels, error: channelsError } = useFrappeGetCall<{ message: ChannelData[] }>("raven.raven_channel_management.doctype.raven_channel.raven_channel.get_channel_list", undefined, undefined, {
+        revalidateOnFocus: false
+    })
 
     const userOptions: SelectOption[] = useMemo(() => {
         if (users) {
@@ -109,6 +111,8 @@ export const MessageSearch = ({ onToggleMyChannels, isOpenMyChannels, dateOption
         my_channel_only: my_channel_only,
         sort_order: sortOrder,
         sort_field: sortByField
+    }, undefined, {
+        revalidateOnFocus: false
     })
 
     useEffect(() => {
