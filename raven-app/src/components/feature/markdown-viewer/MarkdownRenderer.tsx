@@ -34,6 +34,8 @@ export const MarkdownRenderer: React.FC<Props> = ({ content }) => {
 
   const { data } = useFrappeGetCall<{ message: LinkPreviewDetails }>('raven.api.preview_links.get_preview_link', {
     url: LinkURL ? LinkURL : ''
+  }, undefined, {
+    revalidateOnFocus: false
   })
 
   const { colorMode } = useColorMode()

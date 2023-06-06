@@ -140,6 +140,8 @@ export const Files = ({ searchChange, input, isGlobalSearchModalOpen, onGlobalSe
         doctype: 'Raven Message',
         search_text: input,
         page_length: 5
+    }, undefined, {
+        revalidateOnFocus: false
     })
 
     return (

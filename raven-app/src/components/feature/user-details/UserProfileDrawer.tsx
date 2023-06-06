@@ -25,7 +25,9 @@ export const UserProfileDrawer = ({ isOpen, onClose, user }: UserProfileDrawerPr
 
     const navigate = useNavigate()
     const { call, error: channelError, loading, reset } = useFrappePostCall<{ message: string }>("raven.raven_channel_management.doctype.raven_channel.raven_channel.create_direct_message_channel")
-    const { data: activeUsers, error: activeUsersError } = useFrappeGetCall<{ message: string[] }>('raven.api.user_availability.get_active_users')
+    const { data: activeUsers, error: activeUsersError } = useFrappeGetCall<{ message: string[] }>('raven.api.user_availability.get_active_users', undefined, undefined, {
+        revalidateOnFocus: false
+    })
 
     const gotoDMChannel = async (user: string) => {
         reset()

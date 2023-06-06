@@ -53,6 +53,8 @@ export const ChannelSearch = ({ onToggleMyChannels, isOpenMyChannels, onToggleOt
         other_channel_only: other_channel_only,
         sort_order: sortOrder,
         sort_field: sortByField
+    }, undefined, {
+        revalidateOnFocus: false
     })
 
     return (

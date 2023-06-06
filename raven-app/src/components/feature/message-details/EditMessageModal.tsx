@@ -20,7 +20,9 @@ interface EditMessageModalProps {
 export const EditMessageModal = ({ isOpen, onClose, channelMessageID, originalText }: EditMessageModalProps) => {
 
     const { users } = useContext(ChannelContext)
-    const { data: channelList, error: channelListError } = useFrappeGetCall<{ message: ChannelData[] }>("raven.raven_channel_management.doctype.raven_channel.raven_channel.get_channel_list")
+    const { data: channelList, error: channelListError } = useFrappeGetCall<{ message: ChannelData[] }>("raven.raven_channel_management.doctype.raven_channel.raven_channel.get_channel_list", undefined, undefined, {
+        revalidateOnFocus: false
+    })
 
     const allUsers = Object.values(users).map((user) => {
         return {

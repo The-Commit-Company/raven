@@ -16,12 +16,17 @@ export const MainPage = (props: Props) => {
     const [isUserActive, setIsUserActive] = useState(true)
     const toast = useToast()
 
+    useEffect(() => {
+        if (isUserActive) {
+            reset()
+        }
+    }, [isUserActive])
+
     const onPresenceChange = (presence: PresenceType) => {
-        reset()
-        if (presence.type === 'active') {
+        if (presence.type === 'active' && !isUserActive) {
             refreshUserActiveState({}).then(() => setIsUserActive(true))
         }
-        else if (presence.type === 'idle') {
+        else if (presence.type === 'idle' && isUserActive) {
             setIsUserActive(false)
         }
     }
