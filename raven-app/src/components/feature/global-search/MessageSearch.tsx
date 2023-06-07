@@ -1,5 +1,5 @@
 import { SearchIcon } from '@chakra-ui/icons'
-import { Avatar, Box, Button, chakra, FormControl, HStack, Input, InputGroup, InputLeftElement, Stack, StackDivider, TabPanel, Text, Tooltip, useColorMode } from '@chakra-ui/react'
+import { Avatar, Box, Button, chakra, FormControl, HStack, Input, InputGroup, InputLeftElement, Stack, StackDivider, TabPanel, Text, useColorMode } from '@chakra-ui/react'
 import { FrappeContext, FrappeConfig, useFrappeGetCall } from 'frappe-react-sdk'
 import { useContext, useState, useMemo, useEffect } from 'react'
 import { FormProvider, Controller, useForm } from 'react-hook-form'
@@ -18,6 +18,7 @@ import { MarkdownRenderer } from '../markdown-viewer/MarkdownRenderer'
 import { MessageBlock, MessagesWithDate, TextMessage } from '../../../types/Messaging/Message'
 import { VirtuosoHandle } from 'react-virtuoso'
 import { Link, useNavigate } from 'react-router-dom'
+import { MessageBox } from './MessageBox'
 
 interface FilterInput {
     'from-user-filter': SelectOption[],
@@ -47,14 +48,11 @@ export const MessageSearch = ({ onToggleMyChannels, isOpenMyChannels, dateOption
 
     const { url } = useContext(FrappeContext) as FrappeConfig
     const navigate = useNavigate()
-    const { colorMode } = useColorMode()
-    const textColor = colorMode === 'light' ? 'gray.800' : 'gray.50'
-    const [showButtons, setShowButtons] = useState<{}>({ visibility: 'hidden' })
-    const { channelMembers, users } = useContext(ChannelContext)
-    const [channelID, setChannelID] = useState<string>("")
+    const { users } = useContext(ChannelContext)
+    const [channel_ID, setChannel_ID] = useState<string>("")
     const { data: channels, error: channelsError } = useFrappeGetCall<{ message: ChannelData[] }>("raven.raven_channel_management.doctype.raven_channel.raven_channel.get_channel_list")
     const { data: messages, error: messagesError, mutate } = useFrappeGetCall<{ message: MessagesWithDate }>("raven.raven_messaging.doctype.raven_message.raven_message.get_messages_with_dates", {
-        channel_id: channelID
+        channel_id: channel_ID
     }, undefined, {
         revalidateOnFocus: false,
         revalidateOnReconnect: false
@@ -70,8 +68,8 @@ export const MessageSearch = ({ onToggleMyChannels, isOpenMyChannels, dateOption
     }
 
     const handleScrollToMessage = (messageName: string, channelID: string, messages: MessageBlock[]) => {
-        setChannelID(channelID)
-        if (channelID) {
+        setChannel_ID(channelID)
+        if (channel_ID) {
             handleNavigateToChannel(channelID, function () {
                 const index = messages.findIndex((message: MessageBlock) => message.block_type === 'message' && message.data.name === messageName)
                 console.log(index)
@@ -227,43 +225,7 @@ export const MessageSearch = ({ onToggleMyChannels, isOpenMyChannels, dateOption
                                         const channelName: any = channelOption.find((channel) => channel.value === channel_id)?.label
                                         const isArchived: 1 | 0 = channelOption.find((channel) => channel.value === channel_id)?.is_archived as 1 | 0;
                                         return (
-                                            <Box
-                                                key={name}
-                                                pb='1'
-                                                px='2'
-                                                zIndex={1}
-                                                position={'relative'}
-                                                _hover={{
-                                                    bg: colorMode === 'light' && 'gray.50' || 'gray.800',
-                                                    borderRadius: 'md'
-                                                }}
-                                                rounded='md'
-                                                onMouseEnter={e => {
-                                                    setShowButtons({ visibility: 'visible' })
-                                                }}
-                                                onMouseLeave={e => {
-                                                    setShowButtons({ visibility: 'hidden' })
-                                                }}>
-                                                <HStack pb={1.5} spacing={1}>
-                                                    <Text fontWeight='semibold' fontSize='sm'>{channelName ?? "Direct message"}</Text>
-                                                    {isArchived && <Text fontSize={'small'}>(archived)</Text>}
-                                                    <Text fontSize='small'>- {new Date(creation).toDateString()}</Text>
-                                                    <Link style={showButtons} color='blue.500' onClick={() => handleScrollToMessage(name, channel_id, messages.message)} pl={1}>
-                                                        {channelName ? <Text fontSize={'small'}>View in channel</Text> : <Text fontSize={'small'}>View in chat</Text>}
-                                                    </Link>
-                                                </HStack>
-                                                <HStack spacing={2} alignItems='flex-start'>
-                                                    <Avatar name={channelMembers?.[owner]?.full_name ?? users?.[owner]?.full_name ?? owner} src={channelMembers?.[owner]?.user_image ?? users?.[owner]?.user_image} borderRadius={'md'} boxSize='36px' />
-                                                    <Stack spacing='1'>
-                                                        <HStack>
-                                                            <HStack divider={<StackDivider />} align='flex-start'>
-                                                                <Text fontSize='sm' lineHeight={'0.9'} fontWeight="bold" as='span' color={textColor}>{channelMembers?.[owner]?.full_name ?? users?.[owner]?.full_name ?? owner}</Text>
-                                                            </HStack>
-                                                        </HStack>
-                                                        {text && <MarkdownRenderer content={text} />}
-                                                    </Stack>
-                                                </HStack>
-                                            </Box>
+                                            <MessageBox messageName={name} channelName={channelName} channelID={channel_id} isArchived={isArchived} creation={creation} owner={owner} messageText={text} messageData={messages.message} handleScrollToMessage={handleScrollToMessage} />
                                         )
                                     }
                                     )}
