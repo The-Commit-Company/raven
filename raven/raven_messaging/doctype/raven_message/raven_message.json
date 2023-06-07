@@ -48,7 +48,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-05-19 15:14:15.598341",
+ "modified": "2023-06-07 13:12:28.572523",
  "modified_by": "Administrator",
  "module": "Raven Messaging",
  "name": "Raven Message",
@@ -83,17 +83,9 @@
    "write": 1
   },
   {
-   "create": 1,
-   "delete": 1,
-   "email": 1,
-   "export": 1,
-   "print": 1,
    "read": 1,
-   "report": 1,
    "role": "Raven User",
-   "select": 1,
-   "share": 1,
-   "write": 1
+   "select": 1
   }
  ],
  "search_fields": "text",
