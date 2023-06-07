@@ -1,6 +1,6 @@
-import { Avatar, Box, Button, Center, HStack, Icon, Spinner, Stack, Text, useDisclosure, useModalContext, Image, Link } from "@chakra-ui/react"
+import { Avatar, Box, Button, Center, HStack, Icon, Spinner, Stack, Text, useModalContext, Image, Link } from "@chakra-ui/react"
 import { Command } from "cmdk"
-import { Filter, useFrappeGetCall, useSearch } from "frappe-react-sdk"
+import { useFrappeGetCall, useSearch } from "frappe-react-sdk"
 import { useContext, useState } from "react"
 import { BiGlobe, BiHash, BiLockAlt } from "react-icons/bi"
 import { BsFillCircleFill, BsCircle } from "react-icons/bs"
@@ -12,9 +12,9 @@ import { UserContext } from "../../../utils/auth/UserProvider"
 import { ChannelContext } from "../../../utils/channel/ChannelProvider"
 import { getFileExtensionIcon } from "../../../utils/layout/fileExtensionIcon"
 import GlobalSearch from "../global-search/GlobalSearch"
-import { MarkdownRenderer } from "../markdown-viewer/MarkdownRenderer"
 import { FileMessage } from "../../../types/Messaging/Message"
 import { getFileExtension, getFileName } from "../../../utils/operations"
+import { VirtuosoHandle } from "react-virtuoso"
 
 interface Props {
     searchChange: Function
@@ -22,6 +22,8 @@ interface Props {
     isGlobalSearchModalOpen: boolean
     onGlobalSearchModalOpen: () => void
     onGlobalSearchModalClose: () => void
+    virtuosoRef: React.RefObject<VirtuosoHandle>
+    onCommandPaletteClose: () => void
 }
 
 interface PeopleProps {
@@ -34,6 +36,8 @@ interface PeopleProps {
     isGlobalSearchModalOpen: boolean
     onGlobalSearchModalOpen: () => void
     onGlobalSearchModalClose: () => void
+    virtuosoRef: React.RefObject<VirtuosoHandle>
+    onCommandPaletteClose: () => void
 }
 
 interface ChannelsProps {
@@ -41,6 +45,8 @@ interface ChannelsProps {
     isGlobalSearchModalOpen: boolean
     onGlobalSearchModalOpen: () => void
     onGlobalSearchModalClose: () => void
+    virtuosoRef: React.RefObject<VirtuosoHandle>
+    onCommandPaletteClose: () => void
 }
 
 interface FindInProps {
@@ -50,9 +56,11 @@ interface FindInProps {
     isGlobalSearchModalOpen: boolean
     onGlobalSearchModalOpen: () => void
     onGlobalSearchModalClose: () => void
+    virtuosoRef: React.RefObject<VirtuosoHandle>
+    onCommandPaletteClose: () => void
 }
 
-export const Home = ({ searchChange, input, isGlobalSearchModalOpen, onGlobalSearchModalOpen, onGlobalSearchModalClose }: Props) => {
+export const Home = ({ searchChange, input, isGlobalSearchModalOpen, onGlobalSearchModalOpen, onGlobalSearchModalClose, virtuosoRef, onCommandPaletteClose }: Props) => {
     const { channelData, channelMembers } = useContext(ChannelContext)
     const { currentUser } = useContext(UserContext)
     const peer = Object.keys(channelMembers).filter((member) => member !== currentUser)[0]
@@ -61,7 +69,7 @@ export const Home = ({ searchChange, input, isGlobalSearchModalOpen, onGlobalSea
 
     return (
         <Command.List>
-            <CommandPaletteEmptyState input={input} placeholder='messages, files, people and more' tabIndex={0} isGlobalSearchModalOpen={isGlobalSearchModalOpen} onGlobalSearchModalOpen={onGlobalSearchModalOpen} onGlobalSearchModalClose={onGlobalSearchModalClose} />
+            <CommandPaletteEmptyState input={input} placeholder='messages, files, people and more' tabIndex={0} isGlobalSearchModalOpen={isGlobalSearchModalOpen} onGlobalSearchModalOpen={onGlobalSearchModalOpen} onGlobalSearchModalClose={onGlobalSearchModalClose} virtuosoRef={virtuosoRef} onCommandPaletteClose={onCommandPaletteClose} />
             <Command.Group style={style}>
                 {channelData && <Item
                     onSelect={() => {
@@ -112,15 +120,15 @@ export const Home = ({ searchChange, input, isGlobalSearchModalOpen, onGlobalSea
                         </Item>
                     </HStack>
                 </Command.Group>}
-            <GlobalSearch isOpen={isGlobalSearchModalOpen} onClose={onGlobalSearchModalClose} tabIndex={0} input={input} inFilter={inFilter} />
+            <GlobalSearch isOpen={isGlobalSearchModalOpen} onClose={onGlobalSearchModalClose} tabIndex={0} input={input} inFilter={inFilter} virtuosoRef={virtuosoRef} onCommandPaletteClose={onCommandPaletteClose} />
         </Command.List>
     )
 }
 
-export const Messages = ({ searchChange, input, isGlobalSearchModalOpen, onGlobalSearchModalOpen, onGlobalSearchModalClose }: Props) => {
+export const Messages = ({ searchChange, input, isGlobalSearchModalOpen, onGlobalSearchModalOpen, onGlobalSearchModalClose, virtuosoRef, onCommandPaletteClose }: Props) => {
     return (
         <Command.List>
-            <CommandPaletteEmptyState input={input} placeholder='messages' tabIndex={0} isGlobalSearchModalOpen={isGlobalSearchModalOpen} onGlobalSearchModalOpen={onGlobalSearchModalOpen} onGlobalSearchModalClose={onGlobalSearchModalClose} />
+            <CommandPaletteEmptyState input={input} placeholder='messages' tabIndex={0} isGlobalSearchModalOpen={isGlobalSearchModalOpen} onGlobalSearchModalOpen={onGlobalSearchModalOpen} onGlobalSearchModalClose={onGlobalSearchModalClose} virtuosoRef={virtuosoRef} onCommandPaletteClose={onCommandPaletteClose} />
             {!input && <Command.Group heading="Narrow your search">
                 <Item onSelect={() => {
                     searchChange('in')
@@ -133,7 +141,7 @@ export const Messages = ({ searchChange, input, isGlobalSearchModalOpen, onGloba
     )
 }
 
-export const Files = ({ searchChange, input, isGlobalSearchModalOpen, onGlobalSearchModalOpen, onGlobalSearchModalClose }: Props) => {
+export const Files = ({ searchChange, input, isGlobalSearchModalOpen, onGlobalSearchModalOpen, onGlobalSearchModalClose, virtuosoRef, onCommandPaletteClose }: Props) => {
 
     const { data, isValidating } = useFrappeGetCall<{ message: GetFileSearchResult[] }>("raven.api.search.get_search_result", {
         filter_type: 'File',
@@ -146,7 +154,7 @@ export const Files = ({ searchChange, input, isGlobalSearchModalOpen, onGlobalSe
 
     return (
         <Command.List>
-            <CommandPaletteEmptyState input={input} placeholder='files' tabIndex={1} isGlobalSearchModalOpen={isGlobalSearchModalOpen} onGlobalSearchModalOpen={onGlobalSearchModalOpen} onGlobalSearchModalClose={onGlobalSearchModalClose} />
+            <CommandPaletteEmptyState input={input} placeholder='files' tabIndex={1} isGlobalSearchModalOpen={isGlobalSearchModalOpen} onGlobalSearchModalOpen={onGlobalSearchModalOpen} onGlobalSearchModalClose={onGlobalSearchModalClose} virtuosoRef={virtuosoRef} onCommandPaletteClose={onCommandPaletteClose} />
             {!input && <Command.Group heading="Narrow your search">
                 <Item onSelect={() => {
                     searchChange('in')
@@ -177,7 +185,7 @@ export const Files = ({ searchChange, input, isGlobalSearchModalOpen, onGlobalSe
     )
 }
 
-export const Channels = ({ input, isGlobalSearchModalOpen, onGlobalSearchModalOpen, onGlobalSearchModalClose }: ChannelsProps) => {
+export const Channels = ({ input, isGlobalSearchModalOpen, onGlobalSearchModalOpen, onGlobalSearchModalClose, virtuosoRef, onCommandPaletteClose }: ChannelsProps) => {
 
     const { data, isValidating } = useSearch('Raven Channel', input, [["is_direct_message", "=", "0"]], 20)
     const navigate = useNavigate()
@@ -185,7 +193,7 @@ export const Channels = ({ input, isGlobalSearchModalOpen, onGlobalSearchModalOp
 
     return (
         <Command.List>
-            <CommandPaletteEmptyState input={input} placeholder='channels' tabIndex={2} isGlobalSearchModalOpen={isGlobalSearchModalOpen} onGlobalSearchModalOpen={onGlobalSearchModalOpen} onGlobalSearchModalClose={onGlobalSearchModalClose} />
+            <CommandPaletteEmptyState input={input} placeholder='channels' tabIndex={2} isGlobalSearchModalOpen={isGlobalSearchModalOpen} onGlobalSearchModalOpen={onGlobalSearchModalOpen} onGlobalSearchModalClose={onGlobalSearchModalClose} virtuosoRef={virtuosoRef} onCommandPaletteClose={onCommandPaletteClose} />
             <Command.Group heading={data?.results?.length ? "Recent channels" : ""} >
                 {isValidating && !data?.results?.length && <Text py='4' color='gray.500' textAlign='center' fontSize='sm'>No results found.</Text>}
                 {isValidating && <Command.Loading>
@@ -202,7 +210,7 @@ export const Channels = ({ input, isGlobalSearchModalOpen, onGlobalSearchModalOp
     )
 }
 
-export const People = ({ input, users, activeUsers, gotoDMChannel, currentUser }: PeopleProps) => {
+export const People = ({ input, users, activeUsers, gotoDMChannel, currentUser, onCommandPaletteClose }: PeopleProps) => {
     const results_count = users.reduce((count, user) => {
         if (user.full_name.toLowerCase().includes(input.toLowerCase())) {
             return count + 1;
@@ -238,12 +246,12 @@ export const People = ({ input, users, activeUsers, gotoDMChannel, currentUser }
     </Command.List>
 }
 
-export const FindIn = ({ input, tabIndex, isGlobalSearchModalOpen, onGlobalSearchModalOpen, onGlobalSearchModalClose }: FindInProps) => {
+export const FindIn = ({ input, tabIndex, isGlobalSearchModalOpen, onGlobalSearchModalOpen, onGlobalSearchModalClose, virtuosoRef, onCommandPaletteClose }: FindInProps) => {
     const { data, isValidating } = useSearch('Raven Channel', input, [["is_direct_message", "=", "0"]], 20)
     const [inFilter, setInFilter] = useState<string>()
     return (
         <Command.List>
-            <CommandPaletteEmptyState input={input} placeholder='messages' tabIndex={0} isGlobalSearchModalOpen={isGlobalSearchModalOpen} onGlobalSearchModalOpen={onGlobalSearchModalOpen} onGlobalSearchModalClose={onGlobalSearchModalClose} />
+            <CommandPaletteEmptyState input={input} placeholder='messages' tabIndex={0} isGlobalSearchModalOpen={isGlobalSearchModalOpen} onGlobalSearchModalOpen={onGlobalSearchModalOpen} onGlobalSearchModalClose={onGlobalSearchModalClose} virtuosoRef={virtuosoRef} onCommandPaletteClose={onCommandPaletteClose} />
             <Command.Group heading={data?.results?.length ? "Recent channels" : ""} >
                 {isValidating && !data?.results?.length && <Text py='4' color='gray.500' textAlign='center' fontSize='sm'>No results found.</Text>}
                 {isValidating && <Command.Loading>
@@ -256,12 +264,12 @@ export const FindIn = ({ input, tabIndex, isGlobalSearchModalOpen, onGlobalSearc
                     setInFilter(r.value)
                 }}>{r.description.includes("Private") && <BiLockAlt /> || r.description.includes("Public") && <BiHash /> || r.description.includes("Open") && <BiGlobe />}{r.label}</Item>)}
             </Command.Group>
-            <GlobalSearch isOpen={isGlobalSearchModalOpen} onClose={onGlobalSearchModalClose} tabIndex={tabIndex} input={""} inFilter={inFilter} />
+            <GlobalSearch isOpen={isGlobalSearchModalOpen} onClose={onGlobalSearchModalClose} tabIndex={tabIndex} input={""} inFilter={inFilter} virtuosoRef={virtuosoRef} onCommandPaletteClose={onCommandPaletteClose} />
         </Command.List>
     )
 }
 
-export const FindFrom = ({ input, users, tabIndex, isGlobalSearchModalOpen, onGlobalSearchModalOpen, onGlobalSearchModalClose }: PeopleProps) => {
+export const FindFrom = ({ input, users, tabIndex, isGlobalSearchModalOpen, onGlobalSearchModalOpen, onGlobalSearchModalClose, virtuosoRef, onCommandPaletteClose }: PeopleProps) => {
     const results_count = users.reduce((count, user) => {
         if (user.full_name.toLowerCase().includes(input.toLowerCase())) {
             return count + 1;
@@ -271,7 +279,7 @@ export const FindFrom = ({ input, users, tabIndex, isGlobalSearchModalOpen, onGl
     const [fromFilter, setFromFilter] = useState<string>()
     return (
         <Command.List>
-            <CommandPaletteEmptyState input={input} placeholder='messages' tabIndex={0} isGlobalSearchModalOpen={isGlobalSearchModalOpen} onGlobalSearchModalOpen={onGlobalSearchModalOpen} onGlobalSearchModalClose={onGlobalSearchModalClose} />
+            <CommandPaletteEmptyState input={input} placeholder='messages' tabIndex={0} isGlobalSearchModalOpen={isGlobalSearchModalOpen} onGlobalSearchModalOpen={onGlobalSearchModalOpen} onGlobalSearchModalClose={onGlobalSearchModalClose} virtuosoRef={virtuosoRef} onCommandPaletteClose={onCommandPaletteClose} />
             <Command.Group heading={results_count > 0 ? "Recent direct messages" : ""} >
                 {users.map(user => {
                     if (user.full_name.toLowerCase().includes(input.toLowerCase())) {
@@ -289,7 +297,7 @@ export const FindFrom = ({ input, users, tabIndex, isGlobalSearchModalOpen, onGl
                     }
                 })}
             </Command.Group>
-            {tabIndex != undefined && <GlobalSearch isOpen={isGlobalSearchModalOpen} onClose={onGlobalSearchModalClose} tabIndex={tabIndex} input={""} fromFilter={fromFilter} />}
+            {tabIndex != undefined && <GlobalSearch isOpen={isGlobalSearchModalOpen} onClose={onGlobalSearchModalClose} tabIndex={tabIndex} input={""} fromFilter={fromFilter} virtuosoRef={virtuosoRef} onCommandPaletteClose={onCommandPaletteClose} />}
         </Command.List>
     )
 }
@@ -321,44 +329,44 @@ export const Item = ({
     )
 }
 
-export const LoadOptions = ({ doctype, input, filters }: { doctype: string, input: string, filters?: Filter[] }) => {
+// export const LoadOptions = ({ doctype, input, filters }: { doctype: string, input: string, filters?: Filter[] }) => {
 
-    const { data, isValidating } = useSearch(doctype, input, filters, 20)
-    const navigate = useNavigate()
-    const { onClose } = useModalContext()
+//     const { data, isValidating } = useSearch(doctype, input, filters, 20)
+//     const navigate = useNavigate()
+//     const { onClose } = useModalContext()
 
-    return (
-        <Command.List>
-            {isValidating && !data?.results?.length && <Text py='4' color='gray.500' textAlign='center' fontSize='sm'>No results found.</Text>}
-            {isValidating && <Command.Loading>
-                <Center px='4' pb='2'>
-                    <Box><Spinner size={'xs'} color='gray.400' /></Box>
-                </Center>
-            </Command.Loading>}
-            {data?.results?.map((r: { value: string, description: string, label: string }) => <Item key={r.value} value={r.value} onSelect={() => {
-                switch (doctype) {
-                    case 'Raven Channel':
-                        navigate(`/channel/${r.value}`)
-                        break
-                    case 'User':
-                        navigate(`/channel/`)
-                        break
-                    default:
-                        break
-                }
-                onClose()
-            }}>{doctype == "Raven Message" ? <MarkdownRenderer content={r.description} /> : (r.label ? r.label : r.description)}</Item>)}
-        </Command.List>
-    )
-}
+//     return (
+//         <Command.List>
+//             {isValidating && !data?.results?.length && <Text py='4' color='gray.500' textAlign='center' fontSize='sm'>No results found.</Text>}
+//             {isValidating && <Command.Loading>
+//                 <Center px='4' pb='2'>
+//                     <Box><Spinner size={'xs'} color='gray.400' /></Box>
+//                 </Center>
+//             </Command.Loading>}
+//             {data?.results?.map((r: { value: string, description: string, label: string }) => <Item key={r.value} value={r.value} onSelect={() => {
+//                 switch (doctype) {
+//                     case 'Raven Channel':
+//                         navigate(`/channel/${r.value}`)
+//                         break
+//                     case 'User':
+//                         navigate(`/channel/`)
+//                         break
+//                     default:
+//                         break
+//                 }
+//                 onClose()
+//             }}>{doctype == "Raven Message" ? <MarkdownRenderer content={r.description} /> : (r.label ? r.label : r.description)}</Item>)}
+//         </Command.List>
+//     )
+// }
 
-export const CommandPaletteEmptyState = ({ input, placeholder, tabIndex, isGlobalSearchModalOpen, onGlobalSearchModalOpen, onGlobalSearchModalClose }: FindInProps) => {
+export const CommandPaletteEmptyState = ({ input, placeholder, tabIndex, isGlobalSearchModalOpen, onGlobalSearchModalOpen, onGlobalSearchModalClose, virtuosoRef, onCommandPaletteClose }: FindInProps) => {
     return (
         <Command.Empty>
             <Button w='full' fontWeight="light" variant='ghost' alignContent='end' onClick={() => {
                 onGlobalSearchModalOpen()
             }}>{input} - Search {placeholder}</Button>
-            <GlobalSearch isOpen={isGlobalSearchModalOpen} onClose={onGlobalSearchModalClose} tabIndex={tabIndex} input={input} />
+            <GlobalSearch isOpen={isGlobalSearchModalOpen} onClose={onGlobalSearchModalClose} tabIndex={tabIndex} input={input} virtuosoRef={virtuosoRef} onCommandPaletteClose={onCommandPaletteClose} />
         </Command.Empty>
     )
 }

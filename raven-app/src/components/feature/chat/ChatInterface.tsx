@@ -1,6 +1,6 @@
 import { Avatar, AvatarBadge, Box, Button, ButtonGroup, Center, HStack, Stack, Text, useColorMode, useDisclosure, useToast } from "@chakra-ui/react"
 import { useFrappeCreateDoc, useFrappeGetCall } from "frappe-react-sdk"
-import { useContext } from "react"
+import { useContext, useRef } from "react"
 import { BiGlobe, BiHash, BiLockAlt } from "react-icons/bi"
 import { HiOutlineSearch } from "react-icons/hi"
 import { useFrappeEventListener } from "../../../hooks/useFrappeEventListener"
@@ -19,6 +19,7 @@ import { ViewOrAddMembersButton } from "../view-or-add-members/ViewOrAddMembersB
 import { ChatHistory } from "./ChatHistory"
 import { ChatInput } from "./ChatInput"
 import { ModalTypes, useModalManager } from "../../../hooks/useModalManager"
+import { VirtuosoHandle } from "react-virtuoso"
 
 export const ChatInterface = () => {
 
@@ -26,6 +27,7 @@ export const ChatInterface = () => {
     const userData = useContext(UserDataContext)
     const user = userData?.name
     const peer = Object.keys(channelMembers).filter((member) => member !== user)[0]
+    const virtuosoRef = useRef<VirtuosoHandle>(null)
 
     const { data: channelList, error: channelListError } = useFrappeGetCall<{ message: ChannelData[] }>("raven.raven_channel_management.doctype.raven_channel.raven_channel.get_channel_list", undefined, undefined, {
         revalidateOnFocus: false
@@ -165,7 +167,7 @@ export const ChatInterface = () => {
                 </HStack>
             </PageHeader>
             <Stack h='calc(100vh)' justify={'flex-end'} p={4} overflow='hidden' pt='16'>
-                {data && channelData && <ChatHistory parsed_messages={data.message} isDM={channelData?.is_direct_message} />}
+                {data && channelData && <ChatHistory parsed_messages={data.message} isDM={channelData?.is_direct_message} virtuosoRef={virtuosoRef} />}
                 {channelData?.is_archived == 0 && ((user && user in channelMembers) || channelData?.type === 'Open' ?
                     <ChatInput channelID={channelData?.name ?? ''} allChannels={allChannels} allUsers={allUsers} /> :
                     <Box>
@@ -198,7 +200,8 @@ export const ChatInterface = () => {
             <CommandPalette
                 isOpen={isCommandPaletteOpen}
                 onClose={onCommandPaletteClose}
-                onToggle={onCommandPaletteToggle} />
+                onToggle={onCommandPaletteToggle}
+                virtuosoRef={virtuosoRef} />
         </>
     )
 
