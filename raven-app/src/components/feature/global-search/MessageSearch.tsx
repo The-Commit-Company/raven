@@ -1,6 +1,6 @@
 import { SearchIcon } from '@chakra-ui/icons'
-import { Avatar, Box, Button, chakra, FormControl, HStack, Input, InputGroup, InputLeftElement, Stack, StackDivider, TabPanel, Text, useColorMode } from '@chakra-ui/react'
-import { FrappeContext, FrappeConfig, useFrappeGetCall } from 'frappe-react-sdk'
+import { Avatar, Button, Center, chakra, FormControl, HStack, Input, InputGroup, InputLeftElement, Spinner, Stack, TabPanel, Text, useToast } from '@chakra-ui/react'
+import { FrappeContext, FrappeConfig, useFrappeGetCall, useFrappePostCall } from 'frappe-react-sdk'
 import { useContext, useState, useMemo, useEffect } from 'react'
 import { FormProvider, Controller, useForm } from 'react-hook-form'
 import { BiLockAlt, BiHash, BiGlobe } from 'react-icons/bi'
@@ -10,14 +10,12 @@ import { GetMessageSearchResult } from '../../../types/Search/Search'
 import { User } from '../../../types/User/User'
 import { AlertBanner } from '../../layout/AlertBanner'
 import { EmptyStateForSearch } from '../../layout/EmptyState/EmptyState'
-import { FullPageLoader } from '../../layout/Loaders'
 import { SelectInput, SelectOption } from '../search-filters/SelectInput'
 import { Sort } from '../sorting'
 import { ChannelContext } from "../../../utils/channel/ChannelProvider"
-import { MarkdownRenderer } from '../markdown-viewer/MarkdownRenderer'
-import { MessageBlock, MessagesWithDate, TextMessage } from '../../../types/Messaging/Message'
+import { TextMessage } from '../../../types/Messaging/Message'
 import { VirtuosoHandle } from 'react-virtuoso'
-import { Link, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { MessageBox } from './MessageBox'
 
 interface FilterInput {
@@ -49,35 +47,45 @@ export const MessageSearch = ({ onToggleMyChannels, isOpenMyChannels, dateOption
     const { url } = useContext(FrappeContext) as FrappeConfig
     const navigate = useNavigate()
     const { users } = useContext(ChannelContext)
-    const [channel_ID, setChannel_ID] = useState<string>("")
     const { data: channels, error: channelsError } = useFrappeGetCall<{ message: ChannelData[] }>("raven.raven_channel_management.doctype.raven_channel.raven_channel.get_channel_list")
-    const { data: messages, error: messagesError, mutate } = useFrappeGetCall<{ message: MessagesWithDate }>("raven.raven_messaging.doctype.raven_message.raven_message.get_messages_with_dates", {
-        channel_id: channel_ID
-    }, undefined, {
-        revalidateOnFocus: false,
-        revalidateOnReconnect: false
-    })
+    const { call, error: indexingError, loading, reset } = useFrappePostCall<{ message: string }>("raven.raven_messaging.doctype.raven_message.raven_message.get_index_of_message")
 
     const handleNavigateToChannel = (channelID: string, _callback: VoidFunction) => {
         onClose()
         onCommandPaletteClose()
         navigate(`/channel/${channelID}`)
-        setTimeout(() => {
-            _callback()
-        }, 1)
+        _callback()
     }
 
-    const handleScrollToMessage = (messageName: string, channelID: string, messages: MessageBlock[]) => {
-        setChannel_ID(channelID)
-        if (channel_ID) {
-            handleNavigateToChannel(channelID, function () {
-                const index = messages.findIndex((message: MessageBlock) => message.block_type === 'message' && message.data.name === messageName)
-                console.log(index)
-                if (virtuosoRef.current) {
-                    virtuosoRef.current.scrollToIndex({ index: index, align: 'center' })
-                }
+    const handleScrollToMessage = (messageName: string, channelID: string) => {
+        reset()
+        handleNavigateToChannel(channelID, async function () {
+            const result = await call({
+                channel_id: channelID,
+                message_id: messageName
             })
-        }
+            if (virtuosoRef.current) {
+                virtuosoRef.current.scrollToIndex({ index: parseInt(result.message) ?? 'LAST', align: 'center' })
+            }
+        })
+    }
+
+    const toast = useToast()
+
+    if (indexingError && !toast.isActive('message-indexing-error')) {
+        toast({
+            description: "There was an error while indexing the message.",
+            status: "error",
+            duration: 4000,
+            size: 'sm',
+            render: ({ onClose }) => <AlertBanner onClose={onClose} variant='solid' status='error' fontSize="sm">
+                There was an error while indexing the message.<br />You have been redirected to the channel.
+            </AlertBanner>,
+            id: 'message-indexing-error',
+            variant: 'left-accent',
+            isClosable: true,
+            position: 'bottom-right'
+        })
     }
 
     const userOptions: SelectOption[] = useMemo(() => {
@@ -212,7 +220,7 @@ export const MessageSearch = ({ onToggleMyChannels, isOpenMyChannels, dateOption
             </Stack>
             <Stack h='420px' p={4}>
                 {error ? <AlertBanner status='error' heading={error.message}>{error.httpStatus} - {error.httpStatusText}</AlertBanner> :
-                    (isLoading && isValidating ? <FullPageLoader /> :
+                    ((isLoading && isValidating) || loading ? <Center><Spinner /></Center> :
                         (!!!error && data?.message && data.message.length > 0 && showResults ?
                             <><Sort
                                 sortingFields={[{ label: 'Created on', field: 'creation' }]}
@@ -225,7 +233,7 @@ export const MessageSearch = ({ onToggleMyChannels, isOpenMyChannels, dateOption
                                         const channelName: any = channelOption.find((channel) => channel.value === channel_id)?.label
                                         const isArchived: 1 | 0 = channelOption.find((channel) => channel.value === channel_id)?.is_archived as 1 | 0;
                                         return (
-                                            <MessageBox messageName={name} channelName={channelName} channelID={channel_id} isArchived={isArchived} creation={creation} owner={owner} messageText={text} messageData={messages.message} handleScrollToMessage={handleScrollToMessage} />
+                                            <MessageBox messageName={name} channelName={channelName} channelID={channel_id} isArchived={isArchived} creation={creation} owner={owner} messageText={text} handleScrollToMessage={handleScrollToMessage} />
                                         )
                                     }
                                     )}

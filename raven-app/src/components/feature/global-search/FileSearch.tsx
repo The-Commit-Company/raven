@@ -1,5 +1,5 @@
 import { SearchIcon } from '@chakra-ui/icons'
-import { Avatar, Button, Center, chakra, FormControl, HStack, Icon, Input, InputGroup, InputLeftElement, Link, Stack, TabPanel, Text, Image } from '@chakra-ui/react'
+import { Avatar, Button, Center, chakra, FormControl, HStack, Icon, Input, InputGroup, InputLeftElement, Link, Stack, TabPanel, Text, Image, Spinner } from '@chakra-ui/react'
 import { FrappeConfig, FrappeContext, useFrappeGetCall, useFrappeGetDocList } from 'frappe-react-sdk'
 import { useMemo, useState, useContext } from 'react'
 import { Controller, FormProvider, useForm } from 'react-hook-form'
@@ -12,7 +12,6 @@ import { getFileExtensionIcon } from '../../../utils/layout/fileExtensionIcon'
 import { DateObjectToFormattedDateString, getFileExtension, getFileName } from '../../../utils/operations'
 import { AlertBanner } from '../../layout/AlertBanner'
 import { EmptyStateForSearch } from '../../layout/EmptyState/EmptyState'
-import { FullPageLoader } from '../../layout/Loaders'
 import { SelectInput, SelectOption } from '../search-filters/SelectInput'
 import { Sort } from '../sorting'
 import { AiOutlineFileExcel, AiOutlineFileImage, AiOutlineFilePdf, AiOutlineFilePpt, AiOutlineFileText } from 'react-icons/ai'
@@ -188,7 +187,7 @@ export const FileSearch = ({ onToggleMyChannels, isOpenMyChannels, dateOption, i
             <Stack h='420px' p={4}>
 
                 {error ? <AlertBanner status='error' heading={error.message}>{error.httpStatus} - {error.httpStatusText}</AlertBanner> :
-                    (isLoading && isValidating ? <FullPageLoader /> :
+                    (isLoading && isValidating ? <Center><Spinner /></Center> :
                         (!!!error && data?.message && data.message.length > 0 ?
                             <><Sort
                                 sortingFields={[{ label: 'Created on', field: 'creation' }]}

@@ -1,6 +1,5 @@
 import { Avatar, Box, HStack, Link, Stack, StackDivider, Text, useColorMode } from "@chakra-ui/react"
 import { useContext, useState } from "react"
-import { MessageBlock } from "../../../types/Messaging/Message"
 import { ChannelContext } from "../../../utils/channel/ChannelProvider"
 import { MarkdownRenderer } from "../markdown-viewer/MarkdownRenderer"
 
@@ -12,11 +11,10 @@ type MessageBoxProps = {
     creation: Date,
     owner: string,
     messageText: string,
-    messageData: MessageBlock[]
-    handleScrollToMessage: (messageName: string, channelID: string, messagesData: MessageBlock[]) => void
+    handleScrollToMessage: (messageName: string, channelID: string) => void
 }
 
-export const MessageBox = ({ messageName, channelName, channelID, isArchived, creation, owner, messageText, handleScrollToMessage, messageData }: MessageBoxProps) => {
+export const MessageBox = ({ messageName, channelName, channelID, isArchived, creation, owner, messageText, handleScrollToMessage }: MessageBoxProps) => {
 
     const { colorMode } = useColorMode()
     const textColor = colorMode === 'light' ? 'gray.800' : 'gray.50'
@@ -45,7 +43,7 @@ export const MessageBox = ({ messageName, channelName, channelID, isArchived, cr
                 <Text fontWeight='semibold' fontSize='sm'>{channelName ?? "Direct message"}</Text>
                 {isArchived && <Text fontSize={'small'}>(archived)</Text>}
                 <Text fontSize='small'>- {new Date(creation).toDateString()}</Text>
-                <Link style={showButtons} color='blue.500' onClick={() => handleScrollToMessage(messageName, channelID, messageData)} pl={1}>
+                <Link style={showButtons} color='blue.500' onClick={() => handleScrollToMessage(messageName, channelID)} pl={1}>
                     {channelName ? <Text fontSize={'small'}>View in channel</Text> : <Text fontSize={'small'}>View in chat</Text>}
                 </Link>
             </HStack>

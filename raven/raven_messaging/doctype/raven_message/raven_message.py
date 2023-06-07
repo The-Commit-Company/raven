@@ -96,14 +96,15 @@ def get_messages(channel_id):
 def parse_messages(messages):
 
     messages_with_date_header = []
-    previous_message = None 
+    previous_message = None
 
     for i in range(len(messages)):
         message = messages[i]
         is_continuation = (
             previous_message and
             message['owner'] == previous_message['owner'] and
-            (message['creation'] - previous_message['creation']) < timedelta(minutes=2)
+            (message['creation'] - previous_message['creation']
+             ) < timedelta(minutes=2)
         )
         message['is_continuation'] = int(bool(is_continuation))
 
@@ -118,7 +119,7 @@ def parse_messages(messages):
             'data': message
         })
 
-        previous_message = message 
+        previous_message = message
 
     return messages_with_date_header
 
@@ -127,3 +128,13 @@ def parse_messages(messages):
 def get_messages_with_dates(channel_id):
     messages = get_messages(channel_id)
     return parse_messages(messages)
+
+
+@frappe.whitelist()
+def get_index_of_message(channel_id, message_id):
+    messages = get_messages(channel_id)
+    parsed_messages = parse_messages(messages)
+    for i in range(len(parsed_messages)):
+        if parsed_messages[i]['block_type'] == 'message' and parsed_messages[i]['data']['name'] == message_id:
+            return i
+    return -1

@@ -1,5 +1,5 @@
 import { SearchIcon } from '@chakra-ui/icons'
-import { Button, Center, chakra, FormControl, HStack, Input, InputGroup, InputLeftElement, Text, Stack, TabPanel, Box, useColorMode } from '@chakra-ui/react'
+import { Button, Center, chakra, FormControl, HStack, Input, InputGroup, InputLeftElement, Text, Stack, TabPanel, Box, useColorMode, Spinner } from '@chakra-ui/react'
 import { useFrappeGetCall } from 'frappe-react-sdk'
 import { useState } from 'react'
 import { FormProvider, Controller, useForm } from 'react-hook-form'
@@ -9,7 +9,6 @@ import { useDebounce } from '../../../hooks/useDebounce'
 import { GetChannelSearchResult } from '../../../types/Search/Search'
 import { AlertBanner } from '../../layout/AlertBanner'
 import { EmptyStateForSearch } from '../../layout/EmptyState/EmptyState'
-import { FullPageLoader } from '../../layout/Loaders'
 import { SelectInput, SelectOption } from '../search-filters/SelectInput'
 import { Sort } from '../sorting'
 import { ChannelData } from '../../../types/Channel/Channel'
@@ -128,7 +127,7 @@ export const ChannelSearch = ({ onToggleMyChannels, isOpenMyChannels, onToggleOt
             <Stack h='420px' p={4}>
 
                 {error ? <AlertBanner status='error' heading={error.message}>{error.httpStatus} - {error.httpStatusText}</AlertBanner> :
-                    (isLoading && isValidating ? <FullPageLoader /> :
+                    (isLoading && isValidating ? <Center><Spinner /></Center> :
                         (!!!error && data?.message && data.message.length > 0 ?
                             <><Sort
                                 sortingFields={[{ label: 'Created on', field: 'creation' }]}
