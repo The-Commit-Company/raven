@@ -40,11 +40,15 @@ interface Props {
 export const FileSearch = ({ onToggleMyChannels, isOpenMyChannels, dateOption, input, fromFilter, inFilter }: Props) => {
 
     const { url } = useContext(FrappeContext) as FrappeConfig
-    const { data: channels, error: channelsError } = useFrappeGetCall<{ message: ChannelData[] }>("raven.raven_channel_management.doctype.raven_channel.raven_channel.get_channel_list")
+    const { data: channels, error: channelsError } = useFrappeGetCall<{ message: ChannelData[] }>("raven.raven_channel_management.doctype.raven_channel.raven_channel.get_channel_list", undefined, undefined, {
+        revalidateOnFocus: false
+    })
 
     const { data: users, error: usersError } = useFrappeGetDocList<User>("User", {
         fields: ["full_name", "user_image", "name"],
         filters: [["name", "!=", "Guest"]]
+    }, undefined, {
+        revalidateOnFocus: false
     })
 
     const userOptions: SelectOption[] = useMemo(() => {
@@ -123,6 +127,8 @@ export const FileSearch = ({ onToggleMyChannels, isOpenMyChannels, dateOption, i
         my_channel_only: my_channel_only,
         sort_order: sortOrder,
         sort_field: sortByField
+    }, undefined, {
+        revalidateOnFocus: false
     })
 
     return (

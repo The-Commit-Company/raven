@@ -23,13 +23,15 @@ import { VirtuosoHandle } from "react-virtuoso"
 
 export const ChatInterface = () => {
 
-    const { channelData, channelMembers } = useContext(ChannelContext)
+    const { channelData, channelMembers, users } = useContext(ChannelContext)
     const userData = useContext(UserDataContext)
     const user = userData?.name
     const peer = Object.keys(channelMembers).filter((member) => member !== user)[0]
     const virtuosoRef = useRef<VirtuosoHandle>(null)
 
-    const { data: channelList, error: channelListError } = useFrappeGetCall<{ message: ChannelData[] }>("raven.raven_channel_management.doctype.raven_channel.raven_channel.get_channel_list")
+    const { data: channelList, error: channelListError } = useFrappeGetCall<{ message: ChannelData[] }>("raven.raven_channel_management.doctype.raven_channel.raven_channel.get_channel_list", undefined, undefined, {
+        revalidateOnFocus: false
+    })
 
     const { data, error, mutate } = useFrappeGetCall<{ message: MessagesWithDate }>("raven.raven_messaging.doctype.raven_message.raven_message.get_messages_with_dates", {
         channel_id: channelData?.name ?? null
@@ -57,10 +59,10 @@ export const ChatInterface = () => {
         }
     })
 
-    const allMembers = Object.values(channelMembers).map((member) => {
+    const allUsers = Object.values(users).map((user) => {
         return {
-            id: member.name,
-            value: member.full_name
+            id: user.name,
+            value: user.full_name
         }
     })
 
@@ -82,7 +84,9 @@ export const ChatInterface = () => {
 
     const { createDoc, error: joinError } = useFrappeCreateDoc()
     const toast = useToast()
-    const { data: activeUsers, error: activeUsersError } = useFrappeGetCall<{ message: string[] }>('raven.api.user_availability.get_active_users')
+    const { data: activeUsers, error: activeUsersError } = useFrappeGetCall<{ message: string[] }>('raven.api.user_availability.get_active_users', undefined, undefined, {
+        revalidateOnFocus: false
+    })
 
     const joinChannel = () => {
         return createDoc('Raven Channel Member', {
@@ -118,7 +122,7 @@ export const ChatInterface = () => {
         )
     }
 
-    else if (allChannels && allMembers) return (
+    else if (allChannels && allUsers) return (
         <>
             <PageHeader>
                 {channelData && user &&
@@ -165,7 +169,7 @@ export const ChatInterface = () => {
             <Stack h='calc(100vh)' justify={'flex-end'} p={4} overflow='hidden' pt='16'>
                 {data && channelData && <ChatHistory parsed_messages={data.message} isDM={channelData?.is_direct_message} virtuosoRef={virtuosoRef} />}
                 {channelData?.is_archived == 0 && ((user && user in channelMembers) || channelData?.type === 'Open' ?
-                    <ChatInput channelID={channelData?.name ?? ''} allChannels={allChannels} allMembers={allMembers} /> :
+                    <ChatInput channelID={channelData?.name ?? ''} allChannels={allChannels} allUsers={allUsers} /> :
                     <Box>
                         <Stack border='1px' borderColor={'gray.500'} rounded='lg' bottom='2' boxShadow='base' w='calc(98vw - var(--sidebar-width))' bg={colorMode === "light" ? "white" : "gray.800"} p={4}>
                             <HStack justify='center' align='center' pb={4}><BiHash /><Text>{channelData?.channel_name}</Text></HStack>

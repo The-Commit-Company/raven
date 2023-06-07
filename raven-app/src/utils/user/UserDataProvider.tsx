@@ -15,6 +15,8 @@ export const UserDataProvider = ({ children }: PropsWithChildren) => {
         doctype: "User",
         filters: JSON.stringify({ name: currentUser }),
         fieldname: JSON.stringify(["name", "first_name", "full_name", "user_image"])
+    }, undefined, {
+        revalidateOnFocus: false
     })
 
     if (!data && !error) {

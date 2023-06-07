@@ -22,7 +22,7 @@ import { ModalTypes, useModalManager } from "../../../hooks/useModalManager"
 
 interface ChatInputProps {
     channelID: string,
-    allMembers: { id: string; value: string; }[],
+    allUsers: { id: string; value: string; }[],
     allChannels: { id: string; value: string; }[]
 }
 
@@ -30,7 +30,7 @@ Quill.register('modules/linkify', Linkify)
 
 export const fileExt = ['jpg', 'JPG', 'jpeg', 'JPEG', 'png', 'PNG', 'gif', 'GIF']
 
-export const ChatInput = ({ channelID, allMembers, allChannels }: ChatInputProps) => {
+export const ChatInput = ({ channelID, allUsers, allChannels }: ChatInputProps) => {
 
     const { call } = useFrappePostCall('raven.raven_messaging.doctype.raven_message.raven_message.send_message')
     const { createDoc, loading: creatingDoc, error: errorCreatingDoc, reset: resetCreateDoc } = useFrappeCreateDoc()
@@ -115,7 +115,7 @@ export const ChatInput = ({ channelID, allMembers, allChannels }: ChatInputProps
             let values;
 
             if (mentionChar === "@") {
-                values = allMembers;
+                values = allUsers;
             } else {
                 values = allChannels;
             }
@@ -158,7 +158,7 @@ export const ChatInput = ({ channelID, allMembers, allChannels }: ChatInputProps
 
     const onEmojiClick = (emojiObject: EmojiClickData) => {
         // remove html tags from text
-        const textWithoutHTML = text.replace(/(<([^>]+)>)/gi, "")
+        const textWithoutHTML = text.replace(/<(?!\/?span)[^>]+>/gi, "")
         // add emoji to text
         const newText = `${textWithoutHTML} ${emojiObject.emoji}`
         // set text

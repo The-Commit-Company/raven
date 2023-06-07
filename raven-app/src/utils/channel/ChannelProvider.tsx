@@ -25,10 +25,14 @@ export const ChannelProvider = ({ children }: PropsWithChildren) => {
     const { channelID } = useParams()
     const { data, error, mutate } = useFrappeGetCall<{ message: ChannelInfo }>('raven.raven_channel_management.doctype.raven_channel_member.raven_channel_member.get_channel_members_and_data', {
         channel_id: channelID
+    }, undefined, {
+        revalidateOnFocus: false
     })
     const { data: users, error: usersError } = useFrappeGetDocList<User>("User", {
         fields: ["full_name", "user_image", "name"],
         filters: [["name", "!=", "Guest"]]
+    }, undefined, {
+        revalidateOnFocus: false
     })
 
     useFrappeEventListener('member_added', (data) => {

@@ -30,7 +30,9 @@ export const CommandPalette = ({ isOpen, onClose, onToggle, virtuosoRef }: Comma
     const debouncedText = useDebounce(inputValue, 200)
     const { currentUser } = useContext(UserContext)
     const { isOpen: isGlobalSearchModalOpen, onOpen: onGlobalSearchModalOpen, onClose: onGlobalSearchModalClose } = useDisclosure()
-    const { data: activeUsers, error: activeUsersError } = useFrappeGetCall<{ message: string[] }>('raven.api.user_availability.get_active_users')
+    const { data: activeUsers, error: activeUsersError } = useFrappeGetCall<{ message: string[] }>('raven.api.user_availability.get_active_users', undefined, undefined, {
+        revalidateOnFocus: false
+    })
     const { call, error: channelError, loading, reset } = useFrappePostCall<{ message: string }>("raven.raven_channel_management.doctype.raven_channel.raven_channel.create_direct_message_channel")
     let navigate = useNavigate()
 
@@ -43,6 +45,8 @@ export const CommandPalette = ({ isOpen, onClose, onToggle, virtuosoRef }: Comma
     const { data: users, error: usersError } = useFrappeGetDocList<User>("User", {
         fields: ["full_name", "user_image", "name"],
         filters: [["name", "!=", "Guest"]]
+    }, undefined, {
+        revalidateOnFocus: false
     })
 
     const popPage = React.useCallback(() => {
