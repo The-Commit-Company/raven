@@ -29,6 +29,12 @@ export const ChatInterface = () => {
     const peer = Object.keys(channelMembers).filter((member) => member !== user)[0]
     const virtuosoRef = useRef<VirtuosoHandle>(null)
 
+    const { data: lastVisit, error: lastVisitError, mutate: lastVisitMutate } = useFrappeGetCall<{ message: string }>("raven.raven_channel_management.doctype.raven_channel_visit.raven_channel_visit.get_last_visit", {
+        channel_id: channelData?.name ?? null
+    }, undefined, {
+        revalidateOnFocus: false
+    })
+
     const { data: channelList, error: channelListError } = useFrappeGetCall<{ message: ChannelData[] }>("raven.raven_channel_management.doctype.raven_channel.raven_channel.get_channel_list", undefined, undefined, {
         revalidateOnFocus: false
     })
@@ -44,6 +50,7 @@ export const ChatInterface = () => {
     useFrappeEventListener('message_received', (data) => {
         if (data.channel_id === channelData?.name) {
             mutate()
+            lastVisitMutate()
         }
     })
 

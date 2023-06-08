@@ -2,10 +2,11 @@ import { Avatar, AvatarBadge, HStack } from "@chakra-ui/react"
 import { FrappeConfig, FrappeContext, useFrappeGetCall, useFrappeGetDocList, useFrappePostCall } from "frappe-react-sdk"
 import { useContext, useEffect, useState } from "react"
 import { useLocation, useNavigate } from "react-router-dom"
+import { DMChannelData } from "../../../types/Channel/Channel"
 import { User } from "../../../types/User/User"
 import { AlertBanner } from "../../layout/AlertBanner"
 import { SidebarGroup, SidebarGroupItem, SidebarGroupLabel, SidebarGroupList, SidebarIcon, SidebarItemLabel, SidebarButtonItem } from "../../layout/Sidebar"
-import { SidebarViewMoreButton } from "../../layout/Sidebar/SidebarComp"
+import { SidebarBadge, SidebarViewMoreButton } from "../../layout/Sidebar/SidebarComp"
 
 export const DirectMessageList = ({ userData }: { userData: User | null }) => {
     const { url } = useContext(FrappeContext) as FrappeConfig
@@ -16,7 +17,7 @@ export const DirectMessageList = ({ userData }: { userData: User | null }) => {
         revalidateOnFocus: false
     })
     const { call, error: channelError, loading, reset } = useFrappePostCall<{ message: string }>("raven.raven_channel_management.doctype.raven_channel.raven_channel.create_direct_message_channel")
-    const { data: DMChannels, error: DMChannelsError } = useFrappeGetCall<{ message: string }>('raven.raven_channel_management.doctype.raven_channel.raven_channel.get_direct_message_channels_list', undefined, undefined, {
+    const { data: DMChannels, error: DMChannelsError } = useFrappeGetCall<{ message: DMChannelData[] }>('raven.raven_channel_management.doctype.raven_channel.raven_channel.get_direct_message_channels_list', undefined, undefined, {
         revalidateOnFocus: false
     })
     const navigate = useNavigate()
@@ -31,7 +32,7 @@ export const DirectMessageList = ({ userData }: { userData: User | null }) => {
     }, [])
 
     const gotoDMChannel = async (user: string) => {
-        const DMChannel = DMChannels?.message.find((channel: { name: string, channel_name: string, full_name: string, user_id: string }) => channel.user_id === user)
+        const DMChannel = DMChannels?.message.find((channel: DMChannelData) => channel.user_id === user)
         if (DMChannel) {
             navigate(`/channel/${DMChannel.name}`)
             setSelectedUser([user, `/channel/${DMChannel.name}`])
@@ -47,11 +48,18 @@ export const DirectMessageList = ({ userData }: { userData: User | null }) => {
         revalidateOnFocus: false
     })
 
+    const { data: unreadCount } = useFrappeGetCall<{ message: number }>("raven.raven_channel_management.doctype.raven_channel.raven_channel.get_total_unread_count_for_direct_message_channels", undefined, undefined, {
+        revalidateOnFocus: false
+    })
+
     return (
         <SidebarGroup spacing={1}>
             <SidebarGroupItem ml='2'>
                 <SidebarViewMoreButton onClick={() => setShowData(!showData)} />
-                <SidebarGroupLabel>Direct Messages</SidebarGroupLabel>
+                <HStack w='71%' justifyContent='space-between'>
+                    <SidebarGroupLabel>Direct Messages</SidebarGroupLabel>
+                    {!showData && unreadCount?.message > 0 && <SidebarBadge>{unreadCount.message}</SidebarBadge>}
+                </HStack>
             </SidebarGroupItem>
             <SidebarGroup>
                 <SidebarGroupList maxH={'38vh'} overflowY={'scroll'}>
@@ -70,26 +78,32 @@ export const DirectMessageList = ({ userData }: { userData: User | null }) => {
                             {DMChannelsError.httpStatus} - {DMChannelsError.httpStatusText}
                         </AlertBanner>
                     )}
-                    {showData && users && users.map((user: User) => (
-                        <SidebarButtonItem
-                            onClick={() => gotoDMChannel(user.name)}
-                            isLoading={loading}
-                            key={user.name}
-                            active={selectedUser.toString() == [user.name, currentAddress].toString()}
-                            py={1}
-                        >
-                            <HStack>
-                                <SidebarIcon>
-                                    <Avatar name={user.full_name} src={url + user.user_image} borderRadius={'md'} size="xs">
-                                        {data?.message.includes(user.name) && !!!error && <AvatarBadge boxSize='0.88em' bg='green.500' />}
-                                    </Avatar>
-                                </SidebarIcon>
-                                <SidebarItemLabel>
-                                    {user.name !== userData?.name ? user.full_name : `${user.full_name} (You)`}
-                                </SidebarItemLabel>
-                            </HStack>
-                        </SidebarButtonItem>
-                    ))}
+                    {showData && users && users.map((user: User) => {
+                        const unread_count = DMChannels?.message?.find((channel: DMChannelData) => channel.user_id === user.name)?.unread_count
+                        return (
+                            <SidebarButtonItem
+                                onClick={() => gotoDMChannel(user.name)}
+                                isLoading={loading}
+                                key={user.name}
+                                active={selectedUser.toString() == [user.name, currentAddress].toString()}
+                                py={1}
+                            >
+                                <HStack w="100%">
+                                    <SidebarIcon>
+                                        <Avatar name={user.full_name} src={url + user.user_image} borderRadius={'md'} size="xs">
+                                            {data?.message.includes(user.name) && !!!error && <AvatarBadge boxSize='0.88em' bg='green.500' />}
+                                        </Avatar>
+                                    </SidebarIcon>
+                                    <HStack justifyContent='space-between' w='100%'>
+                                        <SidebarItemLabel fontWeight={unread_count > 0 ? 'bold' : 'normal'}>
+                                            {user.name !== userData?.name ? user.full_name : `${user.full_name} (You)`}
+                                        </SidebarItemLabel>
+                                        {unread_count > 0 && <SidebarBadge>{unread_count}</SidebarBadge>}
+                                    </HStack>
+                                </HStack>
+                            </SidebarButtonItem>
+                        )
+                    })}
                 </SidebarGroupList>
             </SidebarGroup>
         </SidebarGroup>

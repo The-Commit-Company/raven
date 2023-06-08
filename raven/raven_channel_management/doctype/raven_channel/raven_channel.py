@@ -3,9 +3,17 @@
 
 import frappe
 from frappe.model.document import Document
+from frappe.query_builder.functions import Count
+from frappe.query_builder import Case
 
 all_users = [member['name'] for member in frappe.get_all(
     "User", filters={"user_type": "System User"}, fields=["name"])]
+
+channel = frappe.qb.DocType("Raven Channel")
+channel_member = frappe.qb.DocType("Raven Channel Member")
+channel_visit = frappe.qb.DocType('Raven Channel Visit')
+message = frappe.qb.DocType('Raven Message')
+user = frappe.qb.DocType("User")
 
 
 class RavenChannel(Document):
@@ -74,18 +82,28 @@ class RavenChannel(Document):
 @frappe.whitelist()
 def get_channel_list(hide_archived=False):
     # get channel list where channel member is current user
-    channel = frappe.qb.DocType("Raven Channel")
-    channel_member = frappe.qb.DocType("Raven Channel Member")
     private_query = (frappe.qb.from_(channel)
                      .select(channel.name, channel.channel_name, channel.type, channel.is_direct_message, channel.is_self_message, channel.is_archived)
                      .join(channel_member)
                      .on(channel.name == channel_member.channel_id)
                      .where(channel_member.user_id == frappe.session.user)
                      .where(channel.type == "Private")
-                     .where(channel.is_direct_message == 0))
+                     .where(channel.is_direct_message == 0)
+                     .left_join(channel_visit)
+                     .on(channel.name == channel_visit.channel_id)
+                     .left_join(message).on(channel.name == message.channel_id)
+                     .where(channel_visit.user_id == frappe.session.user)
+                     .select(Count(Case().when(message.creation > channel_visit.last_visit, 1)).as_('unread_count'))
+                     .groupby(channel.name))
     public_query = (frappe.qb.from_(channel)
                     .select(channel.name, channel.channel_name, channel.type, channel.is_direct_message, channel.is_self_message, channel.is_archived)
-                    .where(channel.type != "Private"))
+                    .where(channel.type != "Private")
+                    .left_join(channel_visit)
+                    .on(channel.name == channel_visit.channel_id)
+                    .left_join(message).on(channel.name == message.channel_id)
+                    .where(channel_visit.user_id == frappe.session.user)
+                    .select(Count(Case().when(message.creation > channel_visit.last_visit, 1)).as_('unread_count'))
+                    .groupby(channel.name))
 
     if hide_archived:
         private_query = private_query.where(channel.is_archived == 0)
@@ -162,9 +180,6 @@ def delete_channel(channel_id):
 @frappe.whitelist()
 def get_direct_message_channels_list():
     # get all direct message channels of user
-    channel = frappe.qb.DocType("Raven Channel")
-    channel_member = frappe.qb.DocType("Raven Channel Member")
-    user = frappe.qb.DocType("User")
     query = (
         frappe.qb
         .from_(channel)
@@ -174,6 +189,61 @@ def get_direct_message_channels_list():
         .where(channel.is_direct_message == 1)
         .where(channel.channel_name.like(f"%{frappe.session.user}%"))
         .select(channel.name, channel.channel_name, user.full_name, (user.name).as_('user_id'))
-    )
+        .left_join(channel_visit)
+        .on(channel.name == channel_visit.channel_id)
+        .left_join(message).on(channel.name == message.channel_id)
+        .where(channel_visit.user_id == frappe.session.user)
+        .select(Count(Case().when(message.creation > channel_visit.last_visit, 1)).as_('unread_count'))
+        .groupby(channel.name))
 
     return query.run(as_dict=True)
+
+
+@frappe.whitelist()
+def get_total_unread_count_for_channels():
+    private_query = (frappe.qb.from_(channel)
+                     .join(channel_member)
+                     .on(channel.name == channel_member.channel_id)
+                     .where(channel_member.user_id == frappe.session.user)
+                     .where(channel.type == "Private")
+                     .where(channel.is_direct_message == 0)
+                     .left_join(channel_visit)
+                     .on(channel.name == channel_visit.channel_id)
+                     .left_join(message).on(channel.name == message.channel_id)
+                     .where(channel_visit.user_id == frappe.session.user)
+                     .select(Count(Case().when(message.creation > channel_visit.last_visit, 1)).as_('total_unread_count'))
+                     .run(as_dict=True))
+
+    public_query = (frappe.qb.from_(channel)
+                    .where(channel.type != "Private")
+                    .left_join(channel_visit)
+                    .on(channel.name == channel_visit.channel_id)
+                    .left_join(message).on(channel.name == message.channel_id)
+                    .where(channel_visit.user_id == frappe.session.user)
+                    .select(Count(Case().when(message.creation > channel_visit.last_visit, 1)).as_('total_unread_count'))
+                    .run(as_dict=True))
+
+    result = private_query[0].total_unread_count + \
+        public_query[0].total_unread_count
+
+    return result
+
+
+@frappe.whitelist()
+def get_total_unread_count_for_direct_message_channels():
+    query = (frappe.qb.from_(channel)
+             .join(channel_member).on(channel.name == channel_member.channel_id)
+             .join(user).on(channel_member.user_id == user.name)
+             .where((channel_member.user_id != frappe.session.user) | (channel.is_self_message == 1)).distinct()
+             .where(channel.is_direct_message == 1)
+             .where(channel.channel_name.like(f"%{frappe.session.user}%"))
+             .left_join(channel_visit)
+             .on(channel.name == channel_visit.channel_id)
+             .left_join(message).on(channel.name == message.channel_id)
+             .where(channel_visit.user_id == frappe.session.user)
+             .select(Count(Case().when(message.creation > channel_visit.last_visit, 1)).as_('total_unread_count'))
+             .run(as_dict=True))
+
+    result = query[0].total_unread_count
+
+    return result
