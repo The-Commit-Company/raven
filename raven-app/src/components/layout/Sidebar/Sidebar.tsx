@@ -6,8 +6,6 @@ import { UserDataContext } from "../../../utils/user/UserDataProvider"
 import { DirectMessageList } from "../../feature/channels/DirectMessageList";
 import { UserContext } from "../../../utils/auth/UserProvider";
 import { RxExit } from "react-icons/rx";
-// import { SidebarIcon, SidebarItem, SidebarItemLabel } from "./SidebarComp";
-// import { VscSettings } from "react-icons/vsc";
 
 interface SidebarProps extends PropsWithChildren<{}> {
     isUserActive: boolean
@@ -20,10 +18,12 @@ export const Sidebar = ({ isUserActive }: SidebarProps) => {
     const userData = useContext(UserDataContext)
 
     return (
-        <Stack justify={'space-between'} h='100vh'>
-            <Stack>
-                <HStack justifyContent="space-between" spacing="3" h='33px'>
-                    <Text fontSize="xl" fontWeight="semibold" ml='3'>Raven</Text>
+        <Stack>
+
+            {/* header */}
+            <Stack position={'fixed'} zIndex='999' h='57px' top='0' px={2} bgColor='gray.50' w='var(--sidebar-width)' borderBottom='1px solid' borderBottomColor={'gray.100'}>
+                <HStack justifyContent="space-between" spacing="3" py='4'>
+                    <Text fontSize="xl" fontWeight="semibold" ml={2}>Raven</Text>
                     <IconButton
                         size={"xs"}
                         aria-label="Toggle theme"
@@ -31,18 +31,19 @@ export const Sidebar = ({ isUserActive }: SidebarProps) => {
                         onClick={toggleColorMode}
                     />
                 </HStack>
-                <Divider />
+
+            </Stack>
+            <Divider />
+            {/* body */}
+            <Stack px='2' pt='57px' pb='50px' overflowY='scroll'>
                 <ChannelList />
                 <DirectMessageList userData={userData} />
-                {/* <SidebarItem to={"settings"}>
-                    <SidebarIcon><VscSettings /></SidebarIcon>
-                    <SidebarItemLabel>Settings</SidebarItemLabel>
-                </SidebarItem> */}
             </Stack>
 
-            <Stack>
+            {/* footer */}
+            <Stack pos='fixed' h='40px' bottom='0' bgColor='gray.50' w='var(--sidebar-width)'>
                 <Divider borderColor={colorMode === "light" ? "gray.300" : "gray.600"} />
-                <HStack justifyContent={"space-between"} px='1'>
+                <HStack justifyContent={"space-between"} px='3' pb='2'>
                     {userData &&
                         <HStack>
                             <Avatar size="xs" src={userData.user_image} name={userData.full_name} borderRadius='md'>

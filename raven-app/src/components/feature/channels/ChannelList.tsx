@@ -50,7 +50,7 @@ export const ChannelList = () => {
                 </SidebarGroupItem>
                 <SidebarGroup>
                     <SidebarGroupList>
-                        <SidebarGroupList maxH={'38vh'} overflowY={'scroll'}>
+                        <SidebarGroupList>
                             {showData && data?.message.filter((channel: ChannelData) => channel.is_direct_message === 0).map((channel: ChannelData) => (
                                 <SidebarItem to={channel.name} key={channel.name}>
                                     <SidebarIcon>{channel.type === "Private" && <BiLockAlt /> || channel.type === "Public" && <BiHash /> || channel.type === "Open" && <BiGlobe />}</SidebarIcon>
