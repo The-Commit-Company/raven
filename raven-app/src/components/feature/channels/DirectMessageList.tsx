@@ -1,8 +1,9 @@
 import { Avatar, AvatarBadge, HStack } from "@chakra-ui/react"
 import { FrappeConfig, FrappeContext, useFrappeGetCall, useFrappeGetDocList, useFrappePostCall } from "frappe-react-sdk"
+import { useFrappeEventListener } from "../../../hooks/useFrappeEventListener"
 import { useContext, useEffect, useState } from "react"
 import { useLocation, useNavigate } from "react-router-dom"
-import { DMChannelData } from "../../../types/Channel/Channel"
+import { DMChannelData, UnreadCountData } from "../../../types/Channel/Channel"
 import { User } from "../../../types/User/User"
 import { AlertBanner } from "../../layout/AlertBanner"
 import { SidebarGroup, SidebarGroupItem, SidebarGroupLabel, SidebarGroupList, SidebarIcon, SidebarItemLabel, SidebarButtonItem } from "../../layout/Sidebar"
@@ -48,8 +49,14 @@ export const DirectMessageList = ({ userData }: { userData: User | null }) => {
         revalidateOnFocus: false
     })
 
-    const { data: unreadCount } = useFrappeGetCall<{ message: number }>("raven.raven_channel_management.doctype.raven_channel.raven_channel.get_total_unread_count_for_direct_message_channels", undefined, undefined, {
-        revalidateOnFocus: false
+    const [unreadCount, setUnreadCount] = useState<UnreadCountData>({
+        total_unread_count: 0,
+        channels: []
+    })
+
+
+    useFrappeEventListener('unread_dm_count_updated', (data: { unread_count: UnreadCountData }) => {
+        setUnreadCount(data.unread_count)
     })
 
     return (
@@ -58,7 +65,7 @@ export const DirectMessageList = ({ userData }: { userData: User | null }) => {
                 <SidebarViewMoreButton onClick={() => setShowData(!showData)} />
                 <HStack w='71%' justifyContent='space-between'>
                     <SidebarGroupLabel>Direct Messages</SidebarGroupLabel>
-                    {!showData && unreadCount?.message > 0 && <SidebarBadge>{unreadCount.message}</SidebarBadge>}
+                    {!showData && unreadCount.total_unread_count > 0 && <SidebarBadge>{unreadCount.total_unread_count}</SidebarBadge>}
                 </HStack>
             </SidebarGroupItem>
             <SidebarGroup>
@@ -79,7 +86,7 @@ export const DirectMessageList = ({ userData }: { userData: User | null }) => {
                         </AlertBanner>
                     )}
                     {showData && users && users.map((user: User) => {
-                        const unread_count = DMChannels?.message?.find((channel: DMChannelData) => channel.user_id === user.name)?.unread_count
+                        const unreadChannelCount = unreadCount.channels?.find((unread) => unread.user_id == user.name)?.unread_count
                         return (
                             <SidebarButtonItem
                                 onClick={() => gotoDMChannel(user.name)}
@@ -95,10 +102,10 @@ export const DirectMessageList = ({ userData }: { userData: User | null }) => {
                                         </Avatar>
                                     </SidebarIcon>
                                     <HStack justifyContent='space-between' w='100%'>
-                                        <SidebarItemLabel fontWeight={unread_count > 0 ? 'bold' : 'normal'}>
+                                        <SidebarItemLabel fontWeight={unreadChannelCount && unreadChannelCount > 0 ? 'bold' : 'normal'}>
                                             {user.name !== userData?.name ? user.full_name : `${user.full_name} (You)`}
                                         </SidebarItemLabel>
-                                        {unread_count > 0 && <SidebarBadge>{unread_count}</SidebarBadge>}
+                                        {unreadChannelCount && unreadChannelCount > 0 && <SidebarBadge>{unreadChannelCount}</SidebarBadge>}
                                     </HStack>
                                 </HStack>
                             </SidebarButtonItem>
