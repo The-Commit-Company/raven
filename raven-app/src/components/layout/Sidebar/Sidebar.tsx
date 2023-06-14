@@ -23,9 +23,9 @@ export const Sidebar = ({ isUserActive }: SidebarProps) => {
         <Stack>
 
             {/* header */}
-            <Stack position={'fixed'} zIndex='999' h='57px' top='0' px={2} bgColor='gray.50' w='var(--sidebar-width)' borderBottom='1px solid' borderBottomColor={'gray.100'}>
-                <HStack justifyContent="space-between" spacing="3" py='4'>
-                    <Image src={colorMode === "light" ? raven_logo_light : raven_logo_dark} objectFit="contain" alt="Raven" width={100} />
+            <Stack position={'fixed'} zIndex='999' top='0' px={4} w='var(--sidebar-width)' bgColor={colorMode === 'light' ? 'gray.50' : 'black'}>
+                <HStack justifyContent="space-between" pb='2' pt='4'>
+                    <Image src={colorMode === "light" ? raven_logo_light : raven_logo_dark} objectFit="contain" alt="Raven" height='25px' />
                     <IconButton
                         size={"xs"}
                         aria-label="Toggle theme"
@@ -33,9 +33,9 @@ export const Sidebar = ({ isUserActive }: SidebarProps) => {
                         onClick={toggleColorMode}
                     />
                 </HStack>
-
+                <Divider />
             </Stack>
-            <Divider />
+
             {/* body */}
             <Stack px='2' pt='57px' pb='50px' overflowY='scroll'>
                 <ChannelList />
@@ -43,9 +43,8 @@ export const Sidebar = ({ isUserActive }: SidebarProps) => {
             </Stack>
 
             {/* footer */}
-            <Stack pos='fixed' h='40px' bottom='0' bgColor='gray.50' w='var(--sidebar-width)'>
-                <Divider borderColor={colorMode === "light" ? "gray.300" : "gray.600"} />
-                <HStack justifyContent={"space-between"} px='3' pb='2'>
+            <Stack pos='fixed' height={'50px'} bottom='0' bgColor={colorMode === 'light' ? 'gray.50' : 'black'} w='var(--sidebar-width)'>
+                <HStack justifyContent={"space-between"} px='3' pt='3'>
                     {userData &&
                         <HStack>
                             <Avatar size="xs" src={userData.user_image} name={userData.full_name} borderRadius='md'>
