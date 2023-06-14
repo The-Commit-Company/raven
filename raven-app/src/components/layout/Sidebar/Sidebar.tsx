@@ -1,4 +1,4 @@
-import { Divider, HStack, IconButton, useColorMode, Text, Stack, Avatar, AvatarBadge, Menu, MenuButton, MenuList, MenuItem, Link } from "@chakra-ui/react";
+import { Divider, HStack, IconButton, useColorMode, Text, Stack, Avatar, AvatarBadge, Menu, MenuButton, MenuList, MenuItem, Link, Image } from "@chakra-ui/react";
 import { PropsWithChildren, useContext } from "react";
 import { HiOutlineMoon, HiOutlineSun } from "react-icons/hi"
 import { ChannelList } from "../../feature/channels/ChannelList";
@@ -6,6 +6,8 @@ import { UserDataContext } from "../../../utils/user/UserDataProvider"
 import { DirectMessageList } from "../../feature/channels/DirectMessageList";
 import { UserContext } from "../../../utils/auth/UserProvider";
 import { RxExit } from "react-icons/rx";
+import raven_logo_light from "../../../assets/raven_logo_light.png"
+import raven_logo_dark from "../../../assets/raven_logo_dark.png"
 // import { SidebarIcon, SidebarItem, SidebarItemLabel } from "./SidebarComp";
 // import { VscSettings } from "react-icons/vsc";
 
@@ -23,7 +25,7 @@ export const Sidebar = ({ isUserActive }: SidebarProps) => {
         <Stack justify={'space-between'} h='100vh'>
             <Stack>
                 <HStack justifyContent="space-between" spacing="3" h='33px'>
-                    <Text fontSize="xl" fontWeight="semibold" ml='3'>Raven</Text>
+                    <Image src={colorMode === "light" ? raven_logo_light : raven_logo_dark} objectFit="contain" alt="Raven" width={100} />
                     <IconButton
                         size={"xs"}
                         aria-label="Toggle theme"
