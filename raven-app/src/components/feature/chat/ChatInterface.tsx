@@ -93,6 +93,7 @@ export const ChatInterface = () => {
             channel_id: channelData?.name,
             user_id: user
         }).then(() => {
+            mutate()
             toast({
                 title: 'Channel joined successfully',
                 status: 'success',
