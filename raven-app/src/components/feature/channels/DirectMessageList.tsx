@@ -69,7 +69,7 @@ export const DirectMessageList = ({ userData }: { userData: User | null }) => {
                 </HStack>
             </SidebarGroupItem>
             <SidebarGroup>
-                <SidebarGroupList maxH={'38vh'} overflowY={'scroll'}>
+                <SidebarGroupList>
                     {usersError && (
                         <AlertBanner status="error" heading={usersError.message}>
                             {usersError.httpStatus} - {usersError.httpStatusText}

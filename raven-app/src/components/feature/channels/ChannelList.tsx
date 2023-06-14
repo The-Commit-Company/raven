@@ -60,8 +60,7 @@ export const ChannelList = () => {
                     </HStack>
                 </SidebarGroupItem>
                 <SidebarGroup>
-                    <SidebarGroupList>
-                        <SidebarGroupList maxH={'38vh'} overflowY={'scroll'}>
+                        <SidebarGroupList>
                             {showData && data?.message.filter((channel: ChannelData) => channel.is_direct_message === 0).map((channel: ChannelData) => {
                                 const unreadChannelCount = unreadCount.channels?.find((unread) => unread.name == channel.name)?.unread_count
                                 return (
