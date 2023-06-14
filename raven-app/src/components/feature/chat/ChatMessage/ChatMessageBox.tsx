@@ -78,7 +78,8 @@ export const ChatMessageBox = ({ message, onOpenUserDetailsDrawer, handleScroll,
             {message && handleScroll && <ActionsPalette
                 message={message}
                 showButtons={showButtons}
-                handleScroll={handleScroll} />
+                handleScroll={handleScroll}
+                is_continuation={is_continuation} />
             }
 
         </Box>

@@ -15,10 +15,11 @@ import { FileMessage, Message, TextMessage } from '../../../types/Messaging/Mess
 interface ActionButtonPaletteProps {
     message: Message,
     showButtons: {}
-    handleScroll: (newState: boolean) => void
+    handleScroll: (newState: boolean) => void,
+    is_continuation: 1 | 0
 }
 
-export const ActionsPalette = ({ message, showButtons, handleScroll }: ActionButtonPaletteProps) => {
+export const ActionsPalette = ({ message, showButtons, handleScroll, is_continuation }: ActionButtonPaletteProps) => {
 
     const { name, owner, message_type } = message
 
@@ -83,7 +84,7 @@ export const ActionsPalette = ({ message, showButtons, handleScroll }: ActionBut
             width='fit-content'
             zIndex={2}
             position='absolute'
-            top={-4}
+            top={is_continuation === 0 ? -4 : -7}
             right={2}>
             <HStack spacing={1}>
                 <EmojiButton emoji={'✅'} label={'done'} onClick={() => saveReaction('✅')} />
