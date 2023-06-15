@@ -76,6 +76,9 @@ class RavenChannel(Document):
                 })
                 channel_member.insert()
 
+    def autoname(self):
+        self.name = self.channel_name.lower().replace(" ", "-")
+
 
 @frappe.whitelist()
 def get_channel_list(hide_archived=False):

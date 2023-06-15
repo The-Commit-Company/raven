@@ -1,7 +1,7 @@
-import { Avatar, AvatarBadge, Box, Button, ButtonGroup, Center, HStack, Stack, Text, Tooltip, useColorMode, useDisclosure, useToast } from "@chakra-ui/react"
+import { Avatar, AvatarBadge, Box, Button, ButtonGroup, Center, HStack, IconButton, Stack, Text, Tooltip, useColorMode, useDisclosure, useToast } from "@chakra-ui/react"
 import { useFrappeCreateDoc, useFrappeGetCall } from "frappe-react-sdk"
 import { useContext, useRef } from "react"
-import { BiGlobe, BiHash, BiLockAlt } from "react-icons/bi"
+import { BiEditAlt, BiGlobe, BiHash, BiLockAlt } from "react-icons/bi"
 import { HiOutlineSearch } from "react-icons/hi"
 import { useFrappeEventListener } from "../../../hooks/useFrappeEventListener"
 import { ChannelData } from "../../../types/Channel/Channel"
@@ -20,6 +20,7 @@ import { ChatHistory } from "./ChatHistory"
 import { ChatInput } from "./ChatInput"
 import { ModalTypes, useModalManager } from "../../../hooks/useModalManager"
 import { VirtuosoHandle } from "react-virtuoso"
+import { ChannelRenameModal } from "../channel-details/EditChannelDetails/ChannelRenameModal"
 
 export const ChatInterface = () => {
 
@@ -77,6 +78,10 @@ export const ChatInterface = () => {
 
     const onAddMemberModalOpen = () => {
         modalManager.openModal(ModalTypes.AddChannelMember)
+    }
+
+    const onRenameChannelModalOpen = () => {
+        modalManager.openModal(ModalTypes.RenameChannel)
     }
 
     const { isOpen: isViewDetailsModalOpen, onOpen: onViewDetailsModalOpen, onClose: onViewDetailsModalClose } = useDisclosure()
@@ -144,13 +149,24 @@ export const ChatInterface = () => {
                                         </Avatar>
                                         <Text>{channelMembers?.[user]?.full_name}</Text><Text fontSize='sm' color='gray.500'>(You)</Text>
                                     </HStack>) :
-                                (channelData?.type === 'Private' &&
-                                    <HStack><BiLockAlt /><Text>{channelData?.channel_name}</Text></HStack> ||
-                                    channelData?.type === 'Public' &&
-                                    <HStack><BiHash /><Text>{channelData?.channel_name}</Text></HStack> ||
-                                    channelData?.type === 'Open' &&
-                                    <HStack><BiGlobe /><Text>{channelData?.channel_name}</Text></HStack>
-                                )}
+                                <HStack>
+                                    {channelData?.type === 'Private' &&
+                                        <HStack><BiLockAlt /><Text>{channelData?.channel_name}</Text></HStack> ||
+                                        channelData?.type === 'Public' &&
+                                        <HStack><BiHash /><Text>{channelData?.channel_name}</Text></HStack> ||
+                                        channelData?.type === 'Open' &&
+                                        <HStack><BiGlobe /><Text>{channelData?.channel_name}</Text></HStack>
+                                    }
+                                    <Tooltip hasArrow label='edit channel name' placement="bottom" rounded='md'>
+                                        <IconButton
+                                            aria-label="edit-channel-name"
+                                            icon={<BiEditAlt />}
+                                            onClick={onRenameChannelModalOpen}
+                                            size='sm'
+                                            variant='ghost'
+                                        />
+                                    </Tooltip>
+                                </HStack>}
                         </HStack>
                     </PageHeading>
                 }
@@ -205,6 +221,11 @@ export const ChatInterface = () => {
                 onClose={onCommandPaletteClose}
                 onToggle={onCommandPaletteToggle}
                 virtuosoRef={virtuosoRef} />
+            <ChannelRenameModal
+                isOpen={modalManager.modalType === ModalTypes.RenameChannel}
+                onClose={modalManager.closeModal}
+            />
+
         </>
     )
 
