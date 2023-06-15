@@ -23,10 +23,9 @@ export const ChannelRenameModal = ({ isOpen, onClose }: RenameChannelModalProps)
             channel_name: channelData?.channel_name
         }
     })
-    const { register, handleSubmit, reset, watch, formState: { errors } } = methods
+    const { register, handleSubmit, reset, formState: { errors } } = methods
     const { updateDoc, loading: updatingDoc, error, reset: resetUpdate } = useFrappeUpdateDoc()
     const toast = useToast()
-    const channel_name = watch('channel_name')
 
     useEffect(() => {
         reset()
@@ -72,12 +71,13 @@ export const ChannelRenameModal = ({ isOpen, onClose }: RenameChannelModalProps)
         //reset form on close
         reset()
         onClose()
+        setValue(channelData?.channel_name ?? '')
     }
 
     const handleChange = (event: ChangeEvent<HTMLInputElement>) => setValue(event.target.value.replace(' ', '-'))
 
     return (
-        <Modal isOpen={isOpen} onClose={onClose} size='lg'>
+        <Modal isOpen={isOpen} onClose={handleClose} size='lg'>
             <ModalOverlay />
             <ModalContent>
 
