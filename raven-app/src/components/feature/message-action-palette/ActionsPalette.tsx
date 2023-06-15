@@ -4,7 +4,7 @@ import { useFrappeCreateDoc } from 'frappe-react-sdk'
 import { useContext, useEffect } from 'react'
 import { AiOutlineEdit } from 'react-icons/ai'
 import { VscTrash } from 'react-icons/vsc'
-import { IoBookmarkOutline } from 'react-icons/io5'
+import { IoBookmarkOutline, IoChatboxEllipsesOutline } from 'react-icons/io5'
 import { UserContext } from '../../../utils/auth/UserProvider'
 import { DeleteMessageModal } from '../message-details/DeleteMessageModal'
 import { EditMessageModal } from '../message-details/EditMessageModal'
@@ -16,10 +16,11 @@ interface ActionButtonPaletteProps {
     message: Message,
     showButtons: {}
     handleScroll: (newState: boolean) => void,
-    is_continuation: 1 | 0
+    is_continuation: 1 | 0,
+    replyToMessage?: (message: Message) => void
 }
 
-export const ActionsPalette = ({ message, showButtons, handleScroll, is_continuation }: ActionButtonPaletteProps) => {
+export const ActionsPalette = ({ message, showButtons, handleScroll, is_continuation, replyToMessage }: ActionButtonPaletteProps) => {
 
     const { name, owner, message_type } = message
 
@@ -72,6 +73,10 @@ export const ActionsPalette = ({ message, showButtons, handleScroll, is_continua
         handleScroll(modalManager.modalType !== ModalTypes.EmojiPicker)
     }, [modalManager.modalType])
 
+    const onReplyClick = () => {
+        replyToMessage && replyToMessage(message)
+    }
+
     return (
         <Box
             rounded='md'
@@ -113,6 +118,13 @@ export const ActionsPalette = ({ message, showButtons, handleScroll, is_continua
                         </Portal>
                     </Popover>
                 </Box>
+                <Tooltip hasArrow label='reply' size='xs' placement='top' rounded='md'>
+                    <IconButton
+                        onClick={onReplyClick}
+                        aria-label="reply"
+                        icon={<IoChatboxEllipsesOutline fontSize={'0.8rem'} />}
+                        size='xs' />
+                </Tooltip>
                 {(owner === currentUser) && text &&
                     <Tooltip hasArrow label='edit' size='xs' placement='top' rounded='md'>
                         <IconButton
