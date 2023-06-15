@@ -99,14 +99,14 @@ export const ChatInterface = () => {
             user_id: user
         }).then(() => {
             mutate()
-            toast({
-                title: 'Channel joined successfully',
-                status: 'success',
-                duration: 1000,
-                position: 'bottom',
-                variant: 'solid',
-                isClosable: true
-            })
+            // toast({
+            //     title: 'Channel joined successfully',
+            //     status: 'success',
+            //     duration: 1000,
+            //     position: 'bottom',
+            //     variant: 'solid',
+            //     isClosable: true
+            // })
         }).catch((e) => {
             toast({
                 title: 'Error: could not join channel.',
