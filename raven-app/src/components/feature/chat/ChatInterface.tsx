@@ -1,4 +1,4 @@
-import { Avatar, AvatarBadge, Box, Button, ButtonGroup, Center, HStack, Stack, Text, useColorMode, useDisclosure, useToast } from "@chakra-ui/react"
+import { Avatar, AvatarBadge, Box, Button, ButtonGroup, Center, HStack, Stack, Text, Tooltip, useColorMode, useDisclosure, useToast } from "@chakra-ui/react"
 import { useFrappeCreateDoc, useFrappeGetCall } from "frappe-react-sdk"
 import { useContext, useRef } from "react"
 import { BiGlobe, BiHash, BiLockAlt } from "react-icons/bi"
@@ -155,14 +155,16 @@ export const ChatInterface = () => {
                     </PageHeading>
                 }
                 <HStack>
-                    <Button
-                        size={"sm"}
-                        aria-label="search"
-                        leftIcon={<HiOutlineSearch />}
-                        onClick={onCommandPaletteToggle}
-                        fontWeight='light'>
-                        Search
-                    </Button>
+                    <Tooltip hasArrow label='search' placement='bottom-start' rounded={'md'}>
+                        <Button
+                            size={"sm"}
+                            aria-label="search"
+                            leftIcon={<HiOutlineSearch />}
+                            onClick={onCommandPaletteToggle}
+                            fontWeight='light'>
+                            Search
+                        </Button>
+                    </Tooltip>
                     {channelData?.is_direct_message == 0 && activeUsers?.message &&
                         <ViewOrAddMembersButton onClickViewMembers={onViewDetailsModalOpen} onClickAddMembers={onAddMemberModalOpen} activeUsers={activeUsers.message} />}
                 </HStack>

@@ -1,4 +1,4 @@
-import { Divider, HStack, IconButton, useColorMode, Text, Stack, Avatar, AvatarBadge, Menu, MenuButton, MenuList, MenuItem, Link, Image } from "@chakra-ui/react";
+import { Divider, HStack, IconButton, useColorMode, Text, Stack, Avatar, AvatarBadge, Menu, MenuButton, MenuList, MenuItem, Link, Image, Tooltip } from "@chakra-ui/react";
 import { PropsWithChildren, useContext } from "react";
 import { HiOutlineMoon, HiOutlineSun } from "react-icons/hi"
 import { ChannelList } from "../../feature/channels/ChannelList";
@@ -26,12 +26,14 @@ export const Sidebar = ({ isUserActive }: SidebarProps) => {
             <Stack position={'fixed'} zIndex='999' top='0' px={4} w='var(--sidebar-width)' bgColor={colorMode === 'light' ? 'gray.50' : 'black'}>
                 <HStack justifyContent="space-between" pb='2' pt='4'>
                     <Image src={colorMode === "light" ? raven_logo_light : raven_logo_dark} objectFit="contain" alt="Raven" height='25px' />
-                    <IconButton
-                        size={"xs"}
-                        aria-label="Toggle theme"
-                        icon={colorMode === "light" ? <HiOutlineMoon /> : <HiOutlineSun />}
-                        onClick={toggleColorMode}
-                    />
+                    <Tooltip hasArrow label='toggle theme' placement='bottom' rounded={'md'}>
+                        <IconButton
+                            size={"xs"}
+                            aria-label="Toggle theme"
+                            icon={colorMode === "light" ? <HiOutlineMoon /> : <HiOutlineSun />}
+                            onClick={toggleColorMode}
+                        />
+                    </Tooltip>
                 </HStack>
                 <Divider />
             </Stack>
@@ -54,12 +56,14 @@ export const Sidebar = ({ isUserActive }: SidebarProps) => {
                         </HStack>
                     }
                     <Menu>
-                        <MenuButton
-                            as={IconButton}
-                            aria-label="Exit Options"
-                            icon={<RxExit />}
-                            size="xs"
-                        />
+                        <Tooltip hasArrow label='exit' placement='bottom' rounded={'md'}>
+                            <MenuButton
+                                as={IconButton}
+                                aria-label="Exit Options"
+                                icon={<RxExit />}
+                                size="xs"
+                            />
+                        </Tooltip>
                         <MenuList fontSize="sm" zIndex={999}>
                             <MenuItem as={Link} href="/app">Desk Interface</MenuItem>
                             <MenuItem onClick={logout}>Log Out</MenuItem>
