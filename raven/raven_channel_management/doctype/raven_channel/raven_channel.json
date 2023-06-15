@@ -1,7 +1,6 @@
 {
  "actions": [],
  "allow_rename": 1,
- "autoname": "hash",
  "creation": "2023-02-12 17:30:30.847618",
  "default_view": "List",
  "doctype": "DocType",
@@ -35,7 +34,8 @@
    "in_preview": 1,
    "in_standard_filter": 1,
    "label": "Channel Name",
-   "reqd": 1
+   "reqd": 1,
+   "unique": 1
   },
   {
    "default": "0",
@@ -75,11 +75,11 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-06-07 13:13:00.237655",
+ "modified": "2023-06-15 13:08:28.717219",
  "modified_by": "Administrator",
  "module": "Raven Channel Management",
  "name": "Raven Channel",
- "naming_rule": "Random",
+ "naming_rule": "By script",
  "owner": "Administrator",
  "permissions": [
   {
