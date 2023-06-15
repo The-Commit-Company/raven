@@ -56,7 +56,7 @@ export const MainPage = (props: Props) => {
         <UserDataProvider>
             <Flex height="100vh" sx={{ '--sidebar-width': '16rem' }} >
                 <Box bg={colorMode === "light" ? "gray.50" : "black"} h="100vh" fontSize="sm" width="var(--sidebar-width)" left="0" position="fixed" zIndex="999">
-                    <Stack h="full" direction="column" py="4" spacing="4" overflow="auto" px="3" {...props}>
+                    <Stack h="full" direction="column" spacing="4" overflow="auto" {...props}>
                         <Sidebar isUserActive={isUserActive} />
                     </Stack>
                 </Box>

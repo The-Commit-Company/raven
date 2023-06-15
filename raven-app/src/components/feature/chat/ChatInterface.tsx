@@ -99,14 +99,14 @@ export const ChatInterface = () => {
             user_id: user
         }).then(() => {
             mutate()
-            toast({
-                title: 'Channel joined successfully',
-                status: 'success',
-                duration: 1000,
-                position: 'bottom',
-                variant: 'solid',
-                isClosable: true
-            })
+            // toast({
+            //     title: 'Channel joined successfully',
+            //     status: 'success',
+            //     duration: 1000,
+            //     position: 'bottom',
+            //     variant: 'solid',
+            //     isClosable: true
+            // })
         }).catch((e) => {
             toast({
                 title: 'Error: could not join channel.',
@@ -171,14 +171,16 @@ export const ChatInterface = () => {
                     </PageHeading>
                 }
                 <HStack>
-                    <Button
-                        size={"sm"}
-                        aria-label="search"
-                        leftIcon={<HiOutlineSearch />}
-                        onClick={onCommandPaletteToggle}
-                        fontWeight='light'>
-                        Search
-                    </Button>
+                    <Tooltip hasArrow label='search' placement='bottom-start' rounded={'md'}>
+                        <Button
+                            size={"sm"}
+                            aria-label="search"
+                            leftIcon={<HiOutlineSearch />}
+                            onClick={onCommandPaletteToggle}
+                            fontWeight='light'>
+                            Search
+                        </Button>
+                    </Tooltip>
                     {channelData?.is_direct_message == 0 && activeUsers?.message &&
                         <ViewOrAddMembersButton onClickViewMembers={onViewDetailsModalOpen} onClickAddMembers={onAddMemberModalOpen} activeUsers={activeUsers.message} />}
                 </HStack>

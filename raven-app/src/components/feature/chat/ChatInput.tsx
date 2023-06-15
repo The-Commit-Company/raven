@@ -1,4 +1,4 @@
-import { Box, HStack, IconButton, Popover, PopoverContent, PopoverTrigger, Stack, StackDivider, useColorMode, Wrap, WrapItem } from "@chakra-ui/react"
+import { Box, HStack, IconButton, Popover, PopoverContent, PopoverTrigger, Stack, StackDivider, Tooltip, useColorMode, Wrap, WrapItem } from "@chakra-ui/react"
 import { useCallback, useRef, useState } from "react"
 import { RiSendPlaneFill } from "react-icons/ri"
 import ReactQuill from "react-quill"
@@ -224,7 +224,9 @@ export const ChatInput = ({ channelID, allUsers, allChannels }: ChatInputProps) 
                     <HStack w='full' justify={'space-between'} px='2' pb='2'>
                         <HStack alignItems='flex-end'>
                             <HStack divider={<StackDivider />}>
-                                <IconButton size='xs' aria-label={"add file"} onClick={fileButtonClicked} icon={<IoMdAdd />} rounded='xl' />
+                                <Tooltip hasArrow label='add files' placement='top' rounded={'md'}>
+                                    <IconButton size='xs' aria-label={"add file"} onClick={fileButtonClicked} icon={<IoMdAdd />} rounded='xl' />
+                                </Tooltip>
                                 <Box>
                                     <Popover
                                         isOpen={modalManager.modalType === ModalTypes.EmojiPicker}
@@ -234,7 +236,9 @@ export const ChatInput = ({ channelID, allUsers, allChannels }: ChatInputProps) 
                                         lazyBehavior="unmount"
                                         gutter={48}>
                                         <PopoverTrigger>
-                                            <IconButton size='xs' variant='ghost' aria-label={"pick emoji"} icon={<FaRegSmile fontSize='1.0rem' />} onClick={onEmojiPickerOpen} />
+                                            <Tooltip hasArrow label='add emoji' placement='top' rounded={'md'}>
+                                                <IconButton size='xs' variant='ghost' aria-label={"pick emoji"} icon={<FaRegSmile fontSize='1.0rem' />} onClick={onEmojiPickerOpen} />
+                                            </Tooltip>
                                         </PopoverTrigger>
                                         <PopoverContent border={'none'} rounded='lg'>
                                             {/* @ts-ignore */}
@@ -243,12 +247,14 @@ export const ChatInput = ({ channelID, allUsers, allChannels }: ChatInputProps) 
                                     </Popover>
                                 </Box>
                             </HStack>
-                            <IconButton
-                                size='xs'
-                                variant='ghost'
-                                aria-label={"mention channel member"}
-                                icon={<VscMention fontSize='1.5rem' />}
-                                onClick={onMentionIconClick} />
+                            <Tooltip hasArrow label='mention someone' placement='top' rounded={'md'}>
+                                <IconButton
+                                    size='xs'
+                                    variant='ghost'
+                                    aria-label={"mention channel member"}
+                                    icon={<VscMention fontSize='1.5rem' />}
+                                    onClick={onMentionIconClick} />
+                            </Tooltip>
                         </HStack>
                         <IconButton
                             isDisabled={text.length === 0 && files.length === 0}

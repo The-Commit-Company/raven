@@ -1,4 +1,4 @@
-import { Divider, HStack, IconButton, useColorMode, Text, Stack, Avatar, AvatarBadge, Menu, MenuButton, MenuList, MenuItem, Link, Image } from "@chakra-ui/react";
+import { Divider, HStack, IconButton, useColorMode, Text, Stack, Avatar, AvatarBadge, Menu, MenuButton, MenuList, MenuItem, Link, Image, Tooltip } from "@chakra-ui/react";
 import { PropsWithChildren, useContext } from "react";
 import { HiOutlineMoon, HiOutlineSun } from "react-icons/hi"
 import { ChannelList } from "../../feature/channels/ChannelList";
@@ -8,8 +8,6 @@ import { UserContext } from "../../../utils/auth/UserProvider";
 import { RxExit } from "react-icons/rx";
 import raven_logo_light from "../../../assets/raven_logo_light.png"
 import raven_logo_dark from "../../../assets/raven_logo_dark.png"
-// import { SidebarIcon, SidebarItem, SidebarItemLabel } from "./SidebarComp";
-// import { VscSettings } from "react-icons/vsc";
 
 interface SidebarProps extends PropsWithChildren<{}> {
     isUserActive: boolean
@@ -22,29 +20,33 @@ export const Sidebar = ({ isUserActive }: SidebarProps) => {
     const userData = useContext(UserDataContext)
 
     return (
-        <Stack justify={'space-between'} h='100vh'>
-            <Stack>
-                <HStack justifyContent="space-between" spacing="3" h='33px'>
-                    <Image src={colorMode === "light" ? raven_logo_light : raven_logo_dark} objectFit="contain" alt="Raven" width={100} />
-                    <IconButton
-                        size={"xs"}
-                        aria-label="Toggle theme"
-                        icon={colorMode === "light" ? <HiOutlineMoon /> : <HiOutlineSun />}
-                        onClick={toggleColorMode}
-                    />
+        <Stack>
+
+            {/* header */}
+            <Stack position={'fixed'} zIndex='999' top='0' px={4} w='var(--sidebar-width)' bgColor={colorMode === 'light' ? 'gray.50' : 'black'}>
+                <HStack justifyContent="space-between" pb='2' pt='4'>
+                    <Image src={colorMode === "light" ? raven_logo_light : raven_logo_dark} objectFit="contain" alt="Raven" height='25px' />
+                    <Tooltip hasArrow label='toggle theme' placement='bottom' rounded={'md'}>
+                        <IconButton
+                            size={"xs"}
+                            aria-label="Toggle theme"
+                            icon={colorMode === "light" ? <HiOutlineMoon /> : <HiOutlineSun />}
+                            onClick={toggleColorMode}
+                        />
+                    </Tooltip>
                 </HStack>
                 <Divider />
-                <ChannelList />
-                <DirectMessageList userData={userData} />
-                {/* <SidebarItem to={"settings"}>
-                    <SidebarIcon><VscSettings /></SidebarIcon>
-                    <SidebarItemLabel>Settings</SidebarItemLabel>
-                </SidebarItem> */}
             </Stack>
 
-            <Stack>
-                <Divider borderColor={colorMode === "light" ? "gray.300" : "gray.600"} />
-                <HStack justifyContent={"space-between"} px='1'>
+            {/* body */}
+            <Stack px='2' pt='57px' pb='50px' overflowY='scroll'>
+                <ChannelList />
+                <DirectMessageList userData={userData} />
+            </Stack>
+
+            {/* footer */}
+            <Stack pos='fixed' height={'50px'} bottom='0' bgColor={colorMode === 'light' ? 'gray.50' : 'black'} w='var(--sidebar-width)'>
+                <HStack justifyContent={"space-between"} px='3' pt='3'>
                     {userData &&
                         <HStack>
                             <Avatar size="xs" src={userData.user_image} name={userData.full_name} borderRadius='md'>
@@ -54,12 +56,14 @@ export const Sidebar = ({ isUserActive }: SidebarProps) => {
                         </HStack>
                     }
                     <Menu>
-                        <MenuButton
-                            as={IconButton}
-                            aria-label="Exit Options"
-                            icon={<RxExit />}
-                            size="xs"
-                        />
+                        <Tooltip hasArrow label='exit' placement='bottom' rounded={'md'}>
+                            <MenuButton
+                                as={IconButton}
+                                aria-label="Exit Options"
+                                icon={<RxExit />}
+                                size="xs"
+                            />
+                        </Tooltip>
                         <MenuList fontSize="sm" zIndex={999}>
                             <MenuItem as={Link} href="/app">Desk Interface</MenuItem>
                             <MenuItem onClick={logout}>Log Out</MenuItem>
