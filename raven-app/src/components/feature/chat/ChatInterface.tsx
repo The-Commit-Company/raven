@@ -1,4 +1,4 @@
-import { Avatar, AvatarBadge, Box, Button, ButtonGroup, Center, HStack, IconButton, Stack, Text, useColorMode, useDisclosure, useToast } from "@chakra-ui/react"
+import { Avatar, AvatarBadge, Box, Button, ButtonGroup, Center, HStack, IconButton, Stack, Text, Tooltip, useColorMode, useDisclosure, useToast } from "@chakra-ui/react"
 import { useFrappeCreateDoc, useFrappeGetCall } from "frappe-react-sdk"
 import { useContext, useRef } from "react"
 import { BiEditAlt, BiGlobe, BiHash, BiLockAlt } from "react-icons/bi"
@@ -157,13 +157,15 @@ export const ChatInterface = () => {
                                         channelData?.type === 'Open' &&
                                         <HStack><BiGlobe /><Text>{channelData?.channel_name}</Text></HStack>
                                     }
-                                    <IconButton
-                                        aria-label="edit-channel-name"
-                                        icon={<BiEditAlt />}
-                                        onClick={onRenameChannelModalOpen}
-                                        size='sm'
-                                        variant='ghost'
-                                    />
+                                    <Tooltip hasArrow label='edit channel name' placement="bottom" rounded='md'>
+                                        <IconButton
+                                            aria-label="edit-channel-name"
+                                            icon={<BiEditAlt />}
+                                            onClick={onRenameChannelModalOpen}
+                                            size='sm'
+                                            variant='ghost'
+                                        />
+                                    </Tooltip>
                                 </HStack>}
                         </HStack>
                     </PageHeading>
