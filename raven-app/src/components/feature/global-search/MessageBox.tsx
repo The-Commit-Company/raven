@@ -1,6 +1,7 @@
 import { Avatar, Box, HStack, Link, Stack, StackDivider, Text, useColorMode } from "@chakra-ui/react"
 import { useContext, useState } from "react"
 import { ChannelContext } from "../../../utils/channel/ChannelProvider"
+import { getFileName } from "../../../utils/operations"
 import { MarkdownRenderer } from "../markdown-viewer/MarkdownRenderer"
 
 type MessageBoxProps = {
@@ -11,10 +12,13 @@ type MessageBoxProps = {
     creation: Date,
     owner: string,
     messageText: string,
+    full_name?: string,
+    user_image?: string,
+    file?: string,
     handleScrollToMessage: (messageName: string, channelID: string) => void
 }
 
-export const MessageBox = ({ messageName, channelName, channelID, isArchived, creation, owner, messageText, handleScrollToMessage }: MessageBoxProps) => {
+export const MessageBox = ({ messageName, channelName, channelID, isArchived, creation, owner, messageText, full_name, user_image, file, handleScrollToMessage }: MessageBoxProps) => {
 
     const { colorMode } = useColorMode()
     const textColor = colorMode === 'light' ? 'gray.800' : 'gray.50'
@@ -48,14 +52,15 @@ export const MessageBox = ({ messageName, channelName, channelID, isArchived, cr
                 </Link>
             </HStack>
             <HStack spacing={2} alignItems='flex-start'>
-                <Avatar name={channelMembers?.[owner]?.full_name ?? users?.[owner]?.full_name ?? owner} src={channelMembers?.[owner]?.user_image ?? users?.[owner]?.user_image} borderRadius={'md'} boxSize='36px' />
+                <Avatar name={channelMembers?.[owner]?.full_name ?? users?.[owner]?.full_name ?? full_name ?? owner} src={channelMembers?.[owner]?.user_image ?? users?.[owner]?.user_image ?? user_image} borderRadius={'md'} boxSize='36px' />
                 <Stack spacing='1'>
                     <HStack>
                         <HStack divider={<StackDivider />} align='flex-start'>
-                            <Text fontSize='sm' lineHeight={'0.9'} fontWeight="bold" as='span' color={textColor}>{channelMembers?.[owner]?.full_name ?? users?.[owner]?.full_name ?? owner}</Text>
+                            <Text fontSize='sm' lineHeight={'0.9'} fontWeight="bold" as='span' color={textColor}>{channelMembers?.[owner]?.full_name ?? users?.[owner]?.full_name ?? full_name ?? owner}</Text>
                         </HStack>
                     </HStack>
                     {messageText && <MarkdownRenderer content={messageText} />}
+                    {file && <Text fontSize='sm' as={Link} href={file} isExternal>{getFileName(file)}</Text>}
                 </Stack>
             </HStack>
         </Box>
