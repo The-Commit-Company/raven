@@ -101,16 +101,11 @@ def fetch_recent_files(channel_id):
 
 @frappe.whitelist()
 def get_last_channel():
-    query = frappe.get_all(
-        'Raven Message',
-        filters={'owner': frappe.session.user},
-        fields=['channel_id'],
-        order_by='creation DESC',
-        limit_page_length=1
-    )
-
-    if query:
-        return query[0]['channel_id']
+    last_message = frappe.get_last_doc('Raven Message', {
+        'owner': frappe.session.user
+    })
+    if last_message:
+        return last_message.channel_id
     else:
         return 'general'
 
