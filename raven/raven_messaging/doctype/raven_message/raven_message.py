@@ -120,7 +120,21 @@ def get_messages(channel_id):
     messages = frappe.db.get_list('Raven Message',
                                   filters={'channel_id': channel_id},
                                   fields=['name', 'owner', 'creation', 'text',
-                                          'file', 'message_type', 'message_reactions'],
+                                          'file', 'message_type', 'message_reactions', '_liked_by'],
+                                  order_by='creation asc'
+                                  )
+
+    return messages
+
+
+@frappe.whitelist()
+def get_saved_messages():
+
+    messages = frappe.db.get_list('Raven Message',
+                                  filters={'_liked_by': [
+                                      'like', '%'+frappe.session.user+'%']},
+                                  fields=['name', 'owner', 'creation', 'text', 'channel_id',
+                                          'file', 'message_type', 'message_reactions', '_liked_by'],
                                   order_by='creation asc'
                                   )
 
@@ -158,8 +172,20 @@ def parse_messages(messages):
     return messages_with_date_header
 
 
+def check_permission(channel_id):
+    if frappe.db.get_value('Raven Channel', channel_id, 'type') == 'Private':
+        if frappe.db.exists("Raven Channel Member", {"channel_id": channel_id, "user_id": frappe.session.user}):
+            pass
+        elif frappe.session.user == "Administrator":
+            pass
+        else:
+            frappe.throw(
+                "You don't have permission to view this channel", frappe.PermissionError)
+
+
 @frappe.whitelist()
 def get_messages_with_dates(channel_id):
+    check_permission(channel_id)
     messages = get_messages(channel_id)
     track_visit(channel_id)
     return parse_messages(messages)
@@ -186,6 +212,7 @@ def get_unread_count_for_channels():
     query = (frappe.qb.from_(channel)
              .left_join(channel_member)
              .on((channel.name == channel_member.channel_id) & (channel_member.user_id == frappe.session.user))
+             .where((channel.type != "Private") | (channel_member.user_id == frappe.session.user))
              .where(channel.is_direct_message == 0)
              .left_join(message).on(channel.name == message.channel_id))
 
