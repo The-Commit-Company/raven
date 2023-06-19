@@ -6,6 +6,7 @@ import { DateObjectToTimeString, DateObjectToFormattedDateStringWithoutYear } fr
 import { ActionsPalette } from "../../message-action-palette/ActionsPalette"
 import { MessageReactions } from "./MessageReactions"
 import { Message, MessageBlock } from "../../../../types/Messaging/Message"
+import { PreviousMessageBox } from "../MessageReply/PreviousMessageBox"
 
 interface ChatMessageBoxProps extends BoxProps {
     message: Message,
@@ -22,7 +23,7 @@ export const ChatMessageBox = ({ message, onOpenUserDetailsDrawer, handleScroll,
     const textColor = colorMode === 'light' ? 'gray.800' : 'gray.50'
     const [showButtons, setShowButtons] = useState<{}>({ visibility: 'hidden' })
     const { channelMembers, users } = useContext(ChannelContext)
-    const { name, owner: user, creation: timestamp, message_reactions, is_continuation } = message
+    const { name, owner: user, creation: timestamp, message_reactions, is_continuation, is_reply, linked_message } = message
 
     return (
         <Box
@@ -58,6 +59,9 @@ export const ChatMessageBox = ({ message, onOpenUserDetailsDrawer, handleScroll,
                                 </Tooltip>
                             </HStack>
                         </HStack>
+                        {is_reply === 1 && linked_message &&
+                            <PreviousMessageBox previous_message_id={linked_message} />
+                        }
                         {children}
                         <MessageReactions message_reactions={message_reactions} name={name} />
                     </Stack>
@@ -70,6 +74,9 @@ export const ChatMessageBox = ({ message, onOpenUserDetailsDrawer, handleScroll,
                         <Text pl='1' style={showButtons} fontSize={'xs'} color="gray.500" _hover={{ textDecoration: 'underline' }}>{DateObjectToTimeString(new Date(timestamp)).split(' ')[0]}</Text>
                     </Tooltip>
                     <Stack spacing='1' pt='0.5'>
+                        {is_reply === 1 && linked_message &&
+                            <PreviousMessageBox previous_message_id={linked_message} />
+                        }
                         {children}
                         <MessageReactions name={name} message_reactions={message_reactions} />
                     </Stack>

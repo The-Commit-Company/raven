@@ -64,9 +64,12 @@ export const ChatInput = ({ channelID, allUsers, allChannels, selectedMessage, h
     const onSubmit = () => {
         call({
             channel_id: channelID,
-            text: text
+            text: text,
+            is_reply: selectedMessage ? 1 : 0,
+            linked_message: selectedMessage ? selectedMessage.name : null
         }).then(() => {
             setText("")
+            handleCancelReply()
         })
         if (files.length > 0) {
             const promises = files.map(async (f: CustomFile) => {
@@ -201,7 +204,7 @@ export const ChatInput = ({ channelID, allUsers, allChannels, selectedMessage, h
             <Box>
                 <Stack spacing={0} border='1px' borderColor={'gray.500'} rounded='lg' bottom='2' boxShadow='base' w='calc(98vw - var(--sidebar-width))' bg={colorMode === "light" ? "white" : "gray.800"}>
                     {selectedMessage && (
-                        <PreviousMessageBox message={selectedMessage} onReplyingToMessageClose={handleCancelReply} />
+                        <PreviousMessageBox previous_message_content={selectedMessage} onReplyingToMessageClose={handleCancelReply} />
                     )}
                     <ReactQuill
                         className={colorMode === 'light' ? 'my-quill-editor light-theme' : 'my-quill-editor dark-theme'}

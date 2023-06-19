@@ -61,7 +61,7 @@ def track_visit(channel_id):
 
 
 @frappe.whitelist(methods=['POST'])
-def send_message(channel_id, text):
+def send_message(channel_id, text, is_reply, linked_message=None):
 
     # remove empty paragraphs
     clean_text = text.replace('<p><br></p>', '').strip()
@@ -69,12 +69,22 @@ def send_message(channel_id, text):
     clean_text = clean_text.replace('<li><br></li>', '').strip()
 
     if clean_text:
-        doc = frappe.get_doc({
-            'doctype': 'Raven Message',
-            'channel_id': channel_id,
-            'text': clean_text,
-            'message_type': 'Text'
-        })
+        if is_reply:
+            doc = frappe.get_doc({
+                'doctype': 'Raven Message',
+                'channel_id': channel_id,
+                'text': clean_text,
+                'message_type': 'Text',
+                'is_reply': is_reply,
+                'linked_message': linked_message
+            })
+        else:
+            doc = frappe.get_doc({
+                'doctype': 'Raven Message',
+                'channel_id': channel_id,
+                'text': clean_text,
+                'message_type': 'Text'
+            })
         doc.insert()
         frappe.publish_realtime('message_received', {
                                 'channel_id': channel_id}, after_commit=True)
@@ -120,7 +130,7 @@ def get_messages(channel_id):
     messages = frappe.db.get_list('Raven Message',
                                   filters={'channel_id': channel_id},
                                   fields=['name', 'owner', 'creation', 'text',
-                                          'file', 'message_type', 'message_reactions'],
+                                          'file', 'message_type', 'message_reactions', 'is_reply', 'linked_message'],
                                   order_by='creation asc'
                                   )
 

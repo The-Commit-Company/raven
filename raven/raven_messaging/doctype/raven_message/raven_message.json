@@ -12,7 +12,9 @@
   "text",
   "file",
   "message_type",
-  "message_reactions"
+  "message_reactions",
+  "is_reply",
+  "linked_message"
  ],
  "fields": [
   {
@@ -44,11 +46,23 @@
    "fieldname": "message_reactions",
    "fieldtype": "JSON",
    "label": "Message Reactions"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_reply",
+   "fieldtype": "Check",
+   "label": "Is Reply"
+  },
+  {
+   "fieldname": "linked_message",
+   "fieldtype": "Link",
+   "label": "Linked Message",
+   "options": "Raven Message"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-06-07 13:12:28.572523",
+ "modified": "2023-06-19 12:09:16.886648",
  "modified_by": "Administrator",
  "module": "Raven Messaging",
  "name": "Raven Message",

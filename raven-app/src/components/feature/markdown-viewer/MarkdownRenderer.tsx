@@ -50,7 +50,7 @@ export const MarkdownRenderer: React.FC<Props> = ({ content }) => {
       rehypePlugins={[rehypeRaw]}
       className="markdown"
       components={{
-        pre: ({ node, ...props }) => <Box position="relative" p={0} width={'calc(100vw - var(--sidebar-width) - var(--chakra-space-16) - 36px)'}>
+        pre: ({ node, ...props }) => <Box position="relative" p={0} width={'calc(100vw - var(--sidebar-width) - var(--chakra-space-16) - 64px)'}>
           <IconButton
             zIndex={1}
             variant={'outline'}

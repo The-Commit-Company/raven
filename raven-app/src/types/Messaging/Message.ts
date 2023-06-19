@@ -7,6 +7,8 @@ export interface BaseMessage {
     message_type: 'Text' | 'File' | 'Image',
     message_reactions?: string | null,
     is_continuation: 1 | 0
+    is_reply: 1 | 0
+    linked_message?: string | null
 }
 
 export interface FileMessage extends BaseMessage {
