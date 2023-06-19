@@ -57,7 +57,7 @@ export const SavedMessages = () => {
                 if (virtuosoRef) {
                     virtuosoRef.current?.scrollToIndex({ index: parseInt(result.message) ?? 'LAST', align: 'center' })
                 }
-            }, 100)
+            }, 200)
         })
     }
 
