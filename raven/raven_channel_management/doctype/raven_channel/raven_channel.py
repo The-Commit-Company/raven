@@ -84,9 +84,10 @@ class RavenChannel(Document):
 def get_channel_list(hide_archived=False):
     # get channel list where channel member is current user
     query = (frappe.qb.from_(channel)
-             .select(channel.name, channel.channel_name, channel.type, channel.is_direct_message, channel.is_self_message, channel.is_archived)
+             .select(channel.name, channel.channel_name, channel.type, channel.is_direct_message, channel.is_self_message, channel.is_archived).distinct()
              .left_join(channel_member)
-             .on((channel.name == channel_member.channel_id) & (channel_member.user_id == frappe.session.user))
+             .on((channel.name == channel_member.channel_id))
+             .where((channel.type != "Private") | (channel_member.user_id == frappe.session.user))
              .where(channel.is_direct_message == 0))
 
     if hide_archived:

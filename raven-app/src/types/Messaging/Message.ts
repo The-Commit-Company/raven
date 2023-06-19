@@ -3,6 +3,7 @@ export type Message = FileMessage | TextMessage
 export interface BaseMessage {
     name: string,
     owner: string,
+    _liked_by: string,
     creation: Date,
     message_type: 'Text' | 'File' | 'Image',
     message_reactions?: string | null,

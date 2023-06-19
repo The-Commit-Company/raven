@@ -1,5 +1,4 @@
 import { Modal, ModalBody, ModalCloseButton, ModalContent, ModalHeader, Stack, Tab, TabList, TabPanels, Tabs, useDisclosure } from "@chakra-ui/react"
-import { VirtuosoHandle } from "react-virtuoso"
 import { SelectOption } from "../search-filters/SelectInput"
 import { ChannelSearch } from "./ChannelSearch"
 import { FileSearch } from "./FileSearch"
@@ -12,11 +11,10 @@ interface GlobalSearchModalProps {
     input: string,
     fromFilter?: string,
     inFilter?: string,
-    virtuosoRef: React.RefObject<VirtuosoHandle>
     onCommandPaletteClose: () => void
 }
 
-export default function GlobalSearch({ isOpen, onClose, tabIndex, input, fromFilter, inFilter, virtuosoRef, onCommandPaletteClose }: GlobalSearchModalProps) {
+export default function GlobalSearch({ isOpen, onClose, tabIndex, input, fromFilter, inFilter, onCommandPaletteClose }: GlobalSearchModalProps) {
 
     const { onToggle: onToggleOtherChannels, isOpen: isOpenOtherChannels } = useDisclosure()
     const { onToggle: onToggleMyChannels, isOpen: isOpenMyChannels } = useDisclosure()
@@ -37,7 +35,7 @@ export default function GlobalSearch({ isOpen, onClose, tabIndex, input, fromFil
                                 <Tab>Channels</Tab>
                             </TabList>
                             <TabPanels>
-                                <MessageSearch onToggleMyChannels={onToggleMyChannels} isOpenMyChannels={isOpenMyChannels} dateOption={dateOption} input={input} fromFilter={fromFilter} inFilter={inFilter} virtuosoRef={virtuosoRef} onCommandPaletteClose={onCommandPaletteClose} onClose={onClose} />
+                                <MessageSearch onToggleMyChannels={onToggleMyChannels} isOpenMyChannels={isOpenMyChannels} dateOption={dateOption} input={input} fromFilter={fromFilter} inFilter={inFilter} onCommandPaletteClose={onCommandPaletteClose} onClose={onClose} />
                                 <FileSearch onToggleMyChannels={onToggleMyChannels} isOpenMyChannels={isOpenMyChannels} dateOption={dateOption} input={input} fromFilter={fromFilter} inFilter={inFilter} />
                                 <ChannelSearch onToggleMyChannels={onToggleMyChannels} isOpenMyChannels={isOpenMyChannels} onToggleOtherChannels={onToggleOtherChannels} isOpenOtherChannels={isOpenOtherChannels} input={input} onClose={onClose} />
                             </TabPanels>

@@ -14,9 +14,9 @@ import { SelectInput, SelectOption } from '../search-filters/SelectInput'
 import { Sort } from '../sorting'
 import { ChannelContext } from "../../../utils/channel/ChannelProvider"
 import { TextMessage } from '../../../types/Messaging/Message'
-import { VirtuosoHandle } from 'react-virtuoso'
 import { useNavigate } from 'react-router-dom'
 import { MessageBox } from './MessageBox'
+import { VirtuosoRefContext } from '../../../utils/message/VirtuosoRefProvider'
 
 interface FilterInput {
     'from-user-filter': SelectOption[],
@@ -33,7 +33,6 @@ interface Props {
     input: string,
     fromFilter?: string,
     inFilter?: string,
-    virtuosoRef: React.RefObject<VirtuosoHandle>,
     onCommandPaletteClose: () => void
     onClose: () => void
 }
@@ -42,8 +41,9 @@ interface MessageSearchResult extends TextMessage {
     channel_id: string
 }
 
-export const MessageSearch = ({ onToggleMyChannels, isOpenMyChannels, dateOption, input, fromFilter, inFilter, virtuosoRef, onClose, onCommandPaletteClose }: Props) => {
+export const MessageSearch = ({ onToggleMyChannels, isOpenMyChannels, dateOption, input, fromFilter, inFilter, onClose, onCommandPaletteClose }: Props) => {
 
+    const { virtuosoRef } = useContext(VirtuosoRefContext)
     const { url } = useContext(FrappeContext) as FrappeConfig
     const navigate = useNavigate()
     const { users } = useContext(ChannelContext)
@@ -66,8 +66,8 @@ export const MessageSearch = ({ onToggleMyChannels, isOpenMyChannels, dateOption
                 channel_id: channelID,
                 message_id: messageName
             })
-            if (virtuosoRef.current) {
-                virtuosoRef.current.scrollToIndex({ index: parseInt(result.message) ?? 'LAST', align: 'center' })
+            if (virtuosoRef) {
+                virtuosoRef.current?.scrollToIndex({ index: parseInt(result.message) ?? 'LAST', align: 'center' })
             }
         })
     }
