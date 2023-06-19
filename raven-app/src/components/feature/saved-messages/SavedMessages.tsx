@@ -8,6 +8,7 @@ import { TextMessage } from "../../../types/Messaging/Message"
 import { User } from "../../../types/User/User"
 import { VirtuosoRefContext } from "../../../utils/message/VirtuosoRefProvider"
 import { AlertBanner } from "../../layout/AlertBanner"
+import { EmptyStateForSavedMessages } from "../../layout/EmptyState/EmptyState"
 import { PageHeader } from "../../layout/Heading/PageHeader"
 import { PageHeading } from "../../layout/Heading/PageHeading"
 import { CommandPalette } from "../command-palette"
@@ -102,7 +103,8 @@ export const SavedMessages = () => {
                     </Button>
                 </Tooltip>
             </PageHeader>
-            <Stack h='calc(100vh)' justify={'flex-start'} p={4} overflow='scroll' pt='20'>
+            {data && data.message?.length === 0 && <EmptyStateForSavedMessages />}
+            <Stack justify={'flex-start'} p={4} overflow='scroll' pt='20'>
                 {data?.message?.map(({ name, text, owner, creation, channel_id, file, message_type }: SavedMessage) => {
                     const isArchived = channels?.message.find((channel: ChannelData) => channel.name === channel_id)?.is_archived
                     const channelName = channels?.message.find((channel: ChannelData) => channel.name === channel_id)?.channel_name

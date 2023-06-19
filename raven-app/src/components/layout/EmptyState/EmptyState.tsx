@@ -1,7 +1,7 @@
 import { Flex, VStack, Text, HStack, Link, Box, Stack, Avatar, Heading, Button, ButtonGroup, useDisclosure, useColorMode, AvatarBadge } from "@chakra-ui/react"
 import { useContext } from "react"
 import { ChannelContext } from "../../../utils/channel/ChannelProvider"
-import { BiGlobe, BiHash, BiLockAlt, BiUserPlus } from "react-icons/bi"
+import { BiBookmark, BiGlobe, BiHash, BiLockAlt, BiUserPlus } from "react-icons/bi"
 import { DateObjectToFormattedDateString } from "../../../utils/operations"
 import { TbEdit } from "react-icons/tb"
 import { AddOrEditChannelDescriptionModal } from "../../feature/channel-details/EditChannelDetails/AddOrEditChannelDescriptionModal"
@@ -118,6 +118,25 @@ const EmptyStateForDM = () => {
                 </Stack>
             }
         </Box>
+    )
+}
+
+export const EmptyStateForSavedMessages = () => {
+    return (
+        <Stack mt='75px' px='4' spacing={4}>
+            <HStack>
+                <BiBookmark fontSize={'1.4rem'} />
+                <Heading size={'md'}>Your saved messages will appear here</Heading>
+            </HStack>
+            <Stack>
+                <Text>Saved messages are a convenient way to keep track of important information or messages you want to refer back to later.</Text>
+                <HStack spacing={1}>
+                    <Text>You can save messages by simply clicking on the bookmark icon</Text>
+                    <BiBookmark fontSize={'1rem'} />
+                    <Text>in message actions.</Text>
+                </HStack>
+            </Stack>
+        </Stack>
     )
 }
 
