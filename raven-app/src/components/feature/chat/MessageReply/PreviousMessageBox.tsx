@@ -6,8 +6,10 @@ import { useContext } from 'react'
 import { ChannelContext } from '../../../../utils/channel/ChannelProvider'
 import { getFileExtensionIcon } from '../../../../utils/layout/fileExtensionIcon'
 import { IoMdClose } from 'react-icons/io'
-import { useFrappeGetDoc } from 'frappe-react-sdk'
+import { useFrappeGetDoc, useFrappePostCall } from 'frappe-react-sdk'
 import { AlertBanner } from '../../../layout/AlertBanner'
+import { VirtuosoRefContext } from '../../../../utils/message/VirtuosoRefProvider'
+import { useNavigate } from "react-router-dom"
 
 interface PreviousMessageBoxProps {
     previous_message_id?: string,
@@ -70,12 +72,40 @@ export const PreviousMessageBox = ({ previous_message_id, previous_message_conte
     }
 
     if (previous_message_id) {
+
         const { data, error } = useFrappeGetDoc<Message>('Raven Message', previous_message_id)
+        const { virtuosoRef } = useContext(VirtuosoRefContext)
+        const { channelData } = useContext(ChannelContext)
+        const navigate = useNavigate()
+
+        const { call, error: indexingError, reset } = useFrappePostCall<{ message: string }>("raven.raven_messaging.doctype.raven_message.raven_message.get_index_of_message")
+
+        const handleNavigateToChannel = (channelID: string, _callback: VoidFunction) => {
+            navigate(`/channel/${channelID}`)
+            _callback()
+        }
+
+        const handleScrollToMessage = (messageName: string) => {
+            reset()
+            handleNavigateToChannel(channelData?.name ?? '', async function () {
+                const result = await call({
+                    channel_id: channelData?.name,
+                    message_id: messageName
+                })
+                if (virtuosoRef) {
+                    virtuosoRef.current?.scrollToIndex({ index: parseInt(result.message) ?? 'LAST', align: 'center' })
+                }
+            })
+        }
+
+        if (indexingError) {
+            return <AlertBanner status='error' heading='error while searching for previous message' />
+        }
         if (error) {
             return <AlertBanner status='error' heading='previous message not found, this message may have been deleted' />
         }
         if (data) {
-            return <LinkBox p='2' border={'1px'} borderColor={colorMode === 'light' ? 'gray.200' : 'gray.600'} rounded={'sm'}>
+            return <LinkBox onClick={() => handleScrollToMessage(previous_message_id)} p='2' border={'1px'} borderColor={colorMode === 'light' ? 'gray.200' : 'gray.600'} rounded={'sm'} _hover={{ cursor: 'pointer', boxShadow: 'base' }}>
                 <Box pl='2' borderLeft={'2px'} borderLeftColor={colorMode === 'light' ? 'gray.600' : 'gray.600'}>
                     <Stack spacing={1}>
                         <HStack>

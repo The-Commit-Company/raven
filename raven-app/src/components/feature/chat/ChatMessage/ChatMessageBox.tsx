@@ -89,7 +89,7 @@ export const ChatMessageBox = ({ message, onOpenUserDetailsDrawer, handleScroll,
                 showButtons={showButtons}
                 handleScroll={handleScroll}
                 is_continuation={is_continuation}
-                replyToMessage={replyToMessage} />
+                replyToMessage={replyToMessage}
                 mutate={mutate} />
             }
 
