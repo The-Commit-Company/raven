@@ -8,7 +8,7 @@ import { UserContext } from "../../../utils/auth/UserProvider";
 import { RxExit } from "react-icons/rx";
 import raven_logo_light from "../../../assets/raven_logo_light.png"
 import raven_logo_dark from "../../../assets/raven_logo_dark.png"
-import { SidebarIcon, SidebarItem, SidebarItemLabel } from "./SidebarComp";
+import { SidebarGroupLabel, SidebarIcon, SidebarItem, SidebarItemLabel } from "./SidebarComp";
 import { IoBookmarkOutline } from "react-icons/io5";
 
 interface SidebarProps extends PropsWithChildren<{}> {
@@ -44,15 +44,16 @@ export const Sidebar = ({ isUserActive }: SidebarProps) => {
             <Stack px='2' pt='57px' pb='50px' overflowY='scroll'>
                 <SidebarItem to={'saved-messages'}>
                     <SidebarIcon><IoBookmarkOutline /></SidebarIcon>
-                    <SidebarItemLabel fontWeight='semibold'>Saved Messages</SidebarItemLabel>
+                    <SidebarGroupLabel pl='1'>Saved Messages</SidebarGroupLabel>
                 </SidebarItem>
                 <ChannelList />
                 <DirectMessageList userData={userData} />
             </Stack>
 
             {/* footer */}
-            <Stack pos='fixed' height={'50px'} bottom='0' bgColor={colorMode === 'light' ? 'gray.50' : 'black'} w='var(--sidebar-width)'>
-                <HStack justifyContent={"space-between"} px='3' pt='3'>
+            <Stack pos='fixed' px='3' pt='2' height={'50px'} bottom='0' bgColor={colorMode === 'light' ? 'gray.50' : 'black'} w='var(--sidebar-width)'>
+                <Divider />
+                <HStack justifyContent={"space-between"}>
                     {userData &&
                         <HStack>
                             <Avatar size="xs" src={userData.user_image} name={userData.full_name} borderRadius='md'>

@@ -11,6 +11,7 @@
   "channel_id",
   "text",
   "file",
+  "file_thumbnail",
   "message_type",
   "message_reactions",
   "is_reply",
@@ -58,11 +59,16 @@
    "fieldtype": "Link",
    "label": "Linked Message",
    "options": "Raven Message"
+  },
+  {
+   "fieldname": "file_thumbnail",
+   "fieldtype": "Attach",
+   "label": "File Thumbnail"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-06-19 12:09:16.886648",
+ "modified": "2023-06-20 14:08:24.579729",
  "modified_by": "Administrator",
  "module": "Raven Messaging",
  "name": "Raven Message",
