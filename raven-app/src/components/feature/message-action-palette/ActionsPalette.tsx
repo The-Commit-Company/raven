@@ -1,10 +1,10 @@
 import { Box, Button, HStack, IconButton, Link, Popover, PopoverContent, PopoverTrigger, Portal, Tooltip, useColorMode } from '@chakra-ui/react'
 import { BsDownload, BsEmojiSmile } from 'react-icons/bs'
-import { useFrappeCreateDoc } from 'frappe-react-sdk'
+import { useFrappeCreateDoc, useFrappePostCall } from 'frappe-react-sdk'
 import { useContext, useEffect } from 'react'
 import { AiOutlineEdit } from 'react-icons/ai'
 import { VscTrash } from 'react-icons/vsc'
-import { IoBookmarkOutline, IoChatboxEllipsesOutline } from 'react-icons/io5'
+import { IoBookmark, IoBookmarkOutline, IoChatboxEllipsesOutline } from 'react-icons/io5'
 import { UserContext } from '../../../utils/auth/UserProvider'
 import { DeleteMessageModal } from '../message-details/DeleteMessageModal'
 import { EditMessageModal } from '../message-details/EditMessageModal'
@@ -18,9 +18,10 @@ interface ActionButtonPaletteProps {
     handleScroll: (newState: boolean) => void,
     is_continuation: 1 | 0,
     replyToMessage?: (message: Message) => void
+    mutate: () => void
 }
 
-export const ActionsPalette = ({ message, showButtons, handleScroll, is_continuation, replyToMessage }: ActionButtonPaletteProps) => {
+export const ActionsPalette = ({ message, showButtons, handleScroll, is_continuation, mutate, replyToMessage }: ActionButtonPaletteProps) => {
 
     const { name, owner, message_type } = message
 
@@ -72,9 +73,23 @@ export const ActionsPalette = ({ message, showButtons, handleScroll, is_continua
     useEffect(() => {
         handleScroll(modalManager.modalType !== ModalTypes.EmojiPicker)
     }, [modalManager.modalType])
-
+  
     const onReplyClick = () => {
         replyToMessage && replyToMessage(message)
+    }
+        
+    const { call } = useFrappePostCall('frappe.desk.like.toggle_like')
+
+    const handleLike = (id: string, value: string) => {
+        call({
+            doctype: 'Raven Message',
+            name: id,
+            add: value
+        }).then((r) => mutate())
+    }
+
+    const checkLiked = (likedBy: string) => {
+        return JSON.parse(likedBy ?? '[]')?.length > 0 && JSON.parse(likedBy ?? '[]')?.includes(currentUser)
     }
 
     return (
@@ -134,11 +149,12 @@ export const ActionsPalette = ({ message, showButtons, handleScroll, is_continua
                             size='xs' />
                     </Tooltip>
                 }
-                <Tooltip hasArrow label='save' size='xs' placement='top' rounded='md'>
+                <Tooltip hasArrow label={checkLiked(message._liked_by) ? 'unsave' : 'save'} size='xs' placement='top' rounded='md'>
                     <IconButton
                         aria-label="save message"
-                        icon={<IoBookmarkOutline fontSize={'0.8rem'} />}
-                        size='xs' />
+                        icon={checkLiked(message._liked_by) ? <IoBookmark fontSize={'0.8rem'} /> : <IoBookmarkOutline fontSize={'0.8rem'} />}
+                        size='xs'
+                        onClick={() => handleLike(message.name, checkLiked(message._liked_by) ? 'No' : 'Yes')} />
                 </Tooltip>
                 {file &&
                     <Tooltip hasArrow label='download' size='xs' placement='top' rounded='md'>

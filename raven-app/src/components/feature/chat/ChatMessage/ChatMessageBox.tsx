@@ -15,9 +15,10 @@ interface ChatMessageBoxProps extends BoxProps {
     onOpenUserDetailsDrawer?: (selectedUser: User) => void,
     handleScrollToMessage?: (name: string, channel: string, messages: MessageBlock[]) => void,
     replyToMessage?: (message: Message) => void
+    mutate: () => void
 }
 
-export const ChatMessageBox = ({ message, onOpenUserDetailsDrawer, handleScroll, children, handleScrollToMessage, replyToMessage, ...props }: ChatMessageBoxProps) => {
+export const ChatMessageBox = ({ message, onOpenUserDetailsDrawer, handleScroll, children, handleScrollToMessage, mutate, replyToMessage, ...props }: ChatMessageBoxProps) => {
 
     const { colorMode } = useColorMode()
     const textColor = colorMode === 'light' ? 'gray.800' : 'gray.50'
@@ -89,6 +90,7 @@ export const ChatMessageBox = ({ message, onOpenUserDetailsDrawer, handleScroll,
                 handleScroll={handleScroll}
                 is_continuation={is_continuation}
                 replyToMessage={replyToMessage} />
+                mutate={mutate} />
             }
 
         </Box>

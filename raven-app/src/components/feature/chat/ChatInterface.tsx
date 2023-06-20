@@ -19,7 +19,6 @@ import { ViewOrAddMembersButton } from "../view-or-add-members/ViewOrAddMembersB
 import { ChatHistory } from "./ChatHistory"
 import { ChatInput } from "./ChatInput"
 import { ModalTypes, useModalManager } from "../../../hooks/useModalManager"
-import { VirtuosoHandle } from "react-virtuoso"
 import { ChannelRenameModal } from "../channel-details/EditChannelDetails/ChannelRenameModal"
 
 export const ChatInterface = () => {
@@ -28,8 +27,6 @@ export const ChatInterface = () => {
     const userData = useContext(UserDataContext)
     const user = userData?.name
     const peer = Object.keys(channelMembers).filter((member) => member !== user)[0]
-    const virtuosoRef = useRef<VirtuosoHandle>(null)
-
     const { data: channelList, error: channelListError } = useFrappeGetCall<{ message: ChannelData[] }>("raven.raven_channel_management.doctype.raven_channel.raven_channel.get_channel_list", undefined, undefined, {
         revalidateOnFocus: false
     })
@@ -188,7 +185,7 @@ export const ChatInterface = () => {
                 </HStack>
             </PageHeader>
             <Stack h='calc(100vh)' justify={'flex-end'} p={4} overflow='hidden' pt='16'>
-                {data && channelData && <ChatHistory parsed_messages={data.message} isDM={channelData?.is_direct_message} virtuosoRef={virtuosoRef} replyToMessage={handleReplyAction} />}
+                {data && channelData && <ChatHistory parsed_messages={data.message} isDM={channelData?.is_direct_message} mutate={mutate} replyToMessage={handleReplyAction} />}
                 {channelData?.is_archived == 0 && ((user && user in channelMembers) || channelData?.type === 'Open' ?
                     <ChatInput channelID={channelData?.name ?? ''} allChannels={allChannels} allUsers={allUsers} selectedMessage={selectedMessage} handleCancelReply={handleCancelReply} /> :
                     <Box>
@@ -221,8 +218,7 @@ export const ChatInterface = () => {
             <CommandPalette
                 isOpen={isCommandPaletteOpen}
                 onClose={onCommandPaletteClose}
-                onToggle={onCommandPaletteToggle}
-                virtuosoRef={virtuosoRef} />
+                onToggle={onCommandPaletteToggle} />
             <ChannelRenameModal
                 isOpen={modalManager.modalType === ModalTypes.RenameChannel}
                 onClose={modalManager.closeModal}

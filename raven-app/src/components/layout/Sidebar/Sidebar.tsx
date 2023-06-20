@@ -8,6 +8,8 @@ import { UserContext } from "../../../utils/auth/UserProvider";
 import { RxExit } from "react-icons/rx";
 import raven_logo_light from "../../../assets/raven_logo_light.png"
 import raven_logo_dark from "../../../assets/raven_logo_dark.png"
+import { SidebarIcon, SidebarItem, SidebarItemLabel } from "./SidebarComp";
+import { IoBookmarkOutline } from "react-icons/io5";
 
 interface SidebarProps extends PropsWithChildren<{}> {
     isUserActive: boolean
@@ -40,6 +42,10 @@ export const Sidebar = ({ isUserActive }: SidebarProps) => {
 
             {/* body */}
             <Stack px='2' pt='57px' pb='50px' overflowY='scroll'>
+                <SidebarItem to={'saved-messages'}>
+                    <SidebarIcon><IoBookmarkOutline /></SidebarIcon>
+                    <SidebarItemLabel fontWeight='semibold'>Saved Messages</SidebarItemLabel>
+                </SidebarItem>
                 <ChannelList />
                 <DirectMessageList userData={userData} />
             </Stack>
