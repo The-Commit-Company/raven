@@ -77,7 +77,8 @@ class RavenChannel(Document):
                 channel_member.insert()
 
     def autoname(self):
-        self.name = self.channel_name.lower().replace(" ", "-")
+        if self.is_direct_message == 0:
+            self.name = self.channel_name.lower().replace(" ", "-")
 
 
 @frappe.whitelist()
