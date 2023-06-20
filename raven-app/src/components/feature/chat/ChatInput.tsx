@@ -19,18 +19,22 @@ import { FileListItem } from "../file-upload/FileListItem"
 import { getFileExtension } from "../../../utils/operations"
 import { AlertBanner } from "../../layout/AlertBanner"
 import { ModalTypes, useModalManager } from "../../../hooks/useModalManager"
+import { Message } from "../../../types/Messaging/Message"
+import { PreviousMessageBox } from "./MessageReply/PreviousMessageBox"
 
 interface ChatInputProps {
     channelID: string,
     allUsers: { id: string; value: string; }[],
-    allChannels: { id: string; value: string; }[]
+    allChannels: { id: string; value: string; }[],
+    selectedMessage?: Message | null,
+    handleCancelReply: () => void
 }
 
 Quill.register('modules/linkify', Linkify)
 
 export const fileExt = ['jpg', 'JPG', 'jpeg', 'JPEG', 'png', 'PNG', 'gif', 'GIF']
 
-export const ChatInput = ({ channelID, allUsers, allChannels }: ChatInputProps) => {
+export const ChatInput = ({ channelID, allUsers, allChannels, selectedMessage, handleCancelReply }: ChatInputProps) => {
 
     const { call } = useFrappePostCall('raven.raven_messaging.doctype.raven_message.raven_message.send_message')
     const { createDoc, loading: creatingDoc, error: errorCreatingDoc, reset: resetCreateDoc } = useFrappeCreateDoc()
@@ -60,9 +64,12 @@ export const ChatInput = ({ channelID, allUsers, allChannels }: ChatInputProps) 
     const onSubmit = () => {
         call({
             channel_id: channelID,
-            text: text
+            text: text,
+            is_reply: selectedMessage ? 1 : 0,
+            linked_message: selectedMessage ? selectedMessage.name : null
         }).then(() => {
             setText("")
+            handleCancelReply()
         })
         if (files.length > 0) {
             const promises = files.map(async (f: CustomFile) => {
@@ -195,7 +202,10 @@ export const ChatInput = ({ channelID, allUsers, allChannels }: ChatInputProps) 
             {errorUpdatingDoc ? <AlertBanner status='error' heading='Error updating doctype with selected file information.'>{errorUpdatingDoc.message} - {errorUpdatingDoc.httpStatus}</AlertBanner> : null}
 
             <Box>
-                <Stack border='1px' borderColor={'gray.500'} rounded='lg' bottom='2' boxShadow='base' w='calc(98vw - var(--sidebar-width))' bg={colorMode === "light" ? "white" : "gray.800"}>
+                <Stack spacing={0} border='1px' borderColor={'gray.500'} rounded='lg' bottom='2' boxShadow='base' w='calc(98vw - var(--sidebar-width))' bg={colorMode === "light" ? "white" : "gray.800"}>
+                    {selectedMessage && (
+                        <PreviousMessageBox previous_message_content={selectedMessage} onReplyingToMessageClose={handleCancelReply} />
+                    )}
                     <ReactQuill
                         className={colorMode === 'light' ? 'my-quill-editor light-theme' : 'my-quill-editor dark-theme'}
                         onChange={handleChange}

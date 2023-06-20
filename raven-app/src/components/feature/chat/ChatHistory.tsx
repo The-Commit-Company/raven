@@ -1,7 +1,7 @@
 import { Box } from "@chakra-ui/react";
 import { DividerWithText } from "../../layout/Divider/DividerWithText";
 import { DateObjectToFormattedDateString } from "../../../utils/operations";
-import { DateBlock, FileMessage, MessageBlock, MessagesWithDate } from "../../../types/Messaging/Message";
+import { DateBlock, FileMessage, Message, MessageBlock, MessagesWithDate } from "../../../types/Messaging/Message";
 import { ChannelHistoryFirstMessage } from "../../layout/EmptyState/EmptyState";
 import { useContext, useState } from "react";
 import { ChatMessageBox } from "./ChatMessage/ChatMessageBox";
@@ -18,11 +18,11 @@ import { VirtuosoRefContext } from "../../../utils/message/VirtuosoRefProvider";
 interface ChatHistoryProps {
     parsed_messages: MessagesWithDate,
     isDM: number,
+    replyToMessage?: (message: Message) => void,
     mutate: () => void
 }
 
-
-export const ChatHistory = ({ parsed_messages, isDM, mutate }: ChatHistoryProps) => {
+export const ChatHistory = ({ parsed_messages, isDM, mutate, replyToMessage }: ChatHistoryProps) => {
 
     const { virtuosoRef } = useContext(VirtuosoRefContext)
 
@@ -62,7 +62,7 @@ export const ChatHistory = ({ parsed_messages, isDM, mutate }: ChatHistoryProps)
             return (
                 <AnimatePresence>
                     <motion.div key={block.data.name} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.4 }}>
-                        <ChatMessageBox message={block.data} handleScroll={handleScroll} onOpenUserDetailsDrawer={onOpenUserDetailsDrawer} mutate={mutate}>
+                        <ChatMessageBox message={block.data} handleScroll={handleScroll} onOpenUserDetailsDrawer={onOpenUserDetailsDrawer} mutate={mutate} replyToMessage={replyToMessage}>
                             {block.data.message_type === 'Text' && <MarkdownRenderer content={block.data.text} />}
                             {(block.data.message_type === 'File' || block.data.message_type === 'Image') && <FileMessageBlock {...block.data} onFilePreviewModalOpen={onFilePreviewModalOpen} />}
                         </ChatMessageBox>

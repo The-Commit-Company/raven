@@ -1,11 +1,11 @@
 import { Avatar, AvatarBadge, Box, Button, ButtonGroup, Center, HStack, IconButton, Stack, Text, Tooltip, useColorMode, useDisclosure, useToast } from "@chakra-ui/react"
 import { useFrappeCreateDoc, useFrappeGetCall } from "frappe-react-sdk"
-import { useContext } from "react"
+import { useContext, useRef, useState } from "react"
 import { BiEditAlt, BiGlobe, BiHash, BiLockAlt } from "react-icons/bi"
 import { HiOutlineSearch } from "react-icons/hi"
 import { useFrappeEventListener } from "../../../hooks/useFrappeEventListener"
 import { ChannelData } from "../../../types/Channel/Channel"
-import { MessagesWithDate } from "../../../types/Messaging/Message"
+import { Message, MessagesWithDate } from "../../../types/Messaging/Message"
 import { ChannelContext } from "../../../utils/channel/ChannelProvider"
 import { UserDataContext } from "../../../utils/user/UserDataProvider"
 import { AlertBanner } from "../../layout/AlertBanner"
@@ -81,6 +81,16 @@ export const ChatInterface = () => {
         modalManager.openModal(ModalTypes.RenameChannel)
     }
 
+    const [selectedMessage, setSelectedMessage] = useState<Message | null>(null)
+
+    const handleReplyAction = (message: Message) => {
+        setSelectedMessage(message)
+    }
+
+    const handleCancelReply = () => {
+        setSelectedMessage(null)
+    }
+
     const { isOpen: isViewDetailsModalOpen, onOpen: onViewDetailsModalOpen, onClose: onViewDetailsModalClose } = useDisclosure()
     const { isOpen: isCommandPaletteOpen, onClose: onCommandPaletteClose, onToggle: onCommandPaletteToggle } = useDisclosure()
 
@@ -96,14 +106,6 @@ export const ChatInterface = () => {
             user_id: user
         }).then(() => {
             mutate()
-            // toast({
-            //     title: 'Channel joined successfully',
-            //     status: 'success',
-            //     duration: 1000,
-            //     position: 'bottom',
-            //     variant: 'solid',
-            //     isClosable: true
-            // })
         }).catch((e) => {
             toast({
                 title: 'Error: could not join channel.',
@@ -183,9 +185,9 @@ export const ChatInterface = () => {
                 </HStack>
             </PageHeader>
             <Stack h='calc(100vh)' justify={'flex-end'} p={4} overflow='hidden' pt='16'>
-                {data && channelData && <ChatHistory parsed_messages={data.message} isDM={channelData?.is_direct_message} mutate={mutate} />}
+                {data && channelData && <ChatHistory parsed_messages={data.message} isDM={channelData?.is_direct_message} mutate={mutate} replyToMessage={handleReplyAction} />}
                 {channelData?.is_archived == 0 && ((user && user in channelMembers) || channelData?.type === 'Open' ?
-                    <ChatInput channelID={channelData?.name ?? ''} allChannels={allChannels} allUsers={allUsers} /> :
+                    <ChatInput channelID={channelData?.name ?? ''} allChannels={allChannels} allUsers={allUsers} selectedMessage={selectedMessage} handleCancelReply={handleCancelReply} /> :
                     <Box>
                         <Stack border='1px' borderColor={'gray.500'} rounded='lg' bottom='2' boxShadow='base' w='calc(98vw - var(--sidebar-width))' bg={colorMode === "light" ? "white" : "gray.800"} p={4}>
                             <HStack justify='center' align='center' pb={4}><BiHash /><Text>{channelData?.channel_name}</Text></HStack>
