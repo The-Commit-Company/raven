@@ -140,3 +140,7 @@
     color: white;
     background-color: #1A202C;
 }
+
+.ql-editor {
+    font-size: var(--chakra-fontSizes-sm)
+}
