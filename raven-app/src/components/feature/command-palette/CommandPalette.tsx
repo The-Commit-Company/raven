@@ -68,6 +68,8 @@ export const CommandPalette = ({ isOpen, onClose, onToggle }: CommandPaletteProp
 
     const { colorMode } = useColorMode()
 
+    const inputRef = React.useRef<HTMLInputElement | null>(null)
+
     return (
         <Modal isOpen={isOpen} onClose={onClose}>
             <ModalOverlay bg='rgba(0,0,0,0.1)' />
@@ -98,6 +100,7 @@ export const CommandPalette = ({ isOpen, onClose, onToggle }: CommandPaletteProp
                         ))}
                         {!activePage && <TbSearch size={20} />}
                         <Command.Input autoFocus
+                            ref={inputRef}
                             placeholder={function () {
                                 switch (activePage) {
                                     case 'messages':
@@ -120,7 +123,10 @@ export const CommandPalette = ({ isOpen, onClose, onToggle }: CommandPaletteProp
                             onValueChange={setInputValue} />
                     </HStack>
 
-                    {activePage === '' && <Home input={debouncedText} searchChange={(pageChange: string) => { setInputValue(""); setPages([...pages, pageChange]) }} isGlobalSearchModalOpen={isGlobalSearchModalOpen} onGlobalSearchModalOpen={onGlobalSearchModalOpen} onGlobalSearchModalClose={onGlobalSearchModalClose} onCommandPaletteClose={onClose} />}
+                    {activePage === '' && <Home input={debouncedText} searchChange={(pageChange: string) => { setInputValue(""); setPages([...pages, pageChange]) }} isGlobalSearchModalOpen={isGlobalSearchModalOpen} onGlobalSearchModalOpen={onGlobalSearchModalOpen} onGlobalSearchModalClose={onGlobalSearchModalClose} onCommandPaletteClose={onClose} inputRef={inputRef}>
+                        <People input={debouncedText} users={users} activeUsers={activeUsers?.message} gotoDMChannel={gotoDMChannel} currentUser={currentUser} isGlobalSearchModalOpen={isGlobalSearchModalOpen} onGlobalSearchModalOpen={onGlobalSearchModalOpen} onGlobalSearchModalClose={onGlobalSearchModalClose} onCommandPaletteClose={onClose} isChild={true} />
+                        <Channels input={debouncedText} isGlobalSearchModalOpen={isGlobalSearchModalOpen} onGlobalSearchModalOpen={onGlobalSearchModalOpen} onGlobalSearchModalClose={onGlobalSearchModalClose} onCommandPaletteClose={onClose} isChild={true} />
+                    </Home>}
                     {activePage === 'messages' && <Messages input={debouncedText} searchChange={(pageChange: string) => { setInputValue(""); setPages([...pages, pageChange]) }} isGlobalSearchModalOpen={isGlobalSearchModalOpen} onGlobalSearchModalOpen={onGlobalSearchModalOpen} onGlobalSearchModalClose={onGlobalSearchModalClose} onCommandPaletteClose={onClose} />}
                     {activePage === 'files' && <Files input={debouncedText} searchChange={(pageChange: string) => { setInputValue(""); setPages([...pages, pageChange]) }} isGlobalSearchModalOpen={isGlobalSearchModalOpen} onGlobalSearchModalOpen={onGlobalSearchModalOpen} onGlobalSearchModalClose={onGlobalSearchModalClose} onCommandPaletteClose={onClose} />}
                     {activePage === 'channels' && <Channels input={debouncedText} isGlobalSearchModalOpen={isGlobalSearchModalOpen} onGlobalSearchModalOpen={onGlobalSearchModalOpen} onGlobalSearchModalClose={onGlobalSearchModalClose} onCommandPaletteClose={onClose} />}

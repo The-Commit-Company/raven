@@ -16,7 +16,7 @@ type MessageBoxProps = {
     full_name?: string,
     user_image?: string,
     file?: string,
-    message_type?: 'Text' | 'File' | 'Image',
+    message_type: 'Text' | 'File' | 'Image',
     handleScrollToMessage: (messageName: string, channelID: string) => void
 }
 
@@ -71,7 +71,7 @@ export const MessageBox = ({ messageName, channelName, channelID, isArchived, cr
                         </HStack>
                     </HStack>
                     {message_type === 'Text' && <MarkdownRenderer content={messageText} />}
-                    {file && (message_type === 'File' || message_type === 'Image') && <FileMessageBlock onFilePreviewModalOpen={onFilePreviewModalOpen} file={file} message_type={message_type} name={messageName} owner={owner} creation={creation} _liked_by={""} is_continuation={0} />}
+                    {file && (message_type === 'File' || message_type === 'Image') && <FileMessageBlock onFilePreviewModalOpen={onFilePreviewModalOpen} file={file} message_type={message_type} name={messageName} owner={owner} creation={creation} _liked_by={""} is_continuation={0} is_reply={0} />}
                 </Stack>
             </HStack>
         </Box>

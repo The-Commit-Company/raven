@@ -1,4 +1,4 @@
-import { Button, ButtonGroup, IconButton, Menu, MenuButton } from "@chakra-ui/react"
+import { Button, ButtonGroup, IconButton, Menu, MenuButton, Tooltip } from "@chakra-ui/react"
 import { HiSortAscending, HiSortDescending } from "react-icons/hi"
 import { SortFields } from "../../../types/Sort"
 import { SortMenu } from "./SortMenu"
@@ -28,11 +28,13 @@ export const Sort = ({ sortingFields, onSortFieldSelect, sortOrder, onSortOrderC
     return (
         <Menu>
             <ButtonGroup size='xs' isAttached variant='outline'>
-                <IconButton
-                    fontSize="sm"
-                    onClick={handleSortOrder}
-                    aria-label='Add to fields'
-                    icon={sortOrder === "asc" ? <HiSortAscending /> : <HiSortDescending />} />
+                <Tooltip hasArrow label={sortOrder === "asc" ? "newest first" : "oldest first"} placement='bottom' rounded={'md'}>
+                    <IconButton
+                        fontSize="sm"
+                        onClick={handleSortOrder}
+                        aria-label='Add to fields'
+                        icon={sortOrder === "asc" ? <HiSortAscending /> : <HiSortDescending />} />
+                </Tooltip>
                 {/* <Button as={MenuButton} fontSize="x-small">
                     {sortField === '' ? "Sort by" : sortingFields.find(f => f.field === sortField)?.label}
                 </Button> */}

@@ -30,6 +30,7 @@ export const ChannelRenameModal = ({ isOpen, onClose }: RenameChannelModalProps)
     useEffect(() => {
         reset()
         resetUpdate()
+        setValue(channelData?.channel_name ?? '')
     }, [isOpen, reset])
 
     const onSubmit = (data: RenameChannelForm) => {
