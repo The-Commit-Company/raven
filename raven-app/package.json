@@ -5,9 +5,9 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build --base=/assets/raven/raven-app/ && yarn copy-html-entry",
+    "build": "vite build --base=/assets/raven/raven/ && yarn copy-html-entry",
     "preview": "vite preview",
-    "copy-html-entry": "cp ../raven/public/raven-app/index.html ../raven/www/raven_app.html"
+    "copy-html-entry": "cp ../raven/public/raven/index.html ../raven/www/raven.html"
   },
   "dependencies": {
     "@chakra-ui/icons": "^2.0.17",
