@@ -5,6 +5,6 @@
 tags
 node_modules
 
-raven/public/raven-app
+raven/public/raven
 raven/public/node_modules
-raven/www/raven-app.html
+raven/www/raven.html

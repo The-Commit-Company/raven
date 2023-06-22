@@ -16,7 +16,7 @@ export default defineConfig({
 		}
 	},
 	build: {
-		outDir: '../raven/public/raven-app',
+		outDir: '../raven/public/raven',
 		emptyOutDir: true,
 		target: 'es2015',
 	},
