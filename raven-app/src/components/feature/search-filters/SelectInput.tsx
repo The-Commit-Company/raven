@@ -47,7 +47,7 @@ export const SelectInput = ({ requiredRule, options, chakraStyles, ...props }: S
 
 const defaultStyles: ChakraStylesConfig<SelectOption> = {
     control: (chakraStyles) => ({ ...chakraStyles, width: '13rem', fontSize: 'sm', maxHeight: '2rem', position: 'relative' }),
-    menu: (chakraStyles) => ({ ...chakraStyles, borderRadius: 'md', width: '13rem', borderWidth: '1px' }),
+    menu: (chakraStyles) => ({ ...chakraStyles, borderRadius: 'md', width: '13rem', borderWidth: '1px', zIndex: '2' }),
     menuList: (chakraStyles) => ({ ...chakraStyles, borderColor: 'transparent' }),
     dropdownIndicator: (chakraStyles) => ({ ...chakraStyles, bg: "transparent", cursor: "inherit", width: '2rem' }),
     clearIndicator: (chakraStyles) => ({ ...chakraStyles, bg: "transparent", cursor: "inherit", width: '2rem' }),
