@@ -18,6 +18,7 @@ export default function GlobalSearch({ isOpen, onClose, tabIndex, input, fromFil
 
     const { onToggle: onToggleOtherChannels, isOpen: isOpenOtherChannels } = useDisclosure()
     const { onToggle: onToggleMyChannels, isOpen: isOpenMyChannels } = useDisclosure()
+    const { onToggle: onToggleSaved, isOpen: isSaved } = useDisclosure()
 
     return (
         <Modal isOpen={isOpen} onClose={onClose} size='6xl'>
@@ -35,8 +36,8 @@ export default function GlobalSearch({ isOpen, onClose, tabIndex, input, fromFil
                                 <Tab>Channels</Tab>
                             </TabList>
                             <TabPanels>
-                                <MessageSearch onToggleMyChannels={onToggleMyChannels} isOpenMyChannels={isOpenMyChannels} dateOption={dateOption} input={input} fromFilter={fromFilter} inFilter={inFilter} onCommandPaletteClose={onCommandPaletteClose} onClose={onClose} />
-                                <FileSearch onToggleMyChannels={onToggleMyChannels} isOpenMyChannels={isOpenMyChannels} dateOption={dateOption} input={input} fromFilter={fromFilter} inFilter={inFilter} />
+                                <MessageSearch onToggleMyChannels={onToggleMyChannels} isOpenMyChannels={isOpenMyChannels} onToggleSaved={onToggleSaved} isSaved={isSaved} dateOption={dateOption} input={input} fromFilter={fromFilter} inFilter={inFilter} onCommandPaletteClose={onCommandPaletteClose} onClose={onClose} />
+                                <FileSearch onToggleMyChannels={onToggleMyChannels} isOpenMyChannels={isOpenMyChannels} onToggleSaved={onToggleSaved} isSaved={isSaved} dateOption={dateOption} input={input} fromFilter={fromFilter} inFilter={inFilter} />
                                 <ChannelSearch onToggleMyChannels={onToggleMyChannels} isOpenMyChannels={isOpenMyChannels} onToggleOtherChannels={onToggleOtherChannels} isOpenOtherChannels={isOpenOtherChannels} input={input} onClose={onClose} />
                             </TabPanels>
                         </Tabs>

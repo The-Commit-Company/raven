@@ -6,10 +6,11 @@ from functools import reduce
 
 
 @frappe.whitelist()
-def get_search_result(filter_type, doctype, search_text=None, from_user=None, with_user=None, in_channel=None, date=None, file_type=None, message_type=None, channel_type=None, my_channel_only=False, other_channel_only=False, sort_field="creation", sort_order="desc", page_length=10, start_after=0):
+def get_search_result(filter_type, doctype, search_text=None, from_user=None, with_user=None, in_channel=None, saved=False, date=None, file_type=None, message_type=None, channel_type=None, my_channel_only=False, other_channel_only=False, sort_field="creation", sort_order="desc", page_length=10, start_after=0):
     doctype = frappe.qb.DocType(doctype)
     channel_member = frappe.qb.DocType("Raven Channel Member")
     channel = frappe.qb.DocType("Raven Channel")
+    message = frappe.qb.DocType("Raven Message")
 
     file_extensions = {
         'pdf': 'pdf',
@@ -108,5 +109,8 @@ def get_search_result(filter_type, doctype, search_text=None, from_user=None, wi
 
     if other_channel_only:
         query = query.where(~channel_member.user_id == frappe.session.user)
+
+    if saved == 'true':
+        query = query.where(message._liked_by.like(f"%{frappe.session.user}%"))
 
     return query.orderby(doctype[sort_field], order=Order[sort_order]).limit(page_length).offset(start_after).run(as_dict=True)

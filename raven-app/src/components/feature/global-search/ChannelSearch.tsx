@@ -117,7 +117,7 @@ export const ChannelSearch = ({ onToggleMyChannels, isOpenMyChannels, onToggleOt
                                                 border: "2px solid #3182CE"
                                             }}
                                         >
-                                            Only my channels
+                                            Only in my channels
                                         </Button>
                                     )}
                                 />

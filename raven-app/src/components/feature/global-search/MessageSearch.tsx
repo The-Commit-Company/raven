@@ -1,5 +1,5 @@
 import { SearchIcon } from '@chakra-ui/icons'
-import { Avatar, Button, Center, chakra, FormControl, HStack, Input, InputGroup, InputLeftElement, Spinner, Stack, TabPanel, Text, useToast } from '@chakra-ui/react'
+import { Avatar, Button, Center, chakra, FormControl, HStack, IconButton, Input, InputGroup, InputLeftElement, Spinner, Stack, TabPanel, Text, useToast } from '@chakra-ui/react'
 import { FrappeContext, FrappeConfig, useFrappeGetCall, useFrappePostCall } from 'frappe-react-sdk'
 import { useContext, useState, useMemo, useEffect } from 'react'
 import { FormProvider, Controller, useForm } from 'react-hook-form'
@@ -17,6 +17,7 @@ import { TextMessage } from '../../../types/Messaging/Message'
 import { useNavigate } from 'react-router-dom'
 import { MessageBox } from './MessageBox'
 import { VirtuosoRefContext } from '../../../utils/message/VirtuosoRefProvider'
+import { IoBookmark, IoBookmarkOutline } from 'react-icons/io5'
 
 interface FilterInput {
     'from-user-filter': SelectOption[],
@@ -25,6 +26,7 @@ interface FilterInput {
     'my-channels-filter': boolean,
     'other-channels-filter': boolean,
     'with-user-filter': SelectOption[],
+    'saved-filter': boolean,
 }
 interface Props {
     onToggleMyChannels: () => void,
@@ -35,13 +37,15 @@ interface Props {
     inFilter?: string,
     onCommandPaletteClose: () => void
     onClose: () => void
+    onToggleSaved: () => void
+    isSaved: boolean
 }
 
 interface MessageSearchResult extends TextMessage {
     channel_id: string
 }
 
-export const MessageSearch = ({ onToggleMyChannels, isOpenMyChannels, dateOption, input, fromFilter, inFilter, onClose, onCommandPaletteClose }: Props) => {
+export const MessageSearch = ({ onToggleMyChannels, isOpenMyChannels, onToggleSaved, isSaved, dateOption, input, fromFilter, inFilter, onClose, onCommandPaletteClose }: Props) => {
 
     const { virtuosoRef } = useContext(VirtuosoRefContext)
     const { url } = useContext(FrappeContext) as FrappeConfig
@@ -132,11 +136,16 @@ export const MessageSearch = ({ onToggleMyChannels, isOpenMyChannels, dateOption
     const watchDate = watch('date-filter')
     const watchMyChannels = watch('my-channels-filter')
     const watchWithUser = watch('with-user-filter')
+    const watchSaved = watch('saved-filter')
     const in_channel: string[] = watchChannel ? watchChannel.map((channel: SelectOption) => (channel.value)) : []
     const from_user: string[] = watchFromUser ? watchFromUser.map((user: SelectOption) => (user.value)) : []
     const with_user: string[] = watchWithUser ? watchWithUser.map((user: SelectOption) => (user.value)) : []
     const date = watchDate ? watchDate.value : null
     const my_channel_only: boolean = watchMyChannels ? watchMyChannels : false
+    const saved: boolean = watchSaved ? watchSaved : false
+
+    console.log(saved)
+    console.log(my_channel_only)
 
     const [sortOrder, setSortOrder] = useState("desc")
     const [sortByField, setSortByField] = useState<string>('creation')
@@ -151,6 +160,7 @@ export const MessageSearch = ({ onToggleMyChannels, isOpenMyChannels, dateOption
         with_user: JSON.stringify(with_user),
         date: date,
         my_channel_only: my_channel_only,
+        saved: saved,
         sort_order: sortOrder,
         sort_field: sortByField
     }, undefined, {
@@ -178,7 +188,7 @@ export const MessageSearch = ({ onToggleMyChannels, isOpenMyChannels, dateOption
                 {!!!channelsError &&
                     <FormProvider {...methods}>
                         <chakra.form>
-                            <HStack>
+                            <HStack justifyContent="space-between">
                                 <FormControl id="from-user-filter" w='fit-content'>
                                     <SelectInput placeholder="From" size='sm' options={userOptions} name='from-user-filter' isMulti={true} chakraStyles={{
                                         multiValue: (chakraStyles) => ({ ...chakraStyles, display: 'flex', alignItems: 'center', overflow: 'hidden', padding: '0rem 0.2rem 0rem 0rem' }),
@@ -213,8 +223,31 @@ export const MessageSearch = ({ onToggleMyChannels, isOpenMyChannels, dateOption
                                                     border: "2px solid #3182CE"
                                                 }}
                                             >
-                                                Only my channels
+                                                Only in my channels
                                             </Button>
+                                        )}
+                                    />
+                                </FormControl>
+                                <FormControl id="saved-filter" w='fit-content'>
+                                    <Controller
+                                        name="saved-filter"
+                                        control={control}
+                                        render={({ field: { onChange, value } }) => (
+                                            <IconButton
+                                                aria-label="saved-filter"
+                                                icon={isSaved ? <IoBookmark /> : <IoBookmarkOutline />}
+                                                borderRadius={3}
+                                                size="sm"
+                                                w="fit-content"
+                                                isActive={value = isSaved}
+                                                onClick={() => {
+                                                    onToggleSaved()
+                                                    onChange(!value)
+                                                }}
+                                                _active={{
+                                                    border: "2px solid #3182CE"
+                                                }}
+                                            />
                                         )}
                                     />
                                 </FormControl>
@@ -237,7 +270,7 @@ export const MessageSearch = ({ onToggleMyChannels, isOpenMyChannels, dateOption
                                         const channelName: any = channelOption.find((channel) => channel.value === channel_id)?.label
                                         const isArchived: 1 | 0 = channelOption.find((channel) => channel.value === channel_id)?.is_archived as 1 | 0;
                                         return (
-                                            <MessageBox messageName={name} channelName={channelName} channelID={channel_id} isArchived={isArchived} creation={creation} owner={owner} messageText={text} handleScrollToMessage={handleScrollToMessage} />
+                                            <MessageBox messageName={name} channelName={channelName} channelID={channel_id} isArchived={isArchived} creation={creation} owner={owner} messageText={text} handleScrollToMessage={handleScrollToMessage} message_type={'Text'} />
                                         )
                                     }
                                     )}

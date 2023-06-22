@@ -46,13 +46,13 @@ export const SelectInput = ({ requiredRule, options, chakraStyles, ...props }: S
 }
 
 const defaultStyles: ChakraStylesConfig<SelectOption> = {
-    control: (chakraStyles) => ({ ...chakraStyles, width: '14rem', fontSize: 'sm', maxHeight: '2rem', position: 'relative' }),
-    menu: (chakraStyles) => ({ ...chakraStyles, borderRadius: 'md', width: '14rem', borderWidth: '1px' }),
+    control: (chakraStyles) => ({ ...chakraStyles, width: '13rem', fontSize: 'sm', maxHeight: '2rem', position: 'relative' }),
+    menu: (chakraStyles) => ({ ...chakraStyles, borderRadius: 'md', width: '13rem', borderWidth: '1px' }),
     menuList: (chakraStyles) => ({ ...chakraStyles, borderColor: 'transparent' }),
     dropdownIndicator: (chakraStyles) => ({ ...chakraStyles, bg: "transparent", cursor: "inherit", width: '2rem' }),
     clearIndicator: (chakraStyles) => ({ ...chakraStyles, bg: "transparent", cursor: "inherit", width: '2rem' }),
     option: (chakraStyles, { isSelected }) => ({
-        ...chakraStyles, width: '14rem', fontSize: 'sm', ...(isSelected && {
+        ...chakraStyles, width: '13rem', fontSize: 'sm', ...(isSelected && {
         })
     }),
     indicatorSeparator: (chakraStyles) => ({ ...chakraStyles, display: "none" }),
