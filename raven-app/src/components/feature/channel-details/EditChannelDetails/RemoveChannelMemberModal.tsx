@@ -22,6 +22,8 @@ export const RemoveChannelMemberModal = ({ isOpen, onClose, user_id }: RemoveCha
         doctype: "Raven Channel Member",
         filters: JSON.stringify({ channel_id: channelData?.name, user_id: user_id }),
         fieldname: JSON.stringify(["name"])
+    }, undefined, {
+        revalidateOnFocus: false
     })
 
     const onSubmit = () => {

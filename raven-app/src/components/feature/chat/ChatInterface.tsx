@@ -1,11 +1,11 @@
-import { Avatar, AvatarBadge, Box, Button, ButtonGroup, Center, HStack, Stack, Text, useColorMode, useDisclosure, useToast } from "@chakra-ui/react"
+import { Avatar, AvatarBadge, Box, Button, ButtonGroup, Center, HStack, IconButton, Stack, Text, Tooltip, useColorMode, useDisclosure, useToast } from "@chakra-ui/react"
 import { useFrappeCreateDoc, useFrappeGetCall } from "frappe-react-sdk"
-import { useContext } from "react"
-import { BiGlobe, BiHash, BiLockAlt } from "react-icons/bi"
+import { useContext, useRef, useState } from "react"
+import { BiEditAlt, BiGlobe, BiHash, BiLockAlt } from "react-icons/bi"
 import { HiOutlineSearch } from "react-icons/hi"
 import { useFrappeEventListener } from "../../../hooks/useFrappeEventListener"
 import { ChannelData } from "../../../types/Channel/Channel"
-import { MessagesWithDate } from "../../../types/Messaging/Message"
+import { Message, MessagesWithDate } from "../../../types/Messaging/Message"
 import { ChannelContext } from "../../../utils/channel/ChannelProvider"
 import { UserDataContext } from "../../../utils/user/UserDataProvider"
 import { AlertBanner } from "../../layout/AlertBanner"
@@ -19,15 +19,17 @@ import { ViewOrAddMembersButton } from "../view-or-add-members/ViewOrAddMembersB
 import { ChatHistory } from "./ChatHistory"
 import { ChatInput } from "./ChatInput"
 import { ModalTypes, useModalManager } from "../../../hooks/useModalManager"
+import { ChannelRenameModal } from "../channel-details/EditChannelDetails/ChannelRenameModal"
 
 export const ChatInterface = () => {
 
-    const { channelData, channelMembers } = useContext(ChannelContext)
+    const { channelData, channelMembers, users } = useContext(ChannelContext)
     const userData = useContext(UserDataContext)
     const user = userData?.name
     const peer = Object.keys(channelMembers).filter((member) => member !== user)[0]
-
-    const { data: channelList, error: channelListError } = useFrappeGetCall<{ message: ChannelData[] }>("raven.raven_channel_management.doctype.raven_channel.raven_channel.get_channel_list")
+    const { data: channelList, error: channelListError } = useFrappeGetCall<{ message: ChannelData[] }>("raven.raven_channel_management.doctype.raven_channel.raven_channel.get_channel_list", undefined, undefined, {
+        revalidateOnFocus: false
+    })
 
     const { data, error, mutate } = useFrappeGetCall<{ message: MessagesWithDate }>("raven.raven_messaging.doctype.raven_message.raven_message.get_messages_with_dates", {
         channel_id: channelData?.name ?? null
@@ -55,10 +57,10 @@ export const ChatInterface = () => {
         }
     })
 
-    const allMembers = Object.values(channelMembers).map((member) => {
+    const allUsers = Object.values(users).map((user) => {
         return {
-            id: member.name,
-            value: member.full_name
+            id: user.name,
+            value: user.full_name
         }
     })
 
@@ -75,26 +77,35 @@ export const ChatInterface = () => {
         modalManager.openModal(ModalTypes.AddChannelMember)
     }
 
+    const onRenameChannelModalOpen = () => {
+        modalManager.openModal(ModalTypes.RenameChannel)
+    }
+
+    const [selectedMessage, setSelectedMessage] = useState<Message | null>(null)
+
+    const handleReplyAction = (message: Message) => {
+        setSelectedMessage(message)
+    }
+
+    const handleCancelReply = () => {
+        setSelectedMessage(null)
+    }
+
     const { isOpen: isViewDetailsModalOpen, onOpen: onViewDetailsModalOpen, onClose: onViewDetailsModalClose } = useDisclosure()
     const { isOpen: isCommandPaletteOpen, onClose: onCommandPaletteClose, onToggle: onCommandPaletteToggle } = useDisclosure()
 
     const { createDoc, error: joinError } = useFrappeCreateDoc()
     const toast = useToast()
-    const { data: activeUsers, error: activeUsersError } = useFrappeGetCall<{ message: string[] }>('raven.api.user_availability.get_active_users')
+    const { data: activeUsers, error: activeUsersError } = useFrappeGetCall<{ message: string[] }>('raven.api.user_availability.get_active_users', undefined, undefined, {
+        revalidateOnFocus: false
+    })
 
     const joinChannel = () => {
         return createDoc('Raven Channel Member', {
             channel_id: channelData?.name,
             user_id: user
         }).then(() => {
-            toast({
-                title: 'Channel joined successfully',
-                status: 'success',
-                duration: 1000,
-                position: 'bottom',
-                variant: 'solid',
-                isClosable: true
-            })
+            mutate()
         }).catch((e) => {
             toast({
                 title: 'Error: could not join channel.',
@@ -116,7 +127,7 @@ export const ChatInterface = () => {
         )
     }
 
-    else if (allChannels && allMembers) return (
+    else if (allChannels && allUsers) return (
         <>
             <PageHeader>
                 {channelData && user &&
@@ -137,33 +148,46 @@ export const ChatInterface = () => {
                                         </Avatar>
                                         <Text>{channelMembers?.[user]?.full_name}</Text><Text fontSize='sm' color='gray.500'>(You)</Text>
                                     </HStack>) :
-                                (channelData?.type === 'Private' &&
-                                    <HStack><BiLockAlt /><Text>{channelData?.channel_name}</Text></HStack> ||
-                                    channelData?.type === 'Public' &&
-                                    <HStack><BiHash /><Text>{channelData?.channel_name}</Text></HStack> ||
-                                    channelData?.type === 'Open' &&
-                                    <HStack><BiGlobe /><Text>{channelData?.channel_name}</Text></HStack>
-                                )}
+                                <HStack>
+                                    {channelData?.type === 'Private' &&
+                                        <HStack><BiLockAlt /><Text>{channelData?.channel_name}</Text></HStack> ||
+                                        channelData?.type === 'Public' &&
+                                        <HStack><BiHash /><Text>{channelData?.channel_name}</Text></HStack> ||
+                                        channelData?.type === 'Open' &&
+                                        <HStack><BiGlobe /><Text>{channelData?.channel_name}</Text></HStack>
+                                    }
+                                    <Tooltip hasArrow label='edit channel name' placement="bottom" rounded='md'>
+                                        <IconButton
+                                            aria-label="edit-channel-name"
+                                            icon={<BiEditAlt />}
+                                            onClick={onRenameChannelModalOpen}
+                                            size='sm'
+                                            variant='ghost'
+                                        />
+                                    </Tooltip>
+                                </HStack>}
                         </HStack>
                     </PageHeading>
                 }
                 <HStack>
-                    <Button
-                        size={"sm"}
-                        aria-label="search"
-                        leftIcon={<HiOutlineSearch />}
-                        onClick={onCommandPaletteToggle}
-                        fontWeight='light'>
-                        Search
-                    </Button>
+                    <Tooltip hasArrow label='search' placement='bottom-start' rounded={'md'}>
+                        <Button
+                            size={"sm"}
+                            aria-label="search"
+                            leftIcon={<HiOutlineSearch />}
+                            onClick={onCommandPaletteToggle}
+                            fontWeight='light'>
+                            Search
+                        </Button>
+                    </Tooltip>
                     {channelData?.is_direct_message == 0 && activeUsers?.message &&
                         <ViewOrAddMembersButton onClickViewMembers={onViewDetailsModalOpen} onClickAddMembers={onAddMemberModalOpen} activeUsers={activeUsers.message} />}
                 </HStack>
             </PageHeader>
             <Stack h='calc(100vh)' justify={'flex-end'} p={4} overflow='hidden' pt='16'>
-                {data && channelData && <ChatHistory parsed_messages={data.message} isDM={channelData?.is_direct_message} />}
+                {data && channelData && <ChatHistory parsed_messages={data.message} isDM={channelData?.is_direct_message} mutate={mutate} replyToMessage={handleReplyAction} />}
                 {channelData?.is_archived == 0 && ((user && user in channelMembers) || channelData?.type === 'Open' ?
-                    <ChatInput channelID={channelData?.name ?? ''} allChannels={allChannels} allMembers={allMembers} /> :
+                    <ChatInput channelID={channelData?.name ?? ''} allChannels={allChannels} allUsers={allUsers} selectedMessage={selectedMessage} handleCancelReply={handleCancelReply} /> :
                     <Box>
                         <Stack border='1px' borderColor={'gray.500'} rounded='lg' bottom='2' boxShadow='base' w='calc(98vw - var(--sidebar-width))' bg={colorMode === "light" ? "white" : "gray.800"} p={4}>
                             <HStack justify='center' align='center' pb={4}><BiHash /><Text>{channelData?.channel_name}</Text></HStack>
@@ -195,6 +219,11 @@ export const ChatInterface = () => {
                 isOpen={isCommandPaletteOpen}
                 onClose={onCommandPaletteClose}
                 onToggle={onCommandPaletteToggle} />
+            <ChannelRenameModal
+                isOpen={modalManager.modalType === ModalTypes.RenameChannel}
+                onClose={modalManager.closeModal}
+            />
+
         </>
     )
 

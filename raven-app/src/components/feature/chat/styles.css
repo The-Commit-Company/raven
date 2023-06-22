@@ -64,6 +64,8 @@
 
 .ql-mention-list-container {
     border-color: var(--gray) !important;
+    max-height: 400px;
+    overflow-y: scroll;
 }
 
 .ql-mention-list-item.selected {
@@ -137,4 +139,8 @@
     width: 100%;
     color: white;
     background-color: #1A202C;
+}
+
+.ql-editor {
+    font-size: var(--chakra-fontSizes-sm)
 }

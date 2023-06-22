@@ -1,5 +1,6 @@
 import { FrappeProvider } from 'frappe-react-sdk'
 import { Route, Routes } from 'react-router-dom'
+import { SavedMessages } from './components/feature/saved-messages/SavedMessages'
 import { Login } from './pages/auth'
 import { ChatSpace } from './pages/ChatSpace'
 import { MainPage } from './pages/MainPage'
@@ -8,7 +9,6 @@ import { UserProvider } from './utils/auth/UserProvider'
 import { ChannelRedirect } from './utils/channel/ChannelRedirect'
 
 function App() {
-
   return (
     <FrappeProvider url={import.meta.env.VITE_FRAPPE_PATH ?? ''} socketPort={import.meta.env.VITE_SOCKET_PORT ?? ''}>
       <UserProvider>
@@ -17,6 +17,7 @@ function App() {
           <Route path="/" element={<ProtectedRoute />}>
             <Route index element={<ChannelRedirect />} />
             <Route path="channel" element={<MainPage />} >
+              <Route path="saved-messages" element={<SavedMessages />} />
               <Route path=":channelID" element={<ChatSpace />} />
             </Route>
           </Route>

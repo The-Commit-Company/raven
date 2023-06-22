@@ -24,6 +24,8 @@ export const FilesSharedInChannel = () => {
     const { channelMembers } = useContext(ChannelContext)
     const { data, error } = useFrappeGetCall<{ message: ChannelFile[] }>("raven.raven_messaging.doctype.raven_message.raven_message.fetch_recent_files", {
         channel_id: channelID
+    }, undefined, {
+        revalidateOnFocus: false
     })
     const { isOpen: isGlobalSearchModalOpen, onOpen: onGlobalSearchModalOpen, onClose: onGlobalSearchModalClose } = useDisclosure()
 

@@ -1,9 +1,9 @@
 import { Box } from "@chakra-ui/react";
 import { DividerWithText } from "../../layout/Divider/DividerWithText";
 import { DateObjectToFormattedDateString } from "../../../utils/operations";
-import { DateBlock, FileMessage, MessageBlock, MessagesWithDate } from "../../../types/Messaging/Message";
+import { DateBlock, FileMessage, Message, MessageBlock, MessagesWithDate } from "../../../types/Messaging/Message";
 import { ChannelHistoryFirstMessage } from "../../layout/EmptyState/EmptyState";
-import { useRef, useState } from "react";
+import { useContext, useState } from "react";
 import { ChatMessageBox } from "./ChatMessage/ChatMessageBox";
 import { MarkdownRenderer } from "../markdown-viewer/MarkdownRenderer";
 import { FileMessageBlock } from "./ChatMessage/FileMessage";
@@ -13,13 +13,18 @@ import { User } from "../../../types/User/User";
 import { FilePreviewModal } from "../file-preview/FilePreviewModal";
 import { Virtuoso } from 'react-virtuoso';
 import { AnimatePresence, motion } from "framer-motion";
+import { VirtuosoRefContext } from "../../../utils/message/VirtuosoRefProvider";
 
 interface ChatHistoryProps {
     parsed_messages: MessagesWithDate,
-    isDM: number
+    isDM: number,
+    replyToMessage?: (message: Message) => void,
+    mutate: () => void
 }
 
-export const ChatHistory = ({ parsed_messages, isDM }: ChatHistoryProps) => {
+export const ChatHistory = ({ parsed_messages, isDM, mutate, replyToMessage }: ChatHistoryProps) => {
+
+    const { virtuosoRef } = useContext(VirtuosoRefContext)
 
     const [isScrollable, setScrollable] = useState<boolean>(true)
     const handleScroll = (newState: boolean) => {
@@ -57,7 +62,7 @@ export const ChatHistory = ({ parsed_messages, isDM }: ChatHistoryProps) => {
             return (
                 <AnimatePresence>
                     <motion.div key={block.data.name} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.4 }}>
-                        <ChatMessageBox message={block.data} handleScroll={handleScroll} onOpenUserDetailsDrawer={onOpenUserDetailsDrawer}>
+                        <ChatMessageBox message={block.data} handleScroll={handleScroll} onOpenUserDetailsDrawer={onOpenUserDetailsDrawer} mutate={mutate} replyToMessage={replyToMessage}>
                             {block.data.message_type === 'Text' && <MarkdownRenderer content={block.data.text} />}
                             {(block.data.message_type === 'File' || block.data.message_type === 'Image') && <FileMessageBlock {...block.data} onFilePreviewModalOpen={onFilePreviewModalOpen} />}
                         </ChatMessageBox>
@@ -67,8 +72,6 @@ export const ChatHistory = ({ parsed_messages, isDM }: ChatHistoryProps) => {
         }
         return null
     }
-
-    const virtuosoRef = useRef(null)
 
     return (
         <>

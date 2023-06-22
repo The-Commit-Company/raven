@@ -25,6 +25,8 @@ export const LeaveChannelModal = ({ isOpen, onClose }: LeaveChannelModalProps) =
         doctype: "Raven Channel Member",
         filters: JSON.stringify({ channel_id: channelData?.name, user_id: currentUser }),
         fieldname: JSON.stringify(["name"])
+    }, undefined, {
+        revalidateOnFocus: false
     })
 
     const onSubmit = () => {

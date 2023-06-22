@@ -14,3 +14,7 @@
 .markdown ul {
     padding-left: 20px;
 }
+
+.markdown {
+    font-size: var(--chakra-fontSizes-sm)
+}
