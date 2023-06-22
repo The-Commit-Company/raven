@@ -27,7 +27,7 @@ export const Sidebar = ({ isUserActive }: SidebarProps) => {
             {/* header */}
             <Stack position={'fixed'} zIndex='999' top='0' px={4} w='var(--sidebar-width)' bgColor={colorMode === 'light' ? 'gray.50' : 'black'}>
                 <HStack justifyContent="space-between" pb='2' pt='4'>
-                    <Image src={colorMode === "light" ? raven_logo_light : raven_logo_dark} objectFit="contain" alt="Raven" height='25px' />
+                    <Image src={colorMode === "light" ? raven_logo_light : raven_logo_dark} objectFit="contain" alt="Raven" height='16px' />
                     <Tooltip hasArrow label='toggle theme' placement='bottom' rounded={'md'}>
                         <IconButton
                             size={"xs"}
