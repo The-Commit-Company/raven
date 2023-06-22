@@ -3,7 +3,7 @@
   <p align="center">Simple, open source team messaging platform</p>
 </p>
 <p align="center">
-  <a href="https://github.com/janhvipatil/Raven/blob/main/LICENSE">
+  <a href="https://github.com/The-Commit-Company/Raven/blob/main/LICENSE">
     <img alt="license" src="https://img.shields.io/badge/license-AGPLv3-blue">
   </a>
 </p>
@@ -167,7 +167,7 @@ We are currently working or will be working on the following features. Please he
 
 
 ## Reporting Bugs
-If you find any bugs, feel free to report them here on [GitHub Issues](https://github.com/janhvipatil/Raven/issues). Make sure you share enough information (app screenshots, browser console screenshots, stack traces, etc) for project maintainers to replicate your bug.
+If you find any bugs, feel free to report them here on [GitHub Issues](https://github.com/The-Commit-Company/Raven/issues). Make sure you share enough information (app screenshots, browser console screenshots, stack traces, etc) for project maintainers to replicate your bug.
 
 
 <hr>
