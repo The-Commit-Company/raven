@@ -87,7 +87,7 @@ export const MarkdownRenderer: React.FC<Props> = ({ content }) => {
           <Stack spacing={1}>
             <Text fontWeight="bold">{data.message.title}</Text>
             <Text fontSize="sm" fontWeight="normal" color={'gray.500'}>
-              {data.message.description}
+              {data.message.description.length > 200 ? data.message.description.substring(0, 200) + '...' : data.message.description}
             </Text>
           </Stack>
         </HStack>

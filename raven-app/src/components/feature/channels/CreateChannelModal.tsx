@@ -1,7 +1,7 @@
 import { Button, ButtonGroup, chakra, FormControl, FormErrorMessage, FormHelperText, FormLabel, HStack, Input, InputGroup, InputLeftElement, InputRightElement, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Radio, RadioGroup, Stack, Text, useToast } from '@chakra-ui/react'
 import { useFrappePostCall } from 'frappe-react-sdk'
 import { ChangeEvent, useEffect, useState } from 'react'
-import { FormProvider, useForm } from 'react-hook-form'
+import { FormProvider, set, useForm } from 'react-hook-form'
 import { BiGlobe, BiHash, BiLockAlt } from 'react-icons/bi'
 import { useNavigate } from 'react-router-dom'
 import { AlertBanner } from '../../layout/AlertBanner'
@@ -32,6 +32,7 @@ export const CreateChannelModal = ({ isOpen, onClose }: ChannelModalProps) => {
     useEffect(() => {
         reset()
         resetChannelCreation()
+        setValue('')
     }, [isOpen, reset])
 
     const channelType = watch('type')
