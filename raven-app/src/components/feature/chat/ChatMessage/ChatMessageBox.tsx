@@ -53,10 +53,10 @@ export const ChatMessageBox = ({ message, onOpenUserDetailsDrawer, handleScroll,
                         <HStack>
                             <HStack divider={<StackDivider />} align='flex-start'>
                                 <Button variant='link' onClick={() => onOpenUserDetailsDrawer?.(channelMembers?.[user])}>
-                                    <Text fontSize='sm' lineHeight={'0.9'} fontWeight="bold" as='span' color={textColor}>{channelMembers?.[user]?.full_name ?? users?.[user]?.full_name ?? user}</Text>
+                                    <Text fontSize='sm' lineHeight={'0.9'} fontWeight="semibold" as='span' color={textColor}>{channelMembers?.[user]?.full_name ?? users?.[user]?.full_name ?? user}</Text>
                                 </Button>
                                 <Tooltip hasArrow label={`${DateObjectToFormattedDateStringWithoutYear(new Date(timestamp))} at ${DateObjectToTimeString(new Date(timestamp))}`} placement='top' rounded='md'>
-                                    <Text fontSize="xs" lineHeight={'0.9'} color="gray.500" _hover={{ textDecoration: 'underline' }}>{DateObjectToTimeString(new Date(timestamp))}</Text>
+                                    <Text fontSize="xs" lineHeight={'0.9'} color="gray.500" _hover={{ textDecoration: 'underline', cursor: 'pointer' }}>{DateObjectToTimeString(new Date(timestamp))}</Text>
                                 </Tooltip>
                             </HStack>
                         </HStack>

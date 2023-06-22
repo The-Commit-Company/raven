@@ -50,17 +50,10 @@ export const Login = () => {
                         <Stack spacing="8" rounded={{ md: "2xl" }} p={{ base: "4", md: "10" }} borderWidth={{ md: "1px" }} shadow={{ lg: "inner" }}>
                             <Link to="/" tabIndex={-1}>
                                 <Flex justify="center">
-                                    <Image src={colorMode === "light" ? raven_logo_light : raven_logo_dark} objectFit="cover" alt="Raven" width={180} height={34} />
+                                    <Image src={colorMode === "light" ? raven_logo_light : raven_logo_dark} objectFit="cover" alt="Raven" width={180} />
                                 </Flex>
                             </Link>
-                            {/* <Box textAlign={{ base: "center", md: "start" }}>
-                                <Heading size="lg" mb="2" fontWeight="extrabold">
-                                    Welcome
-                                </Heading>
-                                <Text fontSize="lg" fontWeight="medium">
-                                    Login
-                                </Text>
-                            </Box> */}
+
                             <chakra.form onSubmit={handleSubmit(onSubmit)}>
                                 {error != null &&
                                     <AlertBanner status="error" mb="3">{error.message}</AlertBanner>
