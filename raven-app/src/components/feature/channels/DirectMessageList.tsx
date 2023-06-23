@@ -58,8 +58,11 @@ export const DirectMessageList = ({ userData }: { userData: User | null }) => {
 
     useFrappeEventListener('unread_dm_count_updated', () => {
         update_count()
-        setUnreadCount(unread_count.message)
     })
+
+    useEffect(() => {
+        setUnreadCount(unread_count.message)
+    }, [unread_count])
 
     return (
         <SidebarGroup spacing={1}>
