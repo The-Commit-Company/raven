@@ -44,7 +44,8 @@ export const ChannelList = () => {
     })
 
     useEffect(() => {
-        setUnreadCount(unread_count.message)
+        if (unread_count)
+            setUnreadCount(unread_count.message)
     }, [unread_count])
 
     const { isOpen, onOpen, onClose } = useDisclosure()

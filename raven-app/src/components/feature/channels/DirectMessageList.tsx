@@ -61,7 +61,8 @@ export const DirectMessageList = ({ userData }: { userData: User | null }) => {
     })
 
     useEffect(() => {
-        setUnreadCount(unread_count.message)
+        if (unread_count)
+            setUnreadCount(unread_count.message)
     }, [unread_count])
 
     return (
