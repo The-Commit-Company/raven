@@ -21,6 +21,7 @@ export const DirectMessageList = ({ userData }: { userData: User | null }) => {
     const { data: DMChannels, error: DMChannelsError } = useFrappeGetCall<{ message: DMChannelData[] }>('raven.raven_channel_management.doctype.raven_channel.raven_channel.get_direct_message_channels_list', undefined, undefined, {
         revalidateOnFocus: false
     })
+    const { data: unread_count, mutate: update_count } = useFrappeGetCall<{ message: UnreadCountData }>("raven.raven_messaging.doctype.raven_message.raven_message.get_unread_count_for_direct_message_channels")
     const navigate = useNavigate()
     const location = useLocation();
     const currentAddress = location.pathname
@@ -55,8 +56,9 @@ export const DirectMessageList = ({ userData }: { userData: User | null }) => {
     })
 
 
-    useFrappeEventListener('unread_dm_count_updated', (data: { unread_count: UnreadCountData }) => {
-        setUnreadCount(data.unread_count)
+    useFrappeEventListener('unread_dm_count_updated', () => {
+        update_count()
+        setUnreadCount(unread_count.message)
     })
 
     return (

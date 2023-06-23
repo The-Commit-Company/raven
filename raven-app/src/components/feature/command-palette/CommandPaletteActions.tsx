@@ -14,6 +14,8 @@ import { getFileExtensionIcon } from "../../../utils/layout/fileExtensionIcon"
 import GlobalSearch from "../global-search/GlobalSearch"
 import { FileMessage } from "../../../types/Messaging/Message"
 import { getFileExtension, getFileName } from "../../../utils/operations"
+import { useModalManager, ModalTypes } from "../../../hooks/useModalManager"
+import { FilePreviewModal } from "../file-preview/FilePreviewModal"
 
 interface Props {
     searchChange: Function
@@ -171,6 +173,7 @@ export const Files = ({ searchChange, input, isGlobalSearchModalOpen, onGlobalSe
     }, undefined, {
         revalidateOnFocus: false
     })
+    const modalManager = useModalManager()
 
     return (
         <Command.List>
@@ -190,17 +193,32 @@ export const Files = ({ searchChange, input, isGlobalSearchModalOpen, onGlobalSe
                         <Box><Spinner size={'xs'} color='gray.400' /></Box>
                     </Center>
                 </Command.Loading>}
-                {data?.message?.map((f: FileMessage) => <Item key={f.name}
-                ><HStack spacing={3}>
-                        <Center maxW='50px'>
-                            {f.message_type === 'File' && <Icon as={getFileExtensionIcon(getFileExtension(f.file))} boxSize="6" />}
-                            {f.message_type === 'Image' && <Image src={f.file} alt='File preview' boxSize={6} rounded='md' fit='cover' />}
-                        </Center>
-                        <Stack spacing={0}>
-                            {f.file && <Link fontSize='sm' href={f.file} isExternal>{getFileName(f.file)}</Link>}
-                        </Stack>
-                    </HStack></Item>)}
+                {data?.message?.map((f: FileMessage) => {
+                    const onFilePreviewModalOpen = () => {
+                        modalManager.openModal(ModalTypes.FilePreview, {
+                            file: f.file,
+                            owner: f.owner,
+                            creation: f.creation,
+                            message_type: f.message_type
+                        })
+                    }
+                    return (<Item key={f.name}>
+                        <HStack spacing={3}>
+                            <Center maxW='50px'>
+                                {f.message_type === 'File' && <Icon as={getFileExtensionIcon(getFileExtension(f.file))} boxSize="6" />}
+                                {f.message_type === 'Image' && <Image src={f.file} alt='File preview' boxSize={6} rounded='md' fit='cover' />}
+                            </Center>
+                            <Stack spacing={0}>
+                                {f.file && <Link fontSize='sm' onClick={onFilePreviewModalOpen}>{getFileName(f.file)}</Link>}
+                            </Stack>
+                        </HStack></Item>)
+                })}
             </Command.Group>
+            <FilePreviewModal
+                isOpen={modalManager.modalType === ModalTypes.FilePreview}
+                onClose={modalManager.closeModal}
+                {...modalManager.modalContent}
+            />
         </Command.List>
     )
 }
