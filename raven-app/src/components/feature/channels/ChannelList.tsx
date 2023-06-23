@@ -9,7 +9,7 @@ import { AlertBanner } from "../../layout/AlertBanner"
 import { SidebarGroup, SidebarGroupItem, SidebarGroupLabel, SidebarGroupList, SidebarIcon, SidebarItem, SidebarItemLabel } from "../../layout/Sidebar"
 import { SidebarBadge, SidebarButtonItem, SidebarViewMoreButton } from "../../layout/Sidebar/SidebarComp"
 import { CreateChannelModal } from "./CreateChannelModal"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 
 export const ChannelList = () => {
 
@@ -18,6 +18,8 @@ export const ChannelList = () => {
     }, undefined, {
         revalidateOnFocus: false
     })
+
+    const { data: unread_count, mutate: update_count } = useFrappeGetCall<{ message: UnreadCountData }>("raven.raven_messaging.doctype.raven_message.raven_message.get_unread_count_for_channels")
 
     const [unreadCount, setUnreadCount] = useState<UnreadCountData>({
         total_unread_count: 0,
@@ -37,9 +39,13 @@ export const ChannelList = () => {
         mutate()
     })
 
-    useFrappeEventListener('unread_channel_count_updated', (data: { unread_count: UnreadCountData }) => {
-        setUnreadCount(data.unread_count)
+    useFrappeEventListener('unread_channel_count_updated', () => {
+        update_count()
     })
+
+    useEffect(() => {
+        setUnreadCount(unread_count.message)
+    }, [unread_count])
 
     const { isOpen, onOpen, onClose } = useDisclosure()
 

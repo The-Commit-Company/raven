@@ -27,12 +27,7 @@ class RavenMessage(Document):
 
     def before_save(self):
         if frappe.db.get_value('Raven Channel', self.channel_id, 'type') != 'Private' or frappe.db.exists("Raven Channel Member", {"channel_id": self.channel_id, "user_id": frappe.session.user}):
-            if frappe.db.get_value('Raven Channel', self.channel_id, 'is_direct_message'):
-                frappe.publish_realtime('unread_dm_count_updated', {
-                    'unread_count': get_unread_count_for_direct_message_channels()}, after_commit=True)
-            else:
-                frappe.publish_realtime('unread_channel_count_updated', {
-                    'unread_count': get_unread_count_for_channels()}, after_commit=True)
+            track_visit(self.channel_id)
         frappe.db.commit()
 
 
@@ -52,11 +47,10 @@ def track_visit(channel_id):
             "last_visit": frappe.utils.now()
         }).insert()
     if frappe.db.get_value('Raven Channel', channel_id, 'is_direct_message') == 1:
-        frappe.publish_realtime('unread_dm_count_updated', {
-            'unread_count': get_unread_count_for_direct_message_channels()}, after_commit=True)
+        frappe.publish_realtime('unread_dm_count_updated', after_commit=True)
     else:
-        frappe.publish_realtime('unread_channel_count_updated', {
-            'unread_count': get_unread_count_for_channels()}, after_commit=True)
+        frappe.publish_realtime(
+            'unread_channel_count_updated', after_commit=True)
     frappe.db.commit()
 
 
