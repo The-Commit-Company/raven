@@ -1,12 +1,5 @@
-import { Redirect, Route } from 'react-router-dom';
 import {
   IonApp,
-  IonIcon,
-  IonLabel,
-  IonRouterOutlet,
-  IonTabBar,
-  IonTabButton,
-  IonTabs,
   setupIonicReact
 } from '@ionic/react';
 
@@ -30,7 +23,6 @@ import '@ionic/react/css/display.css';
 import './styles/global.css';
 import './styles/variables.css';
 import { Storage } from '@ionic/storage';
-import { useEffect, useState } from 'react';
 import { UserProvider } from './utils/UserProvider';
 import { AppRouter } from './utils/Router';
 import { FrappeDBProvider } from './utils/FrappeDBProvider';
