@@ -2,24 +2,18 @@ import { IonIcon, IonLabel, IonRouterOutlet, IonSpinner, IonTabBar, IonTabButton
 import { IonReactRouter } from '@ionic/react-router'
 import { useContext } from 'react'
 import { Redirect, Route } from 'react-router-dom'
-import { UserContext } from './UserProvider'
 import { personCircleOutline, homeOutline } from 'ionicons/icons';
 import { Login } from '../pages/auth'
 import { Profile } from '../pages/profile'
 import { FullPageLoader } from '../components/common'
 import { ChannelList, ViewChannel } from '../pages/channels'
-type Props = {
-    refreshFrappeURL: () => Promise<void>
-}
+import { AuthContext } from './AuthProvider'
 
-export const AppRouter = ({ refreshFrappeURL }: Props) => {
+export const AppRouter = () => {
 
-    const { currentUser, isLoading } = useContext(UserContext)
+    const { isAuthenticated, logout } = useContext(AuthContext)
 
-    if (isLoading) {
-        return <FullPageLoader />
-    }
-    if (currentUser) {
+    if (isAuthenticated) {
         {/* @ts-ignore */ }
         return <IonReactRouter>
             <IonRouterOutlet animated>
@@ -31,9 +25,10 @@ export const AppRouter = ({ refreshFrappeURL }: Props) => {
                 <Route exact path="/channel/:channelID" component={ViewChannel} />
             </IonRouterOutlet>
         </IonReactRouter>
+        // logout()
     }
     return (
-        <Login refreshFrappeURL={refreshFrappeURL} />
+        <Login />
     )
 }
 
