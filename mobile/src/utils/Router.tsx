@@ -14,7 +14,7 @@ import { Notifications } from '../pages/notifications/Notifications'
 
 export const AppRouter = () => {
 
-    const { isAuthenticated, logout } = useContext(AuthContext)
+    const { isAuthenticated } = useContext(AuthContext)
 
     if (isAuthenticated) {
         {/* @ts-ignore */ }
@@ -31,7 +31,6 @@ export const AppRouter = () => {
                 <Route exact path="/channel/:channelID" component={ViewChannel} />
             </IonRouterOutlet>
         </IonReactRouter>
-        // logout()
     }
     return (
         <Login />
