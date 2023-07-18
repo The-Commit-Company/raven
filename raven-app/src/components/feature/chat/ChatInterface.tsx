@@ -1,6 +1,6 @@
 import { Avatar, AvatarBadge, Box, Button, ButtonGroup, Center, HStack, IconButton, Stack, Text, Tooltip, useColorMode, useDisclosure, useToast } from "@chakra-ui/react"
 import { useFrappeCreateDoc, useFrappeGetCall } from "frappe-react-sdk"
-import { useContext, useRef, useState } from "react"
+import { useContext, useState } from "react"
 import { BiEditAlt, BiGlobe, BiHash, BiLockAlt } from "react-icons/bi"
 import { HiOutlineSearch } from "react-icons/hi"
 import { useFrappeEventListener } from "../../../hooks/useFrappeEventListener"
@@ -137,13 +137,13 @@ export const ChatInterface = () => {
                                 ?
                                 (channelData.is_self_message == 0 ?
                                     <HStack>
-                                        <Avatar name={channelMembers?.[peer]?.full_name} src={channelMembers?.[peer]?.user_image} borderRadius={'lg'} size="sm" >
+                                        <Avatar key={channelMembers?.[peer]?.full_name} name={channelMembers?.[peer]?.full_name} src={channelMembers?.[peer]?.user_image} borderRadius={'lg'} size="sm" >
                                             {activeUsers?.message.includes(peer) && !!!activeUsersError && <AvatarBadge boxSize='0.88em' bg='green.500' />}
                                         </Avatar>
                                         <Text>{channelMembers?.[peer]?.full_name}</Text>
                                     </HStack> :
                                     <HStack>
-                                        <Avatar name={channelMembers?.[user]?.full_name} src={channelMembers?.[user]?.user_image} borderRadius={'lg'} size="sm">
+                                        <Avatar key={channelMembers?.[user]?.full_name} name={channelMembers?.[user]?.full_name} src={channelMembers?.[user]?.user_image} borderRadius={'lg'} size="sm">
                                             <AvatarBadge boxSize='0.88em' bg='green.500' />
                                         </Avatar>
                                         <Text>{channelMembers?.[user]?.full_name}</Text><Text fontSize='sm' color='gray.500'>(You)</Text>
