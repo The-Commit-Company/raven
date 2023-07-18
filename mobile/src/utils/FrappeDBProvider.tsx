@@ -13,6 +13,6 @@ export const FrappeDBProvider: FC<PropsWithChildren> = ({ children }) => {
     }
 
     return (
-        <FrappeProvider url={BASE_URI} tokenParams={tokenParams}>{children}</FrappeProvider>
+        <FrappeProvider url={BASE_URI} tokenParams={tokenParams} socketPort={import.meta.env.VITE_SOCKET_PORT ?? ''}>{children}</FrappeProvider>
     )
 }

@@ -5,7 +5,8 @@ import { RouteComponentProps } from 'react-router-dom'
 import { ErrorBanner, FullPageLoader } from '../../components/common'
 import { ChannelContent, ChannelHeader } from '../../components/features/ViewChannel'
 import { ChatInput } from '../../components/features/ViewChannel/ChatInput'
-import { useFrappeEventListener } from '../../hooks/useFrappeEventListener'
+import { useFrappeEventListener } from 'frappe-react-sdk'
+import { MessagesWithDate } from "../../../../raven-app/src/types/Messaging/Message"
 
 export type ChannelData = {
     name: string,
@@ -19,14 +20,6 @@ export type ChannelData = {
     owner_full_name: string
 }
 
-export interface Message {
-    text: string,
-    creation: Date,
-    message_type: "Text" | "Image" | "File",
-    file?: string,
-    name: string,
-    owner: string
-}
 type ChannelInfo = {
     channel_members: ChannelMembersDetails[],
     channel_data: ChannelData
@@ -46,17 +39,16 @@ export const ViewChannel = (props: RouteComponentProps<IdentityParam>): ReactEle
     const { channelID } = props.match.params
     const { data, error, mutate } = useFrappeGetCall<{ message: ChannelInfo }>('raven.raven_channel_management.doctype.raven_channel_member.raven_channel_member.get_channel_members_and_data', {
         channel_id: channelID
+    }, undefined, {
+        revalidateOnFocus: false
     })
 
     const contentRef = createRef<HTMLIonContentElement>();
-    const { data: messages, error: messagesError, mutate: refreshMessages, isLoading: isMessageLoading } = useFrappeGetDocList<Message>('Raven Message', {
-        fields: ["text", "creation", "name", "owner", "message_type", "file"],
-        filters: [["channel_id", "=", channelID]],
-        orderBy: {
-            field: "creation",
-            order: 'desc'
-        },
-        limit: 500
+
+    const { data: messages, error: messagesError, mutate: refreshMessages, isLoading: isMessageLoading } = useFrappeGetCall<{ message: MessagesWithDate }>("raven.raven_messaging.doctype.raven_message.raven_message.get_messages_with_dates", {
+        channel_id: channelID
+    }, undefined, {
+        revalidateOnFocus: false
     })
 
     useEffect(() => {
@@ -149,7 +141,7 @@ export const ViewChannel = (props: RouteComponentProps<IdentityParam>): ReactEle
                     {messagesError && <ErrorBanner heading="There was an error while fetching the messages.">
                         {messagesError.exception} - {messagesError.httpStatus}
                     </ErrorBanner>}
-                    {messages && <ChannelContent messages={messages} />}
+                    {messages && <ChannelContent messages={messages.message} />}
                 </IonContent>
                 <IonFooter className='text-white'>
                     <div className='chat-input'>

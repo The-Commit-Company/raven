@@ -3,7 +3,7 @@ import { useFrappeGetCall } from 'frappe-react-sdk'
 import { lockClosedOutline } from 'ionicons/icons'
 import React from 'react'
 import { BiGlobe, BiHash, BiLockAlt } from 'react-icons/bi'
-import { useFrappeEventListener } from '../../../hooks/useFrappeEventListener'
+import { useFrappeEventListener } from 'frappe-react-sdk'
 import { ErrorBanner } from '../../common'
 
 export type ChannelData = {

@@ -50,8 +50,10 @@ const AuthProvider: FC<PropsWithChildren> = ({ children }) => {
             value: storageValue,
         });
         setIsAuthenticated(true);
-        setToken(authResponse["access_token"]);
-        setRefreshToken(authResponse["refresh_token"]);
+        console.log(authResponse.access_token)
+        console.log(authResponse.access_token_response.refresh_token)
+        setToken(authResponse.access_token);
+        setRefreshToken(authResponse.access_token_response.refresh_token);
     }).catch((err) => {
         console.error(err);
     });
@@ -92,6 +94,7 @@ const AuthProvider: FC<PropsWithChildren> = ({ children }) => {
 
     const refreshAccessTokenAsync = async () => {
         if (!refreshToken) {
+            console.log("refresh token not found")
             logout();
             return;
         }
@@ -104,6 +107,7 @@ const AuthProvider: FC<PropsWithChildren> = ({ children }) => {
         )
             .then(async (res) => {
                 const authResponse = res;
+                console.log(authResponse)
                 const storageValue = JSON.stringify(authResponse);
                 await SecureStoragePlugin.set({ key: SECURE_AUTH_STATE_KEY, value: storageValue });
 
@@ -123,6 +127,7 @@ const AuthProvider: FC<PropsWithChildren> = ({ children }) => {
             .catch((err) => {
                 // unable to refresh
                 // clean up auth state
+                console.log("refresh error")
                 logout();
                 console.error(err);
             });

@@ -12,7 +12,7 @@ export const ChannelHeader = (props: Props) => {
 
     if (channelData?.is_self_message) {
         return (
-            <DirectMessageChannelHeader name={channelMembers[currentUser].full_name + " (You)"} image={channelMembers[currentUser].user_image} />
+            <DirectMessageChannelHeader name={channelMembers[currentUser]?.full_name + " (You)"} image={channelMembers[currentUser]?.user_image} />
         )
     }
     if (channelData?.is_direct_message) {

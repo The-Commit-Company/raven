@@ -39,7 +39,7 @@ export const AppRouter = () => {
 
 const Tabs = () => {
     return <IonTabs>
-        <IonRouterOutlet animated>
+        <IonRouterOutlet animated >
             <Route exact path="/:tab(channels)">
                 <ChannelList />
             </Route>
