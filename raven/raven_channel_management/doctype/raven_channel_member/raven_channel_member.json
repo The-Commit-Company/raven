@@ -9,7 +9,9 @@
  "engine": "InnoDB",
  "field_order": [
   "channel_id",
-  "user_id"
+  "user_id",
+  "is_admin",
+  "last_visit"
  ],
  "fields": [
   {
@@ -27,11 +29,25 @@
    "label": "User",
    "options": "User",
    "reqd": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "is_admin",
+   "fieldtype": "Check",
+   "label": "Is Admin"
+  },
+  {
+   "default": "2000-11-11",
+   "fetch_if_empty": 1,
+   "fieldname": "last_visit",
+   "fieldtype": "Datetime",
+   "label": "Last Visit",
+   "reqd": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-02-20 16:58:29.160295",
+ "modified": "2023-06-13 13:48:11.425055",
  "modified_by": "Administrator",
  "module": "Raven Channel Management",
  "name": "Raven Channel Member",
@@ -47,6 +63,18 @@
    "read": 1,
    "report": 1,
    "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Raven User",
    "share": 1,
    "write": 1
   }

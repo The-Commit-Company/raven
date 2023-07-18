@@ -2,10 +2,10 @@ from . import __version__ as app_version
 
 app_name = "raven"
 app_title = "Raven"
-app_publisher = "Janhvi Patil"
+app_publisher = "The Commit Company"
 app_description = "Messaging Application"
-app_email = "janhvipatil716@gmail.com"
-app_license = "MIT"
+app_email = "support@thecommit.company"
+app_license = "AGPLv3"
 
 # Includes in <head>
 # ------------------
@@ -191,7 +191,7 @@ after_install = "raven.install.after_install"
 # ]
 
 website_route_rules = [
-    {'from_route': '/raven_app/<path:app_path>', 'to_route': 'raven_app'}, ]
+    {'from_route': '/raven/<path:app_path>', 'to_route': 'raven'}, ]
 
 has_permission = {
     "Raven Channel": "raven.permissions.channel_has_permission",

@@ -14,7 +14,8 @@ export type ChannelMembersDetails = {
     name: string,
     first_name: string,
     full_name: string,
-    user_image: string
+    user_image: string,
+    is_admin: 1 | 0
 }
 
 export const ChannelContext = createContext<{ channelMembers: Record<string, ChannelMembersDetails>; channelData?: ChannelData, users: Record<string, User> }>({ channelMembers: {}, users: {} })
@@ -24,10 +25,14 @@ export const ChannelProvider = ({ children }: PropsWithChildren) => {
     const { channelID } = useParams()
     const { data, error, mutate } = useFrappeGetCall<{ message: ChannelInfo }>('raven.raven_channel_management.doctype.raven_channel_member.raven_channel_member.get_channel_members_and_data', {
         channel_id: channelID
+    }, undefined, {
+        revalidateOnFocus: false
     })
     const { data: users, error: usersError } = useFrappeGetDocList<User>("User", {
         fields: ["full_name", "user_image", "name"],
         filters: [["name", "!=", "Guest"]]
+    }, undefined, {
+        revalidateOnFocus: false
     })
 
     useFrappeEventListener('member_added', (data) => {
@@ -66,7 +71,7 @@ export const ChannelProvider = ({ children }: PropsWithChildren) => {
 
     return (
         <>
-            {data?.message?.channel_members && data?.message?.channel_members?.length > 0 && <ChannelContext.Provider value={channelInfo}>
+            {data?.message?.channel_members && <ChannelContext.Provider value={channelInfo}>
                 {children}
             </ChannelContext.Provider>}
         </>

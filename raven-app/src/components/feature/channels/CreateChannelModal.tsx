@@ -1,7 +1,7 @@
 import { Button, ButtonGroup, chakra, FormControl, FormErrorMessage, FormHelperText, FormLabel, HStack, Input, InputGroup, InputLeftElement, InputRightElement, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Radio, RadioGroup, Stack, Text, useToast } from '@chakra-ui/react'
 import { useFrappePostCall } from 'frappe-react-sdk'
-import { useEffect, useState } from 'react'
-import { FormProvider, useForm } from 'react-hook-form'
+import { ChangeEvent, useEffect, useState } from 'react'
+import { FormProvider, set, useForm } from 'react-hook-form'
 import { BiGlobe, BiHash, BiLockAlt } from 'react-icons/bi'
 import { useNavigate } from 'react-router-dom'
 import { AlertBanner } from '../../layout/AlertBanner'
@@ -32,10 +32,10 @@ export const CreateChannelModal = ({ isOpen, onClose }: ChannelModalProps) => {
     useEffect(() => {
         reset()
         resetChannelCreation()
+        setValue('')
     }, [isOpen, reset])
 
     const channelType = watch('type')
-    const channel_name = watch('channel_name')
 
     let navigate = useNavigate()
 
@@ -56,13 +56,24 @@ export const CreateChannelModal = ({ isOpen, onClose }: ChannelModalProps) => {
                 navigate(`/channel/${result.message}`)
             }
         }).catch((err) => {
-            toast({
-                title: "Error creating channel",
-                description: err.message,
-                status: "error",
-                duration: 2000,
-                isClosable: true
-            })
+            if (err.httpStatus === 409) {
+                toast({
+                    title: "Error creating channel",
+                    description: "Channel name already exists",
+                    status: "error",
+                    duration: 2000,
+                    isClosable: true
+                })
+            }
+            else {
+                toast({
+                    title: "Error creating channel",
+                    description: err.httpStatusText,
+                    status: "error",
+                    duration: 2000,
+                    isClosable: true
+                })
+            }
         })
     }
 
@@ -70,6 +81,7 @@ export const CreateChannelModal = ({ isOpen, onClose }: ChannelModalProps) => {
         //reset form on close
         reset()
         onClose()
+        setValue('')
     }
 
     const [channelTypeValue, setChannelTypeValue] = useState<'Public' | 'Private' | 'Open'>('Public')
@@ -78,8 +90,11 @@ export const CreateChannelModal = ({ isOpen, onClose }: ChannelModalProps) => {
         methods.setValue('type', value)
     }
 
+    const [value, setValue] = useState('')
+    const handleChange = (event: ChangeEvent<HTMLInputElement>) => setValue(event.target.value.replace(' ', '-'))
+
     return (
-        <Modal isOpen={isOpen} onClose={onClose} size='lg'>
+        <Modal isOpen={isOpen} onClose={handleClose} size='lg'>
             <ModalOverlay />
             <ModalContent>
                 <ModalHeader fontSize='2xl'>
@@ -100,7 +115,7 @@ export const CreateChannelModal = ({ isOpen, onClose }: ChannelModalProps) => {
 
                                 <Stack spacing={6}>
 
-                                    {channelCreationError ? <AlertBanner status='error' heading={channelCreationError.message}>{channelCreationError.exception}.</AlertBanner> : null}
+                                    {channelCreationError ? <AlertBanner status='error' heading={channelCreationError.message}>Channel name already exists</AlertBanner> : null}
 
                                     <FormControl isRequired isInvalid={!!errors.channel_name}>
                                         <FormLabel htmlFor='channel_name'>Name</FormLabel>
@@ -110,6 +125,7 @@ export const CreateChannelModal = ({ isOpen, onClose }: ChannelModalProps) => {
                                                 children={channelType === 'Private' && <BiLockAlt /> || channelType === 'Open' && <BiGlobe /> || channelType === 'Public' && <BiHash />}
                                             />
                                             <Input
+                                                isInvalid={channelCreationError?.httpStatus === 409}
                                                 maxLength={50}
                                                 autoFocus {...register('channel_name', {
                                                     required: "Please add channel name",
@@ -117,13 +133,15 @@ export const CreateChannelModal = ({ isOpen, onClose }: ChannelModalProps) => {
                                                     pattern: {
                                                         // no special characters allowed
                                                         // cannot start with a space
-                                                        value: /^[a-zA-Z0-9][a-zA-Z0-9]|-*$/,
+                                                        value: /^[a-zA-Z0-9][a-zA-Z0-9-]*$/,
                                                         message: "Channel name can only contain letters, numbers and hyphens."
                                                     }
                                                 })}
-                                                placeholder='e.g. testing' fontSize='sm' />
+                                                placeholder='e.g. testing' fontSize='sm'
+                                                onChange={handleChange}
+                                                value={value} />
                                             <InputRightElement>
-                                                <Text fontSize='sm' fontWeight='light' color='gray.500'>{50 - channel_name?.length}</Text>
+                                                <Text fontSize='sm' fontWeight='light' color='gray.500'>{50 - value.length}</Text>
                                             </InputRightElement>
                                         </InputGroup>
                                         <FormErrorMessage>{errors.channel_name?.message}</FormErrorMessage>

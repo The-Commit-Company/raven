@@ -3,6 +3,7 @@ import { FrappeConfig, FrappeContext, useFrappeGetDoc } from 'frappe-react-sdk'
 import { logOutOutline, pizza } from 'ionicons/icons'
 import { useContext } from 'react'
 import { ErrorBanner, FullPageLoader } from '../../components/common'
+import { AuthContext } from '../../utils/AuthProvider'
 import { UserContext } from '../../utils/UserProvider'
 
 interface User {
@@ -14,27 +15,15 @@ interface User {
 }
 export const Profile = () => {
 
-    const { currentUser, logout } = useContext(UserContext)
+    const { currentUser } = useContext(UserContext)
+    const { logout } = useContext(AuthContext)
 
     const { url } = useContext(FrappeContext) as FrappeConfig
 
     const { data, isLoading, error } = useFrappeGetDoc<User>('User', currentUser)
 
-    const [present, dismiss] = useIonLoading();
-
-    const [presentAlert] = useIonAlert();
     const handleLogout = () => {
-        present('Logging out...')
         logout()
-            .then(() => dismiss())
-            .catch(err => {
-                dismiss()
-                presentAlert({
-                    header: 'Uh oh! There was an error.',
-                    message: err?.message,
-                    buttons: ['Ok'],
-                })
-            })
     }
     return (
         <IonPage>

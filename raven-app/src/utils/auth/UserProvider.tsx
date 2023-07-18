@@ -22,9 +22,7 @@ export const UserContext = createContext<UserContextProps>({
 
 export const UserProvider: FC<PropsWithChildren> = ({ children }) => {
 
-    const { login, logout, isValidating, currentUser, error, updateCurrentUser } = useFrappeAuth()
-
-    const isLoading = (currentUser === undefined || currentUser === null) && (error === null || error === undefined);
+    const { login, logout, isValidating, currentUser, error, updateCurrentUser, isLoading } = useFrappeAuth()
 
     return (
         <UserContext.Provider value={{ isLoading, updateCurrentUser, login, logout, currentUser: currentUser ?? "", isValidating }}>

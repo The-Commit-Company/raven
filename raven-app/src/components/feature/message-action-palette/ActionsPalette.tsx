@@ -1,26 +1,40 @@
 import { Box, Button, HStack, IconButton, Link, Popover, PopoverContent, PopoverTrigger, Portal, Tooltip, useColorMode } from '@chakra-ui/react'
 import { BsDownload, BsEmojiSmile } from 'react-icons/bs'
-import { useFrappeCreateDoc } from 'frappe-react-sdk'
+import { useFrappeCreateDoc, useFrappePostCall } from 'frappe-react-sdk'
 import { useContext, useEffect } from 'react'
 import { AiOutlineEdit } from 'react-icons/ai'
 import { VscTrash } from 'react-icons/vsc'
-import { IoBookmarkOutline } from 'react-icons/io5'
+import { IoBookmark, IoBookmarkOutline, IoChatboxEllipsesOutline } from 'react-icons/io5'
 import { UserContext } from '../../../utils/auth/UserProvider'
 import { DeleteMessageModal } from '../message-details/DeleteMessageModal'
 import { EditMessageModal } from '../message-details/EditMessageModal'
 import EmojiPicker, { EmojiClickData } from 'emoji-picker-react'
 import { ModalTypes, useModalManager } from '../../../hooks/useModalManager'
+import { FileMessage, Message, TextMessage } from '../../../types/Messaging/Message'
 
 interface ActionButtonPaletteProps {
-    name: string
-    file?: string | null
-    text?: string | null
-    user: string
+    message: Message,
     showButtons: {}
-    handleScroll: (newState: boolean) => void
+    handleScroll: (newState: boolean) => void,
+    is_continuation: 1 | 0,
+    replyToMessage?: (message: Message) => void
+    mutate: () => void
 }
 
-export const ActionsPalette = ({ name, file, text, user, showButtons, handleScroll }: ActionButtonPaletteProps) => {
+export const ActionsPalette = ({ message, showButtons, handleScroll, is_continuation, mutate, replyToMessage }: ActionButtonPaletteProps) => {
+
+    const { name, owner, message_type } = message
+
+    let text = ''
+    let file = ''
+
+    if (message_type === 'File' || message_type === 'Image') {
+        const { file: fileValue } = message as FileMessage
+        file = fileValue
+    } else if (message_type === 'Text') {
+        const { text: textValue } = message as TextMessage
+        text = textValue
+    }
 
     const modalManager = useModalManager()
 
@@ -59,6 +73,24 @@ export const ActionsPalette = ({ name, file, text, user, showButtons, handleScro
     useEffect(() => {
         handleScroll(modalManager.modalType !== ModalTypes.EmojiPicker)
     }, [modalManager.modalType])
+  
+    const onReplyClick = () => {
+        replyToMessage && replyToMessage(message)
+    }
+        
+    const { call } = useFrappePostCall('frappe.desk.like.toggle_like')
+
+    const handleLike = (id: string, value: string) => {
+        call({
+            doctype: 'Raven Message',
+            name: id,
+            add: value
+        }).then((r) => mutate())
+    }
+
+    const checkLiked = (likedBy: string) => {
+        return JSON.parse(likedBy ?? '[]')?.length > 0 && JSON.parse(likedBy ?? '[]')?.includes(currentUser)
+    }
 
     return (
         <Box
@@ -72,7 +104,7 @@ export const ActionsPalette = ({ name, file, text, user, showButtons, handleScro
             width='fit-content'
             zIndex={2}
             position='absolute'
-            top={-4}
+            top={is_continuation === 0 ? -4 : -7}
             right={2}>
             <HStack spacing={1}>
                 <EmojiButton emoji={'✅'} label={'done'} onClick={() => saveReaction('✅')} />
@@ -101,7 +133,14 @@ export const ActionsPalette = ({ name, file, text, user, showButtons, handleScro
                         </Portal>
                     </Popover>
                 </Box>
-                {(user === currentUser) && text &&
+                <Tooltip hasArrow label='reply' size='xs' placement='top' rounded='md'>
+                    <IconButton
+                        onClick={onReplyClick}
+                        aria-label="reply"
+                        icon={<IoChatboxEllipsesOutline fontSize={'0.8rem'} />}
+                        size='xs' />
+                </Tooltip>
+                {(owner === currentUser) && text &&
                     <Tooltip hasArrow label='edit' size='xs' placement='top' rounded='md'>
                         <IconButton
                             onClick={onEditMessageModalOpen}
@@ -110,11 +149,12 @@ export const ActionsPalette = ({ name, file, text, user, showButtons, handleScro
                             size='xs' />
                     </Tooltip>
                 }
-                <Tooltip hasArrow label='save' size='xs' placement='top' rounded='md'>
+                <Tooltip hasArrow label={checkLiked(message._liked_by) ? 'unsave' : 'save'} size='xs' placement='top' rounded='md'>
                     <IconButton
                         aria-label="save message"
-                        icon={<IoBookmarkOutline fontSize={'0.8rem'} />}
-                        size='xs' />
+                        icon={checkLiked(message._liked_by) ? <IoBookmark fontSize={'0.8rem'} /> : <IoBookmarkOutline fontSize={'0.8rem'} />}
+                        size='xs'
+                        onClick={() => handleLike(message.name, checkLiked(message._liked_by) ? 'No' : 'Yes')} />
                 </Tooltip>
                 {file &&
                     <Tooltip hasArrow label='download' size='xs' placement='top' rounded='md'>
@@ -127,7 +167,7 @@ export const ActionsPalette = ({ name, file, text, user, showButtons, handleScro
                             size='xs' />
                     </Tooltip>
                 }
-                {(user === currentUser) &&
+                {(owner === currentUser) &&
                     <Tooltip hasArrow label='delete' size='xs' placement='top' rounded='md'>
                         <IconButton
                             onClick={onDeleteMessageModalOpen}

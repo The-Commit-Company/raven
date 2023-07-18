@@ -2,6 +2,7 @@ import { Text, AlertDialog, AlertDialogBody, AlertDialogCloseButton, AlertDialog
 import { useFrappeDeleteDoc, useFrappeGetCall } from 'frappe-react-sdk'
 import { useContext, useRef } from 'react'
 import { BiHash, BiLockAlt } from 'react-icons/bi'
+import { useNavigate } from 'react-router-dom'
 import { UserContext } from '../../../../utils/auth/UserProvider'
 import { ChannelContext } from '../../../../utils/channel/ChannelProvider'
 import { AlertBanner } from '../../../layout/AlertBanner'
@@ -18,11 +19,14 @@ export const LeaveChannelModal = ({ isOpen, onClose }: LeaveChannelModalProps) =
     const cancelRef = useRef<HTMLButtonElement | null>(null)
     const { deleteDoc, error } = useFrappeDeleteDoc()
     const toast = useToast()
+    const navigate = useNavigate()
 
     const { data: channelMember, error: errorFetchingChannelMember } = useFrappeGetCall<{ message: { name: string } }>('frappe.client.get_value', {
         doctype: "Raven Channel Member",
         filters: JSON.stringify({ channel_id: channelData?.name, user_id: currentUser }),
         fieldname: JSON.stringify(["name"])
+    }, undefined, {
+        revalidateOnFocus: false
     })
 
     const onSubmit = () => {
@@ -36,6 +40,7 @@ export const LeaveChannelModal = ({ isOpen, onClose }: LeaveChannelModalProps) =
                 isClosable: true
             })
             onClose()
+            navigate('../general')
         })
             .catch((e) => {
                 toast({

@@ -4,7 +4,7 @@ import { useState } from "react"
  * Hook to manage modals
  * @returns
  * modalType: The type of modal to open
- * modalContext: The context to pass to the modal
+ * modalContent: The content to pass to the modal
  * openModal: Function to open a modal
  * closeModal: Function to close a modal
  */
@@ -27,25 +27,25 @@ export enum ModalTypes {
 
 interface ModalManager {
     modalType: ModalTypes,
-    modalContext: any,
-    openModal: (type: ModalTypes, context?: any) => void,
+    modalContent: any,
+    openModal: (type: ModalTypes, content?: any) => void,
     closeModal: () => void
 }
 
 export const useModalManager = (): ModalManager => {
 
     const [modalType, setModalType] = useState(ModalTypes.None)
-    const [modalContext, setModalContext] = useState(null)
+    const [modalContent, setModalContent] = useState(null)
 
-    const openModal = (type: ModalTypes, context?: any) => {
+    const openModal = (type: ModalTypes, content?: any) => {
         setModalType(type)
-        setModalContext(context)
+        setModalContent(content)
     }
 
     const closeModal = () => {
         setModalType(ModalTypes.None)
-        setModalContext(null)
+        setModalContent(null)
     }
 
-    return { modalType, modalContext, openModal, closeModal }
+    return { modalType, modalContent, openModal, closeModal }
 }

@@ -34,6 +34,8 @@ export const MarkdownRenderer: React.FC<Props> = ({ content }) => {
 
   const { data } = useFrappeGetCall<{ message: LinkPreviewDetails }>('raven.api.preview_links.get_preview_link', {
     url: LinkURL ? LinkURL : ''
+  }, undefined, {
+    revalidateOnFocus: false
   })
 
   const { colorMode } = useColorMode()
@@ -48,7 +50,7 @@ export const MarkdownRenderer: React.FC<Props> = ({ content }) => {
       rehypePlugins={[rehypeRaw]}
       className="markdown"
       components={{
-        pre: ({ node, ...props }) => <Box position="relative" p={0} width={'calc(100vw - var(--sidebar-width) - var(--chakra-space-16) - 36px)'}>
+        pre: ({ node, ...props }) => <Box position="relative" p={0} width={'calc(100vw - var(--sidebar-width) - var(--chakra-space-16) - 64px)'}>
           <IconButton
             zIndex={1}
             variant={'outline'}
@@ -85,7 +87,7 @@ export const MarkdownRenderer: React.FC<Props> = ({ content }) => {
           <Stack spacing={1}>
             <Text fontWeight="bold">{data.message.title}</Text>
             <Text fontSize="sm" fontWeight="normal" color={'gray.500'}>
-              {data.message.description}
+              {data.message.description.length > 200 ? data.message.description.substring(0, 200) + '...' : data.message.description}
             </Text>
           </Stack>
         </HStack>

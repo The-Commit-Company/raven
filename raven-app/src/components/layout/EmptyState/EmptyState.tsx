@@ -1,7 +1,7 @@
 import { Flex, VStack, Text, HStack, Link, Box, Stack, Avatar, Heading, Button, ButtonGroup, useDisclosure, useColorMode, AvatarBadge } from "@chakra-ui/react"
 import { useContext } from "react"
 import { ChannelContext } from "../../../utils/channel/ChannelProvider"
-import { BiGlobe, BiHash, BiLockAlt, BiUserPlus } from "react-icons/bi"
+import { BiBookmark, BiGlobe, BiHash, BiLockAlt, BiUserPlus } from "react-icons/bi"
 import { DateObjectToFormattedDateString } from "../../../utils/operations"
 import { TbEdit } from "react-icons/tb"
 import { AddOrEditChannelDescriptionModal } from "../../feature/channel-details/EditChannelDetails/AddOrEditChannelDescriptionModal"
@@ -27,7 +27,7 @@ export const EmptyStateForSearch = () => {
     )
 }
 
-export const EmptyStateForChannel = () => {
+const EmptyStateForChannel = () => {
 
     const { channelData } = useContext(ChannelContext)
 
@@ -54,10 +54,10 @@ export const EmptyStateForChannel = () => {
                     <Text>{channelData?.owner_full_name} created this channel on {DateObjectToFormattedDateString(new Date(channelData?.creation ?? ''))}. This is the very beginning of the <strong>{channelData?.channel_name}</strong> channel.</Text>
                     {channelData?.channel_description && <Text fontSize={'sm'} color={'gray.500'}>{channelData?.channel_description}</Text>}
                 </Stack>
-                <ButtonGroup size={'xs'} colorScheme="blue" variant={'link'} spacing={4} zIndex={1}>
+                {channelData?.is_archived == 0 && <ButtonGroup size={'xs'} colorScheme="blue" variant={'link'} spacing={4} zIndex={1}>
                     <Button leftIcon={<TbEdit fontSize={'1rem'} />} onClick={onChannelDescriptionModalOpen}>{channelData?.channel_description ? 'Edit' : 'Add'} description</Button>
                     {channelData?.type !== 'Open' && <Button leftIcon={<BiUserPlus fontSize={'1.1rem'} />} onClick={onAddMembersModalOpen}>Add people</Button>}
-                </ButtonGroup>
+                </ButtonGroup>}
             </Stack>
             <AddOrEditChannelDescriptionModal
                 isOpen={modalManager.modalType === ModalTypes.EditChannelDescription}
@@ -70,7 +70,7 @@ export const EmptyStateForChannel = () => {
 }
 
 
-export const EmptyStateForDM = () => {
+const EmptyStateForDM = () => {
 
     const { channelMembers } = useContext(ChannelContext)
     const { channelData } = useContext(ChannelContext)
@@ -119,4 +119,39 @@ export const EmptyStateForDM = () => {
             }
         </Box>
     )
+}
+
+export const EmptyStateForSavedMessages = () => {
+    return (
+        <Stack mt='75px' px='4' spacing={4}>
+            <HStack>
+                <BiBookmark fontSize={'1.4rem'} />
+                <Heading size={'md'}>Your saved messages will appear here</Heading>
+            </HStack>
+            <Stack>
+                <Text>Saved messages are a convenient way to keep track of important information or messages you want to refer back to later.</Text>
+                <HStack spacing={1}>
+                    <Text>You can save messages by simply clicking on the bookmark icon</Text>
+                    <BiBookmark fontSize={'1rem'} />
+                    <Text>in message actions.</Text>
+                </HStack>
+            </Stack>
+        </Stack>
+    )
+}
+
+interface ChannelHistoryFirstMessageProps {
+    isDM: number
+}
+
+export const ChannelHistoryFirstMessage = ({ isDM }: ChannelHistoryFirstMessageProps) => {
+    if (isDM === 1) {
+        return (
+            <EmptyStateForDM />
+        )
+    } else {
+        return (
+            <EmptyStateForChannel />
+        )
+    }
 }

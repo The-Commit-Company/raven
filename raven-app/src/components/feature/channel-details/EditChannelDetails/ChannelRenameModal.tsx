@@ -1,6 +1,6 @@
 import { Text, Button, ButtonGroup, chakra, FormControl, FormErrorMessage, FormHelperText, FormLabel, Input, InputGroup, InputLeftElement, InputRightElement, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Stack, useToast } from "@chakra-ui/react"
 import { useFrappeUpdateDoc } from "frappe-react-sdk"
-import { useContext, useEffect } from "react"
+import { ChangeEvent, useContext, useEffect, useState } from "react"
 import { FormProvider, useForm } from "react-hook-form"
 import { BiGlobe, BiHash, BiLockAlt } from "react-icons/bi"
 import { ChannelContext } from "../../../../utils/channel/ChannelProvider"
@@ -23,14 +23,14 @@ export const ChannelRenameModal = ({ isOpen, onClose }: RenameChannelModalProps)
             channel_name: channelData?.channel_name
         }
     })
-    const { register, handleSubmit, reset, watch, formState: { errors } } = methods
+    const { register, handleSubmit, reset, formState: { errors } } = methods
     const { updateDoc, loading: updatingDoc, error, reset: resetUpdate } = useFrappeUpdateDoc()
     const toast = useToast()
-    const channel_name = watch('channel_name')
 
     useEffect(() => {
         reset()
         resetUpdate()
+        setValue(channelData?.channel_name ?? '')
     }, [isOpen, reset])
 
     const onSubmit = (data: RenameChannelForm) => {
@@ -45,24 +45,40 @@ export const ChannelRenameModal = ({ isOpen, onClose }: RenameChannelModalProps)
             })
             onClose(true)
         }).catch((err) => {
-            toast({
-                title: "Error renaming channel",
-                description: err.message,
-                status: "error",
-                duration: 2000,
-                isClosable: true
-            })
+            if (err.httpStatus === 409) {
+                toast({
+                    title: "Error renaming channel",
+                    description: "Channel name already exists",
+                    status: "error",
+                    duration: 2000,
+                    isClosable: true
+                })
+            }
+            else {
+                toast({
+                    title: "Error renaming channel",
+                    description: err.httpStatusText,
+                    status: "error",
+                    duration: 2000,
+                    isClosable: true
+                })
+            }
         })
     }
+
+    const [value, setValue] = useState(channelData?.channel_name ?? '')
 
     const handleClose = () => {
         //reset form on close
         reset()
         onClose()
+        setValue(channelData?.channel_name ?? '')
     }
 
+    const handleChange = (event: ChangeEvent<HTMLInputElement>) => setValue(event.target.value.replace(' ', '-'))
+
     return (
-        <Modal isOpen={isOpen} onClose={onClose} size='lg'>
+        <Modal isOpen={isOpen} onClose={handleClose} size='lg'>
             <ModalOverlay />
             <ModalContent>
 
@@ -98,9 +114,11 @@ export const ChannelRenameModal = ({ isOpen, onClose }: RenameChannelModalProps)
                                                         value: /^[a-zA-Z0-9][a-zA-Z0-9]|-*$/,
                                                         message: "Channel name can only contain letters and numbers"
                                                     }
-                                                })} />
+                                                })}
+                                                onChange={handleChange}
+                                                value={value} />
                                             <InputRightElement>
-                                                <Text fontSize='sm' fontWeight='light' color='gray.500'>{50 - channel_name?.length}</Text>
+                                                <Text fontSize='sm' fontWeight='light' color='gray.500'>{50 - value.length}</Text>
                                             </InputRightElement>
                                         </InputGroup>
                                     </Stack>

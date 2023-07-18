@@ -1,9 +1,9 @@
 <p align="center">
-  <img src="RAVEN-Logo.png" alt="Raven logo" height="100" />
+  <img src="raven_logo.png" alt="Raven logo" height="100" />
   <p align="center">Simple, open source team messaging platform</p>
 </p>
 <p align="center">
-  <a href="https://github.com/janhvipatil/Raven/blob/main/LICENSE">
+  <a href="https://github.com/The-Commit-Company/Raven/blob/main/LICENSE">
     <img alt="license" src="https://img.shields.io/badge/license-AGPLv3-blue">
   </a>
 </p>
@@ -114,46 +114,6 @@ The mobile app is built using [Ionic](https://ionicframework.com), [Tailwind CSS
   
 </details>
 
-<br/>
-
-#### Work in progress 🚧
-
-The mobile app was set up using Capacitor, Ionic and React:
-1. Set up authentication on the mobile app
-2. View all channels, private messages and profile on mobile app
-3. View a channel's messages (text, images and files) on the mobile app
-4. Send a message on a channel.
-
-New features were added to the web app:
-1. Ability to create an "Open" channel - where all users are members by default.
-2. Ability to delete a message previously sent
-3. Ability to edit a message
-4. Ability to send images and files by clicking on the file "plus" button
-5. Ability to send images and files by dragging and dropping them into the chat interface
-6. Image previews in the chat interface
-7. Ability to download files from the chat interface
-8. Styling improvements: dark mode for emoji picker, highlight for mentions in messages (@user), dark mode support for Quill mentions menu
-9. General channel is created when app is installed.
-10. Bug fix: empty messages cannot be sent
-11. Bug fix: duplicate channel names cannot be created (added validation)
-12. Bug fix: design issues fixed on the chat interface to make the chat messages responsive according to height of input.
-
-<hr>
-
-#### What's not working (yet)
-
-Mobile app:
-1. Channels cannot be created and channel details cannot be viewed
-2. Members cannot be added to or removed from channels
-3. Files and images cannot be sent.
-
-Moreover, the mobile app authentication needs to be updated to use Bearer tokens because of a cookie issue on iOS. The mobile app works on Android.
-
-Web app:
-1. Improvements to be made on direct message listing.
-2. Lazy loading and scroll to load for older messages.
-
-<hr>
 
 
 ## Installation
@@ -167,9 +127,7 @@ bench get-app https://github.com/The-Commit-Company/Raven.git
 bench --site yoursite.name install-app raven
 ```
 
-Post this, you can access Raven on your Frappe site at the `/raven-app` endpoint (e.g. https://yoursite.com/raven-app). 
-
-We plan to publish Raven to the [Frappe Cloud Marketplace](https://frappecloud.com/marketplace/apps) soon.
+Post this, you can access Raven on your Frappe site at the `/raven` endpoint (e.g. https://yoursite.com/raven). 
 
 ### Local development setup
 
@@ -202,15 +160,14 @@ yarn dev
 We are currently working or will be working on the following features. Please head to our Github issues page and feel free to contribute:
 
 1. Mobile app for Raven
-2. Open-graph link previews
-3. Push notifications
-4. Integration service - allowing other applications to create bots and send messages. Some popular services we are looking at are [Github](https://github.com), [Linear](https://linear.app), [Sentry][https://sentry.io], [Frappe Desk][https://frappedesk.com]. 
+2. Push notifications
+3. Integration service - allowing other applications to create bots and send messages. Some popular services we are looking at are [Github](https://github.com), [Linear](https://linear.app), [Sentry][https://sentry.io], [Frappe Desk][https://frappedesk.com]. 
 
 <hr>
 
 
 ## Reporting Bugs
-If you find any bugs, feel free to report them here on [GitHub Issues](https://github.com/janhvipatil/Raven/issues). Make sure you share enough information (app screenshots, browser console screenshots, stack traces, etc) for project maintainers to replicate your bug.
+If you find any bugs, feel free to report them here on [GitHub Issues](https://github.com/The-Commit-Company/Raven/issues). Make sure you share enough information (app screenshots, browser console screenshots, stack traces, etc) for project maintainers to replicate your bug.
 
 
 <hr>

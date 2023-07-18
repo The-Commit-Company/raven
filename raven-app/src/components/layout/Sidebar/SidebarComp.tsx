@@ -200,3 +200,27 @@ export const SidebarViewMoreButton = ({ onClick, ...props }: SidebarViewMoreButt
         />
     )
 }
+
+export const SidebarBadge = ({ children, ...props }: BoxProps) => {
+    const { colorMode } = useColorMode()
+
+    return (
+        <Box
+            fontSize="12"
+            fontWeight="semibold"
+            lineHeight="none"
+            color={colorMode === "light" ? "white" : "black"}
+            bg={colorMode === "light" ? "gray.600" : "gray.200"}
+            rounded="full"
+            boxSize="fit-content"
+            display="flex"
+            alignItems="center"
+            justifyContent="center"
+            px="2"
+            py="0.5"
+            {...props}
+        >
+            {children}
+        </Box>
+    )
+}

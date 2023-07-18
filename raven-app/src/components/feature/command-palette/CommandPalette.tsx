@@ -1,6 +1,6 @@
 import React, { useContext, useEffect } from 'react'
 import { Command } from 'cmdk'
-import { Box, CloseButton, HStack, Link, Modal, ModalCloseButton, ModalContent, ModalOverlay, useColorMode, Text } from '@chakra-ui/react'
+import { Box, CloseButton, HStack, Link, Modal, ModalCloseButton, ModalContent, ModalOverlay, useColorMode, Text, useDisclosure } from '@chakra-ui/react'
 import './styles.css'
 import { Home, Messages, Files, Channels, People, FindIn, FindFrom } from './CommandPaletteActions'
 import { useHotkeys } from 'react-hotkeys-hook'
@@ -14,7 +14,7 @@ import { TbSearch } from 'react-icons/tb'
 interface CommandPaletteProps {
     isOpen: boolean,
     onClose: () => void,
-    onToggle: () => void
+    onToggle: () => void,
 }
 
 export const CommandPalette = ({ isOpen, onClose, onToggle }: CommandPaletteProps) => {
@@ -27,7 +27,10 @@ export const CommandPalette = ({ isOpen, onClose, onToggle }: CommandPaletteProp
     const isHome = activePage === ''
     const debouncedText = useDebounce(inputValue, 200)
     const { currentUser } = useContext(UserContext)
-    const { data: activeUsers, error: activeUsersError } = useFrappeGetCall<{ message: string[] }>('raven.api.user_availability.get_active_users')
+    const { isOpen: isGlobalSearchModalOpen, onOpen: onGlobalSearchModalOpen, onClose: onGlobalSearchModalClose } = useDisclosure()
+    const { data: activeUsers, error: activeUsersError } = useFrappeGetCall<{ message: string[] }>('raven.api.user_availability.get_active_users', undefined, undefined, {
+        revalidateOnFocus: false
+    })
     const { call, error: channelError, loading, reset } = useFrappePostCall<{ message: string }>("raven.raven_channel_management.doctype.raven_channel.raven_channel.create_direct_message_channel")
     let navigate = useNavigate()
 
@@ -40,6 +43,8 @@ export const CommandPalette = ({ isOpen, onClose, onToggle }: CommandPaletteProp
     const { data: users, error: usersError } = useFrappeGetDocList<User>("User", {
         fields: ["full_name", "user_image", "name"],
         filters: [["name", "!=", "Guest"]]
+    }, undefined, {
+        revalidateOnFocus: false
     })
 
     const popPage = React.useCallback(() => {
@@ -63,6 +68,8 @@ export const CommandPalette = ({ isOpen, onClose, onToggle }: CommandPaletteProp
 
     const { colorMode } = useColorMode()
 
+    const inputRef = React.useRef<HTMLInputElement | null>(null)
+
     return (
         <Modal isOpen={isOpen} onClose={onClose}>
             <ModalOverlay bg='rgba(0,0,0,0.1)' />
@@ -75,7 +82,7 @@ export const CommandPalette = ({ isOpen, onClose, onToggle }: CommandPaletteProp
                             return
                         }
 
-                        if (e.key === 'Backspace') {
+                        if (!isGlobalSearchModalOpen && e.key === 'Backspace') {
                             e.preventDefault()
                             popPage()
                         }
@@ -93,6 +100,7 @@ export const CommandPalette = ({ isOpen, onClose, onToggle }: CommandPaletteProp
                         ))}
                         {!activePage && <TbSearch size={20} />}
                         <Command.Input autoFocus
+                            ref={inputRef}
                             placeholder={function () {
                                 switch (activePage) {
                                     case 'messages':
@@ -115,13 +123,16 @@ export const CommandPalette = ({ isOpen, onClose, onToggle }: CommandPaletteProp
                             onValueChange={setInputValue} />
                     </HStack>
 
-                    {activePage === '' && <Home input={debouncedText} searchChange={(pageChange: string) => { setInputValue(""); setPages([...pages, pageChange]) }} />}
-                    {activePage === 'messages' && <Messages input={debouncedText} searchChange={(pageChange: string) => { setInputValue(""); setPages([...pages, pageChange]) }} />}
-                    {activePage === 'files' && <Files input={debouncedText} searchChange={(pageChange: string) => { setInputValue(""); setPages([...pages, pageChange]) }} />}
-                    {activePage === 'channels' && <Channels input={debouncedText} />}
-                    {activePage === 'people' && activeUsers && users && <People input={debouncedText} users={users} activeUsers={activeUsers?.message} gotoDMChannel={gotoDMChannel} currentUser={currentUser} />}
-                    {activePage === 'in' && lastPage && (lastPage === 'messages' ? <FindIn input={debouncedText} tabIndex={0} /> : <FindIn input={debouncedText} tabIndex={1} />)}
-                    {activePage === 'from' && users && lastPage && (lastPage === 'messages' ? <FindFrom input={debouncedText} users={users} tabIndex={0} /> : <FindFrom input={debouncedText} users={users} tabIndex={1} />)}
+                    {activePage === '' && <Home input={debouncedText} searchChange={(pageChange: string) => { setInputValue(""); setPages([...pages, pageChange]) }} isGlobalSearchModalOpen={isGlobalSearchModalOpen} onGlobalSearchModalOpen={onGlobalSearchModalOpen} onGlobalSearchModalClose={onGlobalSearchModalClose} onCommandPaletteClose={onClose} inputRef={inputRef}>
+                        <People input={debouncedText} users={users} activeUsers={activeUsers?.message} gotoDMChannel={gotoDMChannel} currentUser={currentUser} isGlobalSearchModalOpen={isGlobalSearchModalOpen} onGlobalSearchModalOpen={onGlobalSearchModalOpen} onGlobalSearchModalClose={onGlobalSearchModalClose} onCommandPaletteClose={onClose} isChild={true} />
+                        <Channels input={debouncedText} isGlobalSearchModalOpen={isGlobalSearchModalOpen} onGlobalSearchModalOpen={onGlobalSearchModalOpen} onGlobalSearchModalClose={onGlobalSearchModalClose} onCommandPaletteClose={onClose} isChild={true} />
+                    </Home>}
+                    {activePage === 'messages' && <Messages input={debouncedText} searchChange={(pageChange: string) => { setInputValue(""); setPages([...pages, pageChange]) }} isGlobalSearchModalOpen={isGlobalSearchModalOpen} onGlobalSearchModalOpen={onGlobalSearchModalOpen} onGlobalSearchModalClose={onGlobalSearchModalClose} onCommandPaletteClose={onClose} />}
+                    {activePage === 'files' && <Files input={debouncedText} searchChange={(pageChange: string) => { setInputValue(""); setPages([...pages, pageChange]) }} isGlobalSearchModalOpen={isGlobalSearchModalOpen} onGlobalSearchModalOpen={onGlobalSearchModalOpen} onGlobalSearchModalClose={onGlobalSearchModalClose} onCommandPaletteClose={onClose} />}
+                    {activePage === 'channels' && <Channels input={debouncedText} isGlobalSearchModalOpen={isGlobalSearchModalOpen} onGlobalSearchModalOpen={onGlobalSearchModalOpen} onGlobalSearchModalClose={onGlobalSearchModalClose} onCommandPaletteClose={onClose} />}
+                    {activePage === 'people' && activeUsers && users && <People input={debouncedText} users={users} activeUsers={activeUsers?.message} gotoDMChannel={gotoDMChannel} currentUser={currentUser} isGlobalSearchModalOpen={isGlobalSearchModalOpen} onGlobalSearchModalOpen={onGlobalSearchModalOpen} onGlobalSearchModalClose={onGlobalSearchModalClose} onCommandPaletteClose={onClose} />}
+                    {activePage === 'in' && lastPage && (lastPage === 'messages' ? <FindIn input={debouncedText} tabIndex={0} isGlobalSearchModalOpen={isGlobalSearchModalOpen} onGlobalSearchModalOpen={onGlobalSearchModalOpen} onGlobalSearchModalClose={onGlobalSearchModalClose} onCommandPaletteClose={onClose} /> : <FindIn input={debouncedText} tabIndex={1} isGlobalSearchModalOpen={isGlobalSearchModalOpen} onGlobalSearchModalOpen={onGlobalSearchModalOpen} onGlobalSearchModalClose={onGlobalSearchModalClose} onCommandPaletteClose={onClose} />)}
+                    {activePage === 'from' && users && lastPage && (lastPage === 'messages' ? <FindFrom input={debouncedText} users={users} tabIndex={0} isGlobalSearchModalOpen={isGlobalSearchModalOpen} onGlobalSearchModalOpen={onGlobalSearchModalOpen} onGlobalSearchModalClose={onGlobalSearchModalClose} onCommandPaletteClose={onClose} /> : <FindFrom input={debouncedText} users={users} tabIndex={1} isGlobalSearchModalOpen={isGlobalSearchModalOpen} onGlobalSearchModalOpen={onGlobalSearchModalOpen} onGlobalSearchModalClose={onGlobalSearchModalClose} onCommandPaletteClose={onClose} />)}
 
                     <Box cmdk-footer="">
                         <HStack spacing={1}>

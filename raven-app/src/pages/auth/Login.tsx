@@ -1,11 +1,13 @@
 import { useState, useEffect, useContext } from "react";
-import { Box, Button, Flex, FormControl, FormLabel, Heading, IconButton, Input, InputGroup, InputRightElement, Stack, useDisclosure, chakra, FormErrorMessage, CircularProgress } from "@chakra-ui/react";
+import { Box, Button, Flex, FormControl, FormLabel, Image, IconButton, Input, InputGroup, InputRightElement, Stack, useDisclosure, chakra, FormErrorMessage, CircularProgress, useColorMode } from "@chakra-ui/react";
 import { useForm } from "react-hook-form";
 import { HiEye, HiEyeOff } from "react-icons/hi";
 import { Link, useNavigate } from "react-router-dom";
 import { AlertBanner } from "../../components/layout/AlertBanner";
 import { UserContext } from "../../utils/auth/UserProvider";
 import { isEmailValid } from "../../utils/validations";
+import raven_logo_light from "../../assets/raven_logo_light.png"
+import raven_logo_dark from "../../assets/raven_logo_dark.png"
 
 type Inputs = {
     email: string;
@@ -17,6 +19,7 @@ export const Login = () => {
     const navigate = useNavigate()
     const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<Inputs>();
     const { isOpen, onToggle } = useDisclosure();
+    const { colorMode } = useColorMode()
     const onClickReveal = () => {
         onToggle()
     }
@@ -46,16 +49,11 @@ export const Login = () => {
                     <Box w="full" maxW="lg" mx="auto">
                         <Stack spacing="8" rounded={{ md: "2xl" }} p={{ base: "4", md: "10" }} borderWidth={{ md: "1px" }} shadow={{ lg: "inner" }}>
                             <Link to="/" tabIndex={-1}>
-                                <Heading>Raven</Heading>
+                                <Flex justify="center">
+                                    <Image src={colorMode === "light" ? raven_logo_light : raven_logo_dark} objectFit="cover" alt="Raven" width={180} />
+                                </Flex>
                             </Link>
-                            {/* <Box textAlign={{ base: "center", md: "start" }}>
-                                <Heading size="lg" mb="2" fontWeight="extrabold">
-                                    Welcome
-                                </Heading>
-                                <Text fontSize="lg" fontWeight="medium">
-                                    Login
-                                </Text>
-                            </Box> */}
+
                             <chakra.form onSubmit={handleSubmit(onSubmit)}>
                                 {error != null &&
                                     <AlertBanner status="error" mb="3">{error.message}</AlertBanner>

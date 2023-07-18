@@ -1,4 +1,4 @@
-# Copyright (c) 2023, Janhvi Patil and Contributors
+# Copyright (c) 2023, The Commit Company and contributors
 # See license.txt
 
 # import frappe

@@ -1,5 +1,5 @@
 import { SearchIcon } from '@chakra-ui/icons'
-import { Avatar, Button, Center, chakra, FormControl, HStack, Icon, Input, InputGroup, InputLeftElement, Link, Stack, TabPanel, Text, Image } from '@chakra-ui/react'
+import { Avatar, Button, Center, chakra, FormControl, HStack, Icon, Input, InputGroup, InputLeftElement, Link, Stack, TabPanel, Text, Image, Spinner, IconButton } from '@chakra-ui/react'
 import { FrappeConfig, FrappeContext, useFrappeGetCall, useFrappeGetDocList } from 'frappe-react-sdk'
 import { useMemo, useState, useContext } from 'react'
 import { Controller, FormProvider, useForm } from 'react-hook-form'
@@ -9,14 +9,15 @@ import { ChannelData } from '../../../types/Channel/Channel'
 import { GetFileSearchResult } from '../../../types/Search/Search'
 import { User } from '../../../types/User/User'
 import { getFileExtensionIcon } from '../../../utils/layout/fileExtensionIcon'
-import { DateObjectToFormattedDateString } from '../../../utils/operations'
+import { DateObjectToFormattedDateString, getFileExtension, getFileName } from '../../../utils/operations'
 import { AlertBanner } from '../../layout/AlertBanner'
 import { EmptyStateForSearch } from '../../layout/EmptyState/EmptyState'
-import { FullPageLoader } from '../../layout/Loaders'
 import { SelectInput, SelectOption } from '../search-filters/SelectInput'
 import { Sort } from '../sorting'
 import { AiOutlineFileExcel, AiOutlineFileImage, AiOutlineFilePdf, AiOutlineFilePpt, AiOutlineFileText } from 'react-icons/ai'
 import './styles.css'
+import { FileMessage } from '../../../types/Messaging/Message'
+import { IoBookmark, IoBookmarkOutline } from 'react-icons/io5'
 
 interface FilterInput {
     'from-user-filter': SelectOption[],
@@ -26,6 +27,7 @@ interface FilterInput {
     'other-channels-filter': boolean,
     'with-user-filter': SelectOption[],
     'file-type-filter': SelectOption[],
+    'saved-filter': boolean,
 }
 
 interface Props {
@@ -35,16 +37,22 @@ interface Props {
     input: string,
     fromFilter?: string,
     inFilter?: string
+    onToggleSaved: () => void
+    isSaved: boolean
 }
 
-export const FileSearch = ({ onToggleMyChannels, isOpenMyChannels, dateOption, input, fromFilter, inFilter }: Props) => {
+export const FileSearch = ({ onToggleMyChannels, isOpenMyChannels, onToggleSaved, isSaved, dateOption, input, fromFilter, inFilter }: Props) => {
 
     const { url } = useContext(FrappeContext) as FrappeConfig
-    const { data: channels, error: channelsError } = useFrappeGetCall<{ message: ChannelData[] }>("raven.raven_channel_management.doctype.raven_channel.raven_channel.get_channel_list")
+    const { data: channels, error: channelsError } = useFrappeGetCall<{ message: ChannelData[] }>("raven.raven_channel_management.doctype.raven_channel.raven_channel.get_channel_list", undefined, undefined, {
+        revalidateOnFocus: false
+    })
 
     const { data: users, error: usersError } = useFrappeGetDocList<User>("User", {
         fields: ["full_name", "user_image", "name"],
         filters: [["name", "!=", "Guest"]]
+    }, undefined, {
+        revalidateOnFocus: false
     })
 
     const userOptions: SelectOption[] = useMemo(() => {
@@ -88,12 +96,14 @@ export const FileSearch = ({ onToggleMyChannels, isOpenMyChannels, dateOption, i
     const watchFromUser = watch('from-user-filter')
     const watchDate = watch('date-filter')
     const watchMyChannels = watch('my-channels-filter')
+    const watchSaved = watch('saved-filter')
     const file_type: string[] = useMemo(() => watchFileType ? watchFileType.map((fileType: SelectOption) => fileType.value) : [], [watchFileType]);
     const in_channel: string[] = watchChannel ? watchChannel.map((channel: SelectOption) => (channel.value)) : []
     const from_user: string[] = watchFromUser ? watchFromUser.map((user: SelectOption) => (user.value)) : []
     const date = watchDate ? watchDate.value : null
     const my_channel_only: boolean = watchMyChannels ? watchMyChannels : false
     const extensions: string[] = ['pdf', 'doc', 'ppt', 'xls']
+    const saved: boolean = watchSaved ? watchSaved : false
 
     const message_type = useMemo(() => {
         const newMessageType = [];
@@ -119,10 +129,13 @@ export const FileSearch = ({ onToggleMyChannels, isOpenMyChannels, dateOption, i
         file_type: JSON.stringify(file_type),
         in_channel: JSON.stringify(in_channel),
         from_user: JSON.stringify(from_user),
+        saved: saved,
         date: date,
         my_channel_only: my_channel_only,
         sort_order: sortOrder,
         sort_field: sortByField
+    }, undefined, {
+        revalidateOnFocus: false
     })
 
     return (
@@ -145,7 +158,7 @@ export const FileSearch = ({ onToggleMyChannels, isOpenMyChannels, dateOption, i
                             <HStack justifyContent={'space-between'}>
                                 <FormControl id="from-user-filter" w='fit-content'>
                                     <SelectInput placeholder="From" size='sm' options={userOptions} name='from-user-filter' defaultValue={userOptions.find((option) => option.value == fromFilter)} isMulti={true} chakraStyles={{
-                                        multiValue: (chakraStyles) => ({ ...chakraStyles, display: 'flex', alignItems: 'center', overflow: 'hidden', padding: '0rem 0.2rem 0rem 0rem' }),
+                                        multiValue: (chakraStyles) => ({ ...chakraStyles, display: 'flex', alignItems: 'center', overflow: 'hidden', padding: '0rem 0.2rem 0rem 0rem' })
                                     }} />
                                 </FormControl>
                                 <FormControl id="channel-filter" w='fit-content'>
@@ -175,8 +188,31 @@ export const FileSearch = ({ onToggleMyChannels, isOpenMyChannels, dateOption, i
                                                     border: "2px solid #3182CE"
                                                 }}
                                             >
-                                                Only my channels
+                                                Only in my channels
                                             </Button>
+                                        )}
+                                    />
+                                </FormControl>
+                                <FormControl id="saved-filter" w='fit-content'>
+                                    <Controller
+                                        name="saved-filter"
+                                        control={control}
+                                        render={({ field: { onChange, value } }) => (
+                                            <IconButton
+                                                aria-label="saved-filter"
+                                                icon={isSaved ? <IoBookmark /> : <IoBookmarkOutline />}
+                                                borderRadius={3}
+                                                size="sm"
+                                                w="fit-content"
+                                                isActive={value = isSaved}
+                                                onClick={() => {
+                                                    onToggleSaved()
+                                                    onChange(!value)
+                                                }}
+                                                _active={{
+                                                    border: "2px solid #3182CE"
+                                                }}
+                                            />
                                         )}
                                     />
                                 </FormControl>
@@ -187,7 +223,7 @@ export const FileSearch = ({ onToggleMyChannels, isOpenMyChannels, dateOption, i
             <Stack h='420px' p={4}>
 
                 {error ? <AlertBanner status='error' heading={error.message}>{error.httpStatus} - {error.httpStatusText}</AlertBanner> :
-                    (isLoading && isValidating ? <FullPageLoader /> :
+                    (isLoading && isValidating ? <Center><Spinner /></Center> :
                         (!!!error && data?.message && data.message.length > 0 ?
                             <><Sort
                                 sortingFields={[{ label: 'Created on', field: 'creation' }]}
@@ -197,17 +233,16 @@ export const FileSearch = ({ onToggleMyChannels, isOpenMyChannels, dateOption, i
                                 onSortOrderChange={(order) => setSortOrder(order)} />
                                 <Stack spacing={4} overflowY='scroll'>
 
-                                    {data.message.map((f) => {
+                                    {data.message.map((f: FileMessage) => {
                                         return (
-                                            f.message_type != 'Text' &&
-                                            <HStack spacing={3}>
+                                            <HStack spacing={3} key={f.name}>
                                                 <Center maxW='50px'>
-                                                    {f.message_type === 'File' && <Icon as={getFileExtensionIcon(f.file.split('.')[1])} boxSize="9" />}
+                                                    {f.message_type === 'File' && <Icon as={getFileExtensionIcon(getFileExtension(f.file))} boxSize="9" />}
                                                     {f.message_type === 'Image' && <Image src={f.file} alt='File preview' boxSize={'36px'} rounded='md' fit='cover' />}
                                                 </Center>
                                                 <Stack spacing={0}>
-                                                    {f.file && <Text fontSize='sm' as={Link} href={f.file} isExternal>{f.file.split('/')[3]}</Text>}
-                                                    {users && <Text fontSize='xs' color='gray.500'>Shared by {users.find((user) => user.name === f.owner)?.full_name} on {DateObjectToFormattedDateString(new Date(f.creation ?? ''))}</Text>}
+                                                    {f.file && <Text fontSize='sm' as={Link} href={f.file} isExternal>{getFileName(f.file)}</Text>}
+                                                    {users && <Text fontSize='xs' color='gray.500'>Shared by {users.find((user: User) => user.name === f.owner)?.full_name} on {DateObjectToFormattedDateString(new Date(f.creation ?? ''))}</Text>}
                                                 </Stack>
                                             </HStack>
                                         )

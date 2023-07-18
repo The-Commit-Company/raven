@@ -1,6 +1,6 @@
 import { SearchIcon } from '@chakra-ui/icons'
-import { Avatar, Button, chakra, FormControl, HStack, Input, InputGroup, InputLeftElement, Stack, TabPanel, Text } from '@chakra-ui/react'
-import { FrappeContext, FrappeConfig, useFrappeGetCall } from 'frappe-react-sdk'
+import { Avatar, Button, Center, chakra, FormControl, HStack, IconButton, Input, InputGroup, InputLeftElement, Spinner, Stack, TabPanel, Text, useToast } from '@chakra-ui/react'
+import { FrappeContext, FrappeConfig, useFrappeGetCall, useFrappePostCall } from 'frappe-react-sdk'
 import { useContext, useState, useMemo, useEffect } from 'react'
 import { FormProvider, Controller, useForm } from 'react-hook-form'
 import { BiLockAlt, BiHash, BiGlobe } from 'react-icons/bi'
@@ -10,12 +10,14 @@ import { GetMessageSearchResult } from '../../../types/Search/Search'
 import { User } from '../../../types/User/User'
 import { AlertBanner } from '../../layout/AlertBanner'
 import { EmptyStateForSearch } from '../../layout/EmptyState/EmptyState'
-import { FullPageLoader } from '../../layout/Loaders'
 import { SelectInput, SelectOption } from '../search-filters/SelectInput'
 import { Sort } from '../sorting'
 import { ChannelContext } from "../../../utils/channel/ChannelProvider"
-import { MarkdownRenderer } from '../markdown-viewer/MarkdownRenderer'
-import { ChatMessageBox } from '../chat/ChatMessage/ChatMessageBox'
+import { TextMessage } from '../../../types/Messaging/Message'
+import { useNavigate } from 'react-router-dom'
+import { MessageBox } from './MessageBox'
+import { VirtuosoRefContext } from '../../../utils/message/VirtuosoRefProvider'
+import { IoBookmark, IoBookmarkOutline } from 'react-icons/io5'
 
 interface FilterInput {
     'from-user-filter': SelectOption[],
@@ -24,6 +26,7 @@ interface FilterInput {
     'my-channels-filter': boolean,
     'other-channels-filter': boolean,
     'with-user-filter': SelectOption[],
+    'saved-filter': boolean,
 }
 interface Props {
     onToggleMyChannels: () => void,
@@ -31,15 +34,65 @@ interface Props {
     dateOption: SelectOption[],
     input: string,
     fromFilter?: string,
-    inFilter?: string
+    inFilter?: string,
+    onCommandPaletteClose: () => void
+    onClose: () => void
+    onToggleSaved: () => void
+    isSaved: boolean
 }
 
-export const MessageSearch = ({ onToggleMyChannels, isOpenMyChannels, dateOption, input, fromFilter, inFilter }: Props) => {
+interface MessageSearchResult extends TextMessage {
+    channel_id: string
+}
 
+export const MessageSearch = ({ onToggleMyChannels, isOpenMyChannels, onToggleSaved, isSaved, dateOption, input, fromFilter, inFilter, onClose, onCommandPaletteClose }: Props) => {
+
+    const { virtuosoRef } = useContext(VirtuosoRefContext)
     const { url } = useContext(FrappeContext) as FrappeConfig
+    const navigate = useNavigate()
     const { users } = useContext(ChannelContext)
+    const { data: channels, error: channelsError } = useFrappeGetCall<{ message: ChannelData[] }>("raven.raven_channel_management.doctype.raven_channel.raven_channel.get_channel_list", undefined, undefined, {
+        revalidateOnFocus: false
+    })
+    const { call, error: indexingError, loading, reset } = useFrappePostCall<{ message: string }>("raven.raven_messaging.doctype.raven_message.raven_message.get_index_of_message")
 
-    const { data: channels, error: channelsError } = useFrappeGetCall<{ message: ChannelData[] }>("raven.raven_channel_management.doctype.raven_channel.raven_channel.get_channel_list")
+    const handleNavigateToChannel = (channelID: string, _callback: VoidFunction) => {
+        onClose()
+        onCommandPaletteClose()
+        navigate(`/channel/${channelID}`)
+        _callback()
+    }
+
+    const handleScrollToMessage = (messageName: string, channelID: string) => {
+        reset()
+        handleNavigateToChannel(channelID, async function () {
+            const result = await call({
+                channel_id: channelID,
+                message_id: messageName
+            })
+            if (virtuosoRef) {
+                virtuosoRef.current?.scrollToIndex({ index: parseInt(result.message) ?? 'LAST', align: 'center' })
+            }
+        })
+    }
+
+    const toast = useToast()
+
+    if (indexingError && !toast.isActive('message-indexing-error')) {
+        toast({
+            description: "There was an error while indexing the message.",
+            status: "error",
+            duration: 4000,
+            size: 'sm',
+            render: ({ onClose }) => <AlertBanner onClose={onClose} variant='solid' status='error' fontSize="sm">
+                There was an error while indexing the message.<br />You have been redirected to the channel.
+            </AlertBanner>,
+            id: 'message-indexing-error',
+            variant: 'left-accent',
+            isClosable: true,
+            position: 'bottom-right'
+        })
+    }
 
     const userOptions: SelectOption[] = useMemo(() => {
         if (users) {
@@ -83,11 +136,16 @@ export const MessageSearch = ({ onToggleMyChannels, isOpenMyChannels, dateOption
     const watchDate = watch('date-filter')
     const watchMyChannels = watch('my-channels-filter')
     const watchWithUser = watch('with-user-filter')
+    const watchSaved = watch('saved-filter')
     const in_channel: string[] = watchChannel ? watchChannel.map((channel: SelectOption) => (channel.value)) : []
     const from_user: string[] = watchFromUser ? watchFromUser.map((user: SelectOption) => (user.value)) : []
     const with_user: string[] = watchWithUser ? watchWithUser.map((user: SelectOption) => (user.value)) : []
     const date = watchDate ? watchDate.value : null
     const my_channel_only: boolean = watchMyChannels ? watchMyChannels : false
+    const saved: boolean = watchSaved ? watchSaved : false
+
+    console.log(saved)
+    console.log(my_channel_only)
 
     const [sortOrder, setSortOrder] = useState("desc")
     const [sortByField, setSortByField] = useState<string>('creation')
@@ -102,8 +160,11 @@ export const MessageSearch = ({ onToggleMyChannels, isOpenMyChannels, dateOption
         with_user: JSON.stringify(with_user),
         date: date,
         my_channel_only: my_channel_only,
+        saved: saved,
         sort_order: sortOrder,
         sort_field: sortByField
+    }, undefined, {
+        revalidateOnFocus: false
     })
 
     useEffect(() => {
@@ -127,7 +188,7 @@ export const MessageSearch = ({ onToggleMyChannels, isOpenMyChannels, dateOption
                 {!!!channelsError &&
                     <FormProvider {...methods}>
                         <chakra.form>
-                            <HStack>
+                            <HStack justifyContent="space-between">
                                 <FormControl id="from-user-filter" w='fit-content'>
                                     <SelectInput placeholder="From" size='sm' options={userOptions} name='from-user-filter' isMulti={true} chakraStyles={{
                                         multiValue: (chakraStyles) => ({ ...chakraStyles, display: 'flex', alignItems: 'center', overflow: 'hidden', padding: '0rem 0.2rem 0rem 0rem' }),
@@ -162,8 +223,31 @@ export const MessageSearch = ({ onToggleMyChannels, isOpenMyChannels, dateOption
                                                     border: "2px solid #3182CE"
                                                 }}
                                             >
-                                                Only my channels
+                                                Only in my channels
                                             </Button>
+                                        )}
+                                    />
+                                </FormControl>
+                                <FormControl id="saved-filter" w='fit-content'>
+                                    <Controller
+                                        name="saved-filter"
+                                        control={control}
+                                        render={({ field: { onChange, value } }) => (
+                                            <IconButton
+                                                aria-label="saved-filter"
+                                                icon={isSaved ? <IoBookmark /> : <IoBookmarkOutline />}
+                                                borderRadius={3}
+                                                size="sm"
+                                                w="fit-content"
+                                                isActive={value = isSaved}
+                                                onClick={() => {
+                                                    onToggleSaved()
+                                                    onChange(!value)
+                                                }}
+                                                _active={{
+                                                    border: "2px solid #3182CE"
+                                                }}
+                                            />
                                         )}
                                     />
                                 </FormControl>
@@ -173,7 +257,7 @@ export const MessageSearch = ({ onToggleMyChannels, isOpenMyChannels, dateOption
             </Stack>
             <Stack h='420px' p={4}>
                 {error ? <AlertBanner status='error' heading={error.message}>{error.httpStatus} - {error.httpStatusText}</AlertBanner> :
-                    (isLoading && isValidating ? <FullPageLoader /> :
+                    ((isLoading && isValidating) || loading ? <Center><Spinner /></Center> :
                         (!!!error && data?.message && data.message.length > 0 && showResults ?
                             <><Sort
                                 sortingFields={[{ label: 'Created on', field: 'creation' }]}
@@ -182,29 +266,11 @@ export const MessageSearch = ({ onToggleMyChannels, isOpenMyChannels, dateOption
                                 sortField={sortByField}
                                 onSortOrderChange={(order) => setSortOrder(order)} />
                                 <Stack overflowY='scroll' pt={4}>
-                                    {data.message.map(({ name, text, owner, creation, channel_id }) => {
+                                    {data.message.map(({ name, text, owner, creation, channel_id }: MessageSearchResult) => {
                                         const channelName: any = channelOption.find((channel) => channel.value === channel_id)?.label
-                                        const isArchived: number = channelOption.find((channel) => channel.value === channel_id)?.is_archived as number
+                                        const isArchived: 1 | 0 = channelOption.find((channel) => channel.value === channel_id)?.is_archived as 1 | 0;
                                         return (
-                                            <ChatMessageBox
-                                                key={name}
-                                                message={{
-                                                    name: name,
-                                                    text: text,
-                                                    file: null,
-                                                    message_type: 'Text',
-                                                    owner: owner,
-                                                    creation: creation
-                                                }}
-                                                isSearchResult={true}
-                                                isArchived={isArchived}
-                                                channelName={channelName}
-                                                channelID={channel_id}
-                                                py={1}
-                                                zIndex={0}
-                                                creation={creation}                                            >
-                                                {text && <MarkdownRenderer content={text} />}
-                                            </ChatMessageBox>
+                                            <MessageBox messageName={name} channelName={channelName} channelID={channel_id} isArchived={isArchived} creation={creation} owner={owner} messageText={text} handleScrollToMessage={handleScrollToMessage} message_type={'Text'} />
                                         )
                                     }
                                     )}

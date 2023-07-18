@@ -2,28 +2,28 @@ import { IonIcon, IonLabel, IonRouterOutlet, IonSpinner, IonTabBar, IonTabButton
 import { IonReactRouter } from '@ionic/react-router'
 import { useContext } from 'react'
 import { Redirect, Route } from 'react-router-dom'
-import { UserContext } from './UserProvider'
-import { personCircleOutline, homeOutline } from 'ionicons/icons';
 import { Login } from '../pages/auth'
 import { Profile } from '../pages/profile'
 import { FullPageLoader } from '../components/common'
 import { ChannelList, ViewChannel } from '../pages/channels'
-type Props = {
-    refreshFrappeURL: () => Promise<void>
-}
+import { AuthContext } from './AuthProvider'
+import { BiHash, BiChat, BiBell, BiUser, BiSearch } from 'react-icons/bi'
+import { DirectMessageList } from '../pages/directMessages/DirectMessageList'
+import { Search } from '../pages/search/Search'
+import { Notifications } from '../pages/notifications/Notifications'
 
-export const AppRouter = ({ refreshFrappeURL }: Props) => {
+export const AppRouter = () => {
 
-    const { currentUser, isLoading } = useContext(UserContext)
+    const { isAuthenticated, logout } = useContext(AuthContext)
 
-    if (isLoading) {
-        return <FullPageLoader />
-    }
-    if (currentUser) {
+    if (isAuthenticated) {
         {/* @ts-ignore */ }
         return <IonReactRouter>
             <IonRouterOutlet animated>
                 <Route exact path="/channels" component={Tabs} />
+                <Route exact path="/directmessages" component={Tabs} />
+                <Route exact path="/search" component={Tabs} />
+                <Route exact path="/notifications" component={Tabs} />
                 <Route exact path="/profile" component={Tabs} />
                 <Route exact path="/">
                     <Redirect to="/channels" />
@@ -31,9 +31,10 @@ export const AppRouter = ({ refreshFrappeURL }: Props) => {
                 <Route exact path="/channel/:channelID" component={ViewChannel} />
             </IonRouterOutlet>
         </IonReactRouter>
+        // logout()
     }
     return (
-        <Login refreshFrappeURL={refreshFrappeURL} />
+        <Login />
     )
 }
 
@@ -43,18 +44,34 @@ const Tabs = () => {
             <Route exact path="/:tab(channels)">
                 <ChannelList />
             </Route>
+            <Route exact path="/:tab(directmessages)">
+                <DirectMessageList />
+            </Route>
+            <Route exact path="/:tab(search)">
+                <Search />
+            </Route>
+            <Route exact path="/:tab(notifications)">
+                <Notifications />
+            </Route>
             <Route exact path="/:tab(profile)">
                 <Profile />
             </Route>
         </IonRouterOutlet>
         <IonTabBar slot="bottom">
             <IonTabButton tab="channels" href="/channels">
-                <IonIcon aria-hidden="true" icon={homeOutline} />
-                <IonLabel>Home</IonLabel>
+                <BiHash size={30} />
+            </IonTabButton>
+            <IonTabButton tab="directmessages" href="/directmessages">
+                <BiChat size={30} />
+            </IonTabButton>
+            <IonTabButton tab="search" href="/search">
+                <BiSearch size={30} />
+            </IonTabButton>
+            <IonTabButton tab="notifications" href="/notifications">
+                <BiBell size={30} />
             </IonTabButton>
             <IonTabButton tab="profile" href="/profile">
-                <IonIcon aria-hidden="true" icon={personCircleOutline} />
-                <IonLabel>Profile</IonLabel>
+                <BiUser size={30} />
             </IonTabButton>
         </IonTabBar>
     </IonTabs>
