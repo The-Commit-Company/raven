@@ -20,6 +20,8 @@ export const AddMembersDropdown = ({ name, chakraStyles, ...props }: Props<Membe
 
     const { data } = useFrappeGetDocList<{ name: string, user_image: string, full_name: string }>('User', {
         fields: ["name", "user_image", "full_name"]
+    }, undefined, {
+        revalidateOnFocus: false
     })
 
     const memberOptions: MemberOption[] = useMemo(() => {
