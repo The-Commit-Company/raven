@@ -144,9 +144,6 @@ export const MessageSearch = ({ onToggleMyChannels, isOpenMyChannels, onToggleSa
     const my_channel_only: boolean = watchMyChannels ? watchMyChannels : false
     const saved: boolean = watchSaved ? watchSaved : false
 
-    console.log(saved)
-    console.log(my_channel_only)
-
     const [sortOrder, setSortOrder] = useState("desc")
     const [sortByField, setSortByField] = useState<string>('creation')
     const [showResults, setShowResults] = useState<boolean>(false)

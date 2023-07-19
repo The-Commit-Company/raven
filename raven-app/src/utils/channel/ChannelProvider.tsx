@@ -28,10 +28,7 @@ export const ChannelProvider = ({ children }: PropsWithChildren) => {
     }, undefined, {
         revalidateOnFocus: false
     })
-    const { data: users, error: usersError } = useFrappeGetDocList<User>("User", {
-        fields: ["full_name", "user_image", "name"],
-        filters: [["name", "!=", "Guest"]]
-    }, undefined, {
+    const { data: users, error: usersError } = useFrappeGetCall<{ message: User[] }>('raven.raven_channel_management.doctype.raven_channel.raven_channel.get_raven_users_list', undefined, undefined, {
         revalidateOnFocus: false
     })
 
@@ -59,7 +56,7 @@ export const ChannelProvider = ({ children }: PropsWithChildren) => {
             cm[member.name] = member
         })
         const userData: Record<string, User> = {}
-        users?.forEach((user: User) => {
+        users?.message.forEach((user: User) => {
             userData[user.name] = user
         })
         return {
