@@ -8,7 +8,6 @@ export interface MemberOption extends OptionBase {
     value: string
     label: string
     image: string
-    id: string
 }
 
 interface Member {
@@ -30,8 +29,7 @@ export const AddMembersDropdown = ({ name, chakraStyles, ...props }: Props<Membe
             return data.map((m: Member) => ({
                 value: m.name,
                 label: m.full_name,
-                image: m.user_image,
-                id: m.name
+                image: m.user_image
             }))
         } else {
             return []
@@ -47,17 +45,41 @@ export const AddMembersDropdown = ({ name, chakraStyles, ...props }: Props<Membe
             render={({
                 field: { onChange, onBlur, value, name, ref }
             }) => {
-                const memberValue = memberOptions.find((u) => u.id === value)
+                const memberValue = memberOptions.find((u) => u.value === value)
                 return (
                     <Select<MemberOption, true, GroupBase<MemberOption>>
                         name={name}
                         ref={ref}
                         isMulti
-                        onChange={(value) => { onChange(value?.map((v) => v.id)) }}
+                        onChange={(value) => { onChange(value?.map((v) => v.value)) }}
                         onBlur={onBlur}
                         value={memberValue}
-                        chakraStyles={{ ...defaultStyles, ...chakraStyles }}
-                        selectedOptionColor="transparent"
+                        chakraStyles={{
+                            dropdownIndicator: (provided) => ({
+                                ...provided,
+                                paddingLeft: 0,
+                                marginLeft: 0,
+                                marginRight: 1.5,
+                                fontSize: '1.2rem',
+                                paddingRight: 0,
+                                backgroundColor: 'transparent',
+                            }),
+                            indicatorSeparator: (provided) => ({
+                                ...provided,
+                                display: "none"
+                            }),
+                            valueContainer: (provided) => ({
+                                ...provided,
+                                border: 'none',
+                                paddingLeft: 1.5,
+                                display: 'flex'
+                            }),
+                            container: (provided) => ({
+                                ...provided,
+                                width: '100%',
+                            }),
+                            ...defaultStyles
+                        }}
                         options={memberOptions}
                         placeholder={props.placeholder ?? "ex. John, or lily@gmail.com"}
                         noOptionsMessage={() => ('No matches found - try using their email instead')}
@@ -88,7 +110,7 @@ export const pfp = (image: string) => ({
         borderRadius: '50%',
         content: '" "',
         display: 'block',
-        marginRight: 3,
+        marginRight: 1.5,
         height: 6,
         width: 6,
     },
@@ -108,26 +130,18 @@ export const fallbackPfp = (name: string) => ({
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
-        marginRight: 3,
+        marginRight: 1.5,
         height: 4,
         width: 4,
     },
 })
 
 const defaultStyles: ChakraStylesConfig<MemberOption> = {
-    control: (chakraStyles) => ({ ...chakraStyles, backgroundColor: 'transparent', width: '12rem', fontSize: 'sm' }),
-    menu: (chakraStyles) => ({ ...chakraStyles, borderRadius: 'md', width: '12rem', borderWidth: '1px' }),
-    menuList: (chakraStyles) => ({ ...chakraStyles, borderColor: 'transparent' }),
-    dropdownIndicator: (chakraStyles) => ({ ...chakraStyles, bg: "transparent", cursor: "inherit", width: '2rem' }),
-    clearIndicator: (chakraStyles) => ({ ...chakraStyles, bg: "transparent", cursor: "inherit", width: '2rem' }),
     option: (chakraStyles, { isSelected, data }) => ({
-        ...chakraStyles, ...((data.image && { ...pfp(data.image) }) || { ...fallbackPfp(data.label) }), width: '12rem', fontSize: 'sm', ...(isSelected && {
+        ...chakraStyles, ...((data.image && { ...pfp(data.image) }) || { ...fallbackPfp(data.label) }), fontSize: 'sm', ...(isSelected && {
             backgroundColor: "#E2E8F0",
             color: "black",
         })
     }),
-    indicatorSeparator: (chakraStyles) => ({ ...chakraStyles, display: "none" }),
-    input: (chakraStyles) => ({ ...chakraStyles }),
     singleValue: (chakraStyles, { data }) => ({ ...chakraStyles, ...((data.image && { ...pfp(data.image) }) || { ...fallbackPfp(data.label) }) }),
-    noOptionsMessage: (chakraStyles) => ({ ...chakraStyles, width: '12rem', fontSize: 'sm' })
 }

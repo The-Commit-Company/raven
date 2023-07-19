@@ -1,30 +1,20 @@
 import { useFrappeAuth } from 'frappe-react-sdk'
-import { createContext, FC, PropsWithChildren } from 'react'
+import { createContext, FC, PropsWithChildren, useContext } from 'react'
+import { AuthContext } from './AuthProvider'
 
 interface UserContextProps {
-    isLoading: boolean,
-    isValidating: boolean,
-    currentUser: string,
-    login: (username: string, password: string) => Promise<void>,
-    logout: () => Promise<void>,
-    updateCurrentUser: VoidFunction,
+    currentUser: string
 }
 
 export const UserContext = createContext<UserContextProps>({
-    currentUser: '',
-    isLoading: false,
-    isValidating: false,
-    login: () => Promise.resolve(),
-    logout: () => Promise.resolve(),
-    updateCurrentUser: () => { },
+    currentUser: ''
 })
 
 export const UserProvider: FC<PropsWithChildren> = ({ children }) => {
-
-    const { login, logout, isValidating, currentUser, error, updateCurrentUser, isLoading } = useFrappeAuth()
-
+    const { currentUser } = useContext(AuthContext)
+    console.log(currentUser)
     return (
-        <UserContext.Provider value={{ isLoading, updateCurrentUser, login, logout, currentUser: currentUser ?? "", isValidating }}>
+        <UserContext.Provider value={{ currentUser: currentUser ?? "" }}>
             {children}
         </UserContext.Provider>
     )
