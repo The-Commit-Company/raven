@@ -18,6 +18,8 @@ import { AiOutlineFileExcel, AiOutlineFileImage, AiOutlineFilePdf, AiOutlineFile
 import './styles.css'
 import { FileMessage } from '../../../types/Messaging/Message'
 import { IoBookmark, IoBookmarkOutline } from 'react-icons/io5'
+import { FilePreviewModal } from '../file-preview/FilePreviewModal'
+import { useModalManager, ModalTypes } from "../../../hooks/useModalManager"
 
 interface FilterInput {
     'from-user-filter': SelectOption[],
@@ -138,6 +140,8 @@ export const FileSearch = ({ onToggleMyChannels, isOpenMyChannels, onToggleSaved
         revalidateOnFocus: false
     })
 
+    const modalManager = useModalManager()
+
     return (
         <TabPanel px={0}>
             <Stack px={4}>
@@ -234,6 +238,14 @@ export const FileSearch = ({ onToggleMyChannels, isOpenMyChannels, onToggleSaved
                                 <Stack spacing={4} overflowY='scroll'>
 
                                     {data.message.map((f: FileMessage) => {
+                                        const onFilePreviewModalOpen = () => {
+                                            modalManager.openModal(ModalTypes.FilePreview, {
+                                                file: f.file,
+                                                owner: f.owner,
+                                                creation: f.creation,
+                                                message_type: f.message_type
+                                            })
+                                        }
                                         return (
                                             <HStack spacing={3} key={f.name}>
                                                 <Center maxW='50px'>
@@ -241,7 +253,7 @@ export const FileSearch = ({ onToggleMyChannels, isOpenMyChannels, onToggleSaved
                                                     {f.message_type === 'Image' && <Image src={f.file} alt='File preview' boxSize={'36px'} rounded='md' fit='cover' />}
                                                 </Center>
                                                 <Stack spacing={0}>
-                                                    {f.file && <Text fontSize='sm' as={Link} href={f.file} isExternal>{getFileName(f.file)}</Text>}
+                                                    {f.file && <Text fontSize='sm' as={Link} onClick={onFilePreviewModalOpen}>{getFileName(f.file)}</Text>}
                                                     {users && <Text fontSize='xs' color='gray.500'>Shared by {users.find((user: User) => user.name === f.owner)?.full_name} on {DateObjectToFormattedDateString(new Date(f.creation ?? ''))}</Text>}
                                                 </Stack>
                                             </HStack>
@@ -250,6 +262,11 @@ export const FileSearch = ({ onToggleMyChannels, isOpenMyChannels, onToggleSaved
                                     )}
                                 </Stack></> : <EmptyStateForSearch />))}
             </Stack>
+            <FilePreviewModal
+                isOpen={modalManager.modalType === ModalTypes.FilePreview}
+                onClose={modalManager.closeModal}
+                {...modalManager.modalContent}
+            />
         </TabPanel>
     )
 }
