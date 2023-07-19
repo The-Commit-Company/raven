@@ -11,10 +11,7 @@ import { SidebarBadge, SidebarViewMoreButton } from "../../layout/Sidebar/Sideba
 
 export const DirectMessageList = ({ userData }: { userData: User | null }) => {
     const { url } = useContext(FrappeContext) as FrappeConfig
-    const { data: users, error: usersError } = useFrappeGetDocList<User>("User", {
-        fields: ["full_name", "user_image", "name"],
-        filters: [["name", "!=", "Guest"]]
-    }, undefined, {
+    const { data: users, error: usersError } = useFrappeGetCall<{ message: User[] }>('raven.raven_channel_management.doctype.raven_channel.raven_channel.get_raven_users_list', undefined, undefined, {
         revalidateOnFocus: false
     })
     const { call, error: channelError, loading, reset } = useFrappePostCall<{ message: string }>("raven.raven_channel_management.doctype.raven_channel.raven_channel.create_direct_message_channel")
@@ -91,7 +88,7 @@ export const DirectMessageList = ({ userData }: { userData: User | null }) => {
                             {DMChannelsError.httpStatus} - {DMChannelsError.httpStatusText}
                         </AlertBanner>
                     )}
-                    {showData && users && users.map((user: User) => {
+                    {showData && users && users.message.map((user: User) => {
                         const unreadChannelCount = unreadCount.channels?.find((unread) => unread.user_id == user.name)?.unread_count
                         return (
                             <SidebarButtonItem

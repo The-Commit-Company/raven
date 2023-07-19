@@ -201,14 +201,15 @@ ion-tab-bar {
     border-radius: 12px;
     width: 92%;
     margin: 0 auto;
-    background-color: #1A202C;
-    box-shadow: 0 4px 6px -1px rgba(100, 100, 100, 0.25), 0 2px 4px -1px rgba(100, 100, 100, 0.25);
+    background-color: #1b202d80;
+    box-shadow: 0 4px 6px -1px #1b202d80, 0 2px 4px -1px #1b202d;
 }
 
 ion-tab-button {
     --color: var(--ion-color-medium);
-    background-color: #1A202C;
+    background-color: #1b202d80;
     --color-selected: #B589D6;
+    backdrop-filter: blur(8px);
 }
 
 ion-tab-button::before {
@@ -218,8 +219,4 @@ ion-tab-button::before {
     margin: 0 auto;
     width: 20px;
     height: 2px;
-}
-
-ion-tab-button.tab-selected::before {
-    @apply bg-primary
 }

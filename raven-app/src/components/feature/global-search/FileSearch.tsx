@@ -18,6 +18,7 @@ import { AiOutlineFileExcel, AiOutlineFileImage, AiOutlineFilePdf, AiOutlineFile
 import './styles.css'
 import { FileMessage } from '../../../types/Messaging/Message'
 import { IoBookmark, IoBookmarkOutline } from 'react-icons/io5'
+import { ChannelContext } from '../../../utils/channel/ChannelProvider'
 import { FilePreviewModal } from '../file-preview/FilePreviewModal'
 import { useModalManager, ModalTypes } from "../../../hooks/useModalManager"
 
@@ -50,16 +51,11 @@ export const FileSearch = ({ onToggleMyChannels, isOpenMyChannels, onToggleSaved
         revalidateOnFocus: false
     })
 
-    const { data: users, error: usersError } = useFrappeGetDocList<User>("User", {
-        fields: ["full_name", "user_image", "name"],
-        filters: [["name", "!=", "Guest"]]
-    }, undefined, {
-        revalidateOnFocus: false
-    })
+    const { users } = useContext(ChannelContext)
 
     const userOptions: SelectOption[] = useMemo(() => {
         if (users) {
-            return users.map((user: User) => ({
+            return Object.values(users).map((user: User) => ({
                 value: user.name,
                 label: <HStack><Avatar name={user.full_name} src={url + user.user_image} borderRadius={'md'} size="xs" /><Text>{user.full_name}</Text></HStack>
             }))
@@ -156,7 +152,7 @@ export const FileSearch = ({ onToggleMyChannels, isOpenMyChannels, onToggleSaved
                         placeholder='Search by file name or keyword'
                         value={debouncedText} />
                 </InputGroup>
-                {!!!usersError && !!!channelsError &&
+                {!!!channelsError &&
                     <FormProvider {...methods}>
                         <chakra.form>
                             <HStack justifyContent={'space-between'}>
@@ -253,8 +249,8 @@ export const FileSearch = ({ onToggleMyChannels, isOpenMyChannels, onToggleSaved
                                                     {f.message_type === 'Image' && <Image src={f.file} alt='File preview' boxSize={'36px'} rounded='md' fit='cover' />}
                                                 </Center>
                                                 <Stack spacing={0}>
-                                                    {f.file && <Text fontSize='sm' as={Link} onClick={onFilePreviewModalOpen}>{getFileName(f.file)}</Text>}
-                                                    {users && <Text fontSize='xs' color='gray.500'>Shared by {users.find((user: User) => user.name === f.owner)?.full_name} on {DateObjectToFormattedDateString(new Date(f.creation ?? ''))}</Text>}
+                                                    {f.file && <Text fontSize='sm' as={Link} href={f.file} isExternal>{getFileName(f.file)}</Text>}
+                                                    {users && <Text fontSize='xs' color='gray.500'>Shared by {Object.values(users).find((user: User) => user.name === f.owner)?.full_name} on {DateObjectToFormattedDateString(new Date(f.creation ?? ''))}</Text>}
                                                 </Stack>
                                             </HStack>
                                         )

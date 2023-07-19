@@ -33,7 +33,6 @@ export const ChannelList = (props: Props) => {
                         Add Channel
                     </IonLabel>
                 </IonItem>
-                <PrivateMessages />
             </IonContent>
         </IonPage>
     )
