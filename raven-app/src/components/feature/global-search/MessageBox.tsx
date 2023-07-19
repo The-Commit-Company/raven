@@ -3,6 +3,7 @@ import { useContext, useState } from "react"
 import { useModalManager, ModalTypes } from "../../../hooks/useModalManager"
 import { ChannelContext } from "../../../utils/channel/ChannelProvider"
 import { FileMessageBlock } from "../chat/ChatMessage/FileMessage"
+import { FilePreviewModal } from "../file-preview/FilePreviewModal"
 import { MarkdownRenderer } from "../markdown-viewer/MarkdownRenderer"
 
 type MessageBoxProps = {
@@ -74,6 +75,11 @@ export const MessageBox = ({ messageName, channelName, channelID, isArchived, cr
                     {file && (message_type === 'File' || message_type === 'Image') && <FileMessageBlock onFilePreviewModalOpen={onFilePreviewModalOpen} file={file} message_type={message_type} name={messageName} owner={owner} creation={creation} _liked_by={""} is_continuation={0} is_reply={0} />}
                 </Stack>
             </HStack>
+            <FilePreviewModal
+                isOpen={modalManager.modalType === ModalTypes.FilePreview}
+                onClose={modalManager.closeModal}
+                {...modalManager.modalContent}
+            />
         </Box>
     )
 }

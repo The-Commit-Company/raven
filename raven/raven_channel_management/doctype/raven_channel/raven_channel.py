@@ -3,7 +3,6 @@
 
 import frappe
 from frappe.model.document import Document
-from raven.raven_messaging.doctype.raven_message.raven_message import get_unread_count_for_channels, get_unread_count_for_direct_message_channels
 
 all_users = [member['name'] for member in frappe.get_all(
     "User", filters={"user_type": "System User"}, fields=["name"])]
@@ -94,8 +93,7 @@ def get_channel_list(hide_archived=False):
     if hide_archived:
         query = query.where(channel.is_archived == 0)
 
-    frappe.publish_realtime('unread_channel_count_updated', {
-        'unread_count': get_unread_count_for_channels()}, after_commit=True)
+    frappe.publish_realtime('unread_channel_count_updated', after_commit=True)
     frappe.db.commit()
 
     return query.run(as_dict=True)
@@ -179,8 +177,7 @@ def get_direct_message_channels_list():
         .where(channel.channel_name.like(f"%{frappe.session.user}%"))
         .select(channel.name, channel.channel_name, user.full_name, (user.name).as_('user_id')))
 
-    frappe.publish_realtime('unread_dm_count_updated', {
-        'unread_count': get_unread_count_for_direct_message_channels()}, after_commit=True)
+    frappe.publish_realtime('unread_dm_count_updated', after_commit=True)
     frappe.db.commit()
 
     return query.run(as_dict=True)
