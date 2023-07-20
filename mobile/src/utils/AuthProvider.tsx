@@ -1,7 +1,8 @@
 import { createContext, useState, useEffect, PropsWithChildren, FC } from "react";
 import { OAuth2Client } from "@byteowls/capacitor-oauth2";
 import { FrappeApp } from "frappe-js-sdk";
-import { SecureStoragePlugin } from "capacitor-secure-storage-plugin";
+import { Storage } from '@ionic/storage';
+import { store } from "../App";
 
 type AuthContextType = {
     accessToken: string;
@@ -31,10 +32,11 @@ const AuthProvider: FC<PropsWithChildren> = ({ children }) => {
     const [userInfo, setUserInfo] = useState(null);
     const [currentUser, setCurrentUser] = useState<string>('');
 
-    const response = async () => OAuth2Client.authenticate(
+    const response = async () => await OAuth2Client.authenticate(
         {
             appId: OAUTH_CLIENT_ID,
             redirectUrl: redirectUri,
+            resourceUrl: `${BASE_URI}/api/method/frappe.integrations.oauth2.openid_profile`,
             responseType: "code",
             scope: "all",
             pkceEnabled: true,
@@ -44,10 +46,7 @@ const AuthProvider: FC<PropsWithChildren> = ({ children }) => {
     ).then(async (res) => {
         const authResponse = res;
         const storageValue = JSON.stringify(authResponse);
-        await SecureStoragePlugin.set({
-            key: SECURE_AUTH_STATE_KEY,
-            value: storageValue,
-        });
+        await store.set(SECURE_AUTH_STATE_KEY, storageValue);
         setIsAuthenticated(true);
         setToken(authResponse.access_token);
         setRefreshToken(authResponse.access_token_response.refresh_token);
@@ -82,7 +81,16 @@ const AuthProvider: FC<PropsWithChildren> = ({ children }) => {
     };
 
     const logout = async () => {
-        await SecureStoragePlugin.remove({ key: SECURE_AUTH_STATE_KEY });
+        await OAuth2Client.logout({
+            appId: OAUTH_CLIENT_ID,
+            redirectUrl: redirectUri,
+            responseType: "code",
+            scope: "all",
+            pkceEnabled: true,
+            authorizationBaseUrl: `${BASE_URI}/api/method/frappe.integrations.oauth2.authorize`,
+            accessTokenEndpoint: `${BASE_URI}/api/method/frappe.integrations.oauth2.get_token`,
+        })
+        await store.remove(SECURE_AUTH_STATE_KEY);
         setIsAuthenticated(false);
         setToken('');
         setRefreshToken('');
@@ -94,17 +102,18 @@ const AuthProvider: FC<PropsWithChildren> = ({ children }) => {
             logout();
             return;
         }
-        OAuth2Client.refreshToken(
+        await OAuth2Client.refreshToken(
             {
-                refreshToken,
+                refreshToken: refreshToken,
                 appId: "",
                 accessTokenEndpoint: `${BASE_URI}/api/method/frappe.integrations.oauth2.get_token`,
             }
         )
             .then(async (res) => {
                 const authResponse = res;
+                console.log(authResponse)
                 const storageValue = JSON.stringify(authResponse);
-                await SecureStoragePlugin.set({ key: SECURE_AUTH_STATE_KEY, value: storageValue });
+                await store.set(SECURE_AUTH_STATE_KEY, storageValue);
 
                 setToken(authResponse.accessToken);
                 setRefreshToken(authResponse.refreshToken);
@@ -128,30 +137,30 @@ const AuthProvider: FC<PropsWithChildren> = ({ children }) => {
     };
 
 
-    useEffect(() => {
-        isAuthenticated &&
-            SecureStoragePlugin.get({ key: SECURE_AUTH_STATE_KEY })
-                .then((result) => {
-                    if (result) {
-                        // @ts-ignore
-                        const accessToken = result.value["access_token"];
-                        // @ts-ignore
-                        const refreshToken = result.value["refresh_token"];
-                        setToken(accessToken);
-                        setRefreshToken(refreshToken);
-                        setIsAuthenticated(true);
-                    } else {
-                        response();
-                    }
-                })
-                .catch((e: any) => console.error(e));
-    }, [response]);
+    // useEffect(() => {
+    //     store.get(SECURE_AUTH_STATE_KEY)
+    //         .then((result) => {
+    //             if (result) {
+    //                 console.log(result)
+    //                 // @ts-ignore
+    //                 const accessToken = result["access_token"];
+    //                 // @ts-ignore
+    //                 const refreshToken = result["refresh_token"];
+    //                 setToken(accessToken);
+    //                 setRefreshToken(refreshToken);
+    //                 setIsAuthenticated(true);
+    //             } else {
+    //                 refreshAccessTokenAsync()
+    //             }
+    //         })
+    //         .catch((e: any) => console.error(e));
+    // }, [refreshAccessTokenAsync]);
 
-    useEffect(() => {
-        if (accessToken) {
-            fetchUserInfo();
-        }
-    }, [accessToken])
+    // useEffect(() => {
+    //     if (accessToken) {
+    //         fetchUserInfo();
+    //     }
+    // }, [accessToken])
 
     return (
         <AuthContext.Provider
