@@ -1,10 +1,11 @@
-import { IonItem, IonList, IonText } from '@ionic/react'
+import { IonAvatar, IonItem, IonList, IonText } from '@ionic/react'
 import { useContext } from 'react'
 import { ChannelContext } from '../../../pages/channels/ViewChannel'
 import { MarkdownRenderer } from './MarkdownRenderer'
 import { FrappeConfig, FrappeContext } from 'frappe-react-sdk'
 import { getFileExtensionIcon } from '../../../utils/layout/fileExtensions'
 import { DateBlock, MessageBlock } from '../../../../../raven-app/src/types/Messaging/Message'
+import Avatar from 'react-avatar'
 
 type Props = {
     messages: (DateBlock | MessageBlock)[]
@@ -31,9 +32,15 @@ const MessageView = ({ message }: { message: MessageBlock }) => {
     const { channelMembers } = useContext(ChannelContext)
     const { url } = useContext(FrappeContext) as FrappeConfig
     return <IonItem className='flex py-4 items-start'>
-        <div style={{ height: "40px", width: "40px", maxWidth: "40px" }} className='w-1/5'>
+        {/* <div style={{ height: "40px", width: "40px", maxWidth: "40px" }} className='w-1/5'>
             <img style={{ height: "40px", width: "100%", objectFit: 'cover', borderRadius: '4px' }} src={url + channelMembers[message.data.owner]?.user_image} alt={channelMembers[message.data.owner]?.full_name} />
-        </div>
+        </div> */}
+        {channelMembers[message.data.owner]?.user_image ?
+            <IonAvatar style={{ "--border-radius": "8px" }} className="h-10 w-10">
+                <img src={url + channelMembers[message.data.owner]?.user_image} />
+            </IonAvatar>
+            :
+            <Avatar src={url + channelMembers[message.data.owner]?.user_image} name={channelMembers[message.data.owner]?.full_name} size='40' round="8px" />}
         <div className='ml-3 w-4/5'>
             <div style={{ lineHeight: 0.5 }} className='mb-2'>
                 <IonText className='font-semibold text-sm' style={{ lineHeight: 0 }}>{channelMembers[message.data.owner].full_name}</IonText>

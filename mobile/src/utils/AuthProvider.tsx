@@ -156,11 +156,11 @@ const AuthProvider: FC<PropsWithChildren> = ({ children }) => {
     //         .catch((e: any) => console.error(e));
     // }, [refreshAccessTokenAsync]);
 
-    // useEffect(() => {
-    //     if (accessToken) {
-    //         fetchUserInfo();
-    //     }
-    // }, [accessToken])
+    useEffect(() => {
+        if (accessToken) {
+            fetchUserInfo();
+        }
+    }, [accessToken])
 
     return (
         <AuthContext.Provider

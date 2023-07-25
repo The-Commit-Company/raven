@@ -1,5 +1,5 @@
-import { useFrappeCreateDoc } from 'frappe-react-sdk'
-import React, { useCallback, useState } from 'react'
+import { useFrappeCreateDoc, useFrappeFileUpload, useFrappePostCall, useFrappeUpdateDoc } from 'frappe-react-sdk'
+import React, { useCallback, useRef, useState } from 'react'
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css'
 import "quill-mention";
@@ -7,16 +7,26 @@ import 'quill-mention/dist/quill.mention.css';
 import './quill-styles.css'
 import { IonButton, IonIcon } from '@ionic/react';
 import { paperPlane, paperPlaneOutline, sendOutline } from 'ionicons/icons';
+import { fileExt } from '../../../../../raven-app/src/components/feature/chat/ChatInput'
+import { getFileExtension } from '../../../../../raven-app/src/utils/operations';
+import { CustomFile } from '../../../../../raven-app/src/components/feature/file-upload/FileDrop';
+import { Message } from '../../../../../raven-app/src/types/Messaging/Message';
 
 type Props = {
     channelID: string,
     allMembers: { id: string; value: string; }[],
     allChannels: { id: string; value: string; }[],
-    onMessageSend: () => void
+    onMessageSend: () => void,
+    selectedMessage?: Message | null,
+    handleCancelReply: () => void
 }
 
-export const ChatInput = ({ channelID, allChannels, allMembers, onMessageSend }: Props) => {
-    const { createDoc } = useFrappeCreateDoc()
+export const ChatInput = ({ channelID, allChannels, allMembers, onMessageSend, selectedMessage, handleCancelReply }: Props) => {
+
+    const { call } = useFrappePostCall('raven.raven_messaging.doctype.raven_message.raven_message.send_message')
+    const { createDoc, loading: creatingDoc, error: errorCreatingDoc, reset: resetCreateDoc } = useFrappeCreateDoc()
+    const { upload, loading: uploadingFile, progress, error: errorUploadingDoc, reset: resetUploadDoc } = useFrappeFileUpload()
+    const { updateDoc, loading: updatingDoc, error: errorUpdatingDoc, reset: resetUpdateDoc } = useFrappeUpdateDoc()
 
     const [text, setText] = useState("")
 
@@ -24,16 +34,54 @@ export const ChatInput = ({ channelID, allChannels, allMembers, onMessageSend }:
         setText(value)
     }
 
+    const [files, setFiles] = useState<CustomFile[]>([])
+
     const onSubmit = () => {
-        createDoc('Raven Message', {
+        call({
             channel_id: channelID,
-            text: text
+            text: text,
+            is_reply: selectedMessage ? 1 : 0,
+            linked_message: selectedMessage ? selectedMessage.name : null
         }).then(() => {
             setText("")
+            handleCancelReply()
             onMessageSend()
         })
-    }
+        if (files.length > 0) {
+            const promises = files.map(async (f: CustomFile) => {
+                let docname = ''
+                return createDoc('Raven Message', {
+                    channel_id: channelID
+                }).then((d) => {
+                    docname = d.name
+                    f.uploading = true
+                    f.uploadProgress = progress
+                    return upload(f, {
+                        isPrivate: true,
+                        doctype: 'Raven Message',
+                        docname: d.name,
+                        fieldname: 'file',
+                    })
+                }).then((r) => {
+                    f.uploading = false
+                    return updateDoc("Raven Message", docname, {
+                        file: r.file_url,
+                        message_type: fileExt.includes(getFileExtension(f.name)) ? "Image" : "File",
+                    })
+                })
+            })
 
+            Promise.all(promises)
+                .then(() => {
+                    setFiles([])
+                    resetCreateDoc()
+                    resetUploadDoc()
+                    resetUpdateDoc()
+                }).catch((e) => {
+                    console.log(e)
+                })
+        }
+    }
 
     const mention = {
         allowedChars: /^[A-Za-z\sÅÄÖåäö]*$/,
