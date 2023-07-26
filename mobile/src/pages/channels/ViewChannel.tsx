@@ -4,7 +4,7 @@ import React, { createContext, createRef, ReactElement, useEffect, useMemo, useS
 import { RouteComponentProps } from 'react-router-dom'
 import { ErrorBanner, FullPageLoader } from '../../components/common'
 import { ChannelContent, ChannelHeader } from '../../components/features/ViewChannel'
-import { ChatInput } from '../../components/features/ViewChannel/ChatInput'
+import { ChatInput } from '../../components/features/ChatInput/ChatInput'
 import { useFrappeEventListener } from 'frappe-react-sdk'
 import { Message, MessagesWithDate } from "../../../../raven-app/src/types/Messaging/Message"
 
