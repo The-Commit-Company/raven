@@ -1,12 +1,12 @@
 import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonButtons, IonBackButton, IonFooter } from '@ionic/react'
 import { useFrappeGetCall, useFrappeGetDocList } from 'frappe-react-sdk'
-import React, { createContext, createRef, ReactElement, useEffect, useMemo } from 'react'
+import React, { createContext, createRef, ReactElement, useEffect, useMemo, useState } from 'react'
 import { RouteComponentProps } from 'react-router-dom'
 import { ErrorBanner, FullPageLoader } from '../../components/common'
 import { ChannelContent, ChannelHeader } from '../../components/features/ViewChannel'
-import { ChatInput } from '../../components/features/ViewChannel/ChatInput'
+import { ChatInput } from '../../components/features/ChatInput/ChatInput'
 import { useFrappeEventListener } from 'frappe-react-sdk'
-import { MessagesWithDate } from "../../../../raven-app/src/types/Messaging/Message"
+import { Message, MessagesWithDate } from "../../../../raven-app/src/types/Messaging/Message"
 
 export type ChannelData = {
     name: string,
@@ -118,6 +118,16 @@ export const ViewChannel = (props: RouteComponentProps<IdentityParam>): ReactEle
             })
     }
 
+    const [selectedMessage, setSelectedMessage] = useState<Message | null>(null)
+
+    const handleReplyAction = (message: Message) => {
+        setSelectedMessage(message)
+    }
+
+    const handleCancelReply = () => {
+        setSelectedMessage(null)
+    }
+
     // const allChannels = channelList?.message.map((channel) => {
     //     return {
     //         id: channel.name,
@@ -129,10 +139,11 @@ export const ViewChannel = (props: RouteComponentProps<IdentityParam>): ReactEle
         <ChannelContext.Provider value={{ channelMembers: channelMembersObject, channelData: data?.message.channel_data }}>
             <IonPage>
                 <IonHeader translucent>
-                    <IonButtons>
-                        <IonBackButton defaultHref="/channels" />
-                    </IonButtons>
                     <IonToolbar>
+                        <IonButtons>
+                            <IonBackButton defaultHref="/channels" />
+                        </IonButtons>
+
                         <ChannelHeader />
                     </IonToolbar>
                 </IonHeader>
@@ -145,7 +156,7 @@ export const ViewChannel = (props: RouteComponentProps<IdentityParam>): ReactEle
                 </IonContent>
                 <IonFooter className='text-white'>
                     <div className='chat-input'>
-                        <ChatInput channelID={channelID} allMembers={allMembers} allChannels={[]} onMessageSend={onMessageSend} />
+                        <ChatInput channelID={channelID} allMembers={allMembers} allChannels={[]} onMessageSend={onMessageSend} selectedMessage={selectedMessage} handleCancelReply={handleCancelReply} />
                     </div>
                 </IonFooter>
             </IonPage>

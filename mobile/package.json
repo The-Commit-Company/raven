@@ -8,7 +8,11 @@
     "build": "tsc && vite build",
     "preview": "vite preview",
     "ionic:build": "npm run build",
-    "ionic:serve": "npm run dev"
+    "ionic:serve": "npm run dev",
+    "open:android": "npx cap open android",
+    "open:ios": "npx cap open ios",
+    "run:android": "tsc && vite build && npx cap run android",
+    "run:ios": "tsc && vite build && npx cap run ios"
   },
   "dependencies": {
     "@byteowls/capacitor-oauth2": "^4.0.2",
@@ -21,10 +25,9 @@
     "@capacitor/keyboard": "^4.1.1",
     "@capacitor/status-bar": "^4.1.1",
     "@ionic/react": "^6.6.0",
-    "@ionic/react-router": "^6.6.0",
+    "@ionic/react-router": "^7.2.0",
     "@ionic/storage": "^3.0.6",
     "axios": "^1.4.0",
-    "capacitor-secure-storage-plugin": "^0.9.0",
     "core-js-pure": "^3.31.1",
     "frappe-react-sdk": "^1.2.8",
     "ionicons": "^6.1.3",

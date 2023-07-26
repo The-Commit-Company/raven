@@ -12,6 +12,7 @@ export const UserContext = createContext<UserContextProps>({
 
 export const UserProvider: FC<PropsWithChildren> = ({ children }) => {
     const { currentUser } = useContext(AuthContext)
+    console.log("currentUser", currentUser)
     return (
         <UserContext.Provider value={{ currentUser: currentUser ?? "" }}>
             {children}

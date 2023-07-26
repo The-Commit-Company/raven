@@ -78,13 +78,18 @@ export const PrivateMessages = () => {
                     <Swiper modules={[Scrollbar]} scrollbar={{ draggable: true }} slidesPerView={4} className="px-4 py-2">
                         {results && results?.length > 0 ? results.map((user) => (
                             <SwiperSlide className="inline-block align-top" key={user.name} onClick={() => gotoDMChannel(user.name)}>
-                                {user.user_image ?
-                                    <IonAvatar className="h-16 w-16">
-                                        <img src={url + user.user_image} />
-                                    </IonAvatar>
-                                    :
-                                    <Avatar name={user.full_name} round size='64' />}
-                                <IonText className="px-2">{user.first_name}</IonText>
+                                <div className='flex flex-col items-center justify-start'>
+
+                                    {user.user_image ?
+                                        <IonAvatar className="h-16 w-16">
+                                            <img src={url + user.user_image} />
+                                        </IonAvatar>
+                                        :
+                                        <Avatar name={user.full_name} round size='64' />}
+                                    <div className='flex items-center justify-start'>
+                                        <IonText>{user.first_name}</IonText>
+                                    </div>
+                                </div>
                             </SwiperSlide>))
                             :
                             <div className="ion-text-center">No results found.</div>}

@@ -1,5 +1,7 @@
 import { IonAvatar, IonText, IonTitle } from '@ionic/react'
+import { FrappeConfig, FrappeContext } from 'frappe-react-sdk'
 import React, { useContext } from 'react'
+import Avatar from 'react-avatar'
 import { BiGlobe, BiHash, BiLock } from 'react-icons/bi'
 import { ChannelContext } from '../../../pages/channels/ViewChannel'
 import { UserContext } from '../../../utils/UserProvider'
@@ -39,15 +41,17 @@ export const ChannelHeader = (props: Props) => {
 }
 
 const DirectMessageChannelHeader = ({ name, image }: { name: string, image?: string }) => {
+    const { url } = useContext(FrappeContext) as FrappeConfig
 
     return (<IonTitle>
         <div className='flex flex-col items-center justify-start'>
             <div className='flex items-center justify-start'>
                 {image ?
-                    <div>
-                        <img style={{ height: 32, borderRadius: 4 }} src={image} alt={name} />
-                    </div>
-                    : <BiHash />}
+                    <IonAvatar className="h-10 w-10">
+                        <img src={url + image} />
+                    </IonAvatar>
+                    :
+                    <Avatar src={url + image} name={name} size='40' round />}
                 <h1 className='ml-2'>
                     {name}
                 </h1>
