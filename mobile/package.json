@@ -8,7 +8,11 @@
     "build": "tsc && vite build",
     "preview": "vite preview",
     "ionic:build": "npm run build",
-    "ionic:serve": "npm run dev"
+    "ionic:serve": "npm run dev",
+    "open:android": "npx cap open android",
+    "open:ios": "npx cap open ios",
+    "run:android": "tsc && vite build && npx cap run android",
+    "run:ios": "tsc && vite build && npx cap run ios"
   },
   "dependencies": {
     "@byteowls/capacitor-oauth2": "^4.0.2",

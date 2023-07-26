@@ -7,7 +7,6 @@ import 'quill-mention/dist/quill.mention.css';
 import './quill-styles.css'
 import { IonButton, IonIcon } from '@ionic/react';
 import { paperPlane, paperPlaneOutline, sendOutline } from 'ionicons/icons';
-import { fileExt } from '../../../../../raven-app/src/components/feature/chat/ChatInput'
 import { getFileExtension } from '../../../../../raven-app/src/utils/operations';
 import { CustomFile } from '../../../../../raven-app/src/components/feature/file-upload/FileDrop';
 import { Message } from '../../../../../raven-app/src/types/Messaging/Message';
@@ -22,6 +21,8 @@ type Props = {
 }
 
 export const ChatInput = ({ channelID, allChannels, allMembers, onMessageSend, selectedMessage, handleCancelReply }: Props) => {
+
+    const fileExt = ['jpg', 'JPG', 'jpeg', 'JPEG', 'png', 'PNG', 'gif', 'GIF']
 
     const { call } = useFrappePostCall('raven.raven_messaging.doctype.raven_message.raven_message.send_message')
     const { createDoc, loading: creatingDoc, error: errorCreatingDoc, reset: resetCreateDoc } = useFrappeCreateDoc()

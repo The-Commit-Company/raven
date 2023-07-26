@@ -21,6 +21,7 @@
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
+                <data android:scheme="@string/custom_url_scheme" android:host="oauth" />
             </intent-filter>
 
         </activity>

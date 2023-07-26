@@ -1,8 +1,8 @@
 import { createContext, useState, useEffect, PropsWithChildren, FC } from "react";
 import { OAuth2Client } from "@byteowls/capacitor-oauth2";
 import { FrappeApp } from "frappe-js-sdk";
-import { Storage } from '@ionic/storage';
 import { store } from "../App";
+import { FullPageLoader } from "../components/common";
 
 type AuthContextType = {
     accessToken: string;
@@ -12,11 +12,42 @@ type AuthContextType = {
     isAuthenticated: boolean;
     logout: () => void;
     refreshAccessTokenAsync: () => void;
-    fetchUserInfo: () => void;
     response: () => Promise<void>;
 }
 
-const AuthContext = createContext<AuthContextType>({ accessToken: '', refreshToken: '', userInfo: null, currentUser: '', isAuthenticated: false, logout: () => Promise.resolve, refreshAccessTokenAsync: () => Promise.resolve, fetchUserInfo: () => Promise.resolve, response: async () => { } });
+interface UserInfo {
+    sub: string;
+    name: string;
+    given_name: string;
+    family_name: string;
+    email: string;
+    picture: string;
+    roles: string[];
+}
+
+interface AccessTokenResponse {
+    access_token: string;
+    expires_in: number;
+    token_type: string;
+    scope: string;
+    refresh_token?: string;
+}
+
+interface AuthResponse {
+    sub: string;
+    name: string;
+    given_name: string;
+    family_name: string;
+    email: string;
+    picture: string;
+    roles: string[];
+    iss: string;
+    authorization_response: { code: string; state: string };
+    access_token_response: AccessTokenResponse;
+    access_token: string;
+}
+
+const AuthContext = createContext<AuthContextType>({ accessToken: '', refreshToken: '', userInfo: null, currentUser: '', isAuthenticated: false, logout: () => Promise.resolve, refreshAccessTokenAsync: () => Promise.resolve, response: async () => { } });
 
 const AuthProvider: FC<PropsWithChildren> = ({ children }) => {
 
@@ -29,20 +60,34 @@ const AuthProvider: FC<PropsWithChildren> = ({ children }) => {
 
     const [accessToken, setToken] = useState<string>('');
     const [refreshToken, setRefreshToken] = useState('');
-    const [userInfo, setUserInfo] = useState(null);
+    const [userInfo, setUserInfo] = useState<UserInfo>({} as UserInfo);
     const [currentUser, setCurrentUser] = useState<string>('');
+    const [expiresIn, setExpiresIn] = useState(0);
+    const [isLoading, setIsLoading] = useState(true);
 
-    const response = async () => await OAuth2Client.authenticate(
-        {
+    const authOptions = {
+        resourceUrl: `${BASE_URI}/api/method/frappe.integrations.oauth2.openid_profile`,
+        scope: "all",
+        responseType: "code",
+        pkceEnabled: true,
+        authorizationBaseUrl: `${BASE_URI}/api/method/frappe.integrations.oauth2.authorize`,
+        accessTokenEndpoint: `${BASE_URI}/api/method/frappe.integrations.oauth2.get_token`,
+        web: {
             appId: OAUTH_CLIENT_ID,
             redirectUrl: redirectUri,
-            resourceUrl: `${BASE_URI}/api/method/frappe.integrations.oauth2.openid_profile`,
-            responseType: "code",
-            scope: "all",
-            pkceEnabled: true,
-            authorizationBaseUrl: `${BASE_URI}/api/method/frappe.integrations.oauth2.authorize`,
-            accessTokenEndpoint: `${BASE_URI}/api/method/frappe.integrations.oauth2.get_token`,
-        }
+        },
+        android: {
+            appId: OAUTH_CLIENT_ID,
+            redirectUrl: "com.raven.app:/--/auth",
+        },
+        ios: {
+            appId: OAUTH_CLIENT_ID,
+            redirectUrl: "com.raven.app:/--/auth",
+        },
+    }
+
+    const response = async () => await OAuth2Client.authenticate(
+        authOptions
     ).then(async (res) => {
         const authResponse = res;
         const storageValue = JSON.stringify(authResponse);
@@ -54,47 +99,36 @@ const AuthProvider: FC<PropsWithChildren> = ({ children }) => {
         console.error(err);
     });
 
-    const fetchUserInfo = async () => {
+    const fetchUserInfo = async (authData: AuthResponse) => {
         if (!accessToken) {
             console.error("accessToken not found");
             return;
         }
 
-        const frappe = new FrappeApp(BASE_URI, {
-            useToken: true,
-            type: "Bearer",
-            token: () => accessToken,
-        });
+        const userInfo = {
+            "sub": authData.sub,
+            "name": authData.name,
+            "given_name": authData.given_name,
+            "family_name": authData.family_name,
+            "email": authData.email,
+            "picture": authData.picture,
+            "roles": authData.roles,
+        };
+
+        setUserInfo(userInfo);
+        setCurrentUser(userInfo.email);
+        console.log("userInfo", userInfo)
 
 
-        try {
-            const call = frappe.call();
-            const userInfo = await call.get("frappe.integrations.oauth2.openid_profile")
-            setUserInfo(userInfo);
-            setCurrentUser(userInfo["email"]);
-        } catch (e: any) {
-            if (e.httpStatus === 403) {
-                // refresh token
-                await refreshAccessTokenAsync();
-            }
-        }
     };
 
     const logout = async () => {
-        await OAuth2Client.logout({
-            appId: OAUTH_CLIENT_ID,
-            redirectUrl: redirectUri,
-            responseType: "code",
-            scope: "all",
-            pkceEnabled: true,
-            authorizationBaseUrl: `${BASE_URI}/api/method/frappe.integrations.oauth2.authorize`,
-            accessTokenEndpoint: `${BASE_URI}/api/method/frappe.integrations.oauth2.get_token`,
-        })
+        await OAuth2Client.logout(authOptions)
         await store.remove(SECURE_AUTH_STATE_KEY);
         setIsAuthenticated(false);
         setToken('');
         setRefreshToken('');
-        setUserInfo(null);
+        setUserInfo({} as UserInfo);
     };
 
     const refreshAccessTokenAsync = async () => {
@@ -105,28 +139,20 @@ const AuthProvider: FC<PropsWithChildren> = ({ children }) => {
         await OAuth2Client.refreshToken(
             {
                 refreshToken: refreshToken,
-                appId: "",
+                appId: OAUTH_CLIENT_ID,
                 accessTokenEndpoint: `${BASE_URI}/api/method/frappe.integrations.oauth2.get_token`,
             }
         )
             .then(async (res) => {
                 const authResponse = res;
-                console.log(authResponse)
+                console.log("refresh", authResponse)
                 const storageValue = JSON.stringify(authResponse);
                 await store.set(SECURE_AUTH_STATE_KEY, storageValue);
 
                 setToken(authResponse.accessToken);
-                setRefreshToken(authResponse.refreshToken);
+                setRefreshToken(authResponse.access_token_response.refresh_token);
                 setIsAuthenticated(true);
 
-                const frappe = new FrappeApp(BASE_URI, {
-                    useToken: true,
-                    type: "Bearer",
-                    token: () => accessToken,
-                });
-                const call = frappe.call();
-                const userInfo = await call.get("frappe.integrations.oauth2.openid_profile")
-                setUserInfo(userInfo);
             })
             .catch((err) => {
                 // unable to refresh
@@ -136,31 +162,58 @@ const AuthProvider: FC<PropsWithChildren> = ({ children }) => {
             });
     };
 
-
-    // useEffect(() => {
-    //     store.get(SECURE_AUTH_STATE_KEY)
-    //         .then((result) => {
-    //             if (result) {
-    //                 console.log(result)
-    //                 // @ts-ignore
-    //                 const accessToken = result["access_token"];
-    //                 // @ts-ignore
-    //                 const refreshToken = result["refresh_token"];
-    //                 setToken(accessToken);
-    //                 setRefreshToken(refreshToken);
-    //                 setIsAuthenticated(true);
-    //             } else {
-    //                 refreshAccessTokenAsync()
-    //             }
-    //         })
-    //         .catch((e: any) => console.error(e));
-    // }, [refreshAccessTokenAsync]);
-
     useEffect(() => {
-        if (accessToken) {
-            fetchUserInfo();
+        store.get(SECURE_AUTH_STATE_KEY)
+            .then((result) => {
+                if (result) {
+                    console.log("stored keys", result)
+                    const authData: AuthResponse = JSON.parse(result);
+                    const accessToken = authData.access_token;
+                    const refreshToken = authData.access_token_response?.refresh_token ?? '';
+                    console.log(accessToken, refreshToken)
+                    setToken(accessToken);
+                    setRefreshToken(refreshToken);
+                    fetchUserInfo(authData);
+                    setIsAuthenticated(true);
+                    setIsLoading(false);
+                } else {
+                    response()
+                }
+            })
+            .catch((e: any) => {
+                console.error(e)
+                setIsLoading(false);
+            });
+        // Function to refresh the access token and update the state
+        async function refreshTokenAndUpdateState() {
+            try {
+                await refreshAccessTokenAsync();
+
+                // Set a new expiration time (e.g., expiresIn is 3600 seconds, so we convert it to milliseconds)
+                const newExpirationTime = new Date().getTime() + expiresIn * 1000;
+                setExpiresIn(newExpirationTime);
+
+                console.log('Access token refreshed successfully.');
+            } catch (error) {
+                console.error('Error refreshing access token:', error);
+            }
         }
-    }, [accessToken])
+
+        // Calculate the time difference between the current time and the expiration time
+        const timeUntilExpiration = expiresIn - new Date().getTime();
+
+        // Set up a timer to refresh the token before it expires
+        if (timeUntilExpiration > 0) {
+            const refreshTimer = setTimeout(refreshTokenAndUpdateState, timeUntilExpiration);
+
+            // Clean up the timer when the component unmounts or the access token changes
+            return () => clearTimeout(refreshTimer);
+        }
+    }, [refreshToken]);
+
+    if (isLoading) {
+        return <FullPageLoader />;
+    }
 
     return (
         <AuthContext.Provider
@@ -172,7 +225,6 @@ const AuthProvider: FC<PropsWithChildren> = ({ children }) => {
                 currentUser,
                 logout,
                 refreshAccessTokenAsync,
-                fetchUserInfo,
                 response
             }}
         >
