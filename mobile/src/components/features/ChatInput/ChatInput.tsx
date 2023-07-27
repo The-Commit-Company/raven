@@ -44,6 +44,7 @@ export const ChatInput = ({ channelID, allChannels, allMembers, onMessageSend, s
             is_reply: selectedMessage ? 1 : 0,
             linked_message: selectedMessage ? selectedMessage.name : null
         }).then(() => {
+            console.log("Message Sent")
             setText("")
             handleCancelReply()
             onMessageSend()

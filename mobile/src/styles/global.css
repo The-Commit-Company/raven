@@ -220,3 +220,7 @@ ion-tab-button::before {
     width: 20px;
     height: 2px;
 }
+
+ion-back-button {
+    --color: #ffffff;
+}

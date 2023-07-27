@@ -1,11 +1,12 @@
-import { IonAvatar, IonItem, IonList, IonText } from '@ionic/react'
-import { useContext } from 'react'
+import { IonAvatar, IonContent, IonItem, IonList, IonText } from '@ionic/react'
+import { createRef, useContext, useEffect } from 'react'
 import { ChannelContext } from '../../../pages/channels/ViewChannel'
 import { MarkdownRenderer } from './MarkdownRenderer'
 import { FrappeConfig, FrappeContext } from 'frappe-react-sdk'
 import { getFileExtensionIcon } from '../../../utils/layout/fileExtensions'
 import { DateBlock, MessageBlock } from '../../../../../raven-app/src/types/Messaging/Message'
 import Avatar from 'react-avatar'
+import { ChatMessageBox } from '../ChatMessage/ChatMessageBox'
 
 type Props = {
     messages: (DateBlock | MessageBlock)[]
@@ -14,17 +15,30 @@ type Props = {
 
 export const ChannelContent = ({ messages }: Props) => {
 
-    return (
-        <IonList lines='none' className='flex flex-col-reverse'>
-            {messages.slice(0).reverse().map((message: DateBlock | MessageBlock) => {
-                if (message.block_type === "message")
+    const conRef = createRef<HTMLIonContentElement>();
+    useEffect(() => {
+        if (conRef.current) {
+            conRef.current.scrollToPoint(0, 1000000000, 100)
+        }
+    }, [messages])
 
-                    return (
-                        <MessageView key={message.data.name} message={message} />
-                    )
-            }
-            )}
-        </IonList>
+    return (
+        <IonContent className='flex flex-col-reverse' ref={conRef}>
+            <IonList lines='none' className='flex flex-col-reverse'>
+                {messages.slice(0).reverse().map((message: DateBlock | MessageBlock) => {
+                    if (message.block_type === "message")
+
+                        return (
+                            // <MessageView key={message.data.name} message={message} />
+                            <ChatMessageBox key={message.data.name} message={message.data}>
+                                {message.data.message_type === 'Text' && <MarkdownRenderer content={message.data.text} />}
+                            </ChatMessageBox>
+
+                        )
+                }
+                )}
+            </IonList>
+        </IonContent>
     )
 }
 
