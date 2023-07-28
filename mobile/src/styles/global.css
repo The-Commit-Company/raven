@@ -3,6 +3,9 @@
     --safe-area-bottom: env(safe-area-inset-bottom, 0);
     --safe-area-left: env(safe-area-inset-left, 0);
     --safe-area-right: env(safe-area-inset-right, 0);
+    --primary-color: #B589D6;
+    --background-color-translucent: #1b202d80;
+    --background-color: #1b202d;
 }
 
 body {
@@ -201,14 +204,14 @@ ion-tab-bar {
     border-radius: 12px;
     width: 92%;
     margin: 0 auto;
-    background-color: #1b202d80;
-    box-shadow: 0 4px 6px -1px #1b202d80, 0 2px 4px -1px #1b202d;
+    background-color: var(--background-color-translucent);
+    box-shadow: 0 4px 6px -1px var(--background-color-translucent), 0 2px 4px -1px var(--background-color);
 }
 
 ion-tab-button {
     --color: var(--ion-color-medium);
-    background-color: #1b202d80;
-    --color-selected: #B589D6;
+    background-color: var(--background-color-translucent);
+    --color-selected: var(--primary-color);
     backdrop-filter: blur(8px);
 }
 
@@ -222,5 +225,18 @@ ion-tab-button::before {
 }
 
 ion-back-button {
-    --color: #ffffff;
+    --color: var(--primary-color);
+}
+
+ion-action-sheet.action-sheet .action-sheet-button-inner {
+    color: var(--primary-color);
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-start;
+}
+
+ion-action-sheet.action-sheet .action-sheet-cancel .action-sheet-button-inner {
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }

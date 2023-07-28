@@ -1,4 +1,4 @@
-import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonButtons, IonBackButton, IonFooter } from '@ionic/react'
+import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonButtons, IonBackButton, IonFooter, IonAccordion, IonItem, IonAccordionGroup, IonLabel } from '@ionic/react'
 import { useFrappeGetCall, useFrappeGetDocList } from 'frappe-react-sdk'
 import React, { createContext, createRef, ReactElement, useEffect, useMemo, useState } from 'react'
 import { RouteComponentProps } from 'react-router-dom'
@@ -8,6 +8,7 @@ import { ChatInput } from '../../components/features/ChatInput/ChatInput'
 import { useFrappeEventListener } from 'frappe-react-sdk'
 import { Message, MessagesWithDate } from "../../../../raven-app/src/types/Messaging/Message"
 import { User } from '../../../../raven-app/src/types/User/User'
+import EmojiPicker from 'emoji-picker-react'
 
 export type ChannelData = {
     name: string,

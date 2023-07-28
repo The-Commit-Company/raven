@@ -5,11 +5,13 @@ import 'react-quill/dist/quill.snow.css'
 import "quill-mention";
 import 'quill-mention/dist/quill.mention.css';
 import './quill-styles.css'
-import { IonButton, IonIcon } from '@ionic/react';
-import { paperPlane, paperPlaneOutline, sendOutline } from 'ionicons/icons';
+import { AccordionGroupCustomEvent, IonAccordion, IonAccordionGroup, IonActionSheet, IonButton, IonIcon, IonItem } from '@ionic/react';
+import { paperPlane, documentOutline, attachOutline, addOutline, cameraOutline, imageOutline } from 'ionicons/icons';
 import { getFileExtension } from '../../../../../raven-app/src/utils/operations';
 import { CustomFile } from '../../../../../raven-app/src/components/feature/file-upload/FileDrop';
 import { Message } from '../../../../../raven-app/src/types/Messaging/Message';
+import { FilePicker } from '@capawesome/capacitor-file-picker';
+import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
 
 type Props = {
     channelID: string,
@@ -35,7 +37,47 @@ export const ChatInput = ({ channelID, allChannels, allMembers, onMessageSend, s
         setText(value)
     }
 
+    const [isActionSheetOpen, setActionSheetOpen] = useState(false)
+
     const [files, setFiles] = useState<CustomFile[]>([])
+
+    const pickMedia = async () => {
+        const result = await FilePicker.pickMedia({
+            multiple: true,
+        });
+    };
+
+    const pickFiles = async () => {
+        const result = await FilePicker.pickFiles({
+            multiple: true,
+        });
+    };
+
+    const takePhoto = async () => {
+        const photo = await Camera.getPhoto({
+            resultType: CameraResultType.Uri,
+            source: CameraSource.Camera,
+            quality: 100,
+        });
+    };
+
+    const handleAction = (action: string) => {
+        switch (action) {
+            case 'camera':
+                takePhoto()
+                break;
+            case 'media':
+                pickMedia()
+                break;
+            case 'files':
+                pickFiles()
+                break;
+            case 'cancel':
+                break;
+            default:
+                break;
+        }
+    }
 
     const onSubmit = () => {
         call({
@@ -121,8 +163,49 @@ export const ChatInput = ({ channelID, allChannels, allMembers, onMessageSend, s
     ]
 
     return (
-        <div className='flex items-center justify-between'>
-            <div className='w-5/6'>
+        <div className='flex w-full justify-between'>
+            <div className='w-1/12 text-center'>
+                <IonButton slot="icon-only" onClick={() => setActionSheetOpen(true)} fill='clear' size='small'>
+                    <IonIcon color='dark' icon={addOutline} />
+                </IonButton>
+                <IonActionSheet
+                    cssClass="action-sheet"
+                    buttons={[
+                        {
+                            text: 'Camera',
+                            icon: cameraOutline,
+                            data: {
+                                action: 'camera',
+                            },
+                        },
+                        {
+                            text: 'Photo & Video Library',
+                            icon: imageOutline,
+                            data: {
+                                action: 'media',
+                            },
+                        },
+                        {
+                            text: 'Document',
+                            icon: documentOutline,
+                            data: {
+                                action: 'files',
+                            },
+                        },
+                        {
+                            text: 'Cancel',
+                            role: 'cancel',
+                            data: {
+                                action: 'cancel',
+                            },
+                        },
+                    ]} isOpen={isActionSheetOpen}
+                    onDidDismiss={({ detail }) => {
+                        handleAction(detail.data.action);
+                        setActionSheetOpen(false)
+                    }}></IonActionSheet>
+            </div>
+            <div className='w-8/12'>
                 <ReactQuill
                     className={'my-quill-editor'}
                     onChange={handleChange}
@@ -139,11 +222,16 @@ export const ChatInput = ({ channelID, allChannels, allMembers, onMessageSend, s
                     }}
                     formats={formats} />
             </div>
-            <div className='w-1/6 text-center'>
+            <div className='w-1/12 text-center'>
+                <IonButton slot="icon-only" onClick={onSubmit} fill='clear' size='small'>
+                    <IonIcon color='dark' icon={attachOutline} />
+                </IonButton>
+            </div>
+            <div className='w-2/12 text-center'>
                 <IonButton slot="icon-only" onClick={onSubmit} fill='clear' size='small'>
                     <IonIcon color='dark' icon={paperPlane} />
                 </IonButton>
             </div>
-        </div>
+        </div >
     )
 }
