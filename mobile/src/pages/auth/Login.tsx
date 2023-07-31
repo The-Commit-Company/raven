@@ -2,8 +2,8 @@ import { IonButton, IonContent, IonHeader, IonImg, IonInput, IonItem, IonLabel, 
 import { FrappeConfig, FrappeContext } from 'frappe-react-sdk'
 import { useContext, useState } from 'react'
 import { store } from '../../App'
-import { ErrorBanner } from '../../components/common'
-import { AuthContext } from '../../utils/AuthProvider'
+import { ErrorBanner } from '../../components/layout'
+import { AuthContext } from '../../utils/providers/AuthProvider'
 import raven_logo from '../../assets/raven_logo.png'
 import './styles.css'
 
