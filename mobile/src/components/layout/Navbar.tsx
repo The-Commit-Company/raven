@@ -9,11 +9,11 @@ import { Search } from "../../pages/search/Search"
 
 export const Navbar = () => {
     return <IonTabs>
-        <IonRouterOutlet animated >
+        <IonRouterOutlet animated>
             <Route exact path="/:tab(channels)">
                 <ChannelList />
             </Route>
-            <Route exact path="/:tab(directmessages)">
+            <Route exact path="/:tab(direct-messages)">
                 <DirectMessageList />
             </Route>
             <Route exact path="/:tab(search)">
@@ -30,7 +30,7 @@ export const Navbar = () => {
             <IonTabButton tab="channels" href="/channels">
                 <BiHash size={30} />
             </IonTabButton>
-            <IonTabButton tab="directmessages" href="/directmessages">
+            <IonTabButton tab="direct-messages" href="/direct-messages">
                 <BiChat size={30} />
             </IonTabButton>
             <IonTabButton tab="search" href="/search">
