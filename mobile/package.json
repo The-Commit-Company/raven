@@ -20,6 +20,7 @@
     "@capacitor/camera": "^4.1.4",
     "@capacitor/core": "^4.7.0",
     "@capacitor/device": "^4.1.0",
+    "@capacitor/filesystem": "^5.1.1",
     "@capacitor/haptics": "^4.1.0",
     "@capacitor/ios": "^4.7.0",
     "@capacitor/keyboard": "^4.1.1",

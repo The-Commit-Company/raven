@@ -8,10 +8,10 @@ import './quill-styles.css'
 import { AccordionGroupCustomEvent, IonAccordion, IonAccordionGroup, IonActionSheet, IonButton, IonIcon, IonItem } from '@ionic/react';
 import { paperPlane, documentOutline, attachOutline, addOutline, cameraOutline, imageOutline } from 'ionicons/icons';
 import { getFileExtension } from '../../../../../raven-app/src/utils/operations';
-import { CustomFile } from '../../../../../raven-app/src/components/feature/file-upload/FileDrop';
 import { Message } from '../../../../../raven-app/src/types/Messaging/Message';
 import { FilePicker } from '@capawesome/capacitor-file-picker';
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
+import { PickedFile } from '@capawesome/capacitor-file-picker';
 
 type Props = {
     channelID: string,
@@ -20,6 +20,18 @@ type Props = {
     onMessageSend: () => void,
     selectedMessage?: Message | null,
     handleCancelReply: () => void
+}
+
+interface CustomFile extends PickedFile {
+    uploading?: boolean
+    uploadProgress?: number
+    // lastModified: number
+    // webkitRelativePath?: string
+    // type?: string
+    // arrayBuffer?: () => Promise<ArrayBuffer>
+    // slice?: (start?: number, end?: number, contentType?: string) => Blob
+    // stream?: () => ReadableStream 
+    // text?: () => Promise<string>
 }
 
 export const ChatInput = ({ channelID, allChannels, allMembers, onMessageSend, selectedMessage, handleCancelReply }: Props) => {
@@ -39,18 +51,22 @@ export const ChatInput = ({ channelID, allChannels, allMembers, onMessageSend, s
 
     const [isActionSheetOpen, setActionSheetOpen] = useState(false)
 
-    const [files, setFiles] = useState<CustomFile[]>([])
+    const [files, setFiles] = useState<PickedFile[]>([])
 
     const pickMedia = async () => {
         const result = await FilePicker.pickMedia({
             multiple: true,
         });
+        console.log(result);
+        setFiles(result.files)
     };
 
     const pickFiles = async () => {
         const result = await FilePicker.pickFiles({
             multiple: true,
         });
+        console.log(result);
+        setFiles(result.files)
     };
 
     const takePhoto = async () => {
@@ -59,6 +75,7 @@ export const ChatInput = ({ channelID, allChannels, allMembers, onMessageSend, s
             source: CameraSource.Camera,
             quality: 100,
         });
+        console.log(photo);
     };
 
     const handleAction = (action: string) => {
@@ -98,20 +115,24 @@ export const ChatInput = ({ channelID, allChannels, allMembers, onMessageSend, s
                     channel_id: channelID
                 }).then((d) => {
                     docname = d.name
-                    f.uploading = true
-                    f.uploadProgress = progress
-                    return upload(f, {
-                        isPrivate: true,
-                        doctype: 'Raven Message',
-                        docname: d.name,
-                        fieldname: 'file',
-                    })
+                    if (f.blob) {
+                        const file = new File([f.blob], f.name);
+                        f.uploading = true
+                        f.uploadProgress = progress
+                        return upload(file, {
+                            isPrivate: true,
+                            doctype: 'Raven Message',
+                            docname: d.name,
+                            fieldname: 'file',
+                        })
+                    }
                 }).then((r) => {
                     f.uploading = false
-                    return updateDoc("Raven Message", docname, {
-                        file: r.file_url,
-                        message_type: fileExt.includes(getFileExtension(f.name)) ? "Image" : "File",
-                    })
+                    if (r)
+                        return updateDoc("Raven Message", docname, {
+                            file: r.file_url,
+                            message_type: fileExt.includes(getFileExtension(f.name)) ? "Image" : "File",
+                        })
                 })
             })
 
@@ -205,7 +226,7 @@ export const ChatInput = ({ channelID, allChannels, allMembers, onMessageSend, s
                         setActionSheetOpen(false)
                     }}></IonActionSheet>
             </div>
-            <div className='w-8/12'>
+            <div className='w-9/12'>
                 <ReactQuill
                     className={'my-quill-editor'}
                     onChange={handleChange}
@@ -221,11 +242,6 @@ export const ChatInput = ({ channelID, allChannels, allMembers, onMessageSend, s
                         mention
                     }}
                     formats={formats} />
-            </div>
-            <div className='w-1/12 text-center'>
-                <IonButton slot="icon-only" onClick={onSubmit} fill='clear' size='small'>
-                    <IonIcon color='dark' icon={attachOutline} />
-                </IonButton>
             </div>
             <div className='w-2/12 text-center'>
                 <IonButton slot="icon-only" onClick={onSubmit} fill='clear' size='small'>
