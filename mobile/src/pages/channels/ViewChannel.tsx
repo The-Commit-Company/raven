@@ -1,12 +1,13 @@
-import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonButtons, IonBackButton, IonFooter } from '@ionic/react'
-import { useFrappeGetCall, useFrappeGetDocList } from 'frappe-react-sdk'
-import React, { createContext, createRef, ReactElement, useEffect, useMemo, useState } from 'react'
+import { IonPage, IonHeader, IonToolbar, IonButtons, IonBackButton, IonFooter } from '@ionic/react'
+import { useFrappeGetCall } from 'frappe-react-sdk'
+import { createContext, ReactElement, useMemo, useState } from 'react'
 import { RouteComponentProps } from 'react-router-dom'
-import { ErrorBanner, FullPageLoader } from '../../components/common'
-import { ChannelContent, ChannelHeader } from '../../components/features/ViewChannel'
-import { ChatInput } from '../../components/features/ChatInput/ChatInput'
+import { ErrorBanner, FullPageLoader } from '../../components/layout'
+import { ChannelContent, ChannelHeader } from '../../components/features/chat-space'
+import { ChatInput } from '../../components/features/chat-input/ChatInput'
 import { useFrappeEventListener } from 'frappe-react-sdk'
 import { Message, MessagesWithDate } from "../../../../raven-app/src/types/Messaging/Message"
+import { User } from '../../../../raven-app/src/types/User/User'
 
 export type ChannelData = {
     name: string,
@@ -43,20 +44,15 @@ export const ViewChannel = (props: RouteComponentProps<IdentityParam>): ReactEle
         revalidateOnFocus: false
     })
 
-    const contentRef = createRef<HTMLIonContentElement>();
+    const { data: users, error: usersError } = useFrappeGetCall<{ message: User[] }>('raven.raven_channel_management.doctype.raven_channel.raven_channel.get_raven_users_list', undefined, undefined, {
+        revalidateOnFocus: false
+    })
 
     const { data: messages, error: messagesError, mutate: refreshMessages, isLoading: isMessageLoading } = useFrappeGetCall<{ message: MessagesWithDate }>("raven.raven_messaging.doctype.raven_message.raven_message.get_messages_with_dates", {
         channel_id: channelID
     }, undefined, {
         revalidateOnFocus: false
     })
-
-    useEffect(() => {
-        if (contentRef.current) {
-            contentRef.current.scrollToBottom(100)
-        }
-    }, [messages])
-
 
     useFrappeEventListener('member_added', (data) => {
         if (data.channel_id === channelID) {
@@ -83,6 +79,14 @@ export const ViewChannel = (props: RouteComponentProps<IdentityParam>): ReactEle
         })
         return cm
     }, [data])
+
+    const userDataObject = useMemo(() => {
+        const userData: Record<string, User> = {}
+        users?.message.forEach((user: User) => {
+            userData[user.name] = user
+        })
+        return userData
+    }, [users])
 
     useFrappeEventListener('message_received', (data) => {
         if (data.channel_id === channelID) {
@@ -111,11 +115,6 @@ export const ViewChannel = (props: RouteComponentProps<IdentityParam>): ReactEle
 
     const onMessageSend = () => {
         refreshMessages()
-            .then(() => {
-                if (contentRef.current) {
-                    contentRef.current.scrollToBottom(100)
-                }
-            })
     }
 
     const [selectedMessage, setSelectedMessage] = useState<Message | null>(null)
@@ -136,24 +135,22 @@ export const ViewChannel = (props: RouteComponentProps<IdentityParam>): ReactEle
     // })
 
     return (
-        <ChannelContext.Provider value={{ channelMembers: channelMembersObject, channelData: data?.message.channel_data }}>
+        <ChannelContext.Provider value={{ channelMembers: channelMembersObject, channelData: data?.message.channel_data, users: userDataObject }}>
             <IonPage>
                 <IonHeader translucent>
                     <IonToolbar>
                         <IonButtons>
-                            <IonBackButton defaultHref="/channels" />
+                            <IonBackButton text='' defaultHref="/channels" />
                         </IonButtons>
 
                         <ChannelHeader />
                     </IonToolbar>
                 </IonHeader>
-                <IonContent fullscreen ref={contentRef}>
-                    {isMessageLoading && <FullPageLoader />}
-                    {messagesError && <ErrorBanner heading="There was an error while fetching the messages.">
-                        {messagesError.exception} - {messagesError.httpStatus}
-                    </ErrorBanner>}
-                    {messages && <ChannelContent messages={messages.message} />}
-                </IonContent>
+                {isMessageLoading && <FullPageLoader />}
+                {messagesError && <ErrorBanner heading="There was an error while fetching the messages.">
+                    {messagesError.exception} - {messagesError.httpStatus}
+                </ErrorBanner>}
+                {messages && <ChannelContent messages={messages.message} />}
                 <IonFooter className='text-white'>
                     <div className='chat-input'>
                         <ChatInput channelID={channelID} allMembers={allMembers} allChannels={[]} onMessageSend={onMessageSend} selectedMessage={selectedMessage} handleCancelReply={handleCancelReply} />
@@ -164,4 +161,4 @@ export const ViewChannel = (props: RouteComponentProps<IdentityParam>): ReactEle
     )
 }
 
-export const ChannelContext = createContext<{ channelMembers: Record<string, ChannelMembersDetails>; channelData?: ChannelData }>({ channelMembers: {} })
+export const ChannelContext = createContext<{ channelMembers: Record<string, ChannelMembersDetails>; channelData?: ChannelData; users: Record<string, User> }>({ channelMembers: {}, users: {} })
