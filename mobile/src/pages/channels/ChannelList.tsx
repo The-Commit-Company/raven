@@ -1,8 +1,6 @@
-import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonAccordionGroup, IonItem, IonLabel, IonIcon, IonAccordion, IonList } from '@ionic/react'
-import { addOutline } from 'ionicons/icons';
+import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonItem, IonLabel } from '@ionic/react'
 import { IoAdd } from 'react-icons/io5'
-import React, { useEffect, useRef } from 'react'
-import { Channels, PrivateMessages } from '../../components/features/ChannelList';
+import { Channels } from '../../components/features/channels';
 
 type Props = {}
 

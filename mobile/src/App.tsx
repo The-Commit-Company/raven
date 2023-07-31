@@ -23,10 +23,10 @@ import '@ionic/react/css/display.css';
 import './styles/global.css';
 import './styles/variables.css';
 import { Storage } from '@ionic/storage';
-import { UserProvider } from './utils/UserProvider';
+import { UserProvider } from './utils/providers/UserProvider';
 import { AppRouter } from './utils/Router';
-import { FrappeDBProvider } from './utils/FrappeDBProvider';
-import { AuthProvider } from './utils/AuthProvider';
+import { FrappeDBProvider } from './utils/providers/FrappeDBProvider';
+import { AuthProvider } from './utils/providers/AuthProvider';
 
 export const store = new Storage();
 await store.create();

@@ -1,14 +1,13 @@
-import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonButtons, IonBackButton, IonFooter, IonAccordion, IonItem, IonAccordionGroup, IonLabel } from '@ionic/react'
-import { useFrappeGetCall, useFrappeGetDocList } from 'frappe-react-sdk'
-import React, { createContext, createRef, ReactElement, useEffect, useMemo, useState } from 'react'
+import { IonPage, IonHeader, IonToolbar, IonButtons, IonBackButton, IonFooter } from '@ionic/react'
+import { useFrappeGetCall } from 'frappe-react-sdk'
+import { createContext, ReactElement, useMemo, useState } from 'react'
 import { RouteComponentProps } from 'react-router-dom'
-import { ErrorBanner, FullPageLoader } from '../../components/common'
-import { ChannelContent, ChannelHeader } from '../../components/features/ViewChannel'
-import { ChatInput } from '../../components/features/ChatInput/ChatInput'
+import { ErrorBanner, FullPageLoader } from '../../components/layout'
+import { ChannelContent, ChannelHeader } from '../../components/features/chat-space'
+import { ChatInput } from '../../components/features/chat-input/ChatInput'
 import { useFrappeEventListener } from 'frappe-react-sdk'
 import { Message, MessagesWithDate } from "../../../../raven-app/src/types/Messaging/Message"
 import { User } from '../../../../raven-app/src/types/User/User'
-import EmojiPicker from 'emoji-picker-react'
 
 export type ChannelData = {
     name: string,

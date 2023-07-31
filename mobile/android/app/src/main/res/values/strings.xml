@@ -1,7 +1,0 @@
-<?xml version='1.0' encoding='utf-8'?>
-<resources>
-    <string name="app_name">Raven</string>
-    <string name="title_activity_main">Raven</string>
-    <string name="package_name">com.raven.app</string>
-    <string name="custom_url_scheme">com.raven.app</string>
-</resources>
