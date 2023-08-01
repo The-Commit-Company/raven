@@ -3,12 +3,12 @@ import { FrappeConfig, FrappeContext } from 'frappe-react-sdk'
 import { useContext } from 'react'
 import Avatar from 'react-avatar'
 import { BiGlobe, BiHash, BiLock } from 'react-icons/bi'
-import { ChannelContext } from '../../../pages/channels/ViewChannel'
-import { UserContext } from '../../../utils/providers/UserProvider'
+import { UserContext } from '../../../utils/auth/UserProvider'
+import { ChannelContext } from '../../../utils/channel/ChannelProvider'
 
 type Props = {}
 
-export const ChannelHeader = (props: Props) => {
+export const ChatHeader = (props: Props) => {
     const { currentUser } = useContext(UserContext)
     const { channelData, channelMembers } = useContext(ChannelContext)
 

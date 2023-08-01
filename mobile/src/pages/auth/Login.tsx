@@ -1,37 +1,25 @@
-import { IonButton, IonContent, IonHeader, IonImg, IonInput, IonItem, IonLabel, IonNote, IonPage, IonSpinner, IonText, IonTitle, IonToolbar } from '@ionic/react'
-import { FrappeConfig, FrappeContext } from 'frappe-react-sdk'
-import { useContext, useState } from 'react'
-import { store } from '../../App'
+import { IonButton, IonContent, IonHeader, IonImg, IonInput, IonItem, IonPage, IonSpinner, IonTitle, IonToolbar } from '@ionic/react'
 import { ErrorBanner } from '../../components/layout'
-import { AuthContext } from '../../utils/providers/AuthProvider'
 import raven_logo from '../../assets/raven_logo.png'
-import './styles.css'
+import { useContext, useState } from 'react'
+import { UserContext } from '../../utils/auth/UserProvider'
+import { useForm } from 'react-hook-form'
+import { isEmailValid } from '../../utils/validations/validations'
+
+type Inputs = {
+    email: string,
+    password: string
+}
 
 export const Login = () => {
 
-    const { url } = useContext(FrappeContext) as FrappeConfig
-    const { response } = useContext(AuthContext);
-    const [loading, setLoading] = useState(false)
     const [error, setError] = useState<Error | null>(null)
-    const [frappeURL, setFrappeURL] = useState<string | undefined>(undefined)
+    const { login, isLoading } = useContext(UserContext)
+    const { register, handleSubmit, formState: { errors } } = useForm<Inputs>()
 
-    const refreshFrappeURL = async () => {
-        return store.get('frappeURL').then(url => {
-            if (url) {
-                setFrappeURL(url)
-            } else {
-                setFrappeURL(undefined)
-            }
-        })
-    }
-
-    if (!url) {
-        refreshFrappeURL()
-    } else {
-        if (frappeURL !== url) {
-            store.set('frappeURL', url)
-            refreshFrappeURL()
-        }
+    async function onSubmit(values: Inputs) {
+        setError(null)
+        return login(values.email, values.password).catch((error) => { setError(error) })
     }
 
     return (
@@ -42,42 +30,46 @@ export const Login = () => {
                 </IonToolbar>
             </IonHeader>
             <IonContent className='ion-padding'>
-                <div slot='fixed' className="text-center absolute left-0 right-0 top-1/4 transform justify-center items-center">
+                <div slot='fixed' className="left-0 right-0 top-1/4 p-10 transform justify-center items-center">
                     <IonHeader collapse="condense" translucent>
                         <IonToolbar>
-                            <IonImg src={raven_logo} alt="Raven Logo" className="block m-auto w-60" />
+                            <IonImg src={raven_logo} alt="Raven Logo" className="block m-auto mb-4 w-40" />
                         </IonToolbar>
                     </IonHeader>
                     {error && <ErrorBanner heading={error.message}>
                     </ErrorBanner>}
-                    <IonItem>
-                        <IonLabel position="stacked">Frappe Site URL <IonText color="danger">*</IonText></IonLabel>
-                        <IonInput
-                            type="url"
-                            clearInput
-                            inputMode="url"
-                            enterkeyhint="next"
-                            required
-                            disabled={loading}
-                            value={frappeURL}
-                        />
-                    </IonItem>
-                    <div className="ion-padding">
-                        <IonButton
-                            onClick={() => {
-                                setLoading(true)
-                                response().then(() => {
-                                    setLoading(false)
-                                }).catch((error: Error) => {
-                                    setError(error)
-                                    setLoading(false)
-                                })
-                            }}
-                            type="submit" expand="block" fill="clear" disabled={loading}
-                            className="bg-purple-500/[.45] text-white font-bold py-2 px-4 rounded"
-                        >{loading ? <IonSpinner name="crescent" /> : "Login"}
-                        </IonButton>
-                    </div>
+                    <form onSubmit={handleSubmit(onSubmit)}>
+                        <IonItem>
+                            <IonInput
+                                type="email" required
+                                {...register("email", {
+                                    required: "Email is required",
+                                    validate: (e) => isEmailValid(e) ? true : "Please enter a valid email"
+                                })}
+                                placeholder='sally@example.com'
+                                className={errors?.email ? 'ion-invalid' : ''}
+                            />
+                        </IonItem>
+                        <IonItem>
+                            <IonInput
+                                type="password"
+                                {...register("password", {
+                                    required: "Password is required."
+                                })}
+                                required
+                                placeholder='********'
+                                className={errors?.password ? 'ion-invalid' : ''}
+                            />
+                        </IonItem>
+                        <div>
+                            <IonButton
+                                type="submit"
+                                className='ion-margin-top'
+                                expand="block">
+                                {isLoading ? <IonSpinner name="crescent" /> : "Login"}
+                            </IonButton>
+                        </div>
+                    </form>
                 </div>
             </IonContent>
 

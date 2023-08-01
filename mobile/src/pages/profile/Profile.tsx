@@ -3,8 +3,7 @@ import { FrappeConfig, FrappeContext, useFrappeGetDoc } from 'frappe-react-sdk'
 import { logOutOutline, pizza } from 'ionicons/icons'
 import { useContext } from 'react'
 import { ErrorBanner, FullPageLoader } from '../../components/layout'
-import { AuthContext } from '../../utils/providers/AuthProvider'
-import { UserContext } from '../../utils/providers/UserProvider'
+import { UserContext } from '../../utils/auth/UserProvider'
 
 interface User {
     name: string
@@ -15,8 +14,7 @@ interface User {
 }
 export const Profile = () => {
 
-    const { currentUser } = useContext(UserContext)
-    const { logout } = useContext(AuthContext)
+    const { currentUser, logout } = useContext(UserContext)
 
     const { url } = useContext(FrappeContext) as FrappeConfig
 

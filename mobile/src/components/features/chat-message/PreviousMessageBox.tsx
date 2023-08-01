@@ -1,17 +1,13 @@
-// import { Text, Box, HStack, Stack, useColorMode, Center, Image, Icon, IconButton, StackDivider, LinkBox } from '@chakra-ui/react'
 import { Message } from '../../../../../raven-app/src/types/Messaging/Message'
 import { MarkdownRenderer } from '../../common/MarkdownRenderer'
 import { DateObjectToFormattedDateStringWithoutYear, DateObjectToTimeString, getFileExtension, getFileName } from '../../../../../raven-app/src/utils/operations'
 import { useContext } from 'react'
-import { ChannelContext } from '../../../pages/channels/ViewChannel'
 import { getFileExtensionIcon } from '../../../../../raven-app/src/utils/layout/fileExtensionIcon'
 import { IoMdClose } from 'react-icons/io'
 import { useFrappeGetDoc, useFrappePostCall } from 'frappe-react-sdk'
-// import { AlertBanner } from '../../../layout/AlertBanner'
-import { VirtuosoRefContext } from '../../../../../raven-app/src/utils/message/VirtuosoRefProvider'
 import { IonButton, IonCard, IonText } from '@ionic/react'
 import { ErrorBanner } from '../../layout'
-// import { useNavigate } from "react-router-dom"
+import { ChannelContext } from '../../../utils/channel/ChannelProvider'
 
 interface PreviousMessageBoxProps {
     previous_message_id?: string,
@@ -74,7 +70,6 @@ export const PreviousMessageBox = ({ previous_message_id, previous_message_conte
     if (previous_message_id) {
 
         const { data, error } = useFrappeGetDoc<Message>('Raven Message', previous_message_id)
-        const { virtuosoRef } = useContext(VirtuosoRefContext)
         const { channelData } = useContext(ChannelContext)
 
         const { call, error: indexingError, reset } = useFrappePostCall<{ message: string }>("raven.raven_messaging.doctype.raven_message.raven_message.get_index_of_message")

@@ -15,7 +15,7 @@ import { PickedFile } from '@capawesome/capacitor-file-picker';
 
 type Props = {
     channelID: string,
-    allMembers: { id: string; value: string; }[],
+    allMembers: { id: string; value: string }[],
     allChannels: { id: string; value: string; }[],
     onMessageSend: () => void,
     selectedMessage?: Message | null,
@@ -25,13 +25,6 @@ type Props = {
 interface CustomFile extends PickedFile {
     uploading?: boolean
     uploadProgress?: number
-    // lastModified: number
-    // webkitRelativePath?: string
-    // type?: string
-    // arrayBuffer?: () => Promise<ArrayBuffer>
-    // slice?: (start?: number, end?: number, contentType?: string) => Blob
-    // stream?: () => ReadableStream 
-    // text?: () => Promise<string>
 }
 
 export const ChatInput = ({ channelID, allChannels, allMembers, onMessageSend, selectedMessage, handleCancelReply }: Props) => {

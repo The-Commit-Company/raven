@@ -1,16 +1,13 @@
-// import { Box, Button, HStack, IconButton, Link, Popover, PopoverContent, PopoverTrigger, Portal, Tooltip, useColorMode } from '@chakra-ui/react'
 import { BsDownload, BsEmojiSmile } from 'react-icons/bs'
 import { useFrappeCreateDoc, useFrappePostCall } from 'frappe-react-sdk'
 import { useContext, useEffect } from 'react'
 import { AiOutlineEdit } from 'react-icons/ai'
 import { VscTrash } from 'react-icons/vsc'
 import { IoBookmark, IoBookmarkOutline, IoChatboxEllipsesOutline } from 'react-icons/io5'
-import { UserContext } from '../../../utils/providers/UserProvider'
-import { DeleteMessageModal } from './DeleteMessageModal'
-import { EditMessageModal } from './EditMessageModal'
 import EmojiPicker, { EmojiClickData } from 'emoji-picker-react'
 import { FileMessage, Message, TextMessage } from '../../../../../raven-app/src/types/Messaging/Message'
 import { IonButton, IonCard } from '@ionic/react'
+import { UserContext } from '../../../utils/auth/UserProvider'
 
 interface ActionButtonPaletteProps {
     message: Message,
