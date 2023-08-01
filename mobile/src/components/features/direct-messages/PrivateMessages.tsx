@@ -39,7 +39,7 @@ export const PrivateMessages = () => {
     }, [])
     const history = useHistory();
 
-    const gotoDMChannel = async (user: string) => {
+    const gotoDMChannel = async (user: string): Promise<string> => {
         reset()
         const result = await call({ user_id: user })
         history.push(`/channel/${result?.message}`)
@@ -53,6 +53,7 @@ export const PrivateMessages = () => {
             history.push(`/channel/${result?.message}`)
             setSelectedUser([user, `/channel/${result?.message}`])
         }
+        return `/channel/${DMChannel?.name}`
     }
 
     let [results, setResults] = useState(users?.message);

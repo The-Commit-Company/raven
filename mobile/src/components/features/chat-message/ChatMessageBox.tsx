@@ -1,6 +1,5 @@
 import { useContext, useState } from "react"
 import { User } from "../../../../../raven-app/src/types/User/User"
-import { ChannelContext } from "../../../pages/channels/ViewChannel"
 import { DateObjectToTimeString, DateObjectToFormattedDateStringWithoutYear } from "../../../../../raven-app/src/utils/operations"
 // import { ActionsPalette } from "../../message-action-palette/ActionsPalette"
 import { MessageReactions } from "./MessageReactions"
@@ -8,6 +7,7 @@ import { Message, MessageBlock } from "../../../../../raven-app/src/types/Messag
 import { IonAvatar, IonItem, IonText } from "@ionic/react"
 import Avatar from "react-avatar"
 import { FrappeConfig, FrappeContext } from "frappe-react-sdk"
+import { ChannelContext } from "../../../utils/channel/ChannelProvider"
 // import { PreviousMessageBox } from "./PreviousMessageBox"
 
 interface ChatMessageBoxProps {

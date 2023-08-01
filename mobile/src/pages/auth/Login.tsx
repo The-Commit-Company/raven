@@ -46,10 +46,7 @@ export const Login = () => {
                                     required: "Email is required",
                                     validate: (e) => isEmailValid(e) ? true : "Please enter a valid email"
                                 })}
-                                label='Email'
-                                labelPlacement='floating'
                                 placeholder='sally@example.com'
-                                errorText={errors.email?.message}
                                 className={errors?.email ? 'ion-invalid' : ''}
                             />
                         </IonItem>
@@ -60,10 +57,7 @@ export const Login = () => {
                                     required: "Password is required."
                                 })}
                                 required
-                                labelPlacement='floating'
-                                label='Password'
                                 placeholder='********'
-                                errorText={errors.password?.message}
                                 className={errors?.password ? 'ion-invalid' : ''}
                             />
                         </IonItem>
