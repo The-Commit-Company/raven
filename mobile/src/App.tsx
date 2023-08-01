@@ -26,10 +26,10 @@ import './styles/variables.css';
 import { FrappeProvider } from 'frappe-react-sdk';
 import { IonReactRouter } from '@ionic/react-router';
 import { Redirect } from 'react-router-dom';
-import { Navbar } from './components/layout/Navbar';
 import { ViewChannel } from './pages/channels';
 import { UserProvider } from './utils/auth/UserProvider';
 import { ProtectedRoute } from './utils/auth/ProtectedRoute';
+import { Navbar } from './components/layout';
 
 setupIonicReact({
   mode: 'ios',
