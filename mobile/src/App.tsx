@@ -25,11 +25,11 @@ import '@ionic/react/css/display.css';
 import './styles/variables.css';
 import { FrappeProvider } from 'frappe-react-sdk';
 import { IonReactRouter } from '@ionic/react-router';
-import { Redirect } from 'react-router-dom';
-import { ViewChannel } from './pages/channels';
+import { Redirect, Route } from 'react-router-dom';
 import { UserProvider } from './utils/auth/UserProvider';
 import { ProtectedRoute } from './utils/auth/ProtectedRoute';
 import { Navbar } from './components/layout';
+import { ChatSpace } from './pages/chat';
 
 setupIonicReact({
   mode: 'ios',
@@ -44,15 +44,15 @@ function App() {
           {/* @ts-ignore */}
           <IonReactRouter>
             <IonRouterOutlet animated>
-              <ProtectedRoute exact path="/channels" component={Navbar} />
-              <ProtectedRoute exact path="/direct-messages" component={Navbar} />
-              <ProtectedRoute exact path="/search" component={Navbar} />
-              <ProtectedRoute exact path="/notifications" component={Navbar} />
-              <ProtectedRoute exact path="/profile" component={Navbar} />
-              <ProtectedRoute exact path="/">
+              <Route exact path="/channels" component={Navbar} />
+              <Route exact path="/direct-messages" component={Navbar} />
+              <Route exact path="/search" component={Navbar} />
+              <Route exact path="/notifications" component={Navbar} />
+              <Route exact path="/profile" component={Navbar} />
+              <Route exact path="/">
                 <Redirect to="/channels" />
-              </ProtectedRoute>
-              <ProtectedRoute exact path="/channel/:channelID" component={ViewChannel} />
+              </Route>
+              <Route exact path="/channel/:channelID" component={ChatSpace} />
             </IonRouterOutlet>
           </IonReactRouter>
         </UserProvider>
