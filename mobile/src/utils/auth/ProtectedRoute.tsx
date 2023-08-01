@@ -16,8 +16,7 @@ export const ProtectedRoute = ({ component, ...props }: RouteProps) => {
             } else if (!currentUser || currentUser === 'Guest') {
                 return <Login />
             }
-            {/* @ts-ignore */ }
-            return component ? component() : <Redirect to="/" />
+            return component ? <Route {...props} component={component} /> : <Redirect to="/" />
         }}
 
     />
