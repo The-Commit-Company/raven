@@ -74,7 +74,6 @@ export const PreviousMessageBox = ({ previous_message_id, previous_message_conte
     if (previous_message_id) {
 
         const { data, error } = useFrappeGetDoc<Message>('Raven Message', previous_message_id)
-        const { virtuosoRef } = useContext(VirtuosoRefContext)
         const { channelData } = useContext(ChannelContext)
 
         const { call, error: indexingError, reset } = useFrappePostCall<{ message: string }>("raven.raven_messaging.doctype.raven_message.raven_message.get_index_of_message")

@@ -4,7 +4,7 @@ import { useContext } from 'react'
 import Avatar from 'react-avatar'
 import { BiGlobe, BiHash, BiLock } from 'react-icons/bi'
 import { ChannelContext } from '../../../pages/channels/ViewChannel'
-import { UserContext } from '../../../utils/providers/UserProvider'
+import { UserContext } from '../../../utils/auth/UserProvider'
 
 type Props = {}
 

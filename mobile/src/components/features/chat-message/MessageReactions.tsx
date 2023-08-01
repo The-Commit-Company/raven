@@ -1,9 +1,9 @@
 import { useFrappeCreateDoc } from "frappe-react-sdk"
 import { useContext } from "react"
 import { getUsers } from "../../../../../raven-app/src/utils/operations"
-import { UserContext } from "../../../utils/providers/UserProvider"
 import { ChannelContext } from "../../../pages/channels/ViewChannel"
 import { IonBadge } from "@ionic/react"
+import { UserContext } from "../../../utils/auth/UserProvider"
 
 export const MessageReactions = ({ name, message_reactions }: { name: string, message_reactions?: string | null }) => {
 

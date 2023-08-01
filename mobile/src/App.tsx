@@ -1,5 +1,6 @@
 import {
   IonApp,
+  IonRouterOutlet,
   setupIonicReact
 } from '@ionic/react';
 
@@ -20,31 +21,42 @@ import '@ionic/react/css/text-transformation.css';
 import '@ionic/react/css/flex-utils.css';
 import '@ionic/react/css/display.css';
 
-import './styles/global.css';
+// import './styles/global.css';
 import './styles/variables.css';
-import { Storage } from '@ionic/storage';
-import { UserProvider } from './utils/providers/UserProvider';
-import { AppRouter } from './utils/Router';
-import { FrappeDBProvider } from './utils/providers/FrappeDBProvider';
-import { AuthProvider } from './utils/providers/AuthProvider';
+import { FrappeProvider } from 'frappe-react-sdk';
+import { IonReactRouter } from '@ionic/react-router';
+import { Redirect } from 'react-router-dom';
+import { ViewChannel } from './pages/channels';
+import { UserProvider } from './utils/auth/UserProvider';
+import { ProtectedRoute } from './utils/auth/ProtectedRoute';
+import { Navbar } from './components/layout';
 
-export const store = new Storage();
-await store.create();
 setupIonicReact({
   mode: 'ios',
-});
+})
 
 function App() {
 
   return (
     <IonApp>
-      <AuthProvider>
-        <FrappeDBProvider>
-          <UserProvider>
-            <AppRouter />
-          </UserProvider>
-        </FrappeDBProvider>
-      </AuthProvider>
+      <FrappeProvider url={import.meta.env.VITE_FRAPPE_PATH ?? ''} socketPort={import.meta.env.VITE_SOCKET_PORT ?? ''}>
+        <UserProvider>
+          {/* @ts-ignore */}
+          <IonReactRouter>
+            <IonRouterOutlet animated>
+              <ProtectedRoute exact path="/channels" component={Navbar} />
+              <ProtectedRoute exact path="/direct-messages" component={Navbar} />
+              <ProtectedRoute exact path="/search" component={Navbar} />
+              <ProtectedRoute exact path="/notifications" component={Navbar} />
+              <ProtectedRoute exact path="/profile" component={Navbar} />
+              <ProtectedRoute exact path="/">
+                <Redirect to="/channels" />
+              </ProtectedRoute>
+              <ProtectedRoute exact path="/channel/:channelID" component={ViewChannel} />
+            </IonRouterOutlet>
+          </IonReactRouter>
+        </UserProvider>
+      </FrappeProvider>
     </IonApp>
   )
 }
