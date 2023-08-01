@@ -16,12 +16,12 @@ export const Navbar = () => {
             <Route exact path="/:tab(direct-messages)">
                 <DirectMessageList />
             </Route>
-            <Route exact path="/:tab(search)">
+            {/* <Route exact path="/:tab(search)">
                 <Search />
-            </Route>
-            <Route exact path="/:tab(notifications)">
+            </Route> */}
+            {/* <Route exact path="/:tab(notifications)">
                 <Notifications />
-            </Route>
+            </Route> */}
             <Route exact path="/:tab(profile)">
                 <Profile />
             </Route>
@@ -33,12 +33,12 @@ export const Navbar = () => {
             <IonTabButton tab="direct-messages" href="/direct-messages">
                 <BiChat size={30} />
             </IonTabButton>
-            <IonTabButton tab="search" href="/search">
+            {/* <IonTabButton tab="search" href="/search">
                 <BiSearch size={30} />
             </IonTabButton>
             <IonTabButton tab="notifications" href="/notifications">
                 <BiBell size={30} />
-            </IonTabButton>
+            </IonTabButton> */}
             <IonTabButton tab="profile" href="/profile">
                 <BiUser size={30} />
             </IonTabButton>

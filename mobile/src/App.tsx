@@ -1,5 +1,5 @@
 import {
-  IonApp
+  IonApp, setupIonicReact
 } from '@ionic/react';
 
 import 'tailwindcss/tailwind.css';
@@ -24,6 +24,10 @@ import './styles/variables.css';
 import { FrappeProvider } from 'frappe-react-sdk';
 import { UserProvider } from './utils/auth/UserProvider';
 import { Routes } from './utils/auth/Routes';
+
+setupIonicReact({
+  mode: 'ios'
+})
 
 function App() {
   return (
