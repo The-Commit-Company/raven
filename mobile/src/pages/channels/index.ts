@@ -1,1 +1,1 @@
-export { ChannelList } from './ChannelList'
+export { Channels } from './Channels'

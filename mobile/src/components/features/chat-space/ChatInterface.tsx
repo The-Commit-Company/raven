@@ -4,10 +4,10 @@ import { useContext, useState } from 'react'
 import { Message, MessagesWithDate } from '../../../../../raven-app/src/types/Messaging/Message'
 import { ChannelContext } from '../../../utils/channel/ChannelProvider'
 import { ErrorBanner, FullPageLoader } from '../../layout'
-import { ChannelData } from '../channels/Channels'
 import { ChatInput } from '../chat-input'
 import { ChatHeader } from './ChatHeader'
 import { ChatHistory } from './ChatHistory'
+import { RavenChannel } from '../../../types/RavenChannelManagement/RavenChannel'
 
 export const ChatInterface = () => {
 
@@ -19,7 +19,7 @@ export const ChatInterface = () => {
         revalidateOnFocus: false
     })
 
-    const { data: channelList, error: channelListError } = useFrappeGetCall<{ message: ChannelData[] }>("raven.raven_channel_management.doctype.raven_channel.raven_channel.get_channel_list", undefined, undefined, {
+    const { data: channelList, error: channelListError } = useFrappeGetCall<{ message: RavenChannel[] }>("raven.raven_channel_management.doctype.raven_channel.raven_channel.get_channel_list", undefined, undefined, {
         revalidateOnFocus: false
     })
 
@@ -44,7 +44,7 @@ export const ChatInterface = () => {
         }
     })
 
-    const allChannels = channelList?.message.map((channel: ChannelData) => {
+    const allChannels = channelList?.message.map((channel: RavenChannel) => {
         return {
             id: channel.name,
             value: channel.channel_name

@@ -1,7 +1,7 @@
 import { IonRouterOutlet, IonTabBar, IonTabButton, IonTabs } from "@ionic/react"
 import { BiBell, BiChat, BiHash, BiSearch, BiUser } from "react-icons/bi"
 import { Route } from "react-router-dom"
-import { ChannelList } from "../../pages/channels"
+import { Channels } from "../../pages/channels"
 import { DirectMessageList } from "../../pages/direct-messages/DirectMessageList"
 import { Notifications } from "../../pages/notifications/Notifications"
 import { Profile } from "../../pages/profile"
@@ -11,7 +11,7 @@ export const Navbar = () => {
     return <IonTabs>
         <IonRouterOutlet animated>
             <Route exact path="/:tab(channels)">
-                <ChannelList />
+                <Channels />
             </Route>
             <Route exact path="/:tab(direct-messages)">
                 <DirectMessageList />
