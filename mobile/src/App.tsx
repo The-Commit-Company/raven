@@ -1,7 +1,5 @@
 import {
-  IonApp,
-  IonRouterOutlet,
-  setupIonicReact
+  IonApp
 } from '@ionic/react';
 
 import 'tailwindcss/tailwind.css';
@@ -24,37 +22,15 @@ import '@ionic/react/css/display.css';
 // import './styles/global.css';
 import './styles/variables.css';
 import { FrappeProvider } from 'frappe-react-sdk';
-import { IonReactRouter } from '@ionic/react-router';
-import { Redirect, Route } from 'react-router-dom';
 import { UserProvider } from './utils/auth/UserProvider';
-import { ProtectedRoute } from './utils/auth/ProtectedRoute';
-import { Navbar } from './components/layout';
-import { ChatSpace } from './pages/chat';
-
-setupIonicReact({
-  mode: 'ios',
-})
+import { Routes } from './utils/auth/Routes';
 
 function App() {
-
   return (
     <IonApp>
       <FrappeProvider url={import.meta.env.VITE_FRAPPE_PATH ?? ''} socketPort={import.meta.env.VITE_SOCKET_PORT ?? ''}>
         <UserProvider>
-          {/* @ts-ignore */}
-          <IonReactRouter>
-            <IonRouterOutlet animated>
-              <Route exact path="/channels" component={Navbar} />
-              <Route exact path="/direct-messages" component={Navbar} />
-              <Route exact path="/search" component={Navbar} />
-              <Route exact path="/notifications" component={Navbar} />
-              <Route exact path="/profile" component={Navbar} />
-              <Route exact path="/">
-                <Redirect to="/channels" />
-              </Route>
-              <Route exact path="/channel/:channelID" component={ChatSpace} />
-            </IonRouterOutlet>
-          </IonReactRouter>
+          <Routes />
         </UserProvider>
       </FrappeProvider>
     </IonApp>
