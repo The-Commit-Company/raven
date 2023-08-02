@@ -51,30 +51,25 @@ export const ChatInterface = () => {
         }
     })
 
-    if (channelData && allUsers && allChannels)
-        return (
-            <IonPage>
-                <IonHeader translucent>
-                    <IonToolbar>
-                        <IonButtons>
-                            <IonBackButton text='' defaultHref="/channels" />
-                        </IonButtons>
-
-                        <ChatHeader />
-                    </IonToolbar>
-                </IonHeader>
-                {isMessageLoading && <FullPageLoader />}
-                {messagesError && <ErrorBanner error={messagesError} />}
-                {messages && <ChatHistory messages={messages.message} />}
-                <IonFooter className='text-white'>
-                    <div className='chat-input'>
-                        <ChatInput channelID={channelData.name} allMembers={allUsers} allChannels={allChannels} onMessageSend={onMessageSend} selectedMessage={selectedMessage} handleCancelReply={handleCancelReply} />
-                    </div>
-                </IonFooter>
-            </IonPage>
-        )
-
-    else return (
-        <FullPageLoader />
+    return (
+        <IonPage>
+            <IonHeader translucent>
+                <IonToolbar>
+                    <IonButtons>
+                        <IonBackButton text='' defaultHref="/channels" />
+                    </IonButtons>
+                    <ChatHeader />
+                </IonToolbar>
+            </IonHeader>
+            {isMessageLoading && <FullPageLoader />}
+            {messagesError && <ErrorBanner error={messagesError} />}
+            {messages && <ChatHistory messages={messages.message} />}
+            {channelData && allChannels && <IonFooter className='text-white'>
+                <div className='chat-input'>
+                    <ChatInput channelID={channelData.name} allMembers={allUsers} allChannels={allChannels} onMessageSend={onMessageSend} selectedMessage={selectedMessage} handleCancelReply={handleCancelReply} />
+                </div>
+            </IonFooter>}
+        </IonPage>
     )
+
 }
