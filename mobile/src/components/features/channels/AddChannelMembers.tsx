@@ -11,9 +11,9 @@ import {
     IonItem,
     IonLabel,
     IonAvatar,
-    IonImg,
     IonSearchbar,
     IonListHeader,
+    IonCheckbox,
 } from '@ionic/react';
 import { BiGlobe, BiHash, BiLock } from 'react-icons/bi';
 import { ChannelContext } from '../../../utils/channel/ChannelProvider';
@@ -36,12 +36,10 @@ export const AddChannelMembers = ({ presentingElement }: AddChannelMembersProps)
     const { url } = useContext(FrappeContext) as FrappeConfig
 
     const existingMembers = useMemo(() => {
-        if (!channelMembers || !users) return []
         return Object.keys(channelMembers).map(userId => users[userId])
     }, [channelMembers, users])
 
     const nonMembers = useMemo(() => {
-        if (!users || !channelMembers) return []
         return Object.keys(users)
             .filter(userId => !channelMembers || !(userId in channelMembers))
             .map(userId => users[userId])
@@ -80,16 +78,18 @@ export const AddChannelMembers = ({ presentingElement }: AddChannelMembersProps)
                     </IonListHeader>
                     {existingMembers.map((member) => (
                         <IonItem key={member.name}>
-                            {member.user_image ?
-                                <IonAvatar slot="start" className="h-10 w-10">
-                                    <img src={url + member.user_image} />
-                                </IonAvatar>
-                                :
-                                <Avatar name={member.full_name} round size='40' className="mr-3.5" />}
-                            <IonLabel>
-                                <h2>{member.full_name}</h2>
-                                <p>{member.name}</p>
-                            </IonLabel>
+                            <div className='flex gap-4'>
+                                {member.user_image ?
+                                    <IonAvatar slot="start" className="h-10 w-10">
+                                        <img src={url + member.user_image} />
+                                    </IonAvatar>
+                                    :
+                                    <Avatar name={member.full_name} round size='40' />}
+                                <IonLabel>
+                                    <h2>{member.full_name}</h2>
+                                    <p>{member.name}</p>
+                                </IonLabel>
+                            </div>
                         </IonItem>
                     ))}
                 </IonList>
@@ -99,16 +99,20 @@ export const AddChannelMembers = ({ presentingElement }: AddChannelMembersProps)
                     </IonListHeader>
                     {nonMembers.map((user) => (
                         <IonItem key={user.name}>
-                            {user.user_image ?
-                                <IonAvatar slot="start" className="h-10 w-10">
-                                    <img src={url + user.user_image} />
-                                </IonAvatar>
-                                :
-                                <Avatar name={user.full_name} round size='40' className="mr-3.5" />}
-                            <IonLabel>
-                                <h2>{user.full_name}</h2>
-                                <p>{user.name}</p>
-                            </IonLabel>
+                            <IonCheckbox justify="space-between">
+                                <div className='flex gap-4'>
+                                    {user.user_image ?
+                                        <IonAvatar slot="start" className="h-10 w-10">
+                                            <img src={url + user.user_image} />
+                                        </IonAvatar>
+                                        :
+                                        <Avatar name={user.full_name} round size='40' />}
+                                    <IonLabel>
+                                        <h2>{user.full_name}</h2>
+                                        <p>{user.name}</p>
+                                    </IonLabel>
+                                </div>
+                            </IonCheckbox>
                         </IonItem>
                     ))}
                 </IonList>
