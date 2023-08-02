@@ -1,11 +1,12 @@
-import { IonButton, IonButtons, IonContent, IonHeader, IonInput, IonItem, IonItemDivider, IonItemGroup, IonLabel, IonList, IonModal, IonRadio, IonRadioGroup, IonText, IonTextarea, IonTitle, IonToolbar } from "@ionic/react";
+import { IonButton, IonButtons, IonContent, IonHeader, IonInput, IonItem, IonItemDivider, IonItemGroup, IonLabel, IonList, IonModal, IonRadio, IonRadioGroup, IonText, IonTextarea, IonTitle, IonToolbar, useIonToast } from "@ionic/react";
+import { useFrappePostCall } from "frappe-react-sdk";
 import { useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { BiGlobe, BiHash, BiLockAlt } from "react-icons/bi";
+import { useHistory } from "react-router-dom";
+import { ErrorBanner } from "../../layout";
 
 interface AddChannelProps {
-    isOpen: boolean,
-    setIsOpen: (isOpen: boolean) => void,
     presentingElement: HTMLElement | undefined
 }
 
@@ -15,16 +16,45 @@ type CreateChannelInputs = {
     channel_type: 'Private' | 'Public' | 'Open'
 }
 
-export const AddChannel = ({ isOpen, setIsOpen, presentingElement }: AddChannelProps) => {
+export const AddChannel = ({ presentingElement }: AddChannelProps) => {
 
     const modal = useRef<HTMLIonModalElement>(null)
     const { register, handleSubmit, formState: { errors } } = useForm<CreateChannelInputs>()
     const [channelType, setChannelType] = useState<CreateChannelInputs['channel_type']>('Public')
 
+    const { call: callChannelCreation, error: channelCreationError } = useFrappePostCall<{ message: string }>('raven.raven_channel_management.doctype.raven_channel.raven_channel.create_channel')
+
+    const [present] = useIonToast()
+
+    const presentToast = (message: string) => {
+        present({
+            message: message,
+            duration: 1500,
+            position: 'bottom',
+        })
+    }
+
+    const history = useHistory()
+
     const onSubmit = (data: CreateChannelInputs) => {
-        console.log('channel name', data.channel_name)
-        console.log('channel description', data.channel_description)
-        console.log('channel type', channelType)
+        callChannelCreation({
+            channel_name: data.channel_name,
+            channel_description: data.channel_description,
+            type: channelType
+        }).then(result => {
+            if (result) {
+                presentToast("Channel created successfully")
+                modal.current?.dismiss()
+                history.push(`channel/${result.message}`)
+            }
+        }).catch((err) => {
+            if (err.httpStatus === 409) {
+                presentToast("Channel name already exists")
+            }
+            else {
+                presentToast("Error creating channel")
+            }
+        })
     }
 
     const onDismiss = () => {
@@ -45,6 +75,7 @@ export const AddChannel = ({ isOpen, setIsOpen, presentingElement }: AddChannelP
                 </IonToolbar>
             </IonHeader>
             <IonContent>
+                {channelCreationError && <ErrorBanner error={channelCreationError} />}
                 <form onSubmit={handleSubmit(onSubmit)}>
                     <IonList>
                         <IonItemGroup>
@@ -53,7 +84,9 @@ export const AddChannel = ({ isOpen, setIsOpen, presentingElement }: AddChannelP
                             </IonItemDivider>
                             <IonItem lines='none' className="pb-2">
                                 <div slot='start'>
-                                    <BiHash size='16' color='var(--ion-color-medium)' />
+                                    {channelType === 'Public' && <BiHash size='16' color='var(--ion-color-medium)' />}
+                                    {channelType === 'Private' && <BiLockAlt size='16' color='var(--ion-color-medium)' />}
+                                    {channelType === 'Open' && <BiGlobe size='16' color='var(--ion-color-medium)' />}
                                 </div>
                                 <IonInput
                                     required
@@ -114,10 +147,10 @@ export const AddChannel = ({ isOpen, setIsOpen, presentingElement }: AddChannelP
                                     </IonRadio>
                                 </IonItem>
 
-                                <IonItem lines='none'>
-                                    <IonText className="text-sm" color='medium'>
-                                        When a channel is set to open, everyone is a member.
-                                    </IonText>
+                                <IonItem lines='none' className="pt-2">
+                                    {channelType === 'Public' && <IonText className="text-sm" color='medium'>When a channel is set to public, anyone can join the channel and read messages, but only members can post messages.</IonText>}
+                                    {channelType === 'Private' && <IonText className="text-sm" color='medium'>When a channel is set to private, it can only be viewed or joined by invitation.</IonText>}
+                                    {channelType === 'Open' && <IonText className="text-sm" color='medium'>When a channel is set to open, everyone is a member.</IonText>}
                                 </IonItem>
 
                             </IonRadioGroup>

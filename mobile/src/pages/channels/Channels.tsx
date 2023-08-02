@@ -5,13 +5,12 @@ import { useFrappeEventListener, useFrappeGetCall } from 'frappe-react-sdk';
 import { ErrorBanner } from '../../components/layout';
 import { ChannelList } from '../../components/features/channels/ChannelList';
 import { AddChannel } from '../../components/features/channels';
-import { useRef, useState } from 'react';
+import { useRef } from 'react';
 
 export const Channels = () => {
 
     const pageRef = useRef()
     const { data, error, mutate, isLoading } = useFrappeGetCall<{ message: RavenChannel[] }>("raven.raven_channel_management.doctype.raven_channel.raven_channel.get_channel_list")
-    const [isOpen, setIsOpen] = useState(false)
 
     useFrappeEventListener('channel_list_updated', () => {
         mutate()
@@ -41,7 +40,7 @@ export const Channels = () => {
                     </IonLabel>
                 </IonItem>
                 <ChannelList data={data?.message ?? []} />
-                <AddChannel isOpen={isOpen} setIsOpen={setIsOpen} presentingElement={pageRef.current} />
+                <AddChannel presentingElement={pageRef.current} />
             </IonContent>
         </IonPage>
     )

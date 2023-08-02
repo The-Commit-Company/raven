@@ -13,7 +13,6 @@ export const ChannelList = ({ data }: ChannelListProps) => {
                 <div slot='start'>
                     {channel.type === "Private" ? <BiLockAlt size='24' color='var(--ion-color-dark)' /> : channel.type === "Public" ? <BiHash size='24' color='var(--ion-color-dark)' /> :
                         <BiGlobe size='24' color='var(--ion-color-dark)' />}
-
                 </div>
                 <IonLabel>{channel.channel_name}</IonLabel>
             </IonItem>)}
