@@ -5,9 +5,9 @@ import { Message, MessagesWithDate } from '../../../../../raven-app/src/types/Me
 import { ChannelContext } from '../../../utils/channel/ChannelProvider'
 import { ErrorBanner, FullPageLoader } from '../../layout'
 import { ChatInput } from '../chat-input'
-import { ChatHeader } from './ChatHeader'
 import { ChatHistory } from './ChatHistory'
 import { RavenChannel } from '../../../types/RavenChannelManagement/RavenChannel'
+import { ChatHeader } from './chat-header'
 
 export const ChatInterface = () => {
 

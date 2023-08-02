@@ -1,4 +1,4 @@
-import { useRef, useContext } from 'react';
+import { useRef, useContext, useMemo } from 'react';
 import {
     IonButtons,
     IonButton,
@@ -13,11 +13,18 @@ import {
     IonAvatar,
     IonImg,
     IonSearchbar,
+    IonListHeader,
 } from '@ionic/react';
 import { BiGlobe, BiHash, BiLock } from 'react-icons/bi';
 import { ChannelContext } from '../../../utils/channel/ChannelProvider';
+import { FrappeConfig, FrappeContext } from 'frappe-react-sdk';
+import Avatar from 'react-avatar';
 
-export const AddChannelMembers = () => {
+interface AddChannelMembersProps {
+    presentingElement: HTMLElement | undefined
+}
+
+export const AddChannelMembers = ({ presentingElement }: AddChannelMembersProps) => {
 
     const modal = useRef<HTMLIonModalElement>(null)
 
@@ -25,12 +32,23 @@ export const AddChannelMembers = () => {
         modal.current?.dismiss()
     }
 
-    const { channelData, users } = useContext(ChannelContext)
+    const { channelData, channelMembers, users } = useContext(ChannelContext)
+    const { url } = useContext(FrappeContext) as FrappeConfig
 
-    console.log(users)
+    const existingMembers = useMemo(() => {
+        if (!channelMembers || !users) return []
+        return Object.keys(channelMembers).map(userId => users[userId])
+    }, [channelMembers, users])
+
+    const nonMembers = useMemo(() => {
+        if (!users || !channelMembers) return []
+        return Object.keys(users)
+            .filter(userId => !channelMembers || !(userId in channelMembers))
+            .map(userId => users[userId])
+    }, [users, channelMembers])
 
     return (
-        <IonModal ref={modal} trigger="open-modal" initialBreakpoint={0.25} breakpoints={[0, 0.25, 0.5, 0.75]}>
+        <IonModal ref={modal} presentingElement={presentingElement} trigger="add-members">
             <IonHeader>
                 <IonToolbar>
                     <IonButtons slot="start">
@@ -41,11 +59,9 @@ export const AddChannelMembers = () => {
                     <IonTitle>
                         <div className='flex flex-col items-center justify-start'>
                             <h1>Add Members</h1>
-                            <div className='flex items-center justify-start'>
+                            <div className='flex items-center justify-start mt-1 text-gray-400'>
                                 {channelData?.type === 'Private' ? <BiLock /> : channelData?.type === "Public" ? <BiHash /> : <BiGlobe />}
-                                <h1 className='ml-1'>
-                                    {channelData?.channel_name}
-                                </h1>
+                                <p className='text-sm font-medium'>{channelData?.channel_name}</p>
                             </div>
                         </div>
                     </IonTitle>
@@ -57,26 +73,44 @@ export const AddChannelMembers = () => {
                 </IonToolbar>
             </IonHeader>
             <IonContent className="ion-padding">
-                <IonSearchbar onClick={() => modal.current?.setCurrentBreakpoint(0.75)} placeholder="Search"></IonSearchbar>
+                <IonSearchbar placeholder="Search" debounce={1000} onIonInput={() => { }}></IonSearchbar>
                 <IonList>
-                    <IonItem>
-                        <IonAvatar slot="start">
-                            <IonImg src="https://i.pravatar.cc/300?u=b" />
-                        </IonAvatar>
-                        <IonLabel>
-                            <h2>Connor Smith</h2>
-                            <p>Sales Rep</p>
-                        </IonLabel>
-                    </IonItem>
-                    <IonItem>
-                        <IonAvatar slot="start">
-                            <IonImg src="https://i.pravatar.cc/300?u=a" />
-                        </IonAvatar>
-                        <IonLabel>
-                            <h2>Daniel Smith</h2>
-                            <p>Product Designer</p>
-                        </IonLabel>
-                    </IonItem>
+                    <IonListHeader>
+                        <IonLabel>Members</IonLabel>
+                    </IonListHeader>
+                    {existingMembers.map((member) => (
+                        <IonItem key={member.name}>
+                            {member.user_image ?
+                                <IonAvatar slot="start" className="h-10 w-10">
+                                    <img src={url + member.user_image} />
+                                </IonAvatar>
+                                :
+                                <Avatar name={member.full_name} round size='40' className="mr-3.5" />}
+                            <IonLabel>
+                                <h2>{member.full_name}</h2>
+                                <p>{member.name}</p>
+                            </IonLabel>
+                        </IonItem>
+                    ))}
+                </IonList>
+                <IonList>
+                    <IonListHeader>
+                        <IonLabel>Non-Members</IonLabel>
+                    </IonListHeader>
+                    {nonMembers.map((user) => (
+                        <IonItem key={user.name}>
+                            {user.user_image ?
+                                <IonAvatar slot="start" className="h-10 w-10">
+                                    <img src={url + user.user_image} />
+                                </IonAvatar>
+                                :
+                                <Avatar name={user.full_name} round size='40' className="mr-3.5" />}
+                            <IonLabel>
+                                <h2>{user.full_name}</h2>
+                                <p>{user.name}</p>
+                            </IonLabel>
+                        </IonItem>
+                    ))}
                 </IonList>
             </IonContent>
         </IonModal>
