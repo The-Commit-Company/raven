@@ -31,7 +31,7 @@ export const Channels = () => {
                     </IonToolbar>
                 </IonHeader>
                 {isLoading && <div className='text-center'><IonSpinner name='crescent' color='medium' /></div>}
-                {error && <ErrorBanner heading={error.message}>{error.httpStatus} - {error.httpStatusText}</ErrorBanner>}
+                {error && <ErrorBanner error={error} />}
                 <IonItem lines='none' button id='channel-create'>
                     <div slot='start'>
                         <IoAdd size='24' color='var(--ion-color-medium)' />

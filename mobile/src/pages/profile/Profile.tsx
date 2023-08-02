@@ -23,6 +23,7 @@ export const Profile = () => {
     const handleLogout = () => {
         logout()
     }
+
     return (
         <IonPage>
             <IonHeader translucent>
@@ -37,9 +38,7 @@ export const Profile = () => {
                     </IonToolbar>
                 </IonHeader>
                 {isLoading && <FullPageLoader />}
-                {error && <ErrorBanner heading="There was an error while fetching your profile.">
-                    <p>{error.exception} - HTTP {error.httpStatus}</p>
-                </ErrorBanner>}
+                {error && <ErrorBanner error={error} />}
                 <IonList>
                     {data &&
                         <div className="my-8 flex justify-center flex-col items-center ion-text-center space-y-2">

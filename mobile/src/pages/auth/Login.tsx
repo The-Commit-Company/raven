@@ -36,8 +36,7 @@ export const Login = () => {
                             <IonImg src={raven_logo} alt="Raven Logo" className="block m-auto mb-4 w-40" />
                         </IonToolbar>
                     </IonHeader>
-                    {error && <ErrorBanner heading={error.message}>
-                    </ErrorBanner>}
+                    {error && <ErrorBanner overrideHeading={error.message} />}
                     <form onSubmit={handleSubmit(onSubmit)}>
                         <IonItem>
                             <IonInput

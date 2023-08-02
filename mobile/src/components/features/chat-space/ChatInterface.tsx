@@ -64,9 +64,7 @@ export const ChatInterface = () => {
                     </IonToolbar>
                 </IonHeader>
                 {isMessageLoading && <FullPageLoader />}
-                {messagesError && <ErrorBanner heading="There was an error while fetching the messages.">
-                    {messagesError.exception} - {messagesError.httpStatus}
-                </ErrorBanner>}
+                {messagesError && <ErrorBanner error={messagesError} />}
                 {messages && <ChatHistory messages={messages.message} />}
                 <IonFooter className='text-white'>
                     <div className='chat-input'>

@@ -75,10 +75,10 @@ export const PreviousMessageBox = ({ previous_message_id, previous_message_conte
         const { call, error: indexingError, reset } = useFrappePostCall<{ message: string }>("raven.raven_messaging.doctype.raven_message.raven_message.get_index_of_message")
 
         if (indexingError) {
-            return <ErrorBanner heading='error while searching for previous message' />
+            return <ErrorBanner error={indexingError} />
         }
         if (error) {
-            return <ErrorBanner heading='previous message not found, this message may have been deleted' />
+            return <ErrorBanner error={error} />
         }
         if (data) {
             return <IonCard>
