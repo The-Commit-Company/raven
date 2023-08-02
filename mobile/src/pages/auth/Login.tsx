@@ -30,7 +30,7 @@ export const Login = () => {
                 </IonToolbar>
             </IonHeader>
             <IonContent className='ion-padding'>
-                <div slot='fixed' className="left-0 right-0 top-1/4 p-10 transform justify-center items-center">
+                <div slot='fixed' className="left-0 right-0 top-1/4 p-2 transform justify-center items-center">
                     <IonHeader collapse="condense" translucent>
                         <IonToolbar>
                             <IonImg src={raven_logo} alt="Raven Logo" className="block m-auto mb-4 w-40" />
@@ -47,7 +47,10 @@ export const Login = () => {
                                     validate: (e) => isEmailValid(e) ? true : "Please enter a valid email"
                                 })}
                                 placeholder='sally@example.com'
-                                className={errors?.email ? 'ion-invalid' : ''}
+                                className={!!errors?.email ? 'ion-invalid ion-touched' : ''}
+                                label='Email'
+                                inputMode='email'
+                                labelPlacement='stacked'
                             />
                         </IonItem>
                         <IonItem>
@@ -58,17 +61,17 @@ export const Login = () => {
                                 })}
                                 required
                                 placeholder='********'
-                                className={errors?.password ? 'ion-invalid' : ''}
+                                className={!!errors?.password ? 'ion-invalid ion-touched' : ''}
+                                label='Password'
+                                labelPlacement='stacked'
                             />
                         </IonItem>
-                        <div>
-                            <IonButton
-                                type="submit"
-                                className='ion-margin-top'
-                                expand="block">
-                                {isLoading ? <IonSpinner name="crescent" /> : "Login"}
-                            </IonButton>
-                        </div>
+                        <IonButton
+                            type="submit"
+                            className='ion-margin-top'
+                            expand="block">
+                            {isLoading ? <IonSpinner name="crescent" /> : "Login"}
+                        </IonButton>
                     </form>
                 </div>
             </IonContent>

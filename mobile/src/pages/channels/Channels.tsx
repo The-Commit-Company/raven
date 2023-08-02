@@ -4,25 +4,21 @@ import { RavenChannel } from '../../types/RavenChannelManagement/RavenChannel';
 import { useFrappeEventListener, useFrappeGetCall } from 'frappe-react-sdk';
 import { ErrorBanner } from '../../components/layout';
 import { ChannelList } from '../../components/features/channels/ChannelList';
+import { AddChannel } from '../../components/features/channels';
+import { useRef, useState } from 'react';
 
 export const Channels = () => {
 
+    const pageRef = useRef()
     const { data, error, mutate, isLoading } = useFrappeGetCall<{ message: RavenChannel[] }>("raven.raven_channel_management.doctype.raven_channel.raven_channel.get_channel_list")
+    const [isOpen, setIsOpen] = useState(false)
 
     useFrappeEventListener('channel_list_updated', () => {
         mutate()
     })
 
-    if (error) {
-        return <ErrorBanner heading={error.message}>{error.httpStatus} - {error.httpStatusText}</ErrorBanner>
-    }
-
-    if (isLoading) {
-        return <div className='text-center'><IonSpinner name='crescent' color='medium' /></div>
-    }
-
     return (
-        <IonPage>
+        <IonPage ref={pageRef}>
             <IonHeader translucent>
                 <IonToolbar>
                     <IonTitle>Channels</IonTitle>
@@ -31,14 +27,12 @@ export const Channels = () => {
             <IonContent fullscreen>
                 <IonHeader collapse="condense" translucent>
                     <IonToolbar>
-                        <IonTitle size="large">Raven</IonTitle>
+                        <IonTitle size="large">Channels</IonTitle>
                     </IonToolbar>
                 </IonHeader>
-                <div className='ion-padding-horizontal py-2'>
-                    <IonLabel className='text-sm font-medium' color='medium'>Channels</IonLabel>
-                </div>
-                <ChannelList data={data?.message ?? []} />
-                <IonItem lines='none'>
+                {isLoading && <div className='text-center'><IonSpinner name='crescent' color='medium' /></div>}
+                {error && <ErrorBanner heading={error.message}>{error.httpStatus} - {error.httpStatusText}</ErrorBanner>}
+                <IonItem lines='none' button id='channel-create'>
                     <div slot='start'>
                         <IoAdd size='24' color='var(--ion-color-medium)' />
                     </div>
@@ -46,6 +40,8 @@ export const Channels = () => {
                         Add Channel
                     </IonLabel>
                 </IonItem>
+                <ChannelList data={data?.message ?? []} />
+                <AddChannel isOpen={isOpen} setIsOpen={setIsOpen} presentingElement={pageRef.current} />
             </IonContent>
         </IonPage>
     )

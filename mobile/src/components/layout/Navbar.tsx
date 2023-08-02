@@ -1,4 +1,4 @@
-import { IonRouterOutlet, IonTabBar, IonTabButton, IonTabs } from "@ionic/react"
+import { IonIcon, IonRouterOutlet, IonTabBar, IonTabButton, IonTabs } from "@ionic/react"
 import { BiBell, BiChat, BiHash, BiSearch, BiUser } from "react-icons/bi"
 import { Route } from "react-router-dom"
 import { Channels } from "../../pages/channels"
@@ -26,7 +26,7 @@ export const Navbar = () => {
                 <Profile />
             </Route>
         </IonRouterOutlet>
-        <IonTabBar slot="bottom">
+        <IonTabBar slot="bottom" className="pb-6">
             <IonTabButton tab="channels" href="/channels">
                 <BiHash size={30} />
             </IonTabButton>
