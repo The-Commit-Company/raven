@@ -17,6 +17,7 @@ function App() {
           <Route path="/" element={<ProtectedRoute />}>
             <Route index element={<ChannelRedirect />} />
             <Route path="channel" element={<MainPage />} >
+              <Route index element={<ChannelRedirect />} />
               <Route path="saved-messages" element={<SavedMessages />} />
               <Route path=":channelID" element={<ChatSpace />} />
             </Route>
