@@ -1,13 +1,12 @@
-import { Flex, Box, Stack, useColorModeValue } from '@chakra-ui/react'
+import { Flex, Box, useColorModeValue } from '@chakra-ui/react'
 import { Outlet } from 'react-router-dom'
 import { Sidebar } from '../components/layout/Sidebar/Sidebar'
 import { UserDataProvider } from '../utils/user/UserDataProvider'
 import { VirtuosoRefProvider } from '../utils/message/VirtuosoRefProvider'
 import { useActiveState } from '../hooks/useActiveState'
+import { ChannelListProvider } from '../utils/channel/ChannelListProvider'
 
-type Props = {}
-
-export const MainPage = (props: Props) => {
+export const MainPage = () => {
 
     const isUserActive = useActiveState()
 
@@ -16,24 +15,24 @@ export const MainPage = (props: Props) => {
 
     return (
         <UserDataProvider>
-            <Flex height="100vh" sx={{ '--sidebar-width': '16rem' }} >
-                <Box bg={sidebarBackground} h="100vh" fontSize="sm" width="var(--sidebar-width)" left="0" position="fixed" zIndex="999">
-                    <Stack h="full" direction="column" spacing="4" overflow="auto" {...props}>
+            <ChannelListProvider>
+                <Flex height="100vh" sx={{ '--sidebar-width': '16rem' }} >
+                    <Box bg={sidebarBackground} h="100vh" fontSize="sm" width="var(--sidebar-width)" left="0" position="fixed" zIndex="999">
                         <Sidebar isUserActive={isUserActive} />
-                    </Stack>
-                </Box>
-                <Box
-                    overflow="auto"
-                    bgColor={chatInterfaceBackground}
-                    w='calc(100vw - var(--sidebar-width))'
-                    position="relative"
-                    left='var(--sidebar-width)'
-                >
-                    <VirtuosoRefProvider>
-                        <Outlet />
-                    </VirtuosoRefProvider>
-                </Box>
-            </Flex>
+                    </Box>
+                    <Box
+                        overflow="auto"
+                        bgColor={chatInterfaceBackground}
+                        w='calc(100vw - var(--sidebar-width))'
+                        position="relative"
+                        left='var(--sidebar-width)'
+                    >
+                        <VirtuosoRefProvider>
+                            <Outlet />
+                        </VirtuosoRefProvider>
+                    </Box>
+                </Flex>
+            </ChannelListProvider>
         </UserDataProvider>
     )
 }

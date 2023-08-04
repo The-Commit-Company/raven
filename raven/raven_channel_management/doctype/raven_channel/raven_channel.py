@@ -81,10 +81,44 @@ class RavenChannel(Document):
 
 
 @frappe.whitelist()
+def get_all_channels(hide_archived=True):
+    '''
+        Fetches all channels where current user is a member - both channels and DMs
+        To be used on the web app. 
+        On mobile app, these are separate lists
+    '''
+
+    # 1. Get "channels" - public, open, and private
+    channels = get_channel_list(hide_archived)
+
+    #2. Get "direct messages" - DMs
+    dm_channels = get_dm_channels_for_user()
+
+    #3. For every DM channel, we need to fetch user information
+    parsed_dm_channels = []
+    for dm_channel in dm_channels:
+        parsed_dm_channel = {
+            **dm_channel,
+            **get_user_information(dm_channel.get('name'), dm_channel.get('is_self_message'))
+        }
+
+        parsed_dm_channels.append(parsed_dm_channel)
+
+    # Get extra users if dm channels length is less than 5
+    extra_users = []
+    if len(parsed_dm_channels) < 5:
+        extra_users = get_extra_users(parsed_dm_channels)
+    return {
+        "channels": channels,
+        "dm_channels": parsed_dm_channels,
+        "extra_users": extra_users
+    }
+
+@frappe.whitelist()
 def get_channel_list(hide_archived=False):
     # get channel list where channel member is current user
     query = (frappe.qb.from_(channel)
-             .select(channel.name, channel.channel_name, channel.type, channel.is_direct_message, channel.is_self_message, channel.is_archived).distinct()
+             .select(channel.name, channel.channel_name, channel.type, channel.is_archived).distinct()
              .left_join(channel_member)
              .on((channel.name == channel_member.channel_id))
              .where((channel.type != "Private") | (channel_member.user_id == frappe.session.user))
@@ -93,10 +127,58 @@ def get_channel_list(hide_archived=False):
     if hide_archived:
         query = query.where(channel.is_archived == 0)
 
-    frappe.publish_realtime('unread_channel_count_updated', after_commit=True)
-    frappe.db.commit()
+    return query.run(as_dict=True)
+
+def get_dm_channels_for_user():
+    query = (frappe.qb.from_(channel)
+             .select(channel.name, channel.is_self_message)
+             .left_join(channel_member)
+             .on((channel.name == channel_member.channel_id))
+             .where(channel_member.user_id == frappe.session.user)
+             .where(channel.is_direct_message == 1))
 
     return query.run(as_dict=True)
+
+def get_user_information(channel_id, is_self_message=False):
+    '''
+    For a given channel, fetches the user information of the peer
+    '''
+    peer_user_id = get_peer_user_id(channel_id, is_self_message)
+    full_name, user_image = frappe.db.get_value("User", peer_user_id, fieldname=["full_name", "user_image"])
+
+    return {
+        "user_id": peer_user_id,
+        "full_name": full_name,
+        "user_image": user_image
+    }
+
+
+def get_peer_user_id(channel_id, is_self_message=False):
+    '''
+    For a given channel, fetches the user id of the peer
+    '''
+    if is_self_message:
+        return frappe.session.user
+    return frappe.db.get_value('Raven Channel Member', {
+        'channel_id': channel_id,
+        'user_id': ['!=', frappe.session.user]
+        }, 'user_id')
+
+def get_extra_users(dm_channels):
+    '''
+    Fetch extra users - only when number of DMs is less than 5.
+    Do not repeat users already in the list
+    '''
+    existing_users = [dm_channel.get('user_id') for dm_channel in dm_channels]
+    existing_users.append('Administrator')
+    existing_users.append('Guest')
+    return frappe.db.get_list('User', filters=[
+        ['name', 'not in', existing_users],
+        ['enabled', '=', 1],
+        ['user_type', '=', 'System User'],
+        ["Has Role", "role", "=", 'Raven User']]
+        , fields=['name', 'full_name', 'user_image'])
+
 
 
 @frappe.whitelist(methods=['POST'])
@@ -162,25 +244,6 @@ def delete_channel(channel_id):
     frappe.db.delete("Raven Channel Member", {"channel_id": channel_id})
     # delete channel
     channel.delete()
-
-
-@frappe.whitelist()
-def get_direct_message_channels_list():
-    # get all direct message channels of user
-    query = (
-        frappe.qb
-        .from_(channel)
-        .join(channel_member).on(channel.name == channel_member.channel_id)
-        .join(user).on(channel_member.user_id == user.name)
-        .where((channel_member.user_id != frappe.session.user) | (channel.is_self_message == 1)).distinct()
-        .where(channel.is_direct_message == 1)
-        .where(channel.channel_name.like(f"%{frappe.session.user}%"))
-        .select(channel.name, channel.channel_name, user.full_name, (user.name).as_('user_id')))
-
-    frappe.publish_realtime('unread_dm_count_updated', after_commit=True)
-    frappe.db.commit()
-
-    return query.run(as_dict=True)
 
 
 @frappe.whitelist()

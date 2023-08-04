@@ -10,15 +10,3 @@ export type ChannelData = {
     channel_description: string,
     owner_full_name: string,
 }
-
-export type DMChannelData = {
-    name: string,
-    channel_name: string,
-    full_name: string,
-    user_id: string,
-}
-
-export type UnreadCountData = {
-    total_unread_count: number,
-    channels: { name: string, user_id?: string, unread_count: number }[]
-}
