@@ -5,9 +5,7 @@ import { UserDataProvider } from '../utils/user/UserDataProvider'
 import { VirtuosoRefProvider } from '../utils/message/VirtuosoRefProvider'
 import { useActiveState } from '../hooks/useActiveState'
 
-type Props = {}
-
-export const MainPage = (props: Props) => {
+export const MainPage = () => {
 
     const isUserActive = useActiveState()
 
@@ -18,9 +16,7 @@ export const MainPage = (props: Props) => {
         <UserDataProvider>
             <Flex height="100vh" sx={{ '--sidebar-width': '16rem' }} >
                 <Box bg={sidebarBackground} h="100vh" fontSize="sm" width="var(--sidebar-width)" left="0" position="fixed" zIndex="999">
-                    <Stack h="full" direction="column" spacing="4" overflow="auto" {...props}>
-                        <Sidebar isUserActive={isUserActive} />
-                    </Stack>
+                    <Sidebar isUserActive={isUserActive} />
                 </Box>
                 <Box
                     overflow="auto"
