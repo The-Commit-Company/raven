@@ -1,2 +1,2 @@
-export { ChannelHeader } from './ChatHeader'
-export { ChannelContent } from './ChatHistory'
+export { ChatHistory } from './ChatHistory'
+export { ChatInterface } from './ChatInterface'

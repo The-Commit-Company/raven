@@ -1,19 +1,19 @@
 import { IonAvatar, IonContent, IonItem, IonList, IonText } from '@ionic/react'
 import { createRef, useContext, useEffect } from 'react'
-import { ChannelContext } from '../../../pages/channels/ViewChannel'
 import { MarkdownRenderer } from '../../common/MarkdownRenderer'
 import { FrappeConfig, FrappeContext } from 'frappe-react-sdk'
 import { getFileExtensionIcon } from '../../../utils/layout/fileExtensions'
 import { DateBlock, MessageBlock } from '../../../../../raven-app/src/types/Messaging/Message'
 import Avatar from 'react-avatar'
 import { ChatMessageBox } from '../chat-message/ChatMessageBox'
+import { ChannelContext } from '../../../utils/channel/ChannelProvider'
 
 type Props = {
     messages: (DateBlock | MessageBlock)[]
 }
 
 
-export const ChannelContent = ({ messages }: Props) => {
+export const ChatHistory = ({ messages }: Props) => {
 
     const conRef = createRef<HTMLIonContentElement>();
     useEffect(() => {
