@@ -24,8 +24,12 @@ export const UserProvider: FC<PropsWithChildren> = ({ children }) => {
 
     const { login, logout, isValidating, currentUser, error, updateCurrentUser, isLoading } = useFrappeAuth()
 
+    const handleLogout = async () => {
+        localStorage.removeItem('ravenLastChannel')
+        return logout()
+    }
     return (
-        <UserContext.Provider value={{ isLoading, updateCurrentUser, login, logout, currentUser: currentUser ?? "", isValidating }}>
+        <UserContext.Provider value={{ isLoading, updateCurrentUser, login, logout: handleLogout, currentUser: currentUser ?? "", isValidating }}>
             {children}
         </UserContext.Provider>
     )

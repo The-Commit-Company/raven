@@ -1,5 +1,5 @@
-import { useFrappeGetCall, useFrappeGetDocList } from 'frappe-react-sdk'
-import { createContext, PropsWithChildren, useMemo } from 'react'
+import { useFrappeGetCall } from 'frappe-react-sdk'
+import { createContext, PropsWithChildren, useEffect, useMemo } from 'react'
 import { useParams } from 'react-router-dom'
 import { useFrappeEventListener } from '../../hooks/useFrappeEventListener'
 import { ChannelData } from '../../types/Channel/Channel'
@@ -65,6 +65,15 @@ export const ChannelProvider = ({ children }: PropsWithChildren) => {
             channelData: data?.message.channel_data
         }
     }, [data, users])
+
+    /**
+     * Set the last channel in local storage
+     */
+    useEffect(() => {
+        if (channelID) {
+            localStorage.setItem('ravenLastChannel', channelID)
+        }
+    }, [channelID])
 
     return (
         <>
