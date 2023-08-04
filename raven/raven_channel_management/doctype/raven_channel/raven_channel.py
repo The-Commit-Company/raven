@@ -181,3 +181,14 @@ def get_direct_message_channels_list():
     frappe.db.commit()
 
     return query.run(as_dict=True)
+
+
+@frappe.whitelist()
+def get_raven_users_list():
+    raven_users = []
+    users = frappe.get_all("User", filters={"name": ["!=", "Administrator"]}, fields=[
+                           "full_name", "user_image", "name", "first_name"], order_by="full_name")
+    for user in users:
+        if "Raven User" in frappe.get_roles(user.name):
+            raven_users.append(user)
+    return raven_users

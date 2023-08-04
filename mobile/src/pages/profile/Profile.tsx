@@ -2,9 +2,8 @@ import { IonPage, IonHeader, IonContent, IonToolbar, IonTitle, IonList, IonText,
 import { FrappeConfig, FrappeContext, useFrappeGetDoc } from 'frappe-react-sdk'
 import { logOutOutline, pizza } from 'ionicons/icons'
 import { useContext } from 'react'
-import { ErrorBanner, FullPageLoader } from '../../components/common'
-import { AuthContext } from '../../utils/AuthProvider'
-import { UserContext } from '../../utils/UserProvider'
+import { ErrorBanner, FullPageLoader } from '../../components/layout'
+import { UserContext } from '../../utils/auth/UserProvider'
 
 interface User {
     name: string
@@ -15,8 +14,7 @@ interface User {
 }
 export const Profile = () => {
 
-    const { currentUser } = useContext(UserContext)
-    const { logout } = useContext(AuthContext)
+    const { currentUser, logout } = useContext(UserContext)
 
     const { url } = useContext(FrappeContext) as FrappeConfig
 
@@ -25,6 +23,7 @@ export const Profile = () => {
     const handleLogout = () => {
         logout()
     }
+
     return (
         <IonPage>
             <IonHeader translucent>
@@ -39,9 +38,7 @@ export const Profile = () => {
                     </IonToolbar>
                 </IonHeader>
                 {isLoading && <FullPageLoader />}
-                {error && <ErrorBanner heading="There was an error while fetching your profile.">
-                    <p>{error.exception} - HTTP {error.httpStatus}</p>
-                </ErrorBanner>}
+                {error && <ErrorBanner error={error} />}
                 <IonList>
                     {data &&
                         <div className="my-8 flex justify-center flex-col items-center ion-text-center space-y-2">

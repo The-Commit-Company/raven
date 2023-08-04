@@ -27,10 +27,7 @@ export const SavedMessages = () => {
 
     const { isOpen: isCommandPaletteOpen, onClose: onCommandPaletteClose, onToggle: onCommandPaletteToggle } = useDisclosure()
 
-    const { data: users, error: usersError } = useFrappeGetDocList<User>("User", {
-        fields: ["full_name", "user_image", "name"],
-        filters: [["name", "!=", "Guest"]]
-    }, undefined, {
+    const { data: users, error: usersError } = useFrappeGetCall<{ message: User[] }>('raven.raven_channel_management.doctype.raven_channel.raven_channel.get_raven_users_list', undefined, undefined, {
         revalidateOnFocus: false
     })
 
@@ -108,8 +105,8 @@ export const SavedMessages = () => {
                 {data?.message?.map(({ name, text, owner, creation, channel_id, file, message_type }: SavedMessage) => {
                     const isArchived = channels?.message.find((channel: ChannelData) => channel.name === channel_id)?.is_archived
                     const channelName = channels?.message.find((channel: ChannelData) => channel.name === channel_id)?.channel_name
-                    const full_name = users.find((user: User) => user.name === owner)?.full_name
-                    const user_image = users.find((user: User) => user.name === owner)?.user_image
+                    const full_name = users?.message.find((user: User) => user.name === owner)?.full_name
+                    const user_image = users?.message.find((user: User) => user.name === owner)?.user_image
                     return (
                         <MessageBox isArchived={isArchived} channelName={channelName} messageName={name} channelID={channel_id} creation={creation} owner={owner} messageText={text} full_name={full_name} user_image={user_image} file={file} message_type={message_type} handleScrollToMessage={handleScrollToMessage} />
                     )

@@ -1,5 +1,15 @@
+import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent } from "@ionic/react"
+
 export const Notifications = () => {
     return (
-        <div>Notifications</div>
+        <IonPage>
+            <IonHeader translucent>
+                <IonToolbar>
+                    <IonTitle>Notifications</IonTitle>
+                </IonToolbar>
+            </IonHeader>
+            <IonContent fullscreen>
+            </IonContent>
+        </IonPage>
     )
 }

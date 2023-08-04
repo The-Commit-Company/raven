@@ -1,12 +1,14 @@
-import { defineConfig } from 'vite'
 import path from 'path';
+import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react'
+import proxyOptions from './proxyOptions';
 
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [react()],
   server: {
-    port: 8081
+    port: 8081,
+    proxy: proxyOptions
   },
   resolve: {
     alias: {
@@ -16,6 +18,6 @@ export default defineConfig({
   build: {
     outDir: 'dist',
     emptyOutDir: true,
-    target: 'esnext'
+    target: 'es2015',
   },
 });
