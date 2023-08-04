@@ -39,12 +39,6 @@ export const ChatInterface = () => {
 
     const { colorMode } = useColorMode()
 
-    useFrappeEventListener('message_received', (data) => {
-        if (data.channel_id === channelData?.name) {
-            mutate()
-        }
-    })
-
     useFrappeEventListener('message_deleted', (data) => {
         if (data.channel_id === channelData?.name) {
             mutate()

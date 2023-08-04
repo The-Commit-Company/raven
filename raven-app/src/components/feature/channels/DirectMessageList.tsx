@@ -1,66 +1,42 @@
-import { Avatar, AvatarBadge, HStack } from "@chakra-ui/react"
-import { FrappeConfig, FrappeContext, useFrappeGetCall, useFrappeGetDocList, useFrappePostCall } from "frappe-react-sdk"
-import { useFrappeEventListener } from "../../../hooks/useFrappeEventListener"
-import { useContext, useEffect, useState } from "react"
-import { useLocation, useNavigate } from "react-router-dom"
-import { DMChannelData, UnreadCountData } from "../../../types/Channel/Channel"
-import { User } from "../../../types/User/User"
-import { AlertBanner } from "../../layout/AlertBanner"
+import { Avatar, AvatarBadge, HStack, useToast } from "@chakra-ui/react"
+import { useFrappeGetCall, useFrappePostCall } from "frappe-react-sdk"
+import { useContext, useState } from "react"
+import { useNavigate } from "react-router-dom"
 import { SidebarGroup, SidebarGroupItem, SidebarGroupLabel, SidebarGroupList, SidebarIcon, SidebarItemLabel, SidebarButtonItem } from "../../layout/Sidebar"
-import { SidebarBadge, SidebarViewMoreButton } from "../../layout/Sidebar/SidebarComp"
+import { SidebarBadge, SidebarItem, SidebarViewMoreButton } from "../../layout/Sidebar/SidebarComp"
+import { UserContext } from "../../../utils/auth/UserProvider"
+import { ChannelListContext, ChannelListContextType, DMChannelData, ExtraUsersData, UnreadCountData } from "../../../utils/channel/ChannelListProvider"
 
-export const DirectMessageList = ({ userData }: { userData: User | null }) => {
-    const { url } = useContext(FrappeContext) as FrappeConfig
-    const { data: users, error: usersError } = useFrappeGetCall<{ message: User[] }>('raven.raven_channel_management.doctype.raven_channel.raven_channel.get_raven_users_list', undefined, undefined, {
-        revalidateOnFocus: false
-    })
-    const { call, error: channelError, loading, reset } = useFrappePostCall<{ message: string }>("raven.raven_channel_management.doctype.raven_channel.raven_channel.create_direct_message_channel")
-    const { data: DMChannels, error: DMChannelsError } = useFrappeGetCall<{ message: DMChannelData[] }>('raven.raven_channel_management.doctype.raven_channel.raven_channel.get_direct_message_channels_list', undefined, undefined, {
-        revalidateOnFocus: false
-    })
-    const { data: unread_count, mutate: update_count } = useFrappeGetCall<{ message: UnreadCountData }>("raven.raven_messaging.doctype.raven_message.raven_message.get_unread_count_for_direct_message_channels")
+export const DirectMessageList = ({ unread_count }: { unread_count?: UnreadCountData }) => {
+
+    const { dm_channels, extra_users, mutate } = useContext(ChannelListContext) as ChannelListContextType
+    const { call } = useFrappePostCall<{ message: string }>("raven.raven_channel_management.doctype.raven_channel.raven_channel.create_direct_message_channel")
+
+    const toast = useToast()
     const navigate = useNavigate()
-    const location = useLocation();
-    const currentAddress = location.pathname
 
-    const [showData, setShowData] = useState(true)
-    const [selectedUser, setSelectedUser] = useState<string[]>([])
+    const createDMChannel = async (user_id: string) => {
+        return call({ user_id })
+            .then((r) => {
+                navigate(`${r?.message}`)
+                mutate()
+            })
+            .catch(() => {
+                toast({
+                    title: "Error",
+                    description: "Could not create channel.",
+                    status: "error",
+                    duration: 2000,
+                    isClosable: true,
+                    position: 'top-right'
+                })
+            })
 
-    useEffect(() => {
-        reset()
-    }, [])
-
-    const gotoDMChannel = async (user: string) => {
-        const DMChannel = DMChannels?.message.find((channel: DMChannelData) => channel.user_id === user)
-        if (DMChannel) {
-            navigate(`/channel/${DMChannel.name}`)
-            setSelectedUser([user, `/channel/${DMChannel.name}`])
-        }
-        else {
-            const result = await call({ user_id: user })
-            navigate(`/channel/${result?.message}`)
-            setSelectedUser([user, `/channel/${result?.message}`])
-        }
     }
 
-    const { data, error } = useFrappeGetCall<{ message: string }>('raven.api.user_availability.get_active_users', undefined, undefined, {
-        revalidateOnFocus: false
-    })
+    const [showData, setShowData] = useState(true)
 
-    const [unreadCount, setUnreadCount] = useState<UnreadCountData>({
-        total_unread_count: 0,
-        channels: []
-    })
-
-
-    useFrappeEventListener('unread_dm_count_updated', () => {
-        update_count()
-    })
-
-    useEffect(() => {
-        if (unread_count)
-            setUnreadCount(unread_count.message)
-    }, [unread_count])
+    const { data } = useFrappeGetCall<{ message: string[] }>('raven.api.user_availability.get_active_users')
 
     return (
         <SidebarGroup spacing={1}>
@@ -68,54 +44,79 @@ export const DirectMessageList = ({ userData }: { userData: User | null }) => {
                 <SidebarViewMoreButton onClick={() => setShowData(!showData)} />
                 <HStack w='71%' justifyContent='space-between'>
                     <SidebarGroupLabel>Direct Messages</SidebarGroupLabel>
-                    {!showData && unreadCount.total_unread_count > 0 && <SidebarBadge>{unreadCount.total_unread_count}</SidebarBadge>}
+                    {!showData && unread_count && unread_count?.total_unread_count_in_dms > 0 && <SidebarBadge>{unread_count.total_unread_count_in_dms}</SidebarBadge>}
                 </HStack>
             </SidebarGroupItem>
             <SidebarGroup>
                 <SidebarGroupList>
-                    {usersError && (
-                        <AlertBanner status="error" heading={usersError.message}>
-                            {usersError.httpStatus} - {usersError.httpStatusText}
-                        </AlertBanner>
-                    )}
-                    {channelError && (
-                        <AlertBanner status="error" heading={channelError.message}>
-                            {channelError.httpStatus} - {channelError.httpStatusText}
-                        </AlertBanner>
-                    )}
-                    {DMChannelsError && (
-                        <AlertBanner status="error" heading={DMChannelsError.message}>
-                            {DMChannelsError.httpStatus} - {DMChannelsError.httpStatusText}
-                        </AlertBanner>
-                    )}
-                    {showData && users && users.message.map((user: User) => {
-                        const unreadChannelCount = unreadCount.channels?.find((unread) => unread.user_id == user.name)?.unread_count
-                        return (
-                            <SidebarButtonItem
-                                onClick={() => gotoDMChannel(user.name)}
-                                isLoading={loading}
-                                key={user.name}
-                                active={selectedUser.toString() == [user.name, currentAddress].toString()}
-                                py={1}
-                            >
-                                <HStack w="100%">
-                                    <SidebarIcon>
-                                        <Avatar name={user.full_name} src={url + user.user_image} borderRadius={'md'} size="xs">
-                                            {data?.message.includes(user.name) && !!!error && <AvatarBadge boxSize='0.88em' bg='green.500' />}
-                                        </Avatar>
-                                    </SidebarIcon>
-                                    <HStack justifyContent='space-between' w='100%'>
-                                        <SidebarItemLabel fontWeight={unreadChannelCount && unreadChannelCount > 0 ? 'bold' : 'normal'}>
-                                            {user.name !== userData?.name ? user.full_name : `${user.full_name} (You)`}
-                                        </SidebarItemLabel>
-                                        {unreadChannelCount && unreadChannelCount > 0 && <SidebarBadge>{unreadChannelCount}</SidebarBadge>}
-                                    </HStack>
-                                </HStack>
-                            </SidebarButtonItem>
-                        )
-                    })}
+                    {showData && dm_channels.map((channel) => <DirectMessageItem
+                        key={channel.name}
+                        channel={channel}
+                        active_users={data?.message || []}
+                        unreadCount={unread_count?.channels ?? []}
+                    />)}
+                    {showData && extra_users.map((user) => <ExtraUsersItem
+                        key={user.name}
+                        user={user}
+                        active_users={data?.message || []}
+                        createDMChannel={createDMChannel}
+                    />)}
                 </SidebarGroupList>
             </SidebarGroup>
         </SidebarGroup>
     )
+}
+
+const DirectMessageItem = ({ channel, active_users, unreadCount }: { channel: DMChannelData, active_users: string[], unreadCount: UnreadCountData['channels'] }) => {
+
+    const { currentUser } = useContext(UserContext)
+    const unreadCountForChannel = unreadCount.find((unread) => unread.name == channel.name)?.unread_count
+
+    return <SidebarItem to={channel.name}
+        py={1}
+    >
+        <HStack w="100%">
+            <SidebarIcon>
+                <Avatar name={channel.full_name} src={channel.user_image} borderRadius={'md'} size="xs">
+                    <AvatarBadge hidden={!active_users.includes(channel.user_id)} boxSize='0.88em' bg='green.500' />
+                </Avatar>
+            </SidebarIcon>
+            <HStack justifyContent='space-between' w='100%'>
+                <SidebarItemLabel fontWeight={unreadCountForChannel ? 'bold' : 'normal'}>
+                    {channel.user_id !== currentUser ? channel.full_name : `${channel.full_name} (You)`}
+                </SidebarItemLabel>
+                {unreadCountForChannel && <SidebarBadge>{unreadCountForChannel}</SidebarBadge>}
+            </HStack>
+        </HStack>
+    </SidebarItem>
+}
+
+const ExtraUsersItem = ({ user, active_users, createDMChannel }: { user: ExtraUsersData, active_users: string[], createDMChannel: (user_id: string) => Promise<void> }) => {
+
+    const [isLoading, setIsLoading] = useState(false)
+    const { currentUser } = useContext(UserContext)
+
+    const onButtonClick = () => {
+        setIsLoading(true)
+        createDMChannel(user.name)
+            .finally(() => setIsLoading(false))
+    }
+    return <SidebarButtonItem
+        isLoading={isLoading}
+        onClick={onButtonClick}
+        py={1}
+    >
+        <HStack w="100%">
+            <SidebarIcon>
+                <Avatar name={user.full_name} src={user.user_image} borderRadius={'md'} size="xs">
+                    <AvatarBadge hidden={!active_users.includes(user.name)} boxSize='0.88em' bg='green.500' />
+                </Avatar>
+            </SidebarIcon>
+            <HStack justifyContent='space-between' w='100%'>
+                <SidebarItemLabel>
+                    {user.name !== currentUser ? user.full_name : `${user.full_name} (You)`}
+                </SidebarItemLabel>
+            </HStack>
+        </HStack>
+    </SidebarButtonItem>
 }
