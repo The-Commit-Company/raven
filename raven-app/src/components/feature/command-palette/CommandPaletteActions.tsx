@@ -12,10 +12,10 @@ import { UserContext } from "../../../utils/auth/UserProvider"
 import { ChannelContext } from "../../../utils/channel/ChannelProvider"
 import { getFileExtensionIcon } from "../../../utils/layout/fileExtensionIcon"
 import GlobalSearch from "../global-search/GlobalSearch"
-import { FileMessage } from "../../../types/Messaging/Message"
 import { getFileExtension, getFileName } from "../../../utils/operations"
 import { useModalManager, ModalTypes } from "../../../hooks/useModalManager"
 import { FilePreviewModal } from "../file-preview/FilePreviewModal"
+import { FileSearchResult } from "../global-search/FileSearch"
 
 interface Props {
     searchChange: Function
@@ -67,6 +67,7 @@ export const Home = ({ searchChange, input, isGlobalSearchModalOpen, children, i
     const peer = Object.keys(channelMembers).filter((member) => member !== currentUser)[0]
     const style = { paddingBottom: 2, paddingTop: 2 }
     const [inFilter, setInFilter] = useState<string>()
+    const [withFilter, setWithFilter] = useState<string>()
 
     return (
         <Command.List>
@@ -75,7 +76,12 @@ export const Home = ({ searchChange, input, isGlobalSearchModalOpen, children, i
                 {channelData && <Item
                     onSelect={() => {
                         onGlobalSearchModalOpen()
-                        setInFilter(channelData.name)
+                        if (channelData.is_direct_message) {
+                            setWithFilter(channelData.is_self_message ? channelMembers[currentUser].name : channelMembers[peer].name)
+                        }
+                        else {
+                            setInFilter(channelData.name)
+                        }
                     }}
                 >
                     <TbListSearch fontSize={20} />
@@ -142,7 +148,7 @@ export const Home = ({ searchChange, input, isGlobalSearchModalOpen, children, i
                         </Button>
                     </HStack>
                 </Command.Group>}
-            <GlobalSearch isOpen={isGlobalSearchModalOpen} onClose={onGlobalSearchModalClose} tabIndex={0} input={input} inFilter={inFilter} onCommandPaletteClose={onCommandPaletteClose} />
+            <GlobalSearch isOpen={isGlobalSearchModalOpen} onClose={onGlobalSearchModalClose} tabIndex={0} input={input} inFilter={inFilter} withFilter={withFilter} onCommandPaletteClose={onCommandPaletteClose} />
         </Command.List>
     )
 }
@@ -193,7 +199,7 @@ export const Files = ({ searchChange, input, isGlobalSearchModalOpen, onGlobalSe
                         <Box><Spinner size={'xs'} color='gray.400' /></Box>
                     </Center>
                 </Command.Loading>}
-                {data?.message?.map((f: FileMessage) => {
+                {data?.message?.map((f: FileSearchResult) => {
                     const onFilePreviewModalOpen = () => {
                         modalManager.openModal(ModalTypes.FilePreview, {
                             file: f.file,

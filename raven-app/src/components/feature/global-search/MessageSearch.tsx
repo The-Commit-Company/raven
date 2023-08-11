@@ -13,7 +13,6 @@ import { EmptyStateForSearch } from '../../layout/EmptyState/EmptyState'
 import { SelectInput, SelectOption } from '../search-filters/SelectInput'
 import { Sort } from '../sorting'
 import { ChannelContext } from "../../../utils/channel/ChannelProvider"
-import { TextMessage } from '../../../types/Messaging/Message'
 import { useNavigate } from 'react-router-dom'
 import { MessageBox } from './MessageBox'
 import { VirtuosoRefContext } from '../../../utils/message/VirtuosoRefProvider'
@@ -35,17 +34,22 @@ interface Props {
     input: string,
     fromFilter?: string,
     inFilter?: string,
+    withFilter?: string,
     onCommandPaletteClose: () => void
     onClose: () => void
     onToggleSaved: () => void
     isSaved: boolean
 }
 
-interface MessageSearchResult extends TextMessage {
+interface MessageSearchResult {
     channel_id: string
+    name: string,
+    owner: string,
+    creation: Date,
+    text: string,
 }
 
-export const MessageSearch = ({ onToggleMyChannels, isOpenMyChannels, onToggleSaved, isSaved, dateOption, input, fromFilter, inFilter, onClose, onCommandPaletteClose }: Props) => {
+export const MessageSearch = ({ onToggleMyChannels, isOpenMyChannels, onToggleSaved, isSaved, dateOption, input, fromFilter, inFilter, withFilter, onClose, onCommandPaletteClose }: Props) => {
 
     const { virtuosoRef } = useContext(VirtuosoRefContext)
     const { url } = useContext(FrappeContext) as FrappeConfig
@@ -120,7 +124,8 @@ export const MessageSearch = ({ onToggleMyChannels, isOpenMyChannels, onToggleSa
     const methods = useForm<FilterInput>({
         defaultValues: {
             'from-user-filter': userOptions && fromFilter ? [userOptions.find((option) => option.value == fromFilter)] : [],
-            'channel-filter': channelOption && inFilter ? [channelOption.find((option) => option.value == inFilter)] : []
+            'channel-filter': channelOption && inFilter ? [channelOption.find((option) => option.value == inFilter)] : [],
+            'with-user-filter': userOptions && withFilter ? [userOptions.find((option) => option.value == withFilter)] : []
         }
     })
     const { watch, control } = methods
