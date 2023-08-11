@@ -144,3 +144,17 @@
 .ql-editor {
     font-size: var(--chakra-fontSizes-sm)
 }
+
+.EmojiPickerReact.epr-dark-theme.epr-main {
+    background-color: var(--chakra-colors-gray-900);
+    border-color: var(--chakra-colors-gray-700);
+}
+
+.EmojiPickerReact.epr-dark-theme li.epr-emoji-category>.epr-emoji-category-label {
+    background-color: var(--chakra-colors-gray-900);
+}
+
+.EmojiPickerReact.epr-dark-theme .epr-search-container input.epr-search {
+    background-color: var(--chakra-colors-gray-700);
+    border-color: var(--chakra-colors-gray-600);
+}
