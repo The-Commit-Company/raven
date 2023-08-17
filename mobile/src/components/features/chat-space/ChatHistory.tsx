@@ -7,6 +7,7 @@ import { DateBlock, MessageBlock } from '../../../../../raven-app/src/types/Mess
 import Avatar from 'react-avatar'
 import { ChatMessageBox } from '../chat-message/ChatMessageBox'
 import { ChannelContext } from '../../../utils/channel/ChannelProvider'
+import { getFileExtension } from '../../../utils/operations/operations'
 
 type Props = {
     messages: (DateBlock | MessageBlock)[]
@@ -64,7 +65,7 @@ const MessageView = ({ message }: { message: MessageBlock }) => {
             </div>}
             {message.data.message_type === 'Text' && <MarkdownRenderer content={message.data.text} />}
             {message.data.message_type === 'File' && message.data.file && <div className='flex items-center'>
-                <div>{getFileExtensionIcon(message?.data.file?.split('.')[1])}</div>
+                <div>{getFileExtensionIcon(getFileExtension(message?.data.file))}</div>
                 <a className='ml-1' target="_blank" href={url + message.data.file}>
                     <IonText color='dark'>{message?.data.file?.split('/')[3]}</IonText>
                 </a>
