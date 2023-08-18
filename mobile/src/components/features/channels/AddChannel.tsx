@@ -1,5 +1,5 @@
 import { IonButton, IonButtons, IonContent, IonHeader, IonInput, IonItem, IonItemDivider, IonItemGroup, IonLabel, IonList, IonModal, IonRadio, IonRadioGroup, IonText, IonTextarea, IonTitle, IonToolbar, useIonToast } from "@ionic/react";
-import { useFrappePostCall } from "frappe-react-sdk";
+import { useFrappeCreateDoc} from "frappe-react-sdk";
 import { useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { BiGlobe, BiHash, BiLockAlt } from "react-icons/bi";
@@ -22,7 +22,7 @@ export const AddChannel = ({ presentingElement }: AddChannelProps) => {
     const { register, handleSubmit, formState: { errors } } = useForm<CreateChannelInputs>()
     const [channelType, setChannelType] = useState<CreateChannelInputs['channel_type']>('Public')
 
-    const { call: callChannelCreation, error: channelCreationError } = useFrappePostCall<{ message: string }>('raven.raven_channel_management.doctype.raven_channel.raven_channel.create_channel')
+    const { createDoc, error } = useFrappeCreateDoc()
 
     const [present] = useIonToast()
 
@@ -37,11 +37,11 @@ export const AddChannel = ({ presentingElement }: AddChannelProps) => {
     const history = useHistory()
 
     const onSubmit = (data: CreateChannelInputs) => {
-        callChannelCreation({
-            channel_name: data.channel_name,
-            channel_description: data.channel_description,
+        createDoc('Raven Channel', {
+            ...data,
             type: channelType
-        }).then(result => {
+        })
+        .then(result => {
             if (result) {
                 presentToast("Channel created successfully")
                 modal.current?.dismiss()
@@ -75,7 +75,7 @@ export const AddChannel = ({ presentingElement }: AddChannelProps) => {
                 </IonToolbar>
             </IonHeader>
             <IonContent>
-                {channelCreationError && <ErrorBanner error={channelCreationError} />}
+                {error && <ErrorBanner error={error} />}
                 <form onSubmit={handleSubmit(onSubmit)}>
                     <IonList>
                         <IonItemGroup>
