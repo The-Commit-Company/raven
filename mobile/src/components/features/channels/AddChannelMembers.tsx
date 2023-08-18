@@ -17,7 +17,6 @@ import {
 } from '@ionic/react';
 import { BiGlobe, BiHash, BiLock } from 'react-icons/bi';
 import { ChannelContext } from '../../../utils/channel/ChannelProvider';
-import { FrappeConfig, FrappeContext } from 'frappe-react-sdk';
 import Avatar from 'react-avatar';
 
 interface AddChannelMembersProps {
@@ -33,7 +32,6 @@ export const AddChannelMembers = ({ presentingElement }: AddChannelMembersProps)
     }
 
     const { channelData, channelMembers, users } = useContext(ChannelContext)
-    const { url } = useContext(FrappeContext) as FrappeConfig
 
     const existingMembers = useMemo(() => {
         return Object.keys(channelMembers).map(userId => users[userId])
@@ -81,7 +79,7 @@ export const AddChannelMembers = ({ presentingElement }: AddChannelMembersProps)
                             <div className='flex gap-4'>
                                 {member.user_image ?
                                     <IonAvatar slot="start" className="h-10 w-10">
-                                        <img src={url + member.user_image} />
+                                        <img src={member.user_image} />
                                     </IonAvatar>
                                     :
                                     <Avatar name={member.full_name} round size='40' />}
@@ -103,7 +101,7 @@ export const AddChannelMembers = ({ presentingElement }: AddChannelMembersProps)
                                 <div className='flex gap-4'>
                                     {user.user_image ?
                                         <IonAvatar slot="start" className="h-10 w-10">
-                                            <img src={url + user.user_image} />
+                                            <img src={user.user_image} />
                                         </IonAvatar>
                                         :
                                         <Avatar name={user.full_name} round size='40' />}

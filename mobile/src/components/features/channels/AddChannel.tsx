@@ -1,5 +1,5 @@
 import { IonButton, IonButtons, IonContent, IonHeader, IonInput, IonItem, IonItemDivider, IonItemGroup, IonLabel, IonList, IonModal, IonRadio, IonRadioGroup, IonText, IonTextarea, IonTitle, IonToolbar, useIonToast } from "@ionic/react";
-import { useFrappeCreateDoc} from "frappe-react-sdk";
+import { useFrappeCreateDoc } from "frappe-react-sdk";
 import { useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { BiGlobe, BiHash, BiLockAlt } from "react-icons/bi";
@@ -19,8 +19,13 @@ type CreateChannelInputs = {
 export const AddChannel = ({ presentingElement }: AddChannelProps) => {
 
     const modal = useRef<HTMLIonModalElement>(null)
-    const { register, handleSubmit, formState: { errors } } = useForm<CreateChannelInputs>()
+    const { register, handleSubmit, formState: { errors }, reset } = useForm<CreateChannelInputs>()
     const [channelType, setChannelType] = useState<CreateChannelInputs['channel_type']>('Public')
+
+    const [value, setValue] = useState<string>('')
+    const handleChange = (event: any) => {
+        setValue(event.currentTarget.value?.toString().replace(' ', '-') ?? '')
+    }
 
     const { createDoc, error } = useFrappeCreateDoc()
 
@@ -40,12 +45,11 @@ export const AddChannel = ({ presentingElement }: AddChannelProps) => {
         createDoc('Raven Channel', {
             ...data,
             type: channelType
-        })
-        .then(result => {
+        }).then(result => {
             if (result) {
-                presentToast("Channel created successfully")
+                presentToast(`Channel ${result.name} created successfully`)
+                history.push(`channel/${result.name}`)
                 modal.current?.dismiss()
-                history.push(`channel/${result.message}`)
             }
         }).catch((err) => {
             if (err.httpStatus === 409) {
@@ -58,6 +62,7 @@ export const AddChannel = ({ presentingElement }: AddChannelProps) => {
     }
 
     const onDismiss = () => {
+        reset()
         modal.current?.dismiss()
     }
 
@@ -91,8 +96,18 @@ export const AddChannel = ({ presentingElement }: AddChannelProps) => {
                                 <IonInput
                                     required
                                     {...register("channel_name", {
-                                        required: "Channel name is required"
+                                        required: "Channel name is required",
+                                        maxLength: 50,
+                                        pattern: {
+                                            // no special characters allowed
+                                            // cannot start with a space
+                                            value: /^[a-zA-Z0-9][a-zA-Z0-9-]*$/,
+                                            message: "Channel name can only contain letters, numbers and hyphens."
+                                        }
                                     })}
+                                    maxlength={50}
+                                    onIonInput={handleChange}
+                                    value={value}
                                     placeholder='bugs-bugs-bugs'
                                     className={!!errors?.channel_name ? 'ion-invalid ion-touched' : ''}
                                     aria-label="Channel Name"
