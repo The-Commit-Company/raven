@@ -5,12 +5,12 @@ import { useContext } from "react"
 import { BiMessage } from "react-icons/bi"
 import { BsFillCircleFill, BsCircle, BsClock } from "react-icons/bs"
 import { useNavigate } from "react-router-dom"
-import { User } from "../../../types/User/User"
 import { DateObjectToTimeString } from "../../../utils/operations"
 import { AlertBanner } from "../../layout/AlertBanner"
 import { UserDataContext } from "../../../utils/user/UserDataProvider"
 import { AiOutlineEdit } from "react-icons/ai"
 import { SetUserStatus } from "./SetUserStatus"
+import { User } from "../../../types/Core/User"
 
 interface UserProfileDrawerProps {
     isOpen: boolean
