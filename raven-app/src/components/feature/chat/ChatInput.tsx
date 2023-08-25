@@ -21,6 +21,7 @@ import { AlertBanner } from "../../layout/AlertBanner"
 import { ModalTypes, useModalManager } from "../../../hooks/useModalManager"
 import { Message } from "../../../types/Messaging/Message"
 import { PreviousMessageBox } from "./MessageReply/PreviousMessageBox"
+import QuillImageDropAndPaste, { ImageData } from 'quill-image-drop-and-paste'
 
 interface ChatInputProps {
     channelID: string,
@@ -31,6 +32,7 @@ interface ChatInputProps {
 }
 
 Quill.register('modules/linkify', Linkify)
+Quill.register('modules/imageDropAndPaste', QuillImageDropAndPaste)
 
 export const fileExt = ['jpg', 'JPG', 'jpeg', 'JPEG', 'png', 'PNG', 'gif', 'GIF']
 
@@ -187,6 +189,19 @@ export const ChatInput = ({ channelID, allUsers, allChannels, selectedMessage, h
         setFiles(newFiles)
     }
 
+    const imageDropAndPaste = {
+        handler: useCallback((imageDataUrl: string, type: string, imageData: ImageData) => {
+            console.log('Called')
+            const file: CustomFile = imageData.toFile() as CustomFile
+            if (file) {
+                file.fileID = file.name + Date.now()
+                file.uploadProgress = 0
+                setFiles((f) => [...f, file])
+            }
+
+        }, [])
+    }
+
     return (
         <Box>
 
@@ -220,6 +235,7 @@ export const ChatInput = ({ channelID, allUsers, allChannels, selectedMessage, h
                             ],
                             linkify: linkifyOptions,
                             mention,
+                            imageDropAndPaste,
                             clipboard: {
                                 matchVisual: false
                             }
