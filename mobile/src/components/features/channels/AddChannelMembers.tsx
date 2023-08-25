@@ -1,4 +1,4 @@
-import { useRef, useContext, useMemo } from 'react';
+import { useRef, useMemo, useState, useContext } from 'react';
 import {
     IonButtons,
     IonButton,
@@ -16,8 +16,8 @@ import {
     IonCheckbox,
 } from '@ionic/react';
 import { BiGlobe, BiHash, BiLock } from 'react-icons/bi';
-import { ChannelContext } from '../../../utils/channel/ChannelProvider';
 import Avatar from 'react-avatar';
+import { ChannelContext } from '../../../utils/channel/ChannelProvider';
 
 interface AddChannelMembersProps {
     presentingElement: HTMLElement | undefined
@@ -27,11 +27,11 @@ export const AddChannelMembers = ({ presentingElement }: AddChannelMembersProps)
 
     const modal = useRef<HTMLIonModalElement>(null)
 
+    const { channelData, channelMembers, users } = useContext(ChannelContext)
+
     function onDismiss() {
         modal.current?.dismiss()
     }
-
-    const { channelData, channelMembers, users } = useContext(ChannelContext)
 
     const existingMembers = useMemo(() => {
         return Object.keys(channelMembers).map(userId => users[userId])
@@ -42,6 +42,25 @@ export const AddChannelMembers = ({ presentingElement }: AddChannelMembersProps)
             .filter(userId => !channelMembers || !(userId in channelMembers))
             .map(userId => users[userId])
     }, [users, channelMembers])
+
+    const [searchText, setSearchText] = useState('')
+
+    const filteredMembers = useMemo(() => {
+        return existingMembers.filter(member => {
+            return member.name.toLowerCase().includes(searchText.toLowerCase())
+        })
+    }, [existingMembers, searchText])
+
+    const filteredNonMembers = useMemo(() => {
+        return nonMembers.filter(member => {
+            return member.name.toLowerCase().includes(searchText.toLowerCase())
+        })
+    }, [nonMembers, searchText])
+
+    const [selectedMembers, setSelectedMembers] = useState<string[]>([])
+    const addMembers = () => {
+        console.log('Add members', selectedMembers)
+    }
 
     return (
         <IonModal ref={modal} presentingElement={presentingElement} trigger="add-members">
@@ -62,21 +81,25 @@ export const AddChannelMembers = ({ presentingElement }: AddChannelMembersProps)
                         </div>
                     </IonTitle>
                     <IonButtons slot="end">
-                        <IonButton onClick={() => console.log('Add clicked')} strong={true}>
+                        <IonButton onClick={addMembers} strong={true}>
                             Add
                         </IonButton>
                     </IonButtons>
                 </IonToolbar>
             </IonHeader>
             <IonContent className="ion-padding">
-                <IonSearchbar placeholder="Search" debounce={1000} onIonInput={() => { }}></IonSearchbar>
+                <IonSearchbar
+                    placeholder="Search"
+                    debounce={1000}
+                    onIonInput={(e) => setSearchText(e.target.value?.toString() || '')}
+                />
                 <IonList>
                     <IonListHeader>
                         <IonLabel>Members</IonLabel>
                     </IonListHeader>
-                    {existingMembers.map((member) => (
+                    {filteredMembers && filteredMembers.length > 0 ? filteredMembers.map((member) => (
                         <IonItem key={member.name}>
-                            <div className='flex gap-4'>
+                            <div className='flex gap-4 p-2'>
                                 {member.user_image ?
                                     <IonAvatar slot="start" className="h-10 w-10">
                                         <img src={member.user_image} />
@@ -89,15 +112,30 @@ export const AddChannelMembers = ({ presentingElement }: AddChannelMembersProps)
                                 </IonLabel>
                             </div>
                         </IonItem>
-                    ))}
+                    )) : (
+                        <IonItem>
+                            <IonLabel>
+                                <h3 className='text-gray-400'>No users found</h3>
+                            </IonLabel>
+                        </IonItem>
+                    )}
                 </IonList>
                 <IonList>
                     <IonListHeader>
                         <IonLabel>Non-Members</IonLabel>
                     </IonListHeader>
-                    {nonMembers.map((user) => (
+                    {filteredNonMembers && filteredNonMembers.length > 0 ? filteredNonMembers.map((user) => (
                         <IonItem key={user.name}>
-                            <IonCheckbox justify="space-between">
+                            <IonCheckbox
+                                justify="space-between"
+                                checked={selectedMembers.includes(user.name)}
+                                onIonChange={({ detail: { checked } }) => {
+                                    if (checked) {
+                                        setSelectedMembers([...selectedMembers, user.name])
+                                    } else {
+                                        setSelectedMembers(selectedMembers.filter(id => id !== user.name))
+                                    }
+                                }}>
                                 <div className='flex gap-4'>
                                     {user.user_image ?
                                         <IonAvatar slot="start" className="h-10 w-10">
@@ -112,7 +150,13 @@ export const AddChannelMembers = ({ presentingElement }: AddChannelMembersProps)
                                 </div>
                             </IonCheckbox>
                         </IonItem>
-                    ))}
+                    )) : (
+                        <IonItem>
+                            <IonLabel>
+                                <h3 className='text-gray-400'>No users found</h3>
+                            </IonLabel>
+                        </IonItem>
+                    )}
                 </IonList>
             </IonContent>
         </IonModal>

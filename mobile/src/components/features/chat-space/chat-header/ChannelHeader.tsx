@@ -28,11 +28,11 @@ export const ChannelHeader = () => {
                         </IonText>
                     }
                 </div>
-                {/* {channelData?.type !== "Open" && <IonButton fill="clear" size="small" color={'dark'} id='add-members'>
+                {channelData?.type !== "Open" && <IonButton fill="clear" size="small" color={'dark'} id='add-members'>
                     <IonIcon slot="icon-only" icon={personAdd}></IonIcon>
-                </IonButton>} */}
+                </IonButton>}
             </div>
-            {/* <AddChannelMembers presentingElement={pageRef.current} /> */}
+            <AddChannelMembers presentingElement={pageRef.current} />
         </IonTitle>
     )
 }
