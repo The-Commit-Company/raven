@@ -1,11 +1,13 @@
 .light-theme {
     --gray: var(--chakra-colors-gray-100);
     --bg-gray: var(--chakra-colors-white);
+    --thumb-color: var(--chakra-colors-gray-400);
 }
 
 .dark-theme {
     --gray: var(--chakra-colors-gray-700);
     --bg-gray: var(--chakra-colors-gray-800);
+    --thumb-color: var(--chakra-colors-gray-600);
 }
 
 .my-quill-editor .ql-container {
@@ -16,6 +18,36 @@
     border: none;
     max-height: 40vh;
     overflow-y: scroll;
+
+    &::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    &::-webkit-scrollbar-track {
+        background-color: transparent;
+        width: 10px;
+    }
+
+    &::-webkit-scrollbar-thumb {
+        background-color: transparent;
+        border-radius: 10px;
+    }
+
+    &:hover {
+        &::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        &::-webkit-scrollbar-track {
+            background-color: 'transparent';
+            width: 10px;
+        }
+
+        &::-webkit-scrollbar-thumb {
+            background-color: var(--thumb-color);
+            border-radius: 3px;
+        }
+    }
 }
 
 .my-quill-editor .ql-toolbar.ql-snow .ql-formats>button:hover {

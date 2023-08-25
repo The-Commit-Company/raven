@@ -5,7 +5,7 @@ import './styles.css'
 import { Home, Messages, Files, Channels, People, FindIn, FindFrom } from './CommandPaletteActions'
 import { useHotkeys } from 'react-hotkeys-hook'
 import { useDebounce } from '../../../hooks/useDebounce'
-import { useFrappeGetCall, useFrappeGetDocList, useFrappePostCall } from 'frappe-react-sdk'
+import { useFrappeGetCall, useFrappePostCall } from 'frappe-react-sdk'
 import { useNavigate } from 'react-router-dom'
 import { User } from '../../../types/User/User'
 import { UserContext } from '../../../utils/auth/UserProvider'
@@ -121,7 +121,7 @@ export const CommandPalette = ({ isOpen, onClose, onToggle }: CommandPaletteProp
                     </HStack>
 
                     {activePage === '' && <Home input={debouncedText} searchChange={(pageChange: string) => { setInputValue(""); setPages([...pages, pageChange]) }} isGlobalSearchModalOpen={isGlobalSearchModalOpen} onGlobalSearchModalOpen={onGlobalSearchModalOpen} onGlobalSearchModalClose={onGlobalSearchModalClose} onCommandPaletteClose={onClose} inputRef={inputRef}>
-                        <People input={debouncedText} users={users?.message} activeUsers={activeUsers?.message} gotoDMChannel={gotoDMChannel} currentUser={currentUser} isGlobalSearchModalOpen={isGlobalSearchModalOpen} onGlobalSearchModalOpen={onGlobalSearchModalOpen} onGlobalSearchModalClose={onGlobalSearchModalClose} onCommandPaletteClose={onClose} isChild={true} />
+                        {users && <People input={debouncedText} users={users?.message} activeUsers={activeUsers?.message} gotoDMChannel={gotoDMChannel} currentUser={currentUser} isGlobalSearchModalOpen={isGlobalSearchModalOpen} onGlobalSearchModalOpen={onGlobalSearchModalOpen} onGlobalSearchModalClose={onGlobalSearchModalClose} onCommandPaletteClose={onClose} isChild={true} />}
                         <Channels input={debouncedText} isGlobalSearchModalOpen={isGlobalSearchModalOpen} onGlobalSearchModalOpen={onGlobalSearchModalOpen} onGlobalSearchModalClose={onGlobalSearchModalClose} onCommandPaletteClose={onClose} isChild={true} />
                     </Home>}
                     {activePage === 'messages' && <Messages input={debouncedText} searchChange={(pageChange: string) => { setInputValue(""); setPages([...pages, pageChange]) }} isGlobalSearchModalOpen={isGlobalSearchModalOpen} onGlobalSearchModalOpen={onGlobalSearchModalOpen} onGlobalSearchModalClose={onGlobalSearchModalClose} onCommandPaletteClose={onClose} />}

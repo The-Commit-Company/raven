@@ -9,6 +9,7 @@ import { ChannelContext } from "../../../utils/channel/ChannelProvider";
 import { BsDownload } from "react-icons/bs";
 import GlobalSearch from "../global-search/GlobalSearch";
 import { FileMessage } from "../../../types/Messaging/Message";
+import { scrollbarStyles } from "../../../styles";
 
 type ChannelFile = {
     name: string,
@@ -43,7 +44,7 @@ export const FilesSharedInChannel = () => {
                 <Text fontWeight={'semibold'} fontSize={'sm'}>Recently shared files</Text>
             }
             {error && <AlertBanner status='error' heading={error.message}>{error.httpStatus} - {error.httpStatusText}</AlertBanner>}
-            <Box maxH='320px' overflow='hidden' overflowY='scroll'>
+            <Box maxH='320px' overflow='hidden' overflowY='scroll' sx={scrollbarStyles(colorMode)}>
                 <Stack>
                     {data?.message && data.message.length > 0 && data.message.map((f: FileMessage) => {
                         return (

@@ -1,10 +1,11 @@
-import { Stack } from '@chakra-ui/react'
+import { Stack, useColorMode } from '@chakra-ui/react'
 import { IoBookmarkOutline } from 'react-icons/io5'
 import { ChannelList } from '../../feature/channels/ChannelList'
 import { DirectMessageList } from '../../feature/channels/DirectMessageList'
 import { SidebarItem, SidebarIcon, SidebarGroupLabel } from './SidebarComp'
 import { useFrappeEventListener, useFrappeGetCall } from 'frappe-react-sdk'
 import { UnreadCountData } from '../../../utils/channel/ChannelListProvider'
+import { scrollbarStyles } from '../../../styles'
 
 export const SidebarBody = () => {
 
@@ -13,8 +14,10 @@ export const SidebarBody = () => {
         update_count()
     })
 
+    const { colorMode } = useColorMode()
+
     return (
-        <Stack overflowY='scroll' h={'calc(100vh - 120px)'} px={-2}>
+        <Stack overflowY='scroll' h={'calc(100vh - 115px)'} px={-2} sx={scrollbarStyles(colorMode)} overflowX='hidden'>
             <SidebarItem to={'saved-messages'}>
                 <SidebarIcon><IoBookmarkOutline /></SidebarIcon>
                 <SidebarGroupLabel pl='1'>Saved Messages</SidebarGroupLabel>
