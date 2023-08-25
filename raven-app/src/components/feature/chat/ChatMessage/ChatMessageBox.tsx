@@ -1,12 +1,12 @@
 import { Avatar, Box, BoxProps, Button, HStack, Stack, StackDivider, Text, Tooltip, useColorMode } from "@chakra-ui/react"
 import { useContext, useState } from "react"
-import { User } from "../../../../types/User/User"
 import { ChannelContext } from "../../../../utils/channel/ChannelProvider"
 import { DateObjectToTimeString, DateObjectToFormattedDateStringWithoutYear } from "../../../../utils/operations"
 import { ActionsPalette } from "../../message-action-palette/ActionsPalette"
 import { MessageReactions } from "./MessageReactions"
 import { Message, MessageBlock } from "../../../../types/Messaging/Message"
 import { PreviousMessageBox } from "../MessageReply/PreviousMessageBox"
+import { User } from "../../../../types/Core/User"
 
 interface ChatMessageBoxProps extends BoxProps {
     message: Message,

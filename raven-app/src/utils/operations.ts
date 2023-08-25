@@ -1,4 +1,4 @@
-import { User } from "../types/User/User"
+import { User } from "../types/Core/User"
 
 /**
  * Utility to convert Date object to DD-MM-YYYY format

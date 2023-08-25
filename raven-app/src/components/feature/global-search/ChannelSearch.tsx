@@ -11,8 +11,8 @@ import { AlertBanner } from '../../layout/AlertBanner'
 import { EmptyStateForSearch } from '../../layout/EmptyState/EmptyState'
 import { SelectInput, SelectOption } from '../search-filters/SelectInput'
 import { Sort } from '../sorting'
-import { ChannelData } from '../../../types/Channel/Channel'
 import { scrollbarStyles } from '../../../styles'
+import { RavenChannel } from '../../../types/RavenChannelManagement/RavenChannel'
 interface Props {
     onToggleMyChannels: () => void,
     isOpenMyChannels: boolean,
@@ -140,7 +140,7 @@ export const ChannelSearch = ({ onToggleMyChannels, isOpenMyChannels, onToggleOt
                                 onSortOrderChange={(order) => setSortOrder(order)} />
                                 <Stack spacing={2} overflowY='scroll' sx={scrollbarStyles(colorMode)}>
 
-                                    {data.message.map((channel: ChannelData) => {
+                                    {data.message.map((channel: GetChannelSearchResult) => {
                                         return (
                                             <Box p={2}
                                                 _hover={{

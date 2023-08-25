@@ -7,8 +7,8 @@ import { FaRegSmile } from "react-icons/fa"
 import ReactQuill from "react-quill"
 import { AlertBanner } from "../../layout/AlertBanner"
 import { ChannelContext } from "../../../utils/channel/ChannelProvider"
-import { ChannelData } from "../../../types/Channel/Channel"
 import { ModalTypes, useModalManager } from "../../../hooks/useModalManager"
+import { RavenChannel } from "../../../types/RavenChannelManagement/RavenChannel"
 
 interface EditMessageModalProps {
     isOpen: boolean,
@@ -17,26 +17,31 @@ interface EditMessageModalProps {
     originalText: string
 }
 
+type value = {
+    id: string,
+    value: string
+}
+
 export const EditMessageModal = ({ isOpen, onClose, channelMessageID, originalText }: EditMessageModalProps) => {
 
     const { users } = useContext(ChannelContext)
-    const { data: channelList, error: channelListError } = useFrappeGetCall<{ message: ChannelData[] }>("raven.raven_channel_management.doctype.raven_channel.raven_channel.get_channel_list", undefined, undefined, {
+    const { data: channelList, error: channelListError } = useFrappeGetCall<{ message: RavenChannel[] }>("raven.raven_channel_management.doctype.raven_channel.raven_channel.get_channel_list", undefined, undefined, {
         revalidateOnFocus: false
     })
 
-    const allUsers = Object.values(users).map((user) => {
+    const allUsers: value[] = Object.values(users).map((user) => {
         return {
             id: user.name,
-            value: user.full_name
+            value: user.full_name || user.name
         }
     })
 
-    const allChannels = channelList?.message.map((channel: ChannelData) => {
+    const allChannels: value[] = channelList ? channelList.message.map((channel: RavenChannel) => {
         return {
             id: channel.name,
-            value: channel.channel_name
+            value: channel.channel_name || channel.name
         }
-    })
+    }) : []
 
     const toast = useToast()
     const { updateDoc, error, loading, reset } = useFrappeUpdateDoc()
@@ -96,7 +101,7 @@ export const EditMessageModal = ({ isOpen, onClose, channelMessageID, originalTe
         mentionDenotationChars: ["@", "#"],
         source: useCallback((searchTerm: string, renderList: any, mentionChar: string) => {
 
-            let values;
+            let values: { id: string, value: string }[];
 
             if (mentionChar === "@") {
                 values = allUsers;

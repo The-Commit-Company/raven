@@ -11,12 +11,9 @@ import GlobalSearch from "../global-search/GlobalSearch";
 import { FileMessage } from "../../../types/Messaging/Message";
 import { scrollbarStyles } from "../../../styles";
 
-type ChannelFile = {
+interface ChannelFile extends FileMessage {
     name: string,
-    file: string,
     owner: string,
-    creation: string,
-    message_type: 'File' | 'Image'
 }
 
 export const FilesSharedInChannel = () => {

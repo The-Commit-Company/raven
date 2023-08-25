@@ -9,12 +9,12 @@ import { MarkdownRenderer } from "../markdown-viewer/MarkdownRenderer";
 import { FileMessageBlock } from "./ChatMessage/FileMessage";
 import { UserProfileDrawer } from "../user-details/UserProfileDrawer";
 import { ModalTypes, useModalManager } from "../../../hooks/useModalManager";
-import { User } from "../../../types/User/User";
 import { FilePreviewModal } from "../file-preview/FilePreviewModal";
 import { Virtuoso } from 'react-virtuoso';
 import { AnimatePresence, motion } from "framer-motion";
 import { VirtuosoRefContext } from "../../../utils/message/VirtuosoRefProvider";
 import { scrollbarStyles } from "../../../styles";
+import { User } from "../../../types/Core/User";
 
 interface ChatHistoryProps {
     parsed_messages: MessagesWithDate,

@@ -7,9 +7,9 @@ import { useHotkeys } from 'react-hotkeys-hook'
 import { useDebounce } from '../../../hooks/useDebounce'
 import { useFrappeGetCall, useFrappePostCall } from 'frappe-react-sdk'
 import { useNavigate } from 'react-router-dom'
-import { User } from '../../../types/User/User'
 import { UserContext } from '../../../utils/auth/UserProvider'
 import { TbSearch } from 'react-icons/tb'
+import { User } from '../../../types/Core/User'
 
 interface CommandPaletteProps {
     isOpen: boolean,

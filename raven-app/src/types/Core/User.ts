@@ -1,7 +1,3 @@
-import { HasRole } from './HasRole'
-import { BlockModule } from './BlockModule'
-import { UserEmail } from './UserEmail'
-import { DefaultValue } from './DefaultValue'
 import { UserSocialLogin } from './UserSocialLogin'
 
 export interface User{

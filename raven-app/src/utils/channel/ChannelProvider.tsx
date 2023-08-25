@@ -2,23 +2,22 @@ import { useFrappeGetCall } from 'frappe-react-sdk'
 import { createContext, PropsWithChildren, useEffect, useMemo } from 'react'
 import { useParams } from 'react-router-dom'
 import { useFrappeEventListener } from '../../hooks/useFrappeEventListener'
-import { ChannelData } from '../../types/Channel/Channel'
-import { User } from '../../types/User/User'
+import { RavenChannelMember } from '../../types/RavenChannelManagement/RavenChannelMember'
+import { RavenChannel } from '../../types/RavenChannelManagement/RavenChannel'
+import { User } from '../../types/Core/User'
 
 type ChannelInfo = {
     channel_members: ChannelMembersDetails[],
-    channel_data: ChannelData
+    channel_data: RavenChannel
 }
 
-export type ChannelMembersDetails = {
-    name: string,
+export interface ChannelMembersDetails extends RavenChannelMember, User {
     first_name: string,
     full_name: string,
     user_image: string,
-    is_admin: 1 | 0
 }
 
-export const ChannelContext = createContext<{ channelMembers: Record<string, ChannelMembersDetails>; channelData?: ChannelData, users: Record<string, User> }>({ channelMembers: {}, users: {} })
+export const ChannelContext = createContext<{ channelMembers: Record<string, ChannelMembersDetails>; channelData?: RavenChannel, users: Record<string, User> }>({ channelMembers: {}, users: {} })
 
 export const ChannelProvider = ({ children }: PropsWithChildren) => {
 

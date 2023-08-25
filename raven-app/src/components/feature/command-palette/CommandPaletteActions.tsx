@@ -7,7 +7,6 @@ import { BsFillCircleFill, BsCircle } from "react-icons/bs"
 import { TbFiles, TbHash, TbListSearch, TbMessages, TbSearch, TbUsers } from "react-icons/tb"
 import { useNavigate } from "react-router-dom"
 import { GetFileSearchResult } from "../../../types/Search/Search"
-import { User } from "../../../types/User/User"
 import { UserContext } from "../../../utils/auth/UserProvider"
 import { ChannelContext } from "../../../utils/channel/ChannelProvider"
 import { getFileExtensionIcon } from "../../../utils/layout/fileExtensionIcon"
@@ -16,6 +15,7 @@ import { getFileExtension, getFileName } from "../../../utils/operations"
 import { useModalManager, ModalTypes } from "../../../hooks/useModalManager"
 import { FilePreviewModal } from "../file-preview/FilePreviewModal"
 import { FileSearchResult } from "../global-search/FileSearch"
+import { User } from "../../../types/Core/User"
 
 interface Props {
     searchChange: Function
@@ -262,7 +262,7 @@ export const Channels = ({ input, isGlobalSearchModalOpen, isChild, onGlobalSear
 
 export const People = ({ input, users, activeUsers, gotoDMChannel, currentUser, isChild }: PeopleProps) => {
     const results_count = users.reduce((count, user) => {
-        if (user.full_name.toLowerCase().includes(input.toLowerCase())) {
+        if (user?.full_name?.toLowerCase().includes(input.toLowerCase())) {
             return count + 1;
         }
         return count;
@@ -279,7 +279,7 @@ export const People = ({ input, users, activeUsers, gotoDMChannel, currentUser, 
             : {}
         }>
             {users.map(user => {
-                if (user.full_name.toLowerCase().includes(input.toLowerCase())) {
+                if (user?.full_name?.toLowerCase().includes(input.toLowerCase())) {
                     return (
                         gotoDMChannel && activeUsers &&
                         <Item key={user.name}
@@ -327,7 +327,7 @@ export const FindIn = ({ input, tabIndex, isGlobalSearchModalOpen, onGlobalSearc
 
 export const FindFrom = ({ input, users, tabIndex, isGlobalSearchModalOpen, onGlobalSearchModalOpen, onGlobalSearchModalClose, onCommandPaletteClose }: PeopleProps) => {
     const results_count = users.reduce((count, user) => {
-        if (user.full_name.toLowerCase().includes(input.toLowerCase())) {
+        if (user?.full_name?.toLowerCase().includes(input.toLowerCase())) {
             return count + 1;
         }
         return count;
@@ -338,7 +338,7 @@ export const FindFrom = ({ input, users, tabIndex, isGlobalSearchModalOpen, onGl
             <CommandPaletteEmptyState input={input} placeholder='messages' tabIndex={0} isGlobalSearchModalOpen={isGlobalSearchModalOpen} onGlobalSearchModalOpen={onGlobalSearchModalOpen} onGlobalSearchModalClose={onGlobalSearchModalClose} onCommandPaletteClose={onCommandPaletteClose} />
             <Command.Group heading={results_count > 0 ? "Recent direct messages" : ""} >
                 {users.map(user => {
-                    if (user.full_name.toLowerCase().includes(input.toLowerCase())) {
+                    if (user?.full_name?.toLowerCase().includes(input.toLowerCase())) {
                         return (
                             <Item key={user.name}
                                 onSelect={() => {

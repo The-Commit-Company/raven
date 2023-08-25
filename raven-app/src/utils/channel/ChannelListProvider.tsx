@@ -2,12 +2,7 @@ import { FrappeError, useFrappeEventListener, useFrappeGetCall } from 'frappe-re
 import { PropsWithChildren, createContext } from 'react'
 import { KeyedMutator } from 'swr'
 import { useToast } from '@chakra-ui/react'
-
-export type ChannelData = {
-    name: string,
-    channel_name: string,
-    type: 'Private' | 'Public' | 'Open',
-}
+import { RavenChannel } from '../../types/RavenChannelManagement/RavenChannel'
 
 export type DMChannelData = {
     name: string,
@@ -29,7 +24,7 @@ export type UnreadCountData = {
     channels: { name: string, user_id?: string, unread_count: number }[]
 }
 interface ChannelList {
-    channels: ChannelData[],
+    channels: RavenChannel[],
     dm_channels: DMChannelData[],
     extra_users: ExtraUsersData[]
 }
