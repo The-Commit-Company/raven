@@ -1,5 +1,5 @@
 import { SearchIcon } from '@chakra-ui/icons'
-import { Avatar, Button, Center, chakra, FormControl, HStack, IconButton, Input, InputGroup, InputLeftElement, Spinner, Stack, TabPanel, Text, useToast } from '@chakra-ui/react'
+import { Avatar, Button, Center, chakra, FormControl, HStack, IconButton, Input, InputGroup, InputLeftElement, Spinner, Stack, TabPanel, Text, useColorMode, useToast } from '@chakra-ui/react'
 import { FrappeContext, FrappeConfig, useFrappeGetCall, useFrappePostCall } from 'frappe-react-sdk'
 import { useContext, useState, useMemo, useEffect } from 'react'
 import { FormProvider, Controller, useForm } from 'react-hook-form'
@@ -17,6 +17,7 @@ import { useNavigate } from 'react-router-dom'
 import { MessageBox } from './MessageBox'
 import { VirtuosoRefContext } from '../../../utils/message/VirtuosoRefProvider'
 import { IoBookmark, IoBookmarkOutline } from 'react-icons/io5'
+import { scrollbarStyles } from '../../../styles'
 
 interface FilterInput {
     'from-user-filter': SelectOption[],
@@ -50,6 +51,8 @@ interface MessageSearchResult {
 }
 
 export const MessageSearch = ({ onToggleMyChannels, isOpenMyChannels, onToggleSaved, isSaved, dateOption, input, fromFilter, inFilter, withFilter, onClose, onCommandPaletteClose }: Props) => {
+
+    const { colorMode } = useColorMode()
 
     const { virtuosoRef } = useContext(VirtuosoRefContext)
     const { url } = useContext(FrappeContext) as FrappeConfig
@@ -267,7 +270,7 @@ export const MessageSearch = ({ onToggleMyChannels, isOpenMyChannels, onToggleSa
                                 sortOrder={sortOrder}
                                 sortField={sortByField}
                                 onSortOrderChange={(order) => setSortOrder(order)} />
-                                <Stack overflowY='scroll' pt={4}>
+                                <Stack overflowY='scroll' pt={4} sx={scrollbarStyles(colorMode)}>
                                     {data.message.map(({ name, text, owner, creation, channel_id }: MessageSearchResult) => {
                                         const channelName: any = channelOption.find((channel) => channel.value === channel_id)?.label
                                         const isArchived: 1 | 0 = channelOption.find((channel) => channel.value === channel_id)?.is_archived as 1 | 0;

@@ -1,9 +1,9 @@
-import { Box } from "@chakra-ui/react";
+import { Box, useColorMode } from "@chakra-ui/react";
 import { DividerWithText } from "../../layout/Divider/DividerWithText";
 import { DateObjectToFormattedDateString } from "../../../utils/operations";
 import { DateBlock, FileMessage, Message, MessageBlock, MessagesWithDate } from "../../../types/Messaging/Message";
 import { ChannelHistoryFirstMessage } from "../../layout/EmptyState/EmptyState";
-import { useContext, useState } from "react";
+import { useContext, useRef, useState } from "react";
 import { ChatMessageBox } from "./ChatMessage/ChatMessageBox";
 import { MarkdownRenderer } from "../markdown-viewer/MarkdownRenderer";
 import { FileMessageBlock } from "./ChatMessage/FileMessage";
@@ -14,6 +14,7 @@ import { FilePreviewModal } from "../file-preview/FilePreviewModal";
 import { Virtuoso } from 'react-virtuoso';
 import { AnimatePresence, motion } from "framer-motion";
 import { VirtuosoRefContext } from "../../../utils/message/VirtuosoRefProvider";
+import { scrollbarStyles } from "../../../styles";
 
 interface ChatHistoryProps {
     parsed_messages: MessagesWithDate,
@@ -24,7 +25,11 @@ interface ChatHistoryProps {
 
 export const ChatHistory = ({ parsed_messages, isDM, mutate, replyToMessage }: ChatHistoryProps) => {
 
+    const { colorMode } = useColorMode()
+
     const { virtuosoRef } = useContext(VirtuosoRefContext)
+
+    const boxRef = useRef<HTMLDivElement>(null)
 
     const [isScrollable, setScrollable] = useState<boolean>(true)
     const handleScroll = (newState: boolean) => {
@@ -74,9 +79,9 @@ export const ChatHistory = ({ parsed_messages, isDM, mutate, replyToMessage }: C
     }
 
     return (
-        <>
+        <Box ref={boxRef} h='100%' overflowY={isScrollable ? 'scroll' : 'hidden'} sx={scrollbarStyles(colorMode)}>
             <Virtuoso
-                style={{ height: '100%', overflowY: isScrollable ? 'scroll' : 'hidden' }}
+                customScrollParent={boxRef.current ?? undefined}
                 totalCount={parsed_messages.length}
                 itemContent={index => renderItem(parsed_messages[index])}
                 initialTopMostItemIndex={parsed_messages.length - 1}
@@ -99,6 +104,6 @@ export const ChatHistory = ({ parsed_messages, isDM, mutate, replyToMessage }: C
                 onClose={modalManager.closeModal}
                 {...modalManager.modalContent}
             />
-        </>
+        </Box>
     )
 }

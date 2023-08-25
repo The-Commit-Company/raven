@@ -11,6 +11,7 @@ import { UserContext } from "../../../utils/auth/UserProvider"
 import { ChannelContext } from "../../../utils/channel/ChannelProvider"
 import { ModalTypes, useModalManager } from "../../../hooks/useModalManager"
 import { RiVipCrownFill } from "react-icons/ri"
+import { scrollbarStyles } from "../../../styles"
 
 interface MemberDetailsProps {
     members: User[]
@@ -68,7 +69,7 @@ export const ChannelMemberDetails = ({ members, activeUsers }: MemberDetailsProp
                     value={debouncedText} />
             </InputGroup>
 
-            <Box maxH='340px' overflow='hidden' overflowY='scroll'>
+            <Box maxH='340px' overflow='hidden' overflowY='scroll' sx={scrollbarStyles(colorMode)}>
                 <List spacing={2}>
                     {members.some(member => member.name === currentUser) && channelData?.type != 'Open' &&
                         <ListItem _hover={{ ...LISTHOVERSTYLE }} rounded='md' onClick={onAddMembersModalOpen}>

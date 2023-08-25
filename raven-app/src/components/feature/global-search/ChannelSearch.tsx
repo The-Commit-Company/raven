@@ -12,6 +12,7 @@ import { EmptyStateForSearch } from '../../layout/EmptyState/EmptyState'
 import { SelectInput, SelectOption } from '../search-filters/SelectInput'
 import { Sort } from '../sorting'
 import { ChannelData } from '../../../types/Channel/Channel'
+import { scrollbarStyles } from '../../../styles'
 interface Props {
     onToggleMyChannels: () => void,
     isOpenMyChannels: boolean,
@@ -137,7 +138,7 @@ export const ChannelSearch = ({ onToggleMyChannels, isOpenMyChannels, onToggleOt
                                 sortOrder={sortOrder}
                                 sortField={sortByField}
                                 onSortOrderChange={(order) => setSortOrder(order)} />
-                                <Stack spacing={2} overflowY='scroll'>
+                                <Stack spacing={2} overflowY='scroll' sx={scrollbarStyles(colorMode)}>
 
                                     {data.message.map((channel: ChannelData) => {
                                         return (

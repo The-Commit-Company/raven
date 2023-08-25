@@ -1,5 +1,5 @@
 import { SearchIcon } from '@chakra-ui/icons'
-import { Avatar, Button, Center, chakra, FormControl, HStack, Icon, Input, InputGroup, InputLeftElement, Link, Stack, TabPanel, Text, Image, Spinner, IconButton } from '@chakra-ui/react'
+import { Avatar, Button, Center, chakra, FormControl, HStack, Icon, Input, InputGroup, InputLeftElement, Link, Stack, TabPanel, Text, Image, Spinner, IconButton, useColorMode } from '@chakra-ui/react'
 import { FrappeConfig, FrappeContext, useFrappeGetCall } from 'frappe-react-sdk'
 import { useMemo, useState, useContext } from 'react'
 import { Controller, FormProvider, useForm } from 'react-hook-form'
@@ -20,6 +20,7 @@ import { IoBookmark, IoBookmarkOutline } from 'react-icons/io5'
 import { ChannelContext } from '../../../utils/channel/ChannelProvider'
 import { FilePreviewModal } from '../file-preview/FilePreviewModal'
 import { useModalManager, ModalTypes } from "../../../hooks/useModalManager"
+import { scrollbarStyles } from '../../../styles'
 
 interface FilterInput {
     'from-user-filter': SelectOption[],
@@ -52,6 +53,8 @@ export interface FileSearchResult {
 }
 
 export const FileSearch = ({ onToggleMyChannels, isOpenMyChannels, onToggleSaved, isSaved, dateOption, input, fromFilter, inFilter }: Props) => {
+
+    const { colorMode } = useColorMode()
 
     const { url } = useContext(FrappeContext) as FrappeConfig
     const { data: channels, error: channelsError } = useFrappeGetCall<{ message: ChannelData[] }>("raven.raven_channel_management.doctype.raven_channel.raven_channel.get_channel_list", undefined, undefined, {
@@ -238,7 +241,7 @@ export const FileSearch = ({ onToggleMyChannels, isOpenMyChannels, onToggleSaved
                                 sortOrder={sortOrder}
                                 sortField={sortByField}
                                 onSortOrderChange={(order) => setSortOrder(order)} />
-                                <Stack spacing={4} overflowY='scroll'>
+                                <Stack spacing={4} overflowY='scroll' sx={scrollbarStyles(colorMode)}>
 
                                     {data.message.map((f: FileSearchResult) => {
                                         const onFilePreviewModalOpen = () => {

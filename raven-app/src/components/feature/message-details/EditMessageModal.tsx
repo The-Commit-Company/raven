@@ -1,4 +1,4 @@
-import { Box, Button, ButtonGroup, HStack, IconButton, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Popover, PopoverContent, PopoverTrigger, Stack, useColorMode, useDisclosure, useToast } from "@chakra-ui/react"
+import { Box, Button, ButtonGroup, HStack, IconButton, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Popover, PopoverContent, PopoverTrigger, Stack, useColorMode, useToast } from "@chakra-ui/react"
 import EmojiPicker, { EmojiClickData } from "emoji-picker-react"
 import { useFrappeGetCall, useFrappeUpdateDoc } from "frappe-react-sdk"
 import { useCallback, useContext, useEffect, useState } from "react"
@@ -154,7 +154,7 @@ export const EditMessageModal = ({ isOpen, onClose, channelMessageID, originalTe
                 <ModalBody>
                     <Box>
                         {error && <AlertBanner status='error' heading={error.message}>{error.httpStatus} - {error.httpStatusText}</AlertBanner>}
-                        <Stack border='1px' borderColor={'gray.500'} rounded='lg' maxH='40vh' boxShadow='base' bg={colorMode === "light" ? "white" : "gray.800"} overflowY={'scroll'}>
+                        <Stack border='1px' borderColor={'gray.500'} rounded='lg' maxH='50vh' boxShadow='base' bg={colorMode === "light" ? "white" : "gray.800"} overflowY={'hidden'}>
                             <ReactQuill
                                 className={colorMode === 'light' ? 'my-quill-editor light-theme' : 'my-quill-editor dark-theme'}
                                 onChange={handleChange}
