@@ -1,6 +1,6 @@
 import { SearchIcon } from '@chakra-ui/icons'
 import { Avatar, Button, Center, chakra, FormControl, HStack, Icon, Input, InputGroup, InputLeftElement, Link, Stack, TabPanel, Text, Image, Spinner, IconButton } from '@chakra-ui/react'
-import { FrappeConfig, FrappeContext, useFrappeGetCall, useFrappeGetDocList } from 'frappe-react-sdk'
+import { FrappeConfig, FrappeContext, useFrappeGetCall } from 'frappe-react-sdk'
 import { useMemo, useState, useContext } from 'react'
 import { Controller, FormProvider, useForm } from 'react-hook-form'
 import { BiGlobe, BiHash, BiLockAlt } from 'react-icons/bi'
@@ -16,7 +16,6 @@ import { SelectInput, SelectOption } from '../search-filters/SelectInput'
 import { Sort } from '../sorting'
 import { AiOutlineFileExcel, AiOutlineFileImage, AiOutlineFilePdf, AiOutlineFilePpt, AiOutlineFileText } from 'react-icons/ai'
 import './styles.css'
-import { FileMessage } from '../../../types/Messaging/Message'
 import { IoBookmark, IoBookmarkOutline } from 'react-icons/io5'
 import { ChannelContext } from '../../../utils/channel/ChannelProvider'
 import { FilePreviewModal } from '../file-preview/FilePreviewModal'
@@ -42,6 +41,14 @@ interface Props {
     inFilter?: string
     onToggleSaved: () => void
     isSaved: boolean
+}
+
+export interface FileSearchResult {
+    name: string,
+    owner: string,
+    creation: string,
+    file: string,
+    message_type: string
 }
 
 export const FileSearch = ({ onToggleMyChannels, isOpenMyChannels, onToggleSaved, isSaved, dateOption, input, fromFilter, inFilter }: Props) => {
@@ -233,7 +240,7 @@ export const FileSearch = ({ onToggleMyChannels, isOpenMyChannels, onToggleSaved
                                 onSortOrderChange={(order) => setSortOrder(order)} />
                                 <Stack spacing={4} overflowY='scroll'>
 
-                                    {data.message.map((f: FileMessage) => {
+                                    {data.message.map((f: FileSearchResult) => {
                                         const onFilePreviewModalOpen = () => {
                                             modalManager.openModal(ModalTypes.FilePreview, {
                                                 file: f.file,

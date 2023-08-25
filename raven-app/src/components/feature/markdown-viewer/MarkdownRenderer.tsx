@@ -30,10 +30,8 @@ export const MarkdownRenderer: React.FC<Props> = ({ content }) => {
     urls.push(match[2])
   }
 
-  const LinkURL = urls[0]
-
-  const { data } = useFrappeGetCall<{ message: LinkPreviewDetails }>('raven.api.preview_links.get_preview_link', {
-    url: LinkURL ? LinkURL : ''
+  const { data } = useFrappeGetCall<{ message: LinkPreviewDetails[] }>('raven.api.preview_links.get_preview_link', {
+    urls: JSON.stringify(urls)
   }, undefined, {
     revalidateOnFocus: false
   })
@@ -73,26 +71,27 @@ export const MarkdownRenderer: React.FC<Props> = ({ content }) => {
       {content}
     </ReactMarkdown>
 
-    {data && data.message && (data.message.image || data.message.absolute_image) && <Box py={3}>
-      <Box px={3} maxW="50vw" borderLeft="2px" borderColor={borderColor} borderRadius="sm">
-        <HStack alignItems="self-start">
-          <Image
-            src={data.message.image ? data.message.image : data.message.absolute_image}
-            alt={`${data.message.title} website image`}
-            boxSize="8rem"
-            objectFit="cover"
-            borderRadius="md"
-            mr={3}
-          />
-          <Stack spacing={1}>
-            <Text fontWeight="bold">{data.message.title}</Text>
-            {data.message.description && <Text fontSize="sm" fontWeight="normal" color={'gray.500'}>
-              {data.message.description.length > 200 ? data.message.description.substring(0, 200) + '...' : data.message.description}
-            </Text>}
-          </Stack>
-        </HStack>
-      </Box>
-    </Box>}
-
+    {data?.message && data.message.map((link, i) => (
+      (link.image || link.absolute_image) &&
+      <Box py={3} key={i}>
+        <Box px={3} maxW="50vw" borderLeft="2px" borderColor={borderColor} borderRadius="sm">
+          <HStack alignItems="self-start">
+            <Image
+              src={link.image ? link.image : link.absolute_image}
+              alt={`${link.title} website image`}
+              boxSize="8rem"
+              objectFit="cover"
+              borderRadius="md"
+              mr={3}
+            />
+            <Stack spacing={1}>
+              <Text fontWeight="bold">{link.title}</Text>
+              {link.description && <Text fontSize="sm" fontWeight="normal" color={'gray.500'}>
+                {link.description.length > 200 ? link.description.substring(0, 200) + '...' : link.description}
+              </Text>}
+            </Stack>
+          </HStack>
+        </Box>
+      </Box>))}
   </>
 }

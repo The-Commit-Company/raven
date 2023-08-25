@@ -11,10 +11,11 @@ interface GlobalSearchModalProps {
     input: string,
     fromFilter?: string,
     inFilter?: string,
+    withFilter?: string,
     onCommandPaletteClose: () => void
 }
 
-export default function GlobalSearch({ isOpen, onClose, tabIndex, input, fromFilter, inFilter, onCommandPaletteClose }: GlobalSearchModalProps) {
+export default function GlobalSearch({ isOpen, onClose, tabIndex, input, fromFilter, inFilter, withFilter, onCommandPaletteClose }: GlobalSearchModalProps) {
 
     const { onToggle: onToggleOtherChannels, isOpen: isOpenOtherChannels } = useDisclosure()
     const { onToggle: onToggleMyChannels, isOpen: isOpenMyChannels } = useDisclosure()
@@ -36,7 +37,7 @@ export default function GlobalSearch({ isOpen, onClose, tabIndex, input, fromFil
                                 <Tab>Channels</Tab>
                             </TabList>
                             <TabPanels>
-                                <MessageSearch onToggleMyChannels={onToggleMyChannels} isOpenMyChannels={isOpenMyChannels} onToggleSaved={onToggleSaved} isSaved={isSaved} dateOption={dateOption} input={input} fromFilter={fromFilter} inFilter={inFilter} onCommandPaletteClose={onCommandPaletteClose} onClose={onClose} />
+                                <MessageSearch onToggleMyChannels={onToggleMyChannels} isOpenMyChannels={isOpenMyChannels} onToggleSaved={onToggleSaved} isSaved={isSaved} dateOption={dateOption} input={input} fromFilter={fromFilter} inFilter={inFilter} withFilter={withFilter} onCommandPaletteClose={onCommandPaletteClose} onClose={onClose} />
                                 <FileSearch onToggleMyChannels={onToggleMyChannels} isOpenMyChannels={isOpenMyChannels} onToggleSaved={onToggleSaved} isSaved={isSaved} dateOption={dateOption} input={input} fromFilter={fromFilter} inFilter={inFilter} />
                                 <ChannelSearch onToggleMyChannels={onToggleMyChannels} isOpenMyChannels={isOpenMyChannels} onToggleOtherChannels={onToggleOtherChannels} isOpenOtherChannels={isOpenOtherChannels} input={input} onClose={onClose} />
                             </TabPanels>
