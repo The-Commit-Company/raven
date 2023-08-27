@@ -3,7 +3,7 @@ import { useFrappeUpdateDoc } from "frappe-react-sdk"
 import { useContext, useEffect } from "react"
 import { FormProvider, useForm } from "react-hook-form"
 import { ChannelContext } from "../../../../utils/channel/ChannelProvider"
-import { AlertBanner } from "../../../layout/AlertBanner"
+import { AlertBanner, ErrorBanner } from "../../../layout/AlertBanner"
 
 interface RenameChannelModalProps {
     isOpen: boolean,
@@ -74,8 +74,7 @@ export const AddOrEditChannelDescriptionModal = ({ isOpen, onClose }: RenameChan
 
                         <ModalBody>
                             <Stack>
-
-                                {error ? <AlertBanner status='error' heading={error.message}>{error.httpStatus} - {error.httpStatusText}</AlertBanner> : null}
+                                <ErrorBanner error={error} />
 
                                 <FormControl isRequired isInvalid={!!errors.channel_description}>
                                     <Stack>

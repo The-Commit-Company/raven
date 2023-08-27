@@ -4,7 +4,7 @@ import { ChangeEvent, useEffect, useState } from 'react'
 import { FormProvider, set, useForm } from 'react-hook-form'
 import { BiGlobe, BiHash, BiLockAlt } from 'react-icons/bi'
 import { useNavigate } from 'react-router-dom'
-import { AlertBanner } from '../../layout/AlertBanner'
+import { AlertBanner, ErrorBanner } from '../../layout/AlertBanner'
 
 interface ChannelModalProps {
     isOpen: boolean,
@@ -114,9 +114,7 @@ export const CreateChannelModal = ({ isOpen, onClose }: ChannelModalProps) => {
                                 </Text>
 
                                 <Stack spacing={6}>
-
-                                    {channelCreationError ? <AlertBanner status='error' heading={channelCreationError.message}>Channel name already exists</AlertBanner> : null}
-
+                                    <ErrorBanner error={channelCreationError} />
                                     <FormControl isRequired isInvalid={!!errors.channel_name}>
                                         <FormLabel htmlFor='channel_name'>Name</FormLabel>
                                         <InputGroup>

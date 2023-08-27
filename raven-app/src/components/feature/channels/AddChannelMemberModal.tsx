@@ -7,7 +7,7 @@ import { ChakraStylesConfig } from "chakra-react-select"
 import { fallbackPfp, pfp, MemberOption } from "../select-member/AddMembersDropdown"
 import { ChannelContext } from '../../../utils/channel/ChannelProvider'
 import { useFrappeCreateDoc } from 'frappe-react-sdk'
-import { AlertBanner } from '../../layout/AlertBanner'
+import { AlertBanner, ErrorBanner } from '../../layout/AlertBanner'
 
 interface AddChannelMemberModalProps {
   isOpen: boolean,
@@ -110,8 +110,7 @@ export const AddChannelMemberModal = ({ isOpen, onClose }: AddChannelMemberModal
 
             <ModalBody>
               <Stack spacing={4}>
-
-                {error ? <AlertBanner status='error' heading={error.httpStatus === 409 ? 'Member already exists in this channel' : error.message}>{error.httpStatus} - {error.httpStatusText}</AlertBanner> : null}
+                <ErrorBanner error={error} />
 
                 <Text>Anyone you add will be able to see all of the channel’s contents</Text>
 
