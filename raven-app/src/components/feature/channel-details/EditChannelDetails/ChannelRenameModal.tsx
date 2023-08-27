@@ -4,7 +4,7 @@ import { ChangeEvent, useContext, useEffect, useState } from "react"
 import { FormProvider, useForm } from "react-hook-form"
 import { BiGlobe, BiHash, BiLockAlt } from "react-icons/bi"
 import { ChannelContext } from "../../../../utils/channel/ChannelProvider"
-import { AlertBanner } from "../../../layout/AlertBanner"
+import { AlertBanner, ErrorBanner } from "../../../layout/AlertBanner"
 
 interface RenameChannelModalProps {
     isOpen: boolean,
@@ -90,9 +90,7 @@ export const ChannelRenameModal = ({ isOpen, onClose }: RenameChannelModalProps)
 
                         <ModalBody>
                             <Stack>
-
-                                {error ? <AlertBanner status='error' heading={error.message}>{error.httpStatus} - {error.httpStatusText}</AlertBanner> : null}
-
+                                <ErrorBanner error={error} />
                                 <FormControl isRequired isInvalid={!!errors.channel_name}>
                                     <Stack>
                                         <FormLabel htmlFor='channel_name'>Channel name</FormLabel>

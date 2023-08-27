@@ -1,6 +1,6 @@
 import { Button, ButtonGroup, ListItem, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Stack, Text, UnorderedList, useToast } from '@chakra-ui/react'
 import { useFrappeUpdateDoc } from 'frappe-react-sdk'
-import { AlertBanner } from '../../layout/AlertBanner'
+import { AlertBanner, ErrorBanner } from '../../layout/AlertBanner'
 import { useContext } from 'react'
 import { ChannelContext } from '../../../utils/channel/ChannelProvider'
 
@@ -47,7 +47,7 @@ export const ChangeChannelType = ({ isOpen, onClose }: ChangeChannelTypeProps) =
 
                 <ModalBody>
                     <Stack>
-                        {error && <AlertBanner status='error' heading={error.message}>{error.httpStatus} - {error.httpStatusText}</AlertBanner>}
+                        <ErrorBanner error={error} />
                         {channelData?.type === 'Private' && <Stack spacing={4}>
                             <Text>Please understand that when you make <strong>{channelData?.channel_name}</strong> a public channel:</Text>
                             <UnorderedList px='4' spacing={2}>

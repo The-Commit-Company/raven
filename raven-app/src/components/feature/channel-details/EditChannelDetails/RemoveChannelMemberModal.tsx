@@ -3,7 +3,7 @@ import { useFrappeDeleteDoc, useFrappeGetCall } from 'frappe-react-sdk'
 import { useContext, useRef } from 'react'
 import { BiHash, BiLockAlt } from 'react-icons/bi'
 import { ChannelContext } from '../../../../utils/channel/ChannelProvider'
-import { AlertBanner } from '../../../layout/AlertBanner'
+import { AlertBanner, ErrorBanner } from '../../../layout/AlertBanner'
 
 interface RemoveChannelMemberModalProps {
     isOpen: boolean,
@@ -64,7 +64,7 @@ export const RemoveChannelMemberModal = ({ isOpen, onClose, user_id }: RemoveCha
                 </AlertDialogHeader>
                 <AlertDialogCloseButton />
                 <AlertDialogBody>
-                    {error && <AlertBanner status='error' heading={error.message}>{error.exception} - HTTP {error.httpStatus}</AlertBanner>}
+                    <ErrorBanner error={error} />
                     <Text fontSize='sm'>This person will no longer have access to the channel and can only rejoin by invitation.</Text>
                 </AlertDialogBody>
                 <AlertDialogFooter>

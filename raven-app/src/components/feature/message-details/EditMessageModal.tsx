@@ -5,7 +5,7 @@ import { useCallback, useContext, useEffect, useState } from "react"
 import { useHotkeys } from "react-hotkeys-hook"
 import { FaRegSmile } from "react-icons/fa"
 import ReactQuill from "react-quill"
-import { AlertBanner } from "../../layout/AlertBanner"
+import { AlertBanner, ErrorBanner } from "../../layout/AlertBanner"
 import { ChannelContext } from "../../../utils/channel/ChannelProvider"
 import { ChannelData } from "../../../types/Channel/Channel"
 import { ModalTypes, useModalManager } from "../../../hooks/useModalManager"
@@ -153,7 +153,7 @@ export const EditMessageModal = ({ isOpen, onClose, channelMessageID, originalTe
 
                 <ModalBody>
                     <Box>
-                        {error && <AlertBanner status='error' heading={error.message}>{error.httpStatus} - {error.httpStatusText}</AlertBanner>}
+                        <ErrorBanner error={error} />
                         <Stack border='1px' borderColor={'gray.500'} rounded='lg' maxH='50vh' boxShadow='base' bg={colorMode === "light" ? "white" : "gray.800"} overflowY={'hidden'}>
                             <ReactQuill
                                 className={colorMode === 'light' ? 'my-quill-editor light-theme' : 'my-quill-editor dark-theme'}

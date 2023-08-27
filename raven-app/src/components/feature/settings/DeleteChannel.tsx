@@ -1,5 +1,5 @@
 import { AlertDialog, AlertDialogBody, AlertDialogCloseButton, AlertDialogContent, AlertDialogFooter, AlertDialogHeader, AlertDialogOverlay, Button, ButtonGroup, Checkbox, ListItem, Stack, Text, UnorderedList, useToast } from '@chakra-ui/react'
-import { AlertBanner } from '../../layout/AlertBanner'
+import { AlertBanner, ErrorBanner } from '../../layout/AlertBanner'
 import { useContext, useRef, useState } from 'react'
 import { useFrappePostCall } from 'frappe-react-sdk'
 import { ChannelContext } from '../../../utils/channel/ChannelProvider'
@@ -56,7 +56,7 @@ export const DeleteChannel = ({ isOpen, onClose }: DeleteChannelProps) => {
                 <AlertDialogCloseButton />
                 <AlertDialogBody>
                     <Stack spacing={4}>
-                        {error && <AlertBanner status='error' heading={error.message}>{error.exception} - HTTP {error.httpStatus}</AlertBanner>}
+                        <ErrorBanner error={error} />
                         <AlertBanner status='warning' heading='This action is permanent.' />
                         <Text>When you delete a channel, all messages from this channel will be removed immediately.</Text>
                         <Stack>

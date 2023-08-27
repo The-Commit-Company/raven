@@ -5,7 +5,7 @@ import { BiHash, BiLockAlt } from 'react-icons/bi'
 import { useNavigate } from 'react-router-dom'
 import { UserContext } from '../../../../utils/auth/UserProvider'
 import { ChannelContext } from '../../../../utils/channel/ChannelProvider'
-import { AlertBanner } from '../../../layout/AlertBanner'
+import { AlertBanner, ErrorBanner } from '../../../layout/AlertBanner'
 
 interface LeaveChannelModalProps {
     isOpen: boolean,
@@ -68,7 +68,7 @@ export const LeaveChannelModal = ({ isOpen, onClose }: LeaveChannelModalProps) =
                 </AlertDialogHeader>
                 <AlertDialogCloseButton />
                 <AlertDialogBody>
-                    {error && <AlertBanner status='error' heading={error.message}>{error.exception} - HTTP {error.httpStatus}</AlertBanner>}
+                    <ErrorBanner error={error} />
                     <Text fontSize='sm'>When you leave a channel, you’ll no longer be able to see any of its messages. To rejoin this channel later, you’ll need to be invited.</Text>
                 </AlertDialogBody>
                 <AlertDialogFooter>

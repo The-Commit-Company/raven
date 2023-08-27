@@ -144,13 +144,15 @@ def get_user_information(channel_id, is_self_message=False):
     For a given channel, fetches the user information of the peer
     '''
     peer_user_id = get_peer_user_id(channel_id, is_self_message)
-    full_name, user_image = frappe.db.get_value("User", peer_user_id, fieldname=["full_name", "user_image"])
+    if peer_user_id:
+        full_name, user_image = frappe.db.get_value("User", peer_user_id, fieldname=["full_name", "user_image"])
 
-    return {
-        "user_id": peer_user_id,
-        "full_name": full_name,
-        "user_image": user_image
-    }
+        return {
+            "user_id": peer_user_id,
+            "full_name": full_name,
+            "user_image": user_image
+        }
+    return {}
 
 
 def get_peer_user_id(channel_id, is_self_message=False):
