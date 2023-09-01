@@ -1,5 +1,5 @@
 import { createContext, PropsWithChildren } from 'react'
-import { User } from '../../types/User/User'
+import { User } from '../../../../types/User/User'
 import Cookies from 'js-cookie'
 import { useFetchChannelList } from '../channel/ChannelListProvider'
 

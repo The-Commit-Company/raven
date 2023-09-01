@@ -3,7 +3,7 @@ import { DateObjectToTimeString, getFileName } from "../../../utils/operations"
 import { useContext } from "react"
 import { ChannelContext } from "../../../utils/channel/ChannelProvider"
 import { BsDownload } from "react-icons/bs"
-import { FileMessage } from "../../../types/Messaging/Message"
+import { FileMessage } from "../../../../../types/Messaging/Message"
 
 interface FilePreviewModalProps extends FileMessage {
     isOpen: boolean,

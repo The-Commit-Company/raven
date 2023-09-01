@@ -6,7 +6,8 @@ import { SidebarGroup, SidebarGroupItem, SidebarGroupLabel, SidebarGroupList, Si
 import { SidebarBadge, SidebarButtonItem, SidebarViewMoreButton } from "../../layout/Sidebar/SidebarComp"
 import { CreateChannelModal } from "./CreateChannelModal"
 import { useContext } from "react"
-import { ChannelData, ChannelListContext, ChannelListContextType, UnreadCountData } from "../../../utils/channel/ChannelListProvider"
+import { ChannelListContext, ChannelListContextType, UnreadCountData } from "../../../utils/channel/ChannelListProvider"
+import { RavenChannel } from "../../../../../types/RavenChannelManagement/RavenChannel"
 
 export const ChannelList = ({ unread_count }: { unread_count?: UnreadCountData }) => {
 
@@ -53,7 +54,7 @@ export const ChannelList = ({ unread_count }: { unread_count?: UnreadCountData }
     )
 }
 
-const ChannelItem = ({ channel, unreadCount }: { channel: ChannelData, unreadCount: UnreadCountData['channels'] }) => {
+const ChannelItem = ({ channel, unreadCount }: { channel: RavenChannel, unreadCount: UnreadCountData['channels'] }) => {
 
     const unreadCountForChannel = unreadCount.find((unread) => unread.name == channel.name)?.unread_count
     return (

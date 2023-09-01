@@ -4,8 +4,7 @@ import { useContext, useState } from "react"
 import { BiEditAlt, BiGlobe, BiHash, BiLockAlt } from "react-icons/bi"
 import { HiOutlineSearch } from "react-icons/hi"
 import { useFrappeEventListener } from "../../../hooks/useFrappeEventListener"
-import { ChannelData } from "../../../types/Channel/Channel"
-import { Message, MessagesWithDate } from "../../../types/Messaging/Message"
+import { Message, MessagesWithDate } from "../../../../../types/Messaging/Message"
 import { ChannelContext } from "../../../utils/channel/ChannelProvider"
 import { UserDataContext } from "../../../utils/user/UserDataProvider"
 import { AlertBanner, ErrorBanner } from "../../layout/AlertBanner"
@@ -20,6 +19,12 @@ import { ChatHistory } from "./ChatHistory"
 import { ChatInput } from "./ChatInput"
 import { ModalTypes, useModalManager } from "../../../hooks/useModalManager"
 import { ChannelRenameModal } from "../channel-details/EditChannelDetails/ChannelRenameModal"
+import { RavenChannel } from "../../../../../types/RavenChannelManagement/RavenChannel"
+
+type value = {
+    id: string,
+    value: string
+}
 
 export const ChatInterface = () => {
 
@@ -27,7 +32,7 @@ export const ChatInterface = () => {
     const userData = useContext(UserDataContext)
     const user = userData?.name
     const peer = Object.keys(channelMembers).filter((member) => member !== user)[0]
-    const { data: channelList, error: channelListError } = useFrappeGetCall<{ message: ChannelData[] }>("raven.raven_channel_management.doctype.raven_channel.raven_channel.get_channel_list", undefined, undefined, {
+    const { data: channelList, error: channelListError } = useFrappeGetCall<{ message: RavenChannel[] }>("raven.raven_channel_management.doctype.raven_channel.raven_channel.get_channel_list", undefined, undefined, {
         revalidateOnFocus: false
     })
 
@@ -51,19 +56,19 @@ export const ChatInterface = () => {
         }
     })
 
-    const allUsers = Object.values(users).map((user) => {
+    const allUsers: value[] = Object.values(users).map((user) => {
         return {
             id: user.name,
-            value: user.full_name
+            value: user.full_name ?? user.name
         }
     })
 
-    const allChannels = channelList?.message.map((channel: ChannelData) => {
+    const allChannels: value[] = channelList ? channelList.message.map((channel: RavenChannel) => {
         return {
             id: channel.name,
             value: channel.channel_name
         }
-    })
+    }) : []
 
     const modalManager = useModalManager()
 
@@ -179,7 +184,7 @@ export const ChatInterface = () => {
                 </HStack>
             </PageHeader>
             <Stack h='calc(100vh)' justify={'flex-end'} p={4} overflow='hidden' pt='16'>
-                {data && channelData && <ChatHistory parsed_messages={data.message} isDM={channelData?.is_direct_message} mutate={mutate} replyToMessage={handleReplyAction} />}
+                {data && channelData && <ChatHistory parsed_messages={data.message} isDM={channelData.is_direct_message ?? 0} mutate={mutate} replyToMessage={handleReplyAction} />}
                 {channelData?.is_archived == 0 && ((user && user in channelMembers) || channelData?.type === 'Open' ?
                     <ChatInput channelID={channelData?.name ?? ''} allChannels={allChannels} allUsers={allUsers} selectedMessage={selectedMessage} handleCancelReply={handleCancelReply} /> :
                     <Box>

@@ -8,10 +8,10 @@ import './quill-styles.css'
 import { IonActionSheet, IonButton, IonIcon } from '@ionic/react';
 import { paperPlane, documentOutline, addOutline, cameraOutline, imageOutline } from 'ionicons/icons';
 import { getFileExtension } from '../../../../../raven-app/src/utils/operations';
-import { Message } from '../../../../../raven-app/src/types/Messaging/Message';
 import { FilePicker } from '@capawesome/capacitor-file-picker';
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
 import { PickedFile } from '@capawesome/capacitor-file-picker';
+import { Message } from '../../../../../types/Messaging/Message';
 
 type Props = {
     channelID: string,

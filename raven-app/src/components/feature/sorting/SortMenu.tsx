@@ -1,5 +1,5 @@
 import { MenuList, MenuItem } from "@chakra-ui/react"
-import { SortFields } from "../../../types/Sort"
+import { SortFields } from "../../../../../types/Sort"
 
 export interface Props {
     sortingFields: SortFields[],

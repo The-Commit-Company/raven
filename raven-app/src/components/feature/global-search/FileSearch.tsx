@@ -5,9 +5,7 @@ import { useMemo, useState, useContext } from 'react'
 import { Controller, FormProvider, useForm } from 'react-hook-form'
 import { BiGlobe, BiHash, BiLockAlt } from 'react-icons/bi'
 import { useDebounce } from '../../../hooks/useDebounce'
-import { ChannelData } from '../../../types/Channel/Channel'
-import { GetFileSearchResult } from '../../../types/Search/Search'
-import { User } from '../../../types/User/User'
+import { GetFileSearchResult } from '../../../../../types/Search/Search'
 import { getFileExtensionIcon } from '../../../utils/layout/fileExtensionIcon'
 import { DateObjectToFormattedDateString, getFileExtension, getFileName } from '../../../utils/operations'
 import { AlertBanner, ErrorBanner } from '../../layout/AlertBanner'
@@ -21,6 +19,8 @@ import { ChannelContext } from '../../../utils/channel/ChannelProvider'
 import { FilePreviewModal } from '../file-preview/FilePreviewModal'
 import { useModalManager, ModalTypes } from "../../../hooks/useModalManager"
 import { scrollbarStyles } from '../../../styles'
+import { RavenChannel } from '../../../../../types/RavenChannelManagement/RavenChannel'
+import { User } from '../../../../../types/Core/User'
 
 interface FilterInput {
     'from-user-filter': SelectOption[],
@@ -57,7 +57,7 @@ export const FileSearch = ({ onToggleMyChannels, isOpenMyChannels, onToggleSaved
     const { colorMode } = useColorMode()
 
     const { url } = useContext(FrappeContext) as FrappeConfig
-    const { data: channels, error: channelsError } = useFrappeGetCall<{ message: ChannelData[] }>("raven.raven_channel_management.doctype.raven_channel.raven_channel.get_channel_list", undefined, undefined, {
+    const { data: channels, error: channelsError } = useFrappeGetCall<{ message: RavenChannel[] }>("raven.raven_channel_management.doctype.raven_channel.raven_channel.get_channel_list", undefined, undefined, {
         revalidateOnFocus: false
     })
 
@@ -76,7 +76,7 @@ export const FileSearch = ({ onToggleMyChannels, isOpenMyChannels, onToggleSaved
 
     const channelOption: SelectOption[] = useMemo(() => {
         if (channels) {
-            return channels.message.map((channel: ChannelData) => ({
+            return channels.message.map((channel: RavenChannel) => ({
                 value: channel.name,
                 label: <HStack>{channel.type === "Private" && <BiLockAlt /> || channel.type === "Public" && <BiHash /> || channel.type === "Open" && <BiGlobe />}<Text>{channel.channel_name}</Text></HStack>
             }))

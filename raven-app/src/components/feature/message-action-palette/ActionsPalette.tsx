@@ -10,7 +10,7 @@ import { DeleteMessageModal } from '../message-details/DeleteMessageModal'
 import { EditMessageModal } from '../message-details/EditMessageModal'
 import EmojiPicker, { EmojiClickData } from 'emoji-picker-react'
 import { ModalTypes, useModalManager } from '../../../hooks/useModalManager'
-import { FileMessage, Message, TextMessage } from '../../../types/Messaging/Message'
+import { FileMessage, Message, TextMessage } from '../../../../../types/Messaging/Message'
 
 interface ActionButtonPaletteProps {
     message: Message,
@@ -73,11 +73,11 @@ export const ActionsPalette = ({ message, showButtons, handleScroll, is_continua
     useEffect(() => {
         handleScroll(modalManager.modalType !== ModalTypes.EmojiPicker)
     }, [modalManager.modalType])
-  
+
     const onReplyClick = () => {
         replyToMessage && replyToMessage(message)
     }
-        
+
     const { call } = useFrappePostCall('frappe.desk.like.toggle_like')
 
     const handleLike = (id: string, value: string) => {
