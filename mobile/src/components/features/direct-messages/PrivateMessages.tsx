@@ -20,6 +20,7 @@ export const PrivateMessages = () => {
 
     const { url } = useContext(FrappeContext) as FrappeConfig
     const { currentUser } = useContext(UserContext)
+
     const { data: users, error: usersError } = useFrappeGetCall<{ message: User[] }>('raven.raven_channel_management.doctype.raven_channel.raven_channel.get_raven_users_list', undefined, undefined, {
         revalidateOnFocus: false
     })

@@ -4,14 +4,6 @@ import { KeyedMutator } from 'swr'
 import { useToast } from '@chakra-ui/react'
 import { RavenChannel } from '../../../../types/RavenChannelManagement/RavenChannel'
 
-export type DMChannelData = {
-    name: string,
-    is_self_message: 1 | 0,
-    full_name: string,
-    user_image: string,
-    user_id: string,
-}
-
 export type ExtraUsersData = {
     name: string,
     full_name: string,
@@ -23,9 +15,16 @@ export type UnreadCountData = {
     total_unread_count_in_dms: number,
     channels: { name: string, user_id?: string, unread_count: number }[]
 }
+
+export type ChannelListItem = Pick<RavenChannel, 'name' | 'channel_name' | 'type' | 'channel_description' | 'is_direct_message' | 'is_self_message' | 'is_archived'>
+
+export interface DMChannelListItem extends ChannelListItem {
+    peer_user_id?: string,
+    is_direct_message: 1,
+}
 interface ChannelList {
-    channels: RavenChannel[],
-    dm_channels: DMChannelData[],
+    channels: ChannelListItem[],
+    dm_channels: DMChannelListItem[],
     extra_users: ExtraUsersData[]
 }
 
