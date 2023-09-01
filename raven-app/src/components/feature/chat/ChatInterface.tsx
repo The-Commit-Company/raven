@@ -1,6 +1,6 @@
 import { Avatar, AvatarBadge, Box, Button, ButtonGroup, Center, HStack, IconButton, Stack, Text, Tooltip, useColorMode, useDisclosure, useToast } from "@chakra-ui/react"
 import { useFrappeCreateDoc, useFrappeGetCall, useFrappeEventListener } from "frappe-react-sdk"
-import { useContext, useState } from "react"
+import { useContext, useMemo, useState } from "react"
 import { BiEditAlt, BiGlobe, BiHash, BiLockAlt } from "react-icons/bi"
 import { HiOutlineSearch } from "react-icons/hi"
 import { Message, MessagesWithDate } from "../../../../../types/Messaging/Message"
@@ -19,6 +19,7 @@ import { ModalTypes, useModalManager } from "../../../hooks/useModalManager"
 import { ChannelRenameModal } from "../channel-details/EditChannelDetails/ChannelRenameModal"
 import { RavenChannel } from "../../../../../types/RavenChannelManagement/RavenChannel"
 import { useUserData } from "@/hooks/useUserData"
+import { ChannelListContext, ChannelListContextType } from "@/utils/channel/ChannelListProvider"
 
 type value = {
     id: string,
@@ -30,9 +31,8 @@ export const ChatInterface = () => {
     const { channelData, channelMembers, users } = useContext(ChannelContext)
     const { name: user } = useUserData()
     const peer = Object.keys(channelMembers).filter((member) => member !== user)[0]
-    const { data: channelList, error: channelListError } = useFrappeGetCall<{ message: RavenChannel[] }>("raven.raven_channel_management.doctype.raven_channel.raven_channel.get_channel_list", undefined, undefined, {
-        revalidateOnFocus: false
-    })
+
+    const { channels } = useContext(ChannelListContext) as ChannelListContextType
 
     const { data, error, mutate } = useFrappeGetCall<{ message: MessagesWithDate }>("raven.raven_messaging.doctype.raven_message.raven_message.get_messages_with_dates", {
         channel_id: channelData?.name ?? null
@@ -61,12 +61,12 @@ export const ChatInterface = () => {
         }
     })
 
-    const allChannels: value[] = channelList ? channelList.message.map((channel: RavenChannel) => {
+    const allChannels: value[] = useMemo(() => channels?.map((channel) => {
         return {
             id: channel.name,
             value: channel.channel_name
         }
-    }) : []
+    }) ?? [], [channels])
 
     const modalManager = useModalManager()
 
@@ -93,6 +93,7 @@ export const ChatInterface = () => {
 
     const { createDoc, error: joinError } = useFrappeCreateDoc()
     const toast = useToast()
+
     const { data: activeUsers, error: activeUsersError } = useFrappeGetCall<{ message: string[] }>('raven.api.user_availability.get_active_users', undefined, undefined, {
         revalidateOnFocus: false
     })
@@ -223,13 +224,6 @@ export const ChatInterface = () => {
 
         </>
     )
-
-    else if (channelListError) return (
-        <Box p={4}>
-            <ErrorBanner error={channelListError} />
-        </Box>
-    )
-
     else return (
         <FullPageLoader />
     )

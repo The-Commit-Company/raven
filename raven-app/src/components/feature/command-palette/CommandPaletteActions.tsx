@@ -16,6 +16,7 @@ import { useModalManager, ModalTypes } from "../../../hooks/useModalManager"
 import { FilePreviewModal } from "../file-preview/FilePreviewModal"
 import { FileSearchResult } from "../global-search/FileSearch"
 import { User } from "../../../../../types/Core/User"
+import { UserFields } from "@/utils/users/UserListProvider"
 
 interface Props {
     searchChange: Function
@@ -29,7 +30,7 @@ interface Props {
 }
 
 interface PeopleProps {
-    users: User[]
+    users: UserFields[]
     input: string
     activeUsers?: string[]
     gotoDMChannel?: Function

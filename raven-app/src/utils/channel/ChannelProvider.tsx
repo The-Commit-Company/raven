@@ -1,18 +1,19 @@
 import { useFrappeGetCall, useFrappeDocumentEventListener, useFrappeDocTypeEventListener } from 'frappe-react-sdk'
-import { createContext, PropsWithChildren, useEffect, useMemo } from 'react'
+import { createContext, PropsWithChildren, useContext, useEffect, useMemo } from 'react'
 import { useParams } from 'react-router-dom'
 import { RavenChannelMember } from '../../../../types/RavenChannelManagement/RavenChannelMember'
 import { RavenChannel } from '../../../../types/RavenChannelManagement/RavenChannel'
 import { User } from '../../../../types/Core/User'
 import { Box } from '@chakra-ui/react'
 import { ErrorBanner } from '../../components/layout/AlertBanner'
+import { UserFields, UserListContext } from '../users/UserListProvider'
 
 type ChannelInfo = {
     channel_members: ChannelMembersDetails[],
     channel_data: RavenChannel
 }
 
-export interface ChannelMembersDetails extends RavenChannelMember, User {
+export interface ChannelMembersDetails extends RavenChannelMember, UserFields {
     first_name: string,
     full_name: string,
     user_image: string,
@@ -28,9 +29,8 @@ export const ChannelProvider = ({ children }: PropsWithChildren) => {
     }, undefined, {
         revalidateOnFocus: false
     })
-    const { data: users, error: usersError } = useFrappeGetCall<{ message: User[] }>('raven.raven_channel_management.doctype.raven_channel.raven_channel.get_raven_users_list', undefined, undefined, {
-        revalidateOnFocus: false
-    })
+
+    const { users } = useContext(UserListContext)
 
     //TODO: This should be moved down to the interface after it's ascertained that the Channel ID does exist
     useFrappeDocumentEventListener('Raven Channel', channelID as string, () => {
@@ -48,8 +48,8 @@ export const ChannelProvider = ({ children }: PropsWithChildren) => {
         data?.message.channel_members.forEach((member: ChannelMembersDetails) => {
             cm[member.name] = member
         })
-        const userData: Record<string, User> = {}
-        users?.message.forEach((user: User) => {
+        const userData: Record<string, UserFields> = {}
+        users.forEach((user) => {
             userData[user.name] = user
         })
         return {

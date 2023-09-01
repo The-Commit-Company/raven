@@ -87,77 +87,57 @@ def get_all_channels(hide_archived=True):
         On mobile app, these are separate lists
     '''
 
-    # 1. Get "channels" - public, open, and private
+    # 1. Get "channels" - public, open, private, and DMs
     channels = get_channel_list(hide_archived)
 
-    #2. Get "direct messages" - DMs
-    dm_channels = get_dm_channels_for_user()
-
-    #3. For every DM channel, we need to fetch user information
-    parsed_dm_channels = []
-    for dm_channel in dm_channels:
-        parsed_dm_channel = {
-            **dm_channel,
-            **get_user_information(dm_channel.get('name'), dm_channel.get('is_self_message'))
+    #3. For every channel, we need to fetch the peer's User ID (if it's a DM)
+    parsed_channels = []
+    for channel in channels:
+        parsed_channel = {
+            **channel,
+            "peer_user_id": get_peer_user_id(channel.get('name'), channel.get('is_direct_message'), channel.get('is_self_message')),
         }
 
-        parsed_dm_channels.append(parsed_dm_channel)
+        parsed_channels.append(parsed_channel)
+
+    channel_list = [channel for channel in parsed_channels if not channel.get('is_direct_message')]
+    dm_list = [channel for channel in parsed_channels if channel.get('is_direct_message')]
 
     # Get extra users if dm channels length is less than 5
     extra_users = []
-    if len(parsed_dm_channels) < 5:
-        extra_users = get_extra_users(parsed_dm_channels)
+    number_of_dms = len(dm_list)
+
+    if number_of_dms < 5:
+        extra_users = get_extra_users(dm_list)
+    
+
     return {
-        "channels": channels,
-        "dm_channels": parsed_dm_channels,
+        "channels": channel_list,
+        "dm_channels": dm_list,
         "extra_users": extra_users
     }
 
 @frappe.whitelist()
 def get_channel_list(hide_archived=False):
-    # get channel list where channel member is current user
+    # get List of all channels where current user is a member (all includes public, private, open, and DM channels)
     query = (frappe.qb.from_(channel)
-             .select(channel.name, channel.channel_name, channel.type, channel.is_archived).distinct()
+             .select(channel.name, channel.channel_name, channel.type, channel.channel_description, channel.is_archived, channel.is_direct_message, channel.is_self_message).distinct()
              .left_join(channel_member)
              .on((channel.name == channel_member.channel_id))
-             .where((channel.type != "Private") | (channel_member.user_id == frappe.session.user))
-             .where(channel.is_direct_message == 0))
+             .where((channel.type != "Private") | (channel_member.user_id == frappe.session.user)))
 
     if hide_archived:
         query = query.where(channel.is_archived == 0)
 
     return query.run(as_dict=True)
 
-def get_dm_channels_for_user():
-    query = (frappe.qb.from_(channel)
-             .select(channel.name, channel.is_self_message)
-             .left_join(channel_member)
-             .on((channel.name == channel_member.channel_id))
-             .where(channel_member.user_id == frappe.session.user)
-             .where(channel.is_direct_message == 1))
 
-    return query.run(as_dict=True)
-
-def get_user_information(channel_id, is_self_message=False):
-    '''
-    For a given channel, fetches the user information of the peer
-    '''
-    peer_user_id = get_peer_user_id(channel_id, is_self_message)
-    if peer_user_id:
-        full_name, user_image = frappe.db.get_value("User", peer_user_id, fieldname=["full_name", "user_image"])
-
-        return {
-            "user_id": peer_user_id,
-            "full_name": full_name,
-            "user_image": user_image
-        }
-    return {}
-
-
-def get_peer_user_id(channel_id, is_self_message=False):
+def get_peer_user_id(channel_id, is_direct_message, is_self_message=False):
     '''
     For a given channel, fetches the user id of the peer
     '''
+    if is_direct_message == 0:
+        return None
     if is_self_message:
         return frappe.session.user
     return frappe.db.get_value('Raven Channel Member', {
@@ -170,7 +150,7 @@ def get_extra_users(dm_channels):
     Fetch extra users - only when number of DMs is less than 5.
     Do not repeat users already in the list
     '''
-    existing_users = [dm_channel.get('user_id') for dm_channel in dm_channels]
+    existing_users = [dm_channel.get('peer_user_id') for dm_channel in dm_channels]
     existing_users.append('Administrator')
     existing_users.append('Guest')
     return frappe.db.get_list('User', filters=[
@@ -209,15 +189,3 @@ def create_direct_message_channel(user_id):
         if frappe.session.user != user_id:
             channel.add_members([user_id], 1)
         return channel.name
-            
-
-
-@frappe.whitelist()
-def get_raven_users_list():
-    raven_users = []
-    users = frappe.get_all("User", filters={"name": ["!=", "Administrator"]}, fields=[
-                           "full_name", "user_image", "name", "first_name"], order_by="full_name")
-    for user in users:
-        if "Raven User" in frappe.get_roles(user.name):
-            raven_users.append(user)
-    return raven_users
