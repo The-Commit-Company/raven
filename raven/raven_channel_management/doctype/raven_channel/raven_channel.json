@@ -45,7 +45,8 @@
    "fieldtype": "Check",
    "in_list_view": 1,
    "in_standard_filter": 1,
-   "label": "Is Direct Message"
+   "label": "Is Direct Message",
+   "set_only_once": 1
   },
   {
    "default": "0",
@@ -53,7 +54,8 @@
    "fieldtype": "Check",
    "in_list_view": 1,
    "in_standard_filter": 1,
-   "label": "Is Self Message"
+   "label": "Is Self Message",
+   "set_only_once": 1
   },
   {
    "fieldname": "channel_description",
@@ -92,7 +94,7 @@
    "link_fieldname": "channel_id"
   }
  ],
- "modified": "2023-09-01 13:59:34.177727",
+ "modified": "2023-09-01 14:12:58.169255",
  "modified_by": "Administrator",
  "module": "Raven Channel Management",
  "name": "Raven Channel",
