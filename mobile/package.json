@@ -41,7 +41,6 @@
     "react-router-dom": "5.2.0",
     "rehype-raw": "^6.1.1",
     "rehype-sanitize": "^5.0.1",
-    "socket.io-client": "4.6.0",
     "swiper": "^10.0.4"
   },
   "devDependencies": {

@@ -38,7 +38,6 @@
     "react-virtuoso": "^4.3.8",
     "rehype-raw": "^6.1.1",
     "remark-gfm": "^3.0.1",
-    "socket.io-client": "^4.6.0",
     "timeago-react": "^3.0.5"
   },
   "devDependencies": {
