@@ -8,7 +8,7 @@ import { useContext } from "react";
 import { ChannelContext } from "../../../utils/channel/ChannelProvider";
 import { BsDownload } from "react-icons/bs";
 import GlobalSearch from "../global-search/GlobalSearch";
-import { FileMessage } from "../../../types/Messaging/Message";
+import { FileMessage } from "../../../../../types/Messaging/Message";
 import { scrollbarStyles } from "../../../styles";
 
 interface ChannelFile extends FileMessage {

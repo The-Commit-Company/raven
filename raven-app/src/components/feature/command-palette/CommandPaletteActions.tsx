@@ -6,7 +6,7 @@ import { BiGlobe, BiHash, BiLockAlt } from "react-icons/bi"
 import { BsFillCircleFill, BsCircle } from "react-icons/bs"
 import { TbFiles, TbHash, TbListSearch, TbMessages, TbSearch, TbUsers } from "react-icons/tb"
 import { useNavigate } from "react-router-dom"
-import { GetFileSearchResult } from "../../../types/Search/Search"
+import { GetFileSearchResult } from "../../../../../types/Search/Search"
 import { UserContext } from "../../../utils/auth/UserProvider"
 import { ChannelContext } from "../../../utils/channel/ChannelProvider"
 import { getFileExtensionIcon } from "../../../utils/layout/fileExtensionIcon"
@@ -15,7 +15,7 @@ import { getFileExtension, getFileName } from "../../../utils/operations"
 import { useModalManager, ModalTypes } from "../../../hooks/useModalManager"
 import { FilePreviewModal } from "../file-preview/FilePreviewModal"
 import { FileSearchResult } from "../global-search/FileSearch"
-import { User } from "../../../types/Core/User"
+import { User } from "../../../../../types/Core/User"
 
 interface Props {
     searchChange: Function

@@ -9,7 +9,7 @@ import { useFrappeGetCall, useFrappePostCall } from 'frappe-react-sdk'
 import { useNavigate } from 'react-router-dom'
 import { UserContext } from '../../../utils/auth/UserProvider'
 import { TbSearch } from 'react-icons/tb'
-import { User } from '../../../types/Core/User'
+import { User } from '../../../../../types/Core/User'
 
 interface CommandPaletteProps {
     isOpen: boolean,

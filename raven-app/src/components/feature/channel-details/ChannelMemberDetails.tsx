@@ -11,7 +11,7 @@ import { ChannelContext } from "../../../utils/channel/ChannelProvider"
 import { ModalTypes, useModalManager } from "../../../hooks/useModalManager"
 import { RiVipCrownFill } from "react-icons/ri"
 import { scrollbarStyles } from "../../../styles"
-import { User } from "../../../types/Core/User"
+import { User } from "../../../../../types/Core/User"
 
 interface MemberDetailsProps {
     members: User[]

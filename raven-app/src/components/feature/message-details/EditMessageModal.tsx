@@ -8,7 +8,7 @@ import ReactQuill from "react-quill"
 import { AlertBanner, ErrorBanner } from "../../layout/AlertBanner"
 import { ChannelContext } from "../../../utils/channel/ChannelProvider"
 import { ModalTypes, useModalManager } from "../../../hooks/useModalManager"
-import { RavenChannel } from "../../../types/RavenChannelManagement/RavenChannel"
+import { RavenChannel } from "../../../../../types/RavenChannelManagement/RavenChannel"
 
 interface EditMessageModalProps {
     isOpen: boolean,

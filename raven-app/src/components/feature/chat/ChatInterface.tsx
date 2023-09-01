@@ -4,7 +4,7 @@ import { useContext, useState } from "react"
 import { BiEditAlt, BiGlobe, BiHash, BiLockAlt } from "react-icons/bi"
 import { HiOutlineSearch } from "react-icons/hi"
 import { useFrappeEventListener } from "../../../hooks/useFrappeEventListener"
-import { Message, MessagesWithDate } from "../../../types/Messaging/Message"
+import { Message, MessagesWithDate } from "../../../../../types/Messaging/Message"
 import { ChannelContext } from "../../../utils/channel/ChannelProvider"
 import { UserDataContext } from "../../../utils/user/UserDataProvider"
 import { AlertBanner, ErrorBanner } from "../../layout/AlertBanner"
@@ -19,7 +19,7 @@ import { ChatHistory } from "./ChatHistory"
 import { ChatInput } from "./ChatInput"
 import { ModalTypes, useModalManager } from "../../../hooks/useModalManager"
 import { ChannelRenameModal } from "../channel-details/EditChannelDetails/ChannelRenameModal"
-import { RavenChannel } from "../../../types/RavenChannelManagement/RavenChannel"
+import { RavenChannel } from "../../../../../types/RavenChannelManagement/RavenChannel"
 
 type value = {
     id: string,

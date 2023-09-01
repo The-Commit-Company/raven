@@ -2,7 +2,7 @@ import { FrappeError, useFrappeEventListener, useFrappeGetCall } from 'frappe-re
 import { PropsWithChildren, createContext } from 'react'
 import { KeyedMutator } from 'swr'
 import { useToast } from '@chakra-ui/react'
-import { RavenChannel } from '../../types/RavenChannelManagement/RavenChannel'
+import { RavenChannel } from '../../../../types/RavenChannelManagement/RavenChannel'
 
 export type DMChannelData = {
     name: string,

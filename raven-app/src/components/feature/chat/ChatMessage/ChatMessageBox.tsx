@@ -4,9 +4,9 @@ import { ChannelContext } from "../../../../utils/channel/ChannelProvider"
 import { DateObjectToTimeString, DateObjectToFormattedDateStringWithoutYear } from "../../../../utils/operations"
 import { ActionsPalette } from "../../message-action-palette/ActionsPalette"
 import { MessageReactions } from "./MessageReactions"
-import { Message, MessageBlock } from "../../../../types/Messaging/Message"
+import { Message, MessageBlock } from "../../../../../../types/Messaging/Message"
 import { PreviousMessageBox } from "../MessageReply/PreviousMessageBox"
-import { User } from "../../../../types/Core/User"
+import { User } from "../../../../../../types/Core/User"
 
 interface ChatMessageBoxProps extends BoxProps {
     message: Message,

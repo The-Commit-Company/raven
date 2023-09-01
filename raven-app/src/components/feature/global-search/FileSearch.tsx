@@ -5,7 +5,7 @@ import { useMemo, useState, useContext } from 'react'
 import { Controller, FormProvider, useForm } from 'react-hook-form'
 import { BiGlobe, BiHash, BiLockAlt } from 'react-icons/bi'
 import { useDebounce } from '../../../hooks/useDebounce'
-import { GetFileSearchResult } from '../../../types/Search/Search'
+import { GetFileSearchResult } from '../../../../../types/Search/Search'
 import { getFileExtensionIcon } from '../../../utils/layout/fileExtensionIcon'
 import { DateObjectToFormattedDateString, getFileExtension, getFileName } from '../../../utils/operations'
 import { AlertBanner, ErrorBanner } from '../../layout/AlertBanner'
@@ -19,8 +19,8 @@ import { ChannelContext } from '../../../utils/channel/ChannelProvider'
 import { FilePreviewModal } from '../file-preview/FilePreviewModal'
 import { useModalManager, ModalTypes } from "../../../hooks/useModalManager"
 import { scrollbarStyles } from '../../../styles'
-import { RavenChannel } from '../../../types/RavenChannelManagement/RavenChannel'
-import { User } from '../../../types/Core/User'
+import { RavenChannel } from '../../../../../types/RavenChannelManagement/RavenChannel'
+import { User } from '../../../../../types/Core/User'
 
 interface FilterInput {
     'from-user-filter': SelectOption[],

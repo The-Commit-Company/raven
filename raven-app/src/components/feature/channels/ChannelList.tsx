@@ -7,7 +7,7 @@ import { SidebarBadge, SidebarButtonItem, SidebarViewMoreButton } from "../../la
 import { CreateChannelModal } from "./CreateChannelModal"
 import { useContext } from "react"
 import { ChannelListContext, ChannelListContextType, UnreadCountData } from "../../../utils/channel/ChannelListProvider"
-import { RavenChannel } from "../../../types/RavenChannelManagement/RavenChannel"
+import { RavenChannel } from "../../../../../types/RavenChannelManagement/RavenChannel"
 
 export const ChannelList = ({ unread_count }: { unread_count?: UnreadCountData }) => {
 

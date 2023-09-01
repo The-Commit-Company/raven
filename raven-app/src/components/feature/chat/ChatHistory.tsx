@@ -1,7 +1,7 @@
 import { Box, useColorMode } from "@chakra-ui/react";
 import { DividerWithText } from "../../layout/Divider/DividerWithText";
 import { DateObjectToFormattedDateString } from "../../../utils/operations";
-import { DateBlock, FileMessage, Message, MessageBlock, MessagesWithDate } from "../../../types/Messaging/Message";
+import { DateBlock, FileMessage, Message, MessageBlock, MessagesWithDate } from "../../../../../types/Messaging/Message";
 import { ChannelHistoryFirstMessage } from "../../layout/EmptyState/EmptyState";
 import { useContext, useRef, useState } from "react";
 import { ChatMessageBox } from "./ChatMessage/ChatMessageBox";
@@ -14,7 +14,7 @@ import { Virtuoso } from 'react-virtuoso';
 import { AnimatePresence, motion } from "framer-motion";
 import { VirtuosoRefContext } from "../../../utils/message/VirtuosoRefProvider";
 import { scrollbarStyles } from "../../../styles";
-import { User } from "../../../types/Core/User";
+import { User } from "../../../../../types/Core/User";
 
 interface ChatHistoryProps {
     parsed_messages: MessagesWithDate,
