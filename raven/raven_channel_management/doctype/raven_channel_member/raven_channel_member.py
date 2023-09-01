@@ -7,6 +7,9 @@ from pypika import JoinType, Order
 
 
 class RavenChannelMember(Document):
+
+    def before_validate(self):
+        self.last_visit = frappe.utils.now()
     def validate(self):
         if not self.check_if_user_is_member():
             frappe.throw(
