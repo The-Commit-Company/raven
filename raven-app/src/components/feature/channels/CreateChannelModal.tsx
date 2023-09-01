@@ -1,10 +1,10 @@
 import { Button, ButtonGroup, chakra, FormControl, FormErrorMessage, FormHelperText, FormLabel, HStack, Input, InputGroup, InputLeftElement, InputRightElement, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Radio, RadioGroup, Stack, Text, useToast } from '@chakra-ui/react'
-import { useFrappePostCall } from 'frappe-react-sdk'
+import { useFrappeCreateDoc } from 'frappe-react-sdk'
 import { ChangeEvent, useEffect, useState } from 'react'
-import { FormProvider, set, useForm } from 'react-hook-form'
+import { FormProvider, useForm } from 'react-hook-form'
 import { BiGlobe, BiHash, BiLockAlt } from 'react-icons/bi'
 import { useNavigate } from 'react-router-dom'
-import { AlertBanner, ErrorBanner } from '../../layout/AlertBanner'
+import { ErrorBanner } from '../../layout/AlertBanner'
 
 interface ChannelModalProps {
     isOpen: boolean,
@@ -26,7 +26,8 @@ export const CreateChannelModal = ({ isOpen, onClose }: ChannelModalProps) => {
     })
 
     const { register, handleSubmit, watch, reset, formState: { errors } } = methods
-    const { call: callChannelCreation, loading: creatingChannel, error: channelCreationError, reset: resetChannelCreation, result: resultantChannel } = useFrappePostCall<{ message: string }>('raven.raven_channel_management.doctype.raven_channel.raven_channel.create_channel')
+
+    const { createDoc, error: channelCreationError, reset: resetChannelCreation, loading: creatingChannel } = useFrappeCreateDoc()
     const toast = useToast()
 
     useEffect(() => {
@@ -40,7 +41,7 @@ export const CreateChannelModal = ({ isOpen, onClose }: ChannelModalProps) => {
     let navigate = useNavigate()
 
     const onSubmit = (data: ChannelCreationForm) => {
-        callChannelCreation({
+        createDoc('Raven Channel', {
             channel_name: data.channel_name,
             channel_description: data.channel_description,
             type: data.type
@@ -53,7 +54,7 @@ export const CreateChannelModal = ({ isOpen, onClose }: ChannelModalProps) => {
                     isClosable: true
                 })
                 onClose(true)
-                navigate(`/channel/${result.message}`)
+                navigate(`/channel/${result.name}`)
             }
         }).catch((err) => {
             if (err.httpStatus === 409) {

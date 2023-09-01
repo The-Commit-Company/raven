@@ -2,6 +2,7 @@
 # For license information, please see license.txt
 
 import frappe
+from frappe import _
 from frappe.model.document import Document
 
 all_users = [member['name'] for member in frappe.get_all(
@@ -19,7 +20,7 @@ class RavenChannel(Document):
         # add current user as channel member
         if self.type == "Private" or self.type == "Public":
             frappe.get_doc({"doctype": "Raven Channel Member",
-                            "channel_id": self.name, "user_id": frappe.session.user}).insert()
+                            "channel_id": self.name, "user_id": frappe.session.user, "is_admin": 1}).insert()
 
     def on_trash(self):
         # delete all members when channel is deleted
@@ -39,11 +40,13 @@ class RavenChannel(Document):
                 pass
             else:
                 frappe.throw(
-                    "You don't have permission to modify this channel", frappe.PermissionError)
+                    _("You don't have permission to modify this channel"), frappe.PermissionError)
 
     def before_validate(self):
         if self.is_direct_message == 1:
             self.type == "Private"
+        
+        self.channel_name = self.channel_name.strip().lower().replace(" ", "-")
 
     def add_members(self, members):
         for member in members:
@@ -63,7 +66,7 @@ class RavenChannel(Document):
 
     def autoname(self):
         if self.is_direct_message == 0:
-            self.name = self.channel_name.lower().replace(" ", "-")
+            self.name = self.channel_name.strip().lower().replace(" ", "-")
 
 
 @frappe.whitelist()
@@ -199,27 +202,6 @@ def create_direct_message_channel(user_id):
             channel.add_members([frappe.session.user, user_id])
             return channel.name
 
-
-@frappe.whitelist()
-def create_channel(channel_name, type, channel_description=None):
-    # create channel with channel name and channel type if it doesn't exist else return error
-    channel_name = channel_name.lower()
-    channel = frappe.db.exists("Raven Channel", {"channel_name": channel_name})
-    if channel:
-        frappe.throw("Channel name already exists", frappe.DuplicateEntryError)
-    else:
-        channel = frappe.get_doc({
-            "doctype": "Raven Channel",
-            "channel_name": channel_name,
-            "type": type,
-            "channel_description": channel_description
-        })
-        channel.insert()
-        first_member = frappe.db.get_value(
-            "Raven Channel Member", {'channel_id': channel.name}, 'name')
-        frappe.db.set_value("Raven Channel Member",
-                            first_member, "is_admin", 1)
-        return channel.name
 
 @frappe.whitelist()
 def get_raven_users_list():

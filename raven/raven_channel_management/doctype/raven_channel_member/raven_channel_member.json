@@ -37,7 +37,6 @@
    "label": "Is Admin"
   },
   {
-   "default": "2000-11-11",
    "fetch_if_empty": 1,
    "fieldname": "last_visit",
    "fieldtype": "Datetime",
@@ -47,7 +46,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-06-13 13:48:11.425055",
+ "modified": "2023-09-01 13:41:54.499408",
  "modified_by": "Administrator",
  "module": "Raven Channel Management",
  "name": "Raven Channel Member",

@@ -1,5 +1,5 @@
 import { IonButton, IonButtons, IonContent, IonHeader, IonInput, IonItem, IonItemDivider, IonItemGroup, IonLabel, IonList, IonModal, IonRadio, IonRadioGroup, IonText, IonTextarea, IonTitle, IonToolbar, useIonToast } from "@ionic/react";
-import { useFrappePostCall } from "frappe-react-sdk";
+import { useFrappeCreateDoc } from "frappe-react-sdk";
 import { useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { BiGlobe, BiHash, BiLockAlt } from "react-icons/bi";
@@ -22,7 +22,7 @@ export const AddChannel = ({ presentingElement }: AddChannelProps) => {
     const { register, handleSubmit, formState: { errors } } = useForm<CreateChannelInputs>()
     const [channelType, setChannelType] = useState<CreateChannelInputs['channel_type']>('Public')
 
-    const { call: callChannelCreation, error: channelCreationError } = useFrappePostCall<{ message: string }>('raven.raven_channel_management.doctype.raven_channel.raven_channel.create_channel')
+    const { createDoc, error: channelCreationError, reset } = useFrappeCreateDoc()
 
     const [present] = useIonToast()
 
@@ -37,7 +37,7 @@ export const AddChannel = ({ presentingElement }: AddChannelProps) => {
     const history = useHistory()
 
     const onSubmit = (data: CreateChannelInputs) => {
-        callChannelCreation({
+        createDoc('Raven Channel', {
             channel_name: data.channel_name,
             channel_description: data.channel_description,
             type: channelType
@@ -45,7 +45,7 @@ export const AddChannel = ({ presentingElement }: AddChannelProps) => {
             if (result) {
                 presentToast("Channel created successfully")
                 modal.current?.dismiss()
-                history.push(`channel/${result.message}`)
+                history.push(`channel/${result.name}`)
             }
         }).catch((err) => {
             if (err.httpStatus === 409) {
