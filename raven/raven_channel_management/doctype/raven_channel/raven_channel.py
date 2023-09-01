@@ -41,10 +41,6 @@ class RavenChannel(Document):
                 frappe.throw(
                     "You don't have permission to modify this channel", frappe.PermissionError)
 
-    def on_update(self):
-        frappe.publish_realtime('channel_updated', {
-            'channel_id': self.name}, after_commit=True)
-
     def before_validate(self):
         if self.is_direct_message == 1:
             self.type == "Private"
