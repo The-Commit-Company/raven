@@ -38,7 +38,7 @@ def channel_member_has_permission(doc, user=None, permission_type=None):
 
 
 def message_has_permission(doc, user=None, permission_type=None):
-    # Allow self to modify their own channel member document
+    # Allow self to modify their own message document
     if doc.owner == user:
         return True
 
