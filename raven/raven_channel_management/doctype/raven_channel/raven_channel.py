@@ -41,14 +41,23 @@ class RavenChannel(Document):
             else:
                 frappe.throw(
                     _("You don't have permission to modify this channel"), frappe.PermissionError)
+        
+        if self.is_direct_message == 1:
+            old_doc = self.get_doc_before_save()
+            if old_doc:
+                if old_doc.get('channel_name') != self.channel_name:
+                    frappe.throw(_("You cannot change the name of a direct message channel"), frappe.ValidationError)
 
     def before_validate(self):
+        if self.is_self_message == 1:
+            self.is_direct_message = 1
+
         if self.is_direct_message == 1:
             self.type == "Private"
-        
-        self.channel_name = self.channel_name.strip().lower().replace(" ", "-")
+        if self.is_direct_message == 0:
+            self.channel_name = self.channel_name.strip().lower().replace(" ", "-")
 
-    def add_members(self, members):
+    def add_members(self, members, is_admin=0):
         for member in members:
             doc = frappe.db.get_value("Raven Channel Member", filters={
                 "channel_id": self.name,
@@ -60,7 +69,8 @@ class RavenChannel(Document):
                 channel_member = frappe.get_doc({
                     "doctype": "Raven Channel Member",
                     "channel_id": self.name,
-                    "user_id": member
+                    "user_id": member,
+                    "is_admin": is_admin
                 })
                 channel_member.insert()
 
@@ -174,6 +184,13 @@ def get_extra_users(dm_channels):
 
 @frappe.whitelist(methods=['POST'])
 def create_direct_message_channel(user_id):
+    '''
+        Creates a direct message channel between current user and the user with user_id
+        The user_id can be the peer or the user themself
+        1. Check if a channel already exists between the two users
+        2. If not, create a new channel
+        3. Check if the user_id is the current user and set is_self_message accordingly
+    '''
     channel_name = frappe.db.get_value("Raven Channel", filters={
         "is_direct_message": 1,
         "channel_name": ["in", [frappe.session.user + " _ " + user_id, user_id + " _ " + frappe.session.user]]
@@ -182,25 +199,17 @@ def create_direct_message_channel(user_id):
         return channel_name
     # create direct message channel with user and current user
     else:
-        if frappe.session.user == user_id:
-            channel = frappe.get_doc({
+        channel = frappe.get_doc({
                 "doctype": "Raven Channel",
                 "channel_name": frappe.session.user + " _ " + user_id,
                 "is_direct_message": 1,
-                "is_self_message": 1
+                "is_self_message": frappe.session.user == user_id
             })
-            channel.insert()
-            channel.add_members([frappe.session.user])
-            return channel.name
-        else:
-            channel = frappe.get_doc({
-                "doctype": "Raven Channel",
-                "channel_name": frappe.session.user + " _ " + user_id,
-                "is_direct_message": 1
-            })
-            channel.insert()
-            channel.add_members([frappe.session.user, user_id])
-            return channel.name
+        channel.insert()
+        if frappe.session.user != user_id:
+            channel.add_members([user_id], 1)
+        return channel.name
+            
 
 
 @frappe.whitelist()
