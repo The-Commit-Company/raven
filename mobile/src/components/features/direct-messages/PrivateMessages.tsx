@@ -2,7 +2,6 @@ import { IonAvatar, IonHeader, IonItem, IonLabel, IonSearchbar, IonText, IonTool
 import { useFrappePostCall, FrappeContext, FrappeConfig, useFrappeGetCall } from 'frappe-react-sdk'
 import { useContext, useEffect, useState } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
-import { DMChannelData } from "../../../../../raven-app/src/types/Channel/Channel"
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Scrollbar } from 'swiper/modules';
 import Avatar from 'react-avatar';

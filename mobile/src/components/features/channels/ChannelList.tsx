@@ -1,6 +1,6 @@
 import { IonItem, IonLabel } from '@ionic/react'
 import { BiGlobe, BiHash, BiLockAlt } from 'react-icons/bi'
-import { RavenChannel } from '../../../types/RavenChannelManagement/RavenChannel'
+import { RavenChannel } from '../../../../../types/RavenChannelManagement/RavenChannel'
 
 interface ChannelListProps {
     data: RavenChannel[]

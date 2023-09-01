@@ -5,7 +5,7 @@ import { AiOutlineEdit } from 'react-icons/ai'
 import { VscTrash } from 'react-icons/vsc'
 import { IoBookmark, IoBookmarkOutline, IoChatboxEllipsesOutline } from 'react-icons/io5'
 import EmojiPicker, { EmojiClickData } from 'emoji-picker-react'
-import { FileMessage, Message, TextMessage } from '../../../../../raven-app/src/types/Messaging/Message'
+import { FileMessage, Message, TextMessage } from '../../../../../types/Messaging/Message'
 import { IonButton, IonCard } from '@ionic/react'
 import { UserContext } from '../../../utils/auth/UserProvider'
 

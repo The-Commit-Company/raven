@@ -2,18 +2,24 @@ import { useFrappeGetCall } from 'frappe-react-sdk'
 import { createContext, PropsWithChildren, useMemo } from 'react'
 import { RouteComponentProps } from 'react-router-dom'
 import { useFrappeEventListener } from '../../hooks/useFrappeEventListener'
-import { RavenChannel } from '../../types/RavenChannelManagement/RavenChannel'
-import { User } from '../../types/Core/User'
-import { RavenChannelMember } from '../../types/RavenChannelManagement/RavenChannelMember'
+import { RavenChannel } from '../../../../types/RavenChannelManagement/RavenChannel'
+import { User } from '../../../../types/Core/User'
+import { RavenChannelMember } from '../../../../types/RavenChannelManagement/RavenChannelMember'
 
 type ChannelInfo = {
-    channel_members: RavenChannelMember[],
+    channel_members: ChannelMembersDetails[],
     channel_data: RavenChannel
+}
+
+export interface ChannelMembersDetails extends RavenChannelMember, User {
+    first_name: string,
+    full_name: string,
+    user_image: string,
 }
 
 export type IdentityParam = { channelID: string }
 
-export const ChannelContext = createContext<{ channelMembers: Record<string, RavenChannelMember>; channelData?: RavenChannel, users: Record<string, User> }>({ channelMembers: {}, users: {} })
+export const ChannelContext = createContext<{ channelMembers: Record<string, ChannelMembersDetails>; channelData?: RavenChannel, users: Record<string, User> }>({ channelMembers: {}, users: {} })
 
 export const ChannelProvider = ({ children, ...props }: PropsWithChildren<RouteComponentProps<IdentityParam>>) => {
 
@@ -46,8 +52,8 @@ export const ChannelProvider = ({ children, ...props }: PropsWithChildren<RouteC
     })
 
     const channelInfo = useMemo(() => {
-        const cm: Record<string, RavenChannelMember> = {}
-        data?.message.channel_members.forEach((member: RavenChannelMember) => {
+        const cm: Record<string, ChannelMembersDetails> = {}
+        data?.message.channel_members.forEach((member: ChannelMembersDetails) => {
             cm[member.name] = member
         })
         const userData: Record<string, User> = {}

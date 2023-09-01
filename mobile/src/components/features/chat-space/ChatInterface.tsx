@@ -1,12 +1,12 @@
 import { IonBackButton, IonButtons, IonFooter, IonHeader, IonPage, IonToolbar } from '@ionic/react'
 import { useFrappeGetCall } from 'frappe-react-sdk'
 import { useContext, useState } from 'react'
-import { Message, MessagesWithDate } from '../../../../../raven-app/src/types/Messaging/Message'
+import { Message, MessagesWithDate } from '../../../../../types/Messaging/Message'
 import { ChannelContext } from '../../../utils/channel/ChannelProvider'
 import { ErrorBanner, FullPageLoader } from '../../layout'
 import { ChatInput } from '../chat-input'
 import { ChatHistory } from './ChatHistory'
-import { RavenChannel } from '../../../types/RavenChannelManagement/RavenChannel'
+import { RavenChannel } from '../../../../../types/RavenChannelManagement/RavenChannel'
 import { ChatHeader } from './chat-header'
 
 export const ChatInterface = () => {
