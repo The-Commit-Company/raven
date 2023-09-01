@@ -5,8 +5,7 @@ import { BiEditAlt, BiGlobe, BiHash, BiLockAlt } from "react-icons/bi"
 import { HiOutlineSearch } from "react-icons/hi"
 import { Message, MessagesWithDate } from "../../../../../types/Messaging/Message"
 import { ChannelContext } from "../../../utils/channel/ChannelProvider"
-import { UserDataContext } from "../../../utils/user/UserDataProvider"
-import { AlertBanner, ErrorBanner } from "../../layout/AlertBanner"
+import { ErrorBanner } from "../../layout/AlertBanner"
 import { PageHeader } from "../../layout/Heading/PageHeader"
 import { PageHeading } from "../../layout/Heading/PageHeading"
 import { FullPageLoader } from "../../layout/Loaders"
@@ -19,6 +18,7 @@ import { ChatInput } from "./ChatInput"
 import { ModalTypes, useModalManager } from "../../../hooks/useModalManager"
 import { ChannelRenameModal } from "../channel-details/EditChannelDetails/ChannelRenameModal"
 import { RavenChannel } from "../../../../../types/RavenChannelManagement/RavenChannel"
+import { useUserData } from "@/hooks/useUserData"
 
 type value = {
     id: string,
@@ -28,8 +28,7 @@ type value = {
 export const ChatInterface = () => {
 
     const { channelData, channelMembers, users } = useContext(ChannelContext)
-    const userData = useContext(UserDataContext)
-    const user = userData?.name
+    const { name: user } = useUserData()
     const peer = Object.keys(channelMembers).filter((member) => member !== user)[0]
     const { data: channelList, error: channelListError } = useFrappeGetCall<{ message: RavenChannel[] }>("raven.raven_channel_management.doctype.raven_channel.raven_channel.get_channel_list", undefined, undefined, {
         revalidateOnFocus: false
