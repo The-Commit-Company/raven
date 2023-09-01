@@ -20,7 +20,7 @@ export const UserContext = createContext<UserContextProps>({
 
 export const UserProvider: FC<PropsWithChildren> = ({ children }) => {
 
-    const { login, logout, currentUser, error, updateCurrentUser, isLoading } = useFrappeAuth()
+    const { login, logout, currentUser, updateCurrentUser, isLoading } = useFrappeAuth()
 
     const handleLogout = async () => {
         localStorage.removeItem('ravenLastChannel')
