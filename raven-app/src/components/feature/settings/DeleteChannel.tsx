@@ -1,9 +1,9 @@
 import { AlertDialog, AlertDialogBody, AlertDialogCloseButton, AlertDialogContent, AlertDialogFooter, AlertDialogHeader, AlertDialogOverlay, Button, ButtonGroup, Checkbox, ListItem, Stack, Text, UnorderedList, useToast } from '@chakra-ui/react'
 import { AlertBanner, ErrorBanner } from '../../layout/AlertBanner'
 import { useContext, useRef, useState } from 'react'
-import { useFrappePostCall } from 'frappe-react-sdk'
 import { ChannelContext } from '../../../utils/channel/ChannelProvider'
 import { useNavigate } from 'react-router-dom'
+import { useFrappeDeleteDoc } from 'frappe-react-sdk'
 
 type DeleteChannelProps = {
     isOpen: boolean,
@@ -14,40 +14,45 @@ export const DeleteChannel = ({ isOpen, onClose }: DeleteChannelProps) => {
 
     const { channelData } = useContext(ChannelContext)
     const cancelRef = useRef<HTMLButtonElement | null>(null)
-    const { call, error } = useFrappePostCall('raven.raven_channel_management.doctype.raven_channel.raven_channel.delete_channel')
+    const { deleteDoc, error, loading, reset } = useFrappeDeleteDoc()
+
+    const handleClose = () => {
+        onClose()
+        reset()
+    }
+
     const toast = useToast()
     const navigate = useNavigate()
 
     const onSubmit = () => {
         if (channelData?.name) {
-            call({
-                channel_id: channelData.name
-            }).then(() => {
-                onClose()
-                navigate('/channel')
-                toast({
-                    title: 'Success',
-                    description: 'Channel deleted successfully',
-                    status: 'success',
-                    duration: 2000,
-                    isClosable: true,
+            deleteDoc('Raven Channel', channelData.name)
+                .then(() => {
+                    onClose()
+                    navigate('/channel')
+                    toast({
+                        title: 'Success',
+                        description: 'Channel deleted successfully',
+                        status: 'success',
+                        duration: 2000,
+                        isClosable: true,
+                    })
+                }).catch(() => {
+                    toast({
+                        title: 'Error',
+                        description: 'Error deleting channel',
+                        status: 'error',
+                        duration: 3000,
+                        isClosable: true,
+                    })
                 })
-            }).catch(() => {
-                toast({
-                    title: 'Error',
-                    description: 'Error deleting channel',
-                    status: 'error',
-                    duration: 3000,
-                    isClosable: true,
-                })
-            })
         }
     }
 
     const [allowDelete, setAllowDelete] = useState(false)
 
     return (
-        <AlertDialog isOpen={isOpen} onClose={onClose} leastDestructiveRef={cancelRef} size='3xl'>
+        <AlertDialog isOpen={isOpen} onClose={handleClose} leastDestructiveRef={cancelRef} size='3xl'>
             <AlertDialogOverlay />
             <AlertDialogContent>
                 <AlertDialogHeader>
@@ -70,8 +75,8 @@ export const DeleteChannel = ({ isOpen, onClose }: DeleteChannelProps) => {
                 </AlertDialogBody>
                 <AlertDialogFooter>
                     <ButtonGroup>
-                        <Button ref={cancelRef} variant='ghost' onClick={onClose}>Cancel</Button>
-                        <Button colorScheme='red' onClick={onSubmit} isDisabled={!allowDelete}>Delete</Button>
+                        <Button ref={cancelRef} variant='ghost' onClick={handleClose}>Cancel</Button>
+                        <Button colorScheme='red' onClick={onSubmit} isDisabled={!allowDelete} isLoading={loading}>Delete</Button>
                     </ButtonGroup>
                 </AlertDialogFooter>
             </AlertDialogContent>
