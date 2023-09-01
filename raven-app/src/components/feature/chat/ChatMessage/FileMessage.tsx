@@ -1,6 +1,6 @@
 import { Collapse, HStack, Icon, IconButton, Link, Stack, Text, useBoolean, Image } from "@chakra-ui/react"
 import { getFileExtensionIcon } from "../../../../utils/layout/fileExtensionIcon"
-import { FileMessage } from "../../../../types/Messaging/Message"
+import { FileMessage } from "../../../../../../types/Messaging/Message"
 import { useCallback } from "react"
 import { BsFillCaretDownFill, BsFillCaretRightFill } from "react-icons/bs"
 import { getFileExtension, getFileName } from "../../../../utils/operations"

@@ -6,12 +6,12 @@ import { RiUserAddLine } from "react-icons/ri"
 import { useDebounce } from "../../../hooks/useDebounce"
 import { AddChannelMemberModal } from "../channels/AddChannelMemberModal"
 import { RemoveChannelMemberModal } from "./EditChannelDetails/RemoveChannelMemberModal"
-import { User } from "../../../types/User/User"
 import { UserContext } from "../../../utils/auth/UserProvider"
 import { ChannelContext } from "../../../utils/channel/ChannelProvider"
 import { ModalTypes, useModalManager } from "../../../hooks/useModalManager"
 import { RiVipCrownFill } from "react-icons/ri"
 import { scrollbarStyles } from "../../../styles"
+import { User } from "../../../../../types/Core/User"
 
 interface MemberDetailsProps {
     members: User[]
@@ -47,7 +47,7 @@ export const ChannelMemberDetails = ({ members, activeUsers }: MemberDetailsProp
     }
 
     const [selectedMember, setSelectedMember] = useState('')
-    const filteredMembers = members.filter(member => member.full_name.toLowerCase().includes(debouncedText.toLowerCase()))
+    const filteredMembers = members.filter(member => member?.full_name?.toLowerCase().includes(debouncedText.toLowerCase()))
 
     const onMemberSelect = (member: User) => {
         setSelectedMember(member.name)

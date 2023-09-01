@@ -1,6 +1,6 @@
 import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonItem, IonLabel, IonSpinner } from '@ionic/react';
 import { IoAdd } from 'react-icons/io5';
-import { RavenChannel } from '../../types/RavenChannelManagement/RavenChannel';
+import { RavenChannel } from '../../../../types/RavenChannelManagement/RavenChannel';
 import { useFrappeEventListener, useFrappeGetCall } from 'frappe-react-sdk';
 import { ErrorBanner } from '../../components/layout';
 import { ChannelList } from '../../components/features/channels/ChannelList';

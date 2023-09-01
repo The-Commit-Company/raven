@@ -5,9 +5,7 @@ import { useContext, useState, useMemo, useEffect } from 'react'
 import { FormProvider, Controller, useForm } from 'react-hook-form'
 import { BiLockAlt, BiHash, BiGlobe } from 'react-icons/bi'
 import { useDebounce } from '../../../hooks/useDebounce'
-import { ChannelData } from '../../../types/Channel/Channel'
-import { GetMessageSearchResult } from '../../../types/Search/Search'
-import { User } from '../../../types/User/User'
+import { GetMessageSearchResult } from '../../../../../types/Search/Search'
 import { AlertBanner } from '../../layout/AlertBanner'
 import { EmptyStateForSearch } from '../../layout/EmptyState/EmptyState'
 import { SelectInput, SelectOption } from '../search-filters/SelectInput'
@@ -18,6 +16,8 @@ import { MessageBox } from './MessageBox'
 import { VirtuosoRefContext } from '../../../utils/message/VirtuosoRefProvider'
 import { IoBookmark, IoBookmarkOutline } from 'react-icons/io5'
 import { scrollbarStyles } from '../../../styles'
+import { User } from '../../../../../types/Core/User'
+import { RavenChannel } from '../../../../../types/RavenChannelManagement/RavenChannel'
 
 interface FilterInput {
     'from-user-filter': SelectOption[],
@@ -58,7 +58,7 @@ export const MessageSearch = ({ onToggleMyChannels, isOpenMyChannels, onToggleSa
     const { url } = useContext(FrappeContext) as FrappeConfig
     const navigate = useNavigate()
     const { users } = useContext(ChannelContext)
-    const { data: channels, error: channelsError } = useFrappeGetCall<{ message: ChannelData[] }>("raven.raven_channel_management.doctype.raven_channel.raven_channel.get_channel_list", undefined, undefined, {
+    const { data: channels, error: channelsError } = useFrappeGetCall<{ message: RavenChannel[] }>("raven.raven_channel_management.doctype.raven_channel.raven_channel.get_channel_list", undefined, undefined, {
         revalidateOnFocus: false
     })
     const { call, error: indexingError, loading, reset } = useFrappePostCall<{ message: string }>("raven.raven_messaging.doctype.raven_message.raven_message.get_index_of_message")
@@ -114,7 +114,7 @@ export const MessageSearch = ({ onToggleMyChannels, isOpenMyChannels, onToggleSa
 
     const channelOption: SelectOption[] = useMemo(() => {
         if (channels) {
-            return channels.message.map((channel: ChannelData) => ({
+            return channels.message.map((channel: RavenChannel) => ({
                 value: channel.name,
                 label: <HStack>{channel.type === "Private" && <BiLockAlt /> || channel.type === "Public" && <BiHash /> || channel.type === "Open" && <BiGlobe />}<Text>{channel.channel_name}</Text></HStack>,
                 is_archived: channel.is_archived

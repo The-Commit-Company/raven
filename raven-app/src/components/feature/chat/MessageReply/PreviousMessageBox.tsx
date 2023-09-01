@@ -1,5 +1,5 @@
 import { Text, Box, HStack, Stack, useColorMode, Center, Image, Icon, IconButton, StackDivider, LinkBox } from '@chakra-ui/react'
-import { Message } from '../../../../types/Messaging/Message'
+import { Message } from '../../../../../../types/Messaging/Message'
 import { MarkdownRenderer } from '../../markdown-viewer/MarkdownRenderer'
 import { DateObjectToFormattedDateStringWithoutYear, DateObjectToTimeString, getFileExtension, getFileName } from '../../../../utils/operations'
 import { useContext } from 'react'

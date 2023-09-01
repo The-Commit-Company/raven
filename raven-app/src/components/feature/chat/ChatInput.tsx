@@ -19,7 +19,7 @@ import { FileListItem } from "../file-upload/FileListItem"
 import { getFileExtension } from "../../../utils/operations"
 import { AlertBanner, ErrorBanner } from "../../layout/AlertBanner"
 import { ModalTypes, useModalManager } from "../../../hooks/useModalManager"
-import { Message } from "../../../types/Messaging/Message"
+import { Message } from "../../../../../types/Messaging/Message"
 import { PreviousMessageBox } from "./MessageReply/PreviousMessageBox"
 import QuillImageDropAndPaste, { ImageData } from 'quill-image-drop-and-paste'
 

@@ -1,4 +1,4 @@
-import { Message } from '../../../../../raven-app/src/types/Messaging/Message'
+import { Message } from '../../../../../types/Messaging/Message'
 import { MarkdownRenderer } from '../../common/MarkdownRenderer'
 import { DateObjectToFormattedDateStringWithoutYear, DateObjectToTimeString, getFileName } from '../../../../../raven-app/src/utils/operations'
 import { useContext } from 'react'
