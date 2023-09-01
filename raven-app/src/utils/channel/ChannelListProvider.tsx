@@ -1,4 +1,4 @@
-import { FrappeError, useFrappeDocTypeEventListener, useFrappeEventListener, useFrappeGetCall } from 'frappe-react-sdk'
+import { FrappeError, useFrappeDocTypeEventListener, useFrappeGetCall } from 'frappe-react-sdk'
 import { PropsWithChildren, createContext } from 'react'
 import { KeyedMutator } from 'swr'
 import { useToast } from '@chakra-ui/react'
