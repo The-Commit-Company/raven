@@ -44,16 +44,6 @@ class RavenChannel(Document):
     def on_update(self):
         frappe.publish_realtime('channel_updated', {
             'channel_id': self.name}, after_commit=True)
-        frappe.publish_realtime('channel_list_updated', {
-            'channel_id': self.name}, after_commit=True)
-        frappe.db.commit()
-
-    def after_delete(self):
-        frappe.publish_realtime('channel_deleted', {
-            'channel_id': self.name}, after_commit=True)
-        frappe.publish_realtime('channel_list_updated', {
-            'channel_id': self.name}, after_commit=True)
-        frappe.db.commit()
 
     def before_validate(self):
         if self.is_direct_message == 1:

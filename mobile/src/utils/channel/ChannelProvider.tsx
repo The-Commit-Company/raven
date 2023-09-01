@@ -1,4 +1,4 @@
-import { useFrappeGetCall, useFrappeEventListener } from 'frappe-react-sdk'
+import { useFrappeGetCall, useFrappeEventListener, useFrappeDocumentEventListener, useFrappeDocTypeEventListener } from 'frappe-react-sdk'
 import { createContext, PropsWithChildren, useMemo } from 'react'
 import { RouteComponentProps } from 'react-router-dom'
 import { RavenChannel } from '../../../../types/RavenChannelManagement/RavenChannel'
@@ -32,22 +32,13 @@ export const ChannelProvider = ({ children, ...props }: PropsWithChildren<RouteC
         revalidateOnFocus: false
     })
 
-    useFrappeEventListener('member_added', (data) => {
-        if (data.channel_id === channelID) {
-            mutate()
-        }
+    useFrappeDocumentEventListener('Raven Channel', channelID, () => {
+        mutate()
     })
 
-    useFrappeEventListener('member_removed', (data) => {
-        if (data.channel_id === channelID) {
-            mutate()
-        }
-    })
-
-    useFrappeEventListener('channel_updated', (data) => {
-        if (data.channel_id === channelID) {
-            mutate()
-        }
+    useFrappeDocTypeEventListener('Raven Channel Member', () => {
+        //TODO: Can be optimized to only fire an update when this channel has an updated member list
+        mutate()
     })
 
     const channelInfo = useMemo(() => {

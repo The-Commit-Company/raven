@@ -21,11 +21,6 @@ class RavenChannelMember(Document):
         if frappe.db.count("Raven Channel Member", {"channel_id": self.channel_id}) == 0:
             self.is_admin = 1
 
-    def after_insert(self):
-        frappe.publish_realtime('member_added', {
-            'channel_id': self.channel_id}, after_commit=True)
-        frappe.db.commit()
-
     def after_delete(self):
         if frappe.db.count("Raven Channel Member", {"channel_id": self.channel_id}) == 0 and frappe.db.get_value("Raven Channel", self.channel_id, "type") == "Private":
             frappe.db.set_value("Raven Channel", self.channel_id,
@@ -35,9 +30,6 @@ class RavenChannelMember(Document):
                                                "channel_id": self.channel_id}, ["name"], as_dict=1, order_by="creation")
             frappe.db.set_value("Raven Channel Member",
                                 first_member.name, "is_admin", 1)
-        frappe.publish_realtime('member_removed', {
-            'channel_id': self.channel_id}, after_commit=True)
-        frappe.db.commit()
 
     def on_trash(self):
         # if the leaving member is admin, then the first member becomes new admin

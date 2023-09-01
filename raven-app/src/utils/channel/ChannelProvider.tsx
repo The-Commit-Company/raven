@@ -1,4 +1,4 @@
-import { useFrappeGetCall, useFrappeEventListener } from 'frappe-react-sdk'
+import { useFrappeGetCall, useFrappeEventListener, useFrappeDocumentEventListener, useFrappeDocTypeEventListener } from 'frappe-react-sdk'
 import { createContext, PropsWithChildren, useEffect, useMemo } from 'react'
 import { useParams } from 'react-router-dom'
 import { RavenChannelMember } from '../../../../types/RavenChannelManagement/RavenChannelMember'
@@ -22,7 +22,7 @@ export const ChannelContext = createContext<{ channelMembers: Record<string, Cha
 
 export const ChannelProvider = ({ children }: PropsWithChildren) => {
 
-    const { channelID } = useParams()
+    const { channelID } = useParams<{ channelID: string }>()
     const { data, error, mutate } = useFrappeGetCall<{ message: ChannelInfo }>('raven.raven_channel_management.doctype.raven_channel_member.raven_channel_member.get_channel_members_and_data', {
         channel_id: channelID
     }, undefined, {
@@ -32,23 +32,16 @@ export const ChannelProvider = ({ children }: PropsWithChildren) => {
         revalidateOnFocus: false
     })
 
-    useFrappeEventListener('member_added', (data) => {
-        if (data.channel_id === channelID) {
-            mutate()
-        }
+    //TODO: This should be moved down to the interface after it's ascertained that the Channel ID does exist
+    useFrappeDocumentEventListener('Raven Channel', channelID as string, () => {
+        mutate()
     })
 
-    useFrappeEventListener('member_removed', (data) => {
-        if (data.channel_id === channelID) {
-            mutate()
-        }
+    useFrappeDocTypeEventListener('Raven Channel Member', () => {
+        //TODO: Can be optimized to only fire an update when this channel has an updated member list
+        mutate()
     })
 
-    useFrappeEventListener('channel_updated', (data) => {
-        if (data.channel_id === channelID) {
-            mutate()
-        }
-    })
 
     const channelInfo = useMemo(() => {
         const cm: Record<string, ChannelMembersDetails> = {}

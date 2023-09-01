@@ -1,4 +1,4 @@
-import { FrappeError, useFrappeEventListener, useFrappeGetCall } from 'frappe-react-sdk'
+import { FrappeError, useFrappeDocTypeEventListener, useFrappeEventListener, useFrappeGetCall } from 'frappe-react-sdk'
 import { PropsWithChildren, createContext } from 'react'
 import { KeyedMutator } from 'swr'
 import { useToast } from '@chakra-ui/react'
@@ -65,7 +65,7 @@ export const useFetchChannelList = (): ChannelListContextType => {
         }
     })
 
-    useFrappeEventListener('channel_list_updated', () => {
+    useFrappeDocTypeEventListener('Raven Channel', () => {
         mutate()
     })
 

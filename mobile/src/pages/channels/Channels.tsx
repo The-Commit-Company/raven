@@ -1,7 +1,7 @@
 import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonItem, IonLabel, IonSpinner } from '@ionic/react';
 import { IoAdd } from 'react-icons/io5';
 import { RavenChannel } from '../../../../types/RavenChannelManagement/RavenChannel';
-import { useFrappeEventListener, useFrappeGetCall } from 'frappe-react-sdk';
+import { useFrappeDocTypeEventListener, useFrappeEventListener, useFrappeGetCall } from 'frappe-react-sdk';
 import { ErrorBanner } from '../../components/layout';
 import { ChannelList } from '../../components/features/channels/ChannelList';
 import { AddChannel } from '../../components/features/channels';
@@ -12,6 +12,9 @@ export const Channels = () => {
     const pageRef = useRef()
     const { data, error, mutate, isLoading } = useFrappeGetCall<{ message: RavenChannel[] }>("raven.raven_channel_management.doctype.raven_channel.raven_channel.get_channel_list")
 
+    useFrappeDocTypeEventListener('Raven Channel', () => {
+        mutate()
+    })
     useFrappeEventListener('channel_list_updated', () => {
         mutate()
     })
