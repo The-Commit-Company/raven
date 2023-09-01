@@ -1,16 +1,14 @@
 import { EmailIcon } from "@chakra-ui/icons"
 import { Text, Avatar, Divider, Drawer, DrawerBody, DrawerCloseButton, DrawerContent, DrawerHeader, DrawerOverlay, Stack, HStack, IconButton, Button, Icon, useColorMode, useDisclosure } from "@chakra-ui/react"
 import { useFrappeGetCall, useFrappePostCall } from "frappe-react-sdk"
-import { useContext } from "react"
 import { BiMessage } from "react-icons/bi"
 import { BsFillCircleFill, BsCircle, BsClock } from "react-icons/bs"
 import { useNavigate } from "react-router-dom"
 import { DateObjectToTimeString } from "../../../utils/operations"
-import { AlertBanner, ErrorBanner } from "../../layout/AlertBanner"
-import { UserDataContext } from "../../../utils/user/UserDataProvider"
 import { AiOutlineEdit } from "react-icons/ai"
 import { SetUserStatus } from "./SetUserStatus"
 import { User } from "../../../../../types/Core/User"
+import { useUserData } from "@/hooks/useUserData"
 
 interface UserProfileDrawerProps {
     isOpen: boolean
@@ -35,7 +33,7 @@ export const UserProfileDrawer = ({ isOpen, onClose, user }: UserProfileDrawerPr
         navigate(`/channel/${result?.message}`)
     }
 
-    const userData = useContext(UserDataContext)
+    const { name: currentUserName } = useUserData()
     const { isOpen: isSetUserStatusModalOpen, onOpen: onSetUserStatusModalOpen, onClose: onSetUserStatusModalClose } = useDisclosure()
 
     return (
@@ -70,7 +68,7 @@ export const UserProfileDrawer = ({ isOpen, onClose, user }: UserProfileDrawerPr
                             </HStack>
                         </Stack>
 
-                        {user && userData && (user.name !== userData?.name)
+                        {user && (user.name !== currentUserName)
                             ?
                             <Button variant='outline'
                                 colorScheme='blue'

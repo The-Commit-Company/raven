@@ -1,8 +1,8 @@
 import { Stack, Divider, HStack, Avatar, AvatarBadge, Menu, Tooltip, MenuButton, IconButton, MenuList, MenuItem, Text, Link } from '@chakra-ui/react'
 import { useContext } from 'react'
 import { RxExit } from 'react-icons/rx'
-import { UserDataContext } from '../../../utils/user/UserDataProvider'
 import { UserContext } from '../../../utils/auth/UserProvider'
+import { useUserData } from '@/hooks/useUserData'
 
 type Props = {
     isUserActive: boolean
@@ -10,20 +10,18 @@ type Props = {
 
 export const SidebarFooter = ({ isUserActive }: Props) => {
 
-    const userData = useContext(UserDataContext)
+    const userData = useUserData()
     const { logout } = useContext(UserContext)
     return (
         <Stack px='3' pt='2' zIndex='999' height={'50px'} bottom='0' pos='fixed' w='var(--sidebar-width)'>
             <Divider />
             <HStack justifyContent={"space-between"}>
-                {userData &&
-                    <HStack>
-                        <Avatar size="xs" src={userData.user_image} name={userData.full_name} borderRadius='md'>
-                            {isUserActive && <AvatarBadge boxSize='0.88em' bg='green.500' />}
-                        </Avatar>
-                        <Text fontSize="sm">{userData.full_name}</Text>
-                    </HStack>
-                }
+                <HStack>
+                    <Avatar size="xs" src={userData.user_image} name={userData.full_name} borderRadius='md'>
+                        {isUserActive && <AvatarBadge boxSize='0.88em' bg='green.500' />}
+                    </Avatar>
+                    <Text fontSize="sm">{userData.full_name}</Text>
+                </HStack>
                 <Menu>
                     <Tooltip hasArrow label='exit' placement='bottom' rounded={'md'}>
                         <MenuButton

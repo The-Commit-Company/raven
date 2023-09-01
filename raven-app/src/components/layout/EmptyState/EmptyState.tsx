@@ -6,9 +6,9 @@ import { DateObjectToFormattedDateString } from "../../../utils/operations"
 import { TbEdit } from "react-icons/tb"
 import { AddOrEditChannelDescriptionModal } from "../../feature/channel-details/EditChannelDetails/AddOrEditChannelDescriptionModal"
 import { AddChannelMemberModal } from "../../feature/channels/AddChannelMemberModal"
-import { UserDataContext } from "../../../utils/user/UserDataProvider"
 import { UserProfileDrawer } from "../../feature/user-details/UserProfileDrawer"
 import { ModalTypes, useModalManager } from "../../../hooks/useModalManager"
+import { useUserData } from "@/hooks/useUserData"
 
 export const EmptyStateForSearch = () => {
     return (
@@ -74,8 +74,7 @@ const EmptyStateForDM = () => {
 
     const { channelMembers } = useContext(ChannelContext)
     const { channelData } = useContext(ChannelContext)
-    const userData = useContext(UserDataContext)
-    const user = userData?.name
+    const { name: user } = useUserData()
     const peer = Object.keys(channelMembers).filter((member) => member !== user)[0]
     const { isOpen: isUserProfileDetailsDrawerOpen, onOpen: onUserProfileDetailsDrawerOpen, onClose: onUserProfileDetailsDrawerClose } = useDisclosure()
 
