@@ -29,6 +29,7 @@ export const DeleteChannel = ({ isOpen, onClose }: DeleteChannelProps) => {
             deleteDoc('Raven Channel', channelData.name)
                 .then(() => {
                     onClose()
+                    localStorage.removeItem('ravenLastChannel')
                     navigate('/channel')
                     toast({
                         title: 'Success',
