@@ -3,9 +3,7 @@ import { Navigate, Outlet } from 'react-router-dom'
 import { FullPageLoader } from '../../components/layout/Loaders'
 import { UserContext } from './UserProvider'
 
-type Props = {}
-
-export const ProtectedRoute = (props: Props) => {
+export const ProtectedRoute = () => {
 
     const { currentUser, isLoading } = useContext(UserContext)
 
