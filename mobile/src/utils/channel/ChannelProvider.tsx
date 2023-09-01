@@ -1,7 +1,6 @@
-import { useFrappeGetCall } from 'frappe-react-sdk'
+import { useFrappeGetCall, useFrappeEventListener } from 'frappe-react-sdk'
 import { createContext, PropsWithChildren, useMemo } from 'react'
 import { RouteComponentProps } from 'react-router-dom'
-import { useFrappeEventListener } from '../../hooks/useFrappeEventListener'
 import { RavenChannel } from '../../../../types/RavenChannelManagement/RavenChannel'
 import { User } from '../../../../types/Core/User'
 import { RavenChannelMember } from '../../../../types/RavenChannelManagement/RavenChannelMember'
