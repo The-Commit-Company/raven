@@ -2,7 +2,7 @@ import { Text, HStack, Icon, Stack, Link, Box, useColorMode, IconButton, Center,
 import { getFileExtensionIcon } from "../../../utils/layout/fileExtensionIcon";
 import { useFrappeGetCall } from "frappe-react-sdk";
 import { useParams } from "react-router-dom";
-import { AlertBanner } from "../../layout/AlertBanner";
+import { AlertBanner, ErrorBanner } from "../../layout/AlertBanner";
 import { DateObjectToFormattedDateString, getFileExtension, getFileName } from "../../../utils/operations";
 import { useContext } from "react";
 import { ChannelContext } from "../../../utils/channel/ChannelProvider";
@@ -40,7 +40,7 @@ export const FilesSharedInChannel = () => {
             {data?.message && data.message.length > 0 &&
                 <Text fontWeight={'semibold'} fontSize={'sm'}>Recently shared files</Text>
             }
-            {error && <AlertBanner status='error' heading={error.message}>{error.httpStatus} - {error.httpStatusText}</AlertBanner>}
+            <ErrorBanner error={error} />
             <Box maxH='320px' overflow='hidden' overflowY='scroll' sx={scrollbarStyles(colorMode)}>
                 <Stack>
                     {data?.message && data.message.length > 0 && data.message.map((f: FileMessage) => {

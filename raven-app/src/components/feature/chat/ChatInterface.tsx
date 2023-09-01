@@ -7,7 +7,7 @@ import { useFrappeEventListener } from "../../../hooks/useFrappeEventListener"
 import { Message, MessagesWithDate } from "../../../types/Messaging/Message"
 import { ChannelContext } from "../../../utils/channel/ChannelProvider"
 import { UserDataContext } from "../../../utils/user/UserDataProvider"
-import { AlertBanner } from "../../layout/AlertBanner"
+import { AlertBanner, ErrorBanner } from "../../layout/AlertBanner"
 import { PageHeader } from "../../layout/Heading/PageHeader"
 import { PageHeading } from "../../layout/Heading/PageHeading"
 import { FullPageLoader } from "../../layout/Loaders"
@@ -121,7 +121,7 @@ export const ChatInterface = () => {
     if (error) {
         return (
             <Box p={4}>
-                <AlertBanner status='error' heading={error.message}>{error.httpStatus}: {error.httpStatusText}</AlertBanner>
+                <ErrorBanner error={error} />
             </Box>
         )
     }
@@ -228,7 +228,7 @@ export const ChatInterface = () => {
 
     else if (channelListError) return (
         <Box p={4}>
-            <AlertBanner status='error' heading={channelListError.message}>{channelListError.httpStatus}: {channelListError.httpStatusText}</AlertBanner>
+            <ErrorBanner error={channelListError} />
         </Box>
     )
 

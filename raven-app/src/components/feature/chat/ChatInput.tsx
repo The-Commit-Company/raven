@@ -17,10 +17,11 @@ import { VscMention } from 'react-icons/vsc'
 import { CustomFile, FileDrop } from "../file-upload/FileDrop"
 import { FileListItem } from "../file-upload/FileListItem"
 import { getFileExtension } from "../../../utils/operations"
-import { AlertBanner } from "../../layout/AlertBanner"
+import { AlertBanner, ErrorBanner } from "../../layout/AlertBanner"
 import { ModalTypes, useModalManager } from "../../../hooks/useModalManager"
 import { Message } from "../../../types/Messaging/Message"
 import { PreviousMessageBox } from "./MessageReply/PreviousMessageBox"
+import QuillImageDropAndPaste, { ImageData } from 'quill-image-drop-and-paste'
 
 interface ChatInputProps {
     channelID: string,
@@ -31,6 +32,7 @@ interface ChatInputProps {
 }
 
 Quill.register('modules/linkify', Linkify)
+Quill.register('modules/imageDropAndPaste', QuillImageDropAndPaste)
 
 export const fileExt = ['jpg', 'JPG', 'jpeg', 'JPEG', 'png', 'PNG', 'gif', 'GIF']
 
@@ -187,6 +189,19 @@ export const ChatInput = ({ channelID, allUsers, allChannels, selectedMessage, h
         setFiles(newFiles)
     }
 
+    const imageDropAndPaste = {
+        handler: useCallback((imageDataUrl: string, type: string, imageData: ImageData) => {
+            console.log('Called')
+            const file: CustomFile = imageData.toFile() as CustomFile
+            if (file) {
+                file.fileID = file.name + Date.now()
+                file.uploadProgress = 0
+                setFiles((f) => [...f, file])
+            }
+
+        }, [])
+    }
+
     return (
         <Box>
 
@@ -197,9 +212,9 @@ export const ChatInput = ({ channelID, allUsers, allChannels, selectedMessage, h
                 maxFiles={10}
                 maxFileSize={10000000} />
 
-            {errorCreatingDoc?.httpStatus === 409 ? <AlertBanner status='error' heading='File already exists.'>{errorCreatingDoc.message} - {errorCreatingDoc.httpStatus}</AlertBanner> : null}
-            {errorUploadingDoc ? <AlertBanner status='error' heading='Error uploading file'>{errorUploadingDoc.message} - {errorUploadingDoc.httpStatus}</AlertBanner> : null}
-            {errorUpdatingDoc ? <AlertBanner status='error' heading='Error updating doctype with selected file information.'>{errorUpdatingDoc.message} - {errorUpdatingDoc.httpStatus}</AlertBanner> : null}
+            <ErrorBanner error={errorCreatingDoc} />
+            <ErrorBanner error={errorUploadingDoc} />
+            <ErrorBanner error={errorUpdatingDoc} />
 
             <Box>
                 <Stack spacing={0} border='1px' borderColor={'gray.500'} rounded='lg' bottom='2' boxShadow='base' w='calc(98vw - var(--sidebar-width))' bg={colorMode === "light" ? "white" : "gray.800"}>
@@ -220,6 +235,7 @@ export const ChatInput = ({ channelID, allUsers, allChannels, selectedMessage, h
                             ],
                             linkify: linkifyOptions,
                             mention,
+                            imageDropAndPaste,
                             clipboard: {
                                 matchVisual: false
                             }

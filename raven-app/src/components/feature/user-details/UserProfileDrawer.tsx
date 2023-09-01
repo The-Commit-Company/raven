@@ -6,7 +6,7 @@ import { BiMessage } from "react-icons/bi"
 import { BsFillCircleFill, BsCircle, BsClock } from "react-icons/bs"
 import { useNavigate } from "react-router-dom"
 import { DateObjectToTimeString } from "../../../utils/operations"
-import { AlertBanner } from "../../layout/AlertBanner"
+import { AlertBanner, ErrorBanner } from "../../layout/AlertBanner"
 import { UserDataContext } from "../../../utils/user/UserDataProvider"
 import { AiOutlineEdit } from "react-icons/ai"
 import { SetUserStatus } from "./SetUserStatus"
@@ -33,10 +33,6 @@ export const UserProfileDrawer = ({ isOpen, onClose, user }: UserProfileDrawerPr
         reset()
         const result = await call({ user_id: user })
         navigate(`/channel/${result?.message}`)
-    }
-
-    if (channelError) {
-        <AlertBanner status="error" heading={channelError.message}>{channelError.httpStatus} - {channelError.httpStatusText}</AlertBanner>
     }
 
     const userData = useContext(UserDataContext)

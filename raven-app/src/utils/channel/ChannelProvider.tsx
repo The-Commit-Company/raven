@@ -5,6 +5,8 @@ import { useFrappeEventListener } from '../../hooks/useFrappeEventListener'
 import { RavenChannelMember } from '../../types/RavenChannelManagement/RavenChannelMember'
 import { RavenChannel } from '../../types/RavenChannelManagement/RavenChannel'
 import { User } from '../../types/Core/User'
+import { Box } from '@chakra-ui/react'
+import { ErrorBanner } from '../../components/layout/AlertBanner'
 
 type ChannelInfo = {
     channel_members: ChannelMembersDetails[],
@@ -75,10 +77,11 @@ export const ChannelProvider = ({ children }: PropsWithChildren) => {
     }, [channelID])
 
     return (
-        <>
+        <Box>
+            <ErrorBanner error={error} />
             {data?.message?.channel_members && <ChannelContext.Provider value={channelInfo}>
                 {children}
             </ChannelContext.Provider>}
-        </>
+        </Box>
     )
 }

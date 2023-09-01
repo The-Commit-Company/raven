@@ -5,7 +5,7 @@ import { HiOutlineSearch } from "react-icons/hi"
 import { useNavigate } from "react-router-dom"
 import { TextMessage } from "../../../types/Messaging/Message"
 import { VirtuosoRefContext } from "../../../utils/message/VirtuosoRefProvider"
-import { AlertBanner } from "../../layout/AlertBanner"
+import { AlertBanner, ErrorBanner } from "../../layout/AlertBanner"
 import { EmptyStateForSavedMessages } from "../../layout/EmptyState/EmptyState"
 import { PageHeader } from "../../layout/Heading/PageHeader"
 import { PageHeading } from "../../layout/Heading/PageHeading"
@@ -79,7 +79,7 @@ export const SavedMessages = () => {
     if (error) {
         return (
             <Box p={4}>
-                <AlertBanner status='error' heading={error.message}>{error.httpStatus}: {error.httpStatusText}</AlertBanner>
+                <ErrorBanner error={error} />
             </Box>
         )
     }

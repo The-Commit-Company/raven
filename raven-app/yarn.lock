@@ -2792,6 +2792,11 @@ quill-delta@^3.6.2:
     extend "^3.0.2"
     fast-diff "1.1.2"
 
+quill-image-drop-and-paste@^1.3.0:
+  version "1.3.0"
+  resolved "https://registry.yarnpkg.com/quill-image-drop-and-paste/-/quill-image-drop-and-paste-1.3.0.tgz#75aeef50fe51c841ee11d270a28b8519f7cdaad1"
+  integrity sha512-hQiPeHxsNzAIX7T5gcjASA5nMNBUoUDr6ZWReb3k32O/jtAZtjDz1JFtk77D5rbJriqTdkbmZrrTuAzUHXR8vg==
+
 quill-linkify@^0.3.0:
   version "0.3.0"
   resolved "https://registry.yarnpkg.com/quill-linkify/-/quill-linkify-0.3.0.tgz#ebafd88bf4deed3a0985e8e7636cc5b083dcdfb1"

@@ -1,7 +1,7 @@
 import { useContext } from 'react'
 import { Button, ButtonGroup, ListItem, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Stack, Text, UnorderedList, useToast } from '@chakra-ui/react'
 import { useFrappeUpdateDoc } from 'frappe-react-sdk'
-import { AlertBanner } from '../../layout/AlertBanner'
+import { AlertBanner, ErrorBanner } from '../../layout/AlertBanner'
 import { ChannelContext } from '../../../utils/channel/ChannelProvider'
 import { useNavigate } from 'react-router-dom'
 
@@ -51,7 +51,7 @@ export const ArchiveChannel = ({ isOpen, onClose, onCloseViewDetails }: ArchiveC
 
                 <ModalBody>
                     <Stack spacing={4}>
-                        {error && <AlertBanner status='error' heading={error.message}>{error.httpStatus} - {error.httpStatusText}</AlertBanner>}
+                        <ErrorBanner error={error} />
                         <Text>Please understand that when you archive <strong>{channelData?.channel_name}</strong>:</Text>
                         <UnorderedList px='4' spacing={2}>
                             <ListItem>It will be removed from your channel list</ListItem>

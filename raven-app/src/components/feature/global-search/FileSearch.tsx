@@ -8,7 +8,7 @@ import { useDebounce } from '../../../hooks/useDebounce'
 import { GetFileSearchResult } from '../../../types/Search/Search'
 import { getFileExtensionIcon } from '../../../utils/layout/fileExtensionIcon'
 import { DateObjectToFormattedDateString, getFileExtension, getFileName } from '../../../utils/operations'
-import { AlertBanner } from '../../layout/AlertBanner'
+import { AlertBanner, ErrorBanner } from '../../layout/AlertBanner'
 import { EmptyStateForSearch } from '../../layout/EmptyState/EmptyState'
 import { SelectInput, SelectOption } from '../search-filters/SelectInput'
 import { Sort } from '../sorting'
@@ -231,8 +231,8 @@ export const FileSearch = ({ onToggleMyChannels, isOpenMyChannels, onToggleSaved
                     </FormProvider>}
             </Stack>
             <Stack h='420px' p={4}>
-
-                {error ? <AlertBanner status='error' heading={error.message}>{error.httpStatus} - {error.httpStatusText}</AlertBanner> :
+                <ErrorBanner error={error} />
+                {
                     (isLoading && isValidating ? <Center><Spinner /></Center> :
                         (!!!error && data?.message && data.message.length > 0 ?
                             <><Sort

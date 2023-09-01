@@ -7,7 +7,7 @@ import { BiGlobe, BiHash, BiLockAlt } from 'react-icons/bi'
 import { useNavigate } from 'react-router-dom'
 import { useDebounce } from '../../../hooks/useDebounce'
 import { GetChannelSearchResult } from '../../../types/Search/Search'
-import { AlertBanner } from '../../layout/AlertBanner'
+import { AlertBanner, ErrorBanner } from '../../layout/AlertBanner'
 import { EmptyStateForSearch } from '../../layout/EmptyState/EmptyState'
 import { SelectInput, SelectOption } from '../search-filters/SelectInput'
 import { Sort } from '../sorting'
@@ -128,8 +128,8 @@ export const ChannelSearch = ({ onToggleMyChannels, isOpenMyChannels, onToggleOt
                 </FormProvider>
             </Stack>
             <Stack h='420px' p={4}>
-
-                {error ? <AlertBanner status='error' heading={error.message}>{error.httpStatus} - {error.httpStatusText}</AlertBanner> :
+                <ErrorBanner error={error} />
+                {
                     (isLoading && isValidating ? <Center><Spinner /></Center> :
                         (!!!error && data?.message && data.message.length > 0 ?
                             <><Sort

@@ -52,6 +52,7 @@ export const Login = () => {
                                 </Link>
 
                                 <chakra.form onSubmit={handleSubmit(onSubmit)}>
+
                                     {error != null &&
                                         <AlertBanner status="error" mb="3">{error.message}</AlertBanner>
                                     }
