@@ -1,20 +1,19 @@
-import React from 'react';
-import { Remark, UseRemarkSyncOptions } from 'react-remark';
-import rehypeRaw from 'rehype-raw';
-import rehypeSanitize from 'rehype-sanitize';
+import React from 'react'
+import rehypeRaw from 'rehype-raw'
+import ReactMarkdown from 'react-markdown'
+import remarkGfm from 'remark-gfm'
+import './markdown.css'
 
-
-interface Props {
-  content: string;
+interface MarkdownRendererProps {
+  content: string
 }
 
-export const MarkdownRenderer: React.FC<Props> = ({ content }) => {
-
-  return <p>{content}</p>
-
-  // return <Remark
-  //   remarkToRehypeOptions={{ allowDangerousHtml: true }}
-  //   rehypePlugins={[rehypeRaw, rehypeSanitize] as UseRemarkSyncOptions['rehypePlugins']}
-
-  // >{content}</Remark>
+export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) => {
+  return <ReactMarkdown
+    remarkPlugins={[remarkGfm]}
+    // @ts-ignore
+    rehypePlugins={[rehypeRaw]}
+    className='markdown'>
+    {content}
+  </ReactMarkdown>
 }

@@ -6,16 +6,23 @@ import { DirectMessageList } from "../../pages/direct-messages/DirectMessageList
 import { Notifications } from "../../pages/notifications/Notifications"
 import { Profile } from "../../pages/profile"
 import { Search } from "../../pages/search/Search"
+import { Component, PropsWithChildren, useContext } from "react"
+import { UserContext } from "../../utils/auth/UserProvider"
+import { FullPageLoader } from "./FullPageLoader"
+import { Login } from "../../pages/auth"
 
 export const Navbar = () => {
+    const { currentUser, isLoading } = useContext(UserContext)
     return <IonTabs>
         <IonRouterOutlet animated>
             <Route exact path="/:tab(channels)">
-                <Channels />
+                <ProtectedRoute>
+                    <Channels />
+                </ProtectedRoute>
             </Route>
-            {/* <Route exact path="/:tab(direct-messages)">
+            <Route exact path="/:tab(direct-messages)">
                 <DirectMessageList />
-            </Route> */}
+            </Route>
             {/* <Route exact path="/:tab(search)">
                 <Search />
             </Route> */}
@@ -23,10 +30,12 @@ export const Navbar = () => {
                 <Notifications />
             </Route> */}
             <Route exact path="/:tab(profile)">
-                <Profile />
+                <ProtectedRoute>
+                    <Profile />
+                </ProtectedRoute>
             </Route>
         </IonRouterOutlet>
-        <IonTabBar slot="bottom" className="pb-6">
+        <IonTabBar slot="bottom" className="pb-6" hidden={isLoading || !currentUser || currentUser === "Guest"}>
             <IonTabButton tab="channels" href="/channels">
                 <BiHash size={30} />
             </IonTabButton>
@@ -44,4 +53,17 @@ export const Navbar = () => {
             </IonTabButton>
         </IonTabBar>
     </IonTabs>
+}
+
+const ProtectedRoute = ({ children }: PropsWithChildren) => {
+    const { currentUser, isLoading } = useContext(UserContext)
+
+    if (isLoading) {
+        return <FullPageLoader />
+    }
+    if (!currentUser || currentUser === 'Guest') {
+        return <Login />
+    } else {
+        return children
+    }
 }

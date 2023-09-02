@@ -26,7 +26,7 @@ export interface User {
 	/**	Last Name : Data	*/
 	last_name?: string
 	/**	Full Name : Data	*/
-	full_name?: string
+	full_name: string
 	/**	Username : Data	*/
 	username?: string
 	/**	Language : Link - Language	*/
