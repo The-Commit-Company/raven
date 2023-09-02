@@ -22,7 +22,7 @@ import { ModalTypes, useModalManager } from "../../../../hooks/useModalManager"
 import { Message } from "../../../../../../types/Messaging/Message"
 import { PreviousMessageBox } from "../MessageReply/PreviousMessageBox"
 import QuillImageDropAndPaste, { ImageData } from 'quill-image-drop-and-paste'
-import { ChatInputEmojiPickerPopover, ChatInputMentionButton } from "."
+import { ChatInputEmojiPickerPopover, ChatInputFileUploadButton, ChatInputMentionButton } from "."
 
 interface ChatInputProps {
     channelID: string,
@@ -155,11 +155,6 @@ export const ChatInput = ({ channelID, allUsers, allChannels, selectedMessage, h
 
     const fileInputRef = useRef<any>(null)
 
-    const fileButtonClicked = () => {
-        if (fileInputRef.current) {
-            fileInputRef.current.openFileInput()
-        }
-    }
     const [files, setFiles] = useState<CustomFile[]>([])
 
     const removeFile = (id: string) => {
@@ -228,9 +223,7 @@ export const ChatInput = ({ channelID, allUsers, allChannels, selectedMessage, h
                     <HStack w='full' justify={'space-between'} px='2' pb='2'>
                         <HStack alignItems='flex-end'>
                             <HStack divider={<StackDivider />}>
-                                <Tooltip hasArrow label='add files' placement='top' rounded={'md'}>
-                                    <IconButton size='xs' aria-label={"add file"} onClick={fileButtonClicked} icon={<IoMdAdd />} rounded='xl' />
-                                </Tooltip>
+                                <ChatInputFileUploadButton fileInputRef={fileInputRef} />
                                 <ChatInputEmojiPickerPopover text={text} setText={setText} />
                             </HStack>
                             <ChatInputMentionButton current={reactQuillRef.current} />
