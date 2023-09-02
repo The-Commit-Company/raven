@@ -21,18 +21,11 @@ import { RavenChannel } from "../../../../../types/RavenChannelManagement/RavenC
 import { useUserData } from "@/hooks/useUserData"
 import { ChannelListContext, ChannelListContextType } from "@/utils/channel/ChannelListProvider"
 
-type value = {
-    id: string,
-    value: string
-}
-
 export const ChatInterface = () => {
 
-    const { channelData, channelMembers, users } = useContext(ChannelContext)
+    const { channelData, channelMembers } = useContext(ChannelContext)
     const { name: user } = useUserData()
     const peer = Object.keys(channelMembers).filter((member) => member !== user)[0]
-
-    const { channels } = useContext(ChannelListContext) as ChannelListContextType
 
     const { data, error, mutate } = useFrappeGetCall<{ message: MessagesWithDate }>("raven.raven_messaging.doctype.raven_message.raven_message.get_messages_with_dates", {
         channel_id: channelData?.name ?? null
@@ -53,20 +46,6 @@ export const ChatInterface = () => {
             mutate()
         }
     })
-
-    const allUsers: value[] = Object.values(users).map((user) => {
-        return {
-            id: user.name,
-            value: user.full_name ?? user.name
-        }
-    })
-
-    const allChannels: value[] = useMemo(() => channels?.map((channel) => {
-        return {
-            id: channel.name,
-            value: channel.channel_name
-        }
-    }) ?? [], [channels])
 
     const modalManager = useModalManager()
 
@@ -125,7 +104,7 @@ export const ChatInterface = () => {
         )
     }
 
-    else if (allChannels && allUsers) return (
+    else return (
         <>
             <PageHeader>
                 {channelData && user &&
@@ -185,7 +164,7 @@ export const ChatInterface = () => {
             <Stack h='calc(100vh)' justify={'flex-end'} p={4} overflow='hidden' pt='16'>
                 {data && channelData && <ChatHistory parsed_messages={data.message} isDM={channelData.is_direct_message ?? 0} mutate={mutate} replyToMessage={handleReplyAction} />}
                 {channelData?.is_archived == 0 && ((user && user in channelMembers) || channelData?.type === 'Open' ?
-                    <ChatInput channelID={channelData?.name ?? ''} allChannels={allChannels} allUsers={allUsers} selectedMessage={selectedMessage} handleCancelReply={handleCancelReply} /> :
+                    <ChatInput channelID={channelData?.name ?? ''} selectedMessage={selectedMessage} handleCancelReply={handleCancelReply} /> :
                     <Box>
                         <Stack border='1px' borderColor={'gray.500'} rounded='lg' bottom='2' boxShadow='base' w='calc(98vw - var(--sidebar-width))' bg={colorMode === "light" ? "white" : "gray.800"} p={4}>
                             <HStack justify='center' align='center' pb={4}><BiHash /><Text>{channelData?.channel_name}</Text></HStack>
@@ -223,8 +202,5 @@ export const ChatInterface = () => {
             />
 
         </>
-    )
-    else return (
-        <FullPageLoader />
     )
 }

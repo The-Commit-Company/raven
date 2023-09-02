@@ -6,7 +6,7 @@ type Props = {
     fileInputRef: React.MutableRefObject<any>
 }
 
-export const ChatInputFileUploadButton = ({ fileInputRef }: Props) => {
+export const FileUploadButton = ({ fileInputRef }: Props) => {
 
     const fileButtonClicked = () => {
         if (fileInputRef.current) {

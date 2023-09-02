@@ -3,7 +3,7 @@ import { RefObject } from "react"
 import { VscMention } from "react-icons/vsc"
 import ReactQuill from "react-quill"
 
-export const ChatInputMentionButton = (reactQuillRef: RefObject<ReactQuill>) => {
+export const MentionButton = (reactQuillRef: RefObject<ReactQuill>) => {
 
     const onMentionIconClick = () => {
         if (reactQuillRef.current) {

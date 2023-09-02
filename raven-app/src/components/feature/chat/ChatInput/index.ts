@@ -1,4 +1,4 @@
 export { ChatInput } from "./ChatInput";
-export { ChatInputMentionButton } from "./ChatInputMentionButton";
-export { ChatInputEmojiPickerPopover } from "./ChatInputEmojiPickerPopover";
-export { ChatInputFileUploadButton } from "./ChatInputFileUploadButton";
+export { MentionButton } from "./MentionButton";
+export { EmojiPickerPopover } from "./EmojiPickerPopover";
+export { FileUploadButton } from "./FileUploadButton";

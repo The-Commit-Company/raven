@@ -8,7 +8,7 @@ type Props = {
     setText: (text: string) => void
 }
 
-export const ChatInputEmojiPickerPopover = ({ text, setText }: Props) => {
+export const EmojiPickerPopover = ({ text, setText }: Props) => {
 
     const modalManager = useModalManager()
 
