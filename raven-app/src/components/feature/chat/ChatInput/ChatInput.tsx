@@ -14,14 +14,15 @@ import EmojiPicker, { EmojiClickData } from 'emoji-picker-react';
 import { FaRegSmile } from 'react-icons/fa'
 import { IoMdAdd } from 'react-icons/io'
 import { VscMention } from 'react-icons/vsc'
-import { CustomFile, FileDrop } from "../file-upload/FileDrop"
-import { FileListItem } from "../file-upload/FileListItem"
-import { getFileExtension } from "../../../utils/operations"
-import { AlertBanner, ErrorBanner } from "../../layout/AlertBanner"
-import { ModalTypes, useModalManager } from "../../../hooks/useModalManager"
-import { Message } from "../../../../../types/Messaging/Message"
-import { PreviousMessageBox } from "./MessageReply/PreviousMessageBox"
+import { CustomFile, FileDrop } from "../../file-upload/FileDrop"
+import { FileListItem } from "../../file-upload/FileListItem"
+import { getFileExtension } from "../../../../utils/operations"
+import { AlertBanner, ErrorBanner } from "../../../layout/AlertBanner"
+import { ModalTypes, useModalManager } from "../../../../hooks/useModalManager"
+import { Message } from "../../../../../../types/Messaging/Message"
+import { PreviousMessageBox } from "../MessageReply/PreviousMessageBox"
 import QuillImageDropAndPaste, { ImageData } from 'quill-image-drop-and-paste'
+import { ChatInputMentionButton } from "./ChatInputMentionButton"
 
 interface ChatInputProps {
     channelID: string,
@@ -106,13 +107,6 @@ export const ChatInput = ({ channelID, allUsers, allChannels, selectedMessage, h
                 }).catch((e) => {
                     console.log(e)
                 })
-        }
-    }
-
-    const onMentionIconClick = () => {
-        if (reactQuillRef.current) {
-            const editor = reactQuillRef.current?.getEditor()
-            editor.getModule('mention').openMenu("@")
         }
     }
 
@@ -253,34 +247,9 @@ export const ChatInput = ({ channelID, allUsers, allChannels, selectedMessage, h
                                 <Tooltip hasArrow label='add files' placement='top' rounded={'md'}>
                                     <IconButton size='xs' aria-label={"add file"} onClick={fileButtonClicked} icon={<IoMdAdd />} rounded='xl' />
                                 </Tooltip>
-                                <Box>
-                                    <Popover
-                                        isOpen={modalManager.modalType === ModalTypes.EmojiPicker}
-                                        onClose={modalManager.closeModal}
-                                        placement='top-end'
-                                        isLazy
-                                        lazyBehavior="unmount"
-                                        gutter={48}>
-                                        <PopoverTrigger>
-                                            <Tooltip hasArrow label='add emoji' placement='top' rounded={'md'}>
-                                                <IconButton size='xs' variant='ghost' aria-label={"pick emoji"} icon={<FaRegSmile fontSize='1.0rem' />} onClick={onEmojiPickerOpen} />
-                                            </Tooltip>
-                                        </PopoverTrigger>
-                                        <PopoverContent border={'none'} rounded='lg'>
-                                            {/* @ts-ignore */}
-                                            <EmojiPicker onEmojiClick={onEmojiClick} lazyLoadEmojis theme={colorMode === 'light' ? 'light' : 'dark'} />
-                                        </PopoverContent>
-                                    </Popover>
-                                </Box>
+
                             </HStack>
-                            <Tooltip hasArrow label='mention someone' placement='top' rounded={'md'}>
-                                <IconButton
-                                    size='xs'
-                                    variant='ghost'
-                                    aria-label={"mention channel member"}
-                                    icon={<VscMention fontSize='1.5rem' />}
-                                    onClick={onMentionIconClick} />
-                            </Tooltip>
+                            <ChatInputMentionButton current={reactQuillRef.current} />
                         </HStack>
                         <IconButton
                             isDisabled={text.length === 0 && files.length === 0}
