@@ -4,7 +4,7 @@
 import frappe
 from frappe.model.document import Document
 from pypika import JoinType, Order
-
+from raven.api.raven_users import get_list
 
 class RavenChannelMember(Document):
 
@@ -70,18 +70,16 @@ class RavenChannelMember(Document):
 
 
 @frappe.whitelist()
-def get_channel_members_and_data(channel_id):
+def get_channel_members(channel_id):
     # fetch all channel members
     # get member details from user table, such as name, full_name, user_image, first_name
+
+    member_array = []
     if frappe.db.exists("Raven Channel", channel_id):
         channel_member = frappe.qb.DocType('Raven Channel Member')
-        channel_data = frappe.qb.DocType('Raven Channel')
         user = frappe.qb.DocType('User')
         if frappe.db.get_value("Raven Channel", channel_id, "type") == "Open":
-            member_query = (frappe.qb.from_(user)
-                            .select(user.name, user.full_name, user.user_image, user.first_name)
-                            .where(user.name != "administrator")
-                            .where(user.name != "guest"))
+            member_array = get_list()
         else:
             member_query = (frappe.qb.from_(channel_member)
                             .join(user, JoinType.left)
@@ -91,12 +89,12 @@ def get_channel_members_and_data(channel_id):
                             .where(channel_member.user_id != "administrator")
                             .orderby(channel_member.creation, order=Order.desc))
 
-        channel_data = frappe.db.get_value("Raven Channel", channel_id, [
-                                        "name", "channel_name", "type", "creation", "owner", "channel_description", "is_direct_message", "is_self_message", "is_archived"], as_dict=True)
-        if channel_data:
-            channel_data["owner_full_name"] = frappe.db.get_value(
-                "User", channel_data["owner"], "full_name")
+            member_array = member_query.run(as_dict=True)
 
-        return {"channel_members": member_query.run(as_dict=True), "channel_data": channel_data}
+        member_object = {}
+        for member in member_array:
+            member_object[member.name] = member
+        return member_object
+    
     else:
         frappe.throw("Channel {} does not exist".format(channel_id), frappe.DoesNotExistError)
