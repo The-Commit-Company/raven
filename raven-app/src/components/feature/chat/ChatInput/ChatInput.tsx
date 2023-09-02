@@ -1,4 +1,4 @@
-import { Box, HStack, IconButton, Popover, PopoverContent, PopoverTrigger, Stack, StackDivider, Tooltip, useColorMode, Wrap, WrapItem } from "@chakra-ui/react"
+import { Box, HStack, IconButton, Stack, StackDivider, useColorMode, Wrap, WrapItem } from "@chakra-ui/react"
 import { useCallback, useRef, useState } from "react"
 import { RiSendPlaneFill } from "react-icons/ri"
 import ReactQuill from "react-quill"
@@ -10,15 +10,10 @@ import "quill-mention";
 import 'quill-mention/dist/quill.mention.css';
 import Quill from 'quill';
 import { Linkify, Options } from 'quill-linkify';
-import EmojiPicker, { EmojiClickData } from 'emoji-picker-react';
-import { FaRegSmile } from 'react-icons/fa'
-import { IoMdAdd } from 'react-icons/io'
-import { VscMention } from 'react-icons/vsc'
 import { CustomFile, FileDrop } from "../../file-upload/FileDrop"
 import { FileListItem } from "../../file-upload/FileListItem"
 import { getFileExtension } from "../../../../utils/operations"
-import { AlertBanner, ErrorBanner } from "../../../layout/AlertBanner"
-import { ModalTypes, useModalManager } from "../../../../hooks/useModalManager"
+import { ErrorBanner } from "../../../layout/AlertBanner"
 import { Message } from "../../../../../../types/Messaging/Message"
 import { PreviousMessageBox } from "../MessageReply/PreviousMessageBox"
 import QuillImageDropAndPaste, { ImageData } from 'quill-image-drop-and-paste'
@@ -163,7 +158,7 @@ export const ChatInput = ({ channelID, allUsers, allChannels, selectedMessage, h
     }
 
     const imageDropAndPaste = {
-        handler: useCallback((imageDataUrl: string, type: string, imageData: ImageData) => {
+        handler: useCallback((imageData: ImageData) => {
             console.log('Called')
             const file: CustomFile = imageData.toFile() as CustomFile
             if (file) {
