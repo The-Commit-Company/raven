@@ -4,7 +4,7 @@ import { MarkdownRenderer } from '../../common/MarkdownRenderer'
 import { FrappeConfig, FrappeContext } from 'frappe-react-sdk'
 import { getFileExtensionIcon } from '../../../utils/layout/fileExtensions'
 import { DateBlock, MessageBlock } from '../../../../../types/Messaging/Message'
-import Avatar from 'react-avatar'
+// import Avatar from 'react-avatar'
 import { ChatMessageBox } from '../chat-message/ChatMessageBox'
 import { ChannelContext } from '../../../utils/channel/ChannelProvider'
 import { getFileExtension } from '../../../utils/operations/operations'
@@ -55,7 +55,8 @@ const MessageView = ({ message }: { message: MessageBlock }) => {
                 <img src={url + channelMembers[message.data.owner]?.user_image} />
             </IonAvatar>
             :
-            <Avatar src={url + channelMembers[message.data.owner]?.user_image} name={channelMembers[message.data.owner]?.full_name} size='40' round="8px" />)
+            null)
+            // <Avatar src={url + channelMembers[message.data.owner]?.user_image} name={channelMembers[message.data.owner]?.full_name} size='40' round="8px" />)
             :
             <div style={{ height: "40px", width: "40px", maxWidth: "40px" }} className='w-1/5'></div>
         }

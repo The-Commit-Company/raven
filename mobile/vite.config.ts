@@ -12,11 +12,11 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, 'src')
+      '@': path.resolve(__dirname, './src')
     }
   },
   build: {
-    outDir: 'dist',
+    outDir: '../raven/public/raven-mobile',
     emptyOutDir: true,
     target: 'es2015',
   },

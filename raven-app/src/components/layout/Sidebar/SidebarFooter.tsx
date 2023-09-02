@@ -32,6 +32,7 @@ export const SidebarFooter = ({ isUserActive }: Props) => {
                         />
                     </Tooltip>
                     <MenuList fontSize="sm" zIndex={999}>
+                        <MenuItem as={Link} href="/raven-mobile">Mobile App</MenuItem>
                         <MenuItem as={Link} href="/app">Desk Interface</MenuItem>
                         <MenuItem onClick={logout}>Log Out</MenuItem>
                     </MenuList>

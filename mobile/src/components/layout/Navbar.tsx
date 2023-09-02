@@ -13,9 +13,9 @@ export const Navbar = () => {
             <Route exact path="/:tab(channels)">
                 <Channels />
             </Route>
-            <Route exact path="/:tab(direct-messages)">
+            {/* <Route exact path="/:tab(direct-messages)">
                 <DirectMessageList />
-            </Route>
+            </Route> */}
             {/* <Route exact path="/:tab(search)">
                 <Search />
             </Route> */}

@@ -18,7 +18,7 @@ import {
 import { BiGlobe, BiHash, BiLock } from 'react-icons/bi';
 import { ChannelContext } from '../../../utils/channel/ChannelProvider';
 import { FrappeConfig, FrappeContext } from 'frappe-react-sdk';
-import Avatar from 'react-avatar';
+// import Avatar from 'react-avatar';
 
 interface AddChannelMembersProps {
     presentingElement: HTMLElement | undefined
@@ -84,7 +84,8 @@ export const AddChannelMembers = ({ presentingElement }: AddChannelMembersProps)
                                         <img src={url + member.user_image} />
                                     </IonAvatar>
                                     :
-                                    <Avatar name={member.full_name} round size='40' />}
+                                    null}
+                                {/* <Avatar name={member.full_name} round size='40' />} */}
                                 <IonLabel>
                                     <h2>{member.full_name}</h2>
                                     <p>{member.name}</p>
@@ -106,7 +107,8 @@ export const AddChannelMembers = ({ presentingElement }: AddChannelMembersProps)
                                             <img src={url + user.user_image} />
                                         </IonAvatar>
                                         :
-                                        <Avatar name={user.full_name} round size='40' />}
+                                        null}
+                                    {/* <Avatar name={user.full_name} round size='40' />} */}
                                     <IonLabel>
                                         <h2>{user.full_name}</h2>
                                         <p>{user.name}</p>

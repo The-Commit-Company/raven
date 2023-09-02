@@ -21,10 +21,10 @@ export const Routes = () => {
 
     return (
         // @ts-ignore
-        <IonReactRouter>
+        <IonReactRouter basename={import.meta.env.VITE_BASE_NAME ?? ''}>
             <IonRouterOutlet animated>
                 <Route exact path="/channels" component={Navbar} />
-                <Route exact path="/direct-messages" component={Navbar} />
+                {/* <Route exact path="/direct-messages" component={Navbar} /> */}
                 <Route exact path="/search" component={Navbar} />
                 <Route exact path="/notifications" component={Navbar} />
                 <Route exact path="/profile" component={Navbar} />
