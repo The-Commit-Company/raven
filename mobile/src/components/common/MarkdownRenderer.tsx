@@ -10,8 +10,11 @@ interface Props {
 
 export const MarkdownRenderer: React.FC<Props> = ({ content }) => {
 
-  return <Remark
-    remarkToRehypeOptions={{ allowDangerousHtml: true }}
-    rehypePlugins={[rehypeRaw, rehypeSanitize] as UseRemarkSyncOptions['rehypePlugins']}
-  >{content}</Remark>
+  return <p>{content}</p>
+
+  // return <Remark
+  //   remarkToRehypeOptions={{ allowDangerousHtml: true }}
+  //   rehypePlugins={[rehypeRaw, rehypeSanitize] as UseRemarkSyncOptions['rehypePlugins']}
+
+  // >{content}</Remark>
 }

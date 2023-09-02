@@ -1,10 +1,6 @@
-import { BlockModule } from '../../mobile/src/types/Core/BlockModule'
-import { DefaultValue } from '../../mobile/src/types/Core/DefaultValue'
-import { HasRole } from '../../mobile/src/types/Core/HasRole'
-import { UserEmail } from '../../mobile/src/types/Core/UserEmail'
 import { UserSocialLogin } from './UserSocialLogin'
 
-export interface User {
+export interface User{
 	creation: string
 	name: string
 	modified: string

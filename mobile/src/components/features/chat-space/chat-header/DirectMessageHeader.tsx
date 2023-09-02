@@ -1,7 +1,6 @@
 import { IonAvatar, IonTitle } from "@ionic/react"
 import { FrappeConfig, FrappeContext } from "frappe-react-sdk"
 import { useContext } from "react"
-import Avatar from "react-avatar"
 
 export const DirectMessageHeader = ({ name, image }: { name: string, image?: string }) => {
 
@@ -15,7 +14,8 @@ export const DirectMessageHeader = ({ name, image }: { name: string, image?: str
                         <img src={url + image} />
                     </IonAvatar>
                     :
-                    <Avatar src={url + image} name={name} size='40' round />}
+                    null}
+                {/* <Avatar src={url + image} name={name} size='40' round />} */}
                 <h1 className='ml-2'>
                     {name}
                 </h1>
