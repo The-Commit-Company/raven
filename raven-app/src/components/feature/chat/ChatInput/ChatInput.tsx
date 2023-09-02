@@ -22,7 +22,7 @@ import { ModalTypes, useModalManager } from "../../../../hooks/useModalManager"
 import { Message } from "../../../../../../types/Messaging/Message"
 import { PreviousMessageBox } from "../MessageReply/PreviousMessageBox"
 import QuillImageDropAndPaste, { ImageData } from 'quill-image-drop-and-paste'
-import { ChatInputMentionButton } from "./ChatInputMentionButton"
+import { ChatInputEmojiPickerPopover, ChatInputMentionButton } from "."
 
 interface ChatInputProps {
     channelID: string,
@@ -153,22 +153,6 @@ export const ChatInput = ({ channelID, allUsers, allChannels, selectedMessage, h
 
     const { colorMode } = useColorMode()
 
-    const modalManager = useModalManager()
-
-    const onEmojiPickerOpen = () => {
-        modalManager.openModal(ModalTypes.EmojiPicker)
-    }
-
-    const onEmojiClick = (emojiObject: EmojiClickData) => {
-        // remove html tags from text
-        const textWithoutHTML = text.replace(/<(?!\/?span)[^>]+>/gi, "")
-        // add emoji to text
-        const newText = `${textWithoutHTML} ${emojiObject.emoji}`
-        // set text
-        setText(newText)
-        modalManager.closeModal()
-    }
-
     const fileInputRef = useRef<any>(null)
 
     const fileButtonClicked = () => {
@@ -247,7 +231,7 @@ export const ChatInput = ({ channelID, allUsers, allChannels, selectedMessage, h
                                 <Tooltip hasArrow label='add files' placement='top' rounded={'md'}>
                                     <IconButton size='xs' aria-label={"add file"} onClick={fileButtonClicked} icon={<IoMdAdd />} rounded='xl' />
                                 </Tooltip>
-
+                                <ChatInputEmojiPickerPopover text={text} setText={setText} />
                             </HStack>
                             <ChatInputMentionButton current={reactQuillRef.current} />
                         </HStack>
