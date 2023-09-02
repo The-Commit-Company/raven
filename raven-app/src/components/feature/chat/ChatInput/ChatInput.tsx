@@ -1,11 +1,8 @@
 import { Box, HStack, IconButton, Stack, StackDivider, useColorMode, Wrap, WrapItem } from "@chakra-ui/react"
 import { useContext, useMemo, useRef, useState } from "react"
 import { RiSendPlaneFill } from "react-icons/ri"
-
 import { useFrappeCreateDoc, useFrappeFileUpload, useFrappePostCall, useFrappeUpdateDoc } from "frappe-react-sdk"
 import { useHotkeys } from "react-hotkeys-hook"
-
-
 import { CustomFile, FileDrop } from "../../file-upload/FileDrop"
 import { FileListItem } from "../../file-upload/FileListItem"
 import { getFileExtension } from "../../../../utils/operations"
