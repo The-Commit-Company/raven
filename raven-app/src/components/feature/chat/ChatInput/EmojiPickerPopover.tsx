@@ -1,6 +1,6 @@
 import { ModalTypes, useModalManager } from "@/hooks/useModalManager"
-import { Popover, PopoverTrigger, Tooltip, IconButton, PopoverContent, Box } from "@chakra-ui/react"
-import { EmojiClickData } from "emoji-picker-react"
+import { Popover, PopoverTrigger, Tooltip, IconButton, PopoverContent, useColorMode } from "@chakra-ui/react"
+import EmojiPicker, { EmojiClickData } from "emoji-picker-react"
 import { FaRegSmile } from "react-icons/fa"
 
 type Props = {
@@ -9,6 +9,8 @@ type Props = {
 }
 
 export const EmojiPickerPopover = ({ text, setText }: Props) => {
+
+    const { colorMode } = useColorMode()
 
     const modalManager = useModalManager()
 

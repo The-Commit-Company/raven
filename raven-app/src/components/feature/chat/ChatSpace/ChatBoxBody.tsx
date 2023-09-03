@@ -66,7 +66,9 @@ export const ChatBoxBody = ({ channelData, channelMembers, updateMembers }: Chat
                     <ChatInput
                         channelID={channelData?.name}
                         selectedMessage={selectedMessage}
-                        handleCancelReply={handleCancelReply} />
+                        handleCancelReply={handleCancelReply}
+                        channelData={channelData}
+                        channelMembers={channelMembers} />
                     :
                     (updateMembers && <JoinChannelBox
                         channelData={channelData}

@@ -8,17 +8,20 @@ import { FileListItem } from "../../file-upload/FileListItem"
 import { getFileExtension } from "../../../../utils/operations"
 import { ErrorBanner } from "../../../layout/AlertBanner"
 import { Message } from "../../../../../../types/Messaging/Message"
-import { PreviousMessageBox } from "../MessageReply/PreviousMessageBox"
 import { EmojiPickerPopover, FileUploadButton, MentionButton } from "."
 import { QuillEditor } from "./QuillEditor"
 import ReactQuill from "react-quill"
-import { ChannelListContext, ChannelListContextType } from "@/utils/channel/ChannelListProvider"
-import { useUserList } from "@/utils/users/UserListProvider"
+import { ChannelListContext, ChannelListContextType, ChannelListItem, DMChannelListItem } from "@/utils/channel/ChannelListProvider"
+import { UserListContext } from "@/utils/users/UserListProvider"
+import { PreviousMessageBox } from "../MessageReply/PreviousMessageBox"
+import { ChannelMembers } from "@/pages/ChatSpace"
 
 interface ChatInputProps {
     channelID: string,
     selectedMessage?: Message | null,
-    handleCancelReply: () => void
+    handleCancelReply: () => void,
+    channelData: ChannelListItem | DMChannelListItem,
+    channelMembers: ChannelMembers
 }
 
 type value = {
@@ -28,7 +31,7 @@ type value = {
 
 export const fileExt = ['jpg', 'JPG', 'jpeg', 'JPEG', 'png', 'PNG', 'gif', 'GIF']
 
-export const ChatInput = ({ channelID, selectedMessage, handleCancelReply }: ChatInputProps) => {
+export const ChatInput = ({ channelID, selectedMessage, handleCancelReply, channelData, channelMembers }: ChatInputProps) => {
 
     const { call } = useFrappePostCall('raven.raven_messaging.doctype.raven_message.raven_message.send_message')
     const { createDoc, loading: creatingDoc, error: errorCreatingDoc, reset: resetCreateDoc } = useFrappeCreateDoc()
@@ -104,7 +107,7 @@ export const ChatInput = ({ channelID, selectedMessage, handleCancelReply }: Cha
 
     const { channels } = useContext(ChannelListContext) as ChannelListContextType
 
-    const { users } = useUserList()
+    const { users } = useContext(UserListContext)
 
     const allUsers: value[] = Object.values(users).map((user) => {
         return {
@@ -136,9 +139,13 @@ export const ChatInput = ({ channelID, selectedMessage, handleCancelReply }: Cha
 
             <Box>
                 <Stack spacing={0} border='1px' borderColor={'gray.500'} rounded='lg' bottom='2' boxShadow='base' w='calc(98vw - var(--sidebar-width))' bg={colorMode === "light" ? "white" : "gray.800"}>
-                    {/* {selectedMessage && (
-                        <PreviousMessageBox previous_message_content={selectedMessage} onReplyingToMessageClose={handleCancelReply} />
-                    )} */}
+                    {selectedMessage && (
+                        <PreviousMessageBox
+                            previous_message_content={selectedMessage}
+                            onReplyingToMessageClose={handleCancelReply}
+                            channelData={channelData}
+                            channelMembers={channelMembers} />
+                    )}
                     <QuillEditor text={text} setText={setText} onSubmit={onSubmit} setFiles={setFiles} allUsers={allUsers} allChannels={allChannels} reactQuillRef={reactQuillRef} />
                     {files.length > 0 &&
                         <Wrap spacingX={'2'} spacingY='2' w='full' spacing='0' alignItems='flex-end' px='2' pb='1'>
