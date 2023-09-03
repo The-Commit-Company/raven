@@ -1,7 +1,7 @@
-import { useFrappeGetCall } from "frappe-react-sdk";
+import { useFrappeDocTypeEventListener, useFrappeGetCall } from "frappe-react-sdk";
 import { PropsWithChildren, createContext } from "react";
 import { User } from "../../../../types/Core/User";
-import { Box, Center } from "@chakra-ui/react";
+import { Center } from "@chakra-ui/react";
 import { ErrorBanner } from "@/components/layout/AlertBanner";
 
 
@@ -13,10 +13,12 @@ export type UserFields = Pick<User, 'name' | 'full_name' | 'user_image' | 'first
 
 export const UserListProvider = ({ children }: PropsWithChildren) => {
 
-    const { data, error: usersError } = useFrappeGetCall<{ message: UserFields[] }>('raven.api.raven_users.get_list', undefined, undefined, {
+    const { data, error: usersError, mutate } = useFrappeGetCall<{ message: UserFields[] }>('raven.api.raven_users.get_list', undefined, undefined, {
         revalidateOnFocus: false,
         revalidateOnReconnect: false,
     })
+
+    useFrappeDocTypeEventListener('User', () => mutate())
 
     if (usersError) {
         return <Center px='4' w='100vw' h='100vh'>

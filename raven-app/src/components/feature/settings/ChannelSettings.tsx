@@ -1,18 +1,18 @@
-import { Box, Stack, useColorMode, Divider, Button } from "@chakra-ui/react"
-import { useContext } from "react"
-import { ChannelContext } from "../../../utils/channel/ChannelProvider"
-import { BiHash, BiLockAlt } from "react-icons/bi"
+import { Box, Stack, useColorMode, Divider, Button, Icon } from "@chakra-ui/react"
 import { BsTrash, BsArchive } from "react-icons/bs"
 import { ChangeChannelType } from "./ChangeChannelType"
 import { ArchiveChannel } from "./ArchiveChannel"
 import { DeleteChannel } from "./DeleteChannel"
 import { ModalTypes, useModalManager } from "../../../hooks/useModalManager"
+import { ChannelListItem } from "@/utils/channel/ChannelListProvider"
+import { BiHash, BiLockAlt } from "react-icons/bi"
 
 type Props = {
     onClose: () => void
+    channelData: ChannelListItem
 }
 
-export const ChannelSettings = ({ onClose }: Props) => {
+export const ChannelSettings = ({ onClose, channelData }: Props) => {
 
     const modalManager = useModalManager()
 
@@ -29,7 +29,6 @@ export const ChannelSettings = ({ onClose }: Props) => {
     }
 
     const { colorMode } = useColorMode()
-    const { channelData } = useContext(ChannelContext)
 
     const BOXSTYLE = {
         p: '0',
@@ -53,18 +52,12 @@ export const ChannelSettings = ({ onClose }: Props) => {
         <Stack spacing='4'>
             <Box {...BOXSTYLE}>
                 <Stack spacing='0'>
-                    {channelData?.type === 'Private' && <Button {...BUTTONSTYLE}
-                        leftIcon={<BiHash fontSize={'1rem'} />}
+                    <Button {...BUTTONSTYLE}
+                        leftIcon={channelData.type === 'Public' ? <Icon as={BiLockAlt} /> : <Icon as={BiHash} />}
                         colorScheme="black"
                         onClick={onChannelTypeChangeModalOpen}>
-                        Change to a public channel
-                    </Button>}
-                    {channelData?.type === 'Public' && <Button {...BUTTONSTYLE}
-                        leftIcon={<BiLockAlt fontSize={'1rem'} />}
-                        colorScheme="black"
-                        onClick={onChannelTypeChangeModalOpen}>
-                        Change to a private channel
-                    </Button>}
+                        Change to a {channelData.type === 'Public' ? 'private' : 'public'} channel
+                    </Button>
                     <Divider />
                     <Button {...BUTTONSTYLE}
                         leftIcon={<BsArchive />}
@@ -81,14 +74,17 @@ export const ChannelSettings = ({ onClose }: Props) => {
             </Box>
             <ChangeChannelType
                 isOpen={modalManager.modalType === ModalTypes.ChangeChannelType}
-                onClose={modalManager.closeModal} />
+                onClose={modalManager.closeModal}
+                channelData={channelData} />
             <ArchiveChannel
                 isOpen={modalManager.modalType === ModalTypes.ArchiveChannel}
                 onClose={modalManager.closeModal}
-                onCloseViewDetails={onClose} />
+                onCloseViewDetails={onClose}
+                channelData={channelData} />
             <DeleteChannel
                 isOpen={modalManager.modalType === ModalTypes.DeleteChannel}
-                onClose={modalManager.closeModal} />
+                onClose={modalManager.closeModal}
+                channelData={channelData} />
         </Stack>
     )
 }

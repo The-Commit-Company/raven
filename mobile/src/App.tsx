@@ -24,9 +24,12 @@ import './styles/variables.css';
 import { FrappeProvider } from 'frappe-react-sdk';
 import { UserProvider } from './utils/auth/UserProvider';
 import { Routes } from './utils/auth/Routes';
+import { ChannelListProvider } from './utils/channel/ChannelListProvider';
+import { UserListProvider } from './utils/users/UserListProvider';
 
 setupIonicReact({
-  mode: 'ios'
+  mode: 'ios',
+  swipeBackEnabled: false,
 })
 
 function App() {
@@ -34,7 +37,11 @@ function App() {
     <IonApp>
       <FrappeProvider url={import.meta.env.VITE_FRAPPE_PATH ?? ''} socketPort={import.meta.env.VITE_SOCKET_PORT ?? ''}>
         <UserProvider>
-          <Routes />
+          <UserListProvider>
+            <ChannelListProvider>
+              <Routes />
+            </ChannelListProvider>
+          </UserListProvider>
         </UserProvider>
       </FrappeProvider>
     </IonApp>

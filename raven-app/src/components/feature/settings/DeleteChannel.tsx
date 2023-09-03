@@ -1,18 +1,18 @@
 import { AlertDialog, AlertDialogBody, AlertDialogCloseButton, AlertDialogContent, AlertDialogFooter, AlertDialogHeader, AlertDialogOverlay, Button, ButtonGroup, Checkbox, ListItem, Stack, Text, UnorderedList, useToast } from '@chakra-ui/react'
 import { AlertBanner, ErrorBanner } from '../../layout/AlertBanner'
-import { useContext, useRef, useState } from 'react'
-import { ChannelContext } from '../../../utils/channel/ChannelProvider'
+import { useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useFrappeDeleteDoc } from 'frappe-react-sdk'
+import { ChannelListItem } from '@/utils/channel/ChannelListProvider'
 
 type DeleteChannelProps = {
     isOpen: boolean,
-    onClose: () => void
+    onClose: () => void,
+    channelData: ChannelListItem
 }
 
-export const DeleteChannel = ({ isOpen, onClose }: DeleteChannelProps) => {
+export const DeleteChannel = ({ isOpen, onClose, channelData }: DeleteChannelProps) => {
 
-    const { channelData } = useContext(ChannelContext)
     const cancelRef = useRef<HTMLButtonElement | null>(null)
     const { deleteDoc, error, loading, reset } = useFrappeDeleteDoc()
 

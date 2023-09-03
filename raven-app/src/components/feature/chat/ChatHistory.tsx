@@ -7,23 +7,24 @@ import { useContext, useRef, useState } from "react";
 import { ChatMessageBox } from "./ChatMessage/ChatMessageBox";
 import { MarkdownRenderer } from "../markdown-viewer/MarkdownRenderer";
 import { FileMessageBlock } from "./ChatMessage/FileMessage";
-import { UserProfileDrawer } from "../user-details/UserProfileDrawer";
 import { ModalTypes, useModalManager } from "../../../hooks/useModalManager";
 import { FilePreviewModal } from "../file-preview/FilePreviewModal";
 import { Virtuoso } from 'react-virtuoso';
 import { AnimatePresence, motion } from "framer-motion";
 import { VirtuosoRefContext } from "../../../utils/message/VirtuosoRefProvider";
 import { scrollbarStyles } from "../../../styles";
-import { User } from "../../../../../types/Core/User";
+import { ChannelMembers, Member } from "@/pages/ChatSpace";
 
 interface ChatHistoryProps {
-    parsed_messages: MessagesWithDate,
-    isDM: number,
+    parsedMessages: MessagesWithDate,
     replyToMessage?: (message: Message) => void,
-    mutate: () => void
+    updateMessages: () => void,
+    channelID: string,
+    channelMembers: ChannelMembers,
+    updateMembers?: () => void
 }
 
-export const ChatHistory = ({ parsed_messages, isDM, mutate, replyToMessage }: ChatHistoryProps) => {
+export const ChatHistory = ({ parsedMessages, updateMessages, replyToMessage, channelID, channelMembers, updateMembers }: ChatHistoryProps) => {
 
     const { colorMode } = useColorMode()
 
@@ -37,12 +38,6 @@ export const ChatHistory = ({ parsed_messages, isDM, mutate, replyToMessage }: C
     }
 
     const modalManager = useModalManager()
-
-    const onOpenUserDetailsDrawer = (selectedUser: User) => {
-        if (selectedUser) {
-            modalManager.openModal(ModalTypes.UserDetails, selectedUser)
-        }
-    }
 
     const onFilePreviewModalOpen = (message: Partial<FileMessage>) => {
         if (message) {
@@ -67,7 +62,12 @@ export const ChatHistory = ({ parsed_messages, isDM, mutate, replyToMessage }: C
             return (
                 <AnimatePresence>
                     <motion.div key={block.data.name} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.4 }}>
-                        <ChatMessageBox message={block.data} handleScroll={handleScroll} onOpenUserDetailsDrawer={onOpenUserDetailsDrawer} mutate={mutate} replyToMessage={replyToMessage}>
+                        <ChatMessageBox
+                            message={block.data}
+                            handleScroll={handleScroll}
+                            updateMessages={updateMessages}
+                            replyToMessage={replyToMessage}
+                            channelMembers={channelMembers}>
                             {block.data.message_type === 'Text' && <MarkdownRenderer content={block.data.text} />}
                             {(block.data.message_type === 'File' || block.data.message_type === 'Image') && <FileMessageBlock {...block.data} onFilePreviewModalOpen={onFilePreviewModalOpen} />}
                         </ChatMessageBox>
@@ -82,26 +82,24 @@ export const ChatHistory = ({ parsed_messages, isDM, mutate, replyToMessage }: C
         <Box ref={boxRef} h='100%' overflowY={isScrollable ? 'scroll' : 'hidden'} sx={scrollbarStyles(colorMode)}>
             <Virtuoso
                 customScrollParent={boxRef.current ?? undefined}
-                totalCount={parsed_messages.length}
-                itemContent={index => renderItem(parsed_messages[index])}
-                initialTopMostItemIndex={parsed_messages.length - 1}
+                totalCount={parsedMessages.length}
+                itemContent={index => renderItem(parsedMessages[index])}
+                initialTopMostItemIndex={parsedMessages.length - 1}
                 components={{
-                    Header: () => <ChannelHistoryFirstMessage isDM={isDM} />,
+                    Header: () => <ChannelHistoryFirstMessage
+                        channelID={channelID}
+                        channelMembers={channelMembers}
+                        updateMembers={updateMembers} />,
                 }}
                 ref={virtuosoRef}
                 alignToBottom={true}
                 followOutput={'auto'}
             />
 
-            <UserProfileDrawer
-                isOpen={modalManager.modalType === ModalTypes.UserDetails}
-                onClose={modalManager.closeModal}
-                user={modalManager.modalContent}
-            />
-
             <FilePreviewModal
                 isOpen={modalManager.modalType === ModalTypes.FilePreview}
                 onClose={modalManager.closeModal}
+                channelMembers={channelMembers}
                 {...modalManager.modalContent}
             />
         </Box>

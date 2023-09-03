@@ -1,1 +1,1 @@
-export { PrivateMessages } from './PrivateMessages'
+export { PrivateMessages } from './DirectMessages'

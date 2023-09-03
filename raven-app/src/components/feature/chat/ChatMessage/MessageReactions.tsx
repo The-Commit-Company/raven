@@ -3,7 +3,7 @@ import { useFrappeCreateDoc } from "frappe-react-sdk"
 import { useContext } from "react"
 import { UserContext } from "../../../../utils/auth/UserProvider"
 import { getUsers } from "../../../../utils/operations"
-import { ChannelContext } from "../../../../utils/channel/ChannelProvider"
+import { useGetUserRecords } from "@/hooks/useGetUserRecords"
 
 export const MessageReactions = ({ name, message_reactions }: { name: string, message_reactions?: string | null }) => {
 
@@ -21,8 +21,8 @@ export const MessageReactions = ({ name, message_reactions }: { name: string, me
         })
     }
 
+    const allUsers = useGetUserRecords()
     const reactions = JSON.parse(message_reactions ?? '{}')
-    const { users: allUsers } = useContext(ChannelContext)
 
     return (
         <HStack>
@@ -35,8 +35,7 @@ export const MessageReactions = ({ name, message_reactions }: { name: string, me
                             fontSize='xs'
                             variant='subtle'
                             _hover={{ cursor: 'pointer', border: '1px', borderColor: 'blue.500', backgroundColor: bgColor }}
-                            onClick={() => saveReaction(reaction)}
-                        >
+                            onClick={() => saveReaction(reaction)}>
                             {emoji} {count}
                         </Tag>
                     </Tooltip>

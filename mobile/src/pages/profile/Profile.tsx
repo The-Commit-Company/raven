@@ -42,24 +42,20 @@ export const Profile = () => {
                 <IonList>
                     {data &&
                         <div className="my-8 flex justify-center flex-col items-center ion-text-center space-y-2">
-                            <img alt={data.full_name} src={url + data.user_image ?? ""} className='w-100 h-auto mb-2 rounded-full' />
+                            <img alt={data.full_name} src={url + data.user_image ?? ""} className='w-32 h-auto mb-2 rounded-full' />
                             <h2 className='font-bold h2 text-2xl'>{data.full_name}</h2>
                             <span><IonText color="primary">{data.email}</IonText></span>
                         </div>
                     }
-                    <IonItem>
-                        <IonLabel color={'medium'}>URL</IonLabel>
-                        <IonText color='medium'>{url}</IonText>
-                    </IonItem>
                     <IonItem button onClick={handleLogout}>
                         <IonIcon slot="start" icon={logOutOutline} />
                         Logout
                     </IonItem>
                 </IonList>
                 <div className="ion-text-center mt-16">
-                    <IonText color="medium">Raven v1.0.0 (Build 1)</IonText>
+                    <IonText color="medium">Raven v1.2.0</IonText>
                     <br />
-                    <IonText color="medium">Made by bots who consume <IonIcon icon={pizza} color="danger" />.</IonText>
+                    <IonText color="dark">Made by <IonText className='font-semibold'>The Commit Company</IonText>.</IonText>
                 </div>
             </IonContent>
         </IonPage>
