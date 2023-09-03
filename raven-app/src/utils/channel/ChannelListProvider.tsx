@@ -16,10 +16,10 @@ export type UnreadCountData = {
     channels: { name: string, user_id?: string, unread_count: number }[]
 }
 
-export type ChannelListItem = Pick<RavenChannel, 'name' | 'channel_name' | 'type' | 'channel_description' | 'is_direct_message' | 'is_self_message' | 'is_archived'>
+export type ChannelListItem = Pick<RavenChannel, 'name' | 'channel_name' | 'type' | 'channel_description' | 'is_direct_message' | 'is_self_message' | 'is_archived' | 'creation' | 'owner'>
 
 export interface DMChannelListItem extends ChannelListItem {
-    peer_user_id?: string,
+    peer_user_id: string,
     is_direct_message: 1,
 }
 interface ChannelList {

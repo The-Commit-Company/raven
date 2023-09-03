@@ -1,18 +1,17 @@
 import { Avatar, Center, HStack, Link, Modal, ModalBody, Image, ModalFooter, ModalCloseButton, ModalContent, ModalHeader, ModalOverlay, Stack, StackDivider, Text, useColorMode } from "@chakra-ui/react"
 import { DateObjectToTimeString, getFileName } from "../../../utils/operations"
-import { useContext } from "react"
-import { ChannelContext } from "../../../utils/channel/ChannelProvider"
 import { BsDownload } from "react-icons/bs"
 import { FileMessage } from "../../../../../types/Messaging/Message"
+import { ChannelMembers } from "@/pages/ChatSpace"
 
 interface FilePreviewModalProps extends FileMessage {
     isOpen: boolean,
-    onClose: () => void
+    onClose: () => void,
+    channelMembers: ChannelMembers
 }
 
-export const FilePreviewModal = ({ isOpen, onClose, owner, file, creation, message_type }: FilePreviewModalProps) => {
+export const FilePreviewModal = ({ isOpen, onClose, owner, file, creation, message_type, channelMembers }: FilePreviewModalProps) => {
 
-    const { channelMembers } = useContext(ChannelContext)
     const { colorMode } = useColorMode()
     const textColor = colorMode === 'light' ? 'gray.800' : 'gray.50'
 
@@ -23,7 +22,7 @@ export const FilePreviewModal = ({ isOpen, onClose, owner, file, creation, messa
                 <ModalHeader>
                     {owner &&
                         <HStack spacing={2} alignItems='center'>
-                            <Avatar name={channelMembers?.[owner]?.full_name ?? owner} src={channelMembers?.[owner]?.user_image} borderRadius={'md'} boxSize='40px' />
+                            <Avatar name={channelMembers?.[owner]?.full_name ?? owner} src={channelMembers?.[owner]?.user_image ?? ''} borderRadius={'md'} boxSize='40px' />
                             <Stack spacing={1}>
                                 <HStack divider={<StackDivider borderColor="gray.200" />} spacing={2} alignItems='center'>
                                     <Text fontSize='md' lineHeight={'0.9'} fontWeight="bold" as='span' color={textColor}>{channelMembers?.[owner]?.full_name ?? owner}</Text>

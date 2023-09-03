@@ -10,7 +10,6 @@ import { AlertBanner } from '../../layout/AlertBanner'
 import { EmptyStateForSearch } from '../../layout/EmptyState/EmptyState'
 import { SelectInput, SelectOption } from '../search-filters/SelectInput'
 import { Sort } from '../sorting'
-import { ChannelContext } from "../../../utils/channel/ChannelProvider"
 import { useNavigate } from 'react-router-dom'
 import { MessageBox } from './MessageBox'
 import { VirtuosoRefContext } from '../../../utils/message/VirtuosoRefProvider'
@@ -57,7 +56,6 @@ export const MessageSearch = ({ onToggleMyChannels, isOpenMyChannels, onToggleSa
     const { virtuosoRef } = useContext(VirtuosoRefContext)
     const { url } = useContext(FrappeContext) as FrappeConfig
     const navigate = useNavigate()
-    const { users } = useContext(ChannelContext)
     const { data: channels, error: channelsError } = useFrappeGetCall<{ message: RavenChannel[] }>("raven.raven_channel_management.doctype.raven_channel.raven_channel.get_channel_list", undefined, undefined, {
         revalidateOnFocus: false
     })

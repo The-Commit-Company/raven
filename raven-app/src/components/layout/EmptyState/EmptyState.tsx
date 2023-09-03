@@ -1,6 +1,4 @@
 import { Flex, VStack, Text, HStack, Link, Box, Stack, Avatar, Heading, Button, ButtonGroup, useDisclosure, useColorMode, AvatarBadge } from "@chakra-ui/react"
-import { useContext } from "react"
-import { ChannelContext } from "../../../utils/channel/ChannelProvider"
 import { BiBookmark, BiGlobe, BiHash, BiLockAlt, BiUserPlus } from "react-icons/bi"
 import { DateObjectToFormattedDateString } from "../../../utils/operations"
 import { TbEdit } from "react-icons/tb"
@@ -9,6 +7,9 @@ import { AddChannelMemberModal } from "../../feature/channels/AddChannelMemberMo
 import { UserProfileDrawer } from "../../feature/user-details/UserProfileDrawer"
 import { ModalTypes, useModalManager } from "../../../hooks/useModalManager"
 import { useUserData } from "@/hooks/useUserData"
+import { ChannelListItem, DMChannelListItem } from "@/utils/channel/ChannelListProvider"
+import { ChannelMembers } from "@/pages/ChatSpace"
+import { useCurrentChannelData } from "@/hooks/useCurrentChannelData"
 
 export const EmptyStateForSearch = () => {
     return (
@@ -27,9 +28,13 @@ export const EmptyStateForSearch = () => {
     )
 }
 
-const EmptyStateForChannel = () => {
+interface EmptyStateForChannelProps {
+    channelData: ChannelListItem,
+    channelMembers: ChannelMembers,
+    updateMembers: () => void
+}
 
-    const { channelData } = useContext(ChannelContext)
+const EmptyStateForChannel = ({ channelData, channelMembers, updateMembers }: EmptyStateForChannelProps) => {
 
     const modalManager = useModalManager()
 
@@ -51,7 +56,7 @@ const EmptyStateForChannel = () => {
                         {channelData?.type === 'Open' && <BiGlobe fontSize={'1.4rem'} />}
                         <Heading size={'md'}>{channelData?.channel_name}</Heading>
                     </HStack>
-                    <Text>{channelData?.owner_full_name} created this channel on {DateObjectToFormattedDateString(new Date(channelData?.creation ?? ''))}. This is the very beginning of the <strong>{channelData?.channel_name}</strong> channel.</Text>
+                    <Text>{channelMembers[channelData.owner]?.full_name} created this channel on {DateObjectToFormattedDateString(new Date(channelData?.creation ?? ''))}. This is the very beginning of the <strong>{channelData?.channel_name}</strong> channel.</Text>
                     {channelData?.channel_description && <Text fontSize={'sm'} color={'gray.500'}>{channelData?.channel_description}</Text>}
                 </Stack>
                 {channelData?.is_archived == 0 && <ButtonGroup size={'xs'} colorScheme="blue" variant={'link'} spacing={4} zIndex={1}>
@@ -61,21 +66,27 @@ const EmptyStateForChannel = () => {
             </Stack>
             <AddOrEditChannelDescriptionModal
                 isOpen={modalManager.modalType === ModalTypes.EditChannelDescription}
-                onClose={modalManager.closeModal} />
+                onClose={modalManager.closeModal}
+                channelData={channelData} />
             <AddChannelMemberModal
                 isOpen={modalManager.modalType === ModalTypes.AddChannelMember}
-                onClose={modalManager.closeModal} />
+                onClose={modalManager.closeModal}
+                type={channelData?.type}
+                channel_name={channelData?.channel_name}
+                updateMembers={updateMembers} />
         </>
     )
 }
 
+interface EmptyStateForDMProps {
+    channelData: DMChannelListItem,
+    channelMembers: ChannelMembers
+}
 
-const EmptyStateForDM = () => {
+const EmptyStateForDM = ({ channelData, channelMembers }: EmptyStateForDMProps) => {
 
-    const { channelMembers } = useContext(ChannelContext)
-    const { channelData } = useContext(ChannelContext)
     const { name: user } = useUserData()
-    const peer = Object.keys(channelMembers).filter((member) => member !== user)[0]
+    const peer = channelData.peer_user_id
     const { isOpen: isUserProfileDetailsDrawerOpen, onOpen: onUserProfileDetailsDrawerOpen, onClose: onUserProfileDetailsDrawerClose } = useDisclosure()
 
     const { colorMode } = useColorMode()
@@ -86,7 +97,7 @@ const EmptyStateForDM = () => {
             {channelData?.is_direct_message == 1 && channelData?.is_self_message == 0 &&
                 <Stack>
                     <HStack>
-                        <Avatar name={channelMembers?.[peer]?.full_name ?? peer} src={channelMembers?.[peer]?.user_image} borderRadius={'md'} boxSize='42px' />
+                        <Avatar name={channelMembers?.[peer]?.full_name ?? peer} src={channelMembers?.[peer]?.user_image ?? ''} borderRadius={'md'} boxSize='42px' />
                         <Stack spacing={0}>
                             <Text fontWeight={'semibold'}>{channelMembers?.[peer]?.full_name}</Text>
                             <Text fontSize={'xs'} color={textColor}>{channelMembers?.[peer]?.name}</Text>
@@ -102,7 +113,7 @@ const EmptyStateForDM = () => {
             {channelData?.is_self_message == 1 && user &&
                 <Stack spacing={4}>
                     <HStack>
-                        <Avatar name={channelMembers?.[user]?.full_name} src={channelMembers?.[user]?.user_image} borderRadius={'md'} boxSize='42px'>
+                        <Avatar name={channelMembers?.[user]?.full_name} src={channelMembers?.[user]?.user_image ?? ''} borderRadius={'md'} boxSize='42px'>
                             <AvatarBadge boxSize='0.72em' bg='green.500' />
                         </Avatar>
                         <Stack spacing={0}>
@@ -140,17 +151,24 @@ export const EmptyStateForSavedMessages = () => {
 }
 
 interface ChannelHistoryFirstMessageProps {
-    isDM: number
+    channelID: string,
+    channelMembers: ChannelMembers,
+    updateMembers?: () => void
 }
 
-export const ChannelHistoryFirstMessage = ({ isDM }: ChannelHistoryFirstMessageProps) => {
-    if (isDM === 1) {
-        return (
-            <EmptyStateForDM />
-        )
-    } else {
-        return (
-            <EmptyStateForChannel />
-        )
+export const ChannelHistoryFirstMessage = ({ channelID, channelMembers, updateMembers }: ChannelHistoryFirstMessageProps) => {
+
+    const { channel } = useCurrentChannelData(channelID)
+
+    if (channel) {
+        // depending on whether channel is a DM or a channel, render the appropriate component
+        if (channel.type === "dm") {
+            return <EmptyStateForDM channelData={channel.channelData} channelMembers={channelMembers} />
+        }
+        if (updateMembers) {
+            return <EmptyStateForChannel channelData={channel.channelData} channelMembers={channelMembers} updateMembers={updateMembers} />
+        }
     }
+
+    return null
 }

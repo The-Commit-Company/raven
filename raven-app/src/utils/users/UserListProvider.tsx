@@ -1,7 +1,7 @@
 import { useFrappeGetCall } from "frappe-react-sdk";
 import { PropsWithChildren, createContext } from "react";
 import { User } from "../../../../types/Core/User";
-import { Box, Center } from "@chakra-ui/react";
+import { Center } from "@chakra-ui/react";
 import { ErrorBanner } from "@/components/layout/AlertBanner";
 
 

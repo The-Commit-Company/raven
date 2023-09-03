@@ -1,29 +1,27 @@
-import { Avatar, Box, BoxProps, Button, HStack, Stack, StackDivider, Text, Tooltip, useColorMode } from "@chakra-ui/react"
-import { useContext, useState } from "react"
-import { ChannelContext } from "../../../../utils/channel/ChannelProvider"
-import { DateObjectToTimeString, DateObjectToFormattedDateStringWithoutYear } from "../../../../utils/operations"
+import { Avatar, Box, BoxProps, HStack, Stack, useColorMode } from "@chakra-ui/react"
+import { useState } from "react"
 import { ActionsPalette } from "../../message-action-palette/ActionsPalette"
 import { MessageReactions } from "./MessageReactions"
 import { Message, MessageBlock } from "../../../../../../types/Messaging/Message"
 import { PreviousMessageBox } from "../MessageReply/PreviousMessageBox"
-import { User } from "../../../../../../types/Core/User"
+import { ChannelMembers } from "@/pages/ChatSpace"
+import { DateTooltipShort } from "./DateTooltip"
+import { UserNameInMessage } from "./UserNameInMessage"
 
 interface ChatMessageBoxProps extends BoxProps {
     message: Message,
     handleScroll?: (newState: boolean) => void,
     children?: React.ReactNode,
-    onOpenUserDetailsDrawer?: (selectedUser: User) => void,
     handleScrollToMessage?: (name: string, channel: string, messages: MessageBlock[]) => void,
     replyToMessage?: (message: Message) => void
-    mutate: () => void
+    updateMessages: () => void,
+    channelMembers: ChannelMembers
 }
 
-export const ChatMessageBox = ({ message, onOpenUserDetailsDrawer, handleScroll, children, handleScrollToMessage, mutate, replyToMessage, ...props }: ChatMessageBoxProps) => {
+export const ChatMessageBox = ({ message, handleScroll, children, handleScrollToMessage, updateMessages, replyToMessage, channelMembers, ...props }: ChatMessageBoxProps) => {
 
     const { colorMode } = useColorMode()
-    const textColor = colorMode === 'light' ? 'gray.800' : 'gray.50'
     const [showButtons, setShowButtons] = useState<{}>({ visibility: 'hidden' })
-    const { channelMembers, users } = useContext(ChannelContext)
     const { name, owner: user, creation: timestamp, message_reactions, is_continuation, is_reply, linked_message } = message
 
     return (
@@ -46,43 +44,20 @@ export const ChatMessageBox = ({ message, onOpenUserDetailsDrawer, handleScroll,
             }}
             {...props}>
 
-            {is_continuation === 0 &&
-                <HStack spacing={2} alignItems='flex-start'>
-                    <Avatar name={channelMembers?.[user]?.full_name ?? users?.[user]?.full_name ?? user} src={channelMembers?.[user]?.user_image ?? users?.[user]?.user_image} borderRadius={'md'} boxSize='36px' />
-                    <Stack spacing='1'>
-                        <HStack>
-                            <HStack divider={<StackDivider />} align='flex-start'>
-                                <Button variant='link' onClick={() => onOpenUserDetailsDrawer?.(channelMembers?.[user])}>
-                                    <Text fontSize='sm' lineHeight={'0.9'} fontWeight="semibold" as='span' color={textColor}>{channelMembers?.[user]?.full_name ?? users?.[user]?.full_name ?? user}</Text>
-                                </Button>
-                                <Tooltip hasArrow label={`${DateObjectToFormattedDateStringWithoutYear(new Date(timestamp))} at ${DateObjectToTimeString(new Date(timestamp))}`} placement='top' rounded='md'>
-                                    <Text fontSize="xs" lineHeight={'0.9'} color="gray.500" _hover={{ textDecoration: 'underline', cursor: 'pointer' }}>{DateObjectToTimeString(new Date(timestamp))}</Text>
-                                </Tooltip>
-                            </HStack>
-                        </HStack>
-                        {is_reply === 1 && linked_message &&
-                            <PreviousMessageBox previous_message_id={linked_message} />
-                        }
-                        {children}
-                        <MessageReactions message_reactions={message_reactions} name={name} />
-                    </Stack>
-                </HStack>
-            }
-
-            {is_continuation === 1 &&
-                <HStack spacing={3.5}>
-                    <Tooltip hasArrow label={`${DateObjectToFormattedDateStringWithoutYear(new Date(timestamp))} at ${DateObjectToTimeString(new Date(timestamp))}`} placement='top' rounded='md'>
-                        <Text pl='1' style={showButtons} fontSize={'xs'} color="gray.500" _hover={{ textDecoration: 'underline' }}>{DateObjectToTimeString(new Date(timestamp)).split(' ')[0]}</Text>
-                    </Tooltip>
-                    <Stack spacing='1' pt='0.5'>
-                        {is_reply === 1 && linked_message &&
-                            <PreviousMessageBox previous_message_id={linked_message} />
-                        }
-                        {children}
-                        <MessageReactions name={name} message_reactions={message_reactions} />
-                    </Stack>
-                </HStack>
-            }
+            <HStack spacing={is_continuation === 0 ? 2 : 3.5} alignItems={is_continuation === 0 ? 'flex-start' : 'center'}>
+                {is_continuation === 0 ?
+                    <Avatar name={channelMembers?.[user]?.full_name ?? user} src={channelMembers?.[user]?.user_image ?? ''} borderRadius={'md'} boxSize='36px' /> :
+                    <DateTooltipShort timestamp={timestamp} showButtons={showButtons} />
+                }
+                <Stack spacing='1' pt={is_continuation === 0 ? 0 : 0.5}>
+                    {is_continuation === 0 && <UserNameInMessage timestamp={timestamp} user={user} channelMembers={channelMembers} />}
+                    {is_reply === 1 && linked_message &&
+                        <PreviousMessageBox previous_message_id={linked_message} />
+                    }
+                    {children}
+                    <MessageReactions message_reactions={message_reactions} name={name} />
+                </Stack>
+            </HStack>
 
             {message && handleScroll && <ActionsPalette
                 message={message}
@@ -90,7 +65,7 @@ export const ChatMessageBox = ({ message, onOpenUserDetailsDrawer, handleScroll,
                 handleScroll={handleScroll}
                 is_continuation={is_continuation}
                 replyToMessage={replyToMessage}
-                mutate={mutate} />
+                updateMessages={updateMessages} />
             }
 
         </Box>

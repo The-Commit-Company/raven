@@ -1,7 +1,6 @@
 import { Avatar, Box, HStack, Link, Stack, StackDivider, Text, useColorMode } from "@chakra-ui/react"
-import { useContext, useState } from "react"
+import { useState } from "react"
 import { useModalManager, ModalTypes } from "../../../hooks/useModalManager"
-import { ChannelContext } from "../../../utils/channel/ChannelProvider"
 import { FileMessageBlock } from "../chat/ChatMessage/FileMessage"
 import { FilePreviewModal } from "../file-preview/FilePreviewModal"
 import { MarkdownRenderer } from "../markdown-viewer/MarkdownRenderer"
@@ -26,7 +25,6 @@ export const MessageBox = ({ messageName, channelName, channelID, isArchived, cr
     const { colorMode } = useColorMode()
     const textColor = colorMode === 'light' ? 'gray.800' : 'gray.50'
     const [showButtons, setShowButtons] = useState<{}>({ visibility: 'hidden' })
-    const { channelMembers, users } = useContext(ChannelContext)
     const modalManager = useModalManager()
     const onFilePreviewModalOpen = () => {
         modalManager.openModal(ModalTypes.FilePreview, {

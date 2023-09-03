@@ -1,19 +1,18 @@
-import { useContext } from 'react'
 import { Button, ButtonGroup, ListItem, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Stack, Text, UnorderedList, useToast } from '@chakra-ui/react'
 import { useFrappeUpdateDoc } from 'frappe-react-sdk'
-import { AlertBanner, ErrorBanner } from '../../layout/AlertBanner'
-import { ChannelContext } from '../../../utils/channel/ChannelProvider'
+import { ErrorBanner } from '../../layout/AlertBanner'
 import { useNavigate } from 'react-router-dom'
+import { ChannelListItem } from '@/utils/channel/ChannelListProvider'
 
 interface ArchiveChannelProps {
     isOpen: boolean,
-    onClose: () => void
-    onCloseViewDetails: () => void
+    onClose: () => void,
+    onCloseViewDetails: () => void,
+    channelData: ChannelListItem
 }
 
-export const ArchiveChannel = ({ isOpen, onClose, onCloseViewDetails }: ArchiveChannelProps) => {
+export const ArchiveChannel = ({ isOpen, onClose, onCloseViewDetails, channelData }: ArchiveChannelProps) => {
 
-    const { channelData } = useContext(ChannelContext)
     const toast = useToast()
     const { updateDoc, error } = useFrappeUpdateDoc()
     const navigate = useNavigate()

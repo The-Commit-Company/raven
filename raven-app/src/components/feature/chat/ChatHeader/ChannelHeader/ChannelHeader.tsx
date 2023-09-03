@@ -4,35 +4,36 @@ import { EditChannelNameButton } from "./EditChannelNameButton"
 import { Text, HStack, Icon } from "@chakra-ui/react"
 import { getChannelIcon } from "@/utils/layout/channelIcon"
 import { ChannelListItem } from "@/utils/channel/ChannelListProvider"
+import { ViewOrAddMembersButton } from "@/components/feature/view-or-add-members/ViewOrAddMembersButton"
+import { ChannelMembers } from "@/pages/ChatSpace"
 
 interface ChannelHeaderProps {
-    channelID: string,
-    channel_name: string
-    type: ChannelListItem['type']
+    channelData: ChannelListItem,
+    channelMembers: ChannelMembers,
+    updateMembers: () => void
 }
 
-export const ChannelHeader = ({ channelID, channel_name, type }: ChannelHeaderProps) => {
+export const ChannelHeader = ({ channelData, channelMembers, updateMembers }: ChannelHeaderProps) => {
     return (
         <PageHeader>
             <PageHeading>
                 <HStack>
-                    <HStack><Icon as={getChannelIcon(type)} /><Text>{channel_name}</Text></HStack>
-                    <EditChannelNameButton channelID={channelID} channel_name={channel_name} type={type} />
+                    <Icon as={getChannelIcon(channelData.type)} />
+                    <Text>{channelData.channel_name}</Text>
+                    <EditChannelNameButton channelID={channelData.name} channel_name={channelData.channel_name} type={channelData.type} />
                 </HStack>
-                {/* <HStack>
-                    <Tooltip hasArrow label='search' placement='bottom-start' rounded={'md'}>
-                        <Button
-                            size={"sm"}
-                            aria-label="search"
-                            leftIcon={<HiOutlineSearch />}
-                            onClick={onCommandPaletteToggle}
-                            fontWeight='light'>
-                            Search
-                        </Button>
-                    </Tooltip>
-                    <ViewOrAddMembersButton onClickViewMembers={onViewDetailsModalOpen} onClickAddMembers={onAddMemberModalOpen} activeUsers={activeUsers.message} />
-                </HStack> */}
             </PageHeading>
+            {/* <Tooltip hasArrow label='search' placement='bottom-start' rounded={'md'}>
+                <Button
+                    size={"sm"}
+                    aria-label="search"
+                    leftIcon={<HiOutlineSearch />}
+                    onClick={onCommandPaletteToggle}
+                    fontWeight='light'>
+                    Search
+                </Button>
+            </Tooltip> */}
+            <ViewOrAddMembersButton channelData={channelData} channelMembers={channelMembers} updateMembers={updateMembers} />
         </PageHeader>
     )
 }
