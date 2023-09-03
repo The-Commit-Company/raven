@@ -13,7 +13,7 @@ import { EmojiPickerPopover, FileUploadButton, MentionButton } from "."
 import { QuillEditor } from "./QuillEditor"
 import ReactQuill from "react-quill"
 import { ChannelListContext, ChannelListContextType } from "@/utils/channel/ChannelListProvider"
-import { ChannelContext } from "@/utils/channel/ChannelProvider"
+import { useUserList } from "@/utils/users/UserListProvider"
 
 interface ChatInputProps {
     channelID: string,
@@ -104,7 +104,7 @@ export const ChatInput = ({ channelID, selectedMessage, handleCancelReply }: Cha
 
     const { channels } = useContext(ChannelListContext) as ChannelListContextType
 
-    const { users } = useContext(ChannelContext)
+    const { users } = useUserList()
 
     const allUsers: value[] = Object.values(users).map((user) => {
         return {
@@ -136,9 +136,9 @@ export const ChatInput = ({ channelID, selectedMessage, handleCancelReply }: Cha
 
             <Box>
                 <Stack spacing={0} border='1px' borderColor={'gray.500'} rounded='lg' bottom='2' boxShadow='base' w='calc(98vw - var(--sidebar-width))' bg={colorMode === "light" ? "white" : "gray.800"}>
-                    {selectedMessage && (
+                    {/* {selectedMessage && (
                         <PreviousMessageBox previous_message_content={selectedMessage} onReplyingToMessageClose={handleCancelReply} />
-                    )}
+                    )} */}
                     <QuillEditor text={text} setText={setText} onSubmit={onSubmit} setFiles={setFiles} allUsers={allUsers} allChannels={allChannels} reactQuillRef={reactQuillRef} />
                     {files.length > 0 &&
                         <Wrap spacingX={'2'} spacingY='2' w='full' spacing='0' alignItems='flex-end' px='2' pb='1'>

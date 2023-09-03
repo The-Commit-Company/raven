@@ -63,11 +63,10 @@ export const ChatBoxBody = ({ channelData, channelMembers, updateMembers }: Chat
                     channelMembers={channelMembers}
                     updateMembers={updateMembers} />
                 {channelData?.is_archived == 0 && ((user && user in channelMembers) || channelData?.type === 'Open' ?
-                    // <ChatInput
-                    //     channelID={channelData?.name}
-                    //     selectedMessage={selectedMessage}
-                    //     handleCancelReply={handleCancelReply} />
-                    <></>
+                    <ChatInput
+                        channelID={channelData?.name}
+                        selectedMessage={selectedMessage}
+                        handleCancelReply={handleCancelReply} />
                     :
                     (updateMembers && <JoinChannelBox
                         channelData={channelData}
