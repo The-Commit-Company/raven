@@ -2,24 +2,26 @@ import { Text, HStack, Icon, Stack, Link, Box, useColorMode, IconButton, Center,
 import { getFileExtensionIcon } from "../../../utils/layout/fileExtensionIcon";
 import { useFrappeGetCall } from "frappe-react-sdk";
 import { useParams } from "react-router-dom";
-import { AlertBanner, ErrorBanner } from "../../layout/AlertBanner";
+import { ErrorBanner } from "../../layout/AlertBanner";
 import { DateObjectToFormattedDateString, getFileExtension, getFileName } from "../../../utils/operations";
-import { useContext } from "react";
-import { ChannelContext } from "../../../utils/channel/ChannelProvider";
 import { BsDownload } from "react-icons/bs";
 import GlobalSearch from "../global-search/GlobalSearch";
 import { FileMessage } from "../../../../../types/Messaging/Message";
 import { scrollbarStyles } from "../../../styles";
+import { ChannelMembers } from "@/pages/ChatSpace";
 
 interface ChannelFile extends FileMessage {
     name: string,
     owner: string,
 }
 
-export const FilesSharedInChannel = () => {
+interface FilesSharedInChannelProps {
+    channelMembers: ChannelMembers
+}
+
+export const FilesSharedInChannel = ({ channelMembers }: FilesSharedInChannelProps) => {
 
     const { channelID } = useParams()
-    const { channelMembers } = useContext(ChannelContext)
     const { data, error } = useFrappeGetCall<{ message: ChannelFile[] }>("raven.raven_messaging.doctype.raven_message.raven_message.fetch_recent_files", {
         channel_id: channelID
     }, undefined, {
@@ -77,18 +79,17 @@ export const FilesSharedInChannel = () => {
                         No files have been shared in this channel yet. Drag and drop any file into the message pane to add it to this conversation.
                     </Text>
                 </Flex>}
-            {data?.message && data.message.length > 0 &&
+            {/* {data?.message && data.message.length > 0 &&
                 <Button
                     width={'fit-content'}
                     variant='link'
                     onClick={onGlobalSearchModalOpen}
                     color='blue.500'
-                    size={'sm'}
-                >
+                    size={'sm'}>
                     Show more
                 </Button>
             }
-            <GlobalSearch isOpen={isGlobalSearchModalOpen} onClose={onGlobalSearchModalClose} tabIndex={1} input={""} />
+            <GlobalSearch isOpen={isGlobalSearchModalOpen} onClose={onGlobalSearchModalClose} tabIndex={1} input={""} /> */}
         </Stack>
     )
 }

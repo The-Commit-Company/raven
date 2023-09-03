@@ -1,19 +1,18 @@
 import { Button, ButtonGroup, ListItem, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Stack, Text, UnorderedList, useToast } from '@chakra-ui/react'
 import { useFrappeUpdateDoc } from 'frappe-react-sdk'
-import { AlertBanner, ErrorBanner } from '../../layout/AlertBanner'
-import { useContext } from 'react'
-import { ChannelContext } from '../../../utils/channel/ChannelProvider'
+import { ErrorBanner } from '../../layout/AlertBanner'
+import { ChannelListItem } from '@/utils/channel/ChannelListProvider'
 
 interface ChangeChannelTypeProps {
     isOpen: boolean,
     onClose: () => void
+    channelData: ChannelListItem
 }
 
-export const ChangeChannelType = ({ isOpen, onClose }: ChangeChannelTypeProps) => {
+export const ChangeChannelType = ({ isOpen, onClose, channelData }: ChangeChannelTypeProps) => {
 
     const toast = useToast()
     const { updateDoc, error } = useFrappeUpdateDoc()
-    const { channelData } = useContext(ChannelContext)
     const new_channel_type = channelData?.type === 'Public' ? 'Private' : 'Public'
 
     const changeChannelType = (new_channel_type: 'Public' | 'Private') => {

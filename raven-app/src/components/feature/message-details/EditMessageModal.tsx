@@ -1,14 +1,14 @@
 import { Box, Button, ButtonGroup, HStack, IconButton, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Popover, PopoverContent, PopoverTrigger, Stack, useColorMode, useToast } from "@chakra-ui/react"
 import EmojiPicker, { EmojiClickData } from "emoji-picker-react"
-import { useFrappeGetCall, useFrappeUpdateDoc } from "frappe-react-sdk"
+import { useFrappeUpdateDoc } from "frappe-react-sdk"
 import { useCallback, useContext, useEffect, useState } from "react"
 import { useHotkeys } from "react-hotkeys-hook"
 import { FaRegSmile } from "react-icons/fa"
 import ReactQuill from "react-quill"
-import { AlertBanner, ErrorBanner } from "../../layout/AlertBanner"
-import { ChannelContext } from "../../../utils/channel/ChannelProvider"
+import { ErrorBanner } from "../../layout/AlertBanner"
 import { ModalTypes, useModalManager } from "../../../hooks/useModalManager"
-import { RavenChannel } from "../../../../../types/RavenChannelManagement/RavenChannel"
+import { UserListContext } from "@/utils/users/UserListProvider"
+import { ChannelListContext, ChannelListItem } from "@/utils/channel/ChannelListProvider"
 
 interface EditMessageModalProps {
     isOpen: boolean,
@@ -24,19 +24,17 @@ type value = {
 
 export const EditMessageModal = ({ isOpen, onClose, channelMessageID, originalText }: EditMessageModalProps) => {
 
-    const { users } = useContext(ChannelContext)
-    const { data: channelList, error: channelListError } = useFrappeGetCall<{ message: RavenChannel[] }>("raven.raven_channel_management.doctype.raven_channel.raven_channel.get_channel_list", undefined, undefined, {
-        revalidateOnFocus: false
-    })
+    const channels = useContext(ChannelListContext)
+    const users = useContext(UserListContext)
 
-    const allUsers: value[] = Object.values(users).map((user) => {
+    const allUsers: value[] = users ? users.users.map((user) => {
         return {
             id: user.name,
             value: user.full_name || user.name
         }
-    })
+    }) : []
 
-    const allChannels: value[] = channelList ? channelList.message.map((channel: RavenChannel) => {
+    const allChannels: value[] = channels ? Object.values(channels.channels).map((channel: ChannelListItem) => {
         return {
             id: channel.name,
             value: channel.channel_name || channel.name

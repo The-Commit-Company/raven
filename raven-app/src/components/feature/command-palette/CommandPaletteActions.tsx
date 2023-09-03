@@ -8,7 +8,6 @@ import { TbFiles, TbHash, TbListSearch, TbMessages, TbSearch, TbUsers } from "re
 import { useNavigate } from "react-router-dom"
 import { GetFileSearchResult } from "../../../../../types/Search/Search"
 import { UserContext } from "../../../utils/auth/UserProvider"
-import { ChannelContext } from "../../../utils/channel/ChannelProvider"
 import { getFileExtensionIcon } from "../../../utils/layout/fileExtensionIcon"
 import GlobalSearch from "../global-search/GlobalSearch"
 import { getFileExtension, getFileName } from "../../../utils/operations"
@@ -63,7 +62,7 @@ interface FindInProps {
 }
 
 export const Home = ({ searchChange, input, isGlobalSearchModalOpen, children, inputRef, onGlobalSearchModalOpen, onGlobalSearchModalClose, onCommandPaletteClose }: Props) => {
-    const { channelData, channelMembers } = useContext(ChannelContext)
+
     const { currentUser } = useContext(UserContext)
     const peer = Object.keys(channelMembers).filter((member) => member !== currentUser)[0]
     const style = { paddingBottom: 2, paddingTop: 2 }

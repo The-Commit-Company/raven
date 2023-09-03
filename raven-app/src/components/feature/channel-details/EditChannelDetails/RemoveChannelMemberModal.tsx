@@ -1,24 +1,27 @@
 import { Text, AlertDialog, AlertDialogBody, AlertDialogCloseButton, AlertDialogContent, AlertDialogFooter, AlertDialogHeader, AlertDialogOverlay, Button, ButtonGroup, HStack, useToast } from '@chakra-ui/react'
 import { useFrappeDeleteDoc, useFrappeGetCall } from 'frappe-react-sdk'
-import { useContext, useRef } from 'react'
+import { useRef } from 'react'
 import { BiHash, BiLockAlt } from 'react-icons/bi'
-import { ChannelContext } from '../../../../utils/channel/ChannelProvider'
-import { AlertBanner, ErrorBanner } from '../../../layout/AlertBanner'
+import { ErrorBanner } from '../../../layout/AlertBanner'
+import { ChannelListItem } from '@/utils/channel/ChannelListProvider'
+import { ChannelMembers } from '@/pages/ChatSpace'
 
 interface RemoveChannelMemberModalProps {
     isOpen: boolean,
     onClose: (refresh?: boolean) => void,
-    user_id: string
+    user_id: string,
+    channelData: ChannelListItem,
+    channelMembers: ChannelMembers
+    updateMembers: () => void
 }
 
-export const RemoveChannelMemberModal = ({ isOpen, onClose, user_id }: RemoveChannelMemberModalProps) => {
+export const RemoveChannelMemberModal = ({ isOpen, onClose, user_id, channelData, channelMembers, updateMembers }: RemoveChannelMemberModalProps) => {
 
-    const { channelData, channelMembers } = useContext(ChannelContext)
     const cancelRef = useRef<HTMLButtonElement | null>(null)
     const { deleteDoc, error } = useFrappeDeleteDoc()
     const toast = useToast()
 
-    const { data: channelMember, error: errorFetchingChannelMember } = useFrappeGetCall<{ message: { name: string } }>('frappe.client.get_value', {
+    const { data: member, error: errorFetchingChannelMember } = useFrappeGetCall<{ message: { name: string } }>('frappe.client.get_value', {
         doctype: "Raven Channel Member",
         filters: JSON.stringify({ channel_id: channelData?.name, user_id: user_id }),
         fieldname: JSON.stringify(["name"])
@@ -27,7 +30,7 @@ export const RemoveChannelMemberModal = ({ isOpen, onClose, user_id }: RemoveCha
     })
 
     const onSubmit = () => {
-        return deleteDoc('Raven Channel Member', channelMember?.message.name).then(() => {
+        return deleteDoc('Raven Channel Member', member?.message.name).then(() => {
             toast({
                 title: 'Member removed successfully',
                 status: 'success',
@@ -36,19 +39,19 @@ export const RemoveChannelMemberModal = ({ isOpen, onClose, user_id }: RemoveCha
                 variant: 'solid',
                 isClosable: true
             })
+            updateMembers()
             onClose()
-        })
-            .catch((e) => {
-                toast({
-                    title: 'Error: could not remove member.',
-                    status: 'error',
-                    duration: 3000,
-                    position: 'bottom',
-                    variant: 'solid',
-                    isClosable: true,
-                    description: `${e.message}`
-                })
+        }).catch((e) => {
+            toast({
+                title: 'Error: could not remove member.',
+                status: 'error',
+                duration: 3000,
+                position: 'bottom',
+                variant: 'solid',
+                isClosable: true,
+                description: `${e.message}`
             })
+        })
     }
 
     return (
@@ -64,6 +67,7 @@ export const RemoveChannelMemberModal = ({ isOpen, onClose, user_id }: RemoveCha
                 </AlertDialogHeader>
                 <AlertDialogCloseButton />
                 <AlertDialogBody>
+                    <ErrorBanner error={errorFetchingChannelMember} />
                     <ErrorBanner error={error} />
                     <Text fontSize='sm'>This person will no longer have access to the channel and can only rejoin by invitation.</Text>
                 </AlertDialogBody>
