@@ -27,8 +27,7 @@ export const MainPage = () => {
                             bgColor={chatInterfaceBackground}
                             w='calc(100vw - var(--sidebar-width))'
                             position="relative"
-                            left='var(--sidebar-width)'
-                        >
+                            left='var(--sidebar-width)'>
                             <VirtuosoRefProvider>
                                 <Outlet />
                             </VirtuosoRefProvider>
@@ -37,6 +36,5 @@ export const MainPage = () => {
                 </ActiveUsersProvider>
             </ChannelListProvider>
         </UserListProvider>
-
     )
 }

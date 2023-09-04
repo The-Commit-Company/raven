@@ -8,7 +8,6 @@ import { ErrorBanner } from '../../layout/AlertBanner'
 import { SidebarButtonItem, SidebarItemLabel } from '@/components/layout/Sidebar'
 import { IoAdd } from 'react-icons/io5'
 
-
 export const CreateChannelButton = ({ updateChannelList }: { updateChannelList: VoidFunction }) => {
     const { isOpen, onOpen, onClose } = useDisclosure()
     let navigate = useNavigate()
