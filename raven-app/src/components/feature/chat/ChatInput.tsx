@@ -157,6 +157,13 @@ export const ChatInput = ({ channelID, allUsers, allChannels, selectedMessage, h
         'code-block'
     ]
 
+    if (reactQuillRef.current) {
+        const editor = reactQuillRef.current?.getEditor()
+        var keyboard = editor.getModule('keyboard');
+        keyboard.bindings['Enter'] = null;
+        keyboard.bindings['13'] = null;
+    }
+
     const { colorMode } = useColorMode()
 
     const modalManager = useModalManager()
