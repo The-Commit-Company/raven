@@ -82,8 +82,9 @@ export const ChatHistory = ({ parsedMessages, updateMessages, replyToMessage, ch
                     Header: () => <ChannelHistoryFirstMessage channelID={channelData?.name} />,
                 }}
                 ref={virtuosoRef}
+                increaseViewportBy={300}
                 alignToBottom={true}
-                followOutput={'auto'}
+                followOutput={'smooth'}
             />
             <FilePreviewModal
                 isOpen={modalManager.modalType === ModalTypes.FilePreview}

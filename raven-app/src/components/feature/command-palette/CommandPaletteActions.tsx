@@ -94,7 +94,7 @@ export const Home = ({ searchChange, input, isGlobalSearchModalOpen, children, i
                     {channelData.is_direct_message ?
                         (channelData.is_self_message ?
                             `Find in direct messages with ${users[currentUser].first_name}` :
-                            `Find in direct messages with ${users[channelDMData.peer_user_id].first_name}`
+                            `Find in direct messages with ${users[channelDMData.peer_user_id]?.first_name ?? channelDMData.peer_user_id}`
                         ) :
                         `Find in ${channelData.channel_name}`
                     }
