@@ -55,7 +55,7 @@ export const Profile = () => {
                 <div className="ion-text-center mt-16">
                     <IonText color="medium">Raven v1.2.0</IonText>
                     <br />
-                    <IonText color="dark">Made by <IonText className='font-semibold'>The Commit Company</IonText>.</IonText>
+                    <IonText color="dark">Made by <IonText className='font-semibold'>The Commit Company</IonText></IonText>
                 </div>
             </IonContent>
         </IonPage>

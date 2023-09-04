@@ -3,7 +3,7 @@ import { ErrorBanner } from '../../components/layout'
 import raven_logo from '../../assets/raven_logo.png'
 import { useContext, useState } from 'react'
 import { UserContext } from '../../utils/auth/UserProvider'
-import { useForm } from 'react-hook-form'
+import { Controller, useForm } from 'react-hook-form'
 import { isEmailValid } from '../../utils/validations/validations'
 
 type Inputs = {
@@ -15,7 +15,7 @@ export const Login = () => {
 
     const [error, setError] = useState<Error | null>(null)
     const { login, isLoading } = useContext(UserContext)
-    const { register, handleSubmit, formState: { errors } } = useForm<Inputs>()
+    const { control, handleSubmit, formState: { errors } } = useForm<Inputs>()
 
     async function onSubmit(values: Inputs) {
         setError(null)
@@ -39,30 +39,43 @@ export const Login = () => {
                     {error && <ErrorBanner overrideHeading={error.message} />}
                     <form onSubmit={handleSubmit(onSubmit)}>
                         <IonItem>
-                            <IonInput
-                                type="email" required
-                                {...register("email", {
+                            <Controller
+                                name="email"
+                                control={control}
+                                rules={{
                                     required: "Email is required",
                                     validate: (e) => isEmailValid(e) ? true : "Please enter a valid email"
-                                })}
-                                placeholder='sally@example.com'
-                                className={!!errors?.email ? 'ion-invalid ion-touched' : ''}
-                                label='Email'
-                                inputMode='email'
-                                labelPlacement='stacked'
+                                }}
+                                render={({ field }) => <IonInput
+                                    type="email"
+                                    onIonChange={(e) => field.onChange(e.detail.value)}
+                                    required
+                                    placeholder='sally@example.com'
+                                    className={!!errors?.email ? 'ion-invalid ion-touched' : ''}
+                                    label='Email'
+                                    errorText={errors?.email?.message}
+                                    inputMode='email'
+                                    labelPlacement='stacked'
+                                />}
                             />
                         </IonItem>
                         <IonItem>
-                            <IonInput
-                                type="password"
-                                {...register("password", {
+                            <Controller
+                                name="password"
+                                control={control}
+                                rules={{
                                     required: "Password is required."
-                                })}
-                                required
-                                placeholder='********'
-                                className={!!errors?.password ? 'ion-invalid ion-touched' : ''}
-                                label='Password'
-                                labelPlacement='stacked'
+                                }}
+                                render={({ field }) => <IonInput
+                                    type="password"
+                                    onIonChange={(e) => field.onChange(e.detail.value)}
+                                    required
+                                    errorText={errors?.password?.message}
+                                    placeholder='********'
+                                    className={!!errors?.password ? 'ion-invalid ion-touched' : ''}
+                                    label='Password'
+                                    labelPlacement='stacked'
+                                />}
                             />
                         </IonItem>
                         <IonButton

@@ -55,7 +55,7 @@ export const Navbar = () => {
     </IonTabs>
 }
 
-const ProtectedRoute = ({ children }: PropsWithChildren) => {
+export const ProtectedRoute = ({ children }: PropsWithChildren) => {
     const { currentUser, isLoading } = useContext(UserContext)
 
     if (isLoading) {

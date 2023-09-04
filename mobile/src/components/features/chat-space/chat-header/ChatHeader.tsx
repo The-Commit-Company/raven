@@ -1,26 +1,16 @@
-import { useContext } from 'react'
 import { DirectMessageHeader } from './DirectMessageHeader'
-import { UserContext } from '../../../../utils/auth/UserProvider'
-import { ChannelContext } from '../../../../utils/channel/ChannelProvider'
 import { ChannelHeader } from './ChannelHeader'
+import { ChannelListItem, DMChannelListItem } from '@/utils/channel/ChannelListProvider'
 
-export const ChatHeader = () => {
+export const ChatHeader = ({ channel }: { channel: ChannelListItem | DMChannelListItem }) => {
 
-    const { currentUser } = useContext(UserContext)
-    const { channelData, channelMembers } = useContext(ChannelContext)
 
-    if (channelData?.is_self_message) {
+    if (channel.is_direct_message === 1) {
         return (
-            <DirectMessageHeader name={channelMembers[currentUser]?.full_name + " (You)"} image={channelMembers[currentUser]?.user_image} />
-        )
-    }
-    if (channelData?.is_direct_message) {
-        const peer = Object.keys(channelMembers).filter((member) => member !== currentUser)[0]
-        return (
-            <DirectMessageHeader name={channelMembers[peer].full_name} image={channelMembers[peer].user_image} />
+            <DirectMessageHeader channel={channel as DMChannelListItem} />
         )
     }
     return (
-        <ChannelHeader />
+        <ChannelHeader channel={channel} />
     )
 }

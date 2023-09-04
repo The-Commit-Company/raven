@@ -49,14 +49,14 @@ interface DMChannel extends DMUser {
 }
 const DMChannelItem = ({ user }: { user: DMChannel }) => {
     return <IonItem className='py-1' key={user.name} detail={false} lines='none' routerLink={`channel/${user.channel.name}`}>
-        <UserAvatar alt={user.full_name} src={user.user_image} />
+        <UserAvatar slot='start' alt={user.full_name} src={user.user_image} />
         <IonLabel>{user.full_name}</IonLabel>
     </IonItem>
 }
 
 const UserItem = ({ user, onChannelCreate }: { user: DMUser, onChannelCreate: (user_id: string) => void }) => {
     return <IonItem className='py-1' key={user.name} detail={false} lines='none' button onClick={() => onChannelCreate(user.name)}>
-        <UserAvatar alt={user.full_name} src={user.user_image} />
+        <UserAvatar slot='start' alt={user.full_name} src={user.user_image} />
         <IonLabel>{user.full_name}</IonLabel>
     </IonItem>
 }
