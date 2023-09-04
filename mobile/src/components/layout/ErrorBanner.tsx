@@ -34,7 +34,7 @@ export const ErrorBanner = ({ error, overrideHeading, ...props }: ErrorBannerPro
 
         if (eMessages.length === 0) {
             // Get the message from the exception by removing the exc_type
-            const indexOfFirstColon = error?.exception.indexOf(':')
+            const indexOfFirstColon = error?.exception?.indexOf(':')
             if (indexOfFirstColon) {
                 const exception = error?.exception?.slice(indexOfFirstColon + 1)
                 if (exception) {

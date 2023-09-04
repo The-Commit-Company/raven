@@ -4,35 +4,20 @@ import { BiGlobe, BiHash, BiLock } from "react-icons/bi"
 import { IonButton, IonIcon, IonText, IonTitle } from "@ionic/react"
 import { personAdd } from 'ionicons/icons';
 import { AddChannelMembers } from "../../channels";
+import { ChannelListItem } from "@/utils/channel/ChannelListProvider";
 
-export const ChannelHeader = () => {
-
-    const { channelData, channelMembers } = useContext(ChannelContext)
-    const pageRef = useRef()
+export const ChannelHeader = ({ channel }: { channel: ChannelListItem }) => {
 
     return (
         <IonTitle>
-            <div className='flex items-center gap-2'>
-                <div>
-                    <div className='flex items-center'>
-                        <div className='text-xl'>
-                            {channelData?.type === 'Private' ? <BiLock /> : channelData?.type === 'Public' ? <BiHash /> : <BiGlobe />}
-                        </div>
-                        <h1 className='text-lg font-medium'>
-                            {channelData?.channel_name}
-                        </h1>
-                    </div>
-                    {channelData?.type !== "Open" && !channelData?.is_direct_message && !channelData?.is_self_message &&
-                        <IonText color='medium' className='font-light text-sm'>
-                            ({Object.keys(channelMembers).length} member{Object.keys(channelMembers).length > 1 ? 's' : ''})
-                        </IonText>
-                    }
+            <div className='flex flex-col items-center justify-start'>
+                <div className='flex items-center justify-start'>
+                    {channel.type === 'Private' ? <BiLock fontSize={'24px'} /> : channel.type === 'Public' ? <BiHash fontSize={'24px'} /> : <BiGlobe fontSize={'24px'} />}
+                    <h1 className='ml-2'>
+                        {channel.channel_name}
+                    </h1>
                 </div>
-                {/* {channelData?.type !== "Open" && <IonButton fill="clear" size="small" color={'dark'} id='add-members'>
-                    <IonIcon slot="icon-only" icon={personAdd}></IonIcon>
-                </IonButton>} */}
             </div>
-            {/* <AddChannelMembers presentingElement={pageRef.current} /> */}
         </IonTitle>
     )
 }
