@@ -1,18 +1,24 @@
-import { Box, HStack, Stack, useColorMode, Text, Button, Divider } from "@chakra-ui/react"
+import { Box, HStack, Stack, useColorMode, Text, Divider, Icon } from "@chakra-ui/react"
 import { useContext } from "react"
-import { BiGlobe, BiHash, BiLockAlt } from "react-icons/bi"
 import { UserContext } from "../../../utils/auth/UserProvider"
-import { ChannelContext } from "../../../utils/channel/ChannelProvider"
 import { DateObjectToFormattedDateString } from "../../../utils/operations"
-import { AddOrEditChannelDescriptionModal } from "./EditChannelDetails/AddOrEditChannelDescriptionModal"
-import { ChannelRenameModal } from "./EditChannelDetails/ChannelRenameModal"
-import { LeaveChannelModal } from "./EditChannelDetails/LeaveChannelModal"
-import { ModalTypes, useModalManager } from "../../../hooks/useModalManager"
+import { ChannelListItem } from "@/utils/channel/ChannelListProvider"
+import { getChannelIcon } from "@/utils/layout/channelIcon"
+import { ChannelMembers } from "@/utils/channel/ChannelMembersProvider"
+import { EditChannelNameButton } from "./rename-channel/EditChannelNameButton"
+import { EditDescriptionButton } from "./edit-channel-description/EditDescriptionButton"
+import { useGetUserRecords } from "@/hooks/useGetUserRecords"
+import { LeaveChannelButton } from "./leave-channel/LeaveChannelButton"
 
-export const ChannelDetails = () => {
+interface ChannelDetailsProps {
+    channelData: ChannelListItem,
+    channelMembers: ChannelMembers,
+    onClose: () => void
+}
+
+export const ChannelDetails = ({ channelData, channelMembers, onClose }: ChannelDetailsProps) => {
 
     const { colorMode } = useColorMode()
-    const { channelData, channelMembers } = useContext(ChannelContext)
     const { currentUser } = useContext(UserContext)
 
     const BOXSTYLE = {
@@ -22,20 +28,8 @@ export const ChannelDetails = () => {
         borderColor: colorMode === 'light' ? 'gray.200' : 'gray.600'
     }
 
-    const modalManager = useModalManager()
-
-    const onChannelRenameModalOpen = () => {
-        modalManager.openModal(ModalTypes.RenameChannel)
-    }
-
-    const onChannelDescriptionModalOpen = () => {
-        modalManager.openModal(ModalTypes.EditChannelDescription)
-    }
-
-    const onLeaveChannelModalOpen = () => {
-        modalManager.openModal(ModalTypes.LeaveChannel)
-    }
     const admin = Object.values(channelMembers).find(user => user.is_admin === 1)
+    const users = useGetUserRecords()
 
     return (
         <Stack spacing='4'>
@@ -45,13 +39,11 @@ export const ChannelDetails = () => {
                     <Stack>
                         <Text fontWeight='semibold' fontSize='sm'>Channel name</Text>
                         <HStack spacing={1}>
-                            {channelData?.type === 'Private' && <BiLockAlt /> ||
-                                channelData?.type === 'Public' && <BiHash /> ||
-                                channelData?.type === 'Open' && <BiGlobe />}
+                            <Icon as={getChannelIcon(channelData?.type)} />
                             <Text fontSize='sm'>{channelData?.channel_name}</Text>
                         </HStack>
                     </Stack>
-                    <Button colorScheme='blue' variant='link' size='sm' onClick={onChannelRenameModalOpen}>Edit</Button>
+                    <EditChannelNameButton channelID={channelData.name} channel_name={channelData.name} type={channelData.type} />
                 </HStack>
             </Box>
 
@@ -65,9 +57,7 @@ export const ChannelDetails = () => {
                                 {channelData && channelData.channel_description && channelData.channel_description.length > 0 ? channelData.channel_description : 'No description'}
                             </Text>
                         </Stack>
-                        <Button colorScheme='blue' variant='link' size='sm' onClick={onChannelDescriptionModalOpen}>
-                            {channelData && channelData.channel_description && channelData.channel_description.length > 0 ? 'Edit' : 'Add'}
-                        </Button>
+                        <EditDescriptionButton channelData={channelData} />
                     </HStack>
 
                     <Divider />
@@ -79,41 +69,32 @@ export const ChannelDetails = () => {
                                 ?
                                 <Text fontSize='sm'>Administrator</Text>
                                 :
-                                channelData?.owner && <Text fontSize='sm'>{channelData?.owner_full_name}</Text>}
+                                channelData?.owner && <Text fontSize='sm'>{users[channelData.owner]?.full_name}</Text>}
                             <Text fontSize='sm' color='gray.500'>on {DateObjectToFormattedDateString(new Date(channelData?.creation ?? ''))}</Text>
                         </HStack>
                     </Stack>
 
-                    {channelData?.type != 'Open' && <><Divider /><Stack>
-                        <Text fontWeight='semibold' fontSize='sm'>Administrator</Text>
-                        <HStack>
-                            {admin ? <Text fontSize='sm'>{admin.full_name}</Text> :
-                                <Text fontSize='sm' color='gray.500'>No administrator</Text>}
-                        </HStack>
+                    {channelData?.type != 'Open' && <>
+                        <Divider />
+                        <Stack>
+                            <Text fontWeight='semibold' fontSize='sm'>Administrator</Text>
+                            <HStack>
+                                {admin ? <Text fontSize='sm'>{admin.full_name}</Text> : <Text fontSize='sm' color='gray.500'>No administrator</Text>}
+                            </HStack>
+                        </Stack>
+                    </>}
 
-
-                    </Stack></>}
-
+                    {/* users can only leave channels they are members of */}
+                    {/* users cannot leave open channels */}
                     {channelMembers[currentUser] && channelData?.type != 'Open' &&
                         <>
                             <Divider />
-                            <Button colorScheme='red' variant='link' size='sm' w='fit-content' onClick={onLeaveChannelModalOpen}>
-                                Leave channel
-                            </Button>
+                            <LeaveChannelButton channelData={channelData} onClose={onClose} />
                         </>
                     }
 
                 </Stack>
             </Box>
-            <ChannelRenameModal
-                isOpen={modalManager.modalType === ModalTypes.RenameChannel}
-                onClose={modalManager.closeModal} />
-            <AddOrEditChannelDescriptionModal
-                isOpen={modalManager.modalType === ModalTypes.EditChannelDescription}
-                onClose={modalManager.closeModal} />
-            <LeaveChannelModal
-                isOpen={modalManager.modalType === ModalTypes.LeaveChannel}
-                onClose={modalManager.closeModal} />
         </Stack>
     )
 }

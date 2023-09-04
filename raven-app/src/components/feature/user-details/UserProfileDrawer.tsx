@@ -7,13 +7,14 @@ import { useNavigate } from "react-router-dom"
 import { DateObjectToTimeString } from "../../../utils/operations"
 import { AiOutlineEdit } from "react-icons/ai"
 import { SetUserStatus } from "./SetUserStatus"
-import { User } from "../../../../../types/Core/User"
 import { useUserData } from "@/hooks/useUserData"
+import { ErrorBanner } from "@/components/layout/AlertBanner"
+import { Member } from "@/utils/channel/ChannelMembersProvider"
 
 interface UserProfileDrawerProps {
     isOpen: boolean
     onClose: () => void,
-    user: User
+    user: Member
 }
 
 export const UserProfileDrawer = ({ isOpen, onClose, user }: UserProfileDrawerProps) => {
@@ -49,8 +50,9 @@ export const UserProfileDrawer = ({ isOpen, onClose, user }: UserProfileDrawerPr
 
                 <DrawerBody>
                     <Stack spacing={6} mt='4'>
-                        {user && <Avatar size='3xl' borderRadius={'md'} src={user.user_image} />}
+                        {user && <Avatar size='3xl' borderRadius={'md'} src={user.user_image ?? ''} />}
                         <Stack>
+                            <ErrorBanner error={channelError} />
                             <HStack justifyContent='space-between'>
                                 {user && <Text fontSize='xl' fontWeight='bold'>{user.full_name}</Text>}
                                 {user && (activeUsers?.message.includes(user.name) && !!!activeUsersError) ? <HStack spacing={1}>

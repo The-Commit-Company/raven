@@ -7,12 +7,11 @@ import { BiGlobe, BiHash, BiLockAlt } from 'react-icons/bi'
 import { useNavigate } from 'react-router-dom'
 import { useDebounce } from '../../../hooks/useDebounce'
 import { GetChannelSearchResult } from '../../../../../types/Search/Search'
-import { AlertBanner, ErrorBanner } from '../../layout/AlertBanner'
+import { ErrorBanner } from '../../layout/AlertBanner'
 import { EmptyStateForSearch } from '../../layout/EmptyState/EmptyState'
 import { SelectInput, SelectOption } from '../search-filters/SelectInput'
 import { Sort } from '../sorting'
 import { scrollbarStyles } from '../../../styles'
-import { RavenChannel } from '../../../../../types/RavenChannelManagement/RavenChannel'
 interface Props {
     onToggleMyChannels: () => void,
     isOpenMyChannels: boolean,

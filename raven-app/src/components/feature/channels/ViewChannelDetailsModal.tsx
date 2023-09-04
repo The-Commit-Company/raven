@@ -1,24 +1,26 @@
-import { Text, Modal, ModalBody, ModalCloseButton, ModalContent, ModalHeader, ModalOverlay, HStack, Tabs, TabList, Tab, TabPanels, TabPanel } from "@chakra-ui/react"
+import { Text, Modal, ModalBody, ModalCloseButton, ModalContent, ModalHeader, ModalOverlay, HStack, Tabs, TabList, Tab, TabPanels, TabPanel, Icon } from "@chakra-ui/react"
 import { useContext } from "react"
-import { BiGlobe, BiHash, BiLockAlt } from "react-icons/bi"
-import { ChannelContext } from "../../../utils/channel/ChannelProvider"
 import { ChannelDetails } from "../channel-details/ChannelDetails"
-import { ChannelMemberDetails } from "../channel-details/ChannelMemberDetails"
-import { FilesSharedInChannel } from '../files/FilesSharedInChannel'
-import { ChannelSettings } from "../settings/ChannelSettings"
+import { ChannelMemberDetails } from "../channel-member-details/ChannelMemberDetails"
+import { FilesSharedInChannel } from '../channel-shared-files/FilesSharedInChannel'
+import { ChannelSettings } from "../channel-settings/ChannelSettings"
 import { UserContext } from "../../../utils/auth/UserProvider"
+import { getChannelIcon } from "@/utils/layout/channelIcon"
+import { ChannelListItem } from "@/utils/channel/ChannelListProvider"
+import { ChannelMembers } from "@/utils/channel/ChannelMembersProvider"
 
 interface ViewChannelDetailsModalProps {
     isOpen: boolean,
     onClose: () => void,
-    activeUsers: string[]
+    channelData: ChannelListItem,
+    activeUsers: string[],
+    channelMembers: ChannelMembers,
+    updateMembers: () => void
 }
 
-export const ViewChannelDetailsModal = ({ isOpen, onClose, activeUsers }: ViewChannelDetailsModalProps) => {
+export const ViewChannelDetailsModal = ({ isOpen, onClose, channelData, channelMembers, activeUsers, updateMembers }: ViewChannelDetailsModalProps) => {
 
-    const { channelMembers, channelData } = useContext(ChannelContext)
-    const members = Object.values(channelMembers)
-    const memberCount = members.length
+    const memberCount = Object.keys(channelMembers).length
     const { currentUser } = useContext(UserContext)
 
     return (
@@ -27,10 +29,7 @@ export const ViewChannelDetailsModal = ({ isOpen, onClose, activeUsers }: ViewCh
             <ModalContent>
 
                 <ModalHeader>
-                    {channelData?.type === 'Public' && <HStack><BiHash /><Text>{channelData?.channel_name}</Text></HStack> ||
-                        channelData?.type === 'Private' && <HStack><BiLockAlt /><Text>{channelData?.channel_name}</Text></HStack> ||
-                        channelData?.type === 'Open' && <HStack><BiGlobe /><Text>{channelData?.channel_name}</Text></HStack>
-                    }
+                    <HStack><Icon as={getChannelIcon(channelData.type)} /><Text>{channelData.channel_name}</Text></HStack>
                 </ModalHeader>
                 <ModalCloseButton mt='2' />
 
@@ -46,25 +45,27 @@ export const ViewChannelDetailsModal = ({ isOpen, onClose, activeUsers }: ViewCh
                                 </HStack>
                             </Tab>
                             <Tab>Files</Tab>
-                            {channelMembers[currentUser]?.is_admin == 1 && channelData?.name != 'general' && <Tab>Settings</Tab>}
+                            {/* channel settings are only available for admins */}
+                            {/* the general channel is the default channel and cannot be deleted or archived */}
+                            {channelMembers[currentUser]?.is_admin == 1 && channelData.name != 'general' && <Tab>Settings</Tab>}
                         </TabList>
                         <TabPanels>
                             <TabPanel px={0}>
-                                <ChannelDetails />
+                                <ChannelDetails channelData={channelData} channelMembers={channelMembers} onClose={onClose} />
                             </TabPanel>
                             <TabPanel px={0}>
-                                <ChannelMemberDetails members={members} activeUsers={activeUsers} />
+                                <ChannelMemberDetails channelData={channelData} channelMembers={channelMembers} activeUsers={activeUsers} updateMembers={updateMembers} />
                             </TabPanel>
                             <TabPanel px={0}>
-                                <FilesSharedInChannel />
+                                <FilesSharedInChannel channelMembers={channelMembers} />
                             </TabPanel>
-                            {channelData?.name != 'general' && <TabPanel px={0}>
-                                <ChannelSettings onClose={onClose} />
-                            </TabPanel>}
+                            <TabPanel px={0}>
+                                <ChannelSettings channelData={channelData} onClose={onClose} />
+                            </TabPanel>
                         </TabPanels>
                     </Tabs>
 
-                    <Text fontSize='xs' color='gray.500' pl='3' pb='4'>Channel ID: {channelData?.name}</Text>
+                    <Text fontSize='xs' color='gray.500' pl='3' pb='4'>Channel ID: {channelData.name}</Text>
 
                 </ModalBody>
 

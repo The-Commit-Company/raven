@@ -1,20 +1,20 @@
 import { Avatar, Center, HStack, Link, Modal, ModalBody, Image, ModalFooter, ModalCloseButton, ModalContent, ModalHeader, ModalOverlay, Stack, StackDivider, Text, useColorMode } from "@chakra-ui/react"
 import { DateObjectToTimeString, getFileName } from "../../../utils/operations"
-import { useContext } from "react"
-import { ChannelContext } from "../../../utils/channel/ChannelProvider"
 import { BsDownload } from "react-icons/bs"
 import { FileMessage } from "../../../../../types/Messaging/Message"
+import { useGetUserRecords } from "@/hooks/useGetUserRecords"
 
 interface FilePreviewModalProps extends FileMessage {
     isOpen: boolean,
-    onClose: () => void
+    onClose: () => void,
 }
 
 export const FilePreviewModal = ({ isOpen, onClose, owner, file, creation, message_type }: FilePreviewModalProps) => {
 
-    const { channelMembers } = useContext(ChannelContext)
     const { colorMode } = useColorMode()
     const textColor = colorMode === 'light' ? 'gray.800' : 'gray.50'
+
+    const users = useGetUserRecords()
 
     return (
         <Modal isOpen={isOpen} onClose={onClose} size='6xl' scrollBehavior="inside">
@@ -23,10 +23,10 @@ export const FilePreviewModal = ({ isOpen, onClose, owner, file, creation, messa
                 <ModalHeader>
                     {owner &&
                         <HStack spacing={2} alignItems='center'>
-                            <Avatar name={channelMembers?.[owner]?.full_name ?? owner} src={channelMembers?.[owner]?.user_image} borderRadius={'md'} boxSize='40px' />
+                            <Avatar name={users?.[owner]?.full_name ?? owner} src={users?.[owner]?.user_image ?? ''} borderRadius={'md'} boxSize='40px' />
                             <Stack spacing={1}>
                                 <HStack divider={<StackDivider borderColor="gray.200" />} spacing={2} alignItems='center'>
-                                    <Text fontSize='md' lineHeight={'0.9'} fontWeight="bold" as='span' color={textColor}>{channelMembers?.[owner]?.full_name ?? owner}</Text>
+                                    <Text fontSize='md' lineHeight={'0.9'} fontWeight="bold" as='span' color={textColor}>{users?.[owner]?.full_name ?? owner}</Text>
                                     <Text fontSize="xs" lineHeight={'0.9'} color="gray.500">{DateObjectToTimeString(creation)}</Text>
                                 </HStack>
                                 {file &&
@@ -43,8 +43,7 @@ export const FilePreviewModal = ({ isOpen, onClose, owner, file, creation, messa
                 <ModalBody>
                     {message_type === 'Image' && <Center>
                         <Image src={file} alt="uploaded image" maxH={"70vh"} maxW="full" objectFit={'contain'} objectPosition={'center'} />
-                    </Center>
-                    }
+                    </Center>}
                     {message_type === 'File' && <iframe src={file} width="100%" height={'550px'} />}
                 </ModalBody>
                 <ModalFooter></ModalFooter>

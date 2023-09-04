@@ -5,18 +5,19 @@ import { useContext, useState } from "react"
 import { BiGlobe, BiHash, BiLockAlt } from "react-icons/bi"
 import { BsFillCircleFill, BsCircle } from "react-icons/bs"
 import { TbFiles, TbHash, TbListSearch, TbMessages, TbSearch, TbUsers } from "react-icons/tb"
-import { useNavigate } from "react-router-dom"
+import { useNavigate, useParams } from "react-router-dom"
 import { GetFileSearchResult } from "../../../../../types/Search/Search"
 import { UserContext } from "../../../utils/auth/UserProvider"
-import { ChannelContext } from "../../../utils/channel/ChannelProvider"
 import { getFileExtensionIcon } from "../../../utils/layout/fileExtensionIcon"
 import GlobalSearch from "../global-search/GlobalSearch"
 import { getFileExtension, getFileName } from "../../../utils/operations"
 import { useModalManager, ModalTypes } from "../../../hooks/useModalManager"
 import { FilePreviewModal } from "../file-preview/FilePreviewModal"
 import { FileSearchResult } from "../global-search/FileSearch"
-import { User } from "../../../../../types/Core/User"
 import { UserFields } from "@/utils/users/UserListProvider"
+import { useCurrentChannelData } from "@/hooks/useCurrentChannelData"
+import { ChannelListContext, ChannelListContextType, ChannelListItem, DMChannelListItem } from "@/utils/channel/ChannelListProvider"
+import { useGetUserRecords } from "@/hooks/useGetUserRecords"
 
 interface Props {
     searchChange: Function
@@ -63,22 +64,26 @@ interface FindInProps {
 }
 
 export const Home = ({ searchChange, input, isGlobalSearchModalOpen, children, inputRef, onGlobalSearchModalOpen, onGlobalSearchModalClose, onCommandPaletteClose }: Props) => {
-    const { channelData, channelMembers } = useContext(ChannelContext)
+
     const { currentUser } = useContext(UserContext)
-    const peer = Object.keys(channelMembers).filter((member) => member !== currentUser)[0]
     const style = { paddingBottom: 2, paddingTop: 2 }
     const [inFilter, setInFilter] = useState<string>()
     const [withFilter, setWithFilter] = useState<string>()
+    const { channelID } = useParams<{ channelID: string }>()
+    const { channel } = useCurrentChannelData(channelID ?? 'general')
+    const channelData = channel?.channelData as ChannelListItem
+    const channelDMData = channel?.channelData as DMChannelListItem
+    const users = useGetUserRecords()
 
     return (
         <Command.List>
             <CommandPaletteEmptyState input={input} placeholder='messages, files and more' tabIndex={0} isGlobalSearchModalOpen={isGlobalSearchModalOpen} onGlobalSearchModalOpen={onGlobalSearchModalOpen} onGlobalSearchModalClose={onGlobalSearchModalClose} onCommandPaletteClose={onCommandPaletteClose} />
             <Command.Group style={style}>
-                {channelData && <Item
+                <Item
                     onSelect={() => {
                         onGlobalSearchModalOpen()
-                        if (channelData.is_direct_message) {
-                            setWithFilter(channelData.is_self_message ? channelMembers[currentUser].name : channelMembers[peer].name)
+                        if (channel?.type === 'dm') {
+                            setWithFilter(channelData.is_self_message ? channelDMData.owner : channelDMData.peer_user_id)
                         }
                         else {
                             setInFilter(channelData.name)
@@ -88,12 +93,12 @@ export const Home = ({ searchChange, input, isGlobalSearchModalOpen, children, i
                     <TbListSearch fontSize={20} />
                     {channelData.is_direct_message ?
                         (channelData.is_self_message ?
-                            `Find in direct messages with ${channelMembers[currentUser].first_name}` :
-                            `Find in direct messages with ${channelMembers[peer].first_name}`
+                            `Find in direct messages with ${users[currentUser].first_name}` :
+                            `Find in direct messages with ${users[channelDMData.peer_user_id]?.first_name ?? channelDMData.peer_user_id}`
                         ) :
                         `Find in ${channelData.channel_name}`
                     }
-                </Item>}
+                </Item>
             </Command.Group>
             {children}
             {!input &&
@@ -232,30 +237,38 @@ export const Files = ({ searchChange, input, isGlobalSearchModalOpen, onGlobalSe
 
 export const Channels = ({ input, isGlobalSearchModalOpen, isChild, onGlobalSearchModalOpen, onGlobalSearchModalClose, onCommandPaletteClose }: ChannelsProps) => {
 
-    const { data, isValidating } = useSearch('Raven Channel', input, [["is_direct_message", "=", "0"]], 20)
     const navigate = useNavigate()
     const { onClose } = useModalContext()
+    const { channels } = useContext(ChannelListContext) as ChannelListContextType
+
+    const results_count = channels.reduce((count, channel) => {
+        if (channel?.channel_name?.toLowerCase().includes(input.toLowerCase())) {
+            return count + 1;
+        }
+        return count;
+    }, 0)
 
     return (
         <Command.List>
             {!isChild && <CommandPaletteEmptyState input={input} placeholder='channels' tabIndex={2} isGlobalSearchModalOpen={isGlobalSearchModalOpen} onGlobalSearchModalOpen={onGlobalSearchModalOpen} onGlobalSearchModalClose={onGlobalSearchModalClose} onCommandPaletteClose={onCommandPaletteClose} />}
-            <Command.Group heading={data?.results?.length ? "Recent channels" : ""} style={isChild ?
+            <Command.Group heading={results_count > 0 ? "Recent channels" : ""} style={isChild ?
                 {
                     visibility: !!input ? 'visible' : 'hidden',
                     maxHeight: !!input ? '300px' : '0px'
                 }
                 : {}
             }>
-                {isValidating && !data?.results?.length && <Text py='4' color='gray.500' textAlign='center' fontSize='sm'>No results found.</Text>}
-                {isValidating && <Command.Loading>
-                    <Center px='4' pb='2'>
-                        <Box><Spinner size={'xs'} color='gray.400' /></Box>
-                    </Center>
-                </Command.Loading>}
-                {data?.results?.map((r: { value: string, description: string, label: string }) => <Item key={r.value} value={r.value} onSelect={() => {
-                    navigate(`/channel/${r.value}`)
-                    onClose()
-                }}>{r.description.includes("Private") && <BiLockAlt /> || r.description.includes("Public") && <BiHash /> || r.description.includes("Open") && <BiGlobe />}{r.label}</Item>)}
+                {results_count === 0 && <Text py='4' color='gray.500' textAlign='center' fontSize='sm'>No results found.</Text>}
+                {channels?.map((channel: ChannelListItem) => {
+                    if (channel?.channel_name?.toLowerCase().includes(input.toLowerCase())) {
+                        return (
+                            <Item key={channel.name} value={channel.channel_name} onSelect={() => {
+                                navigate(`/channel/${channel.name}`)
+                                onClose()
+                            }}>{channel?.type === "Private" && <BiLockAlt /> || channel?.type === "Public" && <BiHash /> || channel?.type === "Open" && <BiGlobe />}{channel.channel_name}</Item>)
+                    }
+                }
+                )}
             </Command.Group>
         </Command.List>
     )
@@ -374,8 +387,7 @@ export const Item = ({
         <Command.Item
             onSelect={onSelect}
             value={value}
-            key={value}
-        >
+            key={value}>
             {children}
             {shortcut && (
                 <div cmdk-shortcuts="">

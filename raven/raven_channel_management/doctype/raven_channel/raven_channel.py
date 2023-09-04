@@ -121,7 +121,7 @@ def get_all_channels(hide_archived=True):
 def get_channel_list(hide_archived=False):
     # get List of all channels where current user is a member (all includes public, private, open, and DM channels)
     query = (frappe.qb.from_(channel)
-             .select(channel.name, channel.channel_name, channel.type, channel.channel_description, channel.is_archived, channel.is_direct_message, channel.is_self_message).distinct()
+             .select(channel.name, channel.channel_name, channel.type, channel.channel_description, channel.is_archived, channel.is_direct_message, channel.is_self_message, channel.creation, channel.owner).distinct()
              .left_join(channel_member)
              .on((channel.name == channel_member.channel_id))
              .where((channel.type != "Private") | (channel_member.user_id == frappe.session.user)))
