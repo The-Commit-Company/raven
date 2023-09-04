@@ -18,10 +18,9 @@ import { IoBookmark, IoBookmarkOutline } from 'react-icons/io5'
 import { FilePreviewModal } from '../file-preview/FilePreviewModal'
 import { useModalManager, ModalTypes } from "../../../hooks/useModalManager"
 import { scrollbarStyles } from '../../../styles'
-import { RavenChannel } from '../../../../../types/RavenChannelManagement/RavenChannel'
-import { User } from '../../../../../types/Core/User'
-import { UserFields, UserListContext } from '@/utils/users/UserListProvider'
-import { ChannelListContext, ChannelListItem } from '@/utils/channel/ChannelListProvider'
+import { UserFields } from '@/utils/users/UserListProvider'
+import { ChannelListContext, ChannelListContextType, ChannelListItem } from '@/utils/channel/ChannelListProvider'
+import { useGetUserRecords } from '@/hooks/useGetUserRecords'
 
 interface FilterInput {
     'from-user-filter': SelectOption[],
@@ -57,25 +56,27 @@ export const FileSearch = ({ onToggleMyChannels, isOpenMyChannels, onToggleSaved
 
     const { colorMode } = useColorMode()
 
-    const channels = useContext(ChannelListContext)
-    const users = useContext(UserListContext)
+    const users = useGetUserRecords()
 
     const userOptions: SelectOption[] = useMemo(() => {
         if (users) {
             return Object.values(users).map((user: UserFields) => ({
                 value: user.name,
-                label: <HStack><Avatar name={user.full_name} src={url + user.user_image} borderRadius={'md'} size="xs" /><Text>{user.full_name}</Text></HStack>
+                label: <HStack><Avatar name={user.full_name} src={user.user_image ?? ''} borderRadius={'md'} size="xs" /><Text>{user.full_name}</Text></HStack>
             }))
         } else {
             return []
         }
     }, [users])
 
+    const { channels } = useContext(ChannelListContext) as ChannelListContextType
+
     const channelOption: SelectOption[] = useMemo(() => {
         if (channels) {
-            return channels.map((channel: RavenChannel) => ({
+            return channels.map((channel: ChannelListItem) => ({
                 value: channel.name,
-                label: <HStack>{channel.type === "Private" && <BiLockAlt /> || channel.type === "Public" && <BiHash /> || channel.type === "Open" && <BiGlobe />}<Text>{channel.channel_name}</Text></HStack>
+                label: <HStack>{channel.type === "Private" && <BiLockAlt /> || channel.type === "Public" && <BiHash /> || channel.type === "Open" && <BiGlobe />}<Text>{channel.channel_name}</Text></HStack>,
+                is_archived: channel.is_archived
             }))
         } else {
             return []

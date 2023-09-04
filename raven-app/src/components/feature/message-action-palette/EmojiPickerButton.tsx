@@ -45,7 +45,7 @@ export const EmojiPickerButton = ({ handleScroll, saveReaction }: EmojiPickerBut
                     <Box zIndex={10}>
                         <PopoverContent border={'none'} rounded='lg'>
                             {/* @ts-ignore */}
-                            <EmojiPicker onEmojiClick={onEmojiClick} lazyLoadEmojis theme={colorMode === 'light' ? 'light' : 'dark'} />
+                            <EmojiPicker onEmojiClick={onEmojiClick} lazyLoadEmojis height={335} width={350} previewConfig={{ showPreview: false }} skinTonesDisabled theme={colorMode === 'light' ? 'light' : 'dark'} />
                         </PopoverContent>
                     </Box>
                 </Portal>

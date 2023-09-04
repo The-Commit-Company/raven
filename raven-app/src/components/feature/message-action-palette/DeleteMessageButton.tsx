@@ -1,7 +1,7 @@
 import { ModalTypes, useModalManager } from '@/hooks/useModalManager'
 import { IconButton, Tooltip } from '@chakra-ui/react'
 import { VscTrash } from 'react-icons/vsc'
-import { DeleteMessageModal } from '../message-details/DeleteMessageModal'
+import { DeleteMessageModal } from './DeleteMessageModal'
 
 export const DeleteMessageButton = ({ messageID }: { messageID: string }) => {
 

@@ -8,8 +8,8 @@ import { DateObjectToTimeString } from "../../../utils/operations"
 import { AiOutlineEdit } from "react-icons/ai"
 import { SetUserStatus } from "./SetUserStatus"
 import { useUserData } from "@/hooks/useUserData"
-import { Member } from "@/pages/ChatSpace"
 import { ErrorBanner } from "@/components/layout/AlertBanner"
+import { Member } from "@/utils/channel/ChannelMembersProvider"
 
 interface UserProfileDrawerProps {
     isOpen: boolean

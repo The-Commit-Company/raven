@@ -1,15 +1,14 @@
 import { Flex, VStack, Text, HStack, Link, Box, Stack, Avatar, Heading, Button, ButtonGroup, useDisclosure, useColorMode, AvatarBadge } from "@chakra-ui/react"
-import { BiBookmark, BiGlobe, BiHash, BiLockAlt, BiUserPlus } from "react-icons/bi"
+import { BiBookmark, BiGlobe, BiHash, BiLockAlt } from "react-icons/bi"
 import { DateObjectToFormattedDateString } from "../../../utils/operations"
-import { TbEdit } from "react-icons/tb"
-import { AddOrEditChannelDescriptionModal } from "../../feature/channel-details/EditChannelDetails/AddOrEditChannelDescriptionModal"
-import { AddChannelMemberModal } from "../../feature/channels/AddChannelMemberModal"
 import { UserProfileDrawer } from "../../feature/user-details/UserProfileDrawer"
-import { ModalTypes, useModalManager } from "../../../hooks/useModalManager"
 import { useUserData } from "@/hooks/useUserData"
 import { ChannelListItem, DMChannelListItem } from "@/utils/channel/ChannelListProvider"
-import { ChannelMembers } from "@/pages/ChatSpace"
 import { useCurrentChannelData } from "@/hooks/useCurrentChannelData"
+import { useContext } from "react"
+import { ChannelMembers, ChannelMembersContext, ChannelMembersContextType } from "@/utils/channel/ChannelMembersProvider"
+import { EditDescriptionButton } from "@/components/feature/channel-details/edit-channel-description/EditDescriptionButton"
+import { AddMembersButton } from "@/components/feature/channel-member-details/add-members/AddMembersButton"
 
 export const EmptyStateForSearch = () => {
     return (
@@ -36,45 +35,23 @@ interface EmptyStateForChannelProps {
 
 const EmptyStateForChannel = ({ channelData, channelMembers, updateMembers }: EmptyStateForChannelProps) => {
 
-    const modalManager = useModalManager()
-
-    const onChannelDescriptionModalOpen = () => {
-        modalManager.openModal(ModalTypes.EditChannelDescription)
-    }
-
-    const onAddMembersModalOpen = () => {
-        modalManager.openModal(ModalTypes.AddChannelMember)
-    }
-
     return (
-        <>
-            <Stack py='4' px='2'>
-                <Stack spacing={1}>
-                    <HStack alignItems={'center'} pb='1'>
-                        {channelData?.type === 'Private' && <BiLockAlt fontSize={'1.4rem'} />}
-                        {channelData?.type === 'Public' && <BiHash fontSize={'1.4rem'} />}
-                        {channelData?.type === 'Open' && <BiGlobe fontSize={'1.4rem'} />}
-                        <Heading size={'md'}>{channelData?.channel_name}</Heading>
-                    </HStack>
-                    <Text>{channelMembers[channelData.owner]?.full_name} created this channel on {DateObjectToFormattedDateString(new Date(channelData?.creation ?? ''))}. This is the very beginning of the <strong>{channelData?.channel_name}</strong> channel.</Text>
-                    {channelData?.channel_description && <Text fontSize={'sm'} color={'gray.500'}>{channelData?.channel_description}</Text>}
-                </Stack>
-                {channelData?.is_archived == 0 && <ButtonGroup size={'xs'} colorScheme="blue" variant={'link'} spacing={4} zIndex={1}>
-                    <Button leftIcon={<TbEdit fontSize={'1rem'} />} onClick={onChannelDescriptionModalOpen}>{channelData?.channel_description ? 'Edit' : 'Add'} description</Button>
-                    {channelData?.type !== 'Open' && <Button leftIcon={<BiUserPlus fontSize={'1.1rem'} />} onClick={onAddMembersModalOpen}>Add people</Button>}
-                </ButtonGroup>}
+        <Stack py='4' px='2'>
+            <Stack spacing={1}>
+                <HStack alignItems={'center'} pb='1'>
+                    {channelData?.type === 'Private' && <BiLockAlt fontSize={'1.4rem'} />}
+                    {channelData?.type === 'Public' && <BiHash fontSize={'1.4rem'} />}
+                    {channelData?.type === 'Open' && <BiGlobe fontSize={'1.4rem'} />}
+                    <Heading size={'md'}>{channelData?.channel_name}</Heading>
+                </HStack>
+                <Text>{channelMembers[channelData.owner]?.full_name} created this channel on {DateObjectToFormattedDateString(new Date(channelData?.creation ?? ''))}. This is the very beginning of the <strong>{channelData?.channel_name}</strong> channel.</Text>
+                {channelData?.channel_description && <Text fontSize={'sm'} color={'gray.500'}>{channelData?.channel_description}</Text>}
             </Stack>
-            <AddOrEditChannelDescriptionModal
-                isOpen={modalManager.modalType === ModalTypes.EditChannelDescription}
-                onClose={modalManager.closeModal}
-                channelData={channelData} />
-            <AddChannelMemberModal
-                isOpen={modalManager.modalType === ModalTypes.AddChannelMember}
-                onClose={modalManager.closeModal}
-                type={channelData?.type}
-                channel_name={channelData?.channel_name}
-                updateMembers={updateMembers} />
-        </>
+            {channelData?.is_archived == 0 && <ButtonGroup size={'xs'} colorScheme="blue" variant={'link'} spacing={4} zIndex={1}>
+                <EditDescriptionButton channelData={channelData} size={'xs'} />
+                {channelData?.type !== 'Open' && <AddMembersButton channelData={channelData} updateMembers={updateMembers} is_in_empty_state={true} />}
+            </ButtonGroup>}
+        </Stack>
     )
 }
 
@@ -151,14 +128,13 @@ export const EmptyStateForSavedMessages = () => {
 }
 
 interface ChannelHistoryFirstMessageProps {
-    channelID: string,
-    channelMembers: ChannelMembers,
-    updateMembers?: () => void
+    channelID: string
 }
 
-export const ChannelHistoryFirstMessage = ({ channelID, channelMembers, updateMembers }: ChannelHistoryFirstMessageProps) => {
+export const ChannelHistoryFirstMessage = ({ channelID }: ChannelHistoryFirstMessageProps) => {
 
     const { channel } = useCurrentChannelData(channelID)
+    const { channelMembers, mutate: updateMembers } = useContext(ChannelMembersContext) as ChannelMembersContextType
 
     if (channel) {
         // depending on whether channel is a DM or a channel, render the appropriate component

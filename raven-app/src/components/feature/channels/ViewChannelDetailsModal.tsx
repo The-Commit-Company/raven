@@ -1,13 +1,13 @@
 import { Text, Modal, ModalBody, ModalCloseButton, ModalContent, ModalHeader, ModalOverlay, HStack, Tabs, TabList, Tab, TabPanels, TabPanel, Icon } from "@chakra-ui/react"
 import { useContext } from "react"
 import { ChannelDetails } from "../channel-details/ChannelDetails"
-import { ChannelMemberDetails } from "../channel-details/ChannelMemberDetails"
-import { FilesSharedInChannel } from '../files/FilesSharedInChannel'
-import { ChannelSettings } from "../settings/ChannelSettings"
+import { ChannelMemberDetails } from "../channel-member-details/ChannelMemberDetails"
+import { FilesSharedInChannel } from '../channel-shared-files/FilesSharedInChannel'
+import { ChannelSettings } from "../channel-settings/ChannelSettings"
 import { UserContext } from "../../../utils/auth/UserProvider"
-import { ChannelMembers } from "@/pages/ChatSpace"
 import { getChannelIcon } from "@/utils/layout/channelIcon"
 import { ChannelListItem } from "@/utils/channel/ChannelListProvider"
+import { ChannelMembers } from "@/utils/channel/ChannelMembersProvider"
 
 interface ViewChannelDetailsModalProps {
     isOpen: boolean,
@@ -45,6 +45,8 @@ export const ViewChannelDetailsModal = ({ isOpen, onClose, channelData, channelM
                                 </HStack>
                             </Tab>
                             <Tab>Files</Tab>
+                            {/* channel settings are only available for admins */}
+                            {/* the general channel is the default channel and cannot be deleted or archived */}
                             {channelMembers[currentUser]?.is_admin == 1 && channelData.name != 'general' && <Tab>Settings</Tab>}
                         </TabList>
                         <TabPanels>
@@ -57,9 +59,9 @@ export const ViewChannelDetailsModal = ({ isOpen, onClose, channelData, channelM
                             <TabPanel px={0}>
                                 <FilesSharedInChannel channelMembers={channelMembers} />
                             </TabPanel>
-                            {channelData?.name != 'general' && <TabPanel px={0}>
+                            <TabPanel px={0}>
                                 <ChannelSettings channelData={channelData} onClose={onClose} />
-                            </TabPanel>}
+                            </TabPanel>
                         </TabPanels>
                     </Tabs>
 

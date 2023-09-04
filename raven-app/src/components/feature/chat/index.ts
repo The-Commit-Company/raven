@@ -1,4 +1,3 @@
-export { ChatInput } from './ChatInput/ChatInput';
-export { ChatMessageBox } from './ChatMessage/ChatMessageBox';
-export { ChatHistory } from './ChatHistory';
-export { ChatInterface } from './ChatInterface';
+export { ChatInput } from './chat-input/ChatInput';
+export { ChatMessageBox } from './chat-message/ChatMessageBox';
+export { ChatHistory } from './chat-history/ChatHistory';

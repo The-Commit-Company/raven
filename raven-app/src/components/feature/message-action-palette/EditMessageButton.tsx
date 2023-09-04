@@ -1,5 +1,5 @@
 import { IconButton, Tooltip } from "@chakra-ui/react"
-import { EditMessageModal } from "../message-details/EditMessageModal"
+import { EditMessageModal } from "./EditMessageModal"
 import { AiOutlineEdit } from "react-icons/ai"
 import { ModalTypes, useModalManager } from "@/hooks/useModalManager"
 

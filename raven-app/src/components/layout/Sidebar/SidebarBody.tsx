@@ -1,7 +1,7 @@
 import { Icon, Stack, useColorMode } from '@chakra-ui/react'
 import { IoBookmarkOutline } from 'react-icons/io5'
 import { ChannelList } from '../../feature/channels/ChannelList'
-import { DirectMessageList } from '../../feature/channels/DirectMessageList'
+import { DirectMessageList } from '../../feature/direct-messages/DirectMessageList'
 import { SidebarItem, SidebarGroupLabel } from './SidebarComp'
 import { useFrappeEventListener, useFrappeGetCall } from 'frappe-react-sdk'
 import { UnreadCountData } from '../../../utils/channel/ChannelListProvider'
