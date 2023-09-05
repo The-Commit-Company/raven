@@ -9,7 +9,11 @@ import { scrollbarStyles } from '../../../styles'
 
 export const SidebarBody = () => {
 
-    const { data: unread_count, mutate: update_count } = useFrappeGetCall<{ message: UnreadCountData }>("raven.raven_messaging.doctype.raven_message.raven_message.get_unread_count_for_channels")
+    const { data: unread_count, mutate: update_count } = useFrappeGetCall<{ message: UnreadCountData }>("raven.raven_messaging.doctype.raven_message.raven_message.get_unread_count_for_channels",
+        undefined,
+        'unread_channel_count', {
+        // revalidateOnFocus: false,
+    })
     useFrappeEventListener('unread_channel_count_updated', () => {
         update_count()
     })

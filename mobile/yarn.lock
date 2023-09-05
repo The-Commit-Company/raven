@@ -1253,10 +1253,10 @@ frappe-js-sdk@^1.3.6:
   resolved "https://registry.yarnpkg.com/frappe-js-sdk/-/frappe-js-sdk-1.3.6.tgz#dd3b2f43d46ea33345dddbc0b57c3ceb70dfe15f"
   integrity sha512-UjvRg0N+TiT3dmsEL3eMYg5v213/lVTZf793nsWc47IIJoCGqZoIMH8sLUtjeRdZE1Hn2EOL76hT26Q2bqcLQQ==
 
-frappe-react-sdk@^1.3.4:
-  version "1.3.4"
-  resolved "https://registry.yarnpkg.com/frappe-react-sdk/-/frappe-react-sdk-1.3.4.tgz#23956d07b3c6e2a5d7bb6f8a2d166aa64dc843fa"
-  integrity sha512-PwWTcHuQJCrQFj6DjfMpFLEyPc1m2FpVnoNscuxssawZt+rCkMEWoHvgVJsipSLBTSc3sdTQ6S6bVyd5L6KMQw==
+frappe-react-sdk@^1.3.5:
+  version "1.3.5"
+  resolved "https://registry.yarnpkg.com/frappe-react-sdk/-/frappe-react-sdk-1.3.5.tgz#516ccca3a9525deb9d18d539c6ff74c1e98edeb2"
+  integrity sha512-YarfsP19FCfJ9ZccNTIa6H3feuQVUjp1CYdyrSG9J+YYDHosUC4IttaIymwkHg0KD2hqUDb2wjR6VmifzscA5g==
   dependencies:
     frappe-js-sdk "^1.3.6"
     socket.io-client "^4.7.1"
