@@ -18,9 +18,10 @@ export const Channels = () => {
 
     const filteredChannels = useMemo(() => {
         if (!channels) return []
+        const activeChannels = channels.filter(channel => channel.is_archived == 0)
         const searchTerm = searchInput.toLowerCase()
-        if (!searchTerm) return channels
-        return channels.filter(channel => channel.channel_name.includes(searchTerm))
+        if (!searchTerm) return activeChannels
+        return activeChannels.filter(channel => channel.channel_name.includes(searchTerm))
     }, [searchInput, channels])
 
     return (
