@@ -63,7 +63,7 @@ class RavenMessage(Document):
             track_visit(self.channel_id)
 
 
-def track_visit(channel_id):
+def track_visit(channel_id, commit=False):
     '''
     Track the last visit of the user to the channel.
     If the user is not a member of the channel, create a new member record
@@ -80,6 +80,9 @@ def track_visit(channel_id):
             "user_id": frappe.session.user,
             "last_visit": frappe.utils.now()
         }).insert()
+    # Need to comit the changes to the database if the request is a GET request
+    if commit:
+        frappe.db.commit()
 
 
 @frappe.whitelist(methods=['POST'])
@@ -198,7 +201,7 @@ def check_permission(channel_id):
 def get_messages_with_dates(channel_id):
     check_permission(channel_id)
     messages = get_messages(channel_id)
-    track_visit(channel_id)
+    track_visit(channel_id, True)
     return parse_messages(messages)
 
 
