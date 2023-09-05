@@ -18,17 +18,17 @@ class RavenMessage(Document):
         '''
         self.validate_membership()
         self.validate_linked_message()
-        
-    
+
     def validate_membership(self):
         '''
             If the channel is private/public, the user creating the message should be a member of the channel
         '''
-        channel_type = frappe.db.get_value("Raven Channel", self.channel_id, "type")
+        channel_type = frappe.db.get_value(
+            "Raven Channel", self.channel_id, "type")
         if channel_type != "Open":
             if not frappe.db.exists("Raven Channel Member", {"channel_id": self.channel_id, "user_id": self.owner}):
                 frappe.throw(_("You are not a member of this channel"))
-    
+
     def validate_linked_message(self):
         '''
         If there is a linked message, the linked message should be in the same channel
@@ -40,7 +40,7 @@ class RavenMessage(Document):
     def after_insert(self):
         frappe.publish_realtime(
             'unread_channel_count_updated')
-        
+
     def after_delete(self):
         self.send_update_event(txt="delete")
 
@@ -53,6 +53,7 @@ class RavenMessage(Document):
         frappe.publish_realtime('message_updated', {
             'channel_id': self.channel_id}, after_commit=True)
         frappe.db.commit()
+
     def on_trash(self):
         # delete all the reactions for the message
         frappe.db.delete("Raven Message Reaction", {"message": self.name})
@@ -81,10 +82,8 @@ def track_visit(channel_id):
 @frappe.whitelist(methods=['POST'])
 def send_message(channel_id, text, is_reply, linked_message=None):
 
-    # remove empty paragraphs
-    clean_text = text.replace('<p><br></p>', '').strip()
     # remove empty list items
-    clean_text = clean_text.replace('<li><br></li>', '').strip()
+    clean_text = text.replace('<li><br></li>', '').strip()
 
     if clean_text:
         if is_reply:
