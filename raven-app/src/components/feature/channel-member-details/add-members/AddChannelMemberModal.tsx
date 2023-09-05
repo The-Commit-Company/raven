@@ -11,6 +11,7 @@ import { getChannelIcon } from '@/utils/layout/channelIcon'
 interface AddChannelMemberModalProps {
   isOpen: boolean,
   onClose: () => void,
+  channelID: string,
   type: ChannelListItem['type'],
   channel_name: string,
   updateMembers: () => void
@@ -20,13 +21,13 @@ interface FormProps {
   add_members: string[] | null
 }
 
-export const AddChannelMemberModal = ({ isOpen, onClose, type, channel_name, updateMembers }: AddChannelMemberModalProps) => {
+export const AddChannelMemberModal = ({ isOpen, onClose, type, channelID, channel_name, updateMembers }: AddChannelMemberModalProps) => {
   return (
     <Modal isOpen={isOpen} onClose={onClose} size='xl'>
       <ModalOverlay />
       <ModalContent>
         <AddChannelMemberForm
-          channelID={channel_name}
+          channelID={channelID}
           channel_name={channel_name}
           type={type}
           onClose={onClose}

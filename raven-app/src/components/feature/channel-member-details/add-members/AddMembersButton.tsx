@@ -54,6 +54,7 @@ export const AddMembersButton = ({ channelData, updateMembers, style, is_in_list
             <AddChannelMemberModal
                 isOpen={modalManager.modalType === ModalTypes.AddChannelMember}
                 onClose={modalManager.closeModal}
+                channelID={channelData.name}
                 type={channelData.type}
                 channel_name={channelData.channel_name}
                 updateMembers={updateMembers} />
