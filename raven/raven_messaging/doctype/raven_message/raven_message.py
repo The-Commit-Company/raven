@@ -63,12 +63,15 @@ class RavenMessage(Document):
             track_visit(self.channel_id)
 
 
-@frappe.whitelist()
 def track_visit(channel_id):
+    '''
+    Track the last visit of the user to the channel.
+    If the user is not a member of the channel, create a new member record
+    '''
     doc = frappe.db.get_value("Raven Channel Member", {
-        "channel_id": channel_id, "user_id": frappe.session.user}, ["name", "last_visit"], as_dict=1)
+        "channel_id": channel_id, "user_id": frappe.session.user}, "name")
     if doc:
-        frappe.db.set_value("Raven Channel Member", doc.name,
+        frappe.db.set_value("Raven Channel Member", doc,
                             "last_visit", frappe.utils.now())
     elif frappe.db.get_value('Raven Channel', channel_id, 'type') == 'Open':
         frappe.get_doc({
