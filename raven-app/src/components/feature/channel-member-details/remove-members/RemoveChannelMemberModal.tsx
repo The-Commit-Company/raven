@@ -1,10 +1,10 @@
-import { Text, AlertDialog, AlertDialogBody, AlertDialogCloseButton, AlertDialogContent, AlertDialogFooter, AlertDialogHeader, AlertDialogOverlay, Button, ButtonGroup, HStack, useToast } from '@chakra-ui/react'
+import { Text, AlertDialog, AlertDialogBody, AlertDialogCloseButton, AlertDialogContent, AlertDialogFooter, AlertDialogHeader, AlertDialogOverlay, Button, ButtonGroup, useToast, Icon } from '@chakra-ui/react'
 import { useFrappeDeleteDoc, useFrappeGetCall } from 'frappe-react-sdk'
 import { useRef } from 'react'
-import { BiHash, BiLockAlt } from 'react-icons/bi'
 import { ErrorBanner } from '../../../layout/AlertBanner'
 import { ChannelListItem } from '@/utils/channel/ChannelListProvider'
 import { ChannelMembers } from '@/utils/channel/ChannelMembersProvider'
+import { getChannelIcon } from '@/utils/layout/channelIcon'
 
 interface RemoveChannelMemberModalProps {
     isOpen: boolean,
@@ -59,11 +59,15 @@ export const RemoveChannelMemberModal = ({ isOpen, onClose, user_id, channelData
             <AlertDialogOverlay />
             <AlertDialogContent>
                 <AlertDialogHeader>
-                    <HStack>
-                        <Text>Remove {user_id && channelMembers[user_id]?.full_name} from </Text>
-                        {channelData?.type === 'Public' ? <BiHash /> : <BiLockAlt />}
-                        <Text>{channelData?.channel_name}?</Text>
-                    </HStack>
+                    <Text>
+                        Remove {user_id && channelMembers[user_id]?.full_name} from
+                        <Icon
+                            ml={0.5}
+                            pb={0.5}
+                            verticalAlign={'middle'}
+                            as={getChannelIcon(channelData?.type)} display={'inline'} />
+                        {channelData?.channel_name}?
+                    </Text>
                 </AlertDialogHeader>
                 <AlertDialogCloseButton />
                 <AlertDialogBody>
