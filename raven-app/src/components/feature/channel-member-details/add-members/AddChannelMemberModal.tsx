@@ -125,11 +125,15 @@ const AddChannelMemberForm = ({ channelID, channel_name, type, onClose, updateMe
       <chakra.form onSubmit={handleSubmit(onSubmit)}>
 
         <ModalHeader>
-          <HStack>
-            <Text>Add members to </Text>
-            <Icon as={getChannelIcon(type)} />
-            <Text>{channel_name}</Text>
-          </HStack>
+          <Text>
+            Add members to
+            <Icon
+              ml={0.5}
+              pb={0.5}
+              verticalAlign={'middle'}
+              as={getChannelIcon(type)} display={'inline'} />
+            {channel_name}
+          </Text>
         </ModalHeader>
         <ModalCloseButton isDisabled={creatingDoc} />
 
