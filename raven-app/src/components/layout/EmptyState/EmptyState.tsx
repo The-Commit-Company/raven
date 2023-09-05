@@ -9,6 +9,7 @@ import { useContext } from "react"
 import { ChannelMembers, ChannelMembersContext, ChannelMembersContextType } from "@/utils/channel/ChannelMembersProvider"
 import { EditDescriptionButton } from "@/components/feature/channel-details/edit-channel-description/EditDescriptionButton"
 import { AddMembersButton } from "@/components/feature/channel-member-details/add-members/AddMembersButton"
+import { UserContext } from "@/utils/auth/UserProvider"
 
 export const EmptyStateForSearch = () => {
     return (
@@ -35,6 +36,8 @@ interface EmptyStateForChannelProps {
 
 const EmptyStateForChannel = ({ channelData, channelMembers, updateMembers }: EmptyStateForChannelProps) => {
 
+    const { currentUser } = useContext(UserContext)
+
     return (
         <Stack py='4' px='2'>
             <Stack spacing={1}>
@@ -47,7 +50,7 @@ const EmptyStateForChannel = ({ channelData, channelMembers, updateMembers }: Em
                 <Text>{channelMembers[channelData.owner]?.full_name} created this channel on {DateObjectToFormattedDateString(new Date(channelData?.creation ?? ''))}. This is the very beginning of the <strong>{channelData?.channel_name}</strong> channel.</Text>
                 {channelData?.channel_description && <Text fontSize={'sm'} color={'gray.500'}>{channelData?.channel_description}</Text>}
             </Stack>
-            {channelData?.is_archived == 0 && <ButtonGroup size={'xs'} colorScheme="blue" variant={'link'} spacing={4} zIndex={1}>
+            {channelData?.is_archived == 0 && channelMembers[currentUser] && <ButtonGroup size={'xs'} colorScheme="blue" variant={'link'} spacing={4} zIndex={1}>
                 <EditDescriptionButton channelData={channelData} size={'xs'} />
                 {channelData?.type !== 'Open' && <AddMembersButton channelData={channelData} updateMembers={updateMembers} is_in_empty_state={true} />}
             </ButtonGroup>}
