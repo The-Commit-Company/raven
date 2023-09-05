@@ -4,10 +4,11 @@ import { EditChannelDescriptionModal } from './EditChannelDescriptionModal'
 import { ChannelListItem } from '@/utils/channel/ChannelListProvider'
 
 interface EditDescriptionButtonProps extends ButtonProps {
-    channelData: ChannelListItem
+    channelData: ChannelListItem,
+    is_in_box?: boolean
 }
 
-export const EditDescriptionButton = ({ channelData, ...props }: EditDescriptionButtonProps) => {
+export const EditDescriptionButton = ({ channelData, is_in_box, ...props }: EditDescriptionButtonProps) => {
 
     const modalManager = useModalManager()
     const onChannelDescriptionModalOpen = () => {
@@ -19,7 +20,7 @@ export const EditDescriptionButton = ({ channelData, ...props }: EditDescription
     return (
         <>
             <Button colorScheme='blue' variant='link' size='sm' onClick={onChannelDescriptionModalOpen} {...props}>
-                {button_text} description
+                {button_text} {is_in_box ? '' : 'description'}
             </Button>
             <EditChannelDescriptionModal
                 isOpen={modalManager.modalType === ModalTypes.EditChannelDescription}

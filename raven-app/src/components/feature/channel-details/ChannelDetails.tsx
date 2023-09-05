@@ -57,7 +57,7 @@ export const ChannelDetails = ({ channelData, channelMembers, onClose }: Channel
                                 {channelData && channelData.channel_description && channelData.channel_description.length > 0 ? channelData.channel_description : 'No description'}
                             </Text>
                         </Stack>
-                        <EditDescriptionButton channelData={channelData} />
+                        <EditDescriptionButton channelData={channelData} is_in_box={true} />
                     </HStack>
 
                     <Divider />
@@ -65,11 +65,7 @@ export const ChannelDetails = ({ channelData, channelMembers, onClose }: Channel
                     <Stack>
                         <Text fontWeight='semibold' fontSize='sm'>Created by</Text>
                         <HStack>
-                            {channelData?.owner === 'Administrator'
-                                ?
-                                <Text fontSize='sm'>Administrator</Text>
-                                :
-                                channelData?.owner && <Text fontSize='sm'>{users[channelData.owner]?.full_name}</Text>}
+                            {channelData?.owner && <Text fontSize='sm'>{users[channelData.owner]?.full_name}</Text>}
                             <Text fontSize='sm' color='gray.500'>on {DateObjectToFormattedDateString(new Date(channelData?.creation ?? ''))}</Text>
                         </HStack>
                     </Stack>
@@ -77,7 +73,7 @@ export const ChannelDetails = ({ channelData, channelMembers, onClose }: Channel
                     {channelData?.type != 'Open' && <>
                         <Divider />
                         <Stack>
-                            <Text fontWeight='semibold' fontSize='sm'>Administrator</Text>
+                            <Text fontWeight='semibold' fontSize='sm'>Channel admin</Text>
                             <HStack>
                                 {admin ? <Text fontSize='sm'>{admin.full_name}</Text> : <Text fontSize='sm' color='gray.500'>No administrator</Text>}
                             </HStack>
