@@ -9,6 +9,7 @@ import { ChatHeader } from './chat-header'
 import { ChannelListItem, DMChannelListItem } from '@/utils/channel/ChannelListProvider'
 import { UserFields } from '@/utils/users/UserListProvider'
 import { peopleOutline, searchOutline } from 'ionicons/icons'
+import { Haptics, ImpactStyle } from '@capacitor/haptics'
 
 export type ChannelMembersMap = Record<string, UserFields>
 
@@ -81,6 +82,9 @@ export const ChatInterface = ({ channel }: { channel: ChannelListItem | DMChanne
     })
 
     const onMessageSend = () => {
+        Haptics.impact({
+            style: ImpactStyle.Light
+        })
         refreshMessages()
             .then(() => {
                 scrollToBottom(0, 100)

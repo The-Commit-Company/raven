@@ -41,3 +41,7 @@
     border-top: 1px solid var(--ion-color-light);
     background: var(--ion-background-color);
 }
+
+.chat-toolbar {
+    --padding-bottom: 1rem
+}
