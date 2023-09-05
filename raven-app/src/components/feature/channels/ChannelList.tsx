@@ -12,6 +12,8 @@ export const ChannelList = ({ unread_count }: { unread_count?: UnreadCountData }
 
     const [showData, { toggle }] = useBoolean(true)
 
+    const filteredChannels = useMemo(() => channels.filter((channel) => channel.is_archived == 0), [channels])
+
     return (
         <>
             <SidebarGroup spacing={1}>
@@ -25,7 +27,7 @@ export const ChannelList = ({ unread_count }: { unread_count?: UnreadCountData }
                 <SidebarGroup>
                     <SidebarGroupList>
                         <SidebarGroupList>
-                            {showData && channels.filter((channel) => channel.is_archived == 0).map((channel) => <ChannelItem
+                            {showData && filteredChannels.map((channel) => <ChannelItem
                                 channel={channel}
                                 unreadCount={unread_count?.channels ?? []}
                                 key={channel.name} />)}

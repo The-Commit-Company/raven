@@ -22,7 +22,13 @@ export interface DMChannelListItem extends ChannelListItem {
     peer_user_id: string,
     is_direct_message: 1,
 }
+
+export interface SidebarChannelListItem extends ChannelListItem {
+    is_archived: 0,
+}
+
 interface ChannelList {
+    sidebar_channels: SidebarChannelListItem[],
     channels: ChannelListItem[],
     dm_channels: DMChannelListItem[],
     extra_users: ExtraUsersData[]
@@ -72,6 +78,7 @@ export const useFetchChannelList = (): ChannelListContextType => {
         channels: data?.message.channels ?? [],
         dm_channels: data?.message.dm_channels ?? [],
         extra_users: data?.message.extra_users ?? [],
+        sidebar_channels: data?.message.sidebar_channels ?? [],
         mutate,
         ...rest
     }
