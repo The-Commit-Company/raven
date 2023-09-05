@@ -40,16 +40,19 @@ class RavenMessage(Document):
     def after_insert(self):
         frappe.publish_realtime(
             'unread_channel_count_updated')
+        
     def after_delete(self):
-        frappe.publish_realtime('message_deleted', {
-            'channel_id': self.channel_id}, after_commit=True)
-        frappe.db.commit()
+        self.send_update_event(txt="delete")
 
     def on_update(self):
+        print("on update")
+        self.send_update_event(txt="update")
+
+    def send_update_event(self, txt):
+        print("Notifying update", txt)
         frappe.publish_realtime('message_updated', {
             'channel_id': self.channel_id}, after_commit=True)
         frappe.db.commit()
-
     def on_trash(self):
         # delete all the reactions for the message
         frappe.db.delete("Raven Message Reaction", {"message": self.name})

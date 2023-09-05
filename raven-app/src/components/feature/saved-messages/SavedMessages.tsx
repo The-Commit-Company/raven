@@ -11,9 +11,6 @@ import { PageHeader } from "../../layout/Heading/PageHeader"
 import { PageHeading } from "../../layout/Heading/PageHeading"
 import { CommandPalette } from "../command-palette"
 import { MessageBox } from "../global-search/MessageBox"
-import { User } from "../../../../../types/Core/User"
-import { RavenChannel } from "../../../../../types/RavenChannelManagement/RavenChannel"
-import { UserListContext } from "@/utils/users/UserListProvider"
 
 interface SavedMessage extends TextMessage {
     channel_id: string,
@@ -28,14 +25,10 @@ export const SavedMessages = () => {
 
     const { isOpen: isCommandPaletteOpen, onClose: onCommandPaletteClose, onToggle: onCommandPaletteToggle } = useDisclosure()
 
-    const { users } = useContext(UserListContext)
-
     const { data, error } = useFrappeGetCall<{ message: SavedMessage[] }>("raven.raven_messaging.doctype.raven_message.raven_message.get_saved_messages", undefined, undefined, {
         revalidateOnFocus: false
     })
-    const { data: channels, error: channelsError } = useFrappeGetCall<{ message: RavenChannel[] }>("raven.raven_channel_management.doctype.raven_channel.raven_channel.get_channel_list", undefined, undefined, {
-        revalidateOnFocus: false
-    })
+
     const { call, error: indexingError, reset } = useFrappePostCall<{ message: string }>("raven.raven_messaging.doctype.raven_message.raven_message.get_index_of_message")
 
     const handleNavigateToChannel = (channelID: string, _callback: VoidFunction) => {
@@ -76,11 +69,7 @@ export const SavedMessages = () => {
         })
     }
     if (error) {
-        return (
-            <Box p={4}>
-                <ErrorBanner error={error} />
-            </Box>
-        )
+        return <Box p={4}><ErrorBanner error={error} /></Box>
     }
     return (
         <>
@@ -102,15 +91,10 @@ export const SavedMessages = () => {
             {data && data.message?.length === 0 && <EmptyStateForSavedMessages />}
             <Stack justify={'flex-start'} p={4} overflow='scroll' pt='20'>
                 {data?.message?.map(({ name, text, owner, creation, channel_id, file, message_type }: SavedMessage) => {
-                    const isArchived = channels?.message.find((channel: RavenChannel) => channel.name === channel_id)?.is_archived
-                    const channelName = channels?.message.find((channel: RavenChannel) => channel.name === channel_id)?.channel_name
-                    const full_name = users.find((user) => user.name === owner)?.full_name
-                    const user_image = users.find((user) => user.name === owner)?.user_image
                     return (
-                        isArchived && channelName && <MessageBox isArchived={isArchived} channelName={channelName} messageName={name} channelID={channel_id} creation={creation} owner={owner} messageText={text} full_name={full_name} user_image={user_image} file={file} message_type={message_type} handleScrollToMessage={handleScrollToMessage} />
+                        <MessageBox key={name} channelID={channel_id} messageName={name} creation={creation} owner={owner} messageText={text} file={file} message_type={message_type} handleScrollToMessage={handleScrollToMessage} />
                     )
-                }
-                )}
+                })}
             </Stack>
             <CommandPalette
                 isOpen={isCommandPaletteOpen}

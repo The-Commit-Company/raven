@@ -21,8 +21,13 @@ export default function GlobalSearch({ isOpen, onClose, tabIndex, input, fromFil
     const { onToggle: onToggleMyChannels, isOpen: isOpenMyChannels } = useDisclosure()
     const { onToggle: onToggleSaved, isOpen: isSaved } = useDisclosure()
 
+    const onCloseAll = () => {
+        onClose()
+        onCommandPaletteClose && onCommandPaletteClose()
+    }
+
     return (
-        <Modal isOpen={isOpen} onClose={onClose} size='6xl'>
+        <Modal isOpen={isOpen} onClose={onCloseAll} size='6xl'>
             <ModalContent>
                 <ModalHeader>
                     Search Results

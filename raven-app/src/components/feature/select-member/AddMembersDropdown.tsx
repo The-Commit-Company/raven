@@ -1,8 +1,8 @@
 import { Select, ChakraStylesConfig, OptionBase, Props, GroupBase } from 'chakra-react-select'
 import { Controller, useFormContext } from 'react-hook-form'
-import { useFrappeGetDocList } from 'frappe-react-sdk'
-import { useMemo } from 'react'
+import { useContext, useMemo } from 'react'
 import { generateColorHsl } from './GenerateAvatarColor'
+import { UserFields, UserListContext } from '@/utils/users/UserListProvider'
 
 export interface MemberOption extends OptionBase {
     value: string
@@ -10,31 +10,21 @@ export interface MemberOption extends OptionBase {
     image: string
 }
 
-interface Member {
-    name: string
-    user_image: string
-    full_name: string
-}
-
 export const AddMembersDropdown = ({ name, chakraStyles, ...props }: Props<MemberOption, true, GroupBase<MemberOption>>) => {
 
-    const { data } = useFrappeGetDocList<{ name: string, user_image: string, full_name: string }>('User', {
-        fields: ["name", "user_image", "full_name"]
-    }, undefined, {
-        revalidateOnFocus: false
-    })
+    const users = useContext(UserListContext)
 
     const memberOptions: MemberOption[] = useMemo(() => {
-        if (data) {
-            return data.map((m: Member) => ({
+        if (users) {
+            return users.users.map((m: UserFields) => ({
                 value: m.name,
                 label: m.full_name,
-                image: m.user_image
+                image: m.user_image ?? ''
             }))
         } else {
             return []
         }
-    }, [data])
+    }, [users])
 
     const { control } = useFormContext()
 

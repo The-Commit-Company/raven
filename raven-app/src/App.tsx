@@ -10,7 +10,12 @@ import { ChannelRedirect } from './utils/channel/ChannelRedirect'
 
 function App() {
   return (
-    <FrappeProvider url={import.meta.env.VITE_FRAPPE_PATH ?? ''} socketPort={import.meta.env.VITE_SOCKET_PORT ?? ''}>
+    <FrappeProvider
+      url={import.meta.env.VITE_FRAPPE_PATH ?? ''}
+      socketPort={import.meta.env.VITE_SOCKET_PORT ? import.meta.env.VITE_SOCKET_PORT : undefined}
+      //@ts-ignore
+      siteName={window.frappe?.boot?.sitename ?? import.meta.env.VITE_SITE_NAME}
+    >
       <UserProvider>
         <Routes>
           <Route path='/login' element={<Login />} />
