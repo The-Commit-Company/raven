@@ -4,6 +4,7 @@ import { useHistory } from 'react-router-dom';
 import { DMUser } from '@/pages/direct-messages/DirectMessageList';
 import { DMChannelListItem, useChannelList } from '@/utils/channel/ChannelListProvider';
 import { UserAvatar } from '@/components/common/UserAvatar';
+import { useIsUserActive } from '@/hooks/useIsUserActive';
 
 export const PrivateMessages = ({ users }: { users: DMUser[] }) => {
 
@@ -48,15 +49,17 @@ interface DMChannel extends DMUser {
     channel: DMChannelListItem
 }
 const DMChannelItem = ({ user }: { user: DMChannel }) => {
+    const isActive = useIsUserActive(user.name)
     return <IonItem className='py-1' key={user.name} detail={false} lines='none' routerLink={`channel/${user.channel.name}`}>
-        <UserAvatar slot='start' alt={user.full_name} src={user.user_image} />
+        <UserAvatar slot='start' alt={user.full_name} src={user.user_image} isActive={isActive} />
         <IonLabel>{user.full_name}</IonLabel>
     </IonItem>
 }
 
 const UserItem = ({ user, onChannelCreate }: { user: DMUser, onChannelCreate: (user_id: string) => void }) => {
+    const isActive = useIsUserActive(user.name)
     return <IonItem className='py-1' key={user.name} detail={false} lines='none' button onClick={() => onChannelCreate(user.name)}>
-        <UserAvatar slot='start' alt={user.full_name} src={user.user_image} />
+        <UserAvatar slot='start' alt={user.full_name} src={user.user_image} isActive={isActive} />
         <IonLabel>{user.full_name}</IonLabel>
     </IonItem>
 }

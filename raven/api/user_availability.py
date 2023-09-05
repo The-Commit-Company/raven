@@ -3,12 +3,14 @@ import frappe
 
 def set_user_active():
     # Set the user's session ID in the cache
+    print("Setting the user as active", frappe.session.user)
     frappe.cache().set_value(
         f'user_session_{frappe.session.user}', frappe.session.user, expires_in_sec=900)
 
 
 def set_user_inactive():
     # Remove the user's session ID from the cache
+    print("Setting the user as inactive", frappe.session.user)
     frappe.cache().delete_key(f'user_session_{frappe.session.user}')
 
 
@@ -27,7 +29,10 @@ def get_active_users():
 
 @frappe.whitelist()
 def refresh_user_active_state(deactivate=False):
-
+    print(type(deactivate))
+    print("Called", deactivate, frappe.utils.now())
+    if isinstance(deactivate, str):
+        deactivate = True if deactivate.lower() == 'true' else False
     if deactivate:
         set_user_inactive()
         return 'Ok'

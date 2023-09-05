@@ -220,6 +220,11 @@
     "@babel/helper-validator-identifier" "^7.22.5"
     to-fast-properties "^2.0.0"
 
+"@capacitor/app@^5.0.6":
+  version "5.0.6"
+  resolved "https://registry.yarnpkg.com/@capacitor/app/-/app-5.0.6.tgz#2ee02551115fd2e92dc7e81bc30a6c6fa78efa66"
+  integrity sha512-6ZXVdnNmaYILasC/RjQw+yfTmq2ZO7Q3v5lFcDVfq3PFGnybyYQh+RstBrYri+376OmXOXxBD7E6UxBhrMzXGA==
+
 "@capacitor/camera@^5.0.0":
   version "5.0.7"
   resolved "https://registry.yarnpkg.com/@capacitor/camera/-/camera-5.0.7.tgz#42f60168d731fc521df797aacc7cda703b7ac2b1"

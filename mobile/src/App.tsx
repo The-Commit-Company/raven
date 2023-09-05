@@ -26,6 +26,7 @@ import { UserProvider } from './utils/auth/UserProvider';
 import { Routes } from './utils/auth/Routes';
 import { ChannelListProvider } from './utils/channel/ChannelListProvider';
 import { UserListProvider } from './utils/users/UserListProvider';
+import { ActiveUsersProvider } from './utils/users/ActiveUsersProvider';
 
 setupIonicReact({
   mode: 'ios',
@@ -43,7 +44,9 @@ function App() {
         <UserProvider>
           <UserListProvider>
             <ChannelListProvider>
-              <Routes />
+              <ActiveUsersProvider>
+                <Routes />
+              </ActiveUsersProvider>
             </ChannelListProvider>
           </UserListProvider>
         </UserProvider>
