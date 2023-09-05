@@ -22,7 +22,7 @@ export const ViewOrAddMembersButton = ({ channelData }: ViewOrAddMembersButtonPr
                 channelMembers={channelMembers}
                 updateMembers={updateMembers} />
             {/* members can be added to public and private channels only, as open channels are open to everyone */}
-            {(channelData.type === 'Private' || channelData.type === 'Public') && channelMembers[currentUser] && <AddMembersButton
+            {(channelData.type === 'Private' || channelData.type === 'Public') && channelMembers[currentUser] && channelData.is_archived === 0 && <AddMembersButton
                 channelData={channelData}
                 updateMembers={updateMembers} />}
         </ButtonGroup>

@@ -80,7 +80,7 @@ class RavenChannel(Document):
 
 
 @frappe.whitelist()
-def get_all_channels(hide_archived=True):
+def get_all_channels(hide_archived=False):
     '''
         Fetches all channels where current user is a member - both channels and DMs
         To be used on the web app. 

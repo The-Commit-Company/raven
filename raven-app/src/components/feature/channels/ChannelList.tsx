@@ -25,7 +25,7 @@ export const ChannelList = ({ unread_count }: { unread_count?: UnreadCountData }
                 <SidebarGroup>
                     <SidebarGroupList>
                         <SidebarGroupList>
-                            {showData && channels.map((channel) => <ChannelItem
+                            {showData && channels.filter((channel) => channel.is_archived == 0).map((channel) => <ChannelItem
                                 channel={channel}
                                 unreadCount={unread_count?.channels ?? []}
                                 key={channel.name} />)}

@@ -60,7 +60,7 @@ export const ChannelMemberDetails = ({ channelData, channelMembers, activeUsers,
 
                 <List spacing={2}>
                     {/* if current user is a channel member and the channel is not a open channel, user can add more members to the channel */}
-                    {channelMembers[currentUser] && channelData.type !== 'Open' && (
+                    {channelMembers[currentUser] && channelData.type !== 'Open' && channelData.is_archived == 0 && (
                         <AddMembersButton
                             channelData={channelData}
                             updateMembers={updateMembers}
@@ -91,7 +91,7 @@ export const ChannelMemberDetails = ({ channelData, channelMembers, activeUsers,
                                         {channelMembers[currentUser] &&
                                             channelMembers[currentUser].is_admin === 1 &&
                                             member.name !== currentUser &&
-                                            channelData?.type !== 'Open' && (
+                                            channelData?.type !== 'Open' && channelData.is_archived == 0 && (
                                                 <RemoveMemberButton
                                                     channelData={channelData}
                                                     channelMembers={channelMembers}
