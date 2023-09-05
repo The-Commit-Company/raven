@@ -46,7 +46,7 @@ interface MessageSearchResult {
     channel_id: string
     name: string,
     owner: string,
-    creation: Date,
+    creation: string,
     text: string,
 }
 

@@ -22,14 +22,17 @@ export enum ModalTypes {
     ArchiveChannel,
     ChangeChannelType,
     UserDetails,
-    FilePreview
+    FilePreview,
+    CommandPalette,
+    GlobalSearch
 }
 
 interface ModalManager {
     modalType: ModalTypes,
     modalContent: any,
     openModal: (type: ModalTypes, content?: any) => void,
-    closeModal: () => void
+    closeModal: () => void,
+    toggleModal: (type: ModalTypes, content?: any) => void
 }
 
 export const useModalManager = (): ModalManager => {
@@ -47,5 +50,13 @@ export const useModalManager = (): ModalManager => {
         setModalContent(null)
     }
 
-    return { modalType, modalContent, openModal, closeModal }
+    const toggleModal = (type: ModalTypes, content?: any) => {
+        if (modalType === type) {
+            closeModal()
+        } else {
+            openModal(type, content)
+        }
+    }
+
+    return { modalType, modalContent, openModal, closeModal, toggleModal }
 }
