@@ -47,7 +47,7 @@ export const ViewChannelDetailsModal = ({ isOpen, onClose, channelData, channelM
                             <Tab>Files</Tab>
                             {/* channel settings are only available for admins */}
                             {/* the general channel is the default channel and cannot be deleted or archived */}
-                            {channelMembers[currentUser]?.is_admin == 1 && channelData.name != 'general' && <Tab>Settings</Tab>}
+                            {channelMembers[currentUser]?.is_admin == 1 && channelData.name != 'general' && channelData.is_archived == 0 && <Tab>Settings</Tab>}
                         </TabList>
                         <TabPanels>
                             <TabPanel px={0}>

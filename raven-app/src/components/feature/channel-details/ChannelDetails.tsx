@@ -43,7 +43,7 @@ export const ChannelDetails = ({ channelData, channelMembers, onClose }: Channel
                             <Text fontSize='sm'>{channelData?.channel_name}</Text>
                         </HStack>
                     </Stack>
-                    <EditChannelNameButton channelID={channelData.name} channel_name={channelData.channel_name} type={channelData.type} />
+                    <EditChannelNameButton channelID={channelData.name} channel_name={channelData.channel_name} channelType={channelData.type} isDisabled={channelData.is_archived == 1} />
                 </HStack>
             </Box>
 
@@ -57,7 +57,7 @@ export const ChannelDetails = ({ channelData, channelMembers, onClose }: Channel
                                 {channelData && channelData.channel_description && channelData.channel_description.length > 0 ? channelData.channel_description : 'No description'}
                             </Text>
                         </Stack>
-                        <EditDescriptionButton channelData={channelData} is_in_box={true} />
+                        <EditDescriptionButton channelData={channelData} is_in_box={true} isDisabled={channelData.is_archived == 1} />
                     </HStack>
 
                     <Divider />
@@ -82,7 +82,7 @@ export const ChannelDetails = ({ channelData, channelMembers, onClose }: Channel
 
                     {/* users can only leave channels they are members of */}
                     {/* users cannot leave open channels */}
-                    {channelMembers[currentUser] && channelData?.type != 'Open' &&
+                    {channelMembers[currentUser] && channelData?.type != 'Open' && channelData.is_archived == 0 &&
                         <>
                             <Divider />
                             <LeaveChannelButton channelData={channelData} onClose={onClose} />
