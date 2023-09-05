@@ -1,10 +1,19 @@
-import { Tooltip, Button, useDisclosure } from '@chakra-ui/react'
+import { Tooltip, Button } from '@chakra-ui/react'
 import { HiOutlineSearch } from 'react-icons/hi'
 import { CommandPalette } from '../command-palette'
+import { ModalTypes, useModalManager } from '@/hooks/useModalManager'
 
 export const SearchButton = () => {
 
-    const { isOpen: isCommandPaletteOpen, onClose: onCommandPaletteClose, onToggle: onCommandPaletteToggle } = useDisclosure()
+    const modalManager = useModalManager()
+
+    const onCommandPaletteOpen = () => {
+        modalManager.openModal(ModalTypes.CommandPalette)
+    }
+
+    const onCommandPaletteToggle = () => {
+        modalManager.toggleModal(ModalTypes.CommandPalette)
+    }
 
     return (
         <>
@@ -13,15 +22,16 @@ export const SearchButton = () => {
                     size={"sm"}
                     aria-label="search"
                     leftIcon={<HiOutlineSearch />}
-                    onClick={onCommandPaletteToggle}
+                    onClick={onCommandPaletteOpen}
                     fontWeight='light'>
                     Search
                 </Button>
             </Tooltip>
             <CommandPalette
-                isOpen={isCommandPaletteOpen}
-                onClose={onCommandPaletteClose}
-                onToggle={onCommandPaletteToggle} />
+                isOpen={modalManager.modalType === ModalTypes.CommandPalette}
+                onClose={modalManager.closeModal}
+                onToggle={onCommandPaletteToggle}
+            />
         </>
     )
 }
