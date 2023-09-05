@@ -1,7 +1,7 @@
 import { useContext } from 'react'
 import { useBoolean, useToast } from '@chakra-ui/react'
 import { useIdleTimer, PresenceType } from 'react-idle-timer'
-import { FrappeContext, FrappeConfig, useFrappeGetCall } from 'frappe-react-sdk'
+import { FrappeContext, FrappeConfig } from 'frappe-react-sdk'
 import { AlertBanner } from '../components/layout/AlertBanner'
 
 /**

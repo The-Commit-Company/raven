@@ -10,6 +10,7 @@
     "copy-html-entry": "cp ../raven/public/raven_mobile/index.html ../raven/www/raven_mobile.html"
   },
   "dependencies": {
+    "@capacitor/app": "^5.0.6",
     "@capacitor/camera": "^5.0.0",
     "@capacitor/core": "^5.0.0",
     "@capacitor/device": "^5.0.0",

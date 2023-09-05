@@ -1,4 +1,4 @@
-import React, { useContext, useMemo } from 'react'
+import React, { memo, useContext, useMemo } from 'react'
 import { FileMessage, Message, MessageBlock, TextMessage } from '../../../../../../types/Messaging/Message'
 import { ChannelMembersMap } from '../ChatInterface'
 import { IonIcon, IonItem, IonText } from '@ionic/react'
@@ -10,6 +10,7 @@ import { useFrappeGetDoc } from 'frappe-react-sdk'
 import { ChannelMembersContext } from './ChatView'
 import { openOutline } from 'ionicons/icons'
 import { Haptics, ImpactStyle } from '@capacitor/haptics'
+import { useIsUserActive } from '@/hooks/useIsUserActive'
 
 type Props = {
     message: MessageBlock,
@@ -36,9 +37,7 @@ export const MessageBlockItem = ({ message }: Props) => {
 
 const NonContinuationMessageBlock = ({ message, user }: { message: MessageBlock, user?: UserFields }) => {
     return <div className='px-2 mt-3 pt-1 rounded-md flex active:bg-[color:var(--ion-color-light)]'>
-        <div className='w-11 mt-1.5'>
-            <SquareAvatar alt={user?.full_name ?? message.data.owner} src={user?.user_image} isActive />
-        </div>
+        <UserAvatarBlock message={message} user={user} />
         <div>
             <div className='flex items-end pb-0.5'>
                 <IonText className='font-bold text-xs'>{user?.full_name ?? message.data.owner}</IonText>
@@ -48,6 +47,15 @@ const NonContinuationMessageBlock = ({ message, user }: { message: MessageBlock,
         </div>
     </div>
 }
+
+const UserAvatarBlock = ({ message, user }: { message: MessageBlock, user?: UserFields }) => {
+
+    const isActive = useIsUserActive(user?.name ?? message.data.owner)
+    return <div className='w-11 mt-1.5'>
+        <SquareAvatar alt={user?.full_name ?? message.data.owner} src={user?.user_image} isActive={isActive} />
+    </div>
+}
+
 const ContinuationMessageBlock = ({ message }: { message: MessageBlock }) => {
     return <div className='px-2 flex rounded-md  active:bg-[color:var(--ion-color-light)]'>
         <div className='w-11'>
@@ -76,14 +84,14 @@ const TextMessageBlock = ({ message, truncate = false }: { message: TextMessage,
 
 const ImageMessageBlock = ({ message }: { message: FileMessage }) => {
 
-    return <div className='py-1.5 rounded-lg'>
+    return <div className='py-0.5 rounded-lg'>
         <img src={message.file} alt={`Image`} className='rounded-md' />
     </div>
 }
 
 const FileMessageBlock = ({ message }: { message: FileMessage }) => {
 
-    return <div className='rounded-md bg-[color:var(--ion-color-light-shade)]'>
+    return <div className='py-0.5 rounded-md bg-[color:var(--ion-color-light-shade)]'>
         <p className='p-2 text-sm'>
             📎 &nbsp;{message.file?.split('/')[3]}
         </p>
