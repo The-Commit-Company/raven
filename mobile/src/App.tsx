@@ -35,7 +35,11 @@ setupIonicReact({
 function App() {
   return (
     <IonApp>
-      <FrappeProvider url={import.meta.env.VITE_FRAPPE_PATH ?? ''} socketPort={import.meta.env.VITE_SOCKET_PORT ? import.meta.env.VITE_SOCKET_PORT : undefined}>
+      <FrappeProvider
+        url={import.meta.env.VITE_FRAPPE_PATH ?? ''}
+        socketPort={import.meta.env.VITE_SOCKET_PORT ? import.meta.env.VITE_SOCKET_PORT : undefined}
+        //@ts-ignore
+        siteName={window.frappe?.boot?.sitename ?? import.meta.env.VITE_SITE_NAME}>
         <UserProvider>
           <UserListProvider>
             <ChannelListProvider>
