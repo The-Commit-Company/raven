@@ -1,7 +1,7 @@
 import { Avatar, Box, Button, Center, HStack, Icon, Spinner, Stack, Text, useModalContext, Image, Link } from "@chakra-ui/react"
 import { Command } from "cmdk"
 import { useFrappeGetCall } from "frappe-react-sdk"
-import { useContext, useState } from "react"
+import { useContext, useMemo, useState } from "react"
 import { BiGlobe, BiHash, BiLockAlt } from "react-icons/bi"
 import { BsFillCircleFill, BsCircle } from "react-icons/bs"
 import { TbFiles, TbHash, TbListSearch, TbMessages, TbSearch, TbUsers } from "react-icons/tb"
@@ -278,6 +278,8 @@ export const People = ({ input, users, activeUsers, gotoDMChannel, currentUser, 
 
     const { onClose } = useModalContext()
 
+    const lowerCasedInput = useMemo(() => input.toLowerCase(), [input])
+
     const results_count = users.reduce((count, user) => {
         if (user?.full_name?.toLowerCase().includes(input.toLowerCase())) {
             return count + 1;
@@ -295,10 +297,9 @@ export const People = ({ input, users, activeUsers, gotoDMChannel, currentUser, 
             }
             : {}
         }>
-            {users.filter((m: UserFields) => m.name !== 'Administrator').map(user => {
-                if (user?.full_name?.toLowerCase().includes(input.toLowerCase())) {
+            {users.map(user => {
+                if (user?.full_name?.toLowerCase().includes(lowerCasedInput) && gotoDMChannel && activeUsers && user.name !== "Administrator") {
                     return (
-                        gotoDMChannel && activeUsers &&
                         <Item key={user.name}
                             onSelect={() => {
                                 gotoDMChannel(user.name)
