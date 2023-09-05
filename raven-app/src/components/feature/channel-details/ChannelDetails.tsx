@@ -43,7 +43,7 @@ export const ChannelDetails = ({ channelData, channelMembers, onClose }: Channel
                             <Text fontSize='sm'>{channelData?.channel_name}</Text>
                         </HStack>
                     </Stack>
-                    <EditChannelNameButton channelID={channelData.name} channel_name={channelData.name} type={channelData.type} />
+                    <EditChannelNameButton channelID={channelData.name} channel_name={channelData.channel_name} type={channelData.type} />
                 </HStack>
             </Box>
 

@@ -38,19 +38,21 @@ class RavenMessage(Document):
                 frappe.throw(_("Linked message should be in the same channel"))
 
     def after_insert(self):
-        self.notify_update()
         frappe.publish_realtime(
             'unread_channel_count_updated')
         
     def after_delete(self):
-        self.notify_update()
+        self.send_update_event(txt="delete")
 
     def on_update(self):
-        self.notify_update()
+        print("on update")
+        self.send_update_event(txt="update")
 
-    def notify_update(self):
+    def send_update_event(self, txt):
+        print("Notifying update", txt)
         frappe.publish_realtime('message_updated', {
-            'channel_id': self.channel_id})
+            'channel_id': self.channel_id}, after_commit=True)
+        frappe.db.commit()
     def on_trash(self):
         # delete all the reactions for the message
         frappe.db.delete("Raven Message Reaction", {"message": self.name})
