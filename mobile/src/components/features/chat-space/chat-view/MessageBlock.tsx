@@ -76,14 +76,14 @@ const TextMessageBlock = ({ message, truncate = false }: { message: TextMessage,
 
 const ImageMessageBlock = ({ message }: { message: FileMessage }) => {
 
-    return <div className='py-2 rounded-lg'>
+    return <div className='py-1.5 rounded-lg'>
         <img src={message.file} alt={`Image`} className='rounded-md' />
     </div>
 }
 
 const FileMessageBlock = ({ message }: { message: FileMessage }) => {
 
-    return <div className='rounded-md my-2 bg-[color:var(--ion-color-light-shade)]'>
+    return <div className='rounded-md bg-[color:var(--ion-color-light-shade)]'>
         <p className='p-2 text-sm'>
             📎 &nbsp;{message.file?.split('/')[3]}
         </p>

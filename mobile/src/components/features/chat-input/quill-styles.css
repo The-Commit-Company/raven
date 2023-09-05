@@ -5,8 +5,8 @@
 }
 
 .my-quill-editor .ql-container.ql-snow {
-    border: 1px solid transparent;
-    border-radius: 4px;
+    border: 0px;
+    border-radius: none;
 }
 
 .my-quill-editor .ql-container.ql-snow:focus-within {
@@ -42,6 +42,22 @@
     background: var(--ion-background-color);
 }
 
-.chat-toolbar {
-    --padding-bottom: 1rem
+/* Quill Mentions */
+
+.ql-mention-list {
+    background-color: var(--ion-color-light-shade) !important;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    font-size: 12px;
+}
+
+.ql-mention-list-container {
+    /* border-color: var(--gray) !important; */
+    max-height: 400px;
+    overflow-y: scroll;
+}
+
+.ql-mention-list-item {
+    font-size: 14px;
+    line-height: 2.4rem;
+    padding: 0 16px
 }

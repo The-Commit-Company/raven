@@ -1,12 +1,12 @@
 import { IonBackButton, IonButton, IonButtons, IonContent, IonFooter, IonHeader, IonIcon, IonInput, IonToolbar } from '@ionic/react'
 import { useFrappeEventListener, useFrappeGetCall } from 'frappe-react-sdk'
-import { useCallback, useRef, useState } from 'react'
+import { useCallback, useMemo, useRef, useState } from 'react'
 import { Message, MessagesWithDate } from '../../../../../types/Messaging/Message'
 import { ErrorBanner, FullPageLoader } from '../../layout'
 import { ChatInput } from '../chat-input'
 import { ChatView } from './chat-view/ChatView'
 import { ChatHeader } from './chat-header'
-import { ChannelListItem, DMChannelListItem } from '@/utils/channel/ChannelListProvider'
+import { ChannelListItem, DMChannelListItem, useChannelList } from '@/utils/channel/ChannelListProvider'
 import { UserFields } from '@/utils/users/UserListProvider'
 import { peopleOutline, searchOutline } from 'ionicons/icons'
 import { Haptics, ImpactStyle } from '@capacitor/haptics'
@@ -100,6 +100,18 @@ export const ChatInterface = ({ channel }: { channel: ChannelListItem | DMChanne
     const handleCancelReply = () => {
         setSelectedMessage(null)
     }
+    const { channels } = useChannelList()
+
+    const parsedChannels = useMemo(() => {
+        return channels.map(c => ({ id: c.name, value: c.channel_name }))
+    }, [channels])
+
+    const parsedMembers = useMemo(() => {
+        if (channelMembers) {
+            return Object.values(channelMembers.message).map((member) => ({ id: member.name, value: member.full_name }))
+        }
+        return []
+    }, [channelMembers])
     return (
         <>
             <IonHeader translucent>
@@ -141,8 +153,8 @@ export const ChatInterface = ({ channel }: { channel: ChannelListItem | DMChanne
                 </div>
             </IonContent>
 
-            <IonFooter className='text-white' hidden={!!messagesError}>
-                <ChatInput channelID={channel.name} allMembers={[]} allChannels={[]} onMessageSend={onMessageSend} selectedMessage={selectedMessage} handleCancelReply={handleCancelReply} />
+            <IonFooter className='text-white overflow-visible bg-[color:var(--ion-background-color)]' hidden={!!messagesError}>
+                <ChatInput channelID={channel.name} allMembers={parsedMembers} allChannels={parsedChannels} onMessageSend={onMessageSend} selectedMessage={selectedMessage} handleCancelReply={handleCancelReply} />
             </IonFooter>
         </>
     )

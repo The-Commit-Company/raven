@@ -2,6 +2,7 @@ import { useFrappePostCall } from 'frappe-react-sdk'
 import { useCallback, useMemo, useRef, useState } from 'react'
 import { IonButton, IonButtons, IonIcon, IonToolbar } from '@ionic/react';
 import { documentAttachOutline } from 'ionicons/icons';
+
 import { Message } from '../../../../../types/Messaging/Message';
 import { QuillEditor } from './QuillEditor';
 import { FileUploadModal } from './FileUploadModal';
@@ -71,8 +72,8 @@ export const ChatInput = ({ channelID, allChannels, allMembers, onMessageSend, s
     }
 
     return (
-        <IonToolbar className='chat-toolbar flex items-end'>
-            <div>
+        <div className='flex items-end justify-between overflow-visible space-x-1 pb-4 border-t-2 border-t-[color:var(--ion-color-light)]'>
+            <div className='w-full'>
                 <QuillEditor
                     value={text}
                     onChange={onTextChange}
@@ -85,9 +86,9 @@ export const ChatInput = ({ channelID, allChannels, allMembers, onMessageSend, s
                 <IonButton slot='icon-only' hidden={hasText} onClick={pickFiles}>
                     <IonIcon icon={documentAttachOutline} />
                 </IonButton>
-                <IonButton onClick={onSubmit} hidden={!hasText}>Send</IonButton>
+                <IonButton onClick={onSubmit} className='font-bold' size='small' hidden={!hasText}>Send</IonButton>
             </IonButtons>
             <FileUploadModal channelID={channelID} files={files} setFiles={setFiles} pickFiles={pickFiles} onMessageSend={onMessageSend} />
-        </IonToolbar>
+        </div>
     )
 }

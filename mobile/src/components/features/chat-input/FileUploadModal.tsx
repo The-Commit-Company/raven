@@ -45,7 +45,7 @@ export const FileUploadModal = ({ files, setFiles, pickFiles, channelID, onMessa
             }).then((f) => {
                 updateDoc('Raven Message', message_doc, {
                     file: f.file_url,
-                    message_type: fileExt.includes(getFileExtension(f.name)) ? "Image" : "File",
+                    message_type: fileExt.includes(getFileExtension(file.name)) ? "Image" : "File",
                 })
                 setCompletedFiles(cf => [...cf, file.name])
             }).catch((e) => {
@@ -68,6 +68,12 @@ export const FileUploadModal = ({ files, setFiles, pickFiles, channelID, onMessa
     }
 
     const overallProgress = completedFiles.length / files.length
+
+    console.log(files.map(f => ({
+        "name": f.name,
+        "ext": getFileExtension(f.name),
+        "type": fileExt.includes(getFileExtension(f.name)) ? "Image" : "File"
+    })))
 
     return (
         <IonModal isOpen={files.length > 0}>
