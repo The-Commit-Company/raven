@@ -1,6 +1,6 @@
 import { Avatar, Box, Button, Center, HStack, Icon, Spinner, Stack, Text, useModalContext, Image, Link } from "@chakra-ui/react"
 import { Command } from "cmdk"
-import { useFrappeGetCall, useSearch } from "frappe-react-sdk"
+import { useFrappeGetCall } from "frappe-react-sdk"
 import { useContext, useState } from "react"
 import { BiGlobe, BiHash, BiLockAlt } from "react-icons/bi"
 import { BsFillCircleFill, BsCircle } from "react-icons/bs"
@@ -317,22 +317,33 @@ export const People = ({ input, users, activeUsers, gotoDMChannel, currentUser, 
 }
 
 export const FindIn = ({ input, tabIndex, isGlobalSearchModalOpen, onGlobalSearchModalOpen, onGlobalSearchModalClose, onCommandPaletteClose }: FindInProps) => {
-    const { data, isValidating } = useSearch('Raven Channel', input, [["is_direct_message", "=", "0"]], 20)
+
+    const { channels } = useContext(ChannelListContext) as ChannelListContextType
     const [inFilter, setInFilter] = useState<string>()
+
+    const results_count = channels.reduce((count, channel) => {
+        if (channel?.channel_name?.toLowerCase().includes(input.toLowerCase())) {
+            return count + 1;
+        }
+        return count;
+    }, 0)
+
     return (
         <Command.List>
             <CommandPaletteEmptyState input={input} placeholder='messages' tabIndex={0} isGlobalSearchModalOpen={isGlobalSearchModalOpen} onGlobalSearchModalOpen={onGlobalSearchModalOpen} onGlobalSearchModalClose={onGlobalSearchModalClose} onCommandPaletteClose={onCommandPaletteClose} />
-            <Command.Group heading={data?.results?.length ? "Recent channels" : ""} >
-                {isValidating && !data?.results?.length && <Text py='4' color='gray.500' textAlign='center' fontSize='sm'>No results found.</Text>}
-                {isValidating && <Command.Loading>
-                    <Center px='4' pb='2'>
-                        <Box><Spinner size={'xs'} color='gray.400' /></Box>
-                    </Center>
-                </Command.Loading>}
-                {data?.results?.map((r: { value: string, description: string, label: string }) => <Item key={r.value} value={r.value} onSelect={() => {
-                    onGlobalSearchModalOpen()
-                    setInFilter(r.value)
-                }}>{r.description.includes("Private") && <BiLockAlt /> || r.description.includes("Public") && <BiHash /> || r.description.includes("Open") && <BiGlobe />}{r.label}</Item>)}
+            <Command.Group heading={results_count > 0 ? "Recent channels" : ""} >
+                {results_count === 0 && <Text py='4' color='gray.500' textAlign='center' fontSize='sm'>No results found.</Text>}
+                {channels?.map((channel: ChannelListItem) => {
+                    if (channel?.channel_name?.toLowerCase().includes(input.toLowerCase())) {
+                        return (
+                            <Item key={channel.name} value={channel.channel_name}
+                                onSelect={() => {
+                                    onGlobalSearchModalOpen()
+                                    setInFilter(channel.name)
+                                }}>
+                                {channel?.type === "Private" && <BiLockAlt /> || channel?.type === "Public" && <BiHash /> || channel?.type === "Open" && <BiGlobe />}{channel.channel_name}</Item>)
+                    }
+                })}
             </Command.Group>
             <GlobalSearch isOpen={isGlobalSearchModalOpen} onClose={onGlobalSearchModalClose} tabIndex={tabIndex} input={""} inFilter={inFilter} onCommandPaletteClose={onCommandPaletteClose} />
         </Command.List>
