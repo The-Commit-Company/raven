@@ -108,6 +108,15 @@ export const QuillEditor = ({ text, setText, setFiles, onSubmit, allUsers, allCh
                 linkify: linkifyOptions,
                 mention,
                 imageDropAndPaste,
+                keyboard: {
+                    bindings: {
+                        enter: {
+                            key: 13,
+                            handler:
+                                null
+                        },
+                    }
+                },
                 clipboard: {
                     matchVisual: false
                 }

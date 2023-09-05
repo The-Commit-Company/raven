@@ -31,7 +31,7 @@ type value = {
 
 export const fileExt = ['jpg', 'JPG', 'jpeg', 'JPEG', 'png', 'PNG', 'gif', 'GIF']
 
-export const ChatInput = ({ channelID, selectedMessage, handleCancelReply, channelData, channelMembers }: ChatInputProps) => {
+export const ChatInput = ({ channelID, selectedMessage, handleCancelReply, channelData }: ChatInputProps) => {
 
     const { call } = useFrappePostCall('raven.raven_messaging.doctype.raven_message.raven_message.send_message')
     const { createDoc, loading: creatingDoc, error: errorCreatingDoc, reset: resetCreateDoc } = useFrappeCreateDoc()
