@@ -67,7 +67,7 @@ export const MessageBox = ({ messageName, channelID, creation, owner, messageTex
             </HStack>
             <HStack spacing={2} alignItems='flex-start'>
                 <Avatar name={users[owner]?.full_name ?? owner} src={users[owner]?.user_image ?? ''} borderRadius={'md'} boxSize='36px' />
-                <Stack spacing='1'>
+                <Stack spacing='1' width={'full'}>
                     <HStack>
                         <HStack divider={<StackDivider />} align='flex-start'>
                             <Text fontSize='sm' lineHeight={'0.9'} fontWeight="bold" as='span' color={textColor}>{users[owner]?.full_name ?? owner}</Text>
