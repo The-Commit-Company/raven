@@ -8,7 +8,7 @@ import { getChannelIcon } from "@/utils/layout/channelIcon"
 
 export const ChannelList = ({ unread_count }: { unread_count?: UnreadCountData }) => {
 
-    const { channels, mutate } = useContext(ChannelListContext) as ChannelListContextType
+    const { sidebar_channels, mutate } = useContext(ChannelListContext) as ChannelListContextType
 
     const [showData, { toggle }] = useBoolean(true)
 
@@ -25,7 +25,7 @@ export const ChannelList = ({ unread_count }: { unread_count?: UnreadCountData }
                 <SidebarGroup>
                     <SidebarGroupList>
                         <SidebarGroupList>
-                            {showData && channels.map((channel) => <ChannelItem
+                            {showData && sidebar_channels.map((channel) => <ChannelItem
                                 channel={channel}
                                 unreadCount={unread_count?.channels ?? []}
                                 key={channel.name} />)}

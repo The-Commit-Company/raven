@@ -41,12 +41,13 @@ class RavenChannel(Document):
             else:
                 frappe.throw(
                     _("You don't have permission to modify this channel"), frappe.PermissionError)
-        
+
         if self.is_direct_message == 1:
             old_doc = self.get_doc_before_save()
             if old_doc:
                 if old_doc.get('channel_name') != self.channel_name:
-                    frappe.throw(_("You cannot change the name of a direct message channel"), frappe.ValidationError)
+                    frappe.throw(
+                        _("You cannot change the name of a direct message channel"), frappe.ValidationError)
 
     def before_validate(self):
         if self.is_self_message == 1:
@@ -80,7 +81,7 @@ class RavenChannel(Document):
 
 
 @frappe.whitelist()
-def get_all_channels(hide_archived=True):
+def get_all_channels(hide_archived=False):
     '''
         Fetches all channels where current user is a member - both channels and DMs
         To be used on the web app. 
@@ -90,7 +91,7 @@ def get_all_channels(hide_archived=True):
     # 1. Get "channels" - public, open, private, and DMs
     channels = get_channel_list(hide_archived)
 
-    #3. For every channel, we need to fetch the peer's User ID (if it's a DM)
+    # 3. For every channel, we need to fetch the peer's User ID (if it's a DM)
     parsed_channels = []
     for channel in channels:
         parsed_channel = {
@@ -100,8 +101,12 @@ def get_all_channels(hide_archived=True):
 
         parsed_channels.append(parsed_channel)
 
-    channel_list = [channel for channel in parsed_channels if not channel.get('is_direct_message')]
-    dm_list = [channel for channel in parsed_channels if channel.get('is_direct_message')]
+    sidebar_channel_list = [channel for channel in parsed_channels if not channel.get(
+        'is_direct_message') and not channel.get('is_archived')]
+    channel_list = [
+        channel for channel in parsed_channels if not channel.get('is_direct_message')]
+    dm_list = [channel for channel in parsed_channels if channel.get(
+        'is_direct_message')]
 
     # Get extra users if dm channels length is less than 5
     extra_users = []
@@ -109,13 +114,14 @@ def get_all_channels(hide_archived=True):
 
     if number_of_dms < 5:
         extra_users = get_extra_users(dm_list)
-    
 
     return {
+        "sidebar_channels": sidebar_channel_list,
         "channels": channel_list,
         "dm_channels": dm_list,
         "extra_users": extra_users
     }
+
 
 @frappe.whitelist()
 def get_channel_list(hide_archived=False):
@@ -143,23 +149,23 @@ def get_peer_user_id(channel_id, is_direct_message, is_self_message=False):
     return frappe.db.get_value('Raven Channel Member', {
         'channel_id': channel_id,
         'user_id': ['!=', frappe.session.user]
-        }, 'user_id')
+    }, 'user_id')
+
 
 def get_extra_users(dm_channels):
     '''
     Fetch extra users - only when number of DMs is less than 5.
     Do not repeat users already in the list
     '''
-    existing_users = [dm_channel.get('peer_user_id') for dm_channel in dm_channels]
+    existing_users = [dm_channel.get('peer_user_id')
+                      for dm_channel in dm_channels]
     existing_users.append('Administrator')
     existing_users.append('Guest')
     return frappe.db.get_list('User', filters=[
         ['name', 'not in', existing_users],
         ['enabled', '=', 1],
         ['user_type', '=', 'System User'],
-        ["Has Role", "role", "=", 'Raven User']]
-        , fields=['name', 'full_name', 'user_image'])
-
+        ["Has Role", "role", "=", 'Raven User']], fields=['name', 'full_name', 'user_image'])
 
 
 @frappe.whitelist(methods=['POST'])
@@ -180,11 +186,11 @@ def create_direct_message_channel(user_id):
     # create direct message channel with user and current user
     else:
         channel = frappe.get_doc({
-                "doctype": "Raven Channel",
-                "channel_name": frappe.session.user + " _ " + user_id,
-                "is_direct_message": 1,
-                "is_self_message": frappe.session.user == user_id
-            })
+            "doctype": "Raven Channel",
+            "channel_name": frappe.session.user + " _ " + user_id,
+            "is_direct_message": 1,
+            "is_self_message": frappe.session.user == user_id
+        })
         channel.insert()
         if frappe.session.user != user_id:
             channel.add_members([user_id], 1)

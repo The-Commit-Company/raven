@@ -1,16 +1,16 @@
-import { IconButton, Tooltip } from '@chakra-ui/react'
+import { ButtonProps, IconButton, Tooltip } from '@chakra-ui/react'
 import { BiEditAlt } from 'react-icons/bi'
 import { ModalTypes, useModalManager } from "@/hooks/useModalManager"
 import { ChannelRenameModal } from '@/components/feature/channel-details/rename-channel/ChannelRenameModal'
 import { ChannelListItem } from '@/utils/channel/ChannelListProvider'
 
-interface EditChannelNameButtonProps {
+interface EditChannelNameButtonProps extends ButtonProps {
     channelID: string,
     channel_name: string,
-    type: ChannelListItem['type']
+    channelType: ChannelListItem['type']
 }
 
-export const EditChannelNameButton = ({ channelID, channel_name, type }: EditChannelNameButtonProps) => {
+export const EditChannelNameButton = ({ channelID, channel_name, channelType, ...props }: EditChannelNameButtonProps) => {
 
     const modalManager = useModalManager()
     const onRenameChannelModalOpen = () => {
@@ -26,6 +26,7 @@ export const EditChannelNameButton = ({ channelID, channel_name, type }: EditCha
                     onClick={onRenameChannelModalOpen}
                     size='sm'
                     variant='ghost'
+                    {...props}
                 />
             </Tooltip>
             <ChannelRenameModal
@@ -33,7 +34,7 @@ export const EditChannelNameButton = ({ channelID, channel_name, type }: EditCha
                 onClose={modalManager.closeModal}
                 channelID={channelID}
                 channel_name={channel_name}
-                type={type} />
+                type={channelType} />
         </>
     )
 }

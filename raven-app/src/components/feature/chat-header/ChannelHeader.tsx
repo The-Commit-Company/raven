@@ -21,7 +21,7 @@ export const ChannelHeader = ({ channelData }: ChannelHeaderProps) => {
                 <HStack>
                     <Icon as={getChannelIcon(channelData.type)} />
                     <Text>{channelData.channel_name}</Text>
-                    <EditChannelNameButton channelID={channelData.name} channel_name={channelData.channel_name} type={channelData.type} />
+                    <EditChannelNameButton channelID={channelData.name} channel_name={channelData.channel_name} channelType={channelData.type} isDisabled={channelData.is_archived == 1} />
                 </HStack>
             </PageHeading>
             <HStack>
