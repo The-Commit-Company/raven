@@ -10,6 +10,7 @@ import { ChannelMembers, ChannelMembersContext, ChannelMembersContextType } from
 import { EditDescriptionButton } from "@/components/feature/channel-details/edit-channel-description/EditDescriptionButton"
 import { AddMembersButton } from "@/components/feature/channel-member-details/add-members/AddMembersButton"
 import { UserContext } from "@/utils/auth/UserProvider"
+import { useGetUserRecords } from "@/hooks/useGetUserRecords"
 
 export const EmptyStateForSearch = () => {
     return (
@@ -37,6 +38,7 @@ interface EmptyStateForChannelProps {
 const EmptyStateForChannel = ({ channelData, channelMembers, updateMembers }: EmptyStateForChannelProps) => {
 
     const { currentUser } = useContext(UserContext)
+    const users = useGetUserRecords()
 
     return (
         <Stack py='4' px='2'>
@@ -47,7 +49,7 @@ const EmptyStateForChannel = ({ channelData, channelMembers, updateMembers }: Em
                     {channelData?.type === 'Open' && <BiGlobe fontSize={'1.4rem'} />}
                     <Heading size={'md'}>{channelData?.channel_name}</Heading>
                 </HStack>
-                <Text>{channelMembers[channelData.owner]?.full_name} created this channel on {DateObjectToFormattedDateString(new Date(channelData?.creation ?? ''))}. This is the very beginning of the <strong>{channelData?.channel_name}</strong> channel.</Text>
+                <Text>{users[channelData.owner]?.full_name} created this channel on {DateObjectToFormattedDateString(new Date(channelData?.creation ?? ''))}. This is the very beginning of the <strong>{channelData?.channel_name}</strong> channel.</Text>
                 {channelData?.channel_description && <Text fontSize={'sm'} color={'gray.500'}>{channelData?.channel_description}</Text>}
             </Stack>
             {channelData?.is_archived == 0 && channelMembers[currentUser] && <ButtonGroup size={'xs'} colorScheme="blue" variant={'link'} spacing={4} zIndex={1}>
