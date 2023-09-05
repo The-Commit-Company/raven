@@ -11,7 +11,7 @@ import { ChannelListItem, DMChannelListItem } from "@/utils/channel/ChannelListP
 type MessageBoxProps = {
     messageName: string,
     channelID: string,
-    creation: Date,
+    creation: string,
     owner: string,
     messageText: string,
     file?: string,
