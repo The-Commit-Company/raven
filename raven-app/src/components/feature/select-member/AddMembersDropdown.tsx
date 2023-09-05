@@ -16,15 +16,17 @@ export const AddMembersDropdown = ({ name, chakraStyles, ...props }: Props<Membe
 
     const memberOptions: MemberOption[] = useMemo(() => {
         if (users) {
-            return users.users.map((m: UserFields) => ({
-                value: m.name,
-                label: m.full_name,
-                image: m.user_image ?? ''
-            }))
+            return users.users
+                .filter((m: UserFields) => m.name !== 'Administrator')
+                .map((m: UserFields) => ({
+                    value: m.name,
+                    label: m.full_name,
+                    image: m.user_image ?? ''
+                }));
         } else {
-            return []
+            return [];
         }
-    }, [users])
+    }, [users]);
 
     const { control } = useFormContext()
 

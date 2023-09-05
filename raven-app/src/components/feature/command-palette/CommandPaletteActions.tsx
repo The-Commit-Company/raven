@@ -295,7 +295,7 @@ export const People = ({ input, users, activeUsers, gotoDMChannel, currentUser, 
             }
             : {}
         }>
-            {users.map(user => {
+            {users.filter((m: UserFields) => m.name !== 'Administrator').map(user => {
                 if (user?.full_name?.toLowerCase().includes(input.toLowerCase())) {
                     return (
                         gotoDMChannel && activeUsers &&

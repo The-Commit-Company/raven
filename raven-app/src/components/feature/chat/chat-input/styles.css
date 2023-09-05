@@ -173,6 +173,10 @@
     background-color: #1A202C;
 }
 
+.ql-syntax::-webkit-scrollbar {
+    width: 0px;
+}
+
 .ql-editor {
     font-size: var(--chakra-fontSizes-sm)
 }

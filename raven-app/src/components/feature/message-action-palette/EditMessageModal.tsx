@@ -4,11 +4,11 @@ import { useFrappeUpdateDoc } from "frappe-react-sdk"
 import { useCallback, useContext, useEffect, useState } from "react"
 import { useHotkeys } from "react-hotkeys-hook"
 import { FaRegSmile } from "react-icons/fa"
-import ReactQuill from "react-quill"
 import { ErrorBanner } from "../../layout/AlertBanner"
 import { ModalTypes, useModalManager } from "../../../hooks/useModalManager"
 import { UserListContext } from "@/utils/users/UserListProvider"
 import { ChannelListContext, ChannelListItem } from "@/utils/channel/ChannelListProvider"
+import { QuillEditor } from "../chat/chat-input/QuillEditor"
 
 interface EditMessageModalProps {
     isOpen: boolean,
@@ -50,17 +50,6 @@ export const EditMessageModal = ({ isOpen, onClose, channelMessageID, originalTe
 
     const [text, setText] = useState(originalText)
 
-    const handleChange = (value: string) => {
-        setText(value)
-    }
-
-    const handleKeyDown = (event: React.KeyboardEvent) => {
-        if (event.key === 'Enter' && !event.shiftKey) {
-            event.preventDefault()
-            onSubmit();
-        }
-    }
-
     useHotkeys('enter', () => onSubmit(), {
         enabled: isOpen,
         preventDefault: true,
@@ -94,41 +83,6 @@ export const EditMessageModal = ({ isOpen, onClose, channelMessageID, originalTe
         onClose(refresh)
     }
 
-    const mention = {
-        allowedChars: /^[A-Za-z\sÅÄÖåäö]*$/,
-        mentionDenotationChars: ["@", "#"],
-        source: useCallback((searchTerm: string, renderList: any, mentionChar: string) => {
-
-            let values: { id: string, value: string }[];
-
-            if (mentionChar === "@") {
-                values = allUsers;
-            } else {
-                values = allChannels;
-            }
-
-            if (searchTerm.length === 0) {
-                renderList(values, searchTerm);
-            } else {
-                const matches = [];
-                if (values)
-                    for (let i = 0; i < values.length; i++)
-                        if (
-                            ~values[i].value.toLowerCase().indexOf(searchTerm.toLowerCase())
-                        )
-                            matches.push(values[i]);
-                renderList(matches, searchTerm);
-            }
-        }, [])
-    }
-
-    const formats = [
-        'bold', 'italic', 'underline', 'strike', 'blockquote',
-        'list', 'bullet',
-        'link', 'mention',
-        'code-block'
-    ]
-
     const { colorMode } = useColorMode()
 
     const modalManager = useModalManager()
@@ -158,20 +112,7 @@ export const EditMessageModal = ({ isOpen, onClose, channelMessageID, originalTe
                     <Box>
                         <ErrorBanner error={error} />
                         <Stack border='1px' borderColor={'gray.500'} rounded='lg' maxH='50vh' boxShadow='base' bg={colorMode === "light" ? "white" : "gray.800"} overflowY={'hidden'}>
-                            <ReactQuill
-                                className={colorMode === 'light' ? 'my-quill-editor light-theme' : 'my-quill-editor dark-theme'}
-                                onChange={handleChange}
-                                value={text}
-                                modules={{
-                                    toolbar: [
-                                        ['bold', 'italic', 'underline', 'strike', 'blockquote'],
-                                        [{ 'list': 'ordered' }, { 'list': 'bullet' }],
-                                        ['link', 'code-block']
-                                    ],
-                                    mention
-                                }}
-                                formats={formats}
-                                onKeyDown={handleKeyDown} />
+                            <QuillEditor text={text} setText={setText} onSubmit={onSubmit} allUsers={allUsers} allChannels={allChannels} />
                             <HStack w='full' justify={'space-between'} px='2' pb='2'>
                                 <Box>
                                     <Popover

@@ -17,10 +17,10 @@ type Props = {
     text: string,
     setText: (text: string) => void,
     onSubmit: () => void,
-    setFiles: (f: any) => void,
+    setFiles?: (f: any) => void,
     allUsers: any[],
     allChannels: any[],
-    reactQuillRef: React.RefObject<ReactQuill>
+    reactQuillRef?: React.RefObject<ReactQuill>
 }
 
 export const QuillEditor = ({ text, setText, setFiles, onSubmit, allUsers, allChannels, reactQuillRef }: Props) => {
@@ -86,7 +86,7 @@ export const QuillEditor = ({ text, setText, setFiles, onSubmit, allUsers, allCh
             if (file) {
                 file.fileID = file.name + Date.now()
                 file.uploadProgress = 0
-                setFiles((f: any) => [...f, file])
+                setFiles && setFiles((f: any) => [...f, file])
             }
 
         }, [])
