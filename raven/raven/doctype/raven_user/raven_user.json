@@ -1,5 +1,11 @@
 {
- "actions": [],
+ "actions": [
+  {
+   "action": "raven.raven.doctype.raven_user.raven_user.reset_user_permissions",
+   "action_type": "Server Action",
+   "label": "Reset User Permissions"
+  }
+ ],
  "allow_rename": 1,
  "autoname": "field:user",
  "creation": "2023-09-06 14:36:48.631681",
@@ -47,7 +53,7 @@
  ],
  "image_field": "user_image",
  "links": [],
- "modified": "2023-09-06 16:36:52.376325",
+ "modified": "2023-09-06 17:05:53.750965",
  "modified_by": "Administrator",
  "module": "Raven",
  "name": "Raven User",

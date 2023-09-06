@@ -1,13 +1,15 @@
 import { FrappeError } from 'frappe-react-sdk'
 import { AnimatePresence, motion } from 'framer-motion'
 import { AlertBanner } from './AlertBanner'
-import { AlertProps, Text } from '@chakra-ui/react'
+import { AlertProps, Stack, Text } from '@chakra-ui/react'
 import { useMemo } from 'react'
 import React from 'react'
+import { MarkdownRenderer } from '@/components/feature/markdown-viewer/MarkdownRenderer'
 
 interface ErrorBannerProps extends AlertProps {
     error?: FrappeError | null,
     overrideHeading?: string,
+    children?: React.ReactNode
 }
 
 interface ParsedErrorMessage {
@@ -15,7 +17,7 @@ interface ParsedErrorMessage {
     title?: string,
     indicator?: string,
 }
-export const ErrorBanner = ({ error, overrideHeading, ...props }: ErrorBannerProps) => {
+export const ErrorBanner = ({ error, overrideHeading, children, ...props }: ErrorBannerProps) => {
 
 
     //exc_type: "ValidationError" or "PermissionError" etc
@@ -71,7 +73,10 @@ export const ErrorBanner = ({ error, overrideHeading, ...props }: ErrorBannerPro
         <AnimatePresence>
             {error && <motion.div key='error' initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
                 <AlertBanner status={messages[0].indicator === 'yellow' ? 'warning' : "error"} heading={overrideHeading ?? parseHeading(messages[0])} {...props}>
-                    {messages.map((m, i) => <Text key={i} fontSize="small">{m.message}</Text>)}
+                    <Stack>
+                        {messages.map((m, i) => <MarkdownRenderer key={i} content={m.message} />)}
+                        {children}
+                    </Stack>
                 </AlertBanner>
             </motion.div>}
         </AnimatePresence>
