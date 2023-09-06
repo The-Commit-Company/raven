@@ -4,7 +4,7 @@ import { useFrappeEventListener, useFrappeGetCall } from "frappe-react-sdk"
 import { Message, MessagesWithDate } from "../../../../../../types/Messaging/Message"
 import { FullPageLoader } from "@/components/layout/Loaders"
 import { ErrorBanner } from "@/components/layout/AlertBanner"
-import { useContext, useState } from "react"
+import { useContext, useMemo, useState } from "react"
 import { ArchivedChannelBox } from "../chat-footer/ArchivedChannelBox"
 import { ChannelListItem, DMChannelListItem } from "@/utils/channel/ChannelListProvider"
 import { JoinChannelBox } from "../chat-footer/JoinChannelBox"
@@ -51,6 +51,13 @@ export const ChatBoxBody = ({ channelData }: ChatBoxBodyProps) => {
         setSelectedMessage(null)
     }
 
+    const isUserInChannel = useMemo(() => {
+        if (user && channelMembers) {
+            return user in channelMembers
+        }
+        return false
+    }, [user, channelMembers])
+
     if (data) {
         return (
             <Stack h='calc(100vh)' justify={'flex-end'} p={4} overflow='hidden' pt='16'>
@@ -59,14 +66,14 @@ export const ChatBoxBody = ({ channelData }: ChatBoxBodyProps) => {
                     updateMessages={mutate}
                     replyToMessage={handleReplyAction}
                     channelData={channelData} />
-                {channelData?.is_archived == 0 && ((user && user in channelMembers) || channelData?.type === 'Open' ?
+                {channelData?.is_archived == 0 && ((isUserInChannel || channelData?.type === 'Open') &&
                     <ChatInput
                         channelID={channelData?.name}
                         selectedMessage={selectedMessage}
                         handleCancelReply={handleCancelReply}
                         channelData={channelData}
-                        channelMembers={channelMembers} />
-                    :
+                        channelMembers={channelMembers} />)}
+                {channelData?.is_archived == 0 && (!isUserInChannel && channelData?.type !== 'Open' &&
                     <JoinChannelBox
                         channelData={channelData}
                         channelMembers={channelMembers}
