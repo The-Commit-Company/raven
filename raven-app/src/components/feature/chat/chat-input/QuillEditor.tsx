@@ -81,7 +81,6 @@ export const QuillEditor = ({ text, setText, setFiles, onSubmit, allUsers, allCh
 
     const imageDropAndPaste = {
         handler: useCallback((imageData: ImageData) => {
-            console.log('Called')
             const file: CustomFile = imageData.toFile() as CustomFile
             if (file) {
                 file.fileID = file.name + Date.now()

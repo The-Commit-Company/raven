@@ -29,8 +29,6 @@ def get_active_users():
 
 @frappe.whitelist()
 def refresh_user_active_state(deactivate=False):
-    print(type(deactivate))
-    print("Called", deactivate, frappe.utils.now())
     if isinstance(deactivate, str):
         deactivate = True if deactivate.lower() == 'true' else False
     if deactivate:

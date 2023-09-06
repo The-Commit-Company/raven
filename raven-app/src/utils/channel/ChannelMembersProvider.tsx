@@ -41,7 +41,7 @@ export const ChannelMembersProvider = ({ children }: PropsWithChildren) => {
 
 const useFetchChannelMembers = (channelID: string): ChannelMembersContextType | null => {
 
-    const { data, error, isLoading, mutate } = useFrappeGetCall<{ message: ChannelMembers }>('raven.raven_channel_management.doctype.raven_channel_member.raven_channel_member.get_channel_members', {
+    const { data, error, isLoading, mutate } = useFrappeGetCall<{ message: ChannelMembers }>('raven.api.chat.get_channel_members', {
         channel_id: channelID
     }, undefined, {
         revalidateOnFocus: false

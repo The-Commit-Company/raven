@@ -1,0 +1,4 @@
+[pre_model_sync]
+
+[post_model_sync]
+raven.patches.v1_2.create_raven_users
