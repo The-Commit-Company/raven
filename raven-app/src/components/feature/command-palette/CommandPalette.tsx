@@ -59,7 +59,7 @@ export const CommandPalette = ({ isOpen, onClose, onToggle }: CommandPaletteProp
         })
     }, [])
 
-    useHotkeys('meta+k', onToggle, {
+    useHotkeys('meta+k, ctrl+k', onToggle, {
         enabled: true,
         preventDefault: true,
         enableOnFormTags: true,
