@@ -11,6 +11,7 @@ import { JoinChannelBox } from "../chat-footer/JoinChannelBox"
 import { ChatInput } from "../chat-input"
 import { useUserData } from "@/hooks/useUserData"
 import { ChannelMembersContext, ChannelMembersContextType } from "@/utils/channel/ChannelMembersProvider"
+import { UserContext } from "@/utils/auth/UserProvider"
 
 interface ChatBoxBodyProps {
     channelData: ChannelListItem | DMChannelListItem
@@ -18,23 +19,20 @@ interface ChatBoxBodyProps {
 
 export const ChatBoxBody = ({ channelData }: ChatBoxBodyProps) => {
 
+    const { currentUser } = useContext(UserContext)
     const { data, error, mutate, isLoading } = useFrappeGetCall<{ message: MessagesWithDate }>("raven.raven_messaging.doctype.raven_message.raven_message.get_messages_with_dates", {
-        channel_id: channelData?.name
-    }, undefined, {
+        channel_id: channelData.name
+    }, `get_messages_for_channel_${channelData.name}`, {
         revalidateOnFocus: false
     })
 
-    if (isLoading) {
-        <FullPageLoader />
-    }
-
-    if (error) {
-        <Box p={2}><ErrorBanner error={error} /></Box>
-    }
-
     useFrappeEventListener('message_updated', (data) => {
-        if (data.channel_id === channelData?.name) {
-            mutate()
+        //If the message is sent on the current channel
+        if (data.channel_id === channelData.name) {
+            //If the sender is not the current user
+            if (data.sender !== currentUser) {
+                mutate()
+            }
         }
     })
 
@@ -51,12 +49,19 @@ export const ChatBoxBody = ({ channelData }: ChatBoxBodyProps) => {
         setSelectedMessage(null)
     }
 
+    if (isLoading) {
+        return <FullPageLoader />
+    }
+
+    if (error) {
+        return <Box p={2}><ErrorBanner error={error} /></Box>
+    }
+
     if (data) {
         return (
             <Stack h='calc(100vh)' justify={'flex-end'} p={4} overflow='hidden' pt='16'>
                 <ChatHistory
                     parsedMessages={data.message}
-                    updateMessages={mutate}
                     replyToMessage={handleReplyAction}
                     channelData={channelData} />
                 {channelData?.is_archived == 0 && ((user && user in channelMembers) || channelData?.type === 'Open' ?

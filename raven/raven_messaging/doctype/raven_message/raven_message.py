@@ -51,7 +51,9 @@ class RavenMessage(Document):
     def send_update_event(self, txt):
         print("Notifying update", txt)
         frappe.publish_realtime('message_updated', {
-            'channel_id': self.channel_id}, after_commit=True)
+            'channel_id': self.channel_id,
+            'sender': frappe.session.user,
+            }, after_commit=True)
         frappe.db.commit()
 
     def on_trash(self):

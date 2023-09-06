@@ -1,6 +1,6 @@
 import { IonBackButton, IonButton, IonButtons, IonContent, IonFooter, IonHeader, IonIcon, IonInput, IonToolbar } from '@ionic/react'
 import { useFrappeEventListener, useFrappeGetCall } from 'frappe-react-sdk'
-import { useCallback, useMemo, useRef, useState } from 'react'
+import { useCallback, useContext, useMemo, useRef, useState } from 'react'
 import { Message, MessagesWithDate } from '../../../../../types/Messaging/Message'
 import { ErrorBanner, FullPageLoader } from '../../layout'
 import { ChatInput } from '../chat-input'
@@ -10,11 +10,13 @@ import { ChannelListItem, DMChannelListItem, useChannelList } from '@/utils/chan
 import { UserFields } from '@/utils/users/UserListProvider'
 import { peopleOutline, searchOutline } from 'ionicons/icons'
 import { Haptics, ImpactStyle } from '@capacitor/haptics'
+import { UserContext } from '@/utils/auth/UserProvider'
 
 export type ChannelMembersMap = Record<string, UserFields>
 
 export const ChatInterface = ({ channel }: { channel: ChannelListItem | DMChannelListItem }) => {
 
+    const { currentUser } = useContext(UserContext)
     const initialDataLoaded = useRef(false)
     const conRef = useRef<HTMLIonContentElement>(null);
 
@@ -69,9 +71,13 @@ export const ChatInterface = ({ channel }: { channel: ChannelListItem | DMChanne
     })
 
     /** Realtime event listener to update messages */
-    useFrappeEventListener('message_updated', (d) => {
-        if (d.channel_id === channel.name) {
-            refreshMessages()
+    useFrappeEventListener('message_updated', (data) => {
+        //If the message is sent on the current channel
+        if (data.channel_id === channel.name) {
+            //If the sender is not the current user
+            if (data.sender !== currentUser) {
+                refreshMessages()
+            }
         }
     })
 

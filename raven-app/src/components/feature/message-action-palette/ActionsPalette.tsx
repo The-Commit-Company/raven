@@ -43,11 +43,14 @@ export const ActionsPalette = ({ message, showButtons, handleScroll, is_continua
     const { createDoc } = useFrappeCreateDoc()
 
     const saveReaction = (emoji: string) => {
-        if (name) return createDoc('Raven Message Reaction', {
-            reaction: emoji,
-            user: currentUser,
-            message: name
-        })
+        if (name) {
+            return createDoc('Raven Message Reaction', {
+                reaction: emoji,
+                user: currentUser,
+                message: name
+            })
+                .then(() => updateMessages())
+        }
     }
 
     return (
