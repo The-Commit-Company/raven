@@ -101,8 +101,6 @@ def get_all_channels(hide_archived=False):
 
         parsed_channels.append(parsed_channel)
 
-    sidebar_channel_list = [channel for channel in parsed_channels if not channel.get(
-        'is_direct_message') and not channel.get('is_archived')]
     channel_list = [
         channel for channel in parsed_channels if not channel.get('is_direct_message')]
     dm_list = [channel for channel in parsed_channels if channel.get(
@@ -116,7 +114,6 @@ def get_all_channels(hide_archived=False):
         extra_users = get_extra_users(dm_list)
 
     return {
-        "sidebar_channels": sidebar_channel_list,
         "channels": channel_list,
         "dm_channels": dm_list,
         "extra_users": extra_users

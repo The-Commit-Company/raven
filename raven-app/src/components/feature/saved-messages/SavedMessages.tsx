@@ -89,7 +89,7 @@ export const SavedMessages = () => {
                 </Tooltip>
             </PageHeader>
             {data && data.message?.length === 0 && <EmptyStateForSavedMessages />}
-            <Stack justify={'flex-start'} p={4} overflow='scroll' pt='20'>
+            <Stack justify={'flex-start'} p={4} overflow='hidden' pt='20'>
                 {data?.message?.map(({ name, text, owner, creation, channel_id, file, message_type }: SavedMessage) => {
                     return (
                         <MessageBox key={name} channelID={channel_id} messageName={name} creation={creation} owner={owner} messageText={text} file={file} message_type={message_type} handleScrollToMessage={handleScrollToMessage} />
