@@ -22,6 +22,8 @@
   {
    "fieldname": "message",
    "fieldtype": "Link",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
    "label": "Message",
    "options": "Raven Message",
    "reqd": 1,
@@ -30,13 +32,14 @@
   {
    "fieldname": "reaction_escaped",
    "fieldtype": "Data",
+   "in_list_view": 1,
    "label": "Reaction Escaped",
    "search_index": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-06-07 13:13:20.773155",
+ "modified": "2023-09-07 03:19:15.780833",
  "modified_by": "Administrator",
  "module": "Raven Messaging",
  "name": "Raven Message Reaction",
@@ -67,6 +70,15 @@
    "role": "Raven User",
    "share": 1,
    "write": 1
+  },
+  {
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Raven User",
+   "share": 1
   }
  ],
  "sort_field": "modified",

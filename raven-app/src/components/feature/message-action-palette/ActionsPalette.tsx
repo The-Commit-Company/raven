@@ -1,5 +1,5 @@
 import { Box, HStack, useColorMode } from '@chakra-ui/react'
-import { useFrappeCreateDoc } from 'frappe-react-sdk'
+import { useFrappePostCall } from 'frappe-react-sdk'
 import { useContext } from 'react'
 import { UserContext } from '../../../utils/auth/UserProvider'
 import { FileMessage, Message, TextMessage } from '../../../../../types/Messaging/Message'
@@ -40,16 +40,14 @@ export const ActionsPalette = ({ message, showButtons, handleScroll, is_continua
     const BORDERCOLOR = colorMode === 'light' ? 'gray.200' : 'gray.700'
 
     const { currentUser } = useContext(UserContext)
-    const { createDoc } = useFrappeCreateDoc()
 
+    const { call: reactToMessage } = useFrappePostCall('raven.api.reactions.react')
     const saveReaction = (emoji: string) => {
         if (name) {
-            return createDoc('Raven Message Reaction', {
-                reaction: emoji,
-                user: currentUser,
-                message: name
-            })
-                .then(() => updateMessages())
+            return reactToMessage({
+                message_id: name,
+                reaction: emoji
+            }).then(() => updateMessages())
         }
     }
 
