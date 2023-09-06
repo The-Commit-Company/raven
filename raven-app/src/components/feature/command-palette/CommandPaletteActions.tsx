@@ -265,7 +265,7 @@ export const Channels = ({ input, isGlobalSearchModalOpen, isChild, onGlobalSear
                             <Item key={channel.name} value={channel.channel_name} onSelect={() => {
                                 navigate(`/channel/${channel.name}`)
                                 onClose()
-                            }}>{channel?.type === "Private" && <BiLockAlt /> || channel?.type === "Public" && <BiHash /> || channel?.type === "Open" && <BiGlobe />}{channel.channel_name}</Item>)
+                            }}>{channel?.type === "Private" && <BiLockAlt /> || channel?.type === "Public" && <BiHash /> || channel?.type === "Open" && <BiGlobe />}{channel.channel_name} {channel.is_archived ? '(archived)' : ''}</Item>)
                     }
                 }
                 )}
