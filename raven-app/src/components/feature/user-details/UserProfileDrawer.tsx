@@ -9,12 +9,12 @@ import { AiOutlineEdit } from "react-icons/ai"
 import { SetUserStatus } from "./SetUserStatus"
 import { useUserData } from "@/hooks/useUserData"
 import { ErrorBanner } from "@/components/layout/AlertBanner"
-import { Member } from "@/utils/channel/ChannelMembersProvider"
+import { UserFields } from "@/utils/users/UserListProvider"
 
 interface UserProfileDrawerProps {
     isOpen: boolean
     onClose: () => void,
-    user: Member
+    user: UserFields
 }
 
 export const UserProfileDrawer = ({ isOpen, onClose, user }: UserProfileDrawerProps) => {

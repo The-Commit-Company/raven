@@ -61,14 +61,13 @@ const EmptyStateForChannel = ({ channelData, channelMembers, updateMembers }: Em
 }
 
 interface EmptyStateForDMProps {
-    channelData: DMChannelListItem,
-    channelMembers: ChannelMembers
+    channelData: DMChannelListItem
 }
 
-const EmptyStateForDM = ({ channelData, channelMembers }: EmptyStateForDMProps) => {
+const EmptyStateForDM = ({ channelData }: EmptyStateForDMProps) => {
 
-    const { name: user } = useUserData()
     const peer = channelData.peer_user_id
+    const users = useGetUserRecords()
     const { isOpen: isUserProfileDetailsDrawerOpen, onOpen: onUserProfileDetailsDrawerOpen, onClose: onUserProfileDetailsDrawerClose } = useDisclosure()
 
     const { colorMode } = useColorMode()
@@ -76,37 +75,27 @@ const EmptyStateForDM = ({ channelData, channelMembers }: EmptyStateForDMProps) 
 
     return (
         <Box py='4' px='2'>
-            {channelData?.is_direct_message == 1 && channelData?.is_self_message == 0 &&
+            {channelData?.is_direct_message == 1 &&
                 <Stack>
                     <HStack>
-                        <Avatar name={channelMembers?.[peer]?.full_name ?? peer} src={channelMembers?.[peer]?.user_image ?? ''} borderRadius={'md'} boxSize='42px' />
+                        <Avatar name={users?.[peer]?.full_name ?? peer} src={users?.[peer]?.user_image ?? ''} borderRadius={'md'} boxSize='42px' />
                         <Stack spacing={0}>
-                            <Text fontWeight={'semibold'}>{channelMembers?.[peer]?.full_name}</Text>
-                            <Text fontSize={'xs'} color={textColor}>{channelMembers?.[peer]?.name}</Text>
+                            <Text fontWeight={'semibold'}>{users?.[peer]?.full_name}</Text>
+                            <Text fontSize={'xs'} color={textColor}>{users?.[peer]?.name}</Text>
                         </Stack>
                     </HStack>
-                    <HStack spacing={1}>
-                        <Text>This is a Direct Message channel between you and <strong>{channelMembers?.[peer]?.full_name ?? peer}</strong>. Check out their profile to learn more about them.</Text>
-                        <Button variant='link' colorScheme="blue" zIndex={1} onClick={() => onUserProfileDetailsDrawerOpen()}>View profile</Button>
-                    </HStack>
-                    <UserProfileDrawer isOpen={isUserProfileDetailsDrawerOpen} onClose={onUserProfileDetailsDrawerClose} user={channelMembers?.[peer]} />
-                </Stack>
-            }
-            {channelData?.is_self_message == 1 && user &&
-                <Stack spacing={4}>
-                    <HStack>
-                        <Avatar name={channelMembers?.[user]?.full_name} src={channelMembers?.[user]?.user_image ?? ''} borderRadius={'md'} boxSize='42px'>
-                            <AvatarBadge boxSize='0.72em' bg='green.500' />
-                        </Avatar>
+                    {channelData?.is_self_message == 1 ?
                         <Stack spacing={0}>
-                            <HStack spacing={1}><Text fontWeight={'semibold'}>{channelMembers?.[user]?.full_name}</Text><Text fontSize='sm' color='gray.500'>(You)</Text></HStack>
-                            <Text fontSize={'xs'} color={textColor}>{channelMembers?.[user]?.name}</Text>
+                            <Text><strong>This space is all yours.</strong> Draft messages, list your to-dos, or keep links and files handy. </Text>
+                            <Text>And if you ever feel like talking to yourself, don't worry, we won't judge - just remember to bring your own banter to the table.</Text>
                         </Stack>
-                    </HStack>
-                    <Stack spacing={0}>
-                        <Text><strong>This space is all yours.</strong> Draft messages, list your to-dos, or keep links and files handy. </Text>
-                        <Text>And if you ever feel like talking to yourself, don't worry, we won't judge - just remember to bring your own banter to the table.</Text>
-                    </Stack>
+                        :
+                        <HStack spacing={1}>
+                            <Text>This is a Direct Message channel between you and <strong>{users?.[peer]?.full_name ?? peer}</strong>. Check out their profile to learn more about them.</Text>
+                            <Button variant='link' colorScheme="blue" zIndex={1} onClick={() => onUserProfileDetailsDrawerOpen()}>View profile</Button>
+                        </HStack>
+                    }
+                    <UserProfileDrawer isOpen={isUserProfileDetailsDrawerOpen} onClose={onUserProfileDetailsDrawerClose} user={users?.[peer]} />
                 </Stack>
             }
         </Box>
@@ -144,7 +133,7 @@ export const ChannelHistoryFirstMessage = ({ channelID }: ChannelHistoryFirstMes
     if (channel) {
         // depending on whether channel is a DM or a channel, render the appropriate component
         if (channel.type === "dm") {
-            return <EmptyStateForDM channelData={channel.channelData} channelMembers={channelMembers} />
+            return <EmptyStateForDM channelData={channel.channelData} />
         }
         if (updateMembers) {
             return <EmptyStateForChannel channelData={channel.channelData} channelMembers={channelMembers} updateMembers={updateMembers} />

@@ -17,40 +17,19 @@ export const DMChannelHeader = ({ channelData, channelMembers }: DMChannelHeader
     // If channelData.is_self_message is 1, then the user is having a conversation with themself
 
     const peer = channelData.peer_user_id
-    const user = channelData.owner
     const isActive = useIsUserActive(channelData.peer_user_id)
 
     return (
         <PageHeader>
             <PageHeading>
-                <DMChannelPageHeader
-                    name={channelData.is_self_message === 0 ? peer : user}
-                    full_name={channelData.is_self_message === 0 ? channelMembers?.[peer]?.full_name : channelMembers?.[user]?.full_name}
-                    user_image={channelData.is_self_message === 0 ? channelMembers?.[peer]?.user_image ?? '' : channelMembers?.[user]?.user_image ?? ''}
-                    isActive={isActive}
-                    is_self_message={channelData.is_self_message as 1 | 0}
-                />
+                <HStack>
+                    <Avatar key={peer} name={channelMembers?.[peer]?.full_name ?? peer} src={channelMembers?.[peer]?.user_image ?? ''} borderRadius={'lg'} size="sm" >
+                        <AvatarBadge hidden={!isActive} boxSize='0.88em' bg='green.500' />
+                    </Avatar>
+                    <Text>{channelMembers?.[peer]?.full_name ?? peer}</Text>
+                </HStack>
             </PageHeading>
             <SearchButton />
         </PageHeader>
-    )
-}
-
-interface DMChannelPageHeaderProps {
-    name: string,
-    full_name: string,
-    user_image: string
-    isActive: boolean,
-    is_self_message: 1 | 0
-}
-
-const DMChannelPageHeader = ({ name, full_name, user_image, isActive, is_self_message }: DMChannelPageHeaderProps) => {
-    return (
-        <HStack>
-            <Avatar key={name} name={full_name} src={user_image} borderRadius={'lg'} size="sm" >
-                <AvatarBadge hidden={!is_self_message && !isActive} boxSize='0.88em' bg='green.500' />
-            </Avatar>
-            <Text>{full_name}</Text>
-        </HStack>
     )
 }
