@@ -4,71 +4,67 @@
 import frappe
 from frappe.model.document import Document
 from frappe.query_builder.functions import Count
-
+import json
 class RavenMessageReaction(Document):
+    # begin: auto-generated types
+    # This code is auto-generated. Do not modify anything in this block.
 
-	def before_save(self):
-		""" Escape the reaction to UTF-8 (XXXX) """
-		self.reaction_escaped = self.reaction.encode('unicode-escape').decode('utf-8').replace('\\u', '')
+    from typing import TYPE_CHECKING
 
-		# Check if the reaction already exists
-		existing_reaction = frappe.db.exists({
-			'doctype': 'Raven Message Reaction',
-			'reaction_escaped': self.reaction_escaped,
-			'message': self.message,
-			'owner': self.owner
-		})
+    if TYPE_CHECKING:
+        from frappe.types import DF
 
-		if existing_reaction:
-			# Delete the existing reaction
-			frappe.delete_doc('Raven Message Reaction', existing_reaction, ignore_permissions=True)
-			frappe.db.commit()
-			# Do not create a new reaction
-			frappe.throw('Reaction already exists')
+        message: DF.Link
+        reaction: DF.Data
+        reaction_escaped: DF.Data | None
+    # end: auto-generated types
 
-	def after_insert(self):
-		# Update the count for the current reaction
-		calculate_message_reaction(self.message)
-	
-	def after_delete(self):
-		# Update the count for the current reaction
-		calculate_message_reaction(self.message)
+    def before_save(self):
+        """ Escape the reaction to UTF-8 (XXXX) """
+        self.reaction_escaped = self.reaction.encode('unicode-escape').decode('utf-8').replace('\\u', '')
+    
+    def after_insert(self):
+        #Update the count for the current reaction 
+        calculate_message_reaction(self.message)
+    
+    def after_delete(self):
+        # Update the count for the current reaction
+        calculate_message_reaction(self.message)
 
 
 def calculate_message_reaction(message_id):
 	
-    reactions = frappe.db.get_list('Raven Message Reaction',
-        fields=['count(reaction_escaped) as count', 'reaction', 'reaction_escaped'],
-        group_by='reaction_escaped',
+    reactions = frappe.get_all('Raven Message Reaction',
+        fields=['owner', 'reaction'],
         filters={
             'message': message_id
-        }
+        },
+        order_by='reaction_escaped'
     )
 
     total_reactions = {}
 
-    if reactions:
-        for reaction in reactions:
-            total_reactions[reaction.reaction] = {
-                'count': reaction.count,
-                'users': get_users_for_each_reaction(message_id, reaction.reaction_escaped),
-                'reaction': reaction.reaction
+    for reaction_item in reactions:
+        if reaction_item.reaction in total_reactions:
+            existing_reaction = total_reactions[reaction_item.reaction]
+            new_users = existing_reaction.get("users")
+            new_users.append(reaction_item.owner)
+            total_reactions[reaction_item.reaction] = {
+                'count': existing_reaction.get('count') + 1,
+                'users': new_users,
+                'reaction': reaction_item.reaction
             }
-	    
-    message = frappe.get_doc('Raven Message', message_id)
-    message.message_reactions = total_reactions
-    message.save(ignore_permissions=True)
+            
+        else:
+            total_reactions[reaction_item.reaction] = {
+                'count': 1,
+                'users': [reaction_item.owner],
+                'reaction': reaction_item.reaction
+            }
+    channel_id = frappe.db.get_value("Raven Message", message_id, "channel_id")
+    frappe.db.set_value('Raven Message', message_id, 'message_reactions', json.dumps(total_reactions), update_modified=False)
     frappe.db.commit()
-
-
-def get_users_for_each_reaction(message_id, reaction=None):
-	
-    users = frappe.db.get_list('Raven Message Reaction',
-        fields=['owner'],
-        filters={
-            'message': message_id,
-            'reaction_escaped': reaction
-        }
-    )
-
-    return [user.owner for user in users]
+    frappe.publish_realtime('message_updated', {
+            'channel_id': channel_id,
+            'sender': frappe.session.user,
+            }, after_commit=True)
