@@ -1,5 +1,5 @@
 import { Avatar, Box, BoxProps, HStack, Stack, useColorMode } from "@chakra-ui/react"
-import { useState } from "react"
+import { useCallback, useState } from "react"
 import { ActionsPalette } from "../../message-action-palette/ActionsPalette"
 import { MessageReactions } from "./MessageReactions"
 import { Message, MessageBlock } from "../../../../../../types/Messaging/Message"
@@ -8,6 +8,7 @@ import { DateTooltipShort } from "./DateTooltip"
 import { UserNameInMessage } from "./UserNameInMessage"
 import { ChannelListItem, DMChannelListItem } from "@/utils/channel/ChannelListProvider"
 import { useGetUserRecords } from "@/hooks/useGetUserRecords"
+import { useSWRConfig } from "frappe-react-sdk"
 
 interface ChatMessageBoxProps extends BoxProps {
     message: Message,
@@ -15,17 +16,22 @@ interface ChatMessageBoxProps extends BoxProps {
     children?: React.ReactNode,
     handleScrollToMessage?: (name: string, channel: string, messages: MessageBlock[]) => void,
     replyToMessage?: (message: Message) => void
-    updateMessages: () => void,
     channelData: ChannelListItem | DMChannelListItem
 }
 
-export const ChatMessageBox = ({ message, handleScroll, children, handleScrollToMessage, updateMessages, replyToMessage, channelData, ...props }: ChatMessageBoxProps) => {
+export const ChatMessageBox = ({ message, handleScroll, children, handleScrollToMessage, replyToMessage, channelData, ...props }: ChatMessageBoxProps) => {
 
     const { colorMode } = useColorMode()
     const [showButtons, setShowButtons] = useState<{}>({ visibility: 'hidden' })
     const { name, owner: user, creation: timestamp, message_reactions, is_continuation, is_reply, linked_message } = message
 
     const users = useGetUserRecords()
+
+    const { mutate } = useSWRConfig()
+
+    const updateMessages = useCallback(() => {
+        mutate(`get_messages_for_channel_${channelData.name}`)
+    }, [mutate, channelData.name])
 
     return (
         <Box
@@ -58,7 +64,7 @@ export const ChatMessageBox = ({ message, handleScroll, children, handleScrollTo
                         <PreviousMessageBox previous_message_id={linked_message} channelData={channelData} />
                     }
                     {children}
-                    <MessageReactions message_reactions={message_reactions} name={name} />
+                    <MessageReactions message_reactions={message_reactions} name={name} updateMessages={updateMessages} />
                 </Stack>
             </HStack>
 

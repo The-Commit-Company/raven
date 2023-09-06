@@ -6,7 +6,7 @@ import { useGetUserRecords } from "@/hooks/useGetUserRecords"
 import { UserFields } from "@/utils/users/UserListProvider"
 
 interface UserNameInMessageProps {
-    timestamp: Date,
+    timestamp: string,
     user: string,
 }
 

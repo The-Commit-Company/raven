@@ -1,7 +1,7 @@
 import { Box, HStack, IconButton, Stack, StackDivider, useColorMode, Wrap, WrapItem } from "@chakra-ui/react"
 import { useContext, useMemo, useRef, useState } from "react"
 import { RiSendPlaneFill } from "react-icons/ri"
-import { useFrappeCreateDoc, useFrappeFileUpload, useFrappePostCall, useFrappeUpdateDoc } from "frappe-react-sdk"
+import { useFrappeCreateDoc, useFrappeFileUpload, useFrappePostCall, useFrappeUpdateDoc, useSWRConfig } from "frappe-react-sdk"
 import { useHotkeys } from "react-hotkeys-hook"
 import { CustomFile, FileDrop } from "../../file-upload/FileDrop"
 import { FileListItem } from "../../file-upload/FileListItem"
@@ -33,6 +33,7 @@ export const fileExt = ['jpg', 'JPG', 'jpeg', 'JPEG', 'png', 'PNG', 'gif', 'GIF'
 
 export const ChatInput = ({ channelID, selectedMessage, handleCancelReply, channelData }: ChatInputProps) => {
 
+    const { mutate } = useSWRConfig()
     const { call } = useFrappePostCall('raven.raven_messaging.doctype.raven_message.raven_message.send_message')
     const { createDoc, loading: creatingDoc, error: errorCreatingDoc, reset: resetCreateDoc } = useFrappeCreateDoc()
     const { upload, loading: uploadingFile, progress, error: errorUploadingDoc, reset: resetUploadDoc } = useFrappeFileUpload()
@@ -56,6 +57,7 @@ export const ChatInput = ({ channelID, selectedMessage, handleCancelReply, chann
             linked_message: selectedMessage ? selectedMessage.name : null
         }).then(() => {
             setText("")
+            mutate(`get_messages_for_channel_${channelID}`)
             handleCancelReply()
         })}
         if (files.length > 0) {
@@ -85,6 +87,7 @@ export const ChatInput = ({ channelID, selectedMessage, handleCancelReply, chann
             Promise.all(promises)
                 .then(() => {
                     setFiles([])
+                    // mutate(`get_messages_for_channel_${channelID}`)
                     resetCreateDoc()
                     resetUploadDoc()
                     resetUpdateDoc()

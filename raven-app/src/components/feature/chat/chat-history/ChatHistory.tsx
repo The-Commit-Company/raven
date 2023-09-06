@@ -17,11 +17,10 @@ import { ChannelListItem, DMChannelListItem } from "@/utils/channel/ChannelListP
 interface ChatHistoryProps {
     parsedMessages: MessagesWithDate,
     replyToMessage?: (message: Message) => void,
-    updateMessages: () => void,
     channelData: ChannelListItem | DMChannelListItem
 }
 
-export const ChatHistory = ({ parsedMessages, updateMessages, replyToMessage, channelData }: ChatHistoryProps) => {
+export const ChatHistory = ({ parsedMessages, replyToMessage, channelData }: ChatHistoryProps) => {
 
     const { colorMode } = useColorMode()
 
@@ -60,7 +59,6 @@ export const ChatHistory = ({ parsedMessages, updateMessages, replyToMessage, ch
                 <ChatMessageBox
                     message={block.data}
                     handleScroll={handleScroll}
-                    updateMessages={updateMessages}
                     replyToMessage={replyToMessage}
                     channelData={channelData}>
                     {block.data.message_type === 'Text' && <MarkdownRenderer content={block.data.text} />}

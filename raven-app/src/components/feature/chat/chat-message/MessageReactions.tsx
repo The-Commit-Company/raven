@@ -5,7 +5,7 @@ import { UserContext } from "../../../../utils/auth/UserProvider"
 import { getUsers } from "../../../../utils/operations"
 import { useGetUserRecords } from "@/hooks/useGetUserRecords"
 
-export const MessageReactions = ({ name, message_reactions }: { name: string, message_reactions?: string | null }) => {
+export const MessageReactions = ({ name, message_reactions, updateMessages }: { name: string, message_reactions?: string | null, updateMessages: VoidFunction }) => {
 
     const { colorMode } = useColorMode()
     const bgColor = colorMode === 'light' ? 'white' : 'gray.700'
@@ -14,11 +14,14 @@ export const MessageReactions = ({ name, message_reactions }: { name: string, me
     const { currentUser } = useContext(UserContext)
 
     const saveReaction = (emoji: string) => {
-        if (name) return createDoc('Raven Message Reaction', {
-            reaction: emoji,
-            user: currentUser,
-            message: name
-        })
+        if (name) {
+            return createDoc('Raven Message Reaction', {
+                reaction: emoji,
+                user: currentUser,
+                message: name
+            })
+                .then(() => updateMessages())
+        }
     }
 
     const allUsers = useGetUserRecords()

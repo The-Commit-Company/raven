@@ -1,6 +1,6 @@
 import { Box, Button, ButtonGroup, HStack, IconButton, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Popover, PopoverContent, PopoverTrigger, Stack, useColorMode, useToast } from "@chakra-ui/react"
 import EmojiPicker, { EmojiClickData } from "emoji-picker-react"
-import { useFrappeUpdateDoc } from "frappe-react-sdk"
+import { useFrappeUpdateDoc, useSWRConfig } from "frappe-react-sdk"
 import { useCallback, useContext, useEffect, useState } from "react"
 import { useHotkeys } from "react-hotkeys-hook"
 import { FaRegSmile } from "react-icons/fa"
@@ -26,6 +26,8 @@ export const EditMessageModal = ({ isOpen, onClose, channelMessageID, originalTe
 
     const channels = useContext(ChannelListContext)
     const users = useContext(UserListContext)
+
+    const { mutate } = useSWRConfig()
 
     const allUsers: value[] = users ? users.users.map((user) => {
         return {
@@ -58,7 +60,7 @@ export const EditMessageModal = ({ isOpen, onClose, channelMessageID, originalTe
 
     const onSubmit = () => {
         updateDoc('Raven Message', channelMessageID,
-            { text: text }).then(() => {
+            { text: text }).then((d) => {
                 onClose(true)
                 toast({
                     title: "Message updated",
@@ -67,6 +69,8 @@ export const EditMessageModal = ({ isOpen, onClose, channelMessageID, originalTe
                     duration: 3000,
                     isClosable: true
                 })
+                mutate(`get_messages_for_channel_${d.channel_id}`)
+
             }).catch((e) => {
                 toast({
                     title: "Error",
