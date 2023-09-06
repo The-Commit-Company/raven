@@ -1,24 +1,61 @@
-import { Text, Box, Center, HStack, Stack, useColorMode } from "@chakra-ui/react"
+import { ErrorBanner } from "@/components/layout/AlertBanner"
+import { UserContext } from "@/utils/auth/UserProvider"
+import { ChannelListItem } from "@/utils/channel/ChannelListProvider"
+import { Text, Box, HStack, Stack, useColorMode, useToast, Button } from "@chakra-ui/react"
+import { useFrappeUpdateDoc } from "frappe-react-sdk"
+import { useContext } from "react"
 import { BiHash } from "react-icons/bi"
 
 interface ArchivedChannelBoxProps {
-    channel_name: string
+    channelData: ChannelListItem
 }
 
-export const ArchivedChannelBox = ({ channel_name }: ArchivedChannelBoxProps) => {
+export const ArchivedChannelBox = ({ channelData }: ArchivedChannelBoxProps) => {
 
     const { colorMode } = useColorMode()
+
+    const { updateDoc, error, loading } = useFrappeUpdateDoc()
+    const toast = useToast()
+
+    const unArchiveChannel = () => {
+        return updateDoc('Raven Channel', channelData.name, {
+            is_archived: 0
+        }).then(() => {
+            toast({
+                title: 'Channel un-archived.',
+                status: 'success',
+                duration: 3000,
+                position: 'bottom',
+                variant: 'solid',
+                isClosable: true,
+            })
+        }).catch((e) => {
+            toast({
+                title: 'Error: could not un-archive channel.',
+                status: 'error',
+                duration: 3000,
+                position: 'bottom',
+                variant: 'solid',
+                isClosable: true,
+                description: `${e.message}`
+            })
+        })
+    }
+
+    const { currentUser } = useContext(UserContext)
 
     return (
         <Box>
             <Stack border='1px' borderColor={'gray.500'} rounded='lg' bottom='2' boxShadow='base' w='calc(98vw - var(--sidebar-width))' bg={colorMode === "light" ? "white" : "gray.800"} p={4}>
+                <ErrorBanner error={error} />
                 <HStack justify='center' align='center' pb={4}>
                     <BiHash />
-                    <Text>{channel_name}</Text>
+                    <Text>{channelData.channel_name}</Text>
                 </HStack>
-                <Center>
+                <HStack justify='center' align='center'>
                     <Text>This channel has been archived.</Text>
-                </Center>
+                    {channelData.owner === currentUser && <Button colorScheme='blue' variant='solid' size='xs' onClick={unArchiveChannel} isLoading={loading}>Un-archive Channel</Button>}
+                </HStack>
             </Stack>
         </Box>
     )

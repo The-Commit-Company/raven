@@ -71,7 +71,7 @@ export const ChatBoxBody = ({ channelData }: ChatBoxBodyProps) => {
                         channelData={channelData}
                         channelMembers={channelMembers}
                         user={user} />)}
-                {channelData && channelData.is_archived == 1 && <ArchivedChannelBox channel_name={channelData.channel_name} />}
+                {channelData && channelData.is_archived == 1 && <ArchivedChannelBox channelData={channelData} />}
             </Stack>
         )
     }
