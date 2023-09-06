@@ -48,6 +48,8 @@ export const ChatInput = ({ channelID, selectedMessage, handleCancelReply, chann
     })
 
     const onSubmit = () => {
+        if (!isEditorEmpty()) {
+            console.log(text)
         call({
             channel_id: channelID,
             text: text,
@@ -57,7 +59,7 @@ export const ChatInput = ({ channelID, selectedMessage, handleCancelReply, chann
             setText("")
             mutate(`get_messages_for_channel_${channelID}`)
             handleCancelReply()
-        })
+        })}
         if (files.length > 0) {
             const promises = files.map(async (f: CustomFile) => {
                 let docname = ''
@@ -94,6 +96,11 @@ export const ChatInput = ({ channelID, selectedMessage, handleCancelReply, chann
                 })
         }
     }
+
+    const isEditorEmpty = () => {
+        const editorContent = text.trim()
+        return /^(\s*<p>\s*(<br>)?\s*<\/p>\s*)*$/.test(editorContent)
+      }
 
     const { colorMode } = useColorMode()
 
@@ -163,7 +170,7 @@ export const ChatInput = ({ channelID, selectedMessage, handleCancelReply, chann
                             <MentionButton current={reactQuillRef.current} />
                         </HStack>
                         <IconButton
-                            isDisabled={text.length === 0 && files.length === 0}
+                            isDisabled={(text.length === 0 && files.length === 0) || isEditorEmpty()}
                             isLoading={creatingDoc || uploadingFile || updatingDoc}
                             colorScheme='blue'
                             onClick={onSubmit}
