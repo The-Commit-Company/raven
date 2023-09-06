@@ -24,13 +24,14 @@ export interface ChannelMembersContextType {
 
 export const ChannelMembersContext = createContext<ChannelMembersContextType | null>(null)
 
-export const ChannelMembersProvider = ({ children }: PropsWithChildren) => {
+export const ChannelMembersProvider = ({ children, channelID }: PropsWithChildren<{ channelID: string}>) => {
 
-    const { channelID } = useParams<{ channelID: string }>()
+
+    const channelMembers = useFetchChannelMembers(channelID)
 
     if (channelID) {
         return (
-            <ChannelMembersContext.Provider value={useFetchChannelMembers(channelID)}>
+            <ChannelMembersContext.Provider value={channelMembers}>
                 {children}
             </ChannelMembersContext.Provider>
         )

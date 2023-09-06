@@ -28,7 +28,6 @@ export interface SidebarChannelListItem extends ChannelListItem {
 }
 
 interface ChannelList {
-    sidebar_channels: SidebarChannelListItem[],
     channels: ChannelListItem[],
     dm_channels: DMChannelListItem[],
     extra_users: ExtraUsersData[]
@@ -78,7 +77,6 @@ export const useFetchChannelList = (): ChannelListContextType => {
         channels: data?.message.channels ?? [],
         dm_channels: data?.message.dm_channels ?? [],
         extra_users: data?.message.extra_users ?? [],
-        sidebar_channels: data?.message.sidebar_channels ?? [],
         mutate,
         ...rest
     }

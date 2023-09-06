@@ -57,14 +57,23 @@ export const MessageBox = ({ messageName, channelID, creation, owner, messageTex
             onMouseLeave={e => {
                 setShowButtons({ visibility: 'hidden' })
             }}>
-            <HStack pb={1.5} spacing={1}>
-                {channel?.type === 'channel' ? <Text fontSize='small' color='gray.500'>#{channelData?.channel_name}</Text> : <Text fontSize='small' color='gray.500'>Direct Message with {users[channelDMData.peer_user_id].full_name}</Text>}
+            {channel ? <HStack pb={1.5} spacing={1}>
+                {channel?.type === 'channel' ? <Text fontSize='small' color='gray.500'>{channelData?.channel_name}</Text> : <Text fontSize='small' color='gray.500'>Direct Message with {users[channelDMData.peer_user_id].full_name}</Text>}
                 {channelData?.is_archived && <Text fontSize={'small'}>(archived)</Text>}
                 <Text fontSize='small'>- {new Date(creation).toDateString()}</Text>
                 <Link style={showButtons} color='blue.500' onClick={() => handleScrollToMessage(messageName, channelID)} pl={1}>
                     {channelData?.channel_name ? <Text fontSize={'small'}>View in channel</Text> : <Text fontSize={'small'}>View in chat</Text>}
                 </Link>
             </HStack>
+            :
+            <HStack pb={1.5} spacing={1}>
+                <Text fontSize='small' color='gray.500'>{channelID}</Text>
+                <Text fontSize='small'>- {new Date(creation).toDateString()}</Text>
+                <Link style={showButtons} color='blue.500' onClick={() => handleScrollToMessage(messageName, channelID)} pl={1}>
+                     <Text fontSize={'small'}>View in channel</Text>
+                </Link>
+            </HStack>}
+
             <HStack spacing={2} alignItems='flex-start'>
                 <Avatar name={users[owner]?.full_name ?? owner} src={users[owner]?.user_image ?? ''} borderRadius={'md'} boxSize='36px' />
                 <Stack spacing='1' width={'full'}>

@@ -7,7 +7,7 @@ import { ChannelMembersProvider } from "@/utils/channel/ChannelMembersProvider"
 import { Box } from "@chakra-ui/react"
 import { useEffect } from "react"
 import { useParams } from "react-router-dom"
-import { useSWRConfig } from "frappe-react-sdk"
+import { FrappeError, useSWRConfig } from "frappe-react-sdk"
 
 export const ChatSpace = () => {
 
@@ -52,7 +52,7 @@ const ChatSpaceArea = ({ channelID }: { channelID: string }) => {
     if (channel) {
         // depending on channel type render ChannelSpace or DirectMessageSpace
         return (
-            <ChannelMembersProvider>
+            <ChannelMembersProvider channelID={channelID}>
                 {channel.type === "dm" ?
                     <DirectMessageSpace channelData={channel.channelData} />
                     : <ChannelSpace channelData={channel.channelData} />
@@ -61,5 +61,11 @@ const ChatSpaceArea = ({ channelID }: { channelID: string }) => {
         )
     }
 
-    return null
+    return <Box p={2}><ErrorBanner error={
+        {
+            message: "No channel found",
+            exception: `Channel ${channelID} not found`
+
+        } as FrappeError
+    } /></Box>
 }
