@@ -62,3 +62,14 @@ def validate_raven_user_role(doc, method):
 		if not frappe.db.get_value("Raven User", {"user": doc.name}):
 			frappe.msgprint(_("Please create a Raven User directly from the Raven User List to add the role."))
 			doc.get("roles").remove(doc.get("roles", {"role": "Raven User"})[0])
+
+@frappe.whitelist()
+def reset_user_permissions(**args):
+	doc = args.get("doc")
+	doc_json = frappe.parse_json(doc)
+	print(doc_json)
+	if doc_json.get("name"):
+		raven_user = frappe.get_doc("Raven User", doc_json.get("name"))
+		raven_user.update_user_role()
+	
+	return "Raven User role added to user."
