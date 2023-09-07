@@ -1,6 +1,6 @@
 import { Text, AlertDialog, AlertDialogBody, AlertDialogCloseButton, AlertDialogContent, AlertDialogFooter, AlertDialogHeader, AlertDialogOverlay, Button, ButtonGroup, useToast, Stack } from "@chakra-ui/react"
-import { useFrappeDeleteDoc } from "frappe-react-sdk"
-import { useRef } from "react"
+import { useFrappeDeleteDoc, useSWRConfig } from "frappe-react-sdk"
+import { useCallback, useRef } from "react"
 import { AlertBanner, ErrorBanner } from "../../layout/AlertBanner"
 
 interface DeleteMessageModalProps {
@@ -15,6 +15,12 @@ export const DeleteMessageModal = ({ isOpen, onClose, channelMessageID }: Delete
     const { deleteDoc, error } = useFrappeDeleteDoc()
     const toast = useToast()
 
+    const { mutate } = useSWRConfig()
+
+    const updateMessages = useCallback(() => {
+        mutate(`get_messages_for_channel_${channelMessageID}`)
+    }, [mutate, channelMessageID])
+
     const onSubmit = () => {
         return deleteDoc('Raven Message', channelMessageID
         ).then(() => {
@@ -26,6 +32,7 @@ export const DeleteMessageModal = ({ isOpen, onClose, channelMessageID }: Delete
                 variant: 'solid',
                 isClosable: true
             })
+            updateMessages()
             onClose()
         }).catch((e) => {
             toast({

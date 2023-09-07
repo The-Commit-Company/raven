@@ -2,15 +2,17 @@ import { IconButton, Tooltip } from '@chakra-ui/react'
 import { useFrappePostCall } from 'frappe-react-sdk'
 import { IoBookmark, IoBookmarkOutline } from 'react-icons/io5'
 import { Message } from '../../../../../types/Messaging/Message'
+import { UserContext } from '@/utils/auth/UserProvider'
+import { useContext } from 'react'
 
 interface BookmarkButtonProps {
     message: Message,
     updateMessages: () => void
-    currentUser: string
 }
 
-export const BookmarkButton = ({ message, updateMessages, currentUser }: BookmarkButtonProps) => {
+export const BookmarkButton = ({ message, updateMessages }: BookmarkButtonProps) => {
 
+    const { currentUser } = useContext(UserContext)
     const { call } = useFrappePostCall('frappe.desk.like.toggle_like')
 
     const handleLike = (id: string, value: string) => {

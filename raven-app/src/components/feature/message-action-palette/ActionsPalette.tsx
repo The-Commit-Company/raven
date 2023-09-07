@@ -72,7 +72,7 @@ export const ActionsPalette = ({ message, showButtons, handleScroll, is_continua
                 <EmojiPickerButton saveReaction={saveReaction} handleScroll={handleScroll} />
                 <ReplyButton replyToMessage={replyToMessage} message={message} />
                 {(owner === currentUser) && text && <EditMessageButton messageID={name} text={text} />}
-                <BookmarkButton message={message} updateMessages={updateMessages} currentUser={currentUser} />
+                <BookmarkButton message={message} updateMessages={updateMessages} />
                 {file && <DownloadButton file={file} />}
                 {(owner === currentUser) && <DeleteMessageButton messageID={name} />}
             </HStack>
