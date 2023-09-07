@@ -1,7 +1,7 @@
 {
     "name": "Raven",
     "short_name": "Raven",
-    "start_url": "/index.html",
+    "start_url": "/raven_mobile",
     "icons": [
         {
             "src": "/android-chrome-192x192.png",
