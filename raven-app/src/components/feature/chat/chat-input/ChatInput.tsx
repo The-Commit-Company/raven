@@ -49,7 +49,6 @@ export const ChatInput = ({ channelID, selectedMessage, handleCancelReply, chann
 
     const onSubmit = () => {
         if (!isEditorEmpty()) {
-            console.log(text)
         call({
             channel_id: channelID,
             text: text,
