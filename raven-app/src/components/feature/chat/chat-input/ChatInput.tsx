@@ -169,7 +169,7 @@ export const ChatInput = ({ channelID, selectedMessage, handleCancelReply, chann
                             <MentionButton current={reactQuillRef.current} />
                         </HStack>
                         <IconButton
-                            isDisabled={(text.length === 0 && files.length === 0) || isEditorEmpty()}
+                            isDisabled={(text.length === 0 || isEditorEmpty()) && files.length === 0}
                             isLoading={creatingDoc || uploadingFile || updatingDoc}
                             colorScheme='blue'
                             onClick={onSubmit}
