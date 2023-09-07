@@ -1,16 +1,18 @@
 import { ErrorBanner } from "@/components/layout/AlertBanner"
 import { UserContext } from "@/utils/auth/UserProvider"
 import { ChannelListItem } from "@/utils/channel/ChannelListProvider"
+import { ChannelMembers } from "@/utils/channel/ChannelMembersProvider"
 import { Text, Box, HStack, Stack, useColorMode, useToast, Button } from "@chakra-ui/react"
 import { useFrappeUpdateDoc } from "frappe-react-sdk"
 import { useContext } from "react"
 import { BiHash } from "react-icons/bi"
 
 interface ArchivedChannelBoxProps {
-    channelData: ChannelListItem
+    channelData: ChannelListItem,
+    channelMembers: ChannelMembers
 }
 
-export const ArchivedChannelBox = ({ channelData }: ArchivedChannelBoxProps) => {
+export const ArchivedChannelBox = ({ channelData, channelMembers }: ArchivedChannelBoxProps) => {
 
     const { colorMode } = useColorMode()
 
@@ -42,6 +44,7 @@ export const ArchivedChannelBox = ({ channelData }: ArchivedChannelBoxProps) => 
         })
     }
 
+
     const { currentUser } = useContext(UserContext)
 
     return (
@@ -54,7 +57,7 @@ export const ArchivedChannelBox = ({ channelData }: ArchivedChannelBoxProps) => 
                 </HStack>
                 <HStack justify='center' align='center'>
                     <Text>This channel has been archived.</Text>
-                    {channelData.owner === currentUser && <Button colorScheme='blue' variant='solid' size='xs' onClick={unArchiveChannel} isLoading={loading}>Un-archive Channel</Button>}
+                    {channelMembers[currentUser].is_admin === 1 && <Button colorScheme='blue' variant='solid' size='xs' onClick={unArchiveChannel} isLoading={loading}>Un-archive Channel</Button>}
                 </HStack>
             </Stack>
         </Box>

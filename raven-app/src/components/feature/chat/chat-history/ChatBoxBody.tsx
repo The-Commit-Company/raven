@@ -55,7 +55,7 @@ export const ChatBoxBody = ({ channelData }: ChatBoxBodyProps) => {
         }
         return false
     }, [user, channelMembers])
-      
+
     if (isLoading) {
         return <FullPageLoader />
     }
@@ -83,7 +83,7 @@ export const ChatBoxBody = ({ channelData }: ChatBoxBodyProps) => {
                         channelData={channelData}
                         channelMembers={channelMembers}
                         user={user} />)}
-                {channelData && channelData.is_archived == 1 && <ArchivedChannelBox channelData={channelData} />}
+                {channelData && channelData.is_archived == 1 && <ArchivedChannelBox channelData={channelData} channelMembers={channelMembers} />}
             </Stack>
         )
     }
