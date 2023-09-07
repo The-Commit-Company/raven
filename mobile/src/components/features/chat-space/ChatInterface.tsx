@@ -120,7 +120,7 @@ export const ChatInterface = ({ channel }: { channel: ChannelListItem | DMChanne
     }, [channelMembers])
     return (
         <>
-            <IonHeader translucent>
+            <IonHeader>
                 <IonToolbar>
                     <IonButtons slot='start'>
                         <IonBackButton color='medium' text='' defaultHref="/channels" />
@@ -129,8 +129,8 @@ export const ChatInterface = ({ channel }: { channel: ChannelListItem | DMChanne
                     <IonButtons slot='end'>
                         {/* <IonButton color='medium'>
                             <IonIcon slot='icon-only' icon={searchOutline} />
-                        </IonButton> */}
-                        {/* <IonButton color='medium'>
+                        </IonButton>
+                        <IonButton color='medium'>
                             <IonIcon slot='icon-only' icon={peopleOutline} />
                         </IonButton> */}
                     </IonButtons>
@@ -159,8 +159,16 @@ export const ChatInterface = ({ channel }: { channel: ChannelListItem | DMChanne
                 </div>
             </IonContent>
 
-            <IonFooter className='text-white overflow-visible bg-[color:var(--ion-background-color)]' hidden={!!messagesError}>
-                <ChatInput channelID={channel.name} allMembers={parsedMembers} allChannels={parsedChannels} onMessageSend={onMessageSend} selectedMessage={selectedMessage} handleCancelReply={handleCancelReply} />
+            <IonFooter
+                hidden={!!messagesError}>
+                <div className='overflow-visible 
+            text-slate-100
+            bg-[color:var(--ion-background-color)]
+            border-t-zinc-900 border-t-[1px]
+            pb-6
+            pt-1'>
+                    <ChatInput channelID={channel.name} allMembers={parsedMembers} allChannels={parsedChannels} onMessageSend={onMessageSend} selectedMessage={selectedMessage} handleCancelReply={handleCancelReply} />
+                </div>
             </IonFooter>
         </>
     )

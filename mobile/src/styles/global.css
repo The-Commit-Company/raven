@@ -4,8 +4,8 @@
     --safe-area-left: env(safe-area-inset-left, 0);
     --safe-area-right: env(safe-area-inset-right, 0);
     --primary-color: #B589D6;
-    --background-color-translucent: #1b202d80;
-    --background-color: #1b202d;
+    --background-color-translucent: rgb(9 9 11);
+    --background-color: rgb(9 9 11);
 }
 
 body {
@@ -215,6 +215,7 @@ ion-tab-button {
     backdrop-filter: blur(8px);
 }
 
+
 ion-tab-button::before {
     background-color: transparent;
     display: block;
@@ -223,6 +224,7 @@ ion-tab-button::before {
     width: 20px;
     height: 2px;
 }
+
 
 ion-back-button {
     --color: var(--primary-color);

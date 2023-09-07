@@ -26,13 +26,13 @@ export const Profile = () => {
 
     return (
         <IonPage>
-            <IonHeader translucent>
+            <IonHeader>
                 <IonToolbar>
                     <IonTitle>Profile</IonTitle>
                 </IonToolbar>
             </IonHeader>
             <IonContent fullscreen>
-                <IonHeader collapse="condense" translucent>
+                <IonHeader collapse="condense">
                     <IonToolbar>
                         <IonTitle size="large">Profile</IonTitle>
                     </IonToolbar>
@@ -53,9 +53,9 @@ export const Profile = () => {
                     </IonItem>
                 </IonList>
                 <div className="ion-text-center mt-16">
-                    <IonText color="medium">Raven v1.2.0</IonText>
+                    <IonText><span className='cal-sans text-lg tracking-[0.03em]'>Raven</span> <span className='text-zinc-500'>v1.2.0</span></IonText>
                     <br />
-                    <IonText color="dark">Made by <IonText className='font-semibold'>The Commit Company</IonText></IonText>
+                    <p className='text-zinc-500'>Made by <IonText className='font-bold'>The Commit Company</IonText></p>
                 </div>
             </IonContent>
         </IonPage>
