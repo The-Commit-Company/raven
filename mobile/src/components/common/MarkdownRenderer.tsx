@@ -5,7 +5,7 @@ import remarkGfm from 'remark-gfm'
 
 interface MarkdownRendererProps {
   content: string,
-  truncate?: boolean
+  truncate?: boolean,
 }
 
 const MAX_TRUNCATED_LENGTH = 100
@@ -22,8 +22,7 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content, tru
   return <ReactMarkdown
     remarkPlugins={[remarkGfm]}
     // @ts-ignore
-    rehypePlugins={[rehypeRaw]}
-    className='text-sm'>
+    rehypePlugins={[rehypeRaw]}>
     {truncatedContent}
   </ReactMarkdown>
 }

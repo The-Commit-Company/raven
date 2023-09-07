@@ -5,6 +5,7 @@ import { Controller, useForm } from "react-hook-form";
 import { BiGlobe, BiHash, BiLockAlt } from "react-icons/bi";
 import { useHistory } from "react-router-dom";
 import { ErrorBanner } from "../../layout";
+import { useChannelList } from "@/utils/channel/ChannelListProvider";
 
 interface AddChannelProps {
     presentingElement: HTMLElement | undefined,
@@ -21,10 +22,12 @@ type CreateChannelInputs = {
 export const AddChannel = ({ presentingElement, isOpen, onDismiss }: AddChannelProps) => {
 
     const modal = useRef<HTMLIonModalElement>(null)
-    const { register, control, handleSubmit, formState: { errors }, setValue } = useForm<CreateChannelInputs>()
+    const { register, control, handleSubmit, formState: { errors }, setValue, reset: resetForm } = useForm<CreateChannelInputs>()
     const [channelType, setChannelType] = useState<CreateChannelInputs['channel_type']>('Public')
 
     const { createDoc, error: channelCreationError, reset } = useFrappeCreateDoc()
+
+    const { mutate } = useChannelList()
 
     const [present] = useIonToast()
 
@@ -40,16 +43,11 @@ export const AddChannel = ({ presentingElement, isOpen, onDismiss }: AddChannelP
     const history = useHistory()
 
     const onSubmit = (data: CreateChannelInputs) => {
+        let name = data.channel_name
         createDoc('Raven Channel', {
             channel_name: data.channel_name,
             channel_description: data.channel_description,
             type: channelType
-        }).then(result => {
-            if (result) {
-                presentToast("Channel created successfully.", 'success')
-                onDismiss()
-                history.push(`channel/${result.name}`)
-            }
         }).catch((err) => {
             if (err.httpStatus === 409) {
                 presentToast("Channel name already exists.", 'danger')
@@ -57,6 +55,14 @@ export const AddChannel = ({ presentingElement, isOpen, onDismiss }: AddChannelP
             else {
                 presentToast("Error while creating the channel.", 'danger')
             }
+        }).then((result) => {
+            name = result.name
+            resetForm()
+            return mutate()
+        }).then(() => {
+            presentToast("Channel created successfully.", 'success')
+            onDismiss()
+            history.push(`channel/${name}`)
         })
     }
 

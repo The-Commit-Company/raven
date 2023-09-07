@@ -1,6 +1,7 @@
 .my-quill-editor {
     width: 100%;
     height: 100%;
+    font-family: "Lato", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
     padding: 0px;
 }
 
@@ -13,10 +14,17 @@
     border: 0px solid var(--ion-color-light);
 }
 
+.quill>.ql-container>.ql-editor {
+    font-size: 14px;
+    font-style: normal;
+    font-family: "Lato", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+    color: var(--ion-text-color);
+}
+
 .quill>.ql-container>.ql-editor.ql-blank::before {
     font-size: 14px;
     font-style: normal;
-    color: var(--ion-color-medium);
+    color: rgb(82 82 91);
 }
 
 .ql-mention-list-container {

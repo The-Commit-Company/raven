@@ -26,13 +26,13 @@ export const Channels = () => {
 
     return (
         <IonPage ref={pageRef}>
-            <IonHeader translucent>
+            <IonHeader>
                 <IonToolbar>
                     <IonTitle>Channels</IonTitle>
                 </IonToolbar>
             </IonHeader>
             <IonContent fullscreen>
-                <IonHeader collapse="condense" translucent>
+                <IonHeader collapse="condense">
                     <IonToolbar>
                         <IonTitle size="large">Channels</IonTitle>
                     </IonToolbar>

@@ -1,12 +1,10 @@
-import { IonIcon, IonRouterOutlet, IonTabBar, IonTabButton, IonTabs } from "@ionic/react"
-import { BiBell, BiChat, BiHash, BiSearch, BiUser } from "react-icons/bi"
-import { Route } from "react-router-dom"
+import { IonIcon, IonLabel, IonRouterOutlet, IonTabBar, IonTabButton, IonTabs } from "@ionic/react"
+import { BiChat, BiHash, BiUser } from "react-icons/bi"
+import { Redirect, Route } from "react-router-dom"
 import { Channels } from "../../pages/channels"
 import { DirectMessageList } from "../../pages/direct-messages/DirectMessageList"
-import { Notifications } from "../../pages/notifications/Notifications"
 import { Profile } from "../../pages/profile"
-import { Search } from "../../pages/search/Search"
-import { Component, PropsWithChildren, useContext } from "react"
+import { PropsWithChildren, useContext } from "react"
 import { UserContext } from "../../utils/auth/UserProvider"
 import { FullPageLoader } from "./FullPageLoader"
 import { Login } from "../../pages/auth"
@@ -14,14 +12,16 @@ import { Login } from "../../pages/auth"
 export const Navbar = () => {
     const { currentUser, isLoading } = useContext(UserContext)
     return <IonTabs>
-        <IonRouterOutlet animated>
+        <IonRouterOutlet>
             <Route exact path="/:tab(channels)">
                 <ProtectedRoute>
                     <Channels />
                 </ProtectedRoute>
             </Route>
             <Route exact path="/:tab(direct-messages)">
-                <DirectMessageList />
+                <ProtectedRoute>
+                    <DirectMessageList />
+                </ProtectedRoute>
             </Route>
             {/* <Route exact path="/:tab(search)">
                 <Search />
@@ -35,12 +35,16 @@ export const Navbar = () => {
                 </ProtectedRoute>
             </Route>
         </IonRouterOutlet>
-        <IonTabBar slot="bottom" className="pb-6" hidden={isLoading || !currentUser || currentUser === "Guest"}>
+        <IonTabBar slot="bottom" className="pb-6 pt-1 border-t-zinc-900 border-t-[1px]" hidden={isLoading || !currentUser || currentUser === "Guest"}>
             <IonTabButton tab="channels" href="/channels">
-                <BiHash size={30} />
+                <IonIcon hidden />
+                <BiHash size={24} className="mb-0.5" />
+                <IonLabel className="font-semibold">Channels</IonLabel>
             </IonTabButton>
             <IonTabButton tab="direct-messages" href="/direct-messages">
-                <BiChat size={30} />
+                <IonIcon hidden />
+                <BiChat size={24} className="mb-0.5" />
+                <IonLabel className="font-semibold">DM's</IonLabel>
             </IonTabButton>
             {/* <IonTabButton tab="search" href="/search">
                 <BiSearch size={30} />
@@ -49,7 +53,9 @@ export const Navbar = () => {
                 <BiBell size={30} />
             </IonTabButton> */}
             <IonTabButton tab="profile" href="/profile">
-                <BiUser size={30} />
+                <IonIcon hidden />
+                <BiUser size={24} />
+                <IonLabel className="font-semibold">Profile</IonLabel>
             </IonTabButton>
         </IonTabBar>
     </IonTabs>
