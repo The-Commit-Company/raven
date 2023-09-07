@@ -1,4 +1,4 @@
-import { User } from "../types/User/User"
+import { UserFields } from "./users/UserListProvider"
 
 /**
  * Utility to convert Date object to DD-MM-YYYY format
@@ -51,7 +51,7 @@ export const DateObjectToTimeString = (date: Date): string => {
  */
 export const getFileExtension = (filename: string) => {
 
-    const extension = filename.split('.')[1]
+    const extension = filename.split('.').pop()?.toLocaleLowerCase() ?? ''
     return extension;
 }
 
@@ -75,14 +75,14 @@ export const getFileName = (filename: string) => {
  * @returns string of user names with count for reactions
  */
 
-export const getUsers = (usersList: string[], count: number, currentUser: string, allUsers: Record<string, User>) => {
+export const getUsers = (usersList: string[], count: number, currentUser: string, allUsers: Record<string, UserFields>) => {
 
     if (usersList) {
 
         const currentUserIndex = usersList.indexOf(currentUser)
         const currentUserInList = currentUserIndex !== -1
 
-        const userArray = Object.values(allUsers) as User[]
+        const userArray = Object.values(allUsers) as UserFields[]
 
         if (count === 1) {
             return currentUserInList ? 'You' : userArray.find((user) => user.name == usersList[0])?.full_name

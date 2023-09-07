@@ -1,6 +1,7 @@
 # Copyright (c) 2023, The Commit Company and contributors
 # For license information, please see license.txt
 import frappe
+from frappe import _
 from frappe.model.document import Document
 from datetime import timedelta
 from frappe.query_builder.functions import Count, Coalesce
@@ -9,36 +10,71 @@ from frappe.query_builder import Case
 
 class RavenMessage(Document):
 
+    def validate(self):
+        '''
+        1. Message can be created if the channel is open
+        2. If the channel is private/public, the user creating the message should be a member of the channel
+        3. If there is a linked message, the linked message should be in the same channel
+        '''
+        self.validate_membership()
+        self.validate_linked_message()
+
+    def validate_membership(self):
+        '''
+            If the channel is private/public, the user creating the message should be a member of the channel
+        '''
+        channel_type = frappe.db.get_value(
+            "Raven Channel", self.channel_id, "type")
+        if channel_type != "Open":
+            if not frappe.db.exists("Raven Channel Member", {"channel_id": self.channel_id, "user_id": self.owner}):
+                frappe.throw(_("You are not a member of this channel"))
+
+    def validate_linked_message(self):
+        '''
+        If there is a linked message, the linked message should be in the same channel
+        '''
+        if self.linked_message:
+            if frappe.db.get_value("Raven Message", self.linked_message, "channel_id") != self.channel_id:
+                frappe.throw(_("Linked message should be in the same channel"))
+
+    def after_insert(self):
+        frappe.publish_realtime(
+            'unread_channel_count_updated')
+
     def after_delete(self):
-        frappe.publish_realtime('message_deleted', {
-            'channel_id': self.channel_id}, after_commit=True)
-        frappe.db.commit()
+        self.send_update_event(txt="delete")
 
     def on_update(self):
+        print("on update")
+        self.send_update_event(txt="update")
+
+    def send_update_event(self, txt):
+        print("Notifying update", txt)
         frappe.publish_realtime('message_updated', {
-            'channel_id': self.channel_id}, after_commit=True)
+            'channel_id': self.channel_id,
+            'sender': frappe.session.user,
+            }, after_commit=True)
         frappe.db.commit()
 
     def on_trash(self):
         # delete all the reactions for the message
-        frappe.db.sql(
-            "DELETE FROM `tabRaven Message Reaction` WHERE message = %s", self.name)
-        frappe.db.commit()
+        frappe.db.delete("Raven Message Reaction", {"message": self.name})
 
     def before_save(self):
         if frappe.db.get_value('Raven Channel', self.channel_id, 'type') != 'Private' or frappe.db.exists("Raven Channel Member", {"channel_id": self.channel_id, "user_id": frappe.session.user}):
             track_visit(self.channel_id)
-        frappe.db.commit()
 
 
-@frappe.whitelist()
-def track_visit(channel_id):
+def track_visit(channel_id, commit=False):
+    '''
+    Track the last visit of the user to the channel.
+    If the user is not a member of the channel, create a new member record
+    '''
     doc = frappe.db.get_value("Raven Channel Member", {
-        "channel_id": channel_id, "user_id": frappe.session.user}, ["name", "last_visit"], as_dict=1)
+        "channel_id": channel_id, "user_id": frappe.session.user}, "name")
     if doc:
-        frappe.db.set_value("Raven Channel Member", doc.name,
+        frappe.db.set_value("Raven Channel Member", doc,
                             "last_visit", frappe.utils.now())
-        frappe.db.commit()
     elif frappe.db.get_value('Raven Channel', channel_id, 'type') == 'Open':
         frappe.get_doc({
             "doctype": "Raven Channel Member",
@@ -46,21 +82,16 @@ def track_visit(channel_id):
             "user_id": frappe.session.user,
             "last_visit": frappe.utils.now()
         }).insert()
-    if frappe.db.get_value('Raven Channel', channel_id, 'is_direct_message') == 1:
-        frappe.publish_realtime('unread_dm_count_updated', after_commit=True)
-    else:
-        frappe.publish_realtime(
-            'unread_channel_count_updated', after_commit=True)
-    frappe.db.commit()
+    # Need to comit the changes to the database if the request is a GET request
+    if commit:
+        frappe.db.commit()
 
 
 @frappe.whitelist(methods=['POST'])
 def send_message(channel_id, text, is_reply, linked_message=None):
 
-    # remove empty paragraphs
-    clean_text = text.replace('<p><br></p>', '').strip()
     # remove empty list items
-    clean_text = clean_text.replace('<li><br></li>', '').strip()
+    clean_text = text.replace('<li><br></li>', '').strip()
 
     if clean_text:
         if is_reply:
@@ -80,9 +111,6 @@ def send_message(channel_id, text, is_reply, linked_message=None):
                 'message_type': 'Text'
             })
         doc.insert()
-        frappe.publish_realtime('message_received', {
-                                'channel_id': channel_id}, after_commit=True)
-        frappe.db.commit()
         return "message sent"
 
 
@@ -101,19 +129,6 @@ def fetch_recent_files(channel_id):
                                )
 
     return files
-
-
-@frappe.whitelist()
-def get_last_channel():
-    last_message = None
-    if frappe.db.exists("Raven Message", {"owner": frappe.session.user}):
-        last_message = frappe.get_last_doc('Raven Message', {
-            'owner': frappe.session.user
-        })
-    if last_message:
-        return last_message.channel_id
-    else:
-        return 'general'
 
 
 def get_messages(channel_id):
@@ -188,7 +203,7 @@ def check_permission(channel_id):
 def get_messages_with_dates(channel_id):
     check_permission(channel_id)
     messages = get_messages(channel_id)
-    track_visit(channel_id)
+    track_visit(channel_id, True)
     return parse_messages(messages)
 
 
@@ -202,54 +217,32 @@ def get_index_of_message(channel_id, message_id):
     return -1
 
 
-channel = frappe.qb.DocType("Raven Channel")
-channel_member = frappe.qb.DocType("Raven Channel Member")
-message = frappe.qb.DocType('Raven Message')
-user = frappe.qb.DocType("User")
-
-
 @frappe.whitelist()
 def get_unread_count_for_channels():
+
+    channel = frappe.qb.DocType("Raven Channel")
+    channel_member = frappe.qb.DocType("Raven Channel Member")
+    message = frappe.qb.DocType('Raven Message')
     query = (frappe.qb.from_(channel)
              .left_join(channel_member)
              .on((channel.name == channel_member.channel_id) & (channel_member.user_id == frappe.session.user))
-             .where((channel.type != "Private") | (channel_member.user_id == frappe.session.user))
-             .where(channel.is_direct_message == 0)
+             .where((channel.type == "Open") | (channel_member.user_id == frappe.session.user))
              .left_join(message).on(channel.name == message.channel_id))
 
-    total_query = query.select(Count(Case().when(
-        message.creation > Coalesce(channel_member.last_visit, '2000-11-11'), 1)).as_('total_unread_count')).run(as_dict=True)
-
-    channels_query = query.select(channel.name, Count(Case().when(message.creation > Coalesce(channel_member.last_visit, '2000-11-11'), 1)).as_(
+    channels_query = query.select(channel.name, channel.is_direct_message, Count(Case().when(message.creation > Coalesce(channel_member.last_visit, '2000-11-11'), 1)).as_(
         'unread_count')).groupby(channel.name).run(as_dict=True)
 
-    result = {
-        'total_unread_count': total_query[0]['total_unread_count'],
-        'channels': channels_query
-    }
-    return result
-
-
-@frappe.whitelist()
-def get_unread_count_for_direct_message_channels():
-    current_channel_member = channel_member.as_("current_channel_member")
-    query = (frappe.qb.from_(channel)
-             .join(channel_member).on(channel.name == channel_member.channel_id)
-             .join(user).on((channel_member.user_id == user.name) & ((channel_member.user_id != frappe.session.user) | (channel.is_self_message == 1)))
-             .where(channel.is_direct_message == 1)
-             .where(channel.channel_name.like(f"%{frappe.session.user}%"))
-             .left_join(message).on(channel.name == message.channel_id)
-             .left_join(current_channel_member)
-             .on((channel.name == current_channel_member.channel_id) & (current_channel_member.user_id == frappe.session.user)))
-
-    total_query = query.select(Count(Case().when(
-        message.creation > Coalesce(current_channel_member.last_visit, '2000-11-11'), 1)).as_('total_unread_count')).run(as_dict=True)
-
-    channels_query = query.select(channel.name, (user.name).as_('user_id'), Count(Case().when(message.creation > Coalesce(current_channel_member.last_visit, '2000-11-11'), 1)).as_(
-        'unread_count')).groupby(channel.name).run(as_dict=True)
+    total_unread_count_in_channels = 0
+    total_unread_count_in_dms = 0
+    for channel in channels_query:
+        if channel.is_direct_message:
+            total_unread_count_in_dms += channel['unread_count']
+        else:
+            total_unread_count_in_channels += channel['unread_count']
 
     result = {
-        'total_unread_count': total_query[0]['total_unread_count'],
+        'total_unread_count_in_channels': total_unread_count_in_channels,
+        'total_unread_count_in_dms': total_unread_count_in_dms,
         'channels': channels_query
     }
     return result

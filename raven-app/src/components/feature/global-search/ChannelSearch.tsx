@@ -6,12 +6,12 @@ import { FormProvider, Controller, useForm } from 'react-hook-form'
 import { BiGlobe, BiHash, BiLockAlt } from 'react-icons/bi'
 import { useNavigate } from 'react-router-dom'
 import { useDebounce } from '../../../hooks/useDebounce'
-import { GetChannelSearchResult } from '../../../types/Search/Search'
-import { AlertBanner } from '../../layout/AlertBanner'
+import { GetChannelSearchResult } from '../../../../../types/Search/Search'
+import { ErrorBanner } from '../../layout/AlertBanner'
 import { EmptyStateForSearch } from '../../layout/EmptyState/EmptyState'
 import { SelectInput, SelectOption } from '../search-filters/SelectInput'
 import { Sort } from '../sorting'
-import { ChannelData } from '../../../types/Channel/Channel'
+import { scrollbarStyles } from '../../../styles'
 interface Props {
     onToggleMyChannels: () => void,
     isOpenMyChannels: boolean,
@@ -127,8 +127,8 @@ export const ChannelSearch = ({ onToggleMyChannels, isOpenMyChannels, onToggleOt
                 </FormProvider>
             </Stack>
             <Stack h='420px' p={4}>
-
-                {error ? <AlertBanner status='error' heading={error.message}>{error.httpStatus} - {error.httpStatusText}</AlertBanner> :
+                <ErrorBanner error={error} />
+                {
                     (isLoading && isValidating ? <Center><Spinner /></Center> :
                         (!!!error && data?.message && data.message.length > 0 ?
                             <><Sort
@@ -137,9 +137,9 @@ export const ChannelSearch = ({ onToggleMyChannels, isOpenMyChannels, onToggleOt
                                 sortOrder={sortOrder}
                                 sortField={sortByField}
                                 onSortOrderChange={(order) => setSortOrder(order)} />
-                                <Stack spacing={2} overflowY='scroll'>
+                                <Stack spacing={2} overflowY='scroll' sx={scrollbarStyles(colorMode)}>
 
-                                    {data.message.map((channel: ChannelData) => {
+                                    {data.message.map((channel: GetChannelSearchResult) => {
                                         return (
                                             <Box p={2}
                                                 _hover={{

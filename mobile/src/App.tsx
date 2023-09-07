@@ -10,7 +10,7 @@ import '@ionic/react/css/core.css';
 import '@ionic/react/css/normalize.css';
 import '@ionic/react/css/structure.css';
 import '@ionic/react/css/typography.css';
-
+import "cal-sans";
 /* Optional CSS utils that can be commented out */
 import '@ionic/react/css/padding.css';
 import '@ionic/react/css/float-elements.css';
@@ -24,17 +24,31 @@ import './styles/variables.css';
 import { FrappeProvider } from 'frappe-react-sdk';
 import { UserProvider } from './utils/auth/UserProvider';
 import { Routes } from './utils/auth/Routes';
+import { ChannelListProvider } from './utils/channel/ChannelListProvider';
+import { UserListProvider } from './utils/users/UserListProvider';
+import { ActiveUsersProvider } from './utils/users/ActiveUsersProvider';
 
 setupIonicReact({
-  mode: 'ios'
+  mode: 'ios',
+  swipeBackEnabled: false,
 })
 
 function App() {
   return (
     <IonApp>
-      <FrappeProvider url={import.meta.env.VITE_FRAPPE_PATH ?? ''} socketPort={import.meta.env.VITE_SOCKET_PORT ?? ''}>
+      <FrappeProvider
+        url={import.meta.env.VITE_FRAPPE_PATH ?? ''}
+        socketPort={import.meta.env.VITE_SOCKET_PORT ? import.meta.env.VITE_SOCKET_PORT : undefined}
+        //@ts-ignore
+        siteName={window.frappe?.boot?.sitename ?? import.meta.env.VITE_SITE_NAME}>
         <UserProvider>
-          <Routes />
+          <UserListProvider>
+            <ChannelListProvider>
+              <ActiveUsersProvider>
+                <Routes />
+              </ActiveUsersProvider>
+            </ChannelListProvider>
+          </UserListProvider>
         </UserProvider>
       </FrappeProvider>
     </IonApp>

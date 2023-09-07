@@ -1,4 +1,4 @@
-import { User } from "../../types/Core/User"
+import { User } from "../../../../types/Core/User"
 
 /**
  * Utility to convert Date object to DD-MM-YYYY format
@@ -39,8 +39,10 @@ export const DateObjectToFormattedDateStringWithoutYear = (date: Date): string =
  * @returns Time string in hour:minute format
  * @example 08:15 PM or 12:00 AM
  */
-export const DateObjectToTimeString = (date: Date): string => {
-    var date = new Date(date)
+export const DateObjectToTimeString = (date: string | Date): string => {
+    if (typeof date === 'string') {
+        date = new Date(date)
+    }
     return date.toLocaleTimeString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true })
 }
 

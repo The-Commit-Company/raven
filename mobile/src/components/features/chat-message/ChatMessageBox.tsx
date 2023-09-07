@@ -1,13 +1,13 @@
-import { useContext, useState } from "react"
-import { User } from "../../../../../raven-app/src/types/User/User"
-import { DateObjectToTimeString, DateObjectToFormattedDateStringWithoutYear } from "../../../../../raven-app/src/utils/operations"
+import { useContext } from "react"
 // import { ActionsPalette } from "../../message-action-palette/ActionsPalette"
 import { MessageReactions } from "./MessageReactions"
-import { Message, MessageBlock } from "../../../../../raven-app/src/types/Messaging/Message"
+import { Message, MessageBlock } from "../../../../../types/Messaging/Message"
 import { IonAvatar, IonItem, IonText } from "@ionic/react"
-import Avatar from "react-avatar"
+// import Avatar from "react-avatar"
 import { FrappeConfig, FrappeContext } from "frappe-react-sdk"
 import { ChannelContext } from "../../../utils/channel/ChannelProvider"
+import { DateObjectToTimeString } from "../../../utils/operations/operations"
+import { User } from "../../../../../types/Core/User"
 // import { PreviousMessageBox } from "./PreviousMessageBox"
 
 interface ChatMessageBoxProps {
@@ -38,7 +38,8 @@ export const ChatMessageBox = ({ message, onOpenUserDetailsDrawer, handleScroll,
                                 <img src={url + channelMembers[message.owner]?.user_image} />
                             </IonAvatar>
                             :
-                            <Avatar src={url + channelMembers[message.owner]?.user_image} name={channelMembers[message.owner]?.full_name} size='40' round="8px" />}
+                            null}
+                        {/* <Avatar src={url + channelMembers[message.owner]?.user_image} name={channelMembers[message.owner]?.full_name} size='40' round="8px" />} */}
                     </div>
                     <div className="w-full pl-2">
                         <div className="w-full ion-justify-content-between " style={{ display: 'flex', justifyContent: 'space-between' }}>

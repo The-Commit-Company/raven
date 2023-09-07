@@ -4,9 +4,12 @@
 import frappe
 from frappe.model.document import Document
 from pypika import JoinType, Order
-
+from raven.api.raven_users import get_list
 
 class RavenChannelMember(Document):
+
+    def before_validate(self):
+        self.last_visit = frappe.utils.now()
     def validate(self):
         if not self.check_if_user_is_member():
             frappe.throw(
@@ -21,11 +24,6 @@ class RavenChannelMember(Document):
         if frappe.db.count("Raven Channel Member", {"channel_id": self.channel_id}) == 0:
             self.is_admin = 1
 
-    def after_insert(self):
-        frappe.publish_realtime('member_added', {
-            'channel_id': self.channel_id}, after_commit=True)
-        frappe.db.commit()
-
     def after_delete(self):
         if frappe.db.count("Raven Channel Member", {"channel_id": self.channel_id}) == 0 and frappe.db.get_value("Raven Channel", self.channel_id, "type") == "Private":
             frappe.db.set_value("Raven Channel", self.channel_id,
@@ -35,9 +33,6 @@ class RavenChannelMember(Document):
                                                "channel_id": self.channel_id}, ["name"], as_dict=1, order_by="creation")
             frappe.db.set_value("Raven Channel Member",
                                 first_member.name, "is_admin", 1)
-        frappe.publish_realtime('member_removed', {
-            'channel_id': self.channel_id}, after_commit=True)
-        frappe.db.commit()
 
     def on_trash(self):
         # if the leaving member is admin, then the first member becomes new admin
@@ -72,33 +67,3 @@ class RavenChannelMember(Document):
 
     def get_admin_count(self):
         return frappe.db.count("Raven Channel Member", {"channel_id": self.channel_id, "is_admin": 1})
-
-
-@frappe.whitelist()
-def get_channel_members_and_data(channel_id):
-    # fetch all channel members
-    # get member details from user table, such as name, full_name, user_image, first_name
-    channel_member = frappe.qb.DocType('Raven Channel Member')
-    channel_data = frappe.qb.DocType('Raven Channel')
-    user = frappe.qb.DocType('User')
-    if frappe.db.get_value("Raven Channel", channel_id, "type") == "Open":
-        member_query = (frappe.qb.from_(user)
-                        .select(user.name, user.full_name, user.user_image, user.first_name)
-                        .where(user.name != "administrator")
-                        .where(user.name != "guest"))
-    else:
-        member_query = (frappe.qb.from_(channel_member)
-                        .join(user, JoinType.left)
-                        .on(channel_member.user_id == user.name)
-                        .select(user.name, user.full_name, user.user_image, user.first_name, channel_member.is_admin)
-                        .where(channel_member.channel_id == channel_id)
-                        .where(channel_member.user_id != "administrator")
-                        .orderby(channel_member.creation, order=Order.desc))
-
-    channel_data = frappe.db.get_value("Raven Channel", channel_id, [
-                                       "name", "channel_name", "type", "creation", "owner", "channel_description", "is_direct_message", "is_self_message", "is_archived"], as_dict=True)
-
-    channel_data["owner_full_name"] = frappe.db.get_value(
-        "User", channel_data["owner"], "full_name")
-
-    return {"channel_members": member_query.run(as_dict=True), "channel_data": channel_data}

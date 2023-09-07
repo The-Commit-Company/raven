@@ -1,13 +1,18 @@
 {
   "name": "raven",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "Messaging Application",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "cd raven-app && yarn dev",
-    "build": "cd raven-app && yarn build",
-    "postinstall": "cd raven-app && yarn install"
+    "dev-mobile": "cd mobile && yarn dev",
+    "build": "yarn build-web && yarn build-mobile",
+    "build-web": "cd raven-app && yarn build",
+    "build-mobile": "cd mobile && yarn build",
+    "postinstall": "yarn install-web && yarn install-mobile",
+    "install-web": "cd raven-app && yarn install",
+    "install-mobile": "cd mobile && yarn install"
   },
   "keywords": [],
   "author": "",

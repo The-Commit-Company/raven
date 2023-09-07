@@ -103,11 +103,11 @@ after_install = "raven.install.after_install"
 # ---------------
 # Hook on document methods and events
 
-# doc_events = {
-#     "User": {
-#         "on_change": "raven.raven_channel_management.doctype.raven_channel.raven_channel.add_user_to_open_channel"
-#     }
-# }
+doc_events = {
+    "User": {
+        "validate": "raven.raven.doctype.raven_user.raven_user.validate_raven_user_role",
+    }
+}
 
 # Scheduled Tasks
 # ---------------
@@ -191,7 +191,8 @@ after_install = "raven.install.after_install"
 # ]
 
 website_route_rules = [
-    {'from_route': '/raven/<path:app_path>', 'to_route': 'raven'}, ]
+    {'from_route': '/raven/<path:app_path>', 'to_route': 'raven'},
+    {'from_route': '/raven_mobile/<path:app_path>', 'to_route': 'raven_mobile'}, ]
 
 has_permission = {
     "Raven Channel": "raven.permissions.channel_has_permission",
@@ -201,3 +202,5 @@ has_permission = {
 
 on_session_creation = "raven.api.user_availability.set_user_active"
 on_logout = "raven.api.user_availability.set_user_inactive"
+
+export_python_type_annotations = True

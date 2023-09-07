@@ -1,6 +1,7 @@
 {
     "name": "Raven",
     "short_name": "Raven",
+    "start_url": "/raven_mobile",
     "icons": [
         {
             "src": "/android-chrome-192x192.png",
@@ -14,6 +15,6 @@
         }
     ],
     "theme_color": "#ffffff",
-    "background_color": "#000000",
+    "background_color": "#09090B",
     "display": "standalone"
 }

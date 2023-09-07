@@ -1,6 +1,6 @@
 import { Button, ButtonGroup, IconButton, Menu, MenuButton, Tooltip } from "@chakra-ui/react"
 import { HiSortAscending, HiSortDescending } from "react-icons/hi"
-import { SortFields } from "../../../types/Sort"
+import { SortFields } from "../../../../../types/Sort"
 import { SortMenu } from "./SortMenu"
 
 export interface SortProps {

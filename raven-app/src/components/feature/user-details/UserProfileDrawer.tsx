@@ -1,21 +1,20 @@
 import { EmailIcon } from "@chakra-ui/icons"
 import { Text, Avatar, Divider, Drawer, DrawerBody, DrawerCloseButton, DrawerContent, DrawerHeader, DrawerOverlay, Stack, HStack, IconButton, Button, Icon, useColorMode, useDisclosure } from "@chakra-ui/react"
 import { useFrappeGetCall, useFrappePostCall } from "frappe-react-sdk"
-import { useContext } from "react"
 import { BiMessage } from "react-icons/bi"
 import { BsFillCircleFill, BsCircle, BsClock } from "react-icons/bs"
 import { useNavigate } from "react-router-dom"
-import { User } from "../../../types/User/User"
 import { DateObjectToTimeString } from "../../../utils/operations"
-import { AlertBanner } from "../../layout/AlertBanner"
-import { UserDataContext } from "../../../utils/user/UserDataProvider"
 import { AiOutlineEdit } from "react-icons/ai"
 import { SetUserStatus } from "./SetUserStatus"
+import { useUserData } from "@/hooks/useUserData"
+import { ErrorBanner } from "@/components/layout/AlertBanner"
+import { UserFields } from "@/utils/users/UserListProvider"
 
 interface UserProfileDrawerProps {
     isOpen: boolean
     onClose: () => void,
-    user: User
+    user: UserFields
 }
 
 export const UserProfileDrawer = ({ isOpen, onClose, user }: UserProfileDrawerProps) => {
@@ -35,11 +34,7 @@ export const UserProfileDrawer = ({ isOpen, onClose, user }: UserProfileDrawerPr
         navigate(`/channel/${result?.message}`)
     }
 
-    if (channelError) {
-        <AlertBanner status="error" heading={channelError.message}>{channelError.httpStatus} - {channelError.httpStatusText}</AlertBanner>
-    }
-
-    const userData = useContext(UserDataContext)
+    const { name: currentUserName } = useUserData()
     const { isOpen: isSetUserStatusModalOpen, onOpen: onSetUserStatusModalOpen, onClose: onSetUserStatusModalClose } = useDisclosure()
 
     return (
@@ -55,8 +50,9 @@ export const UserProfileDrawer = ({ isOpen, onClose, user }: UserProfileDrawerPr
 
                 <DrawerBody>
                     <Stack spacing={6} mt='4'>
-                        {user && <Avatar size='3xl' borderRadius={'md'} src={user.user_image} />}
+                        {user && <Avatar size='3xl' borderRadius={'md'} src={user.user_image ?? ''} />}
                         <Stack>
+                            <ErrorBanner error={channelError} />
                             <HStack justifyContent='space-between'>
                                 {user && <Text fontSize='xl' fontWeight='bold'>{user.full_name}</Text>}
                                 {user && (activeUsers?.message.includes(user.name) && !!!activeUsersError) ? <HStack spacing={1}>
@@ -74,7 +70,7 @@ export const UserProfileDrawer = ({ isOpen, onClose, user }: UserProfileDrawerPr
                             </HStack>
                         </Stack>
 
-                        {user && userData && (user.name !== userData?.name)
+                        {user && (user.name !== currentUserName)
                             ?
                             <Button variant='outline'
                                 colorScheme='blue'

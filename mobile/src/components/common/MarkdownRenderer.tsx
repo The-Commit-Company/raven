@@ -1,17 +1,28 @@
-import React from 'react';
-import { Remark, UseRemarkSyncOptions } from 'react-remark';
-import rehypeRaw from 'rehype-raw';
-import rehypeSanitize from 'rehype-sanitize';
+import React, { useMemo } from 'react'
+import rehypeRaw from 'rehype-raw'
+import ReactMarkdown from 'react-markdown'
+import remarkGfm from 'remark-gfm'
 
-
-interface Props {
-  content: string;
+interface MarkdownRendererProps {
+  content: string,
+  truncate?: boolean,
 }
 
-export const MarkdownRenderer: React.FC<Props> = ({ content }) => {
+const MAX_TRUNCATED_LENGTH = 100
+export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content, truncate = false }) => {
 
-  return <Remark
-    remarkToRehypeOptions={{ allowDangerousHtml: true }}
-    rehypePlugins={[rehypeRaw, rehypeSanitize] as UseRemarkSyncOptions['rehypePlugins']}
-  >{content}</Remark>
+  const truncatedContent = useMemo(() => {
+    if (truncate && content.length > MAX_TRUNCATED_LENGTH) {
+      return content.slice(0, MAX_TRUNCATED_LENGTH) + "..."
+    } else {
+      return content
+    }
+  }, [content, truncate])
+
+  return <ReactMarkdown
+    remarkPlugins={[remarkGfm]}
+    // @ts-ignore
+    rehypePlugins={[rehypeRaw]}>
+    {truncatedContent}
+  </ReactMarkdown>
 }

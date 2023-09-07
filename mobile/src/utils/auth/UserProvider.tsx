@@ -4,7 +4,7 @@ import { createContext } from 'react'
 
 interface UserContextProps {
     isLoading: boolean,
-    isValidating: boolean,
+    isLoggedIn: boolean,
     currentUser: string,
     login: (username: string, password: string) => Promise<void>,
     logout: () => Promise<void>,
@@ -14,7 +14,7 @@ interface UserContextProps {
 export const UserContext = createContext<UserContextProps>({
     currentUser: '',
     isLoading: false,
-    isValidating: false,
+    isLoggedIn: false,
     login: () => Promise.resolve(),
     logout: () => Promise.resolve(),
     updateCurrentUser: () => { },
@@ -22,10 +22,12 @@ export const UserContext = createContext<UserContextProps>({
 
 export const UserProvider: FC<PropsWithChildren> = ({ children }) => {
 
-    const { login, logout, isValidating, currentUser, error, updateCurrentUser, isLoading } = useFrappeAuth()
+    const { login, logout, currentUser, error, updateCurrentUser, isLoading } = useFrappeAuth()
+
+    const isLoggedIn = currentUser !== undefined && currentUser !== null && currentUser !== "Guest"
 
     return (
-        <UserContext.Provider value={{ isLoading, updateCurrentUser, login, logout, currentUser: currentUser ?? "", isValidating }}>
+        <UserContext.Provider value={{ isLoading, isLoggedIn, updateCurrentUser, login, logout, currentUser: currentUser ?? "" }}>
             {children}
         </UserContext.Provider>
     )

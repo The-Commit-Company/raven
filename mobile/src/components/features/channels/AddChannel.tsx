@@ -1,13 +1,16 @@
-import { IonButton, IonButtons, IonContent, IonHeader, IonInput, IonItem, IonItemDivider, IonItemGroup, IonLabel, IonList, IonModal, IonRadio, IonRadioGroup, IonText, IonTextarea, IonTitle, IonToolbar, useIonToast } from "@ionic/react";
-import { useFrappePostCall } from "frappe-react-sdk";
-import { useRef, useState } from "react";
-import { useForm } from "react-hook-form";
+import { IonButton, IonButtons, IonContent, ToastOptions, IonHeader, IonInput, IonItem, IonItemDivider, IonItemGroup, IonLabel, IonList, IonModal, IonRadio, IonRadioGroup, IonText, IonTextarea, IonTitle, IonToolbar, useIonToast } from "@ionic/react";
+import { useFrappeCreateDoc } from "frappe-react-sdk";
+import { useCallback, useRef, useState } from "react";
+import { Controller, useForm } from "react-hook-form";
 import { BiGlobe, BiHash, BiLockAlt } from "react-icons/bi";
 import { useHistory } from "react-router-dom";
 import { ErrorBanner } from "../../layout";
+import { useChannelList } from "@/utils/channel/ChannelListProvider";
 
 interface AddChannelProps {
-    presentingElement: HTMLElement | undefined
+    presentingElement: HTMLElement | undefined,
+    isOpen: boolean,
+    onDismiss: VoidFunction
 }
 
 type CreateChannelInputs = {
@@ -16,20 +19,23 @@ type CreateChannelInputs = {
     channel_type: 'Private' | 'Public' | 'Open'
 }
 
-export const AddChannel = ({ presentingElement }: AddChannelProps) => {
+export const AddChannel = ({ presentingElement, isOpen, onDismiss }: AddChannelProps) => {
 
     const modal = useRef<HTMLIonModalElement>(null)
-    const { register, handleSubmit, formState: { errors } } = useForm<CreateChannelInputs>()
+    const { register, control, handleSubmit, formState: { errors }, setValue, reset: resetForm } = useForm<CreateChannelInputs>()
     const [channelType, setChannelType] = useState<CreateChannelInputs['channel_type']>('Public')
 
-    const { call: callChannelCreation, error: channelCreationError } = useFrappePostCall<{ message: string }>('raven.raven_channel_management.doctype.raven_channel.raven_channel.create_channel')
+    const { createDoc, error: channelCreationError, reset } = useFrappeCreateDoc()
+
+    const { mutate } = useChannelList()
 
     const [present] = useIonToast()
 
-    const presentToast = (message: string) => {
+    const presentToast = (message: string, color: ToastOptions['color']) => {
         present({
-            message: message,
+            message,
             duration: 1500,
+            color,
             position: 'bottom',
         })
     }
@@ -37,32 +43,41 @@ export const AddChannel = ({ presentingElement }: AddChannelProps) => {
     const history = useHistory()
 
     const onSubmit = (data: CreateChannelInputs) => {
-        callChannelCreation({
+        let name = data.channel_name
+        createDoc('Raven Channel', {
             channel_name: data.channel_name,
             channel_description: data.channel_description,
             type: channelType
-        }).then(result => {
-            if (result) {
-                presentToast("Channel created successfully")
-                modal.current?.dismiss()
-                history.push(`channel/${result.message}`)
-            }
         }).catch((err) => {
             if (err.httpStatus === 409) {
-                presentToast("Channel name already exists")
+                presentToast("Channel name already exists.", 'danger')
             }
             else {
-                presentToast("Error creating channel")
+                presentToast("Error while creating the channel.", 'danger')
             }
+        }).then((result) => {
+            name = result.name
+            resetForm()
+            return mutate()
+        }).then(() => {
+            presentToast("Channel created successfully.", 'success')
+            onDismiss()
+            history.push(`channel/${name}`)
         })
     }
 
-    const onDismiss = () => {
-        modal.current?.dismiss()
-    }
+    // const onDismiss = () => {
+    //     modal.current?.dismiss()
+    // }
+
+    const handleNameChange = useCallback((value?: string | null) => {
+        setValue('channel_name', value?.toLowerCase().replace(' ', '-') ?? '')
+    }, [setValue])
+
+    // console.log("Mounted", modal)
 
     return (
-        <IonModal ref={modal} trigger='channel-create' presentingElement={presentingElement}>
+        <IonModal ref={modal} onDidDismiss={onDismiss} isOpen={isOpen} presentingElement={presentingElement}>
             <IonHeader>
                 <IonToolbar>
                     <IonButtons slot="start">
@@ -88,15 +103,22 @@ export const AddChannel = ({ presentingElement }: AddChannelProps) => {
                                     {channelType === 'Private' && <BiLockAlt size='16' color='var(--ion-color-medium)' />}
                                     {channelType === 'Open' && <BiGlobe size='16' color='var(--ion-color-medium)' />}
                                 </div>
-                                <IonInput
-                                    required
-                                    {...register("channel_name", {
+                                <Controller
+                                    name='channel_name'
+                                    control={control}
+                                    rules={{
                                         required: "Channel name is required"
-                                    })}
-                                    placeholder='bugs-bugs-bugs'
-                                    className={!!errors?.channel_name ? 'ion-invalid ion-touched' : ''}
-                                    aria-label="Channel Name"
-                                    errorText={errors?.channel_name?.message}
+                                    }}
+                                    render={({ field }) => <IonInput
+                                        required
+                                        autoCapitalize="off"
+                                        value={field.value}
+                                        placeholder='bugs-bugs-bugs'
+                                        className={!!errors?.channel_name ? 'ion-invalid ion-touched' : ''}
+                                        aria-label="Channel Name"
+                                        errorText={errors?.channel_name?.message}
+                                        onIonInput={(e) => handleNameChange(e.target.value as string)}
+                                    />}
                                 />
                             </IonItem>
                         </IonItemGroup>

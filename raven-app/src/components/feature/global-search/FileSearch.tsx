@@ -1,26 +1,26 @@
 import { SearchIcon } from '@chakra-ui/icons'
-import { Avatar, Button, Center, chakra, FormControl, HStack, Icon, Input, InputGroup, InputLeftElement, Link, Stack, TabPanel, Text, Image, Spinner, IconButton } from '@chakra-ui/react'
-import { FrappeConfig, FrappeContext, useFrappeGetCall, useFrappeGetDocList } from 'frappe-react-sdk'
+import { Avatar, Button, Center, chakra, FormControl, HStack, Icon, Input, InputGroup, InputLeftElement, Link, Stack, TabPanel, Text, Image, Spinner, IconButton, useColorMode } from '@chakra-ui/react'
+import { useFrappeGetCall } from 'frappe-react-sdk'
 import { useMemo, useState, useContext } from 'react'
 import { Controller, FormProvider, useForm } from 'react-hook-form'
 import { BiGlobe, BiHash, BiLockAlt } from 'react-icons/bi'
 import { useDebounce } from '../../../hooks/useDebounce'
-import { ChannelData } from '../../../types/Channel/Channel'
-import { GetFileSearchResult } from '../../../types/Search/Search'
-import { User } from '../../../types/User/User'
+import { GetFileSearchResult } from '../../../../../types/Search/Search'
 import { getFileExtensionIcon } from '../../../utils/layout/fileExtensionIcon'
 import { DateObjectToFormattedDateString, getFileExtension, getFileName } from '../../../utils/operations'
-import { AlertBanner } from '../../layout/AlertBanner'
+import { ErrorBanner } from '../../layout/AlertBanner'
 import { EmptyStateForSearch } from '../../layout/EmptyState/EmptyState'
 import { SelectInput, SelectOption } from '../search-filters/SelectInput'
 import { Sort } from '../sorting'
 import { AiOutlineFileExcel, AiOutlineFileImage, AiOutlineFilePdf, AiOutlineFilePpt, AiOutlineFileText } from 'react-icons/ai'
 import './styles.css'
-import { FileMessage } from '../../../types/Messaging/Message'
 import { IoBookmark, IoBookmarkOutline } from 'react-icons/io5'
-import { ChannelContext } from '../../../utils/channel/ChannelProvider'
 import { FilePreviewModal } from '../file-preview/FilePreviewModal'
 import { useModalManager, ModalTypes } from "../../../hooks/useModalManager"
+import { scrollbarStyles } from '../../../styles'
+import { UserFields } from '@/utils/users/UserListProvider'
+import { ChannelListContext, ChannelListContextType, ChannelListItem } from '@/utils/channel/ChannelListProvider'
+import { useGetUserRecords } from '@/hooks/useGetUserRecords'
 
 interface FilterInput {
     'from-user-filter': SelectOption[],
@@ -44,31 +44,39 @@ interface Props {
     isSaved: boolean
 }
 
+export interface FileSearchResult {
+    name: string,
+    owner: string,
+    creation: string,
+    file: string,
+    message_type: string
+}
+
 export const FileSearch = ({ onToggleMyChannels, isOpenMyChannels, onToggleSaved, isSaved, dateOption, input, fromFilter, inFilter }: Props) => {
 
-    const { url } = useContext(FrappeContext) as FrappeConfig
-    const { data: channels, error: channelsError } = useFrappeGetCall<{ message: ChannelData[] }>("raven.raven_channel_management.doctype.raven_channel.raven_channel.get_channel_list", undefined, undefined, {
-        revalidateOnFocus: false
-    })
+    const { colorMode } = useColorMode()
 
-    const { users } = useContext(ChannelContext)
+    const users = useGetUserRecords()
 
     const userOptions: SelectOption[] = useMemo(() => {
         if (users) {
-            return Object.values(users).map((user: User) => ({
+            return Object.values(users).map((user: UserFields) => ({
                 value: user.name,
-                label: <HStack><Avatar name={user.full_name} src={url + user.user_image} borderRadius={'md'} size="xs" /><Text>{user.full_name}</Text></HStack>
+                label: <HStack><Avatar name={user.full_name} src={user.user_image ?? ''} borderRadius={'md'} size="xs" /><Text>{user.full_name}</Text></HStack>
             }))
         } else {
             return []
         }
     }, [users])
 
+    const { channels } = useContext(ChannelListContext) as ChannelListContextType
+
     const channelOption: SelectOption[] = useMemo(() => {
         if (channels) {
-            return channels.message.map((channel: ChannelData) => ({
+            return channels.map((channel: ChannelListItem) => ({
                 value: channel.name,
-                label: <HStack>{channel.type === "Private" && <BiLockAlt /> || channel.type === "Public" && <BiHash /> || channel.type === "Open" && <BiGlobe />}<Text>{channel.channel_name}</Text></HStack>
+                label: <HStack>{channel.type === "Private" && <BiLockAlt /> || channel.type === "Public" && <BiHash /> || channel.type === "Open" && <BiGlobe />}<Text>{channel.channel_name}</Text></HStack>,
+                is_archived: channel.is_archived
             }))
         } else {
             return []
@@ -152,77 +160,76 @@ export const FileSearch = ({ onToggleMyChannels, isOpenMyChannels, onToggleSaved
                         placeholder='Search by file name or keyword'
                         value={debouncedText} />
                 </InputGroup>
-                {!!!channelsError &&
-                    <FormProvider {...methods}>
-                        <chakra.form>
-                            <HStack justifyContent={'space-between'}>
-                                <FormControl id="from-user-filter" w='fit-content'>
-                                    <SelectInput placeholder="From" size='sm' options={userOptions} name='from-user-filter' defaultValue={userOptions.find((option) => option.value == fromFilter)} isMulti={true} chakraStyles={{
-                                        multiValue: (chakraStyles) => ({ ...chakraStyles, display: 'flex', alignItems: 'center', overflow: 'hidden', padding: '0rem 0.2rem 0rem 0rem' })
-                                    }} />
-                                </FormControl>
-                                <FormControl id="channel-filter" w='fit-content'>
-                                    <SelectInput placeholder="In" size='sm' options={channelOption} name='channel-filter' defaultValue={channelOption.find((option) => option.value == inFilter)} isMulti={true} />
-                                </FormControl>
-                                <FormControl id="date-filter" w='fit-content'>
-                                    <SelectInput placeholder="Date" size='sm' options={dateOption} name='date-filter' isClearable={true} />
-                                </FormControl>
-                                <FormControl id="file-type-filter" w='fit-content'>
-                                    <SelectInput placeholder="File type" size='sm' options={fileOption} name='file-type-filter' isMulti={true} />
-                                </FormControl>
-                                <FormControl id="my-channels-filter" w='fit-content'>
-                                    <Controller
-                                        name="my-channels-filter"
-                                        control={control}
-                                        render={({ field: { onChange, value } }) => (
-                                            <Button
-                                                borderRadius={3}
-                                                size="sm"
-                                                w="fit-content"
-                                                isActive={value = isOpenMyChannels}
-                                                onClick={() => {
-                                                    onToggleMyChannels()
-                                                    onChange(!value)
-                                                }}
-                                                _active={{
-                                                    border: "2px solid #3182CE"
-                                                }}
-                                            >
-                                                Only in my channels
-                                            </Button>
-                                        )}
-                                    />
-                                </FormControl>
-                                <FormControl id="saved-filter" w='fit-content'>
-                                    <Controller
-                                        name="saved-filter"
-                                        control={control}
-                                        render={({ field: { onChange, value } }) => (
-                                            <IconButton
-                                                aria-label="saved-filter"
-                                                icon={isSaved ? <IoBookmark /> : <IoBookmarkOutline />}
-                                                borderRadius={3}
-                                                size="sm"
-                                                w="fit-content"
-                                                isActive={value = isSaved}
-                                                onClick={() => {
-                                                    onToggleSaved()
-                                                    onChange(!value)
-                                                }}
-                                                _active={{
-                                                    border: "2px solid #3182CE"
-                                                }}
-                                            />
-                                        )}
-                                    />
-                                </FormControl>
-                            </HStack>
-                        </chakra.form>
-                    </FormProvider>}
+                <FormProvider {...methods}>
+                    <chakra.form>
+                        <HStack justifyContent={'space-between'}>
+                            <FormControl id="from-user-filter" w='fit-content'>
+                                <SelectInput placeholder="From" size='sm' options={userOptions} name='from-user-filter' defaultValue={userOptions.find((option) => option.value == fromFilter)} isMulti={true} chakraStyles={{
+                                    multiValue: (chakraStyles) => ({ ...chakraStyles, display: 'flex', alignItems: 'center', overflow: 'hidden', padding: '0rem 0.2rem 0rem 0rem' })
+                                }} />
+                            </FormControl>
+                            <FormControl id="channel-filter" w='fit-content'>
+                                <SelectInput placeholder="In" size='sm' options={channelOption} name='channel-filter' defaultValue={channelOption.find((option) => option.value == inFilter)} isMulti={true} />
+                            </FormControl>
+                            <FormControl id="date-filter" w='fit-content'>
+                                <SelectInput placeholder="Date" size='sm' options={dateOption} name='date-filter' isClearable={true} />
+                            </FormControl>
+                            <FormControl id="file-type-filter" w='fit-content'>
+                                <SelectInput placeholder="File type" size='sm' options={fileOption} name='file-type-filter' isMulti={true} />
+                            </FormControl>
+                            <FormControl id="my-channels-filter" w='fit-content'>
+                                <Controller
+                                    name="my-channels-filter"
+                                    control={control}
+                                    render={({ field: { onChange, value } }) => (
+                                        <Button
+                                            borderRadius={3}
+                                            size="sm"
+                                            w="fit-content"
+                                            isActive={value = isOpenMyChannels}
+                                            onClick={() => {
+                                                onToggleMyChannels()
+                                                onChange(!value)
+                                            }}
+                                            _active={{
+                                                border: "2px solid #3182CE"
+                                            }}
+                                        >
+                                            Only in my channels
+                                        </Button>
+                                    )}
+                                />
+                            </FormControl>
+                            <FormControl id="saved-filter" w='fit-content'>
+                                <Controller
+                                    name="saved-filter"
+                                    control={control}
+                                    render={({ field: { onChange, value } }) => (
+                                        <IconButton
+                                            aria-label="saved-filter"
+                                            icon={isSaved ? <IoBookmark /> : <IoBookmarkOutline />}
+                                            borderRadius={3}
+                                            size="sm"
+                                            w="fit-content"
+                                            isActive={value = isSaved}
+                                            onClick={() => {
+                                                onToggleSaved()
+                                                onChange(!value)
+                                            }}
+                                            _active={{
+                                                border: "2px solid #3182CE"
+                                            }}
+                                        />
+                                    )}
+                                />
+                            </FormControl>
+                        </HStack>
+                    </chakra.form>
+                </FormProvider>
             </Stack>
             <Stack h='420px' p={4}>
-
-                {error ? <AlertBanner status='error' heading={error.message}>{error.httpStatus} - {error.httpStatusText}</AlertBanner> :
+                <ErrorBanner error={error} />
+                {
                     (isLoading && isValidating ? <Center><Spinner /></Center> :
                         (!!!error && data?.message && data.message.length > 0 ?
                             <><Sort
@@ -231,9 +238,9 @@ export const FileSearch = ({ onToggleMyChannels, isOpenMyChannels, onToggleSaved
                                 sortOrder={sortOrder}
                                 sortField={sortByField}
                                 onSortOrderChange={(order) => setSortOrder(order)} />
-                                <Stack spacing={4} overflowY='scroll'>
+                                <Stack spacing={4} overflowY='scroll' sx={scrollbarStyles(colorMode)}>
 
-                                    {data.message.map((f: FileMessage) => {
+                                    {data.message.map((f: FileSearchResult) => {
                                         const onFilePreviewModalOpen = () => {
                                             modalManager.openModal(ModalTypes.FilePreview, {
                                                 file: f.file,
@@ -250,12 +257,11 @@ export const FileSearch = ({ onToggleMyChannels, isOpenMyChannels, onToggleSaved
                                                 </Center>
                                                 <Stack spacing={0}>
                                                     {f.file && <Text fontSize='sm' as={Link} href={f.file} isExternal>{getFileName(f.file)}</Text>}
-                                                    {users && <Text fontSize='xs' color='gray.500'>Shared by {Object.values(users).find((user: User) => user.name === f.owner)?.full_name} on {DateObjectToFormattedDateString(new Date(f.creation ?? ''))}</Text>}
+                                                    {users && <Text fontSize='xs' color='gray.500'>Shared by {Object.values(users).find((user: UserFields) => user.name === f.owner)?.full_name} on {DateObjectToFormattedDateString(new Date(f.creation ?? ''))}</Text>}
                                                 </Stack>
                                             </HStack>
                                         )
-                                    }
-                                    )}
+                                    })}
                                 </Stack></> : <EmptyStateForSearch />))}
             </Stack>
             <FilePreviewModal

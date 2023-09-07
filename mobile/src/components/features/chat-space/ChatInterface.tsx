@@ -1,30 +1,100 @@
-import { IonBackButton, IonButtons, IonFooter, IonHeader, IonPage, IonToolbar } from '@ionic/react'
-import { useFrappeGetCall } from 'frappe-react-sdk'
-import { useContext, useState } from 'react'
-import { Message, MessagesWithDate } from '../../../../../raven-app/src/types/Messaging/Message'
-import { ChannelContext } from '../../../utils/channel/ChannelProvider'
+import { IonBackButton, IonButton, IonButtons, IonContent, IonFooter, IonHeader, IonIcon, IonInput, IonToolbar } from '@ionic/react'
+import { useFrappeEventListener, useFrappeGetCall } from 'frappe-react-sdk'
+import { useCallback, useContext, useMemo, useRef, useState } from 'react'
+import { Message, MessagesWithDate } from '../../../../../types/Messaging/Message'
 import { ErrorBanner, FullPageLoader } from '../../layout'
 import { ChatInput } from '../chat-input'
-import { ChatHistory } from './ChatHistory'
-import { RavenChannel } from '../../../types/RavenChannelManagement/RavenChannel'
+import { ChatView } from './chat-view/ChatView'
 import { ChatHeader } from './chat-header'
+import { ChannelListItem, DMChannelListItem, useChannelList } from '@/utils/channel/ChannelListProvider'
+import { UserFields } from '@/utils/users/UserListProvider'
+import { peopleOutline, searchOutline } from 'ionicons/icons'
+import { Haptics, ImpactStyle } from '@capacitor/haptics'
+import { UserContext } from '@/utils/auth/UserProvider'
 
-export const ChatInterface = () => {
+export type ChannelMembersMap = Record<string, UserFields>
 
-    const { channelData, users } = useContext(ChannelContext)
+export const ChatInterface = ({ channel }: { channel: ChannelListItem | DMChannelListItem }) => {
 
+    const { currentUser } = useContext(UserContext)
+    const initialDataLoaded = useRef(false)
+    const conRef = useRef<HTMLIonContentElement>(null);
+
+    const scrollToBottom = useCallback((duration = 0, delay = 0) => {
+
+
+        setTimeout(() => {
+            conRef.current?.scrollToBottom(duration)
+        }, delay)
+    }, [])
+
+    const onNewMessageLoaded = useCallback(() => {
+        /**
+                 * We need to scroll to the bottom of the chat interface if the user is already at the bottom.
+                 * If the user is not at the bottom, we need to show a button to scroll to the bottom.
+        */
+        if (conRef.current && !initialDataLoaded.current) {
+            scrollToBottom(0, 100)
+            initialDataLoaded.current = true
+        } else {
+            conRef.current?.getScrollElement().then((scrollElement) => {
+
+                const scrollHeight = scrollElement.scrollHeight
+                const clientHeight = scrollElement.clientHeight
+                const scrollTop = scrollElement.scrollTop
+                const isAtBottom = scrollHeight <= scrollTop + clientHeight
+                if (isAtBottom) {
+                    scrollToBottom(0, 100)
+                } else {
+                    // setNewMessagesAvailable(true)
+                }
+            })
+        }
+
+    }, [scrollToBottom, conRef])
+
+    /**
+     * We have the channel data. We also have the channel list in a global context.
+     * Now we need to fetch:
+     * 1. All the messages in the channel - this is done outside and then sent to the ChatHistory component
+     * 2. All the users in the channel
+     * 
+     * */
+    // Fetch all the messages in the channel
     const { data: messages, error: messagesError, mutate: refreshMessages, isLoading: isMessageLoading } = useFrappeGetCall<{ message: MessagesWithDate }>("raven.raven_messaging.doctype.raven_message.raven_message.get_messages_with_dates", {
-        channel_id: channelData?.name
+        channel_id: channel.name
     }, undefined, {
-        revalidateOnFocus: false
+        keepPreviousData: true,
+        onSuccess: (data) => {
+            onNewMessageLoaded()
+        }
     })
 
-    const { data: channelList, error: channelListError } = useFrappeGetCall<{ message: RavenChannel[] }>("raven.raven_channel_management.doctype.raven_channel.raven_channel.get_channel_list", undefined, undefined, {
-        revalidateOnFocus: false
+    /** Realtime event listener to update messages */
+    useFrappeEventListener('message_updated', (data) => {
+        //If the message is sent on the current channel
+        if (data.channel_id === channel.name) {
+            //If the sender is not the current user
+            if (data.sender !== currentUser) {
+                refreshMessages()
+            }
+        }
+    })
+
+    const { data: channelMembers } = useFrappeGetCall<{ message: ChannelMembersMap }>('raven.api.chat.get_channel_members', {
+        channel_id: channel.name
+    }, undefined, {
+        revalidateOnFocus: false,
     })
 
     const onMessageSend = () => {
+        Haptics.impact({
+            style: ImpactStyle.Light
+        })
         refreshMessages()
+            .then(() => {
+                scrollToBottom(0, 100)
+            })
     }
 
     const [selectedMessage, setSelectedMessage] = useState<Message | null>(null)
@@ -36,40 +106,71 @@ export const ChatInterface = () => {
     const handleCancelReply = () => {
         setSelectedMessage(null)
     }
+    const { channels } = useChannelList()
 
-    const allUsers = Object.values(users).map((user) => {
-        return {
-            id: user.name,
-            value: user.full_name ?? ''
+    const parsedChannels = useMemo(() => {
+        return channels.map(c => ({ id: c.name, value: c.channel_name }))
+    }, [channels])
+
+    const parsedMembers = useMemo(() => {
+        if (channelMembers) {
+            return Object.values(channelMembers.message).map((member) => ({ id: member.name, value: member.full_name }))
         }
-    })
-
-    const allChannels = channelList?.message.map((channel: RavenChannel) => {
-        return {
-            id: channel.name,
-            value: channel.channel_name
-        }
-    })
-
+        return []
+    }, [channelMembers])
     return (
-        <IonPage>
-            <IonHeader translucent>
+        <>
+            <IonHeader>
                 <IonToolbar>
-                    <IonButtons>
-                        <IonBackButton text='' defaultHref="/channels" />
+                    <IonButtons slot='start'>
+                        <IonBackButton color='medium' text='' defaultHref="/channels" />
                     </IonButtons>
-                    <ChatHeader />
+                    <ChatHeader channel={channel} />
+                    <IonButtons slot='end'>
+                        {/* <IonButton color='medium'>
+                            <IonIcon slot='icon-only' icon={searchOutline} />
+                        </IonButton>
+                        <IonButton color='medium'>
+                            <IonIcon slot='icon-only' icon={peopleOutline} />
+                        </IonButton> */}
+                    </IonButtons>
                 </IonToolbar>
             </IonHeader>
-            {isMessageLoading && <FullPageLoader />}
-            {messagesError && <ErrorBanner error={messagesError} />}
-            {messages && <ChatHistory messages={messages.message} />}
-            {channelData && allChannels && <IonFooter className='text-white'>
-                <div className='chat-input'>
-                    <ChatInput channelID={channelData.name} allMembers={allUsers} allChannels={allChannels} onMessageSend={onMessageSend} selectedMessage={selectedMessage} handleCancelReply={handleCancelReply} />
+            <IonContent className='flex flex-col-reverse' fullscreen ref={conRef}>
+                {isMessageLoading && <FullPageLoader />}
+                {messagesError && <ErrorBanner error={messagesError} />}
+                <ChatView messages={messages?.message ?? []} members={channelMembers?.message ?? {}} />
+
+                {/* Commented out the button because it was unreliable. We only scroll to bottom when the user is at the bottom. */}
+                {/* <IonButton
+                    size='small'
+                    type="button"
+                    onClick={() => scrollToBottom(200, 0)}
+                    hidden={!newMessagesAvailable}
+                    shape='round'
+                    // fill="outline"
+                    className="fixed bottom-24 left-1/2 -translate-x-1/2 "
+                >
+
+                    New messages
+                    <IonIcon slot="end" icon={arrowDownOutline} />
+                </IonButton> */}
+                <div className='h-8'>
                 </div>
-            </IonFooter>}
-        </IonPage>
+            </IonContent>
+
+            <IonFooter
+                hidden={!!messagesError}>
+                <div className='overflow-visible 
+            text-slate-100
+            bg-[color:var(--ion-background-color)]
+            border-t-zinc-900 border-t-[1px]
+            pb-6
+            pt-1'>
+                    <ChatInput channelID={channel.name} allMembers={parsedMembers} allChannels={parsedChannels} onMessageSend={onMessageSend} selectedMessage={selectedMessage} handleCancelReply={handleCancelReply} />
+                </div>
+            </IonFooter>
+        </>
     )
 
 }

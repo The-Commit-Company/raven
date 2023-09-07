@@ -8,4 +8,8 @@ node_modules
 raven/public/raven
 raven/public/node_modules
 raven/www/raven.html
+raven/www/raven-mobile.html
+raven/public/raven-mobile
+raven/www/raven_mobile.html
+raven/public/raven_mobile
 *.env

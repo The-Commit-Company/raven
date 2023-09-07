@@ -1,50 +1,68 @@
-import { Button, ButtonGroup, chakra, FormControl, FormErrorMessage, FormHelperText, FormLabel, HStack, Input, InputGroup, InputLeftElement, InputRightElement, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Radio, RadioGroup, Stack, Text, useToast } from '@chakra-ui/react'
-import { useFrappePostCall } from 'frappe-react-sdk'
-import { ChangeEvent, useEffect, useState } from 'react'
-import { FormProvider, set, useForm } from 'react-hook-form'
+import { Button, ButtonGroup, chakra, FormControl, FormErrorMessage, FormHelperText, FormLabel, HStack, Icon, Input, InputGroup, InputLeftElement, InputRightElement, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Radio, RadioGroup, Stack, Text, useDisclosure, useToast } from '@chakra-ui/react'
+import { useFrappeCreateDoc } from 'frappe-react-sdk'
+import { ChangeEvent, useCallback, useMemo } from 'react'
+import { Controller, FormProvider, useForm } from 'react-hook-form'
 import { BiGlobe, BiHash, BiLockAlt } from 'react-icons/bi'
 import { useNavigate } from 'react-router-dom'
-import { AlertBanner } from '../../layout/AlertBanner'
+import { ErrorBanner } from '../../layout/AlertBanner'
+import { SidebarButtonItem, SidebarItemLabel } from '@/components/layout/Sidebar'
+import { IoAdd } from 'react-icons/io5'
 
+export const CreateChannelButton = ({ updateChannelList }: { updateChannelList: VoidFunction }) => {
+    const { isOpen, onOpen, onClose } = useDisclosure()
+    let navigate = useNavigate()
+
+    const handleClose = (channel_name?: string) => {
+        if (channel_name) {
+            // Update channel list when name is provided.
+            // Also navigate to new channel
+            updateChannelList()
+            navigate(`/channel/${channel_name}`)
+        }
+        onClose()
+    }
+
+    return <SidebarButtonItem onClick={onOpen}>
+        <Icon as={IoAdd} fontSize={'md'} />
+        <SidebarItemLabel>Add channel</SidebarItemLabel>
+        <Modal isOpen={isOpen} onClose={handleClose} size='lg'>
+            <ModalOverlay />
+            <ModalContent>
+                <CreateChannelModal onClose={handleClose} />
+            </ModalContent>
+        </Modal>
+    </SidebarButtonItem>
+
+}
 interface ChannelModalProps {
-    isOpen: boolean,
-    onClose: (refresh?: boolean) => void
+    onClose: (channel_name?: string) => void
 }
 
 interface ChannelCreationForm {
     channel_name: string,
-    channel_description: string
+    channel_description: string,
     type: 'Public' | 'Private' | 'Open'
 }
 
-export const CreateChannelModal = ({ isOpen, onClose }: ChannelModalProps) => {
+export const CreateChannelModal = ({ onClose }: ChannelModalProps) => {
 
     const methods = useForm<ChannelCreationForm>({
         defaultValues: {
-            type: 'Public'
+            type: 'Public',
+            channel_name: '',
+            channel_description: ''
         }
     })
 
-    const { register, handleSubmit, watch, reset, formState: { errors } } = methods
-    const { call: callChannelCreation, loading: creatingChannel, error: channelCreationError, reset: resetChannelCreation, result: resultantChannel } = useFrappePostCall<{ message: string }>('raven.raven_channel_management.doctype.raven_channel.raven_channel.create_channel')
-    const toast = useToast()
+    const { register, handleSubmit, watch, formState: { errors }, control, setValue } = methods
 
-    useEffect(() => {
-        reset()
-        resetChannelCreation()
-        setValue('')
-    }, [isOpen, reset])
+    const { createDoc, error: channelCreationError, loading: creatingChannel } = useFrappeCreateDoc()
+    const toast = useToast()
 
     const channelType = watch('type')
 
-    let navigate = useNavigate()
-
     const onSubmit = (data: ChannelCreationForm) => {
-        callChannelCreation({
-            channel_name: data.channel_name,
-            channel_description: data.channel_description,
-            type: data.type
-        }).then(result => {
+        createDoc('Raven Channel', data).then(result => {
             if (result) {
                 toast({
                     title: "Channel Created",
@@ -52,8 +70,7 @@ export const CreateChannelModal = ({ isOpen, onClose }: ChannelModalProps) => {
                     duration: 2000,
                     isClosable: true
                 })
-                onClose(true)
-                navigate(`/channel/${result.message}`)
+                onClose(result.name)
             }
         }).catch((err) => {
             if (err.httpStatus === 409) {
@@ -78,132 +95,141 @@ export const CreateChannelModal = ({ isOpen, onClose }: ChannelModalProps) => {
     }
 
     const handleClose = () => {
-        //reset form on close
-        reset()
         onClose()
-        setValue('')
     }
+    const handleNameChange = useCallback((event: ChangeEvent<HTMLInputElement>) => {
+        setValue('channel_name', event.target.value?.toLowerCase().replace(' ', '-'))
+    }, [setValue])
 
-    const [channelTypeValue, setChannelTypeValue] = useState<'Public' | 'Private' | 'Open'>('Public')
-    const setChannelType = (value: 'Public' | 'Private' | 'Open') => {
-        setChannelTypeValue(value)
-        methods.setValue('type', value)
-    }
-
-    const [value, setValue] = useState('')
-    const handleChange = (event: ChangeEvent<HTMLInputElement>) => setValue(event.target.value.replace(' ', '-'))
+    const { channelIcon, header, helperText } = useMemo(() => {
+        switch (channelType) {
+            case 'Private':
+                return {
+                    channelIcon: <BiLockAlt />,
+                    header: 'Create a private channel',
+                    helperText: 'When a channel is set to private, it can only be viewed or joined by invitation.'
+                }
+            case 'Open':
+                return {
+                    channelIcon: <BiGlobe />,
+                    header: 'Create an open channel',
+                    helperText: 'When a channel is set to open, everyone is a member.'
+                }
+            default:
+                return {
+                    channelIcon: <BiHash />,
+                    header: 'Create a public channel',
+                    helperText: 'When a channel is set to public, anyone can join the channel and read messages, but only members can post messages.'
+                }
+        }
+    }, [channelType])
 
     return (
-        <Modal isOpen={isOpen} onClose={handleClose} size='lg'>
-            <ModalOverlay />
-            <ModalContent>
+        <FormProvider {...methods}>
+            <chakra.form onSubmit={handleSubmit(onSubmit)}>
                 <ModalHeader fontSize='2xl'>
-                    {channelType === 'Private' && "Create a private channel"}
-                    {channelType === 'Open' && "Create an open channel"}
-                    {channelType === 'Public' && "Create a public channel"}
+                    {header}
                 </ModalHeader>
                 <ModalCloseButton isDisabled={creatingChannel} />
-                <FormProvider {...methods}>
-                    <chakra.form onSubmit={handleSubmit(onSubmit)}>
+                <ModalBody>
+                    <Stack spacing={8}>
 
-                        <ModalBody>
-                            <Stack spacing={8}>
+                        <Text fontSize='sm' fontWeight='light'>
+                            Channels are where your team communicates. They are best when organized around a topic - #development, for example.
+                        </Text>
 
-                                <Text fontSize='sm' fontWeight='light'>
-                                    Channels are where your team communicates. They are best when organized around a topic - #development, for example.
-                                </Text>
+                        <Stack spacing={6}>
+                            <ErrorBanner error={channelCreationError} />
+                            <FormControl isRequired isInvalid={!!errors.channel_name}>
+                                <FormLabel htmlFor='channel_name'>Name</FormLabel>
 
-                                <Stack spacing={6}>
-
-                                    {channelCreationError ? <AlertBanner status='error' heading={channelCreationError.message}>Channel name already exists</AlertBanner> : null}
-
-                                    <FormControl isRequired isInvalid={!!errors.channel_name}>
-                                        <FormLabel htmlFor='channel_name'>Name</FormLabel>
+                                <Controller
+                                    name='channel_name'
+                                    control={control}
+                                    rules={{
+                                        required: "Please add a channel name",
+                                        maxLength: 50,
+                                        pattern: {
+                                            // no special characters allowed
+                                            // cannot start with a space
+                                            value: /^[a-zA-Z0-9][a-zA-Z0-9-]*$/,
+                                            message: "Channel name can only contain letters, numbers and hyphens."
+                                        }
+                                    }}
+                                    render={({ field }) => (
                                         <InputGroup>
                                             <InputLeftElement
                                                 pointerEvents='none'
-                                                children={channelType === 'Private' && <BiLockAlt /> || channelType === 'Open' && <BiGlobe /> || channelType === 'Public' && <BiHash />}
+                                                children={channelIcon}
                                             />
                                             <Input
-                                                isInvalid={channelCreationError?.httpStatus === 409}
                                                 maxLength={50}
-                                                autoFocus {...register('channel_name', {
-                                                    required: "Please add channel name",
-                                                    maxLength: 50,
-                                                    pattern: {
-                                                        // no special characters allowed
-                                                        // cannot start with a space
-                                                        value: /^[a-zA-Z0-9][a-zA-Z0-9-]*$/,
-                                                        message: "Channel name can only contain letters, numbers and hyphens."
-                                                    }
-                                                })}
+                                                autoFocus
                                                 placeholder='e.g. testing' fontSize='sm'
-                                                onChange={handleChange}
-                                                value={value} />
+                                                onChange={handleNameChange}
+                                                value={field.value} />
                                             <InputRightElement>
-                                                <Text fontSize='sm' fontWeight='light' color='gray.500'>{50 - value.length}</Text>
+                                                <Text fontSize='sm' fontWeight='light' color='gray.500'>{50 - field.value.length}</Text>
                                             </InputRightElement>
                                         </InputGroup>
-                                        <FormErrorMessage>{errors.channel_name?.message}</FormErrorMessage>
-                                    </FormControl>
+                                    )}
+                                />
+                                <FormErrorMessage>{errors.channel_name?.message}</FormErrorMessage>
+                            </FormControl>
 
-                                    <FormControl isInvalid={!!errors.channel_description}>
-                                        <FormLabel htmlFor='channel_description'>
-                                            <HStack>
-                                                <Text>Description</Text>
-                                                <Text fontWeight='light' fontSize='sm'>(optional)</Text>
-                                            </HStack>
-                                        </FormLabel>
-                                        <Input {...register('channel_description', { maxLength: 200 })} />
-                                        <FormHelperText>What is this channel about?</FormHelperText>
-                                        <FormErrorMessage>{errors.channel_description?.message}</FormErrorMessage>
-                                    </FormControl>
+                            <FormControl isInvalid={!!errors.channel_description}>
+                                <FormLabel htmlFor='channel_description'>
+                                    <HStack>
+                                        <Text>Description</Text>
+                                        <Text fontWeight='light' fontSize='sm'>(optional)</Text>
+                                    </HStack>
+                                </FormLabel>
+                                <Input {...register('channel_description', {
+                                    maxLength: {
+                                        value: 200,
+                                        message: "Channel description cannot be more than 200 characters."
+                                    }
+                                })} />
+                                <FormHelperText>What is this channel about?</FormHelperText>
+                                <FormErrorMessage>{errors.channel_description?.message}</FormErrorMessage>
+                            </FormControl>
 
-                                    <FormControl>
-                                        <Stack>
-                                            <FormLabel htmlFor='channel_type' mb='0'>
-                                                Channel Type
-                                            </FormLabel>
-                                            <RadioGroup id='type' onChange={setChannelType} value={channelTypeValue}>
-                                                <Stack direction='row'>
-                                                    <Radio value='Public'>Public</Radio>
-                                                    <Radio value='Private'>Private</Radio>
-                                                    <Radio value='Open'>Open</Radio>
-                                                </Stack>
-                                            </RadioGroup>
-                                            {channelType === 'Private' &&
-                                                <Text fontSize='xs' fontWeight='light'>
-                                                    When a channel is set to private, it can only be viewed or joined by invitation.
-                                                </Text>
-                                            }
-                                            {channelType === 'Public' &&
-                                                <Text fontSize='xs' fontWeight='light'>
-                                                    When a channel is set to public, anyone can join the channel and read messages, but only members can post messages.
-                                                </Text>
-                                            }
-                                            {channelType === 'Open' &&
-                                                <Text fontSize='xs' fontWeight='light'>
-                                                    When a channel is set to open, everyone is a member.
-                                                </Text>
-                                            }
-                                        </Stack>
-                                    </FormControl>
+                            <FormControl>
+                                <Stack>
+                                    <FormLabel htmlFor='channel_type' mb='0'>
+                                        Channel Type
+                                    </FormLabel>
+                                    <Controller
+                                        name='type'
+                                        control={control}
+                                        render={({ field }) => (<RadioGroup id='type' onChange={field.onChange} value={field.value}>
+                                            <Stack direction='row'>
+                                                <Radio value='Public'>Public</Radio>
+                                                <Radio value='Private'>Private</Radio>
+                                                <Radio value='Open'>Open</Radio>
+                                            </Stack>
+                                        </RadioGroup>
+                                        )}
+                                    />
+                                    <Text fontSize='xs' fontWeight='light'>
+                                        {helperText}
+                                    </Text>
+
                                 </Stack>
-                            </Stack>
+                            </FormControl>
+                        </Stack>
+                    </Stack>
 
-                        </ModalBody>
+                </ModalBody>
 
-                        <ModalFooter>
-                            <ButtonGroup>
-                                <Button variant='ghost' onClick={handleClose} isDisabled={creatingChannel}>Cancel</Button>
-                                <Button colorScheme='blue' type='submit' isLoading={creatingChannel}>Save</Button>
-                            </ButtonGroup>
-                        </ModalFooter>
+                <ModalFooter>
+                    <ButtonGroup>
+                        <Button variant='ghost' onClick={handleClose} isDisabled={creatingChannel}>Cancel</Button>
+                        <Button colorScheme='blue' type='submit' isLoading={creatingChannel}>Save</Button>
+                    </ButtonGroup>
+                </ModalFooter>
 
-                    </chakra.form>
-                </FormProvider>
-
-            </ModalContent>
-        </Modal>
+            </chakra.form>
+        </FormProvider>
     )
 }

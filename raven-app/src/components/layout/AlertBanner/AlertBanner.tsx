@@ -16,15 +16,14 @@ export const AlertBanner = ({ variant = "left-accent", heading, onClose, childre
                 {heading && <Text fontSize="sm" fontWeight="medium">{heading}</Text>}
                 {children && <Text fontSize="small">{children}</Text>}
             </Box>
-            {onClose &&
-                <CloseButton
-                    alignSelf='flex-start'
-                    position='relative'
-                    right={-1}
-                    top={-1}
-                    onClick={onClose}
-                />
-            }
+            <CloseButton
+                alignSelf='flex-start'
+                position='relative'
+                right={-1}
+                hidden={onClose === undefined}
+                top={-1}
+                onClick={onClose}
+            />
         </Alert>
     )
 }

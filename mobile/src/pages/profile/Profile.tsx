@@ -26,13 +26,13 @@ export const Profile = () => {
 
     return (
         <IonPage>
-            <IonHeader translucent>
+            <IonHeader>
                 <IonToolbar>
                     <IonTitle>Profile</IonTitle>
                 </IonToolbar>
             </IonHeader>
             <IonContent fullscreen>
-                <IonHeader collapse="condense" translucent>
+                <IonHeader collapse="condense">
                     <IonToolbar>
                         <IonTitle size="large">Profile</IonTitle>
                     </IonToolbar>
@@ -42,24 +42,20 @@ export const Profile = () => {
                 <IonList>
                     {data &&
                         <div className="my-8 flex justify-center flex-col items-center ion-text-center space-y-2">
-                            <img alt={data.full_name} src={url + data.user_image ?? ""} className='w-100 h-auto mb-2 rounded-full' />
+                            <img alt={data.full_name} src={url + data.user_image ?? ""} className='w-32 h-auto mb-2 rounded-full' />
                             <h2 className='font-bold h2 text-2xl'>{data.full_name}</h2>
                             <span><IonText color="primary">{data.email}</IonText></span>
                         </div>
                     }
-                    <IonItem>
-                        <IonLabel color={'medium'}>URL</IonLabel>
-                        <IonText color='medium'>{url}</IonText>
-                    </IonItem>
                     <IonItem button onClick={handleLogout}>
                         <IonIcon slot="start" icon={logOutOutline} />
                         Logout
                     </IonItem>
                 </IonList>
                 <div className="ion-text-center mt-16">
-                    <IonText color="medium">Raven v1.0.0 (Build 1)</IonText>
+                    <IonText><span className='cal-sans text-lg tracking-[0.03em]'>Raven</span> <span className='text-zinc-500'>v1.2.0</span></IonText>
                     <br />
-                    <IonText color="medium">Made by bots who consume <IonIcon icon={pizza} color="danger" />.</IonText>
+                    <p className='text-zinc-500'>Made by <IonText className='font-bold'>The Commit Company</IonText></p>
                 </div>
             </IonContent>
         </IonPage>

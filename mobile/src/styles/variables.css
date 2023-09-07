@@ -1,3 +1,35 @@
+:root {
+    --safe-area-top: env(safe-area-inset-top);
+    --safe-area-bottom: env(safe-area-inset-bottom);
+    --safe-area-left: env(safe-area-inset-left, 0);
+    --safe-area-right: env(safe-area-inset-right, 0);
+    --primary-color: #B589D6;
+    --background-color-translucent: rgb(9 9 11);
+    --background-color: rgb(9 9 11);
+    --ion-font-family: "Lato";
+}
+
+ion-title,
+ion-tab-bar,
+.cal-sans {
+    font-family: 'Cal Sans';
+}
+
+ion-title {
+    letter-spacing: 0.01em;
+}
+
+ion-tab-bar {
+    letter-spacing: 0.02em;
+}
+
+body {
+    overflow: hidden;
+    height: 100vh;
+    width: 100vw;
+    min-width: -webkit-fill-available;
+}
+
 /* Ionic Variables and Theming. For more info, please see:
 http://ionicframework.com/docs/theming/ */
 
@@ -10,12 +42,12 @@ http://ionicframework.com/docs/theming/ */
      */
 
 body {
-    --ion-color-primary: #428cff;
-    --ion-color-primary-rgb: 66, 140, 255;
-    --ion-color-primary-contrast: #ffffff;
-    --ion-color-primary-contrast-rgb: 255, 255, 255;
-    --ion-color-primary-shade: #3a7be0;
-    --ion-color-primary-tint: #5598ff;
+    --ion-color-primary: #3B82F6;
+    --ion-color-primary-rgb: 59, 130, 246;
+    --ion-color-primary-contrast: rgb(226 232 240);
+    --ion-color-primary-contrast-rgb: 226, 232, 240;
+    --ion-color-primary-shade: #3472d8;
+    --ion-color-primary-tint: #4f8ff7;
 
     --ion-color-secondary: #50c8ff;
     --ion-color-secondary-rgb: 80, 200, 255;
@@ -80,11 +112,11 @@ body {
      */
 
 .ios body {
-    --ion-background-color: #000000;
-    --ion-background-color-rgb: 0, 0, 0;
+    --ion-background-color: rgb(9 9 11);
+    --ion-background-color-rgb: 9, 9, 11;
 
-    --ion-text-color: #ffffff;
-    --ion-text-color-rgb: 255, 255, 255;
+    --ion-text-color: rgb(226 232 240);
+    --ion-text-color-rgb: 226, 232, 240;
 
     --ion-color-step-50: #0d0d0d;
     --ion-color-step-100: #1a1a1a;
@@ -106,9 +138,11 @@ body {
     --ion-color-step-900: #e6e6e6;
     --ion-color-step-950: #f2f2f2;
 
-    --ion-toolbar-background: #0d0d0d;
+    --ion-toolbar-background: rgb(9 9 11);
 
-    --ion-item-background: #000000;
+    --ion-item-background: rgb(9 9 11);
+
+    --ion-tab-bar-background: rgb(9 9 11);
 
     --ion-card-background: #1c1c1d;
 }
@@ -122,8 +156,8 @@ body {
     --ion-background-color: #121212;
     --ion-background-color-rgb: 18, 18, 18;
 
-    --ion-text-color: #ffffff;
-    --ion-text-color-rgb: 255, 255, 255;
+    --ion-text-color: rgb(148 163 184);
+    --ion-text-color-rgb: 148, 163, 184;
 
     --ion-border-color: #222222;
 
