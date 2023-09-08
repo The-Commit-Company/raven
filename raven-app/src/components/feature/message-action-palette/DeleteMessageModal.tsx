@@ -17,9 +17,9 @@ export const DeleteMessageModal = ({ isOpen, onClose, channelMessageID }: Delete
 
     const { mutate } = useSWRConfig()
 
-    const updateMessages = useCallback(() => {
-        mutate(`get_messages_for_channel_${channelMessageID}`)
-    }, [mutate, channelMessageID])
+    // const updateMessages = useCallback(() => {
+    //     mutate(`get_messages_for_channel_${channelMessageID}`)
+    // }, [mutate, channelMessageID])
 
     const onSubmit = () => {
         return deleteDoc('Raven Message', channelMessageID
@@ -32,7 +32,7 @@ export const DeleteMessageModal = ({ isOpen, onClose, channelMessageID }: Delete
                 variant: 'solid',
                 isClosable: true
             })
-            updateMessages()
+            mutate(`get_messages_for_channel_${channelMessageID}`)
             onClose()
         }).catch((e) => {
             toast({
