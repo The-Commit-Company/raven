@@ -34,13 +34,25 @@ setupIonicReact({
 })
 
 function App() {
+
+  // We need to pass sitename only if the Frappe version is v15 or above.
+
+  const getSiteName = () => {
+    // @ts-ignore
+    if (window.frappe?.boot?.versions?.frappe && window.frappe.boot.versions.frappe.startsWith('15')) {
+      // @ts-ignore
+      return window.frappe?.boot?.sitename ?? import.meta.env.VITE_SITE_NAME
+    }
+    return import.meta.env.VITE_SITE_NAME
+
+  }
   return (
     <IonApp>
       <FrappeProvider
         url={import.meta.env.VITE_FRAPPE_PATH ?? ''}
         socketPort={import.meta.env.VITE_SOCKET_PORT ? import.meta.env.VITE_SOCKET_PORT : undefined}
         //@ts-ignore
-        siteName={window.frappe?.boot?.sitename ?? import.meta.env.VITE_SITE_NAME}>
+        siteName={getSiteName()}>
         <UserProvider>
           <UserListProvider>
             <ChannelListProvider>

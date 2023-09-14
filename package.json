@@ -1,6 +1,6 @@
 {
   "name": "raven",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Messaging Application",
   "main": "index.js",
   "scripts": {

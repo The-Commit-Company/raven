@@ -4,7 +4,6 @@ import { ActiveUsersContext } from '../utils/users/ActiveUsersProvider';
 export const useIsUserActive = (userID?: string): boolean => {
 
     const activeUsers = useContext(ActiveUsersContext)
-    console.log(activeUsers)
     const isActive = useMemo(() => {
         if (userID) {
             return activeUsers.includes(userID)
