@@ -16,21 +16,13 @@ type Inputs = {
 };
 export const Login = () => {
     const [error, setError] = useState<Error | null>(null)
-    const { login, currentUser, isLoading } = useContext(UserContext)
-    const navigate = useNavigate()
+    const { login, isLoading } = useContext(UserContext)
     const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<Inputs>();
     const { isOpen, onToggle } = useDisclosure();
     const logo = useColorModeValue(raven_logo_light, raven_logo_dark)
     const onClickReveal = () => {
         onToggle()
     }
-
-    useEffect(() => {
-        if (currentUser) {
-            navigate('/', { replace: true })
-        }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [currentUser])
 
     async function onSubmit(values: Inputs) {
         setError(null)
