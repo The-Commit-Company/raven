@@ -1,22 +1,72 @@
 import { Redirect, Route } from 'react-router-dom'
 import { Navbar } from '../../components/layout'
 import { IonReactRouter } from '@ionic/react-router'
-import { IonRouterOutlet } from '@ionic/react'
+import { IonRouterOutlet, useIonToast } from '@ionic/react'
 import { ChatSpace } from '../../pages/chat'
 import { useContext, useEffect } from 'react'
 import { UserContext } from './UserProvider'
 import { App } from '@capacitor/app';
-import { FrappeConfig, FrappeContext } from 'frappe-react-sdk'
+import { FrappeConfig, FrappeContext, useSWRConfig } from 'frappe-react-sdk'
+import { wifi } from 'ionicons/icons'
 
 export const Routes = () => {
-    const { currentUser } = useContext(UserContext)
+    const { isLoggedIn } = useContext(UserContext)
 
+    const { mutate } = useSWRConfig()
     const { call } = useContext(FrappeContext) as FrappeConfig
+
+    const [present, dismiss] = useIonToast();
+
     useEffect(() => {
-        if (currentUser) {
+        const presentToast = () => {
+            present({
+                message: 'You seem to be offline. Please check your internet connection.',
+                position: 'bottom',
+                animated: true,
+                color: 'danger',
+                icon: wifi,
+            });
+        };
+
+        const dismissToast = () => {
+            dismiss();
+        }
+
+        const handleNetworkChange = () => {
+            if (navigator.onLine) {
+                dismissToast();
+            } else {
+                presentToast();
+            }
+        }
+
+        window.addEventListener('offline', handleNetworkChange);
+        window.addEventListener('online', handleNetworkChange);
+
+        return () => {
+            window.removeEventListener('offline', handleNetworkChange);
+            window.removeEventListener('online', handleNetworkChange);
+        }
+
+    }, [])
+
+    useEffect(() => {
+        if (isLoggedIn) {
+            call.get('raven.api.user_availability.refresh_user_active_state', {
+                deactivate: false
+            })
+        }
+    }, [isLoggedIn])
+
+    useEffect(() => {
+        if (isLoggedIn) {
             App.addListener('appStateChange', ({ isActive }) => {
                 call.get('raven.api.user_availability.refresh_user_active_state', {
                     deactivate: !isActive
+                }).then(() => {
+                    if (isActive) {
+                        mutate('active_users', undefined, true)
+                    }
                 })
             })
         }
@@ -24,7 +74,7 @@ export const Routes = () => {
         return () => {
             App.removeAllListeners()
         }
-    }, [currentUser])
+    }, [isLoggedIn])
     return (
         // @ts-ignore
         <IonReactRouter basename={import.meta.env.VITE_BASE_NAME ?? ''}>

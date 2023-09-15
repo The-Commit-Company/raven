@@ -13,8 +13,8 @@ export const AlertBanner = ({ variant = "left-accent", heading, onClose, childre
         <Alert variant={variant} {...props} {...OPACITY_ON_LOAD} exit={{ opacity: 0 }}>
             <AlertIcon />
             <Box>
-                {heading && <Text fontSize="sm" fontWeight="medium">{heading}</Text>}
-                {children && <Text fontSize="small">{children}</Text>}
+                {heading && <Text fontSize="sm" fontWeight="medium" as='span'>{heading}</Text>}
+                {children && <Text fontSize="small" as='span'>{children}</Text>}
             </Box>
             <CloseButton
                 alignSelf='flex-start'

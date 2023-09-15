@@ -1,4 +1,4 @@
-import { useContext } from 'react'
+import { useContext, useEffect } from 'react'
 import { useBoolean, useToast } from '@chakra-ui/react'
 import { useIdleTimer, PresenceType } from 'react-idle-timer'
 import { FrappeContext, FrappeConfig } from 'frappe-react-sdk'
@@ -74,7 +74,14 @@ export const useActiveState = () => {
         }
     }
 
-    useIdleTimer({ onPresenceChange, timeout: 1000 * 60 * 15 })
+    useIdleTimer({ onPresenceChange, timeout: 1000 * 60 * 10 })
+
+    useEffect(() => {
+        // Update user availability when the app is opened
+        call.get('raven.api.user_availability.refresh_user_active_state', {
+            deactivate
+        })
+    }, [])
 
     return isActive
 
