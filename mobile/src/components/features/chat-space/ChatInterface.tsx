@@ -1,4 +1,4 @@
-import { IonBackButton, IonButton, IonButtons, IonContent, IonFooter, IonHeader, IonIcon, IonInput, IonToolbar } from '@ionic/react'
+import { IonBackButton, IonButton, IonButtons, IonContent, IonFooter, IonHeader, IonIcon, IonInput, IonToolbar, useIonViewDidEnter, useIonViewWillEnter } from '@ionic/react'
 import { useFrappeEventListener, useFrappeGetCall } from 'frappe-react-sdk'
 import { useCallback, useContext, useMemo, useRef, useState } from 'react'
 import { Message, MessagesWithDate } from '../../../../../types/Messaging/Message'
@@ -11,6 +11,7 @@ import { UserFields } from '@/utils/users/UserListProvider'
 import { peopleOutline, searchOutline } from 'ionicons/icons'
 import { Haptics, ImpactStyle } from '@capacitor/haptics'
 import { UserContext } from '@/utils/auth/UserProvider'
+import { ChatLoader } from '@/pages/chat/ChatLoader'
 
 export type ChannelMembersMap = Record<string, UserFields>
 
@@ -21,12 +22,14 @@ export const ChatInterface = ({ channel }: { channel: ChannelListItem | DMChanne
     const conRef = useRef<HTMLIonContentElement>(null);
 
     const scrollToBottom = useCallback((duration = 0, delay = 0) => {
-
-
         setTimeout(() => {
             conRef.current?.scrollToBottom(duration)
         }, delay)
     }, [])
+
+    useIonViewWillEnter(() => {
+        scrollToBottom(0, 0)
+    })
 
     const onNewMessageLoaded = useCallback(() => {
         /**
@@ -123,7 +126,7 @@ export const ChatInterface = ({ channel }: { channel: ChannelListItem | DMChanne
             <IonHeader>
                 <IonToolbar>
                     <IonButtons slot='start'>
-                        <IonBackButton color='medium' text='' defaultHref="/channels" />
+                        <IonBackButton color='medium' text=' ' className='px-2' defaultHref="/channels" />
                     </IonButtons>
                     <ChatHeader channel={channel} />
                     <IonButtons slot='end'>
@@ -137,7 +140,7 @@ export const ChatInterface = ({ channel }: { channel: ChannelListItem | DMChanne
                 </IonToolbar>
             </IonHeader>
             <IonContent className='flex flex-col-reverse' fullscreen ref={conRef}>
-                {isMessageLoading && <FullPageLoader />}
+                {isMessageLoading && <ChatLoader />}
                 {messagesError && <ErrorBanner error={messagesError} />}
                 <ChatView messages={messages?.message ?? []} members={channelMembers?.message ?? {}} />
 
