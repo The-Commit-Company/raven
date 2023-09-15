@@ -32,12 +32,7 @@ export const UserProvider: FC<PropsWithChildren> = ({ children }) => {
                 //Clear cache on logout
                 return mutate(() => true, undefined, false)
             })
-            .then(() => {
-                //Reload the page so that the boot info is fetched again
-                const URL = import.meta.env.VITE_BASE_NAME ? `${import.meta.env.VITE_BASE_NAME}` : ``
-                window.location.replace(`/login?redirect-to=${URL}/channel`)
-                // window.location.reload()
-            })
+            .then(() => { })
     }
 
     const handleLogin = async (username: string, password: string) => {
@@ -48,7 +43,7 @@ export const UserProvider: FC<PropsWithChildren> = ({ children }) => {
             })
     }
     return (
-        <UserContext.Provider value={{ isLoading, isLoggedIn, updateCurrentUser, login: handleLogin, logout, currentUser: currentUser ?? "" }}>
+        <UserContext.Provider value={{ isLoading, isLoggedIn, updateCurrentUser, login: handleLogin, logout: handleLogout, currentUser: currentUser ?? "" }}>
             {children}
         </UserContext.Provider>
     )

@@ -32,7 +32,7 @@ export const MarkdownRenderer: React.FC<Props> = ({ content }) => {
 
   const { data } = useFrappeGetCall<{ message: LinkPreviewDetails[] }>('raven.api.preview_links.get_preview_link', {
     urls: JSON.stringify(urls)
-  }, undefined, {
+  }, urls.length > 0 ? undefined : null, {
     revalidateOnFocus: false
   })
 

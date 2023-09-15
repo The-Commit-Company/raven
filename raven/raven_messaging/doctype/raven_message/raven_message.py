@@ -45,11 +45,9 @@ class RavenMessage(Document):
         self.send_update_event(txt="delete")
 
     def on_update(self):
-        print("on update")
         self.send_update_event(txt="update")
 
     def send_update_event(self, txt):
-        print("Notifying update", txt)
         frappe.publish_realtime('message_updated', {
             'channel_id': self.channel_id,
             'sender': frappe.session.user,
