@@ -49,16 +49,17 @@ export const ChatInput = ({ channelID, selectedMessage, handleCancelReply, chann
 
     const onSubmit = () => {
         if (!isEditorEmpty()) {
-        call({
-            channel_id: channelID,
-            text: text,
-            is_reply: selectedMessage ? 1 : 0,
-            linked_message: selectedMessage ? selectedMessage.name : null
-        }).then(() => {
-            setText("")
-            mutate(`get_messages_for_channel_${channelID}`)
-            handleCancelReply()
-        })}
+            call({
+                channel_id: channelID,
+                text: text,
+                is_reply: selectedMessage ? 1 : 0,
+                linked_message: selectedMessage ? selectedMessage.name : null
+            }).then(() => {
+                setText("")
+                mutate(`get_messages_for_channel_${channelID}`)
+                handleCancelReply()
+            })
+        }
         if (files.length > 0) {
             const promises = files.map(async (f: CustomFile) => {
                 let docname = ''
@@ -86,7 +87,7 @@ export const ChatInput = ({ channelID, selectedMessage, handleCancelReply, chann
             Promise.all(promises)
                 .then(() => {
                     setFiles([])
-                    // mutate(`get_messages_for_channel_${channelID}`)
+                    mutate(`get_messages_for_channel_${channelID}`)
                     resetCreateDoc()
                     resetUploadDoc()
                     resetUpdateDoc()
@@ -99,7 +100,7 @@ export const ChatInput = ({ channelID, selectedMessage, handleCancelReply, chann
     const isEditorEmpty = () => {
         const editorContent = text.trim()
         return /^(\s*<p>\s*(<br>)?\s*<\/p>\s*)*$/.test(editorContent)
-      }
+    }
 
     const { colorMode } = useColorMode()
 
@@ -169,7 +170,7 @@ export const ChatInput = ({ channelID, selectedMessage, handleCancelReply, chann
                             <MentionButton current={reactQuillRef.current} />
                         </HStack>
                         <IconButton
-                            isDisabled={(text.length === 0 && files.length === 0) || isEditorEmpty()}
+                            isDisabled={(text.length === 0 || isEditorEmpty()) && files.length === 0}
                             isLoading={creatingDoc || uploadingFile || updatingDoc}
                             colorScheme='blue'
                             onClick={onSubmit}

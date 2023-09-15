@@ -12,11 +12,14 @@ def get_context(context):
     csrf_token = frappe.sessions.get_csrf_token()
     frappe.db.commit()
     # context.csrf_token = csrf_token
-    try:
-        boot = frappe.sessions.get()
-    except Exception as e:
-        raise frappe.SessionBootFailed from e
-    
+
+    if frappe.session.user == "Guest":
+        boot = frappe.website.utils.get_boot_data()
+    else:
+        try:
+            boot = frappe.sessions.get()
+        except Exception as e:
+            raise frappe.SessionBootFailed from e
     boot_json = frappe.as_json(boot, indent=None, separators=(",", ":"))
     boot_json = SCRIPT_TAG_PATTERN.sub("", boot_json)
 

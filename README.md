@@ -161,7 +161,7 @@ We are currently working or will be working on the following features. Please he
 
 1. Mobile app for Raven
 2. Push notifications
-3. Integration service - allowing other applications to create bots and send messages. Some popular services we are looking at are [Github](https://github.com), [Linear](https://linear.app), [Sentry][https://sentry.io], [Frappe Desk][https://frappedesk.com]. 
+3. Integration service - allowing other applications to create bots and send messages. Some popular services we are looking at are [Github](https://github.com), [Linear](https://linear.app), [Sentry](https://sentry.io), [Frappe Desk](https://frappedesk.com). 
 
 <hr>
 

@@ -69,12 +69,6 @@ export const FileUploadModal = ({ files, setFiles, pickFiles, channelID, onMessa
 
     const overallProgress = completedFiles.length / files.length
 
-    console.log(files.map(f => ({
-        "name": f.name,
-        "ext": getFileExtension(f.name),
-        "type": fileExt.includes(getFileExtension(f.name)) ? "Image" : "File"
-    })))
-
     return (
         <IonModal isOpen={files.length > 0}>
             <IonHeader>
