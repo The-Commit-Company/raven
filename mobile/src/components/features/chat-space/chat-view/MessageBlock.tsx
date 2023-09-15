@@ -1,7 +1,7 @@
 import React, { memo, useContext, useMemo } from 'react'
 import { FileMessage, Message, MessageBlock, TextMessage } from '../../../../../../types/Messaging/Message'
 import { ChannelMembersMap } from '../ChatInterface'
-import { IonIcon, IonItem, IonText } from '@ionic/react'
+import { IonIcon, IonItem, IonSkeletonText, IonText } from '@ionic/react'
 import { SquareAvatar, UserAvatar } from '@/components/common/UserAvatar'
 import { MarkdownRenderer } from '@/components/common/MarkdownRenderer'
 import { UserFields } from '@/utils/users/UserListProvider'
@@ -11,6 +11,7 @@ import { ChannelMembersContext } from './ChatView'
 import { openOutline } from 'ionicons/icons'
 import { Haptics, ImpactStyle } from '@capacitor/haptics'
 import { useIsUserActive } from '@/hooks/useIsUserActive'
+import { useInView } from 'react-intersection-observer';
 
 type Props = {
     message: MessageBlock,
@@ -81,11 +82,20 @@ const TextMessageBlock = ({ message, truncate = false }: { message: TextMessage,
         <MarkdownRenderer content={message.text} truncate={truncate} />
     </div>
 }
+const options = {
+    root: null,
+    rootMargin: "100px",
+    threshold: 0.5,
+    triggerOnce: true
+};
 
 const ImageMessageBlock = ({ message }: { message: FileMessage }) => {
-
-    return <div className='py-1.5 rounded-lg'>
-        <img src={message.file} alt={`Image`} className='rounded-md max-h-60 object-cover' />
+    const { ref, inView } = useInView(options);
+    //TODO: Pass the height and width of the image beforehand to avoid layout shift
+    return <div className='py-1.5 rounded-lg' ref={ref}>
+        {inView ?
+            <img src={message.file} alt={`Image`} loading='lazy' className='rounded-md max-h-60 min-h-30 object-cover' />
+            : <IonSkeletonText animated className='w-60 h-60 rounded-md' />}
     </div>
 }
 
