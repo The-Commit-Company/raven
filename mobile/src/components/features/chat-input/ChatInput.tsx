@@ -73,7 +73,7 @@ export const ChatInput = ({ channelID, allChannels, allMembers, onMessageSend, s
 
     return (
         <div className='flex items-end justify-between overflow-visible space-x-1 pb-4'>
-            <div className='w-full'>
+            <div className='w-80'>
                 <QuillEditor
                     value={text}
                     onChange={onTextChange}
