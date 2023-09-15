@@ -1,4 +1,4 @@
-import { IonAvatar, IonSkeletonText } from '@ionic/react'
+import { IonSkeletonText } from '@ionic/react'
 import avatar from '@/assets/male-avatar.svg'
 import { StyleReactProps } from '@ionic/react/dist/types/components/react-component-lib/interfaces'
 import { useInView } from 'react-intersection-observer';
@@ -20,7 +20,7 @@ export const UserAvatar = ({ src, alt, slot, className, isActive }: AvatarProps)
     const { ref, inView } = useInView(options);
     return <span ref={ref} slot={slot} className="relative inline-block">
         {inView ? <img
-            className="h-8 w-8 rounded-md bg-[color:var(--ion-color-light)] object-cover"
+            className="h-8 w-8 rounded-md bg-zinc-900 object-cover"
             src={src ? src : avatar}
             alt={alt}
             loading='lazy'
@@ -36,7 +36,7 @@ export const SquareAvatar = ({ src, alt, className, isActive }: AvatarProps) => 
     const { ref, inView } = useInView(options);
     return <span ref={ref} className="relative inline-block">
         {inView ? <img
-            className="h-8 w-8 rounded-md bg-[color:var(--ion-color-light)] object-cover"
+            className="h-8 w-8 rounded-md bg-zinc-900 object-cover"
             src={src ? src : avatar}
             alt={alt}
             loading='lazy'
