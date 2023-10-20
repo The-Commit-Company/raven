@@ -1,20 +1,11 @@
-import React, { useContext, useState } from 'react'
+import { useContext, useState } from 'react'
 import { MessageBlock } from '../../../../../../types/Messaging/Message'
 import {
-    IonButton,
     IonModal,
-    IonHeader,
     IonContent,
-    IonToolbar,
-    IonTitle,
-    IonPage,
     IonList,
     IonItem,
     IonLabel,
-    IonAvatar,
-    IonImg,
-    IonSearchbar,
-    useIonModal,
     IonIcon,
 } from '@ionic/react';
 import { bookmarkOutline, copyOutline, createOutline, documentAttachOutline, downloadOutline, mailOutline, returnDownBack, returnDownBackOutline } from 'ionicons/icons';
@@ -22,6 +13,7 @@ import { EmojiAction } from './EmojiAction';
 import { DeleteAction } from './DeleteAction';
 import { UserContext } from '@/utils/auth/UserProvider';
 import { CopyAction } from './CopyAction';
+import { SaveMessageAction } from './SaveMessageAction';
 
 interface MessageActionModalProps {
     selectedMessage?: MessageBlock,
@@ -42,15 +34,15 @@ export const MessageActionModal = ({ selectedMessage, onDismiss }: MessageAction
             <IonContent className="ion-padding">
                 {selectedMessage &&
                     <IonList lines='none'>
-                        <EmojiAction />
-                        <IonItem className='py-1'>
+                        {/* <EmojiAction /> */}
+                        {/* <IonItem className='py-1'>
                             <IonIcon slot="start" icon={createOutline} />
                             <IonLabel className='font-semibold'>Edit</IonLabel>
-                        </IonItem>
-                        <IonItem className='py-1'>
+                        </IonItem> */}
+                        {/* <IonItem className='py-1'>
                             <IonIcon slot="start" icon={returnDownBackOutline} />
                             <IonLabel className='font-semibold'>Reply</IonLabel>
-                        </IonItem>
+                        </IonItem> */}
                         {isOwnMessage &&
                             <DeleteAction message={selectedMessage} onSuccess={onDismiss} />
                         }
@@ -59,18 +51,15 @@ export const MessageActionModal = ({ selectedMessage, onDismiss }: MessageAction
                             <IonIcon slot='start' icon={downloadOutline} />
                             <IonLabel className='font-semibold'>Download</IonLabel>
                         </IonItem>
-                        <IonItem className='py-1'>
-                            <IonIcon slot="start" icon={bookmarkOutline} />
-                            <IonLabel className='font-semibold'>Save</IonLabel>
-                        </IonItem>
-                        <IonItem className='py-1'>
+                        <SaveMessageAction message={selectedMessage} onSuccess={onDismiss} />
+                        {/* <IonItem className='py-1'>
                             <IonIcon slot="start" icon={documentAttachOutline} />
                             <IonLabel className='font-semibold'>Link to document</IonLabel>
                         </IonItem>
                         <IonItem className='py-1'>
                             <IonIcon slot='start' icon={mailOutline} />
                             <IonLabel className='font-semibold'>Send in email</IonLabel>
-                        </IonItem>
+                        </IonItem> */}
                     </IonList>
                 }
             </IonContent>
