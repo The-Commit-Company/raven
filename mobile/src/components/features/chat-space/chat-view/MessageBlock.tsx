@@ -12,12 +12,14 @@ import { openOutline } from 'ionicons/icons'
 import { Haptics, ImpactStyle } from '@capacitor/haptics'
 import { useIsUserActive } from '@/hooks/useIsUserActive'
 import { useInView } from 'react-intersection-observer';
+import useLongPress from '@/hooks/useLongPress'
 
 type Props = {
     message: MessageBlock,
+    onMessageSelect: (message: MessageBlock) => void
 }
 
-export const MessageBlockItem = ({ message }: Props) => {
+export const MessageBlockItem = ({ message, onMessageSelect }: Props) => {
     const members = useContext(ChannelMembersContext)
     /**
      * Displays a message block in the chat interface
@@ -28,8 +30,18 @@ export const MessageBlockItem = ({ message }: Props) => {
      */
 
     const user = members[message.data.owner]
+
+    const onLongPress = () => {
+        Haptics.impact({
+            style: ImpactStyle.Medium
+        })
+        onMessageSelect(message)
+    }
+
+    const longPressEvent = useLongPress(onLongPress)
     return (
-        <div className='px-2 my-0' id={`message-${message.data.name}`}>
+        // @ts-ignore
+        <div className='px-2 my-0' id={`message-${message.data.name}`} {...longPressEvent}>
             {message.data.is_continuation === 0 ? <NonContinuationMessageBlock message={message} user={user} /> :
                 <ContinuationMessageBlock message={message} />}
         </div>

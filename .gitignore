@@ -5,6 +5,7 @@
 tags
 node_modules
 
+dist/
 raven/public/raven
 raven/public/node_modules
 raven/www/raven.html

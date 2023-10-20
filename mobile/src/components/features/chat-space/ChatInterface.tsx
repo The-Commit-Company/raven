@@ -12,6 +12,7 @@ import { peopleOutline, searchOutline } from 'ionicons/icons'
 import { Haptics, ImpactStyle } from '@capacitor/haptics'
 import { UserContext } from '@/utils/auth/UserProvider'
 import { ChatLoader } from '@/pages/chat/ChatLoader'
+import { MessageActionModal, useMessageActionModal } from './MessageActions/MessageActionModal'
 
 export type ChannelMembersMap = Record<string, UserFields>
 
@@ -66,7 +67,7 @@ export const ChatInterface = ({ channel }: { channel: ChannelListItem | DMChanne
     // Fetch all the messages in the channel
     const { data: messages, error: messagesError, mutate: refreshMessages, isLoading: isMessageLoading } = useFrappeGetCall<{ message: MessagesWithDate }>("raven.raven_messaging.doctype.raven_message.raven_message.get_messages_with_dates", {
         channel_id: channel.name
-    }, undefined, {
+    }, `get_messages_for_channel_${channel.name}`, {
         keepPreviousData: true,
         onSuccess: (data) => {
             onNewMessageLoaded()
@@ -100,15 +101,8 @@ export const ChatInterface = ({ channel }: { channel: ChannelListItem | DMChanne
             })
     }
 
-    const [selectedMessage, setSelectedMessage] = useState<Message | null>(null)
+    const { selectedMessage, onMessageSelected, onDismiss } = useMessageActionModal()
 
-    const handleReplyAction = (message: Message) => {
-        setSelectedMessage(message)
-    }
-
-    const handleCancelReply = () => {
-        setSelectedMessage(null)
-    }
     const { channels } = useChannelList()
 
     const parsedChannels = useMemo(() => {
@@ -142,7 +136,7 @@ export const ChatInterface = ({ channel }: { channel: ChannelListItem | DMChanne
             <IonContent className='flex flex-col-reverse' fullscreen ref={conRef}>
                 {isMessageLoading && <ChatLoader />}
                 {messagesError && <ErrorBanner error={messagesError} />}
-                <ChatView messages={messages?.message ?? []} members={channelMembers?.message ?? {}} />
+                <ChatView messages={messages?.message ?? []} members={channelMembers?.message ?? {}} onMessageSelected={onMessageSelected} />
 
                 {/* Commented out the button because it was unreliable. We only scroll to bottom when the user is at the bottom. */}
                 {/* <IonButton
@@ -170,9 +164,10 @@ export const ChatInterface = ({ channel }: { channel: ChannelListItem | DMChanne
             border-t-zinc-900 border-t-[1px]
             pb-6
             pt-1'>
-                    <ChatInput channelID={channel.name} allMembers={parsedMembers} allChannels={parsedChannels} onMessageSend={onMessageSend} selectedMessage={selectedMessage} handleCancelReply={handleCancelReply} />
+                    <ChatInput channelID={channel.name} allMembers={parsedMembers} allChannels={parsedChannels} onMessageSend={onMessageSend} />
                 </div>
             </IonFooter>
+            <MessageActionModal selectedMessage={selectedMessage} onDismiss={onDismiss} />
         </>
     )
 

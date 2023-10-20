@@ -12,6 +12,7 @@
   "dependencies": {
     "@capacitor/app": "^5.0.6",
     "@capacitor/camera": "^5.0.0",
+    "@capacitor/clipboard": "^5.0.6",
     "@capacitor/core": "^5.0.0",
     "@capacitor/device": "^5.0.0",
     "@capacitor/filesystem": "^5.0.0",
