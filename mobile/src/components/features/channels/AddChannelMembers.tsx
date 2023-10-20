@@ -11,7 +11,6 @@ import {
     IonItem,
     IonLabel,
     IonSearchbar,
-    IonListHeader,
     IonCheckbox,
     useIonToast,
     ToastOptions,

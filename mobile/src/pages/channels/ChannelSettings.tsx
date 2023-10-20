@@ -1,5 +1,5 @@
 import { AddChannelMembers } from "@/components/features/channels"
-import { IonContent, IonHeader, IonItem, IonLabel, IonList, IonListHeader, IonPage, IonTitle, IonToolbar } from "@ionic/react"
+import { IonBackButton, IonButtons, IonContent, IonHeader, IonItem, IonLabel, IonList, IonListHeader, IonPage, IonTitle, IonToolbar } from "@ionic/react"
 import { useRef, useState } from "react"
 import { IoPersonAdd } from "react-icons/io5"
 import { useParams } from "react-router-dom"
@@ -16,6 +16,9 @@ export const ChannelSettings = () => {
 
             <IonHeader>
                 <IonToolbar>
+                    <IonButtons slot='start'>
+                        <IonBackButton color='medium' text=' ' className='px-2' defaultHref="../" />
+                    </IonButtons>
                     <IonTitle>Channel Settings</IonTitle>
                 </IonToolbar>
             </IonHeader>
