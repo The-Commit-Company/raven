@@ -1,4 +1,4 @@
-import { useRef, useContext, useMemo } from 'react';
+import { useContext, useMemo, useRef, useState } from 'react';
 import {
     IonButtons,
     IonButton,
@@ -10,43 +10,98 @@ import {
     IonList,
     IonItem,
     IonLabel,
-    IonAvatar,
     IonSearchbar,
     IonListHeader,
     IonCheckbox,
+    useIonToast,
+    ToastOptions,
 } from '@ionic/react';
-import { BiGlobe, BiHash, BiLock } from 'react-icons/bi';
-import { ChannelContext } from '../../../utils/channel/ChannelProvider';
-import { FrappeConfig, FrappeContext } from 'frappe-react-sdk';
-// import Avatar from 'react-avatar';
+import { useFrappeCreateDoc, useFrappeGetCall } from 'frappe-react-sdk';
+import { UserListContext } from '@/utils/users/UserListProvider';
+import { UserAvatar } from '@/components/common/UserAvatar';
 
 interface AddChannelMembersProps {
-    presentingElement: HTMLElement | undefined
+    presentingElement: HTMLElement | undefined,
+    isOpen: boolean,
+    onDismiss: VoidFunction,
+    channelID: string
 }
 
-export const AddChannelMembers = ({ presentingElement }: AddChannelMembersProps) => {
+export type Member = {
+    name: string
+    full_name: string
+    user_image: string | undefined
+    first_name: string
+}
+
+export type ChannelMembers = {
+    [name: string]: Member
+}
+
+export const AddChannelMembers = ({ presentingElement, isOpen, onDismiss, channelID }: AddChannelMembersProps) => {
 
     const modal = useRef<HTMLIonModalElement>(null)
 
-    function onDismiss() {
-        modal.current?.dismiss()
+    const { data, error, isLoading, mutate } = useFrappeGetCall<{ message: ChannelMembers }>('raven.api.chat.get_channel_members', {
+        channel_id: channelID
+    }, undefined, {
+        revalidateOnFocus: false
+    })
+    const { createDoc, error: errorAddingMembers, loading: addingMembers } = useFrappeCreateDoc()
+
+    const users = useContext(UserListContext)
+
+    const channelMembers = useMemo(() => {
+        if (data?.message) {
+            return Object.values(data.message)
+        } else {
+            return []
+        }
+    }, [data])
+
+    const [searchText, setSearchText] = useState('')
+
+    const filteredUsers = useMemo(() => {
+        return users.users.filter(member => {
+            return member.name.toLowerCase().includes(searchText.toLowerCase())
+        })
+    }, [users, searchText])
+
+    const [selectedMembers, setSelectedMembers] = useState<string[]>([])
+
+    const [present] = useIonToast()
+
+    const presentToast = (message: string, color: ToastOptions['color']) => {
+        present({
+            message,
+            duration: 1500,
+            color,
+            position: 'bottom',
+        })
     }
 
-    const { channelData, channelMembers, users } = useContext(ChannelContext)
-    const { url } = useContext(FrappeContext) as FrappeConfig
-
-    const existingMembers = useMemo(() => {
-        return Object.keys(channelMembers).map(userId => users[userId])
-    }, [channelMembers, users])
-
-    const nonMembers = useMemo(() => {
-        return Object.keys(users)
-            .filter(userId => !channelMembers || !(userId in channelMembers))
-            .map(userId => users[userId])
-    }, [users, channelMembers])
+    const addMembers = () => {
+        if (selectedMembers && selectedMembers.length > 0) {
+            const promises = selectedMembers.map(async (member) => {
+                return createDoc('Raven Channel Member', {
+                    channel_id: channelID,
+                    user_id: member
+                })
+            })
+            Promise.all(promises)
+                .then(() => {
+                    presentToast("Member added successfully.", 'success')
+                    mutate()
+                    onDismiss()
+                }).catch((e) => {
+                    presentToast("Error while adding member to the channel.", 'danger')
+                })
+        }
+    }
 
     return (
-        <IonModal ref={modal} presentingElement={presentingElement} trigger="add-members">
+        <IonModal ref={modal} onDidDismiss={onDismiss} isOpen={isOpen} presentingElement={presentingElement}>
+
             <IonHeader>
                 <IonToolbar>
                     <IonButtons slot="start">
@@ -57,67 +112,70 @@ export const AddChannelMembers = ({ presentingElement }: AddChannelMembersProps)
                     <IonTitle>
                         <div className='flex flex-col items-center justify-start'>
                             <h1>Add Members</h1>
-                            <div className='flex items-center justify-start mt-1 text-gray-400'>
-                                {channelData?.type === 'Private' ? <BiLock /> : channelData?.type === "Public" ? <BiHash /> : <BiGlobe />}
-                                <p className='text-sm font-medium'>{channelData?.channel_name}</p>
-                            </div>
                         </div>
                     </IonTitle>
                     <IonButtons slot="end">
-                        <IonButton onClick={() => console.log('Add clicked')} strong={true}>
+                        <IonButton onClick={addMembers} strong={true}>
                             Add
                         </IonButton>
                     </IonButtons>
                 </IonToolbar>
             </IonHeader>
+
             <IonContent className="ion-padding">
-                <IonSearchbar placeholder="Search" debounce={1000} onIonInput={() => { }}></IonSearchbar>
+
+                <IonSearchbar
+                    placeholder="Search"
+                    debounce={1000}
+                    onIonInput={(e) => setSearchText(e.target.value?.toString() || '')}
+                />
+
                 <IonList>
-                    <IonListHeader>
-                        <IonLabel>Members</IonLabel>
-                    </IonListHeader>
-                    {existingMembers.map((member) => (
-                        <IonItem key={member.name}>
-                            <div className='flex gap-4'>
-                                {member.user_image ?
-                                    <IonAvatar slot="start" className="h-10 w-10">
-                                        <img src={url + member.user_image} />
-                                    </IonAvatar>
-                                    :
-                                    null}
-                                {/* <Avatar name={member.full_name} round size='40' />} */}
-                                <IonLabel>
-                                    <h2>{member.full_name}</h2>
-                                    <p>{member.name}</p>
-                                </IonLabel>
-                            </div>
-                        </IonItem>
-                    ))}
-                </IonList>
-                <IonList>
-                    <IonListHeader>
-                        <IonLabel>Non-Members</IonLabel>
-                    </IonListHeader>
-                    {nonMembers.map((user) => (
+                    {filteredUsers && filteredUsers.length > 0 ? filteredUsers.map((user) => (
                         <IonItem key={user.name}>
-                            <IonCheckbox justify="space-between">
-                                <div className='flex gap-4'>
-                                    {user.user_image ?
-                                        <IonAvatar slot="start" className="h-10 w-10">
-                                            <img src={url + user.user_image} />
-                                        </IonAvatar>
-                                        :
-                                        null}
-                                    {/* <Avatar name={user.full_name} round size='40' />} */}
-                                    <IonLabel>
-                                        <h2>{user.full_name}</h2>
-                                        <p>{user.name}</p>
-                                    </IonLabel>
+                            {channelMembers.some((member) => member.name === user.name) ? (
+                                // User is already a channel member
+                                <div className='justify-between flex w-full py-2'>
+                                    <div className='flex gap-4'>
+                                        <UserAvatar size='10' slot='start' alt={user.full_name} src={user.user_image} />
+                                        <IonLabel>
+                                            <h2>{user.full_name}</h2>
+                                            <p>{user.name}</p>
+                                        </IonLabel>
+                                    </div>
+                                    <IonLabel color='medium'>added</IonLabel>
                                 </div>
-                            </IonCheckbox>
+                            ) : (
+                                // User is not a channel member, show a checkbox for adding them
+                                <IonCheckbox
+                                    justify="space-between"
+                                    checked={selectedMembers.includes(user.name)}
+                                    onIonChange={({ detail: { checked } }) => {
+                                        if (checked) {
+                                            setSelectedMembers([...selectedMembers, user.name])
+                                        } else {
+                                            setSelectedMembers(selectedMembers.filter(id => id !== user.name))
+                                        }
+                                    }}>
+                                    <div className='flex gap-4'>
+                                        <UserAvatar size='10' slot='start' alt={user.full_name} src={user.user_image} />
+                                        <IonLabel>
+                                            <h2>{user.full_name}</h2>
+                                            <p>{user.name}</p>
+                                        </IonLabel>
+                                    </div>
+                                </IonCheckbox>
+                            )}
                         </IonItem>
-                    ))}
+                    )) : (
+                        <IonItem>
+                            <IonLabel>
+                                <h3 className='text-gray-400'>No users found</h3>
+                            </IonLabel>
+                        </IonItem>
+                    )}
                 </IonList>
+
             </IonContent>
         </IonModal>
     )
