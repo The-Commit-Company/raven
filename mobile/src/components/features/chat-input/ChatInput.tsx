@@ -12,10 +12,8 @@ type Props = {
     allMembers: { id: string; value: string }[],
     allChannels: { id: string; value: string; }[],
     onMessageSend: () => void,
-    selectedMessage?: Message | null,
-    handleCancelReply: () => void
 }
-export const ChatInput = ({ channelID, allChannels, allMembers, onMessageSend, selectedMessage, handleCancelReply }: Props) => {
+export const ChatInput = ({ channelID, allChannels, allMembers, onMessageSend }: Props) => {
 
     const { call } = useFrappePostCall('raven.raven_messaging.doctype.raven_message.raven_message.send_message')
 
@@ -31,12 +29,11 @@ export const ChatInput = ({ channelID, allChannels, allMembers, onMessageSend, s
         call({
             channel_id: channelID,
             text: text,
-            is_reply: selectedMessage ? 1 : 0,
-            linked_message: selectedMessage ? selectedMessage.name : null
+            is_reply: 0,
+            linked_message: null,
         }).then(() => {
             console.log("Message Sent")
             setText("")
-            handleCancelReply()
             onMessageSend()
         })
     }

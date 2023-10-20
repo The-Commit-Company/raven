@@ -4,6 +4,7 @@ export interface BaseMessage {
     name: string,
     owner: string,
     _liked_by: string,
+    channel_id: string,
     creation: string,
     message_type: 'Text' | 'File' | 'Image',
     message_reactions?: string | null,

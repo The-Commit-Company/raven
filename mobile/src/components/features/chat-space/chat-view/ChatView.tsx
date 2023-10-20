@@ -5,13 +5,14 @@ import { DateSeparator } from './DateSeparator'
 import { ChannelMembersMap } from '../ChatInterface'
 import { MessageBlockItem } from './MessageBlock'
 
-type Props = {
+type ChatViewProps = {
     messages: (DateBlock | MessageBlock)[],
-    members: ChannelMembersMap
+    members: ChannelMembersMap,
+    onMessageSelected: (message: MessageBlock) => void
 }
 
 export const ChannelMembersContext = createContext<ChannelMembersMap>({})
-export const ChatView = ({ messages, members }: Props) => {
+export const ChatView = ({ messages, members, onMessageSelected }: ChatViewProps) => {
 
     /** The ChatHistory component renders all the messages in the Chat.
      * It receives a messages array - which consists of two blocks: a Date Block (to show a date separator) and a Message Block (to show a message)
@@ -26,7 +27,7 @@ export const ChatView = ({ messages, members }: Props) => {
                     }
                     if (message.block_type === "message")
                         return (
-                            <MessageBlockItem key={message.data.name} message={message} />
+                            <MessageBlockItem key={message.data.name} message={message} onMessageSelect={onMessageSelected} />
                         )
                 }
                 )}
