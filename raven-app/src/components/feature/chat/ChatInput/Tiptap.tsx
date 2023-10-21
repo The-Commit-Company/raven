@@ -1,4 +1,4 @@
-import { HStack, Stack } from '@chakra-ui/react'
+import { Box, Card, CardBody, HStack, Stack, useColorModeValue } from '@chakra-ui/react'
 import ListItem from '@tiptap/extension-list-item'
 // import TextStyle from '@tiptap/extension-text-style'
 import { EditorProvider, ReactRenderer, useCurrentEditor } from '@tiptap/react'
@@ -18,6 +18,7 @@ import MentionList from './MentionList'
 import tippy from 'tippy.js'
 import { PluginKey } from '@tiptap/pm/state'
 import { ChannelListContext, ChannelListContextType } from '@/utils/channel/ChannelListProvider'
+import ChannelMentionList from './ChannelMentionList'
 type TiptapEditorProps = {
     channelMembers: ChannelMembers
 }
@@ -80,7 +81,6 @@ export const Tiptap = ({ channelMembers }: TiptapEditorProps) => {
                 class: 'mention',
             },
             renderLabel({ options, node }) {
-                console.log(node)
                 return `${options.suggestion.char}${node.attrs.label ?? node.attrs.id}`
             },
             suggestion: {
@@ -151,7 +151,6 @@ export const Tiptap = ({ channelMembers }: TiptapEditorProps) => {
                 class: 'mention',
             },
             renderLabel({ options, node }) {
-                console.log(node)
                 return `${options.suggestion.char}${node.attrs.label ?? node.attrs.id}`
             },
             suggestion: {
@@ -166,7 +165,7 @@ export const Tiptap = ({ channelMembers }: TiptapEditorProps) => {
 
                     return {
                         onStart: props => {
-                            component = new ReactRenderer(MentionList, {
+                            component = new ReactRenderer(ChannelMentionList, {
                                 props,
                                 editor: props.editor,
                             })
@@ -229,9 +228,27 @@ export const Tiptap = ({ channelMembers }: TiptapEditorProps) => {
             placeholder: COOL_PLACEHOLDERS[Math.floor(Math.random() * (COOL_PLACEHOLDERS.length))],
         })
     ]
+
+    const { cardBorderColor, bgColor } = useColorModeValue({
+        cardBorderColor: 'gray.200',
+        bgColor: 'gray.50',
+    }, {
+        cardBorderColor: 'gray.700',
+        bgColor: 'gray.800'
+    })
     return (
-        <EditorProvider extensions={extensions} content={content}>
-            <TextFormattingMenu />
-        </EditorProvider>
+        <Card shadow={'md'} border='1px solid' borderColor={cardBorderColor} bgColor={bgColor}>
+            <CardBody p='0'>
+                <EditorProvider
+                    extensions={extensions}
+                    content={content}
+
+                >
+                    <TextFormattingMenu />
+                </EditorProvider>
+            </CardBody>
+
+        </Card>
+
     )
 }
