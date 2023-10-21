@@ -12,6 +12,7 @@ import { ChatInput } from "../chat-input"
 import { useUserData } from "@/hooks/useUserData"
 import { ChannelMembersContext, ChannelMembersContextType } from "@/utils/channel/ChannelMembersProvider"
 import { UserContext } from "@/utils/auth/UserProvider"
+import { Tiptap } from "../ChatInput/Tiptap"
 
 interface ChatBoxBodyProps {
     channelData: ChannelListItem | DMChannelListItem
@@ -71,13 +72,16 @@ export const ChatBoxBody = ({ channelData }: ChatBoxBodyProps) => {
                     parsedMessages={data.message}
                     replyToMessage={handleReplyAction}
                     channelData={channelData} />
-                {channelData?.is_archived == 0 && ((isUserInChannel || channelData?.type === 'Open') &&
+                <Tiptap
+                    channelMembers={channelMembers}
+                />
+                {/* {channelData?.is_archived == 0 && ((isUserInChannel || channelData?.type === 'Open') &&
                     <ChatInput
                         channelID={channelData?.name}
                         selectedMessage={selectedMessage}
                         handleCancelReply={handleCancelReply}
                         channelData={channelData}
-                        channelMembers={channelMembers} />)}
+                        channelMembers={channelMembers} />)} */}
                 {channelData?.is_archived == 0 && (!isUserInChannel && channelData?.type !== 'Open' &&
                     <JoinChannelBox
                         channelData={channelData}

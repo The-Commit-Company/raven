@@ -1,0 +1,12 @@
+.tiptap p.is-editor-empty:first-child::before {
+    color: var(--chakra-colors-gray-500);
+    content: attr(data-placeholder);
+    float: left;
+    font-size: 14px;
+    height: 0;
+    pointer-events: none;
+}
+
+.tiptap {
+    height: 10vh
+}
