@@ -26,6 +26,7 @@ export const UserProvider: FC<PropsWithChildren> = ({ children }) => {
     const { login, logout, currentUser, error, updateCurrentUser, isLoading } = useFrappeAuth()
 
     const isLoggedIn = currentUser !== undefined && currentUser !== null && currentUser !== "Guest"
+
     const handleLogout = async () => {
         return logout()
             .then(() => {

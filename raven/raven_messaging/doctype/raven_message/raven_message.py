@@ -134,7 +134,7 @@ def get_messages(channel_id):
     messages = frappe.db.get_list('Raven Message',
                                   filters={'channel_id': channel_id},
                                   fields=['name', 'owner', 'creation', 'text',
-                                          'file', 'message_type', 'message_reactions', 'is_reply', 'linked_message', '_liked_by'],
+                                          'file', 'message_type', 'message_reactions', 'is_reply', 'linked_message', '_liked_by', 'channel_id'],
                                   order_by='creation asc'
                                   )
 
