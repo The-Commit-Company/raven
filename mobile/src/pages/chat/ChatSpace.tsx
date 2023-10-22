@@ -1,11 +1,11 @@
 import { RouteComponentProps } from "react-router-dom"
 import { ChatInterface } from "../../components/features/chat-space"
-import { ChannelProvider, IdentityParam } from "../../utils/channel/ChannelProvider"
+import { IdentityParam } from "../../utils/channel/ChannelProvider"
 import { useGetChannelData } from "@/hooks/useGetChannelData"
 import { IonBackButton, IonButtons, IonContent, IonHeader, IonPage, IonTitle, IonToolbar } from "@ionic/react"
-import { ErrorBanner, FullPageLoader } from "@/components/layout"
+import { ErrorBanner } from "@/components/layout"
 import { FrappeError } from "frappe-react-sdk"
-import { ChatLoader } from "./ChatLoader"
+import { ChatLoader } from "../../components/layout/loaders/ChatLoader"
 
 export const ChatSpace: React.FC<RouteComponentProps<IdentityParam>> = (props) => {
 

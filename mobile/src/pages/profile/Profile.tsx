@@ -2,8 +2,9 @@ import { IonPage, IonHeader, IonContent, IonToolbar, IonTitle, IonList, IonText,
 import { FrappeConfig, FrappeContext, useFrappeGetDoc } from 'frappe-react-sdk'
 import { logOutOutline, pizza } from 'ionicons/icons'
 import { useContext } from 'react'
-import { ErrorBanner, FullPageLoader } from '../../components/layout'
+import { ErrorBanner } from '../../components/layout'
 import { UserContext } from '../../utils/auth/UserProvider'
+import { FullPageLoader } from '@/components/layout/loaders'
 
 interface User {
     name: string

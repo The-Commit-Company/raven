@@ -6,7 +6,7 @@ import { DirectMessageList } from "../../pages/direct-messages/DirectMessageList
 import { Profile } from "../../pages/profile"
 import { PropsWithChildren, useContext } from "react"
 import { UserContext } from "../../utils/auth/UserProvider"
-import { FullPageLoader } from "./FullPageLoader"
+import { FullPageLoader } from "./loaders/FullPageLoader"
 import { Login } from "../../pages/auth"
 
 export const Navbar = () => {

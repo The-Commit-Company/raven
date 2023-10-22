@@ -2,8 +2,9 @@ import { FrappeError, useFrappeDocTypeEventListener, useFrappeGetCall } from "fr
 import { PropsWithChildren, createContext, useContext } from "react";
 import { User } from "../../../../types/Core/User";
 import { UserContext } from "../auth/UserProvider";
-import { ErrorBanner, FullPageLoader } from "@/components/layout";
+import { ErrorBanner } from "@/components/layout";
 import { IonButton, IonButtons, IonContent, IonFooter, IonHeader, IonPage, IonTitle, IonToolbar } from "@ionic/react";
+import { FullPageLoader } from "@/components/layout/loaders";
 
 
 export const UserListContext = createContext<{ users: UserFields[] }>({
