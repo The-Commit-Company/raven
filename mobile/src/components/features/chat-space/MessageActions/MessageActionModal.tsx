@@ -12,6 +12,7 @@ import { CopyAction } from './CopyAction';
 import { SaveMessageAction } from './SaveMessageAction';
 import { NonContinuationMessageBlock } from '../chat-view/MessageBlock';
 import { useGetUser } from '@/hooks/useGetUser';
+import { ShareAction } from './ShareAction';
 
 interface MessageActionModalProps {
     selectedMessage?: MessageBlock,
@@ -72,7 +73,7 @@ export const MessageActionModal = ({ selectedMessage, onDismiss }: MessageAction
                             <IonIcon slot="start" icon={returnDownBackOutline} />
                             <IonLabel className='font-semibold'>Reply</IonLabel>
                         </IonItem> */}
-
+                        <ShareAction message={selectedMessage} onSuccess={onDismiss} />
                         <CopyAction message={selectedMessage} onSuccess={onDismiss} />
                         {/* <IonItem className='py-1'>
                             <IonIcon slot='start' icon={downloadOutline} />
