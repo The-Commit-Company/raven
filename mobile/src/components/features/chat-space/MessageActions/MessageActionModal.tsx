@@ -4,6 +4,9 @@ import {
     IonModal,
     IonContent,
     IonList,
+    IonItem,
+    IonIcon,
+    IonLabel,
 } from '@ionic/react';
 import { EmojiAction } from './EmojiAction';
 import { DeleteAction } from './DeleteAction';
@@ -13,6 +16,7 @@ import { SaveMessageAction } from './SaveMessageAction';
 import { NonContinuationMessageBlock } from '../chat-view/MessageBlock';
 import { useGetUser } from '@/hooks/useGetUser';
 import { ShareAction } from './ShareAction';
+import { EditMessageAction } from './EditMessageAction';
 
 interface MessageActionModalProps {
     selectedMessage?: MessageBlock,
@@ -65,10 +69,7 @@ export const MessageActionModal = ({ selectedMessage, onDismiss }: MessageAction
                         </div>
 
                         {/* <EmojiAction /> */}
-                        {/* <IonItem className='py-1'>
-                            <IonIcon slot="start" icon={createOutline} />
-                            <IonLabel className='font-semibold'>Edit</IonLabel>
-                        </IonItem> */}
+                        {isOwnMessage && <EditMessageAction message={selectedMessage} onSuccess={onDismiss} />}
                         {/* <IonItem className='py-1'>
                             <IonIcon slot="start" icon={returnDownBackOutline} />
                             <IonLabel className='font-semibold'>Reply</IonLabel>
