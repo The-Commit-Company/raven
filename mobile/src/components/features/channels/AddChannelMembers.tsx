@@ -121,7 +121,7 @@ export const AddChannelMembers = ({ presentingElement, isOpen, onDismiss, channe
                 </IonToolbar>
             </IonHeader>
 
-            <IonContent className="ion-padding">
+            <IonContent>
 
                 <IonSearchbar
                     placeholder="Search"
