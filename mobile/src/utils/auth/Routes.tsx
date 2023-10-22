@@ -8,6 +8,7 @@ import { UserContext } from './UserProvider'
 import { App } from '@capacitor/app';
 import { FrappeConfig, FrappeContext, useSWRConfig } from 'frappe-react-sdk'
 import { wifi } from 'ionicons/icons'
+import { ChannelSettings } from '@/pages/channels/ChannelSettings'
 
 export const Routes = () => {
     const { isLoggedIn } = useContext(UserContext)
@@ -88,6 +89,7 @@ export const Routes = () => {
                     <Redirect to="/channels" />
                 </Route>
                 <Route exact path="/channel/:channelID" component={ChatSpace} />
+                <Route exact path="/channel/:channelID/:channel-settings" component={ChannelSettings} />
             </IonRouterOutlet>
         </IonReactRouter>
     )

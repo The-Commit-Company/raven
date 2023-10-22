@@ -66,15 +66,11 @@ export const AddChannel = ({ presentingElement, isOpen, onDismiss }: AddChannelP
         })
     }
 
-    // const onDismiss = () => {
-    //     modal.current?.dismiss()
-    // }
 
     const handleNameChange = useCallback((value?: string | null) => {
         setValue('channel_name', value?.toLowerCase().replace(' ', '-') ?? '')
     }, [setValue])
 
-    // console.log("Mounted", modal)
 
     return (
         <IonModal ref={modal} onDidDismiss={onDismiss} isOpen={isOpen} presentingElement={presentingElement}>
@@ -90,7 +86,7 @@ export const AddChannel = ({ presentingElement, isOpen, onDismiss }: AddChannelP
                 </IonToolbar>
             </IonHeader>
             <IonContent>
-                {channelCreationError && <ErrorBanner error={channelCreationError} />}
+                <ErrorBanner error={channelCreationError} />
                 <form onSubmit={handleSubmit(onSubmit)}>
                     <IonList>
                         <IonItemGroup>
@@ -107,10 +103,18 @@ export const AddChannel = ({ presentingElement, isOpen, onDismiss }: AddChannelP
                                     name='channel_name'
                                     control={control}
                                     rules={{
-                                        required: "Channel name is required"
+                                        required: "Channel name is required",
+                                        maxLength: 50,
+                                        pattern: {
+                                            // no special characters allowed
+                                            // cannot start with a space
+                                            value: /^[a-zA-Z0-9][a-zA-Z0-9-]*$/,
+                                            message: "Channel name can only contain letters, numbers and hyphens."
+                                        }
                                     }}
                                     render={({ field }) => <IonInput
                                         required
+                                        maxlength={50}
                                         autoCapitalize="off"
                                         value={field.value}
                                         placeholder='bugs-bugs-bugs'
