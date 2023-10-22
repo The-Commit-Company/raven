@@ -12,6 +12,11 @@
     padding: var(--chakra-space-2);
 }
 
+.tiptap blockquote {
+    border-left: 3px solid var(--chakra-colors-gray-300);
+    padding-left: 1rem;
+}
+
 .tiptap ul,
 .tiptap ol {
     padding-left: var(--chakra-space-8);
