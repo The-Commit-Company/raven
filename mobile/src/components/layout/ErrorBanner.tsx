@@ -61,6 +61,7 @@ export const ErrorBanner = ({ error, overrideHeading, ...props }: ErrorBannerPro
         return message?.title
     }
 
+    if (messages.length === 0) return null
     return (
         <div key='error' className="ion-margin bg-zinc-900 border-l-4 border-red-500 p-4" role="alert">
             <p className="font-bold text-red-400">{overrideHeading ?? parseHeading(messages[0])}</p>
