@@ -14,7 +14,8 @@
 
 .tiptap blockquote {
     border-left: 3px solid var(--chakra-colors-gray-300);
-    padding-left: 1rem;
+    padding-left: 0.8rem;
+    margin: 1rem;
 }
 
 .tiptap ul,

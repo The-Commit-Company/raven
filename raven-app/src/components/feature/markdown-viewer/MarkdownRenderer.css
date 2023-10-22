@@ -23,6 +23,23 @@
     color: var(--chakra-colors-blue-500);
 }
 
+.markdown blockquote {
+    border-left: 3px solid var(--chakra-colors-gray-300);
+    padding-left: 0.8rem;
+    margin: 1rem;
+}
+
+.markdown ul,
+.markdown ol {
+    padding-left: var(--chakra-space-8);
+    line-height: 1.4;
+}
+
+.markdown ul li,
+.markdown ol li {
+    line-height: 2;
+}
+
 .markdown pre {
     background: #0d0d0d;
     border-radius: 0.5rem;
