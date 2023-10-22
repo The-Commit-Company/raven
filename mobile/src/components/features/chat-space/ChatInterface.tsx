@@ -8,7 +8,7 @@ import { ChatView } from './chat-view/ChatView'
 import { ChatHeader } from './chat-header'
 import { ChannelListItem, DMChannelListItem, useChannelList } from '@/utils/channel/ChannelListProvider'
 import { UserFields } from '@/utils/users/UserListProvider'
-import { settingsOutline } from 'ionicons/icons'
+import { peopleOutline, settingsOutline } from 'ionicons/icons'
 import { Haptics, ImpactStyle } from '@capacitor/haptics'
 import { UserContext } from '@/utils/auth/UserProvider'
 import { ChatLoader } from '@/pages/chat/ChatLoader'
@@ -125,8 +125,8 @@ export const ChatInterface = ({ channel }: { channel: ChannelListItem | DMChanne
                     <ChatHeader channel={channel} />
                     <IonButtons slot='end'>
                         {/* do not show settings button for open channels */}
-                        {channel.type !== 'Open' && <IonButton color='medium' routerLink={`${channel.name}/channel-settings`}>
-                            <IonIcon slot='icon-only' icon={settingsOutline} />
+                        {channel.type !== 'Open' && !channel.is_direct_message && <IonButton color='medium' slot='icon-only' routerLink={`${channel.name}/channel-settings`}>
+                            <IonIcon icon={peopleOutline} />
                         </IonButton>}
                     </IonButtons>
                 </IonToolbar>
