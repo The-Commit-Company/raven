@@ -1,4 +1,4 @@
-import { Box, useColorMode } from "@chakra-ui/react";
+import { Box, Stack, useColorMode } from "@chakra-ui/react";
 import { DividerWithText } from "../../../layout/Divider/DividerWithText";
 import { DateObjectToFormattedDateString } from "../../../../utils/operations";
 import { DateBlock, FileMessage, Message, MessageBlock, MessagesWithDate } from "../../../../../../types/Messaging/Message";
@@ -58,6 +58,7 @@ export const ChatHistory = ({ parsedMessages, replyToMessage, channelData }: Cha
             return (
                 <ChatMessageBox
                     message={block.data}
+                    key={block.data.name}
                     handleScroll={handleScroll}
                     replyToMessage={replyToMessage}
                     channelData={channelData}>

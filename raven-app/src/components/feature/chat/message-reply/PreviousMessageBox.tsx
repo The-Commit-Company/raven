@@ -12,6 +12,9 @@ import { useNavigate } from "react-router-dom"
 import { ChannelListItem, DMChannelListItem } from '@/utils/channel/ChannelListProvider'
 import { UserFields } from '@/utils/users/UserListProvider'
 import { useGetUserRecords } from '@/hooks/useGetUserRecords'
+import { BiCross } from 'react-icons/bi'
+import { AiOutlineCloseCircle } from 'react-icons/ai'
+import { CloseIcon } from '@chakra-ui/icons'
 
 interface PreviousMessageBoxProps {
     previous_message_id?: string,
@@ -29,7 +32,7 @@ export const PreviousMessageBox = ({ previous_message_id, previous_message_conte
 
     if (previous_message_content) {
         return (
-            <Box m='2' bgColor={colorMode === 'light' ? 'gray.50' : 'black'} rounded={'md'}>
+            <Box m='2' bgColor={colorMode === 'light' ? 'white' : 'gray.900'} rounded={'md'} shadow={'sm'}>
                 <HStack w='full' p='2' rounded='md' justify="space-between">
 
                     <Stack spacing={1}>
@@ -64,10 +67,10 @@ export const PreviousMessageBox = ({ previous_message_id, previous_message_conte
 
                     <IconButton
                         onClick={onReplyingToMessageClose}
-                        size="sm"
+                        size="xs"
                         title='Remove message'
                         variant="ghost"
-                        icon={<IoMdClose />}
+                        icon={<CloseIcon />}
                         aria-label="Remove message" />
 
                 </HStack>
@@ -123,7 +126,7 @@ const PreviousMessageBoxInChat = ({ previous_message_id, channelData, users }: P
         return <AlertBanner status='error' heading='previous message not found, this message may have been deleted' />
     }
     if (data) {
-        return <LinkBox onClick={() => handleScrollToMessage(previous_message_id)} p='2' border={'1px'} borderColor={colorMode === 'light' ? 'gray.200' : 'gray.600'} rounded={'md'} _hover={{ cursor: 'pointer', boxShadow: 'sm', bgColor: colorMode === 'light' ? 'white' : 'black' }}>
+        return <LinkBox onClick={() => handleScrollToMessage(previous_message_id)} p='2' border={'1px'} borderColor={colorMode === 'light' ? 'gray.400' : 'gray.600'} rounded={'md'} _hover={{ cursor: 'pointer', boxShadow: 'sm', bgColor: colorMode === 'light' ? 'white' : 'black' }}>
             <Box pl='2' borderLeft={'2px'} borderLeftColor={colorMode === 'light' ? 'gray.600' : 'gray.600'}>
                 <Stack spacing={1}>
                     <HStack>
