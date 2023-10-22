@@ -17,6 +17,12 @@
     padding-left: var(--chakra-space-8);
 }
 
+.tiptap a {
+    color: var(--chakra-colors-blue-500);
+    text-decoration: underline;
+    cursor: pointer;
+}
+
 .tiptap pre {
     background: #0d0d0d;
     border-radius: 0.5rem;
