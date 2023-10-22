@@ -47,10 +47,10 @@ export const MessageActionModal = ({ selectedMessage, onDismiss }: MessageAction
                             <DeleteAction message={selectedMessage} onSuccess={onDismiss} />
                         }
                         <CopyAction message={selectedMessage} onSuccess={onDismiss} />
-                        <IonItem className='py-1'>
+                        {/* <IonItem className='py-1'>
                             <IonIcon slot='start' icon={downloadOutline} />
                             <IonLabel className='font-semibold'>Download</IonLabel>
-                        </IonItem>
+                        </IonItem> */}
                         <SaveMessageAction message={selectedMessage} onSuccess={onDismiss} />
                         {/* <IonItem className='py-1'>
                             <IonIcon slot="start" icon={documentAttachOutline} />
