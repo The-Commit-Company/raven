@@ -18,17 +18,17 @@ export const useSendMessage = (channelID: string, noOfFiles: number, uploadFiles
                 linked_message: selectedMessage ? selectedMessage.name : null
             })
                 .then(() => handleCancelReply())
-                // .then(() => uploadFiles())
+                .then(() => uploadFiles())
                 .then(() => {
                     mutate(`get_messages_for_channel_${channelID}`)
                     handleCancelReply()
                 })
         } else if (noOfFiles > 0) {
-            // return uploadFiles()
-            //     .then(() => {
-            //         mutate(`get_messages_for_channel_${channelID}`)
-            //         handleCancelReply()
-            //     })
+            return uploadFiles()
+                .then(() => {
+                    mutate(`get_messages_for_channel_${channelID}`)
+                    handleCancelReply()
+                })
         } else {
             return Promise.resolve()
         }

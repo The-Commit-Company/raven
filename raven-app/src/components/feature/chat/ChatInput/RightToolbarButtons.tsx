@@ -121,10 +121,6 @@ const SendButton = ({ sendMessage, messageSending }: {
     const onClick = () => {
         if (editor) {
 
-            // console.log('editor.isActive', editor.state)
-
-            // console.log(editor.getJSON())
-
 
             const hasContent = editor.getText().trim().length > 0
 
@@ -134,8 +130,6 @@ const SendButton = ({ sendMessage, messageSending }: {
                 html = editor.getHTML()
                 json = editor.getJSON()
             }
-
-            console.log("Will send a message")
             editor.setEditable(false)
             sendMessage(html, json)
                 .then(() => {

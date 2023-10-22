@@ -93,7 +93,6 @@ export const Tiptap = ({ slotAfter, slotBefore, fileProps, onMessageSend, messag
             return {
                 Enter: () => {
 
-                    console.log("Enter clicked")
                     const isCodeBlockActive = this.editor.isActive('codeBlock');
                     const isListItemActive = this.editor.isActive('listItem');
 
@@ -113,7 +112,6 @@ export const Tiptap = ({ slotAfter, slotBefore, fileProps, onMessageSend, messag
 
                     this.editor.setEditable(false)
 
-                    console.log('Calling message')
                     onMessageSend(html, json)
                         .then(() => {
                             this.editor.commands.clearContent();
