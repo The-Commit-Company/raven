@@ -16,6 +16,10 @@ export const EmojiPicker = ({ onSelect }: { onSelect: (emoji: string) => void })
         ref.current?.addEventListener('emoji-click', handler)
         ref.current.skinToneEmoji = '👍'
 
+        const style = document.createElement('style');
+        style.textContent = `.picker { border-radius: var(--chakra-radii-md); box-shadow: var(--chakra-shadows-lg); }`
+        ref.current.shadowRoot.appendChild(style);
+
         return () => {
             ref.current?.removeEventListener('emoji-click', handler)
         }

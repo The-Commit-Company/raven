@@ -5,19 +5,19 @@ emoji-picker {
 }
 
 .picker {
-    border-radius: 10px;
+    --border-size: 2px;
 }
 
 emoji-picker.light {
     --background: var(--chakra-colors-gray-50);
-    --border-color: var(--chakra-colors-gray-50);
+    --border-color: var(--chakra-colors-gray-300);
     --button-active-background: var(--chakra-colors-gray-200);
     --button-hover-background: var(--chakra-colors-gray-200);
 }
 
 emoji-picker.dark {
-    --background: var(--chakra-colors-gray-800);
-    --border-color: var(--chakra-colors-gray-900);
+    --background: var(--chakra-colors-gray-700);
+    --border-color: var(--chakra-colors-gray-600);
     --button-active-background: var(--chakra-colors-gray-600);
     --button-hover-background: var(--chakra-colors-gray-600);
 }

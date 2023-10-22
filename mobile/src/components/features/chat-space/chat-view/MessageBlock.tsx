@@ -41,7 +41,7 @@ export const MessageBlockItem = ({ message, onMessageSelect }: Props) => {
     const longPressEvent = useLongPress(onLongPress)
     return (
         // @ts-ignore
-        <div className='px-2 my-0' id={`message-${message.data.name}`} {...longPressEvent}>
+        <div className='px-2 my-0 ion-activatable ripple-parent' id={`message-${message.data.name}`} {...longPressEvent}>
             {message.data.is_continuation === 0 ? <NonContinuationMessageBlock message={message} user={user} /> :
                 <ContinuationMessageBlock message={message} />}
         </div>

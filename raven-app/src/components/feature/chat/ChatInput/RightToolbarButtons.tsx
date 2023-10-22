@@ -89,7 +89,7 @@ const EmojiPickerButton = () => {
                 isDisabled={!editor.can().chain().focus().insertContent('😅').run() || !editor.isEditable}
                 aria-label={"add emoji"} icon={<BiSmile {...ICON_PROPS} />} />
         </PopoverTrigger>
-        <PopoverContent border={'none'} rounded='lg' mr='4' shadow={'md'}>
+        <PopoverContent border={'none'} rounded='dark-lg' mr='4' shadow={'md'}>
             <EmojiPicker onSelect={(e) => editor.chain().focus().insertContent(e).run()} />
         </PopoverContent>
     </Popover>

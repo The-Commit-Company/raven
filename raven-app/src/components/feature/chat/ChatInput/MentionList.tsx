@@ -2,7 +2,7 @@
 
 import { useIsUserActive } from '@/hooks/useIsUserActive'
 import { UserFields } from '@/utils/users/UserListProvider'
-import { Avatar, AvatarBadge, Button, HStack, Stack, StackDivider, Text, useColorModeValue } from '@chakra-ui/react'
+import { Avatar, AvatarBadge, HStack, Stack, StackDivider, Text, useColorModeValue } from '@chakra-ui/react'
 import { ReactRendererOptions } from '@tiptap/react'
 import {
     forwardRef, useEffect, useImperativeHandle,
@@ -58,7 +58,7 @@ export default forwardRef((props: ReactRendererOptions['props'], ref) => {
     }))
 
     return (
-        <Stack divider={<StackDivider />} spacing='0' rounded='md' shadow='md' bgColor={buttonGroupBgColor}>
+        <Stack divider={<StackDivider />} spacing='0' rounded='md' shadow='dark-lg' bgColor={buttonGroupBgColor}>
             {props?.items.length
                 ? props.items.map((item: UserFields, index: number) => (
                     <MentionItem
@@ -82,14 +82,14 @@ const MentionItem = ({ item, index, selectItem, selectedIndex, itemsLength }: { 
 
     const { selectedBgColor, selectedColor, textColor, backgroundColor } = useColorModeValue({
         selectedBgColor: 'gray.900',
-        selectedColor: 'white',
+        selectedColor: 'gray.50',
         textColor: 'gray.900',
         backgroundColor: 'white'
     }, {
         selectedBgColor: 'gray.100',
         selectedColor: 'gray.900',
         textColor: 'gray.100',
-        backgroundColor: 'gray.800'
+        backgroundColor: 'gray.700'
     })
     return <HStack
         as={'button'}

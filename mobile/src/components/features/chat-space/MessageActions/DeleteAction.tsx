@@ -6,7 +6,7 @@ import { useIonAlert, useIonToast } from '@ionic/react'
 
 export const DeleteAction = ({ message, onSuccess }: ActionProps) => {
 
-    const { deleteDoc } = useFrappeDeleteDoc()
+    const { deleteDoc, loading } = useFrappeDeleteDoc()
     const { mutate } = useSWRConfig()
 
     const [presentAlert] = useIonAlert();
@@ -60,7 +60,7 @@ export const DeleteAction = ({ message, onSuccess }: ActionProps) => {
     }
 
     return (
-        <ActionItem onClick={openConfirmation}>
+        <ActionItem onClick={openConfirmation} isLoading={loading}>
             <ActionIcon icon={trashOutline} />
             <ActionLabel label='Delete' />
         </ActionItem>

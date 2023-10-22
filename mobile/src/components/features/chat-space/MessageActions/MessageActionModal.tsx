@@ -1,4 +1,4 @@
-import { useContext, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import { MessageBlock } from '../../../../../../types/Messaging/Message'
 import {
     IonModal,
@@ -25,13 +25,34 @@ export const MessageActionModal = ({ selectedMessage, onDismiss }: MessageAction
     const isOwnMessage = currentUser === selectedMessage?.data?.owner
 
 
+
+    /**
+     * Message action modal needs to be activated after the message is long pressed.
+     * However, the user is still touching the screen, so we need to add a delay before the modal is activated.
+     */
+
+    const [enablePointerEvents, setEnablePointerEvents] = useState(false)
+
+
+    useEffect(() => {
+        const timeout = setTimeout(() => {
+            setEnablePointerEvents(true)
+        }, 1000)
+        return () => {
+            clearTimeout(timeout)
+            setEnablePointerEvents(false)
+        }
+    }, [selectedMessage])
+
     return (
         <IonModal
             isOpen={!!selectedMessage}
             breakpoints={[0, 0.6, 0.8]}
             initialBreakpoint={0.6}
             onWillDismiss={onDismiss}>
-            <IonContent className="ion-padding">
+            <IonContent className="ion-padding" style={{
+                pointerEvents: enablePointerEvents ? 'all' : 'none'
+            }}>
                 {selectedMessage &&
                     <IonList lines='none'>
                         {/* <EmojiAction /> */}
@@ -43,15 +64,17 @@ export const MessageActionModal = ({ selectedMessage, onDismiss }: MessageAction
                             <IonIcon slot="start" icon={returnDownBackOutline} />
                             <IonLabel className='font-semibold'>Reply</IonLabel>
                         </IonItem> */}
-                        {isOwnMessage &&
-                            <DeleteAction message={selectedMessage} onSuccess={onDismiss} />
-                        }
+
                         <CopyAction message={selectedMessage} onSuccess={onDismiss} />
                         {/* <IonItem className='py-1'>
                             <IonIcon slot='start' icon={downloadOutline} />
                             <IonLabel className='font-semibold'>Download</IonLabel>
                         </IonItem> */}
                         <SaveMessageAction message={selectedMessage} onSuccess={onDismiss} />
+
+                        {isOwnMessage &&
+                            <DeleteAction message={selectedMessage} onSuccess={onDismiss} />
+                        }
                         {/* <IonItem className='py-1'>
                             <IonIcon slot="start" icon={documentAttachOutline} />
                             <IonLabel className='font-semibold'>Link to document</IonLabel>

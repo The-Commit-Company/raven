@@ -59,7 +59,7 @@ export default forwardRef((props: ReactRendererOptions['props'], ref) => {
     }))
 
     return (
-        <Stack divider={<StackDivider />} spacing='0' rounded='md' shadow='md' bgColor={buttonGroupBgColor}>
+        <Stack divider={<StackDivider />} spacing='0' rounded='md' shadow='dark-lg' bgColor={buttonGroupBgColor}>
             {props?.items.length
                 ? props.items.map((item: ChannelListItem, index: number) => (
                     <MentionItem
@@ -81,14 +81,14 @@ const MentionItem = ({ item, index, selectItem, selectedIndex, itemsLength }: { 
 
     const { selectedBgColor, selectedColor, textColor, backgroundColor } = useColorModeValue({
         selectedBgColor: 'gray.900',
-        selectedColor: 'white',
+        selectedColor: 'gray.50',
         textColor: 'gray.900',
         backgroundColor: 'white'
     }, {
         selectedBgColor: 'gray.100',
         selectedColor: 'gray.900',
         textColor: 'gray.100',
-        backgroundColor: 'gray.800'
+        backgroundColor: 'gray.700'
     })
     return <HStack
         as={'button'}

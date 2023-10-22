@@ -1,4 +1,4 @@
-import { IonIcon, IonItem, IonLabel } from '@ionic/react'
+import { IonIcon, IonItem, IonLabel, IonSpinner } from '@ionic/react'
 import React, { PropsWithChildren } from 'react'
 import { MessageBlock } from '../../../../../../types/Messaging/Message'
 
@@ -8,11 +8,13 @@ export interface ActionProps {
 }
 interface ActionItemProps {
     onClick?: () => void,
+    isLoading?: boolean
 }
-export const ActionItem = ({ children, onClick }: PropsWithChildren<ActionItemProps>) => {
+export const ActionItem = ({ children, onClick, isLoading }: PropsWithChildren<ActionItemProps>) => {
     return (
-        <IonItem className='py-1' onClick={onClick} button detail={false}>
+        <IonItem className='py-1' onClick={onClick} button detail={false} disabled={isLoading} aria-disabled={isLoading}>
             {children}
+            {isLoading && <IonSpinner slot='end' name='crescent' />}
         </IonItem>
     )
 }

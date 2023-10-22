@@ -9,7 +9,7 @@ export const SaveMessageAction = ({ message, onSuccess }: ActionProps) => {
 
     const { currentUser } = useContext(UserContext)
     const { mutate } = useSWRConfig()
-    const { call } = useFrappePostCall('frappe.desk.like.toggle_like')
+    const { call, loading } = useFrappePostCall('frappe.desk.like.toggle_like')
 
     const [present] = useIonToast();
 
@@ -46,7 +46,7 @@ export const SaveMessageAction = ({ message, onSuccess }: ActionProps) => {
 
     }
     return (
-        <ActionItem onClick={handleLike}>
+        <ActionItem onClick={handleLike} isLoading={loading}>
             <ActionIcon icon={bookmarkOutline} />
             <ActionLabel label={isMessageLiked ? 'Unsave this message' : 'Save this message'} />
         </ActionItem>

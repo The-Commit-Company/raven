@@ -2,6 +2,7 @@ import { copyOutline } from 'ionicons/icons';
 import { ActionIcon, ActionItem, ActionLabel, ActionProps } from './common'
 import { useIonToast } from '@ionic/react';
 import turndown from 'turndown'
+import { useState } from 'react';
 
 
 export const CopyAction = ({ message, onSuccess }: ActionProps) => {
@@ -18,10 +19,14 @@ const CopyActionItem = ({ message, onSuccess }: ActionProps) => {
 
     const [present] = useIonToast();
 
+    const [loading, setLoading] = useState(false)
+
     const writeToClipboard = () => {
         if (message.data.message_type !== 'Text') {
             return
         }
+
+        setLoading(true)
 
         let text = message.data.text
 
@@ -50,17 +55,21 @@ const CopyActionItem = ({ message, onSuccess }: ActionProps) => {
                 duration: 600,
                 message: 'Copied!',
             }))
+            .then(() => setLoading(false))
             .then(() => onSuccess())
-            .catch((e) => present({
-                color: 'danger',
-                duration: 600,
-                message: "Error: Could not copy - " + e.message || "Unknown Error",
-            }))
+            .catch((e) => {
+                present({
+                    color: 'danger',
+                    duration: 600,
+                    message: "Error: Could not copy - " + e.message || "Unknown Error",
+                })
+                setLoading(false)
+            })
 
     };
 
     return (
-        <ActionItem onClick={writeToClipboard}>
+        <ActionItem onClick={writeToClipboard} isLoading={loading}>
             <ActionIcon icon={copyOutline} />
             <ActionLabel label='Copy' />
         </ActionItem>
