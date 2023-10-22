@@ -85,8 +85,8 @@
 
 .mention {
     background-color: var(--gray) !important;
-    border-radius: 4px;
-    color: #1a97c0;
+    /* border-radius: 4px; */
+    color: var(--chakra-colors-blue-500);
 }
 
 .ql-mention-list {
