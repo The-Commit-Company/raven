@@ -1,27 +1,24 @@
-import { ButtonGroup, HStack, IconButton, StackDivider, border, useColorModeValue } from '@chakra-ui/react'
+import { Box, ButtonGroup, HStack, IconButton, StackDivider, border, useColorModeValue } from '@chakra-ui/react'
 import { useCurrentEditor } from '@tiptap/react'
-import { BiBold, BiCode, BiHighlight, BiItalic, BiLink, BiListOl, BiListUl, BiStrikethrough, BiUnderline } from 'react-icons/bi'
+import { BiBold, BiCode, BiCodeAlt, BiHighlight, BiItalic, BiLink, BiListOl, BiListUl, BiStrikethrough, BiUnderline } from 'react-icons/bi'
 import { BsBlockquoteLeft } from 'react-icons/bs'
+import { ICON_PROPS } from './ToolPanel'
 
 type Props = {}
-const ICON_PROPS = {
-    size: '20px'
-}
 export const TextFormattingMenu = (props: Props) => {
 
     const { editor } = useCurrentEditor()
 
-    const buttonGroupBgColor = useColorModeValue('white', 'gray.900')
-    const borderTopColor = useColorModeValue('gray.100', 'gray.700')
+    const highlightBgColor = useColorModeValue('blue.50', 'blue.900')
 
     if (!editor) {
-        return null
+        return <Box></Box>
     }
     return (
         // <BubbleMenu tippyOptions={{
         //     maxWidth: '600px',
         // }}>
-        <HStack divider={<StackDivider />} borderTop='1px solid' borderTopColor={borderTopColor} bgColor={buttonGroupBgColor} p='1.5' roundedBottom='md' shadow={'md'}>
+        <HStack divider={<StackDivider />}>
             <ButtonGroup size='xs' variant={'ghost'}>
                 <IconButton
                     onClick={() => editor.chain().focus().toggleBold().run()}
@@ -29,6 +26,7 @@ export const TextFormattingMenu = (props: Props) => {
                     title='Bold'
                     icon={<BiBold {...ICON_PROPS} />}
                     colorScheme={editor.isActive('bold') ? 'blue' : 'gray'}
+                    bgColor={editor.isActive('bold') ? highlightBgColor : 'transparent'}
                     isDisabled={
                         !editor.can()
                             .chain()
@@ -43,6 +41,7 @@ export const TextFormattingMenu = (props: Props) => {
                     title='Italic'
                     icon={<BiItalic size='18px' />}
                     colorScheme={editor.isActive('italic') ? 'blue' : 'gray'}
+                    bgColor={editor.isActive('italic') ? highlightBgColor : 'transparent'}
                     isDisabled={
                         !editor.can()
                             .chain()
@@ -56,6 +55,7 @@ export const TextFormattingMenu = (props: Props) => {
                     title='Underline'
                     icon={<BiUnderline {...ICON_PROPS} />}
                     colorScheme={editor.isActive('underline') ? 'blue' : 'gray'}
+                    bgColor={editor.isActive('underline') ? highlightBgColor : 'transparent'}
                     isDisabled={
                         !editor.can()
                             .chain()
@@ -67,14 +67,15 @@ export const TextFormattingMenu = (props: Props) => {
 
 
             </ButtonGroup>
-            <ButtonGroup size='xs' variant={'ghost'}>
+            <ButtonGroup size='xs' variant='ghost'>
 
                 <IconButton
                     onClick={() => editor.chain().focus().toggleCodeBlock().run()}
                     aria-label='code'
                     title='Code'
-                    icon={<BiCode {...ICON_PROPS} />}
-                    colorScheme={editor.isActive('code') ? 'blue' : 'gray'}
+                    icon={<BiCodeAlt {...ICON_PROPS} />}
+                    colorScheme={editor.isActive('codeBlock') ? 'blue' : 'gray'}
+                    bgColor={editor.isActive('codeBlock') ? highlightBgColor : 'transparent'}
                     isDisabled={
                         !editor.can()
                             .chain()
@@ -89,6 +90,7 @@ export const TextFormattingMenu = (props: Props) => {
                     title='Strike'
                     icon={<BiStrikethrough {...ICON_PROPS} />}
                     colorScheme={editor.isActive('strike') ? 'blue' : 'gray'}
+                    bgColor={editor.isActive('strike') ? highlightBgColor : 'transparent'}
                     isDisabled={
                         !editor.can()
                             .chain()
@@ -103,6 +105,15 @@ export const TextFormattingMenu = (props: Props) => {
                 <IconButton
                     onClick={() => editor.chain().focus().toggleBlockquote().run()}
                     aria-label='blockquote'
+                    bgColor={editor.isActive('blockquote') ? highlightBgColor : 'transparent'}
+                    title='Blockquote'
+                    isDisabled={
+                        !editor.can()
+                            .chain()
+                            .focus()
+                            .toggleBlockquote()
+                            .run()
+                    }
                     icon={<BsBlockquoteLeft {...ICON_PROPS} />}
                     colorScheme={editor.isActive('blockquote') ? 'blue' : 'gray'}
                 />
@@ -114,6 +125,7 @@ export const TextFormattingMenu = (props: Props) => {
                     title='Ordered List'
                     icon={<BiListOl {...ICON_PROPS} />}
                     colorScheme={editor.isActive('orderedList') ? 'blue' : 'gray'}
+                    bgColor={editor.isActive('orderedList') ? highlightBgColor : 'transparent'}
                     isDisabled={
                         !editor.can()
                             .chain()
@@ -123,9 +135,10 @@ export const TextFormattingMenu = (props: Props) => {
                     }
                 />
                 <IconButton
-                    onClick={() => editor.chain().focus().toggleBulletList().run()}
+                    onClick={() => editor.chain().focus().liftEmptyBlock().toggleBulletList().run()}
                     aria-label='bullet list'
                     title='Bullet List'
+                    bgColor={editor.isActive('bulletList') ? highlightBgColor : 'transparent'}
                     icon={<BiListUl {...ICON_PROPS} />}
                     colorScheme={editor.isActive('bulletList') ? 'blue' : 'gray'}
                     isDisabled={
@@ -144,7 +157,8 @@ export const TextFormattingMenu = (props: Props) => {
                     aria-label='highlight'
                     onClick={() => editor.chain().focus().toggleHighlight().run()}
                     title='Highlight'
-                    icon={<BiHighlight {...ICON_PROPS} />}
+                    bgColor={editor.isActive('highlight') ? highlightBgColor : 'transparent'}
+                    icon={<BiHighlight fontSize='18px' />}
                     isDisabled={
                         !editor.can()
                             .chain()

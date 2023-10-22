@@ -105,6 +105,6 @@ const MentionItem = ({ item, index, selectItem, selectedIndex, itemsLength }: { 
         onClick={() => selectItem(index)}
     >
         <Icon as={getChannelIcon(item.type)} />
-        <Text as='span'>{item.channel_name}</Text>
+        <Text as='span' fontSize='sm'>{item.channel_name}</Text>
     </HStack>
 }

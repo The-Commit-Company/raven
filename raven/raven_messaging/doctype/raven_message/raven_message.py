@@ -86,7 +86,7 @@ def track_visit(channel_id, commit=False):
 
 
 @frappe.whitelist(methods=['POST'])
-def send_message(channel_id, text, is_reply, linked_message=None):
+def send_message(channel_id, text, is_reply, linked_message=None, json=None):
 
     # remove empty list items
     clean_text = text.replace('<li><br></li>', '').strip()
@@ -99,14 +99,16 @@ def send_message(channel_id, text, is_reply, linked_message=None):
                 'text': clean_text,
                 'message_type': 'Text',
                 'is_reply': is_reply,
-                'linked_message': linked_message
+                'linked_message': linked_message,
+                'json': json
             })
         else:
             doc = frappe.get_doc({
                 'doctype': 'Raven Message',
                 'channel_id': channel_id,
                 'text': clean_text,
-                'message_type': 'Text'
+                'message_type': 'Text',
+                'json': json
             })
         doc.insert()
         return "message sent"

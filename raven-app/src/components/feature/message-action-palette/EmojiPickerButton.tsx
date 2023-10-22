@@ -1,8 +1,8 @@
 import { ModalTypes, useModalManager } from '@/hooks/useModalManager'
 import { Box, IconButton, Popover, PopoverContent, PopoverTrigger, Portal, Tooltip, useColorMode } from '@chakra-ui/react'
-import EmojiPicker, { EmojiClickData } from 'emoji-picker-react'
 import { useEffect } from 'react'
 import { BsEmojiSmile } from 'react-icons/bs'
+import { EmojiPicker } from '../../common/EmojiPicker/EmojiPicker'
 
 interface EmojiPickerButtonProps {
     handleScroll: (newState: boolean) => void,
@@ -22,8 +22,8 @@ export const EmojiPickerButton = ({ handleScroll, saveReaction }: EmojiPickerBut
         modalManager.openModal(ModalTypes.EmojiPicker)
     }
 
-    const onEmojiClick = (emojiObject: EmojiClickData) => {
-        saveReaction(emojiObject.emoji)
+    const onEmojiClick = (emoji: string) => {
+        saveReaction(emoji)
         modalManager.closeModal()
     }
 
@@ -34,7 +34,6 @@ export const EmojiPickerButton = ({ handleScroll, saveReaction }: EmojiPickerBut
                 onClose={modalManager.closeModal}
                 placement='auto-end'
                 isLazy
-                lazyBehavior="unmount"
                 gutter={48}>
                 <PopoverTrigger>
                     <Tooltip hasArrow label='find another reaction' size='xs' placement='top' rounded='md'>
@@ -44,8 +43,7 @@ export const EmojiPickerButton = ({ handleScroll, saveReaction }: EmojiPickerBut
                 <Portal>
                     <Box zIndex={10}>
                         <PopoverContent border={'none'} rounded='lg'>
-                            {/* @ts-ignore */}
-                            <EmojiPicker onEmojiClick={onEmojiClick} lazyLoadEmojis height={335} width={350} previewConfig={{ showPreview: false }} skinTonesDisabled theme={colorMode === 'light' ? 'light' : 'dark'} />
+                            <EmojiPicker onSelect={onEmojiClick} />
                         </PopoverContent>
                     </Box>
                 </Portal>

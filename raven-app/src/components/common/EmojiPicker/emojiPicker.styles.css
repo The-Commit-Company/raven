@@ -1,0 +1,23 @@
+emoji-picker {
+    --indicator-color: var(--chakra-colors-blue-500);
+    --input-padding: var(--chakra-space-2);
+    --input-font-size: var(--chakra-fontSizes-sm);
+}
+
+.picker {
+    border-radius: 10px;
+}
+
+emoji-picker.light {
+    --background: var(--chakra-colors-gray-50);
+    --border-color: var(--chakra-colors-gray-50);
+    --button-active-background: var(--chakra-colors-gray-200);
+    --button-hover-background: var(--chakra-colors-gray-200);
+}
+
+emoji-picker.dark {
+    --background: var(--chakra-colors-gray-800);
+    --border-color: var(--chakra-colors-gray-900);
+    --button-active-background: var(--chakra-colors-gray-600);
+    --button-hover-background: var(--chakra-colors-gray-600);
+}

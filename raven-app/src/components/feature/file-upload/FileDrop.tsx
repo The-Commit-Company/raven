@@ -1,4 +1,4 @@
-import { Box, BoxProps, Stack, Text, useToast } from "@chakra-ui/react"
+import { Box, BoxProps, Center, Stack, Text, useColorModeValue, useToast } from "@chakra-ui/react"
 import { forwardRef, useImperativeHandle, useState } from "react"
 import { Accept, useDropzone } from "react-dropzone"
 
@@ -18,7 +18,8 @@ export interface FileDropProps extends BoxProps {
     /** Takes input MIME type as 'key' & array of extensions as 'value'; empty array - all extensions supported */
     accept?: Accept,
     /** Maximum file size in mb that can be selected */
-    maxFileSize?: number
+    maxFileSize?: number,
+    children?: React.ReactNode
 }
 
 /**
@@ -27,7 +28,7 @@ export interface FileDropProps extends BoxProps {
  */
 export const FileDrop = forwardRef((props: FileDropProps, ref) => {
 
-    const { files, onFileChange, maxFiles, accept, maxFileSize, ...compProps } = props
+    const { files, onFileChange, maxFiles, accept, maxFileSize, children, ...compProps } = props
     const toast = useToast()
 
     const [onDragEnter, setOnDragEnter] = useState(false)
@@ -82,26 +83,43 @@ export const FileDrop = forwardRef((props: FileDropProps, ref) => {
         }
     }));
 
+    const { borderColor, textColor, bgColor } = useColorModeValue({
+        borderColor: "gray.300",
+        textColor: "gray.600",
+        // Using hex values to add opacity
+        bgColor: "#F7FAFCAA"
+    }, {
+        borderColor: "gray.700",
+        textColor: "white",
+        bgColor: "#171923AA"
+    })
+
     return (
-        <Stack pos='fixed' top='75px' w='full' h='70vh' maxW='calc(100vw - var(--sidebar-width) - 30px)'>
+        <Stack
+            w='full'
+            h='calc(100vh - 80px)'
+            {...getRootProps()}
+            {...compProps}>
+            {children}
+
             {(maxFiles === undefined || files.length < maxFiles) &&
-                <Box
-                    display="flex"
-                    w='full'
-                    h='full'
-                    justifyContent="center"
-                    alignItems="center"
+                <Center
+                    pos='fixed'
+                    display={onDragEnter ? "flex" : "none"}
+                    w='calc(100vw - var(--sidebar-width) - var(--chakra-space-8))'
+                    h='calc(100vh - 80px)'
+                    zIndex='9999'
+                    top={'14'}
                     border="2px dashed"
-                    borderColor="gray.300"
-                    borderRadius="lg"
-                    opacity={onDragEnter ? 1 : 0}
-                    p={4}
-                    {...getRootProps()}
-                    {...compProps}>
-                    <input type='file' {...getInputProps()} />
-                    <Text fontSize="sm" color="gray.500">Drag 'n' drop your files here, or click to select files</Text>
-                </Box>
+                    borderRadius="md"
+                    borderColor={borderColor}
+                    bgColor={bgColor}
+                >
+                    <Text fontSize="sm" color={textColor}>Drop your files here. A Raven will pick it up.</Text>
+                    <input type='file' style={{ display: 'none' }} {...getInputProps()} />
+                </Center>
             }
+
         </Stack>
     )
 })

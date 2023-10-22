@@ -1,7 +1,6 @@
-import { Box, Card, CardBody, HStack, Stack, useColorModeValue } from '@chakra-ui/react'
-import ListItem from '@tiptap/extension-list-item'
+import { Card, CardBody, useColorModeValue } from '@chakra-ui/react'
 // import TextStyle from '@tiptap/extension-text-style'
-import { EditorProvider, ReactRenderer, useCurrentEditor } from '@tiptap/react'
+import { EditorProvider, Extension, ReactRenderer } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import Underline from '@tiptap/extension-underline'
 import React, { useContext } from 'react'
@@ -10,17 +9,42 @@ import Highlight from '@tiptap/extension-highlight'
 import Link from '@tiptap/extension-link'
 import Placeholder from '@tiptap/extension-placeholder'
 import './tiptap.styles.css'
-import { NoNewLine } from './NoNewLine'
 import Mention from '@tiptap/extension-mention'
-import { ChannelMembers } from '@/utils/channel/ChannelMembersProvider'
 import { UserListContext } from '@/utils/users/UserListProvider'
 import MentionList from './MentionList'
 import tippy from 'tippy.js'
 import { PluginKey } from '@tiptap/pm/state'
 import { ChannelListContext, ChannelListContextType } from '@/utils/channel/ChannelListProvider'
 import ChannelMentionList from './ChannelMentionList'
+import { ToolPanel } from './ToolPanel'
+import { RightToolbarButtons } from './RightToolbarButtons'
+import { common, createLowlight } from 'lowlight'
+import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight'
+import css from 'highlight.js/lib/languages/css'
+import js from 'highlight.js/lib/languages/javascript'
+import ts from 'highlight.js/lib/languages/typescript'
+import html from 'highlight.js/lib/languages/xml'
+import json from 'highlight.js/lib/languages/json'
+import python from 'highlight.js/lib/languages/python'
+import { Plugin } from 'prosemirror-state'
+const lowlight = createLowlight(common)
+
+lowlight.register('html', html)
+lowlight.register('css', css)
+lowlight.register('js', js)
+lowlight.register('ts', ts)
+lowlight.register('json', json)
+lowlight.register('python', python)
+export interface ToolbarFileProps {
+    fileInputRef: React.MutableRefObject<any>,
+    addFile: (files: File) => void,
+}
 type TiptapEditorProps = {
-    channelMembers: ChannelMembers
+    slotBefore?: React.ReactNode,
+    slotAfter?: React.ReactNode,
+    fileProps?: ToolbarFileProps,
+    onMessageSend: (message: string, json: any) => Promise<void>,
+    messageSending: boolean
 }
 
 const COOL_PLACEHOLDERS = [
@@ -56,25 +80,169 @@ const ChannelMention = Mention.extend({
             pluginKey: new PluginKey('channelMention'),
         }
     })
-export const Tiptap = ({ channelMembers }: TiptapEditorProps) => {
+export const Tiptap = ({ slotAfter, slotBefore, fileProps, onMessageSend, messageSending }: TiptapEditorProps) => {
 
     const { users } = useContext(UserListContext)
 
     const { channels } = useContext(ChannelListContext) as ChannelListContextType
 
+
+    // this is a dummy extension only to create custom keydown behavior
+    const KeyboardHandler = Extension.create({
+        name: 'keyboardHandler',
+        addKeyboardShortcuts() {
+            return {
+                Enter: () => {
+
+                    console.log("Enter clicked")
+                    const isCodeBlockActive = this.editor.isActive('codeBlock');
+                    const isListItemActive = this.editor.isActive('listItem');
+
+                    //@ts-expect-error
+                    const isSuggestionOpen = this.editor.state.userMention$.active || this.editor.state.channelMention$.active
+                    const hasContent = this.editor.getText().trim().length > 0
+
+                    if (isCodeBlockActive || isListItemActive || isSuggestionOpen) {
+                        return false;
+                    }
+                    let html = ''
+                    let json = {}
+                    if (hasContent) {
+                        html = this.editor.getHTML()
+                        json = this.editor.getJSON()
+                    }
+
+                    this.editor.setEditable(false)
+
+                    console.log('Calling message')
+                    onMessageSend(html, json)
+                        .then(() => {
+                            this.editor.commands.clearContent();
+                            this.editor.setEditable(true)
+                        })
+                        .catch(() => {
+                            this.editor.setEditable(true)
+                        })
+                    return this.editor.commands.clearContent();
+                },
+
+                'Mod-Enter': () => {
+                    const isCodeBlockActive = this.editor.isActive('codeBlock');
+                    const isListItemActive = this.editor.isActive('listItem');
+                    const hasContent = this.editor.getText().trim().length > 0
+                    /**
+                     * when inside of a codeblock and setting for sending the message with CMD/CTRL-Enter
+                     * force calling the `onSubmit` function and clear the editor content
+                     */
+                    if (isCodeBlockActive) {
+                        return this.editor.commands.newlineInCode();
+                    }
+
+                    if (isListItemActive) {
+                        return false
+                    }
+
+                    if (!isCodeBlockActive && !isListItemActive) {
+                        let html = ''
+                        let json = {}
+                        if (hasContent) {
+                            html = this.editor.getHTML()
+                            json = this.editor.getJSON()
+                        }
+
+                        this.editor.setEditable(false)
+                        onMessageSend(html, json)
+                            .then(() => {
+                                this.editor.commands.clearContent();
+                                this.editor.setEditable(true)
+                            })
+                            .catch(() => {
+                                this.editor.setEditable(true)
+                            })
+                        return this.editor.commands.clearContent();
+                    }
+
+                    return false;
+                },
+
+                'Shift-Enter': () => {
+                    /**
+                     * currently we do not have an option to show a soft line break in the posts, so we overwrite
+                     * the behavior from tiptap with the default behavior on pressing enter
+                     */
+                    return this.editor.commands.first(({ commands }) => [
+                        () => commands.newlineInCode(),
+                        () => commands.createParagraphNear(),
+                        () => commands.liftEmptyBlock(),
+                        () => commands.splitBlock(),
+                    ]);
+                },
+            };
+        },
+        addProseMirrorPlugins() {
+            return [
+                new Plugin({
+                    props: {
+                        handleDOMEvents: {
+                            drop(view, event) {
+                                const hasFiles =
+                                    event.dataTransfer &&
+                                    event.dataTransfer.files &&
+                                    event.dataTransfer.files.length
+
+                                if (!hasFiles || !fileProps) {
+                                    return
+                                }
+
+                                const images = Array.from(event.dataTransfer.files).filter(file =>
+                                    /image/i.test(file.type)
+                                )
+
+                                if (images.length === 0) {
+                                    return
+                                }
+
+                                event.preventDefault()
+
+                                images.forEach(image => {
+                                    fileProps.addFile(image)
+                                })
+                            },
+                            paste(view, event) {
+                                const hasFiles =
+                                    event.clipboardData &&
+                                    event.clipboardData.files &&
+                                    event.clipboardData.files.length
+
+                                if (!hasFiles || !fileProps) {
+                                    return
+                                }
+
+                                const images = Array.from(
+                                    event.clipboardData.files
+                                ).filter(file => /image/i.test(file.type))
+
+                                if (images.length === 0) {
+                                    return
+                                }
+
+                                event.preventDefault()
+
+                                images.forEach(image => {
+
+                                    fileProps.addFile(image)
+                                })
+                            }
+                        }
+                    }
+                })
+            ]
+        }
+    });
     const extensions = [
-        // Color.configure({ types: [TextStyle.name, ListItem.name] }),
-        // TextStyle.configure({ types: [ListItem.name] }),
-        NoNewLine,
         StarterKit.configure({
-            bulletList: {
-                keepMarks: true,
-                // keepAttributes: false,
-            },
-            orderedList: {
-                keepMarks: true,
-                // keepAttributes: false,
-            },
+            heading: false,
+            codeBlock: false,
         }),
         UserMention.configure({
             HTMLAttributes: {
@@ -226,7 +394,11 @@ export const Tiptap = ({ channelMembers }: TiptapEditorProps) => {
         Placeholder.configure({
             // Pick a random placeholder from the list.
             placeholder: COOL_PLACEHOLDERS[Math.floor(Math.random() * (COOL_PLACEHOLDERS.length))],
-        })
+        }),
+        CodeBlockLowlight.configure({
+            lowlight
+        }),
+        KeyboardHandler
     ]
 
     const { cardBorderColor, bgColor } = useColorModeValue({
@@ -236,15 +408,20 @@ export const Tiptap = ({ channelMembers }: TiptapEditorProps) => {
         cardBorderColor: 'gray.700',
         bgColor: 'gray.800'
     })
+
     return (
         <Card shadow={'md'} border='1px solid' borderColor={cardBorderColor} bgColor={bgColor}>
             <CardBody p='0'>
                 <EditorProvider
                     extensions={extensions}
                     content={content}
-
+                    slotAfter={slotAfter}
+                    slotBefore={slotBefore}
                 >
-                    <TextFormattingMenu />
+                    <ToolPanel>
+                        <TextFormattingMenu />
+                        <RightToolbarButtons fileProps={fileProps} sendMessage={onMessageSend} messageSending={messageSending} />
+                    </ToolPanel>
                 </EditorProvider>
             </CardBody>
 

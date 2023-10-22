@@ -1,4 +1,4 @@
-import { Box, Stack } from "@chakra-ui/react"
+import { Box, Stack, Wrap, WrapItem } from "@chakra-ui/react"
 import { ChatHistory } from "./ChatHistory"
 import { useFrappeEventListener, useFrappeGetCall } from "frappe-react-sdk"
 import { Message, MessagesWithDate } from "../../../../../../types/Messaging/Message"
@@ -13,6 +13,11 @@ import { useUserData } from "@/hooks/useUserData"
 import { ChannelMembersContext, ChannelMembersContextType } from "@/utils/channel/ChannelMembersProvider"
 import { UserContext } from "@/utils/auth/UserProvider"
 import { Tiptap } from "../ChatInput/Tiptap"
+import useFileUpload from "../ChatInput/FileInput/useFileUpload"
+import { CustomFile, FileDrop } from "../../file-upload/FileDrop"
+import { FileListItem } from "../../file-upload/FileListItem"
+import { PreviousMessageBox } from "../message-reply/PreviousMessageBox"
+import { useSendMessage } from "../chat-input/useSendMessage"
 
 interface ChatBoxBodyProps {
     channelData: ChannelListItem | DMChannelListItem
@@ -57,6 +62,40 @@ export const ChatBoxBody = ({ channelData }: ChatBoxBodyProps) => {
         return false
     }, [user, channelMembers])
 
+    const { fileInputRef, files, setFiles, removeFile, uploadFiles, addFile } = useFileUpload(channelData.name)
+
+    const { sendMessage, loading } = useSendMessage(channelData.name, files.length, uploadFiles, handleCancelReply, selectedMessage)
+
+    const PreviousMessagePreview = () => {
+
+        if (selectedMessage) {
+            return <PreviousMessageBox
+                previous_message_content={selectedMessage}
+                onReplyingToMessageClose={handleCancelReply}
+                channelData={channelData} />
+        }
+        return null
+    }
+    const FilePreviewList = () => {
+        if (files.length === 0) {
+            return null
+        }
+        return <Wrap spacingX={'2'} spacingY='2' w='full' spacing='0' alignItems='flex-end' px='2' p='2'>
+            {files.map((f: CustomFile) => <WrapItem key={f.fileID}><FileListItem file={f} isUploading={f.uploading} uploadProgress={f.uploadProgress} removeFile={() => removeFile(f.fileID)} /></WrapItem>)}
+        </Wrap>
+    }
+
+    const EditorSlot = () => {
+        if (selectedMessage || files.length > 0) {
+            return <Stack>
+                {PreviousMessagePreview()}
+                {FilePreviewList()}
+            </Stack>
+        } else {
+            return null
+        }
+    }
+
     if (isLoading) {
         return <FullPageLoader />
     }
@@ -67,14 +106,36 @@ export const ChatBoxBody = ({ channelData }: ChatBoxBodyProps) => {
 
     if (data) {
         return (
-            <Stack h='calc(100vh)' justify={'flex-end'} p={4} overflow='hidden' pt='16'>
-                <ChatHistory
-                    parsedMessages={data.message}
-                    replyToMessage={handleReplyAction}
-                    channelData={channelData} />
-                <Tiptap
-                    channelMembers={channelMembers}
-                />
+            <Stack h='full' justify={'flex-end'} p={4} overflow='hidden' pt='16'>
+                <FileDrop
+                    files={files}
+                    ref={fileInputRef}
+                    onFileChange={setFiles}
+                    maxFiles={10}
+                    maxFileSize={10000000}>
+                    <ChatHistory
+                        parsedMessages={data.message}
+                        replyToMessage={handleReplyAction}
+                        channelData={channelData} />
+
+                    {channelData?.is_archived == 0 && (isUserInChannel || channelData?.type === 'Open')
+                        &&
+                        <Tiptap
+                            fileProps={{
+                                fileInputRef,
+                                addFile
+                            }}
+                            onMessageSend={sendMessage}
+                            messageSending={loading}
+                            slotBefore={<EditorSlot />}
+                        />
+                    }
+                    {channelData?.is_archived == 0 && (!isUserInChannel && channelData?.type !== 'Open' &&
+                        <JoinChannelBox
+                            channelData={channelData}
+                            channelMembers={channelMembers}
+                            user={user} />)}
+                </FileDrop>
                 {/* {channelData?.is_archived == 0 && ((isUserInChannel || channelData?.type === 'Open') &&
                     <ChatInput
                         channelID={channelData?.name}
@@ -82,11 +143,7 @@ export const ChatBoxBody = ({ channelData }: ChatBoxBodyProps) => {
                         handleCancelReply={handleCancelReply}
                         channelData={channelData}
                         channelMembers={channelMembers} />)} */}
-                {channelData?.is_archived == 0 && (!isUserInChannel && channelData?.type !== 'Open' &&
-                    <JoinChannelBox
-                        channelData={channelData}
-                        channelMembers={channelMembers}
-                        user={user} />)}
+
                 {channelData && channelData.is_archived == 1 && <ArchivedChannelBox channelData={channelData} channelMembers={channelMembers} />}
             </Stack>
         )
