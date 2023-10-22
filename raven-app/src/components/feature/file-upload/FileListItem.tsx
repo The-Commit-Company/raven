@@ -1,4 +1,4 @@
-import { Text, Stack, IconButton, HStack, Icon, Image, Center, CircularProgress, CircularProgressLabel, useColorMode } from '@chakra-ui/react'
+import { Text, Stack, IconButton, HStack, Icon, Image, Center, CircularProgress, CircularProgressLabel, useColorModeValue } from '@chakra-ui/react'
 import { TbTrash } from 'react-icons/tb'
 import { useGetFilePreviewUrl } from '../../../hooks/useGetFilePreviewUrl'
 import { getFileExtensionIcon } from '../../../utils/layout/fileExtensionIcon'
@@ -14,12 +14,18 @@ interface FileListItemProps {
 
 export const FileListItem = ({ file, removeFile, isUploading, uploadProgress }: FileListItemProps) => {
 
-    const { colorMode } = useColorMode()
+    const { borderColor, bgColor } = useColorModeValue({
+        borderColor: 'gray.200',
+        bgColor: 'white'
+    }, {
+        borderColor: 'gray.800',
+        bgColor: 'gray.900'
+    })
     const previewURL = useGetFilePreviewUrl(file)
     const fileSizeString = getFileSize(file)
 
     return (
-        <HStack w='full' justify={'flex-start'} border={'1px'} borderColor={colorMode === 'light' ? 'gray.300' : 'gray.600'} p='2' rounded='md'>
+        <HStack w='full' justify={'flex-start'} border={'2px'} borderColor={borderColor} bgColor={bgColor} p='2' rounded='md'>
             <Center maxW='50px'>
                 {previewURL ? <Image src={previewURL} alt='File preview' boxSize={'30px'} rounded='md' /> : <Icon as={getFileExtensionIcon(getFileExtension(file.name) ?? '')} boxSize="6" />}
             </Center>

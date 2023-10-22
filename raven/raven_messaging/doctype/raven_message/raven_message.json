@@ -10,6 +10,7 @@
  "field_order": [
   "channel_id",
   "text",
+  "json",
   "file",
   "file_thumbnail",
   "message_type",
@@ -31,6 +32,11 @@
    "fieldname": "text",
    "fieldtype": "Long Text",
    "label": "Text"
+  },
+  {
+    "fieldname": "json",
+    "fieldtype": "JSON",
+    "label": "JSON"
   },
   {
    "fieldname": "file",
