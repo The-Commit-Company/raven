@@ -4,16 +4,14 @@ import {
     IonModal,
     IonContent,
     IonList,
-    IonItem,
-    IonLabel,
-    IonIcon,
 } from '@ionic/react';
-import { bookmarkOutline, copyOutline, createOutline, documentAttachOutline, downloadOutline, mailOutline, returnDownBack, returnDownBackOutline } from 'ionicons/icons';
 import { EmojiAction } from './EmojiAction';
 import { DeleteAction } from './DeleteAction';
 import { UserContext } from '@/utils/auth/UserProvider';
 import { CopyAction } from './CopyAction';
 import { SaveMessageAction } from './SaveMessageAction';
+import { NonContinuationMessageBlock } from '../chat-view/MessageBlock';
+import { useGetUser } from '@/hooks/useGetUser';
 
 interface MessageActionModalProps {
     selectedMessage?: MessageBlock,
@@ -44,17 +42,27 @@ export const MessageActionModal = ({ selectedMessage, onDismiss }: MessageAction
         }
     }, [selectedMessage])
 
+    const user = useGetUser(selectedMessage?.data.owner)
+
     return (
         <IonModal
             isOpen={!!selectedMessage}
-            breakpoints={[0, 0.6, 0.8]}
-            initialBreakpoint={0.6}
+            breakpoints={[0, 0.75, 0.9]}
+            initialBreakpoint={0.75}
             onWillDismiss={onDismiss}>
             <IonContent className="ion-padding" style={{
                 pointerEvents: enablePointerEvents ? 'all' : 'none'
             }}>
                 {selectedMessage &&
                     <IonList lines='none'>
+                        <div className='rounded-md pb-2 flex bg-zinc-900'>
+                            <NonContinuationMessageBlock message={selectedMessage} user={user} />
+                        </div>
+
+                        <div className='h-[2px] bg-zinc-800 my-2'>
+
+                        </div>
+
                         {/* <EmojiAction /> */}
                         {/* <IonItem className='py-1'>
                             <IonIcon slot="start" icon={createOutline} />
