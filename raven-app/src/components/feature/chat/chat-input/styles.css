@@ -85,7 +85,7 @@
 
 .mention {
     background-color: var(--gray) !important;
-    /* border-radius: 4px; */
+    border-radius: 4px;
     color: var(--chakra-colors-blue-500);
 }
 

@@ -44,7 +44,8 @@ type TiptapEditorProps = {
     slotAfter?: React.ReactNode,
     fileProps?: ToolbarFileProps,
     onMessageSend: (message: string, json: any) => Promise<void>,
-    messageSending: boolean
+    messageSending: boolean,
+    defaultText?: string
 }
 
 const COOL_PLACEHOLDERS = [
@@ -58,8 +59,6 @@ const COOL_PLACEHOLDERS = [
     "Want to know who writes these placeholders? 🤔. No one.",
     "Type a message..."
 ]
-
-const content = ''
 
 const UserMention = Mention.extend({
     name: 'userMention',
@@ -80,7 +79,7 @@ const ChannelMention = Mention.extend({
             pluginKey: new PluginKey('channelMention'),
         }
     })
-export const Tiptap = ({ slotAfter, slotBefore, fileProps, onMessageSend, messageSending }: TiptapEditorProps) => {
+export const Tiptap = ({ slotAfter, slotBefore, fileProps, onMessageSend, messageSending, defaultText = '' }: TiptapEditorProps) => {
 
     const { users } = useContext(UserListContext)
 
@@ -165,18 +164,18 @@ export const Tiptap = ({ slotAfter, slotBefore, fileProps, onMessageSend, messag
                     return false;
                 },
 
-                'Shift-Enter': () => {
-                    /**
-                     * currently we do not have an option to show a soft line break in the posts, so we overwrite
-                     * the behavior from tiptap with the default behavior on pressing enter
-                     */
-                    return this.editor.commands.first(({ commands }) => [
-                        () => commands.newlineInCode(),
-                        () => commands.createParagraphNear(),
-                        () => commands.liftEmptyBlock(),
-                        () => commands.splitBlock(),
-                    ]);
-                },
+                // 'Shift-Enter': () => {
+                //     /**
+                //      * currently we do not have an option to show a soft line break in the posts, so we overwrite
+                //      * the behavior from tiptap with the default behavior on pressing enter
+                //      */
+                //     return this.editor.commands.first(({ commands }) => [
+                //         () => commands.newlineInCode(),
+                //         () => commands.createParagraphNear(),
+                //         () => commands.liftEmptyBlock(),
+                //         () => commands.splitBlock(),
+                //     ]);
+                // },
             };
         },
         addProseMirrorPlugins() {
@@ -414,7 +413,7 @@ export const Tiptap = ({ slotAfter, slotBefore, fileProps, onMessageSend, messag
             <CardBody p='0'>
                 <EditorProvider
                     extensions={extensions}
-                    content={content}
+                    content={defaultText}
                     slotAfter={slotAfter}
                     slotBefore={slotBefore}
                 >

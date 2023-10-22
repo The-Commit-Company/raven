@@ -22,8 +22,12 @@
     padding-left: var(--chakra-space-8);
 }
 
-.tiptap a {
+.tiptap a,
+.tiptap .mention {
     color: var(--chakra-colors-blue-500);
+}
+
+.tiptap a {
     text-decoration: underline;
     cursor: pointer;
 }
