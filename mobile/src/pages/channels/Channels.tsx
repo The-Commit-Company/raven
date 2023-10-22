@@ -1,10 +1,11 @@
 import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonItem, IonLabel, IonSearchbar, useIonModal } from '@ionic/react';
 import { IoAdd } from 'react-icons/io5';
-import { ErrorBanner, FullPageLoader } from '../../components/layout';
+import { ErrorBanner } from '../../components/layout';
 import { ChannelList } from '../../components/features/channels/ChannelList';
 import { AddChannel } from '../../components/features/channels';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import { useChannelList } from '@/utils/channel/ChannelListProvider';
+import { ChannelListLoader } from '../../components/layout/loaders/ChannelListLoader';
 
 export const Channels = () => {
 
@@ -40,11 +41,10 @@ export const Channels = () => {
                 <IonToolbar>
                     <IonSearchbar
                         spellCheck
-                        onIonInput={(e) => setSearchInput(e.detail.value!)}
-                    >
+                        onIonInput={(e) => setSearchInput(e.detail.value!)}>
                     </IonSearchbar>
                 </IonToolbar>
-                {isLoading && <FullPageLoader />}
+                {isLoading && <ChannelListLoader />}
                 {error && <ErrorBanner error={error} />}
                 <IonItem lines='none' button onClick={() => setIsOpen(true)}>
                     <div slot='start'>

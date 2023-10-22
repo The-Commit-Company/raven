@@ -3,6 +3,8 @@ import { PrivateMessages } from "../../components/features/direct-messages"
 import { useMemo, useState } from "react"
 import { UserFields, useUserList } from "@/utils/users/UserListProvider"
 import { DMChannelListItem, useChannelList } from "@/utils/channel/ChannelListProvider"
+import { ChannelListLoader } from "@/components/layout/loaders"
+import { ErrorBanner } from "@/components/layout"
 
 export interface DMUser extends UserFields {
     channel?: DMChannelListItem,
@@ -11,7 +13,7 @@ export const DirectMessageList = () => {
 
     const [searchInput, setSearchInput] = useState('')
 
-    const users = useMessageUsersList()
+    const { users, isLoading, error } = useMessageUsersList()
 
     const filteredUsers: DMUser[] = useMemo(() => {
         if (!users) return []
@@ -36,10 +38,11 @@ export const DirectMessageList = () => {
                 <IonToolbar>
                     <IonSearchbar
                         spellCheck
-                        onIonInput={(e) => setSearchInput(e.detail.value!)}
-                    >
+                        onIonInput={(e) => setSearchInput(e.detail.value!)}>
                     </IonSearchbar>
                 </IonToolbar>
+                {isLoading && <ChannelListLoader />}
+                {error && <ErrorBanner error={error} />}
                 <PrivateMessages users={filteredUsers} />
             </IonContent>
         </IonPage>
@@ -51,7 +54,7 @@ const useMessageUsersList = () => {
     const { users } = useUserList()
 
     //Channel list gives us the list of DM channels for this user
-    const { dm_channels } = useChannelList()
+    const { dm_channels, isLoading, error } = useChannelList()
     const allUsers: DMUser[] = useMemo(() => {
         if (!users) return []
         return users.map(user => {
@@ -63,5 +66,9 @@ const useMessageUsersList = () => {
         })
     }, [users, dm_channels])
 
-    return allUsers
+    return {
+        users: allUsers,
+        isLoading,
+        error
+    }
 }

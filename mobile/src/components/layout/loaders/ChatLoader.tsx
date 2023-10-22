@@ -1,9 +1,7 @@
 import { IonList, IonSkeletonText } from '@ionic/react'
-import React, { PropsWithChildren } from 'react'
+import { PropsWithChildren } from 'react'
 
-type Props = {}
-
-export const ChatLoader = (props: Props) => {
+export const ChatLoader = () => {
     return (
         <IonList lines='none' className='flex flex-col'>
             <NonContinuationMessageItem>

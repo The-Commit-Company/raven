@@ -1,5 +1,4 @@
 import { IonSpinner, IonText } from '@ionic/react'
-import React from 'react'
 
 type Props = {
     text?: string
