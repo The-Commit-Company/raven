@@ -18,7 +18,6 @@ const ShareActionItem = ({ message, onSuccess }: ActionProps) => {
 
     const downloadFile = async (url: string) => {
 
-        console.log("Downloading file", url)
         return fetch(url, { method: 'get', referrerPolicy: 'no-referrer' })
             .then(res => res.blob())
             .catch((e) => {
@@ -60,7 +59,6 @@ const ShareActionItem = ({ message, onSuccess }: ActionProps) => {
                         }),
                     ]
                     shareOptions.title = fileName
-                    shareOptions.text = fileName
                 }
             } else if (message.data.message_type === 'Text') {
                 let text = message.data.text
@@ -98,11 +96,16 @@ const ShareActionItem = ({ message, onSuccess }: ActionProps) => {
                         .then(() => setLoading(false))
                         .then(() => onSuccess())
                         .catch((e) => {
-                            present({
-                                color: 'danger',
-                                duration: 600,
-                                message: "Error: Could not share - " + e.message || "Unknown Error",
-                            })
+
+                            if (e.message === 'AbortError' || e.name === 'AbortError') {
+                                setLoading(false)
+                            } else {
+                                present({
+                                    color: 'danger',
+                                    duration: 600,
+                                    message: "Error: Could not share - " + e.message || "Unknown Error",
+                                })
+                            }
                             setLoading(false)
                         })
                 }
