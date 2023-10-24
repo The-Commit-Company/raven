@@ -1,0 +1,77 @@
+.tiptap p.is-editor-empty:first-child::before {
+    color: rgb(82 82 91);
+    content: attr(data-placeholder);
+    float: left;
+    text-overflow: ellipsis;
+    /* white-space: nowrap; */
+    font-size: 14px;
+    height: 0;
+    pointer-events: none;
+}
+
+.tiptap pre {
+    background: #0d0d0d;
+    border-radius: 0.5rem;
+    color: #fff;
+    font-family: "JetBrainsMono", monospace;
+    padding: 0.75rem 1rem;
+}
+
+.tiptap pre code {
+    background: none;
+    color: inherit;
+    font-size: 0.8rem;
+    padding: 0;
+}
+
+.tiptap pre .hljs-comment,
+.tiptap pre .hljs-quote {
+    color: #616161;
+}
+
+.tiptap pre .hljs-variable,
+.tiptap pre .hljs-template-variable,
+.tiptap pre .hljs-attribute,
+.tiptap pre .hljs-tag,
+.tiptap pre .hljs-name,
+.tiptap pre .hljs-regexp,
+.tiptap pre .hljs-link,
+.tiptap pre .hljs-name,
+.tiptap pre .hljs-selector-id,
+.tiptap pre .hljs-selector-class {
+    color: #f98181;
+}
+
+.tiptap pre .hljs-number,
+.tiptap pre .hljs-meta,
+.tiptap pre .hljs-built_in,
+.tiptap pre .hljs-builtin-name,
+.tiptap pre .hljs-literal,
+.tiptap pre .hljs-type,
+.tiptap pre .hljs-params {
+    color: #fbbc88;
+}
+
+.tiptap pre .tiptap pre .hljs-string,
+.tiptap pre .hljs-symbol,
+.tiptap pre .hljs-bullet {
+    color: #b9f18d;
+}
+
+.tiptap pre .hljs-title,
+.tiptap pre .hljs-section {
+    color: #faf594;
+}
+
+.tiptap pre .hljs-keyword,
+.tiptap pre .hljs-selector-tag {
+    color: #70cff8;
+}
+
+.tiptap pre .hljs-emphasis {
+    font-style: italic;
+}
+
+.tiptap pre .hljs-strong {
+    font-weight: 700;
+}

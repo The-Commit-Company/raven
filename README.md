@@ -53,7 +53,7 @@ The frontend is built using React and the following tools:
 2. [frappe-react-sdk](https://github.com/nikkothari22/frappe-react-sdk) - simple React hooks to interface with a Frappe framework backend - built and maintained by us at The Commit Company.
 3. [react-icons](https://react-icons.github.io) - Icon set
 4. [Framer Motion](https://www.framer.com/motion/) - Animations
-5. [react-quill](https://www.npmjs.com/package/react-quill)
+5. [Tiptap](https://www.tiptap.dev)
 
 The mobile app is built using [Ionic](https://ionicframework.com), [Tailwind CSS](tailwindcss.com) and [Capacitor](https://capacitorjs.com).
 
