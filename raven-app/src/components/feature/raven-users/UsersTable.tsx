@@ -67,7 +67,6 @@ export const UsersTable = ({ data, selected, setSelected, defaultSelected }: Use
                 </Thead>
                 <Tbody>
                     {data?.map((user: User, index) => {
-
                         const isSelected = selected.includes(user.name) || defaultSelected.includes(user.name)
                         return (
                             <Tr key={index}>
@@ -78,9 +77,7 @@ export const UsersTable = ({ data, selected, setSelected, defaultSelected }: Use
                                 <Td>{convertFrappeTimestampToReadableDate(user.creation)}</Td>
                             </Tr>
                         )
-                    }
-
-                    )}
+                    })}
                 </Tbody>
             </Table>
         </TableContainer>

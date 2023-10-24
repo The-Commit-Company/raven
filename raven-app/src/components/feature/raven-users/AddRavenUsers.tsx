@@ -3,9 +3,9 @@ import { useDebounce } from "@/hooks/useDebounce"
 import { usePaginationWithDoctype } from "@/hooks/usePagination"
 import { User } from "@/types/Core/User"
 import { SearchIcon } from "@chakra-ui/icons"
-import { Text, Button, ButtonGroup, HStack, Icon, Input, InputGroup, InputLeftElement, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Stack, useDisclosure, Center } from "@chakra-ui/react"
-import { Filter, useFrappeGetDocList } from "frappe-react-sdk"
-import { ChangeEvent, useState } from "react"
+import { Text, Button, ButtonGroup, HStack, Icon, Input, InputGroup, InputLeftElement, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Stack, useDisclosure, Center, useToast } from "@chakra-ui/react"
+import { Filter, useFrappeCreateDoc, useFrappeGetDocList, useSWRConfig } from "frappe-react-sdk"
+import { ChangeEvent, useContext, useState } from "react"
 import { FiUsers } from "react-icons/fi"
 import { Sort } from "../sorting"
 import { PageLengthSelector } from "../pagination/PageLengthSelector"
@@ -13,7 +13,7 @@ import { PageSelector } from "../pagination/PageSelector"
 import { ErrorBanner } from "@/components/layout/AlertBanner"
 import { TableLoader } from "@/components/layout/Loaders/TableLoader"
 import { UsersTable } from "./UsersTable"
-import { useGetUserRecords } from "@/hooks/useGetUserRecords"
+import { UserListContext } from "@/utils/users/UserListProvider"
 
 export const AddRavenUsersButton = () => {
 
@@ -36,6 +36,7 @@ interface ChannelModalProps {
 
 export const AddRavenUsersModal = ({ onClose }: ChannelModalProps) => {
 
+    const { mutate } = useSWRConfig()
     const [searchText, setSearchText] = useState("")
     const debouncedText = useDebounce(searchText, 200)
 
@@ -60,10 +61,41 @@ export const AddRavenUsersModal = ({ onClose }: ChannelModalProps) => {
         limit: selectedPageLength
     })
 
-    const users = useGetUserRecords()
-    const ravenUsersArray = Object.keys(users)
+    const users = useContext(UserListContext)
+    const ravenUsersArray = users.users.map(user => user.name)
 
     const [selected, setSelected] = useState<string[]>([])
+    const { createDoc, loading } = useFrappeCreateDoc()
+    const toast = useToast()
+
+    const handleAddUsers = async () => {
+        if (selected.length > 0) {
+
+            const createPromises = selected.map(user => createDoc('Raven User', { user: user }))
+
+            Promise.all(createPromises)
+                .then(() => {
+                    toast({
+                        title: 'Users added',
+                        description: 'Users have been added to Raven',
+                        status: 'success',
+                        duration: 3000,
+                        isClosable: true
+                    })
+                    onClose()
+                    mutate('raven.api.raven_users.get_list')
+                })
+                .catch(err => {
+                    toast({
+                        title: 'Error',
+                        description: err.message,
+                        status: 'error',
+                        duration: 3000,
+                        isClosable: true
+                    })
+                })
+        }
+    }
 
     return (
         <ModalContent>
@@ -123,8 +155,8 @@ export const AddRavenUsersModal = ({ onClose }: ChannelModalProps) => {
 
             <ModalFooter>
                 <ButtonGroup>
-                    <Button variant='ghost' onClick={onClose}>Cancel</Button>
-                    <Button colorScheme='blue'>Add users</Button>
+                    <Button variant='ghost' onClick={onClose} isDisabled={loading}>Cancel</Button>
+                    <Button colorScheme='blue' onClick={handleAddUsers} isLoading={loading}>Add users</Button>
                 </ButtonGroup>
             </ModalFooter>
         </ModalContent>
