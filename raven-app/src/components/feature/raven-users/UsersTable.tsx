@@ -1,6 +1,7 @@
 import { Table, TableContainer, Tbody, Td, Th, Thead, Tr, Checkbox, Avatar } from "@chakra-ui/react"
 import { User } from "@/types/Core/User"
 import { useMemo } from "react"
+import { convertFrappeTimestampToReadableDate } from "@/utils/operations"
 
 interface UsersTableProps {
     data: User[],
@@ -61,7 +62,7 @@ export const UsersTable = ({ data, selected, setSelected, defaultSelected }: Use
                         <Th></Th>
                         <Th>Full name</Th>
                         <Th>User ID</Th>
-                        {/* <Th>Created on</Th> */}
+                        <Th>Created on</Th>
                     </Tr>
                 </Thead>
                 <Tbody>
@@ -74,7 +75,7 @@ export const UsersTable = ({ data, selected, setSelected, defaultSelected }: Use
                                 <Td><Avatar borderRadius={'sm'} boxSize={'10'} name={user.full_name ?? user.name} src={user.user_image ?? ''} /></Td>
                                 <Td>{user.full_name ?? '-'}</Td>
                                 <Td>{user.name}</Td>
-                                {/* <Td>{user.creation.substring(0, 10)}</Td> */}
+                                <Td>{convertFrappeTimestampToReadableDate(user.creation)}</Td>
                             </Tr>
                         )
                     }
