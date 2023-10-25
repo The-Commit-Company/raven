@@ -17,7 +17,7 @@ import {
 } from '@ionic/react';
 import { useFrappeCreateDoc, useFrappeGetCall } from 'frappe-react-sdk';
 import { UserListContext } from '@/utils/users/UserListProvider';
-import { UserAvatar } from '@/components/common/UserAvatar';
+import { SquareAvatar } from '@/components/common/UserAvatar';
 
 interface AddChannelMembersProps {
     presentingElement: HTMLElement | undefined,
@@ -136,7 +136,7 @@ export const AddChannelMembers = ({ presentingElement, isOpen, onDismiss, channe
                                 // User is already a channel member
                                 <div className='justify-between flex w-full py-2'>
                                     <div className='flex gap-4'>
-                                        <UserAvatar size='10' slot='start' alt={user.full_name} src={user.user_image} />
+                                        <SquareAvatar sizeClass='w-10 h-10' slot='start' alt={user.full_name} src={user.user_image} />
                                         <IonLabel>
                                             <h2>{user.full_name}</h2>
                                             <p>{user.name}</p>
@@ -157,7 +157,7 @@ export const AddChannelMembers = ({ presentingElement, isOpen, onDismiss, channe
                                         }
                                     }}>
                                     <div className='flex gap-4'>
-                                        <UserAvatar size='10' slot='start' alt={user.full_name} src={user.user_image} />
+                                        <SquareAvatar sizeClass='w-10 h-10' slot='start' alt={user.full_name} src={user.user_image} />
                                         <IonLabel>
                                             <h2>{user.full_name}</h2>
                                             <p>{user.name}</p>
