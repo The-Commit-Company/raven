@@ -12,7 +12,7 @@ interface ActionItemProps {
 }
 export const ActionItem = ({ children, onClick, isLoading }: PropsWithChildren<ActionItemProps>) => {
     return (
-        <IonItem className='py-1' onClick={onClick} button detail={false} disabled={isLoading} aria-disabled={isLoading}>
+        <IonItem className='py-1 bg-zinc-900 menu-action-button' onClick={onClick} button detail={false} disabled={isLoading} aria-disabled={isLoading}>
             {children}
             {isLoading && <IonSpinner slot='end' name='crescent' />}
         </IonItem>
