@@ -1,5 +1,5 @@
 import {
-  IonApp, setupIonicReact
+  IonApp, setupIonicReact, AnimationBuilder
 } from '@ionic/react';
 
 import 'tailwindcss/tailwind.css';
@@ -27,10 +27,19 @@ import { Routes } from './utils/auth/Routes';
 import { ChannelListProvider } from './utils/channel/ChannelListProvider';
 import { UserListProvider } from './utils/users/UserListProvider';
 import { ActiveUsersProvider } from './utils/users/ActiveUsersProvider';
+import { createAnimation, iosTransitionAnimation } from '@ionic/core';
 
+const animationBuilder: AnimationBuilder = (baseEl, opts) => {
+  if (opts.direction === "back") {
+    return createAnimation(); // TODO: not sure if it is correct way to create empty animation
+  }
+
+  return iosTransitionAnimation(baseEl, opts);
+};
 setupIonicReact({
   mode: 'ios',
   swipeBackEnabled: false,
+  navAnimation: animationBuilder,
 })
 
 function App() {
