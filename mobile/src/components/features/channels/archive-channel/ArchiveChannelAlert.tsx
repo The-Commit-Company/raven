@@ -1,5 +1,5 @@
 import { useGetChannelData } from "@/hooks/useGetChannelData"
-import { IonAlert } from "@ionic/react"
+import { IonAlert, ToastOptions, useIonToast } from "@ionic/react"
 import { useFrappeUpdateDoc } from "frappe-react-sdk"
 import { useHistory } from "react-router-dom"
 
@@ -16,15 +16,27 @@ export const ArchiveChannelAlert = ({ isOpen, onDismiss, channelID }: ArchiveCha
     const { updateDoc, error } = useFrappeUpdateDoc()
     const history = useHistory()
 
+    const [present] = useIonToast()
+
+    const presentToast = (message: string, color: ToastOptions['color']) => {
+        present({
+            message,
+            duration: 1500,
+            color,
+            position: 'bottom',
+        })
+    }
+
     const archiveChannel = () => {
         console.log('archive channel')
         updateDoc('Raven Channel', channel?.name ?? '', {
             is_archived: 1
         }).then(() => {
+            presentToast("Channel archived successfully.", 'success')
             onDismiss()
-            history.replace('/channel/general')
+            history.replace('/channels')
         }).catch((e) => {
-            console.log(e)
+            presentToast("Error while archiving the channel.", 'danger')
         })
     }
 
