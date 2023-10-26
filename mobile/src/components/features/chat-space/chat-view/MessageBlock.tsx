@@ -141,6 +141,8 @@ const FileMessageBlock = ({ message }: { message: FileMessage }) => {
 
 const ReplyBlock = ({ linked_message }: { linked_message: string }) => {
     const members = useContext(ChannelMembersContext)
+
+    //TODO: Cache the messages to prevent API calls
     const { data } = useFrappeGetDoc<Message>('Raven Message', linked_message)
 
     const user = useMemo(() => {

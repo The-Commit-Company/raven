@@ -6,6 +6,7 @@ import {
     IonList,
 } from '@ionic/react';
 import { EmojiAction } from './EmojiAction';
+import './messageActionModal.styles.css'
 import { DeleteAction } from './DeleteAction';
 import { UserContext } from '@/utils/auth/UserProvider';
 import { CopyAction } from './CopyAction';
@@ -49,14 +50,15 @@ export const MessageActionModal = ({ selectedMessage, onDismiss }: MessageAction
         <IonModal
             isOpen={!!selectedMessage}
             breakpoints={[0, 0.75, 0.9]}
+            id='message-action-modal'
             initialBreakpoint={0.75}
             onWillDismiss={onDismiss}>
             <IonContent className="ion-padding" style={{
                 pointerEvents: enablePointerEvents ? 'all' : 'none'
             }}>
                 {selectedMessage &&
-                    <IonList lines='none'>
-                        <div className='rounded-md pb-2 flex bg-zinc-900'>
+                    <IonList lines='none' className='bg-zinc-900'>
+                        <div className='rounded-md pb-2 flex bg-zinc-800'>
                             <NonContinuationMessageBlock message={selectedMessage} user={user} />
                         </div>
 
