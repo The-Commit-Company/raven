@@ -1,4 +1,5 @@
 import { UserFields } from "./users/UserListProvider"
+import moment from "moment-timezone"
 
 /**
  * Utility to convert Date object to DD-MM-YYYY format
@@ -42,6 +43,19 @@ export const DateObjectToFormattedDateStringWithoutYear = (date: Date): string =
 export const DateObjectToTimeString = (date: Date): string => {
     var date = new Date(date)
     return date.toLocaleTimeString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true })
+}
+
+/**
+ * Converts Frappe datetime timestamp to readable string
+ * @param timestamp A frappe timestamp string in the format YYYY-MM-DD HH:mm:ss
+ * @param format Format can include both date and time formats
+ * @returns 
+ */
+export const convertFrappeTimestampToReadableDate = (timestamp?: string, format: string = 'DD-MM-YYYY') => {
+    if (timestamp) {
+        return moment(timestamp, 'YYYY-MM-DD HH:mm:ss').format(format)
+    }
+    return ''
 }
 
 /**

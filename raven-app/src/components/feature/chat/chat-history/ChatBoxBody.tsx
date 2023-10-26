@@ -8,7 +8,6 @@ import { useContext, useMemo, useState } from "react"
 import { ArchivedChannelBox } from "../chat-footer/ArchivedChannelBox"
 import { ChannelListItem, DMChannelListItem } from "@/utils/channel/ChannelListProvider"
 import { JoinChannelBox } from "../chat-footer/JoinChannelBox"
-import { ChatInput } from "../chat-input"
 import { useUserData } from "@/hooks/useUserData"
 import { ChannelMembersContext, ChannelMembersContextType } from "@/utils/channel/ChannelMembersProvider"
 import { UserContext } from "@/utils/auth/UserProvider"
@@ -17,7 +16,7 @@ import useFileUpload from "../ChatInput/FileInput/useFileUpload"
 import { CustomFile, FileDrop } from "../../file-upload/FileDrop"
 import { FileListItem } from "../../file-upload/FileListItem"
 import { PreviousMessageBox } from "../message-reply/PreviousMessageBox"
-import { useSendMessage } from "../chat-input/useSendMessage"
+import { useSendMessage } from "../ChatInput/useSendMessage"
 
 interface ChatBoxBodyProps {
     channelData: ChannelListItem | DMChannelListItem

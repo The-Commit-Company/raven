@@ -21,7 +21,7 @@ export const SidebarBody = () => {
     const { colorMode } = useColorMode()
 
     return (
-        <Stack overflowY='scroll' h={'calc(100vh - 115px)'} px={-2} sx={scrollbarStyles(colorMode)} overflowX='hidden'>
+        <Stack overflowY='scroll' h={'calc(100vh - 145px)'} px={-2} sx={scrollbarStyles(colorMode)} overflowX='hidden'>
             <SidebarItem to={'saved-messages'}>
                 <Icon fontSize={'md'} as={IoBookmarkOutline} />
                 <SidebarGroupLabel pl='1'>Saved Messages</SidebarGroupLabel>

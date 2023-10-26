@@ -1,15 +1,13 @@
 import { ChannelListItem } from '@/utils/channel/ChannelListProvider'
-import { getChannelIcon } from '@/utils/layout/channelIcon'
-import { HStack, Icon, Stack, StackDivider, Text, useColorModeValue } from '@chakra-ui/react'
 import { ReactRendererOptions } from '@tiptap/react'
 import {
     forwardRef, useEffect, useImperativeHandle,
     useState,
 } from 'react'
+import { BiGlobe, BiHash, BiLockAlt } from 'react-icons/bi'
 
 export default forwardRef((props: ReactRendererOptions['props'], ref) => {
 
-    const buttonGroupBgColor = useColorModeValue('white', 'gray.900')
     const [selectedIndex, setSelectedIndex] = useState(0)
 
     const selectItem = (index: number) => {
@@ -54,10 +52,10 @@ export default forwardRef((props: ReactRendererOptions['props'], ref) => {
         },
     }))
 
-    return (
-        <Stack divider={<StackDivider />} spacing='0' rounded='md' shadow='dark-lg' bgColor={buttonGroupBgColor}>
-            {props?.items.length
-                ? props.items.map((item: ChannelListItem, index: number) => (
+    if (props?.items.length) {
+        return (
+            <ul role="list" className="divide-y divide-zinc-700 bg-zinc-900 border border-zinc-800 shadow-lg shadow-black list-none rounded-md">
+                {props.items.map((item: ChannelListItem, index: number) => (
                     <MentionItem
                         item={item}
                         index={index}
@@ -67,40 +65,29 @@ export default forwardRef((props: ReactRendererOptions['props'], ref) => {
                         itemsLength={props.items.length}
                     />
                 ))
-                : <div className="item">No result</div>
-            }
-        </Stack>
-    )
+
+                }
+            </ul>
+        )
+    } else {
+        return null
+    }
 })
 
 const MentionItem = ({ item, index, selectItem, selectedIndex, itemsLength }: { itemsLength: number, selectedIndex: number, index: number, item: ChannelListItem, selectItem: (index: number) => void }) => {
 
-    const { selectedBgColor, selectedColor, textColor, backgroundColor } = useColorModeValue({
-        selectedBgColor: 'gray.900',
-        selectedColor: 'gray.50',
-        textColor: 'gray.900',
-        backgroundColor: 'white'
-    }, {
-        selectedBgColor: 'gray.100',
-        selectedColor: 'gray.900',
-        textColor: 'gray.100',
-        backgroundColor: 'gray.700'
-    })
-    return <HStack
-        as={'button'}
-        rounded='md'
-        roundedBottom={index === itemsLength - 1 ? 'md' : 'none'}
-        roundedTop={index === 0 ? 'md' : 'none'}
-        px='3'
-        py='1.5'
-        textAlign={'left'}
-        // colorScheme='blue'
-        bgColor={index === selectedIndex ? selectedBgColor : backgroundColor}
-        color={index === selectedIndex ? selectedColor : textColor}
-        key={index}
+    const roundedTop = index === 0 ? ' rounded-t-md' : ''
+
+    const roundedBottom = index === itemsLength - 1 ? ' rounded-b-md' : ''
+
+    return <li
+        className={'py-2 px-3 text-zinc-200 text-md active:bg-blue-500 focus:bg-blue-500 focus-visible:bg-blue-500 hover:bg-blue-500' + roundedBottom + roundedTop}
         onClick={() => selectItem(index)}
     >
-        <Icon as={getChannelIcon(item.type)} />
-        <Text as='span' fontSize='sm'>{item.channel_name}</Text>
-    </HStack>
+        <div className="flex items-center gap-x-3">
+            {item.type === "Private" ? <BiLockAlt size='18' color='var(--ion-color-dark)' /> : item.type === "Public" ? <BiHash size='18' color='var(--ion-color-dark)' /> :
+                <BiGlobe size='18' color='var(--ion-color-dark)' />}
+            <span>{item.channel_name}</span>
+        </div>
+    </li>
 }

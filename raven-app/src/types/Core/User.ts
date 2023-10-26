@@ -1,6 +1,10 @@
+import { BlockModule } from './BlockModule'
+import { DefaultValue } from './DefaultValue'
+import { HasRole } from './HasRole'
+import { UserEmail } from './UserEmail'
 import { UserSocialLogin } from './UserSocialLogin'
 
-export interface User{
+export interface User {
 	creation: string
 	name: string
 	modified: string
