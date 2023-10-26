@@ -1,4 +1,5 @@
 import { AddChannelMembers } from "@/components/features/channels"
+import { ArchiveChannelButton } from "@/components/features/channels/archive-channel"
 import { IonBackButton, IonButtons, IonContent, IonHeader, IonItem, IonLabel, IonList, IonListHeader, IonPage, IonTitle, IonToolbar } from "@ionic/react"
 import { useRef, useState } from "react"
 import { IoPersonAdd } from "react-icons/io5"
@@ -37,6 +38,8 @@ export const ChannelSettings = () => {
                             Add Members
                         </IonLabel>
                     </IonItem>
+
+                    <ArchiveChannelButton channelID={channelID} />
 
                 </IonList>
             </IonContent>
