@@ -7,7 +7,7 @@ export const ArchiveChannelButton = ({ channelID }: { channelID: string }) => {
 
     return (
         <>
-            <IonButton fill="clear" color="danger" onClick={() => setIsOpen(true)}>Archive Channel</IonButton>
+            <IonButton fill="clear" color="danger" onClick={() => setIsOpen(true)} className="text-left justify-start">Archive Channel</IonButton>
             <ArchiveChannelAlert isOpen={isOpen} onDismiss={() => setIsOpen(false)} channelID={channelID} />
         </>
     )

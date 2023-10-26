@@ -28,7 +28,6 @@ export const ArchiveChannelAlert = ({ isOpen, onDismiss, channelID }: ArchiveCha
     }
 
     const archiveChannel = () => {
-        console.log('archive channel')
         updateDoc('Raven Channel', channel?.name ?? '', {
             is_archived: 1
         }).then(() => {
