@@ -1,6 +1,5 @@
-import { AddChannelMembersButton } from "@/components/features/channels/channel-members/AddChannelMembersButton"
-import { ViewChannelMembersButton } from "@/components/features/channels/channel-members/ViewChannelMembersButton"
-import { IonBackButton, IonButtons, IonContent, IonHeader, IonLabel, IonList, IonListHeader, IonPage, IonTitle, IonToolbar } from "@ionic/react"
+import { AddChannelMembersButton, ViewChannelMembersButton } from "@/components/features/channels/channel-members"
+import { IonBackButton, IonButtons, IonContent, IonHeader, IonList, IonPage, IonTitle, IonToolbar } from "@ionic/react"
 import { useRef } from "react"
 import { useParams } from "react-router-dom"
 
@@ -23,9 +22,6 @@ export const ChannelSettings = () => {
 
             <IonContent fullscreen={true}>
                 <IonList>
-                    <IonListHeader>
-                        <IonLabel>Channel Settings</IonLabel>
-                    </IonListHeader>
 
                     <ViewChannelMembersButton pageRef={pageRef} channelID={channelID} />
                     <AddChannelMembersButton pageRef={pageRef} channelID={channelID} />
