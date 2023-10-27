@@ -17,9 +17,7 @@ export const FileUploadModal = ({ files, setFiles, pickFiles, channelID, onMessa
 
     const [currentFileName, setCurrentFileName] = useState('')
     const [completedFiles, setCompletedFiles] = useState<string[]>([])
-    const { createDoc } = useFrappeCreateDoc()
     const { upload } = useFrappeFileUpload()
-    const { updateDoc } = useFrappeUpdateDoc()
 
     const [loading, setLoading] = useState(false)
     const [errorMap, setErrorMap] = React.useState<{ [key: string]: string }>({})
@@ -31,26 +29,20 @@ export const FileUploadModal = ({ files, setFiles, pickFiles, channelID, onMessa
         for (let i = 0; i < files.length; i++) {
             setCurrentFileName(files[i].name)
             const file = files[i]
-            let message_doc = ''
-            await createDoc('Raven Message', {
-                channel_id: channelID
-            }).then(d => {
-                message_doc = d.name
-                return upload(file, {
-                    doctype: 'Raven Message',
-                    docname: d.name,
-                    fieldname: 'file',
-                    isPrivate: true,
+            await upload(file, {
+                isPrivate: true,
+                doctype: 'Raven Message',
+                otherData: {
+                    channelID: channelID,
+                },
+                fieldname: 'file',
+            }, 'raven.api.upload_file.upload_file_with_message')
+                .then((f) => {
+
+                    setCompletedFiles(cf => [...cf, file.name])
+                }).catch((e) => {
+                    setErrorMap(em => ({ ...em, [file.name]: e.message }))
                 })
-            }).then((f) => {
-                updateDoc('Raven Message', message_doc, {
-                    file: f.file_url,
-                    message_type: fileExt.includes(getFileExtension(file.name)) ? "Image" : "File",
-                })
-                setCompletedFiles(cf => [...cf, file.name])
-            }).catch((e) => {
-                setErrorMap(em => ({ ...em, [file.name]: e.message }))
-            })
         }
         onMessageSend()
         clearFiles()

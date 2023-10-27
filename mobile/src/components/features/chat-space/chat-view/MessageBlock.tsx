@@ -103,11 +103,29 @@ const options = {
 
 const ImageMessageBlock = ({ message }: { message: FileMessage }) => {
     const { ref, inView } = useInView(options);
-    //TODO: Pass the height and width of the image beforehand to avoid layout shift
-    return <div className='py-1.5 rounded-lg' ref={ref}>
+
+    const height = `${message.thumbnail_height}px`
+    const width = `${message.thumbnail_width}px`
+    return <div className='py-1.5 rounded-lg' ref={ref} style={{
+        minWidth: width,
+        minHeight: height
+    }}>
         {inView ?
-            <img src={message.file} alt={`Image`} loading='lazy' className='rounded-md max-h-60 min-h-30 object-cover' />
-            : <IonSkeletonText animated className='w-60 h-60 rounded-md' />}
+            <img src={message.file}
+                alt={`Image`}
+                loading='lazy'
+                className='rounded-md object-cover bg-transparent'
+                style={{
+                    width: width,
+                    height: height
+                }}
+            />
+            :
+            <IonSkeletonText animated className='max-w-60 rounded-md' style={{
+                width: width,
+                height: height
+            }} />
+        }
     </div>
 }
 

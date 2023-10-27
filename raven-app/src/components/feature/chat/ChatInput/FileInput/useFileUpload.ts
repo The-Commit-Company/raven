@@ -1,21 +1,22 @@
 import { CustomFile } from '@/components/feature/file-upload/FileDrop'
-import { useRef, useState } from 'react'
+import { useContext, useRef, useState } from 'react'
 import { Message } from '../../../../../../../types/Messaging/Message'
-import { useFrappeCreateDoc, useFrappeFileUpload, useFrappeUpdateDoc } from 'frappe-react-sdk'
-import { getFileExtension } from '@/utils/operations'
+import { FrappeConfig, FrappeContext } from 'frappe-react-sdk'
 
 
 export const fileExt = ['jpg', 'JPG', 'jpeg', 'JPEG', 'png', 'PNG', 'gif', 'GIF']
-
+export interface FileUploadProgress {
+  progress: number,
+  isComplete: boolean,
+}
 export default function useFileUpload(channelID: string, selectedMessage?: Message | null) {
 
+  const { file } = useContext(FrappeContext) as FrappeConfig
   const fileInputRef = useRef<any>(null)
 
   const [files, setFiles] = useState<CustomFile[]>([])
 
-  const { createDoc, loading: creatingDoc, error: errorCreatingDoc, reset: resetCreateDoc } = useFrappeCreateDoc()
-  const { upload, loading: uploadingFile, progress, error: errorUploadingDoc, reset: resetUploadDoc } = useFrappeFileUpload()
-  const { updateDoc, loading: updatingDoc, error: errorUpdatingDoc, reset: resetUpdateDoc } = useFrappeUpdateDoc()
+  const [fileUploadProgress, setFileUploadProgress] = useState<Record<string, FileUploadProgress>>({})
 
   const addFile = (file: File) => {
 
@@ -29,42 +30,62 @@ export default function useFileUpload(channelID: string, selectedMessage?: Messa
   const removeFile = (id: string) => {
     let newFiles = files.filter(file => file.fileID !== id)
     setFiles(newFiles)
+    setFileUploadProgress(p => {
+      const newProgress = { ...p }
+      delete newProgress[id]
+      return newProgress
+    })
   }
 
   const uploadFiles = async () => {
-
-    if (files.length > 0) {
-      const promises = files.map(async (f: CustomFile) => {
-        let docname = ''
-        return createDoc('Raven Message', {
-          channel_id: channelID
-        }).then((d) => {
-          docname = d.name
-          f.uploading = true
-          f.uploadProgress = progress
-          return upload(f, {
+    const newFiles = [...files]
+    if (newFiles.length > 0) {
+      const promises = newFiles.map(async (f: CustomFile) => {
+        return file.uploadFile(f,
+          {
             isPrivate: true,
             doctype: 'Raven Message',
-            docname: d.name,
+            otherData: {
+              channelID: channelID,
+            },
             fieldname: 'file',
+          },
+          (bytesUploaded, totalBytes) => {
+            const percentage = Math.round((bytesUploaded / totalBytes) * 100)
+
+            setFileUploadProgress(p => ({
+              ...p,
+              [f.fileID]: {
+                progress: percentage,
+                isComplete: false,
+              },
+            }))
+          },
+          'raven.api.upload_file.upload_file_with_message')
+          .then(() => {
+            setFiles(files => files.filter(file => file.fileID !== f.fileID))
+            setFileUploadProgress(p => ({
+              ...p,
+              [f.fileID]: {
+                progress: 100,
+                isComplete: true,
+              },
+            }))
           })
-        }).then((r) => {
-          f.uploading = false
-          return updateDoc("Raven Message", docname, {
-            file: r.file_url,
-            message_type: fileExt.includes(getFileExtension(f.name)) ? "Image" : "File",
+          .catch(() => {
+            setFileUploadProgress(p => {
+              const newProgress = { ...p }
+              delete newProgress[f.fileID]
+              return newProgress
+            })
           })
-        })
       })
 
       return Promise.all(promises)
         .then(() => {
           setFiles([])
-          resetCreateDoc()
-          resetUploadDoc()
-          resetUpdateDoc()
         }).catch((e) => {
-          console.log(e)
+          console.error(e)
         })
     } else {
       return Promise.resolve()
@@ -77,6 +98,7 @@ export default function useFileUpload(channelID: string, selectedMessage?: Messa
     setFiles,
     removeFile,
     addFile,
-    uploadFiles
+    uploadFiles,
+    fileUploadProgress
   }
 }

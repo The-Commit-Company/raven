@@ -16,12 +16,20 @@ export interface RavenMessage{
 	text?: string
 	/**	JSON : JSON	*/
 	json?: any
-	/**	File : Attach	*/
-	file?: string
-	/**	File Thumbnail : Attach	*/
-	file_thumbnail?: string
 	/**	Message Type : Select	*/
 	message_type?: "Text" | "Image" | "File"
+	/**	File : Attach	*/
+	file?: string
+	/**	Image Width : Data	*/
+	image_width?: string
+	/**	Image Height : Data	*/
+	image_height?: string
+	/**	File Thumbnail : Attach	*/
+	file_thumbnail?: string
+	/**	Thumbnail Width : Data	*/
+	thumbnail_width?: string
+	/**	Thumbnail Height : Data	*/
+	thumbnail_height?: string
 	/**	Message Reactions : JSON	*/
 	message_reactions?: any
 	/**	Is Reply : Check	*/
