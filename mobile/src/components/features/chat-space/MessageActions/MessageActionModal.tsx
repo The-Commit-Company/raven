@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from 'react'
-import { MessageBlock } from '../../../../../../types/Messaging/Message'
+import { MessageBlock, TextMessage } from '../../../../../../types/Messaging/Message'
 import {
     IonModal,
     IonContent,
@@ -71,7 +71,7 @@ export const MessageActionModal = ({ selectedMessage, onDismiss }: MessageAction
                         </div>
 
                         {/* <EmojiAction /> */}
-                        {isOwnMessage && <EditMessageAction message={selectedMessage} onSuccess={onDismiss} />}
+                        {isOwnMessage && selectedMessage.data.message_type === 'Text' && <EditMessageAction message={selectedMessage.data as TextMessage} onSuccess={onDismiss} />}
                         {/* <IonItem className='py-1'>
                             <IonIcon slot="start" icon={returnDownBackOutline} />
                             <IonLabel className='font-semibold'>Reply</IonLabel>
