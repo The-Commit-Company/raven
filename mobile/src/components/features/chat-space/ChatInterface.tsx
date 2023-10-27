@@ -1,4 +1,4 @@
-import { IonBackButton, IonButton, IonButtons, IonContent, IonFooter, IonHeader, IonIcon, IonInput, IonToolbar, useIonViewDidEnter, useIonViewWillEnter } from '@ionic/react'
+import { IonBackButton, IonButton, IonButtons, IonContent, IonFooter, IonHeader, IonIcon, IonToolbar, useIonViewWillEnter } from '@ionic/react'
 import { useFrappeEventListener, useFrappeGetCall } from 'frappe-react-sdk'
 import { useCallback, useContext, useMemo, useRef } from 'react'
 import { MessagesWithDate } from '../../../../../types/Messaging/Message'
@@ -8,7 +8,7 @@ import { ChatView } from './chat-view/ChatView'
 import { ChatHeader } from './chat-header'
 import { ChannelListItem, DMChannelListItem, useChannelList } from '@/utils/channel/ChannelListProvider'
 import { UserFields } from '@/utils/users/UserListProvider'
-import { peopleOutline } from 'ionicons/icons'
+import { settingsOutline } from 'ionicons/icons'
 import { Haptics, ImpactStyle } from '@capacitor/haptics'
 import { UserContext } from '@/utils/auth/UserProvider'
 import { ChatLoader } from '@/components/layout/loaders/ChatLoader'
@@ -126,7 +126,7 @@ export const ChatInterface = ({ channel }: { channel: ChannelListItem | DMChanne
                     <IonButtons slot='end'>
                         {/* do not show settings button for open channels */}
                         {channel.type !== 'Open' && !channel.is_direct_message && <IonButton color='medium' slot='icon-only' routerLink={`${channel.name}/channel-settings`}>
-                            <IonIcon icon={peopleOutline} />
+                            <IonIcon icon={settingsOutline} />
                         </IonButton>}
                     </IonButtons>
                 </IonToolbar>

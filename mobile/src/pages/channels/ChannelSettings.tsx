@@ -1,16 +1,13 @@
-import { AddChannelMembers } from "@/components/features/channels"
+import { AddChannelMembersButton, ViewChannelMembersButton } from "@/components/features/channels/channel-members"
 import { ArchiveChannelButton } from "@/components/features/channels/ArchiveChannel"
 import { DeleteChannelButton } from "@/components/features/channels/DeleteChannel"
-import { IonBackButton, IonButtons, IonContent, IonHeader, IonItem, IonItemDivider, IonItemGroup, IonLabel, IonList, IonListHeader, IonPage, IonTitle, IonToolbar } from "@ionic/react"
-import { useRef, useState } from "react"
-import { IoPersonAdd } from "react-icons/io5"
+import { IonBackButton, IonButtons, IonContent, IonHeader, IonItemDivider, IonItemGroup, IonLabel, IonList, IonPage, IonTitle, IonToolbar } from "@ionic/react"
+import { useRef } from "react"
 import { useParams } from "react-router-dom"
 
 export const ChannelSettings = () => {
 
     const pageRef = useRef()
-    const [isOpen, setIsOpen] = useState(false)
-
     const { channelID } = useParams<{ channelID: string }>()
 
     return (
@@ -28,14 +25,8 @@ export const ChannelSettings = () => {
             <IonContent fullscreen={true}>
                 <IonList>
 
-                    <IonItem lines="full" button onClick={() => setIsOpen(true)}>
-                        <div slot='start'>
-                            <IoPersonAdd size='18' color='var(--ion-color-medium)' />
-                        </div>
-                        <IonLabel color='medium'>
-                            Add Members
-                        </IonLabel>
-                    </IonItem>
+                    <ViewChannelMembersButton pageRef={pageRef} channelID={channelID} />
+                    <AddChannelMembersButton pageRef={pageRef} channelID={channelID} />
                     <IonItemGroup className="py-2">
                         <IonItemDivider className="bg-transparent text-sm text-zinc-300 pt-2">
                             <IonLabel>Channel Management</IonLabel>
@@ -46,12 +37,6 @@ export const ChannelSettings = () => {
 
                 </IonList>
             </IonContent>
-
-            <AddChannelMembers
-                isOpen={isOpen}
-                onDismiss={() => setIsOpen(false)}
-                presentingElement={pageRef.current}
-                channelID={channelID} />
         </IonPage>
     )
 }
