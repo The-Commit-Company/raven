@@ -1,5 +1,5 @@
 import { IonAlert, IonButton, IonButtons, IonContent, IonHeader, IonItem, IonItemOption, IonItemOptions, IonItemSliding, IonLabel, IonList, IonModal, IonSearchbar, IonTitle, IonToolbar, ToastOptions, useIonToast } from "@ionic/react"
-import { useFrappeDeleteDoc, useFrappeGetCall } from "frappe-react-sdk"
+import { FrappeConfig, FrappeContext, useFrappeGetCall } from "frappe-react-sdk"
 import { useContext, useMemo, useRef, useState } from "react"
 import { ChannelMembers, Member } from "./AddChannelMembers"
 import { SquareAvatar } from "@/components/common/UserAvatar"
@@ -39,15 +39,7 @@ export const ViewChannelMembers = ({ presentingElement, isOpen, onDismiss, chann
     const [searchText, setSearchText] = useState('')
     const [selectedMember, setSelectedMember] = useState<Member | undefined>(undefined)
 
-    const { data: member, error: errorFetchingChannelMember } = useFrappeGetCall<{ message: { name: string } }>('frappe.client.get_value', {
-        doctype: "Raven Channel Member",
-        filters: JSON.stringify({ channel_id: channelID, user_id: selectedMember?.name }),
-        fieldname: JSON.stringify(["name"])
-    }, undefined, {
-        revalidateOnFocus: false
-    })
-
-    const { deleteDoc, error: errorDeleting } = useFrappeDeleteDoc()
+    const { call } = useContext(FrappeContext) as FrappeConfig
 
     const [present] = useIonToast()
 
@@ -61,7 +53,10 @@ export const ViewChannelMembers = ({ presentingElement, isOpen, onDismiss, chann
     }
 
     const removeMember = () => {
-        return deleteDoc('Raven Channel Member', member?.message.name).then(() => {
+        return call.post('raven.raven_channel_management.doctype.raven_channel_member.raven_channel_member.remove_channel_member', {
+            user_id: selectedMember?.name,
+            channel_id: channelID
+        }).then(() => {
             presentToast("Member removed successfully.", 'success')
             mutate()
         }).catch((e) => {
@@ -103,8 +98,6 @@ export const ViewChannelMembers = ({ presentingElement, isOpen, onDismiss, chann
                     onIonInput={(e) => setSearchText(e.target.value?.toString() || '')}
                 />
 
-                <ErrorBanner error={errorFetchingChannelMember} />
-                <ErrorBanner error={errorDeleting} />
                 <ErrorBanner error={error} />
 
                 <IonList>
@@ -122,7 +115,7 @@ export const ViewChannelMembers = ({ presentingElement, isOpen, onDismiss, chann
                                     {user.is_admin ? <IonLabel color='medium'>admin</IonLabel> : null}
                                 </div>
                             </IonItem>
-                            {isCurrentUserAdmin && user.name !== currentUser && <IonItemOptions
+                            {(isCurrentUserAdmin && user.name !== currentUser) ? <IonItemOptions
                                 side="end"
                                 onIonSwipe={() => {
                                     setSelectedMember(user)
@@ -134,11 +127,9 @@ export const ViewChannelMembers = ({ presentingElement, isOpen, onDismiss, chann
                                         setSelectedMember(user)
                                         setIsAlertOpen(true)
                                     }}>Remove</IonItemOption>
-                            </IonItemOptions>}
+                            </IonItemOptions> : null}
                         </IonItemSliding>
-                    )) : <IonItem>
-                        <IonLabel>No members found</IonLabel>
-                    </IonItem>}
+                    )) : <IonItem><IonLabel>No members found</IonLabel></IonItem>}
                 </IonList>
 
                 <IonAlert onDidDismiss={() => setIsAlertOpen(false)} isOpen={isAlertOpen}
