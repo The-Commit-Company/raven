@@ -151,7 +151,7 @@ export const ViewChannelMembers = ({ presentingElement, isOpen, onDismiss, chann
                         }
                         , {
                             text: 'Yes',
-                            role: 'confirm',
+                            role: 'destructive',
                             cssClass: 'text-danger',
                             handler: removeMember
                         }
