@@ -1,7 +1,7 @@
 import { AddChannelMembers } from "@/components/features/channels"
 import { ArchiveChannelButton } from "@/components/features/channels/ArchiveChannel"
 import { DeleteChannelButton } from "@/components/features/channels/DeleteChannel"
-import { IonBackButton, IonButtons, IonContent, IonHeader, IonItem, IonLabel, IonList, IonListHeader, IonPage, IonTitle, IonToolbar } from "@ionic/react"
+import { IonBackButton, IonButtons, IonContent, IonHeader, IonItem, IonItemDivider, IonItemGroup, IonLabel, IonList, IonListHeader, IonPage, IonTitle, IonToolbar } from "@ionic/react"
 import { useRef, useState } from "react"
 import { IoPersonAdd } from "react-icons/io5"
 import { useParams } from "react-router-dom"
@@ -27,9 +27,6 @@ export const ChannelSettings = () => {
 
             <IonContent fullscreen={true}>
                 <IonList>
-                    <IonListHeader>
-                        <IonLabel>Channel Settings</IonLabel>
-                    </IonListHeader>
 
                     <IonItem lines="full" button onClick={() => setIsOpen(true)}>
                         <div slot='start'>
@@ -39,10 +36,13 @@ export const ChannelSettings = () => {
                             Add Members
                         </IonLabel>
                     </IonItem>
-                    <div className="flex flex-col">
+                    <IonItemGroup className="py-2">
+                        <IonItemDivider className="bg-transparent text-sm text-zinc-300 pt-2">
+                            <IonLabel>Channel Management</IonLabel>
+                        </IonItemDivider>
                         <ArchiveChannelButton channelID={channelID} />
                         <DeleteChannelButton channelID={channelID} />
-                    </div>
+                    </IonItemGroup>
 
                 </IonList>
             </IonContent>
