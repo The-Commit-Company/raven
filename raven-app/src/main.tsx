@@ -3,7 +3,6 @@ import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { BrowserRouter } from 'react-router-dom'
 import App from './App'
-import './utils/namespace'
 
 if (import.meta.env.DEV) {
   fetch('/api/method/raven.www.raven.get_context_for_dev', {
@@ -18,13 +17,8 @@ if (import.meta.env.DEV) {
       frappe.boot = v
       //@ts-ignore
       frappe._messages = frappe.boot["__messages"];
-      //@ts-ignore
-      frappe.model.sync(frappe.boot.docs);
 
     })
-} else {
-  //@ts-ignore
-  frappe.model.sync(frappe.boot.docs);
 }
 
 const theme = extendTheme({
