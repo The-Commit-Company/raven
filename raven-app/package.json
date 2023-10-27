@@ -49,7 +49,8 @@
     "rehype-raw": "^6.1.1",
     "remark-gfm": "^3.0.1",
     "timeago-react": "^3.0.5",
-    "tippy.js": "^6.3.7"
+    "tippy.js": "^6.3.7",
+    "use-sound": "^4.0.1"
   },
   "devDependencies": {
     "@types/react": "^18.0.27",

@@ -4,6 +4,8 @@ import { useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useFrappeDeleteDoc } from 'frappe-react-sdk'
 import { ChannelListItem } from '@/utils/channel/ChannelListProvider'
+import { useDeleteSound } from '@/hooks/useSound'
+
 
 type DeleteChannelModalProps = {
     isOpen: boolean,
@@ -16,6 +18,8 @@ export const DeleteChannelModal = ({ isOpen, onClose, onCloseParent, channelData
 
     const cancelRef = useRef<HTMLButtonElement | null>(null)
     const { deleteDoc, error, loading, reset } = useFrappeDeleteDoc()
+
+    const play = useDeleteSound()
 
     const handleClose = () => {
         onClose()
@@ -33,6 +37,7 @@ export const DeleteChannelModal = ({ isOpen, onClose, onCloseParent, channelData
                     onCloseParent()
                     localStorage.removeItem('ravenLastChannel')
                     navigate('/channel')
+                    play()
                     toast({
                         title: 'Success',
                         description: 'Channel deleted successfully',
