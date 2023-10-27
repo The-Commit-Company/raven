@@ -3,6 +3,7 @@ import { useFrappeDeleteDoc, useSWRConfig } from "frappe-react-sdk"
 import { useRef } from "react"
 import { AlertBanner, ErrorBanner } from "../../layout/AlertBanner"
 import { useParams } from "react-router-dom"
+import { useDeleteSound } from "@/hooks/useSound"
 
 interface DeleteMessageModalProps {
     isOpen: boolean,
@@ -13,7 +14,7 @@ interface DeleteMessageModalProps {
 export const DeleteMessageModal = ({ isOpen, onClose, channelMessageID }: DeleteMessageModalProps) => {
 
     const cancelRef = useRef<HTMLButtonElement | null>(null)
-    const { deleteDoc, error } = useFrappeDeleteDoc()
+    const { deleteDoc, error, loading } = useFrappeDeleteDoc()
     const toast = useToast()
 
     const { mutate } = useSWRConfig()
@@ -24,9 +25,12 @@ export const DeleteMessageModal = ({ isOpen, onClose, channelMessageID }: Delete
 
     const { channelID } = useParams()
 
+    const play = useDeleteSound()
+
     const onSubmit = () => {
         return deleteDoc('Raven Message', channelMessageID
         ).then(() => {
+            play()
             toast({
                 title: 'Message deleted successfully',
                 status: 'success',
@@ -68,7 +72,7 @@ export const DeleteMessageModal = ({ isOpen, onClose, channelMessageID }: Delete
                 <AlertDialogFooter>
                     <ButtonGroup>
                         <Button ref={cancelRef} variant='ghost' onClick={() => onClose(false)}>Cancel</Button>
-                        <Button colorScheme='red' onClick={onSubmit}>Delete</Button>
+                        <Button colorScheme='red' onClick={onSubmit} isDisabled={loading} isLoading={loading}>Delete</Button>
                     </ButtonGroup>
                 </AlertDialogFooter>
             </AlertDialogContent>

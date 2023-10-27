@@ -5,6 +5,8 @@ import { useContext } from 'react'
 import { ErrorBanner } from '../../components/layout'
 import { UserContext } from '../../utils/auth/UserProvider'
 import { FullPageLoader } from '@/components/layout/loaders'
+import { ProfileLoader } from '@/components/layout/loaders/ProfileLoader'
+import { UserAvatar } from '@/components/common/UserAvatar'
 
 interface User {
     name: string
@@ -38,12 +40,12 @@ export const Profile = () => {
                         <IonTitle size="large">Profile</IonTitle>
                     </IonToolbar>
                 </IonHeader>
-                {isLoading && <FullPageLoader />}
+                {isLoading && <ProfileLoader />}
                 {error && <ErrorBanner error={error} />}
                 <IonList>
                     {data &&
                         <div className="my-8 flex justify-center flex-col items-center ion-text-center space-y-2">
-                            <img alt={data.full_name} src={url + data.user_image ?? ""} className='w-32 h-auto mb-2 rounded-full' />
+                            <UserAvatar sizeClass='w-32 h-32' alt={data.full_name} src={data.user_image ? `${url}${data.user_image}` : undefined} />
                             <h2 className='font-bold h2 text-2xl'>{data.full_name}</h2>
                             <span><IonText color="primary">{data.email}</IonText></span>
                         </div>

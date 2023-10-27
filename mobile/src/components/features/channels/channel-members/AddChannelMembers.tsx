@@ -31,6 +31,7 @@ export type Member = {
     full_name: string
     user_image: string | undefined
     first_name: string
+    is_admin?: boolean
 }
 
 export type ChannelMembers = {

@@ -11,9 +11,13 @@
   "channel_id",
   "text",
   "json",
-  "file",
-  "file_thumbnail",
   "message_type",
+  "file",
+  "image_width",
+  "image_height",
+  "file_thumbnail",
+  "thumbnail_width",
+  "thumbnail_height",
   "message_reactions",
   "is_reply",
   "linked_message"
@@ -34,9 +38,9 @@
    "label": "Text"
   },
   {
-    "fieldname": "json",
-    "fieldtype": "JSON",
-    "label": "JSON"
+   "fieldname": "json",
+   "fieldtype": "JSON",
+   "label": "JSON"
   },
   {
    "fieldname": "file",
@@ -70,11 +74,31 @@
    "fieldname": "file_thumbnail",
    "fieldtype": "Attach",
    "label": "File Thumbnail"
+  },
+  {
+   "fieldname": "image_width",
+   "fieldtype": "Data",
+   "label": "Image Width"
+  },
+  {
+   "fieldname": "image_height",
+   "fieldtype": "Data",
+   "label": "Image Height"
+  },
+  {
+   "fieldname": "thumbnail_width",
+   "fieldtype": "Data",
+   "label": "Thumbnail Width"
+  },
+  {
+   "fieldname": "thumbnail_height",
+   "fieldtype": "Data",
+   "label": "Thumbnail Height"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-06-20 14:08:24.579729",
+ "modified": "2023-10-27 15:39:27.926205",
  "modified_by": "Administrator",
  "module": "Raven Messaging",
  "name": "Raven Message",
