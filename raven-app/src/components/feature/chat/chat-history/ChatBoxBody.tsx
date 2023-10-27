@@ -61,11 +61,11 @@ export const ChatBoxBody = ({ channelData }: ChatBoxBodyProps) => {
         return false
     }, [user, channelMembers])
 
-    const { fileInputRef, files, setFiles, removeFile, uploadFiles, addFile } = useFileUpload(channelData.name)
+    const { fileInputRef, files, setFiles, removeFile, uploadFiles, addFile, fileUploadProgress } = useFileUpload(channelData.name)
 
     const { sendMessage, loading } = useSendMessage(channelData.name, files.length, uploadFiles, handleCancelReply, selectedMessage)
 
-    const PreviousMessagePreview = () => {
+    const PreviousMessagePreview = ({ selectedMessage }: { selectedMessage: any }) => {
 
         if (selectedMessage) {
             return <PreviousMessageBox
@@ -74,25 +74,6 @@ export const ChatBoxBody = ({ channelData }: ChatBoxBodyProps) => {
                 channelData={channelData} />
         }
         return null
-    }
-    const FilePreviewList = () => {
-        if (files.length === 0) {
-            return null
-        }
-        return <Wrap spacingX={'2'} spacingY='2' w='full' spacing='0' alignItems='flex-end' px='2' p='2'>
-            {files.map((f: CustomFile) => <WrapItem key={f.fileID}><FileListItem file={f} isUploading={f.uploading} uploadProgress={f.uploadProgress} removeFile={() => removeFile(f.fileID)} /></WrapItem>)}
-        </Wrap>
-    }
-
-    const EditorSlot = () => {
-        if (selectedMessage || files.length > 0) {
-            return <Stack>
-                {PreviousMessagePreview()}
-                {FilePreviewList()}
-            </Stack>
-        } else {
-            return null
-        }
     }
 
     if (isLoading) {
@@ -126,7 +107,12 @@ export const ChatBoxBody = ({ channelData }: ChatBoxBodyProps) => {
                             }}
                             onMessageSend={sendMessage}
                             messageSending={loading}
-                            slotBefore={<EditorSlot />}
+                            slotBefore={<Stack hidden={!selectedMessage && !files.length}>
+                                {selectedMessage && <PreviousMessagePreview selectedMessage={selectedMessage} />}
+                                {files && files.length > 0 && <Wrap spacingX={'2'} spacingY='2' w='full' spacing='0' alignItems='flex-end' px='2' p='2'>
+                                    {files.map((f: CustomFile) => <WrapItem key={f.fileID}><FileListItem file={f} uploadProgress={fileUploadProgress} removeFile={() => removeFile(f.fileID)} /></WrapItem>)}
+                                </Wrap>}
+                            </Stack>}
                         />
                     }
                     {channelData?.is_archived == 0 && (!isUserInChannel && channelData?.type !== 'Open' &&
