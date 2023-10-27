@@ -4,8 +4,7 @@ import { useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useFrappeDeleteDoc } from 'frappe-react-sdk'
 import { ChannelListItem } from '@/utils/channel/ChannelListProvider'
-import deleteSound from '../../../../utils/sounds/delete.mp3'
-import useSound from 'use-sound'
+import { useDeleteSound } from '@/hooks/useSound'
 
 
 type DeleteChannelModalProps = {
@@ -20,10 +19,7 @@ export const DeleteChannelModal = ({ isOpen, onClose, onCloseParent, channelData
     const cancelRef = useRef<HTMLButtonElement | null>(null)
     const { deleteDoc, error, loading, reset } = useFrappeDeleteDoc()
 
-    const [play] = useSound(
-        deleteSound,
-        { volume: 0.5 }
-    );
+    const play = useDeleteSound()
 
     const handleClose = () => {
         onClose()
