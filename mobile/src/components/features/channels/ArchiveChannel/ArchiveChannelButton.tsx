@@ -1,7 +1,7 @@
-import { IonItem, IonLabel } from "@ionic/react"
+import { IonIcon, IonItem, IonLabel } from "@ionic/react"
 import { useState } from "react"
 import { ArchiveChannelAlert } from "."
-import { IoArchiveOutline } from "react-icons/io5"
+import { archiveOutline } from "ionicons/icons"
 
 export const ArchiveChannelButton = ({ channelID }: { channelID: string }) => {
     const [isOpen, setIsOpen] = useState(false)
@@ -9,9 +9,7 @@ export const ArchiveChannelButton = ({ channelID }: { channelID: string }) => {
     return (
         <>
             <IonItem button onClick={() => setIsOpen(true)} detail={false}>
-                <div slot='start'>
-                    <IoArchiveOutline />
-                </div>
+                <IonIcon slot='start' icon={archiveOutline} />
                 <IonLabel>Archive Channel</IonLabel>
             </IonItem>
             <ArchiveChannelAlert isOpen={isOpen} onDismiss={() => setIsOpen(false)} channelID={channelID} />
