@@ -49,7 +49,7 @@ export const DeleteChannelAlert = ({ isOpen, onDismiss, channelID }: DeleteChann
                 }
                 , {
                     text: 'Yes',
-                    role: 'confirm',
+                    role: 'destructive',
                     cssClass: 'text-danger',
                     handler: archiveChannel
                 }
