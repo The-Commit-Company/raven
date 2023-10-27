@@ -1,21 +1,32 @@
 import { useGetChannelData } from "@/hooks/useGetChannelData"
-import { ChannelListContext, ChannelListContextType } from "@/utils/channel/ChannelListProvider"
 import { IonAlert, ToastOptions, useIonToast } from "@ionic/react"
-import { useFrappeDeleteDoc } from "frappe-react-sdk"
+import { useFrappeDeleteDoc, useFrappeGetCall } from "frappe-react-sdk"
+import { UserContext } from "@/utils/auth/UserProvider"
 import { useContext } from "react"
 import { useHistory } from "react-router-dom"
+import { ChannelListContext, ChannelListContextType } from "@/utils/channel/ChannelListProvider"
 
-interface DeleteChannelModalProps {
+interface LeaveChannelModalProps {
     isOpen: boolean,
     onDismiss: VoidFunction,
     channelID: string
 }
 
-export const DeleteChannelAlert = ({ isOpen, onDismiss, channelID }: DeleteChannelModalProps) => {
+export const LeaveChannelAlert = ({ isOpen, onDismiss, channelID }: LeaveChannelModalProps) => {
 
-    const { channel } = useGetChannelData(channelID)
+    const { currentUser } = useContext(UserContext)
+
+    const { data: channelMember } = useFrappeGetCall<{ message: { name: string } }>('frappe.client.get_value', {
+        doctype: "Raven Channel Member",
+        filters: JSON.stringify({ channel_id: channelID, user_id: currentUser }),
+        fieldname: JSON.stringify(["name"])
+    }, undefined, {
+        revalidateOnFocus: false
+    })
 
     const { mutate } = useContext(ChannelListContext) as ChannelListContextType
+
+    const { channel } = useGetChannelData(channelID)
 
     const { deleteDoc, error } = useFrappeDeleteDoc()
 
@@ -32,22 +43,23 @@ export const DeleteChannelAlert = ({ isOpen, onDismiss, channelID }: DeleteChann
         })
     }
 
-    const archiveChannel = () => {
-        deleteDoc('Raven Channel', channel?.name)
+
+    const leaveChannel = () => {
+        deleteDoc('Raven Channel Member', channelMember?.message.name)
             .then(() => {
-                presentToast("Channel deleted successfully.", 'success')
+                presentToast("Channel left successfully.", 'success')
                 onDismiss()
                 mutate()
                 history.replace('/channels')
             }).catch((e) => {
-                presentToast("Error while deleting the channel.", 'danger')
+                presentToast("Couldn't leave the channel.", 'danger')
             })
     }
 
     return (
         <IonAlert onDidDismiss={onDismiss} isOpen={isOpen}
-            header="Delete Channel"
-            message={`Are you sure you want to delete #${channel?.channel_name}? This action cannot be undone.`}
+            header="Leave Channel"
+            message={`Are you sure you want to leave #${channel?.channel_name}?`}
             buttons={[
                 {
                     text: 'No',
@@ -57,7 +69,7 @@ export const DeleteChannelAlert = ({ isOpen, onDismiss, channelID }: DeleteChann
                     text: 'Yes',
                     role: 'destructive',
                     cssClass: 'text-danger',
-                    handler: archiveChannel
+                    handler: leaveChannel
                 }
             ]} />
     )
