@@ -55,7 +55,7 @@ export default forwardRef((props: ReactRendererOptions['props'], ref) => {
     }))
 
     return (
-        <Stack divider={<StackDivider />} spacing='0' rounded='md' shadow='dark-lg' bgColor={buttonGroupBgColor}>
+        <Stack divider={<StackDivider />} spacing='0' rounded='md' overflowY={'scroll'} maxH='480px' shadow='dark-lg' bgColor={buttonGroupBgColor}>
             {props?.items.length
                 ? props.items.map((item: ChannelListItem, index: number) => (
                     <MentionItem

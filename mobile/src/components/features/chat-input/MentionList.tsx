@@ -58,7 +58,7 @@ export default forwardRef((props: ReactRendererOptions['props'], ref) => {
 
     if (props?.items.length) {
         return (
-            <ul role="list" className="divide-y divide-zinc-700 bg-zinc-900 border border-zinc-800 shadow-lg shadow-black list-none rounded-md">
+            <ul role="list" className="divide-y divide-zinc-700 bg-zinc-900 border border-zinc-800 shadow-lg shadow-black list-none rounded-md overflow-y-auto max-h-96">
                 {props.items.map((item: UserFields, index: number) => (
                     <MentionItem
                         item={item}
