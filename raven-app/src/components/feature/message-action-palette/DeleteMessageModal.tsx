@@ -13,7 +13,7 @@ interface DeleteMessageModalProps {
 export const DeleteMessageModal = ({ isOpen, onClose, channelMessageID }: DeleteMessageModalProps) => {
 
     const cancelRef = useRef<HTMLButtonElement | null>(null)
-    const { deleteDoc, error } = useFrappeDeleteDoc()
+    const { deleteDoc, error, loading } = useFrappeDeleteDoc()
     const toast = useToast()
 
     const { mutate } = useSWRConfig()
@@ -68,7 +68,7 @@ export const DeleteMessageModal = ({ isOpen, onClose, channelMessageID }: Delete
                 <AlertDialogFooter>
                     <ButtonGroup>
                         <Button ref={cancelRef} variant='ghost' onClick={() => onClose(false)}>Cancel</Button>
-                        <Button colorScheme='red' onClick={onSubmit}>Delete</Button>
+                        <Button colorScheme='red' onClick={onSubmit} isLoading={loading}>Delete</Button>
                     </ButtonGroup>
                 </AlertDialogFooter>
             </AlertDialogContent>
