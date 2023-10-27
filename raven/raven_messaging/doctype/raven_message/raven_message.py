@@ -9,6 +9,28 @@ from frappe.query_builder import Case
 
 
 class RavenMessage(Document):
+    # begin: auto-generated types
+    # This code is auto-generated. Do not modify anything in this block.
+
+    from typing import TYPE_CHECKING
+
+    if TYPE_CHECKING:
+        from frappe.types import DF
+
+        channel_id: DF.Link
+        file: DF.Attach | None
+        file_thumbnail: DF.Attach | None
+        image_height: DF.Data | None
+        image_width: DF.Data | None
+        is_reply: DF.Check
+        json: DF.JSON | None
+        linked_message: DF.Link | None
+        message_reactions: DF.JSON | None
+        message_type: DF.Literal["Text", "Image", "File"]
+        text: DF.LongText | None
+        thumbnail_height: DF.Data | None
+        thumbnail_width: DF.Data | None
+    # end: auto-generated types
 
     def validate(self):
         '''
@@ -136,7 +158,7 @@ def get_messages(channel_id):
     messages = frappe.db.get_list('Raven Message',
                                   filters={'channel_id': channel_id},
                                   fields=['name', 'owner', 'creation', 'text',
-                                          'file', 'message_type', 'message_reactions', 'is_reply', 'linked_message', '_liked_by', 'channel_id'],
+                                          'file', 'message_type', 'message_reactions', 'is_reply', 'linked_message', '_liked_by', 'channel_id', 'thumbnail_width', 'thumbnail_height', 'file_thumbnail'],
                                   order_by='creation asc'
                                   )
 

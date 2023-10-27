@@ -4,15 +4,15 @@ import { useGetFilePreviewUrl } from '../../../hooks/useGetFilePreviewUrl'
 import { getFileExtensionIcon } from '../../../utils/layout/fileExtensionIcon'
 import { getFileExtension } from '../../../utils/operations'
 import { CustomFile } from './FileDrop'
+import { FileUploadProgress } from '../chat/ChatInput/FileInput/useFileUpload'
 
 interface FileListItemProps {
     file: CustomFile,
     removeFile: VoidFunction,
-    isUploading?: boolean,
-    uploadProgress?: number
+    uploadProgress: Record<string, FileUploadProgress>
 }
 
-export const FileListItem = ({ file, removeFile, isUploading, uploadProgress }: FileListItemProps) => {
+export const FileListItem = ({ file, removeFile, uploadProgress }: FileListItemProps) => {
 
     const { borderColor, bgColor } = useColorModeValue({
         borderColor: 'gray.200',
@@ -24,10 +24,13 @@ export const FileListItem = ({ file, removeFile, isUploading, uploadProgress }: 
     const previewURL = useGetFilePreviewUrl(file)
     const fileSizeString = getFileSize(file)
 
+    const isUploadComplete = uploadProgress?.[file.fileID]?.isComplete ?? false
+    const progress = uploadProgress?.[file.fileID]?.progress ?? 0
+
     return (
         <HStack w='full' justify={'flex-start'} border={'2px'} borderColor={borderColor} bgColor={bgColor} p='2' rounded='md'>
             <Center maxW='50px'>
-                {previewURL ? <Image src={previewURL} alt='File preview' boxSize={'30px'} rounded='md' /> : <Icon as={getFileExtensionIcon(getFileExtension(file.name) ?? '')} boxSize="6" />}
+                {previewURL ? <Image src={previewURL} alt='File preview' boxSize={'32px'} rounded='md' /> : <Icon as={getFileExtensionIcon(getFileExtension(file.name) ?? '')} boxSize="8" />}
             </Center>
             <HStack justify="space-between" width="calc(100% - 50px)">
                 <Stack spacing={0} w='full' whiteSpace="nowrap" overflow="hidden">
@@ -36,12 +39,14 @@ export const FileListItem = ({ file, removeFile, isUploading, uploadProgress }: 
                         {fileSizeString}
                     </Text>
                 </Stack>
-                {isUploading
-                    ?
-                    <CircularProgress size='30px' thickness='6px' color='green.500' value={uploadProgress}>
-                        <CircularProgressLabel>{uploadProgress}%</CircularProgressLabel>
+                {!isUploadComplete && progress > 0
+                    &&
+                    <CircularProgress size='30px' thickness='6px' color='green.500' value={progress}>
+                        <CircularProgressLabel>{progress}%</CircularProgressLabel>
                     </CircularProgress>
-                    :
+                }
+                {
+                    uploadProgress?.[file.fileID] === undefined &&
                     <IconButton
                         onClick={removeFile}
                         size="sm"

@@ -1,7 +1,9 @@
 import { AddChannelMembersButton, ViewChannelMembersButton } from "@/components/features/channels/channel-members"
-import { ArchiveChannelButton } from "@/components/features/channels/archive-channel"
-import { IonBackButton, IonButtons, IonContent, IonHeader, IonList, IonPage, IonTitle, IonToolbar } from "@ionic/react"
-import { useRef } from "react"
+import { ArchiveChannelButton } from "@/components/features/channels/ArchiveChannel"
+import { DeleteChannelButton } from "@/components/features/channels/DeleteChannel"
+import { IonBackButton, IonButtons, IonContent, IonHeader, IonItem, IonItemDivider, IonItemGroup, IonLabel, IonList, IonListHeader, IonPage, IonTitle, IonToolbar } from "@ionic/react"
+import { useRef, useState } from "react"
+import { IoPersonAdd } from "react-icons/io5"
 import { useParams } from "react-router-dom"
 
 export const ChannelSettings = () => {
@@ -26,7 +28,13 @@ export const ChannelSettings = () => {
 
                     <ViewChannelMembersButton pageRef={pageRef} channelID={channelID} />
                     <AddChannelMembersButton pageRef={pageRef} channelID={channelID} />
-                    <ArchiveChannelButton channelID={channelID} />
+                    <IonItemGroup className="py-2">
+                        <IonItemDivider className="bg-transparent text-sm text-zinc-300 pt-2">
+                            <IonLabel>Channel Management</IonLabel>
+                        </IonItemDivider>
+                        <ArchiveChannelButton channelID={channelID} />
+                        <DeleteChannelButton channelID={channelID} />
+                    </IonItemGroup>
 
                 </IonList>
             </IonContent>

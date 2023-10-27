@@ -16,6 +16,9 @@ export interface BaseMessage {
 export interface FileMessage extends BaseMessage {
     file: string,
     message_type: 'File' | 'Image'
+    thumbnail_width: number,
+    thumbnail_height: number,
+    file_thumbnail?: string,
 }
 
 export interface TextMessage extends BaseMessage {

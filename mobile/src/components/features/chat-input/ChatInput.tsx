@@ -55,7 +55,7 @@ export const ChatInput = ({ channelID, allChannels, allMembers, onMessageSend }:
             <IonButtons slot='end' className='mb-0.5'>
                 <input multiple type='file' hidden ref={fileInputRef} onChange={getFiles} />
                 <IonButton onClick={pickFiles} color='light' fill='solid' shape='round' slot='icon-only'>
-                    <AiOutlinePaperClip size='20px' className='text-zinc-500' />
+                    <AiOutlinePaperClip size='20px' className='text-zinc-300' />
                 </IonButton>
             </IonButtons>
             <div className='overflow-x-hidden w-[90%]'>

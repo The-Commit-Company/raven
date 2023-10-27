@@ -1,19 +1,19 @@
 import { useGetChannelData } from "@/hooks/useGetChannelData"
 import { IonAlert, ToastOptions, useIonToast } from "@ionic/react"
-import { useFrappeUpdateDoc } from "frappe-react-sdk"
+import { useFrappeDeleteDoc } from "frappe-react-sdk"
 import { useHistory } from "react-router-dom"
 
-interface ArchiveChannelModalProps {
+interface DeleteChannelModalProps {
     isOpen: boolean,
     onDismiss: VoidFunction,
     channelID: string
 }
 
-export const ArchiveChannelAlert = ({ isOpen, onDismiss, channelID }: ArchiveChannelModalProps) => {
+export const DeleteChannelAlert = ({ isOpen, onDismiss, channelID }: DeleteChannelModalProps) => {
 
     const { channel } = useGetChannelData(channelID)
 
-    const { updateDoc, error } = useFrappeUpdateDoc()
+    const { deleteDoc, error } = useFrappeDeleteDoc()
     const history = useHistory()
 
     const [present] = useIonToast()
@@ -28,22 +28,20 @@ export const ArchiveChannelAlert = ({ isOpen, onDismiss, channelID }: ArchiveCha
     }
 
     const archiveChannel = () => {
-        console.log('archive channel')
-        updateDoc('Raven Channel', channel?.name ?? '', {
-            is_archived: 1
-        }).then(() => {
-            presentToast("Channel archived successfully.", 'success')
-            onDismiss()
-            history.replace('/channels')
-        }).catch((e) => {
-            presentToast("Error while archiving the channel.", 'danger')
-        })
+        deleteDoc('Raven Channel', channel?.name)
+            .then(() => {
+                presentToast("Channel deleted successfully.", 'success')
+                onDismiss()
+                history.replace('/channels')
+            }).catch((e) => {
+                presentToast("Error while deleting the channel.", 'danger')
+            })
     }
 
     return (
         <IonAlert onDidDismiss={onDismiss} isOpen={isOpen}
-            header="Archive Channel"
-            message={`Are you sure you want to archive #${channel?.channel_name}`}
+            header="Delete Channel"
+            message={`Are you sure you want to delete #${channel?.channel_name}? This action cannot be undone.`}
             buttons={[
                 {
                     text: 'No',
@@ -51,7 +49,7 @@ export const ArchiveChannelAlert = ({ isOpen, onDismiss, channelID }: ArchiveCha
                 }
                 , {
                     text: 'Yes',
-                    role: 'confirm',
+                    role: 'destructive',
                     cssClass: 'text-danger',
                     handler: archiveChannel
                 }
