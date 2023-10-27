@@ -28,6 +28,7 @@ import { ChannelListProvider } from './utils/channel/ChannelListProvider';
 import { UserListProvider } from './utils/users/UserListProvider';
 import { ActiveUsersProvider } from './utils/users/ActiveUsersProvider';
 import { createAnimation, iosTransitionAnimation } from '@ionic/core';
+import { isPlatform } from '@ionic/react';
 
 const animationBuilder: AnimationBuilder = (baseEl, opts) => {
   if (opts.direction === "back") {
@@ -39,7 +40,7 @@ const animationBuilder: AnimationBuilder = (baseEl, opts) => {
 setupIonicReact({
   mode: 'ios',
   swipeBackEnabled: false,
-  navAnimation: animationBuilder,
+  navAnimation: isPlatform('ios') ? animationBuilder : undefined,
 })
 
 function App() {
