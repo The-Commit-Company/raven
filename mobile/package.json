@@ -29,7 +29,7 @@
     "@tiptap/suggestion": "^2.1.12",
     "cal-sans": "^1.0.1",
     "emoji-picker-element": "^1.18.4",
-    "frappe-react-sdk": "^1.3.7",
+    "frappe-react-sdk": "^1.3.8",
     "highlight.js": "^11.9.0",
     "ionicons": "^7.1.2",
     "lowlight": "^3.1.0",

@@ -2603,7 +2603,7 @@ frappe-js-sdk@^1.3.7:
   dependencies:
     axios "^0.26.1"
 
-frappe-react-sdk@^1.3.7:
+frappe-react-sdk@^1.3.8:
   version "1.3.8"
   resolved "https://registry.yarnpkg.com/frappe-react-sdk/-/frappe-react-sdk-1.3.8.tgz#dda28987bc48a51826204b41bedc5d82acf65eba"
   integrity sha512-NZG2XyK1kHbF7hqKoLXLY5XkwKOx/72xHz8BVFp0phDlytsymFdLWHHi+r6VFA4swsHCoKu1Mpjj3HV6D/nhEw==
