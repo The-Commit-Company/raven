@@ -1,9 +1,8 @@
 import { AddChannelMembersButton, ViewChannelMembersButton } from "@/components/features/channels/channel-members"
 import { ArchiveChannelButton } from "@/components/features/channels/ArchiveChannel"
 import { DeleteChannelButton } from "@/components/features/channels/DeleteChannel"
-import { IonBackButton, IonButtons, IonContent, IonHeader, IonItem, IonItemDivider, IonItemGroup, IonLabel, IonList, IonListHeader, IonPage, IonTitle, IonToolbar } from "@ionic/react"
-import { useRef, useState } from "react"
-import { IoPersonAdd } from "react-icons/io5"
+import { IonBackButton, IonButtons, IonContent, IonHeader, IonItemDivider, IonItemGroup, IonLabel, IonList, IonPage, IonTitle, IonToolbar } from "@ionic/react"
+import { useRef } from "react"
 import { useParams } from "react-router-dom"
 
 export const ChannelSettings = () => {
