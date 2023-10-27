@@ -3,6 +3,8 @@ import { useFrappeDeleteDoc, useSWRConfig } from "frappe-react-sdk"
 import { useRef } from "react"
 import { AlertBanner, ErrorBanner } from "../../layout/AlertBanner"
 import { useParams } from "react-router-dom"
+import useSound from "use-sound"
+import deleteSound from '../../../utils/sounds/delete.mp3'
 
 interface DeleteMessageModalProps {
     isOpen: boolean,
@@ -24,9 +26,15 @@ export const DeleteMessageModal = ({ isOpen, onClose, channelMessageID }: Delete
 
     const { channelID } = useParams()
 
+    const [play] = useSound(
+        deleteSound,
+        { volume: 0.5 }
+    );
+
     const onSubmit = () => {
         return deleteDoc('Raven Message', channelMessageID
         ).then(() => {
+            play()
             toast({
                 title: 'Message deleted successfully',
                 status: 'success',
@@ -68,7 +76,7 @@ export const DeleteMessageModal = ({ isOpen, onClose, channelMessageID }: Delete
                 <AlertDialogFooter>
                     <ButtonGroup>
                         <Button ref={cancelRef} variant='ghost' onClick={() => onClose(false)}>Cancel</Button>
-                        <Button colorScheme='red' onClick={onSubmit} isLoading={loading}>Delete</Button>
+                        <Button colorScheme='red' onClick={onSubmit} isDisabled={loading} isLoading={loading}>Delete</Button>
                     </ButtonGroup>
                 </AlertDialogFooter>
             </AlertDialogContent>
