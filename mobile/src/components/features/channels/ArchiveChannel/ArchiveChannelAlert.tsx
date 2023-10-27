@@ -1,6 +1,8 @@
 import { useGetChannelData } from "@/hooks/useGetChannelData"
+import { ChannelListContext, ChannelListContextType } from "@/utils/channel/ChannelListProvider"
 import { IonAlert, ToastOptions, useIonToast } from "@ionic/react"
 import { useFrappeUpdateDoc } from "frappe-react-sdk"
+import { useContext } from "react"
 import { useHistory } from "react-router-dom"
 
 interface ArchiveChannelModalProps {
@@ -12,6 +14,8 @@ interface ArchiveChannelModalProps {
 export const ArchiveChannelAlert = ({ isOpen, onDismiss, channelID }: ArchiveChannelModalProps) => {
 
     const { channel } = useGetChannelData(channelID)
+
+    const { mutate } = useContext(ChannelListContext) as ChannelListContextType
 
     const { updateDoc, error } = useFrappeUpdateDoc()
     const history = useHistory()
@@ -33,6 +37,7 @@ export const ArchiveChannelAlert = ({ isOpen, onDismiss, channelID }: ArchiveCha
         }).then(() => {
             presentToast("Channel archived successfully.", 'success')
             onDismiss()
+            mutate()
             history.replace('/channels')
         }).catch((e) => {
             presentToast("Error while archiving the channel.", 'danger')
