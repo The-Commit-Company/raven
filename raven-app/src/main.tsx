@@ -5,7 +5,7 @@ import { BrowserRouter } from 'react-router-dom'
 import App from './App'
 import '@radix-ui/themes/styles.css';
 import { Theme } from '@radix-ui/themes';
-
+import './index.css'
 if (import.meta.env.DEV) {
   fetch('/api/method/raven.www.raven.get_context_for_dev', {
     method: 'POST',
@@ -23,19 +23,13 @@ if (import.meta.env.DEV) {
     })
 }
 
-const theme = extendTheme({
-  config: {
-    initialColorMode: 'dark',
-    useSystemColorMode: false,
-  }
-})
-
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <React.StrictMode>
     <BrowserRouter basename={import.meta.env.VITE_BASE_NAME ?? ''}>
-      <ChakraProvider theme={theme}>
+      <ChakraProvider>
         <Theme
           radius='medium'
+          appearance='dark'
           panelBackground='translucent'>
           <App />
         </Theme>

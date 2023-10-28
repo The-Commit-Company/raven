@@ -1,8 +1,9 @@
-import { Heading, HeadingProps } from "@chakra-ui/react"
+import { Heading } from "@radix-ui/themes"
+import { HeadingProps } from "@radix-ui/themes/dist/cjs/components/heading"
 import { PropsWithChildren } from "react"
 
 export const PageHeading = ({ children, ...props }: PropsWithChildren<HeadingProps>) => {
     return (
-        <Heading as='h1' size='md' fontWeight='semibold' {...props}>{children}</Heading>
+        <Heading size='6' {...props}>{children}</Heading>
     )
 }

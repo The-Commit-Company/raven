@@ -68,7 +68,7 @@ export const ErrorBanner = ({ error, overrideHeading, children, ...props }: Erro
 
     // TODO: Sometimes, error message has links which route to the ERPNext interface. We need to parse the link to route to the correct page in our interface
     // Links are of format <a href="{host_name}/app/{doctype}/{name}">LEAD-00001</a>
-
+    if (messages.length === 0 || !error) return null
     return (<ErrorCallout>
         {messages.map((m, i) => <MarkdownRenderer key={i} content={m.message} />)}
         {children}

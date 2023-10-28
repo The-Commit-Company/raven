@@ -1,10 +1,11 @@
-import { ButtonProps, IconButton, Tooltip } from '@chakra-ui/react'
-import { BiEditAlt } from 'react-icons/bi'
 import { ModalTypes, useModalManager } from "@/hooks/useModalManager"
 import { ChannelRenameModal } from '@/components/feature/channel-details/rename-channel/ChannelRenameModal'
 import { ChannelListItem } from '@/utils/channel/ChannelListProvider'
+import { IconButton, Tooltip } from '@radix-ui/themes'
+import { Pencil2Icon } from '@radix-ui/react-icons'
+import { IconButtonProps } from '@radix-ui/themes/dist/cjs/components/icon-button'
 
-interface EditChannelNameButtonProps extends ButtonProps {
+interface EditChannelNameButtonProps extends IconButtonProps {
     channelID: string,
     channel_name: string,
     channelType: ChannelListItem['type']
@@ -19,15 +20,14 @@ export const EditChannelNameButton = ({ channelID, channel_name, channelType, ..
 
     return (
         <>
-            <Tooltip hasArrow label='Edit channel name' placement="bottom" rounded='md'>
+            <Tooltip content="Edit channel name">
                 <IconButton
-                    aria-label="edit-channel-name"
-                    icon={<BiEditAlt />}
+                    variant="ghost"
                     onClick={onRenameChannelModalOpen}
-                    size='sm'
-                    variant='ghost'
-                    {...props}
-                />
+                    aria-label="edit-channel-name"
+                    {...props}>
+                    <Pencil2Icon />
+                </IconButton>
             </Tooltip>
             <ChannelRenameModal
                 isOpen={modalManager.modalType === ModalTypes.RenameChannel}
