@@ -1,19 +1,16 @@
-import { BoxProps, Center, Spinner, SpinnerProps, Stack, Text, TextProps } from '@chakra-ui/react'
-import { motion } from 'framer-motion'
+import { Flex, Text } from '@radix-ui/themes'
+import { FlexProps } from '@radix-ui/themes/dist/cjs/components/flex'
 
-interface Props extends BoxProps {
+interface Props extends FlexProps {
     text?: string
-    textProps?: TextProps,
-    spinnerProps?: SpinnerProps
 }
 
-export const FullPageLoader = ({ text = "Ravens are finding their way to you...", textProps, spinnerProps, ...props }: Props) => {
+export const FullPageLoader = ({ text = "Ravens are finding their way to you...", ...props }: Props) => {
     return (
-        <Center w='100vw' h='100vh' as={motion.div} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} {...props}>
-            <Stack justify={'center'} align='center'>
-                <Spinner color='gray.500' {...spinnerProps} />
-                <Text as='span' color='gray.500' fontStyle={'italic'} {...textProps}>{text}</Text>
-            </Stack>
-        </Center>
+        <Flex width='100%' height='100%' align='center' justify='center' {...props}>
+            <Flex justify='center' align='center' direction='column'>
+                <Text as='span' color='gray'><i>{text}</i></Text>
+            </Flex>
+        </Flex>
     )
 }

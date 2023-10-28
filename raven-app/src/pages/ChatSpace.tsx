@@ -1,13 +1,14 @@
 import { ChannelSpace } from "@/components/feature/chat/chat-space/ChannelSpace"
 import { DirectMessageSpace } from "@/components/feature/chat/chat-space/DirectMessageSpace"
-import { AlertBanner, ErrorBanner } from "@/components/layout/AlertBanner"
+import { ErrorBanner } from "@/components/layout/AlertBanner"
 import { FullPageLoader } from "@/components/layout/Loaders"
 import { useCurrentChannelData } from "@/hooks/useCurrentChannelData"
 import { ChannelMembersProvider } from "@/utils/channel/ChannelMembersProvider"
-import { Box } from "@chakra-ui/react"
 import { useEffect } from "react"
+import { Box } from '@radix-ui/themes'
 import { useParams } from "react-router-dom"
 import { FrappeError, useSWRConfig } from "frappe-react-sdk"
+import { ErrorCallout } from "@/components/layout/AlertBanner/ErrorBanner"
 
 export const ChatSpace = () => {
 
@@ -18,7 +19,10 @@ export const ChatSpace = () => {
         return <ChatSpaceArea channelID={channelID} />
     }
 
-    return <Box p={2}><AlertBanner status="error" heading="No channel found" /></Box>
+    return <Box p='2'><ErrorCallout>
+        No channel found
+    </ErrorCallout>
+    </Box>
 
 }
 
@@ -46,7 +50,7 @@ const ChatSpaceArea = ({ channelID }: { channelID: string }) => {
     }
 
     if (error) {
-        return <Box p={2}><ErrorBanner error={error} /></Box>
+        return <Box p='2'><ErrorBanner error={error} /></Box>
     }
 
     if (channel) {
@@ -61,7 +65,7 @@ const ChatSpaceArea = ({ channelID }: { channelID: string }) => {
         )
     }
 
-    return <Box p={2}><ErrorBanner error={
+    return <Box p='2'><ErrorBanner error={
         {
             message: "No channel found",
             exception: `Channel ${channelID} not found`

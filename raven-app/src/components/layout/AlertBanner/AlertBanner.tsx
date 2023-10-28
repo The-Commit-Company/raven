@@ -9,6 +9,7 @@ interface Props extends AlertProps {
 
 export const AlertBanner = ({ variant = "left-accent", heading, onClose, children, ...props }: Props) => {
 
+
     return (
         <Alert variant={variant} {...props} {...OPACITY_ON_LOAD} exit={{ opacity: 0 }}>
             <AlertIcon />
