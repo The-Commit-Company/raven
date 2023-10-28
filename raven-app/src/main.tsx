@@ -3,6 +3,8 @@ import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { BrowserRouter } from 'react-router-dom'
 import App from './App'
+import '@radix-ui/themes/styles.css';
+import { Theme } from '@radix-ui/themes';
 
 if (import.meta.env.DEV) {
   fetch('/api/method/raven.www.raven.get_context_for_dev', {
@@ -32,7 +34,11 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <React.StrictMode>
     <BrowserRouter basename={import.meta.env.VITE_BASE_NAME ?? ''}>
       <ChakraProvider theme={theme}>
-        <App />
+        <Theme
+          radius='medium'
+          panelBackground='translucent'>
+          <App />
+        </Theme>
       </ChakraProvider>
     </BrowserRouter>
   </React.StrictMode>
