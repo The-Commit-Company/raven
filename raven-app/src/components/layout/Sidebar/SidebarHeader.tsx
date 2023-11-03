@@ -1,16 +1,13 @@
-import { Stack, HStack, Tooltip, IconButton, Image, useColorModeValue, useColorMode } from '@chakra-ui/react'
+import { Stack, HStack, Tooltip, IconButton, useColorMode } from '@chakra-ui/react'
+import { Text } from '@radix-ui/themes'
 import { HiOutlineMoon, HiOutlineSun } from 'react-icons/hi'
-import raven_logo_light from "../../../assets/raven_logo_light.png"
-import raven_logo_dark from "../../../assets/raven_logo_dark.png"
 
 export const SidebarHeader = () => {
 
-    const logo = useColorModeValue(raven_logo_light, raven_logo_dark)
-
     return (
         <Stack px={1} w='full' h='48px'>
-            <HStack justifyContent="space-between" pb='2' pt='4'>
-                <Image src={logo} objectFit="contain" alt="Raven" height='16px' />
+            <HStack justifyContent="space-between" pb='2' pt='2'>
+                <Text as='span' size='6' className='cal-sans'>raven</Text>
                 <ColorModeToggleButton />
             </HStack>
         </Stack>

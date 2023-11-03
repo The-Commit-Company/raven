@@ -2,13 +2,12 @@ import { useState, useEffect, useContext } from "react";
 import { Box, Button, Flex, FormControl, FormLabel, Image, IconButton, Input, InputGroup, InputRightElement, Stack, useDisclosure, chakra, FormErrorMessage, useColorModeValue } from "@chakra-ui/react";
 import { useForm } from "react-hook-form";
 import { HiEye, HiEyeOff } from "react-icons/hi";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { AlertBanner } from "../../components/layout/AlertBanner";
 import { UserContext } from "../../utils/auth/UserProvider";
 import { isEmailValid } from "../../utils/validations";
-import raven_logo_light from "../../assets/raven_logo_light.png"
-import raven_logo_dark from "../../assets/raven_logo_dark.png"
 import { FullPageLoader } from "../../components/layout/Loaders";
+import { Text } from "@radix-ui/themes";
 
 type Inputs = {
     email: string;
@@ -19,7 +18,6 @@ export const Login = () => {
     const { login, isLoading } = useContext(UserContext)
     const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<Inputs>();
     const { isOpen, onToggle } = useDisclosure();
-    const logo = useColorModeValue(raven_logo_light, raven_logo_dark)
     const onClickReveal = () => {
         onToggle()
     }
@@ -39,7 +37,7 @@ export const Login = () => {
                             <Stack spacing="8" rounded={{ md: "2xl" }} p={{ base: "4", md: "10" }} borderWidth={{ md: "1px" }} shadow={{ lg: "inner" }}>
                                 <Link to="/" tabIndex={-1}>
                                     <Flex justify="center">
-                                        <Image src={logo} objectFit="cover" alt="Raven" width={180} />
+                                        <Text as='span' size='9' className='cal-sans'>raven</Text>
                                     </Flex>
                                 </Link>
 

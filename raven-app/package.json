@@ -29,6 +29,7 @@
     "@tiptap/suggestion": "^2.1.12",
     "@types/js-cookie": "^3.0.3",
     "@types/unist": "^2.0.6",
+    "cal-sans": "^1.0.1",
     "chakra-react-select": "^4.6.0",
     "cmdk": "^0.2.0",
     "emoji-picker-element": "^1.18.4",
@@ -51,8 +52,7 @@
     "rehype-raw": "^6.1.1",
     "remark-gfm": "^3.0.1",
     "timeago-react": "^3.0.5",
-    "tippy.js": "^6.3.7",
-    "use-sound": "^4.0.1"
+    "tippy.js": "^6.3.7"
   },
   "devDependencies": {
     "@types/react": "^18.0.27",
