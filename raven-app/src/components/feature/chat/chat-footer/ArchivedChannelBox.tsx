@@ -1,8 +1,9 @@
+import { useTheme } from "@/ThemeProvider"
 import { ErrorBanner } from "@/components/layout/AlertBanner"
 import { UserContext } from "@/utils/auth/UserProvider"
 import { ChannelListItem } from "@/utils/channel/ChannelListProvider"
 import { ChannelMembers } from "@/utils/channel/ChannelMembersProvider"
-import { Text, Box, HStack, Stack, useColorMode, useToast, Button } from "@chakra-ui/react"
+import { Text, Box, HStack, Stack, useToast, Button } from "@chakra-ui/react"
 import { useFrappeUpdateDoc } from "frappe-react-sdk"
 import { useContext } from "react"
 import { BiHash } from "react-icons/bi"
@@ -14,7 +15,7 @@ interface ArchivedChannelBoxProps {
 
 export const ArchivedChannelBox = ({ channelData, channelMembers }: ArchivedChannelBoxProps) => {
 
-    const { colorMode } = useColorMode()
+    const { appearance } = useTheme()
 
     const { updateDoc, error, loading } = useFrappeUpdateDoc()
     const toast = useToast()
@@ -49,7 +50,7 @@ export const ArchivedChannelBox = ({ channelData, channelMembers }: ArchivedChan
 
     return (
         <Box>
-            <Stack border='1px' borderColor={'gray.500'} rounded='lg' bottom='2' boxShadow='base' w='calc(98vw - var(--sidebar-width))' bg={colorMode === "light" ? "white" : "gray.800"} p={4}>
+            <Stack border='1px' borderColor={'gray.500'} rounded='lg' bottom='2' boxShadow='base' w='calc(98vw - var(--sidebar-width))' bg={appearance === "light" ? "white" : "gray.800"} p={4}>
                 <ErrorBanner error={error} />
                 <HStack justify='center' align='center' pb={4}>
                     <BiHash />

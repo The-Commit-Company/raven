@@ -1,4 +1,4 @@
-import { Text, Box, HStack, Stack, useColorMode, Center, Image, Icon, IconButton, StackDivider, LinkBox } from '@chakra-ui/react'
+import { Text, Box, HStack, Stack, Center, Image, Icon, IconButton, StackDivider, LinkBox } from '@chakra-ui/react'
 import { Message } from '../../../../../../types/Messaging/Message'
 import { MarkdownRenderer } from '../../markdown-viewer/MarkdownRenderer'
 import { DateObjectToFormattedDateStringWithoutYear, DateObjectToTimeString, getFileExtension, getFileName } from '../../../../utils/operations'
@@ -15,6 +15,7 @@ import { useGetUserRecords } from '@/hooks/useGetUserRecords'
 import { BiCross } from 'react-icons/bi'
 import { AiOutlineCloseCircle } from 'react-icons/ai'
 import { CloseIcon } from '@chakra-ui/icons'
+import { useTheme } from '@/ThemeProvider'
 
 interface PreviousMessageBoxProps {
     previous_message_id?: string,
@@ -28,11 +29,11 @@ const MAX_TRUNCATED_LENGTH = 100
 export const PreviousMessageBox = ({ previous_message_id, previous_message_content, onReplyingToMessageClose, channelData }: PreviousMessageBoxProps) => {
 
     const users = useGetUserRecords()
-    const { colorMode } = useColorMode()
+    const { appearance } = useTheme()
 
     if (previous_message_content) {
         return (
-            <Box m='2' bgColor={colorMode === 'light' ? 'white' : 'gray.900'} rounded={'md'} shadow={'sm'}>
+            <Box m='2' bgColor={appearance === 'light' ? 'white' : 'gray.900'} rounded={'md'} shadow={'sm'}>
                 <HStack w='full' p='2' rounded='md' justify="space-between">
 
                     <Stack spacing={1}>
@@ -94,7 +95,7 @@ interface PreviousMessageBoxInChatProps {
 
 const PreviousMessageBoxInChat = ({ previous_message_id, channelData, users }: PreviousMessageBoxInChatProps) => {
 
-    const { colorMode } = useColorMode()
+    const { appearance } = useTheme()
     const { data, error } = useFrappeGetDoc<Message>('Raven Message', previous_message_id)
     const { virtuosoRef } = useContext(VirtuosoRefContext)
     const navigate = useNavigate()
@@ -126,8 +127,8 @@ const PreviousMessageBoxInChat = ({ previous_message_id, channelData, users }: P
         return <AlertBanner status='error' heading='previous message not found, this message may have been deleted' />
     }
     if (data) {
-        return <LinkBox onClick={() => handleScrollToMessage(previous_message_id)} p='2' border={'1px'} borderColor={colorMode === 'light' ? 'gray.400' : 'gray.600'} rounded={'md'} _hover={{ cursor: 'pointer', boxShadow: 'sm', bgColor: colorMode === 'light' ? 'white' : 'black' }}>
-            <Box pl='2' borderLeft={'2px'} borderLeftColor={colorMode === 'light' ? 'gray.600' : 'gray.600'}>
+        return <LinkBox onClick={() => handleScrollToMessage(previous_message_id)} p='2' border={'1px'} borderColor={appearance === 'light' ? 'gray.400' : 'gray.600'} rounded={'md'} _hover={{ cursor: 'pointer', boxShadow: 'sm', bgColor: appearance === 'light' ? 'white' : 'black' }}>
+            <Box pl='2' borderLeft={'2px'} borderLeftColor={appearance === 'light' ? 'gray.600' : 'gray.600'}>
                 <Stack spacing={1}>
                     <HStack>
                         <Text fontSize='xs' fontWeight={'semibold'} color='blue.500'>{users?.[data.owner]?.full_name ?? data.owner}</Text>

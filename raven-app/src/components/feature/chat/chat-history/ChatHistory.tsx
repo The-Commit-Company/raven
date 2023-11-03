@@ -1,4 +1,4 @@
-import { Box, Stack, useColorMode } from "@chakra-ui/react";
+import { Box } from "@chakra-ui/react";
 import { DividerWithText } from "../../../layout/Divider/DividerWithText";
 import { DateObjectToFormattedDateString } from "../../../../utils/operations";
 import { DateBlock, FileMessage, Message, MessageBlock, MessagesWithDate } from "../../../../../../types/Messaging/Message";
@@ -13,6 +13,7 @@ import { Virtuoso } from 'react-virtuoso';
 import { VirtuosoRefContext } from "../../../../utils/message/VirtuosoRefProvider";
 import { scrollbarStyles } from "../../../../styles";
 import { ChannelListItem, DMChannelListItem } from "@/utils/channel/ChannelListProvider";
+import { useTheme } from "@/ThemeProvider";
 
 interface ChatHistoryProps {
     parsedMessages: MessagesWithDate,
@@ -22,7 +23,7 @@ interface ChatHistoryProps {
 
 export const ChatHistory = ({ parsedMessages, replyToMessage, channelData }: ChatHistoryProps) => {
 
-    const { colorMode } = useColorMode()
+    const { appearance } = useTheme()
 
     const { virtuosoRef } = useContext(VirtuosoRefContext)
 
@@ -71,7 +72,7 @@ export const ChatHistory = ({ parsedMessages, replyToMessage, channelData }: Cha
     }
 
     return (
-        <Box ref={boxRef} h='100%' overflowY={isScrollable ? 'scroll' : 'hidden'} sx={scrollbarStyles(colorMode)}>
+        <Box ref={boxRef} h='100%' overflowY={isScrollable ? 'scroll' : 'hidden'} sx={scrollbarStyles(appearance)}>
             <Virtuoso
                 customScrollParent={boxRef.current ?? undefined}
                 totalCount={parsedMessages.length}

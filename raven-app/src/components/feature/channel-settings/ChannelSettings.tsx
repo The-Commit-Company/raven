@@ -1,8 +1,9 @@
-import { Box, Stack, useColorMode, Divider } from "@chakra-ui/react"
+import { Box, Stack, Divider } from "@chakra-ui/react"
 import { ChannelListItem } from "@/utils/channel/ChannelListProvider"
 import { ArchiveChannelButton } from "./archive-channel/ArchiveChannelButton"
 import { ChangeChannelTypeButton } from "./change-channel-type/ChangeChannelTypeButton"
 import { DeleteChannelButton } from "./delete-channel/DeleteChannelButton"
+import { useTheme } from "@/ThemeProvider"
 
 type Props = {
     onClose: () => void
@@ -11,13 +12,13 @@ type Props = {
 
 export const ChannelSettings = ({ onClose, channelData }: Props) => {
 
-    const { colorMode } = useColorMode()
+    const { appearance } = useTheme()
 
     const BOXSTYLE = {
         p: '0',
         rounded: 'md',
         border: '1px solid',
-        borderColor: colorMode === 'light' ? 'gray.200' : 'gray.600'
+        borderColor: appearance === 'light' ? 'gray.200' : 'gray.600'
     }
 
     const BUTTONSTYLE = {
@@ -26,7 +27,7 @@ export const ChannelSettings = ({ onClose, channelData }: Props) => {
         p: '4',
         justifyContent: 'flex-start',
         _hover: {
-            bg: colorMode === 'light' ? 'gray.50' : 'gray.800'
+            bg: appearance === 'light' ? 'gray.50' : 'gray.800'
         },
         rounded: 'none'
     }

@@ -1,5 +1,5 @@
 .tiptap p.is-editor-empty:first-child::before {
-    color: var(--chakra-colors-gray-500);
+    color: var(--gray-9);
     content: attr(data-placeholder);
     float: left;
     font-size: 14px;
@@ -9,7 +9,14 @@
 
 .tiptap.ProseMirror {
     min-height: 60px;
-    padding: var(--chakra-space-2);
+    padding: var(--space-3);
+    border-top-left-radius: var(--radius-4);
+    border-top-right-radius: var(--radius-4);
+}
+
+.tiptap.ProseMirror:focus {
+    outline: 1.5px solid var(--color-focus-root);
+    outline-offset: -1.5px;
 }
 
 .tiptap blockquote {

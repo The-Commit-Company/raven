@@ -1,4 +1,4 @@
-import { Box, HStack, Stack, useColorMode, Text, Divider, Icon } from "@chakra-ui/react"
+import { Box, HStack, Stack, Text, Divider, Icon } from "@chakra-ui/react"
 import { useContext } from "react"
 import { UserContext } from "../../../utils/auth/UserProvider"
 import { DateObjectToFormattedDateString } from "../../../utils/operations"
@@ -9,6 +9,7 @@ import { EditChannelNameButton } from "./rename-channel/EditChannelNameButton"
 import { EditDescriptionButton } from "./edit-channel-description/EditDescriptionButton"
 import { useGetUserRecords } from "@/hooks/useGetUserRecords"
 import { LeaveChannelButton } from "./leave-channel/LeaveChannelButton"
+import { useTheme } from "@/ThemeProvider"
 
 interface ChannelDetailsProps {
     channelData: ChannelListItem,
@@ -18,14 +19,14 @@ interface ChannelDetailsProps {
 
 export const ChannelDetails = ({ channelData, channelMembers, onClose }: ChannelDetailsProps) => {
 
-    const { colorMode } = useColorMode()
+    const { appearance } = useTheme()
     const { currentUser } = useContext(UserContext)
 
     const BOXSTYLE = {
         p: '4',
         rounded: 'md',
         border: '1px solid',
-        borderColor: colorMode === 'light' ? 'gray.200' : 'gray.600'
+        borderColor: appearance === 'light' ? 'gray.200' : 'gray.600'
     }
 
     const admin = Object.values(channelMembers).find(user => user.is_admin === 1)

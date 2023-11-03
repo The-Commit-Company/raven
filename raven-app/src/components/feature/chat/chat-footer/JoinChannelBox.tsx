@@ -1,12 +1,13 @@
 import { ErrorBanner } from "@/components/layout/AlertBanner"
 import { ChannelListItem } from "@/utils/channel/ChannelListProvider"
-import { Text, Box, HStack, Stack, Center, ButtonGroup, Button, useToast, useColorMode, useDisclosure } from "@chakra-ui/react"
+import { Text, Box, HStack, Stack, Center, ButtonGroup, Button, useToast, useDisclosure } from "@chakra-ui/react"
 import { useFrappeCreateDoc } from "frappe-react-sdk"
 import { BiHash } from "react-icons/bi"
 import { ViewChannelDetailsModal } from "../../channels/ViewChannelDetailsModal"
 import { useContext } from "react"
 import { ActiveUsersContext } from "@/utils/users/ActiveUsersProvider"
 import { ChannelMembers, ChannelMembersContext, ChannelMembersContextType } from "@/utils/channel/ChannelMembersProvider"
+import { useTheme } from "@/ThemeProvider"
 
 interface JoinChannelBoxProps {
     channelData: ChannelListItem,
@@ -16,7 +17,7 @@ interface JoinChannelBoxProps {
 
 export const JoinChannelBox = ({ channelData, channelMembers, user }: JoinChannelBoxProps) => {
 
-    const { colorMode } = useColorMode()
+    const { appearance } = useTheme()
 
     const { mutate: updateMembers } = useContext(ChannelMembersContext) as ChannelMembersContextType
 
@@ -47,7 +48,7 @@ export const JoinChannelBox = ({ channelData, channelMembers, user }: JoinChanne
 
     return (
         <Box>
-            <Stack border='1px' borderColor={'gray.500'} rounded='lg' bottom='2' boxShadow='base' w='calc(98vw - var(--sidebar-width))' bg={colorMode === "light" ? "white" : "gray.800"} p={4}>
+            <Stack border='1px' borderColor={'gray.500'} rounded='lg' bottom='2' boxShadow='base' w='calc(98vw - var(--sidebar-width))' bg={appearance === "light" ? "white" : "gray.800"} p={4}>
                 <ErrorBanner error={error} />
                 <HStack justify='center' align='center' pb={4}><BiHash />
                     <Text>{channelData?.channel_name}</Text>

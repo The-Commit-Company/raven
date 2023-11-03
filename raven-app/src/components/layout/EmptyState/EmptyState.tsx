@@ -1,4 +1,4 @@
-import { Flex, VStack, Text, HStack, Link, Box, Stack, Avatar, Heading, Button, ButtonGroup, useDisclosure, useColorMode, AvatarBadge } from "@chakra-ui/react"
+import { Flex, VStack, Text, HStack, Link, Box, Stack, Avatar, Heading, Button, ButtonGroup, useDisclosure } from "@chakra-ui/react"
 import { BiBookmark, BiGlobe, BiHash, BiLockAlt } from "react-icons/bi"
 import { DateObjectToFormattedDateString } from "../../../utils/operations"
 import { UserProfileDrawer } from "../../feature/user-details/UserProfileDrawer"
@@ -11,6 +11,7 @@ import { EditDescriptionButton } from "@/components/feature/channel-details/edit
 import { AddMembersButton } from "@/components/feature/channel-member-details/add-members/AddMembersButton"
 import { UserContext } from "@/utils/auth/UserProvider"
 import { useGetUserRecords } from "@/hooks/useGetUserRecords"
+import { useTheme } from "@/ThemeProvider"
 
 export const EmptyStateForSearch = () => {
     return (
@@ -70,8 +71,8 @@ const EmptyStateForDM = ({ channelData }: EmptyStateForDMProps) => {
     const users = useGetUserRecords()
     const { isOpen: isUserProfileDetailsDrawerOpen, onOpen: onUserProfileDetailsDrawerOpen, onClose: onUserProfileDetailsDrawerClose } = useDisclosure()
 
-    const { colorMode } = useColorMode()
-    const textColor = colorMode === 'light' ? 'gray.600' : 'gray.400'
+    const { appearance } = useTheme()
+    const textColor = appearance === 'light' ? 'gray.600' : 'gray.400'
 
     return (
         <Box py='4' px='2'>

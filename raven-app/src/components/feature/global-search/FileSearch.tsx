@@ -1,5 +1,5 @@
 import { SearchIcon } from '@chakra-ui/icons'
-import { Avatar, Button, Center, chakra, FormControl, HStack, Icon, Input, InputGroup, InputLeftElement, Link, Stack, TabPanel, Text, Image, Spinner, IconButton, useColorMode } from '@chakra-ui/react'
+import { Avatar, Button, Center, chakra, FormControl, HStack, Icon, Input, InputGroup, InputLeftElement, Link, Stack, TabPanel, Text, Image, Spinner, IconButton } from '@chakra-ui/react'
 import { useFrappeGetCall } from 'frappe-react-sdk'
 import { useMemo, useState, useContext } from 'react'
 import { Controller, FormProvider, useForm } from 'react-hook-form'
@@ -21,6 +21,7 @@ import { scrollbarStyles } from '../../../styles'
 import { UserFields } from '@/utils/users/UserListProvider'
 import { ChannelListContext, ChannelListContextType, ChannelListItem } from '@/utils/channel/ChannelListProvider'
 import { useGetUserRecords } from '@/hooks/useGetUserRecords'
+import { useTheme } from '@/ThemeProvider'
 
 interface FilterInput {
     'from-user-filter': SelectOption[],
@@ -54,7 +55,7 @@ export interface FileSearchResult {
 
 export const FileSearch = ({ onToggleMyChannels, isOpenMyChannels, onToggleSaved, isSaved, dateOption, input, fromFilter, inFilter }: Props) => {
 
-    const { colorMode } = useColorMode()
+    const { appearance } = useTheme()
 
     const users = useGetUserRecords()
 
@@ -238,7 +239,7 @@ export const FileSearch = ({ onToggleMyChannels, isOpenMyChannels, onToggleSaved
                                 sortOrder={sortOrder}
                                 sortField={sortByField}
                                 onSortOrderChange={(order) => setSortOrder(order)} />
-                                <Stack spacing={4} overflowY='scroll' sx={scrollbarStyles(colorMode)}>
+                                <Stack spacing={4} overflowY='scroll' sx={scrollbarStyles(appearance)}>
 
                                     {data.message.map((f: FileSearchResult) => {
                                         const onFilePreviewModalOpen = () => {

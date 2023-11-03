@@ -1,4 +1,5 @@
-import { Box, BoxProps, Center, Stack, Text, useColorModeValue, useToast } from "@chakra-ui/react"
+import { useColorModeValue } from "@/ThemeProvider"
+import { Box, BoxProps, Center, Stack, Text, useToast } from "@chakra-ui/react"
 import { forwardRef, useImperativeHandle, useState } from "react"
 import { Accept, useDropzone } from "react-dropzone"
 

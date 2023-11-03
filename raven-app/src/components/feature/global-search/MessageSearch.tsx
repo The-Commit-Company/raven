@@ -1,5 +1,5 @@
 import { SearchIcon } from '@chakra-ui/icons'
-import { Avatar, Button, Center, chakra, FormControl, HStack, IconButton, Input, InputGroup, InputLeftElement, Spinner, Stack, TabPanel, Text, useColorMode, useToast } from '@chakra-ui/react'
+import { Avatar, Button, Center, chakra, FormControl, HStack, IconButton, Input, InputGroup, InputLeftElement, Spinner, Stack, TabPanel, Text, useToast } from '@chakra-ui/react'
 import { useFrappeGetCall, useFrappePostCall } from 'frappe-react-sdk'
 import { useContext, useState, useMemo, useEffect } from 'react'
 import { FormProvider, Controller, useForm } from 'react-hook-form'
@@ -18,6 +18,7 @@ import { scrollbarStyles } from '../../../styles'
 import { useGetUserRecords } from '@/hooks/useGetUserRecords'
 import { UserFields } from '@/utils/users/UserListProvider'
 import { ChannelListContext, ChannelListContextType, ChannelListItem } from '@/utils/channel/ChannelListProvider'
+import { useTheme } from '@/ThemeProvider'
 
 interface FilterInput {
     'from-user-filter': SelectOption[],
@@ -52,7 +53,7 @@ interface MessageSearchResult {
 
 export const MessageSearch = ({ onToggleMyChannels, isOpenMyChannels, onToggleSaved, isSaved, dateOption, input, fromFilter, inFilter, withFilter, onClose, onCommandPaletteClose }: Props) => {
 
-    const { colorMode } = useColorMode()
+    const { appearance } = useTheme()
 
     const { virtuosoRef } = useContext(VirtuosoRefContext)
     const navigate = useNavigate()
@@ -268,7 +269,7 @@ export const MessageSearch = ({ onToggleMyChannels, isOpenMyChannels, onToggleSa
                                 sortOrder={sortOrder}
                                 sortField={sortByField}
                                 onSortOrderChange={(order) => setSortOrder(order)} />
-                                <Stack overflowY='scroll' pt={4} sx={scrollbarStyles(colorMode)}>
+                                <Stack overflowY='scroll' pt={4} sx={scrollbarStyles(appearance)}>
                                     {data.message.map(({ name, text, owner, creation, channel_id }: MessageSearchResult) => {
                                         return (
                                             <MessageBox messageName={name} channelID={channel_id} creation={creation} owner={owner} messageText={text} handleScrollToMessage={handleScrollToMessage} message_type={'Text'} />

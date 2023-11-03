@@ -1,8 +1,9 @@
-import { Avatar, Center, HStack, Link, Modal, ModalBody, Image, ModalFooter, ModalCloseButton, ModalContent, ModalHeader, ModalOverlay, Stack, StackDivider, Text, useColorMode } from "@chakra-ui/react"
+import { Avatar, Center, HStack, Link, Modal, ModalBody, Image, ModalFooter, ModalCloseButton, ModalContent, ModalHeader, ModalOverlay, Stack, StackDivider, Text } from "@chakra-ui/react"
 import { DateObjectToTimeString, getFileName } from "../../../utils/operations"
 import { BsDownload } from "react-icons/bs"
 import { FileMessage } from "../../../../../types/Messaging/Message"
 import { useGetUserRecords } from "@/hooks/useGetUserRecords"
+import { useTheme } from "@/ThemeProvider"
 
 interface FilePreviewModalProps extends FileMessage {
     isOpen: boolean,
@@ -11,8 +12,8 @@ interface FilePreviewModalProps extends FileMessage {
 
 export const FilePreviewModal = ({ isOpen, onClose, owner, file, creation, message_type }: FilePreviewModalProps) => {
 
-    const { colorMode } = useColorMode()
-    const textColor = colorMode === 'light' ? 'gray.800' : 'gray.50'
+    const { appearance } = useTheme()
+    const textColor = appearance === 'light' ? 'gray.800' : 'gray.50'
 
     const users = useGetUserRecords()
 

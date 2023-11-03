@@ -1,5 +1,5 @@
 import { SearchIcon } from "@chakra-ui/icons"
-import { Text, Avatar, HStack, Icon, Input, InputGroup, InputLeftElement, List, ListItem, Stack, useColorMode, Box, Center } from "@chakra-ui/react"
+import { Text, Avatar, HStack, Icon, Input, InputGroup, InputLeftElement, List, ListItem, Stack, Box, Center } from "@chakra-ui/react"
 import { useContext, useState } from "react"
 import { BsFillCircleFill, BsCircle } from "react-icons/bs"
 import { useDebounce } from "../../../hooks/useDebounce"
@@ -10,6 +10,7 @@ import { ChannelListItem } from "@/utils/channel/ChannelListProvider"
 import { ChannelMembers } from "@/utils/channel/ChannelMembersProvider"
 import { AddMembersButton } from "./add-members/AddMembersButton"
 import { RemoveMemberButton } from "./remove-members/RemoveMemberButton"
+import { useTheme } from "@/ThemeProvider"
 
 interface MemberDetailsProps {
     channelData: ChannelListItem,
@@ -20,9 +21,9 @@ interface MemberDetailsProps {
 
 export const ChannelMemberDetails = ({ channelData, channelMembers, activeUsers, updateMembers }: MemberDetailsProps) => {
 
-    const { colorMode } = useColorMode()
+    const { appearance } = useTheme()
     const LISTHOVERSTYLE = {
-        bg: colorMode === 'light' ? 'gray.100' : 'gray.600',
+        bg: appearance === 'light' ? 'gray.100' : 'gray.600',
         cursor: 'pointer'
     }
 
@@ -56,7 +57,7 @@ export const ChannelMemberDetails = ({ channelData, channelMembers, activeUsers,
                     value={debouncedText} />
             </InputGroup>
 
-            <Box maxH='340px' overflow='hidden' overflowY='scroll' sx={scrollbarStyles(colorMode)}>
+            <Box maxH='340px' overflow='hidden' overflowY='scroll' sx={scrollbarStyles(appearance)}>
 
                 <List spacing={2}>
                     {/* if current user is a channel member and the channel is not a open channel, user can add more members to the channel */}

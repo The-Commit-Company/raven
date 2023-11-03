@@ -1,4 +1,4 @@
-import { Box, HStack, useColorMode } from '@chakra-ui/react'
+import { Box, HStack } from '@chakra-ui/react'
 import { useFrappePostCall } from 'frappe-react-sdk'
 import { useContext } from 'react'
 import { UserContext } from '../../../utils/auth/UserProvider'
@@ -10,6 +10,7 @@ import { EditMessageButton } from './EditMessageButton'
 import { BookmarkButton } from './BookmarkButton'
 import { DownloadButton } from './DownloadButton'
 import { DeleteMessageButton } from './DeleteMessageButton'
+import { useTheme } from '@/ThemeProvider'
 
 interface ActionButtonPaletteProps {
     message: Message,
@@ -35,9 +36,9 @@ export const ActionsPalette = ({ message, showButtons, handleScroll, is_continua
         text = textValue
     }
 
-    const { colorMode } = useColorMode()
-    const BGCOLOR = colorMode === 'light' ? 'white' : 'black'
-    const BORDERCOLOR = colorMode === 'light' ? 'gray.200' : 'gray.700'
+    const { appearance } = useTheme()
+    const BGCOLOR = appearance === 'light' ? 'white' : 'black'
+    const BORDERCOLOR = appearance === 'light' ? 'gray.200' : 'gray.700'
 
     const { currentUser } = useContext(UserContext)
 

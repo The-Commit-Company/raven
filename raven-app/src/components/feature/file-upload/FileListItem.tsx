@@ -1,10 +1,11 @@
-import { Text, Stack, IconButton, HStack, Icon, Image, Center, CircularProgress, CircularProgressLabel, useColorModeValue } from '@chakra-ui/react'
+import { Text, Stack, IconButton, HStack, Icon, Image, Center, CircularProgress, CircularProgressLabel, } from '@chakra-ui/react'
 import { TbTrash } from 'react-icons/tb'
 import { useGetFilePreviewUrl } from '../../../hooks/useGetFilePreviewUrl'
 import { getFileExtensionIcon } from '../../../utils/layout/fileExtensionIcon'
 import { getFileExtension } from '../../../utils/operations'
 import { CustomFile } from './FileDrop'
 import { FileUploadProgress } from '../chat/ChatInput/FileInput/useFileUpload'
+import { useColorModeValue } from '@/ThemeProvider'
 
 interface FileListItemProps {
     file: CustomFile,

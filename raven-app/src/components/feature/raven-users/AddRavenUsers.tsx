@@ -1,12 +1,10 @@
-import { SidebarButtonItem, SidebarItemLabel } from "@/components/layout/Sidebar"
 import { useDebounce } from "@/hooks/useDebounce"
 import { usePaginationWithDoctype } from "@/hooks/usePagination"
 import { User } from "@/types/Core/User"
 import { SearchIcon } from "@chakra-ui/icons"
-import { Text, Button, ButtonGroup, HStack, Icon, Input, InputGroup, InputLeftElement, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Stack, useDisclosure, Center, useToast } from "@chakra-ui/react"
+import { Button, ButtonGroup, HStack, Input, InputGroup, InputLeftElement, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Stack, Center, useToast } from "@chakra-ui/react"
 import { Filter, useFrappeCreateDoc, useFrappeGetDocList, useSWRConfig } from "frappe-react-sdk"
 import { ChangeEvent, useContext, useState } from "react"
-import { FiUsers } from "react-icons/fi"
 import { Sort } from "../sorting"
 import { PageLengthSelector } from "../pagination/PageLengthSelector"
 import { PageSelector } from "../pagination/PageSelector"
@@ -14,19 +12,14 @@ import { ErrorBanner } from "@/components/layout/AlertBanner"
 import { TableLoader } from "@/components/layout/Loaders/TableLoader"
 import { UsersTable } from "./UsersTable"
 import { UserListContext } from "@/utils/users/UserListProvider"
+import { Text } from "@radix-ui/themes"
 
-export const AddRavenUsersButton = () => {
+export const AddRavenUsersButton = ({ isOpen, onClose }: any) => {
 
-    const { isOpen, onOpen, onClose } = useDisclosure()
 
-    return <SidebarButtonItem onClick={onOpen} my={0}>
-        <Icon as={FiUsers} fontSize={'md'} />
-        <SidebarItemLabel>Add Raven users</SidebarItemLabel>
-        <Modal isOpen={isOpen} onClose={onClose} size='4xl'>
-            <ModalOverlay />
-            <AddRavenUsersModal onClose={onClose} />
-        </Modal>
-    </SidebarButtonItem>
+    return <Modal isOpen={isOpen} onClose={onClose} size='4xl'>
+        <AddRavenUsersModal onClose={onClose} />
+    </Modal>
 
 }
 
@@ -116,7 +109,7 @@ export const AddRavenUsersModal = ({ onClose }: ChannelModalProps) => {
                                     type='text'
                                     placeholder='Search for user' />
                             </InputGroup>
-                            {debouncedText.length > 0 && debouncedText.length < 2 && <Text fontSize='xs' color='gray.500'>Continue typing...</Text>}
+                            {debouncedText.length > 0 && debouncedText.length < 2 && <Text size='1' color="gray">Continue typing...</Text>}
                         </HStack>
                         <HStack justify='flex-end'>
                             <Sort
@@ -144,7 +137,7 @@ export const AddRavenUsersModal = ({ onClose }: ChannelModalProps) => {
 
                     {data && data.length === 0 && debouncedText.length >= 2 &&
                         <Center h='400px'>
-                            <Text fontSize='sm' textAlign='center'>No results found</Text>
+                            <Text size='2' align='center'>No results found</Text>
                         </Center>}
 
                     {data && data.length !== 0 && <UsersTable data={data} defaultSelected={ravenUsersArray} selected={selected} setSelected={setSelected} />}

@@ -1,6 +1,6 @@
 import React, { useContext, useEffect } from 'react'
 import { Command } from 'cmdk'
-import { Box, CloseButton, HStack, Link, Modal, ModalCloseButton, ModalContent, ModalOverlay, useColorMode, Text } from '@chakra-ui/react'
+import { Box, CloseButton, HStack, Link, Modal, ModalCloseButton, ModalContent, ModalOverlay, Text } from '@chakra-ui/react'
 import './styles.css'
 import { Home, Messages, Files, Channels, People, FindIn, FindFrom } from './CommandPaletteActions'
 import { useHotkeys } from 'react-hotkeys-hook'
@@ -12,6 +12,7 @@ import { TbSearch } from 'react-icons/tb'
 import { UserListContext } from '@/utils/users/UserListProvider'
 import { ActiveUsersContext } from '@/utils/users/ActiveUsersProvider'
 import { ModalTypes, useModalManager } from '@/hooks/useModalManager'
+import { useTheme } from '@/ThemeProvider'
 
 interface CommandPaletteProps {
     isOpen: boolean,
@@ -70,16 +71,16 @@ export const CommandPalette = ({ isOpen, onClose, onToggle }: CommandPaletteProp
         setPages([''])
     }, [isOpen])
 
-    const { colorMode } = useColorMode()
+    const { appearance } = useTheme()
 
     const inputRef = React.useRef<HTMLInputElement | null>(null)
 
     return (
         <Modal isOpen={isOpen} onClose={onClose}>
             <ModalOverlay bg='rgba(0,0,0,0.1)' />
-            <ModalContent p={2} rounded='xl' shadow='xl' minW={600} bg={colorMode === 'light' ? 'white' : 'gray.800'}>
+            <ModalContent p={2} rounded='xl' shadow='xl' minW={600} bg={appearance === 'light' ? 'white' : 'gray.800'}>
                 <ModalCloseButton />
-                <Command aria-label="Command menu" className={colorMode === 'light' ? 'palette light-theme' : 'palette dark-theme'} ref={ref}
+                <Command aria-label="Command menu" className={appearance === 'light' ? 'palette light-theme' : 'palette dark-theme'} ref={ref}
                     onKeyDown={(e: React.KeyboardEvent) => {
 
                         if (isHome || debouncedText.length) {

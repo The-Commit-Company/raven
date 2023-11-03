@@ -1,5 +1,5 @@
-import { useState, useEffect, useContext } from "react";
-import { Box, Button, Flex, FormControl, FormLabel, Image, IconButton, Input, InputGroup, InputRightElement, Stack, useDisclosure, chakra, FormErrorMessage, useColorModeValue } from "@chakra-ui/react";
+import { useState, useContext } from "react";
+import { Box, Button, Flex, FormControl, FormLabel, IconButton, Input, InputGroup, InputRightElement, Stack, useDisclosure, chakra, FormErrorMessage } from "@chakra-ui/react";
 import { useForm } from "react-hook-form";
 import { HiEye, HiEyeOff } from "react-icons/hi";
 import { Link } from "react-router-dom";

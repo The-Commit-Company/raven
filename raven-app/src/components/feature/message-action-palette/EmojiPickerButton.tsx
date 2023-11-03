@@ -1,5 +1,5 @@
 import { ModalTypes, useModalManager } from '@/hooks/useModalManager'
-import { Box, IconButton, Popover, PopoverContent, PopoverTrigger, Portal, Tooltip, useColorMode } from '@chakra-ui/react'
+import { Box, IconButton, Popover, PopoverContent, PopoverTrigger, Portal, Tooltip } from '@chakra-ui/react'
 import { useEffect } from 'react'
 import { BsEmojiSmile } from 'react-icons/bs'
 import { EmojiPicker } from '../../common/EmojiPicker/EmojiPicker'
@@ -11,7 +11,6 @@ interface EmojiPickerButtonProps {
 
 export const EmojiPickerButton = ({ handleScroll, saveReaction }: EmojiPickerButtonProps) => {
 
-    const { colorMode } = useColorMode()
     const modalManager = useModalManager()
 
     useEffect(() => {

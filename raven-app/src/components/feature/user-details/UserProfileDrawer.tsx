@@ -1,15 +1,14 @@
 import { EmailIcon } from "@chakra-ui/icons"
-import { Text, Avatar, Divider, Drawer, DrawerBody, DrawerCloseButton, DrawerContent, DrawerHeader, DrawerOverlay, Stack, HStack, IconButton, Button, Icon, useColorMode, useDisclosure } from "@chakra-ui/react"
+import { Text, Avatar, Divider, Drawer, DrawerBody, DrawerCloseButton, DrawerContent, DrawerHeader, DrawerOverlay, Stack, HStack, IconButton, Button, Icon } from "@chakra-ui/react"
 import { useFrappeGetCall, useFrappePostCall } from "frappe-react-sdk"
 import { BiMessage } from "react-icons/bi"
 import { BsFillCircleFill, BsCircle, BsClock } from "react-icons/bs"
 import { useNavigate } from "react-router-dom"
 import { DateObjectToTimeString } from "../../../utils/operations"
-import { AiOutlineEdit } from "react-icons/ai"
-import { SetUserStatus } from "./SetUserStatus"
 import { useUserData } from "@/hooks/useUserData"
 import { ErrorBanner } from "@/components/layout/AlertBanner"
 import { UserFields } from "@/utils/users/UserListProvider"
+import { useTheme } from "@/ThemeProvider"
 
 interface UserProfileDrawerProps {
     isOpen: boolean
@@ -19,8 +18,8 @@ interface UserProfileDrawerProps {
 
 export const UserProfileDrawer = ({ isOpen, onClose, user }: UserProfileDrawerProps) => {
 
-    const { colorMode } = useColorMode()
-    const textColor = colorMode === 'light' ? 'blue.500' : 'blue.300'
+    const { appearance } = useTheme()
+    const textColor = appearance === 'light' ? 'blue.500' : 'blue.300'
 
     const navigate = useNavigate()
     const { call, error: channelError, loading, reset } = useFrappePostCall<{ message: string }>("raven.raven_channel_management.doctype.raven_channel.raven_channel.create_direct_message_channel")
@@ -35,7 +34,6 @@ export const UserProfileDrawer = ({ isOpen, onClose, user }: UserProfileDrawerPr
     }
 
     const { name: currentUserName } = useUserData()
-    const { isOpen: isSetUserStatusModalOpen, onOpen: onSetUserStatusModalOpen, onClose: onSetUserStatusModalClose } = useDisclosure()
 
     return (
         <Drawer
@@ -69,28 +67,16 @@ export const UserProfileDrawer = ({ isOpen, onClose, user }: UserProfileDrawerPr
                                 <Text fontWeight='normal' fontSize={15}>{DateObjectToTimeString(new Date())} local time</Text>
                             </HStack>
                         </Stack>
-
-                        {user && (user.name !== currentUserName)
-                            ?
-                            <Button variant='outline'
-                                colorScheme='blue'
-                                leftIcon={<BiMessage />}
-                                onClick={() => {
-                                    gotoDMChannel(user.name)
-                                    onClose()
-                                }}
-                                isLoading={loading}>
-                                Message
-                            </Button>
-                            :
-                            <Button variant='outline'
-                                colorScheme='blue'
-                                leftIcon={<AiOutlineEdit />}
-                                onClick={onSetUserStatusModalOpen}>
-                                Set Status
-                            </Button>
-                        }
-
+                        <Button variant='outline'
+                            colorScheme='blue'
+                            leftIcon={<BiMessage />}
+                            onClick={() => {
+                                gotoDMChannel(user.name)
+                                onClose()
+                            }}
+                            isLoading={loading}>
+                            Message
+                        </Button>
                         <Divider />
                         <Stack spacing={4}>
                             <Text fontWeight='semibold'>Contact Information</Text>
@@ -104,7 +90,6 @@ export const UserProfileDrawer = ({ isOpen, onClose, user }: UserProfileDrawerPr
                         </Stack>
                     </Stack>
                 </DrawerBody>
-                <SetUserStatus isOpen={isSetUserStatusModalOpen} onClose={onSetUserStatusModalClose} />
             </DrawerContent>
         </Drawer>
     )

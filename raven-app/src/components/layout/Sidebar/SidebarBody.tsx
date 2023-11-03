@@ -1,11 +1,10 @@
-import { Icon, Stack, useColorMode } from '@chakra-ui/react'
 import { IoBookmarkOutline } from 'react-icons/io5'
 import { ChannelList } from '../../feature/channels/ChannelList'
 import { DirectMessageList } from '../../feature/direct-messages/DirectMessageList'
 import { SidebarItem, SidebarGroupLabel } from './SidebarComp'
 import { useFrappeEventListener, useFrappeGetCall } from 'frappe-react-sdk'
 import { UnreadCountData } from '../../../utils/channel/ChannelListProvider'
-import { scrollbarStyles } from '../../../styles'
+import { AccessibleIcon, Box, Flex, ScrollArea } from '@radix-ui/themes'
 
 export const SidebarBody = () => {
 
@@ -18,16 +17,20 @@ export const SidebarBody = () => {
         update_count()
     })
 
-    const { colorMode } = useColorMode()
-
     return (
-        <Stack overflowY='scroll' h={'calc(100vh - 145px)'} px={-2} sx={scrollbarStyles(colorMode)} overflowX='hidden'>
-            <SidebarItem to={'saved-messages'}>
-                <Icon fontSize={'md'} as={IoBookmarkOutline} />
-                <SidebarGroupLabel pl='1'>Saved Messages</SidebarGroupLabel>
-            </SidebarItem>
-            <ChannelList unread_count={unread_count?.message} />
-            <DirectMessageList unread_count={unread_count?.message} />
-        </Stack>
+        <ScrollArea type="hover" scrollbars="vertical" className='h-[calc(100vh-7rem)]'>
+            <Flex direction='column' gap='2' className='overflow-x-hidden' px='2'>
+                <SidebarItem to={'saved-messages'}>
+                    <AccessibleIcon label='Saved Messages'>
+                        <IoBookmarkOutline />
+                    </AccessibleIcon>
+                    <Box>
+                        <SidebarGroupLabel>Saved Messages</SidebarGroupLabel>
+                    </Box>
+                </SidebarItem>
+                <ChannelList unread_count={unread_count?.message} />
+                <DirectMessageList unread_count={unread_count?.message} />
+            </Flex>
+        </ScrollArea>
     )
 }

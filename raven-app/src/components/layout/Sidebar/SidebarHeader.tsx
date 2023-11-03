@@ -1,28 +1,30 @@
-import { Stack, HStack, Tooltip, IconButton, useColorMode } from '@chakra-ui/react'
-import { Text } from '@radix-ui/themes'
+import { useTheme } from '@/ThemeProvider'
+import { Box, Flex, IconButton, Text } from '@radix-ui/themes'
 import { HiOutlineMoon, HiOutlineSun } from 'react-icons/hi'
 
 export const SidebarHeader = () => {
 
     return (
-        <Stack px={1} w='full' h='48px'>
-            <HStack justifyContent="space-between" pb='2' pt='2'>
-                <Text as='span' size='6' className='cal-sans'>raven</Text>
-                <ColorModeToggleButton />
-            </HStack>
-        </Stack>
+        <Flex justify="between" px='3' align='center' height='8'>
+            <Text as='span' size='6' className='cal-sans'>raven</Text>
+            <ColorModeToggleButton />
+        </Flex>
     )
 }
 
 const ColorModeToggleButton = () => {
 
-    const { colorMode, toggleColorMode } = useColorMode()
-    return <Tooltip hasArrow label='toggle theme' placement='bottom' rounded={'md'}>
+    const { appearance, toggleTheme } = useTheme()
+    return <Flex align='center' justify='center' pr='1'>
         <IconButton
-            size={"xs"}
+            size={"1"}
             aria-label="Toggle theme"
-            icon={colorMode === "light" ? <HiOutlineMoon /> : <HiOutlineSun />}
-            onClick={toggleColorMode}
-        />
-    </Tooltip>
+            title='Toggle theme'
+            color='gray'
+            variant='ghost'
+            onClick={toggleTheme}
+        >
+            {appearance === "light" ? <HiOutlineMoon /> : <HiOutlineSun />}
+        </IconButton>
+    </Flex>
 }

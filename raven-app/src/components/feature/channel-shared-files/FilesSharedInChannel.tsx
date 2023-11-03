@@ -1,4 +1,4 @@
-import { Text, HStack, Icon, Stack, Link, Box, useColorMode, IconButton, Center, Image, useDisclosure, Flex } from "@chakra-ui/react"
+import { Text, HStack, Icon, Stack, Link, Box, IconButton, Center, Image, useDisclosure, Flex } from "@chakra-ui/react"
 import { getFileExtensionIcon } from "../../../utils/layout/fileExtensionIcon";
 import { useFrappeGetCall } from "frappe-react-sdk";
 import { useParams } from "react-router-dom";
@@ -8,6 +8,7 @@ import { BsDownload } from "react-icons/bs";
 import { FileMessage } from "../../../../../types/Messaging/Message";
 import { scrollbarStyles } from "../../../styles";
 import { ChannelMembers } from "@/utils/channel/ChannelMembersProvider";
+import { useTheme } from "@/ThemeProvider";
 
 interface ChannelFile extends FileMessage {
     name: string,
@@ -28,12 +29,12 @@ export const FilesSharedInChannel = ({ channelMembers }: FilesSharedInChannelPro
     })
     const { isOpen: isGlobalSearchModalOpen, onOpen: onGlobalSearchModalOpen, onClose: onGlobalSearchModalClose } = useDisclosure()
 
-    const { colorMode } = useColorMode()
+    const { appearance } = useTheme()
     const BOXSTYLE = {
         p: '4',
         rounded: 'md',
         border: '1px solid',
-        borderColor: colorMode === 'light' ? 'gray.200' : 'gray.600'
+        borderColor: appearance === 'light' ? 'gray.200' : 'gray.600'
     }
 
     return (
@@ -42,7 +43,7 @@ export const FilesSharedInChannel = ({ channelMembers }: FilesSharedInChannelPro
                 <Text fontWeight={'semibold'} fontSize={'sm'}>Recently shared files</Text>
             }
             <ErrorBanner error={error} />
-            <Box maxH='320px' overflow='hidden' overflowY='scroll' sx={scrollbarStyles(colorMode)}>
+            <Box maxH='320px' overflow='hidden' overflowY='scroll' sx={scrollbarStyles(appearance)}>
                 <Stack>
                     {data?.message && data.message.length > 0 && data.message.map((f: FileMessage) => {
                         return (
