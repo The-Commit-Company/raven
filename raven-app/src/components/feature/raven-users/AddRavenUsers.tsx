@@ -1,8 +1,7 @@
 import { useDebounce } from "@/hooks/useDebounce"
 import { usePaginationWithDoctype } from "@/hooks/usePagination"
 import { User } from "@/types/Core/User"
-import { SearchIcon } from "@chakra-ui/icons"
-import { Button, ButtonGroup, HStack, Input, InputGroup, InputLeftElement, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Stack, Center, useToast } from "@chakra-ui/react"
+import { useToast } from "@chakra-ui/react"
 import { Filter, useFrappeCreateDoc, useFrappeGetDocList, useSWRConfig } from "frappe-react-sdk"
 import { ChangeEvent, useContext, useState } from "react"
 import { Sort } from "../sorting"
@@ -12,22 +11,23 @@ import { ErrorBanner } from "@/components/layout/AlertBanner"
 import { TableLoader } from "@/components/layout/Loaders/TableLoader"
 import { UsersTable } from "./UsersTable"
 import { UserListContext } from "@/utils/users/UserListProvider"
-import { Text } from "@radix-ui/themes"
+import { Button, Dialog, Flex, Text, TextField } from "@radix-ui/themes"
+import { Loader } from "@/components/common/Loader"
+import { useModalContentStyle } from "@/hooks/useModalContentStyle"
+import { BiSearch } from "react-icons/bi"
 
-export const AddRavenUsersButton = ({ isOpen, onClose }: any) => {
+export const AddRavenUsers = ({ isOpen, onOpenChange }: any) => {
 
-
-    return <Modal isOpen={isOpen} onClose={onClose} size='4xl'>
+    const onClose = () => {
+        onOpenChange(false)
+    }
+    return <Dialog.Root open={isOpen} onOpenChange={onOpenChange}>
         <AddRavenUsersModal onClose={onClose} />
-    </Modal>
+    </Dialog.Root>
 
 }
 
-interface ChannelModalProps {
-    onClose: () => void
-}
-
-export const AddRavenUsersModal = ({ onClose }: ChannelModalProps) => {
+export const AddRavenUsersModal = ({ onClose }: { onClose: VoidFunction }) => {
 
     const { mutate } = useSWRConfig()
     const [searchText, setSearchText] = useState("")
@@ -41,13 +41,12 @@ export const AddRavenUsersModal = ({ onClose }: ChannelModalProps) => {
 
     const { start, count, selectedPageLength, setPageLength, nextPage, previousPage } = usePaginationWithDoctype("User", 10, filters)
     const [sortOrder, setSortOder] = useState<"asc" | "desc">("desc")
-    const [sortByField, setSortByField] = useState<string>('creation')
 
     const { data, error } = useFrappeGetDocList<User>("User", {
         fields: ["name", "full_name", "user_image", "creation", "enabled", "user_type"],
         filters,
         orderBy: {
-            field: sortByField,
+            field: 'creation',
             order: sortOrder
         },
         limit_start: start > 0 ? (start - 1) : 0,
@@ -90,68 +89,65 @@ export const AddRavenUsersModal = ({ onClose }: ChannelModalProps) => {
         }
     }
 
+    const contentClass = useModalContentStyle('min-w-[64rem]')
+
     return (
-        <ModalContent>
-            <ModalHeader>Add users to Raven</ModalHeader>
-            <ModalCloseButton />
+        <Dialog.Content className={contentClass}>
+            <Dialog.Title>Add users to Raven</Dialog.Title>
 
-            <ModalBody>
+            <Flex direction='column' gap='4' pt='4'>
+                <Flex justify='between' gap='2'>
+                    <Flex gap='2' align='center'>
+                        <TextField.Root>
+                            <TextField.Slot>
+                                <BiSearch />
+                            </TextField.Slot>
+                            <TextField.Input
+                                onChange={handleChange}
+                                type='text'
+                                placeholder='Search for user' />
+                        </TextField.Root>
+                        {debouncedText.length > 0 && debouncedText.length < 2 && <Text size='1' color="gray">Continue typing...</Text>}
+                    </Flex>
+                    <Flex justify='end' gap='2' align='center'>
+                        <Sort
+                            sortOrder={sortOrder}
+                            onSortOrderChange={(order) => setSortOder(order)} />
+                        <PageLengthSelector
+                            options={[10, 20, 50, 100]}
+                            selectedValue={selectedPageLength}
+                            updateValue={(value) => setPageLength(value)} />
+                        <PageSelector
+                            rowsPerPage={selectedPageLength}
+                            start={start}
+                            totalRows={count!}
+                            gotoNextPage={() => nextPage()}
+                            gotoPreviousPage={() => previousPage()} />
+                    </Flex>
+                </Flex>
 
-                <Stack spacing={4}>
-                    <HStack justifyContent='space-between'>
-                        <HStack>
-                            <InputGroup size='sm' width='300px'>
-                                <InputLeftElement
-                                    pointerEvents='none'
-                                    children={<SearchIcon color='gray.300' />} />
-                                <Input
-                                    onChange={handleChange}
-                                    type='text'
-                                    placeholder='Search for user' />
-                            </InputGroup>
-                            {debouncedText.length > 0 && debouncedText.length < 2 && <Text size='1' color="gray">Continue typing...</Text>}
-                        </HStack>
-                        <HStack justify='flex-end'>
-                            <Sort
-                                sortingFields={[{ label: 'Created on', field: 'creation' }]}
-                                onSortFieldSelect={(selField) => setSortByField(selField)}
-                                sortOrder={sortOrder}
-                                sortField={sortByField}
-                                onSortOrderChange={(order) => setSortOder(order)} />
-                            <PageLengthSelector
-                                options={[10, 20, 50, 100]}
-                                selectedValue={selectedPageLength}
-                                updateValue={(value) => setPageLength(value)} />
-                            <PageSelector
-                                rowsPerPage={selectedPageLength}
-                                start={start}
-                                totalRows={count!}
-                                gotoNextPage={() => nextPage()}
-                                gotoPreviousPage={() => previousPage()} />
-                        </HStack>
-                    </HStack>
+                <ErrorBanner error={error} />
+                {!data && !error && <TableLoader columns={3} />}
 
-                    <ErrorBanner error={error} />
+                {data && data.length === 0 && debouncedText.length >= 2 &&
+                    <Flex align='center' justify='center' className="min-h-[32rem]">
+                        <Text size='2' align='center'>No results found</Text>
+                    </Flex>}
 
-                    {!data && !error && <TableLoader columns={10} />}
+                {data && data.length !== 0 && <UsersTable data={data} defaultSelected={ravenUsersArray} selected={selected} setSelected={setSelected} />}
 
-                    {data && data.length === 0 && debouncedText.length >= 2 &&
-                        <Center h='400px'>
-                            <Text size='2' align='center'>No results found</Text>
-                        </Center>}
-
-                    {data && data.length !== 0 && <UsersTable data={data} defaultSelected={ravenUsersArray} selected={selected} setSelected={setSelected} />}
-
-                </Stack>
-
-            </ModalBody>
-
-            <ModalFooter>
-                <ButtonGroup>
-                    <Button variant='ghost' onClick={onClose} isDisabled={loading}>Cancel</Button>
-                    <Button colorScheme='blue' onClick={handleAddUsers} isLoading={loading}>Add users</Button>
-                </ButtonGroup>
-            </ModalFooter>
-        </ModalContent>
+            </Flex>
+            <Flex gap="3" mt="4" justify="end">
+                <Dialog.Close disabled={loading}>
+                    <Button variant="soft" color="gray">
+                        Cancel
+                    </Button>
+                </Dialog.Close>
+                <Button type='button' disabled={loading} onClick={handleAddUsers}>
+                    {loading && <Loader />}
+                    {loading ? "Adding" : "Add to Raven"}
+                </Button>
+            </Flex>
+        </Dialog.Content>
     )
 }

@@ -10,6 +10,7 @@ import { useTheme } from '@/ThemeProvider'
 import { FiPlus } from 'react-icons/fi'
 import { ErrorText, HelperText, Label } from '@/components/common/Form'
 import { Loader } from '@/components/common/Loader'
+import { useModalContentStyle } from '@/hooks/useModalContentStyle'
 interface ChannelCreationForm {
     channel_name: string,
     channel_description: string,
@@ -98,9 +99,7 @@ export const CreateChannelButton = ({ updateChannelList }: { updateChannelList: 
         }
     }, [channelType])
 
-    const { appearance } = useTheme()
-
-    const contentClass = appearance === 'dark' ? 'backdrop-blur-md bg-[var(--color-panel)]' : ''
+    const contentClass = useModalContentStyle()
 
     return <Dialog.Root open={isOpen} onOpenChange={onOpenChange}>
         <Dialog.Trigger>

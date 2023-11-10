@@ -1,8 +1,7 @@
-import { Divider } from '@chakra-ui/react'
 import { useContext, useState } from 'react'
 import { UserContext } from '../../../utils/auth/UserProvider'
 import { useUserData } from '@/hooks/useUserData'
-import { AddRavenUsersButton } from '@/components/feature/raven-users/AddRavenUsers'
+import { AddRavenUsers } from '@/components/feature/raven-users/AddRavenUsers'
 import { DropdownMenu, Flex, IconButton, Link, Separator, Text } from '@radix-ui/themes'
 import { BsThreeDots } from 'react-icons/bs'
 import { UserAvatar } from '@/components/common/UserAvatar'
@@ -56,7 +55,7 @@ export const SidebarFooter = () => {
                     </DropdownMenu.Root>
                 </Flex>
             </Flex>
-            <AddRavenUsersButton isOpen={isAddUserModalOpen} onClose={() => setIsAddUserModalOpen(false)} />
+            <AddRavenUsers isOpen={isAddUserModalOpen} onOpenChange={setIsAddUserModalOpen} />
         </Flex>
     )
 }

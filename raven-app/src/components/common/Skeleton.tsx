@@ -7,9 +7,10 @@ function Skeleton({
 }: BoxProps) {
     return (
         <Box
-            className={"animate-pulse rounded-md bg-muted " + className}
             {...props}
-        />
+            className={"animate-pulse rounded-md bg-[var(--slate-6)] " + className}
+        >
+        </Box>
     )
 }
 
