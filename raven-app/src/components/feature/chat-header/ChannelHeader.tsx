@@ -4,7 +4,7 @@ import { ChannelListItem } from "@/utils/channel/ChannelListProvider"
 import { ViewOrAddMembersButton } from "@/components/feature/chat-header/ViewOrAddMembersButton"
 import { EditChannelNameButton } from "../channel-details/rename-channel/EditChannelNameButton"
 import { SearchButton } from "./SearchButton"
-import { Box, Flex, Heading, Text } from "@radix-ui/themes"
+import { Flex, Heading } from "@radix-ui/themes"
 
 interface ChannelHeaderProps {
     channelData: ChannelListItem

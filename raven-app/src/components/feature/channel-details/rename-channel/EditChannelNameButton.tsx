@@ -1,9 +1,11 @@
 import { ModalTypes, useModalManager } from "@/hooks/useModalManager"
-import { ChannelRenameModal } from '@/components/feature/channel-details/rename-channel/ChannelRenameModal'
+import { RenameChannelModalContent } from '@/components/feature/channel-details/rename-channel/ChannelRenameModal'
 import { ChannelListItem } from '@/utils/channel/ChannelListProvider'
-import { Button, Dialog, IconButton, Theme, ThemePanel, Tooltip } from '@radix-ui/themes'
+import { Button, Dialog, IconButton, Tooltip } from '@radix-ui/themes'
 import { Pencil2Icon } from '@radix-ui/react-icons'
 import { IconButtonProps } from '@radix-ui/themes/dist/cjs/components/icon-button'
+import { useState } from "react"
+import { useModalContentStyle } from "@/hooks/useModalContentStyle"
 
 interface EditChannelNameButtonProps extends IconButtonProps {
     channelID: string,
@@ -13,39 +15,32 @@ interface EditChannelNameButtonProps extends IconButtonProps {
 
 export const EditChannelNameButton = ({ channelID, channel_name, channelType, ...props }: EditChannelNameButtonProps) => {
 
-    const modalManager = useModalManager()
-    const onRenameChannelModalOpen = () => {
-        modalManager.openModal(ModalTypes.RenameChannel)
+    const [open, setOpen] = useState(false);
+
+    const onClose = () => {
+        setOpen(false)
     }
 
+    const contentClass = useModalContentStyle()
     return (
-        <>
-            <Tooltip content="Edit channel name">
+        <Dialog.Root open={open} onOpenChange={setOpen}>
+            <Dialog.Trigger>
                 <IconButton
                     variant="ghost"
-                    onClick={onRenameChannelModalOpen}
-                    aria-label="edit-channel-name"
+                    color="gray"
+                    aria-label="Click to edit channel name"
+                    title='Edit channel name'
                     {...props}>
                     <Pencil2Icon />
                 </IconButton>
-            </Tooltip>
-            <ChannelRenameModal
-                isOpen={modalManager.modalType === ModalTypes.RenameChannel}
-                onClose={modalManager.closeModal}
-                channelID={channelID}
-                channel_name={channel_name}
-                type={channelType} />
-            <Dialog.Root>
-                <Dialog.Trigger><Button>Open</Button></Dialog.Trigger>
-                <Dialog.Content>
-                    <Dialog.Title>My Dialog</Dialog.Title>
-                    <Dialog.Description>A sample dialog</Dialog.Description>
-                    <Dialog.Close>
-                        <Button>Close</Button>
-                    </Dialog.Close>
-                </Dialog.Content>
-
-            </Dialog.Root>
-        </>
+            </Dialog.Trigger>
+            <Dialog.Content className={contentClass}>
+                <RenameChannelModalContent
+                    channelID={channelID}
+                    channelName={channel_name}
+                    onClose={onClose}
+                    type={channelType} />
+            </Dialog.Content>
+        </Dialog.Root>
     )
 }
