@@ -2,6 +2,7 @@
  "charts": [],
  "content": "[{\"id\":\"MKitHAnT4f\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\"><a href=\\\"/raven\\\">Raven</a></span>\",\"col\":12}},{\"id\":\"_TmvmGAvy7\",\"type\":\"paragraph\",\"data\":{\"text\":\"Click <a href=\\\"/raven\\\">here</a>&nbsp;to visit the Raven app\",\"col\":12}},{\"id\":\"ZcawYU5brv\",\"type\":\"card\",\"data\":{\"card_name\":\"DocTypes\",\"col\":4}}]",
  "creation": "2023-06-22 20:12:29.687295",
+ "custom_blocks": [],
  "docstatus": 0,
  "doctype": "Workspace",
  "for_user": "",
@@ -15,9 +16,19 @@
    "hidden": 0,
    "is_query_report": 0,
    "label": "DocTypes",
-   "link_count": 4,
+   "link_count": 5,
    "onboard": 0,
    "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Raven Users",
+   "link_count": 0,
+   "link_to": "Raven User",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
   },
   {
    "hidden": 0,
@@ -60,7 +71,7 @@
    "type": "Link"
   }
  ],
- "modified": "2023-06-22 20:14:45.643069",
+ "modified": "2023-11-15 00:08:09.420828",
  "modified_by": "Administrator",
  "module": "Raven",
  "name": "Raven",
