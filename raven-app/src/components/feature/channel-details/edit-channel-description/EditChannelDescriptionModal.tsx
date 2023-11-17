@@ -3,9 +3,9 @@ import { useFrappeUpdateDoc } from "frappe-react-sdk"
 import { FormProvider, useForm } from "react-hook-form"
 import { ErrorBanner } from "../../../layout/AlertBanner"
 import { ChannelListItem } from "@/utils/channel/ChannelListProvider"
-import { Box, Dialog, Flex, Button, TextArea } from "@radix-ui/themes"
+import { Box, Dialog, Flex, Button, TextArea, Text } from "@radix-ui/themes"
 import { Loader } from "@/components/common/Loader"
-import { ErrorText, HelperText, Label } from "@/components/common/Form"
+import { ErrorText, Label } from "@/components/common/Form"
 
 interface RenameChannelForm {
     channel_description: string
@@ -71,7 +71,7 @@ export const EditChannelDescriptionModalContent = ({ channelData, onClose }: Ren
                             })}
                             aria-invalid={errors.channel_description ? 'true' : 'false'}
                         />
-                        <HelperText>This is how people will know what this channel is about.</HelperText>
+                        <Text size='1' weight='light'>This is how people will know what this channel is about.</Text>
                         {errors?.channel_description && <ErrorText>{errors.channel_description?.message}</ErrorText>}
                     </Box>
                 </Flex>

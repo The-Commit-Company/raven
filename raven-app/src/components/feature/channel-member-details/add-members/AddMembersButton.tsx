@@ -1,63 +1,46 @@
-import { Text, HStack, IconButton, ListItem, Tooltip, Button } from "@chakra-ui/react"
-import { AddChannelMemberModal } from "./AddChannelMemberModal"
+import { AddChannelMembersModalContent } from "./AddChannelMemberModal"
 import { RiUserAddLine } from "react-icons/ri"
-import { ModalTypes, useModalManager } from "@/hooks/useModalManager"
 import { ChannelListItem } from "@/utils/channel/ChannelListProvider"
 import { BiUserPlus } from "react-icons/bi"
+import { useState } from "react"
+import { useModalContentStyle } from "@/hooks/useModalContentStyle"
+import { Button, Dialog, IconButton } from "@radix-ui/themes"
 
 interface AddMembersButtonProps {
     channelData: ChannelListItem,
     updateMembers: () => void,
-    style?: {
-        bg: string,
-        cursor: string
-    },
-    is_in_list?: boolean,
     is_in_empty_state?: boolean
 }
 
-export const AddMembersButton = ({ channelData, updateMembers, style, is_in_list, is_in_empty_state }: AddMembersButtonProps) => {
+export const AddMembersButton = ({ channelData, updateMembers, is_in_empty_state }: AddMembersButtonProps) => {
 
-    const modalManager = useModalManager()
-
-    const onAddMembersModalOpen = () => {
-        modalManager.openModal(ModalTypes.AddChannelMember)
+    const [open, setOpen] = useState(false)
+    const onClose = () => {
+        setOpen(false)
     }
+    const contentClass = useModalContentStyle()
 
     return (
-        <>
-            {is_in_list && <ListItem _hover={{ ...style }} rounded='md' onClick={onAddMembersModalOpen}>
-                <HStack p='2' spacing={3}>
-                    <IconButton
-                        size='sm'
-                        aria-label='add members'
-                        icon={<RiUserAddLine />}
-                        colorScheme='blue'
-                        variant='outline'
-                    />
-                    <Text>Add members</Text>
-                </HStack>
-            </ListItem>}
+        <Dialog.Root open={open} onOpenChange={setOpen}>
 
-            {is_in_empty_state &&
-                <Button leftIcon={<BiUserPlus fontSize={'1.1rem'} />} onClick={onAddMembersModalOpen}>Add people</Button>
-            }
+            {is_in_empty_state ? <Dialog.Trigger>
+                <Button variant="ghost" size='1'>
+                    <BiUserPlus fontSize={'1.1rem'} />Add people</Button>
+            </Dialog.Trigger> : <Dialog.Trigger>
+                <IconButton aria-label={"add members to channel"}>
+                    <RiUserAddLine />
+                </IconButton>
+            </Dialog.Trigger>}
 
-            {!is_in_empty_state && !is_in_list && <Tooltip hasArrow label='add members' placement='bottom-start' rounded={'md'}>
-                <IconButton
-                    onClick={onAddMembersModalOpen}
-                    aria-label={"add members to channel"}
-                    icon={<RiUserAddLine />}
-                />
-            </Tooltip>}
+            <Dialog.Content className={contentClass}>
+                <AddChannelMembersModalContent
+                    onClose={onClose}
+                    channelID={channelData.name}
+                    channel_name={channelData.channel_name}
+                    type={channelData.type}
+                    updateMembers={updateMembers} />
+            </Dialog.Content>
 
-            <AddChannelMemberModal
-                isOpen={modalManager.modalType === ModalTypes.AddChannelMember}
-                onClose={modalManager.closeModal}
-                channelID={channelData.name}
-                type={channelData.type}
-                channel_name={channelData.channel_name}
-                updateMembers={updateMembers} />
-        </>
+        </Dialog.Root>
     )
 }
