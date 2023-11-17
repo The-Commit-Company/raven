@@ -9,6 +9,11 @@
     pointer-events: none;
 }
 
+.tiptap.ProseMirror {
+    max-height: 130px;
+    overflow: auto;
+}
+
 .tiptap pre {
     background: #0d0d0d;
     border-radius: 0.5rem;
