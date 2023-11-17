@@ -15,6 +15,31 @@ user = frappe.qb.DocType("User")
 
 
 class RavenChannel(Document):
+    # begin: auto-generated types
+    # This code is auto-generated. Do not modify anything in this block.
+
+    from typing import TYPE_CHECKING
+
+    if TYPE_CHECKING:
+        from frappe.types import DF
+
+        channel_description: DF.Data | None
+        channel_name: DF.Data
+        is_archived: DF.Check
+        is_direct_message: DF.Check
+        is_self_message: DF.Check
+        type: DF.Literal["Private", "Public", "Open"]
+    # end: auto-generated types
+
+    def on_trash(self):
+        # Channel can only be deleted by the current channel admin
+        if frappe.db.exists("Raven Channel Member", {"channel_id": self.name, "user_id": frappe.session.user, "is_admin": 1}):
+            pass
+        elif frappe.session.user == "Administrator":
+            pass
+        else:
+            frappe.throw(
+                _("You don't have permission to delete this channel"), frappe.PermissionError)
 
     def after_insert(self):
         # add current user as channel member
@@ -120,7 +145,6 @@ def get_all_channels(hide_archived=False):
     }
 
 
-@frappe.whitelist()
 def get_channel_list(hide_archived=False):
     # get List of all channels where current user is a member (all includes public, private, open, and DM channels)
     query = (frappe.qb.from_(channel)
