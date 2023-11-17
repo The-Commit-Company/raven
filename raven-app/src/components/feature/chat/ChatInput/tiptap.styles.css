@@ -9,6 +9,8 @@
 
 .tiptap.ProseMirror {
     min-height: 60px;
+    max-height: 150px;
+    overflow: auto;
     padding: var(--chakra-space-2);
 }
 
