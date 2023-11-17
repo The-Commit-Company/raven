@@ -33,13 +33,20 @@ class RavenChannel(Document):
 
     def on_trash(self):
         # Channel can only be deleted by the current channel admin
+        print(frappe.session.user)
         if frappe.db.exists("Raven Channel Member", {"channel_id": self.name, "user_id": frappe.session.user, "is_admin": 1}):
             pass
         elif frappe.session.user == "Administrator":
             pass
         else:
             frappe.throw(
-                _("You don't have permission to delete this channel"), frappe.PermissionError)
+                _("You don't have permission to delete this channel."), frappe.PermissionError)
+        
+        # delete all members when channel is deleted
+        frappe.db.delete("Raven Channel Member", {"channel_id": self.name})
+
+        # delete all messages when channel is deleted
+        frappe.db.delete("Raven Message", {"channel_id": self.name})
 
     def after_insert(self):
         # add current user as channel member
@@ -47,15 +54,26 @@ class RavenChannel(Document):
             frappe.get_doc({"doctype": "Raven Channel Member",
                             "channel_id": self.name, "user_id": frappe.session.user, "is_admin": 1}).insert()
 
-    def on_trash(self):
-        # delete all members when channel is deleted
-        frappe.db.delete("Raven Channel Member", {"channel_id": self.name})
-
-        # delete all messages when channel is deleted
-        frappe.db.delete("Raven Message", {"channel_id": self.name})
 
     def validate(self):
         # If the user trying to modify the channel is not the owner or channel member, then don't allow
+        old_doc = self.get_doc_before_save()
+
+        if self.is_direct_message == 1:
+            if old_doc:
+                if old_doc.get('channel_name') != self.channel_name:
+                    frappe.throw(
+                        _("You cannot change the name of a direct message channel"), frappe.ValidationError)
+        
+        if old_doc and old_doc.get('is_archived') != self.is_archived:
+            if frappe.db.exists("Raven Channel Member", {"channel_id": self.name, "user_id": frappe.session.user, "is_admin": 1}):
+                pass
+            elif frappe.session.user == "Administrator":
+                pass
+            else:
+                frappe.throw(
+                    _("You don't have permission to archive/unarchive this channel"), frappe.PermissionError)
+
         if self.type == "Private" or self.type == "Public":
             if self.owner == frappe.session.user and frappe.db.count("Raven Channel Member", {"channel_id": self.name}) <= 1:
                 pass
@@ -66,13 +84,6 @@ class RavenChannel(Document):
             else:
                 frappe.throw(
                     _("You don't have permission to modify this channel"), frappe.PermissionError)
-
-        if self.is_direct_message == 1:
-            old_doc = self.get_doc_before_save()
-            if old_doc:
-                if old_doc.get('channel_name') != self.channel_name:
-                    frappe.throw(
-                        _("You cannot change the name of a direct message channel"), frappe.ValidationError)
 
     def before_validate(self):
         if self.is_self_message == 1:
