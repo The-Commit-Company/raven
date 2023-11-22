@@ -1,6 +1,6 @@
 import { useToast } from "@chakra-ui/react"
 import { useFrappeDeleteDoc, useSWRConfig } from "frappe-react-sdk"
-import { AlertBanner, ErrorBanner } from "../../layout/AlertBanner"
+import { ErrorBanner } from "../../layout/AlertBanner"
 import { useParams } from "react-router-dom"
 import { AlertDialog, Button, Callout, Flex, Text } from "@radix-ui/themes"
 import { Loader } from "@/components/common/Loader"
