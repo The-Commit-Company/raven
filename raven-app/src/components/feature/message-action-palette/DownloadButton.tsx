@@ -1,16 +1,19 @@
-import { IconButton, Link, Tooltip } from '@chakra-ui/react'
+
+import { IconButton, Link, Tooltip } from '@radix-ui/themes'
 import { BsDownload } from 'react-icons/bs'
 
 export const DownloadButton = ({ file }: { file: string }) => {
     return (
-        <Tooltip hasArrow label='download' size='xs' placement='top' rounded='md'>
-            <IconButton
-                as={Link}
-                href={file}
-                isExternal
-                aria-label="download file"
-                icon={<BsDownload />}
-                size='xs' />
+        <Tooltip content='download'>
+            <Link href={file} target='_blank'>
+                <IconButton
+                    variant='soft'
+                    size='1'
+                    color='gray'
+                    aria-label='download message'>
+                    <BsDownload fontSize={'0.75rem'} />
+                </IconButton>
+            </Link>
         </Tooltip>
     )
 }

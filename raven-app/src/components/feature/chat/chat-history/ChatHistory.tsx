@@ -3,7 +3,7 @@ import { DividerWithText } from "../../../layout/Divider/DividerWithText";
 import { DateObjectToFormattedDateString } from "../../../../utils/operations";
 import { DateBlock, FileMessage, Message, MessageBlock, MessagesWithDate } from "../../../../../../types/Messaging/Message";
 import { ChannelHistoryFirstMessage } from "../../../layout/EmptyState/EmptyState";
-import { useContext, useRef, useState } from "react";
+import { useContext, useRef } from "react";
 import { ChatMessageBox } from "../chat-message/ChatMessageBox";
 import { MarkdownRenderer } from "../../markdown-viewer/MarkdownRenderer";
 import { FileMessageBlock } from "../chat-message/FileMessage";
@@ -29,10 +29,6 @@ export const ChatHistory = ({ parsedMessages, replyToMessage, channelData }: Cha
 
     const boxRef = useRef<HTMLDivElement>(null)
 
-    const [isScrollable, setScrollable] = useState<boolean>(true)
-    const handleScroll = (newState: boolean) => {
-        setScrollable(newState)
-    }
 
     const modalManager = useModalManager()
 
@@ -60,7 +56,6 @@ export const ChatHistory = ({ parsedMessages, replyToMessage, channelData }: Cha
                 <ChatMessageBox
                     message={block.data}
                     key={block.data.name}
-                    handleScroll={handleScroll}
                     replyToMessage={replyToMessage}
                     channelData={channelData}>
                     {block.data.message_type === 'Text' && <MarkdownRenderer content={block.data.text} />}
@@ -72,7 +67,7 @@ export const ChatHistory = ({ parsedMessages, replyToMessage, channelData }: Cha
     }
 
     return (
-        <Box ref={boxRef} h='100%' overflowY={isScrollable ? 'scroll' : 'hidden'} sx={scrollbarStyles(appearance)}>
+        <Box ref={boxRef} h='100%' overflowY={'scroll'} sx={scrollbarStyles(appearance)}>
             <Virtuoso
                 customScrollParent={boxRef.current ?? undefined}
                 totalCount={parsedMessages.length}

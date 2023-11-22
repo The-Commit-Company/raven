@@ -1,4 +1,4 @@
-import { Box, HStack } from '@chakra-ui/react'
+import { Box } from '@chakra-ui/react'
 import { useFrappePostCall } from 'frappe-react-sdk'
 import { useContext } from 'react'
 import { UserContext } from '../../../utils/auth/UserProvider'
@@ -11,17 +11,17 @@ import { BookmarkButton } from './BookmarkButton'
 import { DownloadButton } from './DownloadButton'
 import { DeleteMessageButton } from './DeleteMessageButton'
 import { useTheme } from '@/ThemeProvider'
+import { Flex } from '@radix-ui/themes'
 
 interface ActionButtonPaletteProps {
     message: Message,
     showButtons: {}
-    handleScroll: (newState: boolean) => void,
     is_continuation: 1 | 0,
     replyToMessage?: (message: Message) => void
     updateMessages: () => void
 }
 
-export const ActionsPalette = ({ message, showButtons, handleScroll, is_continuation, updateMessages, replyToMessage }: ActionButtonPaletteProps) => {
+export const ActionsPalette = ({ message, showButtons, is_continuation, updateMessages, replyToMessage }: ActionButtonPaletteProps) => {
 
     const { name, owner, message_type } = message
 
@@ -66,17 +66,17 @@ export const ActionsPalette = ({ message, showButtons, handleScroll, is_continua
             position='absolute'
             top={is_continuation === 0 ? -4 : -7}
             right={2}>
-            <HStack spacing={1}>
+            <Flex gap='1'>
                 <EmojiButton emoji={'✅'} label={'done'} onClick={() => saveReaction('✅')} />
                 <EmojiButton emoji={'👀'} label={'looking into this...'} onClick={() => saveReaction('👀')} />
                 <EmojiButton emoji={'🎉'} label={'great job!'} onClick={() => saveReaction('🎉')} />
-                <EmojiPickerButton saveReaction={saveReaction} handleScroll={handleScroll} />
+                <EmojiPickerButton saveReaction={saveReaction} />
                 <ReplyButton replyToMessage={replyToMessage} message={message} />
                 {(owner === currentUser) && text && <EditMessageButton messageID={name} text={text} />}
                 <BookmarkButton message={message} updateMessages={updateMessages} />
                 {file && <DownloadButton file={file} />}
                 {(owner === currentUser) && <DeleteMessageButton messageID={name} />}
-            </HStack>
+            </Flex>
         </Box>
     )
 }

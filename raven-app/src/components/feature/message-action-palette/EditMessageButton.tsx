@@ -19,11 +19,11 @@ export const EditMessageButton = ({ messageID, text }: { messageID: string, text
             <Tooltip content='edit'>
                 <Dialog.Trigger>
                     <IconButton
-                        variant="ghost"
-                        color="gray"
-                        aria-label="edit message"
-                        size='1'>
-                        <AiOutlineEdit />
+                        variant='soft'
+                        size='1'
+                        color='gray'
+                        aria-label='edit message'>
+                        <AiOutlineEdit fontSize={'0.88rem'} />
                     </IconButton>
                 </Dialog.Trigger>
             </Tooltip>

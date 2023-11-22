@@ -16,8 +16,8 @@ export const DeleteMessageButton = ({ messageID }: { messageID: string }) => {
         <AlertDialog.Root open={open} onOpenChange={setOpen}>
             <Tooltip content='delete'>
                 <AlertDialog.Trigger>
-                    <IconButton size='1' variant='ghost' color='red'>
-                        <VscTrash />
+                    <IconButton variant='soft' size='1' color='red' aria-label='delete message'>
+                        <VscTrash fontSize={'0.9rem'} />
                     </IconButton>
                 </AlertDialog.Trigger>
             </Tooltip>

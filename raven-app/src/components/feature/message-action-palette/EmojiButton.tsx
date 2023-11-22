@@ -1,5 +1,4 @@
-import { Button, Tooltip } from "@chakra-ui/react"
-
+import { Button, Tooltip } from "@radix-ui/themes"
 interface EmojiButtonProps {
     emoji: string,
     label: string,
@@ -8,8 +7,8 @@ interface EmojiButtonProps {
 
 export const EmojiButton = ({ emoji, label, onClick }: EmojiButtonProps) => {
     return (
-        <Tooltip hasArrow label={label} size='xs' placement='top' rounded='md'>
-            <Button size='xs' fontSize='md' onClick={onClick}>
+        <Tooltip content={label}>
+            <Button size='1' onClick={onClick} variant='soft' color='gray' aria-label={label}>
                 {emoji}
             </Button>
         </Tooltip>

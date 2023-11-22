@@ -13,14 +13,13 @@ import { useTheme } from "@/ThemeProvider"
 
 interface ChatMessageBoxProps extends BoxProps {
     message: Message,
-    handleScroll?: (newState: boolean) => void,
     children?: React.ReactNode,
     handleScrollToMessage?: (name: string, channel: string, messages: MessageBlock[]) => void,
     replyToMessage?: (message: Message) => void
     channelData: ChannelListItem | DMChannelListItem
 }
 
-export const ChatMessageBox = ({ message, handleScroll, children, handleScrollToMessage, replyToMessage, channelData, ...props }: ChatMessageBoxProps) => {
+export const ChatMessageBox = ({ message, children, handleScrollToMessage, replyToMessage, channelData, ...props }: ChatMessageBoxProps) => {
 
     const { appearance } = useTheme()
     const [showButtons, setShowButtons] = useState<{}>({ visibility: 'hidden' })
@@ -69,10 +68,9 @@ export const ChatMessageBox = ({ message, handleScroll, children, handleScrollTo
                 </Stack>
             </HStack>
 
-            {message && handleScroll && <ActionsPalette
+            {message && <ActionsPalette
                 message={message}
                 showButtons={showButtons}
-                handleScroll={handleScroll}
                 is_continuation={is_continuation}
                 replyToMessage={replyToMessage}
                 updateMessages={updateMessages} />
