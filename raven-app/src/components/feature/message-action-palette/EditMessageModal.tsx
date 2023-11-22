@@ -1,28 +1,28 @@
-import { HStack, Modal, ModalBody, ModalCloseButton, ModalContent, ModalHeader, ModalOverlay, Stack, Text, useToast } from "@chakra-ui/react"
+import { useToast } from "@chakra-ui/react"
 import { useFrappeUpdateDoc, useSWRConfig } from "frappe-react-sdk"
 import { useEffect } from "react"
 import { ErrorBanner } from "../../layout/AlertBanner"
 import { Tiptap } from "../chat/ChatInput/Tiptap"
+import { IconButton, Dialog, Flex, Text } from "@radix-ui/themes"
+import { Cross1Icon } from "@radix-ui/react-icons"
 
 interface EditMessageModalProps {
-    isOpen: boolean,
     onClose: (refresh?: boolean) => void,
     channelMessageID: string,
     originalText: string
 }
 
-export const EditMessageModal = ({ isOpen, onClose, channelMessageID, originalText }: EditMessageModalProps) => {
+export const EditMessageModal = ({ onClose, channelMessageID, originalText }: EditMessageModalProps) => {
 
     const { mutate } = useSWRConfig()
     const toast = useToast()
-    const { updateDoc, error, loading, reset } = useFrappeUpdateDoc()
+    const { updateDoc, error, loading: updatingDoc, reset } = useFrappeUpdateDoc()
 
     useEffect(() => {
         reset()
-    }, [isOpen, reset])
+    }, [reset])
 
     const onSubmit = async (html: string, json: any) => {
-        console.log("Submit")
         return updateDoc('Raven Message', channelMessageID,
             { text: html, json }).then((d) => {
                 onClose(true)
@@ -47,21 +47,23 @@ export const EditMessageModal = ({ isOpen, onClose, channelMessageID, originalTe
     }
 
     return (
-        <Modal isOpen={isOpen} onClose={onClose} size={'4xl'}>
-            <ModalOverlay />
-            <ModalContent>
-                <ModalHeader>Edit Message</ModalHeader>
-                <ModalCloseButton />
-                <ModalBody>
-                    <Stack pb='3'>
-                        <ErrorBanner error={error} />
-                        <Tiptap onMessageSend={onSubmit} messageSending={loading} defaultText={originalText} />
-                        <HStack justify={'flex-end'}>
-                            <Text fontSize='sm' color='gray.500'>Press <b>Enter</b> to save</Text>
-                        </HStack>
-                    </Stack>
-                </ModalBody>
-            </ModalContent>
-        </Modal>
+        <>
+            <Flex justify={'between'}>
+                <Dialog.Title>Edit Message</Dialog.Title>
+                <Dialog.Close disabled={updatingDoc}>
+                    <IconButton size='1' variant="soft" color="gray">
+                        <Cross1Icon />
+                    </IconButton>
+                </Dialog.Close>
+            </Flex>
+
+            <Flex gap='2' direction='column'>
+                <ErrorBanner error={error} />
+                <Tiptap onMessageSend={onSubmit} messageSending={updatingDoc} defaultText={originalText} />
+                <Flex justify='end'>
+                    <Text size='1' color='gray'>Press <b>Enter</b> to save</Text>
+                </Flex>
+            </Flex>
+        </>
     )
 }

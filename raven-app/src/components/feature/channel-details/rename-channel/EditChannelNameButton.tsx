@@ -1,7 +1,6 @@
-import { ModalTypes, useModalManager } from "@/hooks/useModalManager"
 import { RenameChannelModalContent } from '@/components/feature/channel-details/rename-channel/ChannelRenameModal'
 import { ChannelListItem } from '@/utils/channel/ChannelListProvider'
-import { Button, Dialog, IconButton, Tooltip } from '@radix-ui/themes'
+import { Dialog, IconButton } from '@radix-ui/themes'
 import { Pencil2Icon } from '@radix-ui/react-icons'
 import { IconButtonProps } from '@radix-ui/themes/dist/cjs/components/icon-button'
 import { useState } from "react"
@@ -22,6 +21,7 @@ export const EditChannelNameButton = ({ channelID, channel_name, channelType, ..
     }
 
     const contentClass = useModalContentStyle()
+
     return (
         <Dialog.Root open={open} onOpenChange={setOpen}>
             <Dialog.Trigger>
