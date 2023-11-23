@@ -38,8 +38,8 @@ export const EmojiPickerButton = ({ saveReaction }: EmojiPickerButtonProps) => {
                     </Popover.Trigger>
                 </Tooltip>
                 <Portal>
-                    <Box z-Index={10}>
-                        <Popover.Content className={contentClass}>
+                    <Box className={'z-10'}>
+                        <Popover.Content className={`${contentClass} p-0`}>
                             <EmojiPicker onSelect={onEmojiClick} />
                         </Popover.Content>
                     </Box>

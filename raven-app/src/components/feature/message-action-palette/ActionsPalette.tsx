@@ -1,4 +1,3 @@
-import { Box } from '@chakra-ui/react'
 import { useFrappePostCall } from 'frappe-react-sdk'
 import { useContext } from 'react'
 import { UserContext } from '../../../utils/auth/UserProvider'
@@ -10,8 +9,7 @@ import { EditMessageButton } from './EditMessageButton'
 import { BookmarkButton } from './BookmarkButton'
 import { DownloadButton } from './DownloadButton'
 import { DeleteMessageButton } from './DeleteMessageButton'
-import { useTheme } from '@/ThemeProvider'
-import { Flex } from '@radix-ui/themes'
+import { Box, Flex } from '@radix-ui/themes'
 
 interface ActionButtonPaletteProps {
     message: Message,
@@ -36,10 +34,6 @@ export const ActionsPalette = ({ message, showButtons, is_continuation, updateMe
         text = textValue
     }
 
-    const { appearance } = useTheme()
-    const BGCOLOR = appearance === 'light' ? 'white' : 'black'
-    const BORDERCOLOR = appearance === 'light' ? 'gray.200' : 'gray.700'
-
     const { currentUser } = useContext(UserContext)
 
     const { call: reactToMessage } = useFrappePostCall('raven.api.reactions.react')
@@ -54,18 +48,8 @@ export const ActionsPalette = ({ message, showButtons, is_continuation, updateMe
 
     return (
         <Box
-            rounded='md'
-            bgColor={BGCOLOR}
-            p='1'
             style={showButtons}
-            boxShadow='bottom'
-            border='1px'
-            borderColor={BORDERCOLOR}
-            width='fit-content'
-            zIndex={2}
-            position='absolute'
-            top={is_continuation === 0 ? -4 : -7}
-            right={2}>
+            className={`z-2 p-1 shadow-sm rounded-md bg-[var(--slate-2)] absolute ${is_continuation ? '-top-7' : '-top-4'} right-2`}>
             <Flex gap='1'>
                 <EmojiButton emoji={'✅'} label={'done'} onClick={() => saveReaction('✅')} />
                 <EmojiButton emoji={'👀'} label={'looking into this...'} onClick={() => saveReaction('👀')} />

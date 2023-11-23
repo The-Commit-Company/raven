@@ -3,7 +3,7 @@ import { ChannelListItem } from "@/utils/channel/ChannelListProvider"
 import { Text, Box, HStack, Stack, Center, ButtonGroup, Button, useToast, useDisclosure } from "@chakra-ui/react"
 import { useFrappeCreateDoc } from "frappe-react-sdk"
 import { BiHash } from "react-icons/bi"
-import { ViewChannelDetailsModal } from "../../channels/ViewChannelDetailsModal"
+import { ViewChannelDetailsModalContent } from "../../channels/ViewChannelDetailsModal"
 import { useContext } from "react"
 import { ActiveUsersContext } from "@/utils/users/ActiveUsersProvider"
 import { ChannelMembers, ChannelMembersContext, ChannelMembersContextType } from "@/utils/channel/ChannelMembersProvider"
@@ -55,18 +55,17 @@ export const JoinChannelBox = ({ channelData, channelMembers, user }: JoinChanne
                 </HStack>
                 <Center>
                     <ButtonGroup>
-                        <Button colorScheme='blue' variant='outline' size='sm' onClick={onOpen}>Details</Button>
+                        {/* <Button colorScheme='blue' variant='outline' size='sm' onClick={onOpen}>Details</Button> */}
                         <Button colorScheme='blue' variant='solid' size='sm' onClick={joinChannel} isLoading={loading}>Join Channel</Button>
                     </ButtonGroup>
                 </Center>
             </Stack>
-            <ViewChannelDetailsModal
-                isOpen={isOpen}
+            {/* <ViewChannelDetailsModalContent
                 onClose={onClose}
                 channelData={channelData}
                 channelMembers={channelMembers}
                 updateMembers={updateMembers}
-                activeUsers={activeUsers} />
+                activeUsers={activeUsers} /> */}
         </Box>
     )
 }
