@@ -1,5 +1,5 @@
 import { IonBackButton, IonButton, IonButtons, IonContent, IonFooter, IonHeader, IonIcon, IonToolbar, useIonViewWillEnter } from '@ionic/react'
-import { useFrappeEventListener, useFrappeGetCall } from 'frappe-react-sdk'
+import { useFrappeDocumentEventListener, useFrappeEventListener, useFrappeGetCall } from 'frappe-react-sdk'
 import { useCallback, useContext, useMemo, useRef } from 'react'
 import { MessagesWithDate } from '../../../../../types/Messaging/Message'
 import { ErrorBanner } from '../../layout'
@@ -73,6 +73,8 @@ export const ChatInterface = ({ channel }: { channel: ChannelListItem | DMChanne
             onNewMessageLoaded()
         }
     })
+
+    useFrappeDocumentEventListener('Raven Channel', channel.name, () => { })
 
     /** Realtime event listener to update messages */
     useFrappeEventListener('message_updated', (data) => {
