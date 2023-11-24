@@ -4,6 +4,7 @@ import frappe
 def react(message_id: str, reaction: str):
     '''
     API to react/unreact to a message.
+    #TODO: FIXME: Check if the user can react to the message
     First checks if the user has already reacted to the message.
     If yes, then unreacts (deletes), else reacts (creates).
     '''

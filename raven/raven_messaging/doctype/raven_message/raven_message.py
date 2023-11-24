@@ -138,7 +138,10 @@ def send_message(channel_id, text, is_reply, linked_message=None, json=None):
 
 @frappe.whitelist()
 def fetch_recent_files(channel_id):
-
+    '''
+     Fetches recently sent files in a channel
+     #TODO: FIXME: Check if the user has permission to view the channel
+    '''
     files = frappe.db.get_list('Raven Message',
                                filters={
                                    'channel_id': channel_id,
@@ -155,7 +158,7 @@ def fetch_recent_files(channel_id):
 
 def get_messages(channel_id):
 
-    messages = frappe.db.get_list('Raven Message',
+    messages = frappe.db.get_all('Raven Message',
                                   filters={'channel_id': channel_id},
                                   fields=['name', 'owner', 'creation', 'text',
                                           'file', 'message_type', 'message_reactions', 'is_reply', 'linked_message', '_liked_by', 'channel_id', 'thumbnail_width', 'thumbnail_height', 'file_thumbnail'],
@@ -167,7 +170,10 @@ def get_messages(channel_id):
 
 @frappe.whitelist()
 def get_saved_messages():
-
+    '''
+        Fetches list of all messages liked by the user
+        #TODO: FIXME: Check if the user has permission to view the message
+    '''
     messages = frappe.db.get_list('Raven Message',
                                   filters={'_liked_by': [
                                       'like', '%'+frappe.session.user+'%']},

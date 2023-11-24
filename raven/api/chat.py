@@ -5,6 +5,7 @@ from frappe import _
 
 @frappe.whitelist()
 def get_channel_members(channel_id):
+    #TODO: FIXME: Check if the user has permission to view the channel
     # fetch all channel members
     # get member details from user table, such as name, full_name, user_image, first_name
 
