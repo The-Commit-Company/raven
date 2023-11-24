@@ -1,24 +1,24 @@
-import { Text, AlertDialog, AlertDialogBody, AlertDialogCloseButton, AlertDialogContent, AlertDialogFooter, AlertDialogHeader, AlertDialogOverlay, Button, ButtonGroup, HStack, useToast, Icon } from '@chakra-ui/react'
+import { useToast } from '@chakra-ui/react'
 import { useFrappeDeleteDoc, useFrappeGetCall } from 'frappe-react-sdk'
 import { useContext, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { UserContext } from '../../../../utils/auth/UserProvider'
 import { ErrorBanner } from '../../../layout/AlertBanner'
 import { ChannelListContext, ChannelListContextType, ChannelListItem } from '@/utils/channel/ChannelListProvider'
-import { ChannelIcon, getChannelIcon } from '@/utils/layout/channelIcon'
+import { ChannelIcon } from '@/utils/layout/channelIcon'
+import { AlertDialog, Button, Flex, Text } from '@radix-ui/themes'
+import { Loader } from '@/components/common/Loader'
 
 interface LeaveChannelModalProps {
-    isOpen: boolean,
     onClose: () => void,
     channelData: ChannelListItem,
     closeDetailsModal: () => void
 }
 
-export const LeaveChannelModal = ({ isOpen, onClose, channelData, closeDetailsModal }: LeaveChannelModalProps) => {
+export const LeaveChannelModal = ({ onClose, channelData, closeDetailsModal }: LeaveChannelModalProps) => {
 
     const { currentUser } = useContext(UserContext)
-    const cancelRef = useRef<HTMLButtonElement | null>(null)
-    const { deleteDoc, error } = useFrappeDeleteDoc()
+    const { deleteDoc, loading: deletingDoc, error } = useFrappeDeleteDoc()
     const toast = useToast()
     const navigate = useNavigate()
 
@@ -60,31 +60,36 @@ export const LeaveChannelModal = ({ isOpen, onClose, channelData, closeDetailsMo
     }
 
     return (
-        <AlertDialog isOpen={isOpen} onClose={onClose} leastDestructiveRef={cancelRef} size='2xl'>
-            <AlertDialogOverlay />
-            <AlertDialogContent>
-                <AlertDialogHeader>
-                    <HStack>
-                        <Text>Leave </Text>
-                        <ChannelIcon type={channelData?.type} className={'mt-0.5'} />
-                        <Text>{channelData?.channel_name}?</Text>
-                    </HStack>
-                </AlertDialogHeader>
-                <AlertDialogCloseButton />
-                <AlertDialogBody>
-                    <ErrorBanner error={error} />
-                    {channelData?.type === 'Private' ?
-                        <Text fontSize='sm'>When you leave this channel, you’ll no longer be able to see any of its messages. To rejoin, you’ll need to be invited.</Text> :
-                        <Text fontSize='sm'>When you leave this channel, you’ll no longer be able to send anymore messages, you will have to rejoin the channel to continue participation.</Text>
-                    }
-                </AlertDialogBody>
-                <AlertDialogFooter>
-                    <ButtonGroup>
-                        <Button ref={cancelRef} variant='ghost' onClick={onClose}>Cancel</Button>
-                        <Button colorScheme='red' onClick={onSubmit}>Leave</Button>
-                    </ButtonGroup>
-                </AlertDialogFooter>
-            </AlertDialogContent>
-        </AlertDialog>
+        <>
+            <AlertDialog.Title>
+                <Flex gap='1'>
+                    <Text>Leave </Text>
+                    <ChannelIcon type={channelData?.type} className={'mt-1'} />
+                    <Text>{channelData?.channel_name}?</Text>
+                </Flex>
+            </AlertDialog.Title>
+
+            <Flex direction={'column'} gap='2'>
+                <ErrorBanner error={error} />
+                {channelData?.type === 'Private' ?
+                    <Text size='1'>When you leave this channel, you’ll no longer be able to see any of its messages. To rejoin, you’ll need to be invited.</Text> :
+                    <Text size='1'>When you leave this channel, you’ll no longer be able to send anymore messages, you will have to rejoin the channel to continue participation.</Text>
+                }
+            </Flex>
+
+            <Flex gap="3" mt="4" justify="end">
+                <AlertDialog.Cancel>
+                    <Button variant="soft" color="gray">
+                        Cancel
+                    </Button>
+                </AlertDialog.Cancel>
+                <AlertDialog.Action>
+                    <Button variant="solid" color="red" onClick={onSubmit} disabled={deletingDoc}>
+                        {deletingDoc && <Loader />}
+                        {deletingDoc ? "Leaving" : "Leave"}
+                    </Button>
+                </AlertDialog.Action>
+            </Flex>
+        </>
     )
 }
