@@ -55,3 +55,20 @@ def message_has_permission(doc, user=None, permission_type=None):
         return True
     else:
         return False
+
+
+
+def raven_channel_query(user):
+    if not user:
+        user = frappe.session.user
+    
+    '''
+      Only show channels that the user is a member of by using a WHERE clause
+
+      We could also remove "Raven User" from the Raven Channel doctype role, but then permission checks for joining socket rooms for the channel would fail
+
+      Hence, we are adding a WHERE clause to the query - this is inconsequential since we will never use the standard get_list query for Raven Channel,
+      but needed for securoty since we do not want users to be able to view channels they are not a member of
+    '''
+    return "`tabRaven Channel`.owner = {user}".format(user=frappe.db.escape(user))
+    

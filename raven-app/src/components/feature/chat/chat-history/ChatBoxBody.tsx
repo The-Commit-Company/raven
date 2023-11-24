@@ -1,6 +1,6 @@
 import { Box, Stack, Wrap, WrapItem } from "@chakra-ui/react"
 import { ChatHistory } from "./ChatHistory"
-import { useFrappeEventListener, useFrappeGetCall } from "frappe-react-sdk"
+import { useFrappeDocumentEventListener, useFrappeEventListener, useFrappeGetCall } from "frappe-react-sdk"
 import { Message, MessagesWithDate } from "../../../../../../types/Messaging/Message"
 import { FullPageLoader } from "@/components/layout/Loaders"
 import { ErrorBanner } from "@/components/layout/AlertBanner"
@@ -30,6 +30,8 @@ export const ChatBoxBody = ({ channelData }: ChatBoxBodyProps) => {
     }, `get_messages_for_channel_${channelData.name}`, {
         revalidateOnFocus: false
     })
+
+    useFrappeDocumentEventListener('Raven Channel', channelData.name, () => { })
 
     useFrappeEventListener('message_updated', (data) => {
         //If the message is sent on the current channel

@@ -61,19 +61,26 @@ class RavenMessage(Document):
 
     def after_insert(self):
         frappe.publish_realtime(
-            'unread_channel_count_updated')
+            'raven:unread_channel_count_updated', {
+                'channel_id': self.channel_id,
+            })
 
     def after_delete(self):
-        self.send_update_event(txt="delete")
+        self.send_update_event(type="delete")
 
     def on_update(self):
-        self.send_update_event(txt="update")
+        self.send_update_event(type="update")
 
-    def send_update_event(self, txt):
+    def send_update_event(self, type):
         frappe.publish_realtime('message_updated', {
             'channel_id': self.channel_id,
             'sender': frappe.session.user,
-            }, after_commit=True)
+            'message_id': self.name,
+            'type': type,
+            }, 
+            doctype='Raven Channel', 
+            docname=self.channel_id,  # Adding this to automatically add the room for the event via Frappe
+            after_commit=True)
         frappe.db.commit()
 
     def on_trash(self):
@@ -102,7 +109,11 @@ def track_visit(channel_id, commit=False):
             "user_id": frappe.session.user,
             "last_visit": frappe.utils.now()
         }).insert()
-    # Need to comit the changes to the database if the request is a GET request
+    frappe.publish_realtime(
+            'raven:unread_channel_count_updated', {
+                'channel_id': channel_id,
+            }, after_commit=True)
+    # Need to commit the changes to the database if the request is a GET request
     if commit:
         frappe.db.commit()
 
