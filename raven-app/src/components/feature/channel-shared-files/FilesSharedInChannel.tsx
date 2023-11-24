@@ -36,7 +36,7 @@ export const FilesSharedInChannel = ({ channelMembers }: FilesSharedInChannelPro
                 <Flex direction='column' gap='2'>
                     {data?.message && data.message.length > 0 && data.message.map((f: FileMessage) => {
                         return (
-                            <Box key={f.name} className={'p-2 rounded-md border border-gray-600'}>
+                            <Box key={f.name} className={'p-2 rounded-md border border-[var(--gray-6)]'}>
                                 <Flex justify='between' align={'center'}>
                                     <Flex gap='3'>
                                         <Box>
@@ -50,10 +50,11 @@ export const FilesSharedInChannel = ({ channelMembers }: FilesSharedInChannelPro
                                     </Flex>
                                     <Link href={f.file} target='_blank' aria-label='download file'>
                                         <IconButton
+                                            className={'mr-2 mt-1'}
                                             aria-label="download file"
                                             size='1'
                                             color='gray'
-                                            variant='soft'>
+                                            variant='ghost'>
                                             <BsDownload fontSize={'0.7rem'} />
                                         </IconButton>
                                     </Link>

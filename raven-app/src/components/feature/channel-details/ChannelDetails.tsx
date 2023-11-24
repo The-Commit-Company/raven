@@ -26,7 +26,7 @@ export const ChannelDetails = ({ channelData, channelMembers, onClose }: Channel
     return (
         <Flex direction='column' gap='4' className={'h-96'}>
 
-            <Box className={'p-4 rounded-md border border-gray-700'}>
+            <Box className={'p-4 rounded-md border border-[var(--gray-6)]'}>
                 <Flex justify={'between'}>
                     <Flex direction={'column'}>
                         <Text weight='medium' size='2'>Channel name</Text>
@@ -39,7 +39,7 @@ export const ChannelDetails = ({ channelData, channelMembers, onClose }: Channel
                 </Flex>
             </Box>
 
-            <Box className={'p-4 rounded-md border border-gray-700'}>
+            <Box className={'p-4 rounded-md border border-[var(--gray-6)]'}>
                 <Flex direction='column' gap='4'>
                     <Flex justify={'between'}>
                         <Flex direction={'column'} gap='1'>
