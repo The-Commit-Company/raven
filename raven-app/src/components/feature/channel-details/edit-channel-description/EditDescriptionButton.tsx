@@ -3,8 +3,9 @@ import { Button, Dialog } from '@radix-ui/themes'
 import { EditChannelDescriptionModalContent } from './EditChannelDescriptionModal'
 import { useState } from 'react'
 import { useModalContentStyle } from '@/hooks/useModalContentStyle'
+import { ButtonProps } from '@radix-ui/themes/dist/cjs/components/button'
 
-interface EditDescriptionButtonProps {
+interface EditDescriptionButtonProps extends ButtonProps {
     channelData: ChannelListItem,
     is_in_box?: boolean
 }

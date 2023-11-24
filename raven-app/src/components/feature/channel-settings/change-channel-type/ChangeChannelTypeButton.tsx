@@ -1,43 +1,34 @@
-import { ModalTypes, useModalManager } from '@/hooks/useModalManager'
 import { ChannelListItem } from '@/utils/channel/ChannelListProvider'
-import { Button, Icon } from '@chakra-ui/react'
 import { BiHash, BiLockAlt } from 'react-icons/bi'
 import { ChangeChannelTypeModal } from './ChangeChannelTypeModal'
-
+import { useState } from 'react'
+import { useModalContentStyle } from '@/hooks/useModalContentStyle'
+import { Button, Dialog } from '@radix-ui/themes'
 interface ChangeChannelTypeButtonProps {
-    channelData: ChannelListItem,
-    styles: {
-        variant: string,
-        size: string,
-        p: string,
-        justifyContent: string,
-        _hover: {
-            bg: string
-        },
-        rounded: string
-    }
+    channelData: ChannelListItem
 }
 
-export const ChangeChannelTypeButton = ({ channelData, styles }: ChangeChannelTypeButtonProps) => {
+export const ChangeChannelTypeButton = ({ channelData }: ChangeChannelTypeButtonProps) => {
 
-    const modalManager = useModalManager()
-
-    const onChannelTypeChangeModalOpen = () => {
-        modalManager.openModal(ModalTypes.ChangeChannelType)
+    const [open, setOpen] = useState(false)
+    const onClose = () => {
+        setOpen(false)
     }
+    const contentClass = useModalContentStyle()
 
     return (
-        <>
-            <Button {...styles}
-                leftIcon={channelData.type === 'Public' ? <Icon as={BiLockAlt} /> : <Icon as={BiHash} />}
-                colorScheme="black"
-                onClick={onChannelTypeChangeModalOpen}>
-                Change to a {channelData.type === 'Public' ? 'private' : 'public'} channel
-            </Button>
-            <ChangeChannelTypeModal
-                isOpen={modalManager.modalType === ModalTypes.ChangeChannelType}
-                onClose={modalManager.closeModal}
-                channelData={channelData} />
-        </>
+        <Dialog.Root open={open} onOpenChange={setOpen}>
+            <Dialog.Trigger>
+                <Button color='gray' variant='surface'>
+                    {channelData.type === 'Public' ? <BiLockAlt /> : <BiHash />}
+                    Change to a {channelData.type === 'Public' ? 'private' : 'public'} channel
+                </Button>
+            </Dialog.Trigger>
+            <Dialog.Content className={contentClass}>
+                <ChangeChannelTypeModal
+                    onClose={onClose}
+                    channelData={channelData} />
+            </Dialog.Content>
+        </Dialog.Root>
     )
 }

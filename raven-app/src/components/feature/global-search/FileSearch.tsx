@@ -235,7 +235,7 @@ export const FileSearch = ({ onToggleMyChannels, isOpenMyChannels, onToggleSaved
                         (!!!error && data?.message && data.message.length > 0 ?
                             <><Sort
                                 sortingFields={[{ label: 'Created on', field: 'creation' }]}
-                                onSortFieldSelect={(selField) => setSortByField(selField)}
+                                onSortFieldSelect={(selField: any) => setSortByField(selField)}
                                 sortOrder={sortOrder}
                                 sortField={sortByField}
                                 onSortOrderChange={(order) => setSortOrder(order)} />
@@ -253,7 +253,7 @@ export const FileSearch = ({ onToggleMyChannels, isOpenMyChannels, onToggleSaved
                                         return (
                                             <HStack spacing={3} key={f.name}>
                                                 <Center maxW='50px'>
-                                                    {f.message_type === 'File' && <Icon as={getFileExtensionIcon(getFileExtension(f.file))} boxSize="9" />}
+                                                    {f.message_type === 'File' && <div>{getFileExtensionIcon(getFileExtension(f.file))}</div>}
                                                     {f.message_type === 'Image' && <Image src={f.file} alt='File preview' boxSize={'36px'} rounded='md' fit='cover' />}
                                                 </Center>
                                                 <Stack spacing={0}>

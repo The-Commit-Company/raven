@@ -25,7 +25,9 @@ export const FileMessageBlock = ({ file, owner, creation, message_type, onFilePr
     if (message_type === 'File' && file) {
         return (
             <HStack>
-                <Icon as={getFileExtensionIcon(getFileExtension(file))} />
+                <div slot='start'>
+                    {getFileExtensionIcon(getFileExtension(file))}
+                </div>
                 {getFileExtension(file).toLowerCase() === 'pdf'
                     ?
                     <Text

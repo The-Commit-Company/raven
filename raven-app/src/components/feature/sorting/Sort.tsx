@@ -1,4 +1,3 @@
-import { Tooltip } from "@chakra-ui/react"
 import { IconButton } from "@radix-ui/themes"
 import { HiSortAscending, HiSortDescending } from "react-icons/hi"
 
@@ -28,8 +27,7 @@ export const Sort = ({ sortOrder, onSortOrderChange }: SortProps) => {
             variant="soft"
             title={sortOrder === "asc" ? "newest first" : "oldest first"}
             onClick={handleSortOrder}
-            aria-label={sortOrder === "asc" ? "click to sort by newest first" : "click to sort by oldest first"}
-        >
+            aria-label={sortOrder === "asc" ? "click to sort by newest first" : "click to sort by oldest first"}>
             {sortOrder === "asc" ? <HiSortAscending /> : <HiSortDescending />}
         </IconButton>
     )

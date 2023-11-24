@@ -33,7 +33,7 @@ export const ViewChannelDetailsButton = ({ channelData, channelMembers, updateMe
                             {Object.entries(channelMembers).map(([name, member], index) => {
                                 const isActive = activeUsers.includes(name)
                                 if (index < 3)
-                                    return <UserAvatar key={name} src={member.user_image ?? 'undefined'} alt={member.full_name ?? member.name} radius='full' isActive={isActive} />
+                                    return <UserAvatar key={name} src={member.user_image ?? 'undefined'} alt={member.full_name ?? member.name} radius='full' isActive={isActive} variant='solid' />
                             })}
                             {totalMembers > 3 && <div className={'z-10 flex items-center justify-center w-6 h-6 text-xs font-medium text-white bg-gray-800 rounded-full'}>+ {totalMembers - 3}</div>}
                         </div> : <RiUserLine />}

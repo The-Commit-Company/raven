@@ -54,8 +54,8 @@ const EmptyStateForChannel = ({ channelData, channelMembers, updateMembers }: Em
                 {channelData?.channel_description && <Text fontSize={'sm'} color={'gray.500'}>{channelData?.channel_description}</Text>}
             </Stack>
             {channelData?.is_archived == 0 && channelMembers[currentUser] && <ButtonGroup size={'xs'} colorScheme="blue" variant={'link'} spacing={4} zIndex={1}>
-                <EditDescriptionButton channelData={channelData} size={'xs'} />
-                {channelData?.type !== 'Open' && <AddMembersButton channelData={channelData} updateMembers={updateMembers} is_in_empty_state={true} />}
+                <EditDescriptionButton channelData={channelData} />
+                {channelData?.type !== 'Open' && <AddMembersButton channelData={channelData} updateMembers={updateMembers} />}
             </ButtonGroup>}
         </Stack>
     )

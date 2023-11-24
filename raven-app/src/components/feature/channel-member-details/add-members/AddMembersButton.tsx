@@ -5,14 +5,15 @@ import { BiUserPlus } from "react-icons/bi"
 import { useState } from "react"
 import { useModalContentStyle } from "@/hooks/useModalContentStyle"
 import { Button, Dialog, IconButton } from "@radix-ui/themes"
+import { ButtonProps } from "@radix-ui/themes/dist/cjs/components/button"
 
-interface AddMembersButtonProps {
+interface AddMembersButtonProps extends ButtonProps {
     channelData: ChannelListItem,
     updateMembers: () => void,
-    is_in_empty_state?: boolean
+    isIconButton?: boolean
 }
 
-export const AddMembersButton = ({ channelData, updateMembers, is_in_empty_state }: AddMembersButtonProps) => {
+export const AddMembersButton = ({ channelData, updateMembers, isIconButton = false, ...props }: AddMembersButtonProps) => {
 
     const [open, setOpen] = useState(false)
     const onClose = () => {
@@ -23,13 +24,13 @@ export const AddMembersButton = ({ channelData, updateMembers, is_in_empty_state
     return (
         <Dialog.Root open={open} onOpenChange={setOpen}>
 
-            {is_in_empty_state ? <Dialog.Trigger>
-                <Button variant="ghost" size='1'>
-                    <BiUserPlus fontSize={'1.1rem'} />Add people</Button>
-            </Dialog.Trigger> : <Dialog.Trigger>
-                <IconButton aria-label={"add members to channel"}>
+            {isIconButton ? <Dialog.Trigger>
+                <IconButton aria-label={"add members to channel"} {...props}>
                     <RiUserAddLine />
                 </IconButton>
+            </Dialog.Trigger> : <Dialog.Trigger>
+                <Button variant="ghost" size='1' {...props}>
+                    <BiUserPlus fontSize={'1.1rem'} />Add members</Button>
             </Dialog.Trigger>}
 
             <Dialog.Content className={contentClass}>

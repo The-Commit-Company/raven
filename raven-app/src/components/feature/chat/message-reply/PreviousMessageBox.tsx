@@ -1,10 +1,9 @@
-import { Text, Box, HStack, Stack, Center, Image, Icon, IconButton, StackDivider, LinkBox } from '@chakra-ui/react'
+import { Text, Box, HStack, Stack, Center, Image, IconButton, StackDivider, LinkBox } from '@chakra-ui/react'
 import { Message } from '../../../../../../types/Messaging/Message'
 import { MarkdownRenderer } from '../../markdown-viewer/MarkdownRenderer'
 import { DateObjectToFormattedDateStringWithoutYear, DateObjectToTimeString, getFileExtension, getFileName } from '../../../../utils/operations'
 import { useContext } from 'react'
 import { getFileExtensionIcon } from '../../../../utils/layout/fileExtensionIcon'
-import { IoMdClose } from 'react-icons/io'
 import { useFrappeGetDoc, useFrappePostCall } from 'frappe-react-sdk'
 import { AlertBanner } from '../../../layout/AlertBanner'
 import { VirtuosoRefContext } from '../../../../utils/message/VirtuosoRefProvider'
@@ -12,8 +11,6 @@ import { useNavigate } from "react-router-dom"
 import { ChannelListItem, DMChannelListItem } from '@/utils/channel/ChannelListProvider'
 import { UserFields } from '@/utils/users/UserListProvider'
 import { useGetUserRecords } from '@/hooks/useGetUserRecords'
-import { BiCross } from 'react-icons/bi'
-import { AiOutlineCloseCircle } from 'react-icons/ai'
 import { CloseIcon } from '@chakra-ui/icons'
 import { useTheme } from '@/ThemeProvider'
 
@@ -59,7 +56,9 @@ export const PreviousMessageBox = ({ previous_message_id, previous_message_conte
                                 <Center maxW='50px'>
                                     {previous_message_content.message_type === 'Image' ?
                                         <Image src={previous_message_content.file} alt='File preview' boxSize={'30px'} rounded='md' /> :
-                                        <Icon as={getFileExtensionIcon(getFileExtension(previous_message_content.file) ?? '')} boxSize="4" />}
+                                        <div slot='start'>
+                                            {getFileExtensionIcon(getFileExtension(previous_message_content.file) ?? '')}
+                                        </div>}
                                 </Center>
                                 <Text as="span" fontSize="sm" overflow="hidden" whiteSpace="nowrap" textOverflow="ellipsis">{getFileName(previous_message_content.file)}</Text>
                             </HStack>
@@ -152,7 +151,9 @@ const PreviousMessageBoxInChat = ({ previous_message_id, channelData, users }: P
                             <Center maxW='50px'>
                                 {data.message_type === 'Image' ?
                                     <Image src={data.file} alt='File preview' boxSize={'30px'} rounded='md' /> :
-                                    <Icon as={getFileExtensionIcon(getFileExtension(data.file) ?? '')} boxSize="4" />}
+                                    <div slot='start'>
+                                        {getFileExtensionIcon(getFileExtension(data.file) ?? '')}
+                                    </div>}
                             </Center>
                             <Text as="span" fontSize="sm" overflow="hidden" whiteSpace="nowrap" textOverflow="ellipsis">{getFileName(data.file)}</Text>
                         </HStack>
