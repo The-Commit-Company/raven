@@ -1,37 +1,36 @@
-import { Tooltip, Button } from '@chakra-ui/react'
 import { HiOutlineSearch } from 'react-icons/hi'
 import { CommandPalette } from '../command-palette'
-import { ModalTypes, useModalManager } from '@/hooks/useModalManager'
+import { useState } from 'react'
+import { useModalContentStyle } from '@/hooks/useModalContentStyle'
+import { Button, Dialog, Tooltip } from '@radix-ui/themes'
 
 export const SearchButton = () => {
 
-    const modalManager = useModalManager()
-
-    const onCommandPaletteOpen = () => {
-        modalManager.openModal(ModalTypes.CommandPalette)
+    const [open, setOpen] = useState(false)
+    const onClose = () => {
+        setOpen(false)
     }
-
-    const onCommandPaletteToggle = () => {
-        modalManager.toggleModal(ModalTypes.CommandPalette)
-    }
+    const contentClass = useModalContentStyle()
 
     return (
-        <>
-            <Tooltip hasArrow label='search' placement='bottom-start' rounded={'md'}>
-                <Button
-                    size={"sm"}
-                    aria-label="search"
-                    leftIcon={<HiOutlineSearch />}
-                    onClick={onCommandPaletteOpen}
-                    fontWeight='light'>
-                    Search
-                </Button>
+        <Dialog.Root open={open} onOpenChange={setOpen}>
+            <Tooltip content='search'>
+                <Dialog.Trigger>
+                    <Button
+                        size='2'
+                        variant='outline'
+                        aria-label="search">
+                        <HiOutlineSearch />
+                        Search
+                    </Button>
+                </Dialog.Trigger>
             </Tooltip>
-            <CommandPalette
-                isOpen={modalManager.modalType === ModalTypes.CommandPalette}
-                onClose={modalManager.closeModal}
-                onToggle={onCommandPaletteToggle}
-            />
-        </>
+            <Dialog.Content className={contentClass}>
+                {/* <CommandPalette
+                    onClose={onClose}
+                    onToggle={onCommandPaletteToggle}
+                /> */}
+            </Dialog.Content>
+        </Dialog.Root >
     )
 }
