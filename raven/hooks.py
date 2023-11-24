@@ -196,6 +196,7 @@ website_route_rules = [
 
 permission_query_conditions = {
     "Raven Channel": "raven.permissions.raven_channel_query",
+    "Raven Message": "raven.permissions.raven_message_query",
 }
 
 has_permission = {

@@ -5,7 +5,7 @@ from frappe import _
 from frappe.model.document import Document
 from datetime import timedelta
 from frappe.query_builder.functions import Count, Coalesce
-from frappe.query_builder import Case
+from frappe.query_builder import Case, Order,JoinType
 
 
 class RavenMessage(Document):
@@ -151,9 +151,12 @@ def send_message(channel_id, text, is_reply, linked_message=None, json=None):
 def fetch_recent_files(channel_id):
     '''
      Fetches recently sent files in a channel
-     #TODO: FIXME: Check if the user has permission to view the channel
+     Check if the user has permission to view the channel
     '''
-    files = frappe.db.get_list('Raven Message',
+    if not frappe.has_permission("Raven Channel", doc=channel_id):
+        frappe.throw(
+            "You don't have permission to view this channel", frappe.PermissionError)
+    files = frappe.db.get_all('Raven Message',
                                filters={
                                    'channel_id': channel_id,
                                    'message_type': ['in', ['Image', 'File']]
@@ -183,15 +186,25 @@ def get_messages(channel_id):
 def get_saved_messages():
     '''
         Fetches list of all messages liked by the user
-        #TODO: FIXME: Check if the user has permission to view the message
+        Check if the user has permission to view the message
     '''
-    messages = frappe.db.get_list('Raven Message',
-                                  filters={'_liked_by': [
-                                      'like', '%'+frappe.session.user+'%']},
-                                  fields=['name', 'owner', 'creation', 'text', 'channel_id',
-                                          'file', 'message_type', 'message_reactions', '_liked_by'],
-                                  order_by='creation asc'
-                                  )
+
+    raven_message = frappe.qb.DocType('Raven Message')
+    raven_channel = frappe.qb.DocType('Raven Channel')
+    raven_channel_member = frappe.qb.DocType('Raven Channel Member')
+
+    query = (frappe.qb.from_(raven_message)
+                .join(raven_channel, JoinType.left)
+                .on(raven_message.channel_id == raven_channel.name)
+                .join(raven_channel_member, JoinType.left)
+                .on(raven_channel.name == raven_channel_member.channel_id)
+                .select(raven_message.name, raven_message.owner, raven_message.creation, raven_message.text, raven_message.channel_id,
+                        raven_message.file, raven_message.message_type, raven_message.message_reactions, raven_message._liked_by)
+                .where(raven_message._liked_by.like('%'+frappe.session.user+'%'))
+                .where((raven_channel.type == "Open") | (raven_channel_member.user_id == frappe.session.user))
+                .orderby(raven_message.creation, order=Order.asc))
+    
+    messages = query.run(as_dict=True)
 
     return messages
 

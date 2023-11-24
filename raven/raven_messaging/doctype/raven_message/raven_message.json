@@ -99,7 +99,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-11-24 15:09:28.714137",
+ "modified": "2023-11-24 18:46:53.805799",
  "modified_by": "Administrator",
  "module": "Raven Messaging",
  "name": "Raven Message",
@@ -130,6 +130,10 @@
    "role": "Raven User",
    "share": 1,
    "write": 1
+  },
+  {
+   "read": 1,
+   "role": "Raven User"
   }
  ],
  "search_fields": "text",
