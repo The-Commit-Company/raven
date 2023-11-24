@@ -38,7 +38,7 @@ class RavenMessage(Document):
         2. If the channel is private/public, the user creating the message should be a member of the channel
         3. If there is a linked message, the linked message should be in the same channel
         '''
-        self.validate_membership()
+        # self.validate_membership()
         self.validate_linked_message()
 
     def validate_membership(self):

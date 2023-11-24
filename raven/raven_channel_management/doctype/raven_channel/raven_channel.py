@@ -33,7 +33,6 @@ class RavenChannel(Document):
 
     def on_trash(self):
         # Channel can only be deleted by the current channel admin
-        print(frappe.session.user)
         if frappe.db.exists("Raven Channel Member", {"channel_id": self.name, "user_id": frappe.session.user, "is_admin": 1}):
             pass
         elif frappe.session.user == "Administrator":
