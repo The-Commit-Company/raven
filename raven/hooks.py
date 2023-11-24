@@ -194,6 +194,11 @@ website_route_rules = [
     {'from_route': '/raven/<path:app_path>', 'to_route': 'raven'},
     {'from_route': '/raven_mobile/<path:app_path>', 'to_route': 'raven_mobile'}, ]
 
+permission_query_conditions = {
+    "Raven Channel": "raven.permissions.raven_channel_query",
+    "Raven Message": "raven.permissions.raven_message_query",
+}
+
 has_permission = {
     "Raven Channel": "raven.permissions.channel_has_permission",
     "Raven Channel Member": "raven.permissions.channel_member_has_permission",

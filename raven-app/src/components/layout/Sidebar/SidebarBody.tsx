@@ -13,7 +13,7 @@ export const SidebarBody = () => {
         'unread_channel_count', {
         // revalidateOnFocus: false,
     })
-    useFrappeEventListener('unread_channel_count_updated', () => {
+    useFrappeEventListener('raven:unread_channel_count_updated', () => {
         update_count()
     })
 
