@@ -4,11 +4,20 @@ import frappe
 def react(message_id: str, reaction: str):
     '''
     API to react/unreact to a message.
-    #TODO: FIXME: Check if the user can react to the message
+    Checks if the user can react to the message
     First checks if the user has already reacted to the message.
     If yes, then unreacts (deletes), else reacts (creates).
     '''
 
+    channel_id = frappe.db.get_value('Raven Message', message_id, 'channel_id')
+    channel_type = frappe.db.get_value('Raven Channel', channel_id, 'type')
+
+    if channel_type == 'Private':
+        if not frappe.db.exists('Raven Channel Member', {
+            'channel_id': channel_id,
+            'user_id': frappe.session.user
+        }):
+            frappe.throw('You do not have permission to react to this message', frappe.PermissionError)
     reaction_escaped = reaction.encode('unicode-escape').decode('utf-8').replace('\\u', '')
     user = frappe.session.user
     existing_reaction = frappe.db.exists('Raven Message Reaction', {
