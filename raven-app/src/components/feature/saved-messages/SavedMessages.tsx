@@ -1,4 +1,4 @@
-import { Text, Stack, useToast, Tooltip, Button, useDisclosure, Box } from "@chakra-ui/react"
+import { Stack, useToast, Tooltip, Button, useDisclosure, Box } from "@chakra-ui/react"
 import { useFrappeGetCall, useFrappePostCall } from "frappe-react-sdk"
 import { useContext } from "react"
 import { HiOutlineSearch } from "react-icons/hi"
@@ -8,9 +8,9 @@ import { VirtuosoRefContext } from "../../../utils/message/VirtuosoRefProvider"
 import { AlertBanner, ErrorBanner } from "../../layout/AlertBanner"
 import { EmptyStateForSavedMessages } from "../../layout/EmptyState/EmptyState"
 import { PageHeader } from "../../layout/Heading/PageHeader"
-import { PageHeading } from "../../layout/Heading/PageHeading"
 import { CommandPalette } from "../command-palette"
 import { MessageBox } from "../global-search/MessageBox"
+import { Heading } from "@radix-ui/themes"
 
 interface SavedMessage extends TextMessage {
     channel_id: string,
@@ -74,9 +74,7 @@ export const SavedMessages = () => {
     return (
         <>
             <PageHeader>
-                <PageHeading>
-                    <Text>Saved</Text>
-                </PageHeading>
+                <Heading size='5'>Saved</Heading>
                 <Tooltip hasArrow label='search' placement='bottom-start' rounded={'md'}>
                     <Button
                         size={"sm"}
