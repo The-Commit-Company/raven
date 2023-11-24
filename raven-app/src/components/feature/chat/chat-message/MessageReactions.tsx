@@ -1,9 +1,10 @@
-import { HStack, Tag, Tooltip, useColorModeValue } from "@chakra-ui/react"
+import { HStack, Tag, Tooltip } from "@chakra-ui/react"
 import { useFrappePostCall } from "frappe-react-sdk"
 import { useCallback, useContext, useMemo } from "react"
 import { UserContext } from "../../../../utils/auth/UserProvider"
 import { getUsers } from "../../../../utils/operations"
 import { useGetUserRecords } from "@/hooks/useGetUserRecords"
+import { useColorModeValue } from "@/ThemeProvider"
 
 interface ReactionObject {
     // The emoji

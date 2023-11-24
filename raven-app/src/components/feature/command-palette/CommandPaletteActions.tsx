@@ -217,7 +217,7 @@ export const Files = ({ searchChange, input, isGlobalSearchModalOpen, onGlobalSe
                     return (<Item key={f.name}>
                         <HStack spacing={3}>
                             <Center maxW='50px'>
-                                {f.message_type === 'File' && <Icon as={getFileExtensionIcon(getFileExtension(f.file))} boxSize="6" />}
+                                {f.message_type === 'File' && <div>{getFileExtensionIcon(getFileExtension(f.file))}</div>}
                                 {f.message_type === 'Image' && <Image src={f.file} alt='File preview' boxSize={6} rounded='md' fit='cover' />}
                             </Center>
                             <Stack spacing={0}>

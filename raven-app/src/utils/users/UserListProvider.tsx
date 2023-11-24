@@ -16,7 +16,7 @@ export type UserFields = Pick<User, 'name' | 'full_name' | 'user_image' | 'first
 export const UserListProvider = ({ children }: PropsWithChildren) => {
 
 
-    const { data, error: usersError, mutate, isLoading } = useFrappeGetCall<{ message: UserFields[] }>('raven.api.raven_users.get_list', undefined, undefined, {
+    const { data, error: usersError, mutate, isLoading } = useFrappeGetCall<{ message: UserFields[] }>('raven.api.raven_users.get_list', undefined, 'raven.api.raven_users.get_list', {
         revalidateOnFocus: false,
         revalidateOnReconnect: false,
     })

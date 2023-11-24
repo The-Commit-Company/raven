@@ -4,8 +4,9 @@ import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import './MarkdownRenderer.css'
 import { useFrappeGetCall } from 'frappe-react-sdk';
-import { Box, Text, Image, HStack, Stack, useColorMode, IconButton, useClipboard } from '@chakra-ui/react';
+import { Box, Text, Image, HStack, Stack, IconButton, useClipboard } from '@chakra-ui/react';
 import { CheckIcon, CopyIcon } from '@chakra-ui/icons';
+import { useTheme } from '@/ThemeProvider';
 
 interface Props {
   content: string
@@ -36,8 +37,8 @@ export const MarkdownRenderer: React.FC<Props> = ({ content }) => {
     revalidateOnFocus: false
   })
 
-  const { colorMode } = useColorMode()
-  const borderColor = colorMode === 'light' ? 'gray.900' : 'gray.400'
+  const { appearance } = useTheme()
+  const borderColor = appearance === 'light' ? 'gray.900' : 'gray.400'
 
   const { onCopy, hasCopied } = useClipboard("")
 

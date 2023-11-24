@@ -1,6 +1,7 @@
+import { useColorModeValue } from '@/ThemeProvider'
 import { ChannelListItem } from '@/utils/channel/ChannelListProvider'
 import { getChannelIcon } from '@/utils/layout/channelIcon'
-import { HStack, Icon, Stack, StackDivider, Text, useColorModeValue } from '@chakra-ui/react'
+import { HStack, Icon, Stack, StackDivider, Text } from '@chakra-ui/react'
 import { ReactRendererOptions } from '@tiptap/react'
 import {
     forwardRef, useEffect, useImperativeHandle,

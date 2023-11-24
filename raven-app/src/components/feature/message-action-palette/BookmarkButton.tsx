@@ -1,9 +1,9 @@
-import { IconButton, Tooltip } from '@chakra-ui/react'
 import { useFrappePostCall } from 'frappe-react-sdk'
 import { IoBookmark, IoBookmarkOutline } from 'react-icons/io5'
 import { Message } from '../../../../../types/Messaging/Message'
 import { UserContext } from '@/utils/auth/UserProvider'
 import { useContext } from 'react'
+import { IconButton, Tooltip } from '@radix-ui/themes'
 
 interface BookmarkButtonProps {
     message: Message,
@@ -23,17 +23,18 @@ export const BookmarkButton = ({ message, updateMessages }: BookmarkButtonProps)
         }).then((r) => updateMessages())
     }
 
-    const checkLiked = (likedBy: string) => {
-        return JSON.parse(likedBy ?? '[]')?.length > 0 && JSON.parse(likedBy ?? '[]')?.includes(currentUser)
-    }
+    const isSaved = JSON.parse(message._liked_by ?? '[]')?.length > 0 && JSON.parse(message._liked_by ?? '[]')?.includes(currentUser)
 
     return (
-        <Tooltip hasArrow label={checkLiked(message._liked_by) ? 'unsave' : 'save'} size='xs' placement='top' rounded='md'>
+        <Tooltip content={isSaved ? 'unsave' : 'save'}>
             <IconButton
-                aria-label="save message"
-                icon={checkLiked(message._liked_by) ? <IoBookmark fontSize={'0.8rem'} /> : <IoBookmarkOutline fontSize={'0.8rem'} />}
-                size='xs'
-                onClick={() => handleLike(message.name, checkLiked(message._liked_by) ? 'No' : 'Yes')} />
+                variant='soft'
+                aria-label='save message'
+                size='1'
+                color='gray'
+                onClick={() => handleLike(message.name, isSaved ? 'No' : 'Yes')}>
+                {isSaved ? <IoBookmark fontSize={'0.8rem'} /> : <IoBookmarkOutline fontSize={'0.8rem'} />}
+            </IconButton>
         </Tooltip>
     )
 }

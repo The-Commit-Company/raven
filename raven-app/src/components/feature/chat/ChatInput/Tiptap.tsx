@@ -1,5 +1,3 @@
-import { Card, CardBody, useColorModeValue } from '@chakra-ui/react'
-// import TextStyle from '@tiptap/extension-text-style'
 import { EditorProvider, Extension, ReactRenderer } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import Underline from '@tiptap/extension-underline'
@@ -27,6 +25,8 @@ import html from 'highlight.js/lib/languages/xml'
 import json from 'highlight.js/lib/languages/json'
 import python from 'highlight.js/lib/languages/python'
 import { Plugin } from 'prosemirror-state'
+import { useColorModeValue } from '@/ThemeProvider'
+import { Box, Card, Inset } from '@radix-ui/themes'
 const lowlight = createLowlight(common)
 
 lowlight.register('html', html)
@@ -407,8 +407,8 @@ export const Tiptap = ({ slotAfter, slotBefore, fileProps, onMessageSend, messag
     })
 
     return (
-        <Card shadow={'md'} border='1px solid' borderColor={cardBorderColor} bgColor={bgColor}>
-            <CardBody p='0'>
+        <Card variant="classic">
+            <Inset clip='border-box'>
                 <EditorProvider
                     extensions={extensions}
                     content={defaultText}
@@ -420,8 +420,7 @@ export const Tiptap = ({ slotAfter, slotBefore, fileProps, onMessageSend, messag
                         <RightToolbarButtons fileProps={fileProps} sendMessage={onMessageSend} messageSending={messageSending} />
                     </ToolPanel>
                 </EditorProvider>
-            </CardBody>
-
+            </Inset>
         </Card>
 
     )

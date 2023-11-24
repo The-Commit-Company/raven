@@ -1,11 +1,9 @@
 import { createElement, useEffect, useRef } from "react"
 import 'emoji-picker-element'
-import { useColorModeValue } from "@chakra-ui/react"
 import './emojiPicker.styles.css'
 
 export const EmojiPicker = ({ onSelect }: { onSelect: (emoji: string) => void }) => {
 
-    const className = useColorModeValue('light', 'dark')
     const ref = useRef<any>(null)
 
     useEffect(() => {
@@ -25,5 +23,5 @@ export const EmojiPicker = ({ onSelect }: { onSelect: (emoji: string) => void })
         }
     }, [])
 
-    return createElement('emoji-picker', { ref, class: className })
+    return createElement('emoji-picker', { ref })
 }

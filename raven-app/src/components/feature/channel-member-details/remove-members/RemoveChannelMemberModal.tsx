@@ -1,13 +1,13 @@
-import { Text, AlertDialog, AlertDialogBody, AlertDialogCloseButton, AlertDialogContent, AlertDialogFooter, AlertDialogHeader, AlertDialogOverlay, Button, ButtonGroup, useToast, Icon } from '@chakra-ui/react'
+import { useToast } from '@chakra-ui/react'
 import { useFrappeDeleteDoc, useFrappeGetCall } from 'frappe-react-sdk'
-import { useRef } from 'react'
 import { ErrorBanner } from '../../../layout/AlertBanner'
 import { ChannelListItem } from '@/utils/channel/ChannelListProvider'
 import { ChannelMembers } from '@/utils/channel/ChannelMembersProvider'
-import { getChannelIcon } from '@/utils/layout/channelIcon'
+import { ChannelIcon } from '@/utils/layout/channelIcon'
+import { AlertDialog, Button, Flex, Text } from '@radix-ui/themes'
+import { Loader } from '@/components/common/Loader'
 
 interface RemoveChannelMemberModalProps {
-    isOpen: boolean,
     onClose: (refresh?: boolean) => void,
     user_id: string,
     channelData: ChannelListItem,
@@ -15,10 +15,9 @@ interface RemoveChannelMemberModalProps {
     updateMembers: () => void
 }
 
-export const RemoveChannelMemberModal = ({ isOpen, onClose, user_id, channelData, channelMembers, updateMembers }: RemoveChannelMemberModalProps) => {
+export const RemoveChannelMemberModal = ({ onClose, user_id, channelData, channelMembers, updateMembers }: RemoveChannelMemberModalProps) => {
 
-    const cancelRef = useRef<HTMLButtonElement | null>(null)
-    const { deleteDoc, error } = useFrappeDeleteDoc()
+    const { deleteDoc, error, loading: deletingDoc } = useFrappeDeleteDoc()
     const toast = useToast()
 
     const { data: member, error: errorFetchingChannelMember } = useFrappeGetCall<{ message: { name: string } }>('frappe.client.get_value', {
@@ -54,34 +53,37 @@ export const RemoveChannelMemberModal = ({ isOpen, onClose, user_id, channelData
         })
     }
 
+    const type = channelData?.type
+
     return (
-        <AlertDialog isOpen={isOpen} onClose={onClose} leastDestructiveRef={cancelRef} size='2xl'>
-            <AlertDialogOverlay />
-            <AlertDialogContent>
-                <AlertDialogHeader>
-                    <Text>
-                        Remove {user_id && channelMembers[user_id]?.full_name} from
-                        <Icon
-                            ml={0.5}
-                            pb={0.5}
-                            verticalAlign={'middle'}
-                            as={getChannelIcon(channelData?.type)} display={'inline'} />
-                        {channelData?.channel_name}?
-                    </Text>
-                </AlertDialogHeader>
-                <AlertDialogCloseButton />
-                <AlertDialogBody>
-                    <ErrorBanner error={errorFetchingChannelMember} />
-                    <ErrorBanner error={error} />
-                    <Text fontSize='sm'>This person will no longer have access to the channel and can only rejoin by invitation.</Text>
-                </AlertDialogBody>
-                <AlertDialogFooter>
-                    <ButtonGroup>
-                        <Button ref={cancelRef} variant='ghost' onClick={() => onClose(false)}>Cancel</Button>
-                        <Button colorScheme='red' onClick={onSubmit}>Remove</Button>
-                    </ButtonGroup>
-                </AlertDialogFooter>
-            </AlertDialogContent>
-        </AlertDialog>
+        <>
+            <AlertDialog.Title>
+                <Text>
+                    Remove {user_id && channelMembers[user_id]?.full_name} from
+                    {ChannelIcon({ type, size: '1.5rem' })}
+                    {channelData?.channel_name}?
+                </Text>
+            </AlertDialog.Title>
+
+            <Flex direction={'column'} gap='2'>
+                <ErrorBanner error={errorFetchingChannelMember} />
+                <ErrorBanner error={error} />
+                <Text size='1'>This person will no longer have access to the channel and can only rejoin by invitation.</Text>
+            </Flex>
+
+            <Flex gap="3" mt="4" justify="end">
+                <AlertDialog.Cancel>
+                    <Button variant="soft" color="gray">
+                        Cancel
+                    </Button>
+                </AlertDialog.Cancel>
+                <AlertDialog.Action>
+                    <Button variant="solid" color="red" onClick={onSubmit} disabled={deletingDoc}>
+                        {deletingDoc && <Loader />}
+                        {deletingDoc ? "Removing" : "Remove"}
+                    </Button>
+                </AlertDialog.Action>
+            </Flex>
+        </>
     )
 }

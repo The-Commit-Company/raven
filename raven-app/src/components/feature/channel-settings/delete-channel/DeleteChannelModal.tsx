@@ -1,25 +1,22 @@
-import { AlertDialog, AlertDialogBody, AlertDialogCloseButton, AlertDialogContent, AlertDialogFooter, AlertDialogHeader, AlertDialogOverlay, Button, ButtonGroup, Checkbox, ListItem, Stack, Text, UnorderedList, useToast } from '@chakra-ui/react'
-import { AlertBanner, ErrorBanner } from '../../../layout/AlertBanner'
-import { useRef, useState } from 'react'
+import { useToast } from '@chakra-ui/react'
+import { ErrorBanner } from '../../../layout/AlertBanner'
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useFrappeDeleteDoc } from 'frappe-react-sdk'
 import { ChannelListItem } from '@/utils/channel/ChannelListProvider'
-import { useDeleteSound } from '@/hooks/useSound'
-
+import { AlertDialog, Button, Callout, Checkbox, Flex, Text } from '@radix-ui/themes'
+import { Loader } from '@/components/common/Loader'
+import { ExclamationTriangleIcon } from '@radix-ui/react-icons'
 
 type DeleteChannelModalProps = {
-    isOpen: boolean,
     onClose: () => void,
     onCloseParent: () => void,
     channelData: ChannelListItem
 }
 
-export const DeleteChannelModal = ({ isOpen, onClose, onCloseParent, channelData }: DeleteChannelModalProps) => {
+export const DeleteChannelModal = ({ onClose, onCloseParent, channelData }: DeleteChannelModalProps) => {
 
-    const cancelRef = useRef<HTMLButtonElement | null>(null)
-    const { deleteDoc, error, loading, reset } = useFrappeDeleteDoc()
-
-    const play = useDeleteSound()
+    const { deleteDoc, error, loading: deletingDoc, reset } = useFrappeDeleteDoc()
 
     const handleClose = () => {
         onClose()
@@ -37,7 +34,6 @@ export const DeleteChannelModal = ({ isOpen, onClose, onCloseParent, channelData
                     onCloseParent()
                     localStorage.removeItem('ravenLastChannel')
                     navigate('/channel')
-                    play()
                     toast({
                         title: 'Success',
                         description: 'Channel deleted successfully',
@@ -60,34 +56,47 @@ export const DeleteChannelModal = ({ isOpen, onClose, onCloseParent, channelData
     const [allowDelete, setAllowDelete] = useState(false)
 
     return (
-        <AlertDialog isOpen={isOpen} onClose={handleClose} leastDestructiveRef={cancelRef} size='3xl'>
-            <AlertDialogOverlay />
-            <AlertDialogContent>
-                <AlertDialogHeader>
-                    Delete this channel?
-                </AlertDialogHeader>
-                <AlertDialogCloseButton />
-                <AlertDialogBody>
-                    <Stack spacing={4}>
-                        <ErrorBanner error={error} />
-                        <AlertBanner status='warning' heading='This action is permanent.' />
-                        <Text>When you delete a channel, all messages from this channel will be removed immediately.</Text>
-                        <Stack>
-                            <UnorderedList>
-                                <ListItem>All messages, including files and images will be removed</ListItem>
-                                <ListItem>You can archive this channel instead to preserve your messages</ListItem>
-                            </UnorderedList>
-                        </Stack>
-                        <Checkbox isChecked={allowDelete} onChange={() => setAllowDelete(!allowDelete)}>Yes, I understand, permanently delete this channel</Checkbox>
-                    </Stack>
-                </AlertDialogBody>
-                <AlertDialogFooter>
-                    <ButtonGroup>
-                        <Button ref={cancelRef} variant='ghost' onClick={handleClose}>Cancel</Button>
-                        <Button colorScheme='red' onClick={onSubmit} isDisabled={!allowDelete} isLoading={loading}>Delete</Button>
-                    </ButtonGroup>
-                </AlertDialogFooter>
-            </AlertDialogContent>
-        </AlertDialog>
+        <>
+            <AlertDialog.Title>
+                Delete this channel?
+            </AlertDialog.Title>
+
+            <Flex direction='column' gap='4'>
+                <ErrorBanner error={error} />
+                <Callout.Root color="red" size='1'>
+                    <Callout.Icon>
+                        <ExclamationTriangleIcon />
+                    </Callout.Icon>
+                    <Callout.Text size='1'>
+                        This action is permanent and cannot be undone.
+                    </Callout.Text>
+                </Callout.Root>
+                <Text size='2'>When you delete a channel, all messages from this channel will be removed immediately.</Text>
+                <Flex direction='column'>
+                    <ul className={'list-inside'}>
+                        <li><Text size='1'>All messages, including files and images will be removed</Text></li>
+                        <li><Text size='1'>You can archive this channel instead to preserve your messages</Text></li>
+                    </ul>
+                </Flex>
+                <Flex gap="2" align={'center'}>
+                    <Checkbox onClick={() => setAllowDelete(!allowDelete)} color='red' />
+                    <Text size='2'>Yes, I understand, permanently delete this channel</Text>
+                </Flex>
+            </Flex>
+
+            <Flex gap="3" mt="4" justify="end">
+                <AlertDialog.Cancel>
+                    <Button variant="soft" color="gray" onClick={handleClose}>
+                        Cancel
+                    </Button>
+                </AlertDialog.Cancel>
+                <AlertDialog.Action>
+                    <Button variant="solid" color="red" onClick={onSubmit} disabled={!allowDelete || deletingDoc}>
+                        {deletingDoc && <Loader />}
+                        {deletingDoc ? "Deleting" : "Delete"}
+                    </Button>
+                </AlertDialog.Action>
+            </Flex>
+        </>
     )
 }

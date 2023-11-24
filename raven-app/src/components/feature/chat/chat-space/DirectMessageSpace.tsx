@@ -1,5 +1,5 @@
 import { DMChannelListItem } from "@/utils/channel/ChannelListProvider"
-import { Box } from "@chakra-ui/react"
+import { Box } from "@radix-ui/themes"
 import { DMChannelHeader } from "../../chat-header/DMChannelHeader"
 import { ChatBoxBody } from "../chat-history/ChatBoxBody"
 import { useContext } from "react"

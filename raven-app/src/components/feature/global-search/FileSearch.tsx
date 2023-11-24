@@ -1,5 +1,5 @@
 import { SearchIcon } from '@chakra-ui/icons'
-import { Avatar, Button, Center, chakra, FormControl, HStack, Icon, Input, InputGroup, InputLeftElement, Link, Stack, TabPanel, Text, Image, Spinner, IconButton, useColorMode } from '@chakra-ui/react'
+import { Avatar, Button, Center, chakra, FormControl, HStack, Icon, Input, InputGroup, InputLeftElement, Link, Stack, TabPanel, Text, Image, Spinner, IconButton } from '@chakra-ui/react'
 import { useFrappeGetCall } from 'frappe-react-sdk'
 import { useMemo, useState, useContext } from 'react'
 import { Controller, FormProvider, useForm } from 'react-hook-form'
@@ -21,6 +21,7 @@ import { scrollbarStyles } from '../../../styles'
 import { UserFields } from '@/utils/users/UserListProvider'
 import { ChannelListContext, ChannelListContextType, ChannelListItem } from '@/utils/channel/ChannelListProvider'
 import { useGetUserRecords } from '@/hooks/useGetUserRecords'
+import { useTheme } from '@/ThemeProvider'
 
 interface FilterInput {
     'from-user-filter': SelectOption[],
@@ -54,7 +55,7 @@ export interface FileSearchResult {
 
 export const FileSearch = ({ onToggleMyChannels, isOpenMyChannels, onToggleSaved, isSaved, dateOption, input, fromFilter, inFilter }: Props) => {
 
-    const { colorMode } = useColorMode()
+    const { appearance } = useTheme()
 
     const users = useGetUserRecords()
 
@@ -234,11 +235,11 @@ export const FileSearch = ({ onToggleMyChannels, isOpenMyChannels, onToggleSaved
                         (!!!error && data?.message && data.message.length > 0 ?
                             <><Sort
                                 sortingFields={[{ label: 'Created on', field: 'creation' }]}
-                                onSortFieldSelect={(selField) => setSortByField(selField)}
+                                onSortFieldSelect={(selField: any) => setSortByField(selField)}
                                 sortOrder={sortOrder}
                                 sortField={sortByField}
                                 onSortOrderChange={(order) => setSortOrder(order)} />
-                                <Stack spacing={4} overflowY='scroll' sx={scrollbarStyles(colorMode)}>
+                                <Stack spacing={4} overflowY='scroll' sx={scrollbarStyles(appearance)}>
 
                                     {data.message.map((f: FileSearchResult) => {
                                         const onFilePreviewModalOpen = () => {
@@ -252,7 +253,7 @@ export const FileSearch = ({ onToggleMyChannels, isOpenMyChannels, onToggleSaved
                                         return (
                                             <HStack spacing={3} key={f.name}>
                                                 <Center maxW='50px'>
-                                                    {f.message_type === 'File' && <Icon as={getFileExtensionIcon(getFileExtension(f.file))} boxSize="9" />}
+                                                    {f.message_type === 'File' && <div>{getFileExtensionIcon(getFileExtension(f.file))}</div>}
                                                     {f.message_type === 'Image' && <Image src={f.file} alt='File preview' boxSize={'36px'} rounded='md' fit='cover' />}
                                                 </Center>
                                                 <Stack spacing={0}>

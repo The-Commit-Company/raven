@@ -1,31 +1,22 @@
-import { Button, ButtonGroup, chakra, FormControl, FormErrorMessage, FormHelperText, FormLabel, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Stack, Textarea, useToast } from "@chakra-ui/react"
+import { useToast } from "@chakra-ui/react"
 import { useFrappeUpdateDoc } from "frappe-react-sdk"
 import { FormProvider, useForm } from "react-hook-form"
 import { ErrorBanner } from "../../../layout/AlertBanner"
 import { ChannelListItem } from "@/utils/channel/ChannelListProvider"
-
-interface RenameChannelModalProps {
-    isOpen: boolean,
-    onClose: (refresh?: boolean) => void
-    channelData: ChannelListItem
-}
+import { Box, Dialog, Flex, Button, TextArea, Text } from "@radix-ui/themes"
+import { Loader } from "@/components/common/Loader"
+import { ErrorText, Label } from "@/components/common/Form"
 
 interface RenameChannelForm {
     channel_description: string
 }
 
-export const EditChannelDescriptionModal = ({ isOpen, onClose, channelData }: RenameChannelModalProps) => {
-    return (
-        <Modal isOpen={isOpen} onClose={onClose} size='lg'>
-            <ModalOverlay />
-            <ModalContent>
-                <EditChannelDescriptionModalForm channelData={channelData} onClose={onClose} />
-            </ModalContent>
-        </Modal>
-    )
+interface RenameChannelModalContentProps {
+    channelData: ChannelListItem,
+    onClose: () => void
 }
 
-const EditChannelDescriptionModalForm = ({ channelData, onClose }: { channelData: ChannelListItem, onClose: () => void }) => {
+export const EditChannelDescriptionModalContent = ({ channelData, onClose }: RenameChannelModalContentProps) => {
 
     const methods = useForm<RenameChannelForm>({
         defaultValues: {
@@ -60,36 +51,42 @@ const EditChannelDescriptionModalForm = ({ channelData, onClose }: { channelData
 
     return (
         <FormProvider {...methods}>
-            <chakra.form onSubmit={handleSubmit(onSubmit)}>
+            <form onSubmit={handleSubmit(onSubmit)}>
 
-                <ModalHeader>{channelData && channelData?.channel_description && channelData?.channel_description.length > 0 ? 'Edit description' : 'Add description'}</ModalHeader>
-                <ModalCloseButton isDisabled={updatingDoc} />
+                <Dialog.Title>{channelData && channelData?.channel_description && channelData?.channel_description.length > 0 ? 'Edit description' : 'Add description'}</Dialog.Title>
 
-                <ModalBody>
-                    <Stack>
-                        <ErrorBanner error={error} />
+                <Flex gap='2' direction='row' width='100%'>
+                    <ErrorBanner error={error} />
+                    <Box width='100%'>
+                        <Label htmlFor='channel_description'>Channel description</Label>
+                        <TextArea
+                            maxLength={200}
+                            id='channel_description'
+                            placeholder='Add description'
+                            {...register('channel_description', {
+                                maxLength: {
+                                    value: 200,
+                                    message: "Channel description cannot be more than 200 characters."
+                                }
+                            })}
+                            aria-invalid={errors.channel_description ? 'true' : 'false'}
+                        />
+                        <Text size='1' weight='light'>This is how people will know what this channel is about.</Text>
+                        {errors?.channel_description && <ErrorText>{errors.channel_description?.message}</ErrorText>}
+                    </Box>
+                </Flex>
 
-                        <FormControl isRequired isInvalid={!!errors.channel_description}>
-                            <Stack>
-                                <FormLabel htmlFor='channel_description'>Channel description</FormLabel>
-                                <Textarea {...register('channel_description', { required: "Add a description", maxLength: 200 })}
-                                    placeholder='Add a description' />
-                            </Stack>
-                            <FormHelperText fontSize='xs'>This is how people will know what this channel is about. (Description cannot be longer than 200 characters)</FormHelperText>
-                            <FormErrorMessage>{errors?.channel_description?.message}</FormErrorMessage>
-                        </FormControl>
+                <Flex gap="3" mt="6" justify="end" align='center'>
+                    <Dialog.Close disabled={updatingDoc}>
+                        <Button variant="soft" color="gray">Cancel</Button>
+                    </Dialog.Close>
+                    <Button type='submit' disabled={updatingDoc}>
+                        {updatingDoc && <Loader />}
+                        {updatingDoc ? "Saving" : "Save"}
+                    </Button>
+                </Flex>
 
-                    </Stack>
-                </ModalBody>
-
-                <ModalFooter>
-                    <ButtonGroup>
-                        <Button variant='ghost' onClick={onClose} isDisabled={updatingDoc}>Cancel</Button>
-                        <Button colorScheme='blue' type='submit' isLoading={updatingDoc}>Save Changes</Button>
-                    </ButtonGroup>
-                </ModalFooter>
-
-            </chakra.form>
+            </form>
         </FormProvider>
     )
 }

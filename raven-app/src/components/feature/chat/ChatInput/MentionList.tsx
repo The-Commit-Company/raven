@@ -1,8 +1,9 @@
 // import './MentionList.scss'
 
+import { useColorModeValue } from '@/ThemeProvider'
 import { useIsUserActive } from '@/hooks/useIsUserActive'
 import { UserFields } from '@/utils/users/UserListProvider'
-import { Avatar, AvatarBadge, HStack, Stack, StackDivider, Text, useColorModeValue } from '@chakra-ui/react'
+import { Avatar, AvatarBadge, HStack, Stack, StackDivider, Text } from '@chakra-ui/react'
 import { ReactRendererOptions } from '@tiptap/react'
 import {
     forwardRef, useEffect, useImperativeHandle,

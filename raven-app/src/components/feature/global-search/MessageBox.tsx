@@ -1,4 +1,4 @@
-import { Avatar, Box, HStack, Link, Stack, StackDivider, Text, useColorMode } from "@chakra-ui/react"
+import { Avatar, Box, HStack, Link, Stack, StackDivider, Text } from "@chakra-ui/react"
 import { useState } from "react"
 import { useModalManager, ModalTypes } from "../../../hooks/useModalManager"
 import { FileMessageBlock } from "../chat/chat-message/FileMessage"
@@ -7,6 +7,7 @@ import { MarkdownRenderer } from "../markdown-viewer/MarkdownRenderer"
 import { useGetUserRecords } from "@/hooks/useGetUserRecords"
 import { useCurrentChannelData } from "@/hooks/useCurrentChannelData"
 import { ChannelListItem, DMChannelListItem } from "@/utils/channel/ChannelListProvider"
+import { useTheme } from "@/ThemeProvider"
 
 type MessageBoxProps = {
     messageName: string,
@@ -21,8 +22,8 @@ type MessageBoxProps = {
 
 export const MessageBox = ({ messageName, channelID, creation, owner, messageText, file, message_type, handleScrollToMessage }: MessageBoxProps) => {
 
-    const { colorMode } = useColorMode()
-    const textColor = colorMode === 'light' ? 'gray.800' : 'gray.50'
+    const { appearance } = useTheme()
+    const textColor = appearance === 'light' ? 'gray.800' : 'gray.50'
     const [showButtons, setShowButtons] = useState<{}>({ visibility: 'hidden' })
     const modalManager = useModalManager()
     const onFilePreviewModalOpen = () => {
@@ -47,7 +48,7 @@ export const MessageBox = ({ messageName, channelID, creation, owner, messageTex
             zIndex={1}
             position={'relative'}
             _hover={{
-                bg: colorMode === 'light' && 'gray.50' || 'gray.800',
+                bg: appearance === 'light' && 'gray.50' || 'gray.800',
                 borderRadius: 'md'
             }}
             rounded='md'
@@ -65,14 +66,14 @@ export const MessageBox = ({ messageName, channelID, creation, owner, messageTex
                     {channelData?.channel_name ? <Text fontSize={'small'}>View in channel</Text> : <Text fontSize={'small'}>View in chat</Text>}
                 </Link>
             </HStack>
-            :
-            <HStack pb={1.5} spacing={1}>
-                <Text fontSize='small' color='gray.500'>{channelID}</Text>
-                <Text fontSize='small'>- {new Date(creation).toDateString()}</Text>
-                <Link style={showButtons} color='blue.500' onClick={() => handleScrollToMessage(messageName, channelID)} pl={1}>
-                     <Text fontSize={'small'}>View in channel</Text>
-                </Link>
-            </HStack>}
+                :
+                <HStack pb={1.5} spacing={1}>
+                    <Text fontSize='small' color='gray.500'>{channelID}</Text>
+                    <Text fontSize='small'>- {new Date(creation).toDateString()}</Text>
+                    <Link style={showButtons} color='blue.500' onClick={() => handleScrollToMessage(messageName, channelID)} pl={1}>
+                        <Text fontSize={'small'}>View in channel</Text>
+                    </Link>
+                </HStack>}
 
             <HStack spacing={2} alignItems='flex-start'>
                 <Avatar name={users[owner]?.full_name ?? owner} src={users[owner]?.user_image ?? ''} borderRadius={'md'} boxSize='36px' />

@@ -1,8 +1,9 @@
-import { Button } from '@chakra-ui/react'
 import { RemoveChannelMemberModal } from './RemoveChannelMemberModal'
-import { ModalTypes, useModalManager } from '@/hooks/useModalManager'
 import { ChannelMembers } from '@/utils/channel/ChannelMembersProvider'
 import { ChannelListItem } from '@/utils/channel/ChannelListProvider'
+import { useState } from 'react'
+import { useModalContentStyle } from '@/hooks/useModalContentStyle'
+import { AlertDialog, Button } from '@radix-ui/themes'
 
 interface RemoveMemberButtonProps {
     channelData: ChannelListItem,
@@ -13,28 +14,27 @@ interface RemoveMemberButtonProps {
 
 export const RemoveMemberButton = ({ channelData, channelMembers, updateMembers, selectedMember }: RemoveMemberButtonProps) => {
 
-    const modalManager = useModalManager()
-
-    const onRemoveMembersModalOpen = () => {
-        modalManager.openModal(ModalTypes.RemoveChannelMember)
+    const [open, setOpen] = useState(false)
+    const onClose = () => {
+        setOpen(false)
     }
+    const contentClass = useModalContentStyle()
 
     return (
-        <>
-            <Button
-                colorScheme='blue'
-                variant='link'
-                size='xs'
-                onClick={onRemoveMembersModalOpen}>
-                Remove
-            </Button>
-            <RemoveChannelMemberModal
-                isOpen={modalManager.modalType === ModalTypes.RemoveChannelMember}
-                onClose={modalManager.closeModal}
-                user_id={selectedMember}
-                channelData={channelData}
-                channelMembers={channelMembers}
-                updateMembers={updateMembers} />
-        </>
+        <AlertDialog.Root open={open} onOpenChange={setOpen}>
+            <AlertDialog.Trigger>
+                <Button variant='ghost' className={'hover:bg-[var(--slate-3)]'} size='1'>
+                    Remove
+                </Button>
+            </AlertDialog.Trigger>
+            <AlertDialog.Content className={contentClass}>
+                <RemoveChannelMemberModal
+                    onClose={onClose}
+                    user_id={selectedMember}
+                    channelData={channelData}
+                    channelMembers={channelMembers}
+                    updateMembers={updateMembers} />
+            </AlertDialog.Content>
+        </AlertDialog.Root>
     )
 }

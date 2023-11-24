@@ -1,53 +1,50 @@
-import { ModalTypes, useModalManager } from '@/hooks/useModalManager'
-import { Box, IconButton, Popover, PopoverContent, PopoverTrigger, Portal, Tooltip, useColorMode } from '@chakra-ui/react'
-import { useEffect } from 'react'
+import { useState } from 'react'
 import { BsEmojiSmile } from 'react-icons/bs'
 import { EmojiPicker } from '../../common/EmojiPicker/EmojiPicker'
+import { useModalContentStyle } from '@/hooks/useModalContentStyle'
+import { Box, Flex, IconButton, Popover, Portal, Tooltip } from '@radix-ui/themes'
 
 interface EmojiPickerButtonProps {
-    handleScroll: (newState: boolean) => void,
     saveReaction: (emoji: string) => void
 }
 
-export const EmojiPickerButton = ({ handleScroll, saveReaction }: EmojiPickerButtonProps) => {
+export const EmojiPickerButton = ({ saveReaction }: EmojiPickerButtonProps) => {
 
-    const { colorMode } = useColorMode()
-    const modalManager = useModalManager()
+    const [open, setOpen] = useState(false)
 
-    useEffect(() => {
-        handleScroll(modalManager.modalType !== ModalTypes.EmojiPicker)
-    }, [modalManager.modalType])
-
-    const onEmojiPickerOpen = () => {
-        modalManager.openModal(ModalTypes.EmojiPicker)
+    const onClose = () => {
+        setOpen(false)
     }
+
+    const contentClass = useModalContentStyle()
 
     const onEmojiClick = (emoji: string) => {
         saveReaction(emoji)
-        modalManager.closeModal()
+        onClose()
     }
 
     return (
-        <Box>
-            <Popover
-                isOpen={modalManager.modalType === ModalTypes.EmojiPicker}
-                onClose={modalManager.closeModal}
-                placement='auto-end'
-                isLazy
-                gutter={48}>
-                <PopoverTrigger>
-                    <Tooltip hasArrow label='find another reaction' size='xs' placement='top' rounded='md'>
-                        <IconButton size='xs' aria-label={"pick emoji"} icon={<BsEmojiSmile />} onClick={onEmojiPickerOpen} />
-                    </Tooltip>
-                </PopoverTrigger>
+        <Popover.Root open={open} onOpenChange={setOpen}>
+            <Flex>
+                <Tooltip content='find another reaction'>
+                    <Popover.Trigger>
+                        <IconButton
+                            variant='soft'
+                            size='1'
+                            color='gray'
+                            aria-label='pick emoji'>
+                            <BsEmojiSmile fontSize={'0.8rem'} />
+                        </IconButton>
+                    </Popover.Trigger>
+                </Tooltip>
                 <Portal>
-                    <Box zIndex={10}>
-                        <PopoverContent border={'none'} rounded='lg'>
+                    <Box className={'z-10'}>
+                        <Popover.Content className={`${contentClass} p-0`}>
                             <EmojiPicker onSelect={onEmojiClick} />
-                        </PopoverContent>
+                        </Popover.Content>
                     </Box>
                 </Portal>
-            </Popover>
-        </Box>
+            </Flex>
+        </Popover.Root>
     )
 }

@@ -1,5 +1,5 @@
 import { SearchIcon } from '@chakra-ui/icons'
-import { Button, Center, chakra, FormControl, HStack, Input, InputGroup, InputLeftElement, Text, Stack, TabPanel, Box, useColorMode, Spinner } from '@chakra-ui/react'
+import { Button, Center, chakra, FormControl, HStack, Input, InputGroup, InputLeftElement, Text, Stack, TabPanel, Box, Spinner } from '@chakra-ui/react'
 import { useFrappeGetCall } from 'frappe-react-sdk'
 import { useState } from 'react'
 import { FormProvider, Controller, useForm } from 'react-hook-form'
@@ -12,6 +12,7 @@ import { EmptyStateForSearch } from '../../layout/EmptyState/EmptyState'
 import { SelectInput, SelectOption } from '../search-filters/SelectInput'
 import { Sort } from '../sorting'
 import { scrollbarStyles } from '../../../styles'
+import { useTheme } from '@/ThemeProvider'
 interface Props {
     onToggleMyChannels: () => void,
     isOpenMyChannels: boolean,
@@ -41,7 +42,7 @@ export const ChannelSearch = ({ onToggleMyChannels, isOpenMyChannels, onToggleOt
         setSearchText(e.target.value)
     }
 
-    const { colorMode } = useColorMode()
+    const { appearance } = useTheme()
 
     const { data, error, isLoading, isValidating } = useFrappeGetCall<{ message: GetChannelSearchResult[] }>("raven.api.search.get_search_result", {
         filter_type: 'Channel',
@@ -137,13 +138,13 @@ export const ChannelSearch = ({ onToggleMyChannels, isOpenMyChannels, onToggleOt
                                 sortOrder={sortOrder}
                                 sortField={sortByField}
                                 onSortOrderChange={(order) => setSortOrder(order)} />
-                                <Stack spacing={2} overflowY='scroll' sx={scrollbarStyles(colorMode)}>
+                                <Stack spacing={2} overflowY='scroll' sx={scrollbarStyles(appearance)}>
 
                                     {data.message.map((channel: GetChannelSearchResult) => {
                                         return (
                                             <Box p={2}
                                                 _hover={{
-                                                    bg: colorMode === 'light' && 'gray.50' || 'gray.800',
+                                                    bg: appearance === 'light' && 'gray.50' || 'gray.800',
                                                     borderRadius: 'md'
                                                 }}
                                                 rounded='md'

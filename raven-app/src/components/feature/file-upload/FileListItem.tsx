@@ -1,10 +1,11 @@
-import { Text, Stack, IconButton, HStack, Icon, Image, Center, CircularProgress, CircularProgressLabel, useColorModeValue } from '@chakra-ui/react'
+import { Text, Stack, IconButton, HStack, Image, Center, CircularProgress, CircularProgressLabel, } from '@chakra-ui/react'
 import { TbTrash } from 'react-icons/tb'
 import { useGetFilePreviewUrl } from '../../../hooks/useGetFilePreviewUrl'
 import { getFileExtensionIcon } from '../../../utils/layout/fileExtensionIcon'
 import { getFileExtension } from '../../../utils/operations'
 import { CustomFile } from './FileDrop'
 import { FileUploadProgress } from '../chat/ChatInput/FileInput/useFileUpload'
+import { useColorModeValue } from '@/ThemeProvider'
 
 interface FileListItemProps {
     file: CustomFile,
@@ -30,7 +31,7 @@ export const FileListItem = ({ file, removeFile, uploadProgress }: FileListItemP
     return (
         <HStack w='full' justify={'flex-start'} border={'2px'} borderColor={borderColor} bgColor={bgColor} p='2' rounded='md'>
             <Center maxW='50px'>
-                {previewURL ? <Image src={previewURL} alt='File preview' boxSize={'32px'} rounded='md' /> : <Icon as={getFileExtensionIcon(getFileExtension(file.name) ?? '')} boxSize="8" />}
+                {previewURL ? <Image src={previewURL} alt='File preview' boxSize={'32px'} rounded='md' /> : <div>{getFileExtensionIcon(getFileExtension(file.name) ?? '')}</div>}
             </Center>
             <HStack justify="space-between" width="calc(100% - 50px)">
                 <Stack spacing={0} w='full' whiteSpace="nowrap" overflow="hidden">

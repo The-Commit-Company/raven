@@ -1,30 +1,32 @@
-import { ModalTypes, useModalManager } from '@/hooks/useModalManager'
-import { IconButton, Tooltip } from '@chakra-ui/react'
 import { VscTrash } from 'react-icons/vsc'
 import { DeleteMessageModal } from './DeleteMessageModal'
+import { useState } from 'react'
+import { useModalContentStyle } from '@/hooks/useModalContentStyle'
+import { AlertDialog, IconButton, Tooltip } from '@radix-ui/themes'
 
 export const DeleteMessageButton = ({ messageID }: { messageID: string }) => {
 
-    const modalManager = useModalManager()
-
-    const onDeleteMessageModalOpen = () => {
-        modalManager.openModal(ModalTypes.DeleteMessage)
+    const [open, setOpen] = useState(false)
+    const onClose = () => {
+        setOpen(false)
     }
+    const contentClass = useModalContentStyle()
 
     return (
-        <>
-            <Tooltip hasArrow label='delete' size='xs' placement='top' rounded='md'>
-                <IconButton
-                    onClick={onDeleteMessageModalOpen}
-                    aria-label="delete message"
-                    icon={<VscTrash fontSize={'0.9rem'} />}
-                    size='xs' />
+        <AlertDialog.Root open={open} onOpenChange={setOpen}>
+            <Tooltip content='delete'>
+                <AlertDialog.Trigger>
+                    <IconButton variant='soft' size='1' color='red' aria-label='delete message'>
+                        <VscTrash fontSize={'0.9rem'} />
+                    </IconButton>
+                </AlertDialog.Trigger>
             </Tooltip>
-            <DeleteMessageModal
-                isOpen={modalManager.modalType === ModalTypes.DeleteMessage}
-                onClose={modalManager.closeModal}
-                channelMessageID={messageID}
-            />
-        </>
+            <AlertDialog.Content className={contentClass}>
+                <DeleteMessageModal
+                    onClose={onClose}
+                    channelMessageID={messageID}
+                />
+            </AlertDialog.Content>
+        </AlertDialog.Root>
     )
 }

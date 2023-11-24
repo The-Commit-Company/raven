@@ -1,23 +1,21 @@
-import { HStack, StackProps, useColorModeValue } from '@chakra-ui/react'
+import { Flex } from '@radix-ui/themes'
+import { FlexProps } from '@radix-ui/themes/dist/cjs/components/flex'
 
 export const ICON_PROPS = {
-    size: '20px'
+    size: '18px'
 }
-export const ToolPanel = (props: StackProps) => {
 
-    const buttonGroupBgColor = useColorModeValue('white', 'gray.900')
-    const borderTopColor = useColorModeValue('gray.100', 'gray.700')
+export const DEFAULT_BUTTON_STYLE = 'bg-transparent text-[var(--gray-11)] hover:bg-[var(--accent-a3)] hover:text-[var(--accent-a11)]'
+export const ToolPanel = (props: FlexProps) => {
+
     return (
-        <HStack
-            justify={'space-between'}
-            borderTop='1px solid'
-            borderTopColor={borderTopColor}
-            bgColor={buttonGroupBgColor}
-            p='1.5'
-            shadow={'md'}
-            roundedBottom='md'
+        <Flex
+            justify='between'
+            align='center'
+            className='border-t border-t-[var(--slate-5)] bg-[var(--slate-2)] shadow-md rounded-b-md'
+            p='1'
             {...props}
         >
-        </HStack>
+        </Flex>
     )
 }

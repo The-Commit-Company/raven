@@ -1,20 +1,21 @@
-import { Button, ButtonGroup, ListItem, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Stack, Text, UnorderedList, useToast } from '@chakra-ui/react'
+import { useToast } from '@chakra-ui/react'
 import { useFrappeUpdateDoc } from 'frappe-react-sdk'
 import { ErrorBanner } from '../../../layout/AlertBanner'
 import { useNavigate } from 'react-router-dom'
 import { ChannelListItem } from '@/utils/channel/ChannelListProvider'
+import { AlertDialog, Flex, Text, Button } from '@radix-ui/themes'
+import { Loader } from '@/components/common/Loader'
 
 interface ArchiveChannelModalProps {
-    isOpen: boolean,
     onClose: () => void,
     onCloseViewDetails: () => void,
     channelData: ChannelListItem
 }
 
-export const ArchiveChannelModal = ({ isOpen, onClose, onCloseViewDetails, channelData }: ArchiveChannelModalProps) => {
+export const ArchiveChannelModal = ({ onClose, onCloseViewDetails, channelData }: ArchiveChannelModalProps) => {
 
     const toast = useToast()
-    const { updateDoc, error } = useFrappeUpdateDoc()
+    const { updateDoc, loading: archivingDoc, error } = useFrappeUpdateDoc()
     const navigate = useNavigate()
 
     const archiveChannel = () => {
@@ -42,32 +43,34 @@ export const ArchiveChannelModal = ({ isOpen, onClose, onCloseViewDetails, chann
     }
 
     return (
-        <Modal isOpen={isOpen} onClose={onClose} size='xl'>
-            <ModalOverlay />
-            <ModalContent>
-                <ModalHeader>Archive this channel?</ModalHeader>
-                <ModalCloseButton />
+        <>
+            <AlertDialog.Title>Archive this channel? </AlertDialog.Title>
 
-                <ModalBody>
-                    <Stack spacing={4}>
-                        <ErrorBanner error={error} />
-                        <Text>Please understand that when you archive <strong>{channelData?.channel_name}</strong>:</Text>
-                        <UnorderedList px='4' spacing={2}>
-                            <ListItem>It will be removed from your channel list</ListItem>
-                            <ListItem>No one will be able to send messages to this channel</ListItem>
-                        </UnorderedList>
-                        <Text>You will still be able to find the channel’s contents via search. And you can always unarchive the channel in the future, if you want.</Text>
-                    </Stack>
-                </ModalBody>
+            <Flex direction='column' gap='4'>
+                <ErrorBanner error={error} />
+                <Text size='2'>Please understand that when you archive <strong>{channelData?.channel_name}</strong>:</Text>
+                <Flex direction='column'>
+                    <ul className={'list-inside'}>
+                        <li><Text size='1'>It will be removed from your channel list</Text></li>
+                        <li><Text size='1'>No one will be able to send messages to this channel</Text></li>
+                    </ul>
+                </Flex>
+                <Text size='2'>You will still be able to find the channel’s contents via search. And you can always unarchive the channel in the future, if you want.</Text>
+            </Flex>
 
-                <ModalFooter>
-                    <ButtonGroup>
-                        <Button variant='ghost' onClick={onClose}>Cancel</Button>
-                        <Button colorScheme='red' type='submit' variant='outline' onClick={archiveChannel}>Archive Channel</Button>
-                    </ButtonGroup>
-                </ModalFooter>
-
-            </ModalContent>
-        </Modal>
+            <Flex gap="3" mt="4" justify="end">
+                <AlertDialog.Cancel>
+                    <Button variant="soft" color="gray">
+                        Cancel
+                    </Button>
+                </AlertDialog.Cancel>
+                <AlertDialog.Action>
+                    <Button variant="solid" color="red" onClick={archiveChannel} disabled={archivingDoc}>
+                        {archivingDoc && <Loader />}
+                        {archivingDoc ? "Archiving" : "Archive"}
+                    </Button>
+                </AlertDialog.Action>
+            </Flex>
+        </>
     )
 }

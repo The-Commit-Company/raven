@@ -1,45 +1,37 @@
-import { ModalTypes, useModalManager } from "@/hooks/useModalManager";
-import { Button } from "@chakra-ui/react";
 import { BsArchive } from "react-icons/bs";
 import { ArchiveChannelModal } from "./ArchiveChannelModal";
 import { ChannelListItem } from "@/utils/channel/ChannelListProvider";
+import { useState } from "react";
+import { useModalContentStyle } from "@/hooks/useModalContentStyle";
+import { AlertDialog, Button } from "@radix-ui/themes";
 
 interface ArchiveChannelButtonProps {
-    styles: {
-        variant: string,
-        size: string,
-        p: string,
-        justifyContent: string,
-        _hover: {
-            bg: string
-        },
-        rounded: string
-    },
     onClose: () => void,
     channelData: ChannelListItem
 }
 
-export const ArchiveChannelButton = ({ styles, onClose, channelData }: ArchiveChannelButtonProps) => {
+export const ArchiveChannelButton = ({ onClose: onCloseParent, channelData }: ArchiveChannelButtonProps) => {
 
-    const modalManager = useModalManager()
-
-    const onArchiveChannelModalOpen = () => {
-        modalManager.openModal(ModalTypes.ArchiveChannel)
+    const [open, setOpen] = useState(false)
+    const onClose = () => {
+        setOpen(false)
     }
+    const contentClass = useModalContentStyle()
 
     return (
-        <>
-            <Button {...styles}
-                leftIcon={<BsArchive />}
-                colorScheme="red"
-                onClick={onArchiveChannelModalOpen}>
-                Archive channel
-            </Button>
-            <ArchiveChannelModal
-                isOpen={modalManager.modalType === ModalTypes.ArchiveChannel}
-                onClose={modalManager.closeModal}
-                onCloseViewDetails={onClose}
-                channelData={channelData} />
-        </>
+        <AlertDialog.Root open={open} onOpenChange={setOpen}>
+            <AlertDialog.Trigger>
+                <Button variant='surface' color='gray'>
+                    <BsArchive />
+                    Archive channel
+                </Button>
+            </AlertDialog.Trigger>
+            <AlertDialog.Content className={contentClass}>
+                <ArchiveChannelModal
+                    onClose={onCloseParent}
+                    onCloseViewDetails={onClose}
+                    channelData={channelData} />
+            </AlertDialog.Content>
+        </AlertDialog.Root>
     )
 }

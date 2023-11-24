@@ -1,34 +1,40 @@
-import { Avatar, AvatarBadge, HStack, useBoolean, useToast } from "@chakra-ui/react"
+import { useToast } from "@chakra-ui/react"
 import { useFrappePostCall } from "frappe-react-sdk"
 import { useContext, useMemo, useState } from "react"
 import { useNavigate } from "react-router-dom"
-import { SidebarGroup, SidebarGroupItem, SidebarGroupLabel, SidebarGroupList, SidebarIcon, SidebarItemLabel, SidebarButtonItem } from "../../layout/Sidebar"
+import { SidebarGroup, SidebarGroupItem, SidebarGroupLabel, SidebarGroupList, SidebarIcon, SidebarButtonItem } from "../../layout/Sidebar"
 import { SidebarBadge, SidebarItem, SidebarViewMoreButton } from "../../layout/Sidebar/SidebarComp"
 import { UserContext } from "../../../utils/auth/UserProvider"
 import { useGetUser } from "@/hooks/useGetUser"
 import { useIsUserActive } from "@/hooks/useIsUserActive"
 import { ChannelListContext, ChannelListContextType, DMChannelListItem, ExtraUsersData, UnreadCountData } from "../../../utils/channel/ChannelListProvider"
+import { Flex, Text } from "@radix-ui/themes"
+import { UserAvatar } from "@/components/common/UserAvatar"
 
 export const DirectMessageList = ({ unread_count }: { unread_count?: UnreadCountData }) => {
 
     const { extra_users } = useContext(ChannelListContext) as ChannelListContextType
 
-    const [showData, { toggle }] = useBoolean(true)
+    const [showData, setShowData] = useState(true)
+
+    const toggle = () => setShowData(d => !d)
 
     return (
-        <SidebarGroup spacing={1}>
-            <SidebarGroupItem ml='2'>
+        <SidebarGroup pb='4'>
+            <SidebarGroupItem gap='2' px='2'>
                 <SidebarViewMoreButton onClick={toggle} />
-                <HStack w='71%' justifyContent='space-between'>
-                    <SidebarGroupLabel>Direct Messages</SidebarGroupLabel>
+                <Flex width='100%' justify='between' align='center' gap='2'>
+                    <Flex gap='2' align='center'>
+                        <SidebarGroupLabel className="cal-sans">Direct Messages</SidebarGroupLabel>
+                    </Flex>
                     {!showData && unread_count && unread_count?.total_unread_count_in_dms > 0 && <SidebarBadge>{unread_count.total_unread_count_in_dms}</SidebarBadge>}
-                </HStack>
+                </Flex>
             </SidebarGroupItem>
             <SidebarGroup>
                 {showData &&
-                    <SidebarGroupList>
+                    <SidebarGroupList px='1'>
                         <DirectMessageItemList unread_count={unread_count} />
-                        {extra_users && extra_users.length && <ExtraUsersItemList />}
+                        {extra_users && extra_users.length ? <ExtraUsersItemList /> : null}
                     </SidebarGroupList>
                 }
             </SidebarGroup>
@@ -57,20 +63,16 @@ const DirectMessageItem = ({ channel, unreadCount }: { channel: DMChannelListIte
 
     const isActive = useIsUserActive(channel.peer_user_id)
 
-    return <SidebarItem to={channel.name} py={1}>
-        <HStack w="full">
-            <SidebarIcon>
-                <Avatar name={userData?.full_name} src={userData?.user_image} borderRadius={'md'} size="xs">
-                    <AvatarBadge hidden={!isActive} boxSize='0.88em' bg='green.500' />
-                </Avatar>
-            </SidebarIcon>
-            <HStack justifyContent='space-between' w='full'>
-                <SidebarItemLabel fontWeight={unreadCountForChannel ? 'bold' : 'normal'}>
-                    {channel.peer_user_id !== currentUser ? userData?.full_name ?? channel.peer_user_id : `${userData?.full_name} (You)`}
-                </SidebarItemLabel>
-                {unreadCountForChannel && <SidebarBadge>{unreadCountForChannel}</SidebarBadge>}
-            </HStack>
-        </HStack>
+    return <SidebarItem to={channel.name}>
+        <SidebarIcon>
+            <UserAvatar src={userData?.user_image} alt={userData?.full_name} isActive={isActive} />
+        </SidebarIcon>
+        <Flex justify='between' width='100%'>
+            <Text size='2' className="text-ellipsis line-clamp-1" weight={unreadCountForChannel ? 'bold' : 'regular'}>
+                {channel.peer_user_id !== currentUser ? userData?.full_name ?? channel.peer_user_id : `${userData?.full_name} (You)`}
+            </Text>
+            {unreadCountForChannel ? <SidebarBadge>{unreadCountForChannel}</SidebarBadge> : null}
+        </Flex>
     </SidebarItem>
 }
 
@@ -122,18 +124,14 @@ const ExtraUsersItem = ({ user, createDMChannel }: { user: ExtraUsersData, creat
     return <SidebarButtonItem
         isLoading={isLoading}
         onClick={onButtonClick}
-        py={1}>
-        <HStack w="full">
-            <SidebarIcon>
-                <Avatar name={user.full_name} src={user.user_image} borderRadius={'md'} size="xs">
-                    <AvatarBadge hidden={!isActive} boxSize='0.88em' bg='green.500' />
-                </Avatar>
-            </SidebarIcon>
-            <HStack justifyContent='space-between' w='100%'>
-                <SidebarItemLabel>
-                    {user.name !== currentUser ? user.full_name : `${user.full_name} (You)`}
-                </SidebarItemLabel>
-            </HStack>
-        </HStack>
+    >
+        <SidebarIcon>
+            <UserAvatar src={user.user_image} alt={user.full_name} isActive={isActive} />
+        </SidebarIcon>
+        <Flex justify='between' width='100%'>
+            <Text size='2' className="text-ellipsis line-clamp-1">
+                {user.name !== currentUser ? user.full_name : `${user.full_name} (You)`}
+            </Text>
+        </Flex>
     </SidebarButtonItem>
 }

@@ -1,4 +1,4 @@
-import { Avatar, Box, BoxProps, HStack, Stack, useColorMode } from "@chakra-ui/react"
+import { Avatar, Box, BoxProps, HStack, Stack } from "@chakra-ui/react"
 import { useCallback, useState } from "react"
 import { ActionsPalette } from "../../message-action-palette/ActionsPalette"
 import { MessageReactions } from "./MessageReactions"
@@ -9,19 +9,19 @@ import { UserNameInMessage } from "./UserNameInMessage"
 import { ChannelListItem, DMChannelListItem } from "@/utils/channel/ChannelListProvider"
 import { useGetUserRecords } from "@/hooks/useGetUserRecords"
 import { useSWRConfig } from "frappe-react-sdk"
+import { useTheme } from "@/ThemeProvider"
 
 interface ChatMessageBoxProps extends BoxProps {
     message: Message,
-    handleScroll?: (newState: boolean) => void,
     children?: React.ReactNode,
     handleScrollToMessage?: (name: string, channel: string, messages: MessageBlock[]) => void,
     replyToMessage?: (message: Message) => void
     channelData: ChannelListItem | DMChannelListItem
 }
 
-export const ChatMessageBox = ({ message, handleScroll, children, handleScrollToMessage, replyToMessage, channelData, ...props }: ChatMessageBoxProps) => {
+export const ChatMessageBox = ({ message, children, handleScrollToMessage, replyToMessage, channelData, ...props }: ChatMessageBoxProps) => {
 
-    const { colorMode } = useColorMode()
+    const { appearance } = useTheme()
     const [showButtons, setShowButtons] = useState<{}>({ visibility: 'hidden' })
     const { name, owner: user, creation: timestamp, message_reactions, is_continuation, is_reply, linked_message } = message
 
@@ -41,7 +41,7 @@ export const ChatMessageBox = ({ message, handleScroll, children, handleScrollTo
             zIndex={1}
             position={'relative'}
             _hover={{
-                bg: colorMode === 'light' && 'gray.50' || 'gray.800',
+                bg: appearance === 'light' && 'gray.50' || 'gray.800',
                 borderRadius: 'md'
             }}
             rounded='md'
@@ -68,10 +68,9 @@ export const ChatMessageBox = ({ message, handleScroll, children, handleScrollTo
                 </Stack>
             </HStack>
 
-            {message && handleScroll && <ActionsPalette
+            {message && <ActionsPalette
                 message={message}
                 showButtons={showButtons}
-                handleScroll={handleScroll}
                 is_continuation={is_continuation}
                 replyToMessage={replyToMessage}
                 updateMessages={updateMessages} />

@@ -7,8 +7,17 @@ import { MainPage } from './pages/MainPage'
 import { ProtectedRoute } from './utils/auth/ProtectedRoute'
 import { UserProvider } from './utils/auth/UserProvider'
 import { ChannelRedirect } from './utils/channel/ChannelRedirect'
+import "cal-sans";
+import { useState } from 'react'
+import { ThemeProvider } from './ThemeProvider'
 
 function App() {
+
+  const [appearance, setAppearance] = useState<'dark' | 'light'>('dark');
+
+  const toggleTheme = () => {
+    setAppearance(appearance === 'dark' ? 'light' : 'dark');
+  };
 
   // We need to pass sitename only if the Frappe version is v15 or above.
 
@@ -30,17 +39,24 @@ function App() {
       siteName={getSiteName()}
     >
       <UserProvider>
-        <Routes>
-          <Route path='/login' element={<Login />} />
-          <Route path="/" element={<ProtectedRoute />}>
-            <Route index element={<ChannelRedirect />} />
-            <Route path="channel" element={<MainPage />} >
+        <ThemeProvider
+          appearance={appearance}
+          grayColor='slate'
+          accentColor='iris'
+          panelBackground='translucent'
+          toggleTheme={toggleTheme}>
+          <Routes>
+            <Route path='/login' element={<Login />} />
+            <Route path="/" element={<ProtectedRoute />}>
               <Route index element={<ChannelRedirect />} />
-              <Route path="saved-messages" element={<SavedMessages />} />
-              <Route path=":channelID" element={<ChatSpace />} />
+              <Route path="channel" element={<MainPage />} >
+                <Route index element={<ChannelRedirect />} />
+                <Route path="saved-messages" element={<SavedMessages />} />
+                <Route path=":channelID" element={<ChatSpace />} />
+              </Route>
             </Route>
-          </Route>
-        </Routes>
+          </Routes>
+        </ThemeProvider>
       </UserProvider>
     </FrappeProvider>
   )

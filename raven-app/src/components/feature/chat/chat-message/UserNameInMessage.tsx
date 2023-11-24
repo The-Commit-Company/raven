@@ -1,9 +1,10 @@
-import { Text, Button, HStack, StackDivider, useColorMode } from "@chakra-ui/react"
+import { Text, Button, HStack, StackDivider } from "@chakra-ui/react"
 import { DateTooltip } from "./DateTooltip"
 import { ModalTypes, useModalManager } from "@/hooks/useModalManager"
 import { UserProfileDrawer } from "../../user-details/UserProfileDrawer"
 import { useGetUserRecords } from "@/hooks/useGetUserRecords"
 import { UserFields } from "@/utils/users/UserListProvider"
+import { useTheme } from "@/ThemeProvider"
 
 interface UserNameInMessageProps {
     timestamp: string,
@@ -12,8 +13,8 @@ interface UserNameInMessageProps {
 
 export const UserNameInMessage = ({ timestamp, user }: UserNameInMessageProps) => {
 
-    const { colorMode } = useColorMode()
-    const textColor = colorMode === 'light' ? 'gray.800' : 'gray.50'
+    const { appearance } = useTheme()
+    const textColor = appearance === 'light' ? 'gray.800' : 'gray.50'
 
     const modalManager = useModalManager()
 

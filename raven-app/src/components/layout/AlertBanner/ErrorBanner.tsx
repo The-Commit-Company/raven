@@ -1,10 +1,10 @@
 import { FrappeError } from 'frappe-react-sdk'
-import { AnimatePresence, motion } from 'framer-motion'
-import { AlertBanner } from './AlertBanner'
-import { AlertProps, Stack, Text } from '@chakra-ui/react'
-import { useMemo } from 'react'
+import { AlertProps } from '@chakra-ui/react'
+import { PropsWithChildren, useMemo } from 'react'
 import React from 'react'
 import { MarkdownRenderer } from '@/components/feature/markdown-viewer/MarkdownRenderer'
+import { Callout } from '@radix-ui/themes'
+import { ExclamationTriangleIcon } from '@radix-ui/react-icons'
 
 interface ErrorBannerProps extends AlertProps {
     error?: FrappeError | null,
@@ -68,18 +68,21 @@ export const ErrorBanner = ({ error, overrideHeading, children, ...props }: Erro
 
     // TODO: Sometimes, error message has links which route to the ERPNext interface. We need to parse the link to route to the correct page in our interface
     // Links are of format <a href="{host_name}/app/{doctype}/{name}">LEAD-00001</a>
+    if (messages.length === 0 || !error) return null
+    return (<ErrorCallout>
+        {messages.map((m, i) => <MarkdownRenderer key={i} content={m.message} />)}
+        {children}
+    </ErrorCallout>)
+}
 
-    return (
-        <AnimatePresence>
-            {error && <motion.div key='error' initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-                <AlertBanner status={messages[0].indicator === 'yellow' ? 'warning' : "error"} heading={overrideHeading ?? parseHeading(messages[0])} {...props}>
-                    <Stack>
-                        {messages.map((m, i) => <MarkdownRenderer key={i} content={m.message} />)}
-                        {children}
-                    </Stack>
-                </AlertBanner>
-            </motion.div>}
-        </AnimatePresence>
 
-    )
+export const ErrorCallout = ({ children }: PropsWithChildren) => {
+    return (<Callout.Root color="red" role="alert">
+        <Callout.Icon>
+            <ExclamationTriangleIcon />
+        </Callout.Icon>
+        <Callout.Text>
+            {children}
+        </Callout.Text>
+    </Callout.Root>)
 }

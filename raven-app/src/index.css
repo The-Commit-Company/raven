@@ -1,0 +1,20 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+.cal-sans {
+    font-family: 'Cal Sans';
+}
+
+:root {
+    --sidebar-width: 16rem;
+}
+
+.radix-themes {
+    --heading-font-family: 'Cal Sans', sans-serif;
+}
+
+.rt-Button {
+    font-family: 'Cal Sans', sans-serif;
+}
