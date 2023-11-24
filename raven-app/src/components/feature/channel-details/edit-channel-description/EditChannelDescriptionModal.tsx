@@ -55,17 +55,17 @@ export const EditChannelDescriptionModalContent = ({ channelData, onClose }: Ren
 
                 <Dialog.Title>{channelData && channelData?.channel_description && channelData?.channel_description.length > 0 ? 'Edit description' : 'Add description'}</Dialog.Title>
 
-                <Flex gap='2' direction='row' width='100%'>
+                <Flex gap='2' direction='column' width='100%'>
                     <ErrorBanner error={error} />
                     <Box width='100%'>
                         <Label htmlFor='channel_description'>Channel description</Label>
                         <TextArea
-                            maxLength={200}
+                            maxLength={140}
                             id='channel_description'
                             placeholder='Add description'
                             {...register('channel_description', {
                                 maxLength: {
-                                    value: 200,
+                                    value: 140,
                                     message: "Channel description cannot be more than 200 characters."
                                 }
                             })}

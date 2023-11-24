@@ -110,7 +110,7 @@ export const AddChannelMembersModalContent = ({ channelID, channel_name, onClose
           </Flex>
         </Dialog.Title>
 
-        <Flex gap='2' direction='row' width='100%'>
+        <Flex gap='2' direction='column' width='100%'>
           <ErrorBanner error={error} />
           <Box width='100%'>
             <Flex direction='column' gap='2'>

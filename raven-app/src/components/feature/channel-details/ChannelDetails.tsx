@@ -31,7 +31,7 @@ export const ChannelDetails = ({ channelData, channelMembers, onClose }: Channel
                     <Flex direction={'column'}>
                         <Text weight='medium' size='2'>Channel name</Text>
                         <Flex gap='1'>
-                            <div className={'mt-0.5'}>{ChannelIcon({ type, size: '1rem' })}</div>
+                            <ChannelIcon type={channelData.type} className={'mt-0.5'} />
                             <Text size='2'>{channelData?.channel_name}</Text>
                         </Flex>
                     </Flex>
@@ -82,7 +82,6 @@ export const ChannelDetails = ({ channelData, channelMembers, onClose }: Channel
 
                 </Flex>
             </Box>
-            <Text size='1' color='gray' weight='light'>channel ID : {channelData.name}</Text>
         </Flex>
     )
 }

@@ -29,8 +29,8 @@ export const ViewChannelDetailsModalContent = ({ onClose, channelData, channelMe
     return (
         <Dialog.Content className={contentClass}>
             <Dialog.Title>
-                <Flex direction='row' align='center' gap='2'>
-                    <div className={'mt-1'}>{ChannelIcon({ type, size: '1.5rem' })}</div>
+                <Flex align='center' gap='2'>
+                    <ChannelIcon className={'mt-1'} type={type} />
                     <Text>{channelData.channel_name}</Text>
                 </Flex>
             </Dialog.Title>

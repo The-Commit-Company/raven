@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom'
 import { UserContext } from '../../../../utils/auth/UserProvider'
 import { ErrorBanner } from '../../../layout/AlertBanner'
 import { ChannelListContext, ChannelListContextType, ChannelListItem } from '@/utils/channel/ChannelListProvider'
-import { getChannelIcon } from '@/utils/layout/channelIcon'
+import { ChannelIcon, getChannelIcon } from '@/utils/layout/channelIcon'
 
 interface LeaveChannelModalProps {
     isOpen: boolean,
@@ -66,7 +66,7 @@ export const LeaveChannelModal = ({ isOpen, onClose, channelData, closeDetailsMo
                 <AlertDialogHeader>
                     <HStack>
                         <Text>Leave </Text>
-                        <Icon as={getChannelIcon(channelData?.type)} />
+                        <ChannelIcon type={channelData?.type} className={'mt-0.5'} />
                         <Text>{channelData?.channel_name}?</Text>
                     </HStack>
                 </AlertDialogHeader>

@@ -74,7 +74,7 @@ export const RenameChannelModalContent = ({ channelID, channelName, type, onClos
             <form onSubmit={handleSubmit(onSubmit)}>
                 <Dialog.Title>Rename this channel</Dialog.Title>
 
-                <Flex gap='2' direction='row' width='100%'>
+                <Flex gap='2' direction='column' width='100%'>
                     <ErrorBanner error={error} />
                     <Box width='100%'>
                         <Label htmlFor='channel_name' isRequired>Name</Label>

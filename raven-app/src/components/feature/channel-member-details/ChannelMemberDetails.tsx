@@ -38,26 +38,32 @@ export const ChannelMemberDetails = ({ channelData, channelMembers, activeUsers,
     return (
         <Flex direction='column' gap='4' className={'h-96'}>
 
-            <TextField.Root>
-                <TextField.Slot>
-                    <MagnifyingGlassIcon />
-                </TextField.Slot>
-                <TextField.Input autoFocus placeholder='Find members' onChange={handleChange} value={debouncedText} />
-            </TextField.Root>
+            <Flex gap='2'>
+                <div className={'w-full'}>
+                    <TextField.Root>
+                        <TextField.Slot>
+                            <MagnifyingGlassIcon />
+                        </TextField.Slot>
+                        <TextField.Input autoFocus placeholder='Find members' onChange={handleChange} value={debouncedText} />
+                    </TextField.Root>
+                </div>
+                {/* if current user is a channel member and the channel is not a open channel, user can add more members to the channel */}
+                {channelMembers[currentUser] && channelData.type !== 'Open' && channelData.is_archived == 0 &&
+                    <div className={'w-48'}>
+                        <AddMembersButton
+                            channelData={channelData}
+                            updateMembers={updateMembers}
+                            variant='soft'
+                            size='2'
+                        />
+                    </div>
+                }
+            </Flex>
+
 
             <Box className={'overflow-hidden overflow-y-scroll'}>
 
                 <Flex direction='column' gap='2'>
-                    {/* if current user is a channel member and the channel is not a open channel, user can add more members to the channel */}
-                    {channelMembers[currentUser] && channelData.type !== 'Open' && channelData.is_archived == 0 &&
-                        <Flex className={'pl-2'}>
-                            <AddMembersButton
-                                channelData={channelData}
-                                updateMembers={updateMembers}
-                                variant='soft'
-                            />
-                        </Flex>
-                    }
 
                     {filteredMembers.length > 0 ? (
                         <Flex direction='column'>

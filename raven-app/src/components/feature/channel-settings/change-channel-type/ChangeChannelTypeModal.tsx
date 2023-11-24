@@ -42,7 +42,7 @@ export const ChangeChannelTypeModal = ({ onClose, channelData }: ChangeChannelTy
         <>
             <Dialog.Title>Change to a {new_channel_type.toLocaleLowerCase()} channel?</Dialog.Title>
 
-            <Flex gap='2' direction='row' width='100%'>
+            <Flex gap='2' direction='column' width='100%'>
                 <ErrorBanner error={error} />
                 {channelData?.type === 'Private' && <Flex direction='column' gap='4'>
                     <Text size='2'>Please understand that when you make <strong>{channelData?.channel_name}</strong> a public channel:</Text>
