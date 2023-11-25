@@ -1,30 +1,18 @@
 import { useToast } from '@chakra-ui/react'
-import { FormProvider, useForm } from 'react-hook-form'
-import { AddMembersDropdown } from '../../select-member/AddMembersDropdown'
-import { ChakraStylesConfig } from "chakra-react-select"
-import { fallbackPfp, pfp, MemberOption } from "../../select-member/AddMembersDropdown"
+import { Controller, FormProvider, useForm } from 'react-hook-form'
 import { useFrappeCreateDoc } from 'frappe-react-sdk'
 import { ErrorBanner } from '../../../layout/AlertBanner'
 import { Loader } from '@/components/common/Loader'
 import { Box, Button, Dialog, Flex, Text } from '@radix-ui/themes'
-import { Label } from '@/components/common/Form'
 import { ChannelIcon } from '@/utils/layout/channelIcon'
 import { RavenChannel } from '../../../../../../types/RavenChannelManagement/RavenChannel'
-
+import { ChannelMembers } from '@/utils/channel/ChannelMembersProvider'
+import { Suspense, lazy } from 'react'
+import { UserFields } from '@/utils/users/UserListProvider'
+import { ErrorText, Label } from '@/components/common/Form'
+const AddMembersDropdown = lazy(() => import('../../select-member/AddMembersDropdown'))
 interface AddChannelMemberForm {
-  add_members: string[] | null
-}
-
-const customStyles: ChakraStylesConfig<MemberOption> = {
-  control: (chakraStyles) => ({ ...chakraStyles, backgroundColor: 'transparent', width: '100%', fontSize: 'sm' }),
-  menu: (chakraStyles) => ({ ...chakraStyles, borderRadius: 'md', width: '100%', borderWidth: '1px' }),
-  option: (chakraStyles, { isSelected, data }) => ({
-    ...chakraStyles, ...((data.image && { ...pfp(data.image) }) || { ...fallbackPfp(data.label) }), width: '100%', fontSize: 'sm', ...(isSelected && {
-      backgroundColor: "#E2E8F0",
-      color: "black",
-    })
-  }),
-  noOptionsMessage: (chakraStyles) => ({ ...chakraStyles, width: '100%', fontSize: 'sm' })
+  add_members: UserFields[] | null
 }
 
 interface AddChannelMemberModalContentProps {
@@ -32,10 +20,11 @@ interface AddChannelMemberModalContentProps {
   channel_name: string,
   type: RavenChannel['type'],
   onClose: () => void,
-  updateMembers: () => void
+  updateMembers: () => void,
+  channelMembers?: ChannelMembers
 }
 
-export const AddChannelMembersModalContent = ({ channelID, channel_name, onClose, type, updateMembers }: AddChannelMemberModalContentProps) => {
+export const AddChannelMembersModalContent = ({ channelID, channel_name, onClose, type, updateMembers, channelMembers }: AddChannelMemberModalContentProps) => {
 
   const { createDoc, error, loading: creatingDoc } = useFrappeCreateDoc()
   const methods = useForm<AddChannelMemberForm>({
@@ -44,17 +33,19 @@ export const AddChannelMembersModalContent = ({ channelID, channel_name, onClose
     }
   })
 
-  const { handleSubmit } = methods
+  const { setValue, watch } = methods
+
+  const members = watch('add_members') ?? []
+
+  const { handleSubmit, control } = methods
   const toast = useToast()
 
-  const members = methods.watch('add_members')
-
-  const onSubmit = () => {
-    if (members && members.length > 0) {
-      const promises = members.map(async (member) => {
+  const onSubmit = (data: AddChannelMemberForm) => {
+    if (data.add_members && data.add_members.length > 0) {
+      const promises = data.add_members.map(async (member) => {
         return createDoc('Raven Channel Member', {
           channel_id: channelID,
-          user_id: member
+          user_id: member.name
         })
       })
 
@@ -103,19 +94,35 @@ export const AddChannelMembersModalContent = ({ channelID, channel_name, onClose
       <form onSubmit={handleSubmit(onSubmit)}>
 
         <Dialog.Title>
-          <Flex direction='row' align='center' gap='2'>
-            <Text>Add members to</Text>
-            {ChannelIcon({ type, size: '1.5rem' })}
-            <Text>{channel_name}</Text>
-          </Flex>
+          <Text>Add members to&nbsp; <ChannelIcon type={type} size='18' className='inline-block -mb-0.5' /> {channel_name}</Text>
         </Dialog.Title>
 
-        <Flex gap='2' direction='row' width='100%'>
+        <Dialog.Description>Anyone you add will be able to see all of the channel’s contents</Dialog.Description>
+
+        <Flex gap='2' py='4' direction='column' width='100%'>
           <ErrorBanner error={error} />
           <Box width='100%'>
-            <Flex direction='column' gap='2'>
-              <Label>Anyone you add will be able to see all of the channel’s contents</Label>
-              <AddMembersDropdown autoFocus name="add_members" chakraStyles={customStyles} />
+            <Flex direction='column' gap='4'>
+              <Flex direction='column' gap='2'>
+                <Suspense fallback={<Loader />}>
+                  <Controller
+                    control={control}
+                    name='add_members'
+                    rules={{
+                      validate: (value) => {
+                        if (value && value.length > 0) {
+                          return true
+                        }
+                        return 'Please select at least one member'
+                      }
+                    }}
+                    render={({ field: { onChange, value } }) => (
+                      <AddMembersDropdown setSelectedUsers={onChange} selectedUsers={value ?? []} channelMembers={channelMembers} label='' />
+                    )}
+                  />
+                </Suspense>
+                <ErrorText>{methods.formState.errors.add_members?.message}</ErrorText>
+              </Flex>
               <Text size='1' weight='light'>New members will be able to see all of <strong>{channel_name}</strong>'s history, including any files that have been shared in the channel.</Text>
             </Flex>
           </Box>

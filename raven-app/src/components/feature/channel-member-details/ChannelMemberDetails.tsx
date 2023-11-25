@@ -10,7 +10,6 @@ import { RemoveMemberButton } from "./remove-members/RemoveMemberButton"
 import { Box, Flex, TextField, Text } from "@radix-ui/themes"
 import { MagnifyingGlassIcon } from "@radix-ui/react-icons"
 import { UserAvatar } from "@/components/common/UserAvatar"
-
 interface MemberDetailsProps {
     channelData: ChannelListItem,
     channelMembers: ChannelMembers,
@@ -53,6 +52,7 @@ export const ChannelMemberDetails = ({ channelData, channelMembers, activeUsers,
                         <Flex className={'pl-2'}>
                             <AddMembersButton
                                 channelData={channelData}
+                                channelMembers={channelMembers}
                                 updateMembers={updateMembers}
                                 variant='soft'
                             />
