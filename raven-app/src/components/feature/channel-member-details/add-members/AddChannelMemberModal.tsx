@@ -1,4 +1,3 @@
-import { useToast } from '@chakra-ui/react'
 import { Controller, FormProvider, useForm } from 'react-hook-form'
 import { useFrappeCreateDoc } from 'frappe-react-sdk'
 import { ErrorBanner } from '../../../layout/AlertBanner'
@@ -9,7 +8,8 @@ import { RavenChannel } from '../../../../../../types/RavenChannelManagement/Rav
 import { ChannelMembers } from '@/utils/channel/ChannelMembersProvider'
 import { Suspense, lazy } from 'react'
 import { UserFields } from '@/utils/users/UserListProvider'
-import { ErrorText, Label } from '@/components/common/Form'
+import { ErrorText } from '@/components/common/Form'
+import { useToast } from '@/hooks/useToast'
 const AddMembersDropdown = lazy(() => import('../../select-member/AddMembersDropdown'))
 interface AddChannelMemberForm {
   add_members: UserFields[] | null
@@ -33,12 +33,8 @@ export const AddChannelMembersModalContent = ({ channelID, channel_name, onClose
     }
   })
 
-  const { setValue, watch } = methods
-
-  const members = watch('add_members') ?? []
-
   const { handleSubmit, control } = methods
-  const toast = useToast()
+  const { toast } = useToast()
 
   const onSubmit = (data: AddChannelMemberForm) => {
     if (data.add_members && data.add_members.length > 0) {
@@ -53,38 +49,11 @@ export const AddChannelMembersModalContent = ({ channelID, channel_name, onClose
         .then(() => {
           toast({
             title: 'Members added successfully',
-            status: 'success',
-            duration: 2000,
-            position: 'bottom',
-            variant: 'solid',
-            isClosable: true,
+            variant: 'success',
+            duration: 1000
           })
           updateMembers()
           onClose()
-        }).catch((e) => {
-          if (e.httpStatus === 409) {
-            toast({
-              duration: 4000,
-              position: 'bottom',
-              variant: 'solid',
-              isClosable: true,
-              status: 'warning',
-              title: `${e.httpStatus} - skipped pre-existing members`,
-              description: 'One or more members already exist in this channel'
-            })
-            onClose()
-          }
-          else {
-            toast({
-              duration: 3000,
-              position: 'bottom',
-              variant: 'solid',
-              isClosable: true,
-              status: 'error',
-              title: 'An error occurred',
-              description: `${e.httpStatus} - ${e.httpStatusText}`
-            })
-          }
         })
     }
   }

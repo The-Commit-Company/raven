@@ -1,4 +1,3 @@
-import { useToast } from '@chakra-ui/react'
 import { useFrappeCreateDoc } from 'frappe-react-sdk'
 import { ChangeEvent, useCallback, useMemo, useState } from 'react'
 import { Controller, FormProvider, useForm } from 'react-hook-form'
@@ -10,6 +9,7 @@ import { Plus } from 'lucide-react'
 import { ErrorText, HelperText, Label } from '@/components/common/Form'
 import { Loader } from '@/components/common/Loader'
 import { DIALOG_CONTENT_CLASS } from '@/utils/layout/dialog'
+import { useToast } from '@/hooks/useToast'
 interface ChannelCreationForm {
     channel_name: string,
     channel_description: string,
@@ -53,7 +53,7 @@ export const CreateChannelButton = ({ updateChannelList }: { updateChannelList: 
     }
 
 
-    const toast = useToast()
+    const { toast } = useToast()
 
     const channelType = watch('type')
 
@@ -62,9 +62,8 @@ export const CreateChannelButton = ({ updateChannelList }: { updateChannelList: 
             if (result) {
                 toast({
                     title: "Channel Created",
-                    status: "success",
-                    duration: 2000,
-                    isClosable: true
+                    variant: "success",
+                    duration: 1000,
                 })
                 onClose(result.name)
             }

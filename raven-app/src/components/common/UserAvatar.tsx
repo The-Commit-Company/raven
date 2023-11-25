@@ -3,6 +3,7 @@ import { Skeleton } from './Skeleton'
 import { Avatar } from '@radix-ui/themes'
 import { AvatarProps } from '@radix-ui/themes/dist/cjs/components/avatar'
 import { BoxProps } from '@radix-ui/themes/dist/cjs/components/box'
+import { clsx } from 'clsx'
 
 interface UserAvatarProps extends Partial<AvatarProps> {
     alt?: string,
@@ -47,7 +48,7 @@ export const UserAvatar = ({ src, alt, size = '1', radius = 'medium', isActive, 
             <Skeleton className={radixRadiusToTailwind(radius)} width={skeletonSize} height={skeletonSize} />
         }
         {isActive &&
-            <span className="absolute bottom-0 right-0 block translate-x-1/2 translate-y-1/2 transform rounded-full">
+            <span className={clsx("absolute block translate-x-1/2 translate-y-1/2 transform rounded-full", radius === 'full' ? 'bottom-0.5 right-0.5' : 'bottom-0 right-0')}>
                 <span className="block h-1.5 w-1.5 rounded-full bg-green-500" />
             </span>
         }

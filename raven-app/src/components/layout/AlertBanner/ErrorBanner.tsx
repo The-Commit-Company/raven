@@ -1,12 +1,11 @@
 import { FrappeError } from 'frappe-react-sdk'
-import { AlertProps } from '@chakra-ui/react'
 import { PropsWithChildren, useMemo } from 'react'
 import React from 'react'
 import { MarkdownRenderer } from '@/components/feature/markdown-viewer/MarkdownRenderer'
 import { Callout } from '@radix-ui/themes'
 import { AlertTriangle } from 'lucide-react'
 
-interface ErrorBannerProps extends AlertProps {
+interface ErrorBannerProps {
     error?: FrappeError | null,
     overrideHeading?: string,
     children?: React.ReactNode
@@ -17,7 +16,7 @@ interface ParsedErrorMessage {
     title?: string,
     indicator?: string,
 }
-export const ErrorBanner = ({ error, overrideHeading, children, ...props }: ErrorBannerProps) => {
+export const ErrorBanner = ({ error, overrideHeading, children }: ErrorBannerProps) => {
 
 
     //exc_type: "ValidationError" or "PermissionError" etc

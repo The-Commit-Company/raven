@@ -1,5 +1,3 @@
-// import { Table, Tr, Td, Skeleton, TableProps, Tbody } from '@chakra-ui/react'
-
 import { Skeleton } from "@/components/common/Skeleton"
 import { Table } from "@radix-ui/themes"
 import { TableRootProps } from "@radix-ui/themes/dist/cjs/components/table"

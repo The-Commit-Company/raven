@@ -17,10 +17,7 @@ export const ChatSpace = () => {
     const className = 'bg-white dark:from-[var(--accent-1)] dark:to-95% dark:to-[var(--accent-2)] dark:bg-gradient-to-b'
 
     return <Box className={className}>
-        {channelID ? <ChatSpaceArea channelID={channelID} /> : <Box p='2'><ErrorCallout>
-            No channel found
-        </ErrorCallout>
-        </Box>}
+        {channelID && <ChatSpaceArea channelID={channelID} />}
     </Box>
 
 }
@@ -29,7 +26,7 @@ const ChatSpaceArea = ({ channelID }: { channelID: string }) => {
 
     const { channel, error, isLoading } = useCurrentChannelData(channelID)
     const { mutate, cache } = useSWRConfig()
-
+    console.log("Mounted")
     useEffect(() => {
         //If the cached value of unread message count is 0, then no need to update it
         const channels = cache.get('unread_channel_count')?.data?.message?.channels
@@ -44,31 +41,14 @@ const ChatSpaceArea = ({ channelID }: { channelID: string }) => {
         }
     }, [channelID])
 
-    if (isLoading) {
-        <FullPageLoader />
-    }
-
-    if (error) {
-        return <Box p='2'><ErrorBanner error={error} /></Box>
-    }
-
-    if (channel) {
-        // depending on channel type render ChannelSpace or DirectMessageSpace
-        return (
-            <ChannelMembersProvider channelID={channelID}>
-                {channel.type === "dm" ?
-                    <DirectMessageSpace channelData={channel.channelData} />
-                    : <ChannelSpace channelData={channel.channelData} />
-                }
-            </ChannelMembersProvider>
-        )
-    }
-
-    return <Box p='2'><ErrorBanner error={
-        {
-            message: "No channel found",
-            exception: `Channel ${channelID} not found`
-
-        } as FrappeError
-    } /></Box>
+    return <Box>
+        {isLoading && <FullPageLoader />}
+        <ErrorBanner error={error} />
+        {channel && <ChannelMembersProvider channelID={channelID}>
+            {channel.type === "dm" ?
+                <DirectMessageSpace channelData={channel.channelData} />
+                : <ChannelSpace channelData={channel.channelData} />
+            }
+        </ChannelMembersProvider>}
+    </Box>
 }

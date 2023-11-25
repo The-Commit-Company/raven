@@ -1,10 +1,9 @@
 import { useFrappeDocTypeEventListener, useFrappeGetCall } from "frappe-react-sdk";
 import { PropsWithChildren, createContext } from "react";
 import { User } from "../../../../types/Core/User";
-import { Box, Button, Center } from "@chakra-ui/react";
 import { ErrorBanner } from "@/components/layout/AlertBanner";
 import { FullPageLoader } from "@/components/layout/Loaders";
-import { ChevronRight } from "lucide-react";
+import { Box, Flex, Link } from "@radix-ui/themes";
 
 
 export const UserListContext = createContext<{ users: UserFields[] }>({
@@ -27,13 +26,13 @@ export const UserListProvider = ({ children }: PropsWithChildren) => {
         return <FullPageLoader />
     }
     if (usersError) {
-        return <Center px='4' mx='auto' w='50vw' h='100vh'>
+        return <Flex align='center' justify='center' px='4' mx='auto' className="w-[50vw] h-screen">
             <ErrorBanner error={usersError} status="info">
-                <Box>
-                    <Button colorScheme='blue' size='xs' as={'a'} href={'/app/raven-user'} rightIcon={<ChevronRight />}>View Raven Users</Button>
+                <Box py='2'>
+                    <Link href={'/app/raven-user'}>View Raven Users</Link>
                 </Box>
             </ErrorBanner>
-        </Center>
+        </Flex>
     }
 
     return <UserListContext.Provider value={{ users: data?.message ?? [] }}>

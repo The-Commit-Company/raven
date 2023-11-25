@@ -1,7 +1,6 @@
 import { useDebounce } from "@/hooks/useDebounce"
 import { usePaginationWithDoctype } from "@/hooks/usePagination"
 import { User } from "@/types/Core/User"
-import { useToast } from "@chakra-ui/react"
 import { Filter, useFrappeCreateDoc, useFrappeGetDocList, useSWRConfig } from "frappe-react-sdk"
 import { ChangeEvent, useContext, useState } from "react"
 import { Sort } from "../sorting"
@@ -15,6 +14,7 @@ import { Button, Dialog, Flex, Text, TextField } from "@radix-ui/themes"
 import { Loader } from "@/components/common/Loader"
 import { Search } from "lucide-react"
 import { DIALOG_CONTENT_CLASS } from "@/utils/layout/dialog"
+import { useToast } from "@/hooks/useToast"
 
 export const AddRavenUsers = ({ isOpen, onOpenChange }: any) => {
 
@@ -58,7 +58,7 @@ export const AddRavenUsersModal = ({ onClose }: { onClose: VoidFunction }) => {
 
     const [selected, setSelected] = useState<string[]>([])
     const { createDoc, loading } = useFrappeCreateDoc()
-    const toast = useToast()
+    const { toast } = useToast()
 
     const handleAddUsers = async () => {
         if (selected.length > 0) {
@@ -68,23 +68,12 @@ export const AddRavenUsersModal = ({ onClose }: { onClose: VoidFunction }) => {
             Promise.all(createPromises)
                 .then(() => {
                     toast({
-                        title: 'Users added',
-                        description: 'Users have been added to Raven',
-                        status: 'success',
-                        duration: 3000,
-                        isClosable: true
+                        title: `You have added ${selected.length} users to Raven`,
+                        variant: 'success',
+                        duration: 1000
                     })
                     onClose()
                     mutate('raven.api.raven_users.get_list')
-                })
-                .catch(err => {
-                    toast({
-                        title: 'Error',
-                        description: err.message,
-                        status: 'error',
-                        duration: 3000,
-                        isClosable: true
-                    })
                 })
         }
     }

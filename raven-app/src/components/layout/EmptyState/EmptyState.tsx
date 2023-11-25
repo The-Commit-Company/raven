@@ -1,5 +1,4 @@
 import { DateObjectToFormattedDateString } from "../../../utils/operations"
-import { UserProfileDrawer } from "../../feature/user-details/UserProfileDrawer"
 import { ChannelListItem, DMChannelListItem } from "@/utils/channel/ChannelListProvider"
 import { useCurrentChannelData } from "@/hooks/useCurrentChannelData"
 import { useContext, useState } from "react"

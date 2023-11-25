@@ -10,6 +10,7 @@ import { ChannelRedirect } from './utils/channel/ChannelRedirect'
 import "cal-sans";
 import { useState } from 'react'
 import { ThemeProvider } from './ThemeProvider'
+import { Toaster } from './components/common/Toast/Toaster'
 
 function App() {
 
@@ -56,6 +57,7 @@ function App() {
               </Route>
             </Route>
           </Routes>
+          <Toaster />
         </ThemeProvider>
       </UserProvider>
     </FrappeProvider>

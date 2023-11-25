@@ -1,10 +1,10 @@
-import { useToast } from '@chakra-ui/react'
 import { useFrappeUpdateDoc } from 'frappe-react-sdk'
 import { ErrorBanner } from '../../../layout/AlertBanner'
 import { useNavigate } from 'react-router-dom'
 import { ChannelListItem } from '@/utils/channel/ChannelListProvider'
 import { AlertDialog, Flex, Text, Button } from '@radix-ui/themes'
 import { Loader } from '@/components/common/Loader'
+import { useToast } from '@/hooks/useToast'
 
 interface ArchiveChannelModalProps {
     onClose: () => void,
@@ -14,7 +14,7 @@ interface ArchiveChannelModalProps {
 
 export const ArchiveChannelModal = ({ onClose, onCloseViewDetails, channelData }: ArchiveChannelModalProps) => {
 
-    const toast = useToast()
+    const { toast } = useToast()
     const { updateDoc, loading: archivingDoc, error } = useFrappeUpdateDoc()
     const navigate = useNavigate()
 
@@ -27,17 +27,8 @@ export const ArchiveChannelModal = ({ onClose, onCloseViewDetails, channelData }
             navigate('/channel/general')
             toast({
                 title: "Channel archived",
-                status: "success",
-                duration: 3000,
-                isClosable: true
-            })
-        }).catch((e) => {
-            toast({
-                title: "Error archiving channel",
-                description: e.message,
-                status: "error",
-                duration: 3000,
-                isClosable: true
+                variant: "success",
+                duration: 1000,
             })
         })
     }

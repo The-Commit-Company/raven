@@ -1,10 +1,10 @@
-import { useToast } from "@chakra-ui/react"
 import { useFrappeDeleteDoc, useSWRConfig } from "frappe-react-sdk"
 import { ErrorBanner } from "../../layout/AlertBanner"
 import { useParams } from "react-router-dom"
 import { AlertDialog, Button, Callout, Flex, Text } from "@radix-ui/themes"
 import { Loader } from "@/components/common/Loader"
 import { AlertTriangle } from "lucide-react"
+import { useToast } from "@/hooks/useToast"
 
 interface DeleteMessageModalProps {
     onClose: (refresh?: boolean) => void,
@@ -14,7 +14,7 @@ interface DeleteMessageModalProps {
 export const DeleteMessageModal = ({ onClose, channelMessageID }: DeleteMessageModalProps) => {
 
     const { deleteDoc, error, loading: deletingDoc } = useFrappeDeleteDoc()
-    const toast = useToast()
+    const { toast } = useToast()
 
     const { mutate } = useSWRConfig()
 
@@ -24,29 +24,16 @@ export const DeleteMessageModal = ({ onClose, channelMessageID }: DeleteMessageM
 
     const { channelID } = useParams()
 
-    const onSubmit = () => {
+    const onSubmit = async () => {
         return deleteDoc('Raven Message', channelMessageID
         ).then(() => {
             toast({
-                title: 'Message deleted successfully',
-                status: 'success',
-                duration: 1500,
-                position: 'bottom',
-                variant: 'solid',
-                isClosable: true
+                title: 'Message deleted',
+                duration: 1000,
+                variant: 'destructive'
             })
             mutate(`get_messages_for_channel_${channelID}`)
             onClose()
-        }).catch((e) => {
-            toast({
-                title: 'Error: could not delete message.',
-                status: 'error',
-                duration: 3000,
-                position: 'bottom',
-                variant: 'solid',
-                isClosable: true,
-                description: `${e.message}`
-            })
         })
     }
 

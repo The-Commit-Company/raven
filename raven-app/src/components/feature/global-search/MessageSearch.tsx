@@ -1,11 +1,11 @@
 import { Bookmark, BookmarkCheck, Search } from 'lucide-react'
-import { Avatar, Button, Center, chakra, FormControl, HStack, IconButton, Input, InputGroup, InputLeftElement, Spinner, Stack, TabPanel, Text, useToast } from '@chakra-ui/react'
+import { Avatar, Button, Center, chakra, FormControl, HStack, IconButton, Input, InputGroup, InputLeftElement, Spinner, Stack, TabPanel, Text } from '@chakra-ui/react'
 import { useFrappeGetCall, useFrappePostCall } from 'frappe-react-sdk'
 import { useContext, useState, useMemo, useEffect } from 'react'
 import { FormProvider, Controller, useForm } from 'react-hook-form'
 import { useDebounce } from '../../../hooks/useDebounce'
 import { GetMessageSearchResult } from '../../../../../types/Search/Search'
-import { AlertBanner } from '../../layout/AlertBanner'
+import { ErrorBanner } from '../../layout/AlertBanner'
 import { EmptyStateForSearch } from '../../layout/EmptyState/EmptyState'
 import { SelectInput, SelectOption } from '../search-filters/SelectInput'
 import { Sort } from '../sorting'
@@ -18,6 +18,7 @@ import { UserFields } from '@/utils/users/UserListProvider'
 import { ChannelListContext, ChannelListContextType, ChannelListItem } from '@/utils/channel/ChannelListProvider'
 import { useTheme } from '@/ThemeProvider'
 import { ChannelIcon } from '@/utils/layout/channelIcon'
+import { useToast } from '@/hooks/useToast'
 
 interface FilterInput {
     'from-user-filter': SelectOption[],
@@ -78,21 +79,13 @@ export const MessageSearch = ({ onToggleMyChannels, isOpenMyChannels, onToggleSa
         })
     }
 
-    const toast = useToast()
+    const { toast } = useToast()
 
-    if (indexingError && !toast.isActive('message-indexing-error')) {
+    if (indexingError) {
         toast({
             description: "There was an error while indexing the message.",
-            status: "error",
-            duration: 4000,
-            size: 'sm',
-            render: ({ onClose }) => <AlertBanner onClose={onClose} variant='solid' status='error' fontSize="sm">
-                There was an error while indexing the message.<br />You have been redirected to the channel.
-            </AlertBanner>,
-            id: 'message-indexing-error',
-            variant: 'left-accent',
-            isClosable: true,
-            position: 'bottom-right'
+            duration: 1000,
+            variant: "destructive"
         })
     }
 
@@ -259,9 +252,10 @@ export const MessageSearch = ({ onToggleMyChannels, isOpenMyChannels, onToggleSa
                 </FormProvider>
             </Stack>
             <Stack h='420px' p={4}>
-                {error ? <AlertBanner status='error' heading={error.message}>{error.httpStatus} - {error.httpStatusText}</AlertBanner> :
+                <ErrorBanner error={error} />
+                {
                     ((isLoading && isValidating) || loading ? <Center><Spinner /></Center> :
-                        (!!!error && data?.message && data.message.length > 0 && showResults ?
+                        (data?.message && data.message.length > 0 && showResults ?
                             <><Sort
                                 sortingFields={[{ label: 'Created on', field: 'creation' }]}
                                 onSortFieldSelect={(selField) => setSortByField(selField)}

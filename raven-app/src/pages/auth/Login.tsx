@@ -3,18 +3,19 @@ import { Box, Button, Flex, FormControl, FormLabel, IconButton, Input, InputGrou
 import { useForm } from "react-hook-form";
 import { Eye, EyeOff } from "lucide-react";
 import { Link } from "react-router-dom";
-import { AlertBanner } from "../../components/layout/AlertBanner";
+import { ErrorBanner } from "../../components/layout/AlertBanner";
 import { UserContext } from "../../utils/auth/UserProvider";
 import { isEmailValid } from "../../utils/validations";
 import { FullPageLoader } from "../../components/layout/Loaders";
 import { Text } from "@radix-ui/themes";
+import { FrappeError } from "frappe-react-sdk";
 
 type Inputs = {
     email: string;
     password: string;
 };
 export const Login = () => {
-    const [error, setError] = useState<Error | null>(null)
+    const [error, setError] = useState<FrappeError | null>(null)
     const { login, isLoading } = useContext(UserContext)
     const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<Inputs>();
     const { isOpen, onToggle } = useDisclosure();
@@ -42,10 +43,7 @@ export const Login = () => {
                                 </Link>
 
                                 <chakra.form onSubmit={handleSubmit(onSubmit)}>
-
-                                    {error != null &&
-                                        <AlertBanner status="error" mb="3">{error.message}</AlertBanner>
-                                    }
+                                    <ErrorBanner error={error} />
                                     <Stack spacing="6">
                                         <FormControl
                                             id="email"

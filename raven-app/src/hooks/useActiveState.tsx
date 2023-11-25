@@ -1,8 +1,8 @@
 import { useContext, useEffect } from 'react'
-import { useBoolean, useToast } from '@chakra-ui/react'
 import { useIdleTimer, PresenceType } from 'react-idle-timer'
 import { FrappeContext, FrappeConfig } from 'frappe-react-sdk'
-import { AlertBanner } from '../components/layout/AlertBanner'
+import { useBoolean } from './useBoolean'
+import { useToast } from './useToast'
 
 /**
  * We need to track and sync user's active state with the server
@@ -16,10 +16,9 @@ export const useActiveState = () => {
     const [isActive, {
         on: activate,
         off: deactivate,
-        toggle: toggleActive
     }] = useBoolean(true)
 
-    const toast = useToast()
+    const { toast } = useToast()
 
     /**
      * Make an API call to the server to refresh the user's active state
@@ -44,21 +43,11 @@ export const useActiveState = () => {
     const showToast = () => {
         // Check if the toast is already active
         // If it is, don't show it again
-        if (!toast.isActive('refresh-active-state-error')) {
-            toast({
-                description: "There was an error while refreshing your active state. You may appear offline to other users.",
-                status: "error",
-                duration: 4000,
-                size: 'sm',
-                render: ({ onClose }) => <AlertBanner onClose={onClose} variant='solid' status='error' fontSize="sm">
-                    There was an error while refreshing your login state.<br />You may appear offline to other users.
-                </AlertBanner>,
-                id: 'refresh-active-state-error',
-                variant: 'left-accent',
-                isClosable: true,
-                position: 'bottom-right'
-            })
-        }
+        toast({
+            description: "There was an error while refreshing your active state. You may appear offline to other users.",
+            duration: 4000,
+            variant: 'destructive',
+        })
     }
 
     /**

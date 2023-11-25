@@ -5,7 +5,6 @@ import { DateObjectToFormattedDateStringWithoutYear, DateObjectToTimeString, get
 import { useContext } from 'react'
 import { FileExtensionIcon } from '../../../../utils/layout/FileExtensionIcon'
 import { useFrappeGetDoc, useFrappePostCall } from 'frappe-react-sdk'
-import { AlertBanner } from '../../../layout/AlertBanner'
 import { VirtuosoRefContext } from '../../../../utils/message/VirtuosoRefProvider'
 import { useNavigate } from "react-router-dom"
 import { ChannelListItem, DMChannelListItem } from '@/utils/channel/ChannelListProvider'
@@ -13,6 +12,7 @@ import { UserFields } from '@/utils/users/UserListProvider'
 import { useGetUserRecords } from '@/hooks/useGetUserRecords'
 import { X } from 'lucide-react'
 import { useTheme } from '@/ThemeProvider'
+import { ErrorCallout } from '@/components/layout/AlertBanner/ErrorBanner'
 
 interface PreviousMessageBoxProps {
     previous_message_id?: string,
@@ -57,7 +57,7 @@ export const PreviousMessageBox = ({ previous_message_id, previous_message_conte
                                     {previous_message_content.message_type === 'Image' ?
                                         <Image src={previous_message_content.file} alt='File preview' boxSize={'30px'} rounded='md' /> :
                                         <div slot='start'>
-                                            {FileExtensionIcon(getFileExtension(previous_message_content.file) ?? '')}
+                                            <FileExtensionIcon ext={getFileExtension(previous_message_content.file)} />
                                         </div>}
                                 </Center>
                                 <Text as="span" fontSize="sm" overflow="hidden" whiteSpace="nowrap" textOverflow="ellipsis">{getFileName(previous_message_content.file)}</Text>
@@ -120,10 +120,12 @@ const PreviousMessageBoxInChat = ({ previous_message_id, channelData, users }: P
     }
 
     if (indexingError) {
-        return <AlertBanner status='error' heading='error while searching for previous message' />
+        return <ErrorCallout>
+            There was an error while searching for the previous message.
+        </ErrorCallout>
     }
     if (error) {
-        return <AlertBanner status='error' heading='previous message not found, this message may have been deleted' />
+        return <ErrorCallout>Previous message not found, this message may have been deleted.</ErrorCallout>
     }
     if (data) {
         return <LinkBox onClick={() => handleScrollToMessage(previous_message_id)} p='2' border={'1px'} borderColor={appearance === 'light' ? 'gray.400' : 'gray.600'} rounded={'md'} _hover={{ cursor: 'pointer', boxShadow: 'sm', bgColor: appearance === 'light' ? 'white' : 'black' }}>
@@ -152,7 +154,7 @@ const PreviousMessageBoxInChat = ({ previous_message_id, channelData, users }: P
                                 {data.message_type === 'Image' ?
                                     <Image src={data.file} alt='File preview' boxSize={'30px'} rounded='md' /> :
                                     <div slot='start'>
-                                        {FileExtensionIcon(getFileExtension(data.file) ?? '')}
+                                        <FileExtensionIcon ext={getFileExtension(data.file)} />
                                     </div>}
                             </Center>
                             <Text as="span" fontSize="sm" overflow="hidden" whiteSpace="nowrap" textOverflow="ellipsis">{getFileName(data.file)}</Text>

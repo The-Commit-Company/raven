@@ -1,9 +1,10 @@
-import { Collapse, HStack, Icon, IconButton, Link, Stack, Text, useBoolean, Image } from "@chakra-ui/react"
+import { Collapse, HStack, IconButton, Link, Stack, Text, Image } from "@chakra-ui/react"
 import { FileExtensionIcon } from "../../../../utils/layout/FileExtensionIcon"
 import { FileMessage } from "../../../../../../types/Messaging/Message"
 import { useCallback } from "react"
 import { getFileExtension, getFileName } from "../../../../utils/operations"
 import { ChevronDown, ChevronRight } from "lucide-react"
+import { useBoolean } from "@/hooks/useBoolean"
 
 interface FileMessageProps extends Partial<FileMessage> {
     onFilePreviewModalOpen: ({ file, owner, creation, message_type }: Partial<FileMessage>) => void

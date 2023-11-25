@@ -1,10 +1,7 @@
-import { Text, Button, HStack, StackDivider } from "@chakra-ui/react"
 import { DateTooltip } from "./DateTooltip"
-import { ModalTypes, useModalManager } from "@/hooks/useModalManager"
-import { UserProfileDrawer } from "../../user-details/UserProfileDrawer"
 import { useGetUserRecords } from "@/hooks/useGetUserRecords"
-import { UserFields } from "@/utils/users/UserListProvider"
 import { useTheme } from "@/ThemeProvider"
+import { Flex, Separator, Text } from "@radix-ui/themes"
 
 interface UserNameInMessageProps {
     timestamp: string,
@@ -16,29 +13,20 @@ export const UserNameInMessage = ({ timestamp, user }: UserNameInMessageProps) =
     const { appearance } = useTheme()
     const textColor = appearance === 'light' ? 'gray.800' : 'gray.50'
 
-    const modalManager = useModalManager()
-
-    const onOpenUserDetailsDrawer = (selectedUser: UserFields) => {
-        if (selectedUser) {
-            modalManager.openModal(ModalTypes.UserDetails, selectedUser)
-        }
-    }
-
     const users = useGetUserRecords()
 
     return (
-        <>
-            <HStack divider={<StackDivider />} align='flex-start'>
-                <Button variant='link' onClick={() => onOpenUserDetailsDrawer?.(users?.[user])}>
-                    <Text fontSize='sm' lineHeight={'0.9'} fontWeight="semibold" as='span' color={textColor}>{users?.[user]?.full_name ?? user}</Text>
-                </Button>
-                <DateTooltip timestamp={timestamp} />
-            </HStack>
-            <UserProfileDrawer
-                isOpen={modalManager.modalType === ModalTypes.UserDetails}
-                onClose={modalManager.closeModal}
-                user={modalManager.modalContent}
-            />
-        </>
+        <Flex gap='2' align='start'>
+            <Text
+                size='2'
+                weight="bold"
+                className="leading-3"
+                as='span'
+            >
+                {users?.[user]?.full_name ?? user}
+            </Text>
+            <Separator orientation="vertical" />
+            <DateTooltip timestamp={timestamp} />
+        </Flex>
     )
 }

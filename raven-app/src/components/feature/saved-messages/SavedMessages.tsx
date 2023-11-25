@@ -1,16 +1,17 @@
-import { Stack, useToast, Tooltip, Button, useDisclosure, Box } from "@chakra-ui/react"
+import { Stack, Tooltip, Button, useDisclosure, Box } from "@chakra-ui/react"
 import { useFrappeGetCall, useFrappePostCall } from "frappe-react-sdk"
 import { useContext } from "react"
 import { Search } from "lucide-react"
 import { useNavigate } from "react-router-dom"
 import { TextMessage } from "../../../../../types/Messaging/Message"
 import { VirtuosoRefContext } from "../../../utils/message/VirtuosoRefProvider"
-import { AlertBanner, ErrorBanner } from "../../layout/AlertBanner"
+import { ErrorBanner } from "../../layout/AlertBanner"
 import { EmptyStateForSavedMessages } from "../../layout/EmptyState/EmptyState"
 import { PageHeader } from "../../layout/Heading/PageHeader"
 import { CommandPalette } from "../command-palette"
 import { MessageBox } from "../global-search/MessageBox"
 import { Heading } from "@radix-ui/themes"
+import { useToast } from "@/hooks/useToast"
 
 interface SavedMessage extends TextMessage {
     channel_id: string,
@@ -20,6 +21,8 @@ interface SavedMessage extends TextMessage {
 export const SavedMessages = () => {
 
     const navigate = useNavigate()
+
+    const { toast } = useToast()
 
     const { virtuosoRef } = useContext(VirtuosoRefContext)
 
@@ -51,21 +54,13 @@ export const SavedMessages = () => {
         })
     }
 
-    const toast = useToast()
 
-    if (indexingError && !toast.isActive('message-indexing-error')) {
+
+    if (indexingError) {
         toast({
             description: "There was an error while indexing the message.",
-            status: "error",
-            duration: 4000,
-            size: 'sm',
-            render: ({ onClose }) => <AlertBanner onClose={onClose} variant='solid' status='error' fontSize="sm">
-                There was an error while indexing the message.<br />You have been redirected to the channel.
-            </AlertBanner>,
-            id: 'message-indexing-error',
-            variant: 'left-accent',
-            isClosable: true,
-            position: 'bottom-right'
+            variant: "destructive",
+            duration: 1000,
         })
     }
     if (error) {

@@ -1,4 +1,3 @@
-import { useToast } from "@chakra-ui/react"
 import { useFrappeUpdateDoc } from "frappe-react-sdk"
 import { FormProvider, useForm } from "react-hook-form"
 import { ErrorBanner } from "../../../layout/AlertBanner"
@@ -6,6 +5,8 @@ import { ChannelListItem } from "@/utils/channel/ChannelListProvider"
 import { Box, Dialog, Flex, Button, TextArea, Text } from "@radix-ui/themes"
 import { Loader } from "@/components/common/Loader"
 import { ErrorText, Label } from "@/components/common/Form"
+import { useToast } from "@/hooks/useToast"
+import { ToastAction } from "@/components/common/Toast/Toast"
 
 interface RenameChannelForm {
     channel_description: string
@@ -25,7 +26,7 @@ export const EditChannelDescriptionModalContent = ({ channelData, onClose }: Ren
     })
     const { register, handleSubmit, formState: { errors } } = methods
     const { updateDoc, loading: updatingDoc, error } = useFrappeUpdateDoc()
-    const toast = useToast()
+    const { toast } = useToast()
 
     const onSubmit = (data: RenameChannelForm) => {
         updateDoc("Raven Channel", channelData?.name ?? null, {
@@ -33,18 +34,14 @@ export const EditChannelDescriptionModalContent = ({ channelData, onClose }: Ren
         }).then(() => {
             toast({
                 title: "Channel description updated",
-                status: "success",
-                duration: 2000,
-                isClosable: true
+                variant: 'success',
             })
             onClose()
         }).catch((err) => {
             toast({
                 title: "Error updating channel description",
                 description: err.message,
-                status: "error",
-                duration: 2000,
-                isClosable: true
+                variant: "destructive",
             })
         })
     }

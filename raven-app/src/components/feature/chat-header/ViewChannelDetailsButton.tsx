@@ -28,12 +28,11 @@ export const ViewChannelDetailsButton = ({ channelData, channelMembers, updateMe
         <Dialog.Root open={open} onOpenChange={setOpen}>
             <Tooltip content='view members/ channel details'>
                 <Dialog.Trigger>
-                    <Button className={'pr-2 pl-1 w-fit'} variant='surface' color='gray'>
+                    <Button className={'pr-2 pl-1 w-fit rounded-r-none border-r-0'} variant='surface' color='gray'>
                         {Object.keys(channelMembers).length > 0 ? <div className={'flex -space-x-2 rtl:space-x-reverse'}>
                             {Object.entries(channelMembers).map(([name, member], index) => {
-                                const isActive = activeUsers.includes(name)
                                 if (index < 3)
-                                    return <UserAvatar key={name} src={member.user_image ?? 'undefined'} alt={member.full_name ?? member.name} radius='full' isActive={isActive} variant='solid' />
+                                    return <UserAvatar key={name} src={member.user_image ?? 'undefined'} alt={member.full_name ?? member.name} radius='full' variant='solid' />
                             })}
                             {totalMembers > 3 && <div className={'z-10 flex items-center justify-center w-6 h-6 text-xs font-medium text-white bg-gray-800 rounded-full'}>+ {totalMembers - 3}</div>}
                         </div> : <User />}

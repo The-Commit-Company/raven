@@ -1,4 +1,3 @@
-import { useToast } from '@chakra-ui/react'
 import { ErrorBanner } from '../../../layout/AlertBanner'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
@@ -7,6 +6,7 @@ import { ChannelListItem } from '@/utils/channel/ChannelListProvider'
 import { AlertDialog, Button, Callout, Checkbox, Flex, Text } from '@radix-ui/themes'
 import { Loader } from '@/components/common/Loader'
 import { AlertTriangle } from 'lucide-react'
+import { useToast } from '@/hooks/useToast'
 
 type DeleteChannelModalProps = {
     onClose: () => void,
@@ -23,7 +23,7 @@ export const DeleteChannelModal = ({ onClose, onCloseParent, channelData }: Dele
         reset()
     }
 
-    const toast = useToast()
+    const { toast } = useToast()
     const navigate = useNavigate()
 
     const onSubmit = () => {
@@ -35,19 +35,8 @@ export const DeleteChannelModal = ({ onClose, onCloseParent, channelData }: Dele
                     localStorage.removeItem('ravenLastChannel')
                     navigate('/channel')
                     toast({
-                        title: 'Success',
-                        description: 'Channel deleted successfully',
-                        status: 'success',
-                        duration: 2000,
-                        isClosable: true,
-                    })
-                }).catch(() => {
-                    toast({
-                        title: 'Error',
-                        description: 'Error deleting channel',
-                        status: 'error',
-                        duration: 3000,
-                        isClosable: true,
+                        title: `Channel ${channelData.name} deleted`,
+                        variant: 'success',
                     })
                 })
         }

@@ -1,4 +1,3 @@
-import { useToast } from "@chakra-ui/react"
 import { useFrappePostCall } from "frappe-react-sdk"
 import { useContext, useMemo, useState } from "react"
 import { useNavigate } from "react-router-dom"
@@ -10,6 +9,7 @@ import { useIsUserActive } from "@/hooks/useIsUserActive"
 import { ChannelListContext, ChannelListContextType, DMChannelListItem, ExtraUsersData, UnreadCountData } from "../../../utils/channel/ChannelListProvider"
 import { Flex, Text } from "@radix-ui/themes"
 import { UserAvatar } from "@/components/common/UserAvatar"
+import { useToast } from "@/hooks/useToast"
 
 export const DirectMessageList = ({ unread_count }: { unread_count?: UnreadCountData }) => {
 
@@ -81,7 +81,7 @@ const ExtraUsersItemList = () => {
     const { extra_users, mutate } = useContext(ChannelListContext) as ChannelListContextType
     const { call } = useFrappePostCall<{ message: string }>("raven.raven_channel_management.doctype.raven_channel.raven_channel.create_direct_message_channel")
 
-    const toast = useToast()
+    const { toast } = useToast()
     const navigate = useNavigate()
 
     const createDMChannel = async (user_id: string) => {
@@ -94,10 +94,8 @@ const ExtraUsersItemList = () => {
                 toast({
                     title: "Error",
                     description: "Could not create channel.",
-                    status: "error",
+                    variant: 'destructive',
                     duration: 2000,
-                    isClosable: true,
-                    position: 'top-right'
                 })
             })
     }

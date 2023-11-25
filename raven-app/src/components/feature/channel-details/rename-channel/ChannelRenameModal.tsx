@@ -1,4 +1,3 @@
-import { useToast } from "@chakra-ui/react"
 import { useFrappeUpdateDoc } from "frappe-react-sdk"
 import { ChangeEvent, useCallback } from "react"
 import { Controller, FormProvider, useForm } from "react-hook-form"
@@ -8,6 +7,7 @@ import { ChannelListItem } from "@/utils/channel/ChannelListProvider"
 import { Box, Dialog, Flex, Text, TextField, Button } from "@radix-ui/themes"
 import { ErrorText, Label } from "@/components/common/Form"
 import { Loader } from "@/components/common/Loader"
+import { useToast } from "@/hooks/useToast"
 
 interface RenameChannelForm {
     channel_name: string
@@ -30,38 +30,18 @@ export const RenameChannelModalContent = ({ channelID, channelName, type, onClos
     })
     const { control, handleSubmit, setValue, formState: { errors } } = methods
     const { updateDoc, loading: updatingDoc, error } = useFrappeUpdateDoc()
-    const toast = useToast()
+    const { toast } = useToast()
 
-    const onSubmit = (data: RenameChannelForm) => {
-        updateDoc("Raven Channel", channelID ?? null, {
+    const onSubmit = async (data: RenameChannelForm) => {
+        return updateDoc("Raven Channel", channelID ?? null, {
             channel_name: data.channel_name
         }).then(() => {
             toast({
                 title: "Channel name updated",
-                status: "success",
-                duration: 2000,
-                isClosable: true
+                variant: 'success',
+                duration: 800
             })
             onClose()
-        }).catch((err) => {
-            if (err.httpStatus === 409) {
-                toast({
-                    title: "Error renaming channel",
-                    description: "Channel name already exists",
-                    status: "error",
-                    duration: 2000,
-                    isClosable: true
-                })
-            }
-            else {
-                toast({
-                    title: "Error renaming channel",
-                    description: err.httpStatusText,
-                    status: "error",
-                    duration: 2000,
-                    isClosable: true
-                })
-            }
         })
     }
 

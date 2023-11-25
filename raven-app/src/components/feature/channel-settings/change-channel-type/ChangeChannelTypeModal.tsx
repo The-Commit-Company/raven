@@ -1,9 +1,9 @@
-import { useToast } from '@chakra-ui/react'
 import { useFrappeUpdateDoc } from 'frappe-react-sdk'
 import { ErrorBanner } from '../../../layout/AlertBanner'
 import { ChannelListItem } from '@/utils/channel/ChannelListProvider'
 import { Button, Dialog, Flex, Text } from '@radix-ui/themes'
 import { Loader } from '@/components/common/Loader'
+import { useToast } from '@/hooks/useToast'
 
 interface ChangeChannelTypeModalProps {
     onClose: () => void
@@ -12,7 +12,7 @@ interface ChangeChannelTypeModalProps {
 
 export const ChangeChannelTypeModal = ({ onClose, channelData }: ChangeChannelTypeModalProps) => {
 
-    const toast = useToast()
+    const { toast } = useToast()
     const { updateDoc, loading: updatingDoc, error } = useFrappeUpdateDoc()
     const new_channel_type = channelData?.type === 'Public' ? 'Private' : 'Public'
 
@@ -22,19 +22,10 @@ export const ChangeChannelTypeModal = ({ onClose, channelData }: ChangeChannelTy
         }).then(() => {
             toast({
                 title: "Channel type updated",
-                status: "success",
-                duration: 2000,
-                isClosable: true
+                variant: "success",
+                duration: 1000,
             })
             onClose()
-        }).catch((err) => {
-            toast({
-                title: "Error updating channel type",
-                description: err.message,
-                status: "error",
-                duration: 2000,
-                isClosable: true
-            })
         })
     }
 

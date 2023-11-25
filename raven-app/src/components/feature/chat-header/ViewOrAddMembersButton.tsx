@@ -1,10 +1,10 @@
-import { ButtonGroup } from "@chakra-ui/react"
 import { ViewChannelDetailsButton } from "./ViewChannelDetailsButton"
 import { ChannelListItem } from "@/utils/channel/ChannelListProvider"
 import { ChannelMembersContext, ChannelMembersContextType } from "@/utils/channel/ChannelMembersProvider"
 import { useContext } from "react"
 import { AddMembersButton } from "../channel-member-details/add-members/AddMembersButton"
 import { UserContext } from "@/utils/auth/UserProvider"
+import { Flex } from "@radix-ui/themes"
 
 interface ViewOrAddMembersButtonProps {
     channelData: ChannelListItem
@@ -16,7 +16,7 @@ export const ViewOrAddMembersButton = ({ channelData }: ViewOrAddMembersButtonPr
     const { currentUser } = useContext(UserContext)
 
     return (
-        <ButtonGroup isAttached size='sm' variant='outline'>
+        <Flex>
             <ViewChannelDetailsButton
                 channelData={channelData}
                 channelMembers={channelMembers}
@@ -26,7 +26,8 @@ export const ViewOrAddMembersButton = ({ channelData }: ViewOrAddMembersButtonPr
                 channelData={channelData}
                 channelMembers={channelMembers}
                 updateMembers={updateMembers}
+                className="rounded-l-none border-l-0"
                 isIconButton={true} />}
-        </ButtonGroup>
+        </Flex>
     )
 }

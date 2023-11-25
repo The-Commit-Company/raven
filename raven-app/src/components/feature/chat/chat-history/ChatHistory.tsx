@@ -1,4 +1,3 @@
-import { Box } from "@chakra-ui/react";
 import { DividerWithText } from "../../../layout/Divider/DividerWithText";
 import { DateObjectToFormattedDateString } from "../../../../utils/operations";
 import { DateBlock, FileMessage, Message, MessageBlock, MessagesWithDate } from "../../../../../../types/Messaging/Message";
@@ -12,6 +11,7 @@ import { FilePreviewModal } from "../../file-preview/FilePreviewModal";
 import { Virtuoso } from 'react-virtuoso';
 import { VirtuosoRefContext } from "../../../../utils/message/VirtuosoRefProvider";
 import { ChannelListItem, DMChannelListItem } from "@/utils/channel/ChannelListProvider";
+import { Box } from "@radix-ui/themes";
 
 interface ChatHistoryProps {
     parsedMessages: MessagesWithDate,
@@ -42,7 +42,7 @@ export const ChatHistory = ({ parsedMessages, replyToMessage, channelData }: Cha
     const renderItem = (block: DateBlock | MessageBlock) => {
         if (block.block_type === 'date') {
             return (
-                <Box p={4} key={block.data} zIndex={1} position={'relative'}>
+                <Box p='4' key={block.data} className="z-10 relative">
                     <DividerWithText>{DateObjectToFormattedDateString(new Date(block.data))}</DividerWithText>
                 </Box>
             )
@@ -63,7 +63,7 @@ export const ChatHistory = ({ parsedMessages, replyToMessage, channelData }: Cha
     }
 
     return (
-        <Box ref={boxRef} h='100%' overflowY={'scroll'}>
+        <Box ref={boxRef} height='100%' className="overflow-y-scroll">
             <Virtuoso
                 customScrollParent={boxRef.current ?? undefined}
                 totalCount={parsedMessages.length}

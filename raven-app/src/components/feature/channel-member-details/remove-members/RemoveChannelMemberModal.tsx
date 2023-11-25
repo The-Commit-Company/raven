@@ -1,4 +1,3 @@
-import { useToast } from '@chakra-ui/react'
 import { useFrappeDeleteDoc, useFrappeGetCall } from 'frappe-react-sdk'
 import { ErrorBanner } from '../../../layout/AlertBanner'
 import { ChannelListItem } from '@/utils/channel/ChannelListProvider'
@@ -6,6 +5,7 @@ import { ChannelMembers } from '@/utils/channel/ChannelMembersProvider'
 import { ChannelIcon } from '@/utils/layout/channelIcon'
 import { AlertDialog, Button, Flex, Text } from '@radix-ui/themes'
 import { Loader } from '@/components/common/Loader'
+import { useToast } from '@/hooks/useToast'
 
 interface RemoveChannelMemberModalProps {
     onClose: (refresh?: boolean) => void,
@@ -18,7 +18,7 @@ interface RemoveChannelMemberModalProps {
 export const RemoveChannelMemberModal = ({ onClose, user_id, channelData, channelMembers, updateMembers }: RemoveChannelMemberModalProps) => {
 
     const { deleteDoc, error, loading: deletingDoc } = useFrappeDeleteDoc()
-    const toast = useToast()
+    const { toast } = useToast()
 
     const { data: member, error: errorFetchingChannelMember } = useFrappeGetCall<{ message: { name: string } }>('frappe.client.get_value', {
         doctype: "Raven Channel Member",
@@ -28,28 +28,15 @@ export const RemoveChannelMemberModal = ({ onClose, user_id, channelData, channe
         revalidateOnFocus: false
     })
 
-    const onSubmit = () => {
+    const onSubmit = async () => {
         return deleteDoc('Raven Channel Member', member?.message.name).then(() => {
             toast({
                 title: 'Member removed successfully',
-                status: 'success',
-                duration: 1500,
-                position: 'bottom',
-                variant: 'solid',
-                isClosable: true
+                variant: 'success',
+                duration: 1000
             })
             updateMembers()
             onClose()
-        }).catch((e) => {
-            toast({
-                title: 'Error: could not remove member.',
-                status: 'error',
-                duration: 3000,
-                position: 'bottom',
-                variant: 'solid',
-                isClosable: true,
-                description: `${e.message}`
-            })
         })
     }
 

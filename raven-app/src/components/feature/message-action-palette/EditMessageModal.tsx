@@ -1,10 +1,10 @@
-import { useToast } from "@chakra-ui/react"
 import { useFrappeUpdateDoc, useSWRConfig } from "frappe-react-sdk"
 import { useEffect } from "react"
 import { ErrorBanner } from "../../layout/AlertBanner"
 import { Tiptap } from "../chat/ChatInput/Tiptap"
 import { IconButton, Dialog, Flex, Text } from "@radix-ui/themes"
 import { X } from "lucide-react"
+import { useToast } from "@/hooks/useToast"
 
 interface EditMessageModalProps {
     onClose: (refresh?: boolean) => void,
@@ -15,7 +15,7 @@ interface EditMessageModalProps {
 export const EditMessageModal = ({ onClose, channelMessageID, originalText }: EditMessageModalProps) => {
 
     const { mutate } = useSWRConfig()
-    const toast = useToast()
+    const { toast } = useToast()
     const { updateDoc, error, loading: updatingDoc, reset } = useFrappeUpdateDoc()
 
     useEffect(() => {
@@ -29,20 +29,11 @@ export const EditMessageModal = ({ onClose, channelMessageID, originalText }: Ed
                 toast({
                     title: "Message updated",
                     description: "Your message has been updated",
-                    status: "success",
-                    duration: 3000,
-                    isClosable: true
+                    variant: "success",
+                    duration: 1000,
                 })
-                mutate(`get_messages_for_channel_${d.channel_id}`)
+                return mutate(`get_messages_for_channel_${d.channel_id}`)
 
-            }).catch((e) => {
-                toast({
-                    title: "Error",
-                    description: e.message,
-                    status: "error",
-                    duration: 3000,
-                    isClosable: true
-                })
             })
     }
 
