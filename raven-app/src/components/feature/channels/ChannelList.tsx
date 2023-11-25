@@ -46,7 +46,7 @@ const ChannelItem = ({ channel, unreadCount }: { channel: ChannelListItem, unrea
 
     return (
         <SidebarItem to={channel.name}>
-            <ChannelIcon type={channel.type} />
+            <ChannelIcon type={channel.type} size='20' />
             <Flex justify='between' align={'center'} width='100%'>
                 <Text size='2' className="text-ellipsis line-clamp-1" weight={unreadCountForChannel ? 'bold' : 'regular'}>{channel.channel_name}</Text>
                 <SidebarBadge hidden={!unreadCountForChannel}>{unreadCountForChannel}</SidebarBadge>

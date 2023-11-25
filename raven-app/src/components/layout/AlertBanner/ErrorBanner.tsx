@@ -4,7 +4,7 @@ import { PropsWithChildren, useMemo } from 'react'
 import React from 'react'
 import { MarkdownRenderer } from '@/components/feature/markdown-viewer/MarkdownRenderer'
 import { Callout } from '@radix-ui/themes'
-import { ExclamationTriangleIcon } from '@radix-ui/react-icons'
+import { AlertTriangle } from 'lucide-react'
 
 interface ErrorBannerProps extends AlertProps {
     error?: FrappeError | null,
@@ -79,7 +79,7 @@ export const ErrorBanner = ({ error, overrideHeading, children, ...props }: Erro
 export const ErrorCallout = ({ children }: PropsWithChildren) => {
     return (<Callout.Root color="red" role="alert">
         <Callout.Icon>
-            <ExclamationTriangleIcon />
+            <AlertTriangle size='18' />
         </Callout.Icon>
         <Callout.Text>
             {children}

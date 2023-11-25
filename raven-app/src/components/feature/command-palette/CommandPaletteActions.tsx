@@ -1,14 +1,12 @@
-import { Avatar, Box, Button, Center, HStack, Icon, Spinner, Stack, Text, useModalContext, Image, Link } from "@chakra-ui/react"
+import { Avatar, Box, Button, Center, HStack, Spinner, Stack, Text, useModalContext, Image, Link } from "@chakra-ui/react"
 import { Command } from "cmdk"
 import { useFrappeGetCall } from "frappe-react-sdk"
 import { useContext, useMemo, useState } from "react"
-import { BiGlobe, BiHash, BiLockAlt } from "react-icons/bi"
-import { BsFillCircleFill, BsCircle } from "react-icons/bs"
-import { TbFiles, TbHash, TbListSearch, TbMessages, TbSearch, TbUsers } from "react-icons/tb"
+import { Files as FilesIcon, Hash, MailSearch, MessagesSquare, Search, Users } from "lucide-react"
 import { useNavigate, useParams } from "react-router-dom"
 import { GetFileSearchResult } from "../../../../../types/Search/Search"
 import { UserContext } from "../../../utils/auth/UserProvider"
-import { getFileExtensionIcon } from "../../../utils/layout/fileExtensionIcon"
+import { FileExtensionIcon } from "../../../utils/layout/FileExtensionIcon"
 import GlobalSearch from "../global-search/GlobalSearch"
 import { getFileExtension, getFileName } from "../../../utils/operations"
 import { useModalManager, ModalTypes } from "../../../hooks/useModalManager"
@@ -18,6 +16,7 @@ import { UserFields } from "@/utils/users/UserListProvider"
 import { useCurrentChannelData } from "@/hooks/useCurrentChannelData"
 import { ChannelListContext, ChannelListContextType, ChannelListItem, DMChannelListItem } from "@/utils/channel/ChannelListProvider"
 import { useGetUserRecords } from "@/hooks/useGetUserRecords"
+import { ChannelIcon } from "@/utils/layout/channelIcon"
 
 interface Props {
     searchChange: Function
@@ -87,7 +86,7 @@ export const Home = ({ searchChange, input, isGlobalSearchModalOpen, children, i
                         }
                     }}
                 >
-                    <TbListSearch fontSize={20} />
+                    <MailSearch size='18' />
                     {channelData.is_direct_message ?
                         (channelData.is_self_message ?
                             `Find in direct messages with ${users[currentUser].first_name}` :
@@ -102,7 +101,7 @@ export const Home = ({ searchChange, input, isGlobalSearchModalOpen, children, i
                 <Command.Group heading="I'm looking for..." style={style} >
                     <HStack p={1} spacing={3}>
                         <Button
-                            leftIcon={<TbMessages fontSize={20} />}
+                            leftIcon={<MessagesSquare size='20' />}
                             variant="outline"
                             fontSize={12}
                             h={8}
@@ -114,7 +113,7 @@ export const Home = ({ searchChange, input, isGlobalSearchModalOpen, children, i
                             Messages
                         </Button>
                         <Button
-                            leftIcon={<TbFiles fontSize={20} />}
+                            leftIcon={<FilesIcon size='20' />}
                             variant="outline"
                             fontSize={12}
                             h={8}
@@ -126,7 +125,7 @@ export const Home = ({ searchChange, input, isGlobalSearchModalOpen, children, i
                             Files
                         </Button>
                         <Button
-                            leftIcon={<TbHash fontSize={20} />}
+                            leftIcon={<Hash size='20' />}
                             variant="outline"
                             fontSize={12}
                             h={8}
@@ -138,7 +137,7 @@ export const Home = ({ searchChange, input, isGlobalSearchModalOpen, children, i
                             Channels
                         </Button>
                         <Button
-                            leftIcon={<TbUsers fontSize={20} />}
+                            leftIcon={<Users size='20' />}
                             variant="outline"
                             fontSize={12}
                             h={8}
@@ -164,10 +163,10 @@ export const Messages = ({ searchChange, input, isGlobalSearchModalOpen, onGloba
             {!input && <Command.Group heading="Narrow your search">
                 <Item onSelect={() => {
                     searchChange('in')
-                }}><TbSearch />in a channel</Item>
+                }}><Search />in a channel</Item>
                 <Item onSelect={() => {
                     searchChange('from')
-                }}><TbSearch />from anyone on Raven</Item>
+                }}><Search />from anyone on Raven</Item>
             </Command.Group>}
         </Command.List>
     )
@@ -193,10 +192,10 @@ export const Files = ({ searchChange, input, isGlobalSearchModalOpen, onGlobalSe
             {!input && <Command.Group heading="Narrow your search">
                 <Item onSelect={() => {
                     searchChange('in')
-                }}><TbSearch />in a channel</Item>
+                }}><Search />in a channel</Item>
                 <Item onSelect={() => {
                     searchChange('from')
-                }}><TbSearch />from anyone on Raven</Item>
+                }}><Search />from anyone on Raven</Item>
             </Command.Group>}
             <Command.Group heading={data?.message.length ? "Recent files" : ""}>
                 {isValidating && !data?.message.length && <Text py='4' color='gray.500' textAlign='center' fontSize='sm'>No results found.</Text>}
@@ -217,7 +216,7 @@ export const Files = ({ searchChange, input, isGlobalSearchModalOpen, onGlobalSe
                     return (<Item key={f.name}>
                         <HStack spacing={3}>
                             <Center maxW='50px'>
-                                {f.message_type === 'File' && <div>{getFileExtensionIcon(getFileExtension(f.file))}</div>}
+                                {f.message_type === 'File' && <div>{<FileExtensionIcon ext={getFileExtension(f.file)} />}</div>}
                                 {f.message_type === 'Image' && <Image src={f.file} alt='File preview' boxSize={6} rounded='md' fit='cover' />}
                             </Center>
                             <Stack spacing={0}>
@@ -265,7 +264,7 @@ export const Channels = ({ input, isGlobalSearchModalOpen, isChild, onGlobalSear
                             <Item key={channel.name} value={channel.channel_name} onSelect={() => {
                                 navigate(`/channel/${channel.name}`)
                                 onClose()
-                            }}>{channel?.type === "Private" && <BiLockAlt /> || channel?.type === "Public" && <BiHash /> || channel?.type === "Open" && <BiGlobe />}{channel.channel_name} {channel.is_archived ? '(archived)' : ''}</Item>)
+                            }}><ChannelIcon type={channel?.type} />{channel.channel_name} {channel.is_archived ? '(archived)' : ''}</Item>)
                     }
                 }
                 )}
@@ -309,9 +308,9 @@ export const People = ({ input, users, activeUsers, gotoDMChannel, currentUser, 
                                 <Avatar size='xs' src={user.user_image} name={user.full_name} borderRadius='md' />
                                 <HStack spacing={2}>
                                     {user.name === currentUser ? <Text>{user.full_name} (you)</Text> : <Text>{user.full_name}</Text>}
-                                    {activeUsers.includes(user.name) ?
+                                    {/* {activeUsers.includes(user.name) ?
                                         <Icon as={BsFillCircleFill} color='green.500' h='8px' /> :
-                                        <Icon as={BsCircle} h='8px' />}
+                                        <Icon as={BsCircle} h='8px' />} */}
                                 </HStack>
                             </HStack>
                         </Item>)
@@ -348,7 +347,7 @@ export const FindIn = ({ input, tabIndex, isGlobalSearchModalOpen, onGlobalSearc
                                     onGlobalSearchModalOpen()
                                     setInFilter(channel.name)
                                 }}>
-                                {channel?.type === "Private" && <BiLockAlt /> || channel?.type === "Public" && <BiHash /> || channel?.type === "Open" && <BiGlobe />}{channel.channel_name}</Item>)
+                                <ChannelIcon type={channel?.type} /> {channel.channel_name}</Item>)
                     }
                 })}
             </Command.Group>

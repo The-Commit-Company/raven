@@ -5,7 +5,7 @@ import remarkGfm from 'remark-gfm'
 import './MarkdownRenderer.css'
 import { useFrappeGetCall } from 'frappe-react-sdk';
 import { Box, Text, Image, HStack, Stack, IconButton, useClipboard } from '@chakra-ui/react';
-import { CheckIcon, CopyIcon } from '@chakra-ui/icons';
+import { Check, Copy } from 'lucide-react';
 import { useTheme } from '@/ThemeProvider';
 
 interface Props {
@@ -61,7 +61,7 @@ export const MarkdownRenderer: React.FC<Props> = ({ content }) => {
             right="2"
             aria-label="copy"
             size="xs"
-            icon={hasCopied ? <CheckIcon color={'green.500'} fontSize={'0.6rem'} /> : <CopyIcon />}
+            icon={hasCopied ? <Check color={'green'} size='16' /> : <Copy size='16' />}
             onClick={() => {
               navigator.clipboard.writeText(content.replace(/<[^>]*>?/gm, '').trim())
               onCopy()

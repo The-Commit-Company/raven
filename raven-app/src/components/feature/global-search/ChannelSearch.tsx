@@ -1,9 +1,8 @@
-import { SearchIcon } from '@chakra-ui/icons'
+import { Globe, Hash, Lock, Search } from 'lucide-react'
 import { Button, Center, chakra, FormControl, HStack, Input, InputGroup, InputLeftElement, Text, Stack, TabPanel, Box, Spinner } from '@chakra-ui/react'
 import { useFrappeGetCall } from 'frappe-react-sdk'
 import { useState } from 'react'
 import { FormProvider, Controller, useForm } from 'react-hook-form'
-import { BiGlobe, BiHash, BiLockAlt } from 'react-icons/bi'
 import { useNavigate } from 'react-router-dom'
 import { useDebounce } from '../../../hooks/useDebounce'
 import { GetChannelSearchResult } from '../../../../../types/Search/Search'
@@ -13,6 +12,7 @@ import { SelectInput, SelectOption } from '../search-filters/SelectInput'
 import { Sort } from '../sorting'
 import { scrollbarStyles } from '../../../styles'
 import { useTheme } from '@/ThemeProvider'
+import { ChannelIcon } from '@/utils/layout/channelIcon'
 interface Props {
     onToggleMyChannels: () => void,
     isOpenMyChannels: boolean,
@@ -63,7 +63,7 @@ export const ChannelSearch = ({ onToggleMyChannels, isOpenMyChannels, onToggleOt
                 <InputGroup>
                     <InputLeftElement
                         pointerEvents='none'
-                        children={<SearchIcon color='gray.300' />} />
+                        children={<Search color='gray.300' />} />
                     <Input
                         autoFocus
                         onChange={handleChange}
@@ -155,7 +155,7 @@ export const ChannelSearch = ({ onToggleMyChannels, isOpenMyChannels, onToggleOt
                                                 key={channel.name}>
                                                 <HStack spacing={3}>
                                                     <Center maxW='50px'>
-                                                        {channel.type === "Private" && <BiLockAlt /> || channel.type === "Public" && <BiHash /> || channel.type === "Open" && <BiGlobe />}
+                                                        <ChannelIcon type={channel.type} />
                                                     </Center>
                                                     <HStack spacing={1}>
                                                         <Text>{channel.channel_name}</Text>
@@ -173,7 +173,7 @@ export const ChannelSearch = ({ onToggleMyChannels, isOpenMyChannels, onToggleOt
 }
 
 const channelOption: SelectOption[] = [
-    { label: <HStack><div className="icon-container"><BiLockAlt /></div><Text>Private</Text></HStack>, value: "Private" },
-    { label: <HStack><div className="icon-container"><BiHash /></div><Text>Public</Text></HStack>, value: "Public" },
-    { label: <HStack><div className="icon-container"><BiGlobe /></div><Text>Open</Text></HStack>, value: "Open" }
+    { label: <HStack><div className="icon-container"><Lock /></div><Text>Private</Text></HStack>, value: "Private" },
+    { label: <HStack><div className="icon-container"><Hash /></div><Text>Public</Text></HStack>, value: "Public" },
+    { label: <HStack><div className="icon-container"><Globe /></div><Text>Open</Text></HStack>, value: "Open" }
 ]

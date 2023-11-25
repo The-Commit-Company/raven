@@ -2,11 +2,11 @@ import { useToast } from '@chakra-ui/react'
 import { useFrappeCreateDoc } from 'frappe-react-sdk'
 import { ChangeEvent, useCallback, useMemo, useState } from 'react'
 import { Controller, FormProvider, useForm } from 'react-hook-form'
-import { BiGlobe, BiHash, BiLockAlt } from 'react-icons/bi'
+import { Globe, Hash, Lock } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { ErrorBanner } from '../../layout/AlertBanner'
 import { Box, Button, Dialog, Flex, IconButton, RadioGroup, Text, TextArea, TextField } from '@radix-ui/themes'
-import { FiPlus } from 'react-icons/fi'
+import { Plus } from 'lucide-react'
 import { ErrorText, HelperText, Label } from '@/components/common/Form'
 import { Loader } from '@/components/common/Loader'
 import { DIALOG_CONTENT_CLASS } from '@/utils/layout/dialog'
@@ -79,19 +79,19 @@ export const CreateChannelButton = ({ updateChannelList }: { updateChannelList: 
         switch (channelType) {
             case 'Private':
                 return {
-                    channelIcon: <BiLockAlt />,
+                    channelIcon: <Lock size='16' />,
                     header: 'Create a private channel',
                     helperText: 'When a channel is set to private, it can only be viewed or joined by invitation.'
                 }
             case 'Open':
                 return {
-                    channelIcon: <BiGlobe />,
+                    channelIcon: <Globe size='16' />,
                     header: 'Create an open channel',
                     helperText: 'When a channel is set to open, everyone is a member.'
                 }
             default:
                 return {
-                    channelIcon: <BiHash />,
+                    channelIcon: <Hash size='16' />,
                     header: 'Create a public channel',
                     helperText: 'When a channel is set to public, anyone can join the channel and read messages, but only members can post messages.'
                 }
@@ -101,7 +101,7 @@ export const CreateChannelButton = ({ updateChannelList }: { updateChannelList: 
     return <Dialog.Root open={isOpen} onOpenChange={onOpenChange}>
         <Dialog.Trigger>
             <IconButton variant='ghost' size='1' color='gray' aria-label='Create Channel' className='h-[18px]' title='Create Channel'>
-                <FiPlus width="18" height="18" className='text-[--gray-12]' />
+                <Plus size='18' className='text-[--gray-12]' />
             </IconButton>
         </Dialog.Trigger>
         <Dialog.Content className={DIALOG_CONTENT_CLASS}>
@@ -210,7 +210,8 @@ export const CreateChannelButton = ({ updateChannelList }: { updateChannelList: 
                                     </RadioGroup.Root>
                                 )}
                             />
-                            <Text size='1' weight='light'>
+                            {/* Added min height to avoid layout shift when two lines of text are shown */}
+                            <Text size='1' weight='light' className='min-h-[2rem]'>
                                 {helperText}
                             </Text>
                         </Flex>

@@ -1,6 +1,5 @@
 import { useCurrentEditor } from '@tiptap/react'
-import { BiBold, BiCodeAlt, BiHighlight, BiItalic, BiLink, BiListOl, BiListUl, BiStrikethrough, BiUnderline } from 'react-icons/bi'
-import { BsBlockquoteLeft } from 'react-icons/bs'
+import { Bold, Code2, Highlighter, Italic, Link, ListOrdered, List, Strikethrough, Underline, TextQuote } from 'lucide-react'
 import { DEFAULT_BUTTON_STYLE, ICON_PROPS } from './ToolPanel'
 import { Box, Flex, IconButton, Separator } from '@radix-ui/themes'
 
@@ -30,7 +29,7 @@ export const TextFormattingMenu = () => {
                             .toggleBold()
                             .run()
                     }>
-                    <BiBold {...ICON_PROPS} />
+                    <Bold {...ICON_PROPS} />
                 </IconButton>
 
                 <IconButton
@@ -47,7 +46,7 @@ export const TextFormattingMenu = () => {
                             .toggleItalic()
                             .run()
                     }>
-                    <BiItalic size='17px' />
+                    <Italic {...ICON_PROPS} />
                 </IconButton>
                 <IconButton
                     onClick={() => editor.chain().focus().toggleUnderline().run()}
@@ -64,7 +63,7 @@ export const TextFormattingMenu = () => {
                             .run()
                     }
                 >
-                    <BiUnderline {...ICON_PROPS} />
+                    <Underline {...ICON_PROPS} />
                 </IconButton>
 
 
@@ -87,7 +86,7 @@ export const TextFormattingMenu = () => {
                             .run()
                     }
                 >
-                    <BiCodeAlt {...ICON_PROPS} />
+                    <Code2 {...ICON_PROPS} />
                 </IconButton>
                 <IconButton
                     onClick={() => editor.chain().focus().toggleStrike().run()}
@@ -104,7 +103,7 @@ export const TextFormattingMenu = () => {
                             .run()
                     }
                 >
-                    <BiStrikethrough {...ICON_PROPS} />
+                    <Strikethrough {...ICON_PROPS} />
                 </IconButton>
 
 
@@ -124,7 +123,7 @@ export const TextFormattingMenu = () => {
                             .run()
                     }
                 >
-                    <BsBlockquoteLeft {...ICON_PROPS} />
+                    <TextQuote {...ICON_PROPS} />
                 </IconButton>
             </Flex>
             <Separator orientation='vertical' />
@@ -144,7 +143,7 @@ export const TextFormattingMenu = () => {
                             .run()
                     }
                 >
-                    <BiListOl {...ICON_PROPS} />
+                    <ListOrdered {...ICON_PROPS} />
                 </IconButton>
                 <IconButton
                     onClick={() => editor.chain().focus().liftEmptyBlock().toggleBulletList().run()}
@@ -161,7 +160,7 @@ export const TextFormattingMenu = () => {
                             .run()
                     }
                 >
-                    <BiListUl {...ICON_PROPS} />
+                    <List {...ICON_PROPS} />
                 </IconButton>
 
             </Flex>
@@ -182,7 +181,7 @@ export const TextFormattingMenu = () => {
                             .run()
                     }
                 >
-                    <BiHighlight fontSize='18px' />
+                    <Highlighter {...ICON_PROPS} />
                 </IconButton>
             </Flex>
         </Flex >

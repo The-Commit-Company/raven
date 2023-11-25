@@ -1,20 +1,17 @@
-import { SearchIcon } from '@chakra-ui/icons'
+import { Bookmark, BookmarkCheck, Search } from 'lucide-react'
 import { Avatar, Button, Center, chakra, FormControl, HStack, Icon, Input, InputGroup, InputLeftElement, Link, Stack, TabPanel, Text, Image, Spinner, IconButton } from '@chakra-ui/react'
 import { useFrappeGetCall } from 'frappe-react-sdk'
 import { useMemo, useState, useContext } from 'react'
 import { Controller, FormProvider, useForm } from 'react-hook-form'
-import { BiGlobe, BiHash, BiLockAlt } from 'react-icons/bi'
 import { useDebounce } from '../../../hooks/useDebounce'
 import { GetFileSearchResult } from '../../../../../types/Search/Search'
-import { getFileExtensionIcon } from '../../../utils/layout/fileExtensionIcon'
+import { FileExtensionIcon } from '../../../utils/layout/FileExtensionIcon'
 import { DateObjectToFormattedDateString, getFileExtension, getFileName } from '../../../utils/operations'
 import { ErrorBanner } from '../../layout/AlertBanner'
 import { EmptyStateForSearch } from '../../layout/EmptyState/EmptyState'
 import { SelectInput, SelectOption } from '../search-filters/SelectInput'
 import { Sort } from '../sorting'
-import { AiOutlineFileExcel, AiOutlineFileImage, AiOutlineFilePdf, AiOutlineFilePpt, AiOutlineFileText } from 'react-icons/ai'
 import './styles.css'
-import { IoBookmark, IoBookmarkOutline } from 'react-icons/io5'
 import { FilePreviewModal } from '../file-preview/FilePreviewModal'
 import { useModalManager, ModalTypes } from "../../../hooks/useModalManager"
 import { scrollbarStyles } from '../../../styles'
@@ -22,6 +19,7 @@ import { UserFields } from '@/utils/users/UserListProvider'
 import { ChannelListContext, ChannelListContextType, ChannelListItem } from '@/utils/channel/ChannelListProvider'
 import { useGetUserRecords } from '@/hooks/useGetUserRecords'
 import { useTheme } from '@/ThemeProvider'
+import { ChannelIcon } from '@/utils/layout/channelIcon'
 
 interface FilterInput {
     'from-user-filter': SelectOption[],
@@ -76,7 +74,7 @@ export const FileSearch = ({ onToggleMyChannels, isOpenMyChannels, onToggleSaved
         if (channels) {
             return channels.map((channel: ChannelListItem) => ({
                 value: channel.name,
-                label: <HStack>{channel.type === "Private" && <BiLockAlt /> || channel.type === "Public" && <BiHash /> || channel.type === "Open" && <BiGlobe />}<Text>{channel.channel_name}</Text></HStack>,
+                label: <HStack><ChannelIcon type={channel.type} /><Text>{channel.channel_name}</Text></HStack>,
                 is_archived: channel.is_archived
             }))
         } else {
@@ -153,7 +151,7 @@ export const FileSearch = ({ onToggleMyChannels, isOpenMyChannels, onToggleSaved
                 <InputGroup>
                     <InputLeftElement
                         pointerEvents='none'
-                        children={<SearchIcon color='gray.300' />} />
+                        children={<Search color='gray.300' />} />
                     <Input
                         autoFocus
                         onChange={handleChange}
@@ -208,7 +206,7 @@ export const FileSearch = ({ onToggleMyChannels, isOpenMyChannels, onToggleSaved
                                     render={({ field: { onChange, value } }) => (
                                         <IconButton
                                             aria-label="saved-filter"
-                                            icon={isSaved ? <IoBookmark /> : <IoBookmarkOutline />}
+                                            icon={isSaved ? <BookmarkCheck /> : <Bookmark />}
                                             borderRadius={3}
                                             size="sm"
                                             w="fit-content"
@@ -253,7 +251,7 @@ export const FileSearch = ({ onToggleMyChannels, isOpenMyChannels, onToggleSaved
                                         return (
                                             <HStack spacing={3} key={f.name}>
                                                 <Center maxW='50px'>
-                                                    {f.message_type === 'File' && <div>{getFileExtensionIcon(getFileExtension(f.file))}</div>}
+                                                    {f.message_type === 'File' && <FileExtensionIcon ext={getFileExtension(f.file)} />}
                                                     {f.message_type === 'Image' && <Image src={f.file} alt='File preview' boxSize={'36px'} rounded='md' fit='cover' />}
                                                 </Center>
                                                 <Stack spacing={0}>
@@ -275,9 +273,9 @@ export const FileSearch = ({ onToggleMyChannels, isOpenMyChannels, onToggleSaved
 }
 
 const fileOption: SelectOption[] = [
-    { label: <HStack><div className="icon-container"><AiOutlineFilePdf /></div><Text>PDFs</Text></HStack>, value: "pdf" },
-    { label: <HStack><div className="icon-container"><AiOutlineFileText /></div><Text>Documents</Text></HStack>, value: "doc" },
-    { label: <HStack><div className="icon-container"><AiOutlineFilePpt /></div><Text>Presentations</Text></HStack>, value: "ppt" },
-    { label: <HStack><div className="icon-container"><AiOutlineFileExcel /></div><Text>Spreadsheets</Text></HStack>, value: "xls" },
-    { label: <HStack><div className="icon-container"><AiOutlineFileImage /></div><Text>Image</Text></HStack>, value: "image" }
+    { label: <HStack><div className="icon-container"><FileExtensionIcon ext={'pdf'} /></div><Text>PDFs</Text></HStack>, value: "pdf" },
+    { label: <HStack><div className="icon-container"><FileExtensionIcon ext='doc' /></div><Text>Documents</Text></HStack>, value: "doc" },
+    { label: <HStack><div className="icon-container"><FileExtensionIcon ext='ppt' /></div><Text>Presentations</Text></HStack>, value: "ppt" },
+    { label: <HStack><div className="icon-container"><FileExtensionIcon ext='xls' /></div><Text>Spreadsheets</Text></HStack>, value: "xls" },
+    { label: <HStack><div className="icon-container"><FileExtensionIcon ext='' /></div><Text>Image</Text></HStack>, value: "image" }
 ]

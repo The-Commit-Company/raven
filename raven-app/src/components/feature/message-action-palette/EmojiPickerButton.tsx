@@ -1,8 +1,8 @@
 import { useState } from 'react'
-import { BsEmojiSmile } from 'react-icons/bs'
 import { EmojiPicker } from '../../common/EmojiPicker/EmojiPicker'
 import { Box, Flex, IconButton, Popover, Portal, Tooltip } from '@radix-ui/themes'
 import { DIALOG_CONTENT_CLASS } from '@/utils/layout/dialog'
+import { Smile } from 'lucide-react'
 
 interface EmojiPickerButtonProps {
     saveReaction: (emoji: string) => void
@@ -31,7 +31,7 @@ export const EmojiPickerButton = ({ saveReaction }: EmojiPickerButtonProps) => {
                             size='1'
                             color='gray'
                             aria-label='pick emoji'>
-                            <BsEmojiSmile fontSize={'0.8rem'} />
+                            <Smile size='14' />
                         </IconButton>
                     </Popover.Trigger>
                 </Tooltip>

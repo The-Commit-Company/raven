@@ -1,9 +1,9 @@
 import { Avatar, Center, HStack, Link, Modal, ModalBody, Image, ModalFooter, ModalCloseButton, ModalContent, ModalHeader, ModalOverlay, Stack, StackDivider, Text } from "@chakra-ui/react"
 import { DateObjectToTimeString, getFileName } from "../../../utils/operations"
-import { BsDownload } from "react-icons/bs"
 import { FileMessage } from "../../../../../types/Messaging/Message"
 import { useGetUserRecords } from "@/hooks/useGetUserRecords"
 import { useTheme } from "@/ThemeProvider"
+import { Download } from "lucide-react"
 
 interface FilePreviewModalProps extends FileMessage {
     isOpen: boolean,
@@ -31,7 +31,7 @@ export const FilePreviewModal = ({ isOpen, onClose, owner, file, creation, messa
                                     <Text fontSize="xs" lineHeight={'0.9'} color="gray.500">{DateObjectToTimeString(creation)}</Text>
                                 </HStack>
                                 {file &&
-                                    <HStack spacing='1' align='center'><BsDownload size='12' />
+                                    <HStack spacing='1' align='center'><Download size='12' />
                                         <Link textDecor='underline' _hover={{ color: 'blue.500' }} isExternal fontSize='xs' href={file}>{getFileName(file)}</Link>
                                     </HStack>
                                 }

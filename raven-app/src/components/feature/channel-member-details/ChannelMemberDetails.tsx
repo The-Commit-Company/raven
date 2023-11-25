@@ -1,14 +1,12 @@
 import { useContext, useState } from "react"
-import { BsFillCircleFill, BsCircle } from "react-icons/bs"
 import { useDebounce } from "../../../hooks/useDebounce"
 import { UserContext } from "../../../utils/auth/UserProvider"
-import { RiVipCrownFill } from "react-icons/ri"
 import { ChannelListItem } from "@/utils/channel/ChannelListProvider"
 import { ChannelMembers } from "@/utils/channel/ChannelMembersProvider"
 import { AddMembersButton } from "./add-members/AddMembersButton"
 import { RemoveMemberButton } from "./remove-members/RemoveMemberButton"
 import { Box, Flex, TextField, Text } from "@radix-ui/themes"
-import { MagnifyingGlassIcon } from "@radix-ui/react-icons"
+import { Search, Circle, Crown } from "lucide-react"
 import { UserAvatar } from "@/components/common/UserAvatar"
 interface MemberDetailsProps {
     channelData: ChannelListItem,
@@ -41,7 +39,7 @@ export const ChannelMemberDetails = ({ channelData, channelMembers, activeUsers,
                 <div className={'w-full'}>
                     <TextField.Root>
                         <TextField.Slot>
-                            <MagnifyingGlassIcon />
+                            <Search size='14' />
                         </TextField.Slot>
                         <TextField.Input autoFocus placeholder='Find members' onChange={handleChange} value={debouncedText} />
                     </TextField.Root>
@@ -75,14 +73,14 @@ export const ChannelMemberDetails = ({ channelData, channelMembers, activeUsers,
                                             <Flex gap='2' align={'center'}>
                                                 <Text weight='medium'>{member.first_name}</Text>
                                                 {activeUsers.includes(member.name) ? (
-                                                    <BsFillCircleFill color='green' fontSize={'0.5rem'} />
+                                                    <Circle color='green' size='8' />
                                                 ) : (
-                                                    <BsCircle fontSize={'0.5rem'} />
+                                                    <Circle size='8' />
                                                 )}
                                                 <Flex gap='1'>
                                                     <Text weight='light' size='1'>{member.full_name}</Text>
                                                     {member.name === currentUser && <Text weight='light' size='1'>(You)</Text>}
-                                                    {channelMembers[member.name].is_admin == 1 && <Flex align="center"><RiVipCrownFill color='#FFC53D' height='14px' /></Flex>}
+                                                    {channelMembers[member.name].is_admin == 1 && <Flex align="center"><Crown color='#FFC53D' size='14' /></Flex>}
                                                 </Flex>
                                             </Flex>
                                         </Flex>

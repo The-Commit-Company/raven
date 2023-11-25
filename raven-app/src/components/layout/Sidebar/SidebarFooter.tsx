@@ -3,7 +3,7 @@ import { UserContext } from '../../../utils/auth/UserProvider'
 import { useUserData } from '@/hooks/useUserData'
 import { AddRavenUsers } from '@/components/feature/raven-users/AddRavenUsers'
 import { DropdownMenu, Flex, IconButton, Link, Separator, Text } from '@radix-ui/themes'
-import { BsThreeDots } from 'react-icons/bs'
+import { MoreHorizontal } from 'lucide-react'
 import { UserAvatar } from '@/components/common/UserAvatar'
 
 export const SidebarFooter = () => {
@@ -27,7 +27,7 @@ export const SidebarFooter = () => {
                     <DropdownMenu.Root>
                         <DropdownMenu.Trigger>
                             <IconButton aria-label='Options' color='gray' variant='ghost'>
-                                <BsThreeDots />
+                                <MoreHorizontal size='18' />
                             </IconButton>
                         </DropdownMenu.Trigger>
                         <DropdownMenu.Content variant='soft'>

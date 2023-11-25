@@ -1,12 +1,10 @@
 import { useCurrentEditor } from '@tiptap/react'
-import { BiAt, BiHash, BiSmile } from 'react-icons/bi'
+import { AtSign, Hash, Smile, SendHorizontal, Paperclip } from 'lucide-react'
 import { DEFAULT_BUTTON_STYLE, ICON_PROPS } from './ToolPanel'
 import { EmojiPicker } from '../../../common/EmojiPicker/EmojiPicker'
 import { ToolbarFileProps } from './Tiptap'
-import { AiOutlinePaperClip } from 'react-icons/ai'
 import { Flex, IconButton, Inset, Popover, Separator } from '@radix-ui/themes'
 import { Loader } from '@/components/common/Loader'
-import { IoMdSend } from 'react-icons/io'
 
 type RightToolbarButtonsProps = {
     fileProps?: ToolbarFileProps,
@@ -59,7 +57,7 @@ const MentionButtons = () => {
                     .insertContent('#')
                     .run() || !editor.isEditable
             }>
-            <BiHash {...ICON_PROPS} />
+            <Hash {...ICON_PROPS} />
         </IconButton>
         <IconButton
             onClick={() => editor.chain().focus().insertContent('@').run()}
@@ -75,7 +73,7 @@ const MentionButtons = () => {
                     .insertContent('@')
                     .run() || !editor.isEditable
             }>
-            <BiAt {...ICON_PROPS} />
+            <AtSign {...ICON_PROPS} />
         </IconButton>
     </Flex>
 }
@@ -97,7 +95,7 @@ const EmojiPickerButton = () => {
                 title='Add emoji'
                 disabled={!editor.can().chain().focus().insertContent('😅').run() || !editor.isEditable}
                 aria-label={"add emoji"}>
-                <BiSmile {...ICON_PROPS} />
+                <Smile {...ICON_PROPS} />
             </IconButton>
         </Popover.Trigger>
         <Popover.Content>
@@ -124,7 +122,7 @@ const FilePickerButton = ({ fileProps }: { fileProps: ToolbarFileProps }) => {
         disabled={editor?.isEditable === false}
         title='Attach file'
         aria-label={"attach file"}>
-        <AiOutlinePaperClip {...ICON_PROPS} />
+        <Paperclip {...ICON_PROPS} />
     </IconButton>
 }
 
@@ -166,7 +164,7 @@ const SendButton = ({ sendMessage, messageSending }: {
         onClick={onClick}
     >
         {messageSending ? <Loader /> :
-            <IoMdSend {...ICON_PROPS} />
+            <SendHorizontal {...ICON_PROPS} />
         }
     </IconButton>
 }

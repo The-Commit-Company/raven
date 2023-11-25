@@ -1,8 +1,4 @@
-import { IconType } from "react-icons"
-import { BsArrowReturnLeft, BsOption } from "react-icons/bs"
-import { ImArrowDown2, ImArrowLeft2, ImArrowRight2, ImArrowUp2, ImCommand, ImCtrl, ImShift } from "react-icons/im"
-import { IoBackspaceOutline } from "react-icons/io5"
-import { MdKeyboardTab, MdOutlineSpaceBar } from "react-icons/md"
+import { Command, ChevronUp, ArrowBigUpDash, LucideProps, Option, Delete, CornerDownLeft, Space, ArrowRightToLine, ArrowBigUp, ArrowBigDown, ArrowBigLeft, ArrowBigRight } from 'lucide-react'
 
 export const getKeyboardMetaKeyString = () => {
     if (navigator.platform.toUpperCase().indexOf('MAC') >= 0) {
@@ -31,28 +27,33 @@ export const KEYBOARD_KEY_STRING_MAP: Record<KEY_TYPE, string> = {
     'return': '⏎',
 
 }
-export const getKeyboardMetaKeyIcon = () => {
+export const KeyboardMetaKeyIcon = ({ ...props }: LucideProps) => {
     if (navigator.platform.toUpperCase().indexOf('MAC') >= 0) {
-        return ImCommand
+        return <Command {...props} />
     } else {
-        return ImCtrl
+        return <ChevronUp {...props} />
     }
 }
-export const KEYBOARD_KEY_ICON_MAP: Record<KEY_TYPE, IconType> = {
-    'shift': ImShift,
-    'ctrl': ImCtrl,
-    'alt': BsOption,
-    'meta': getKeyboardMetaKeyIcon(),
-    'left': ImArrowLeft2,
-    'up': ImArrowUp2,
-    'right': ImArrowRight2,
-    'tab': MdKeyboardTab,
-    'down': ImArrowDown2,
-    'space': MdOutlineSpaceBar,
-    'backspace': IoBackspaceOutline,
-    'delete': IoBackspaceOutline,
-    'del': IoBackspaceOutline,
-    'enter': BsArrowReturnLeft,
-    'return': BsArrowReturnLeft,
 
+interface KeyboardKeyIconProps extends LucideProps {
+    key: KEY_TYPE
+}
+export const KeyboardKeyIcon = ({ key, ...props }: KeyboardKeyIconProps) => {
+    switch (key) {
+        case 'meta': return <KeyboardMetaKeyIcon {...props} />;
+        case 'shift': return <ArrowBigUpDash {...props} />
+        case 'ctrl': return <ChevronUp {...props} />
+        case 'alt': return <Option {...props} />
+        case 'backspace': return <Delete {...props} />
+        case 'del': return <Delete {...props} />
+        case 'delete': return <Delete {...props} />
+        case 'return': return <CornerDownLeft {...props} />
+        case 'enter': return <CornerDownLeft {...props} />
+        case 'space': return <Space {...props} />
+        case 'tab': return <ArrowRightToLine {...props} />
+        case 'up': return <ArrowBigUp {...props} />
+        case 'down': return <ArrowBigDown {...props} />
+        case 'left': return <ArrowBigLeft {...props} />
+        case 'right': return <ArrowBigRight {...props} />
+    }
 }

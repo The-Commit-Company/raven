@@ -4,7 +4,7 @@ import { useEffect } from "react"
 import { ErrorBanner } from "../../layout/AlertBanner"
 import { Tiptap } from "../chat/ChatInput/Tiptap"
 import { IconButton, Dialog, Flex, Text } from "@radix-ui/themes"
-import { Cross1Icon } from "@radix-ui/react-icons"
+import { X } from "lucide-react"
 
 interface EditMessageModalProps {
     onClose: (refresh?: boolean) => void,
@@ -52,7 +52,7 @@ export const EditMessageModal = ({ onClose, channelMessageID, originalText }: Ed
                 <Dialog.Title>Edit Message</Dialog.Title>
                 <Dialog.Close disabled={updatingDoc}>
                     <IconButton size='1' variant="soft" color="gray">
-                        <Cross1Icon />
+                        <X size='18' />
                     </IconButton>
                 </Dialog.Close>
             </Flex>

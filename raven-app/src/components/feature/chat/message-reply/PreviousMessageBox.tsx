@@ -3,7 +3,7 @@ import { Message } from '../../../../../../types/Messaging/Message'
 import { MarkdownRenderer } from '../../markdown-viewer/MarkdownRenderer'
 import { DateObjectToFormattedDateStringWithoutYear, DateObjectToTimeString, getFileExtension, getFileName } from '../../../../utils/operations'
 import { useContext } from 'react'
-import { getFileExtensionIcon } from '../../../../utils/layout/fileExtensionIcon'
+import { FileExtensionIcon } from '../../../../utils/layout/FileExtensionIcon'
 import { useFrappeGetDoc, useFrappePostCall } from 'frappe-react-sdk'
 import { AlertBanner } from '../../../layout/AlertBanner'
 import { VirtuosoRefContext } from '../../../../utils/message/VirtuosoRefProvider'
@@ -11,7 +11,7 @@ import { useNavigate } from "react-router-dom"
 import { ChannelListItem, DMChannelListItem } from '@/utils/channel/ChannelListProvider'
 import { UserFields } from '@/utils/users/UserListProvider'
 import { useGetUserRecords } from '@/hooks/useGetUserRecords'
-import { CloseIcon } from '@chakra-ui/icons'
+import { X } from 'lucide-react'
 import { useTheme } from '@/ThemeProvider'
 
 interface PreviousMessageBoxProps {
@@ -57,7 +57,7 @@ export const PreviousMessageBox = ({ previous_message_id, previous_message_conte
                                     {previous_message_content.message_type === 'Image' ?
                                         <Image src={previous_message_content.file} alt='File preview' boxSize={'30px'} rounded='md' /> :
                                         <div slot='start'>
-                                            {getFileExtensionIcon(getFileExtension(previous_message_content.file) ?? '')}
+                                            {FileExtensionIcon(getFileExtension(previous_message_content.file) ?? '')}
                                         </div>}
                                 </Center>
                                 <Text as="span" fontSize="sm" overflow="hidden" whiteSpace="nowrap" textOverflow="ellipsis">{getFileName(previous_message_content.file)}</Text>
@@ -70,7 +70,7 @@ export const PreviousMessageBox = ({ previous_message_id, previous_message_conte
                         size="xs"
                         title='Remove message'
                         variant="ghost"
-                        icon={<CloseIcon />}
+                        icon={<X />}
                         aria-label="Remove message" />
 
                 </HStack>
@@ -152,7 +152,7 @@ const PreviousMessageBoxInChat = ({ previous_message_id, channelData, users }: P
                                 {data.message_type === 'Image' ?
                                     <Image src={data.file} alt='File preview' boxSize={'30px'} rounded='md' /> :
                                     <div slot='start'>
-                                        {getFileExtensionIcon(getFileExtension(data.file) ?? '')}
+                                        {FileExtensionIcon(getFileExtension(data.file) ?? '')}
                                     </div>}
                             </Center>
                             <Text as="span" fontSize="sm" overflow="hidden" whiteSpace="nowrap" textOverflow="ellipsis">{getFileName(data.file)}</Text>

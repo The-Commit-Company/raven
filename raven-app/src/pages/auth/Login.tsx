@@ -1,7 +1,7 @@
 import { useState, useContext } from "react";
 import { Box, Button, Flex, FormControl, FormLabel, IconButton, Input, InputGroup, InputRightElement, Stack, useDisclosure, chakra, FormErrorMessage } from "@chakra-ui/react";
 import { useForm } from "react-hook-form";
-import { HiEye, HiEyeOff } from "react-icons/hi";
+import { Eye, EyeOff } from "lucide-react";
 import { Link } from "react-router-dom";
 import { AlertBanner } from "../../components/layout/AlertBanner";
 import { UserContext } from "../../utils/auth/UserProvider";
@@ -80,7 +80,7 @@ export const Login = () => {
                                                         bg="transparent !important"
                                                         variant="ghost"
                                                         aria-label={isOpen ? "Mask password" : "Reveal password"}
-                                                        icon={isOpen ? <HiEyeOff /> : <HiEye />}
+                                                        icon={isOpen ? <EyeOff /> : <Eye />}
                                                         onClick={onClickReveal}
                                                         tabIndex={-1} />
                                                 </InputRightElement>

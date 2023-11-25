@@ -1,4 +1,3 @@
-import { BiBookmark, BiGlobe, BiHash, BiLockAlt } from "react-icons/bi"
 import { DateObjectToFormattedDateString } from "../../../utils/operations"
 import { UserProfileDrawer } from "../../feature/user-details/UserProfileDrawer"
 import { ChannelListItem, DMChannelListItem } from "@/utils/channel/ChannelListProvider"
@@ -11,6 +10,8 @@ import { UserContext } from "@/utils/auth/UserProvider"
 import { useGetUserRecords } from "@/hooks/useGetUserRecords"
 import { Box, Button, Flex, Heading, Link, Text } from "@radix-ui/themes"
 import { UserAvatar } from "@/components/common/UserAvatar"
+import { ChannelIcon } from "@/utils/layout/channelIcon"
+import { Bookmark } from "lucide-react"
 
 export const EmptyStateForSearch = () => {
     return (
@@ -44,9 +45,7 @@ const EmptyStateForChannel = ({ channelData, channelMembers, updateMembers }: Em
         <Flex direction='column' className={'py-4 px-2'} gap='2'>
             <Flex direction='column' gap='2'>
                 <Flex align={'center'} gap='1'>
-                    {channelData?.type === 'Private' && <BiLockAlt fontSize={'1.4rem'} />}
-                    {channelData?.type === 'Public' && <BiHash fontSize={'1.4rem'} />}
-                    {channelData?.type === 'Open' && <BiGlobe fontSize={'1.4rem'} />}
+                    <ChannelIcon type={channelData?.type} />
                     <Heading size='4'>{channelData?.channel_name}</Heading>
                 </Flex>
                 <Text size='2'>{users[channelData.owner]?.full_name} created this channel on {DateObjectToFormattedDateString(new Date(channelData?.creation ?? ''))}. This is the very beginning of the <strong>{channelData?.channel_name}</strong> channel.</Text>
@@ -107,14 +106,14 @@ export const EmptyStateForSavedMessages = () => {
     return (
         <Flex direction='column' className={'mt-75 px-4'} gap='4'>
             <Flex>
-                <BiBookmark fontSize={'1.4rem'} />
+                <Bookmark size='16' />
                 <Text size='2'>Your saved messages will appear here</Text>
             </Flex>
             <Flex direction='column'>
                 <Text>Saved messages are a convenient way to keep track of important information or messages you want to refer back to later.</Text>
                 <Flex gap='1'>
                     <Text size='2'>You can save messages by simply clicking on the bookmark icon</Text>
-                    <BiBookmark fontSize={'1rem'} />
+                    <Bookmark size='16' />
                     <Text size='2'>in message actions.</Text>
                 </Flex>
             </Flex>

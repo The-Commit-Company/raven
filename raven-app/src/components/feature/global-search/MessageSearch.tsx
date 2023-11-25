@@ -1,9 +1,8 @@
-import { SearchIcon } from '@chakra-ui/icons'
+import { Bookmark, BookmarkCheck, Search } from 'lucide-react'
 import { Avatar, Button, Center, chakra, FormControl, HStack, IconButton, Input, InputGroup, InputLeftElement, Spinner, Stack, TabPanel, Text, useToast } from '@chakra-ui/react'
 import { useFrappeGetCall, useFrappePostCall } from 'frappe-react-sdk'
 import { useContext, useState, useMemo, useEffect } from 'react'
 import { FormProvider, Controller, useForm } from 'react-hook-form'
-import { BiLockAlt, BiHash, BiGlobe } from 'react-icons/bi'
 import { useDebounce } from '../../../hooks/useDebounce'
 import { GetMessageSearchResult } from '../../../../../types/Search/Search'
 import { AlertBanner } from '../../layout/AlertBanner'
@@ -13,12 +12,12 @@ import { Sort } from '../sorting'
 import { useNavigate } from 'react-router-dom'
 import { MessageBox } from './MessageBox'
 import { VirtuosoRefContext } from '../../../utils/message/VirtuosoRefProvider'
-import { IoBookmark, IoBookmarkOutline } from 'react-icons/io5'
 import { scrollbarStyles } from '../../../styles'
 import { useGetUserRecords } from '@/hooks/useGetUserRecords'
 import { UserFields } from '@/utils/users/UserListProvider'
 import { ChannelListContext, ChannelListContextType, ChannelListItem } from '@/utils/channel/ChannelListProvider'
 import { useTheme } from '@/ThemeProvider'
+import { ChannelIcon } from '@/utils/layout/channelIcon'
 
 interface FilterInput {
     'from-user-filter': SelectOption[],
@@ -116,7 +115,7 @@ export const MessageSearch = ({ onToggleMyChannels, isOpenMyChannels, onToggleSa
         if (channels) {
             return channels.map((channel: ChannelListItem) => ({
                 value: channel.name,
-                label: <HStack>{channel.type === "Private" && <BiLockAlt /> || channel.type === "Public" && <BiHash /> || channel.type === "Open" && <BiGlobe />}<Text>{channel.channel_name}</Text></HStack>,
+                label: <HStack><ChannelIcon type={channel.type} /><Text>{channel.channel_name}</Text></HStack>,
                 is_archived: channel.is_archived
             }))
         } else {
@@ -182,7 +181,7 @@ export const MessageSearch = ({ onToggleMyChannels, isOpenMyChannels, onToggleSa
                 <InputGroup>
                     <InputLeftElement
                         pointerEvents='none'
-                        children={<SearchIcon color='gray.300' />} />
+                        children={<Search color='gray.300' />} />
                     <Input
                         autoFocus
                         onChange={handleChange}
@@ -239,7 +238,7 @@ export const MessageSearch = ({ onToggleMyChannels, isOpenMyChannels, onToggleSa
                                     render={({ field: { onChange, value } }) => (
                                         <IconButton
                                             aria-label="saved-filter"
-                                            icon={isSaved ? <IoBookmark /> : <IoBookmarkOutline />}
+                                            icon={isSaved ? <BookmarkCheck /> : <Bookmark />}
                                             borderRadius={3}
                                             size="sm"
                                             w="fit-content"

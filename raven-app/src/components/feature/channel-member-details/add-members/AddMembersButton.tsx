@@ -1,12 +1,11 @@
 import { AddChannelMembersModalContent } from "./AddChannelMemberModal"
-import { RiUserAddLine } from "react-icons/ri"
 import { ChannelListItem } from "@/utils/channel/ChannelListProvider"
-import { BiUserPlus } from "react-icons/bi"
 import { useState } from "react"
 import { Button, Dialog, IconButton } from "@radix-ui/themes"
 import { ButtonProps } from "@radix-ui/themes/dist/cjs/components/button"
 import { ChannelMembers } from "@/utils/channel/ChannelMembersProvider"
 import { DIALOG_CONTENT_CLASS } from "@/utils/layout/dialog"
+import { UserPlus } from 'lucide-react'
 
 interface AddMembersButtonProps extends ButtonProps {
     channelData: ChannelListItem,
@@ -27,11 +26,11 @@ export const AddMembersButton = ({ channelData, updateMembers, isIconButton = fa
 
             {isIconButton ? <Dialog.Trigger>
                 <IconButton variant='surface' color='gray' aria-label={"add members to channel"} {...props}>
-                    <RiUserAddLine />
+                    <UserPlus size='14' />
                 </IconButton>
             </Dialog.Trigger> : <Dialog.Trigger>
                 <Button variant="ghost" size='1' {...props}>
-                    <BiUserPlus fontSize={'1.1rem'} />Add members</Button>
+                    <UserPlus size='14' />Add members</Button>
             </Dialog.Trigger>}
 
             <Dialog.Content className={DIALOG_CONTENT_CLASS}>

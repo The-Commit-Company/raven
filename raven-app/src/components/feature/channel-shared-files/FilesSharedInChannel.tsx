@@ -1,9 +1,9 @@
-import { getFileExtensionIcon } from "../../../utils/layout/fileExtensionIcon";
+import { FileExtensionIcon } from "../../../utils/layout/FileExtensionIcon";
 import { useFrappeGetCall } from "frappe-react-sdk";
 import { useParams } from "react-router-dom";
 import { ErrorBanner } from "../../layout/AlertBanner";
 import { DateObjectToFormattedDateString, getFileExtension, getFileName } from "../../../utils/operations";
-import { BsDownload } from "react-icons/bs";
+import { Download } from "lucide-react";
 import { FileMessage } from "../../../../../types/Messaging/Message";
 import { ChannelMembers } from "@/utils/channel/ChannelMembersProvider";
 import { Box, Flex, IconButton, Link, Text } from "@radix-ui/themes";
@@ -39,10 +39,10 @@ export const FilesSharedInChannel = ({ channelMembers }: FilesSharedInChannelPro
                             <Box key={f.name} className={'p-2 rounded-md border border-[var(--gray-6)]'}>
                                 <Flex justify='between' align={'center'}>
                                     <Flex gap='3'>
-                                        <Box>
-                                            {f.message_type === 'File' && <div>{getFileExtensionIcon(getFileExtension(f.file))}</div>}
+                                        <Flex align='center' justify='center' className="h-8 w-8">
+                                            {f.message_type === 'File' && <FileExtensionIcon width='18px' fill='var(--gray-12)' ext={getFileExtension(f.file)} />}
                                             {f.message_type === 'Image' && <img src={f.file} alt='File preview' className={'h-8 w-8 rounded-md object-cover'} />}
-                                        </Box>
+                                        </Flex>
                                         <Flex direction='column' gap='0'>
                                             <Link size='1' href={f.file} target='_blank' aria-label='download file'>{getFileName(f.file)}</Link>
                                             <Text size='1' color='gray'>Shared by {channelMembers[f.owner]?.full_name} on {DateObjectToFormattedDateString(new Date(f.creation ?? ''))}</Text>
@@ -55,7 +55,7 @@ export const FilesSharedInChannel = ({ channelMembers }: FilesSharedInChannelPro
                                             size='1'
                                             color='gray'
                                             variant='ghost'>
-                                            <BsDownload fontSize={'0.7rem'} />
+                                            <Download size='16' />
                                         </IconButton>
                                     </Link>
                                 </Flex>

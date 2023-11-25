@@ -1,8 +1,8 @@
 import { EditMessageModal } from "./EditMessageModal"
 import { Dialog, IconButton, Tooltip } from '@radix-ui/themes'
-import { AiOutlineEdit } from "react-icons/ai"
 import { useState } from "react"
 import { DIALOG_CONTENT_CLASS } from "@/utils/layout/dialog"
+import { Edit } from "lucide-react"
 
 export const EditMessageButton = ({ messageID, text }: { messageID: string, text: string }) => {
 
@@ -21,7 +21,7 @@ export const EditMessageButton = ({ messageID, text }: { messageID: string, text
                         size='1'
                         color='gray'
                         aria-label='edit message'>
-                        <AiOutlineEdit fontSize={'0.88rem'} />
+                        <Edit size='14' />
                     </IconButton>
                 </Dialog.Trigger>
             </Tooltip>

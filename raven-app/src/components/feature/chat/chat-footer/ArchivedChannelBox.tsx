@@ -6,7 +6,7 @@ import { ChannelMembers } from "@/utils/channel/ChannelMembersProvider"
 import { Text, Box, HStack, Stack, useToast, Button } from "@chakra-ui/react"
 import { useFrappeUpdateDoc } from "frappe-react-sdk"
 import { useContext } from "react"
-import { BiHash } from "react-icons/bi"
+import { Hash } from "lucide-react"
 
 interface ArchivedChannelBoxProps {
     channelData: ChannelListItem,
@@ -53,7 +53,7 @@ export const ArchivedChannelBox = ({ channelData, channelMembers }: ArchivedChan
             <Stack border='1px' borderColor={'gray.500'} rounded='lg' bottom='2' boxShadow='base' w='calc(98vw - var(--sidebar-width))' bg={appearance === "light" ? "white" : "gray.800"} p={4}>
                 <ErrorBanner error={error} />
                 <HStack justify='center' align='center' pb={4}>
-                    <BiHash />
+                    <Hash />
                     <Text>{channelData.channel_name}</Text>
                 </HStack>
                 <HStack justify='center' align='center'>

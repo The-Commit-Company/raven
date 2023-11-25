@@ -1,7 +1,7 @@
 import { Text, Stack, IconButton, HStack, Image, Center, CircularProgress, CircularProgressLabel, } from '@chakra-ui/react'
-import { TbTrash } from 'react-icons/tb'
+import { Trash2 } from 'lucide-react'
 import { useGetFilePreviewUrl } from '../../../hooks/useGetFilePreviewUrl'
-import { getFileExtensionIcon } from '../../../utils/layout/fileExtensionIcon'
+import { FileExtensionIcon } from '../../../utils/layout/FileExtensionIcon'
 import { getFileExtension } from '../../../utils/operations'
 import { CustomFile } from './FileDrop'
 import { FileUploadProgress } from '../chat/ChatInput/FileInput/useFileUpload'
@@ -31,7 +31,7 @@ export const FileListItem = ({ file, removeFile, uploadProgress }: FileListItemP
     return (
         <HStack w='full' justify={'flex-start'} border={'2px'} borderColor={borderColor} bgColor={bgColor} p='2' rounded='md'>
             <Center maxW='50px'>
-                {previewURL ? <Image src={previewURL} alt='File preview' boxSize={'32px'} rounded='md' /> : <div>{getFileExtensionIcon(getFileExtension(file.name) ?? '')}</div>}
+                {previewURL ? <Image src={previewURL} alt='File preview' boxSize={'32px'} rounded='md' /> : <div>{FileExtensionIcon(getFileExtension(file.name) ?? '')}</div>}
             </Center>
             <HStack justify="space-between" width="calc(100% - 50px)">
                 <Stack spacing={0} w='full' whiteSpace="nowrap" overflow="hidden">
@@ -53,7 +53,7 @@ export const FileListItem = ({ file, removeFile, uploadProgress }: FileListItemP
                         size="sm"
                         title='Remove File'
                         variant="ghost"
-                        icon={<TbTrash />}
+                        icon={<Trash2 size='16' />}
                         aria-label="Remove File" />
                 }
             </HStack>

@@ -1,8 +1,8 @@
-import { VscTrash } from 'react-icons/vsc'
 import { DeleteMessageModal } from './DeleteMessageModal'
 import { useState } from 'react'
 import { AlertDialog, IconButton, Tooltip } from '@radix-ui/themes'
 import { DIALOG_CONTENT_CLASS } from '@/utils/layout/dialog'
+import { Trash2 } from 'lucide-react'
 
 export const DeleteMessageButton = ({ messageID }: { messageID: string }) => {
 
@@ -16,7 +16,7 @@ export const DeleteMessageButton = ({ messageID }: { messageID: string }) => {
             <Tooltip content='delete'>
                 <AlertDialog.Trigger>
                     <IconButton variant='soft' size='1' color='red' aria-label='delete message'>
-                        <VscTrash fontSize={'0.9rem'} />
+                        <Trash2 size='14' />
                     </IconButton>
                 </AlertDialog.Trigger>
             </Tooltip>

@@ -1,7 +1,7 @@
 import { Stack, useToast, Tooltip, Button, useDisclosure, Box } from "@chakra-ui/react"
 import { useFrappeGetCall, useFrappePostCall } from "frappe-react-sdk"
 import { useContext } from "react"
-import { HiOutlineSearch } from "react-icons/hi"
+import { Search } from "lucide-react"
 import { useNavigate } from "react-router-dom"
 import { TextMessage } from "../../../../../types/Messaging/Message"
 import { VirtuosoRefContext } from "../../../utils/message/VirtuosoRefProvider"
@@ -79,7 +79,7 @@ export const SavedMessages = () => {
                     <Button
                         size={"sm"}
                         aria-label="search"
-                        leftIcon={<HiOutlineSearch />}
+                        leftIcon={<Search size='16' />}
                         onClick={onCommandPaletteToggle}
                         fontWeight='light'>
                         Search

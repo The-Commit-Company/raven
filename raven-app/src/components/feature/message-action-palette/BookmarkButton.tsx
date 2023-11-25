@@ -1,9 +1,9 @@
 import { useFrappePostCall } from 'frappe-react-sdk'
-import { IoBookmark, IoBookmarkOutline } from 'react-icons/io5'
 import { Message } from '../../../../../types/Messaging/Message'
 import { UserContext } from '@/utils/auth/UserProvider'
 import { useContext } from 'react'
 import { IconButton, Tooltip } from '@radix-ui/themes'
+import { BookmarkPlus, BookmarkX } from 'lucide-react'
 
 interface BookmarkButtonProps {
     message: Message,
@@ -33,7 +33,7 @@ export const BookmarkButton = ({ message, updateMessages }: BookmarkButtonProps)
                 size='1'
                 color='gray'
                 onClick={() => handleLike(message.name, isSaved ? 'No' : 'Yes')}>
-                {isSaved ? <IoBookmark fontSize={'0.8rem'} /> : <IoBookmarkOutline fontSize={'0.8rem'} />}
+                {isSaved ? <BookmarkX size='14' color='red' /> : <BookmarkPlus size='14' />}
             </IconButton>
         </Tooltip>
     )

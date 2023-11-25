@@ -1,8 +1,6 @@
-import { EmailIcon } from "@chakra-ui/icons"
+import { Circle, Clock, Mail, MessageSquare } from "lucide-react"
 import { Text, Avatar, Divider, Drawer, DrawerBody, DrawerCloseButton, DrawerContent, DrawerHeader, DrawerOverlay, Stack, HStack, IconButton, Button, Icon } from "@chakra-ui/react"
 import { useFrappeGetCall, useFrappePostCall } from "frappe-react-sdk"
-import { BiMessage } from "react-icons/bi"
-import { BsFillCircleFill, BsCircle, BsClock } from "react-icons/bs"
 import { useNavigate } from "react-router-dom"
 import { DateObjectToTimeString } from "../../../utils/operations"
 import { useUserData } from "@/hooks/useUserData"
@@ -54,22 +52,22 @@ export const UserProfileDrawer = ({ isOpen, onClose, user }: UserProfileDrawerPr
                             <HStack justifyContent='space-between'>
                                 {user && <Text fontSize='xl' fontWeight='bold'>{user.full_name}</Text>}
                                 {user && (activeUsers?.message.includes(user.name) && !!!activeUsersError) ? <HStack spacing={1}>
-                                    <Icon as={BsFillCircleFill} color='green.500' h='10px' />
+                                    <Icon as={Circle} color='green.500' h='10px' />
                                     <Text fontWeight='normal'>Active</Text>
                                 </HStack> :
                                     <HStack spacing={1}>
-                                        <Icon as={BsCircle} h='10px' />
+                                        <Icon as={Circle} h='10px' />
                                         <Text fontWeight='normal'>Away</Text>
                                     </HStack>}
                             </HStack>
                             <HStack spacing={1}>
-                                <Icon as={BsClock} />
+                                <Icon as={Clock} />
                                 <Text fontWeight='normal' fontSize={15}>{DateObjectToTimeString(new Date())} local time</Text>
                             </HStack>
                         </Stack>
                         <Button variant='outline'
                             colorScheme='blue'
-                            leftIcon={<BiMessage />}
+                            leftIcon={<MessageSquare size='18' />}
                             onClick={() => {
                                 gotoDMChannel(user.name)
                                 onClose()
@@ -81,7 +79,7 @@ export const UserProfileDrawer = ({ isOpen, onClose, user }: UserProfileDrawerPr
                         <Stack spacing={4}>
                             <Text fontWeight='semibold'>Contact Information</Text>
                             <HStack>
-                                <IconButton aria-label='Email' icon={<EmailIcon />} cursor='initial' />
+                                <IconButton aria-label='Email' icon={<Mail size='18' />} cursor='initial' />
                                 <Stack spacing={0}>
                                     <Text fontSize='sm' fontWeight='medium'>Email Address</Text>
                                     {user && <Text fontSize='sm' color={textColor}>{user.name}</Text>}

@@ -1,6 +1,6 @@
-import { IoChatboxEllipsesOutline } from 'react-icons/io5'
 import { Message } from '../../../../../types/Messaging/Message'
 import { IconButton, Tooltip } from '@radix-ui/themes'
+import { Reply } from 'lucide-react'
 
 interface ReplyButtonProps {
     replyToMessage?: (message: Message) => void
@@ -21,7 +21,7 @@ export const ReplyButton = ({ replyToMessage, message }: ReplyButtonProps) => {
                 size='1'
                 color='gray'
                 aria-label='reply'>
-                <IoChatboxEllipsesOutline fontSize={'0.8rem'} />
+                <Reply size='14' />
             </IconButton>
         </Tooltip>
     )

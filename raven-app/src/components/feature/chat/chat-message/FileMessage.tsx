@@ -1,9 +1,9 @@
 import { Collapse, HStack, Icon, IconButton, Link, Stack, Text, useBoolean, Image } from "@chakra-ui/react"
-import { getFileExtensionIcon } from "../../../../utils/layout/fileExtensionIcon"
+import { FileExtensionIcon } from "../../../../utils/layout/FileExtensionIcon"
 import { FileMessage } from "../../../../../../types/Messaging/Message"
 import { useCallback } from "react"
-import { BsFillCaretDownFill, BsFillCaretRightFill } from "react-icons/bs"
 import { getFileExtension, getFileName } from "../../../../utils/operations"
+import { ChevronDown, ChevronRight } from "lucide-react"
 
 interface FileMessageProps extends Partial<FileMessage> {
     onFilePreviewModalOpen: ({ file, owner, creation, message_type }: Partial<FileMessage>) => void
@@ -26,7 +26,7 @@ export const FileMessageBlock = ({ file, owner, creation, message_type, onFilePr
         return (
             <HStack>
                 <div slot='start'>
-                    {getFileExtensionIcon(getFileExtension(file))}
+                    {<FileExtensionIcon ext={getFileExtension(file)} />}
                 </div>
                 {getFileExtension(file).toLowerCase() === 'pdf'
                     ?
@@ -48,7 +48,7 @@ export const FileMessageBlock = ({ file, owner, creation, message_type, onFilePr
                 <HStack spacing={1}>
                     {<Text fontSize={'sm'} color={'gray.500'}>{getFileName(file)}</Text>}
                     <IconButton aria-label={"view"} size='xs' onClick={toggle} variant={'unstyled'}
-                        icon={showImage ? <BsFillCaretDownFill fontSize={'0.6rem'} /> : <BsFillCaretRightFill fontSize={'0.6rem'} />} />
+                        icon={showImage ? <ChevronDown size='16' /> : <ChevronRight size='16' />} />
                 </HStack>
                 <Collapse in={showImage} animateOpacity>
                     <Image src={file} height='360px' rounded={'md'}

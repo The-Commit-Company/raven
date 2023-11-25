@@ -4,7 +4,7 @@ import { User } from "../../../../types/Core/User";
 import { Box, Button, Center } from "@chakra-ui/react";
 import { ErrorBanner } from "@/components/layout/AlertBanner";
 import { FullPageLoader } from "@/components/layout/Loaders";
-import { FaChevronRight } from "react-icons/fa";
+import { ChevronRight } from "lucide-react";
 
 
 export const UserListContext = createContext<{ users: UserFields[] }>({
@@ -30,7 +30,7 @@ export const UserListProvider = ({ children }: PropsWithChildren) => {
         return <Center px='4' mx='auto' w='50vw' h='100vh'>
             <ErrorBanner error={usersError} status="info">
                 <Box>
-                    <Button colorScheme='blue' size='xs' as={'a'} href={'/app/raven-user'} rightIcon={<FaChevronRight />}>View Raven Users</Button>
+                    <Button colorScheme='blue' size='xs' as={'a'} href={'/app/raven-user'} rightIcon={<ChevronRight />}>View Raven Users</Button>
                 </Box>
             </ErrorBanner>
         </Center>

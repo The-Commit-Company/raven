@@ -1,5 +1,5 @@
 import { Flex, Text, IconButton } from '@radix-ui/themes'
-import { BiChevronLeft, BiChevronRight } from 'react-icons/bi'
+import { ChevronLeft, ChevronRight } from 'lucide-react'
 
 interface Props {
     start: number,
@@ -29,7 +29,7 @@ export const PageSelector = ({ start, rowsPerPage, totalRows, gotoPreviousPage, 
                 onClick={gotoPreviousPage}
                 disabled={(start <= 1)}
             >
-                <BiChevronLeft />
+                <ChevronLeft size='18' />
             </IconButton>
 
             <Text size='1' weight='light' as='span'>
@@ -44,7 +44,7 @@ export const PageSelector = ({ start, rowsPerPage, totalRows, gotoPreviousPage, 
                 onClick={gotoNextPage}
                 disabled={(end === totalRows)}
             >
-                <BiChevronRight />
+                <ChevronRight size='18' />
             </IconButton>
         </Flex>
     )

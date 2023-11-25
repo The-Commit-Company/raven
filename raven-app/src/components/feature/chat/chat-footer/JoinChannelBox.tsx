@@ -2,7 +2,7 @@ import { ErrorBanner } from "@/components/layout/AlertBanner"
 import { ChannelListItem } from "@/utils/channel/ChannelListProvider"
 import { Text, Box, HStack, Stack, Center, ButtonGroup, Button, useToast, useDisclosure } from "@chakra-ui/react"
 import { useFrappeCreateDoc } from "frappe-react-sdk"
-import { BiHash } from "react-icons/bi"
+import { Hash } from "lucide-react"
 import { ViewChannelDetailsModalContent } from "../../channels/ViewChannelDetailsModal"
 import { useContext } from "react"
 import { ActiveUsersContext } from "@/utils/users/ActiveUsersProvider"
@@ -50,7 +50,7 @@ export const JoinChannelBox = ({ channelData, channelMembers, user }: JoinChanne
         <Box>
             <Stack border='1px' borderColor={'gray.500'} rounded='lg' bottom='2' boxShadow='base' w='calc(98vw - var(--sidebar-width))' bg={appearance === "light" ? "white" : "gray.800"} p={4}>
                 <ErrorBanner error={error} />
-                <HStack justify='center' align='center' pb={4}><BiHash />
+                <HStack justify='center' align='center' pb={4}><Hash size='18' />
                     <Text>{channelData?.channel_name}</Text>
                 </HStack>
                 <Center>

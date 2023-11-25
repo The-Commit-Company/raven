@@ -1,12 +1,12 @@
 import React, { ReactNode, useState } from 'react'
 import { NavLink } from 'react-router-dom'
-import { BsFillCaretDownFill, BsFillCaretRightFill } from 'react-icons/bs';
 import { Flex, Box, IconButton, Text, Badge } from '@radix-ui/themes';
 import { FlexProps } from '@radix-ui/themes/dist/cjs/components/flex';
 import { TextProps } from '@radix-ui/themes/dist/cjs/components/text';
 import { BoxProps } from '@radix-ui/themes/dist/cjs/components/box';
 import { IconButtonProps } from '@radix-ui/themes/dist/cjs/components/icon-button';
 import { BadgeProps } from '@radix-ui/themes/dist/cjs/components/badge';
+import { ChevronDown, ChevronRight } from 'lucide-react';
 
 interface SidebarGroupProps extends FlexProps {
     children: ReactNode;
@@ -158,7 +158,7 @@ export const SidebarViewMoreButton = ({ onClick, ...props }: SidebarViewMoreButt
             }}
             {...props}
         >
-            {isViewMore ? <BsFillCaretRightFill size='14' /> : <BsFillCaretDownFill size='14' />}
+            {isViewMore ? <ChevronRight size='18' /> : <ChevronDown size='18' />}
         </IconButton>
     )
 }
