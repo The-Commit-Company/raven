@@ -27,7 +27,7 @@ export const AddMembersButton = ({ channelData, updateMembers, isIconButton = fa
         <Dialog.Root open={open} onOpenChange={setOpen}>
 
             {isIconButton ? <Dialog.Trigger>
-                <IconButton aria-label={"add members to channel"} {...props}>
+                <IconButton variant='surface' color='gray' aria-label={"add members to channel"} {...props}>
                     <RiUserAddLine />
                 </IconButton>
             </Dialog.Trigger> : <Dialog.Trigger>

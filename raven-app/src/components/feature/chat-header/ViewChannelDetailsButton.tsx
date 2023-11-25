@@ -28,7 +28,7 @@ export const ViewChannelDetailsButton = ({ channelData, channelMembers, updateMe
         <Dialog.Root open={open} onOpenChange={setOpen}>
             <Tooltip content='view members/ channel details'>
                 <Dialog.Trigger>
-                    <Button className={'pr-2 pl-1 w-fit'} variant='surface'>
+                    <Button className={'pr-2 pl-1 w-fit'} variant='surface' color='gray'>
                         {Object.keys(channelMembers).length > 0 ? <div className={'flex -space-x-2 rtl:space-x-reverse'}>
                             {Object.entries(channelMembers).map(([name, member], index) => {
                                 const isActive = activeUsers.includes(name)

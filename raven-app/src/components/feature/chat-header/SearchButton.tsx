@@ -17,8 +17,9 @@ export const SearchButton = () => {
             <Tooltip content='search'>
                 <Dialog.Trigger>
                     <Button
+                        color='gray'
                         size='2'
-                        variant='outline'
+                        variant='soft'
                         aria-label="search">
                         <HiOutlineSearch />
                         Search

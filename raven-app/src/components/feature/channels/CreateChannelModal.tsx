@@ -6,7 +6,6 @@ import { BiGlobe, BiHash, BiLockAlt } from 'react-icons/bi'
 import { useNavigate } from 'react-router-dom'
 import { ErrorBanner } from '../../layout/AlertBanner'
 import { Box, Button, Dialog, Flex, IconButton, RadioGroup, Text, TextArea, TextField } from '@radix-ui/themes'
-import { useTheme } from '@/ThemeProvider'
 import { FiPlus } from 'react-icons/fi'
 import { ErrorText, HelperText, Label } from '@/components/common/Form'
 import { Loader } from '@/components/common/Loader'
@@ -167,13 +166,13 @@ export const CreateChannelButton = ({ updateChannelList }: { updateChannelList: 
                         <Box>
                             <Label htmlFor='channel_description'>Description <Text as='span' weight='light'>(optional)</Text></Label>
                             <TextArea
-                                maxLength={200}
+                                maxLength={140}
                                 id='channel_description'
                                 placeholder='Great wine and food. What could go wrong?'
                                 {...register('channel_description', {
                                     maxLength: {
-                                        value: 200,
-                                        message: "Channel description cannot be more than 200 characters."
+                                        value: 140,
+                                        message: "Channel description cannot be more than 140 characters."
                                     }
                                 })}
                                 aria-invalid={errors.channel_description ? 'true' : 'false'}

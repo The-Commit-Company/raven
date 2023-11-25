@@ -1,11 +1,9 @@
-import { PropsWithChildren } from "react";
 import { SidebarHeader } from "./SidebarHeader";
 import { SidebarFooter } from "./SidebarFooter";
 import { SidebarBody } from "./SidebarBody";
 import { Box, Flex, Separator } from "@radix-ui/themes";
 
 export const Sidebar = () => {
-
     return (
         <Flex justify='between' direction='row' gap='2'>
             <Flex direction='column' gap='2' width='100%'>

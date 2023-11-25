@@ -1,7 +1,7 @@
 import { useColorModeValue } from '@/ThemeProvider'
 import { ChannelListItem } from '@/utils/channel/ChannelListProvider'
-import { getChannelIcon } from '@/utils/layout/channelIcon'
-import { HStack, Icon, Stack, StackDivider, Text } from '@chakra-ui/react'
+import { ChannelIcon } from '@/utils/layout/channelIcon'
+import { HStack, Stack, StackDivider, Text } from '@chakra-ui/react'
 import { ReactRendererOptions } from '@tiptap/react'
 import {
     forwardRef, useEffect, useImperativeHandle,
@@ -99,9 +99,8 @@ const MentionItem = ({ item, index, selectItem, selectedIndex, itemsLength }: { 
         bgColor={index === selectedIndex ? selectedBgColor : backgroundColor}
         color={index === selectedIndex ? selectedColor : textColor}
         key={index}
-        onClick={() => selectItem(index)}
-    >
-        <Icon as={getChannelIcon(item.type)} />
+        onClick={() => selectItem(index)}>
+        <ChannelIcon type={item.type} className={'mt-0.5'} />
         <Text as='span' fontSize='sm'>{item.channel_name}</Text>
     </HStack>
 }

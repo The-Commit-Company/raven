@@ -53,16 +53,14 @@ export const RemoveChannelMemberModal = ({ onClose, user_id, channelData, channe
         })
     }
 
-    const type = channelData?.type
-
     return (
         <>
             <AlertDialog.Title>
-                <Text>
-                    Remove {user_id && channelMembers[user_id]?.full_name} from
-                    {ChannelIcon({ type, size: '1.5rem' })}
-                    {channelData?.channel_name}?
-                </Text>
+                <Flex gap='1'>
+                    <Text>Remove {user_id && channelMembers[user_id]?.full_name} from</Text>
+                    <ChannelIcon type={channelData.type} className={'mt-1'} />
+                    <Text>{channelData?.channel_name}?</Text>
+                </Flex>
             </AlertDialog.Title>
 
             <Flex direction={'column'} gap='2'>
