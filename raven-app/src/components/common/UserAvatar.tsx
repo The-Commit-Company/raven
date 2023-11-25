@@ -1,7 +1,6 @@
-import avatar from '@/assets/male-avatar.svg'
 import { useInView } from 'react-intersection-observer'
 import { Skeleton } from './Skeleton'
-import { Avatar, Responsive } from '@radix-ui/themes'
+import { Avatar } from '@radix-ui/themes'
 import { AvatarProps } from '@radix-ui/themes/dist/cjs/components/avatar'
 import { BoxProps } from '@radix-ui/themes/dist/cjs/components/box'
 
@@ -42,7 +41,7 @@ export const UserAvatar = ({ src, alt, size = '1', radius = 'medium', isActive, 
     const { ref, inView } = useInView(options)
     return <span ref={ref} className="relative inline-block">
         {inView ?
-            <Avatar src={src ? src : avatar} alt={alt} loading='lazy' fallback={fallback ?? getInitials(alt)} size={size} radius={radius} {...props} />
+            <Avatar src={src} alt={alt} loading='lazy' fallback={fallback ?? getInitials(alt)} size={size} radius={radius} {...props} />
             :
 
             <Skeleton className={radixRadiusToTailwind(radius)} width={skeletonSize} height={skeletonSize} />

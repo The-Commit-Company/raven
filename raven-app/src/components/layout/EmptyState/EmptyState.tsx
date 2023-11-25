@@ -54,7 +54,7 @@ const EmptyStateForChannel = ({ channelData, channelMembers, updateMembers }: Em
             </Flex>
             {channelData?.is_archived == 0 && channelMembers[currentUser] && <Flex gap='4' className={'z-1'}>
                 <EditDescriptionButton channelData={channelData} />
-                {channelData?.type !== 'Open' && <AddMembersButton channelData={channelData} updateMembers={updateMembers} />}
+                {channelData?.type !== 'Open' && <AddMembersButton channelData={channelData} updateMembers={updateMembers} channelMembers={channelMembers} />}
             </Flex>}
         </Flex>
     )

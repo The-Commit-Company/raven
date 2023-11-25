@@ -6,14 +6,16 @@ import { useState } from "react"
 import { useModalContentStyle } from "@/hooks/useModalContentStyle"
 import { Button, Dialog, IconButton } from "@radix-ui/themes"
 import { ButtonProps } from "@radix-ui/themes/dist/cjs/components/button"
+import { ChannelMembers } from "@/utils/channel/ChannelMembersProvider"
 
 interface AddMembersButtonProps extends ButtonProps {
     channelData: ChannelListItem,
     updateMembers: () => void,
-    isIconButton?: boolean
+    isIconButton?: boolean,
+    channelMembers?: ChannelMembers
 }
 
-export const AddMembersButton = ({ channelData, updateMembers, isIconButton = false, ...props }: AddMembersButtonProps) => {
+export const AddMembersButton = ({ channelData, updateMembers, isIconButton = false, channelMembers, ...props }: AddMembersButtonProps) => {
 
     const [open, setOpen] = useState(false)
     const onClose = () => {
@@ -36,6 +38,7 @@ export const AddMembersButton = ({ channelData, updateMembers, isIconButton = fa
             <Dialog.Content className={contentClass}>
                 <AddChannelMembersModalContent
                     onClose={onClose}
+                    channelMembers={channelMembers}
                     channelID={channelData.name}
                     channel_name={channelData.channel_name}
                     type={channelData.type}
