@@ -24,7 +24,7 @@ export const JoinChannelBox = ({ channelData, channelMembers, user }: JoinChanne
     const { createDoc, error, loading } = useFrappeCreateDoc()
     const toast = useToast()
 
-    const joinChannel = () => {
+    const joinChannel = async () => {
         return createDoc('Raven Channel Member', {
             channel_id: channelData?.name,
             user_id: user

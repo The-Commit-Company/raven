@@ -9,7 +9,7 @@ import { Box, Button, Dialog, Flex, IconButton, RadioGroup, Text, TextArea, Text
 import { FiPlus } from 'react-icons/fi'
 import { ErrorText, HelperText, Label } from '@/components/common/Form'
 import { Loader } from '@/components/common/Loader'
-import { useModalContentStyle } from '@/hooks/useModalContentStyle'
+import { DIALOG_CONTENT_CLASS } from '@/utils/layout/dialog'
 interface ChannelCreationForm {
     channel_name: string,
     channel_description: string,
@@ -98,15 +98,13 @@ export const CreateChannelButton = ({ updateChannelList }: { updateChannelList: 
         }
     }, [channelType])
 
-    const contentClass = useModalContentStyle()
-
     return <Dialog.Root open={isOpen} onOpenChange={onOpenChange}>
         <Dialog.Trigger>
             <IconButton variant='ghost' size='1' color='gray' aria-label='Create Channel' className='h-[18px]' title='Create Channel'>
                 <FiPlus width="18" height="18" className='text-[--gray-12]' />
             </IconButton>
         </Dialog.Trigger>
-        <Dialog.Content className={contentClass}>
+        <Dialog.Content className={DIALOG_CONTENT_CLASS}>
             <Dialog.Title>
                 {header}
             </Dialog.Title>

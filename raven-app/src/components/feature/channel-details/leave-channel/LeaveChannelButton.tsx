@@ -1,8 +1,8 @@
 import { ChannelListItem } from '@/utils/channel/ChannelListProvider'
 import { LeaveChannelModal } from './LeaveChannelModal'
 import { useState } from 'react'
-import { useModalContentStyle } from '@/hooks/useModalContentStyle'
 import { AlertDialog, Button } from '@radix-ui/themes'
+import { DIALOG_CONTENT_CLASS } from '@/utils/layout/dialog'
 
 interface LeaveChannelButtonProps {
     channelData: ChannelListItem,
@@ -15,7 +15,6 @@ export const LeaveChannelButton = ({ channelData, onClose: onParentClose }: Leav
     const onClose = () => {
         setOpen(false)
     }
-    const contentClass = useModalContentStyle()
 
     return (
         <AlertDialog.Root open={open} onOpenChange={setOpen}>
@@ -24,7 +23,7 @@ export const LeaveChannelButton = ({ channelData, onClose: onParentClose }: Leav
                     Leave channel
                 </Button>
             </AlertDialog.Trigger>
-            <AlertDialog.Content className={contentClass}>
+            <AlertDialog.Content className={DIALOG_CONTENT_CLASS}>
                 <LeaveChannelModal
                     onClose={onClose}
                     closeDetailsModal={onParentClose}

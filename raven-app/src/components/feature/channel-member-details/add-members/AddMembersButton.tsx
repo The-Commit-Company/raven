@@ -3,10 +3,10 @@ import { RiUserAddLine } from "react-icons/ri"
 import { ChannelListItem } from "@/utils/channel/ChannelListProvider"
 import { BiUserPlus } from "react-icons/bi"
 import { useState } from "react"
-import { useModalContentStyle } from "@/hooks/useModalContentStyle"
 import { Button, Dialog, IconButton } from "@radix-ui/themes"
 import { ButtonProps } from "@radix-ui/themes/dist/cjs/components/button"
 import { ChannelMembers } from "@/utils/channel/ChannelMembersProvider"
+import { DIALOG_CONTENT_CLASS } from "@/utils/layout/dialog"
 
 interface AddMembersButtonProps extends ButtonProps {
     channelData: ChannelListItem,
@@ -21,7 +21,6 @@ export const AddMembersButton = ({ channelData, updateMembers, isIconButton = fa
     const onClose = () => {
         setOpen(false)
     }
-    const contentClass = useModalContentStyle()
 
     return (
         <Dialog.Root open={open} onOpenChange={setOpen}>
@@ -35,7 +34,7 @@ export const AddMembersButton = ({ channelData, updateMembers, isIconButton = fa
                     <BiUserPlus fontSize={'1.1rem'} />Add members</Button>
             </Dialog.Trigger>}
 
-            <Dialog.Content className={contentClass}>
+            <Dialog.Content className={DIALOG_CONTENT_CLASS}>
                 <AddChannelMembersModalContent
                     onClose={onClose}
                     channelMembers={channelMembers}

@@ -14,14 +14,13 @@ export const ChatSpace = () => {
 
     // only if channelID is present render ChatSpaceArea component'
     const { channelID } = useParams<{ channelID: string }>()
+    const className = 'bg-white dark:from-[var(--accent-1)] dark:to-95% dark:to-[var(--accent-2)] dark:bg-gradient-to-t'
 
-    if (channelID) {
-        return <ChatSpaceArea channelID={channelID} />
-    }
-
-    return <Box p='2'><ErrorCallout>
-        No channel found
-    </ErrorCallout>
+    return <Box className={className}>
+        {channelID ? <ChatSpaceArea channelID={channelID} /> : <Box p='2'><ErrorCallout>
+            No channel found
+        </ErrorCallout>
+        </Box>}
     </Box>
 
 }

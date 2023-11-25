@@ -9,7 +9,7 @@
 
 .tiptap.ProseMirror {
     min-height: 60px;
-  max-height: 150px;
+    max-height: 150px;
     overflow: auto;
     padding: var(--space-3);
     border-top-left-radius: var(--radius-4);

@@ -25,8 +25,7 @@ import html from 'highlight.js/lib/languages/xml'
 import json from 'highlight.js/lib/languages/json'
 import python from 'highlight.js/lib/languages/python'
 import { Plugin } from 'prosemirror-state'
-import { useColorModeValue } from '@/ThemeProvider'
-import { Box, Card, Inset } from '@radix-ui/themes'
+import { Card, Inset } from '@radix-ui/themes'
 const lowlight = createLowlight(common)
 
 lowlight.register('html', html)
@@ -398,20 +397,13 @@ export const Tiptap = ({ slotAfter, slotBefore, fileProps, onMessageSend, messag
         KeyboardHandler
     ]
 
-    const { cardBorderColor, bgColor } = useColorModeValue({
-        cardBorderColor: 'gray.200',
-        bgColor: 'gray.50',
-    }, {
-        cardBorderColor: 'gray.700',
-        bgColor: 'gray.800'
-    })
-
     return (
-        <Card variant="classic">
+        <Card variant='surface'>
             <Inset clip='border-box'>
                 <EditorProvider
                     extensions={extensions}
                     content={defaultText}
+                    autofocus
                     slotAfter={slotAfter}
                     slotBefore={slotBefore}
                 >

@@ -13,8 +13,8 @@ import { UsersTable } from "./UsersTable"
 import { UserListContext } from "@/utils/users/UserListProvider"
 import { Button, Dialog, Flex, Text, TextField } from "@radix-ui/themes"
 import { Loader } from "@/components/common/Loader"
-import { useModalContentStyle } from "@/hooks/useModalContentStyle"
 import { BiSearch } from "react-icons/bi"
+import { DIALOG_CONTENT_CLASS } from "@/utils/layout/dialog"
 
 export const AddRavenUsers = ({ isOpen, onOpenChange }: any) => {
 
@@ -89,10 +89,8 @@ export const AddRavenUsersModal = ({ onClose }: { onClose: VoidFunction }) => {
         }
     }
 
-    const contentClass = useModalContentStyle('min-w-[64rem]')
-
     return (
-        <Dialog.Content className={contentClass}>
+        <Dialog.Content className={`${DIALOG_CONTENT_CLASS} min-w-[64rem]`}>
             <Dialog.Title>Add users to Raven</Dialog.Title>
 
             <Flex direction='column' gap='4' pt='4'>

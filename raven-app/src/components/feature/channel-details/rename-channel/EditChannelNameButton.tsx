@@ -4,7 +4,7 @@ import { Dialog, IconButton } from '@radix-ui/themes'
 import { Pencil2Icon } from '@radix-ui/react-icons'
 import { IconButtonProps } from '@radix-ui/themes/dist/cjs/components/icon-button'
 import { useState } from "react"
-import { useModalContentStyle } from "@/hooks/useModalContentStyle"
+import { DIALOG_CONTENT_CLASS } from '@/utils/layout/dialog'
 
 interface EditChannelNameButtonProps extends IconButtonProps {
     channelID: string,
@@ -20,8 +20,6 @@ export const EditChannelNameButton = ({ channelID, channel_name, channelType, ..
         setOpen(false)
     }
 
-    const contentClass = useModalContentStyle()
-
     return (
         <Dialog.Root open={open} onOpenChange={setOpen}>
             <Dialog.Trigger>
@@ -34,7 +32,7 @@ export const EditChannelNameButton = ({ channelID, channel_name, channelType, ..
                     <Pencil2Icon />
                 </IconButton>
             </Dialog.Trigger>
-            <Dialog.Content className={contentClass}>
+            <Dialog.Content className={DIALOG_CONTENT_CLASS}>
                 <RenameChannelModalContent
                     channelID={channelID}
                     channelName={channel_name}

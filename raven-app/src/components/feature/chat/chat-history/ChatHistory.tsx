@@ -11,9 +11,7 @@ import { ModalTypes, useModalManager } from "../../../../hooks/useModalManager";
 import { FilePreviewModal } from "../../file-preview/FilePreviewModal";
 import { Virtuoso } from 'react-virtuoso';
 import { VirtuosoRefContext } from "../../../../utils/message/VirtuosoRefProvider";
-import { scrollbarStyles } from "../../../../styles";
 import { ChannelListItem, DMChannelListItem } from "@/utils/channel/ChannelListProvider";
-import { useTheme } from "@/ThemeProvider";
 
 interface ChatHistoryProps {
     parsedMessages: MessagesWithDate,
@@ -22,8 +20,6 @@ interface ChatHistoryProps {
 }
 
 export const ChatHistory = ({ parsedMessages, replyToMessage, channelData }: ChatHistoryProps) => {
-
-    const { appearance } = useTheme()
 
     const { virtuosoRef } = useContext(VirtuosoRefContext)
 
@@ -67,7 +63,7 @@ export const ChatHistory = ({ parsedMessages, replyToMessage, channelData }: Cha
     }
 
     return (
-        <Box ref={boxRef} h='100%' overflowY={'scroll'} sx={scrollbarStyles(appearance)}>
+        <Box ref={boxRef} h='100%' overflowY={'scroll'}>
             <Virtuoso
                 customScrollParent={boxRef.current ?? undefined}
                 totalCount={parsedMessages.length}

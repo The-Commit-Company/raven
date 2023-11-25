@@ -5,16 +5,13 @@ import { AddRavenUsers } from '@/components/feature/raven-users/AddRavenUsers'
 import { DropdownMenu, Flex, IconButton, Link, Separator, Text } from '@radix-ui/themes'
 import { BsThreeDots } from 'react-icons/bs'
 import { UserAvatar } from '@/components/common/UserAvatar'
-import { useTheme } from '@/ThemeProvider'
 
 export const SidebarFooter = () => {
 
     const userData = useUserData()
     const { logout } = useContext(UserContext)
 
-    const { appearance } = useTheme()
-
-    const sidebarBgColor = appearance === 'light' ? 'bg-[var(--slate-2)]' : 'bg-[var(--color-background)]'
+    const sidebarBgColor = 'bg-[var(--slate-2)] dark:bg-[var(--color-background)]'
 
     const [isAddUserModalOpen, setIsAddUserModalOpen] = useState(false)
 

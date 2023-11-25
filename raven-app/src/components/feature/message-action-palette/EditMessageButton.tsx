@@ -2,7 +2,7 @@ import { EditMessageModal } from "./EditMessageModal"
 import { Dialog, IconButton, Tooltip } from '@radix-ui/themes'
 import { AiOutlineEdit } from "react-icons/ai"
 import { useState } from "react"
-import { useModalContentStyle } from "@/hooks/useModalContentStyle"
+import { DIALOG_CONTENT_CLASS } from "@/utils/layout/dialog"
 
 export const EditMessageButton = ({ messageID, text }: { messageID: string, text: string }) => {
 
@@ -11,8 +11,6 @@ export const EditMessageButton = ({ messageID, text }: { messageID: string, text
     const onClose = () => {
         setOpen(false)
     }
-
-    const contentClass = useModalContentStyle()
 
     return (
         <Dialog.Root open={open} onOpenChange={setOpen}>
@@ -27,7 +25,7 @@ export const EditMessageButton = ({ messageID, text }: { messageID: string, text
                     </IconButton>
                 </Dialog.Trigger>
             </Tooltip>
-            <Dialog.Content className={contentClass}>
+            <Dialog.Content className={DIALOG_CONTENT_CLASS}>
                 <EditMessageModal
                     onClose={onClose}
                     channelMessageID={messageID}

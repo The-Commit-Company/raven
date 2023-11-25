@@ -1,8 +1,8 @@
 import { useState } from 'react'
 import { BsEmojiSmile } from 'react-icons/bs'
 import { EmojiPicker } from '../../common/EmojiPicker/EmojiPicker'
-import { useModalContentStyle } from '@/hooks/useModalContentStyle'
 import { Box, Flex, IconButton, Popover, Portal, Tooltip } from '@radix-ui/themes'
+import { DIALOG_CONTENT_CLASS } from '@/utils/layout/dialog'
 
 interface EmojiPickerButtonProps {
     saveReaction: (emoji: string) => void
@@ -15,8 +15,6 @@ export const EmojiPickerButton = ({ saveReaction }: EmojiPickerButtonProps) => {
     const onClose = () => {
         setOpen(false)
     }
-
-    const contentClass = useModalContentStyle()
 
     const onEmojiClick = (emoji: string) => {
         saveReaction(emoji)
@@ -39,7 +37,7 @@ export const EmojiPickerButton = ({ saveReaction }: EmojiPickerButtonProps) => {
                 </Tooltip>
                 <Portal>
                     <Box className={'z-10'}>
-                        <Popover.Content className={`${contentClass} p-0`}>
+                        <Popover.Content className={`${DIALOG_CONTENT_CLASS} p-0`}>
                             <EmojiPicker onSelect={onEmojiClick} />
                         </Popover.Content>
                     </Box>

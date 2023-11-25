@@ -2,8 +2,8 @@ import { ChannelListItem } from '@/utils/channel/ChannelListProvider'
 import { BiHash, BiLockAlt } from 'react-icons/bi'
 import { ChangeChannelTypeModal } from './ChangeChannelTypeModal'
 import { useState } from 'react'
-import { useModalContentStyle } from '@/hooks/useModalContentStyle'
 import { Button, Dialog } from '@radix-ui/themes'
+import { DIALOG_CONTENT_CLASS } from '@/utils/layout/dialog'
 interface ChangeChannelTypeButtonProps {
     channelData: ChannelListItem
 }
@@ -14,7 +14,6 @@ export const ChangeChannelTypeButton = ({ channelData }: ChangeChannelTypeButton
     const onClose = () => {
         setOpen(false)
     }
-    const contentClass = useModalContentStyle()
 
     return (
         <Dialog.Root open={open} onOpenChange={setOpen}>
@@ -24,7 +23,7 @@ export const ChangeChannelTypeButton = ({ channelData }: ChangeChannelTypeButton
                     Change to a {channelData.type === 'Public' ? 'private' : 'public'} channel
                 </Button>
             </Dialog.Trigger>
-            <Dialog.Content className={contentClass}>
+            <Dialog.Content className={DIALOG_CONTENT_CLASS}>
                 <ChangeChannelTypeModal
                     onClose={onClose}
                     channelData={channelData} />

@@ -3,7 +3,7 @@ import { DeleteChannelModal } from './DeleteChannelModal'
 import { BsTrash } from 'react-icons/bs'
 import { useState } from 'react'
 import { AlertDialog, Button } from '@radix-ui/themes'
-import { useModalContentStyle } from '@/hooks/useModalContentStyle'
+import { DIALOG_CONTENT_CLASS } from '@/utils/layout/dialog'
 
 interface DeleteChannelButtonProps {
     onClose: () => void,
@@ -16,7 +16,6 @@ export const DeleteChannelButton = ({ onClose: onCloseParent, channelData }: Del
     const onClose = () => {
         setOpen(false)
     }
-    const contentClass = useModalContentStyle()
 
     return (
         <AlertDialog.Root open={open} onOpenChange={setOpen}>
@@ -26,7 +25,7 @@ export const DeleteChannelButton = ({ onClose: onCloseParent, channelData }: Del
                     Delete channel
                 </Button>
             </AlertDialog.Trigger>
-            <AlertDialog.Content className={contentClass}>
+            <AlertDialog.Content className={DIALOG_CONTENT_CLASS}>
                 <DeleteChannelModal
                     onClose={onClose}
                     onCloseParent={onCloseParent}

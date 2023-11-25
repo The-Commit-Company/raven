@@ -20,7 +20,7 @@ export const ArchivedChannelBox = ({ channelData, channelMembers }: ArchivedChan
     const { updateDoc, error, loading } = useFrappeUpdateDoc()
     const toast = useToast()
 
-    const unArchiveChannel = () => {
+    const unArchiveChannel = async () => {
         return updateDoc('Raven Channel', channelData.name, {
             is_archived: 0
         }).then(() => {

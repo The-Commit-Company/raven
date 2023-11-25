@@ -1,8 +1,8 @@
 import { VscTrash } from 'react-icons/vsc'
 import { DeleteMessageModal } from './DeleteMessageModal'
 import { useState } from 'react'
-import { useModalContentStyle } from '@/hooks/useModalContentStyle'
 import { AlertDialog, IconButton, Tooltip } from '@radix-ui/themes'
+import { DIALOG_CONTENT_CLASS } from '@/utils/layout/dialog'
 
 export const DeleteMessageButton = ({ messageID }: { messageID: string }) => {
 
@@ -10,7 +10,6 @@ export const DeleteMessageButton = ({ messageID }: { messageID: string }) => {
     const onClose = () => {
         setOpen(false)
     }
-    const contentClass = useModalContentStyle()
 
     return (
         <AlertDialog.Root open={open} onOpenChange={setOpen}>
@@ -21,7 +20,7 @@ export const DeleteMessageButton = ({ messageID }: { messageID: string }) => {
                     </IconButton>
                 </AlertDialog.Trigger>
             </Tooltip>
-            <AlertDialog.Content className={contentClass}>
+            <AlertDialog.Content className={DIALOG_CONTENT_CLASS}>
                 <DeleteMessageModal
                     onClose={onClose}
                     channelMessageID={messageID}

@@ -2,8 +2,8 @@ import { BsArchive } from "react-icons/bs";
 import { ArchiveChannelModal } from "./ArchiveChannelModal";
 import { ChannelListItem } from "@/utils/channel/ChannelListProvider";
 import { useState } from "react";
-import { useModalContentStyle } from "@/hooks/useModalContentStyle";
 import { AlertDialog, Button } from "@radix-ui/themes";
+import { DIALOG_CONTENT_CLASS } from "@/utils/layout/dialog";
 
 interface ArchiveChannelButtonProps {
     onClose: () => void,
@@ -16,7 +16,6 @@ export const ArchiveChannelButton = ({ onClose: onCloseParent, channelData }: Ar
     const onClose = () => {
         setOpen(false)
     }
-    const contentClass = useModalContentStyle()
 
     return (
         <AlertDialog.Root open={open} onOpenChange={setOpen}>
@@ -26,7 +25,7 @@ export const ArchiveChannelButton = ({ onClose: onCloseParent, channelData }: Ar
                     Archive channel
                 </Button>
             </AlertDialog.Trigger>
-            <AlertDialog.Content className={contentClass}>
+            <AlertDialog.Content className={DIALOG_CONTENT_CLASS}>
                 <ArchiveChannelModal
                     onClose={onCloseParent}
                     onCloseViewDetails={onClose}

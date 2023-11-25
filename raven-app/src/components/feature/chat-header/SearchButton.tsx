@@ -1,8 +1,8 @@
 import { HiOutlineSearch } from 'react-icons/hi'
 import { CommandPalette } from '../command-palette'
 import { useState } from 'react'
-import { useModalContentStyle } from '@/hooks/useModalContentStyle'
 import { Button, Dialog, Tooltip } from '@radix-ui/themes'
+import { DIALOG_CONTENT_CLASS } from '@/utils/layout/dialog'
 
 export const SearchButton = () => {
 
@@ -10,7 +10,6 @@ export const SearchButton = () => {
     const onClose = () => {
         setOpen(false)
     }
-    const contentClass = useModalContentStyle()
 
     return (
         <Dialog.Root open={open} onOpenChange={setOpen}>
@@ -26,7 +25,7 @@ export const SearchButton = () => {
                     </Button>
                 </Dialog.Trigger>
             </Tooltip>
-            <Dialog.Content className={contentClass}>
+            <Dialog.Content className={DIALOG_CONTENT_CLASS}>
                 {/* <CommandPalette
                     onClose={onClose}
                     onToggle={onCommandPaletteToggle}

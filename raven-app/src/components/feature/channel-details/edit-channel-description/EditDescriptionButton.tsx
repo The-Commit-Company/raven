@@ -2,8 +2,8 @@ import { ChannelListItem } from '@/utils/channel/ChannelListProvider'
 import { Button, Dialog } from '@radix-ui/themes'
 import { EditChannelDescriptionModalContent } from './EditChannelDescriptionModal'
 import { useState } from 'react'
-import { useModalContentStyle } from '@/hooks/useModalContentStyle'
 import { ButtonProps } from '@radix-ui/themes/dist/cjs/components/button'
+import { DIALOG_CONTENT_CLASS } from '@/utils/layout/dialog'
 
 interface EditDescriptionButtonProps extends ButtonProps {
     channelData: ChannelListItem,
@@ -16,7 +16,6 @@ export const EditDescriptionButton = ({ channelData, is_in_box }: EditDescriptio
     const onClose = () => {
         setOpen(false)
     }
-    const contentClass = useModalContentStyle()
     const button_text = channelData && channelData.channel_description && channelData.channel_description.length > 0 ? 'Edit' : 'Add'
 
     return (
@@ -26,7 +25,7 @@ export const EditDescriptionButton = ({ channelData, is_in_box }: EditDescriptio
                     {button_text} {is_in_box ? '' : 'description'}
                 </Button>
             </Dialog.Trigger>
-            <Dialog.Content className={contentClass}>
+            <Dialog.Content className={DIALOG_CONTENT_CLASS}>
                 <EditChannelDescriptionModalContent
                     channelData={channelData}
                     onClose={onClose} />

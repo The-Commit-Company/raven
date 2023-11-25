@@ -2,8 +2,8 @@ import { RemoveChannelMemberModal } from './RemoveChannelMemberModal'
 import { ChannelMembers } from '@/utils/channel/ChannelMembersProvider'
 import { ChannelListItem } from '@/utils/channel/ChannelListProvider'
 import { useState } from 'react'
-import { useModalContentStyle } from '@/hooks/useModalContentStyle'
 import { AlertDialog, Button } from '@radix-ui/themes'
+import { DIALOG_CONTENT_CLASS } from '@/utils/layout/dialog'
 
 interface RemoveMemberButtonProps {
     channelData: ChannelListItem,
@@ -18,7 +18,6 @@ export const RemoveMemberButton = ({ channelData, channelMembers, updateMembers,
     const onClose = () => {
         setOpen(false)
     }
-    const contentClass = useModalContentStyle()
 
     return (
         <AlertDialog.Root open={open} onOpenChange={setOpen}>
@@ -27,7 +26,7 @@ export const RemoveMemberButton = ({ channelData, channelMembers, updateMembers,
                     Remove
                 </Button>
             </AlertDialog.Trigger>
-            <AlertDialog.Content className={contentClass}>
+            <AlertDialog.Content className={DIALOG_CONTENT_CLASS}>
                 <RemoveChannelMemberModal
                     onClose={onClose}
                     user_id={selectedMember}

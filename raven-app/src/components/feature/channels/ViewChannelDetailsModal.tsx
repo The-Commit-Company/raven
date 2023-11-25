@@ -8,7 +8,7 @@ import { ChannelIcon } from "@/utils/layout/channelIcon"
 import { ChannelListItem } from "@/utils/channel/ChannelListProvider"
 import { ChannelMembers } from "@/utils/channel/ChannelMembersProvider"
 import { Box, Dialog, Flex, Tabs, Text } from "@radix-ui/themes"
-import { useModalContentStyle } from "@/hooks/useModalContentStyle"
+import { DIALOG_CONTENT_CLASS } from "@/utils/layout/dialog"
 
 interface ViewChannelDetailsModalContentProps {
     onClose: () => void,
@@ -24,10 +24,8 @@ export const ViewChannelDetailsModalContent = ({ onClose, channelData, channelMe
     const { currentUser } = useContext(UserContext)
     const type = channelData.type
 
-    const contentClass = useModalContentStyle()
-
     return (
-        <Dialog.Content className={contentClass}>
+        <Dialog.Content className={DIALOG_CONTENT_CLASS}>
             <Dialog.Title>
                 <Flex align='center' gap='2'>
                     <ChannelIcon className={'mt-1'} type={type} />
