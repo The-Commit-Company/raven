@@ -1,6 +1,6 @@
 import { lazy, Suspense } from "react";
 
-const FrappeTimestampToReadableDate = lazy(() => import("./FrappeTimestampToReadableDate"));
+const MomentConverter = lazy(() => import("./MomentConverter"));
 
 interface Props {
     date: string;
@@ -18,7 +18,7 @@ export const StandardDate = (props: Props) => {
     }
     return (
         <Suspense fallback={parseDateString(props.date)}>
-            <FrappeTimestampToReadableDate {...props} />
+            <MomentConverter {...props} />
         </Suspense>
     )
 }
@@ -34,7 +34,7 @@ export const DateMonthYear = (props: Props) => {
     }
     return (
         <Suspense fallback={parseDateString(props.date)}>
-            <FrappeTimestampToReadableDate {...props} format="Do MMMM YYYY" />
+            <MomentConverter {...props} format="Do MMMM YYYY" />
         </Suspense>
     )
 }
@@ -55,7 +55,7 @@ export const HourMinuteAmPm = ({ amPm = true, date }: HourMinuteAmPmProps) => {
     }
     return (
         <Suspense fallback={parseDateString(date)}>
-            <FrappeTimestampToReadableDate date={date} format={amPm ? "hh:mm A" : "hh:mm"} />
+            <MomentConverter date={date} format={amPm ? "hh:mm A" : "hh:mm"} />
         </Suspense>
     )
 }
@@ -68,7 +68,7 @@ export const DateMonthAtHourMinuteAmPm = (props: Props) => {
     }
     return (
         <Suspense fallback={parseDateString(props.date)}>
-            <FrappeTimestampToReadableDate {...props} format="Do MMMM \at hh:mm A" />
+            <MomentConverter {...props} format="Do MMMM \at hh:mm A" />
         </Suspense>
     )
 }
