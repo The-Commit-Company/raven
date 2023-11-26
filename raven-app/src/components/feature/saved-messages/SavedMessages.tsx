@@ -18,7 +18,7 @@ interface SavedMessage extends TextMessage {
     file: string
 }
 
-export const SavedMessages = () => {
+const SavedMessages = () => {
 
     const navigate = useNavigate()
 
@@ -96,3 +96,6 @@ export const SavedMessages = () => {
         </>
     )
 }
+
+export const Component = SavedMessages
+// Component.displayName = "SavedMessages"

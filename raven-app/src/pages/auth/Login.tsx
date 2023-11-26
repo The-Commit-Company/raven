@@ -14,7 +14,8 @@ type Inputs = {
     email: string;
     password: string;
 };
-export const Login = () => {
+
+export const Component = () => {
     const [error, setError] = useState<FrappeError | null>(null)
     const { login, isLoading } = useContext(UserContext)
     const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<Inputs>();
@@ -109,3 +110,5 @@ export const Login = () => {
         </Box>
     )
 }
+
+Component.displayName = "LoginPage";

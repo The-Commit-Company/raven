@@ -1,8 +1,5 @@
 import { FrappeProvider } from 'frappe-react-sdk'
-import { Route, Routes } from 'react-router-dom'
-import { SavedMessages } from './components/feature/saved-messages/SavedMessages'
-import { Login } from './pages/auth'
-import { ChatSpace } from './pages/ChatSpace'
+import { Route, RouterProvider, createBrowserRouter, createRoutesFromElements } from 'react-router-dom'
 import { MainPage } from './pages/MainPage'
 import { ProtectedRoute } from './utils/auth/ProtectedRoute'
 import { UserProvider } from './utils/auth/UserProvider'
@@ -11,7 +8,26 @@ import "cal-sans";
 import { useState } from 'react'
 import { ThemeProvider } from './ThemeProvider'
 import { Toaster } from './components/common/Toast/Toaster'
+import { FullPageLoader } from './components/layout/Loaders'
 
+
+const router = createBrowserRouter(
+  createRoutesFromElements(
+    <>
+      <Route path='/login' lazy={() => import('@/pages/auth/Login')} />
+      <Route path="/" element={<ProtectedRoute />}>
+        <Route index element={<ChannelRedirect />} />
+        <Route path="channel" element={<MainPage />} >
+          <Route index element={<ChannelRedirect />} />
+          <Route path="saved-messages" lazy={() => import('./components/feature/saved-messages/SavedMessages')} />
+          <Route path=":channelID" lazy={() => import('@/pages/ChatSpace')} />
+        </Route>
+      </Route>
+    </>
+  ), {
+  basename: `/${import.meta.env.VITE_BASE_NAME}` ?? '',
+}
+)
 function App() {
 
   const [appearance, setAppearance] = useState<'dark' | 'light'>('dark');
@@ -46,17 +62,7 @@ function App() {
           accentColor='iris'
           panelBackground='translucent'
           toggleTheme={toggleTheme}>
-          <Routes>
-            <Route path='/login' element={<Login />} />
-            <Route path="/" element={<ProtectedRoute />}>
-              <Route index element={<ChannelRedirect />} />
-              <Route path="channel" element={<MainPage />} >
-                <Route index element={<ChannelRedirect />} />
-                <Route path="saved-messages" element={<SavedMessages />} />
-                <Route path=":channelID" element={<ChatSpace />} />
-              </Route>
-            </Route>
-          </Routes>
+          <RouterProvider router={router} fallbackElement={<FullPageLoader className='w-screen' />} />
           <Toaster />
         </ThemeProvider>
       </UserProvider>

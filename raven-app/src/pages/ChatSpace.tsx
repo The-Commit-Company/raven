@@ -7,10 +7,9 @@ import { ChannelMembersProvider } from "@/utils/channel/ChannelMembersProvider"
 import { useEffect } from "react"
 import { Box } from '@radix-ui/themes'
 import { useParams } from "react-router-dom"
-import { FrappeError, useSWRConfig } from "frappe-react-sdk"
-import { ErrorCallout } from "@/components/layout/AlertBanner/ErrorBanner"
+import { useSWRConfig } from "frappe-react-sdk"
 
-export const ChatSpace = () => {
+const ChatSpace = () => {
 
     // only if channelID is present render ChatSpaceArea component'
     const { channelID } = useParams<{ channelID: string }>()
@@ -21,6 +20,8 @@ export const ChatSpace = () => {
     </Box>
 
 }
+
+export const Component = ChatSpace
 
 const ChatSpaceArea = ({ channelID }: { channelID: string }) => {
 
