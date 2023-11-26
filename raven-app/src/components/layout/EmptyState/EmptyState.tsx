@@ -1,4 +1,3 @@
-import { DateObjectToFormattedDateString } from "../../../utils/operations"
 import { ChannelListItem, DMChannelListItem } from "@/utils/channel/ChannelListProvider"
 import { useCurrentChannelData } from "@/hooks/useCurrentChannelData"
 import { useContext, useState } from "react"
@@ -11,6 +10,7 @@ import { Box, Button, Flex, Heading, Link, Text } from "@radix-ui/themes"
 import { UserAvatar } from "@/components/common/UserAvatar"
 import { ChannelIcon } from "@/utils/layout/channelIcon"
 import { Bookmark } from "lucide-react"
+import { DateMonthYear } from "@/utils/dateConversions"
 
 export const EmptyStateForSearch = () => {
     return (
@@ -47,7 +47,7 @@ const EmptyStateForChannel = ({ channelData, channelMembers, updateMembers }: Em
                     <ChannelIcon type={channelData?.type} />
                     <Heading size='4'>{channelData?.channel_name}</Heading>
                 </Flex>
-                <Text size='2'>{users[channelData.owner]?.full_name} created this channel on {DateObjectToFormattedDateString(new Date(channelData?.creation ?? ''))}. This is the very beginning of the <strong>{channelData?.channel_name}</strong> channel.</Text>
+                <Text size='2'>{users[channelData.owner]?.full_name} created this channel on <DateMonthYear date={channelData?.creation} />. This is the very beginning of the <strong>{channelData?.channel_name}</strong> channel.</Text>
                 {channelData?.channel_description && <Text size={'1'} color='gray'>{channelData?.channel_description}</Text>}
             </Flex>
             {channelData?.is_archived == 0 && channelMembers[currentUser] && <Flex gap='4' className={'z-1'}>

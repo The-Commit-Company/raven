@@ -1,6 +1,5 @@
 import { useContext } from "react"
 import { UserContext } from "../../../utils/auth/UserProvider"
-import { DateObjectToFormattedDateString } from "../../../utils/operations"
 import { ChannelListItem } from "@/utils/channel/ChannelListProvider"
 import { ChannelIcon } from "@/utils/layout/channelIcon"
 import { ChannelMembers } from "@/utils/channel/ChannelMembersProvider"
@@ -9,6 +8,7 @@ import { EditDescriptionButton } from "./edit-channel-description/EditDescriptio
 import { useGetUserRecords } from "@/hooks/useGetUserRecords"
 import { LeaveChannelButton } from "./leave-channel/LeaveChannelButton"
 import { Box, Flex, Separator, Text } from "@radix-ui/themes"
+import { DateMonthYear } from "@/utils/dateConversions"
 
 interface ChannelDetailsProps {
     channelData: ChannelListItem,
@@ -21,7 +21,6 @@ export const ChannelDetails = ({ channelData, channelMembers, onClose }: Channel
     const { currentUser } = useContext(UserContext)
     const admin = Object.values(channelMembers).find(user => user.is_admin === 1)
     const users = useGetUserRecords()
-    const type = channelData.type
 
     return (
         <Flex direction='column' gap='4' className={'h-96'}>
@@ -30,8 +29,8 @@ export const ChannelDetails = ({ channelData, channelMembers, onClose }: Channel
                 <Flex justify={'between'}>
                     <Flex direction={'column'}>
                         <Text weight='medium' size='2'>Channel name</Text>
-                        <Flex gap='1'>
-                            <ChannelIcon type={channelData.type} className={'mt-0.5'} />
+                        <Flex gap='1' pt='1' align='center'>
+                            <ChannelIcon type={channelData.type} size='14' />
                             <Text size='2'>{channelData?.channel_name}</Text>
                         </Flex>
                     </Flex>
@@ -57,7 +56,7 @@ export const ChannelDetails = ({ channelData, channelMembers, onClose }: Channel
                         <Text weight='medium' size='2'>Created by</Text>
                         <Flex gap='1'>
                             {channelData?.owner && <Text size='1'>{users[channelData.owner]?.full_name}</Text>}
-                            <Text size='1' color='gray'>on {DateObjectToFormattedDateString(new Date(channelData?.creation ?? ''))}</Text>
+                            {channelData.creation && <Text size='1' color='gray' as='span'>on <DateMonthYear date={channelData?.creation} /></Text>}
                         </Flex>
                     </Flex>
 

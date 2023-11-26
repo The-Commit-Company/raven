@@ -1,8 +1,8 @@
 import { User } from "@/types/Core/User"
 import { useMemo } from "react"
-import { convertFrappeTimestampToReadableDate } from "@/utils/operations"
 import { Checkbox, Flex, Table } from "@radix-ui/themes"
 import { UserAvatar } from "@/components/common/UserAvatar"
+import { StandardDate } from "@/utils/dateConversions"
 
 interface UsersTableProps {
     data: User[],
@@ -78,7 +78,7 @@ export const UsersTable = ({ data, selected, setSelected, defaultSelected }: Use
                             </Table.Cell>
 
                             <Table.Cell>{user.name}</Table.Cell>
-                            <Table.Cell>{convertFrappeTimestampToReadableDate(user.creation)}</Table.Cell>
+                            <Table.Cell><StandardDate date={user.creation} /></Table.Cell>
                         </Table.Row>
                     )
                 })}

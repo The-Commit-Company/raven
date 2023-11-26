@@ -1,9 +1,10 @@
 import { Avatar, Center, HStack, Link, Modal, ModalBody, Image, ModalFooter, ModalCloseButton, ModalContent, ModalHeader, ModalOverlay, Stack, StackDivider, Text } from "@chakra-ui/react"
-import { DateObjectToTimeString, getFileName } from "../../../utils/operations"
+import { getFileName } from "../../../utils/operations"
 import { FileMessage } from "../../../../../types/Messaging/Message"
 import { useGetUserRecords } from "@/hooks/useGetUserRecords"
 import { useTheme } from "@/ThemeProvider"
 import { Download } from "lucide-react"
+import { HourMinuteAmPm } from "@/utils/dateConversions"
 
 interface FilePreviewModalProps extends FileMessage {
     isOpen: boolean,
@@ -28,7 +29,7 @@ export const FilePreviewModal = ({ isOpen, onClose, owner, file, creation, messa
                             <Stack spacing={1}>
                                 <HStack divider={<StackDivider borderColor="gray.200" />} spacing={2} alignItems='center'>
                                     <Text fontSize='md' lineHeight={'0.9'} fontWeight="bold" as='span' color={textColor}>{users?.[owner]?.full_name ?? owner}</Text>
-                                    <Text fontSize="xs" lineHeight={'0.9'} color="gray.500">{DateObjectToTimeString(creation)}</Text>
+                                    <Text fontSize="xs" lineHeight={'0.9'} color="gray.500"><HourMinuteAmPm date={creation} /></Text>
                                 </HStack>
                                 {file &&
                                     <HStack spacing='1' align='center'><Download size='12' />

@@ -2,11 +2,12 @@ import { FileExtensionIcon } from "../../../utils/layout/FileExtensionIcon";
 import { useFrappeGetCall } from "frappe-react-sdk";
 import { useParams } from "react-router-dom";
 import { ErrorBanner } from "../../layout/AlertBanner";
-import { DateObjectToFormattedDateString, getFileExtension, getFileName } from "../../../utils/operations";
+import { getFileExtension, getFileName } from "../../../utils/operations";
 import { Download } from "lucide-react";
 import { FileMessage } from "../../../../../types/Messaging/Message";
 import { ChannelMembers } from "@/utils/channel/ChannelMembersProvider";
 import { Box, Flex, IconButton, Link, Text } from "@radix-ui/themes";
+import { DateMonthYear } from "@/utils/dateConversions";
 
 interface ChannelFile extends FileMessage {
     name: string,
@@ -45,7 +46,7 @@ export const FilesSharedInChannel = ({ channelMembers }: FilesSharedInChannelPro
                                         </Flex>
                                         <Flex direction='column' gap='0'>
                                             <Link size='1' href={f.file} target='_blank' aria-label='download file'>{getFileName(f.file)}</Link>
-                                            <Text size='1' color='gray'>Shared by {channelMembers[f.owner]?.full_name} on {DateObjectToFormattedDateString(new Date(f.creation ?? ''))}</Text>
+                                            {f.creation && <Text size='1' color='gray' as='span'>Shared by {channelMembers[f.owner]?.full_name} on <DateMonthYear date={f.creation} /></Text>}
                                         </Flex>
                                     </Flex>
                                     <Link href={f.file} target='_blank' aria-label='download file'>

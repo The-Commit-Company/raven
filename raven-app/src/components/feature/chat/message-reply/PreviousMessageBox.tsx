@@ -1,7 +1,7 @@
 import { Text, Box, HStack, Stack, Center, Image, IconButton, StackDivider, LinkBox } from '@chakra-ui/react'
 import { Message } from '../../../../../../types/Messaging/Message'
 import { MarkdownRenderer } from '../../markdown-viewer/MarkdownRenderer'
-import { DateObjectToFormattedDateStringWithoutYear, DateObjectToTimeString, getFileExtension, getFileName } from '../../../../utils/operations'
+import { getFileExtension, getFileName } from '../../../../utils/operations'
 import { useContext } from 'react'
 import { FileExtensionIcon } from '../../../../utils/layout/FileExtensionIcon'
 import { useFrappeGetDoc, useFrappePostCall } from 'frappe-react-sdk'
@@ -13,6 +13,7 @@ import { useGetUserRecords } from '@/hooks/useGetUserRecords'
 import { X } from 'lucide-react'
 import { useTheme } from '@/ThemeProvider'
 import { ErrorCallout } from '@/components/layout/AlertBanner/ErrorBanner'
+import { DateMonthAtHourMinuteAmPm } from '@/utils/dateConversions'
 
 interface PreviousMessageBoxProps {
     previous_message_id?: string,
@@ -36,11 +37,7 @@ export const PreviousMessageBox = ({ previous_message_id, previous_message_conte
                     <Stack spacing={1}>
                         <HStack divider={<StackDivider />}>
                             <Text fontSize='sm' fontWeight={'semibold'}>{users?.[previous_message_content.owner]?.full_name ?? previous_message_content.owner}</Text>
-                            <HStack spacing={1}>
-                                <Text fontSize='xs' color='gray.500'>{DateObjectToFormattedDateStringWithoutYear(new Date(previous_message_content.creation))}</Text>
-                                <Text fontSize='xs' color='gray.500'>at</Text>
-                                <Text fontSize='xs' color='gray.500'>{DateObjectToTimeString(new Date(previous_message_content.creation))}</Text>
-                            </HStack>
+                            <Text fontSize='2xs' color='gray.500'><DateMonthAtHourMinuteAmPm date={previous_message_content.creation} /></Text>
                         </HStack>
                         {/* message content */}
                         {previous_message_content.message_type === 'Text' &&
@@ -133,11 +130,7 @@ const PreviousMessageBoxInChat = ({ previous_message_id, channelData, users }: P
                 <Stack spacing={1}>
                     <HStack>
                         <Text fontSize='xs' fontWeight={'semibold'} color='blue.500'>{users?.[data.owner]?.full_name ?? data.owner}</Text>
-                        <HStack spacing={1}>
-                            <Text fontSize='2xs' color='gray.500'>{DateObjectToFormattedDateStringWithoutYear(new Date(data.creation))}</Text>
-                            <Text fontSize='2xs' color='gray.500'>at</Text>
-                            <Text fontSize='2xs' color='gray.500'>{DateObjectToTimeString(new Date(data.creation))}</Text>
-                        </HStack>
+                        <Text fontSize='2xs' color='gray.500'><DateMonthAtHourMinuteAmPm date={data.creation} /></Text>
                     </HStack>
                     {/* message content */}
                     {data.message_type === 'Text' &&

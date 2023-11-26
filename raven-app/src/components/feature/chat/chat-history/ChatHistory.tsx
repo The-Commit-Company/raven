@@ -1,5 +1,4 @@
 import { DividerWithText } from "../../../layout/Divider/DividerWithText";
-import { DateObjectToFormattedDateString } from "../../../../utils/operations";
 import { DateBlock, FileMessage, Message, MessageBlock, MessagesWithDate } from "../../../../../../types/Messaging/Message";
 import { ChannelHistoryFirstMessage } from "../../../layout/EmptyState/EmptyState";
 import { useContext, useRef } from "react";
@@ -12,6 +11,7 @@ import { Virtuoso } from 'react-virtuoso';
 import { VirtuosoRefContext } from "../../../../utils/message/VirtuosoRefProvider";
 import { ChannelListItem, DMChannelListItem } from "@/utils/channel/ChannelListProvider";
 import { Box } from "@radix-ui/themes";
+import { DateMonthYear } from "@/utils/dateConversions";
 
 interface ChatHistoryProps {
     parsedMessages: MessagesWithDate,
@@ -43,7 +43,7 @@ export const ChatHistory = ({ parsedMessages, replyToMessage, channelData }: Cha
         if (block.block_type === 'date') {
             return (
                 <Box p='4' key={block.data} className="z-10 relative">
-                    <DividerWithText>{DateObjectToFormattedDateString(new Date(block.data))}</DividerWithText>
+                    <DividerWithText><DateMonthYear date={block.data} /></DividerWithText>
                 </Box>
             )
         }

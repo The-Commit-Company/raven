@@ -6,7 +6,7 @@ import { Controller, FormProvider, useForm } from 'react-hook-form'
 import { useDebounce } from '../../../hooks/useDebounce'
 import { GetFileSearchResult } from '../../../../../types/Search/Search'
 import { FileExtensionIcon } from '../../../utils/layout/FileExtensionIcon'
-import { DateObjectToFormattedDateString, getFileExtension, getFileName } from '../../../utils/operations'
+import { getFileExtension, getFileName } from '../../../utils/operations'
 import { ErrorBanner } from '../../layout/AlertBanner'
 import { EmptyStateForSearch } from '../../layout/EmptyState/EmptyState'
 import { SelectInput, SelectOption } from '../search-filters/SelectInput'
@@ -20,6 +20,7 @@ import { ChannelListContext, ChannelListContextType, ChannelListItem } from '@/u
 import { useGetUserRecords } from '@/hooks/useGetUserRecords'
 import { useTheme } from '@/ThemeProvider'
 import { ChannelIcon } from '@/utils/layout/channelIcon'
+import { DateMonthYear } from '@/utils/dateConversions'
 
 interface FilterInput {
     'from-user-filter': SelectOption[],
@@ -256,7 +257,7 @@ export const FileSearch = ({ onToggleMyChannels, isOpenMyChannels, onToggleSaved
                                                 </Center>
                                                 <Stack spacing={0}>
                                                     {f.file && <Text fontSize='sm' as={Link} href={f.file} isExternal>{getFileName(f.file)}</Text>}
-                                                    {users && <Text fontSize='xs' color='gray.500'>Shared by {Object.values(users).find((user: UserFields) => user.name === f.owner)?.full_name} on {DateObjectToFormattedDateString(new Date(f.creation ?? ''))}</Text>}
+                                                    {users && <Text fontSize='xs' color='gray.500'>Shared by {Object.values(users).find((user: UserFields) => user.name === f.owner)?.full_name} on <DateMonthYear date={f.creation} /></Text>}
                                                 </Stack>
                                             </HStack>
                                         )
