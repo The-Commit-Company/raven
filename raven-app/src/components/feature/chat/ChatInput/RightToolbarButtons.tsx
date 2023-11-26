@@ -1,10 +1,12 @@
 import { useCurrentEditor } from '@tiptap/react'
 import { AtSign, Hash, Smile, SendHorizontal, Paperclip } from 'lucide-react'
 import { DEFAULT_BUTTON_STYLE, ICON_PROPS } from './ToolPanel'
-import { EmojiPicker } from '../../../common/EmojiPicker/EmojiPicker'
 import { ToolbarFileProps } from './Tiptap'
 import { Flex, IconButton, Inset, Popover, Separator } from '@radix-ui/themes'
 import { Loader } from '@/components/common/Loader'
+import { Suspense, lazy } from 'react'
+
+const EmojiPicker = lazy(() => import('@/components/common/EmojiPicker/EmojiPicker'))
 
 type RightToolbarButtonsProps = {
     fileProps?: ToolbarFileProps,
@@ -100,7 +102,9 @@ const EmojiPickerButton = () => {
         </Popover.Trigger>
         <Popover.Content>
             <Inset>
-                <EmojiPicker onSelect={(e) => editor.chain().focus().insertContent(e).run()} />
+                <Suspense fallback={<Loader />}>
+                    <EmojiPicker onSelect={(e) => editor.chain().focus().insertContent(e).run()} />
+                </Suspense>
             </Inset>
         </Popover.Content>
     </Popover.Root>

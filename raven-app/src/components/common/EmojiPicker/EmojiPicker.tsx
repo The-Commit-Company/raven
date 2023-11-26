@@ -2,7 +2,7 @@ import { createElement, useEffect, useRef } from "react"
 import 'emoji-picker-element'
 import './emojiPicker.styles.css'
 
-export const EmojiPicker = ({ onSelect }: { onSelect: (emoji: string) => void }) => {
+const EmojiPicker = ({ onSelect }: { onSelect: (emoji: string) => void }) => {
 
     const ref = useRef<any>(null)
 
@@ -25,3 +25,5 @@ export const EmojiPicker = ({ onSelect }: { onSelect: (emoji: string) => void })
 
     return createElement('emoji-picker', { ref })
 }
+
+export default EmojiPicker

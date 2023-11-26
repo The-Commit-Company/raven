@@ -1,10 +1,12 @@
 import { useFrappeUpdateDoc, useSWRConfig } from "frappe-react-sdk"
-import { useEffect } from "react"
+import { Suspense, lazy, useEffect } from "react"
 import { ErrorBanner } from "../../layout/AlertBanner"
-import { Tiptap } from "../chat/ChatInput/Tiptap"
 import { IconButton, Dialog, Flex, Text } from "@radix-ui/themes"
 import { X } from "lucide-react"
 import { useToast } from "@/hooks/useToast"
+import { Loader } from "@/components/common/Loader"
+
+const Tiptap = lazy(() => import("../chat/ChatInput/Tiptap"))
 
 interface EditMessageModalProps {
     onClose: (refresh?: boolean) => void,
@@ -50,7 +52,9 @@ export const EditMessageModal = ({ onClose, channelMessageID, originalText }: Ed
 
             <Flex gap='2' direction='column'>
                 <ErrorBanner error={error} />
-                <Tiptap onMessageSend={onSubmit} messageSending={updatingDoc} defaultText={originalText} />
+                <Suspense fallback={<Loader />}>
+                    <Tiptap onMessageSend={onSubmit} messageSending={updatingDoc} defaultText={originalText} />
+                </Suspense>
                 <Flex justify='end'>
                     <Text size='1' color='gray'>Press <b>Enter</b> to save</Text>
                 </Flex>

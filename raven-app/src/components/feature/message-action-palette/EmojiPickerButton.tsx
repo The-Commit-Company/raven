@@ -1,8 +1,10 @@
-import { useState } from 'react'
-import { EmojiPicker } from '../../common/EmojiPicker/EmojiPicker'
+import { lazy, useState, Suspense } from 'react'
 import { Box, Flex, IconButton, Popover, Portal, Tooltip } from '@radix-ui/themes'
 import { DIALOG_CONTENT_CLASS } from '@/utils/layout/dialog'
 import { Smile } from 'lucide-react'
+import { Loader } from '@/components/common/Loader'
+
+const EmojiPicker = lazy(() => import('@/components/common/EmojiPicker/EmojiPicker'))
 
 interface EmojiPickerButtonProps {
     saveReaction: (emoji: string) => void
@@ -38,7 +40,9 @@ export const EmojiPickerButton = ({ saveReaction }: EmojiPickerButtonProps) => {
                 <Portal>
                     <Box className={'z-10'}>
                         <Popover.Content className={`${DIALOG_CONTENT_CLASS} p-0`}>
-                            <EmojiPicker onSelect={onEmojiClick} />
+                            <Suspense fallback={<Loader />}>
+                                <EmojiPicker onSelect={onEmojiClick} />
+                            </Suspense>
                         </Popover.Content>
                     </Box>
                 </Portal>

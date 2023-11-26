@@ -78,7 +78,7 @@ const ChannelMention = Mention.extend({
             pluginKey: new PluginKey('channelMention'),
         }
     })
-export const Tiptap = ({ slotAfter, slotBefore, fileProps, onMessageSend, messageSending, defaultText = '' }: TiptapEditorProps) => {
+const Tiptap = ({ slotAfter, slotBefore, fileProps, onMessageSend, messageSending, defaultText = '' }: TiptapEditorProps) => {
 
     const { users } = useContext(UserListContext)
 
@@ -417,3 +417,5 @@ export const Tiptap = ({ slotAfter, slotBefore, fileProps, onMessageSend, messag
 
     )
 }
+
+export default Tiptap

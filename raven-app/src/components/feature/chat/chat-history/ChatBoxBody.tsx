@@ -4,20 +4,22 @@ import { useFrappeDocumentEventListener, useFrappeEventListener, useFrappeGetCal
 import { Message, MessagesWithDate } from "../../../../../../types/Messaging/Message"
 import { FullPageLoader } from "@/components/layout/Loaders"
 import { ErrorBanner } from "@/components/layout/AlertBanner"
-import { useContext, useMemo, useState } from "react"
+import { Suspense, lazy, useContext, useMemo, useState } from "react"
 import { ArchivedChannelBox } from "../chat-footer/ArchivedChannelBox"
 import { ChannelListItem, DMChannelListItem } from "@/utils/channel/ChannelListProvider"
 import { JoinChannelBox } from "../chat-footer/JoinChannelBox"
 import { useUserData } from "@/hooks/useUserData"
 import { ChannelMembersContext, ChannelMembersContextType } from "@/utils/channel/ChannelMembersProvider"
 import { UserContext } from "@/utils/auth/UserProvider"
-import { Tiptap } from "../ChatInput/Tiptap"
 import useFileUpload from "../ChatInput/FileInput/useFileUpload"
 import { CustomFile, FileDrop } from "../../file-upload/FileDrop"
 import { FileListItem } from "../../file-upload/FileListItem"
 import { PreviousMessageBox } from "../message-reply/PreviousMessageBox"
 import { useSendMessage } from "../ChatInput/useSendMessage"
+import { Loader } from "@/components/common/Loader"
 
+
+const Tiptap = lazy(() => import("../ChatInput/Tiptap"))
 interface ChatBoxBodyProps {
     channelData: ChannelListItem | DMChannelListItem
 }
@@ -102,20 +104,22 @@ export const ChatBoxBody = ({ channelData }: ChatBoxBodyProps) => {
 
                     {channelData?.is_archived == 0 && (isUserInChannel || channelData?.type === 'Open')
                         &&
-                        <Tiptap
-                            fileProps={{
-                                fileInputRef,
-                                addFile
-                            }}
-                            onMessageSend={sendMessage}
-                            messageSending={loading}
-                            slotBefore={<Stack hidden={!selectedMessage && !files.length}>
-                                {selectedMessage && <PreviousMessagePreview selectedMessage={selectedMessage} />}
-                                {files && files.length > 0 && <Wrap spacingX={'2'} spacingY='2' w='full' spacing='0' alignItems='flex-end' px='2' p='2'>
-                                    {files.map((f: CustomFile) => <WrapItem key={f.fileID}><FileListItem file={f} uploadProgress={fileUploadProgress} removeFile={() => removeFile(f.fileID)} /></WrapItem>)}
-                                </Wrap>}
-                            </Stack>}
-                        />
+                        <Suspense fallback={<Loader />}>
+                            <Tiptap
+                                fileProps={{
+                                    fileInputRef,
+                                    addFile
+                                }}
+                                onMessageSend={sendMessage}
+                                messageSending={loading}
+                                slotBefore={<Stack hidden={!selectedMessage && !files.length}>
+                                    {selectedMessage && <PreviousMessagePreview selectedMessage={selectedMessage} />}
+                                    {files && files.length > 0 && <Wrap spacingX={'2'} spacingY='2' w='full' spacing='0' alignItems='flex-end' px='2' p='2'>
+                                        {files.map((f: CustomFile) => <WrapItem key={f.fileID}><FileListItem file={f} uploadProgress={fileUploadProgress} removeFile={() => removeFile(f.fileID)} /></WrapItem>)}
+                                    </Wrap>}
+                                </Stack>}
+                            />
+                        </Suspense>
                     }
                     {channelData?.is_archived == 0 && (!isUserInChannel && channelData?.type !== 'Open' &&
                         <JoinChannelBox

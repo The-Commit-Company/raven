@@ -2984,10 +2984,10 @@ electron-to-chromium@^1.4.535:
   resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.4.593.tgz#f71b157f7382f3d3a164f73ff2da772d4b3fd984"
   integrity sha512-c7+Hhj87zWmdpmjDONbvNKNo24tvmD4mjal1+qqTYTrlF0/sNpAcDlU0Ki84ftA/5yj3BF2QhSGEC0Rky6larg==
 
-emoji-picker-element@^1.18.4:
-  version "1.19.1"
-  resolved "https://registry.yarnpkg.com/emoji-picker-element/-/emoji-picker-element-1.19.1.tgz#8c3ba086406884c0582349e770383b42bcb802ab"
-  integrity sha512-EPkKg3IuxL1oyK2hmTCIzabErhvhHUUeFsUqu0e32dPxQZCeP+BkbgKZ8t4pJuvHjpdvLuB+L4vuO4ko1la7lA==
+emoji-picker-element@^1.19.2:
+  version "1.19.2"
+  resolved "https://registry.yarnpkg.com/emoji-picker-element/-/emoji-picker-element-1.19.2.tgz#2e6f7a001c5b66e5114ef25f5130298d1e6c26a6"
+  integrity sha512-oBwJnF1DjUiY/eT7XVUbMV6iXXRkvdFYnpjDyKhn0zfkmkNNigo0UTGxHDiPUNpy4q0qsfKnwNdf79ozTxinnA==
 
 engine.io-client@~6.5.2:
   version "6.5.3"
@@ -4835,18 +4835,6 @@ throttle-debounce@^3.0.1:
   version "3.0.1"
   resolved "https://registry.yarnpkg.com/throttle-debounce/-/throttle-debounce-3.0.1.tgz#32f94d84dfa894f786c9a1f290e7a645b6a19abb"
   integrity sha512-dTEWWNu6JmeVXY0ZYoPuH5cRIwc0MeGbJwah9KUNYSJwommQpCzTySTpEe8Gs1J23aeWEuAobe4Ag7EHVt/LOg==
-
-timeago-react@^3.0.5:
-  version "3.0.6"
-  resolved "https://registry.yarnpkg.com/timeago-react/-/timeago-react-3.0.6.tgz#d1b55af67ed21b1c5429b9ba8043d0d0f7dab295"
-  integrity sha512-4ywnCX3iFjdp84WPK7gt8s4n0FxXbYM+xv8hYL73p83dpcMxzmO+0W4xJuxflnkWNvum5aEaqTe6LZ3lUIudjQ==
-  dependencies:
-    timeago.js "^4.0.0"
-
-timeago.js@^4.0.0:
-  version "4.0.2"
-  resolved "https://registry.yarnpkg.com/timeago.js/-/timeago.js-4.0.2.tgz#724e8c8833e3490676c7bb0a75f5daf20e558028"
-  integrity sha512-a7wPxPdVlQL7lqvitHGGRsofhdwtkoSXPGATFuSOA2i1ZNQEPLrGnj68vOp2sOJTCFAQVXPeNMX/GctBaO9L2w==
 
 tiny-invariant@^1.0.6:
   version "1.3.1"
