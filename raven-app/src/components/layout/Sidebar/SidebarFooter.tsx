@@ -32,7 +32,7 @@ export const SidebarFooter = () => {
                         </DropdownMenu.Trigger>
                         <DropdownMenu.Content variant='soft'>
                             <DropdownMenu.Item color='gray' onClick={() => setIsAddUserModalOpen(true)} className="cursor-pointer">
-                                Add Raven users
+                                Add users to Raven
                             </DropdownMenu.Item>
                             <DropdownMenu.Separator />
                             <DropdownMenu.Item color='gray' className='group'>
