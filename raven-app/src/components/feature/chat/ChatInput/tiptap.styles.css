@@ -22,19 +22,19 @@
 }
 
 .tiptap blockquote {
-    border-left: 3px solid var(--chakra-colors-gray-300);
+    border-left: 3px solid var(--gray-11);
     padding-left: 0.8rem;
     margin: 1rem;
 }
 
 .tiptap ul,
 .tiptap ol {
-    padding-left: var(--chakra-space-8);
+    padding-left: var(--space-5);
 }
 
 .tiptap a,
 .tiptap .mention {
-    color: var(--chakra-colors-blue-500);
+    color: var(--accent-a10);
 }
 
 .tiptap a {
