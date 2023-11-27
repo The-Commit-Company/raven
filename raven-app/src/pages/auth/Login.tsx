@@ -85,6 +85,7 @@ export const Component = () => {
                                                     placeholder="***********" />
                                                 <TextField.Slot>
                                                     <IconButton
+                                                        type='button'
                                                         size='1'
                                                         variant='ghost'
                                                         aria-label={isOpen ? "Mask password" : "Reveal password"}
