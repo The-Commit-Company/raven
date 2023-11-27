@@ -29,7 +29,7 @@ export const FileExtensionIcon = ({ ext, ...props }: FileExtensionIconProps) => 
         {isImage && <Image width='18px' fill='var(--gray-12)' {...props} />}
         {isWord && <Word width='18px' fill='var(--gray-12)' {...props} />}
         {isPdf && <Pdf width='18px' fill='var(--gray-12)' {...props} />}
-        {!isExcel && !isImage && !isWord && !isPdf && <FileIcon {...props} />}
+        {!isExcel && !isImage && !isWord && !isPdf && <FileIcon width='18px' fill='var(--gray-12)' {...props} />}
     </Suspense>
 
 }

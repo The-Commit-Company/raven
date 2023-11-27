@@ -1,4 +1,3 @@
-import { Box, Stack, Wrap, WrapItem } from "@chakra-ui/react"
 import { ChatHistory } from "./ChatHistory"
 import { useFrappeDocumentEventListener, useFrappeEventListener, useFrappeGetCall } from "frappe-react-sdk"
 import { Message, MessagesWithDate } from "../../../../../../types/Messaging/Message"
@@ -17,6 +16,7 @@ import { FileListItem } from "../../file-upload/FileListItem"
 import { PreviousMessageBox } from "../message-reply/PreviousMessageBox"
 import { useSendMessage } from "../ChatInput/useSendMessage"
 import { Loader } from "@/components/common/Loader"
+import { Flex, Box } from "@radix-ui/themes"
 
 
 const Tiptap = lazy(() => import("../ChatInput/Tiptap"))
@@ -81,16 +81,17 @@ export const ChatBoxBody = ({ channelData }: ChatBoxBodyProps) => {
     }
 
     if (isLoading) {
+        //TODO: Replace with skeleton loader
         return <FullPageLoader />
     }
 
     if (error) {
-        return <Box p={2}><ErrorBanner error={error} /></Box>
+        return <Box p='2' pt='9' className="h-screen"><ErrorBanner error={error} /></Box>
     }
 
     if (data) {
         return (
-            <Stack h='full' justify={'flex-end'} p={4} overflow='hidden' pt='16'>
+            <Flex height='100%' direction='column' justify={'end'} p='4' pt='9' className="overflow-hidden">
                 <FileDrop
                     files={files}
                     ref={fileInputRef}
@@ -104,7 +105,7 @@ export const ChatBoxBody = ({ channelData }: ChatBoxBodyProps) => {
 
                     {channelData?.is_archived == 0 && (isUserInChannel || channelData?.type === 'Open')
                         &&
-                        <Suspense fallback={<Loader />}>
+                        <Suspense fallback={<Flex align='center' justify='center' width='100%' height='9'><Loader /></Flex>}>
                             <Tiptap
                                 fileProps={{
                                     fileInputRef,
@@ -112,12 +113,12 @@ export const ChatBoxBody = ({ channelData }: ChatBoxBodyProps) => {
                                 }}
                                 onMessageSend={sendMessage}
                                 messageSending={loading}
-                                slotBefore={<Stack hidden={!selectedMessage && !files.length}>
+                                slotBefore={<Flex direction='column' justify='center' hidden={!selectedMessage && !files.length}>
                                     {selectedMessage && <PreviousMessagePreview selectedMessage={selectedMessage} />}
-                                    {files && files.length > 0 && <Wrap spacingX={'2'} spacingY='2' w='full' spacing='0' alignItems='flex-end' px='2' p='2'>
-                                        {files.map((f: CustomFile) => <WrapItem key={f.fileID}><FileListItem file={f} uploadProgress={fileUploadProgress} removeFile={() => removeFile(f.fileID)} /></WrapItem>)}
-                                    </Wrap>}
-                                </Stack>}
+                                    {files && files.length > 0 && <Flex gap='2' width='100%' align='end' px='2' p='2' wrap='wrap'>
+                                        {files.map((f: CustomFile) => <Box className="grow-0" key={f.fileID}><FileListItem file={f} uploadProgress={fileUploadProgress} removeFile={() => removeFile(f.fileID)} /></Box>)}
+                                    </Flex>}
+                                </Flex>}
                             />
                         </Suspense>
                     }
@@ -126,17 +127,9 @@ export const ChatBoxBody = ({ channelData }: ChatBoxBodyProps) => {
                             channelData={channelData}
                             channelMembers={channelMembers}
                             user={user} />)}
+                    {channelData && channelData.is_archived == 1 && <ArchivedChannelBox channelData={channelData} channelMembers={channelMembers} />}
                 </FileDrop>
-                {/* {channelData?.is_archived == 0 && ((isUserInChannel || channelData?.type === 'Open') &&
-                    <ChatInput
-                        channelID={channelData?.name}
-                        selectedMessage={selectedMessage}
-                        handleCancelReply={handleCancelReply}
-                        channelData={channelData}
-                        channelMembers={channelMembers} />)} */}
-
-                {channelData && channelData.is_archived == 1 && <ArchivedChannelBox channelData={channelData} channelMembers={channelMembers} />}
-            </Stack>
+            </Flex>
         )
     }
 
