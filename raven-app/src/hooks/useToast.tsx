@@ -6,7 +6,7 @@ import type {
 } from "@/components/common/Toast/Toast"
 
 const TOAST_LIMIT = 1
-const TOAST_REMOVE_DELAY = 1500
+const TOAST_REMOVE_DELAY = 1000
 
 type ToasterToast = ToastProps & {
     id: string
@@ -152,6 +152,7 @@ function toast({ ...props }: Toast) {
     dispatch({
         type: "ADD_TOAST",
         toast: {
+            duration: TOAST_REMOVE_DELAY,
             ...props,
             id,
             open: true,

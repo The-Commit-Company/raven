@@ -1,7 +1,7 @@
 import { RenameChannelModalContent } from '@/components/feature/channel-details/rename-channel/ChannelRenameModal'
 import { ChannelListItem } from '@/utils/channel/ChannelListProvider'
 import { Dialog, IconButton } from '@radix-ui/themes'
-import { PenSquare } from 'lucide-react'
+import { BiEdit } from 'react-icons/bi'
 import { IconButtonProps } from '@radix-ui/themes/dist/cjs/components/icon-button'
 import { useState } from "react"
 import { DIALOG_CONTENT_CLASS } from '@/utils/layout/dialog'
@@ -29,7 +29,7 @@ export const EditChannelNameButton = ({ channelID, channel_name, channelType, ..
                     aria-label="Click to edit channel name"
                     title='Edit channel name'
                     {...props}>
-                    <PenSquare size='14' />
+                    <BiEdit size='16' />
                 </IconButton>
             </Dialog.Trigger>
             <Dialog.Content className={DIALOG_CONTENT_CLASS}>
