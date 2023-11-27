@@ -1,5 +1,4 @@
 import { useState, useContext } from "react";
-import { Box, Button, Flex, FormControl, FormLabel, IconButton, Input, InputGroup, InputRightElement, Stack, useDisclosure, chakra, FormErrorMessage } from "@chakra-ui/react";
 import { useForm } from "react-hook-form";
 import { Eye, EyeOff } from "lucide-react";
 import { Link } from "react-router-dom";
@@ -7,8 +6,10 @@ import { ErrorBanner } from "../../components/layout/AlertBanner";
 import { UserContext } from "../../utils/auth/UserProvider";
 import { isEmailValid } from "../../utils/validations";
 import { FullPageLoader } from "../../components/layout/Loaders";
-import { Text } from "@radix-ui/themes";
+import { Box, Button, Flex, IconButton, Text, TextField } from "@radix-ui/themes";
 import { FrappeError } from "frappe-react-sdk";
+import { Loader } from "@/components/common/Loader";
+import { ErrorText, Label } from "@/components/common/Form";
 
 type Inputs = {
     email: string;
@@ -18,10 +19,11 @@ type Inputs = {
 export const Component = () => {
     const [error, setError] = useState<FrappeError | null>(null)
     const { login, isLoading } = useContext(UserContext)
-    const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<Inputs>();
-    const { isOpen, onToggle } = useDisclosure();
+    const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<Inputs>()
+    const [isOpen, setIsOpen] = useState(false)
+
     const onClickReveal = () => {
-        onToggle()
+        setIsOpen(!isOpen)
     }
 
     async function onSubmit(values: Inputs) {
@@ -31,59 +33,46 @@ export const Component = () => {
     }
 
     return (
-        <Box minH="100vh">
-            <Flex justify="center" align="center" height="100vh" width="full">
+        <Box className={'min-h-screen'}>
+            <Flex justify='center' align='center' className={'h-screen w-full'}>
                 {isLoading ? <FullPageLoader /> :
-                    <Box w="full" maxW="lg" mx="auto">
-                        <Box w="full" maxW="lg" mx="auto">
-                            <Stack spacing="8" rounded={{ md: "2xl" }} p={{ base: "4", md: "10" }} borderWidth={{ md: "1px" }} shadow={{ lg: "inner" }}>
-                                <Link to="/" tabIndex={-1}>
-                                    <Flex justify="center">
-                                        <Text as='span' size='9' className='cal-sans'>raven</Text>
-                                    </Flex>
-                                </Link>
+                    <Box className={'w-full max-w-xl'}>
+                        <Flex direction='column' gap='6' className={'w-full bg-white rounded-lg shadow dark:border dark:bg-gray-900 dark:border-gray-700 p-8'}>
 
-                                <chakra.form onSubmit={handleSubmit(onSubmit)}>
-                                    <ErrorBanner error={error} />
-                                    <Stack spacing="6">
-                                        <FormControl
-                                            id="email"
-                                            isInvalid={!!errors?.email}
-                                            isRequired
-                                            isDisabled={isSubmitting}
-                                        >
-                                            <FormLabel htmlFor="email">Email address</FormLabel>
-                                            <Input {...register("email",
-                                                {
-                                                    validate: (email) => isEmailValid(email) || "Please enter a valid email address.",
-                                                    required: "Email is required."
-                                                })}
-                                                name="email"
-                                                type="email"
-                                                autoComplete="email"
-                                                required
-                                                placeholder="e.g. example@gmail.com"
-                                                tabIndex={0} />
-                                            <FormErrorMessage>{errors?.email?.message}</FormErrorMessage>
-                                        </FormControl>
-                                        <FormControl
-                                            id="password"
-                                            isRequired
-                                            isInvalid={!!errors?.password}
-                                            isDisabled={isSubmitting}
-                                        >
-                                            <FormLabel htmlFor="password">Password</FormLabel>
-                                            <InputGroup>
-                                                <InputRightElement>
-                                                    <IconButton
-                                                        bg="transparent !important"
-                                                        variant="ghost"
-                                                        aria-label={isOpen ? "Mask password" : "Reveal password"}
-                                                        icon={isOpen ? <EyeOff /> : <Eye />}
-                                                        onClick={onClickReveal}
-                                                        tabIndex={-1} />
-                                                </InputRightElement>
-                                                <Input
+                            <Link to="/" tabIndex={-1}>
+                                <Flex justify="center">
+                                    <Text as='span' size='9' className='cal-sans'>raven</Text>
+                                </Flex>
+                            </Link>
+
+                            <ErrorBanner error={error} />
+
+                            <form onSubmit={handleSubmit(onSubmit)}>
+                                <Flex direction='column' gap='6'>
+                                    <Flex direction='column' gap='4'>
+
+                                        <Flex direction='column' gap='2'>
+                                            <Label htmlFor='email' isRequired>Email address</Label>
+                                            <TextField.Root>
+                                                <TextField.Input {...register("email",
+                                                    {
+                                                        validate: (email) => isEmailValid(email) || "Please enter a valid email address.",
+                                                        required: "Email is required."
+                                                    })}
+                                                    name="email"
+                                                    type="email"
+                                                    autoComplete="email"
+                                                    required
+                                                    placeholder="e.g. example@gmail.com"
+                                                    tabIndex={0} />
+                                            </TextField.Root>
+                                            {errors?.email && <ErrorText>{errors?.email?.message}</ErrorText>}
+                                        </Flex>
+
+                                        <Flex direction='column' gap='2'>
+                                            <Label htmlFor='password' isRequired>Password</Label>
+                                            <TextField.Root>
+                                                <TextField.Input
                                                     {...register("password",
                                                         {
                                                             required: "Password is required.",
@@ -94,16 +83,27 @@ export const Component = () => {
                                                     autoComplete="current-password"
                                                     required
                                                     placeholder="***********" />
-                                            </InputGroup>
-                                            <FormErrorMessage>{errors?.password?.message}</FormErrorMessage>
-                                        </FormControl>
-                                        <Button type="submit" isLoading={isSubmitting}>
-                                            Login
-                                        </Button>
-                                    </Stack>
-                                </chakra.form>
-                            </Stack>
-                        </Box>
+                                                <TextField.Slot>
+                                                    <IconButton
+                                                        size='1'
+                                                        variant='ghost'
+                                                        aria-label={isOpen ? "Mask password" : "Reveal password"}
+                                                        onClick={onClickReveal}
+                                                        tabIndex={-1}>
+                                                        {isOpen ? <EyeOff /> : <Eye />}
+                                                    </IconButton>
+                                                </TextField.Slot>
+                                            </TextField.Root>
+                                            {errors?.password && <ErrorText>{errors.password?.message}</ErrorText>}
+                                        </Flex>
+                                    </Flex>
+
+                                    <Button type='submit' disabled={isSubmitting}>
+                                        {isSubmitting ? <Loader /> : 'Login'}
+                                    </Button>
+                                </Flex>
+                            </form>
+                        </Flex>
                     </Box>
                 }
             </Flex>
