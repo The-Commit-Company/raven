@@ -1,6 +1,6 @@
 import { useState, useContext } from "react";
 import { useForm } from "react-hook-form";
-import { Eye, EyeOff } from "lucide-react";
+import { BiShow, BiHide } from "react-icons/bi";
 import { Link } from "react-router-dom";
 import { ErrorBanner } from "../../components/layout/AlertBanner";
 import { UserContext } from "../../utils/auth/UserProvider";
@@ -91,7 +91,7 @@ export const Component = () => {
                                                         aria-label={isOpen ? "Mask password" : "Reveal password"}
                                                         onClick={onClickReveal}
                                                         tabIndex={-1}>
-                                                        {isOpen ? <EyeOff /> : <Eye />}
+                                                        {isOpen ? <BiHide /> : <BiShow />}
                                                     </IconButton>
                                                 </TextField.Slot>
                                             </TextField.Root>

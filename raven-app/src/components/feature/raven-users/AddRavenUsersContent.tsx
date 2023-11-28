@@ -12,8 +12,7 @@ import { UsersTable } from "./UsersTable"
 import { UserListContext } from "@/utils/users/UserListProvider"
 import { Button, Dialog, Flex, Text, TextField } from "@radix-ui/themes"
 import { Loader } from "@/components/common/Loader"
-import { Search } from "lucide-react"
-import { DIALOG_CONTENT_CLASS } from "@/utils/layout/dialog"
+import { BiSearch } from "react-icons/bi"
 import { useToast } from "@/hooks/useToast"
 
 const AddRavenUsersContent = ({ onClose }: { onClose: VoidFunction }) => {
@@ -76,7 +75,7 @@ const AddRavenUsersContent = ({ onClose }: { onClose: VoidFunction }) => {
                     <Flex gap='2' align='center'>
                         <TextField.Root>
                             <TextField.Slot>
-                                <Search size='16' />
+                                <BiSearch />
                             </TextField.Slot>
                             <TextField.Input
                                 onChange={handleChange}

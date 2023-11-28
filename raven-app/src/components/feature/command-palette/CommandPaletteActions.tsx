@@ -2,11 +2,11 @@ import { Avatar, Box, Button, Center, HStack, Spinner, Stack, Text, useModalCont
 import { Command } from "cmdk"
 import { useFrappeGetCall } from "frappe-react-sdk"
 import { useContext, useMemo, useState } from "react"
-import { Files as FilesIcon, Hash, MailSearch, MessagesSquare, Search, Users } from "lucide-react"
+import { MailSearch, Users } from "lucide-react"
+import { BiSearch, BiHash, BiFile, BiMessageSquareDetail } from "react-icons/bi"
 import { useNavigate, useParams } from "react-router-dom"
 import { GetFileSearchResult } from "../../../../../types/Search/Search"
 import { UserContext } from "../../../utils/auth/UserProvider"
-import { FileExtensionIcon } from "../../../utils/layout/FileExtensionIcon"
 import GlobalSearch from "../global-search/GlobalSearch"
 import { getFileExtension, getFileName } from "../../../utils/operations"
 import { useModalManager, ModalTypes } from "../../../hooks/useModalManager"
@@ -17,6 +17,7 @@ import { useCurrentChannelData } from "@/hooks/useCurrentChannelData"
 import { ChannelListContext, ChannelListContextType, ChannelListItem, DMChannelListItem } from "@/utils/channel/ChannelListProvider"
 import { useGetUserRecords } from "@/hooks/useGetUserRecords"
 import { ChannelIcon } from "@/utils/layout/channelIcon"
+import { FileExtensionIcon } from "@/utils/layout/FileExtensionIcon"
 
 interface Props {
     searchChange: Function
@@ -101,7 +102,7 @@ export const Home = ({ searchChange, input, isGlobalSearchModalOpen, children, i
                 <Command.Group heading="I'm looking for..." style={style} >
                     <HStack p={1} spacing={3}>
                         <Button
-                            leftIcon={<MessagesSquare size='20' />}
+                            leftIcon={<BiMessageSquareDetail />}
                             variant="outline"
                             fontSize={12}
                             h={8}
@@ -113,7 +114,7 @@ export const Home = ({ searchChange, input, isGlobalSearchModalOpen, children, i
                             Messages
                         </Button>
                         <Button
-                            leftIcon={<FilesIcon size='20' />}
+                            leftIcon={<BiFile />}
                             variant="outline"
                             fontSize={12}
                             h={8}
@@ -125,7 +126,7 @@ export const Home = ({ searchChange, input, isGlobalSearchModalOpen, children, i
                             Files
                         </Button>
                         <Button
-                            leftIcon={<Hash size='20' />}
+                            leftIcon={<BiHash />}
                             variant="outline"
                             fontSize={12}
                             h={8}
@@ -163,10 +164,10 @@ export const Messages = ({ searchChange, input, isGlobalSearchModalOpen, onGloba
             {!input && <Command.Group heading="Narrow your search">
                 <Item onSelect={() => {
                     searchChange('in')
-                }}><Search />in a channel</Item>
+                }}><BiSearch />in a channel</Item>
                 <Item onSelect={() => {
                     searchChange('from')
-                }}><Search />from anyone on Raven</Item>
+                }}><BiSearch />from anyone on Raven</Item>
             </Command.Group>}
         </Command.List>
     )
@@ -192,10 +193,10 @@ export const Files = ({ searchChange, input, isGlobalSearchModalOpen, onGlobalSe
             {!input && <Command.Group heading="Narrow your search">
                 <Item onSelect={() => {
                     searchChange('in')
-                }}><Search />in a channel</Item>
+                }}><BiSearch />in a channel</Item>
                 <Item onSelect={() => {
                     searchChange('from')
-                }}><Search />from anyone on Raven</Item>
+                }}><BiSearch />from anyone on Raven</Item>
             </Command.Group>}
             <Command.Group heading={data?.message.length ? "Recent files" : ""}>
                 {isValidating && !data?.message.length && <Text py='4' color='gray.500' textAlign='center' fontSize='sm'>No results found.</Text>}

@@ -1,6 +1,6 @@
 import { Message } from '../../../../../types/Messaging/Message'
 import { IconButton, Tooltip } from '@radix-ui/themes'
-import { Reply } from 'lucide-react'
+import { BiReply } from 'react-icons/bi'
 
 interface ReplyButtonProps {
     replyToMessage?: (message: Message) => void
@@ -21,7 +21,7 @@ export const ReplyButton = ({ replyToMessage, message }: ReplyButtonProps) => {
                 size='1'
                 color='gray'
                 aria-label='reply'>
-                <Reply size='14' />
+                <BiReply />
             </IconButton>
         </Tooltip>
     )

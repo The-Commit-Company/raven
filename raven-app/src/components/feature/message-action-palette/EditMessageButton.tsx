@@ -2,7 +2,7 @@ import { EditMessageModal } from "./EditMessageModal"
 import { Dialog, IconButton, Tooltip } from '@radix-ui/themes'
 import { useState } from "react"
 import { DIALOG_CONTENT_CLASS } from "@/utils/layout/dialog"
-import { Edit } from "lucide-react"
+import { BiEditAlt } from "react-icons/bi"
 
 export const EditMessageButton = ({ messageID, text }: { messageID: string, text: string }) => {
 
@@ -21,7 +21,7 @@ export const EditMessageButton = ({ messageID, text }: { messageID: string, text
                         size='1'
                         color='gray'
                         aria-label='edit message'>
-                        <Edit size='14' />
+                        <BiEditAlt />
                     </IconButton>
                 </Dialog.Trigger>
             </Tooltip>

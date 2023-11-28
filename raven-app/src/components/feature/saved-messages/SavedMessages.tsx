@@ -1,7 +1,7 @@
-import { Stack, Tooltip, Button, useDisclosure, Box } from "@chakra-ui/react"
+import { Stack, Tooltip, useDisclosure, Box } from "@chakra-ui/react"
 import { useFrappeGetCall, useFrappePostCall } from "frappe-react-sdk"
 import { useContext } from "react"
-import { Search } from "lucide-react"
+import { BiSearch } from "react-icons/bi"
 import { useNavigate } from "react-router-dom"
 import { TextMessage } from "../../../../../types/Messaging/Message"
 import { VirtuosoRefContext } from "../../../utils/message/VirtuosoRefProvider"
@@ -10,7 +10,7 @@ import { EmptyStateForSavedMessages } from "../../layout/EmptyState/EmptyState"
 import { PageHeader } from "../../layout/Heading/PageHeader"
 import { CommandPalette } from "../command-palette"
 import { MessageBox } from "../global-search/MessageBox"
-import { Heading } from "@radix-ui/themes"
+import { Button, Heading } from "@radix-ui/themes"
 import { useToast } from "@/hooks/useToast"
 
 interface SavedMessage extends TextMessage {
@@ -72,11 +72,12 @@ const SavedMessages = () => {
                 <Heading size='5'>Saved</Heading>
                 <Tooltip hasArrow label='search' placement='bottom-start' rounded={'md'}>
                     <Button
-                        size={"sm"}
+                        size='2'
                         aria-label="search"
-                        leftIcon={<Search size='16' />}
-                        onClick={onCommandPaletteToggle}
-                        fontWeight='light'>
+                        color='gray'
+                        variant='soft'
+                        onClick={onCommandPaletteToggle}>
+                        <BiSearch />
                         Search
                     </Button>
                 </Tooltip>

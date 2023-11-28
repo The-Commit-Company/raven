@@ -1,7 +1,7 @@
 import { lazy, useState, Suspense } from 'react'
 import { Box, Flex, IconButton, Popover, Portal, Tooltip } from '@radix-ui/themes'
 import { DIALOG_CONTENT_CLASS } from '@/utils/layout/dialog'
-import { Smile } from 'lucide-react'
+import { BiSmile } from 'react-icons/bi'
 import { Loader } from '@/components/common/Loader'
 
 const EmojiPicker = lazy(() => import('@/components/common/EmojiPicker/EmojiPicker'))
@@ -33,7 +33,7 @@ export const EmojiPickerButton = ({ saveReaction }: EmojiPickerButtonProps) => {
                             size='1'
                             color='gray'
                             aria-label='pick emoji'>
-                            <Smile size='14' />
+                            <BiSmile />
                         </IconButton>
                     </Popover.Trigger>
                 </Tooltip>

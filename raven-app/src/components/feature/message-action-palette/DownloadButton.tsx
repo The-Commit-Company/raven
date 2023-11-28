@@ -1,6 +1,5 @@
-
 import { IconButton, Link, Tooltip } from '@radix-ui/themes'
-import { Download } from 'lucide-react'
+import { BiDownload } from 'react-icons/bi'
 
 export const DownloadButton = ({ file }: { file: string }) => {
     return (
@@ -11,7 +10,7 @@ export const DownloadButton = ({ file }: { file: string }) => {
                     size='1'
                     color='gray'
                     aria-label='download message'>
-                    <Download size='14' />
+                    <BiDownload />
                 </IconButton>
             </Link>
         </Tooltip>

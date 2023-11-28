@@ -6,7 +6,7 @@ import { ChannelMembers } from "@/utils/channel/ChannelMembersProvider"
 import { AddMembersButton } from "./add-members/AddMembersButton"
 import { RemoveMemberButton } from "./remove-members/RemoveMemberButton"
 import { Box, Flex, TextField, Text } from "@radix-ui/themes"
-import { Search, Circle, Crown } from "lucide-react"
+import { BiSearch, BiCircle, BiSolidCrown } from "react-icons/bi"
 import { UserAvatar } from "@/components/common/UserAvatar"
 interface MemberDetailsProps {
     channelData: ChannelListItem,
@@ -39,7 +39,7 @@ export const ChannelMemberDetails = ({ channelData, channelMembers, activeUsers,
                 <div className={'w-full'}>
                     <TextField.Root>
                         <TextField.Slot>
-                            <Search size='14' />
+                            <BiSearch />
                         </TextField.Slot>
                         <TextField.Input autoFocus placeholder='Find members' onChange={handleChange} value={debouncedText} />
                     </TextField.Root>
@@ -73,14 +73,14 @@ export const ChannelMemberDetails = ({ channelData, channelMembers, activeUsers,
                                             <Flex gap='2' align={'center'}>
                                                 <Text weight='medium'>{member.first_name}</Text>
                                                 {activeUsers.includes(member.name) ? (
-                                                    <Circle color='green' size='8' />
+                                                    <BiCircle color='green' />
                                                 ) : (
-                                                    <Circle size='8' />
+                                                    <BiCircle />
                                                 )}
                                                 <Flex gap='1'>
                                                     <Text weight='light' size='1'>{member.full_name}</Text>
                                                     {member.name === currentUser && <Text weight='light' size='1'>(You)</Text>}
-                                                    {channelMembers[member.name].is_admin == 1 && <Flex align="center"><Crown color='#FFC53D' size='14' /></Flex>}
+                                                    {channelMembers[member.name].is_admin == 1 && <Flex align="center"><BiSolidCrown color='#FFC53D' /></Flex>}
                                                 </Flex>
                                             </Flex>
                                         </Flex>

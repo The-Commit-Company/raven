@@ -1,5 +1,5 @@
 import { useCurrentEditor } from '@tiptap/react'
-import { AtSign, Hash, Smile, SendHorizontal, Paperclip } from 'lucide-react'
+import { BiAt, BiHash, BiSmile, BiPaperclip, BiSolidSend } from 'react-icons/bi'
 import { DEFAULT_BUTTON_STYLE, ICON_PROPS } from './ToolPanel'
 import { ToolbarFileProps } from './Tiptap'
 import { Flex, IconButton, Inset, Popover, Separator } from '@radix-ui/themes'
@@ -59,7 +59,7 @@ const MentionButtons = () => {
                     .insertContent('#')
                     .run() || !editor.isEditable
             }>
-            <Hash {...ICON_PROPS} />
+            <BiHash {...ICON_PROPS} />
         </IconButton>
         <IconButton
             onClick={() => editor.chain().focus().insertContent('@').run()}
@@ -75,7 +75,7 @@ const MentionButtons = () => {
                     .insertContent('@')
                     .run() || !editor.isEditable
             }>
-            <AtSign {...ICON_PROPS} />
+            <BiAt {...ICON_PROPS} />
         </IconButton>
     </Flex>
 }
@@ -97,7 +97,7 @@ const EmojiPickerButton = () => {
                 title='Add emoji'
                 disabled={!editor.can().chain().focus().insertContent('😅').run() || !editor.isEditable}
                 aria-label={"add emoji"}>
-                <Smile {...ICON_PROPS} />
+                <BiSmile {...ICON_PROPS} />
             </IconButton>
         </Popover.Trigger>
         <Popover.Content>
@@ -126,7 +126,7 @@ const FilePickerButton = ({ fileProps }: { fileProps: ToolbarFileProps }) => {
         disabled={editor?.isEditable === false}
         title='Attach file'
         aria-label={"attach file"}>
-        <Paperclip {...ICON_PROPS} />
+        <BiPaperclip {...ICON_PROPS} />
     </IconButton>
 }
 
@@ -168,7 +168,7 @@ const SendButton = ({ sendMessage, messageSending }: {
         onClick={onClick}
     >
         {messageSending ? <Loader /> :
-            <SendHorizontal {...ICON_PROPS} />
+            <BiSolidSend {...ICON_PROPS} />
         }
     </IconButton>
 }

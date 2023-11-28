@@ -1,4 +1,5 @@
 import { Command, ChevronUp, ArrowBigUpDash, LucideProps, Option, Delete, CornerDownLeft, Space, ArrowRightToLine, ArrowBigUp, ArrowBigDown, ArrowBigLeft, ArrowBigRight } from 'lucide-react'
+import { BiSpaceBar } from 'react-icons/bi'
 
 export const getKeyboardMetaKeyString = () => {
     if (navigator.platform.toUpperCase().indexOf('MAC') >= 0) {
@@ -49,7 +50,7 @@ export const KeyboardKeyIcon = ({ key, ...props }: KeyboardKeyIconProps) => {
         case 'delete': return <Delete {...props} />
         case 'return': return <CornerDownLeft {...props} />
         case 'enter': return <CornerDownLeft {...props} />
-        case 'space': return <Space {...props} />
+        case 'space': return <BiSpaceBar {...props} />
         case 'tab': return <ArrowRightToLine {...props} />
         case 'up': return <ArrowBigUp {...props} />
         case 'down': return <ArrowBigDown {...props} />

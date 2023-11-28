@@ -5,7 +5,7 @@ import { ChannelListItem } from "@/utils/channel/ChannelListProvider"
 import { ChannelMembers } from "@/utils/channel/ChannelMembersProvider"
 import { Button, Dialog, Tooltip } from "@radix-ui/themes"
 import { UserAvatar } from "@/components/common/UserAvatar"
-import { User } from "lucide-react"
+import { BiSolidUser } from "react-icons/bi"
 
 interface ViewChannelDetailsButtonProps {
     channelData: ChannelListItem,
@@ -35,7 +35,7 @@ export const ViewChannelDetailsButton = ({ channelData, channelMembers, updateMe
                                     return <UserAvatar key={name} src={member.user_image ?? 'undefined'} alt={member.full_name ?? member.name} radius='full' variant='solid' />
                             })}
                             {totalMembers > 3 && <div className={'z-10 flex items-center justify-center w-6 h-6 text-xs font-medium text-white bg-gray-800 rounded-full'}>+ {totalMembers - 3}</div>}
-                        </div> : <User />}
+                        </div> : <BiSolidUser />}
                     </Button>
                 </Dialog.Trigger>
             </Tooltip>

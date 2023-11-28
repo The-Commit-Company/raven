@@ -1,4 +1,4 @@
-import { Globe, Hash, Lock, Search } from 'lucide-react'
+import { BiGlobe, BiHash, BiLockAlt, BiSearch } from 'react-icons/bi'
 import { Button, Center, chakra, FormControl, HStack, Input, InputGroup, InputLeftElement, Text, Stack, TabPanel, Box, Spinner } from '@chakra-ui/react'
 import { useFrappeGetCall } from 'frappe-react-sdk'
 import { useState } from 'react'
@@ -63,7 +63,7 @@ export const ChannelSearch = ({ onToggleMyChannels, isOpenMyChannels, onToggleOt
                 <InputGroup>
                     <InputLeftElement
                         pointerEvents='none'
-                        children={<Search color='gray.300' />} />
+                        children={<BiSearch color='gray.300' />} />
                     <Input
                         autoFocus
                         onChange={handleChange}
@@ -173,7 +173,7 @@ export const ChannelSearch = ({ onToggleMyChannels, isOpenMyChannels, onToggleOt
 }
 
 const channelOption: SelectOption[] = [
-    { label: <HStack><div className="icon-container"><Lock /></div><Text>Private</Text></HStack>, value: "Private" },
-    { label: <HStack><div className="icon-container"><Hash /></div><Text>Public</Text></HStack>, value: "Public" },
-    { label: <HStack><div className="icon-container"><Globe /></div><Text>Open</Text></HStack>, value: "Open" }
+    { label: <HStack><div className="icon-container"><BiLockAlt /></div><Text>Private</Text></HStack>, value: "Private" },
+    { label: <HStack><div className="icon-container"><BiHash /></div><Text>Public</Text></HStack>, value: "Public" },
+    { label: <HStack><div className="icon-container"><BiGlobe /></div><Text>Open</Text></HStack>, value: "Open" }
 ]

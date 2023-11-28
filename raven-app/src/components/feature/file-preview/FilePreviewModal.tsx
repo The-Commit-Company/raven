@@ -3,7 +3,7 @@ import { getFileName } from "../../../utils/operations"
 import { FileMessage } from "../../../../../types/Messaging/Message"
 import { useGetUserRecords } from "@/hooks/useGetUserRecords"
 import { useTheme } from "@/ThemeProvider"
-import { Download } from "lucide-react"
+import { BiDownload } from "react-icons/bi"
 import { HourMinuteAmPm } from "@/utils/dateConversions"
 
 interface FilePreviewModalProps extends FileMessage {
@@ -32,7 +32,7 @@ export const FilePreviewModal = ({ isOpen, onClose, owner, file, creation, messa
                                     <Text fontSize="xs" lineHeight={'0.9'} color="gray.500"><HourMinuteAmPm date={creation} /></Text>
                                 </HStack>
                                 {file &&
-                                    <HStack spacing='1' align='center'><Download size='12' />
+                                    <HStack spacing='1' align='center'><BiDownload />
                                         <Link textDecor='underline' _hover={{ color: 'blue.500' }} isExternal fontSize='xs' href={file}>{getFileName(file)}</Link>
                                     </HStack>
                                 }

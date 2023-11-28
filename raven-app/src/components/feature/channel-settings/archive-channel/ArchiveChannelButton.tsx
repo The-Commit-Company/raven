@@ -1,4 +1,4 @@
-import { Archive } from "lucide-react";
+import { BiBox } from "react-icons/bi";
 import { ArchiveChannelModal } from "./ArchiveChannelModal";
 import { ChannelListItem } from "@/utils/channel/ChannelListProvider";
 import { useState } from "react";
@@ -21,7 +21,7 @@ export const ArchiveChannelButton = ({ onClose: onCloseParent, channelData }: Ar
         <AlertDialog.Root open={open} onOpenChange={setOpen}>
             <AlertDialog.Trigger>
                 <Button variant='surface' color='gray'>
-                    <Archive size='16' />
+                    <BiBox />
                     Archive channel
                 </Button>
             </AlertDialog.Trigger>

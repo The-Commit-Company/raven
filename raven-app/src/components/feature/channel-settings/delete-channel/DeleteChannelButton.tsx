@@ -1,6 +1,6 @@
 import { ChannelListItem } from '@/utils/channel/ChannelListProvider'
 import { DeleteChannelModal } from './DeleteChannelModal'
-import { Trash2 } from 'lucide-react'
+import { BiTrash } from 'react-icons/bi'
 import { useState } from 'react'
 import { AlertDialog, Button } from '@radix-ui/themes'
 import { DIALOG_CONTENT_CLASS } from '@/utils/layout/dialog'
@@ -21,7 +21,7 @@ export const DeleteChannelButton = ({ onClose: onCloseParent, channelData }: Del
         <AlertDialog.Root open={open} onOpenChange={setOpen}>
             <AlertDialog.Trigger>
                 <Button color='red' variant='surface'>
-                    <Trash2 size='16' />
+                    <BiTrash />
                     Delete channel
                 </Button>
             </AlertDialog.Trigger>

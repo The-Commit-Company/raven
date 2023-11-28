@@ -2,7 +2,7 @@ import { DeleteMessageModal } from './DeleteMessageModal'
 import { useState } from 'react'
 import { AlertDialog, IconButton, Tooltip } from '@radix-ui/themes'
 import { DIALOG_CONTENT_CLASS } from '@/utils/layout/dialog'
-import { Trash2 } from 'lucide-react'
+import { BiTrash } from 'react-icons/bi'
 
 export const DeleteMessageButton = ({ messageID }: { messageID: string }) => {
 
@@ -16,7 +16,7 @@ export const DeleteMessageButton = ({ messageID }: { messageID: string }) => {
             <Tooltip content='delete'>
                 <AlertDialog.Trigger>
                     <IconButton variant='soft' size='1' color='red' aria-label='delete message'>
-                        <Trash2 size='14' />
+                        <BiTrash />
                     </IconButton>
                 </AlertDialog.Trigger>
             </Tooltip>

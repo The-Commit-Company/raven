@@ -1,5 +1,5 @@
 import { IconButton } from "@radix-ui/themes"
-import { ArrowDownWideNarrow, ArrowUpNarrowWide } from "lucide-react"
+import { BiDownArrowAlt, BiUpArrowAlt } from "react-icons/bi"
 
 export interface SortProps {
     sortOrder: string,
@@ -28,7 +28,7 @@ export const Sort = ({ sortOrder, onSortOrderChange }: SortProps) => {
             title={sortOrder === "asc" ? "newest first" : "oldest first"}
             onClick={handleSortOrder}
             aria-label={sortOrder === "asc" ? "click to sort by newest first" : "click to sort by oldest first"}>
-            {sortOrder === "asc" ? <ArrowUpNarrowWide size='16' /> : <ArrowDownWideNarrow size='16' />}
+            {sortOrder === "asc" ? <BiUpArrowAlt /> : <BiDownArrowAlt />}
         </IconButton>
     )
 }

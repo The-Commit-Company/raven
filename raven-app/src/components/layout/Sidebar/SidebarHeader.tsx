@@ -1,6 +1,6 @@
 import { useTheme } from '@/ThemeProvider'
 import { Flex, IconButton, Text } from '@radix-ui/themes'
-import { Moon, Sun } from 'lucide-react'
+import { BiMoon, BiSun } from 'react-icons/bi'
 
 export const SidebarHeader = () => {
     return (
@@ -23,7 +23,7 @@ const ColorModeToggleButton = () => {
             color='gray'
             variant='ghost'
             onClick={toggleTheme}>
-            {appearance === 'light' ? <Moon size='16' /> : <Sun size='16' />}
+            {appearance === 'light' ? <BiMoon /> : <BiSun />}
         </IconButton>
     </Flex>
 }

@@ -8,7 +8,7 @@ import { useDebounce } from '../../../hooks/useDebounce'
 import { useFrappePostCall } from 'frappe-react-sdk'
 import { useNavigate } from 'react-router-dom'
 import { UserContext } from '../../../utils/auth/UserProvider'
-import { Search } from 'lucide-react'
+import { BiSearch } from 'react-icons/bi'
 import { UserListContext } from '@/utils/users/UserListProvider'
 import { ActiveUsersContext } from '@/utils/users/ActiveUsersProvider'
 import { ModalTypes, useModalManager } from '@/hooks/useModalManager'
@@ -103,7 +103,7 @@ export const CommandPalette = ({ isOpen, onClose, onToggle }: CommandPaletteProp
                                 })} />
                             </Box>
                         ))}
-                        {!activePage && <Search size={20} />}
+                        {!activePage && <BiSearch />}
                         <Command.Input autoFocus
                             ref={inputRef}
                             placeholder={function () {

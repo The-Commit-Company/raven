@@ -1,4 +1,4 @@
-import { Search } from 'lucide-react'
+import { BiSearch } from 'react-icons/bi'
 import { CommandPalette } from '../command-palette'
 import { useState } from 'react'
 import { Button, Dialog, Kbd, Tooltip } from '@radix-ui/themes'
@@ -24,7 +24,7 @@ export const SearchButton = () => {
                         size='2'
                         variant='soft'
                         aria-label="search">
-                        <Search size='16' />
+                        <BiSearch />
                         Search
                         {/* <Kbd size='3'><KeyboardMetaKeyIcon size='12' />&nbsp;K</Kbd> */}
                     </Button>

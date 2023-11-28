@@ -3,7 +3,7 @@ import { useFrappeGetCall } from "frappe-react-sdk";
 import { useParams } from "react-router-dom";
 import { ErrorBanner } from "../../layout/AlertBanner";
 import { getFileExtension, getFileName } from "../../../utils/operations";
-import { Download } from "lucide-react";
+import { BiDownload } from "react-icons/bi";
 import { FileMessage } from "../../../../../types/Messaging/Message";
 import { ChannelMembers } from "@/utils/channel/ChannelMembersProvider";
 import { Box, Flex, IconButton, Link, Text } from "@radix-ui/themes";
@@ -56,7 +56,7 @@ export const FilesSharedInChannel = ({ channelMembers }: FilesSharedInChannelPro
                                             size='1'
                                             color='gray'
                                             variant='ghost'>
-                                            <Download size='16' />
+                                            <BiDownload />
                                         </IconButton>
                                     </Link>
                                 </Flex>

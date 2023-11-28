@@ -9,7 +9,7 @@ import { useGetUserRecords } from "@/hooks/useGetUserRecords"
 import { Box, Button, Flex, Heading, Link, Text } from "@radix-ui/themes"
 import { UserAvatar } from "@/components/common/UserAvatar"
 import { ChannelIcon } from "@/utils/layout/channelIcon"
-import { Bookmark } from "lucide-react"
+import { BiBookmark } from "react-icons/bi"
 import { DateMonthYear } from "@/utils/dateConversions"
 
 export const EmptyStateForSearch = () => {
@@ -105,14 +105,14 @@ export const EmptyStateForSavedMessages = () => {
     return (
         <Flex direction='column' className={'mt-75 px-4'} gap='4'>
             <Flex>
-                <Bookmark size='16' />
+                <BiBookmark />
                 <Text size='2'>Your saved messages will appear here</Text>
             </Flex>
             <Flex direction='column'>
                 <Text>Saved messages are a convenient way to keep track of important information or messages you want to refer back to later.</Text>
                 <Flex gap='1'>
                     <Text size='2'>You can save messages by simply clicking on the bookmark icon</Text>
-                    <Bookmark size='16' />
+                    <BiBookmark />
                     <Text size='2'>in message actions.</Text>
                 </Flex>
             </Flex>

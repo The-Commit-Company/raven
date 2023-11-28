@@ -1,4 +1,4 @@
-import { Bookmark, BookmarkCheck, Search } from 'lucide-react'
+import { BiBookmark, BiSolidBookmark, BiSearch } from 'react-icons/bi'
 import { Avatar, Button, Center, chakra, FormControl, HStack, IconButton, Input, InputGroup, InputLeftElement, Spinner, Stack, TabPanel, Text } from '@chakra-ui/react'
 import { useFrappeGetCall, useFrappePostCall } from 'frappe-react-sdk'
 import { useContext, useState, useMemo, useEffect } from 'react'
@@ -174,7 +174,7 @@ export const MessageSearch = ({ onToggleMyChannels, isOpenMyChannels, onToggleSa
                 <InputGroup>
                     <InputLeftElement
                         pointerEvents='none'
-                        children={<Search color='gray.300' />} />
+                        children={<BiSearch color='gray.300' />} />
                     <Input
                         autoFocus
                         onChange={handleChange}
@@ -231,7 +231,7 @@ export const MessageSearch = ({ onToggleMyChannels, isOpenMyChannels, onToggleSa
                                     render={({ field: { onChange, value } }) => (
                                         <IconButton
                                             aria-label="saved-filter"
-                                            icon={isSaved ? <BookmarkCheck /> : <Bookmark />}
+                                            icon={isSaved ? <BiSolidBookmark /> : <BiBookmark />}
                                             borderRadius={3}
                                             size="sm"
                                             w="fit-content"

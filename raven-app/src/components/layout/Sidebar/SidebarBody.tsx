@@ -1,4 +1,4 @@
-import { Bookmark } from 'lucide-react'
+import { BiBookmark } from 'react-icons/bi'
 import { ChannelList } from '../../feature/channels/ChannelList'
 import { DirectMessageList } from '../../feature/direct-messages/DirectMessageList'
 import { SidebarItem, SidebarGroupLabel } from './SidebarComp'
@@ -22,7 +22,7 @@ export const SidebarBody = () => {
             <Flex direction='column' gap='2' className='overflow-x-hidden' px='2'>
                 <SidebarItem to={'saved-messages'}>
                     <AccessibleIcon label='Saved Messages'>
-                        <Bookmark size='18' />
+                        <BiBookmark />
                     </AccessibleIcon>
                     <Box>
                         <SidebarGroupLabel>Saved Messages</SidebarGroupLabel>

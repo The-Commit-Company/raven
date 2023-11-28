@@ -3,7 +3,7 @@ import { Message } from '../../../../../types/Messaging/Message'
 import { UserContext } from '@/utils/auth/UserProvider'
 import { useContext } from 'react'
 import { IconButton, Tooltip } from '@radix-ui/themes'
-import { BookmarkPlus, BookmarkX } from 'lucide-react'
+import { BiBookmark, BiSolidBookmark } from 'react-icons/bi'
 
 interface BookmarkButtonProps {
     message: Message,
@@ -33,7 +33,7 @@ export const BookmarkButton = ({ message, updateMessages }: BookmarkButtonProps)
                 size='1'
                 color='gray'
                 onClick={() => handleLike(message.name, isSaved ? 'No' : 'Yes')}>
-                {isSaved ? <BookmarkX size='14' color='red' /> : <BookmarkPlus size='14' />}
+                {isSaved ? <BiSolidBookmark /> : <BiBookmark />}
             </IconButton>
         </Tooltip>
     )

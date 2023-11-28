@@ -1,11 +1,11 @@
 import { useFrappeCreateDoc } from 'frappe-react-sdk'
 import { ChangeEvent, useCallback, useMemo, useState } from 'react'
 import { Controller, FormProvider, useForm } from 'react-hook-form'
-import { Globe, Hash, Lock } from 'lucide-react'
+import { BiGlobe, BiHash, BiLockAlt } from 'react-icons/bi'
 import { useNavigate } from 'react-router-dom'
 import { ErrorBanner } from '../../layout/AlertBanner'
 import { Box, Button, Dialog, Flex, IconButton, RadioGroup, Text, TextArea, TextField } from '@radix-ui/themes'
-import { Plus } from 'lucide-react'
+import { BiPlus } from 'react-icons/bi'
 import { ErrorText, HelperText, Label } from '@/components/common/Form'
 import { Loader } from '@/components/common/Loader'
 import { DIALOG_CONTENT_CLASS } from '@/utils/layout/dialog'
@@ -78,19 +78,19 @@ export const CreateChannelButton = ({ updateChannelList }: { updateChannelList: 
         switch (channelType) {
             case 'Private':
                 return {
-                    channelIcon: <Lock size='16' />,
+                    channelIcon: <BiLockAlt />,
                     header: 'Create a private channel',
                     helperText: 'When a channel is set to private, it can only be viewed or joined by invitation.'
                 }
             case 'Open':
                 return {
-                    channelIcon: <Globe size='16' />,
+                    channelIcon: <BiGlobe />,
                     header: 'Create an open channel',
                     helperText: 'When a channel is set to open, everyone is a member.'
                 }
             default:
                 return {
-                    channelIcon: <Hash size='16' />,
+                    channelIcon: <BiHash />,
                     header: 'Create a public channel',
                     helperText: 'When a channel is set to public, anyone can join the channel and read messages, but only members can post messages.'
                 }
@@ -100,7 +100,7 @@ export const CreateChannelButton = ({ updateChannelList }: { updateChannelList: 
     return <Dialog.Root open={isOpen} onOpenChange={onOpenChange}>
         <Dialog.Trigger>
             <IconButton variant='ghost' size='1' color='gray' aria-label='Create Channel' className='h-[18px]' title='Create Channel'>
-                <Plus size='18' className='text-[--gray-12]' />
+                <BiPlus className='text-[--gray-12]' />
             </IconButton>
         </Dialog.Trigger>
         <Dialog.Content className={DIALOG_CONTENT_CLASS}>

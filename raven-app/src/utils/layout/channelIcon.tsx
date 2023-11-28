@@ -1,16 +1,16 @@
-import { Globe, Hash, Lock, LucideProps } from "lucide-react";
+import { BiGlobe, BiHash, BiLockAlt } from 'react-icons/bi';
 import { RavenChannel } from "../../../../types/RavenChannelManagement/RavenChannel";
 
 export const getChannelIcon = (type: RavenChannel['type']) => {
 
     switch (type) {
-        case 'Private': return Lock
-        case 'Open': return Globe
-        default: return Hash
+        case 'Private': return BiLockAlt
+        case 'Open': return BiGlobe
+        default: return BiHash
     }
 }
 
-interface ChannelIconProps extends LucideProps {
+interface ChannelIconProps {
     type: RavenChannel['type']
 }
 
@@ -18,8 +18,8 @@ export const ChannelIcon = ({ type, ...props }: ChannelIconProps) => {
 
     if (!type) return null
 
-    if (type === 'Private') return <Lock {...props} />
-    if (type === 'Open') return <Globe {...props} />
-    return <Hash {...props} />
+    if (type === 'Private') return <BiLockAlt {...props} />
+    if (type === 'Open') return <BiGlobe {...props} />
+    return <BiHash {...props} />
 
 }

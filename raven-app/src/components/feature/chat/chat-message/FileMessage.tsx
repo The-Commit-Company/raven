@@ -3,7 +3,7 @@ import { FileExtensionIcon } from "../../../../utils/layout/FileExtensionIcon"
 import { FileMessage } from "../../../../../../types/Messaging/Message"
 import { useCallback } from "react"
 import { getFileExtension, getFileName } from "../../../../utils/operations"
-import { ChevronDown, ChevronRight } from "lucide-react"
+import { BiChevronDown, BiChevronRight } from "react-icons/bi"
 import { useBoolean } from "@/hooks/useBoolean"
 
 interface FileMessageProps extends Partial<FileMessage> {
@@ -49,7 +49,7 @@ export const FileMessageBlock = ({ file, owner, creation, message_type, onFilePr
                 <HStack spacing={1}>
                     {<Text fontSize={'sm'} color={'gray.500'}>{getFileName(file)}</Text>}
                     <IconButton aria-label={"view"} size='xs' onClick={toggle} variant={'unstyled'}
-                        icon={showImage ? <ChevronDown size='16' /> : <ChevronRight size='16' />} />
+                        icon={showImage ? <BiChevronDown /> : <BiChevronRight />} />
                 </HStack>
                 <Collapse in={showImage} animateOpacity>
                     <Image src={file} height='360px' rounded={'md'}

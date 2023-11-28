@@ -1,4 +1,4 @@
-import { Bookmark, BookmarkCheck, Search } from 'lucide-react'
+import { BiBookmark, BiSolidBookmark, BiSearch } from 'react-icons/bi'
 import { Avatar, Button, Center, chakra, FormControl, HStack, Icon, Input, InputGroup, InputLeftElement, Link, Stack, TabPanel, Text, Image, Spinner, IconButton } from '@chakra-ui/react'
 import { useFrappeGetCall } from 'frappe-react-sdk'
 import { useMemo, useState, useContext } from 'react'
@@ -152,7 +152,7 @@ export const FileSearch = ({ onToggleMyChannels, isOpenMyChannels, onToggleSaved
                 <InputGroup>
                     <InputLeftElement
                         pointerEvents='none'
-                        children={<Search color='gray.300' />} />
+                        children={<BiSearch color='gray.300' />} />
                     <Input
                         autoFocus
                         onChange={handleChange}
@@ -207,7 +207,7 @@ export const FileSearch = ({ onToggleMyChannels, isOpenMyChannels, onToggleSaved
                                     render={({ field: { onChange, value } }) => (
                                         <IconButton
                                             aria-label="saved-filter"
-                                            icon={isSaved ? <BookmarkCheck /> : <Bookmark />}
+                                            icon={isSaved ? <BiSolidBookmark /> : <BiBookmark />}
                                             borderRadius={3}
                                             size="sm"
                                             w="fit-content"

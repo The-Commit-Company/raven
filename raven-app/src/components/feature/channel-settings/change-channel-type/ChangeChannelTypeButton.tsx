@@ -1,5 +1,5 @@
 import { ChannelListItem } from '@/utils/channel/ChannelListProvider'
-import { Hash, Lock } from 'lucide-react'
+import { BiHash, BiLockAlt } from 'react-icons/bi'
 import { ChangeChannelTypeModal } from './ChangeChannelTypeModal'
 import { useState } from 'react'
 import { Button, Dialog } from '@radix-ui/themes'
@@ -19,7 +19,7 @@ export const ChangeChannelTypeButton = ({ channelData }: ChangeChannelTypeButton
         <Dialog.Root open={open} onOpenChange={setOpen}>
             <Dialog.Trigger>
                 <Button color='gray' variant='surface'>
-                    {channelData.type === 'Public' ? <Lock size='16' /> : <Hash size='16' />}
+                    {channelData.type === 'Public' ? <BiLockAlt /> : <BiHash />}
                     Change to a {channelData.type === 'Public' ? 'private' : 'public'} channel
                 </Button>
             </Dialog.Trigger>

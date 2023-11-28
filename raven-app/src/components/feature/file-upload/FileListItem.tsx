@@ -1,4 +1,4 @@
-import { Trash2 } from 'lucide-react'
+import { BiTrash } from 'react-icons/bi'
 import { useGetFilePreviewUrl } from '../../../hooks/useGetFilePreviewUrl'
 import { FileExtensionIcon } from '../../../utils/layout/FileExtensionIcon'
 import { getFileExtension } from '../../../utils/operations'
@@ -51,7 +51,7 @@ export const FileListItem = ({ file, removeFile, uploadProgress }: FileListItemP
                             title='Remove File'
                             variant="ghost"
                             aria-label="Remove File">
-                            <Trash2 size='16' />
+                            <BiTrash />
                         </IconButton>
                     }
                 </Flex>
