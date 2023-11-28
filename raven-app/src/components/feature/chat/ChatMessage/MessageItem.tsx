@@ -1,4 +1,4 @@
-import { Box, Button, ContextMenu, Flex, HoverCard, Link, Separator, Text } from '@radix-ui/themes'
+import { Box, ContextMenu, Flex, HoverCard, Link, Separator, Text } from '@radix-ui/themes'
 import { MessageBlock } from '../../../../../../types/Messaging/Message'
 import { MessageContextMenu } from './MessageActions'
 import { DateTooltip, DateTooltipShort } from './DateTooltip'
@@ -9,6 +9,7 @@ import { useGetUser } from '@/hooks/useGetUser'
 import { useIsUserActive } from '@/hooks/useIsUserActive'
 import { UserFields } from '@/utils/users/UserListProvider'
 import { BsFillCircleFill } from 'react-icons/bs'
+import { MessageReactions } from './MessageReactions'
 
 interface MessageBlockProps {
     message: MessageBlock['data']
@@ -19,6 +20,11 @@ export const MessageItem = ({ message }: MessageBlockProps) => {
     const { name, owner: userID, creation: timestamp, message_reactions, is_continuation, is_reply, linked_message } = message
 
     const { user, isActive } = useGetUserDetails(userID)
+
+    //TODO:
+    const updateMessages = () => {
+
+    }
 
     return (
         <Box>
@@ -42,6 +48,11 @@ export const MessageItem = ({ message }: MessageBlockProps) => {
                             </Flex>
                                 : null}
                             {/* Message content goes here */}
+                            <MessageReactions
+                                messageID={name}
+                                updateMessages={updateMessages}
+                                message_reactions={message_reactions}
+                            />
                         </Flex>
                     </Flex>
                 </ContextMenu.Trigger>

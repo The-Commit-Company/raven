@@ -64,7 +64,7 @@ export const ChatMessageBox = ({ message, children, handleScrollToMessage, reply
                         <PreviousMessageBox previous_message_id={linked_message} channelData={channelData} />
                     }
                     {children}
-                    <MessageReactions message_reactions={message_reactions} name={name} updateMessages={updateMessages} />
+                    <MessageReactions message_reactions={message_reactions} messageID={name} updateMessages={updateMessages} />
                 </Stack>
             </HStack>
 

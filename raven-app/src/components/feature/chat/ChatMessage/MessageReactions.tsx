@@ -1,10 +1,11 @@
-import { HStack, Tag, Tooltip } from "@chakra-ui/react"
 import { useFrappePostCall } from "frappe-react-sdk"
 import { useCallback, useContext, useMemo } from "react"
 import { UserContext } from "../../../../utils/auth/UserProvider"
 import { getUsers } from "../../../../utils/operations"
 import { useGetUserRecords } from "@/hooks/useGetUserRecords"
 import { useColorModeValue } from "@/ThemeProvider"
+import { Flex, IconButton, Text, Tooltip } from "@radix-ui/themes"
+import { clsx } from "clsx"
 
 interface ReactionObject {
     // The emoji
@@ -14,20 +15,20 @@ interface ReactionObject {
     // The number of users who reacted with this emoji
     count: number
 }
-export const MessageReactions = ({ name, message_reactions, updateMessages }: { name: string, message_reactions?: string | null, updateMessages: VoidFunction }) => {
+export const MessageReactions = ({ messageID, message_reactions, updateMessages }: { messageID: string, message_reactions?: string | null, updateMessages: VoidFunction }) => {
 
     const { currentUser } = useContext(UserContext)
 
     const { call: reactToMessage } = useFrappePostCall('raven.api.reactions.react')
 
     const saveReaction = useCallback((emoji: string) => {
-        if (name) {
+        if (messageID) {
             return reactToMessage({
-                message_id: name,
+                message_id: messageID,
                 reaction: emoji
             }).then(() => updateMessages())
         }
-    }, [name, updateMessages, reactToMessage])
+    }, [messageID, updateMessages, reactToMessage])
 
     const allUsers = useGetUserRecords()
     const reactions: ReactionObject[] = useMemo(() => {
@@ -37,7 +38,7 @@ export const MessageReactions = ({ name, message_reactions, updateMessages }: { 
     }, [message_reactions])
 
     return (
-        <HStack>
+        <Flex gap='1' wrap='wrap'>
             {reactions.map((reaction) => {
                 return (
                     <ReactionButton
@@ -49,7 +50,7 @@ export const MessageReactions = ({ name, message_reactions, updateMessages }: { 
                     />
                 )
             })}
-        </HStack>
+        </Flex>
     )
 }
 
@@ -61,8 +62,6 @@ interface ReactionButtonProps {
 }
 const ReactionButton = ({ reaction, onReactionClick, currentUser, allUsers }: ReactionButtonProps) => {
     const { reaction: emoji, users, count } = reaction
-    const bgColor = useColorModeValue('white', 'gray.700')
-    const activeBorderColor = useColorModeValue('gray.200', 'gray.600')
 
     const onClick = useCallback(() => {
         onReactionClick(emoji)
@@ -76,17 +75,17 @@ const ReactionButton = ({ reaction, onReactionClick, currentUser, allUsers }: Re
     }, [allUsers, count, currentUser, reaction, users])
 
     return (
-        <Tooltip hasArrow label={label} placement='top' rounded='md' key={emoji} width={'fit-content'}>
-            <Tag
-                fontSize='xs'
-                borderWidth='1px'
-                borderColor='transparent'
-                bgColor={currentUserReacted ? activeBorderColor : 'auto'}
-                variant='subtle'
-                _hover={{ cursor: 'pointer', border: '1px', borderColor: 'blue.500', backgroundColor: bgColor }}
-                onClick={onClick}>
-                {emoji} {count}
-            </Tag>
+        <Tooltip content={label}>
+            <IconButton
+                size='1'
+                onClick={onClick}
+                radius='large'
+                className={clsx("w-fit h-full text-sm cursor-pointer hover:bg-[var(--gray-5)] dark:hover:bg-[var(--gray-7)]",
+                    currentUserReacted ? "bg-[var(--accent-4)] dark:bg-[var(--accent-a3)]" : "bg-[var(--gray-3)] dark:bg-[var(--gray-5)]")}>
+                <Text as='span' className={clsx("w-fit px-2", currentUserReacted ? "text-[var(--accent-a11)]" : 'text-[var(--gray-12)]')} weight='medium'>
+                    {emoji} {count}
+                </Text>
+            </IconButton>
         </Tooltip>
     )
 }
