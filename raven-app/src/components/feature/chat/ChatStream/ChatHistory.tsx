@@ -73,64 +73,69 @@ export const ChatHistory = ({ parsedMessages, replyToMessage, channelData }: Cha
 
     const modalManager = useModalManager()
 
-    const onFilePreviewModalOpen = (message: Partial<FileMessage>) => {
-        if (message) {
-            modalManager.openModal(ModalTypes.FilePreview, {
-                file: message.file,
-                owner: message.owner,
-                creation: message.creation,
-                message_type: message.message_type
-            })
-        }
-    }
-
-    const RenderItem = ({ block }: { block: DateBlock | MessageBlock }) => {
-        if (block.block_type === 'date') {
-            return (
-                <Box p='4' className="z-10 relative">
-                    <DividerWithText><DateMonthYear date={block.data} /></DividerWithText>
-                </Box>
-            )
-        }
-        if (block.block_type === 'message') {
-            return (
-                <Box>
-                    <MessageItem message={block.data} />
-                    <ChatMessageBox
-                        message={block.data}
-                        key={block.data.name}
-                        replyToMessage={replyToMessage}
-                        channelData={channelData}>
-                        {block.data.message_type === 'Text' && <MarkdownRenderer content={block.data.text} />}
-                        {(block.data.message_type === 'File' || block.data.message_type === 'Image') && <FileMessageBlock {...block.data} onFilePreviewModalOpen={onFilePreviewModalOpen} />}
-                    </ChatMessageBox>
-                </Box>
-
-            )
-        }
-        return null
-    }
+    // const onFilePreviewModalOpen = (message: Partial<FileMessage>) => {
+    //     if (message) {
+    //         modalManager.openModal(ModalTypes.FilePreview, {
+    //             file: message.file,
+    //             owner: message.owner,
+    //             creation: message.creation,
+    //             message_type: message.message_type
+    //         })
+    //     }
+    // }
 
     return (
         <Box ref={boxRef} height='100%' className="overflow-y-scroll">
             <Virtuoso
                 customScrollParent={boxRef.current ?? undefined}
                 totalCount={parsedMessages.length}
-                itemContent={index => <RenderItem block={parsedMessages[index]} />}
+                itemContent={(index, data, context) => <RenderItem index={index} {...data} {...context} />}
                 initialTopMostItemIndex={parsedMessages.length - 1}
                 components={{
                     Header: () => <ChannelHistoryFirstMessage channelID={channelData?.name} />,
                 }}
+                context={{ channelData, replyToMessage, parsedMessages }}
                 ref={virtuosoRef}
                 increaseViewportBy={300}
                 alignToBottom={true}
                 followOutput={'smooth'}
             />
-            <FilePreviewModal
+            {/* <FilePreviewModal
                 isOpen={modalManager.modalType === ModalTypes.FilePreview}
                 onClose={modalManager.closeModal}
                 {...modalManager.modalContent}
-            />
+            /> */}
         </Box>
     )
+}
+
+const RenderItem = ({ index, parsedMessages, replyToMessage, channelData, ...props }: {
+    index: number, parsedMessages: MessagesWithDate, replyToMessage?: (message: Message) => void,
+    channelData: ChannelListItem | DMChannelListItem
+}) => {
+    const block = parsedMessages[index]
+    if (block.block_type === 'date') {
+        return (
+            <Box p='4' className="z-10 relative">
+                <DividerWithText><DateMonthYear date={block.data} /></DividerWithText>
+            </Box>
+        )
+    }
+    if (block.block_type === 'message') {
+        return (
+            <Box>
+                <MessageItem message={block.data} />
+                <ChatMessageBox
+                    message={block.data}
+                    key={block.data.name}
+                    replyToMessage={replyToMessage}
+                    channelData={channelData}>
+                    {block.data.message_type === 'Text' && <MarkdownRenderer content={block.data.text} />}
+                    {(block.data.message_type === 'File' || block.data.message_type === 'Image') && <FileMessageBlock {...block.data} onFilePreviewModalOpen={() => { }} />}
+                </ChatMessageBox>
+            </Box>
+
+        )
+    }
+    return null
 }
