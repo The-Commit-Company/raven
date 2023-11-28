@@ -10,7 +10,7 @@ import { useNavigate } from "react-router-dom"
 import { ChannelListItem, DMChannelListItem } from '@/utils/channel/ChannelListProvider'
 import { UserFields } from '@/utils/users/UserListProvider'
 import { useGetUserRecords } from '@/hooks/useGetUserRecords'
-import { X } from 'lucide-react'
+import { BiX } from 'react-icons/bi'
 import { useTheme } from '@/ThemeProvider'
 import { ErrorCallout } from '@/components/layout/AlertBanner/ErrorBanner'
 import { DateMonthAtHourMinuteAmPm } from '@/utils/dateConversions'
@@ -67,7 +67,7 @@ export const PreviousMessageBox = ({ previous_message_id, previous_message_conte
                         size="xs"
                         title='Remove message'
                         variant="ghost"
-                        icon={<X />}
+                        icon={<BiX />}
                         aria-label="Remove message" />
 
                 </HStack>

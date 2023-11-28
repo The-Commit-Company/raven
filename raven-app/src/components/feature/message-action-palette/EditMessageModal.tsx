@@ -2,7 +2,7 @@ import { useFrappeUpdateDoc, useSWRConfig } from "frappe-react-sdk"
 import { Suspense, lazy, useEffect } from "react"
 import { ErrorBanner } from "../../layout/AlertBanner"
 import { IconButton, Dialog, Flex, Text } from "@radix-ui/themes"
-import { X } from "lucide-react"
+import { BiX } from "react-icons/bi"
 import { useToast } from "@/hooks/useToast"
 import { Loader } from "@/components/common/Loader"
 
@@ -45,7 +45,7 @@ export const EditMessageModal = ({ onClose, channelMessageID, originalText }: Ed
                 <Dialog.Title>Edit Message</Dialog.Title>
                 <Dialog.Close disabled={updatingDoc}>
                     <IconButton size='1' variant="soft" color="gray">
-                        <X size='18' />
+                        <BiX size='18' />
                     </IconButton>
                 </Dialog.Close>
             </Flex>

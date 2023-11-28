@@ -2,7 +2,7 @@ import { Avatar, Box, Button, Center, HStack, Spinner, Stack, Text, useModalCont
 import { Command } from "cmdk"
 import { useFrappeGetCall } from "frappe-react-sdk"
 import { useContext, useMemo, useState } from "react"
-import { MailSearch, Users } from "lucide-react"
+import { LuMailSearch, LuUsers } from "react-icons/lu"
 import { BiSearch, BiHash, BiFile, BiMessageSquareDetail } from "react-icons/bi"
 import { useNavigate, useParams } from "react-router-dom"
 import { GetFileSearchResult } from "../../../../../types/Search/Search"
@@ -87,7 +87,7 @@ export const Home = ({ searchChange, input, isGlobalSearchModalOpen, children, i
                         }
                     }}
                 >
-                    <MailSearch size='18' />
+                    <LuMailSearch size='18' />
                     {channelData.is_direct_message ?
                         (channelData.is_self_message ?
                             `Find in direct messages with ${users[currentUser].first_name}` :
@@ -138,7 +138,7 @@ export const Home = ({ searchChange, input, isGlobalSearchModalOpen, children, i
                             Channels
                         </Button>
                         <Button
-                            leftIcon={<Users size='20' />}
+                            leftIcon={<LuUsers size='20' />}
                             variant="outline"
                             fontSize={12}
                             h={8}

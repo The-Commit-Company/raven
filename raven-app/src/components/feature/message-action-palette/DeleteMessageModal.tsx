@@ -3,8 +3,8 @@ import { ErrorBanner } from "../../layout/AlertBanner"
 import { useParams } from "react-router-dom"
 import { AlertDialog, Button, Callout, Flex, Text } from "@radix-ui/themes"
 import { Loader } from "@/components/common/Loader"
-import { AlertTriangle } from "lucide-react"
 import { useToast } from "@/hooks/useToast"
+import { FiAlertTriangle } from "react-icons/fi"
 
 interface DeleteMessageModalProps {
     onClose: (refresh?: boolean) => void,
@@ -46,7 +46,7 @@ export const DeleteMessageModal = ({ onClose, channelMessageID }: DeleteMessageM
             <Flex direction={'column'} gap='2'>
                 <Callout.Root color="red" size='1'>
                     <Callout.Icon>
-                        <AlertTriangle />
+                        <FiAlertTriangle size='18' />
                     </Callout.Icon>
                     <Callout.Text size='1'>
                         This action is permanent and cannot be undone.
