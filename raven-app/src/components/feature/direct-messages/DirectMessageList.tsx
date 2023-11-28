@@ -21,7 +21,7 @@ export const DirectMessageList = ({ unread_count }: { unread_count?: UnreadCount
 
     return (
         <SidebarGroup pb='4'>
-            <SidebarGroupItem gap='2' px='2'>
+            <SidebarGroupItem gap='2' px='1'>
                 <SidebarViewMoreButton onClick={toggle} />
                 <Flex width='100%' justify='between' align='center' gap='2'>
                     <Flex gap='2' align='center'>
@@ -30,7 +30,7 @@ export const DirectMessageList = ({ unread_count }: { unread_count?: UnreadCount
                     {!showData && unread_count && unread_count?.total_unread_count_in_dms > 0 && <SidebarBadge>{unread_count.total_unread_count_in_dms}</SidebarBadge>}
                 </Flex>
             </SidebarGroupItem>
-            <SidebarGroup>
+            <SidebarGroup pr='1'>
                 {showData &&
                     <SidebarGroupList px='1'>
                         <DirectMessageItemList unread_count={unread_count} />

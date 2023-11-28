@@ -13,9 +13,9 @@ const ChatSpace = () => {
 
     // only if channelID is present render ChatSpaceArea component'
     const { channelID } = useParams<{ channelID: string }>()
-    const className = 'bg-white dark:from-[var(--accent-1)] dark:to-95% dark:to-[var(--accent-2)] dark:bg-gradient-to-b'
+    // const className = 'bg-white dark:from-[var(--accent-1)] dark:to-95% dark:to-[var(--accent-2)] dark:bg-gradient-to-b'
 
-    return <Box className={className}>
+    return <Box>
         {channelID && <ChatSpaceArea channelID={channelID} />}
     </Box>
 
@@ -27,7 +27,7 @@ const ChatSpaceArea = ({ channelID }: { channelID: string }) => {
 
     const { channel, error, isLoading } = useCurrentChannelData(channelID)
     const { mutate, cache } = useSWRConfig()
-    console.log("Mounted")
+
     useEffect(() => {
         //If the cached value of unread message count is 0, then no need to update it
         const channels = cache.get('unread_channel_count')?.data?.message?.channels

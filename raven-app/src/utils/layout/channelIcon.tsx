@@ -1,5 +1,6 @@
 import { BiGlobe, BiHash, BiLockAlt } from 'react-icons/bi';
 import { RavenChannel } from "../../../../types/RavenChannelManagement/RavenChannel";
+import { IconBaseProps } from 'react-icons';
 
 export const getChannelIcon = (type: RavenChannel['type']) => {
 
@@ -10,7 +11,7 @@ export const getChannelIcon = (type: RavenChannel['type']) => {
     }
 }
 
-interface ChannelIconProps {
+interface ChannelIconProps extends IconBaseProps {
     type: RavenChannel['type']
 }
 

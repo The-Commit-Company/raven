@@ -25,7 +25,7 @@ import html from 'highlight.js/lib/languages/xml'
 import json from 'highlight.js/lib/languages/json'
 import python from 'highlight.js/lib/languages/python'
 import { Plugin } from 'prosemirror-state'
-import { Card, Inset } from '@radix-ui/themes'
+import { Box, Card, Inset } from '@radix-ui/themes'
 const lowlight = createLowlight(common)
 
 lowlight.register('html', html)
@@ -398,22 +398,20 @@ const Tiptap = ({ slotAfter, slotBefore, fileProps, onMessageSend, messageSendin
     ]
 
     return (
-        <Card variant='surface'>
-            <Inset clip='border-box'>
-                <EditorProvider
-                    extensions={extensions}
-                    content={defaultText}
-                    autofocus
-                    slotAfter={slotAfter}
-                    slotBefore={slotBefore}
-                >
-                    <ToolPanel>
-                        <TextFormattingMenu />
-                        <RightToolbarButtons fileProps={fileProps} sendMessage={onMessageSend} messageSending={messageSending} />
-                    </ToolPanel>
-                </EditorProvider>
-            </Inset>
-        </Card>
+        <Box className='border rounded-md border-[var(--gray-5)] dark:bg-[var(--gray-3)] shadow-md '>
+            <EditorProvider
+                extensions={extensions}
+                content={defaultText}
+                autofocus
+                slotAfter={slotAfter}
+                slotBefore={slotBefore}
+            >
+                <ToolPanel>
+                    <TextFormattingMenu />
+                    <RightToolbarButtons fileProps={fileProps} sendMessage={onMessageSend} messageSending={messageSending} />
+                </ToolPanel>
+            </EditorProvider>
+        </Box>
 
     )
 }

@@ -3,7 +3,7 @@ import { Box, Flex } from '@radix-ui/themes'
 
 export const PageHeader = ({ children }: PropsWithChildren) => {
     return (
-        <Box
+        <header><Box
             py='3'
             mx='4'
             position='fixed'
@@ -16,5 +16,6 @@ export const PageHeader = ({ children }: PropsWithChildren) => {
                 {children}
             </Flex>
         </Box>
+        </header>
     )
 }
