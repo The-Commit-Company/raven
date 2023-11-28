@@ -398,7 +398,7 @@ const Tiptap = ({ slotAfter, slotBefore, fileProps, onMessageSend, messageSendin
     ]
 
     return (
-        <Box className='border rounded-md border-[var(--gray-5)] dark:bg-[var(--gray-3)] shadow-md '>
+        <Box className='border rounded-md border-[var(--gray-5)] dark:border-[var(--gray-6)] dark:bg-[var(--gray-3)] shadow-md '>
             <EditorProvider
                 extensions={extensions}
                 content={defaultText}
