@@ -1,7 +1,7 @@
 import { Avatar, Box, HStack, Link, Stack, StackDivider, Text } from "@chakra-ui/react"
 import { useState } from "react"
 import { useModalManager, ModalTypes } from "../../../hooks/useModalManager"
-import { FileMessageBlock } from "../chat/chat-message/FileMessage"
+import { FileMessageBlock } from "../chat/ChatMessage/FileMessage"
 import { FilePreviewModal } from "../file-preview/FilePreviewModal"
 import { MarkdownRenderer } from "../markdown-viewer/MarkdownRenderer"
 import { useGetUserRecords } from "@/hooks/useGetUserRecords"

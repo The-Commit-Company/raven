@@ -56,7 +56,7 @@ export const ChatMessageBox = ({ message, children, handleScrollToMessage, reply
             <HStack spacing={is_continuation === 0 ? 2 : 3.5} alignItems={is_continuation === 0 ? 'flex-start' : 'center'}>
                 {is_continuation === 0 ?
                     <Avatar name={users?.[user]?.full_name ?? user} src={users?.[user]?.user_image ?? ''} borderRadius={'md'} boxSize='36px' /> :
-                    <DateTooltipShort timestamp={timestamp} showButtons={showButtons} />
+                    <DateTooltipShort timestamp={timestamp} />
                 }
                 <Stack spacing='1' pt={is_continuation === 0 ? 0 : 0.5}>
                     {is_continuation === 0 && <UserNameInMessage timestamp={timestamp} user={user} />}

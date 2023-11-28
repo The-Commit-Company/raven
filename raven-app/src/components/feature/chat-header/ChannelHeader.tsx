@@ -17,7 +17,7 @@ export const ChannelHeader = ({ channelData }: ChannelHeaderProps) => {
     return (
         <PageHeader>
             <Flex gap='4' align={'center'}>
-                <Flex gap='0' align={'center'}>
+                <Flex gap='1' align={'center'}>
                     <ChannelIcon type={channelData.type} size='20' />
                     <Heading size='5' className="mb-0.5">{channelData.channel_name}</Heading>
                 </Flex>

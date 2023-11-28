@@ -1,3 +1,3 @@
 export { ChatInput } from './chat-input/ChatInput';
-export { ChatMessageBox } from './chat-message/ChatMessageBox';
-export { ChatHistory } from './chat-history/ChatHistory';
+export { ChatMessageBox } from './ChatMessage/ChatMessageBox';
+export { ChatHistory } from './ChatStream/ChatHistory';
