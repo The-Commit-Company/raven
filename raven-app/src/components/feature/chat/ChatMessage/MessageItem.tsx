@@ -1,5 +1,5 @@
 import { Box, ContextMenu, Flex, HoverCard, Link, Separator, Text } from '@radix-ui/themes'
-import { MessageBlock } from '../../../../../../types/Messaging/Message'
+import { Message, MessageBlock } from '../../../../../../types/Messaging/Message'
 import { MessageContextMenu } from './MessageActions'
 import { DateTooltip, DateTooltipShort } from './DateTooltip'
 import { BoxProps } from '@radix-ui/themes/dist/cjs/components/box'
@@ -10,6 +10,7 @@ import { useIsUserActive } from '@/hooks/useIsUserActive'
 import { UserFields } from '@/utils/users/UserListProvider'
 import { BsFillCircleFill } from 'react-icons/bs'
 import { MessageReactions } from './MessageReactions'
+import { ImageMessageBlock } from './ImageMessage'
 
 interface MessageBlockProps {
     message: MessageBlock['data']
@@ -48,6 +49,11 @@ export const MessageItem = ({ message }: MessageBlockProps) => {
                             </Flex>
                                 : null}
                             {/* Message content goes here */}
+
+                            {/* If it's a reply, then show the linked message */}
+
+                            {/* Show message according to type */}
+                            <MessageContent message={message} user={user} />
                             <MessageReactions
                                 messageID={name}
                                 updateMessages={updateMessages}
@@ -131,4 +137,14 @@ const UserHoverCard = ({ user, userID, isActive }: UserProps) => {
 
         </HoverCard.Content>
     </HoverCard.Root>
+}
+interface MessageContentProps extends BoxProps {
+    user?: UserFields
+    message: Message
+}
+const MessageContent = ({ message, user, ...props }: MessageContentProps) => {
+
+    return <Box>
+        {message.message_type === 'Image' && <ImageMessageBlock message={message} user={user} />}
+    </Box>
 }
