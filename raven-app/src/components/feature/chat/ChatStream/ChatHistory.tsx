@@ -131,7 +131,7 @@ const RenderItem = ({ index, parsedMessages, replyToMessage, channelData, ...pro
                     replyToMessage={replyToMessage}
                     channelData={channelData}>
                     {block.data.message_type === 'Text' && <MarkdownRenderer content={block.data.text} />}
-                    {(block.data.message_type === 'File' || block.data.message_type === 'Image') && <FileMessageBlock {...block.data} onFilePreviewModalOpen={() => { }} />}
+                    {/* {(block.data.message_type === 'File' || block.data.message_type === 'Image') && <FileMessageBlock {...block.data} onFilePreviewModalOpen={() => { }} />} */}
                 </ChatMessageBox>
             </Box>
 

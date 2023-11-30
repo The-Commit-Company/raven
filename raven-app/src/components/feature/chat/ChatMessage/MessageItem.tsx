@@ -11,6 +11,7 @@ import { UserFields } from '@/utils/users/UserListProvider'
 import { BsFillCircleFill } from 'react-icons/bs'
 import { MessageReactions } from './MessageReactions'
 import { ImageMessageBlock } from './ImageMessage'
+import { FileMessageBlock } from './FileMessage'
 
 interface MessageBlockProps {
     message: MessageBlock['data']
@@ -144,7 +145,8 @@ interface MessageContentProps extends BoxProps {
 }
 const MessageContent = ({ message, user, ...props }: MessageContentProps) => {
 
-    return <Box>
+    return <Box {...props}>
         {message.message_type === 'Image' && <ImageMessageBlock message={message} user={user} />}
+        {message.message_type === 'File' && <FileMessageBlock message={message} user={user} />}
     </Box>
 }
