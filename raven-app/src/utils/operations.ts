@@ -11,6 +11,17 @@ export const getFileExtension = (filename: string) => {
     return extension;
 }
 
+export const VIDEO_FORMATS = ['mp4', 'webm']
+/**
+ * Function to check if a file is a video
+ * @param extension extension of the file
+ * @returns boolean
+ */
+export const isVideoFile = (ext: string) => {
+
+    return VIDEO_FORMATS.includes(ext)
+}
+
 /**
  * Function to return name of a file name without extension
  * @param filename name of the file with extension

@@ -30,7 +30,7 @@ import { MessageItem } from "../ChatMessage/MessageItem";
  * 
  * The message block can be of the following types:
  * 1. Image - this will show a preview of the image. Clicking on it will open the image in a modal.
- * 2. File - this will show a small box with the file name and file size with actions to copy the link or download the file.
+ * 2. File - this will show a small box with the file name with actions to copy the link or download the file.
  *      PDF - PDF files will also have an action to open the file in a modal.
  *      Video - A video file will have a preview of the video.
  * 3. Text - this will show the text message in a tiptap renderer. A text block can have multiple elements
@@ -125,14 +125,14 @@ const RenderItem = ({ index, parsedMessages, replyToMessage, channelData, ...pro
         return (
             <Box>
                 <MessageItem message={block.data} />
-                <ChatMessageBox
+                {/* <ChatMessageBox
                     message={block.data}
                     key={block.data.name}
                     replyToMessage={replyToMessage}
                     channelData={channelData}>
                     {block.data.message_type === 'Text' && <MarkdownRenderer content={block.data.text} />}
-                    {/* {(block.data.message_type === 'File' || block.data.message_type === 'Image') && <FileMessageBlock {...block.data} onFilePreviewModalOpen={() => { }} />} */}
-                </ChatMessageBox>
+                    {(block.data.message_type === 'File' || block.data.message_type === 'Image') && <FileMessageBlock {...block.data} onFilePreviewModalOpen={() => { }} />}
+                </ChatMessageBox> */}
             </Box>
 
         )
