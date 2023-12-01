@@ -1,4 +1,4 @@
-.tiptap p.is-editor-empty:first-child::before {
+.tiptap-editor p.is-editor-empty:first-child::before {
     color: var(--gray-9);
     content: attr(data-placeholder);
     float: left;
@@ -7,7 +7,7 @@
     pointer-events: none;
 }
 
-.tiptap.ProseMirror {
+.tiptap-editor.ProseMirror {
     min-height: 60px;
     max-height: 150px;
     overflow: auto;
@@ -16,28 +16,28 @@
     border-top-right-radius: var(--radius-4);
 }
 
-.tiptap.ProseMirror:focus {
+.tiptap-editor.ProseMirror:focus {
     outline: 1.5px solid var(--color-focus-root);
     outline-offset: -1.5px;
 }
 
-.tiptap blockquote {
+.tiptap-editor blockquote {
     border-left: 3px solid var(--gray-11);
     padding-left: 0.8rem;
     margin: 1rem;
 }
 
-.tiptap ul,
-.tiptap ol {
+.tiptap-editor ul,
+.tiptap-editor ol {
     padding-left: var(--space-5);
 }
 
-.tiptap a,
-.tiptap .mention {
+.tiptap-editor a,
+.tiptap-editor .mention {
     color: var(--accent-a10);
 }
 
-.tiptap a {
+.tiptap-editor a {
     text-decoration: underline;
     cursor: pointer;
 }

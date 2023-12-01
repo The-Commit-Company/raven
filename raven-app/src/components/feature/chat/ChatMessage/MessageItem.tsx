@@ -12,6 +12,7 @@ import { BsFillCircleFill } from 'react-icons/bs'
 import { MessageReactions } from './MessageReactions'
 import { ImageMessageBlock } from './ImageMessage'
 import { FileMessageBlock } from './FileMessage'
+import { TiptapRenderer } from './TiptapRenderer/TiptapRenderer'
 
 interface MessageBlockProps {
     message: MessageBlock['data']
@@ -42,7 +43,7 @@ export const MessageItem = ({ message }: MessageBlockProps) => {
                             rounded-md'>
                     <Flex gap='2' >
                         <MessageLeftElement message={message} user={user} isActive={isActive} />
-                        <Flex direction='column'>
+                        <Flex direction='column' gap='1' justify='center'>
                             {!is_continuation ? <Flex align='center' gap='2'>
                                 <UserHoverCard user={user} userID={userID} isActive={isActive} />
                                 <Separator orientation='vertical' />
@@ -55,11 +56,13 @@ export const MessageItem = ({ message }: MessageBlockProps) => {
 
                             {/* Show message according to type */}
                             <MessageContent message={message} user={user} />
-                            <MessageReactions
-                                messageID={name}
-                                updateMessages={updateMessages}
-                                message_reactions={message_reactions}
-                            />
+                            {message_reactions?.length &&
+                                <MessageReactions
+                                    messageID={name}
+                                    updateMessages={updateMessages}
+                                    message_reactions={message_reactions}
+                                />
+                            }
                         </Flex>
                     </Flex>
                 </ContextMenu.Trigger>
@@ -117,7 +120,7 @@ const UserHoverCard = ({ user, userID, isActive }: UserProps) => {
 
     return <HoverCard.Root>
         <HoverCard.Trigger>
-            <Link className='text-[var(--gray-12)]' weight='medium' size='2'>
+            <Link className='text-[var(--gray-11)]' weight='medium' size='2'>
                 {user?.full_name ?? userID}
             </Link>
         </HoverCard.Trigger>
@@ -148,5 +151,6 @@ const MessageContent = ({ message, user, ...props }: MessageContentProps) => {
     return <Box {...props}>
         {message.message_type === 'Image' && <ImageMessageBlock message={message} user={user} />}
         {message.message_type === 'File' && <FileMessageBlock message={message} user={user} />}
+        {message.message_type === 'Text' && <TiptapRenderer message={message} user={user} />}
     </Box>
 }

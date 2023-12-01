@@ -66,6 +66,7 @@ export const ImageMessageBlock = ({ message, user }: ImageMessageProps) => {
                         <img
                             src={message.file}
                             loading='lazy'
+                            width='100%'
                             className='rounded-md shadow-md'
                             alt={`Image file sent by ${message.owner} at ${message.creation}`}
                         />
