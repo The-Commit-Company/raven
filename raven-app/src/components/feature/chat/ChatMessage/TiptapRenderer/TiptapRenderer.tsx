@@ -16,7 +16,7 @@ import python from 'highlight.js/lib/languages/python'
 import { CustomBlockquote } from './Blockquote'
 import { CustomBold } from './Bold'
 import { CustomUserMention } from './Mention'
-import { CustomLink } from './Link'
+import { CustomLink, LinkPreview } from './Link'
 import { CustomItalic } from './Italic'
 import { CustomUnderline } from './Underline'
 const lowlight = createLowlight(common)
@@ -75,11 +75,13 @@ export const TiptapRenderer = ({ message, user, ...props }: TiptapRendererProps)
       // CustomChannelMention
     ]
   })
+
   return (
     <Box {...props}>
       <EditorContent
         editor={editor}
         readOnly />
+      <LinkPreview editor={editor} />
     </Box>
   )
 }
