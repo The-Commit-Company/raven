@@ -15,10 +15,12 @@ import { FileMessageBlock } from './FileMessage'
 import { TiptapRenderer } from './TiptapRenderer/TiptapRenderer'
 
 interface MessageBlockProps {
-    message: MessageBlock['data']
+    message: MessageBlock['data'],
+    setDeleteMessage: (message: Message) => void,
+    setEditMessage: (message: Message) => void
 }
 
-export const MessageItem = ({ message }: MessageBlockProps) => {
+export const MessageItem = ({ message, setDeleteMessage, setEditMessage }: MessageBlockProps) => {
 
     const { name, owner: userID, creation: timestamp, message_reactions, is_continuation, is_reply, linked_message } = message
 
@@ -27,6 +29,14 @@ export const MessageItem = ({ message }: MessageBlockProps) => {
     //TODO:
     const updateMessages = () => {
 
+    }
+
+    const onDelete = () => {
+        setDeleteMessage(message)
+    }
+
+    const onEdit = () => {
+        setEditMessage(message)
     }
 
     return (
@@ -66,7 +76,11 @@ export const MessageItem = ({ message }: MessageBlockProps) => {
                         </Flex>
                     </Flex>
                 </ContextMenu.Trigger>
-                <MessageContextMenu />
+                <MessageContextMenu
+                    message={message}
+                    onDelete={onDelete}
+                    onEdit={onEdit}
+                    user={user} />
             </ContextMenu.Root>
 
         </Box>

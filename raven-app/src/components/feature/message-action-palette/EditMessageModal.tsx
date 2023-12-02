@@ -5,16 +5,16 @@ import { IconButton, Dialog, Flex, Text } from "@radix-ui/themes"
 import { BiX } from "react-icons/bi"
 import { useToast } from "@/hooks/useToast"
 import { Loader } from "@/components/common/Loader"
+import { Message, TextMessage } from "../../../../../types/Messaging/Message"
 
 const Tiptap = lazy(() => import("../chat/ChatInput/Tiptap"))
 
 interface EditMessageModalProps {
     onClose: (refresh?: boolean) => void,
-    channelMessageID: string,
-    originalText: string
+    message: TextMessage,
 }
 
-export const EditMessageModal = ({ onClose, channelMessageID, originalText }: EditMessageModalProps) => {
+export const EditMessageModal = ({ onClose, message }: EditMessageModalProps) => {
 
     const { mutate } = useSWRConfig()
     const { toast } = useToast()
@@ -25,7 +25,7 @@ export const EditMessageModal = ({ onClose, channelMessageID, originalText }: Ed
     }, [reset])
 
     const onSubmit = async (html: string, json: any) => {
-        return updateDoc('Raven Message', channelMessageID,
+        return updateDoc('Raven Message', message.name,
             { text: html, json }).then((d) => {
                 onClose(true)
                 toast({
@@ -53,7 +53,7 @@ export const EditMessageModal = ({ onClose, channelMessageID, originalText }: Ed
             <Flex gap='2' direction='column'>
                 <ErrorBanner error={error} />
                 <Suspense fallback={<Loader />}>
-                    <Tiptap onMessageSend={onSubmit} messageSending={updatingDoc} defaultText={originalText} />
+                    <Tiptap onMessageSend={onSubmit} messageSending={updatingDoc} defaultText={message.text} />
                 </Suspense>
                 <Flex justify='end'>
                     <Text size='1' color='gray'>Press <b>Enter</b> to save</Text>

@@ -13,6 +13,8 @@ import { ChannelListItem, DMChannelListItem } from "@/utils/channel/ChannelListP
 import { Box } from "@radix-ui/themes";
 import { DateMonthYear } from "@/utils/dateConversions";
 import { MessageItem } from "../ChatMessage/MessageItem";
+import { DeleteMessageDialog, useDeleteMessage } from "../ChatMessage/MessageActions/DeleteMessage";
+import { EditMessageDialog, useEditMessage } from "../ChatMessage/MessageActions/EditMessage";
 
 /**
  * Anatomy of a message
@@ -70,36 +72,28 @@ export const ChatHistory = ({ parsedMessages, replyToMessage, channelData }: Cha
 
     const boxRef = useRef<HTMLDivElement>(null)
 
+    const { setDeleteMessage, ...deleteProps } = useDeleteMessage()
 
-    const modalManager = useModalManager()
-
-    // const onFilePreviewModalOpen = (message: Partial<FileMessage>) => {
-    //     if (message) {
-    //         modalManager.openModal(ModalTypes.FilePreview, {
-    //             file: message.file,
-    //             owner: message.owner,
-    //             creation: message.creation,
-    //             message_type: message.message_type
-    //         })
-    //     }
-    // }
+    const { setEditMessage, ...editProps } = useEditMessage()
 
     return (
         <Box ref={boxRef} height='100%' className="overflow-y-scroll">
             <Virtuoso
                 customScrollParent={boxRef.current ?? undefined}
                 totalCount={parsedMessages.length}
-                itemContent={(index, data, context) => <RenderItem index={index} {...data} {...context} />}
+                itemContent={(index, data, context) => <RenderItem block={parsedMessages[index]} index={index} {...data} {...context} />}
                 initialTopMostItemIndex={parsedMessages.length - 1}
                 components={{
                     Header: () => <ChannelHistoryFirstMessage channelID={channelData?.name} />,
                 }}
-                context={{ channelData, replyToMessage, parsedMessages }}
+                context={{ channelData, replyToMessage, setDeleteMessage, setEditMessage }}
                 ref={virtuosoRef}
                 increaseViewportBy={300}
                 alignToBottom={true}
                 followOutput={'smooth'}
             />
+            <DeleteMessageDialog {...deleteProps} />
+            <EditMessageDialog {...editProps} />
             {/* <FilePreviewModal
                 isOpen={modalManager.modalType === ModalTypes.FilePreview}
                 onClose={modalManager.closeModal}
@@ -109,11 +103,15 @@ export const ChatHistory = ({ parsedMessages, replyToMessage, channelData }: Cha
     )
 }
 
-const RenderItem = ({ index, parsedMessages, replyToMessage, channelData, ...props }: {
-    index: number, parsedMessages: MessagesWithDate, replyToMessage?: (message: Message) => void,
+const RenderItem = ({ index, replyToMessage, block, channelData, setEditMessage, setDeleteMessage, ...props }: {
+    index: number,
+    block: MessageBlock | DateBlock,
+    replyToMessage?: (message: Message) => void,
+    setDeleteMessage: (message: Message) => void,
+    setEditMessage: (message: Message) => void,
     channelData: ChannelListItem | DMChannelListItem
 }) => {
-    const block = parsedMessages[index]
+    // const block = parsedMessages[index]
     if (block.block_type === 'date') {
         return (
             <Box p='4' className="z-10 relative">
@@ -124,15 +122,10 @@ const RenderItem = ({ index, parsedMessages, replyToMessage, channelData, ...pro
     if (block.block_type === 'message') {
         return (
             <Box>
-                <MessageItem message={block.data} />
-                {/* <ChatMessageBox
+                <MessageItem
                     message={block.data}
-                    key={block.data.name}
-                    replyToMessage={replyToMessage}
-                    channelData={channelData}>
-                    {block.data.message_type === 'Text' && <MarkdownRenderer content={block.data.text} />}
-                    {(block.data.message_type === 'File' || block.data.message_type === 'Image') && <FileMessageBlock {...block.data} onFilePreviewModalOpen={() => { }} />}
-                </ChatMessageBox> */}
+                    setEditMessage={setEditMessage}
+                    setDeleteMessage={setDeleteMessage} />
             </Box>
 
         )

@@ -29,10 +29,11 @@ lowlight.register('json', json)
 lowlight.register('python', python)
 interface TiptapRendererProps extends BoxProps {
   message: TextMessage,
-  user?: UserFields
+  user?: UserFields,
+  showLinkPreview?: boolean
 }
 
-export const TiptapRenderer = ({ message, user, ...props }: TiptapRendererProps) => {
+export const TiptapRenderer = ({ message, user, showLinkPreview = true, ...props }: TiptapRendererProps) => {
 
   const editor = useEditor({
     content: message.text,
@@ -81,7 +82,7 @@ export const TiptapRenderer = ({ message, user, ...props }: TiptapRendererProps)
       <EditorContent
         editor={editor}
         readOnly />
-      <LinkPreview editor={editor} />
+      {showLinkPreview && <LinkPreview editor={editor} />}
     </Box>
   )
 }

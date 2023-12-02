@@ -7,7 +7,7 @@ import { UserFields } from "./users/UserListProvider"
  */
 export const getFileExtension = (filename: string) => {
 
-    const extension = filename.split('.').pop()?.toLocaleLowerCase() ?? ''
+    const extension = filename?.split('.').pop()?.toLocaleLowerCase() ?? ''
     return extension;
 }
 
