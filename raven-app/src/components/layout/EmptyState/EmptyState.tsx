@@ -66,11 +66,6 @@ const EmptyStateForDM = ({ channelData }: EmptyStateForDMProps) => {
 
     const peer = channelData.peer_user_id
     const users = useGetUserRecords()
-    const [open, setOpen] = useState(false)
-
-    const onClose = () => {
-        setOpen(false)
-    }
 
     return (
         <Box className={'py-4 px-2'}>
@@ -91,10 +86,9 @@ const EmptyStateForDM = ({ channelData }: EmptyStateForDMProps) => {
                         :
                         <Flex gap='2' align='center'>
                             <Text size='2'>This is a Direct Message channel between you and <strong>{users?.[peer]?.full_name ?? peer}</strong>. Check out their profile to learn more about them.</Text>
-                            <Button size='2' variant='ghost' className={'z-1'}>View profile</Button>
+                            {/* <Button size='2' variant='ghost' className={'z-1'}>View profile</Button> */}
                         </Flex>
                     }
-                    {/* <UserProfileDrawer isOpen={isUserProfileDetailsDrawerOpen} onClose={onUserProfileDetailsDrawerClose} user={users?.[peer]} /> */}
                 </Flex>
             }
         </Box>
@@ -103,17 +97,14 @@ const EmptyStateForDM = ({ channelData }: EmptyStateForDMProps) => {
 
 export const EmptyStateForSavedMessages = () => {
     return (
-        <Flex direction='column' className={'mt-75 px-4'} gap='4'>
-            <Flex>
-                <BiBookmark />
-                <Text size='2'>Your saved messages will appear here</Text>
-            </Flex>
-            <Flex direction='column'>
-                <Text>Saved messages are a convenient way to keep track of important information or messages you want to refer back to later.</Text>
-                <Flex gap='1'>
-                    <Text size='2'>You can save messages by simply clicking on the bookmark icon</Text>
+        <Flex direction='column' className={'pt-24 h-screen px-4'} gap='6'>
+            <Heading as='h2' size='7' className="cal-sans">Your saved messages will appear here</Heading>
+            <Flex direction='column' gap='1'>
+                <Text size='3'>Saved messages are a convenient way to keep track of important information or messages you want to refer back to later.</Text>
+                <Flex align='center' gap='1'>
+                    <Text size='3'>You can save messages by simply clicking on the bookmark icon</Text>
                     <BiBookmark />
-                    <Text size='2'>in message actions.</Text>
+                    <Text size='3'>in message actions.</Text>
                 </Flex>
             </Flex>
         </Flex>

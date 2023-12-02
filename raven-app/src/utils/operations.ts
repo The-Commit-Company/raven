@@ -7,8 +7,19 @@ import { UserFields } from "./users/UserListProvider"
  */
 export const getFileExtension = (filename: string) => {
 
-    const extension = filename.split('.').pop()?.toLocaleLowerCase() ?? ''
+    const extension = filename?.split('.').pop()?.toLocaleLowerCase() ?? ''
     return extension;
+}
+
+export const VIDEO_FORMATS = ['mp4', 'webm']
+/**
+ * Function to check if a file is a video
+ * @param extension extension of the file
+ * @returns boolean
+ */
+export const isVideoFile = (ext: string) => {
+
+    return VIDEO_FORMATS.includes(ext)
 }
 
 /**
@@ -18,7 +29,7 @@ export const getFileExtension = (filename: string) => {
  */
 export const getFileName = (filename: string) => {
 
-    const name = filename.split('/')[3]
+    const name = filename?.split('/')[3]
     return name;
 }
 

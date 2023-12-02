@@ -58,7 +58,7 @@ function App() {
       <UserProvider>
         <ThemeProvider
           appearance={appearance}
-          grayColor='slate'
+          // grayColor='slate'
           accentColor='iris'
           panelBackground='translucent'
           toggleTheme={toggleTheme}>

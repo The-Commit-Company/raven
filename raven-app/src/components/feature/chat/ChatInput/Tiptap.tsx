@@ -25,7 +25,7 @@ import html from 'highlight.js/lib/languages/xml'
 import json from 'highlight.js/lib/languages/json'
 import python from 'highlight.js/lib/languages/python'
 import { Plugin } from 'prosemirror-state'
-import { Card, Inset } from '@radix-ui/themes'
+import { Box } from '@radix-ui/themes'
 const lowlight = createLowlight(common)
 
 lowlight.register('html', html)
@@ -59,7 +59,7 @@ const COOL_PLACEHOLDERS = [
     "Type a message..."
 ]
 
-const UserMention = Mention.extend({
+export const UserMention = Mention.extend({
     name: 'userMention',
 })
     .configure({
@@ -69,7 +69,7 @@ const UserMention = Mention.extend({
         }
     })
 
-const ChannelMention = Mention.extend({
+export const ChannelMention = Mention.extend({
     name: 'channelMention',
 })
     .configure({
@@ -83,7 +83,6 @@ const Tiptap = ({ slotAfter, slotBefore, fileProps, onMessageSend, messageSendin
     const { users } = useContext(UserListContext)
 
     const { channels } = useContext(ChannelListContext) as ChannelListContextType
-
 
     // this is a dummy extension only to create custom keydown behavior
     const KeyboardHandler = Extension.create({
@@ -239,6 +238,16 @@ const Tiptap = ({ slotAfter, slotBefore, fileProps, onMessageSend, messageSendin
         StarterKit.configure({
             heading: false,
             codeBlock: false,
+            listItem: {
+                HTMLAttributes: {
+                    class: 'rt-Text rt-r-size-2'
+                }
+            },
+            paragraph: {
+                HTMLAttributes: {
+                    class: 'rt-Text rt-r-size-2'
+                }
+            }
         }),
         UserMention.configure({
             HTMLAttributes: {
@@ -383,6 +392,9 @@ const Tiptap = ({ slotAfter, slotBefore, fileProps, onMessageSend, messageSendin
         Underline,
         Highlight.configure({
             multicolor: true,
+            HTMLAttributes: {
+                class: 'bg-[var(--yellow-6)] dark:bg-[var(--yellow-11)] px-2 py-1'
+            }
         }),
         Link.configure({
             protocols: ['mailto', 'https', 'http']
@@ -398,22 +410,25 @@ const Tiptap = ({ slotAfter, slotBefore, fileProps, onMessageSend, messageSendin
     ]
 
     return (
-        <Card variant='surface'>
-            <Inset clip='border-box'>
-                <EditorProvider
-                    extensions={extensions}
-                    content={defaultText}
-                    autofocus
-                    slotAfter={slotAfter}
-                    slotBefore={slotBefore}
-                >
-                    <ToolPanel>
-                        <TextFormattingMenu />
-                        <RightToolbarButtons fileProps={fileProps} sendMessage={onMessageSend} messageSending={messageSending} />
-                    </ToolPanel>
-                </EditorProvider>
-            </Inset>
-        </Card>
+        <Box className='border rounded-md border-[var(--gray-5)] dark:border-[var(--gray-6)] dark:bg-[var(--gray-3)] shadow-md '>
+            <EditorProvider
+                extensions={extensions}
+                content={defaultText}
+                editorProps={{
+                    attributes: {
+                        class: 'tiptap-editor'
+                    }
+                }}
+                autofocus
+                slotAfter={slotAfter}
+                slotBefore={slotBefore}
+            >
+                <ToolPanel>
+                    <TextFormattingMenu />
+                    <RightToolbarButtons fileProps={fileProps} sendMessage={onMessageSend} messageSending={messageSending} />
+                </ToolPanel>
+            </EditorProvider>
+        </Box>
 
     )
 }

@@ -2,7 +2,7 @@ import { Avatar, Box, Button, Center, HStack, Spinner, Stack, Text, useModalCont
 import { Command } from "cmdk"
 import { useFrappeGetCall } from "frappe-react-sdk"
 import { useContext, useMemo, useState } from "react"
-import { MailSearch, Users } from "lucide-react"
+import { LuMailSearch, LuUsers } from "react-icons/lu"
 import { BiSearch, BiHash, BiFile, BiMessageSquareDetail } from "react-icons/bi"
 import { useNavigate, useParams } from "react-router-dom"
 import { GetFileSearchResult } from "../../../../../types/Search/Search"
@@ -10,7 +10,6 @@ import { UserContext } from "../../../utils/auth/UserProvider"
 import GlobalSearch from "../global-search/GlobalSearch"
 import { getFileExtension, getFileName } from "../../../utils/operations"
 import { useModalManager, ModalTypes } from "../../../hooks/useModalManager"
-import { FilePreviewModal } from "../file-preview/FilePreviewModal"
 import { FileSearchResult } from "../global-search/FileSearch"
 import { UserFields } from "@/utils/users/UserListProvider"
 import { useCurrentChannelData } from "@/hooks/useCurrentChannelData"
@@ -87,7 +86,7 @@ export const Home = ({ searchChange, input, isGlobalSearchModalOpen, children, i
                         }
                     }}
                 >
-                    <MailSearch size='18' />
+                    <LuMailSearch size='18' />
                     {channelData.is_direct_message ?
                         (channelData.is_self_message ?
                             `Find in direct messages with ${users[currentUser].first_name}` :
@@ -138,7 +137,7 @@ export const Home = ({ searchChange, input, isGlobalSearchModalOpen, children, i
                             Channels
                         </Button>
                         <Button
-                            leftIcon={<Users size='20' />}
+                            leftIcon={<LuUsers size='20' />}
                             variant="outline"
                             fontSize={12}
                             h={8}
@@ -226,11 +225,11 @@ export const Files = ({ searchChange, input, isGlobalSearchModalOpen, onGlobalSe
                         </HStack></Item>)
                 })}
             </Command.Group>
-            <FilePreviewModal
+            {/* <FilePreviewModal
                 isOpen={modalManager.modalType === ModalTypes.FilePreview}
                 onClose={modalManager.closeModal}
                 {...modalManager.modalContent}
-            />
+            /> */}
         </Command.List>
     )
 }

@@ -4,7 +4,7 @@ import { CreateChannelButton } from "./CreateChannelModal"
 import { useContext, useMemo, useState } from "react"
 import { ChannelListContext, ChannelListContextType, ChannelListItem, UnreadCountData } from "../../../utils/channel/ChannelListProvider"
 import { ChannelIcon } from "@/utils/layout/channelIcon"
-import { Box, Flex, Text } from "@radix-ui/themes"
+import { Flex, Text } from "@radix-ui/themes"
 
 export const ChannelList = ({ unread_count }: { unread_count?: UnreadCountData }) => {
 
@@ -18,10 +18,10 @@ export const ChannelList = ({ unread_count }: { unread_count?: UnreadCountData }
 
     return (
         <SidebarGroup>
-            <SidebarGroupItem gap='2' px='2'>
+            <SidebarGroupItem gap='2' px='1'>
                 <SidebarViewMoreButton onClick={toggle} />
                 <Flex width='100%' justify='between' align='center' gap='2'>
-                    <Flex gap='2' align='center'>
+                    <Flex gap='3' align='center'>
                         <SidebarGroupLabel className="cal-sans">Channels</SidebarGroupLabel>
                         <CreateChannelButton updateChannelList={mutate} />
                     </Flex>
@@ -29,7 +29,7 @@ export const ChannelList = ({ unread_count }: { unread_count?: UnreadCountData }
                 </Flex>
             </SidebarGroupItem>
             <SidebarGroup>
-                <SidebarGroupList px='1'>
+                <SidebarGroupList pr='1'>
                     {showData && filteredChannels.map((channel) => <ChannelItem
                         channel={channel}
                         unreadCount={unread_count?.channels ?? []}
@@ -46,9 +46,9 @@ const ChannelItem = ({ channel, unreadCount }: { channel: ChannelListItem, unrea
 
     return (
         <SidebarItem to={channel.name}>
-            <ChannelIcon type={channel.type} size='20' />
+            <ChannelIcon type={channel.type} size='18' />
             <Flex justify='between' align={'center'} width='100%'>
-                <Text size='2' className="text-ellipsis line-clamp-1" weight={unreadCountForChannel ? 'bold' : 'regular'}>{channel.channel_name}</Text>
+                <Text size='2' className="text-ellipsis line-clamp-1" as='span' weight={unreadCountForChannel ? 'bold' : 'regular'}>{channel.channel_name}</Text>
                 <SidebarBadge hidden={!unreadCountForChannel}>{unreadCountForChannel}</SidebarBadge>
             </Flex>
         </SidebarItem>

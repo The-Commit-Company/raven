@@ -7,14 +7,111 @@
     font-family: 'Cal Sans';
 }
 
-:root {
-    --sidebar-width: 16rem;
-}
-
 .radix-themes {
     --heading-font-family: 'Cal Sans', sans-serif;
 }
 
 .rt-Button {
     font-family: 'Cal Sans', sans-serif;
+}
+
+:root {
+    --sidebar-width: 16rem;
+}
+
+html {
+    scrollbar-gutter: stable;
+}
+
+body {
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+}
+
+/* make header draggable on desktop app */
+html header {
+    -webkit-app-region: drag;
+}
+
+html header button {
+    -webkit-app-region: no-drag;
+}
+
+/*
+  Adds Utility to hide scrollbar to tailwind
+    https://github.com/tailwindlabs/tailwindcss/discussions/2394
+    https://github.com/tailwindlabs/tailwindcss/pull/5732
+*/
+@layer utilities {
+
+    /* Chrome, Safari and Opera */
+    .no-scrollbar::-webkit-scrollbar {
+        display: none;
+    }
+
+    .no-scrollbar {
+        -ms-overflow-style: none;
+        /* IE and Edge */
+        scrollbar-width: none;
+        /* Firefox */
+    }
+}
+
+
+/* animations */
+.slideInBottom {
+    animation-duration: 0.3s;
+    animation-fill-mode: both;
+    animation-name: slideInBottom;
+}
+
+@keyframes slideInBottom {
+    from {
+        opacity: 0;
+        transform: translateY(30%);
+        pointer-events: none;
+    }
+
+    to {
+        opacity: 1;
+        pointer-events: auto;
+    }
+}
+
+/* animations */
+.slideInTop {
+    animation-duration: 0.3s;
+    animation-fill-mode: both;
+    animation-name: slideInTop;
+}
+
+@keyframes slideInTop {
+    from {
+        opacity: 0;
+        transform: translateY(-20%);
+        pointer-events: none;
+    }
+
+    to {
+        opacity: 1;
+        pointer-events: auto;
+        transform: translateY(0%);
+    }
+}
+
+.fadeIn {
+    animation-duration: 0.3s;
+    animation-fill-mode: both;
+    animation-name: fadeIn;
+    animation-timing-function: ease-in-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
 }

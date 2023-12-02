@@ -1,8 +1,7 @@
 import { Avatar, Box, HStack, Link, Stack, StackDivider, Text } from "@chakra-ui/react"
 import { useState } from "react"
 import { useModalManager, ModalTypes } from "../../../hooks/useModalManager"
-import { FileMessageBlock } from "../chat/chat-message/FileMessage"
-import { FilePreviewModal } from "../file-preview/FilePreviewModal"
+import { FileMessageBlock } from "../chat/ChatMessage/Renderers/FileMessage"
 import { MarkdownRenderer } from "../markdown-viewer/MarkdownRenderer"
 import { useGetUserRecords } from "@/hooks/useGetUserRecords"
 import { useCurrentChannelData } from "@/hooks/useCurrentChannelData"
@@ -87,12 +86,12 @@ export const MessageBox = ({ messageName, channelID, creation, owner, messageTex
                     {file && (message_type === 'File' || message_type === 'Image') && <FileMessageBlock onFilePreviewModalOpen={onFilePreviewModalOpen} file={file} message_type={message_type} owner={owner} creation={creation} />}
                 </Stack>
             </HStack>
-            <FilePreviewModal
+            {/* <FilePreviewModal
                 isOpen={modalManager.modalType === ModalTypes.FilePreview}
                 onClose={modalManager.closeModal}
                 channelMembers={users}
                 {...modalManager.modalContent}
-            />
+            /> */}
         </Box>
     )
 }

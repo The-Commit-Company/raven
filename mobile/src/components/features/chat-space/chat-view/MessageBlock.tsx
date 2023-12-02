@@ -1,5 +1,5 @@
 import React, { memo, useContext, useMemo } from 'react'
-import { FileMessage, Message, MessageBlock, TextMessage } from '../../../../../../types/Messaging/Message'
+import { FileMessage, ImageMessage, Message, MessageBlock, TextMessage } from '../../../../../../types/Messaging/Message'
 import { ChannelMembersMap } from '../ChatInterface'
 import { IonIcon, IonItem, IonSkeletonText, IonText } from '@ionic/react'
 import { SquareAvatar, UserAvatar } from '@/components/common/UserAvatar'
@@ -101,7 +101,7 @@ const options = {
     triggerOnce: true
 };
 
-const ImageMessageBlock = ({ message }: { message: FileMessage }) => {
+const ImageMessageBlock = ({ message }: { message: ImageMessage }) => {
     const { ref, inView } = useInView(options);
 
     const height = `${message.thumbnail_height}px`

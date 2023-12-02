@@ -5,8 +5,8 @@ import { useFrappeDeleteDoc } from 'frappe-react-sdk'
 import { ChannelListItem } from '@/utils/channel/ChannelListProvider'
 import { AlertDialog, Button, Callout, Checkbox, Flex, Text } from '@radix-ui/themes'
 import { Loader } from '@/components/common/Loader'
-import { AlertTriangle } from 'lucide-react'
 import { useToast } from '@/hooks/useToast'
+import { FiAlertTriangle } from 'react-icons/fi'
 
 type DeleteChannelModalProps = {
     onClose: () => void,
@@ -54,7 +54,7 @@ export const DeleteChannelModal = ({ onClose, onCloseParent, channelData }: Dele
                 <ErrorBanner error={error} />
                 <Callout.Root color="red" size='1'>
                     <Callout.Icon>
-                        <AlertTriangle size='18' />
+                        <FiAlertTriangle size='18' />
                     </Callout.Icon>
                     <Callout.Text>
                         This action is permanent and cannot be undone.

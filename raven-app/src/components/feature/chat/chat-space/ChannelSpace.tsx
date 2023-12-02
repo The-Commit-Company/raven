@@ -1,6 +1,6 @@
 import { Box } from '@radix-ui/themes'
 import { ChannelListItem } from '@/utils/channel/ChannelListProvider'
-import { ChatBoxBody } from '../chat-history/ChatBoxBody'
+import { ChatBoxBody } from '../ChatStream/ChatBoxBody'
 import { ChannelHeader } from '../../chat-header/ChannelHeader'
 
 interface ChannelSpaceProps {

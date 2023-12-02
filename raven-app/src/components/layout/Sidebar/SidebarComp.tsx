@@ -7,6 +7,7 @@ import { BoxProps } from '@radix-ui/themes/dist/cjs/components/box';
 import { IconButtonProps } from '@radix-ui/themes/dist/cjs/components/icon-button';
 import { BadgeProps } from '@radix-ui/themes/dist/cjs/components/badge';
 import { BiCaretDown, BiCaretRight } from 'react-icons/bi';
+import { clsx } from 'clsx';
 
 interface SidebarGroupProps extends FlexProps {
     children: ReactNode;
@@ -52,7 +53,7 @@ interface SidebarGroupListProps extends FlexProps {
 export const SidebarGroupList = ({ children, ...props }: SidebarGroupListProps) => {
 
     return (
-        <Flex gap="1" direction='column' {...props}>
+        <Flex className='gap-1.5' direction='column' {...props}>
             {children}
         </Flex>
     )
@@ -66,9 +67,9 @@ interface SidebarItemProps extends FlexProps {
     activeStyles?: Record<string, string>
 }
 
-export const SidebarItem = ({ to, children, end, active = false, activeStyles, ...props }: SidebarItemProps) => {
+export const SidebarItem = ({ to, children, end, active = false, activeStyles, className, ...props }: SidebarItemProps) => {
 
-    const activeClass = ' bg-[var(--slate-4)]'
+    const activeClass = ' bg-[var(--gray-4)] dark:bg-[var(--gray-3)] text-[var(--gray-12)]'
 
     return (
         <NavLink
@@ -80,9 +81,9 @@ export const SidebarItem = ({ to, children, end, active = false, activeStyles, .
                     <Flex
                         gap='2'
                         align='center'
-                        px='2'
+                        px='3'
                         // py="1"
-                        className={'cursor-pointer user-select-none rounded-md py-1.5 transition-all duration-200 hover:bg-[var(--slate-3)] hover:text-[var(--slate-12)]' + (isActive ? activeClass : '')}
+                        className={clsx('cursor-pointer user-select-none rounded-md py-1.5 transition-all duration-200 text-[var(--gray-11)] hover:bg-[var(--gray-3)] dark:hover:bg-[var(--gray-2)]', isActive ? activeClass : '', className)}
                         {...props}
                     >
                         {children}
@@ -94,16 +95,16 @@ export const SidebarItem = ({ to, children, end, active = false, activeStyles, .
     )
 }
 
-interface SidebarIconProps extends BoxProps {
+interface SidebarIconProps extends FlexProps {
     subtle?: boolean,
     children: React.ReactNode
 }
 export const SidebarIcon = ({ subtle, children, ...props }: SidebarIconProps) => {
 
     return (
-        <Box className='text-base' {...props}>
+        <Flex align='center' justify='center' className='text-[var(--slate-11)]' {...props}>
             {children}
-        </Box>
+        </Flex>
     )
 }
 
@@ -125,7 +126,7 @@ export const SidebarButtonItem = ({ children, subtle, onClick, isLoading, active
         <Flex
             gap='2'
             align='center'
-            px='2'
+            px='3'
             className={'user-select-none rounded-md py-1.5 transition-all duration-200 hover:bg-[var(--slate-3)] hover:text-[var(--slate-12)] ' + cursor}
             onClick={onClick}
             {...props}
@@ -150,7 +151,7 @@ export const SidebarViewMoreButton = ({ onClick, ...props }: SidebarViewMoreButt
             color='gray'
             variant='ghost'
             size='1'
-            className='cursor-pointer bg-transparent pt-1.5'
+            className='cursor-pointer text-[var(--gray-10)] bg-transparent hover:text-[var(--gray-11)]'
             highContrast
             onClick={() => {
                 setIsViewMore(!isViewMore)

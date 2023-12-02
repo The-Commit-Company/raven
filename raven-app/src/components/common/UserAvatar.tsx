@@ -48,8 +48,8 @@ export const UserAvatar = ({ src, alt, size = '1', radius = 'medium', isActive, 
             <Skeleton className={radixRadiusToTailwind(radius)} width={skeletonSize} height={skeletonSize} />
         }
         {isActive &&
-            <span className={clsx("absolute block translate-x-1/2 translate-y-1/2 transform rounded-full", radius === 'full' ? 'bottom-0.5 right-0.5' : 'bottom-0 right-0')}>
-                <span className="block h-1.5 w-1.5 rounded-full bg-green-500" />
+            <span className={clsx("absolute block translate-x-1/2 translate-y-1/2 transform rounded-full", radius === 'full' ? 'bottom-1 right-1' : 'bottom-0.5 right-0.5')}>
+                <span className="block h-2 w-2 rounded-full bg-green-500 shadow-md" />
             </span>
         }
     </span>

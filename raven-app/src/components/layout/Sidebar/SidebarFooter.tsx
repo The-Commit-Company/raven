@@ -11,12 +11,17 @@ export const SidebarFooter = () => {
     const userData = useUserData()
     const { logout } = useContext(UserContext)
 
-    const sidebarBgColor = 'bg-[var(--slate-2)] dark:bg-[var(--color-background)]'
-
     const [isAddUserModalOpen, setIsAddUserModalOpen] = useState(false)
 
     return (
-        <Flex gap='1' direction='column' px='3' pb='3' bottom='0' position='fixed' className={`w-[var(--sidebar-width)] ${sidebarBgColor}`} >
+        <Flex
+            gap='1'
+            direction='column'
+            px='4'
+            pb='4'
+            bottom='0'
+            position='fixed'
+            className={`w-[var(--sidebar-width)] bg-[var(--gray-2)] border-r-[var(--gray-3)] border-r dark:bg-[var(--gray-1)]`} >
             <Flex direction='column' gap='2'>
                 <Separator size='4' />
                 <Flex justify="between" align='center' px='1'>

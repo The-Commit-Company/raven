@@ -17,9 +17,9 @@ export const ChannelHeader = ({ channelData }: ChannelHeaderProps) => {
     return (
         <PageHeader>
             <Flex gap='4' align={'center'}>
-                <Flex gap='2' align={'center'}>
-                    <ChannelIcon type={channelData.type} size='20px' />
-                    <Heading size='5'>{channelData.channel_name}</Heading>
+                <Flex gap='1' align={'center'}>
+                    <ChannelIcon type={channelData.type} size='20' />
+                    <Heading size='5' className="mb-0.5">{channelData.channel_name}</Heading>
                 </Flex>
                 <EditChannelNameButton channelID={channelData.name} channel_name={channelData.channel_name} channelType={channelData.type} disabled={channelData.is_archived == 1} />
             </Flex>

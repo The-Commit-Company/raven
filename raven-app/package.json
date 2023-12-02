@@ -38,7 +38,6 @@
     "highlight.js": "^11.9.0",
     "js-cookie": "^3.0.5",
     "lowlight": "^3.1.0",
-    "lucide-react": "^0.293.0",
     "moment-timezone": "^0.5.43",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
@@ -53,12 +52,14 @@
     "react-virtuoso": "^4.3.8",
     "rehype-raw": "^6.1.1",
     "remark-gfm": "^3.0.1",
-    "tippy.js": "^6.3.7"
+    "tippy.js": "^6.3.7",
+    "turndown": "^7.1.2"
   },
   "devDependencies": {
     "@types/js-cookie": "^3.0.6",
     "@types/react": "^18.0.27",
     "@types/react-dom": "^18.0.10",
+    "@types/turndown": "^5.0.4",
     "@vitejs/plugin-react": "^3.1.0",
     "autoprefixer": "^10.4.16",
     "tailwindcss": "^3.3.5",

@@ -46,7 +46,7 @@ def upload_file_with_message():
         image, filename, extn = get_local_image(file_doc.file_url)
         width, height = image.size
 
-        MAX_WIDTH = 640
+        MAX_WIDTH = 480
 
         thumbnail_width = min(width, MAX_WIDTH)
         thumbnail_height = int(height * thumbnail_width / width)

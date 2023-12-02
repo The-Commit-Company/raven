@@ -30,7 +30,7 @@ def react(message_id: str, reaction: str):
         # Why not use frappe.db.delete? 
         # Because frappe won't run the controller method for 'after_delete' if we do so, 
         # and we need to calculate the new count of reactions for our message
-        frappe.get_doc('Raven Message Reaction', existing_reaction).delete()
+        frappe.get_doc('Raven Message Reaction', existing_reaction).delete(delete_permanently=True)
     
     else:
         frappe.get_doc({
