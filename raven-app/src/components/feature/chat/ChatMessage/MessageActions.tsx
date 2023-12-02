@@ -3,19 +3,21 @@ import { FileMessage, Message } from '../../../../../../types/Messaging/Message'
 import { UserFields } from '@/utils/users/UserListProvider'
 import { useContext } from 'react'
 import { UserContext } from '@/utils/auth/UserProvider'
-import { BiCopy, BiDownload, BiEditAlt, BiLink, BiTrash } from 'react-icons/bi'
+import { BiBookmarkMinus, BiBookmarkPlus, BiCopy, BiDownload, BiEditAlt, BiLink, BiTrash } from 'react-icons/bi'
 import { useToast } from '@/hooks/useToast'
 import turndown from 'turndown'
-
+import { HiReply } from 'react-icons/hi'
+import { useFrappePostCall } from 'frappe-react-sdk'
 interface MessageContextMenuProps {
     message: Message,
     onDelete: VoidFunction
     user?: UserFields,
-    onEdit: VoidFunction
+    onEdit: VoidFunction,
+    onReply: VoidFunction,
+    updateMessages: VoidFunction
 }
 
-// TODO:
-export const MessageContextMenu = ({ message, onDelete, onEdit, user }: MessageContextMenuProps) => {
+export const MessageContextMenu = ({ message, onDelete, onEdit, onReply, user, updateMessages }: MessageContextMenuProps) => {
 
     const { currentUser } = useContext(UserContext)
 
@@ -73,22 +75,12 @@ export const MessageContextMenu = ({ message, onDelete, onEdit, user }: MessageC
     }
     return (
         <ContextMenu.Content>
-            <ContextMenu.Item shortcut="⌘ D">Duplicate</ContextMenu.Item>
-            <ContextMenu.Separator />
-
-            <ContextMenu.Sub>
-                <ContextMenu.SubTrigger>More</ContextMenu.SubTrigger>
-                <ContextMenu.SubContent>
-                    <ContextMenu.Item>Move to project…</ContextMenu.Item>
-                    <ContextMenu.Item>Move to folder…</ContextMenu.Item>
-                    <ContextMenu.Separator />
-                    <ContextMenu.Item>Advanced options…</ContextMenu.Item>
-                </ContextMenu.SubContent>
-            </ContextMenu.Sub>
-
-            <ContextMenu.Separator />
-            <ContextMenu.Item>Share</ContextMenu.Item>
-            <ContextMenu.Item>Add to favorites</ContextMenu.Item>
+            <ContextMenu.Item onClick={onReply}>
+                <Flex gap='2'>
+                    <HiReply size='18' />
+                    Reply
+                </Flex>
+            </ContextMenu.Item>
             <ContextMenu.Separator />
             <ContextMenu.Group>
                 {message.message_type === 'Text' &&
@@ -121,8 +113,33 @@ export const MessageContextMenu = ({ message, onDelete, onEdit, user }: MessageC
                 }
 
             </ContextMenu.Group>
+
             <ContextMenu.Separator />
+            <ContextMenu.Group>
+
+                <SaveMessageAction message={message} updateMessages={updateMessages} />
+
+                {/* <ContextMenu.Item>
+                    <Flex gap='2'>
+                        <HiOutlineDocumentAdd size='18' />
+                        Link with document
+                    </Flex>
+                </ContextMenu.Item>
+
+                <ContextMenu.Item>
+                    <Flex gap='2'>
+                        <BiMailSend size='18' />
+                        Send in an email
+                    </Flex>
+                </ContextMenu.Item> */}
+
+            </ContextMenu.Group>
+
+
+
+
             {isOwner && <ContextMenu.Group>
+                <ContextMenu.Separator />
                 {message.message_type === 'Text' &&
                     <ContextMenu.Item onClick={onEdit}>
                         <Flex gap='2'>
@@ -141,4 +158,31 @@ export const MessageContextMenu = ({ message, onDelete, onEdit, user }: MessageC
 
         </ContextMenu.Content>
     )
+}
+
+
+const SaveMessageAction = ({ message, updateMessages }: { message: Message, updateMessages: VoidFunction }) => {
+
+    const { currentUser } = useContext(UserContext)
+    const isSaved = JSON.parse(message._liked_by ?? '[]').includes(currentUser)
+
+    const { call } = useFrappePostCall('frappe.desk.like.toggle_like')
+
+    const handleLike = () => {
+        call({
+            doctype: 'Raven Message',
+            name: message.name,
+            add: isSaved ? 'No' : 'Yes'
+        }).then((r) => updateMessages())
+    }
+
+    return <ContextMenu.Item onClick={handleLike}>
+        <Flex gap='2'>
+            {!isSaved && <BiBookmarkPlus size='18' />}
+            {isSaved && <BiBookmarkMinus size='18' />}
+            {!isSaved ? "Save" : "Unsave"} message
+        </Flex>
+    </ContextMenu.Item>
+
+
 }

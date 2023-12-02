@@ -1,7 +1,7 @@
 import { DividerWithText } from "../../../layout/Divider/DividerWithText";
 import { DateBlock, FileMessage, Message, MessageBlock, MessagesWithDate } from "../../../../../../types/Messaging/Message";
 import { ChannelHistoryFirstMessage } from "../../../layout/EmptyState/EmptyState";
-import { useContext, useRef } from "react";
+import { useCallback, useContext, useRef } from "react";
 import { ChatMessageBox } from "../ChatMessage/ChatMessageBox";
 import { MarkdownRenderer } from "../../markdown-viewer/MarkdownRenderer";
 import { FileMessageBlock } from "../ChatMessage/FileMessage";
@@ -15,6 +15,7 @@ import { DateMonthYear } from "@/utils/dateConversions";
 import { MessageItem } from "../ChatMessage/MessageItem";
 import { DeleteMessageDialog, useDeleteMessage } from "../ChatMessage/MessageActions/DeleteMessage";
 import { EditMessageDialog, useEditMessage } from "../ChatMessage/MessageActions/EditMessage";
+import { useSWRConfig } from "frappe-react-sdk";
 
 /**
  * Anatomy of a message
@@ -62,13 +63,19 @@ import { EditMessageDialog, useEditMessage } from "../ChatMessage/MessageActions
  */
 interface ChatHistoryProps {
     parsedMessages: MessagesWithDate,
-    replyToMessage?: (message: Message) => void,
+    replyToMessage: (message: Message) => void,
     channelData: ChannelListItem | DMChannelListItem
 }
 
 export const ChatHistory = ({ parsedMessages, replyToMessage, channelData }: ChatHistoryProps) => {
 
     const { virtuosoRef } = useContext(VirtuosoRefContext)
+
+    const { mutate } = useSWRConfig()
+
+    const updateMessages = useCallback(() => {
+        mutate(`get_messages_for_channel_${channelData.name}`)
+    }, [channelData.name])
 
     const boxRef = useRef<HTMLDivElement>(null)
 
@@ -86,7 +93,7 @@ export const ChatHistory = ({ parsedMessages, replyToMessage, channelData }: Cha
                 components={{
                     Header: () => <ChannelHistoryFirstMessage channelID={channelData?.name} />,
                 }}
-                context={{ channelData, replyToMessage, setDeleteMessage, setEditMessage }}
+                context={{ channelData, replyToMessage, setDeleteMessage, updateMessages, setEditMessage }}
                 ref={virtuosoRef}
                 increaseViewportBy={300}
                 alignToBottom={true}
@@ -94,19 +101,15 @@ export const ChatHistory = ({ parsedMessages, replyToMessage, channelData }: Cha
             />
             <DeleteMessageDialog {...deleteProps} />
             <EditMessageDialog {...editProps} />
-            {/* <FilePreviewModal
-                isOpen={modalManager.modalType === ModalTypes.FilePreview}
-                onClose={modalManager.closeModal}
-                {...modalManager.modalContent}
-            /> */}
         </Box>
     )
 }
 
-const RenderItem = ({ index, replyToMessage, block, channelData, setEditMessage, setDeleteMessage, ...props }: {
+const RenderItem = ({ index, replyToMessage, updateMessages, block, channelData, setEditMessage, setDeleteMessage, ...props }: {
     index: number,
     block: MessageBlock | DateBlock,
-    replyToMessage?: (message: Message) => void,
+    replyToMessage: (message: Message) => void,
+    updateMessages: () => void,
     setDeleteMessage: (message: Message) => void,
     setEditMessage: (message: Message) => void,
     channelData: ChannelListItem | DMChannelListItem
@@ -124,7 +127,9 @@ const RenderItem = ({ index, replyToMessage, block, channelData, setEditMessage,
             <Box>
                 <MessageItem
                     message={block.data}
+                    updateMessages={updateMessages}
                     setEditMessage={setEditMessage}
+                    replyToMessage={replyToMessage}
                     setDeleteMessage={setDeleteMessage} />
             </Box>
 
