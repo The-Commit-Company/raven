@@ -60,7 +60,7 @@ export const ReplyMessage = ({ messageID, ...props }: ReplyMessageProps) => {
             name: messageID
         },
         fieldname: JSON.stringify(['owner', 'creation', 'message_type', 'file', 'text', 'channel_id', 'name'])
-    }, undefined, {
+    }, `reply_message_${messageID}`, {
         revalidateIfStale: false,
         revalidateOnFocus: false,
         shouldRetryOnError: false,
