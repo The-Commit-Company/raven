@@ -16,6 +16,7 @@ import { TiptapRenderer } from './Renderers/TiptapRenderer/TiptapRenderer'
 import { QuickActions } from './MessageActions/QuickActions/QuickActions'
 import { useContext } from 'react'
 import { UserContext } from '@/utils/auth/UserProvider'
+import { ReplyMessage } from './ReplyMessageBox/ReplyMessageBox'
 
 interface MessageBlockProps {
     message: MessageBlock['data'],
@@ -71,9 +72,11 @@ export const MessageItem = ({ message, setDeleteMessage, setEditMessage, replyTo
                             {/* Message content goes here */}
 
                             {/* If it's a reply, then show the linked message */}
-
+                            {linked_message && <ReplyMessage
+                                className='min-w-[32rem]'
+                                messageID={linked_message} />}
                             {/* Show message according to type */}
-                            <MessageContent message={message} user={user} className={clsx(message.is_continuation ? '-ml-[2px]' : '')} />
+                            <MessageContent message={message} user={user} className={clsx(message.is_continuation ? 'ml-0.5' : '')} />
                             {message_reactions?.length &&
                                 <MessageReactions
                                     messageID={name}

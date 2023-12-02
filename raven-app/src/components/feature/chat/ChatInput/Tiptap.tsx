@@ -84,7 +84,6 @@ const Tiptap = ({ slotAfter, slotBefore, fileProps, onMessageSend, messageSendin
 
     const { channels } = useContext(ChannelListContext) as ChannelListContextType
 
-
     // this is a dummy extension only to create custom keydown behavior
     const KeyboardHandler = Extension.create({
         name: 'keyboardHandler',
@@ -239,6 +238,11 @@ const Tiptap = ({ slotAfter, slotBefore, fileProps, onMessageSend, messageSendin
         StarterKit.configure({
             heading: false,
             codeBlock: false,
+            listItem: {
+                HTMLAttributes: {
+                    class: 'rt-Text rt-r-size-2'
+                }
+            },
             paragraph: {
                 HTMLAttributes: {
                     class: 'rt-Text rt-r-size-2'

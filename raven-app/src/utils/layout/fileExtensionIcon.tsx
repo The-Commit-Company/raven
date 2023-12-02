@@ -35,7 +35,7 @@ export const FileExtensionIcon = ({ ext, ...props }: FileExtensionIconProps) => 
         {isVideo && <FaRegFileVideo size='20' fill='var(--gray-12)' {...props} />}
         {isAudio && <FaRegFileAudio size='20' fill='var(--gray-12)' {...props} />}
         {isPpt && <FaRegFilePowerpoint size='20' fill='var(--gray-12)' {...props} />}
-        {!isExcel && !isImage && !isWord && !isPdf && <FaRegFileAlt width='20' fill='var(--gray-12)' {...props} />}
+        {!isExcel && !isImage && !isWord && !isPdf && !isAudio && !isPpt && !isVideo && <FaRegFileAlt width='20' fill='var(--gray-12)' {...props} />}
     </span>
 
 }

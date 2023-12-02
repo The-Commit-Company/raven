@@ -13,10 +13,11 @@ import { UserContext } from "@/utils/auth/UserProvider"
 import useFileUpload from "../ChatInput/FileInput/useFileUpload"
 import { CustomFile, FileDrop } from "../../file-upload/FileDrop"
 import { FileListItem } from "../../file-upload/FileListItem"
-import { PreviousMessageBox } from "../message-reply/PreviousMessageBox"
 import { useSendMessage } from "../ChatInput/useSendMessage"
 import { Loader } from "@/components/common/Loader"
-import { Flex, Box } from "@radix-ui/themes"
+import { Flex, Box, IconButton } from "@radix-ui/themes"
+import { ReplyMessageBox } from "../ChatMessage/ReplyMessageBox/ReplyMessageBox"
+import { BiX } from "react-icons/bi"
 
 
 const Tiptap = lazy(() => import("../ChatInput/Tiptap"))
@@ -72,10 +73,18 @@ export const ChatBoxBody = ({ channelData }: ChatBoxBodyProps) => {
     const PreviousMessagePreview = ({ selectedMessage }: { selectedMessage: any }) => {
 
         if (selectedMessage) {
-            return <PreviousMessageBox
-                previous_message_content={selectedMessage}
-                onReplyingToMessageClose={handleCancelReply}
-                channelData={channelData} />
+            return <ReplyMessageBox
+                justify='between'
+                align='center'
+                className="m-2"
+                message={selectedMessage}>
+                <IconButton
+                    color='gray'
+                    variant="soft"
+                    onClick={handleCancelReply}>
+                    <BiX size='24' />
+                </IconButton>
+            </ReplyMessageBox>
         }
         return null
     }

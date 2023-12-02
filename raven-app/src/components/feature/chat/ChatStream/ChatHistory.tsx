@@ -5,7 +5,7 @@ import { useCallback, useContext, useRef } from "react";
 import { Virtuoso } from 'react-virtuoso';
 import { VirtuosoRefContext } from "../../../../utils/message/VirtuosoRefProvider";
 import { ChannelListItem, DMChannelListItem } from "@/utils/channel/ChannelListProvider";
-import { Box } from "@radix-ui/themes";
+import { Box, Flex } from "@radix-ui/themes";
 import { DateMonthYear } from "@/utils/dateConversions";
 import { MessageItem } from "../ChatMessage/MessageItem";
 import { DeleteMessageDialog, useDeleteMessage } from "../ChatMessage/MessageActions/DeleteMessage";

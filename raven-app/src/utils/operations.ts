@@ -29,7 +29,7 @@ export const isVideoFile = (ext: string) => {
  */
 export const getFileName = (filename: string) => {
 
-    const name = filename.split('/')[3]
+    const name = filename?.split('/')[3]
     return name;
 }
 
