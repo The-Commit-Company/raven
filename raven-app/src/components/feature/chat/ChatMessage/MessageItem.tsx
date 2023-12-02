@@ -23,10 +23,11 @@ interface MessageBlockProps {
     setDeleteMessage: (message: Message) => void,
     setEditMessage: (message: Message) => void,
     replyToMessage: (message: Message) => void,
-    updateMessages: () => void
+    updateMessages: () => void,
+    onReplyMessageClick: (messageID: string) => void,
 }
 
-export const MessageItem = ({ message, setDeleteMessage, setEditMessage, replyToMessage, updateMessages }: MessageBlockProps) => {
+export const MessageItem = ({ message, setDeleteMessage, onReplyMessageClick, setEditMessage, replyToMessage, updateMessages }: MessageBlockProps) => {
 
     const { name, owner: userID, creation: timestamp, message_reactions, is_continuation, is_reply, linked_message } = message
 
@@ -73,7 +74,9 @@ export const MessageItem = ({ message, setDeleteMessage, setEditMessage, replyTo
 
                             {/* If it's a reply, then show the linked message */}
                             {linked_message && <ReplyMessage
-                                className='min-w-[32rem]'
+                                className='min-w-[32rem] cursor-pointer'
+                                role='button'
+                                onClick={() => onReplyMessageClick(linked_message)}
                                 messageID={linked_message} />}
                             {/* Show message according to type */}
                             <MessageContent message={message} user={user} className={clsx(message.is_continuation ? 'ml-0.5' : '')} />

@@ -10,7 +10,7 @@ import { DateMonthYear } from "@/utils/dateConversions";
 import { MessageItem } from "../ChatMessage/MessageItem";
 import { DeleteMessageDialog, useDeleteMessage } from "../ChatMessage/MessageActions/DeleteMessage";
 import { EditMessageDialog, useEditMessage } from "../ChatMessage/MessageActions/EditMessage";
-import { useSWRConfig } from "frappe-react-sdk";
+import { FrappeConfig, FrappeContext, useSWRConfig } from "frappe-react-sdk";
 
 /**
  * Anatomy of a message
@@ -66,6 +66,8 @@ export const ChatHistory = ({ parsedMessages, replyToMessage, channelData }: Cha
 
     const { virtuosoRef } = useContext(VirtuosoRefContext)
 
+    const { call } = useContext(FrappeContext) as FrappeConfig
+
     const { mutate } = useSWRConfig()
 
     const updateMessages = useCallback(() => {
@@ -78,6 +80,18 @@ export const ChatHistory = ({ parsedMessages, replyToMessage, channelData }: Cha
 
     const { setEditMessage, ...editProps } = useEditMessage()
 
+    const onReplyMessageClick = (messageID: string) => {
+        if (virtuosoRef?.current) {
+            call.get('raven.raven_messaging.doctype.raven_message.raven_message.get_index_of_message', {
+                channel_id: channelData.name,
+                message_id: messageID
+            }).then((result) => {
+                virtuosoRef.current?.scrollToIndex({ index: parseInt(result.message) ?? 'LAST', align: 'center', behavior: 'smooth' })
+            })
+        }
+
+    }
+
     return (
         <Box ref={boxRef} height='100%' className="overflow-y-scroll">
             <Virtuoso
@@ -88,7 +102,7 @@ export const ChatHistory = ({ parsedMessages, replyToMessage, channelData }: Cha
                 components={{
                     Header: () => <ChannelHistoryFirstMessage channelID={channelData?.name} />,
                 }}
-                context={{ channelData, replyToMessage, setDeleteMessage, updateMessages, setEditMessage }}
+                context={{ channelData, replyToMessage, onReplyMessageClick, setDeleteMessage, updateMessages, setEditMessage }}
                 ref={virtuosoRef}
                 increaseViewportBy={300}
                 alignToBottom={true}
@@ -100,13 +114,14 @@ export const ChatHistory = ({ parsedMessages, replyToMessage, channelData }: Cha
     )
 }
 
-const RenderItem = ({ index, replyToMessage, updateMessages, block, channelData, setEditMessage, setDeleteMessage, ...props }: {
+const RenderItem = ({ index, replyToMessage, updateMessages, block, onReplyMessageClick, channelData, setEditMessage, setDeleteMessage, ...props }: {
     index: number,
     block: MessageBlock | DateBlock,
     replyToMessage: (message: Message) => void,
     updateMessages: () => void,
     setDeleteMessage: (message: Message) => void,
     setEditMessage: (message: Message) => void,
+    onReplyMessageClick: (messageID: string) => void,
     channelData: ChannelListItem | DMChannelListItem
 }) => {
     // const block = parsedMessages[index]
@@ -123,6 +138,7 @@ const RenderItem = ({ index, replyToMessage, updateMessages, block, channelData,
                 <MessageItem
                     message={block.data}
                     updateMessages={updateMessages}
+                    onReplyMessageClick={onReplyMessageClick}
                     setEditMessage={setEditMessage}
                     replyToMessage={replyToMessage}
                     setDeleteMessage={setDeleteMessage} />
