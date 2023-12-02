@@ -59,7 +59,7 @@ export const MessageItem = ({ message, setDeleteMessage, setEditMessage, replyTo
                             data-[state=open]:shadow-sm
                             p-2
                             rounded-md'>
-                    <Flex gap='2' >
+                    <Flex gap='3' >
                         <MessageLeftElement message={message} user={user} isActive={isActive} />
                         <Flex direction='column' gap='1' justify='center'>
                             {!is_continuation ? <Flex align='center' gap='2'>
@@ -73,7 +73,7 @@ export const MessageItem = ({ message, setDeleteMessage, setEditMessage, replyTo
                             {/* If it's a reply, then show the linked message */}
 
                             {/* Show message according to type */}
-                            <MessageContent message={message} user={user} />
+                            <MessageContent message={message} user={user} className={clsx(message.is_continuation ? '-ml-[2px]' : '')} />
                             {message_reactions?.length &&
                                 <MessageReactions
                                     messageID={name}

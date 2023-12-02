@@ -53,7 +53,7 @@ export const TiptapRenderer = ({ message, user, showLinkPreview = true, ...props
         },
         paragraph: {
           HTMLAttributes: {
-            class: 'rt-Text rt-r-size-3 ml-1'
+            class: 'rt-Text rt-r-size-3'
           }
         }
       }),
