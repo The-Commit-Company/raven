@@ -1,10 +1,10 @@
 import { useFrappeDeleteDoc, useSWRConfig } from "frappe-react-sdk"
-import { ErrorBanner } from "../../layout/AlertBanner"
+import { ErrorBanner } from "../../../../layout/AlertBanner"
 import { AlertDialog, Button, Callout, Flex, Text } from "@radix-ui/themes"
 import { Loader } from "@/components/common/Loader"
 import { useToast } from "@/hooks/useToast"
 import { FiAlertTriangle } from "react-icons/fi"
-import { Message } from "../../../../../types/Messaging/Message"
+import { Message } from "../../../../../../../types/Messaging/Message"
 
 interface DeleteMessageModalProps {
     onClose: (refresh?: boolean) => void,

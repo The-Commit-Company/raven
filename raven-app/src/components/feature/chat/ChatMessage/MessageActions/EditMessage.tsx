@@ -2,7 +2,7 @@ import { useCallback, useState } from "react"
 import { Message, TextMessage } from "../../../../../../../types/Messaging/Message"
 import { Dialog } from "@radix-ui/themes"
 import { DIALOG_CONTENT_CLASS } from "@/utils/layout/dialog"
-import { EditMessageModal } from "@/components/feature/message-action-palette/EditMessageModal"
+import { EditMessageModal } from "@/components/feature/chat/ChatMessage/ActionModals/EditMessageModal"
 
 export const useEditMessage = () => {
     const [message, setMessage] = useState<null | Message>(null)

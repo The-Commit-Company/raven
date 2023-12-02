@@ -10,7 +10,6 @@ import { UserContext } from "../../../utils/auth/UserProvider"
 import GlobalSearch from "../global-search/GlobalSearch"
 import { getFileExtension, getFileName } from "../../../utils/operations"
 import { useModalManager, ModalTypes } from "../../../hooks/useModalManager"
-import { FilePreviewModal } from "../file-preview/FilePreviewModal"
 import { FileSearchResult } from "../global-search/FileSearch"
 import { UserFields } from "@/utils/users/UserListProvider"
 import { useCurrentChannelData } from "@/hooks/useCurrentChannelData"
@@ -226,11 +225,11 @@ export const Files = ({ searchChange, input, isGlobalSearchModalOpen, onGlobalSe
                         </HStack></Item>)
                 })}
             </Command.Group>
-            <FilePreviewModal
+            {/* <FilePreviewModal
                 isOpen={modalManager.modalType === ModalTypes.FilePreview}
                 onClose={modalManager.closeModal}
                 {...modalManager.modalContent}
-            />
+            /> */}
         </Command.List>
     )
 }

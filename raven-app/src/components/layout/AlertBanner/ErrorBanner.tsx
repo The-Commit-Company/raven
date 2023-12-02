@@ -1,7 +1,6 @@
 import { FrappeError } from 'frappe-react-sdk'
 import { PropsWithChildren, useMemo } from 'react'
 import React from 'react'
-import { MarkdownRenderer } from '@/components/feature/markdown-viewer/MarkdownRenderer'
 import { Callout } from '@radix-ui/themes'
 import { FiAlertTriangle } from 'react-icons/fi'
 
@@ -65,11 +64,12 @@ export const ErrorBanner = ({ error, overrideHeading, children }: ErrorBannerPro
         return message?.title
     }
 
-    // TODO: Sometimes, error message has links which route to the ERPNext interface. We need to parse the link to route to the correct page in our interface
-    // Links are of format <a href="{host_name}/app/{doctype}/{name}">LEAD-00001</a>
     if (messages.length === 0 || !error) return null
     return (<ErrorCallout>
-        {messages.map((m, i) => <MarkdownRenderer key={i} content={m.message} />)}
+        {/* Can do this since the error will be coming from the server */}
+        {messages.map((m, i) => <div key={i} dangerouslySetInnerHTML={{
+            __html: m.message
+        }} />)}
         {children}
     </ErrorCallout>)
 }

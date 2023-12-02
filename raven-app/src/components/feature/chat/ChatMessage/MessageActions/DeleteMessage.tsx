@@ -2,7 +2,7 @@ import { useCallback, useState } from "react"
 import { Message } from "../../../../../../../types/Messaging/Message"
 import { AlertDialog } from "@radix-ui/themes"
 import { DIALOG_CONTENT_CLASS } from "@/utils/layout/dialog"
-import { DeleteMessageModal } from "@/components/feature/message-action-palette/DeleteMessageModal"
+import { DeleteMessageModal } from "@/components/feature/chat/ChatMessage/ActionModals/DeleteMessageModal"
 
 export const useDeleteMessage = () => {
     const [message, setMessage] = useState<null | Message>(null)

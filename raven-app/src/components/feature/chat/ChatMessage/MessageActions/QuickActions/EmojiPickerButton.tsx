@@ -3,6 +3,7 @@ import { Box, Flex, IconButton, Popover, Portal, Tooltip } from '@radix-ui/theme
 import { DIALOG_CONTENT_CLASS } from '@/utils/layout/dialog'
 import { BiSmile } from 'react-icons/bi'
 import { Loader } from '@/components/common/Loader'
+import { QUICK_ACTION_BUTTON_CLASS } from './QuickActionButton'
 
 const EmojiPicker = lazy(() => import('@/components/common/EmojiPicker/EmojiPicker'))
 
@@ -30,7 +31,8 @@ export const EmojiPickerButton = ({ saveReaction }: EmojiPickerButtonProps) => {
                     <Popover.Trigger>
                         <IconButton
                             variant='soft'
-                            size='1'
+                            size='2'
+                            className={QUICK_ACTION_BUTTON_CLASS}
                             color='gray'
                             aria-label='pick emoji'>
                             <BiSmile />

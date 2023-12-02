@@ -1,5 +1,5 @@
 import { getFileName } from '@/utils/operations'
-import { ImageMessage } from '../../../../../../types/Messaging/Message'
+import { ImageMessage } from '../../../../../../../types/Messaging/Message'
 import { Box, Button, Dialog, Flex, Link } from '@radix-ui/themes'
 import { useState } from 'react'
 import { DIALOG_CONTENT_CLASS } from '@/utils/layout/dialog'

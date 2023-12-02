@@ -1,78 +1,26 @@
 import { ContextMenu, Flex } from '@radix-ui/themes'
-import { FileMessage, Message } from '../../../../../../types/Messaging/Message'
-import { UserFields } from '@/utils/users/UserListProvider'
+import { FileMessage, Message } from '../../../../../../../types/Messaging/Message'
 import { useContext } from 'react'
 import { UserContext } from '@/utils/auth/UserProvider'
 import { BiBookmarkMinus, BiBookmarkPlus, BiCopy, BiDownload, BiEditAlt, BiLink, BiTrash } from 'react-icons/bi'
-import { useToast } from '@/hooks/useToast'
-import turndown from 'turndown'
 import { HiReply } from 'react-icons/hi'
-import { useFrappePostCall } from 'frappe-react-sdk'
-interface MessageContextMenuProps {
+import { FrappeConfig, FrappeContext } from 'frappe-react-sdk'
+import { useMessageCopy } from './useMessageCopy'
+import { useToast } from '@/hooks/useToast'
+
+export interface MessageContextMenuProps {
     message: Message,
     onDelete: VoidFunction
-    user?: UserFields,
     onEdit: VoidFunction,
     onReply: VoidFunction,
-    updateMessages: VoidFunction
+    updateMessages: VoidFunction,
+    isOwner: boolean
 }
 
-export const MessageContextMenu = ({ message, onDelete, onEdit, onReply, user, updateMessages }: MessageContextMenuProps) => {
+export const MessageContextMenu = ({ message, onDelete, onEdit, onReply, updateMessages, isOwner }: MessageContextMenuProps) => {
 
-    const { currentUser } = useContext(UserContext)
+    const copy = useMessageCopy(message)
 
-    const isOwner = currentUser === message.owner
-
-    const { toast } = useToast()
-
-    const copy = () => {
-        if (message.message_type === 'Text') {
-
-            // Remove all empty lines
-            let text = message.text.replace(/^\s*[\r\n]/gm, "")
-
-            var turndownService = new turndown({
-                codeBlockStyle: 'fenced',
-            })
-
-            // We want the links to not be converted to markdown links
-
-            turndownService.addRule('links', {
-                filter: 'a',
-                replacement: function (content, node, options) {
-                    return content
-                }
-            })
-            var markdown = turndownService.turndown(text)
-            if (markdown) {
-                navigator.clipboard.writeText(markdown)
-                toast({
-                    title: 'Text copied',
-                    duration: 800,
-                    variant: 'accent'
-                })
-            } else {
-                toast({
-                    title: 'Could not copy text',
-                    duration: 800,
-                    variant: 'destructive'
-                })
-            }
-
-        } else {
-            if (message.file.startsWith('http') || message.file.startsWith('https')) {
-                navigator.clipboard.writeText(message.file)
-            }
-            else {
-                navigator.clipboard.writeText(window.location.origin + message.file)
-            }
-            toast({
-                title: 'Link copied',
-                duration: 800,
-                variant: 'accent'
-            })
-        }
-    }
     return (
         <ContextMenu.Content>
             <ContextMenu.Item onClick={onReply}>
@@ -166,14 +114,30 @@ const SaveMessageAction = ({ message, updateMessages }: { message: Message, upda
     const { currentUser } = useContext(UserContext)
     const isSaved = JSON.parse(message._liked_by ?? '[]').includes(currentUser)
 
-    const { call } = useFrappePostCall('frappe.desk.like.toggle_like')
+    const { call } = useContext(FrappeContext) as FrappeConfig
+
+    const { toast } = useToast()
 
     const handleLike = () => {
-        call({
+        call.post('frappe.desk.like.toggle_like', {
             doctype: 'Raven Message',
             name: message.name,
             add: isSaved ? 'No' : 'Yes'
-        }).then((r) => updateMessages())
+        }).then(() => {
+            toast({
+                title: isSaved ? 'Message unsaved' : 'Message saved',
+                variant: isSaved ? 'default' : 'accent',
+                duration: 800,
+            })
+            updateMessages()
+        })
+            .catch(() => {
+                toast({
+                    title: 'Could not perform the action',
+                    variant: 'destructive',
+                    duration: 800,
+                })
+            })
     }
 
     return <ContextMenu.Item onClick={handleLike}>
@@ -181,6 +145,7 @@ const SaveMessageAction = ({ message, updateMessages }: { message: Message, upda
             {!isSaved && <BiBookmarkPlus size='18' />}
             {isSaved && <BiBookmarkMinus size='18' />}
             {!isSaved ? "Save" : "Unsave"} message
+
         </Flex>
     </ContextMenu.Item>
 

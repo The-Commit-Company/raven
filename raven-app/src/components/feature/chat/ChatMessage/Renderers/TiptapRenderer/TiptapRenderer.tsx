@@ -1,5 +1,5 @@
 import { EditorContent, EditorProvider, Extension, ReactRenderer, useEditor } from '@tiptap/react'
-import { Message, TextMessage } from '../../../../../../../types/Messaging/Message'
+import { Message, TextMessage } from '../../../../../../../../types/Messaging/Message'
 import { UserFields } from '@/utils/users/UserListProvider'
 import { BoxProps } from '@radix-ui/themes/dist/cjs/components/box'
 import { Box } from '@radix-ui/themes'

@@ -1,7 +1,7 @@
 import { Box, ContextMenu, Flex, HoverCard, Link, Separator, Text } from '@radix-ui/themes'
 import { Message, MessageBlock } from '../../../../../../types/Messaging/Message'
-import { MessageContextMenu } from './MessageActions'
-import { DateTooltip, DateTooltipShort } from './DateTooltip'
+import { MessageContextMenu } from './MessageActions/MessageActions'
+import { DateTooltip, DateTooltipShort } from './Renderers/DateTooltip'
 import { BoxProps } from '@radix-ui/themes/dist/cjs/components/box'
 import { clsx } from 'clsx'
 import { UserAvatar } from '@/components/common/UserAvatar'
@@ -10,9 +10,12 @@ import { useIsUserActive } from '@/hooks/useIsUserActive'
 import { UserFields } from '@/utils/users/UserListProvider'
 import { BsFillCircleFill } from 'react-icons/bs'
 import { MessageReactions } from './MessageReactions'
-import { ImageMessageBlock } from './ImageMessage'
-import { FileMessageBlock } from './FileMessage'
-import { TiptapRenderer } from './TiptapRenderer/TiptapRenderer'
+import { ImageMessageBlock } from './Renderers/ImageMessage'
+import { FileMessageBlock } from './Renderers/FileMessage'
+import { TiptapRenderer } from './Renderers/TiptapRenderer/TiptapRenderer'
+import { QuickActions } from './MessageActions/QuickActions/QuickActions'
+import { useContext } from 'react'
+import { UserContext } from '@/utils/auth/UserProvider'
 
 interface MessageBlockProps {
     message: MessageBlock['data'],
@@ -40,8 +43,12 @@ export const MessageItem = ({ message, setDeleteMessage, setEditMessage, replyTo
         replyToMessage(message)
     }
 
+    const { currentUser } = useContext(UserContext)
+
+    const isOwner = currentUser === message.owner
+
     return (
-        <Box>
+        <Box className='relative'>
             <ContextMenu.Root>
                 <ContextMenu.Trigger className='group 
                             hover:bg-[var(--accent-2)]
@@ -75,17 +82,27 @@ export const MessageItem = ({ message, setDeleteMessage, setEditMessage, replyTo
                                 />
                             }
                         </Flex>
+                        <QuickActions
+                            message={message}
+                            onDelete={onDelete}
+                            onEdit={onEdit}
+                            isOwner={isOwner}
+                            updateMessages={updateMessages}
+                            onReply={onReply}
+                        />
                     </Flex>
+
                 </ContextMenu.Trigger>
+
                 <MessageContextMenu
                     message={message}
                     onDelete={onDelete}
                     onEdit={onEdit}
+                    isOwner={isOwner}
                     updateMessages={updateMessages}
                     onReply={onReply}
-                    user={user} />
+                />
             </ContextMenu.Root>
-
         </Box>
     )
 }

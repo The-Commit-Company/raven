@@ -1,13 +1,13 @@
 import { useFrappeUpdateDoc, useSWRConfig } from "frappe-react-sdk"
 import { Suspense, lazy, useEffect } from "react"
-import { ErrorBanner } from "../../layout/AlertBanner"
+import { ErrorBanner } from "../../../../layout/AlertBanner"
 import { IconButton, Dialog, Flex, Text } from "@radix-ui/themes"
 import { BiX } from "react-icons/bi"
 import { useToast } from "@/hooks/useToast"
 import { Loader } from "@/components/common/Loader"
-import { Message, TextMessage } from "../../../../../types/Messaging/Message"
+import { Message, TextMessage } from "../../../../../../../types/Messaging/Message"
 
-const Tiptap = lazy(() => import("../chat/ChatInput/Tiptap"))
+const Tiptap = lazy(() => import("../../ChatInput/Tiptap"))
 
 interface EditMessageModalProps {
     onClose: (refresh?: boolean) => void,

@@ -1,12 +1,7 @@
 import { DividerWithText } from "../../../layout/Divider/DividerWithText";
-import { DateBlock, FileMessage, Message, MessageBlock, MessagesWithDate } from "../../../../../../types/Messaging/Message";
+import { DateBlock, Message, MessageBlock, MessagesWithDate } from "../../../../../../types/Messaging/Message";
 import { ChannelHistoryFirstMessage } from "../../../layout/EmptyState/EmptyState";
 import { useCallback, useContext, useRef } from "react";
-import { ChatMessageBox } from "../ChatMessage/ChatMessageBox";
-import { MarkdownRenderer } from "../../markdown-viewer/MarkdownRenderer";
-import { FileMessageBlock } from "../ChatMessage/FileMessage";
-import { ModalTypes, useModalManager } from "../../../../hooks/useModalManager";
-import { FilePreviewModal } from "../../file-preview/FilePreviewModal";
 import { Virtuoso } from 'react-virtuoso';
 import { VirtuosoRefContext } from "../../../../utils/message/VirtuosoRefProvider";
 import { ChannelListItem, DMChannelListItem } from "@/utils/channel/ChannelListProvider";

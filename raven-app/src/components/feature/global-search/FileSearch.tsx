@@ -12,7 +12,6 @@ import { EmptyStateForSearch } from '../../layout/EmptyState/EmptyState'
 import { SelectInput, SelectOption } from '../search-filters/SelectInput'
 import { Sort } from '../sorting'
 import './styles.css'
-import { FilePreviewModal } from '../file-preview/FilePreviewModal'
 import { useModalManager, ModalTypes } from "../../../hooks/useModalManager"
 import { scrollbarStyles } from '../../../styles'
 import { UserFields } from '@/utils/users/UserListProvider'
@@ -264,11 +263,6 @@ export const FileSearch = ({ onToggleMyChannels, isOpenMyChannels, onToggleSaved
                                     })}
                                 </Stack></> : <EmptyStateForSearch />))}
             </Stack>
-            <FilePreviewModal
-                isOpen={modalManager.modalType === ModalTypes.FilePreview}
-                onClose={modalManager.closeModal}
-                {...modalManager.modalContent}
-            />
         </TabPanel>
     )
 }
