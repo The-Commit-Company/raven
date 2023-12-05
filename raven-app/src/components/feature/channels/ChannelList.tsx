@@ -18,18 +18,18 @@ export const ChannelList = ({ unread_count }: { unread_count?: UnreadCountData }
 
     return (
         <SidebarGroup>
-            <SidebarGroupItem gap='2' px='1'>
+            <SidebarGroupItem gap='2' className={'pl-1.5'}>
                 <SidebarViewMoreButton onClick={toggle} />
                 <Flex width='100%' justify='between' align='center' gap='2'>
                     <Flex gap='3' align='center'>
-                        <SidebarGroupLabel className="cal-sans">Channels</SidebarGroupLabel>
+                        <SidebarGroupLabel className='cal-sans'>Channels</SidebarGroupLabel>
                         <CreateChannelButton updateChannelList={mutate} />
                     </Flex>
                     {!showData && unread_count && unread_count.total_unread_count_in_channels > 0 && <SidebarBadge>{unread_count.total_unread_count_in_channels}</SidebarBadge>}
                 </Flex>
             </SidebarGroupItem>
             <SidebarGroup>
-                <SidebarGroupList pr='1'>
+                <SidebarGroupList>
                     {showData && filteredChannels.map((channel) => <ChannelItem
                         channel={channel}
                         unreadCount={unread_count?.channels ?? []}
@@ -45,10 +45,10 @@ const ChannelItem = ({ channel, unreadCount }: { channel: ChannelListItem, unrea
     const unreadCountForChannel = useMemo(() => unreadCount.find((unread) => unread.name == channel.name)?.unread_count, [channel.name, unreadCount])
 
     return (
-        <SidebarItem to={channel.name}>
+        <SidebarItem to={channel.name} className={'py-1.5'}>
             <ChannelIcon type={channel.type} size='18' />
             <Flex justify='between' align={'center'} width='100%'>
-                <Text size='2' className="text-ellipsis line-clamp-1" as='span' weight={unreadCountForChannel ? 'bold' : 'regular'}>{channel.channel_name}</Text>
+                <Text size='1' className="text-ellipsis line-clamp-1" as='span' weight={unreadCountForChannel ? 'bold' : 'regular'}>{channel.channel_name}</Text>
                 <SidebarBadge hidden={!unreadCountForChannel}>{unreadCountForChannel}</SidebarBadge>
             </Flex>
         </SidebarItem>

@@ -10,6 +10,7 @@ import { ErrorText, HelperText, Label } from '@/components/common/Form'
 import { Loader } from '@/components/common/Loader'
 import { DIALOG_CONTENT_CLASS } from '@/utils/layout/dialog'
 import { useToast } from '@/hooks/useToast'
+
 interface ChannelCreationForm {
     channel_name: string,
     channel_description: string,
@@ -100,7 +101,7 @@ export const CreateChannelButton = ({ updateChannelList }: { updateChannelList: 
     return <Dialog.Root open={isOpen} onOpenChange={onOpenChange}>
         <Dialog.Trigger>
             <IconButton variant='ghost' size='1' color='gray' aria-label='Create Channel' className='h-[18px]' title='Create Channel'>
-                <BiPlus className='text-[--gray-12]' />
+                <BiPlus className='text-[var(--slate-12)] mt-0.5' />
             </IconButton>
         </Dialog.Trigger>
         <Dialog.Content className={DIALOG_CONTENT_CLASS}>

@@ -21,18 +21,18 @@ export const DirectMessageList = ({ unread_count }: { unread_count?: UnreadCount
 
     return (
         <SidebarGroup pb='4'>
-            <SidebarGroupItem gap='2' px='1'>
+            <SidebarGroupItem gap='2' className={'pl-1.5'}>
                 <SidebarViewMoreButton onClick={toggle} />
                 <Flex width='100%' justify='between' align='center' gap='2'>
                     <Flex gap='2' align='center'>
-                        <SidebarGroupLabel className="cal-sans">Direct Messages</SidebarGroupLabel>
+                        <SidebarGroupLabel className='cal-sans'>Direct Messages</SidebarGroupLabel>
                     </Flex>
                     {!showData && unread_count && unread_count?.total_unread_count_in_dms > 0 && <SidebarBadge>{unread_count.total_unread_count_in_dms}</SidebarBadge>}
                 </Flex>
             </SidebarGroupItem>
-            <SidebarGroup pr='1'>
+            <SidebarGroup>
                 {showData &&
-                    <SidebarGroupList px='1'>
+                    <SidebarGroupList>
                         <DirectMessageItemList unread_count={unread_count} />
                         {extra_users && extra_users.length ? <ExtraUsersItemList /> : null}
                     </SidebarGroupList>
@@ -60,15 +60,14 @@ const DirectMessageItem = ({ channel, unreadCount }: { channel: DMChannelListIte
     const unreadCountForChannel = useMemo(() => unreadCount.find((unread) => unread.name == channel.name)?.unread_count, [channel.name, unreadCount])
 
     const userData = useGetUser(channel.peer_user_id)
-
     const isActive = useIsUserActive(channel.peer_user_id)
 
-    return <SidebarItem to={channel.name}>
+    return <SidebarItem to={channel.name} className={'py-0.5'}>
         <SidebarIcon>
-            <UserAvatar src={userData?.user_image} alt={userData?.full_name} isActive={isActive} />
+            <UserAvatar src={userData?.user_image} alt={userData?.full_name} isActive={isActive} size='1' />
         </SidebarIcon>
         <Flex justify='between' width='100%'>
-            <Text size='2' className="text-ellipsis line-clamp-1" weight={unreadCountForChannel ? 'bold' : 'regular'}>
+            <Text size='1' className="text-ellipsis line-clamp-1" weight={unreadCountForChannel ? 'bold' : 'regular'}>
                 {channel.peer_user_id !== currentUser ? userData?.full_name ?? channel.peer_user_id : `${userData?.full_name} (You)`}
             </Text>
             {unreadCountForChannel ? <SidebarBadge>{unreadCountForChannel}</SidebarBadge> : null}
@@ -121,8 +120,7 @@ const ExtraUsersItem = ({ user, createDMChannel }: { user: ExtraUsersData, creat
     const isActive = useIsUserActive(user.name)
     return <SidebarButtonItem
         isLoading={isLoading}
-        onClick={onButtonClick}
-    >
+        onClick={onButtonClick}>
         <SidebarIcon>
             <UserAvatar src={user.user_image} alt={user.full_name} isActive={isActive} />
         </SidebarIcon>
