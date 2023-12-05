@@ -1,5 +1,5 @@
 import { BiBookmark, BiSolidBookmark, BiSearch } from 'react-icons/bi'
-import { Avatar, Button, Center, chakra, FormControl, HStack, IconButton, Input, InputGroup, InputLeftElement, Spinner, Stack, TabPanel, Text } from '@chakra-ui/react'
+import { Avatar, Button, Center, chakra, FormControl, HStack, IconButton, Input, InputGroup, InputLeftElement, Spinner, Stack, Text } from '@chakra-ui/react'
 import { useFrappeGetCall, useFrappePostCall } from 'frappe-react-sdk'
 import { useContext, useState, useMemo, useEffect } from 'react'
 import { FormProvider, Controller, useForm } from 'react-hook-form'
@@ -19,6 +19,7 @@ import { ChannelListContext, ChannelListContextType, ChannelListItem } from '@/u
 import { useTheme } from '@/ThemeProvider'
 import { ChannelIcon } from '@/utils/layout/channelIcon'
 import { useToast } from '@/hooks/useToast'
+import { Box } from '@radix-ui/themes'
 
 interface FilterInput {
     'from-user-filter': SelectOption[],
@@ -169,8 +170,8 @@ export const MessageSearch = ({ onToggleMyChannels, isOpenMyChannels, onToggleSa
     }, [debouncedText, in_channel, from_user, with_user, date, my_channel_only])
 
     return (
-        <TabPanel px={0}>
-            <Stack px={4}>
+        <Box>
+            <Stack>
                 <InputGroup>
                     <InputLeftElement
                         pointerEvents='none'
@@ -251,7 +252,7 @@ export const MessageSearch = ({ onToggleMyChannels, isOpenMyChannels, onToggleSa
                     </chakra.form>
                 </FormProvider>
             </Stack>
-            <Stack h='420px' p={4}>
+            <Stack h='420px'>
                 <ErrorBanner error={error} />
                 {
                     ((isLoading && isValidating) || loading ? <Center><Spinner /></Center> :
@@ -263,13 +264,19 @@ export const MessageSearch = ({ onToggleMyChannels, isOpenMyChannels, onToggleSa
                                 sortField={sortByField}
                                 onSortOrderChange={(order) => setSortOrder(order)} />
                                 <Stack overflowY='scroll' pt={4} sx={scrollbarStyles(appearance)}>
-                                    {data.message.map(({ name, text, owner, creation, channel_id }: MessageSearchResult) => {
+                                    {data.message.map((message: MessageSearchResult) => {
                                         return (
-                                            <MessageBox messageName={name} channelID={channel_id} creation={creation} owner={owner} messageText={text} handleScrollToMessage={handleScrollToMessage} message_type={'Text'} />
+                                            <MessageBox message={{
+                                                ...message,
+                                                message_type: 'Text',
+                                                is_continuation: 0,
+                                                is_reply: 0,
+                                                _liked_by: '[]',
+                                            }} handleScrollToMessage={handleScrollToMessage} />
                                         )
                                     })}
                                 </Stack></> : <EmptyStateForSearch />))}
             </Stack>
-        </TabPanel>
+        </Box>
     )
 }

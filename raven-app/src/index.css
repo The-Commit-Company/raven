@@ -15,6 +15,10 @@
     font-family: 'Cal Sans', sans-serif;
 }
 
+.not-cal {
+    font-family: var(--default-font-family);
+}
+
 :root {
     --sidebar-width: 16rem;
 }
