@@ -47,9 +47,16 @@ def upload_file_with_message():
         width, height = image.size
 
         MAX_WIDTH = 480
+        MAX_HEIGHT = 320
 
-        thumbnail_width = min(width, MAX_WIDTH)
-        thumbnail_height = int(height * thumbnail_width / width)
+        # If it's a landscape image, then the thumbnail needs to be 480px wide
+        if width > height:
+            thumbnail_width = min(width, MAX_WIDTH)
+            thumbnail_height = int(height * thumbnail_width / width)
+        
+        else:
+            thumbnail_height = min(height, MAX_HEIGHT)
+            thumbnail_width = int(width * thumbnail_height / height)
 
         # thumbnail_size = thumbnail_width, thumbnail_height
 

@@ -6,6 +6,7 @@ import { DIALOG_CONTENT_CLASS } from '@/utils/layout/dialog'
 import { BiDownload } from 'react-icons/bi'
 import { UserFields } from '@/utils/users/UserListProvider'
 import { DateMonthAtHourMinuteAmPm } from '@/utils/dateConversions'
+import { clsx } from 'clsx'
 
 interface ImageMessageProps {
     message: ImageMessage,
@@ -59,7 +60,7 @@ export const ImageMessageBlock = ({ message, user }: ImageMessageProps) => {
                 />
             </Box>
             <Dialog.Root open={isOpen} onOpenChange={setIsOpen}>
-                <Dialog.Content className={DIALOG_CONTENT_CLASS}>
+                <Dialog.Content className={clsx(DIALOG_CONTENT_CLASS, 'max-w-[88vw]')}>
                     <Dialog.Title size='3'>{fileName}</Dialog.Title>
                     <Dialog.Description color='gray' size='1'>{user?.full_name ?? message.owner} on <DateMonthAtHourMinuteAmPm date={message.creation} /></Dialog.Description>
                     <Box my='4'>
@@ -67,7 +68,8 @@ export const ImageMessageBlock = ({ message, user }: ImageMessageProps) => {
                             src={message.file}
                             loading='lazy'
                             width='100%'
-                            className='rounded-md shadow-md'
+                            // height='300'
+                            className='rounded-md shadow-md object-contain max-h-[600px]'
                             alt={`Image file sent by ${message.owner} at ${message.creation}`}
                         />
                     </Box>
