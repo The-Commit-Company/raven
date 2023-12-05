@@ -1,7 +1,7 @@
-import { EditorProvider, Extension, ReactRenderer } from '@tiptap/react'
+import { Editor, EditorContent, EditorContext, Extension, ReactRenderer, useEditor } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import Underline from '@tiptap/extension-underline'
-import React, { useContext } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { TextFormattingMenu } from './TextFormattingMenu'
 import Highlight from '@tiptap/extension-highlight'
 import Link from '@tiptap/extension-link'
@@ -26,6 +26,7 @@ import json from 'highlight.js/lib/languages/json'
 import python from 'highlight.js/lib/languages/python'
 import { Plugin } from 'prosemirror-state'
 import { Box } from '@radix-ui/themes'
+import { useSessionStickyState } from '@/hooks/useStickyState'
 const lowlight = createLowlight(common)
 
 lowlight.register('html', html)
@@ -41,6 +42,8 @@ export interface ToolbarFileProps {
 type TiptapEditorProps = {
     slotBefore?: React.ReactNode,
     slotAfter?: React.ReactNode,
+    sessionStorageKey?: string,
+    disableSessionStorage?: boolean,
     fileProps?: ToolbarFileProps,
     onMessageSend: (message: string, json: any) => Promise<void>,
     messageSending: boolean,
@@ -78,7 +81,7 @@ export const ChannelMention = Mention.extend({
             pluginKey: new PluginKey('channelMention'),
         }
     })
-const Tiptap = ({ slotAfter, slotBefore, fileProps, onMessageSend, messageSending, defaultText = '' }: TiptapEditorProps) => {
+const Tiptap = ({ slotBefore, fileProps, onMessageSend, messageSending, sessionStorageKey = 'tiptap-editor', disableSessionStorage = false, defaultText = '' }: TiptapEditorProps) => {
 
     const { users } = useContext(UserListContext)
 
@@ -112,13 +115,13 @@ const Tiptap = ({ slotAfter, slotBefore, fileProps, onMessageSend, messageSendin
 
                     onMessageSend(html, json)
                         .then(() => {
-                            this.editor.commands.clearContent();
+                            this.editor.commands.clearContent(true);
                             this.editor.setEditable(true)
                         })
                         .catch(() => {
                             this.editor.setEditable(true)
                         })
-                    return this.editor.commands.clearContent();
+                    return this.editor.commands.clearContent(true);
                 },
 
                 'Mod-Enter': () => {
@@ -148,13 +151,13 @@ const Tiptap = ({ slotAfter, slotBefore, fileProps, onMessageSend, messageSendin
                         this.editor.setEditable(false)
                         onMessageSend(html, json)
                             .then(() => {
-                                this.editor.commands.clearContent();
+                                this.editor.commands.clearContent(true);
                                 this.editor.setEditable(true)
                             })
                             .catch(() => {
                                 this.editor.setEditable(true)
                             })
-                        return this.editor.commands.clearContent();
+                        return this.editor.commands.clearContent(true);
                     }
 
                     return false;
@@ -409,25 +412,38 @@ const Tiptap = ({ slotAfter, slotBefore, fileProps, onMessageSend, messageSendin
         KeyboardHandler
     ]
 
+    const [content, setContent] = useSessionStickyState(defaultText, sessionStorageKey, disableSessionStorage)
+
+
+    const editor = useEditor({
+        extensions,
+        content,
+        autofocus: "end",
+        editorProps: {
+            attributes: {
+                class: 'tiptap-editor'
+            }
+        },
+        onUpdate({ editor }) {
+            setContent(editor.getHTML())
+        }
+    }, [onMessageSend])
+
+    useEffect(() => {
+        editor?.commands.setContent(content)
+    }, [onMessageSend])
+
+
     return (
         <Box className='border rounded-md border-[var(--gray-5)] dark:border-[var(--gray-6)] dark:bg-[var(--gray-3)] shadow-md '>
-            <EditorProvider
-                extensions={extensions}
-                content={defaultText}
-                editorProps={{
-                    attributes: {
-                        class: 'tiptap-editor'
-                    }
-                }}
-                autofocus
-                slotAfter={slotAfter}
-                slotBefore={slotBefore}
-            >
+            <EditorContext.Provider value={{ editor }}>
+                {slotBefore}
+                <EditorContent editor={editor} />
                 <ToolPanel>
                     <TextFormattingMenu />
                     <RightToolbarButtons fileProps={fileProps} sendMessage={onMessageSend} messageSending={messageSending} />
                 </ToolPanel>
-            </EditorProvider>
+            </EditorContext.Provider>
         </Box>
 
     )

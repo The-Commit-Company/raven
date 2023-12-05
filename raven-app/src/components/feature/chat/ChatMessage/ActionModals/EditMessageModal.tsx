@@ -53,7 +53,7 @@ export const EditMessageModal = ({ onClose, message }: EditMessageModalProps) =>
             <Flex gap='2' direction='column'>
                 <ErrorBanner error={error} />
                 <Suspense fallback={<Loader />}>
-                    <Tiptap onMessageSend={onSubmit} messageSending={updatingDoc} defaultText={message.text} />
+                    <Tiptap onMessageSend={onSubmit} disableSessionStorage messageSending={updatingDoc} defaultText={message.text} />
                 </Suspense>
                 <Flex justify='end'>
                     <Text size='1' color='gray'>Press <b>Enter</b> to save</Text>
