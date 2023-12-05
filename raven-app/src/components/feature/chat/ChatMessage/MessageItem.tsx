@@ -53,9 +53,8 @@ export const MessageItem = ({ message, setDeleteMessage, onReplyMessageClick, se
         <Box className='relative'>
             <ContextMenu.Root>
                 <ContextMenu.Trigger className='group 
-                            hover:bg-[var(--accent-2)]
+                            hover:bg-gray-100
                             dark:hover:bg-[var(--gray-4)] 
-                            hover:shadow-sm 
                             data-[state=open]:bg-[var(--accent-2)]
                             dark:data-[state=open]:bg-[var(--gray-4)]
                             data-[state=open]:shadow-sm
@@ -64,7 +63,7 @@ export const MessageItem = ({ message, setDeleteMessage, onReplyMessageClick, se
                     <Flex gap='3' >
                         <MessageLeftElement message={message} user={user} isActive={isActive} />
                         <Flex direction='column' gap='1' justify='center'>
-                            {!is_continuation ? <Flex align='center' gap='2'>
+                            {!is_continuation ? <Flex align='center' gap='2' mt='-1'>
                                 <UserHoverCard user={user} userID={userID} isActive={isActive} />
                                 <Separator orientation='vertical' />
                                 <DateTooltip timestamp={timestamp} />
@@ -132,7 +131,7 @@ const MessageLeftElement = ({ message, className, user, isActive, ...props }: Me
 
 }
 
-const useGetUserDetails = (userID: string) => {
+export const useGetUserDetails = (userID: string) => {
 
     const user = useGetUser(userID)
 
@@ -146,7 +145,7 @@ interface UserProps {
     userID: string
     isActive?: boolean
 }
-const Avatar = ({ user, userID, isActive = false }: UserProps) => {
+export const Avatar = ({ user, userID, isActive = false }: UserProps) => {
 
     return <UserAvatar
         src={user?.user_image}
@@ -156,11 +155,11 @@ const Avatar = ({ user, userID, isActive = false }: UserProps) => {
         alt={user?.full_name ?? userID} />
 }
 
-const UserHoverCard = ({ user, userID, isActive }: UserProps) => {
+export const UserHoverCard = ({ user, userID, isActive }: UserProps) => {
 
     return <HoverCard.Root>
         <HoverCard.Trigger>
-            <Link className='text-[var(--gray-11)]' weight='medium' size='2'>
+            <Link className='text-[var(--gray-12)]' weight='medium' size='2'>
                 {user?.full_name ?? userID}
             </Link>
         </HoverCard.Trigger>
@@ -186,7 +185,7 @@ interface MessageContentProps extends BoxProps {
     user?: UserFields
     message: Message
 }
-const MessageContent = ({ message, user, ...props }: MessageContentProps) => {
+export const MessageContent = ({ message, user, ...props }: MessageContentProps) => {
 
     return <Box {...props}>
         {message.message_type === 'Image' && <ImageMessageBlock message={message} user={user} />}

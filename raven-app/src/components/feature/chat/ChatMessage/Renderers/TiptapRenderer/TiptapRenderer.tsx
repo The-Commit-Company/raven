@@ -48,12 +48,12 @@ export const TiptapRenderer = ({ message, user, showLinkPreview = true, ...props
         italic: false,
         listItem: {
           HTMLAttributes: {
-            class: 'ml-5 rt-Text rt-r-size-3'
+            class: 'ml-5 rt-Text rt-r-size-2'
           }
         },
         paragraph: {
           HTMLAttributes: {
-            class: 'rt-Text rt-r-size-3'
+            class: 'rt-Text rt-r-size-2'
           }
         }
       }),

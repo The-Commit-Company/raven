@@ -1,22 +1,16 @@
-import { Stack, Tooltip, useDisclosure, Box } from "@chakra-ui/react"
 import { useFrappeGetCall, useFrappePostCall } from "frappe-react-sdk"
 import { useContext } from "react"
-import { BiSearch } from "react-icons/bi"
 import { useNavigate } from "react-router-dom"
-import { TextMessage } from "../../../../../types/Messaging/Message"
+import { Message, TextMessage } from "../../../../../types/Messaging/Message"
 import { VirtuosoRefContext } from "../../../utils/message/VirtuosoRefProvider"
 import { ErrorBanner } from "../../layout/AlertBanner"
 import { EmptyStateForSavedMessages } from "../../layout/EmptyState/EmptyState"
 import { PageHeader } from "../../layout/Heading/PageHeader"
-import { CommandPalette } from "../command-palette"
 import { MessageBox } from "../global-search/MessageBox"
-import { Button, Heading } from "@radix-ui/themes"
+import { Heading } from "@radix-ui/themes"
 import { useToast } from "@/hooks/useToast"
-
-interface SavedMessage extends TextMessage {
-    channel_id: string,
-    file: string
-}
+import { SearchButton } from "../chat-header/SearchButton"
+import { Box, Flex } from '@radix-ui/themes'
 
 const SavedMessages = () => {
 
@@ -26,9 +20,7 @@ const SavedMessages = () => {
 
     const { virtuosoRef } = useContext(VirtuosoRefContext)
 
-    const { isOpen: isCommandPaletteOpen, onClose: onCommandPaletteClose, onToggle: onCommandPaletteToggle } = useDisclosure()
-
-    const { data, error } = useFrappeGetCall<{ message: SavedMessage[] }>("raven.raven_messaging.doctype.raven_message.raven_message.get_saved_messages", undefined, undefined, {
+    const { data, error } = useFrappeGetCall<{ message: Message[] }>("raven.raven_messaging.doctype.raven_message.raven_message.get_saved_messages", undefined, undefined, {
         revalidateOnFocus: false
     })
 
@@ -45,58 +37,43 @@ const SavedMessages = () => {
             const result = await call({
                 channel_id: channelID,
                 message_id: messageName
+            }).catch(() => {
+                toast({
+                    description: "There was an error while indexing the message.",
+                    variant: "destructive",
+                    duration: 1000,
+                })
             })
-            setTimeout(() => {
-                if (virtuosoRef) {
-                    virtuosoRef.current?.scrollToIndex({ index: parseInt(result.message) ?? 'LAST', align: 'center' })
-                }
-            }, 200)
+            if (result) {
+                setTimeout(() => {
+                    if (virtuosoRef) {
+                        virtuosoRef.current?.scrollToIndex({ index: parseInt(result.message) ?? 'LAST', align: 'center' })
+                    }
+                }, 200)
+            }
         })
     }
 
-
-
-    if (indexingError) {
-        toast({
-            description: "There was an error while indexing the message.",
-            variant: "destructive",
-            duration: 1000,
-        })
-    }
-    if (error) {
-        return <Box p={4}><ErrorBanner error={error} /></Box>
-    }
     return (
         <>
             <PageHeader>
-                <Heading size='5'>Saved</Heading>
-                <Tooltip hasArrow label='search' placement='bottom-start' rounded={'md'}>
-                    <Button
-                        size='2'
-                        aria-label="search"
-                        color='gray'
-                        variant='soft'
-                        onClick={onCommandPaletteToggle}>
-                        <BiSearch />
-                        Search
-                    </Button>
-                </Tooltip>
+                <Heading size='5'>Saved Messages</Heading>
+                <SearchButton />
             </PageHeader>
-            {data && data.message?.length === 0 && <EmptyStateForSavedMessages />}
-            <Stack justify={'flex-start'} p={4} overflow='hidden' pt='20'>
-                {data?.message?.map(({ name, text, owner, creation, channel_id, file, message_type }: SavedMessage) => {
-                    return (
-                        <MessageBox key={name} channelID={channel_id} messageName={name} creation={creation} owner={owner} messageText={text} file={file} message_type={message_type} handleScrollToMessage={handleScrollToMessage} />
-                    )
-                })}
-            </Stack>
-            <CommandPalette
-                isOpen={isCommandPaletteOpen}
-                onClose={onCommandPaletteClose}
-                onToggle={onCommandPaletteToggle} />
+            <Box className="min-h-screen pt-20 pb-8">
+                <ErrorBanner error={error} />
+                {data && data.message?.length === 0 && <EmptyStateForSavedMessages />}
+                <Flex direction='column' gap='3' justify='start' px='4'>
+                    {data?.message?.map((message) => {
+                        return (
+                            <MessageBox key={message.name} message={message} handleScrollToMessage={handleScrollToMessage} />
+                        )
+                    })}
+                </Flex>
+            </Box>
+
         </>
     )
 }
 
 export const Component = SavedMessages
-// Component.displayName = "SavedMessages"

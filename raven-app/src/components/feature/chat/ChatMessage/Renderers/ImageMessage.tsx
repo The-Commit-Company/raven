@@ -55,6 +55,10 @@ export const ImageMessageBlock = ({ message, user }: ImageMessageProps) => {
                     loading='lazy'
                     className='z-50 absolute top-0 left-0 rounded-md shadow-md object-cover'
                     height={height}
+                    style={{
+                        maxHeight: height + 'px',
+                        maxWidth: width + 'px',
+                    }}
                     width={width}
                     alt={`Image file sent by ${message.owner} at ${message.creation}`}
                 />
