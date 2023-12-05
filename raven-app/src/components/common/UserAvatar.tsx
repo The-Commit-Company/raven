@@ -43,7 +43,7 @@ export const UserAvatar = ({ src, alt, size = '1', radius = 'medium', isActive, 
     const { ref, inView } = useInView(options)
     return <span ref={ref} className="relative inline-block">
         {inView ?
-            <Avatar color={generateAvatarColor(alt)} src={src} alt={alt} loading='lazy' fallback={fallback ?? getInitials(alt)} size={size} radius={radius} {...props} />
+            <Avatar color={generateAvatarColor(alt)} src={src} alt={alt} loading='lazy' fallback={fallback ?? getInitials(alt)} size={size} radius={radius} className={className} {...props} />
             :
             <Skeleton className={radixRadiusToTailwind(radius)} width={skeletonSize} height={skeletonSize} />
         }
