@@ -116,10 +116,12 @@ export const ChatBoxBody = ({ channelData }: ChatBoxBodyProps) => {
                         &&
                         <Suspense fallback={<Flex align='center' justify='center' width='100%' height='9'><Loader /></Flex>}>
                             <Tiptap
+                                key={channelData.name}
                                 fileProps={{
                                     fileInputRef,
                                     addFile
                                 }}
+                                sessionStorageKey={`tiptap-${channelData.name}`}
                                 onMessageSend={sendMessage}
                                 messageSending={loading}
                                 slotBefore={<Flex direction='column' justify='center' hidden={!selectedMessage && !files.length}>

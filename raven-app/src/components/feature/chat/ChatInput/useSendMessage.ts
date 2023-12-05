@@ -1,6 +1,5 @@
 import { useFrappePostCall, useSWRConfig } from 'frappe-react-sdk'
 import { Message } from '../../../../../../types/Messaging/Message'
-import { CustomFile } from '../../file-upload/FileDrop'
 
 export const useSendMessage = (channelID: string, noOfFiles: number, uploadFiles: () => Promise<void>, handleCancelReply: VoidFunction, selectedMessage?: Message | null) => {
 
