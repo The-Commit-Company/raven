@@ -93,7 +93,7 @@ export const ChatHistory = ({ parsedMessages, replyToMessage, channelData }: Cha
     }
 
     return (
-        <Box ref={boxRef} height='100%' className="overflow-y-scroll">
+        <Box ref={boxRef} height='100%' pb='2' className="overflow-y-scroll">
             <Virtuoso
                 customScrollParent={boxRef.current ?? undefined}
                 totalCount={parsedMessages.length}
