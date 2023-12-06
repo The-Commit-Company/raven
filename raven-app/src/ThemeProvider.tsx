@@ -48,8 +48,3 @@ export const ThemeContext = React.createContext<ThemeContextType>({
 });
 
 export const useTheme = () => React.useContext(ThemeContext);
-
-export const useColorModeValue = (light: any, dark: any) => {
-    const { appearance } = useTheme();
-    return appearance === 'light' ? light : dark;
-}

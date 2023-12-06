@@ -9,6 +9,7 @@ import { useState } from 'react'
 import { ThemeProvider } from './ThemeProvider'
 import { Toaster } from './components/common/Toast/Toaster'
 import { FullPageLoader } from './components/layout/Loaders'
+import { useStickyState } from './hooks/useStickyState'
 
 
 const router = createBrowserRouter(
@@ -30,7 +31,7 @@ const router = createBrowserRouter(
 )
 function App() {
 
-  const [appearance, setAppearance] = useState<'dark' | 'light'>('dark');
+  const [appearance, setAppearance] = useStickyState<'light' | 'dark'>('light', 'appearance');
 
   const toggleTheme = () => {
     setAppearance(appearance === 'dark' ? 'light' : 'dark');

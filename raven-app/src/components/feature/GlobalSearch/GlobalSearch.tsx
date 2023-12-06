@@ -1,4 +1,3 @@
-import { SelectOption } from "../search-filters/SelectInput"
 import { ChannelSearch } from "./ChannelSearch"
 import { FileSearch } from "./FileSearch"
 import { MessageSearch } from "./MessageSearch"
@@ -19,7 +18,6 @@ interface GlobalSearchModalProps {
 
 export default function GlobalSearch({ isOpen, onClose, tabIndex, input, fromFilter, inFilter, withFilter, onCommandPaletteClose }: GlobalSearchModalProps) {
 
-    const [isOpenOtherChannels, { toggle: onToggleOtherChannels }] = useBoolean()
     const [isOpenMyChannels, { toggle: onToggleMyChannels }] = useBoolean()
     const [isSaved, { toggle: onToggleSaved }] = useBoolean()
 
@@ -48,15 +46,15 @@ export default function GlobalSearch({ isOpen, onClose, tabIndex, input, fromFil
                             <Tabs.Trigger value="1">Files</Tabs.Trigger>
                             <Tabs.Trigger value="2">Channels</Tabs.Trigger>
                         </Tabs.List>
-                        <Box px='2' pt="3" pb="2">
+                        <Box pt="3" pb="2">
                             <Tabs.Content value="0">
-                                {onCommandPaletteClose && <MessageSearch onToggleMyChannels={onToggleMyChannels} isOpenMyChannels={isOpenMyChannels} onToggleSaved={onToggleSaved} isSaved={isSaved} dateOption={dateOption} input={input} fromFilter={fromFilter} inFilter={inFilter} withFilter={withFilter} onCommandPaletteClose={onCommandPaletteClose} onClose={onClose} />}
+                                {onCommandPaletteClose && <MessageSearch onToggleMyChannels={onToggleMyChannels} isOpenMyChannels={isOpenMyChannels} onToggleSaved={onToggleSaved} isSaved={isSaved} input={input} fromFilter={fromFilter} inFilter={inFilter} withFilter={withFilter} onCommandPaletteClose={onCommandPaletteClose} onClose={onClose} />}
                             </Tabs.Content>
                             <Tabs.Content value="1">
-                                <FileSearch onToggleMyChannels={onToggleMyChannels} isOpenMyChannels={isOpenMyChannels} onToggleSaved={onToggleSaved} isSaved={isSaved} dateOption={dateOption} input={input} fromFilter={fromFilter} inFilter={inFilter} />
+                                <FileSearch onToggleMyChannels={onToggleMyChannels} isOpenMyChannels={isOpenMyChannels} onToggleSaved={onToggleSaved} isSaved={isSaved} input={input} fromFilter={fromFilter} inFilter={inFilter} withFilter={withFilter} />
                             </Tabs.Content>
                             <Tabs.Content value="2">
-                                <ChannelSearch onToggleMyChannels={onToggleMyChannels} isOpenMyChannels={isOpenMyChannels} onToggleOtherChannels={onToggleOtherChannels} isOpenOtherChannels={isOpenOtherChannels} input={input} onClose={onClose} />
+                                <ChannelSearch onToggleMyChannels={onToggleMyChannels} isOpenMyChannels={isOpenMyChannels} input={input} onClose={onCloseAll} />
                             </Tabs.Content>
                         </Box>
                     </Tabs.Root>
@@ -66,7 +64,12 @@ export default function GlobalSearch({ isOpen, onClose, tabIndex, input, fromFil
     )
 }
 
-export const dateOption: SelectOption[] = [
+interface Option {
+    label: string,
+    value: string
+}
+
+export const dateOption: Option[] = [
     { label: "Today", value: getDateString(0) },
     { label: "Yesterday", value: getDateString(-1) },
     { label: "Last 7 days", value: getDateString(-6) },

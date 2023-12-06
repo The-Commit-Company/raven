@@ -1,12 +1,12 @@
 import { ChannelListItem, DMChannelListItem } from "@/utils/channel/ChannelListProvider"
 import { useCurrentChannelData } from "@/hooks/useCurrentChannelData"
-import { useContext, useState } from "react"
+import { useContext } from "react"
 import { ChannelMembers, ChannelMembersContext, ChannelMembersContextType } from "@/utils/channel/ChannelMembersProvider"
 import { EditDescriptionButton } from "@/components/feature/channel-details/edit-channel-description/EditDescriptionButton"
 import { AddMembersButton } from "@/components/feature/channel-member-details/add-members/AddMembersButton"
 import { UserContext } from "@/utils/auth/UserProvider"
 import { useGetUserRecords } from "@/hooks/useGetUserRecords"
-import { Box, Button, Flex, Heading, Link, Text } from "@radix-ui/themes"
+import { Box, Flex, Heading, Link, Text } from "@radix-ui/themes"
 import { UserAvatar } from "@/components/common/UserAvatar"
 import { ChannelIcon } from "@/utils/layout/channelIcon"
 import { BiBookmark } from "react-icons/bi"
@@ -14,16 +14,14 @@ import { DateMonthYear } from "@/utils/dateConversions"
 
 export const EmptyStateForSearch = () => {
     return (
-        <Flex justify="center" align="center" className={'w-full h-screen-1/2'}>
-            <Flex direction='column'>
-                <Text weight="bold" align="center" size='2'>Nothing turned up</Text>
-                <Text align="center" className={'w-screen-1/4'} size='1'>You may want to try using different keywords, checking for typos or adjusting your filters.</Text>
-                <Flex gap='1'>
-                    <Text size='1'>Not the results that you expected? File an issue on</Text>
-                    <Link href="https://github.com/The-Commit-Company/Raven" target="_blank" rel="noreferrer">
-                        <Text color='blue' size='1'>GitHub.</Text>
-                    </Link>.
-                </Flex>
+        <Flex justify="center" align="center" className={'w-full h-64'}>
+            <Flex direction='column' gap='1' className="text-center">
+                <Text weight="bold" size='5'>Nothing turned up</Text>
+                <Text as='span' size='2'>You may want to try using different keywords, checking for typos or adjusting your filters.</Text>
+                <Text as='span' size='2'>Not the results that you expected? File an issue on <Link href="https://github.com/The-Commit-Company/Raven" target="_blank" rel="noreferrer">
+                    <Text color='blue' size='2'>GitHub</Text>
+                </Link>.
+                </Text>
             </Flex>
         </Flex>
     )

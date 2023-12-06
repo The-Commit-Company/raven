@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 
-export const useDebounce = <T = any>(value: T, delay: number): T => {
+export const useDebounce = <T = any>(value: T, delay: number = 200): T => {
     const [debouncedValue, setDebouncedValue] = useState(value)
 
     useEffect(() => {

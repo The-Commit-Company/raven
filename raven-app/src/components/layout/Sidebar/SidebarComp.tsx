@@ -72,20 +72,21 @@ export const SidebarItem = ({ to, children, end, active = false, activeStyles, c
     return (
         <NavLink
             to={to}
-            end={end}>
+            end={end}
+            className='no-underline'
+        >
             {({ isActive }) => {
                 return (
                     <Flex
                         gap='2'
                         align='center'
                         px='3'
-                        className={clsx('cursor-pointer user-select-none rounded-md transition-all duration-200 hover:bg-[var(--gray-3)] dark:hover:bg-[var(--gray-5)]', isActive ? activeClass : '', className)}
+                        className={clsx('cursor-pointer user-select-none rounded-md no-underline transition-all duration-200 hover:bg-[var(--gray-3)] dark:hover:bg-[var(--gray-5)]', isActive ? activeClass : '', className)}
                         {...props}>
                         {children}
                     </Flex>
                 )
             }}
-
         </NavLink>
     )
 }

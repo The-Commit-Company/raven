@@ -98,7 +98,7 @@ export const FileDrop = forwardRef((props: FileDropProps, ref) => {
                     justify='center'
                     className="fixed top-14 border-2 border-dashed rounded-md border-[var(--gray-6)] dark:bg-[#171923AA] bg-[#F7FAFCAA]"
                     style={{
-                        width: 'calc(100vw - var(--sidebar-width) - var(--chakra-space-8))',
+                        width: 'calc(100vw - var(--sidebar-width) - var(--space-8))',
                         height: 'calc(100vh - 80px)',
                         zIndex: 9999
                     }}
