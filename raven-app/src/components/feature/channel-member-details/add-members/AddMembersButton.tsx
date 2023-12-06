@@ -26,11 +26,11 @@ export const AddMembersButton = ({ channelData, updateMembers, isIconButton = fa
 
             {isIconButton ? <Dialog.Trigger>
                 <IconButton variant='surface' color='gray' aria-label={"add members to channel"} {...props}>
-                    <BiUserPlus />
+                    <BiUserPlus size='18' />
                 </IconButton>
             </Dialog.Trigger> : <Dialog.Trigger>
                 <Button variant="ghost" size='1' {...props}>
-                    <BiUserPlus />Add members</Button>
+                    <BiUserPlus size='16' />Add members</Button>
             </Dialog.Trigger>}
 
             <Dialog.Content className={DIALOG_CONTENT_CLASS}>

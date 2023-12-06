@@ -5,8 +5,8 @@ import { FlexProps } from '@radix-ui/themes/dist/cjs/components/flex';
 import { TextProps } from '@radix-ui/themes/dist/cjs/components/text';
 import { IconButtonProps } from '@radix-ui/themes/dist/cjs/components/icon-button';
 import { BadgeProps } from '@radix-ui/themes/dist/cjs/components/badge';
-import { BiCaretDown, BiCaretRight } from 'react-icons/bi';
 import { clsx } from 'clsx';
+import { BsCaretDownFill, BsCaretRightFill } from 'react-icons/bs';
 
 interface SidebarGroupProps extends FlexProps {
     children: ReactNode;
@@ -38,7 +38,6 @@ type SidebarGroupLabelProps = TextProps & {
 }
 
 export const SidebarGroupLabel = ({ children, ...props }: SidebarGroupLabelProps) => {
-
     return (
         <Text size='2' weight='medium' {...props}>
             {children}
@@ -52,7 +51,7 @@ interface SidebarGroupListProps extends FlexProps {
 export const SidebarGroupList = ({ children, ...props }: SidebarGroupListProps) => {
 
     return (
-        <Flex className='gap-1.5' direction='column' {...props}>
+        <Flex gap='1' direction='column' {...props}>
             {children}
         </Flex>
     )
@@ -68,7 +67,7 @@ interface SidebarItemProps extends FlexProps {
 
 export const SidebarItem = ({ to, children, end, active = false, activeStyles, className, ...props }: SidebarItemProps) => {
 
-    const activeClass = ' bg-[var(--gray-4)] dark:bg-[var(--gray-3)] text-[var(--gray-12)]'
+    const activeClass = 'bg-[#EBEBEB] dark:bg-[var(--gray-6)] text-[var(--gray-12)]'
 
     return (
         <NavLink
@@ -82,15 +81,12 @@ export const SidebarItem = ({ to, children, end, active = false, activeStyles, c
                         gap='2'
                         align='center'
                         px='3'
-                        // py="1"
-                        className={clsx('cursor-pointer user-select-none rounded-md py-1.5 no-underline transition-all duration-200 text-[var(--gray-11)] hover:bg-[var(--gray-3)] dark:hover:bg-[var(--gray-2)]', isActive ? activeClass : '', className)}
-                        {...props}
-                    >
+                        className={clsx('cursor-pointer user-select-none rounded-md no-underline transition-all duration-200 hover:bg-[var(--gray-3)] dark:hover:bg-[var(--gray-5)]', isActive ? activeClass : '', className)}
+                        {...props}>
                         {children}
                     </Flex>
                 )
             }}
-
         </NavLink>
     )
 }
@@ -100,7 +96,6 @@ interface SidebarIconProps extends FlexProps {
     children: React.ReactNode
 }
 export const SidebarIcon = ({ subtle, children, ...props }: SidebarIconProps) => {
-
     return (
         <Flex align='center' justify='center' className='text-[var(--slate-11)]' {...props}>
             {children}
@@ -127,7 +122,7 @@ export const SidebarButtonItem = ({ children, subtle, onClick, isLoading, active
             gap='2'
             align='center'
             px='3'
-            className={'user-select-none rounded-md py-1.5 transition-all duration-200 hover:bg-[var(--slate-3)] hover:text-[var(--slate-12)] ' + cursor}
+            className={'user-select-none rounded-md py-1.5 transition-all duration-200 hover:bg-[var(--slate-3)] hover:text-[var(--slate-11)] ' + cursor}
             onClick={onClick}
             {...props}
         >
@@ -148,18 +143,16 @@ export const SidebarViewMoreButton = ({ onClick, ...props }: SidebarViewMoreButt
         <IconButton
             aria-label={"view"}
             title='View'
-            color='gray'
             variant='ghost'
             size='1'
-            className='cursor-pointer text-[var(--gray-10)] bg-transparent hover:text-[var(--gray-11)]'
+            className='cursor-pointer text-[var(--slate-12)] bg-transparent hover:text-[var(--gray-13)]'
             highContrast
             onClick={() => {
                 setIsViewMore(!isViewMore)
                 onClick()
             }}
-            {...props}
-        >
-            {isViewMore ? <BiCaretRight /> : <BiCaretDown />}
+            {...props}>
+            {isViewMore ? <BsCaretRightFill size='13' /> : <BsCaretDownFill size='13' />}
         </IconButton>
     )
 }

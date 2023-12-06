@@ -23,7 +23,7 @@ export const SidebarFooter = () => {
             position='fixed'
             className={`w-[var(--sidebar-width)] bg-[var(--gray-2)] border-r-[var(--gray-3)] border-r dark:bg-[var(--gray-1)]`} >
             <Flex direction='column' gap='2'>
-                <Separator size='4' />
+                <Separator size='4' className={`bg-[var(--gray-4)] dark:bg-[var(--gray-6)]`} />
                 <Flex justify="between" align='center' px='1'>
                     <Flex gap='2' align='center'>
                         <UserAvatar src={userData.user_image} alt={userData.full_name} isActive />

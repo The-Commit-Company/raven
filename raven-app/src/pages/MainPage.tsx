@@ -16,9 +16,7 @@ export const MainPage = () => {
                         <Box className={`w-64 bg-[var(--gray-2)] border-r-[var(--gray-3)] border-r dark:bg-[var(--gray-1)]`} left="0" position="fixed">
                             <Sidebar />
                         </Box>
-                        <Box
-                            className='ml-[var(--sidebar-width)] w-[calc(100vw-var(--sidebar-width))] dark:bg-[var(--gray-2)]'
-                        >
+                        <Box className='ml-[var(--sidebar-width)] w-[calc(100vw-var(--sidebar-width))] dark:bg-[var(--gray-3)]'>
                             <VirtuosoRefProvider>
                                 <Outlet />
                             </VirtuosoRefProvider>

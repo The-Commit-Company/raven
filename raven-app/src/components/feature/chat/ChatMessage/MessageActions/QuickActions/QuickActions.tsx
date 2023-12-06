@@ -7,8 +7,8 @@ import { MouseEventHandler, useContext, useRef } from 'react'
 import { FrappeConfig, FrappeContext } from 'frappe-react-sdk'
 import { EmojiPickerButton } from './EmojiPickerButton'
 
-
 const QUICK_EMOJIS = ['👍', '✅', '👀', '🎉']
+
 export const QuickActions = ({ message, onReply, onEdit, updateMessages, isOwner }: MessageContextMenuProps) => {
 
     const toolbarRef = useRef<HTMLDivElement>(null)
@@ -42,24 +42,23 @@ export const QuickActions = ({ message, onReply, onEdit, updateMessages, isOwner
         }).then(() => updateMessages())
     }
 
-
     return (
-
         <Box ref={toolbarRef} className='absolute 
         -top-6 
         right-4
         group-hover:visible
         z-2 
-        p-2
+        p-1
         shadow-md
         rounded-md
-        dark:bg-[var(--color-panel-translucent)]
+        bg-white
+        dark:bg-black
         invisible'>
             <Flex gap='1'>
                 {QUICK_EMOJIS.map((emoji) => {
                     return <QuickActionButton
                         key={emoji}
-
+                        className={'text-sm'}
                         tooltip={`React with ${emoji}`}
                         aria-label={`React with ${emoji}`}
                         onClick={() => {
@@ -71,32 +70,29 @@ export const QuickActions = ({ message, onReply, onEdit, updateMessages, isOwner
 
                 <EmojiPickerButton saveReaction={onEmojiReact} />
 
-                {isOwner ? <Tooltip content='Edit'><QuickActionButton
+                {isOwner && message.message_type === 'Text' ? <Tooltip content='Edit'><QuickActionButton
                     onClick={onEdit}
                     tooltip='Edit message'
                     aria-label='Edit message'>
-
-                    <BiEditAlt size='18' />
-
+                    <BiEditAlt size='14' />
                 </QuickActionButton>
                 </Tooltip> :
                     <QuickActionButton
                         tooltip='Reply'
                         aria-label='Reply to this message'
                         onClick={onReply}>
-                        <HiReply size='18' />
+                        <HiReply size='14' />
                     </QuickActionButton>
                 }
+
                 <QuickActionButton
                     aria-label='More actions'
                     variant='soft'
                     tooltip='More actions'
                     onClick={onMoreClick}
-                    className={QUICK_ACTION_BUTTON_CLASS}
-                >
-                    <BiDotsHorizontal size='18' />
+                    className={QUICK_ACTION_BUTTON_CLASS}>
+                    <BiDotsHorizontal size='14' />
                 </QuickActionButton>
-
             </Flex>
         </Box>
 

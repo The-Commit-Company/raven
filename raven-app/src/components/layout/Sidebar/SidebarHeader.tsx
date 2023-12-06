@@ -13,7 +13,7 @@ export const SidebarHeader = () => {
                 height='8'>
                 <Text as='span' size='6' className='cal-sans pl-1'>raven</Text>
                 <ColorModeToggleButton />
-            </Flex >
+            </Flex>
         </header>
     )
 }

@@ -97,8 +97,10 @@ const Tiptap = ({ slotBefore, fileProps, onMessageSend, messageSending, sessionS
                     const isCodeBlockActive = this.editor.isActive('codeBlock');
                     const isListItemActive = this.editor.isActive('listItem');
 
+
+                    // FIXME: This breaks sometimes when the key is not `userMention$` but a random number appended in front of it
                     //@ts-expect-error
-                    const isSuggestionOpen = this.editor.state.userMention$.active || this.editor.state.channelMention$.active
+                    const isSuggestionOpen = this.editor.state.userMention$?.active || this.editor.state.channelMention$?.active
                     const hasContent = this.editor.getText().trim().length > 0
 
                     if (isCodeBlockActive || isListItemActive || isSuggestionOpen) {
@@ -435,7 +437,7 @@ const Tiptap = ({ slotBefore, fileProps, onMessageSend, messageSending, sessionS
 
 
     return (
-        <Box className='border rounded-md border-[var(--gray-5)] dark:border-[var(--gray-6)] dark:bg-[var(--gray-3)] shadow-md '>
+        <Box className='border rounded-[var(--radius-4)] border-gray-300 dark:border-gray-500 dark:bg-[var(--gray-3)] shadow-md '>
             <EditorContext.Provider value={{ editor }}>
                 {slotBefore}
                 <EditorContent editor={editor} />

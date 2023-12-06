@@ -1,10 +1,10 @@
-import { BiBookmark } from 'react-icons/bi'
 import { ChannelList } from '../../feature/channels/ChannelList'
 import { DirectMessageList } from '../../feature/direct-messages/DirectMessageList'
-import { SidebarItem, SidebarGroupLabel, SidebarIcon } from './SidebarComp'
+import { SidebarItem } from './SidebarComp'
 import { useFrappeEventListener, useFrappeGetCall } from 'frappe-react-sdk'
 import { UnreadCountData } from '../../../utils/channel/ChannelListProvider'
 import { AccessibleIcon, Box, Flex, ScrollArea, Text } from '@radix-ui/themes'
+import { BiBookmark } from 'react-icons/bi'
 
 export const SidebarBody = () => {
 
@@ -20,13 +20,13 @@ export const SidebarBody = () => {
     return (
         <ScrollArea type="hover" scrollbars="vertical" className='h-[calc(100vh-7rem)]'>
             <Flex direction='column' gap='2' className='overflow-x-hidden' px='2'>
-                <Box pr='1'>
-                    <SidebarItem to={'saved-messages'} className='pl-1'>
+                <Box>
+                    <SidebarItem to={'saved-messages'} className='pl-1.5 py-0.5'>
                         <AccessibleIcon label='Saved Messages'>
-                            <BiBookmark size='16' className='text-[var(--gray-10)]' />
+                            <BiBookmark className='text-[var(--slate-12)] mt-0.5' size='14' />
                         </AccessibleIcon>
                         <Box>
-                            <Text size='2' className="cal-sans" as='span'>Saved Messages</Text>
+                            <Text size='2' className='cal-sans' as='span'>Saved Messages</Text>
                         </Box>
                     </SidebarItem>
                 </Box>

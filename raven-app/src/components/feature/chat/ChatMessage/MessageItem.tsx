@@ -54,7 +54,7 @@ export const MessageItem = ({ message, setDeleteMessage, onReplyMessageClick, se
             <ContextMenu.Root>
                 <ContextMenu.Trigger className='group 
                             hover:bg-gray-100
-                            dark:hover:bg-[var(--gray-4)] 
+                            dark:hover:bg-[var(--gray-5)] 
                             data-[state=open]:bg-[var(--accent-2)]
                             dark:data-[state=open]:bg-[var(--gray-4)]
                             data-[state=open]:shadow-sm
@@ -62,7 +62,7 @@ export const MessageItem = ({ message, setDeleteMessage, onReplyMessageClick, se
                             rounded-md'>
                     <Flex gap='3' >
                         <MessageLeftElement message={message} user={user} isActive={isActive} />
-                        <Flex direction='column' gap='1' justify='center'>
+                        <Flex direction='column' gap='0' justify='center'>
                             {!is_continuation ? <Flex align='center' gap='2' mt='-1'>
                                 <UserHoverCard user={user} userID={userID} isActive={isActive} />
                                 <Separator orientation='vertical' />
@@ -73,7 +73,7 @@ export const MessageItem = ({ message, setDeleteMessage, onReplyMessageClick, se
 
                             {/* If it's a reply, then show the linked message */}
                             {linked_message && <ReplyMessage
-                                className='min-w-[32rem] cursor-pointer'
+                                className='min-w-[32rem] cursor-pointer mb-1'
                                 role='button'
                                 onClick={() => onReplyMessageClick(linked_message)}
                                 messageID={linked_message} />}
@@ -163,14 +163,14 @@ export const UserHoverCard = ({ user, userID, isActive }: UserProps) => {
                 {user?.full_name ?? userID}
             </Link>
         </HoverCard.Trigger>
-        <HoverCard.Content>
+        <HoverCard.Content size='1'>
             <Flex gap='2' align='center'>
                 <UserAvatar src={user?.user_image} alt={user?.full_name ?? userID} size='4' />
                 <Flex direction='column'>
                     <Flex gap='3' align='center'>
                         <Text className='text-[var(--gray-12)]' weight='bold' size='3'>{user?.full_name ?? userID}</Text>
                         {isActive && <Flex gap='1' align='center'>
-                            <BsFillCircleFill className='text-green-400' size='8' />
+                            <BsFillCircleFill className='text-green-500' size='8' />
                             <Text className='text-[var(--gray-10)]' size='1'>Online</Text>
                         </Flex>}
                     </Flex>

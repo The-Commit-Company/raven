@@ -9,7 +9,7 @@ export const Sidebar = () => {
             <Flex direction='column' gap='2' width='100%'>
                 <SidebarHeader />
                 <Box px='3'>
-                    <Separator size='4' />
+                    <Separator size='4' className={`bg-[var(--gray-4)] dark:bg-[var(--gray-6)]`} />
                 </Box>
                 <SidebarBody />
             </Flex>
