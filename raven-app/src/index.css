@@ -14,6 +14,11 @@
     font-family: 'Cal Sans';
 }
 
+a {
+    color: inherit;
+    text-decoration: none;
+}
+
 ol,
 ul {
     margin: 0;

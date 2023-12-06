@@ -52,7 +52,7 @@ export const QuickActions = ({ message, onReply, onEdit, updateMessages, isOwner
         shadow-md
         rounded-md
         bg-white
-        dark:bg-black
+        dark:bg-[var(--gray-1)]
         invisible'>
             <Flex gap='1'>
                 {QUICK_EMOJIS.map((emoji) => {
