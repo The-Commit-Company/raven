@@ -1,8 +1,10 @@
-import { Modal, ModalBody, ModalCloseButton, ModalContent, ModalHeader, Stack, Tab, TabList, TabPanels, Tabs, useDisclosure } from "@chakra-ui/react"
 import { SelectOption } from "../search-filters/SelectInput"
 import { ChannelSearch } from "./ChannelSearch"
 import { FileSearch } from "./FileSearch"
 import { MessageSearch } from "./MessageSearch"
+import { Dialog, Flex, Tabs, Box } from "@radix-ui/themes"
+import { DIALOG_CONTENT_CLASS } from "@/utils/layout/dialog"
+import { useBoolean } from "@/hooks/useBoolean"
 
 interface GlobalSearchModalProps {
     isOpen: boolean,
@@ -17,40 +19,50 @@ interface GlobalSearchModalProps {
 
 export default function GlobalSearch({ isOpen, onClose, tabIndex, input, fromFilter, inFilter, withFilter, onCommandPaletteClose }: GlobalSearchModalProps) {
 
-    const { onToggle: onToggleOtherChannels, isOpen: isOpenOtherChannels } = useDisclosure()
-    const { onToggle: onToggleMyChannels, isOpen: isOpenMyChannels } = useDisclosure()
-    const { onToggle: onToggleSaved, isOpen: isSaved } = useDisclosure()
+    const [isOpenOtherChannels, { toggle: onToggleOtherChannels }] = useBoolean()
+    const [isOpenMyChannels, { toggle: onToggleMyChannels }] = useBoolean()
+    const [isSaved, { toggle: onToggleSaved }] = useBoolean()
 
     const onCloseAll = () => {
         onClose()
         onCommandPaletteClose && onCommandPaletteClose()
     }
+    const onOpenChange = (open: boolean) => {
+        if (!open) {
+            onCloseAll()
+        }
+    }
+
 
     return (
-        <Modal isOpen={isOpen} onClose={onCloseAll} size='6xl'>
-            <ModalContent>
-                <ModalHeader>
-                    Search Results
-                    <ModalCloseButton mt='2' />
-                </ModalHeader>
-                <ModalBody>
-                    <Stack>
-                        <Tabs defaultIndex={tabIndex}>
-                            <TabList>
-                                <Tab>Messages</Tab>
-                                <Tab>Files</Tab>
-                                <Tab>Channels</Tab>
-                            </TabList>
-                            <TabPanels>
+        <Dialog.Root open={isOpen} onOpenChange={onOpenChange}>
+            <Dialog.Content className={DIALOG_CONTENT_CLASS} style={{
+                width: '80vw',
+                maxWidth: '80vw'
+            }}>
+                <Dialog.Title>Search Results</Dialog.Title>
+                <Flex direction='column' gap='2'>
+                    <Tabs.Root defaultValue={tabIndex.toString()}>
+                        <Tabs.List>
+                            <Tabs.Trigger value="0">Messages</Tabs.Trigger>
+                            <Tabs.Trigger value="1">Files</Tabs.Trigger>
+                            <Tabs.Trigger value="2">Channels</Tabs.Trigger>
+                        </Tabs.List>
+                        <Box px='2' pt="3" pb="2">
+                            <Tabs.Content value="0">
                                 {onCommandPaletteClose && <MessageSearch onToggleMyChannels={onToggleMyChannels} isOpenMyChannels={isOpenMyChannels} onToggleSaved={onToggleSaved} isSaved={isSaved} dateOption={dateOption} input={input} fromFilter={fromFilter} inFilter={inFilter} withFilter={withFilter} onCommandPaletteClose={onCommandPaletteClose} onClose={onClose} />}
+                            </Tabs.Content>
+                            <Tabs.Content value="1">
                                 <FileSearch onToggleMyChannels={onToggleMyChannels} isOpenMyChannels={isOpenMyChannels} onToggleSaved={onToggleSaved} isSaved={isSaved} dateOption={dateOption} input={input} fromFilter={fromFilter} inFilter={inFilter} />
+                            </Tabs.Content>
+                            <Tabs.Content value="2">
                                 <ChannelSearch onToggleMyChannels={onToggleMyChannels} isOpenMyChannels={isOpenMyChannels} onToggleOtherChannels={onToggleOtherChannels} isOpenOtherChannels={isOpenOtherChannels} input={input} onClose={onClose} />
-                            </TabPanels>
-                        </Tabs>
-                    </Stack>
-                </ModalBody>
-            </ModalContent>
-        </Modal>
+                            </Tabs.Content>
+                        </Box>
+                    </Tabs.Root>
+                </Flex>
+            </Dialog.Content>
+        </Dialog.Root>
     )
 }
 

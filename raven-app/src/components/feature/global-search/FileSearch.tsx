@@ -20,6 +20,7 @@ import { useGetUserRecords } from '@/hooks/useGetUserRecords'
 import { useTheme } from '@/ThemeProvider'
 import { ChannelIcon } from '@/utils/layout/channelIcon'
 import { DateMonthYear } from '@/utils/dateConversions'
+import { Box } from '@radix-ui/themes'
 
 interface FilterInput {
     'from-user-filter': SelectOption[],
@@ -146,8 +147,8 @@ export const FileSearch = ({ onToggleMyChannels, isOpenMyChannels, onToggleSaved
     const modalManager = useModalManager()
 
     return (
-        <TabPanel px={0}>
-            <Stack px={4}>
+        <Box>
+            <Stack>
                 <InputGroup>
                     <InputLeftElement
                         pointerEvents='none'
@@ -226,7 +227,7 @@ export const FileSearch = ({ onToggleMyChannels, isOpenMyChannels, onToggleSaved
                     </chakra.form>
                 </FormProvider>
             </Stack>
-            <Stack h='420px' p={4}>
+            <Stack h='420px'>
                 <ErrorBanner error={error} />
                 {
                     (isLoading && isValidating ? <Center><Spinner /></Center> :
@@ -263,7 +264,7 @@ export const FileSearch = ({ onToggleMyChannels, isOpenMyChannels, onToggleSaved
                                     })}
                                 </Stack></> : <EmptyStateForSearch />))}
             </Stack>
-        </TabPanel>
+        </Box>
     )
 }
 

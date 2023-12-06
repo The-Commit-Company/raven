@@ -1,5 +1,5 @@
 import { BiGlobe, BiHash, BiLockAlt, BiSearch } from 'react-icons/bi'
-import { Button, Center, chakra, FormControl, HStack, Input, InputGroup, InputLeftElement, Text, Stack, TabPanel, Box, Spinner } from '@chakra-ui/react'
+import { Button, Center, chakra, FormControl, HStack, Input, InputGroup, InputLeftElement, Text, Stack, Box, Spinner } from '@chakra-ui/react'
 import { useFrappeGetCall } from 'frappe-react-sdk'
 import { useState } from 'react'
 import { FormProvider, Controller, useForm } from 'react-hook-form'
@@ -58,8 +58,8 @@ export const ChannelSearch = ({ onToggleMyChannels, isOpenMyChannels, onToggleOt
     })
 
     return (
-        <TabPanel px={0}>
-            <Stack px={4}>
+        <Box>
+            <Stack>
                 <InputGroup>
                     <InputLeftElement
                         pointerEvents='none'
@@ -127,7 +127,7 @@ export const ChannelSearch = ({ onToggleMyChannels, isOpenMyChannels, onToggleOt
                     </chakra.form>
                 </FormProvider>
             </Stack>
-            <Stack h='420px' p={4}>
+            <Stack h='420px'>
                 <ErrorBanner error={error} />
                 {
                     (isLoading && isValidating ? <Center><Spinner /></Center> :
@@ -168,7 +168,7 @@ export const ChannelSearch = ({ onToggleMyChannels, isOpenMyChannels, onToggleOt
                                     )}
                                 </Stack></> : <EmptyStateForSearch />))}
             </Stack>
-        </TabPanel>
+        </Box>
     )
 }
 

@@ -151,7 +151,7 @@ const SendButton = ({ sendMessage, messageSending }: {
             editor.setEditable(false)
             sendMessage(html, json)
                 .then(() => {
-                    editor.chain().focus().clearContent().run()
+                    editor.chain().focus().clearContent(true).run()
                     editor.setEditable(true)
                 })
                 .catch(() => {

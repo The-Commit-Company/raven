@@ -1,97 +1,63 @@
-import { Avatar, Box, HStack, Link, Stack, StackDivider, Text } from "@chakra-ui/react"
-import { useState } from "react"
-import { useModalManager, ModalTypes } from "../../../hooks/useModalManager"
-import { FileMessageBlock } from "../chat/ChatMessage/Renderers/FileMessage"
-import { MarkdownRenderer } from "../markdown-viewer/MarkdownRenderer"
 import { useGetUserRecords } from "@/hooks/useGetUserRecords"
 import { useCurrentChannelData } from "@/hooks/useCurrentChannelData"
-import { ChannelListItem, DMChannelListItem } from "@/utils/channel/ChannelListProvider"
-import { useTheme } from "@/ThemeProvider"
+import { DMChannelListItem } from "@/utils/channel/ChannelListProvider"
+import { Box, Flex, Link, Separator, Text } from '@radix-ui/themes'
+import { Avatar, MessageContent, UserHoverCard } from "../chat/ChatMessage/MessageItem"
+import { useGetUser } from "@/hooks/useGetUser"
+import { Message } from "../../../../../types/Messaging/Message"
+import { useMemo } from "react"
+import { DateMonthYear } from "@/utils/dateConversions"
 
 type MessageBoxProps = {
-    messageName: string,
-    channelID: string,
-    creation: string,
-    owner: string,
-    messageText: string,
-    file?: string,
-    message_type: 'Text' | 'File' | 'Image',
+    message: Message
     handleScrollToMessage: (messageName: string, channelID: string) => void
 }
 
-export const MessageBox = ({ messageName, channelID, creation, owner, messageText, file, message_type, handleScrollToMessage }: MessageBoxProps) => {
+export const MessageBox = ({ message, handleScrollToMessage }: MessageBoxProps) => {
 
-    const { appearance } = useTheme()
-    const textColor = appearance === 'light' ? 'gray.800' : 'gray.50'
-    const [showButtons, setShowButtons] = useState<{}>({ visibility: 'hidden' })
-    const modalManager = useModalManager()
-    const onFilePreviewModalOpen = () => {
-        modalManager.openModal(ModalTypes.FilePreview, {
-            file: file,
-            owner: owner,
-            creation: creation,
-            message_type: message_type
-        })
-    }
-
+    const { owner, creation, channel_id } = message
     const users = useGetUserRecords()
-    const { channel } = useCurrentChannelData(channelID)
-    const channelData = channel?.channelData as ChannelListItem
-    const channelDMData = channel?.channelData as DMChannelListItem
+
+    const user = useGetUser(owner)
+    const { channel } = useCurrentChannelData(channel_id)
+    const channelData = channel?.channelData
+
+    const channelName = useMemo(() => {
+        if (channelData) {
+            if (channelData.is_direct_message) {
+                const peer_user_name = users[(channelData as DMChannelListItem).peer_user_id]?.full_name ?? (channelData as DMChannelListItem).peer_user_id
+                return `DM with ${peer_user_name}`
+            } else {
+                return channelData.channel_name
+            }
+        }
+    }, [channelData])
 
     return (
-        <Box
-            key={messageName}
-            pb='1'
-            px='2'
-            zIndex={1}
-            position={'relative'}
-            _hover={{
-                bg: appearance === 'light' && 'gray.50' || 'gray.800',
-                borderRadius: 'md'
-            }}
-            rounded='md'
-            onMouseEnter={e => {
-                setShowButtons({ visibility: 'visible' })
-            }}
-            onMouseLeave={e => {
-                setShowButtons({ visibility: 'hidden' })
-            }}>
-            {channel ? <HStack pb={1.5} spacing={1}>
-                {channel?.type === 'channel' ? <Text fontSize='small' color='gray.500'>{channelData?.channel_name}</Text> : <Text fontSize='small' color='gray.500'>Direct Message with {users[channelDMData.peer_user_id].full_name}</Text>}
-                {channelData?.is_archived && <Text fontSize={'small'}>(archived)</Text>}
-                <Text fontSize='small'>- {new Date(creation).toDateString()}</Text>
-                <Link style={showButtons} color='blue.500' onClick={() => handleScrollToMessage(messageName, channelID)} pl={1}>
-                    {channelData?.channel_name ? <Text fontSize={'small'}>View in channel</Text> : <Text fontSize={'small'}>View in chat</Text>}
-                </Link>
-            </HStack>
-                :
-                <HStack pb={1.5} spacing={1}>
-                    <Text fontSize='small' color='gray.500'>{channelID}</Text>
-                    <Text fontSize='small'>- {new Date(creation).toDateString()}</Text>
-                    <Link style={showButtons} color='blue.500' onClick={() => handleScrollToMessage(messageName, channelID)} pl={1}>
-                        <Text fontSize={'small'}>View in channel</Text>
-                    </Link>
-                </HStack>}
+        <Flex direction='column' gap='2' className="group
+        hover:bg-gray-100
+                            dark:hover:bg-[var(--gray-4)] 
+                            p-2
+                            rounded-md">
+            <Flex gap='2'>
+                <Text as='span' size='1'>{channelName}</Text>
+                <Separator orientation='vertical' />
+                <Text as='span' size='1' color='gray'><DateMonthYear date={creation} /></Text>
 
-            <HStack spacing={2} alignItems='flex-start'>
-                <Avatar name={users[owner]?.full_name ?? owner} src={users[owner]?.user_image ?? ''} borderRadius={'md'} boxSize='36px' />
-                <Stack spacing='1' width={'full'}>
-                    <HStack>
-                        <HStack divider={<StackDivider />} align='flex-start'>
-                            <Text fontSize='sm' lineHeight={'0.9'} fontWeight="bold" as='span' color={textColor}>{users[owner]?.full_name ?? owner}</Text>
-                        </HStack>
-                    </HStack>
-                    {message_type === 'Text' && <MarkdownRenderer content={messageText} />}
-                    {file && (message_type === 'File' || message_type === 'Image') && <FileMessageBlock onFilePreviewModalOpen={onFilePreviewModalOpen} file={file} message_type={message_type} owner={owner} creation={creation} />}
-                </Stack>
-            </HStack>
-            {/* <FilePreviewModal
-                isOpen={modalManager.modalType === ModalTypes.FilePreview}
-                onClose={modalManager.closeModal}
-                channelMembers={users}
-                {...modalManager.modalContent}
-            /> */}
-        </Box>
+                <Link size='1' className="invisible group-hover:visible" onClick={() => handleScrollToMessage(message.name, channel_id)}>
+                    View in channel
+                </Link>
+            </Flex>
+
+            <Flex gap='3'>
+                <Avatar userID={owner} user={user} isActive={false} />
+                <Flex direction='column' gap='1' justify='center'>
+                    <Box mt='-1'>
+                        <UserHoverCard user={user} userID={owner} isActive={false} />
+                    </Box>
+                    <MessageContent message={message} user={user} />
+                </Flex>
+            </Flex>
+        </Flex>
     )
 }
