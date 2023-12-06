@@ -83,7 +83,7 @@ export const SidebarItem = ({ to, children, end, active = false, activeStyles, c
                         align='center'
                         px='3'
                         // py="1"
-                        className={clsx('cursor-pointer user-select-none rounded-md py-1.5 transition-all duration-200 text-[var(--gray-11)] hover:bg-[var(--gray-3)] dark:hover:bg-[var(--gray-2)]', isActive ? activeClass : '', className)}
+                        className={clsx('cursor-pointer user-select-none rounded-md py-1.5 no-underline transition-all duration-200 text-[var(--gray-11)] hover:bg-[var(--gray-3)] dark:hover:bg-[var(--gray-2)]', isActive ? activeClass : '', className)}
                         {...props}
                     >
                         {children}

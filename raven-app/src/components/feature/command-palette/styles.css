@@ -102,36 +102,34 @@
     overscroll-behavior: contain;
     transition: 100ms ease;
     transition-property: height;
+}
 
-    &::-webkit-scrollbar {
-        width: 6px;
-    }
+.palette [cmdk-list]::-webkit-scrollbar {
+    width: 6px;
+}
 
-    &::-webkit-scrollbar-track {
-        background-color: transparent;
-        width: 10px;
-    }
+.palette [cmdk-list]::-webkit-scrollbar-track {
+    background-color: transparent;
+    width: 10px;
+}
 
-    &::-webkit-scrollbar-thumb {
-        background-color: transparent;
-        border-radius: 10px;
-    }
+.palette [cmdk-list]::-webkit-scrollbar-thumb {
+    background-color: transparent;
+    border-radius: 10px;
+}
 
-    &:hover {
-        &::-webkit-scrollbar {
-            width: 6px;
-        }
+.palette [cmdk-list]:hover::-webkit-scrollbar {
+    width: 6px;
+}
 
-        &::-webkit-scrollbar-track {
-            background-color: 'transparent';
-            width: 10px;
-        }
+.palette [cmdk-list]:hover::-webkit-scrollbar-track {
+    background-color: 'transparent';
+    width: 10px;
+}
 
-        &::-webkit-scrollbar-thumb {
-            background-color: var(--thumb-color);
-            border-radius: 3px;
-        }
-    }
+.palette [cmdk-list]:hover::-webkit-scrollbar-thumb {
+    background-color: var(--thumb-color);
+    border-radius: 3px;
 }
 
 .palette [cmdk-separator] {
