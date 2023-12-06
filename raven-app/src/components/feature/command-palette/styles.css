@@ -1,7 +1,7 @@
 .light .palette {
     --gray: var(--gray-2);
     --bg-gray: white;
-    --box-shadow: var(--chakra-shadows-md);
+    --box-shadow: var(--shadow-3);
     --border: 1px solid var(--gray-1);
     --item: var(--gray-2);
     --item-hover: var(--gray-3);
@@ -15,7 +15,7 @@
     --box-shadow: var(--shadow-3);
     --border: 1px solid var(--gray-1);
     --item: var(--gray-2);
-    --item-hover: var(--gray-3);
+    --item-hover: var(--gray-7);
     --text: var(--gray-12);
     --text-alt: var(--gray-9);
 }

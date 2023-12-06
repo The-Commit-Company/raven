@@ -28,14 +28,14 @@ export const FileExtensionIcon = ({ ext, ...props }: FileExtensionIconProps) => 
     const isPpt = pptExt.includes(ext)
 
     return <span>
-        {isExcel && <FaRegFileExcel size='20' fill='var(--gray-12)' {...props} />}
-        {isImage && <FaRegFileImage size='20' fill='var(--gray-12)' {...props} />}
-        {isWord && <FaRegFileWord size='20' fill='var(--gray-12)' {...props} />}
-        {isPdf && <FaRegFilePdf size='20' fill='var(--gray-12)' {...props} />}
-        {isVideo && <FaRegFileVideo size='20' fill='var(--gray-12)' {...props} />}
-        {isAudio && <FaRegFileAudio size='20' fill='var(--gray-12)' {...props} />}
-        {isPpt && <FaRegFilePowerpoint size='20' fill='var(--gray-12)' {...props} />}
-        {!isExcel && !isImage && !isWord && !isPdf && !isAudio && !isPpt && !isVideo && <FaRegFileAlt width='20' fill='var(--gray-12)' {...props} />}
+        {isExcel && <FaRegFileExcel size='20' {...props} />}
+        {isImage && <FaRegFileImage size='20' {...props} />}
+        {isWord && <FaRegFileWord size='20' {...props} />}
+        {isPdf && <FaRegFilePdf size='20' {...props} />}
+        {isVideo && <FaRegFileVideo size='20' {...props} />}
+        {isAudio && <FaRegFileAudio size='20' {...props} />}
+        {isPpt && <FaRegFilePowerpoint size='20' {...props} />}
+        {!isExcel && !isImage && !isWord && !isPdf && !isAudio && !isPpt && !isVideo && <FaRegFileAlt width='20' {...props} />}
     </span>
 
 }

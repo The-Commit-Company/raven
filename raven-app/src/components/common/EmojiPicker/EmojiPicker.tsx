@@ -15,7 +15,7 @@ const EmojiPicker = ({ onSelect }: { onSelect: (emoji: string) => void }) => {
         ref.current.skinToneEmoji = '👍'
 
         const style = document.createElement('style');
-        style.textContent = `.picker { border-radius: var(--chakra-radii-md); box-shadow: var(--chakra-shadows-lg); }`
+        style.textContent = `.picker { border-radius: var(--radius-4); box-shadow: var(--shadow-6); }`
         ref.current.shadowRoot.appendChild(style);
 
         return () => {
