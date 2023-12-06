@@ -1,6 +1,6 @@
 import { BiTrash } from 'react-icons/bi'
 import { useGetFilePreviewUrl } from '../../../hooks/useGetFilePreviewUrl'
-import { FileExtensionIcon } from '../../../utils/layout/FileExtensionIcon'
+import { FileExtensionIcon } from '../../../utils/layout/FileExtIcon'
 import { getFileExtension } from '../../../utils/operations'
 import { CustomFile } from './FileDrop'
 import { FileUploadProgress } from '../chat/ChatInput/FileInput/useFileUpload'

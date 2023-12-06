@@ -1,4 +1,3 @@
-import { FileExtensionIcon } from "../../../../../utils/layout/FileExtensionIcon"
 import { FileMessage } from "../../../../../../../types/Messaging/Message"
 import { getFileExtension, getFileName, isVideoFile } from "../../../../../utils/operations"
 import { UserFields } from "@/utils/users/UserListProvider"
@@ -9,6 +8,7 @@ import { useToast } from "@/hooks/useToast"
 import { DIALOG_CONTENT_CLASS } from "@/utils/layout/dialog"
 import { DateMonthAtHourMinuteAmPm } from "@/utils/dateConversions"
 import { clsx } from "clsx"
+import { FileExtensionIcon } from "@/utils/layout/FileExtIcon"
 
 interface FileMessageBlockProps extends BoxProps {
     message: FileMessage,

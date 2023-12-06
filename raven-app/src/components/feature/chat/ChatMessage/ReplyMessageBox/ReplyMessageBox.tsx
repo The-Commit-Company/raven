@@ -2,7 +2,7 @@ import { FileMessage, Message, TextMessage } from "../../../../../../../types/Me
 import { Flex, Separator, Text } from "@radix-ui/themes"
 import { useGetUser } from "@/hooks/useGetUser"
 import { DateMonthAtHourMinuteAmPm } from "@/utils/dateConversions"
-import { FileExtensionIcon } from "@/utils/layout/FileExtensionIcon"
+import { FileExtensionIcon } from "@/utils/layout/FileExtIcon"
 import { getFileExtension, getFileName } from "@/utils/operations"
 import { FlexProps } from "@radix-ui/themes/dist/cjs/components/flex"
 import { clsx } from "clsx"

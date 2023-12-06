@@ -1,4 +1,4 @@
-import { FileExtensionIcon } from "../../../utils/layout/FileExtensionIcon";
+import { FileExtensionIcon } from "../../../utils/layout/FileExtIcon";
 import { useFrappeGetCall } from "frappe-react-sdk";
 import { useParams } from "react-router-dom";
 import { ErrorBanner } from "../../layout/AlertBanner";
