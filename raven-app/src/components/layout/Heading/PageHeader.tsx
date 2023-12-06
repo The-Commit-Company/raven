@@ -8,7 +8,7 @@ export const PageHeader = ({ children }: PropsWithChildren) => {
             mx='4'
             position='fixed'
             top='0'
-            className='z-10 border-[var(--gray-6)] border-b'
+            className='z-10 border-[var(--gray-4)] dark:border-[var(--gray-6)] border-b'
             style={{
                 width: 'calc(100vw - var(--sidebar-width) - var(--space-6))',
             }}>

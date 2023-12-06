@@ -1,4 +1,4 @@
-import { DividerWithText } from "../../../layout/Divider/DividerWithText";
+import { DateSeparator } from "../../../layout/Divider/DateSeparator";
 import { DateBlock, Message, MessageBlock, MessagesWithDate } from "../../../../../../types/Messaging/Message";
 import { ChannelHistoryFirstMessage } from "../../../layout/EmptyState/EmptyState";
 import { useCallback, useContext, useRef } from "react";
@@ -128,7 +128,7 @@ const RenderItem = ({ index, replyToMessage, updateMessages, block, onReplyMessa
     if (block.block_type === 'date') {
         return (
             <Box p='4' className="z-10 relative">
-                <DividerWithText><DateMonthYear date={block.data} /></DividerWithText>
+                <DateSeparator><DateMonthYear date={block.data} /></DateSeparator>
             </Box>
         )
     }
