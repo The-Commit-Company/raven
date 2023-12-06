@@ -1,32 +1,28 @@
-import { Table, Tr, Td, Skeleton, TableProps, Tbody } from '@chakra-ui/react'
-import { AnimatePresence, motion } from 'framer-motion'
+import { Skeleton } from "@/components/common/Skeleton"
+import { Table } from "@radix-ui/themes"
+import { TableRootProps } from "@radix-ui/themes/dist/cjs/components/table"
 
-interface Props extends TableProps {
+
+interface Props extends TableRootProps {
     rows?: number,
     columns?: number,
-    speed?: number,
-    color?: string,
-    width?: string,
-    height?: string
 }
 
-export const TableLoader = ({ rows = 10, columns = 5, color = "gray", speed = 1, width = "28", height = "4", ...props }: Props) => {
+export const TableLoader = ({ rows = 10, columns = 5, color = "gray", ...props }: Props) => {
 
     return (
-        <Table size="sm" {...props} as={motion.table} initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-            <Tbody>
-                <AnimatePresence>
-                    {
-                        [...Array(rows)].map((e, index) =>
-                            <Tr key={index} as={motion.tr} initial={{ y: 10 }} animate={{ y: 0 }} exit={{ y: -10 }}>
-                                {[...Array(columns)].map((e, i) =>
-                                    <Td key={i} py="3"><Skeleton height={height} width={width} speed={speed} colorScheme={color} /></Td>
-                                )}
-                            </Tr>
-                        )
-                    }
-                </AnimatePresence>
-            </Tbody>
-        </Table>
+        <Table.Root {...props}>
+            <Table.Body>
+                {
+                    [...Array(rows)].map((e, index) =>
+                        <Table.Row key={index}>
+                            {[...Array(columns)].map((e, i) =>
+                                <Table.Cell key={i}><Skeleton width='100%' height='4' /></Table.Cell>
+                            )}
+                        </Table.Row>
+                    )
+                }
+            </Table.Body>
+        </Table.Root>
     )
 }

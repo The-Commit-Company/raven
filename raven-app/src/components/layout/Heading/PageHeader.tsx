@@ -1,17 +1,21 @@
-import { Box, Divider, HStack, useColorMode } from '@chakra-ui/react'
 import { PropsWithChildren } from 'react'
-import { OPACITY_ON_LOAD } from '../../../utils/layout/animations'
+import { Box, Flex } from '@radix-ui/themes'
 
 export const PageHeader = ({ children }: PropsWithChildren) => {
-
-    const { colorMode } = useColorMode()
-
     return (
-        <Box p={4} pb={0} pos='fixed' top='0' w='calc(100vw - var(--sidebar-width))' zIndex={10} bg={colorMode === 'light' ? 'white' : 'gray.900'}>
-            <HStack justify="space-between" {...OPACITY_ON_LOAD} minH='40px' pb='2'>
+        <header><Box
+            py='3'
+            mx='4'
+            position='fixed'
+            top='0'
+            className='z-10 border-[var(--gray-4)] dark:border-[var(--gray-6)] border-b'
+            style={{
+                width: 'calc(100vw - var(--sidebar-width) - var(--space-6))',
+            }}>
+            <Flex justify='between'>
                 {children}
-            </HStack>
-            <Divider />
+            </Flex>
         </Box>
+        </header>
     )
 }

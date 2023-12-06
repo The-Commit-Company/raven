@@ -16,7 +16,7 @@ export interface GetMessageSearchResult {
 }
 
 export interface GetChannelSearchResult {
-    type: string
+    type: "Private" | "Public" | "Open"
     name: string
     channel_name: string
     is_archived: 1 | 0

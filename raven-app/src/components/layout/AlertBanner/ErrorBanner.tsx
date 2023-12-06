@@ -1,12 +1,10 @@
 import { FrappeError } from 'frappe-react-sdk'
-import { AnimatePresence, motion } from 'framer-motion'
-import { AlertBanner } from './AlertBanner'
-import { AlertProps, Stack, Text } from '@chakra-ui/react'
-import { useMemo } from 'react'
+import { PropsWithChildren, useMemo } from 'react'
 import React from 'react'
-import { MarkdownRenderer } from '@/components/feature/markdown-viewer/MarkdownRenderer'
+import { Callout } from '@radix-ui/themes'
+import { FiAlertTriangle } from 'react-icons/fi'
 
-interface ErrorBannerProps extends AlertProps {
+interface ErrorBannerProps {
     error?: FrappeError | null,
     overrideHeading?: string,
     children?: React.ReactNode
@@ -17,7 +15,7 @@ interface ParsedErrorMessage {
     title?: string,
     indicator?: string,
 }
-export const ErrorBanner = ({ error, overrideHeading, children, ...props }: ErrorBannerProps) => {
+export const ErrorBanner = ({ error, overrideHeading, children }: ErrorBannerProps) => {
 
 
     //exc_type: "ValidationError" or "PermissionError" etc
@@ -66,20 +64,24 @@ export const ErrorBanner = ({ error, overrideHeading, children, ...props }: Erro
         return message?.title
     }
 
-    // TODO: Sometimes, error message has links which route to the ERPNext interface. We need to parse the link to route to the correct page in our interface
-    // Links are of format <a href="{host_name}/app/{doctype}/{name}">LEAD-00001</a>
+    if (messages.length === 0 || !error) return null
+    return (<ErrorCallout>
+        {/* Can do this since the error will be coming from the server */}
+        {messages.map((m, i) => <div key={i} dangerouslySetInnerHTML={{
+            __html: m.message
+        }} />)}
+        {children}
+    </ErrorCallout>)
+}
 
-    return (
-        <AnimatePresence>
-            {error && <motion.div key='error' initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-                <AlertBanner status={messages[0].indicator === 'yellow' ? 'warning' : "error"} heading={overrideHeading ?? parseHeading(messages[0])} {...props}>
-                    <Stack>
-                        {messages.map((m, i) => <MarkdownRenderer key={i} content={m.message} />)}
-                        {children}
-                    </Stack>
-                </AlertBanner>
-            </motion.div>}
-        </AnimatePresence>
 
-    )
+export const ErrorCallout = ({ children }: PropsWithChildren) => {
+    return (<Callout.Root color="red" role="alert">
+        <Callout.Icon>
+            <FiAlertTriangle size='18' />
+        </Callout.Icon>
+        <Callout.Text>
+            {children}
+        </Callout.Text>
+    </Callout.Root>)
 }

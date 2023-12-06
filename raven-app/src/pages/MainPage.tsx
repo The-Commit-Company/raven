@@ -1,33 +1,22 @@
-import { Flex, Box, useColorModeValue } from '@chakra-ui/react'
+import { Flex, Box } from '@radix-ui/themes'
 import { Outlet } from 'react-router-dom'
 import { Sidebar } from '../components/layout/Sidebar/Sidebar'
 import { VirtuosoRefProvider } from '../utils/message/VirtuosoRefProvider'
-import { useActiveState } from '../hooks/useActiveState'
 import { ChannelListProvider } from '../utils/channel/ChannelListProvider'
 import { UserListProvider } from '@/utils/users/UserListProvider'
 import { ActiveUsersProvider } from '@/utils/users/ActiveUsersProvider'
 
 export const MainPage = () => {
 
-    const isUserActive = useActiveState()
-
-    const chatInterfaceBackground = useColorModeValue("white", "gray.900")
-    const sidebarBackground = useColorModeValue("gray.50", "black")
-
     return (
         <UserListProvider>
             <ChannelListProvider>
                 <ActiveUsersProvider>
-                    <Flex height="100vh" sx={{ '--sidebar-width': '16rem' }} >
-                        <Box bg={sidebarBackground} h="100vh" fontSize="sm" width="var(--sidebar-width)" left="0" position="fixed" zIndex="999">
-                            <Sidebar isUserActive={isUserActive} />
+                    <Flex>
+                        <Box className={`w-64 bg-[var(--gray-2)] border-r-[var(--gray-3)] border-r dark:bg-[var(--gray-1)]`} left="0" position="fixed">
+                            <Sidebar />
                         </Box>
-                        <Box
-                            overflow="auto"
-                            bgColor={chatInterfaceBackground}
-                            w='calc(100vw - var(--sidebar-width))'
-                            position="relative"
-                            left='var(--sidebar-width)'>
+                        <Box className='ml-[var(--sidebar-width)] w-[calc(100vw-var(--sidebar-width))] dark:bg-[var(--gray-3)]'>
                             <VirtuosoRefProvider>
                                 <Outlet />
                             </VirtuosoRefProvider>

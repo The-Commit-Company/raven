@@ -1,3 +1,5 @@
+import { AvatarProps } from "@radix-ui/themes/dist/cjs/components/avatar";
+
 const getHashOfString = (str: string) => {
     let hash = 0;
     for (let i = 0; i < str.length; i++) {
@@ -25,4 +27,12 @@ const HSLtoString = (hsl: any) => {
 
 export const generateColorHsl = (id: string, saturationRange: number[], lightnessRange: number[]) => {
     return HSLtoString(generateHSL(id, saturationRange, lightnessRange))
+}
+
+const COLORS: AvatarProps['color'][] = ["tomato", "red", "ruby", "crimson", "pink", "plum", "purple", "violet", "iris", "indigo", "blue", "cyan", "teal", "jade", "green", "grass", "brown", "orange", "sky", "mint", "lime", "yellow", "amber", "gold", "bronze", "gray"]
+
+export const generateAvatarColor = (id?: string): AvatarProps['color'] => {
+    const hash = getHashOfString(id || 'random')
+    const index = normalizeHash(hash, 0, COLORS.length)
+    return COLORS[index]
 }

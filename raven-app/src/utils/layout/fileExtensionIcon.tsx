@@ -1,18 +1,41 @@
-import { IconType } from "react-icons";
-import { AiFillFileExcel, AiFillFileImage, AiFillFileMarkdown, AiFillFilePdf, AiFillFileWord } from "react-icons/ai";
+import { IconBaseProps } from 'react-icons'
+import { FaRegFilePdf, FaRegFileVideo, FaRegFileWord, FaRegFileExcel, FaRegFileAudio, FaRegFilePowerpoint, FaRegFileImage, FaRegFileAlt } from 'react-icons/fa'
+
 
 export const imageExt = ["jpeg", "jpg", "png"]
 
 export const excelExt = ['csv', 'xls', 'xlsx']
 
+export const pptExt = ['ppt', 'pptx']
+
 export const wordExt = ['doc', 'docx']
 
-export const getFileExtensionIcon = (ext: string): IconType => {
+export const videoExt = ['mp4', 'mkv', 'webm', 'avi', 'mov']
 
-    if (excelExt.includes(ext)) return AiFillFileExcel
-    else if (imageExt.includes(ext)) return AiFillFileImage
-    else if (wordExt.includes(ext)) return AiFillFileWord
-    else if (ext === "pdf") return AiFillFilePdf
-    else if (ext === "eml") return AiFillFileMarkdown
-    else return AiFillFilePdf
+export const audioExt = ['mp3', 'wav', 'ogg', 'flac']
+
+interface FileExtensionIconProps extends IconBaseProps {
+    ext: string
+}
+export const FileExtensionIcon = ({ ext, ...props }: FileExtensionIconProps) => {
+
+    const isExcel = excelExt.includes(ext)
+    const isImage = imageExt.includes(ext)
+    const isWord = wordExt.includes(ext)
+    const isPdf = ext === "pdf"
+    const isVideo = videoExt.includes(ext)
+    const isAudio = audioExt.includes(ext)
+    const isPpt = pptExt.includes(ext)
+
+    return <span>
+        {isExcel && <FaRegFileExcel size='20' {...props} />}
+        {isImage && <FaRegFileImage size='20' {...props} />}
+        {isWord && <FaRegFileWord size='20' {...props} />}
+        {isPdf && <FaRegFilePdf size='20' {...props} />}
+        {isVideo && <FaRegFileVideo size='20' {...props} />}
+        {isAudio && <FaRegFileAudio size='20' {...props} />}
+        {isPpt && <FaRegFilePowerpoint size='20' {...props} />}
+        {!isExcel && !isImage && !isWord && !isPdf && !isAudio && !isPpt && !isVideo && <FaRegFileAlt width='20' {...props} />}
+    </span>
+
 }

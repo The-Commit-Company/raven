@@ -1,9 +1,7 @@
-import { Card, CardBody, useColorModeValue } from '@chakra-ui/react'
-// import TextStyle from '@tiptap/extension-text-style'
-import { EditorProvider, Extension, ReactRenderer } from '@tiptap/react'
+import { Editor, EditorContent, EditorContext, Extension, ReactRenderer, useEditor } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import Underline from '@tiptap/extension-underline'
-import React, { useContext } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { TextFormattingMenu } from './TextFormattingMenu'
 import Highlight from '@tiptap/extension-highlight'
 import Link from '@tiptap/extension-link'
@@ -27,6 +25,8 @@ import html from 'highlight.js/lib/languages/xml'
 import json from 'highlight.js/lib/languages/json'
 import python from 'highlight.js/lib/languages/python'
 import { Plugin } from 'prosemirror-state'
+import { Box } from '@radix-ui/themes'
+import { useSessionStickyState } from '@/hooks/useStickyState'
 const lowlight = createLowlight(common)
 
 lowlight.register('html', html)
@@ -42,6 +42,8 @@ export interface ToolbarFileProps {
 type TiptapEditorProps = {
     slotBefore?: React.ReactNode,
     slotAfter?: React.ReactNode,
+    sessionStorageKey?: string,
+    disableSessionStorage?: boolean,
     fileProps?: ToolbarFileProps,
     onMessageSend: (message: string, json: any) => Promise<void>,
     messageSending: boolean,
@@ -60,7 +62,7 @@ const COOL_PLACEHOLDERS = [
     "Type a message..."
 ]
 
-const UserMention = Mention.extend({
+export const UserMention = Mention.extend({
     name: 'userMention',
 })
     .configure({
@@ -70,7 +72,7 @@ const UserMention = Mention.extend({
         }
     })
 
-const ChannelMention = Mention.extend({
+export const ChannelMention = Mention.extend({
     name: 'channelMention',
 })
     .configure({
@@ -79,12 +81,11 @@ const ChannelMention = Mention.extend({
             pluginKey: new PluginKey('channelMention'),
         }
     })
-export const Tiptap = ({ slotAfter, slotBefore, fileProps, onMessageSend, messageSending, defaultText = '' }: TiptapEditorProps) => {
+const Tiptap = ({ slotBefore, fileProps, onMessageSend, messageSending, sessionStorageKey = 'tiptap-editor', disableSessionStorage = false, defaultText = '' }: TiptapEditorProps) => {
 
     const { users } = useContext(UserListContext)
 
     const { channels } = useContext(ChannelListContext) as ChannelListContextType
-
 
     // this is a dummy extension only to create custom keydown behavior
     const KeyboardHandler = Extension.create({
@@ -96,8 +97,10 @@ export const Tiptap = ({ slotAfter, slotBefore, fileProps, onMessageSend, messag
                     const isCodeBlockActive = this.editor.isActive('codeBlock');
                     const isListItemActive = this.editor.isActive('listItem');
 
+
+                    // FIXME: This breaks sometimes when the key is not `userMention$` but a random number appended in front of it
                     //@ts-expect-error
-                    const isSuggestionOpen = this.editor.state.userMention$.active || this.editor.state.channelMention$.active
+                    const isSuggestionOpen = this.editor.state.userMention$?.active || this.editor.state.channelMention$?.active
                     const hasContent = this.editor.getText().trim().length > 0
 
                     if (isCodeBlockActive || isListItemActive || isSuggestionOpen) {
@@ -114,13 +117,13 @@ export const Tiptap = ({ slotAfter, slotBefore, fileProps, onMessageSend, messag
 
                     onMessageSend(html, json)
                         .then(() => {
-                            this.editor.commands.clearContent();
+                            this.editor.commands.clearContent(true);
                             this.editor.setEditable(true)
                         })
                         .catch(() => {
                             this.editor.setEditable(true)
                         })
-                    return this.editor.commands.clearContent();
+                    return this.editor.commands.clearContent(true);
                 },
 
                 'Mod-Enter': () => {
@@ -150,13 +153,13 @@ export const Tiptap = ({ slotAfter, slotBefore, fileProps, onMessageSend, messag
                         this.editor.setEditable(false)
                         onMessageSend(html, json)
                             .then(() => {
-                                this.editor.commands.clearContent();
+                                this.editor.commands.clearContent(true);
                                 this.editor.setEditable(true)
                             })
                             .catch(() => {
                                 this.editor.setEditable(true)
                             })
-                        return this.editor.commands.clearContent();
+                        return this.editor.commands.clearContent(true);
                     }
 
                     return false;
@@ -240,6 +243,16 @@ export const Tiptap = ({ slotAfter, slotBefore, fileProps, onMessageSend, messag
         StarterKit.configure({
             heading: false,
             codeBlock: false,
+            listItem: {
+                HTMLAttributes: {
+                    class: 'rt-Text rt-r-size-2'
+                }
+            },
+            paragraph: {
+                HTMLAttributes: {
+                    class: 'rt-Text rt-r-size-2'
+                }
+            }
         }),
         UserMention.configure({
             HTMLAttributes: {
@@ -384,6 +397,9 @@ export const Tiptap = ({ slotAfter, slotBefore, fileProps, onMessageSend, messag
         Underline,
         Highlight.configure({
             multicolor: true,
+            HTMLAttributes: {
+                class: 'bg-[var(--yellow-6)] dark:bg-[var(--yellow-11)] px-2 py-1'
+            }
         }),
         Link.configure({
             protocols: ['mailto', 'https', 'http']
@@ -398,31 +414,41 @@ export const Tiptap = ({ slotAfter, slotBefore, fileProps, onMessageSend, messag
         KeyboardHandler
     ]
 
-    const { cardBorderColor, bgColor } = useColorModeValue({
-        cardBorderColor: 'gray.200',
-        bgColor: 'gray.50',
-    }, {
-        cardBorderColor: 'gray.700',
-        bgColor: 'gray.800'
-    })
+    const [content, setContent] = useSessionStickyState(defaultText, sessionStorageKey, disableSessionStorage)
+
+
+    const editor = useEditor({
+        extensions,
+        content,
+        autofocus: "end",
+        editorProps: {
+            attributes: {
+                class: 'tiptap-editor'
+            }
+        },
+        onUpdate({ editor }) {
+            setContent(editor.getHTML())
+        }
+    }, [onMessageSend])
+
+    useEffect(() => {
+        editor?.commands.setContent(content)
+    }, [onMessageSend])
+
 
     return (
-        <Card shadow={'md'} border='1px solid' borderColor={cardBorderColor} bgColor={bgColor}>
-            <CardBody p='0'>
-                <EditorProvider
-                    extensions={extensions}
-                    content={defaultText}
-                    slotAfter={slotAfter}
-                    slotBefore={slotBefore}
-                >
-                    <ToolPanel>
-                        <TextFormattingMenu />
-                        <RightToolbarButtons fileProps={fileProps} sendMessage={onMessageSend} messageSending={messageSending} />
-                    </ToolPanel>
-                </EditorProvider>
-            </CardBody>
-
-        </Card>
+        <Box className='border rounded-[var(--radius-4)] border-gray-300 dark:border-gray-500 dark:bg-[var(--gray-3)] shadow-md '>
+            <EditorContext.Provider value={{ editor }}>
+                {slotBefore}
+                <EditorContent editor={editor} />
+                <ToolPanel>
+                    <TextFormattingMenu />
+                    <RightToolbarButtons fileProps={fileProps} sendMessage={onMessageSend} messageSending={messageSending} />
+                </ToolPanel>
+            </EditorContext.Provider>
+        </Box>
 
     )
 }
+
+export default Tiptap

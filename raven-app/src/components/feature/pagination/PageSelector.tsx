@@ -1,5 +1,5 @@
-import { HStack, IconButton, Text } from '@chakra-ui/react'
-import { BsChevronLeft, BsChevronRight } from 'react-icons/bs'
+import { Flex, Text, IconButton } from '@radix-ui/themes'
+import { BiChevronLeft, BiChevronRight } from 'react-icons/bi'
 
 interface Props {
     start: number,
@@ -20,26 +20,32 @@ export const PageSelector = ({ start, rowsPerPage, totalRows, gotoPreviousPage, 
     // If previous page is not avaialbe or next page is not available then disable 
     // the previous or next page button accordingly
     return (
-        <HStack>
-            <IconButton aria-label="go to previous page"
-                size='xs'
+        <Flex gap='2'>
+            <IconButton
+                aria-label="go to previous page"
+                size='1'
+                color='gray'
                 variant='ghost'
-                rounded='full'
-                icon={<BsChevronLeft />}
                 onClick={gotoPreviousPage}
-                isDisabled={(start <= 1)} />
+                disabled={(start <= 1)}
+            >
+                <BiChevronLeft />
+            </IconButton>
 
-            <Text fontSize='xs' fontWeight='light'>
+            <Text size='1' weight='light' as='span'>
                 {start} - {end} of {totalRows}
             </Text>
 
-            <IconButton aria-label="go to next page"
-                size='xs'
+            <IconButton
+                aria-label="go to next page"
+                size='1'
                 variant='ghost'
-                rounded='full'
-                icon={<BsChevronRight />}
+                color='gray'
                 onClick={gotoNextPage}
-                isDisabled={(end === totalRows)} />
-        </HStack>
+                disabled={(end === totalRows)}
+            >
+                <BiChevronRight />
+            </IconButton>
+        </Flex>
     )
 }
