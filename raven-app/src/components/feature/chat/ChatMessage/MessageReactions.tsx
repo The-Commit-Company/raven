@@ -37,7 +37,7 @@ export const MessageReactions = ({ messageID, message_reactions, updateMessages 
     }, [message_reactions])
 
     return (
-        <Flex gap='1' wrap='wrap'>
+        <Flex gap='1' mt='1' wrap='wrap'>
             {reactions.map((reaction) => {
                 return (
                     <ReactionButton
@@ -80,7 +80,7 @@ const ReactionButton = ({ reaction, onReactionClick, currentUser, allUsers }: Re
                 onClick={onClick}
                 radius='large'
                 className={clsx("w-fit h-full text-xs py-0.5 cursor-pointer hover:bg-white dark:hover:bg-[var(--gray-10)]",
-                    currentUserReacted ? "bg-[var(--accent-4)] dark:bg-[var(--gray-8)]" : "bg-[var(--gray-3)] dark:bg-[var(--gray-6)]")}>
+                    currentUserReacted ? "bg-[var(--accent-4)] dark:bg-[var(--gray-8)]" : "bg-[var(--gray-3)] dark:bg-[var(--gray-7)]")}>
                 <Text as='span' className={clsx("w-fit px-2 text-[var(--gray-12)]")} weight='medium'>
                     {emoji} {count}
                 </Text>
