@@ -1,9 +1,8 @@
 import React, { ReactNode, useState } from 'react'
 import { NavLink } from 'react-router-dom'
-import { Flex, Box, IconButton, Text, Badge } from '@radix-ui/themes';
+import { Flex, IconButton, Text, Badge } from '@radix-ui/themes';
 import { FlexProps } from '@radix-ui/themes/dist/cjs/components/flex';
 import { TextProps } from '@radix-ui/themes/dist/cjs/components/text';
-import { BoxProps } from '@radix-ui/themes/dist/cjs/components/box';
 import { IconButtonProps } from '@radix-ui/themes/dist/cjs/components/icon-button';
 import { BadgeProps } from '@radix-ui/themes/dist/cjs/components/badge';
 import { BiCaretDown, BiCaretRight } from 'react-icons/bi';
@@ -75,6 +74,7 @@ export const SidebarItem = ({ to, children, end, active = false, activeStyles, c
         <NavLink
             to={to}
             end={end}
+            className='no-underline'
         >
             {({ isActive }) => {
                 return (

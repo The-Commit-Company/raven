@@ -5,6 +5,7 @@ import { useContext, useMemo, useState } from "react"
 import { ChannelListContext, ChannelListContextType, ChannelListItem, UnreadCountData } from "../../../utils/channel/ChannelListProvider"
 import { ChannelIcon } from "@/utils/layout/channelIcon"
 import { Flex, Text } from "@radix-ui/themes"
+import { clsx } from "clsx"
 
 export const ChannelList = ({ unread_count }: { unread_count?: UnreadCountData }) => {
 
@@ -49,7 +50,7 @@ const ChannelItem = ({ channel, unreadCount }: { channel: ChannelListItem, unrea
             <ChannelIcon type={channel.type} size='18' />
             <Flex justify='between' align={'center'} width='100%'>
                 <Text size='2' className="text-ellipsis line-clamp-1" as='span' weight={unreadCountForChannel ? 'bold' : 'regular'}>{channel.channel_name}</Text>
-                <SidebarBadge hidden={!unreadCountForChannel}>{unreadCountForChannel}</SidebarBadge>
+                {unreadCountForChannel ? <SidebarBadge>{unreadCountForChannel}</SidebarBadge> : null}
             </Flex>
         </SidebarItem>
     )
