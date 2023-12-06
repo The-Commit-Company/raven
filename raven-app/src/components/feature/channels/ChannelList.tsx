@@ -49,8 +49,8 @@ const ChannelItem = ({ channel, unreadCount }: { channel: ChannelListItem, unrea
         <SidebarItem to={channel.name} className={'py-1.5'}>
             <ChannelIcon type={channel.type} size='18' />
             <Flex justify='between' align={'center'} width='100%'>
-                <Text size='1' className="text-ellipsis line-clamp-1" as='span' weight={unreadCountForChannel ? 'bold' : 'regular'}>{channel.channel_name}</Text>
-                 {unreadCountForChannel ? <SidebarBadge>{unreadCountForChannel}</SidebarBadge> : null}
+                <Text size='2' className="text-ellipsis line-clamp-1" as='span' weight={unreadCountForChannel ? 'bold' : 'regular'}>{channel.channel_name}</Text>
+                {unreadCountForChannel ? <SidebarBadge>{unreadCountForChannel}</SidebarBadge> : null}
             </Flex>
         </SidebarItem>
     )

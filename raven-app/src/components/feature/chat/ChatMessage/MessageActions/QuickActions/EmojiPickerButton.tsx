@@ -31,11 +31,11 @@ export const EmojiPickerButton = ({ saveReaction }: EmojiPickerButtonProps) => {
                     <Popover.Trigger>
                         <IconButton
                             variant='soft'
-                            size='1'
+                            size='2'
                             className={QUICK_ACTION_BUTTON_CLASS}
                             color='gray'
                             aria-label='pick emoji'>
-                            <BiSmile size='14' />
+                            <BiSmile size='18' />
                         </IconButton>
                     </Popover.Trigger>
                 </Tooltip>

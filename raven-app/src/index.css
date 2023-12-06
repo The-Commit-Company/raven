@@ -2,8 +2,22 @@
 @tailwind components;
 @tailwind utilities;
 
+*,
+::before,
+::after {
+    border-width: 0;
+    border-style: solid;
+    border-color: theme('borderColor.DEFAULT', currentColor);
+}
+
 .cal-sans {
     font-family: 'Cal Sans';
+}
+
+ol,
+ul {
+    margin: 0;
+    padding: 0;
 }
 
 .radix-themes {
@@ -28,6 +42,7 @@ html {
 
 body {
     text-rendering: optimizeLegibility;
+    margin: 0;
     -webkit-font-smoothing: antialiased;
 }
 

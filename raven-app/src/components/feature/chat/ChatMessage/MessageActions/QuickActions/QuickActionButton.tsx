@@ -12,7 +12,7 @@ export const QuickActionButton = forwardRef(({ className, tooltip, ...props }: Q
     return (
         <Tooltip content={tooltip}>
             <IconButton
-                size='1'
+                size='2'
                 className={clsx(QUICK_ACTION_BUTTON_CLASS, className)}
                 ref={ref}
                 {...props}

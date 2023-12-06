@@ -62,7 +62,7 @@ export const MessageItem = ({ message, setDeleteMessage, onReplyMessageClick, se
                             rounded-md'>
                     <Flex gap='3' >
                         <MessageLeftElement message={message} user={user} isActive={isActive} />
-                        <Flex direction='column' gap='0' justify='center'>
+                        <Flex direction='column' className='gap-0.5' justify='center'>
                             {!is_continuation ? <Flex align='center' gap='2' mt='-1'>
                                 <UserHoverCard user={user} userID={userID} isActive={isActive} />
                                 <Separator orientation='vertical' />

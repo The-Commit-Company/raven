@@ -58,7 +58,7 @@ export const QuickActions = ({ message, onReply, onEdit, updateMessages, isOwner
                 {QUICK_EMOJIS.map((emoji) => {
                     return <QuickActionButton
                         key={emoji}
-                        className={'text-sm'}
+                        className={'text-base'}
                         tooltip={`React with ${emoji}`}
                         aria-label={`React with ${emoji}`}
                         onClick={() => {
@@ -74,14 +74,14 @@ export const QuickActions = ({ message, onReply, onEdit, updateMessages, isOwner
                     onClick={onEdit}
                     tooltip='Edit message'
                     aria-label='Edit message'>
-                    <BiEditAlt size='14' />
+                    <BiEditAlt size='18' />
                 </QuickActionButton>
                 </Tooltip> :
                     <QuickActionButton
                         tooltip='Reply'
                         aria-label='Reply to this message'
                         onClick={onReply}>
-                        <HiReply size='14' />
+                        <HiReply size='18' />
                     </QuickActionButton>
                 }
 
@@ -91,7 +91,7 @@ export const QuickActions = ({ message, onReply, onEdit, updateMessages, isOwner
                     tooltip='More actions'
                     onClick={onMoreClick}
                     className={QUICK_ACTION_BUTTON_CLASS}>
-                    <BiDotsHorizontal size='14' />
+                    <BiDotsHorizontal size='18' />
                 </QuickActionButton>
             </Flex>
         </Box>
