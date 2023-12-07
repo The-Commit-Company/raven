@@ -32,9 +32,9 @@ export const ViewChannelDetailsButton = ({ channelData, channelMembers, updateMe
                         {Object.keys(channelMembers).length > 0 ? <div className={'flex -space-x-2 rtl:space-x-reverse'}>
                             {Object.entries(channelMembers).map(([name, member], index) => {
                                 if (index < 3)
-                                    return <UserAvatar key={name} src={member.user_image ?? 'undefined'} alt={member.full_name ?? member.name} radius='full' variant='solid' className={`border border-[var(--slate-2)]`} />
+                                    return <UserAvatar key={name} src={member.user_image ?? 'undefined'} alt={member.full_name ?? member.name} radius='full' variant='solid' className={`border border-slate-2`} />
                             })}
-                            {totalMembers > 3 && <div className={'z-10 flex items-center justify-center w-6 h-6 text-[0.65rem] text-black bg-[var(--gray-5)] dark:bg-[var(--gray-8)] dark:text-white rounded-full border border-[var(--slate-2)]'}>+ {totalMembers - 3}</div>}
+                            {totalMembers > 3 && <div className={'z-10 flex items-center justify-center w-6 h-6 text-[0.65rem] text-black bg-gray-5 dark:bg-gray-8 dark:text-white rounded-full border border-slate-2'}>+ {totalMembers - 3}</div>}
                         </div> : <BiSolidUser />}
                     </Button>
                 </Dialog.Trigger>

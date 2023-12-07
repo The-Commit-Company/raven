@@ -22,7 +22,7 @@ export const RemoveMemberButton = ({ channelData, channelMembers, updateMembers,
     return (
         <AlertDialog.Root open={open} onOpenChange={setOpen}>
             <AlertDialog.Trigger>
-                <Button variant='ghost' color='gray' className={'hover:bg-[var(--slate-3)]'} size='1'>
+                <Button variant='ghost' color='gray' className={'hover:bg-slate-3'} size='1'>
                     Remove
                 </Button>
             </AlertDialog.Trigger>

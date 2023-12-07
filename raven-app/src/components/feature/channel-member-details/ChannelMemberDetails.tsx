@@ -66,7 +66,7 @@ export const ChannelMemberDetails = ({ channelData, channelMembers, activeUsers,
                     {filteredMembers.length > 0 ? (
                         <Flex direction='column'>
                             {filteredMembers.map(member => (
-                                <Box key={member.name} className={'hover:bg-[var(--slate-3)] rounded-md'}>
+                                <Box key={member.name} className={'hover:bg-slate-3 rounded-md'}>
                                     <Flex justify='between' className={'pr-3'}>
                                         <Flex className={'p-2'} gap='3'>
                                             <UserAvatar src={member.user_image ?? ''} alt={member.full_name} size='2' isActive={activeUsers.includes(member.name)} />

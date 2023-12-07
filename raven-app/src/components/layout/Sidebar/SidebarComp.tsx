@@ -67,7 +67,7 @@ interface SidebarItemProps extends FlexProps {
 
 export const SidebarItem = ({ to, children, end, active = false, activeStyles, className, ...props }: SidebarItemProps) => {
 
-    const activeClass = 'bg-[#EBEBEB] dark:bg-[var(--gray-6)] text-[var(--gray-12)]'
+    const activeClass = 'bg-[#EBEBEB] dark:bg-gray-6 text-gray-12'
 
     return (
         <NavLink
@@ -81,7 +81,7 @@ export const SidebarItem = ({ to, children, end, active = false, activeStyles, c
                         gap='2'
                         align='center'
                         px='3'
-                        className={clsx('cursor-pointer text-black dark:text-gray-100 user-select-none rounded-md no-underline transition-all duration-200 hover:bg-[var(--gray-3)] dark:hover:bg-[var(--gray-5)]', isActive ? activeClass : '', className)}
+                        className={clsx('cursor-pointer text-black dark:text-gray-100 user-select-none rounded-md no-underline transition-all duration-200 hover:bg-gray-3 dark:hover:bg-gray-5', isActive ? activeClass : '', className)}
                         {...props}>
                         {children}
                     </Flex>
@@ -97,7 +97,7 @@ interface SidebarIconProps extends FlexProps {
 }
 export const SidebarIcon = ({ subtle, children, ...props }: SidebarIconProps) => {
     return (
-        <Flex align='center' justify='center' className='text-[var(--slate-11)]' {...props}>
+        <Flex align='center' justify='center' className='text-slate-11' {...props}>
             {children}
         </Flex>
     )
@@ -122,7 +122,7 @@ export const SidebarButtonItem = ({ children, subtle, onClick, isLoading, active
             gap='2'
             align='center'
             px='3'
-            className={'user-select-none rounded-md py-1.5 transition-all duration-200 hover:bg-[var(--slate-3)] hover:text-[var(--slate-11)] ' + cursor}
+            className={'user-select-none rounded-md py-1.5 transition-all duration-200 hover:bg-slate-3 hover:text-slate-11 ' + cursor}
             onClick={onClick}
             {...props}
         >
@@ -145,7 +145,7 @@ export const SidebarViewMoreButton = ({ onClick, ...props }: SidebarViewMoreButt
             title='View'
             variant='ghost'
             size='1'
-            className='cursor-pointer text-[var(--slate-12)] bg-transparent hover:text-[var(--gray-13)]'
+            className='cursor-pointer text-slate-12 bg-transparent hover:text-gray-12'
             highContrast
             onClick={() => {
                 setIsViewMore(!isViewMore)

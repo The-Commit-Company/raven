@@ -39,13 +39,13 @@ const UserMentionRenderer = ({ node }: NodeViewRendererProps) => {
                         <UserAvatar src={user?.user_image} alt={user?.full_name ?? node.attrs.label} size='4' />
                         <Flex direction='column'>
                             <Flex gap='3' align='center'>
-                                <Text className='text-[var(--gray-12)]' weight='bold' size='3'>{user?.full_name ?? node.attrs.label}</Text>
+                                <Text className='text-gray-12' weight='bold' size='3'>{user?.full_name ?? node.attrs.label}</Text>
                                 {isActive && <Flex gap='1' align='center'>
                                     <BsFillCircleFill className='text-green-400' size='8' />
-                                    <Text className='text-[var(--gray-10)]' size='1'>Online</Text>
+                                    <Text className='text-gray-10' size='1'>Online</Text>
                                 </Flex>}
                             </Flex>
-                            {user && <Text className='text-[var(--gray-11)]' size='1'>{user?.name}</Text>}
+                            {user && <Text className='text-gray-11' size='1'>{user?.name}</Text>}
                         </Flex>
                     </Flex>
 

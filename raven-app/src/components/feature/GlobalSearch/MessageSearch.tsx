@@ -227,7 +227,7 @@ export const MessageSearch = ({ onToggleMyChannels, isOpenMyChannels, onToggleSa
                         )
                     })}
                 </Flex> : !showResults && <Box className='text-center' py='8'>
-                    <Text size='2' className='text-[var(--gray-11)]'>Add a search query above to see results.</Text>
+                    <Text size='2' className='text-gray-11'>Add a search query above to see results.</Text>
                 </Box>}
             </ScrollArea>
         </Box>

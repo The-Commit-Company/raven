@@ -59,7 +59,7 @@ export default forwardRef((props: ReactRendererOptions['props'], ref) => {
             <Flex
                 direction='column'
                 gap='0'
-                className='shadow-lg dark:backdrop-blur-[8px] dark:bg-[var(--color-panel)] bg-white overflow-y-scroll max-h-64 rounded-md'
+                className='shadow-lg dark:backdrop-blur-[8px] dark:bg-panel-translucent bg-white overflow-y-scroll max-h-64 rounded-md'
             >
                 {props?.items.length
                     ? props.items.map((item: ChannelListItem, index: number) => (
@@ -90,7 +90,7 @@ const MentionItem = ({ item, index, selectItem, selectedIndex, itemsLength }: { 
         className={clsx('px-3 py-2 gap-2 rounded-md',
             index === itemsLength - 1 ? 'rounded-b-md' : 'rounded-b-none',
             index === 0 ? 'rounded-t-md' : 'rounded-t-none',
-            index === selectedIndex ? 'bg-[var(--accent-a5)]' : 'bg-[var(--color-panel-translucent)]'
+            index === selectedIndex ? 'bg-accent-a5' : 'bg-panel-translucent'
         )}
         key={index}
         onClick={() => selectItem(index)}

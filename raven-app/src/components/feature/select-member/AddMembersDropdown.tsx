@@ -170,7 +170,7 @@ const AddMembersDropdown = ({ channelMembers, label = 'Select users', selectedUs
                     </TextField.Root>
                 </div >
                 <ul
-                    className={`absolute w-inherit bg-[var(--color-background)] rounded-b-md mt-1 shadow-md max-h-36 overflow-scroll p-0 z-50 ${!(isOpen && items.length) && 'hidden'
+                    className={`absolute w-inherit bg-background rounded-b-md mt-1 shadow-md max-h-36 overflow-scroll p-0 z-50 ${!(isOpen && items.length) && 'hidden'
                         }`}
                     {...getMenuProps()}
                 >
@@ -178,7 +178,7 @@ const AddMembersDropdown = ({ channelMembers, label = 'Select users', selectedUs
                         items.map((item, index) => (
                             <li
                                 className={clsx(
-                                    highlightedIndex === index && 'bg-[var(--accent-4)]',
+                                    highlightedIndex === index && 'bg-accent-4',
                                     selectedItem === item && 'font-bold',
                                     'py-2 px-3 shadow-sm flex gap-2 items-center',
                                 )}

@@ -79,9 +79,9 @@ const ReactionButton = ({ reaction, onReactionClick, currentUser, allUsers }: Re
                 size='1'
                 onClick={onClick}
                 radius='large'
-                className={clsx("w-fit h-full text-xs py-0.5 cursor-pointer hover:bg-white dark:hover:bg-[var(--gray-10)]",
-                    currentUserReacted ? "bg-[var(--accent-4)] dark:bg-[var(--gray-8)]" : "bg-[var(--gray-3)] dark:bg-[var(--gray-7)]")}>
-                <Text as='span' className={clsx("w-fit px-2 text-[var(--gray-12)]")} weight='medium'>
+                className={clsx("w-fit h-full text-xs py-0.5 cursor-pointer hover:bg-white dark:hover:bg-gray-10",
+                    currentUserReacted ? "bg-accent-4 dark:bg-gray-8" : "bg-gray-3 dark:bg-gray-7")}>
+                <Text as='span' className={clsx("w-fit px-2 text-gray-12")} weight='medium'>
                     {emoji} {count}
                 </Text>
             </IconButton>

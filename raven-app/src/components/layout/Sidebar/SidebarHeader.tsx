@@ -28,7 +28,7 @@ const ColorModeToggleButton = () => {
             aria-label='Toggle theme'
             title='Toggle theme'
             color='gray'
-            className='text-[var(--gray-11)] hover:text-[var(--gray-12)]'
+            className='text-gray-11 hover:text-gray-12'
             variant='ghost'
             onClick={toggleTheme}>
             {appearance === 'light' ? <BiMoon /> : <BiSun />}

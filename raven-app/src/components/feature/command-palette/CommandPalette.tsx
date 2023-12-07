@@ -85,7 +85,7 @@ export const CommandPalette = ({ isOpen, onClose }: CommandPaletteProps) => {
                         <IconButton
                             color='gray'
                             variant='ghost'
-                            className='hover:bg-transparent hover:cursor-pointer hover:text-[var(--gray-12)]'
+                            className='hover:bg-transparent hover:cursor-pointer hover:text-gray-12'
                             size='1'
                             onClick={() => setPages((pages) => {
                                 const x = [...pages]

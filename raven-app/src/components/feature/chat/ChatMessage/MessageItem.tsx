@@ -54,9 +54,9 @@ export const MessageItem = ({ message, setDeleteMessage, onReplyMessageClick, se
             <ContextMenu.Root>
                 <ContextMenu.Trigger className='group 
                             hover:bg-gray-100
-                            dark:hover:bg-[var(--gray-5)] 
-                            data-[state=open]:bg-[var(--accent-2)]
-                            dark:data-[state=open]:bg-[var(--gray-4)]
+                            dark:hover:bg-gray-5 
+                            data-[state=open]:bg-accent-2
+                            dark:data-[state=open]:bg-gray-4
                             data-[state=open]:shadow-sm
                             p-2
                             rounded-md'>
@@ -159,7 +159,7 @@ export const UserHoverCard = ({ user, userID, isActive }: UserProps) => {
 
     return <HoverCard.Root>
         <HoverCard.Trigger>
-            <Link className='text-[var(--gray-12)]' weight='medium' size='2'>
+            <Link className='text-gray-12' weight='medium' size='2'>
                 {user?.full_name ?? userID}
             </Link>
         </HoverCard.Trigger>
@@ -168,13 +168,13 @@ export const UserHoverCard = ({ user, userID, isActive }: UserProps) => {
                 <UserAvatar src={user?.user_image} alt={user?.full_name ?? userID} size='4' />
                 <Flex direction='column'>
                     <Flex gap='3' align='center'>
-                        <Text className='text-[var(--gray-12)]' weight='bold' size='3'>{user?.full_name ?? userID}</Text>
+                        <Text className='text-gray-12' weight='bold' size='3'>{user?.full_name ?? userID}</Text>
                         {isActive && <Flex gap='1' align='center'>
                             <BsFillCircleFill className='text-green-500' size='8' />
-                            <Text className='text-[var(--gray-10)]' size='1'>Online</Text>
+                            <Text className='text-gray-10' size='1'>Online</Text>
                         </Flex>}
                     </Flex>
-                    {user && <Text className='text-[var(--gray-11)]' size='1'>{user?.name}</Text>}
+                    {user && <Text className='text-gray-11' size='1'>{user?.name}</Text>}
                 </Flex>
             </Flex>
 

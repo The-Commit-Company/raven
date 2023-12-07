@@ -197,7 +197,7 @@ export const Files = ({ searchChange, input, onClose, isGlobalSearchModalOpen, o
                                 {f.message_type === 'Image' && <img src={f.file} alt='File preview' className="object-cover w-8 h-8 rounded-sm" />}
                             </Flex>
                             <Box>
-                                {f.file && <Link size='1' color='gray' className="text-[var(--accent-12)]" onClick={() => setSelectedFile(f)}>{getFileName(f.file)}</Link>}
+                                {f.file && <Link size='1' color='gray' className="text-accent-12" onClick={() => setSelectedFile(f)}>{getFileName(f.file)}</Link>}
                             </Box>
                         </Flex></Item>)
                 })}

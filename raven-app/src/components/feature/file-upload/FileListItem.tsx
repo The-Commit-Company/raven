@@ -22,7 +22,7 @@ export const FileListItem = ({ file, removeFile, uploadProgress }: FileListItemP
     const progress = uploadProgress?.[file.fileID]?.progress ?? 0
 
     return (
-        <Flex width='100%' justify={'start'} gap='2' className='border rounded-md border-[var(--slate-8)] dark:bg-[var(--slate-5)] bg-[var(--slate-2)]' px='1' py='1'>
+        <Flex width='100%' justify={'start'} gap='2' className='border rounded-md border-slate-8 dark:bg-slate-5 bg-slate-2' px='1' py='1'>
             <Flex align='center' justify='center' width='6'>
                 {previewURL ? <img src={previewURL} alt='File preview' className='aspect-square object-cover rounded-md' /> : <FileExtensionIcon ext={getFileExtension(file.name)} />}
             </Flex>
