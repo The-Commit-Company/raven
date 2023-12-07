@@ -61,7 +61,7 @@ export const FileMessageBlock = ({ message, user, ...props }: FileMessageBlockPr
                 align='center'
                 gap='4'
                 p='4'
-                className="border-2 bg-[var(--gray-2)] dark:bg-[var(--gray-4)] rounded-md border-[var(--gray-4)]  dark:border-[var(--gray-6)] shadow-sm">
+                className="border-2 bg-gray-2 dark:bg-gray-4 rounded-md border-gray-4  dark:border-gray-6 shadow-sm">
                 <Flex align='center' gap='2'>
                     <FileExtensionIcon ext={fileExtension} />
                     <Text as='span' size='2' className="text-ellipsis overflow-hidden line-clamp-1">{fileName}</Text>

@@ -49,7 +49,7 @@ export const UserAvatar = ({ src, alt, size = '1', radius = 'medium', isActive, 
         }
         {isActive &&
             <span className={clsx("absolute block translate-x-1/2 translate-y-1/2 transform rounded-full", radius === 'full' ? 'bottom-1 right-1' : 'bottom-0.5 right-0.5')}>
-                <span className="block h-2 w-2 rounded-full border border-[var(--slate-2)] bg-green-600 shadow-md" />
+                <span className="block h-2 w-2 rounded-full border border-slate-2 bg-green-600 shadow-md" />
             </span>
         }
     </span>

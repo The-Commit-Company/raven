@@ -118,7 +118,7 @@ export const ChannelSearch = ({ onToggleMyChannels, isOpenMyChannels, input, onC
                             return (
                                 <Box p='2'
                                     role='link'
-                                    className='hover:bg-[var(--gray-3)] rounded-md cursor-pointer'
+                                    className='hover:bg-gray-3 rounded-md cursor-pointer'
                                     onClick={() => {
                                         navigate(`/channel/${channel.name}`)
                                         onClose()

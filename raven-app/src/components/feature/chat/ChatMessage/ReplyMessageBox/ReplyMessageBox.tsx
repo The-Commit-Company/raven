@@ -22,8 +22,8 @@ export const ReplyMessageBox = ({ message, children, className, ...props }: Repl
 
     const user = useGetUser(message.owner)
     return (
-        <Flex className={clsx('p-2 bg-white border border-[var(--gray-5)] shadow-sm hover:border-[var(--iris-10)] dark:bg-[var(--gray-1)] dark:border-[var(--gray-7)] dark:hover:border-[var(--iris-8)] rounded-md', className)} {...props}>
-            <Flex gap='1' direction='column' className="border-l-2 pl-2 border-[var(--gray-8)]">
+        <Flex className={clsx('p-2 bg-white border border-gray-5 shadow-sm hover:border-iris-10 dark:bg-gray-1 dark:border-gray-7 dark:hover:border-iris-8 rounded-md', className)} {...props}>
+            <Flex gap='1' direction='column' className="border-l-2 pl-2 border-gray-8">
                 <Flex gap='2' align='center'>
                     <Text as='span' size='1' weight='bold'>{user?.full_name ?? message.owner}</Text>
                     <Separator orientation='vertical' />

@@ -437,7 +437,7 @@ const Tiptap = ({ slotBefore, fileProps, onMessageSend, messageSending, sessionS
 
 
     return (
-        <Box className='border rounded-[var(--radius-4)] border-gray-300 dark:border-gray-500 dark:bg-[var(--gray-3)] shadow-md '>
+        <Box className='border rounded-radius4 border-gray-300 dark:border-gray-500 dark:bg-gray-3 shadow-md '>
             <EditorContext.Provider value={{ editor }}>
                 {slotBefore}
                 <EditorContent editor={editor} />

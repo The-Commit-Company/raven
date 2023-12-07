@@ -37,7 +37,7 @@ export const FilesSharedInChannel = ({ channelMembers }: FilesSharedInChannelPro
                 <Flex direction='column' gap='2'>
                     {data?.message && data.message.length > 0 && data.message.map((f: FileMessage) => {
                         return (
-                            <Box key={f.name} className={'p-2 rounded-md border border-[var(--gray-6)]'}>
+                            <Box key={f.name} className={'p-2 rounded-md border border-gray-6'}>
                                 <Flex justify='between' align={'center'}>
                                     <Flex gap='3'>
                                         <Flex align='center' justify='center' className="h-8 w-8">

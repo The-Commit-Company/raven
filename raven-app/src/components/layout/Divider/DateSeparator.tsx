@@ -8,9 +8,9 @@ export const DateSeparator = (props: FlexProps) => {
     return (
         <Flex align="center" {...flexProps}>
             <Flex grow='1' >
-                <Separator size='4' className={`bg-[var(--gray-5)] dark:bg-[var(--gray-7)]`} />
+                <Separator size='4' className={`bg-gray-5 dark:bg-gray-7`} />
             </Flex>
-            <Flex className='border border-[var(--gray-7)] shadow-sm rounded-md' px='2'>
+            <Flex className='border border-gray-7 shadow-sm rounded-md' px='2'>
                 <Text
                     as="span"
                     size='1'
@@ -19,7 +19,7 @@ export const DateSeparator = (props: FlexProps) => {
                 </Text>
             </Flex>
             <Flex grow='1'>
-                <Separator size='4' className={`bg-[var(--gray-5)] dark:bg-[var(--gray-7)]`} />
+                <Separator size='4' className={`bg-gray-5 dark:bg-gray-7`} />
             </Flex>
         </Flex>
     )

@@ -13,7 +13,7 @@ const ChatSpace = () => {
 
     // only if channelID is present render ChatSpaceArea component'
     const { channelID } = useParams<{ channelID: string }>()
-    // const className = 'bg-white dark:from-[var(--accent-1)] dark:to-95% dark:to-[var(--accent-2)] dark:bg-gradient-to-b'
+    // const className = 'bg-white dark:from-accent-1 dark:to-95% dark:to-accent-2 dark:bg-gradient-to-b'
 
     return <Box>
         {channelID && <ChatSpaceArea channelID={channelID} />}

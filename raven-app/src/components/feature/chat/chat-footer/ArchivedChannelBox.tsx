@@ -37,7 +37,7 @@ export const ArchivedChannelBox = ({ channelData, channelMembers }: ArchivedChan
             <Flex
                 direction='column'
                 align='center'
-                className="border-2 rounded-md bg-[var(--color-surface)] border-[var(--accent-a6)]"
+                className="border-2 rounded-md bg-surface border-accent-a6"
                 p='4'>
                 <ErrorBanner error={error} />
                 <Flex justify='center' align='center' gap='4'>

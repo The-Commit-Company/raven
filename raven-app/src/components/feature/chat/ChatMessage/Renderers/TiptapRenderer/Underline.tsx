@@ -6,7 +6,7 @@ export const CustomUnderline = TiptapUnderline.extend({
         return [
             "span",
             mergeAttributes(HTMLAttributes, {
-                class: 'rt-Text rt-reset rt-Link rt-underline-always text-[var(--gray-12)]',
+                class: 'rt-Text rt-reset rt-Link rt-underline-always text-gray-12',
                 'data-accent-color': 'gray',
             }), // mergeAttributes is a exported function from @tiptap/core
             0,

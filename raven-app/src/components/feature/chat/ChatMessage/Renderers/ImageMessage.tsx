@@ -46,7 +46,7 @@ export const ImageMessageBlock = ({ message, user }: ImageMessageProps) => {
                     <Box style={{
                         height: height + 'px',
                         width: width + 'px',
-                    }} className='bg-[var(--gray-3)] z-0 dark:bg-[var(--gray-5)] rounded-md'>
+                    }} className='bg-gray-3 z-0 dark:bg-gray-5 rounded-md'>
 
                     </Box>
                 </Box>

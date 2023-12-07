@@ -49,7 +49,7 @@ export const LinkPreview = ({ editor }: { editor: Editor | null }) => {
                         <Box className='relative min-w-[18rem] min-h-[9rem] w-72 h-36'>
                             {/* Absolute positioned skeleton loader */}
                             <Box className='absolute top-0 z-0 left-0 w-72 h-36' >
-                                <Box className='animate-pulse bg-[var(--gray-3)] z-0 w-72 h-36 dark:bg-[var(--gray-5)] rounded-md'>
+                                <Box className='animate-pulse bg-gray-3 z-0 w-72 h-36 dark:bg-gray-5 rounded-md'>
 
                                 </Box>
                             </Box>

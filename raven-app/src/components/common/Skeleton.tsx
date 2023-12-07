@@ -8,7 +8,7 @@ function Skeleton({
     return (
         <Box
             {...props}
-            className={"animate-pulse rounded-md bg-[var(--slate-6)] " + className}
+            className={"animate-pulse rounded-md bg-slate-6 " + className}
         >
         </Box>
     )

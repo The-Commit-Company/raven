@@ -23,7 +23,7 @@ export const SidebarBody = () => {
                 <Box>
                     <SidebarItem to={'saved-messages'} className='pl-1.5 py-0.5'>
                         <AccessibleIcon label='Saved Messages'>
-                            <BiBookmark className='text-[var(--slate-12)] mt-0.5' size='14' />
+                            <BiBookmark className='text-slate-12 mt-0.5' size='14' />
                         </AccessibleIcon>
                         <Box>
                             <Text size='2' className='cal-sans' as='span'>Saved Messages</Text>

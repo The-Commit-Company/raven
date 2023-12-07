@@ -7,7 +7,7 @@ export const TextFormattingMenu = () => {
 
     const { editor } = useCurrentEditor()
 
-    const highlightBgColor = 'bg-[var(--accent-a3)]'
+    const highlightBgColor = 'bg-accent-a3'
 
     if (!editor) {
         return <Box></Box>

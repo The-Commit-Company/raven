@@ -36,7 +36,7 @@ export const MessageBox = ({ message, handleScrollToMessage }: MessageBoxProps) 
     return (
         <Flex direction='column' gap='2' className="group
         hover:bg-gray-100
-                            dark:hover:bg-[var(--gray-4)] 
+                            dark:hover:bg-gray-4 
                             p-2
                             rounded-md">
             <Flex gap='2'>
