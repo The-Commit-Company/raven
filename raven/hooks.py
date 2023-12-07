@@ -71,7 +71,7 @@ after_install = "raven.install.after_install"
 # ------------
 
 # before_uninstall = "raven.uninstall.before_uninstall"
-# after_uninstall = "raven.uninstall.after_uninstall"
+after_uninstall = "raven.uninstall.after_uninstall"
 
 # Desk Notifications
 # ------------------
