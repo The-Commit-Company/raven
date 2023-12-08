@@ -135,7 +135,7 @@ const RenderItem = ({ index, replyToMessage, updateMessages, block, onReplyMessa
             <DateSeparator><DateMonthYear date={block.data} /></DateSeparator>
         </Box> :
 
-            <Box className="w-full overflow-x--hidden">
+            <Box className="w-full overflow-x-clip overflow-y-visible text-ellipsis">
                 <MessageItem
                     message={block.data}
                     isScrolling={isScrolling}

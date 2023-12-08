@@ -93,9 +93,10 @@ export const ChatBoxBody = ({ channelData }: ChatBoxBodyProps) => {
                 message={selectedMessage}>
                 <IconButton
                     color='gray'
+                    size='1'
                     variant="soft"
                     onClick={handleCancelReply}>
-                    <BiX size='24' />
+                    <BiX size='20' />
                 </IconButton>
             </ReplyMessageBox>
         }
@@ -136,6 +137,7 @@ export const ChatBoxBody = ({ channelData }: ChatBoxBodyProps) => {
                                     fileInputRef,
                                     addFile
                                 }}
+                                clearReplyMessage={handleCancelReply}
                                 placeholder={randomPlaceholder}
                                 sessionStorageKey={`tiptap-${channelData.name}`}
                                 onMessageSend={sendMessage}

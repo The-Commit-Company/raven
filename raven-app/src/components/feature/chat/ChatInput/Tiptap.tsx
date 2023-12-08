@@ -44,6 +44,7 @@ type TiptapEditorProps = {
     slotAfter?: React.ReactNode,
     placeholder?: string,
     sessionStorageKey?: string,
+    clearReplyMessage?: () => void,
     disableSessionStorage?: boolean,
     fileProps?: ToolbarFileProps,
     onMessageSend: (message: string, json: any) => Promise<void>,
@@ -70,7 +71,7 @@ export const ChannelMention = Mention.extend({
             pluginKey: new PluginKey('channelMention'),
         }
     })
-const Tiptap = ({ slotBefore, fileProps, onMessageSend, placeholder = 'Type a message...', messageSending, sessionStorageKey = 'tiptap-editor', disableSessionStorage = false, defaultText = '' }: TiptapEditorProps) => {
+const Tiptap = ({ slotBefore, fileProps, onMessageSend, clearReplyMessage, placeholder = 'Type a message...', messageSending, sessionStorageKey = 'tiptap-editor', disableSessionStorage = false, defaultText = '' }: TiptapEditorProps) => {
 
     const { users } = useContext(UserListContext)
 
@@ -153,6 +154,17 @@ const Tiptap = ({ slotBefore, fileProps, onMessageSend, placeholder = 'Type a me
 
                     return false;
                 },
+                Backspace: () => {
+                    const isEditorEmpty = this.editor.isEmpty
+
+                    if (isEditorEmpty) {
+                        // Clear the reply message if the editor is empty
+                        clearReplyMessage?.()
+                        return this.editor.commands.clearContent(true)
+                    }
+
+                    return false
+                }
 
                 // 'Shift-Enter': () => {
                 //     /**
