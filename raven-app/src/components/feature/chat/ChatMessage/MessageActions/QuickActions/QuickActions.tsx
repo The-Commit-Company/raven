@@ -47,6 +47,8 @@ export const QuickActions = ({ message, onReply, onEdit, updateMessages, isOwner
         -top-6 
         right-4
         group-hover:visible
+        group-hover:transition-all
+        group-hover:delay-100
         z-50 
         p-1
         shadow-md

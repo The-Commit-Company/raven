@@ -54,7 +54,9 @@ export const MessageItem = ({ message, setDeleteMessage, onReplyMessageClick, se
             <ContextMenu.Root>
                 <ContextMenu.Trigger className='group 
                             hover:bg-gray-100
-                            dark:hover:bg-gray-5 
+                            hover:transition-all
+                            hover:delay-100
+                            dark:hover:bg-gray-3 
                             data-[state=open]:bg-accent-2
                             dark:data-[state=open]:bg-gray-4
                             data-[state=open]:shadow-sm
