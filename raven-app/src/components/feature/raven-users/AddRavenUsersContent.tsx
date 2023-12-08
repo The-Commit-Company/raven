@@ -1,7 +1,7 @@
 import { useDebounce } from "@/hooks/useDebounce"
 import { usePaginationWithDoctype } from "@/hooks/usePagination"
 import { User } from "@/types/Core/User"
-import { Filter, useFrappeCreateDoc, useFrappeGetDocList, useSWRConfig } from "frappe-react-sdk"
+import { Filter, useFrappeGetDocList, useFrappePostCall, useSWRConfig } from "frappe-react-sdk"
 import { ChangeEvent, useContext, useState } from "react"
 import { Sort } from "../sorting"
 import { PageLengthSelector } from "../pagination/PageLengthSelector"
@@ -45,24 +45,23 @@ const AddRavenUsersContent = ({ onClose }: { onClose: VoidFunction }) => {
     const ravenUsersArray = users.users.map(user => user.name)
 
     const [selected, setSelected] = useState<string[]>([])
-    const { createDoc, loading } = useFrappeCreateDoc()
+    const { loading, call, error: postError } = useFrappePostCall('raven.api.raven_users.add_users_to_raven')
     const { toast } = useToast()
 
     const handleAddUsers = async () => {
         if (selected.length > 0) {
 
-            const createPromises = selected.map(user => createDoc('Raven User', { user: user }))
-
-            Promise.all(createPromises)
-                .then(() => {
-                    toast({
-                        title: `You have added ${selected.length} users to Raven`,
-                        variant: 'success',
-                        duration: 1000
-                    })
-                    onClose()
-                    mutate('raven.api.raven_users.get_list')
+            call({
+                users: JSON.stringify(selected)
+            }).then(() => {
+                toast({
+                    title: `You have added ${selected.length} users to Raven`,
+                    variant: 'success',
+                    duration: 1000
                 })
+                onClose()
+                mutate('raven.api.raven_users.get_list')
+            })
         }
     }
 
@@ -102,6 +101,7 @@ const AddRavenUsersContent = ({ onClose }: { onClose: VoidFunction }) => {
                 </Flex>
 
                 <ErrorBanner error={error} />
+                <ErrorBanner error={postError} />
                 {!data && !error && <TableLoader columns={3} />}
 
                 {data && data.length === 0 && debouncedText.length >= 2 &&

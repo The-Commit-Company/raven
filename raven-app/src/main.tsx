@@ -4,6 +4,21 @@ import App from './App'
 import '@radix-ui/themes/styles.css';
 import './index.css'
 
+if (import.meta.env.DEV) {
+  fetch('/api/method/raven.www.raven.get_context_for_dev', {
+    method: 'POST',
+  })
+    .then(response => response.json())
+    .then((values) => {
+      const v = JSON.parse(values.message)
+      console.log(v)
+      //@ts-expect-error
+      if (!window.frappe) window.frappe = {};
+      //@ts-ignore
+      window.frappe.boot = v
+    }
+    )
+}
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <React.StrictMode>
     <App />

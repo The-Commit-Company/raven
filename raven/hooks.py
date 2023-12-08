@@ -105,7 +105,8 @@ after_uninstall = "raven.uninstall.after_uninstall"
 
 doc_events = {
     "User": {
-        "validate": "raven.raven.doctype.raven_user.raven_user.validate_raven_user_role",
+        "after_insert": "raven.raven.doctype.raven_user.raven_user.add_user_to_raven",
+        "before_validate": "raven.raven.doctype.raven_user.raven_user.add_user_to_raven",
     }
 }
 
