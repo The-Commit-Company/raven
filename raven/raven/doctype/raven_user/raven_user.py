@@ -21,6 +21,10 @@ class RavenUser(Document):
 		user_image: DF.AttachImage | None
 	# end: auto-generated types
 
+	def before_validate(self):
+		if not self.full_name:
+			self.full_name = self.first_name
+
 	def before_save(self):
 		self.update_photo_from_user()
 	
