@@ -73,10 +73,14 @@ def add_user_to_raven(doc,method):
 			
 			if has_raven_role:
 				raven_user = frappe.get_doc("Raven User", {"user": doc.name})
+				if not doc.full_name:
+					raven_user.full_name = doc.first_name
 				raven_user.enabled = 1
 				raven_user.save()
 			else:
 				raven_user = frappe.get_doc("Raven User", {"user": doc.name})
+				if not doc.full_name:
+					raven_user.full_name = doc.first_name
 				raven_user.enabled = 0
 				raven_user.save()
 		else:
@@ -89,6 +93,8 @@ def add_user_to_raven(doc,method):
 					# Create a Raven User record for the user.
 					raven_user = frappe.new_doc("Raven User")
 					raven_user.user = doc.name
+					if not doc.full_name:
+						raven_user.full_name = doc.first_name
 					raven_user.enabled = 1
 					raven_user.insert()
 				else:
@@ -96,5 +102,7 @@ def add_user_to_raven(doc,method):
 						# Create a Raven User record for the user.
 						raven_user = frappe.new_doc("Raven User")
 						raven_user.user = doc.name
+						if not doc.full_name:
+							raven_user.full_name = doc.first_name
 						raven_user.enabled = 1
 						raven_user.insert()
