@@ -1,9 +1,9 @@
 import { Skeleton } from '@/components/common/Skeleton';
 import { Box, Flex, Text } from '@radix-ui/themes';
 import TiptapLink from '@tiptap/extension-link'
-import { Editor, mergeAttributes, useCurrentEditor } from "@tiptap/react";
+import { mergeAttributes, useCurrentEditor } from "@tiptap/react";
 import { useFrappeGetCall } from 'frappe-react-sdk';
-import { memo } from 'react';
+import { memo, useMemo } from 'react';
 
 export const CustomLink = TiptapLink.extend({
     renderHTML({ HTMLAttributes }) {
@@ -31,7 +31,52 @@ export type LinkPreviewDetails = {
 export const LinkPreview = memo(({ isScrolling }: { isScrolling?: boolean }) => {
 
     const { editor } = useCurrentEditor()
-    const href = editor?.getAttributes('link').href
+
+    // We need to find the first mark of type link in a message and extract the href.
+
+    const json = editor?.getJSON()
+
+    const href = useMemo(() => {
+        if (!json) return null
+
+        let firstLink = ''
+
+        // At every level of the json, we need to find the first mark of type link and extract the href.
+        // Once we find the first link, we can stop searching.
+        const findFirstLink = (json: any) => {
+            if (firstLink) return firstLink
+
+            if (Array.isArray(json)) {
+                for (const item of json) {
+                    if (typeof item === 'object') {
+                        findFirstLink(item)
+                    }
+                }
+            } else {
+                if (json.type === 'link') {
+                    const link = json.attrs.href
+                    if (link.startsWith('mailto')) {
+                    } else {
+                        firstLink = json.attrs.href
+                    }
+                } else {
+                    for (const key in json) {
+                        if (typeof json[key] === 'object') {
+                            findFirstLink(json[key])
+                        }
+                    }
+                }
+            }
+        }
+
+        findFirstLink(json)
+
+        return firstLink
+    }, [json])
+
+    // const href = editor?.getAttributes('link').href
+
+    // console.log(editor?.state)
 
     const { data, isLoading } = useFrappeGetCall<{ message: LinkPreviewDetails[] }>('raven.api.preview_links.get_preview_link', {
         urls: JSON.stringify([href])
@@ -48,7 +93,7 @@ export const LinkPreview = memo(({ isScrolling }: { isScrolling?: boolean }) => 
 
     return <a href={href} target='_blank'>
         <Flex direction='column' gap='2' py='2'>
-            {linkPreview ? <Flex gap='4'>
+            {linkPreview ? linkPreview.site_name ? <Flex gap='4'>
                 <Box className='relative min-w-[18rem] min-h-[9rem] w-72 h-36'>
                     {/* Absolute positioned skeleton loader */}
                     <Box className='absolute top-0 z-0 left-0 w-72 h-36' >
@@ -56,11 +101,13 @@ export const LinkPreview = memo(({ isScrolling }: { isScrolling?: boolean }) => 
 
                         </Box>
                     </Box>
-                    <img
-                        width='100%'
-                        className='absolute object-cover min-w-[18rem] min-h-[9rem] w-72 h-36 rounded-md z-50 top-0 left-0'
-                        src={linkPreview.image || linkPreview.absolute_image}
-                        alt={linkPreview.title} />
+                    {(linkPreview.absolute_image || linkPreview.image) &&
+                        <img
+                            width='100%'
+                            className='absolute object-cover min-w-[18rem] min-h-[9rem] w-72 h-36 rounded-md z-50 top-0 left-0'
+                            src={linkPreview.absolute_image || linkPreview.image}
+                            alt={linkPreview.title} />
+                    }
                 </Box>
                 <Flex direction='column' gap='1' py='1' className='w-84'>
                     <Flex gap='1' direction='column'>
@@ -69,7 +116,7 @@ export const LinkPreview = memo(({ isScrolling }: { isScrolling?: boolean }) => 
                     </Flex>
                     <Text as='p' size='2' className='whitespace-break-spaces'>{linkPreview.description}</Text>
                 </Flex>
-            </Flex> :
+            </Flex> : null :
 
                 <Flex gap='4'>
                     <Box className='relative min-w-[18rem] min-h-[9rem] w-72 h-36'>

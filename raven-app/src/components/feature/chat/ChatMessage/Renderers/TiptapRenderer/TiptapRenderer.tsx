@@ -89,6 +89,7 @@ export const TiptapRenderer = ({ message, user, isScrolling = false, isTruncated
     <Box className={clsx('overflow-x-hidden text-ellipsis', props.className)} {...props}>
       <EditorContext.Provider value={{ editor }}>
         <EditorContent
+          contentEditable={false}
           editor={editor}
           readOnly />
         {showLinkPreview && <LinkPreview isScrolling={isScrolling} />}
