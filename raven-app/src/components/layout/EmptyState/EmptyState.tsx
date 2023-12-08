@@ -70,7 +70,7 @@ const EmptyStateForDM = ({ channelData }: EmptyStateForDMProps) => {
             {channelData?.is_direct_message == 1 &&
                 <Flex direction='column' gap='2'>
                     <Flex gap='2'>
-                        <UserAvatar alt={users?.[peer]?.full_name ?? peer} src={users?.[peer]?.user_image ?? ''} size='3' />
+                        <UserAvatar alt={users?.[peer]?.full_name ?? peer} src={users?.[peer]?.user_image ?? ''} size='3' skeletonSize='7' />
                         <Flex direction='column' gap='0'>
                             <Heading size='4'>{users?.[peer]?.full_name}</Heading>
                             <Text size='1' color='gray'>{users?.[peer]?.name}</Text>

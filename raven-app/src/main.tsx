@@ -11,7 +11,6 @@ if (import.meta.env.DEV) {
     .then(response => response.json())
     .then((values) => {
       const v = JSON.parse(values.message)
-      console.log(v)
       //@ts-expect-error
       if (!window.frappe) window.frappe = {};
       //@ts-ignore

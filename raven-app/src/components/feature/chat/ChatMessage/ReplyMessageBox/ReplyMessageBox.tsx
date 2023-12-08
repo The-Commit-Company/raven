@@ -1,5 +1,5 @@
 import { FileMessage, Message, TextMessage } from "../../../../../../../types/Messaging/Message"
-import { Flex, Separator, Text } from "@radix-ui/themes"
+import { Box, Flex, Separator, Text } from "@radix-ui/themes"
 import { useGetUser } from "@/hooks/useGetUser"
 import { DateMonthAtHourMinuteAmPm } from "@/utils/dateConversions"
 import { FileExtensionIcon } from "@/utils/layout/FileExtIcon"
@@ -31,15 +31,16 @@ export const ReplyMessageBox = ({ message, children, className, ...props }: Repl
                         <DateMonthAtHourMinuteAmPm date={message.creation} />
                     </Text>
                 </Flex>
-                {['File', 'Image'].includes(message.message_type) ?
-                    <Flex gap='1'>
-                        {message.message_type === 'File' && <FileExtensionIcon ext={getFileExtension(message.file)} />}
-                        {message.message_type === 'Image' && <img src={message.file} alt={`Image sent by ${message.owner}`} height='30' width='30' className="object-cover" />}
-                        <Text as='span'>{getFileName((message as FileMessage).file)}</Text>
-                    </Flex>
-                    : <TruncatedTiptapRenderer message={message as TextMessage} />
-                }
-
+                <Box className="max-w-3xl">
+                    {['File', 'Image'].includes(message.message_type) ?
+                        <Flex gap='1'>
+                            {message.message_type === 'File' && <FileExtensionIcon ext={getFileExtension(message.file)} />}
+                            {message.message_type === 'Image' && <img src={message.file} alt={`Image sent by ${message.owner}`} height='30' width='30' className="object-cover" />}
+                            <Text as='span'>{getFileName((message as FileMessage).file)}</Text>
+                        </Flex>
+                        : <TruncatedTiptapRenderer message={message as TextMessage} />
+                    }
+                </Box>
             </Flex>
             {children}
         </Flex>
@@ -54,12 +55,8 @@ interface ReplyMessageProps extends FlexProps {
  */
 export const ReplyMessage = ({ messageID, ...props }: ReplyMessageProps) => {
 
-    const { data, isLoading } = useFrappeGetCall('frappe.client.get_value', {
-        doctype: 'Raven Message',
-        filters: {
-            name: messageID
-        },
-        fieldname: JSON.stringify(['owner', 'creation', 'message_type', 'file', 'text', 'channel_id', 'name'])
+    const { data, isLoading } = useFrappeGetCall('raven.api.chat.get_reply_message_content', {
+        message_id: messageID
     }, `reply_message_${messageID}`, {
         revalidateIfStale: false,
         revalidateOnFocus: false,

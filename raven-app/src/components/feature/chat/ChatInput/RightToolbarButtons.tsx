@@ -11,7 +11,8 @@ const EmojiPicker = lazy(() => import('@/components/common/EmojiPicker/EmojiPick
 type RightToolbarButtonsProps = {
     fileProps?: ToolbarFileProps,
     sendMessage: (html: string, json: any) => Promise<void>,
-    messageSending: boolean
+    messageSending: boolean,
+    setContent: (content: string) => void
 }
 /**
  * Component to render the right toolbar buttons:
@@ -131,9 +132,10 @@ const FilePickerButton = ({ fileProps }: { fileProps: ToolbarFileProps }) => {
 }
 
 
-const SendButton = ({ sendMessage, messageSending }: {
+const SendButton = ({ sendMessage, messageSending, setContent }: {
     sendMessage: RightToolbarButtonsProps['sendMessage'],
-    messageSending: boolean
+    messageSending: boolean,
+    setContent: RightToolbarButtonsProps['setContent']
 }) => {
     const { editor } = useCurrentEditor()
     const onClick = () => {
@@ -151,6 +153,7 @@ const SendButton = ({ sendMessage, messageSending }: {
             editor.setEditable(false)
             sendMessage(html, json)
                 .then(() => {
+                    setContent('')
                     editor.chain().focus().clearContent(true).run()
                     editor.setEditable(true)
                 })

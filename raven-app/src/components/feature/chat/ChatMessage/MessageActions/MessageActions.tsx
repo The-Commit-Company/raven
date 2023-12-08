@@ -126,7 +126,7 @@ const SaveMessageAction = ({ message, updateMessages }: { message: Message, upda
         }).then(() => {
             toast({
                 title: isSaved ? 'Message unsaved' : 'Message saved',
-                variant: isSaved ? 'default' : 'accent',
+                variant: 'accent',
                 duration: 800,
             })
             updateMessages()
