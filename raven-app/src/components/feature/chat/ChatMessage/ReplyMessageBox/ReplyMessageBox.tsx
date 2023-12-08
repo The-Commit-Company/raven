@@ -41,8 +41,6 @@ export const ReplyMessageBox = ({ message, children, className, ...props }: Repl
                         : <TruncatedTiptapRenderer message={message as TextMessage} />
                     }
                 </Box>
-
-
             </Flex>
             {children}
         </Flex>
