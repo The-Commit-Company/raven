@@ -5,6 +5,7 @@ import { AddRavenUsers } from '@/components/feature/raven-users/AddRavenUsers'
 import { DropdownMenu, Flex, IconButton, Link, Separator, Text } from '@radix-ui/themes'
 import { BiDotsHorizontalRounded } from 'react-icons/bi'
 import { UserAvatar } from '@/components/common/UserAvatar'
+import { isSystemManager } from '@/utils/roles'
 
 export const SidebarFooter = () => {
 
@@ -12,6 +13,8 @@ export const SidebarFooter = () => {
     const { logout } = useContext(UserContext)
 
     const [isAddUserModalOpen, setIsAddUserModalOpen] = useState(false)
+
+    const canAddUsers = isSystemManager()
 
     return (
         <Flex
@@ -36,10 +39,14 @@ export const SidebarFooter = () => {
                             </IconButton>
                         </DropdownMenu.Trigger>
                         <DropdownMenu.Content variant='soft'>
-                            <DropdownMenu.Item color='gray' onClick={() => setIsAddUserModalOpen(true)} className="cursor-pointer">
-                                Add users to Raven
-                            </DropdownMenu.Item>
-                            <DropdownMenu.Separator />
+                            {canAddUsers &&
+                                <DropdownMenu.Item color='gray' onClick={() => setIsAddUserModalOpen(true)} className="cursor-pointer">
+                                    Add users to Raven
+                                </DropdownMenu.Item>
+                            }
+                            {canAddUsers &&
+                                <DropdownMenu.Separator />
+                            }
                             <DropdownMenu.Item color='gray' className='group'>
                                 <Link href="/app" className='no-underline'>
                                     Desk Interface

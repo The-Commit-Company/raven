@@ -14,6 +14,7 @@ class RavenUser(Document):
 	if TYPE_CHECKING:
 		from frappe.types import DF
 
+		enabled: DF.Check
 		first_name: DF.Data | None
 		full_name: DF.Data
 		user: DF.Link
@@ -23,15 +24,14 @@ class RavenUser(Document):
 	def before_save(self):
 		self.update_photo_from_user()
 	
-	def after_insert(self):
-		self.update_user_role()
-	
-	def update_user_role(self):
+	def after_delete(self):
+		'''
+		 Remove the Raven User role from the user.
+		'''
 		user = frappe.get_doc("User", self.user)
 		user.flags.ignore_permissions = True
-		if "Raven User" not in user.get("roles"):
-			user.append_roles("Raven User")
-		
+		user.flags.deleting_raven_user = True
+		user.remove_roles("Raven User")
 		user.save()
 	
 	def update_photo_from_user(self):
@@ -56,20 +56,45 @@ class RavenUser(Document):
 	pass
 
 
-def validate_raven_user_role(doc, method):
-	# called via User hook
-	if "Raven User" in [d.role for d in doc.get("roles")]:
-		if not frappe.db.get_value("Raven User", {"user": doc.name}):
-			frappe.msgprint(_("Please create a Raven User directly from the Raven User List to add the role."))
-			doc.get("roles").remove(doc.get("roles", {"role": "Raven User"})[0])
+def add_user_to_raven(doc,method):
+	# called when the user is inserted or updated
+	# If the auto-create setting is set to True, check if the user is a System user. If yes, then create a Raven User record for the user.
+	# Else, check if the user has a Raven User role. If yes, then create a Raven User record for the user if not already created. 
 
-@frappe.whitelist()
-def reset_user_permissions(**args):
-	doc = args.get("doc")
-	doc_json = frappe.parse_json(doc)
-	print(doc_json)
-	if doc_json.get("name"):
-		raven_user = frappe.get_doc("Raven User", doc_json.get("name"))
-		raven_user.update_user_role()
-	
-	return "Raven User role added to user."
+	# If the user is already added to Raven, do nothing.
+	if not doc.flags.deleting_raven_user:
+		if frappe.db.exists("Raven User", {"user": doc.name}):
+			# Check if the role is still present. If not, then inactivate the Raven User record.
+			has_raven_role = False
+			for role in doc.get("roles"):
+				if role.role == "Raven User":
+					has_raven_role = True
+					break
+			
+			if has_raven_role:
+				raven_user = frappe.get_doc("Raven User", {"user": doc.name})
+				raven_user.enabled = 1
+				raven_user.save()
+			else:
+				raven_user = frappe.get_doc("Raven User", {"user": doc.name})
+				raven_user.enabled = 0
+				raven_user.save()
+		else:
+			# Raven user does not exist. Check if the user is a system user.
+			if doc.user_type == "System User":
+				auto_add = frappe.db.get_single_value("Raven Settings", "auto_add_system_users")
+
+				if auto_add:
+					doc.append("roles", {"role": "Raven User"})
+					# Create a Raven User record for the user.
+					raven_user = frappe.new_doc("Raven User")
+					raven_user.user = doc.name
+					raven_user.enabled = 1
+					raven_user.insert()
+				else:
+					if "Raven User" in [d.role for d in doc.get("roles")]:
+						# Create a Raven User record for the user.
+						raven_user = frappe.new_doc("Raven User")
+						raven_user.user = doc.name
+						raven_user.enabled = 1
+						raven_user.insert()

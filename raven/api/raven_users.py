@@ -1,5 +1,6 @@
 import frappe
 from frappe import _
+import json
 
 @frappe.whitelist()
 def get_list():
@@ -19,3 +20,20 @@ def get_list():
                                    "name", "first_name"],
                            order_by="full_name")
     return users
+
+
+@frappe.whitelist(methods=['POST'])
+def add_users_to_raven(users):
+
+    if isinstance(users, str):
+        users = json.loads(users)
+    
+    for user in users:
+        user_doc = frappe.get_doc("User", user)
+        user_doc.append("roles", {
+            "role": "Raven User"
+        })
+        user_doc.save()
+    
+    return "success"
+            

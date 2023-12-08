@@ -1,11 +1,5 @@
 {
- "actions": [
-  {
-   "action": "raven.raven.doctype.raven_user.raven_user.reset_user_permissions",
-   "action_type": "Server Action",
-   "label": "Reset User Permissions"
-  }
- ],
+ "actions": [],
  "allow_rename": 1,
  "autoname": "field:user",
  "creation": "2023-09-06 14:36:48.631681",
@@ -17,7 +11,9 @@
   "user",
   "full_name",
   "first_name",
-  "user_image"
+  "user_image",
+  "enabled",
+  "html_xuuw"
  ],
  "fields": [
   {
@@ -49,11 +45,23 @@
    "fieldname": "user_image",
    "fieldtype": "Attach Image",
    "label": "User Image"
+  },
+  {
+   "default": "1",
+   "fieldname": "enabled",
+   "fieldtype": "Check",
+   "label": "Enabled",
+   "read_only": 1
+  },
+  {
+   "fieldname": "html_xuuw",
+   "fieldtype": "HTML",
+   "options": "<p>To disable the user from accessing Raven, go to \"Users\" and remove the \"Raven User\" role.</p>"
   }
  ],
  "image_field": "user_image",
  "links": [],
- "modified": "2023-09-06 17:05:53.750965",
+ "modified": "2023-12-08 04:14:02.588812",
  "modified_by": "Administrator",
  "module": "Raven",
  "name": "Raven User",
@@ -84,7 +92,6 @@
   },
   {
    "create": 1,
-   "delete": 1,
    "email": 1,
    "export": 1,
    "if_owner": 1,
