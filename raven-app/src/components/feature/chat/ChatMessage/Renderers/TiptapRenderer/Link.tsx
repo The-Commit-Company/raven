@@ -1,7 +1,9 @@
+import { Skeleton } from '@/components/common/Skeleton';
 import { Box, Flex, Text } from '@radix-ui/themes';
 import TiptapLink from '@tiptap/extension-link'
-import { Editor, mergeAttributes } from "@tiptap/react";
+import { Editor, mergeAttributes, useCurrentEditor } from "@tiptap/react";
 import { useFrappeGetCall } from 'frappe-react-sdk';
+import { memo } from 'react';
 
 export const CustomLink = TiptapLink.extend({
     renderHTML({ HTMLAttributes }) {
@@ -26,8 +28,9 @@ export type LinkPreviewDetails = {
     site_name: string
 }
 
-export const LinkPreview = ({ editor }: { editor: Editor | null }) => {
+export const LinkPreview = memo(({ isScrolling }: { isScrolling?: boolean }) => {
 
+    const { editor } = useCurrentEditor()
     const href = editor?.getAttributes('link').href
 
     const { data, isLoading } = useFrappeGetCall<{ message: LinkPreviewDetails[] }>('raven.api.preview_links.get_preview_link', {
@@ -41,38 +44,57 @@ export const LinkPreview = ({ editor }: { editor: Editor | null }) => {
 
     if (!href) return null
 
-    return <a href={href} target='_blank'>
-        <Flex direction='column' gap='2' my='2'>
-            {data?.message.map((linkPreview) => {
-                if (linkPreview.image || linkPreview.absolute_image) {
-                    return <Flex key={linkPreview.site_name} gap='4'>
-                        <Box className='relative min-w-[18rem] min-h-[9rem] w-72 h-36'>
-                            {/* Absolute positioned skeleton loader */}
-                            <Box className='absolute top-0 z-0 left-0 w-72 h-36' >
-                                <Box className='animate-pulse bg-gray-3 z-0 w-72 h-36 dark:bg-gray-5 rounded-md'>
+    const linkPreview = data?.message?.[0]
 
-                                </Box>
-                            </Box>
-                            <img
-                                width='100%'
-                                className='absolute object-cover min-w-[18rem] min-h-[9rem] w-72 h-36 rounded-md z-50 top-0 left-0'
-                                src={linkPreview.image || linkPreview.absolute_image}
-                                alt={linkPreview.title} />
+    return <a href={href} target='_blank'>
+        <Flex direction='column' gap='2' py='2'>
+            {linkPreview ? <Flex gap='4'>
+                <Box className='relative min-w-[18rem] min-h-[9rem] w-72 h-36'>
+                    {/* Absolute positioned skeleton loader */}
+                    <Box className='absolute top-0 z-0 left-0 w-72 h-36' >
+                        <Box className='animate-pulse bg-gray-3 z-0 w-72 h-36 dark:bg-gray-5 rounded-md'>
+
                         </Box>
-                        <Flex direction='column' gap='1' py='1' className='w-84'>
-                            <Flex gap='1' direction='column'>
-                                <Text as='span' weight='bold' size='5' className='cal-sans'>{linkPreview.title}</Text>
-                                <Text as='span' color='gray' size='2' weight='medium'>{linkPreview.site_name}</Text>
-                            </Flex>
-                            <Text as='p' size='2' className='whitespace-break-spaces'>{linkPreview.description}</Text>
-                        </Flex>
+                    </Box>
+                    <img
+                        width='100%'
+                        className='absolute object-cover min-w-[18rem] min-h-[9rem] w-72 h-36 rounded-md z-50 top-0 left-0'
+                        src={linkPreview.image || linkPreview.absolute_image}
+                        alt={linkPreview.title} />
+                </Box>
+                <Flex direction='column' gap='1' py='1' className='w-84'>
+                    <Flex gap='1' direction='column'>
+                        <Text as='span' weight='bold' size='5' className='cal-sans'>{linkPreview.title}</Text>
+                        <Text as='span' color='gray' size='2' weight='medium'>{linkPreview.site_name}</Text>
                     </Flex>
-                } else {
-                    return null
-                }
-            })
-            }
+                    <Text as='p' size='2' className='whitespace-break-spaces'>{linkPreview.description}</Text>
+                </Flex>
+            </Flex> :
+
+                <Flex gap='4'>
+                    <Box className='relative min-w-[18rem] min-h-[9rem] w-72 h-36'>
+                        {/* Absolute positioned skeleton loader */}
+                        <Box className='absolute top-0 z-0 left-0 w-72 h-36' >
+                            <Box className='animate-pulse bg-gray-3 z-0 w-72 h-36 dark:bg-gray-5 rounded-md'>
+
+                            </Box>
+                        </Box>
+                    </Box>
+                    <Flex direction='column' gap='1' py='1' className='w-84'>
+                        <Flex gap='1' direction='column'>
+                            <Text as='span' weight='bold' size='5' className='cal-sans'><Skeleton className='w-48 h-6' /></Text>
+                            <Text as='span' color='gray' size='2' weight='medium'><Skeleton className='w-64 h-4' /></Text>
+                        </Flex>
+                        <Text as='p' size='2' className='whitespace-break-spaces line-clamp-2'>{isScrolling ?
+                            <Flex direction='column' gap='1' pt='2'>
+                                <Skeleton className='h-2 w-72' />
+                                <Skeleton className='h-2 w-96' />
+                            </Flex>
+
+                            : href}</Text>
+                    </Flex>
+                </Flex>}
         </Flex>
     </a>
 
-}
+})

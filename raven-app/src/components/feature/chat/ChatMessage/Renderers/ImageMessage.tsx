@@ -1,7 +1,7 @@
 import { getFileName } from '@/utils/operations'
 import { ImageMessage } from '../../../../../../../types/Messaging/Message'
 import { Box, Button, Dialog, Flex, Link } from '@radix-ui/themes'
-import { useState } from 'react'
+import { memo, useState } from 'react'
 import { DIALOG_CONTENT_CLASS } from '@/utils/layout/dialog'
 import { BiDownload } from 'react-icons/bi'
 import { UserFields } from '@/utils/users/UserListProvider'
@@ -11,9 +11,11 @@ import { clsx } from 'clsx'
 interface ImageMessageProps {
     message: ImageMessage,
     user?: UserFields,
+    // Do not load image when scrolling
+    isScrolling?: boolean
 }
 
-export const ImageMessageBlock = ({ message, user }: ImageMessageProps) => {
+export const ImageMessageBlock = memo(({ message, isScrolling = false, user }: ImageMessageProps) => {
 
     const [isOpen, setIsOpen] = useState(false)
     // Show skeleton loader when image is loading
@@ -32,7 +34,7 @@ export const ImageMessageBlock = ({ message, user }: ImageMessageProps) => {
             <Box
                 className='relative rounded-md cursor-pointer'
                 role='button'
-                onClick={() => setIsOpen(true)}
+                onClick={() => setIsOpen(!isScrolling && true)}
                 style={{
                     height: height + 'px',
                     width: width + 'px',
@@ -50,6 +52,8 @@ export const ImageMessageBlock = ({ message, user }: ImageMessageProps) => {
 
                     </Box>
                 </Box>
+                {/* We are not hiding the image when scrolling because we already know the height and width of the image
+                Hence no layout shift */}
                 <img
                     src={message.file}
                     loading='lazy'
@@ -65,34 +69,36 @@ export const ImageMessageBlock = ({ message, user }: ImageMessageProps) => {
                     alt={`Image file sent by ${message.owner} at ${message.creation}`}
                 />
             </Box>
-            <Dialog.Root open={isOpen} onOpenChange={setIsOpen}>
-                <Dialog.Content className={clsx(DIALOG_CONTENT_CLASS, 'max-w-[88vw]')}>
-                    <Dialog.Title size='3'>{fileName}</Dialog.Title>
-                    <Dialog.Description color='gray' size='1'>{user?.full_name ?? message.owner} on <DateMonthAtHourMinuteAmPm date={message.creation} /></Dialog.Description>
-                    <Box my='4'>
-                        <img
-                            src={message.file}
-                            loading='lazy'
-                            width='100%'
-                            // height='300'
-                            className='rounded-md shadow-md object-contain max-h-[600px]'
-                            alt={`Image file sent by ${message.owner} at ${message.creation}`}
-                        />
-                    </Box>
-                    <Flex justify='end' gap='2' mt='3'>
-                        <Button variant='soft' color='gray' asChild>
-                            <Link className='no-underline' href={message.file} download>
-                                <BiDownload />
-                                Download
-                            </Link>
-                        </Button>
-                        <Dialog.Close>
-                            <Button color='gray' variant='soft'>Close</Button>
-                        </Dialog.Close>
-                    </Flex>
+            {!isScrolling &&
+                <Dialog.Root open={isOpen} onOpenChange={setIsOpen}>
+                    <Dialog.Content className={clsx(DIALOG_CONTENT_CLASS, 'max-w-[88vw]')}>
+                        <Dialog.Title size='3'>{fileName}</Dialog.Title>
+                        <Dialog.Description color='gray' size='1'>{user?.full_name ?? message.owner} on <DateMonthAtHourMinuteAmPm date={message.creation} /></Dialog.Description>
+                        <Box my='4'>
+                            <img
+                                src={message.file}
+                                loading='lazy'
+                                width='100%'
+                                // height='300'
+                                className='rounded-md shadow-md object-contain max-h-[600px]'
+                                alt={`Image file sent by ${message.owner} at ${message.creation}`}
+                            />
+                        </Box>
+                        <Flex justify='end' gap='2' mt='3'>
+                            <Button variant='soft' color='gray' asChild>
+                                <Link className='no-underline' href={message.file} download>
+                                    <BiDownload />
+                                    Download
+                                </Link>
+                            </Button>
+                            <Dialog.Close>
+                                <Button color='gray' variant='soft'>Close</Button>
+                            </Dialog.Close>
+                        </Flex>
 
-                </Dialog.Content>
-            </Dialog.Root>
+                    </Dialog.Content>
+                </Dialog.Root>
+            }
         </Flex>
     )
-}
+})

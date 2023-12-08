@@ -1,7 +1,7 @@
 import { DateSeparator } from "../../../layout/Divider/DateSeparator";
 import { DateBlock, Message, MessageBlock, MessagesWithDate } from "../../../../../../types/Messaging/Message";
 import { ChannelHistoryFirstMessage } from "../../../layout/EmptyState/EmptyState";
-import { useCallback, useContext, useRef } from "react";
+import { useCallback, useContext, useRef, useState } from "react";
 import { Virtuoso } from 'react-virtuoso';
 import { VirtuosoRefContext } from "../../../../utils/message/VirtuosoRefProvider";
 import { ChannelListItem, DMChannelListItem } from "@/utils/channel/ChannelListProvider";
@@ -92,16 +92,20 @@ export const ChatHistory = ({ parsedMessages, replyToMessage, channelData }: Cha
 
     }
 
+    const [isScrolling, setIsScrolling] = useState(false)
+
     return (
         <Box ref={boxRef} height='100%' pb='2' className="overflow-y-scroll">
             <Virtuoso
                 customScrollParent={boxRef.current ?? undefined}
                 totalCount={parsedMessages.length}
-                itemContent={(index, data, context) => <RenderItem block={parsedMessages[index]} index={index} {...data} {...context} />}
+                itemContent={(index, data, context) => <RenderItem block={parsedMessages[index]} index={index} {...data} {...context} isScrolling={isScrolling} />}
                 initialTopMostItemIndex={parsedMessages.length - 1}
                 components={{
                     Header: () => <ChannelHistoryFirstMessage channelID={channelData?.name} />,
+                    Footer: () => <Box p='4' className="z-10 relative"></Box>
                 }}
+                isScrolling={setIsScrolling}
                 context={{ channelData, replyToMessage, onReplyMessageClick, setDeleteMessage, updateMessages, setEditMessage }}
                 ref={virtuosoRef}
                 increaseViewportBy={300}
@@ -114,37 +118,33 @@ export const ChatHistory = ({ parsedMessages, replyToMessage, channelData }: Cha
     )
 }
 
-const RenderItem = ({ index, replyToMessage, updateMessages, block, onReplyMessageClick, channelData, setEditMessage, setDeleteMessage, ...props }: {
+const RenderItem = ({ index, replyToMessage, updateMessages, block, onReplyMessageClick, channelData, setEditMessage, setDeleteMessage, isScrolling, ...props }: {
     index: number,
     block: MessageBlock | DateBlock,
     replyToMessage: (message: Message) => void,
     updateMessages: () => void,
+    isScrolling: boolean,
     setDeleteMessage: (message: Message) => void,
     setEditMessage: (message: Message) => void,
     onReplyMessageClick: (messageID: string) => void,
     channelData: ChannelListItem | DMChannelListItem
 }) => {
-    // const block = parsedMessages[index]
-    if (block.block_type === 'date') {
-        return (
-            <Box p='4' className="z-10 relative">
-                <DateSeparator><DateMonthYear date={block.data} /></DateSeparator>
-            </Box>
-        )
-    }
-    if (block.block_type === 'message') {
-        return (
+
+    return <Box>
+        {block.block_type === 'date' ? <Box p='4' className="z-10 relative">
+            <DateSeparator><DateMonthYear date={block.data} /></DateSeparator>
+        </Box> :
+
             <Box className="w-full overflow-x--hidden">
                 <MessageItem
                     message={block.data}
+                    isScrolling={isScrolling}
                     updateMessages={updateMessages}
                     onReplyMessageClick={onReplyMessageClick}
                     setEditMessage={setEditMessage}
                     replyToMessage={replyToMessage}
                     setDeleteMessage={setDeleteMessage} />
             </Box>
-
-        )
-    }
-    return null
+        }
+    </Box>
 }

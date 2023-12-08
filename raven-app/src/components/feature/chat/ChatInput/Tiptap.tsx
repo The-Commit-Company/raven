@@ -408,6 +408,7 @@ const Tiptap = ({ slotBefore, fileProps, onMessageSend, placeholder = 'Type a me
 
     const editor = useEditor({
         extensions,
+        autofocus: 'end',
         content,
         editorProps: {
             attributes: {

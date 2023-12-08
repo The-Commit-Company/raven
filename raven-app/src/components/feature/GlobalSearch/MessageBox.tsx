@@ -2,7 +2,7 @@ import { useGetUserRecords } from "@/hooks/useGetUserRecords"
 import { useCurrentChannelData } from "@/hooks/useCurrentChannelData"
 import { DMChannelListItem } from "@/utils/channel/ChannelListProvider"
 import { Box, Flex, Link, Separator, Text } from '@radix-ui/themes'
-import { Avatar, MessageContent, UserHoverCard } from "../chat/ChatMessage/MessageItem"
+import { MessageSenderAvatar, MessageContent, UserHoverCard } from "../chat/ChatMessage/MessageItem"
 import { useGetUser } from "@/hooks/useGetUser"
 import { Message } from "../../../../../types/Messaging/Message"
 import { useMemo } from "react"
@@ -50,7 +50,7 @@ export const MessageBox = ({ message, handleScrollToMessage }: MessageBoxProps) 
             </Flex>
 
             <Flex gap='3'>
-                <Avatar userID={owner} user={user} isActive={false} />
+                <MessageSenderAvatar userID={owner} user={user} isActive={false} />
                 <Flex direction='column' gap='1' justify='center'>
                     <Box mt='-1'>
                         <UserHoverCard user={user} userID={owner} isActive={false} />

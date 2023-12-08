@@ -1,4 +1,4 @@
-import { EditorContent, EditorProvider, Extension, ReactRenderer, useEditor } from '@tiptap/react'
+import { EditorContent, EditorContext, EditorProvider, Extension, ReactRenderer, useEditor } from '@tiptap/react'
 import { Message, TextMessage } from '../../../../../../../../types/Messaging/Message'
 import { UserFields } from '@/utils/users/UserListProvider'
 import { BoxProps } from '@radix-ui/themes/dist/cjs/components/box'
@@ -31,10 +31,11 @@ lowlight.register('python', python)
 interface TiptapRendererProps extends BoxProps {
   message: TextMessage,
   user?: UserFields,
-  showLinkPreview?: boolean
+  showLinkPreview?: boolean,
+  isScrolling?: boolean
 }
 
-export const TiptapRenderer = ({ message, user, showLinkPreview = true, ...props }: TiptapRendererProps) => {
+export const TiptapRenderer = ({ message, user, isScrolling = false, showLinkPreview = true, ...props }: TiptapRendererProps) => {
 
   const editor = useEditor({
     content: message.text,
@@ -80,10 +81,12 @@ export const TiptapRenderer = ({ message, user, showLinkPreview = true, ...props
 
   return (
     <Box className={clsx('overflow-x-hidden', props.className)} {...props}>
-      <EditorContent
-        editor={editor}
-        readOnly />
-      {showLinkPreview && <LinkPreview editor={editor} />}
+      <EditorContext.Provider value={{ editor }}>
+        <EditorContent
+          editor={editor}
+          readOnly />
+        {showLinkPreview && <LinkPreview isScrolling={isScrolling} />}
+      </EditorContext.Provider>
     </Box>
   )
 }

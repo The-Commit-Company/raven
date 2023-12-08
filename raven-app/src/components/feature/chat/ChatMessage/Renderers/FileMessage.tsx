@@ -9,13 +9,14 @@ import { DIALOG_CONTENT_CLASS } from "@/utils/layout/dialog"
 import { DateMonthAtHourMinuteAmPm } from "@/utils/dateConversions"
 import { clsx } from "clsx"
 import { FileExtensionIcon } from "@/utils/layout/FileExtIcon"
+import { memo } from "react"
 
 interface FileMessageBlockProps extends BoxProps {
     message: FileMessage,
     user?: UserFields,
 }
 
-export const FileMessageBlock = ({ message, user, ...props }: FileMessageBlockProps) => {
+export const FileMessageBlock = memo(({ message, user, ...props }: FileMessageBlockProps) => {
 
     const fileExtension = getFileExtension(message.file)
 
@@ -95,7 +96,7 @@ export const FileMessageBlock = ({ message, user, ...props }: FileMessageBlockPr
 
     </Box>
 
-}
+})
 
 
 const PDFPreviewButton = ({ message, user }: {
