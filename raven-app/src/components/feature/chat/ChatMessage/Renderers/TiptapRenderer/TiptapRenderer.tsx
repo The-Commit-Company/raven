@@ -19,6 +19,7 @@ import { CustomUserMention } from './Mention'
 import { CustomLink, LinkPreview } from './Link'
 import { CustomItalic } from './Italic'
 import { CustomUnderline } from './Underline'
+import { clsx } from 'clsx'
 const lowlight = createLowlight(common)
 
 lowlight.register('html', html)
@@ -78,7 +79,7 @@ export const TiptapRenderer = ({ message, user, showLinkPreview = true, ...props
   })
 
   return (
-    <Box {...props}>
+    <Box className={clsx('overflow-x-hidden', props.className)} {...props}>
       <EditorContent
         editor={editor}
         readOnly />

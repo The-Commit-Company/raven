@@ -8,7 +8,7 @@ export const CustomLink = TiptapLink.extend({
         return [
             "a",
             mergeAttributes(HTMLAttributes, {
-                class: 'rt-Text rt-reset rt-Link rt-underline-auto'
+                class: 'rt-Text rt-reset rt-Link rt-underline-auto break-all line-clamp-3'
             }), // mergeAttributes is a exported function from @tiptap/core
             0,
         ];
