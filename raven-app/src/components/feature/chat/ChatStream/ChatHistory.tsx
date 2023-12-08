@@ -134,7 +134,7 @@ const RenderItem = ({ index, replyToMessage, updateMessages, block, onReplyMessa
     }
     if (block.block_type === 'message') {
         return (
-            <Box className="w-full overflow-hidden">
+            <Box className="w-full overflow-x--hidden">
                 <MessageItem
                     message={block.data}
                     updateMessages={updateMessages}
