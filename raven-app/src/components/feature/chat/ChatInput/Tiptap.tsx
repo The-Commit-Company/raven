@@ -409,7 +409,6 @@ const Tiptap = ({ slotBefore, fileProps, onMessageSend, placeholder = 'Type a me
     const editor = useEditor({
         extensions,
         content,
-        autofocus: "end",
         editorProps: {
             attributes: {
                 class: 'tiptap-editor'
@@ -419,6 +418,8 @@ const Tiptap = ({ slotBefore, fileProps, onMessageSend, placeholder = 'Type a me
             setContent(editor.getHTML())
         }
     }, [onMessageSend])
+
+
 
     useEffect(() => {
         editor?.commands.setContent(content)
