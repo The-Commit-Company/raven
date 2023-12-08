@@ -70,13 +70,13 @@ export const QuickActions = ({ message, onReply, onEdit, updateMessages, isOwner
 
                 <EmojiPickerButton saveReaction={onEmojiReact} />
 
-                {isOwner && message.message_type === 'Text' ? <Tooltip content='Edit'><QuickActionButton
+                {isOwner && message.message_type === 'Text' ? <QuickActionButton
                     onClick={onEdit}
                     tooltip='Edit message'
                     aria-label='Edit message'>
                     <BiEditAlt size='18' />
                 </QuickActionButton>
-                </Tooltip> :
+                    :
                     <QuickActionButton
                         tooltip='Reply'
                         aria-label='Reply to this message'
