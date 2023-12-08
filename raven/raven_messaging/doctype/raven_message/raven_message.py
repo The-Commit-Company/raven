@@ -282,7 +282,7 @@ def get_unread_count_for_channels():
 def get_timeline_message_content(doctype, docname):
 
     query = (frappe.qb.from_(message)
-             .select('*')
+             .select(message.creation, message.owner, message.text, message.file, channel.name.as_('channel_id'), channel.channel_name, channel.type, channel.is_direct_message, user.full_name)
              .left_join(channel).on(message.channel_id == channel.name)
              .left_join(channel_member).on(channel.name == channel_member.channel_id)
              .left_join(user).on(message.owner == user.name)
@@ -296,7 +296,7 @@ def get_timeline_message_content(doctype, docname):
             "icon": "share",
             "is_card": True,
             "creation": log.creation,
-            # "template": "send_message",
+            "template": "send_message",
             "template_data": log
         })
 
