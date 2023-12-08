@@ -90,7 +90,7 @@ const MessageContent = ({ message }: { message: MessageBlock }) => {
 const TextMessageBlock = ({ message, truncate = false }: { message: TextMessage, truncate?: boolean }) => {
 
 
-    return <div className='py-0.5 rounded-lg'>
+    return <div className={'py-0.5 rounded-lg' + (truncate ? ' line-clamp-3' : '')}>
         <MarkdownRenderer content={message.text} truncate={truncate} />
     </div>
 }
@@ -104,8 +104,8 @@ const options = {
 const ImageMessageBlock = ({ message }: { message: ImageMessage }) => {
     const { ref, inView } = useInView(options);
 
-    const height = `${message.thumbnail_height}px`
-    const width = `${message.thumbnail_width}px`
+    const height = `${message.thumbnail_height ?? 200}px`
+    const width = `${message.thumbnail_width ?? 300}px`
     return <div className='py-1.5 rounded-lg' ref={ref} style={{
         minWidth: width,
         minHeight: height
@@ -117,13 +117,15 @@ const ImageMessageBlock = ({ message }: { message: ImageMessage }) => {
                 className='rounded-md object-cover bg-transparent'
                 style={{
                     width: width,
-                    height: height
+                    height: height,
+                    maxWidth: '280px'
                 }}
             />
             :
             <IonSkeletonText animated className='max-w-60 rounded-md' style={{
                 width: width,
-                height: height
+                height: height,
+                maxWidth: '280px'
             }} />
         }
     </div>
