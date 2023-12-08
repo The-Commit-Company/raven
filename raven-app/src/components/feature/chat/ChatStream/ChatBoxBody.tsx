@@ -21,6 +21,19 @@ import { BiX } from "react-icons/bi"
 
 
 const Tiptap = lazy(() => import("../ChatInput/Tiptap"))
+
+const COOL_PLACEHOLDERS = [
+    "Sure - you can send your message via pigeons, only if you want them covered in poop 😷",
+    "Delivering messages atop dragons 🐉 is available on a chargeable basis.",
+    "Note 🚨: Service beyond the wall is currently disrupted due to bad weather.",
+    "Pigeons just have better brand recognition tbh 🤷🏻",
+    "Ravens double up as spies. Eyes everywhere 👀",
+    "Ravens do not 'slack' off. See what we did there? 😉",
+    "Were you expecting a funny placeholder? 😂",
+    "Want to know who writes these placeholders? 🤔. No one.",
+    "Type a message..."
+]
+const randomPlaceholder = COOL_PLACEHOLDERS[Math.floor(Math.random() * (COOL_PLACEHOLDERS.length))]
 interface ChatBoxBodyProps {
     channelData: ChannelListItem | DMChannelListItem
 }
@@ -101,17 +114,19 @@ export const ChatBoxBody = ({ channelData }: ChatBoxBodyProps) => {
     if (data) {
         return (
             <Flex height='100%' direction='column' justify={'end'} p='4' pt='9' className="overflow-hidden">
+
                 <FileDrop
                     files={files}
                     ref={fileInputRef}
                     onFileChange={setFiles}
                     maxFiles={10}
                     maxFileSize={10000000}>
-                    <ChatHistory
-                        parsedMessages={data.message}
-                        replyToMessage={handleReplyAction}
-                        channelData={channelData} />
-
+                    {isLoading ? <FullPageLoader className="w-full" /> :
+                        <ChatHistory
+                            parsedMessages={data.message}
+                            replyToMessage={handleReplyAction}
+                            channelData={channelData} />
+                    }
                     {channelData?.is_archived == 0 && (isUserInChannel || channelData?.type === 'Open')
                         &&
                         <Suspense fallback={<Flex align='center' justify='center' width='100%' height='9'><Loader /></Flex>}>
@@ -121,6 +136,7 @@ export const ChatBoxBody = ({ channelData }: ChatBoxBodyProps) => {
                                     fileInputRef,
                                     addFile
                                 }}
+                                placeholder={randomPlaceholder}
                                 sessionStorageKey={`tiptap-${channelData.name}`}
                                 onMessageSend={sendMessage}
                                 messageSending={loading}

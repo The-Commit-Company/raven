@@ -42,6 +42,7 @@ export interface ToolbarFileProps {
 type TiptapEditorProps = {
     slotBefore?: React.ReactNode,
     slotAfter?: React.ReactNode,
+    placeholder?: string,
     sessionStorageKey?: string,
     disableSessionStorage?: boolean,
     fileProps?: ToolbarFileProps,
@@ -49,18 +50,6 @@ type TiptapEditorProps = {
     messageSending: boolean,
     defaultText?: string
 }
-
-const COOL_PLACEHOLDERS = [
-    "Sure - you can send your message via pigeons, only if you want them covered in poop 😷",
-    "Delivering messages atop dragons 🐉 is available on a chargeable basis.",
-    "Note 🚨: Service beyond the wall is currently disrupted due to bad weather.",
-    "Pigeons just have better brand recognition tbh 🤷🏻",
-    "Ravens double up as spies. Eyes everywhere 👀",
-    "Ravens do not 'slack' off. See what we did there? 😉",
-    "Were you expecting a funny placeholder? 😂",
-    "Want to know who writes these placeholders? 🤔. No one.",
-    "Type a message..."
-]
 
 export const UserMention = Mention.extend({
     name: 'userMention',
@@ -81,7 +70,7 @@ export const ChannelMention = Mention.extend({
             pluginKey: new PluginKey('channelMention'),
         }
     })
-const Tiptap = ({ slotBefore, fileProps, onMessageSend, messageSending, sessionStorageKey = 'tiptap-editor', disableSessionStorage = false, defaultText = '' }: TiptapEditorProps) => {
+const Tiptap = ({ slotBefore, fileProps, onMessageSend, placeholder = 'Type a message...', messageSending, sessionStorageKey = 'tiptap-editor', disableSessionStorage = false, defaultText = '' }: TiptapEditorProps) => {
 
     const { users } = useContext(UserListContext)
 
@@ -406,7 +395,7 @@ const Tiptap = ({ slotBefore, fileProps, onMessageSend, messageSending, sessionS
         }),
         Placeholder.configure({
             // Pick a random placeholder from the list.
-            placeholder: COOL_PLACEHOLDERS[Math.floor(Math.random() * (COOL_PLACEHOLDERS.length))],
+            placeholder,
         }),
         CodeBlockLowlight.configure({
             lowlight
