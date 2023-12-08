@@ -32,14 +32,20 @@ interface TiptapRendererProps extends BoxProps {
   message: TextMessage,
   user?: UserFields,
   showLinkPreview?: boolean,
-  isScrolling?: boolean
+  isScrolling?: boolean,
+  isTruncated?: boolean
 }
 
-export const TiptapRenderer = ({ message, user, isScrolling = false, showLinkPreview = true, ...props }: TiptapRendererProps) => {
+export const TiptapRenderer = ({ message, user, isScrolling = false, isTruncated = false, showLinkPreview = true, ...props }: TiptapRendererProps) => {
 
   const editor = useEditor({
     content: message.text,
     editable: false,
+    editorProps: {
+      attributes: {
+        class: isTruncated ? 'line-clamp-3' : ''
+      }
+    },
     enableCoreExtensions: true,
     extensions: [
       StarterKit.configure({
@@ -80,7 +86,7 @@ export const TiptapRenderer = ({ message, user, isScrolling = false, showLinkPre
   })
 
   return (
-    <Box className={clsx('overflow-x-hidden', props.className)} {...props}>
+    <Box className={clsx('overflow-x-hidden text-ellipsis', props.className)} {...props}>
       <EditorContext.Provider value={{ editor }}>
         <EditorContent
           editor={editor}
@@ -94,8 +100,8 @@ export const TiptapRenderer = ({ message, user, isScrolling = false, showLinkPre
 export const TruncatedTiptapRenderer = ({ message, user, showLinkPreview = false, ...props }: TiptapRendererProps) => {
 
 
-  return <Box className='text-ellipsis overflow-none line-clamp-3'>
-    <TiptapRenderer message={message} user={user} showLinkPreview={showLinkPreview} {...props} />
+  return <Box className='text-ellipsis overflow-hidden line-clamp-3'>
+    <TiptapRenderer message={message} user={user} showLinkPreview={showLinkPreview} isTruncated {...props} />
   </Box>
 
 }
