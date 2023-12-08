@@ -55,12 +55,8 @@ interface ReplyMessageProps extends FlexProps {
  */
 export const ReplyMessage = ({ messageID, ...props }: ReplyMessageProps) => {
 
-    const { data, isLoading } = useFrappeGetCall('frappe.client.get_value', {
-        doctype: 'Raven Message',
-        filters: {
-            name: messageID
-        },
-        fieldname: JSON.stringify(['owner', 'creation', 'message_type', 'file', 'text', 'channel_id', 'name'])
+    const { data, isLoading } = useFrappeGetCall('raven.api.chat.get_reply_message_content', {
+        message_id: messageID
     }, `reply_message_${messageID}`, {
         revalidateIfStale: false,
         revalidateOnFocus: false,
