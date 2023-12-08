@@ -6,6 +6,12 @@ from frappe.model.document import Document
 from datetime import timedelta
 from frappe.query_builder.functions import Count, Coalesce
 from frappe.query_builder import Case
+from raven.raven_channel_management.doctype.raven_channel.raven_channel import get_peer_user_id
+
+channel = frappe.qb.DocType("Raven Channel")
+channel_member = frappe.qb.DocType("Raven Channel Member")
+message = frappe.qb.DocType('Raven Message')
+user = frappe.qb.DocType("User")
 
 
 class RavenMessage(Document):
@@ -24,6 +30,8 @@ class RavenMessage(Document):
         image_width: DF.Data | None
         is_reply: DF.Check
         json: DF.JSON | None
+        link_doctype: DF.Link | None
+        link_document: DF.DynamicLink | None
         linked_message: DF.Link | None
         message_reactions: DF.JSON | None
         message_type: DF.Literal["Text", "Image", "File"]
@@ -268,3 +276,28 @@ def get_unread_count_for_channels():
         'channels': channels_query
     }
     return result
+
+
+@frappe.whitelist()
+def get_timeline_message_content(doctype, docname):
+
+    query = (frappe.qb.from_(message)
+             .select('*')
+             .left_join(channel).on(message.channel_id == channel.name)
+             .left_join(channel_member).on(channel.name == channel_member.channel_id)
+             .left_join(user).on(message.owner == user.name)
+             .where(((channel.type != "Private") | (channel_member.user_id == frappe.session.user)) & (message.link_doctype == doctype) & (message.link_document == docname) & (channel.is_archived == 0))
+             )
+    data = query.run(as_dict=True)
+
+    timeline_contents = []
+    for log in data:
+        timeline_contents.append({
+            "icon": "share",
+            "is_card": True,
+            "creation": log.creation,
+            # "template": "send_message",
+            "template_data": log
+        })
+
+    return timeline_contents

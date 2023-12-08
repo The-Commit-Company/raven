@@ -1,0 +1,24 @@
+<div class="message-notification-wrapper">
+    <div class="head flex justify-between">
+        <div class="user-info">
+            <img src="{{ user_image }}" alt="{{ full_name }} Avatar" class="avatar">
+            <span class="bold">{{ full_name }}</span>
+        </div>
+        <!-- <span>
+            <a class="action-btn" href="/app/user-profile/{{ user.id }}" title="{{ __(" Open User Profile") }}">
+                <svg class="icon icon-sm">
+                    <use href="#icon-link-url" class="like-icon"></use>
+                </svg>
+            </a>
+        </span> -->
+    </div>
+
+    <div class="body pt-3">
+        <div class="user-group">
+            {{ channel_name }}
+        </div>
+        <div class="message pt-3">
+            {{ text }}
+        </div>
+    </div>
+</div>
