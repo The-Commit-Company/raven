@@ -443,7 +443,7 @@ const Tiptap = ({ slotBefore, fileProps, onMessageSend, messageSending, sessionS
                 <EditorContent editor={editor} />
                 <ToolPanel>
                     <TextFormattingMenu />
-                    <RightToolbarButtons fileProps={fileProps} sendMessage={onMessageSend} messageSending={messageSending} />
+                    <RightToolbarButtons fileProps={fileProps} setContent={setContent} sendMessage={onMessageSend} messageSending={messageSending} />
                 </ToolPanel>
             </EditorContext.Provider>
         </Box>
