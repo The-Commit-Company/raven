@@ -6,9 +6,14 @@ $(document).on('app_ready', function () {
         if (frm.footer?.frm?.timeline) {
           let send_message_modal = (channels) => {
             if (channels && channels.message && channels.message.length > 0) {
-              let channels_list = channels.message.map(
-                (channel) => channel.channel_name
-              );
+              let channel_id = [];
+              let channels_list = channels.message.map((channel) => {
+                channel_id.push({
+                  value: channel.name,
+                  name: channel.channel_name,
+                });
+                return channel.channel_name;
+              });
               let dialog = new frappe.ui.Dialog({
                 title: __('Send raven'),
                 fields: [
@@ -28,7 +33,7 @@ $(document).on('app_ready', function () {
                 ],
                 primary_action_label: __('Send'),
                 primary_action(values) {
-                  send_message(values);
+                  send_message(values, channel_id);
                   dialog.hide();
                 },
                 secondary_action_label: __('Discard'),
@@ -64,8 +69,11 @@ $(document).on('app_ready', function () {
             });
           };
 
-          let send_message = (values) => {
-            let channel = values.channel;
+          let send_message = (values, channel_id) => {
+            // let channel = values.channel;
+            let channel = channel_id.find(
+              (channel) => channel.name == values.channel
+            ).value;
             // get message from values.message and clean it up, remove html tags
             let message = values.message.replace(/<[^>]*>?/gm, '');
 
@@ -79,10 +87,12 @@ $(document).on('app_ready', function () {
                 link_document: frm.docname,
               })
               .then((doc) => {
+                frm.reload_doc();
                 frappe.show_alert({
                   message: __('Message sent'),
                   indicator: 'green',
                 });
+                frappe.utils.play_sound('email');
               })
               .catch((err) => {
                 frappe.throw(__('Error sending message'));
