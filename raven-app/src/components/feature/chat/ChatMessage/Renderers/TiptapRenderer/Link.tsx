@@ -53,16 +53,16 @@ export const LinkPreview = memo(({ isScrolling }: { isScrolling?: boolean }) => 
                     }
                 }
             } else {
-                if (json.type === 'link') {
-                    const link = json.attrs.href
-                    if (link.startsWith('mailto')) {
+                if (json?.type === 'link') {
+                    const link = json?.attrs?.href
+                    if (link?.startsWith('mailto')) {
                     } else {
-                        firstLink = json.attrs.href
+                        firstLink = json?.attrs?.href
                     }
                 } else {
                     for (const key in json) {
-                        if (typeof json[key] === 'object') {
-                            findFirstLink(json[key])
+                        if (typeof json?.[key] === 'object') {
+                            findFirstLink(json?.[key])
                         }
                     }
                 }
