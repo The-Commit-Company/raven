@@ -7,6 +7,9 @@
       "DOM.Iterable",
       "ESNext"
     ],
+    "types": [
+      "vite-plugin-svgr/client"
+    ],
     "allowJs": false,
     "skipLibCheck": true,
     "esModuleInterop": false,

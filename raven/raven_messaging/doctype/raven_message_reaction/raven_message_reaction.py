@@ -67,4 +67,9 @@ def calculate_message_reaction(message_id):
     frappe.publish_realtime('message_updated', {
             'channel_id': channel_id,
             'sender': frappe.session.user,
-            }, after_commit=True)
+            'type': 'reaction',
+            'message_id': message_id,
+            },
+             doctype='Raven Channel', 
+            docname= channel_id,  # Adding this to automatically add the room for the event via Frappe
+            after_commit=True)

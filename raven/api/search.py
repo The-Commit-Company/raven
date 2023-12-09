@@ -6,7 +6,7 @@ from functools import reduce
 
 
 @frappe.whitelist()
-def get_search_result(filter_type, doctype, search_text=None, from_user=None, with_user=None, in_channel=None, saved=False, date=None, file_type=None, message_type=None, channel_type=None, my_channel_only=False, other_channel_only=False, sort_field="creation", sort_order="desc", page_length=10, start_after=0):
+def get_search_result(filter_type, doctype, search_text=None, from_user=None, in_channel=None, saved=False, date=None, file_type=None, message_type=None, channel_type=None, my_channel_only=False, sort_field="creation", sort_order="desc", page_length=10, start_after=0):
     doctype = frappe.qb.DocType(doctype)
     channel_member = frappe.qb.DocType("Raven Channel Member")
     channel = frappe.qb.DocType("Raven Channel")
@@ -45,32 +45,17 @@ def get_search_result(filter_type, doctype, search_text=None, from_user=None, wi
             query = query.where(
                 doctype.channel_name.like("%" + search_text + "%"))
 
-    if from_user and from_user != '[]':
-        from_user = json.loads(from_user)
-        query = query.where(doctype.owner.isin(from_user))
+    if from_user:
+        query = query.where(doctype.owner == from_user)
 
-    if with_user and with_user != '[]':
-        with_user = json.loads(with_user)
-        query = query.where(
-            (
-                (((doctype.owner.isin(with_user)) & (channel_member.user_id == frappe.session.user)) | ((doctype.owner == frappe.session.user) & reduce(operator.or_, [
-                    channel.channel_name.like(f"%{user}%")
-                    for user in with_user
-                ]))) &
-                (channel.is_direct_message == 1)
-            )
-        )
-
-    if in_channel and in_channel != '[]':
-        in_channel = json.loads(in_channel)
-        query = query.where(doctype.channel_id.isin(in_channel))
+    if in_channel:
+        query = query.where(doctype.channel_id == in_channel)
 
     if date:
         query = query.where(doctype.creation > date)
 
-    if message_type and message_type != '[]':
-        message_type = json.loads(message_type)
-        query = query.where(doctype.message_type.isin(message_type))
+    if message_type:
+        query = query.where(doctype.message_type == message_type)
 
     if file_type and file_type != '[]':
         file_type = json.loads(file_type)
@@ -99,16 +84,12 @@ def get_search_result(filter_type, doctype, search_text=None, from_user=None, wi
             else:
                 query = query.where(reduce(operator.or_, filters))
 
-    if channel_type and channel_type != '[]':
-        channel_type = json.loads(channel_type)
-        query = query.where(doctype.type.isin(channel_type))
+    if channel_type:
+        query = query.where(doctype.type == channel_type)
 
     if my_channel_only:
         query = query.where((channel.type == 'Open') | (
             channel_member.user_id == frappe.session.user))
-
-    if other_channel_only:
-        query = query.where(~channel_member.user_id == frappe.session.user)
 
     if saved == 'true':
         query = query.where(message._liked_by.like(f"%{frappe.session.user}%"))

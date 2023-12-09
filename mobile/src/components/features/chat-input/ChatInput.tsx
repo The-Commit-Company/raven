@@ -1,55 +1,34 @@
 import { useFrappePostCall } from 'frappe-react-sdk'
 import { useCallback, useMemo, useRef, useState } from 'react'
-import { IonButton, IonButtons, IonIcon, IonToolbar } from '@ionic/react';
+import { IonButton, IonButtons, IonIcon, IonItem, IonToolbar } from '@ionic/react';
 import { documentAttachOutline } from 'ionicons/icons';
-
-import { Message } from '../../../../../types/Messaging/Message';
-import { QuillEditor } from './QuillEditor';
 import { FileUploadModal } from './FileUploadModal';
+import { Tiptap } from './Tiptap';
+import { AiOutlinePaperClip } from 'react-icons/ai';
 
 type Props = {
     channelID: string,
     allMembers: { id: string; value: string }[],
     allChannels: { id: string; value: string; }[],
     onMessageSend: () => void,
-    selectedMessage?: Message | null,
-    handleCancelReply: () => void
 }
-export const ChatInput = ({ channelID, allChannels, allMembers, onMessageSend, selectedMessage, handleCancelReply }: Props) => {
+export const ChatInput = ({ channelID, allChannels, allMembers, onMessageSend }: Props) => {
 
-    const { call } = useFrappePostCall('raven.raven_messaging.doctype.raven_message.raven_message.send_message')
-
-    const [text, setText] = useState("")
-
-    const onTextChange = useCallback((value: string) => {
-        setText(value)
-    }, [])
+    const { call, loading } = useFrappePostCall('raven.raven_messaging.doctype.raven_message.raven_message.send_message')
 
     const [files, setFiles] = useState<File[]>([])
 
-    const onSubmit = () => {
-        call({
+    const onSubmit = async (message: string, json: any) => {
+        return call({
             channel_id: channelID,
-            text: text,
-            is_reply: selectedMessage ? 1 : 0,
-            linked_message: selectedMessage ? selectedMessage.name : null
+            text: message,
+            json,
+            is_reply: 0,
+            linked_message: null,
         }).then(() => {
-            console.log("Message Sent")
-            setText("")
-            handleCancelReply()
             onMessageSend()
         })
     }
-
-    const hasText = useMemo(() => {
-        /** We need to check if the text has any content or not.
-         * Normally, we could just check it's length. However, the Quill Editor will sometimes return empty HTML tags like <p><br/></p>
-         * So we need to check if the text has any content or not.
-         */
-        let doc = new DOMParser().parseFromString(text ?? "", 'text/html')
-        return (doc.body.textContent?.length ?? 0) > 0
-
-    }, [text])
 
     const fileInputRef = useRef<HTMLInputElement>(null)
 
@@ -72,22 +51,16 @@ export const ChatInput = ({ channelID, allChannels, allMembers, onMessageSend, s
     }
 
     return (
-        <div className='flex items-end justify-between overflow-visible space-x-1 pb-4'>
-            <div className='w-full'>
-                <QuillEditor
-                    value={text}
-                    onChange={onTextChange}
-                    allChannels={allChannels}
-                    allMembers={allMembers}
-                />
-            </div>
-            <IonButtons slot='end' className='self-end pb-2 pr-2'>
+        <div className='flex justify-between items-end content-start px-4 py-2 overflow-visible space-x-2'>
+            <IonButtons slot='end' className='mb-0.5'>
                 <input multiple type='file' hidden ref={fileInputRef} onChange={getFiles} />
-                <IonButton slot='icon-only' hidden={hasText} onClick={pickFiles}>
-                    <IonIcon icon={documentAttachOutline} />
+                <IonButton onClick={pickFiles} color='light' fill='solid' shape='round' slot='icon-only'>
+                    <AiOutlinePaperClip size='20px' className='text-zinc-300' />
                 </IonButton>
-                <IonButton onClick={onSubmit} className='font-bold' size='small' hidden={!hasText}>Send</IonButton>
             </IonButtons>
+            <div className='overflow-x-hidden w-[90%]'>
+                <Tiptap onMessageSend={onSubmit} messageSending={loading} />
+            </div>
             <FileUploadModal channelID={channelID} files={files} setFiles={setFiles} pickFiles={pickFiles} onMessageSend={onMessageSend} />
         </div>
     )

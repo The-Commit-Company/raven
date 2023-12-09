@@ -1,16 +1,18 @@
-import { IonBackButton, IonButton, IonButtons, IonContent, IonFooter, IonHeader, IonIcon, IonInput, IonToolbar } from '@ionic/react'
-import { useFrappeEventListener, useFrappeGetCall } from 'frappe-react-sdk'
-import { useCallback, useContext, useMemo, useRef, useState } from 'react'
-import { Message, MessagesWithDate } from '../../../../../types/Messaging/Message'
-import { ErrorBanner, FullPageLoader } from '../../layout'
+import { IonBackButton, IonButton, IonButtons, IonContent, IonFooter, IonHeader, IonIcon, IonToolbar, useIonViewWillEnter } from '@ionic/react'
+import { useFrappeDocumentEventListener, useFrappeEventListener, useFrappeGetCall } from 'frappe-react-sdk'
+import { useCallback, useContext, useMemo, useRef } from 'react'
+import { MessagesWithDate } from '../../../../../types/Messaging/Message'
+import { ErrorBanner } from '../../layout'
 import { ChatInput } from '../chat-input'
 import { ChatView } from './chat-view/ChatView'
 import { ChatHeader } from './chat-header'
 import { ChannelListItem, DMChannelListItem, useChannelList } from '@/utils/channel/ChannelListProvider'
 import { UserFields } from '@/utils/users/UserListProvider'
-import { peopleOutline, searchOutline } from 'ionicons/icons'
+import { peopleOutline } from 'ionicons/icons'
 import { Haptics, ImpactStyle } from '@capacitor/haptics'
 import { UserContext } from '@/utils/auth/UserProvider'
+import { ChatLoader } from '@/components/layout/loaders/ChatLoader'
+import { MessageActionModal, useMessageActionModal } from './MessageActions/MessageActionModal'
 
 export type ChannelMembersMap = Record<string, UserFields>
 
@@ -21,12 +23,14 @@ export const ChatInterface = ({ channel }: { channel: ChannelListItem | DMChanne
     const conRef = useRef<HTMLIonContentElement>(null);
 
     const scrollToBottom = useCallback((duration = 0, delay = 0) => {
-
-
         setTimeout(() => {
             conRef.current?.scrollToBottom(duration)
         }, delay)
     }, [])
+
+    useIonViewWillEnter(() => {
+        scrollToBottom(0, 0)
+    })
 
     const onNewMessageLoaded = useCallback(() => {
         /**
@@ -63,12 +67,14 @@ export const ChatInterface = ({ channel }: { channel: ChannelListItem | DMChanne
     // Fetch all the messages in the channel
     const { data: messages, error: messagesError, mutate: refreshMessages, isLoading: isMessageLoading } = useFrappeGetCall<{ message: MessagesWithDate }>("raven.raven_messaging.doctype.raven_message.raven_message.get_messages_with_dates", {
         channel_id: channel.name
-    }, undefined, {
+    }, `get_messages_for_channel_${channel.name}`, {
         keepPreviousData: true,
         onSuccess: (data) => {
             onNewMessageLoaded()
         }
     })
+
+    useFrappeDocumentEventListener('Raven Channel', channel.name, () => { })
 
     /** Realtime event listener to update messages */
     useFrappeEventListener('message_updated', (data) => {
@@ -97,15 +103,8 @@ export const ChatInterface = ({ channel }: { channel: ChannelListItem | DMChanne
             })
     }
 
-    const [selectedMessage, setSelectedMessage] = useState<Message | null>(null)
+    const { selectedMessage, onMessageSelected, onDismiss } = useMessageActionModal()
 
-    const handleReplyAction = (message: Message) => {
-        setSelectedMessage(message)
-    }
-
-    const handleCancelReply = () => {
-        setSelectedMessage(null)
-    }
     const { channels } = useChannelList()
 
     const parsedChannels = useMemo(() => {
@@ -123,23 +122,21 @@ export const ChatInterface = ({ channel }: { channel: ChannelListItem | DMChanne
             <IonHeader>
                 <IonToolbar>
                     <IonButtons slot='start'>
-                        <IonBackButton color='medium' text='' defaultHref="/channels" />
+                        <IonBackButton color='medium' text=' ' className='px-2' defaultHref="/channels" />
                     </IonButtons>
                     <ChatHeader channel={channel} />
                     <IonButtons slot='end'>
-                        {/* <IonButton color='medium'>
-                            <IonIcon slot='icon-only' icon={searchOutline} />
-                        </IonButton>
-                        <IonButton color='medium'>
-                            <IonIcon slot='icon-only' icon={peopleOutline} />
-                        </IonButton> */}
+                        {/* do not show settings button for open channels */}
+                        {channel.type !== 'Open' && !channel.is_direct_message && <IonButton color='medium' slot='icon-only' routerLink={`${channel.name}/channel-settings`}>
+                            <IonIcon icon={peopleOutline} />
+                        </IonButton>}
                     </IonButtons>
                 </IonToolbar>
             </IonHeader>
             <IonContent className='flex flex-col-reverse' fullscreen ref={conRef}>
-                {isMessageLoading && <FullPageLoader />}
+                {isMessageLoading && <ChatLoader />}
                 {messagesError && <ErrorBanner error={messagesError} />}
-                <ChatView messages={messages?.message ?? []} members={channelMembers?.message ?? {}} />
+                <ChatView messages={messages?.message ?? []} members={channelMembers?.message ?? {}} onMessageSelected={onMessageSelected} />
 
                 {/* Commented out the button because it was unreliable. We only scroll to bottom when the user is at the bottom. */}
                 {/* <IonButton
@@ -167,9 +164,10 @@ export const ChatInterface = ({ channel }: { channel: ChannelListItem | DMChanne
             border-t-zinc-900 border-t-[1px]
             pb-6
             pt-1'>
-                    <ChatInput channelID={channel.name} allMembers={parsedMembers} allChannels={parsedChannels} onMessageSend={onMessageSend} selectedMessage={selectedMessage} handleCancelReply={handleCancelReply} />
+                    <ChatInput channelID={channel.name} allMembers={parsedMembers} allChannels={parsedChannels} onMessageSend={onMessageSend} />
                 </div>
             </IonFooter>
+            <MessageActionModal selectedMessage={selectedMessage} onDismiss={onDismiss} />
         </>
     )
 

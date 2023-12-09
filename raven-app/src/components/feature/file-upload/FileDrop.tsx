@@ -1,4 +1,6 @@
-import { Box, BoxProps, Stack, Text, useToast } from "@chakra-ui/react"
+import { useToast } from "@/hooks/useToast"
+import { Flex, Text } from "@radix-ui/themes"
+import { FlexProps } from "@radix-ui/themes/dist/cjs/components/flex"
 import { forwardRef, useImperativeHandle, useState } from "react"
 import { Accept, useDropzone } from "react-dropzone"
 
@@ -8,7 +10,7 @@ export interface CustomFile extends File {
     uploadProgress?: number
 }
 
-export interface FileDropProps extends BoxProps {
+export interface FileDropProps extends FlexProps {
     /** Array of files */
     files: CustomFile[],
     /** Function to set files in parent */
@@ -18,7 +20,8 @@ export interface FileDropProps extends BoxProps {
     /** Takes input MIME type as 'key' & array of extensions as 'value'; empty array - all extensions supported */
     accept?: Accept,
     /** Maximum file size in mb that can be selected */
-    maxFileSize?: number
+    maxFileSize?: number,
+    children?: React.ReactNode
 }
 
 /**
@@ -27,8 +30,8 @@ export interface FileDropProps extends BoxProps {
  */
 export const FileDrop = forwardRef((props: FileDropProps, ref) => {
 
-    const { files, onFileChange, maxFiles, accept, maxFileSize, ...compProps } = props
-    const toast = useToast()
+    const { files, onFileChange, maxFiles, accept, maxFileSize, children, ...compProps } = props
+    const { toast } = useToast()
 
     const [onDragEnter, setOnDragEnter] = useState(false)
 
@@ -36,10 +39,8 @@ export const FileDrop = forwardRef((props: FileDropProps, ref) => {
         if (maxFileSize && file.size > maxFileSize * 1000000) {
             toast({
                 title: `Uh Oh! ${file.name} exceeded the maximum file size required.`,
-                status: 'warning',
-                position: 'top',
-                duration: 2500,
-                isClosable: true
+                variant: 'destructive',
+                duration: 2500
             })
             return {
                 code: "size-too-large",
@@ -58,10 +59,8 @@ export const FileDrop = forwardRef((props: FileDropProps, ref) => {
             if (maxFiles && maxFiles < fileRejections.length) {
                 toast({
                     title: `Uh Oh! Maximum ${maxFiles} files can be uploaded. Please try again.`,
-                    status: "warning",
-                    position: "top",
+                    variant: 'destructive',
                     duration: 1800,
-                    isClosable: true,
                 })
             }
         },
@@ -83,25 +82,33 @@ export const FileDrop = forwardRef((props: FileDropProps, ref) => {
     }));
 
     return (
-        <Stack pos='fixed' top='75px' w='full' h='70vh' maxW='calc(100vw - var(--sidebar-width) - 30px)'>
+        <Flex
+            direction='column'
+            style={{
+                height: 'calc(100vh - 80px)',
+            }}
+            width='100%'
+            {...getRootProps()}
+            {...compProps}>
+            {children}
+
             {(maxFiles === undefined || files.length < maxFiles) &&
-                <Box
-                    display="flex"
-                    w='full'
-                    h='full'
-                    justifyContent="center"
-                    alignItems="center"
-                    border="2px dashed"
-                    borderColor="gray.300"
-                    borderRadius="lg"
-                    opacity={onDragEnter ? 1 : 0}
-                    p={4}
-                    {...getRootProps()}
-                    {...compProps}>
-                    <input type='file' {...getInputProps()} />
-                    <Text fontSize="sm" color="gray.500">Drag 'n' drop your files here, or click to select files</Text>
-                </Box>
+                <Flex
+                    align='center'
+                    justify='center'
+                    className="fixed top-14 border-2 border-dashed rounded-md border-gray-6 dark:bg-[#171923AA] bg-[#F7FAFCAA]"
+                    style={{
+                        width: 'calc(100vw - var(--sidebar-width) - var(--space-8))',
+                        height: 'calc(100vh - 80px)',
+                        zIndex: 9999
+                    }}
+                    display={onDragEnter ? "flex" : "none"}
+                >
+                    <Text as='span' size='2' color='gray'>Drop your files here. A Raven will pick it up.</Text>
+                    <input type='file' style={{ display: 'none' }} {...getInputProps()} />
+                </Flex>
             }
-        </Stack>
+
+        </Flex>
     )
 })

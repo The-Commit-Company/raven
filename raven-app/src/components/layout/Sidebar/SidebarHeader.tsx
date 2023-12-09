@@ -1,31 +1,37 @@
-import { Stack, HStack, Tooltip, IconButton, Image, useColorModeValue, useColorMode } from '@chakra-ui/react'
-import { HiOutlineMoon, HiOutlineSun } from 'react-icons/hi'
-import raven_logo_light from "../../../assets/raven_logo_light.png"
-import raven_logo_dark from "../../../assets/raven_logo_dark.png"
+import { useTheme } from '@/ThemeProvider'
+import { Flex, IconButton, Text } from '@radix-ui/themes'
+import { BiMoon, BiSun } from 'react-icons/bi'
 
 export const SidebarHeader = () => {
-
-    const logo = useColorModeValue(raven_logo_light, raven_logo_dark)
-
     return (
-        <Stack px={1} w='full' h='48px'>
-            <HStack justifyContent="space-between" pb='2' pt='4'>
-                <Image src={logo} objectFit="contain" alt="Raven" height='16px' />
+        <header>
+            <Flex
+                justify='between'
+                px='3'
+                align='center'
+                pt='1'
+                height='8'>
+                <Text as='span' size='6' className='cal-sans pl-1'>raven</Text>
                 <ColorModeToggleButton />
-            </HStack>
-        </Stack>
+            </Flex>
+        </header>
     )
 }
 
 const ColorModeToggleButton = () => {
 
-    const { colorMode, toggleColorMode } = useColorMode()
-    return <Tooltip hasArrow label='toggle theme' placement='bottom' rounded={'md'}>
+    const { appearance, toggleTheme } = useTheme()
+
+    return <Flex align='center' justify='center' pr='1'>
         <IconButton
-            size={"xs"}
-            aria-label="Toggle theme"
-            icon={colorMode === "light" ? <HiOutlineMoon /> : <HiOutlineSun />}
-            onClick={toggleColorMode}
-        />
-    </Tooltip>
+            size='1'
+            aria-label='Toggle theme'
+            title='Toggle theme'
+            color='gray'
+            className='text-gray-11 hover:text-gray-12'
+            variant='ghost'
+            onClick={toggleTheme}>
+            {appearance === 'light' ? <BiMoon /> : <BiSun />}
+        </IconButton>
+    </Flex>
 }

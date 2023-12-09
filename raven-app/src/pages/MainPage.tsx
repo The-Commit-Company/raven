@@ -1,40 +1,43 @@
-import { Flex, Box, useColorModeValue } from '@chakra-ui/react'
+import { Flex, Box } from '@radix-ui/themes'
 import { Outlet } from 'react-router-dom'
+import { lazy, Suspense } from 'react'
 import { Sidebar } from '../components/layout/Sidebar/Sidebar'
 import { VirtuosoRefProvider } from '../utils/message/VirtuosoRefProvider'
-import { useActiveState } from '../hooks/useActiveState'
 import { ChannelListProvider } from '../utils/channel/ChannelListProvider'
 import { UserListProvider } from '@/utils/users/UserListProvider'
 import { ActiveUsersProvider } from '@/utils/users/ActiveUsersProvider'
+import { hasRavenUserRole } from '@/utils/roles'
+import { FullPageLoader } from '@/components/layout/Loaders'
+const AddRavenUsersPage = lazy(() => import('@/pages/AddRavenUsersPage'))
 
 export const MainPage = () => {
+    const isRavenUser = hasRavenUserRole()
 
-    const isUserActive = useActiveState()
+    if (isRavenUser) {
+        return (
+            <UserListProvider>
+                <ChannelListProvider>
+                    <ActiveUsersProvider>
+                        <Flex>
+                            <Box className={`w-64 bg-gray-2 border-r-gray-3 border-r dark:bg-gray-1`} left="0" top='0' position="fixed">
+                                <Sidebar />
+                            </Box>
+                            <Box className='ml-[var(--sidebar-width)] w-[calc(100vw-var(--sidebar-width))] dark:bg-gray-2'>
+                                <VirtuosoRefProvider>
+                                    <Outlet />
+                                </VirtuosoRefProvider>
+                            </Box>
+                        </Flex>
+                    </ActiveUsersProvider>
+                </ChannelListProvider>
+            </UserListProvider>
+        )
+    } else {
+        // If the user does not have the Raven User role, then show an error message if the user cannot add more people.
+        // Else, show the page to add people to Raven
+        return <Suspense fallback={<FullPageLoader />}>
+            <AddRavenUsersPage />
+        </Suspense>
+    }
 
-    const chatInterfaceBackground = useColorModeValue("white", "gray.900")
-    const sidebarBackground = useColorModeValue("gray.50", "black")
-
-    return (
-        <UserListProvider>
-            <ChannelListProvider>
-                <ActiveUsersProvider>
-                    <Flex height="100vh" sx={{ '--sidebar-width': '16rem' }} >
-                        <Box bg={sidebarBackground} h="100vh" fontSize="sm" width="var(--sidebar-width)" left="0" position="fixed" zIndex="999">
-                            <Sidebar isUserActive={isUserActive} />
-                        </Box>
-                        <Box
-                            overflow="auto"
-                            bgColor={chatInterfaceBackground}
-                            w='calc(100vw - var(--sidebar-width))'
-                            position="relative"
-                            left='var(--sidebar-width)'>
-                            <VirtuosoRefProvider>
-                                <Outlet />
-                            </VirtuosoRefProvider>
-                        </Box>
-                    </Flex>
-                </ActiveUsersProvider>
-            </ChannelListProvider>
-        </UserListProvider>
-    )
 }

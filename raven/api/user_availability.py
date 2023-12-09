@@ -33,7 +33,13 @@ def refresh_user_active_state(deactivate=False):
         deactivate = True if deactivate.lower() == 'true' else False
     if deactivate:
         set_user_inactive()
-        return 'Ok'
     else:
         set_user_active()
-        return 'Ok'
+    
+    frappe.publish_realtime('raven:user_active_state_updated', {
+        'user': frappe.session.user,
+        'active': not deactivate
+    })
+
+    return "ok"
+

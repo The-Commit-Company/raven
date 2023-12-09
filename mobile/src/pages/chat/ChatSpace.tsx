@@ -1,10 +1,11 @@
 import { RouteComponentProps } from "react-router-dom"
 import { ChatInterface } from "../../components/features/chat-space"
-import { ChannelProvider, IdentityParam } from "../../utils/channel/ChannelProvider"
+import { IdentityParam } from "../../utils/channel/ChannelProvider"
 import { useGetChannelData } from "@/hooks/useGetChannelData"
 import { IonBackButton, IonButtons, IonContent, IonHeader, IonPage, IonTitle, IonToolbar } from "@ionic/react"
-import { ErrorBanner, FullPageLoader } from "@/components/layout"
+import { ErrorBanner } from "@/components/layout"
 import { FrappeError } from "frappe-react-sdk"
+import { ChatLoader } from "../../components/layout/loaders/ChatLoader"
 
 export const ChatSpace: React.FC<RouteComponentProps<IdentityParam>> = (props) => {
 
@@ -23,18 +24,18 @@ export const ChatSpace: React.FC<RouteComponentProps<IdentityParam>> = (props) =
   </IonPage>
 }
 
-const LoadingErrorPage = ({ isLoading, error }: { isLoading: boolean, error?: FrappeError }) => {
+const LoadingErrorPage = ({ isLoading, error, channelID }: { isLoading: boolean, error?: FrappeError, channelID?: string }) => {
   return <>
     <IonHeader>
       <IonToolbar>
         <IonButtons>
           <IonBackButton defaultHref="/channels" />
         </IonButtons>
-        <IonTitle>Channel</IonTitle>
+        <IonTitle>{channelID ?? "Channel"}</IonTitle>
       </IonToolbar>
     </IonHeader>
     <IonContent fullscreen>
-      {isLoading && <FullPageLoader />}
+      {isLoading && <ChatLoader />}
       {error && <ErrorBanner error={error} />}
     </IonContent>
   </>

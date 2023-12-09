@@ -1,33 +1,18 @@
-import { Text, Button, ButtonGroup, chakra, FormControl, FormErrorMessage, FormHelperText, FormLabel, Input, InputGroup, InputLeftElement, InputRightElement, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Stack, useToast, Icon } from "@chakra-ui/react"
 import { useFrappeUpdateDoc } from "frappe-react-sdk"
 import { ChangeEvent, useCallback } from "react"
 import { Controller, FormProvider, useForm } from "react-hook-form"
 import { ErrorBanner } from "../../../layout/AlertBanner"
-import { getChannelIcon } from "@/utils/layout/channelIcon"
+import { ChannelIcon } from "@/utils/layout/channelIcon"
 import { ChannelListItem } from "@/utils/channel/ChannelListProvider"
-
-interface RenameChannelModalProps {
-    isOpen: boolean,
-    onClose: () => void,
-    channelID: string,
-    channel_name: string,
-    type: ChannelListItem['type']
-}
+import { Box, Dialog, Flex, Text, TextField, Button } from "@radix-ui/themes"
+import { ErrorText, Label } from "@/components/common/Form"
+import { Loader } from "@/components/common/Loader"
+import { useToast } from "@/hooks/useToast"
 
 interface RenameChannelForm {
     channel_name: string
 }
 
-export const ChannelRenameModal = ({ isOpen, onClose, channelID, channel_name, type }: RenameChannelModalProps) => {
-    return (
-        <Modal isOpen={isOpen} onClose={onClose} size='lg'>
-            <ModalOverlay />
-            <ModalContent>
-                <RenameChannelModalContent channelID={channelID} channelName={channel_name} type={type} onClose={onClose} />
-            </ModalContent>
-        </Modal>
-    )
-}
 
 interface RenameChannelModalContentProps {
     channelID: string,
@@ -36,7 +21,7 @@ interface RenameChannelModalContentProps {
     onClose: () => void
 }
 
-const RenameChannelModalContent = ({ channelID, channelName, type, onClose }: RenameChannelModalContentProps) => {
+export const RenameChannelModalContent = ({ channelID, channelName, type, onClose }: RenameChannelModalContentProps) => {
 
     const methods = useForm<RenameChannelForm>({
         defaultValues: {
@@ -45,38 +30,18 @@ const RenameChannelModalContent = ({ channelID, channelName, type, onClose }: Re
     })
     const { control, handleSubmit, setValue, formState: { errors } } = methods
     const { updateDoc, loading: updatingDoc, error } = useFrappeUpdateDoc()
-    const toast = useToast()
+    const { toast } = useToast()
 
-    const onSubmit = (data: RenameChannelForm) => {
-        updateDoc("Raven Channel", channelID ?? null, {
+    const onSubmit = async (data: RenameChannelForm) => {
+        return updateDoc("Raven Channel", channelID ?? null, {
             channel_name: data.channel_name
         }).then(() => {
             toast({
                 title: "Channel name updated",
-                status: "success",
-                duration: 2000,
-                isClosable: true
+                variant: 'success',
+                duration: 800
             })
             onClose()
-        }).catch((err) => {
-            if (err.httpStatus === 409) {
-                toast({
-                    title: "Error renaming channel",
-                    description: "Channel name already exists",
-                    status: "error",
-                    duration: 2000,
-                    isClosable: true
-                })
-            }
-            else {
-                toast({
-                    title: "Error renaming channel",
-                    description: err.httpStatusText,
-                    status: "error",
-                    duration: 2000,
-                    isClosable: true
-                })
-            }
         })
     }
 
@@ -86,61 +51,68 @@ const RenameChannelModalContent = ({ channelID, channelName, type, onClose }: Re
 
     return (
         <FormProvider {...methods}>
-            <chakra.form onSubmit={handleSubmit(onSubmit)}>
+            <form onSubmit={handleSubmit(onSubmit)}>
+                <Dialog.Title>Rename this channel</Dialog.Title>
 
-                <ModalHeader>Rename this channel</ModalHeader>
-                <ModalCloseButton isDisabled={updatingDoc} />
+                <Flex gap='2' direction='column' width='100%'>
+                    <ErrorBanner error={error} />
+                    <Box width='100%'>
+                        <Label htmlFor='channel_name' isRequired>Name</Label>
+                        <Controller
+                            name='channel_name'
+                            control={control}
+                            rules={{
+                                required: "Please add a channel name",
+                                maxLength: {
+                                    value: 50,
+                                    message: "Channel name cannot be more than 50 characters."
+                                },
+                                minLength: {
+                                    value: 3,
+                                    message: "Channel name cannot be less than 3 characters."
+                                },
+                                pattern: {
+                                    // no special characters allowed
+                                    // cannot start with a space
+                                    value: /^[a-zA-Z0-9][a-zA-Z0-9-]*$/,
+                                    message: "Channel name can only contain letters, numbers and hyphens."
+                                }
+                            }}
+                            render={({ field, fieldState: { error } }) => (
+                                <TextField.Root>
+                                    <TextField.Slot>
+                                        {<ChannelIcon type={type} />}
+                                    </TextField.Slot>
+                                    <TextField.Input
+                                        maxLength={50}
+                                        required
+                                        autoFocus
+                                        placeholder='e.g. wedding-gone-wrong, joffrey-tributes'
+                                        color={error ? 'red' : undefined}
+                                        {...field}
+                                        aria-invalid={error ? 'true' : 'false'}
+                                        onChange={handleChange}
+                                    />
+                                    <TextField.Slot>
+                                        <Text size='2' weight='light' color='gray'>{50 - field.value.length}</Text>
+                                    </TextField.Slot>
+                                </TextField.Root>
+                            )}
+                        />
+                        {errors?.channel_name && <ErrorText>{errors.channel_name?.message}</ErrorText>}
+                    </Box>
+                </Flex>
 
-                <ModalBody>
-                    <Stack>
-                        <ErrorBanner error={error} />
-                        <FormControl isRequired isInvalid={!!errors.channel_name}>
-                            <FormLabel htmlFor='channel_name'>Channel name</FormLabel>
-                            <Controller
-                                name='channel_name'
-                                control={control}
-                                rules={{
-                                    required: "Please add a channel name",
-                                    maxLength: 50,
-                                    pattern: {
-                                        // no special characters allowed
-                                        // cannot start with a space
-                                        value: /^[a-zA-Z0-9][a-zA-Z0-9-]*$/,
-                                        message: "Channel name can only contain letters, numbers and hyphens."
-                                    }
-                                }}
-                                render={({ field }) => (
-                                    <InputGroup>
-                                        <InputLeftElement
-                                            pointerEvents='none'
-                                            children={<Icon as={getChannelIcon(type)} />}
-                                        />
-                                        <Input
-                                            maxLength={50}
-                                            autoFocus
-                                            placeholder='e.g. testing' fontSize='sm'
-                                            onChange={handleChange}
-                                            value={field.value} />
-                                        <InputRightElement>
-                                            <Text fontSize='sm' fontWeight='light' color='gray.500'>{50 - field.value.length}</Text>
-                                        </InputRightElement>
-                                    </InputGroup>
-                                )}
-                            />
-                            <FormHelperText fontSize='xs'>Names cannot be longer than 50 characters.</FormHelperText>
-                            <FormErrorMessage>{errors?.channel_name?.message}</FormErrorMessage>
-                        </FormControl>
-                    </Stack>
-                </ModalBody>
-
-                <ModalFooter>
-                    <ButtonGroup>
-                        <Button variant='ghost' onClick={onClose} isDisabled={updatingDoc}>Cancel</Button>
-                        <Button colorScheme='blue' type='submit' isLoading={updatingDoc}>Save Changes</Button>
-                    </ButtonGroup>
-                </ModalFooter>
-
-            </chakra.form>
+                <Flex gap="3" mt="6" justify="end" align='center'>
+                    <Dialog.Close disabled={updatingDoc}>
+                        <Button variant="soft" color="gray">Cancel</Button>
+                    </Dialog.Close>
+                    <Button type='submit' disabled={updatingDoc}>
+                        {updatingDoc && <Loader />}
+                        {updatingDoc ? "Saving" : "Save"}
+                    </Button>
+                </Flex>
+            </form>
         </FormProvider>
     )
 

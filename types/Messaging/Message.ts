@@ -1,9 +1,10 @@
-export type Message = FileMessage | TextMessage
+export type Message = FileMessage | TextMessage | ImageMessage
 
 export interface BaseMessage {
     name: string,
     owner: string,
     _liked_by: string,
+    channel_id: string,
     creation: string,
     message_type: 'Text' | 'File' | 'Image',
     message_reactions?: string | null,
@@ -14,7 +15,15 @@ export interface BaseMessage {
 
 export interface FileMessage extends BaseMessage {
     file: string,
-    message_type: 'File' | 'Image'
+    message_type: 'File'
+}
+
+export interface ImageMessage extends BaseMessage {
+    file: string,
+    message_type: 'Image'
+    thumbnail_width?: number,
+    thumbnail_height?: number,
+    image_thumbnail?: string,
 }
 
 export interface TextMessage extends BaseMessage {

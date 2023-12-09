@@ -5,10 +5,32 @@ from frappe import _
 from frappe.model.document import Document
 from datetime import timedelta
 from frappe.query_builder.functions import Count, Coalesce
-from frappe.query_builder import Case
+from frappe.query_builder import Case, Order,JoinType
 
 
 class RavenMessage(Document):
+    # begin: auto-generated types
+    # This code is auto-generated. Do not modify anything in this block.
+
+    from typing import TYPE_CHECKING
+
+    if TYPE_CHECKING:
+        from frappe.types import DF
+
+        channel_id: DF.Link
+        file: DF.Attach | None
+        file_thumbnail: DF.Attach | None
+        image_height: DF.Data | None
+        image_width: DF.Data | None
+        is_reply: DF.Check
+        json: DF.JSON | None
+        linked_message: DF.Link | None
+        message_reactions: DF.JSON | None
+        message_type: DF.Literal["Text", "Image", "File"]
+        text: DF.LongText | None
+        thumbnail_height: DF.Data | None
+        thumbnail_width: DF.Data | None
+    # end: auto-generated types
 
     def validate(self):
         '''
@@ -16,7 +38,7 @@ class RavenMessage(Document):
         2. If the channel is private/public, the user creating the message should be a member of the channel
         3. If there is a linked message, the linked message should be in the same channel
         '''
-        self.validate_membership()
+        # self.validate_membership()
         self.validate_linked_message()
 
     def validate_membership(self):
@@ -39,21 +61,26 @@ class RavenMessage(Document):
 
     def after_insert(self):
         frappe.publish_realtime(
-            'unread_channel_count_updated')
+            'raven:unread_channel_count_updated', {
+                'channel_id': self.channel_id,
+            })
 
     def after_delete(self):
-        self.send_update_event(txt="delete")
+        self.send_update_event(type="delete")
 
     def on_update(self):
-        print("on update")
-        self.send_update_event(txt="update")
+        self.send_update_event(type="update")
 
-    def send_update_event(self, txt):
-        print("Notifying update", txt)
+    def send_update_event(self, type):
         frappe.publish_realtime('message_updated', {
             'channel_id': self.channel_id,
             'sender': frappe.session.user,
-            }, after_commit=True)
+            'message_id': self.name,
+            'type': type,
+            }, 
+            doctype='Raven Channel', 
+            docname=self.channel_id,  # Adding this to automatically add the room for the event via Frappe
+            after_commit=True)
         frappe.db.commit()
 
     def on_trash(self):
@@ -64,6 +91,13 @@ class RavenMessage(Document):
         if frappe.db.get_value('Raven Channel', self.channel_id, 'type') != 'Private' or frappe.db.exists("Raven Channel Member", {"channel_id": self.channel_id, "user_id": frappe.session.user}):
             track_visit(self.channel_id)
 
+def on_doctype_update():
+    '''
+    Add indexes to Raven Message table
+    '''
+    # Index the selector (channel or message type) first for faster queries (less rows to sort in the next step)
+    frappe.db.add_index("Raven Message", ["channel_id", "creation"])
+    frappe.db.add_index("Raven Message", ["message_type", "creation"])
 
 def track_visit(channel_id, commit=False):
     '''
@@ -82,13 +116,17 @@ def track_visit(channel_id, commit=False):
             "user_id": frappe.session.user,
             "last_visit": frappe.utils.now()
         }).insert()
-    # Need to comit the changes to the database if the request is a GET request
+    frappe.publish_realtime(
+            'raven:unread_channel_count_updated', {
+                'channel_id': channel_id,
+            }, after_commit=True)
+    # Need to commit the changes to the database if the request is a GET request
     if commit:
         frappe.db.commit()
 
 
 @frappe.whitelist(methods=['POST'])
-def send_message(channel_id, text, is_reply, linked_message=None):
+def send_message(channel_id, text, is_reply, linked_message=None, json=None):
 
     # remove empty list items
     clean_text = text.replace('<li><br></li>', '').strip()
@@ -101,14 +139,16 @@ def send_message(channel_id, text, is_reply, linked_message=None):
                 'text': clean_text,
                 'message_type': 'Text',
                 'is_reply': is_reply,
-                'linked_message': linked_message
+                'linked_message': linked_message,
+                'json': json
             })
         else:
             doc = frappe.get_doc({
                 'doctype': 'Raven Message',
                 'channel_id': channel_id,
                 'text': clean_text,
-                'message_type': 'Text'
+                'message_type': 'Text',
+                'json': json
             })
         doc.insert()
         return "message sent"
@@ -116,8 +156,14 @@ def send_message(channel_id, text, is_reply, linked_message=None):
 
 @frappe.whitelist()
 def fetch_recent_files(channel_id):
-
-    files = frappe.db.get_list('Raven Message',
+    '''
+     Fetches recently sent files in a channel
+     Check if the user has permission to view the channel
+    '''
+    if not frappe.has_permission("Raven Channel", doc=channel_id):
+        frappe.throw(
+            "You don't have permission to view this channel", frappe.PermissionError)
+    files = frappe.db.get_all('Raven Message',
                                filters={
                                    'channel_id': channel_id,
                                    'message_type': ['in', ['Image', 'File']]
@@ -133,10 +179,10 @@ def fetch_recent_files(channel_id):
 
 def get_messages(channel_id):
 
-    messages = frappe.db.get_list('Raven Message',
+    messages = frappe.db.get_all('Raven Message',
                                   filters={'channel_id': channel_id},
                                   fields=['name', 'owner', 'creation', 'text',
-                                          'file', 'message_type', 'message_reactions', 'is_reply', 'linked_message', '_liked_by'],
+                                          'file', 'message_type', 'message_reactions', 'is_reply', 'linked_message', '_liked_by', 'channel_id', 'thumbnail_width', 'thumbnail_height', 'file_thumbnail'],
                                   order_by='creation asc'
                                   )
 
@@ -145,14 +191,27 @@ def get_messages(channel_id):
 
 @frappe.whitelist()
 def get_saved_messages():
+    '''
+        Fetches list of all messages liked by the user
+        Check if the user has permission to view the message
+    '''
 
-    messages = frappe.db.get_list('Raven Message',
-                                  filters={'_liked_by': [
-                                      'like', '%'+frappe.session.user+'%']},
-                                  fields=['name', 'owner', 'creation', 'text', 'channel_id',
-                                          'file', 'message_type', 'message_reactions', '_liked_by'],
-                                  order_by='creation asc'
-                                  )
+    raven_message = frappe.qb.DocType('Raven Message')
+    raven_channel = frappe.qb.DocType('Raven Channel')
+    raven_channel_member = frappe.qb.DocType('Raven Channel Member')
+
+    query = (frappe.qb.from_(raven_message)
+                .join(raven_channel, JoinType.left)
+                .on(raven_message.channel_id == raven_channel.name)
+                .join(raven_channel_member, JoinType.left)
+                .on(raven_channel.name == raven_channel_member.channel_id)
+                .select(raven_message.name, raven_message.owner, raven_message.creation, raven_message.text, raven_message.channel_id,
+                        raven_message.file, raven_message.message_type, raven_message.message_reactions, raven_message._liked_by)
+                .where(raven_message._liked_by.like('%'+frappe.session.user+'%'))
+                .where((raven_channel.type == "Open") | (raven_channel_member.user_id == frappe.session.user))
+                .orderby(raven_message.creation, order=Order.asc))
+    
+    messages = query.run(as_dict=True)
 
     return messages
 

@@ -1,5 +1,6 @@
 import frappe
 from frappe import _
+import json
 
 @frappe.whitelist()
 def get_list():
@@ -15,7 +16,24 @@ def get_list():
     if not frappe.db.exists("Raven User", { "user": frappe.session.user }):
         frappe.throw(_("You do not have a <b>Raven User</b> profile. Please contact your administrator to add your user profile as a <b>Raven User</b>."), title="Insufficient permissions. Please contact your administrator.")
     
-    users = frappe.db.get_list("Raven User", fields=["full_name", "user_image",
+    users = frappe.db.get_all("Raven User", fields=["full_name", "user_image",
                                    "name", "first_name"],
                            order_by="full_name")
     return users
+
+
+@frappe.whitelist(methods=['POST'])
+def add_users_to_raven(users):
+
+    if isinstance(users, str):
+        users = json.loads(users)
+    
+    for user in users:
+        user_doc = frappe.get_doc("User", user)
+        user_doc.append("roles", {
+            "role": "Raven User"
+        })
+        user_doc.save()
+    
+    return "success"
+            

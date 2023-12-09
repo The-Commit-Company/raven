@@ -1,19 +1,19 @@
-import { BoxProps, Center, Spinner, SpinnerProps, Stack, Text, TextProps } from '@chakra-ui/react'
-import { motion } from 'framer-motion'
+import { Loader } from '@/components/common/Loader'
+import { Flex, Text } from '@radix-ui/themes'
+import { FlexProps } from '@radix-ui/themes/dist/cjs/components/flex'
+import { clsx } from 'clsx'
 
-interface Props extends BoxProps {
+interface Props extends FlexProps {
     text?: string
-    textProps?: TextProps,
-    spinnerProps?: SpinnerProps
 }
 
-export const FullPageLoader = ({ text = "Ravens are finding their way to you...", textProps, spinnerProps, ...props }: Props) => {
+export const FullPageLoader = ({ text = "Ravens are finding their way to you...", ...props }: Props) => {
     return (
-        <Center w='100vw' h='100vh' as={motion.div} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} {...props}>
-            <Stack justify={'center'} align='center'>
-                <Spinner color='gray.500' {...spinnerProps} />
-                <Text as='span' color='gray.500' fontStyle={'italic'} {...textProps}>{text}</Text>
-            </Stack>
-        </Center>
+        <Flex align='center' width='100%' justify='center' {...props} className={clsx('h-screen', props.className)}>
+            <Flex justify='center' align='center' direction='row' gap='4'>
+                <Loader />
+                <Text as='span' color='gray' className='cal-sans'>{text}</Text>
+            </Flex>
+        </Flex>
     )
 }

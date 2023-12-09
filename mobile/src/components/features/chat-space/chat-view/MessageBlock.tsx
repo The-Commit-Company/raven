@@ -1,22 +1,25 @@
 import React, { memo, useContext, useMemo } from 'react'
-import { FileMessage, Message, MessageBlock, TextMessage } from '../../../../../../types/Messaging/Message'
+import { FileMessage, ImageMessage, Message, MessageBlock, TextMessage } from '../../../../../../types/Messaging/Message'
 import { ChannelMembersMap } from '../ChatInterface'
-import { IonIcon, IonItem, IonText } from '@ionic/react'
+import { IonIcon, IonItem, IonSkeletonText, IonText } from '@ionic/react'
 import { SquareAvatar, UserAvatar } from '@/components/common/UserAvatar'
 import { MarkdownRenderer } from '@/components/common/MarkdownRenderer'
 import { UserFields } from '@/utils/users/UserListProvider'
 import { DateObjectToFormattedDateString, DateObjectToFormattedDateStringWithoutYear, DateObjectToTimeString } from '@/utils/operations/operations'
-import { useFrappeGetDoc } from 'frappe-react-sdk'
+import { useFrappeGetCall, useFrappeGetDoc } from 'frappe-react-sdk'
 import { ChannelMembersContext } from './ChatView'
 import { openOutline } from 'ionicons/icons'
 import { Haptics, ImpactStyle } from '@capacitor/haptics'
 import { useIsUserActive } from '@/hooks/useIsUserActive'
+import { useInView } from 'react-intersection-observer';
+import useLongPress from '@/hooks/useLongPress'
 
 type Props = {
     message: MessageBlock,
+    onMessageSelect: (message: MessageBlock) => void
 }
 
-export const MessageBlockItem = ({ message }: Props) => {
+export const MessageBlockItem = ({ message, onMessageSelect }: Props) => {
     const members = useContext(ChannelMembersContext)
     /**
      * Displays a message block in the chat interface
@@ -27,15 +30,25 @@ export const MessageBlockItem = ({ message }: Props) => {
      */
 
     const user = members[message.data.owner]
+
+    const onLongPress = () => {
+        Haptics.impact({
+            style: ImpactStyle.Medium
+        })
+        onMessageSelect(message)
+    }
+
+    const longPressEvent = useLongPress(onLongPress)
     return (
-        <div className='px-2 my-0' id={`message-${message.data.name}`}>
+        // @ts-ignore
+        <div className='px-2 my-0' id={`message-${message.data.name}`} {...longPressEvent}>
             {message.data.is_continuation === 0 ? <NonContinuationMessageBlock message={message} user={user} /> :
                 <ContinuationMessageBlock message={message} />}
         </div>
     )
 }
 
-const NonContinuationMessageBlock = ({ message, user }: { message: MessageBlock, user?: UserFields }) => {
+export const NonContinuationMessageBlock = ({ message, user }: { message: MessageBlock, user?: UserFields }) => {
     return <div className='px-2 mt-3 pt-1 rounded-md flex active:bg-[color:var(--ion-color-light)]'>
         <UserAvatarBlock message={message} user={user} />
         <div>
@@ -77,15 +90,44 @@ const MessageContent = ({ message }: { message: MessageBlock }) => {
 const TextMessageBlock = ({ message, truncate = false }: { message: TextMessage, truncate?: boolean }) => {
 
 
-    return <div className='py-0.5 rounded-lg'>
+    return <div className={'py-0.5 rounded-lg' + (truncate ? ' line-clamp-3' : '')}>
         <MarkdownRenderer content={message.text} truncate={truncate} />
     </div>
 }
+const options = {
+    root: null,
+    rootMargin: "100px",
+    threshold: 0.5,
+    triggerOnce: true
+};
 
-const ImageMessageBlock = ({ message }: { message: FileMessage }) => {
+const ImageMessageBlock = ({ message }: { message: ImageMessage }) => {
+    const { ref, inView } = useInView(options);
 
-    return <div className='py-1.5 rounded-lg'>
-        <img src={message.file} alt={`Image`} className='rounded-md max-h-60 object-cover' />
+    const height = `${message.thumbnail_height ?? 200}px`
+    const width = `${message.thumbnail_width ?? 300}px`
+    return <div className='py-1.5 rounded-lg' ref={ref} style={{
+        minWidth: width,
+        minHeight: height
+    }}>
+        {inView ?
+            <img src={message.file}
+                alt={`Image`}
+                loading='lazy'
+                className='rounded-md object-cover bg-transparent'
+                style={{
+                    width: width,
+                    height: height,
+                    maxWidth: '280px'
+                }}
+            />
+            :
+            <IonSkeletonText animated className='max-w-60 rounded-md' style={{
+                width: width,
+                height: height,
+                maxWidth: '280px'
+            }} />
+        }
     </div>
 }
 
@@ -119,11 +161,19 @@ const FileMessageBlock = ({ message }: { message: FileMessage }) => {
 
 const ReplyBlock = ({ linked_message }: { linked_message: string }) => {
     const members = useContext(ChannelMembersContext)
-    const { data } = useFrappeGetDoc<Message>('Raven Message', linked_message)
+
+    const { data, isLoading } = useFrappeGetCall('raven.api.chat.get_reply_message_content', {
+        message_id: linked_message
+    }, `reply_message_${linked_message}`, {
+        revalidateIfStale: false,
+        revalidateOnFocus: false,
+        shouldRetryOnError: false,
+        revalidateOnReconnect: false
+    })
 
     const user = useMemo(() => {
-        if (data) {
-            return members[data.owner]
+        if (data && data.message) {
+            return members[data?.message.owner]
         } else {
             return undefined
         }
@@ -136,20 +186,20 @@ const ReplyBlock = ({ linked_message }: { linked_message: string }) => {
         document.getElementById(`message-${linked_message}`)?.scrollIntoView({ behavior: 'smooth' })
     }
 
-    const date = data ? new Date(data?.creation) : null
+    const date = data ? new Date(data?.message?.creation) : null
     return <div onClick={scrollToMessage} className='px-2 py-1.5 my-2 rounded-e-sm bg-neutral-900 border-l-4 border-l-neutral-500'>
-        {data && <div>
+        {data && data.message && <div>
             <div className='flex items-end pb-1'>
-                <IonText className='font-bold text-sm'>{user?.full_name ?? data.owner}</IonText>
+                <IonText className='font-bold text-sm'>{user?.full_name ?? data.message.owner}</IonText>
                 {date && <IonText className='font-normal text-xs pl-2' color='medium'>on {DateObjectToFormattedDateStringWithoutYear(date)} at {DateObjectToTimeString(date)}</IonText>}
             </div>
-            {data.message_type === 'Text' && <div className='text-sm text-neutral-400'><TextMessageBlock message={data} truncate /></div>}
-            {data.message_type === 'Image' && <div className='flex items-center space-x-2'>
-                <img src={data.file} alt={`Image`} className='inline-block w-10 h-10 rounded-md' />
+            {data.message.message_type === 'Text' && <div className='text-sm text-neutral-400'><TextMessageBlock message={data.message} truncate /></div>}
+            {data.message.message_type === 'Image' && <div className='flex items-center space-x-2'>
+                <img src={data.message.file} alt={`Image`} className='inline-block w-10 h-10 rounded-md' />
                 <p className='text-sm font-semibold'>📸 &nbsp;Image</p>
             </div>}
-            {data.message_type === 'File' && <p
-                className='text-sm font-semibold'>📎 &nbsp;{data.file?.split('/')[3]}</p>}
+            {data.message.message_type === 'File' && <p
+                className='text-sm font-semibold'>📎 &nbsp;{data.message.file?.split('/')[3]}</p>}
         </div>
         }
     </div>

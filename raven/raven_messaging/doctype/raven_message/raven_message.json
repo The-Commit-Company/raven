@@ -10,9 +10,14 @@
  "field_order": [
   "channel_id",
   "text",
-  "file",
-  "file_thumbnail",
+  "json",
   "message_type",
+  "file",
+  "image_width",
+  "image_height",
+  "file_thumbnail",
+  "thumbnail_width",
+  "thumbnail_height",
   "message_reactions",
   "is_reply",
   "linked_message"
@@ -25,12 +30,18 @@
    "in_standard_filter": 1,
    "label": "Channel ID",
    "options": "Raven Channel",
-   "reqd": 1
+   "reqd": 1,
+   "search_index": 1
   },
   {
    "fieldname": "text",
    "fieldtype": "Long Text",
    "label": "Text"
+  },
+  {
+   "fieldname": "json",
+   "fieldtype": "JSON",
+   "label": "JSON"
   },
   {
    "fieldname": "file",
@@ -64,11 +75,31 @@
    "fieldname": "file_thumbnail",
    "fieldtype": "Attach",
    "label": "File Thumbnail"
+  },
+  {
+   "fieldname": "image_width",
+   "fieldtype": "Data",
+   "label": "Image Width"
+  },
+  {
+   "fieldname": "image_height",
+   "fieldtype": "Data",
+   "label": "Image Height"
+  },
+  {
+   "fieldname": "thumbnail_width",
+   "fieldtype": "Data",
+   "label": "Thumbnail Width"
+  },
+  {
+   "fieldname": "thumbnail_height",
+   "fieldtype": "Data",
+   "label": "Thumbnail Height"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-06-20 14:08:24.579729",
+ "modified": "2023-11-24 18:46:53.805799",
  "modified_by": "Administrator",
  "module": "Raven Messaging",
  "name": "Raven Message",
@@ -95,17 +126,14 @@
    "export": 1,
    "if_owner": 1,
    "print": 1,
-   "read": 1,
    "report": 1,
    "role": "Raven User",
-   "select": 1,
    "share": 1,
    "write": 1
   },
   {
    "read": 1,
-   "role": "Raven User",
-   "select": 1
+   "role": "Raven User"
   }
  ],
  "search_fields": "text",

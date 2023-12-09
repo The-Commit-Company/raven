@@ -1,8 +1,9 @@
-import { Button } from '@chakra-ui/react'
 import { RemoveChannelMemberModal } from './RemoveChannelMemberModal'
-import { ModalTypes, useModalManager } from '@/hooks/useModalManager'
 import { ChannelMembers } from '@/utils/channel/ChannelMembersProvider'
 import { ChannelListItem } from '@/utils/channel/ChannelListProvider'
+import { useState } from 'react'
+import { AlertDialog, Button } from '@radix-ui/themes'
+import { DIALOG_CONTENT_CLASS } from '@/utils/layout/dialog'
 
 interface RemoveMemberButtonProps {
     channelData: ChannelListItem,
@@ -13,28 +14,26 @@ interface RemoveMemberButtonProps {
 
 export const RemoveMemberButton = ({ channelData, channelMembers, updateMembers, selectedMember }: RemoveMemberButtonProps) => {
 
-    const modalManager = useModalManager()
-
-    const onRemoveMembersModalOpen = () => {
-        modalManager.openModal(ModalTypes.RemoveChannelMember)
+    const [open, setOpen] = useState(false)
+    const onClose = () => {
+        setOpen(false)
     }
 
     return (
-        <>
-            <Button
-                colorScheme='blue'
-                variant='link'
-                size='xs'
-                onClick={onRemoveMembersModalOpen}>
-                Remove
-            </Button>
-            <RemoveChannelMemberModal
-                isOpen={modalManager.modalType === ModalTypes.RemoveChannelMember}
-                onClose={modalManager.closeModal}
-                user_id={selectedMember}
-                channelData={channelData}
-                channelMembers={channelMembers}
-                updateMembers={updateMembers} />
-        </>
+        <AlertDialog.Root open={open} onOpenChange={setOpen}>
+            <AlertDialog.Trigger>
+                <Button variant='ghost' color='gray' className={'hover:bg-slate-3'} size='1'>
+                    Remove
+                </Button>
+            </AlertDialog.Trigger>
+            <AlertDialog.Content className={DIALOG_CONTENT_CLASS}>
+                <RemoveChannelMemberModal
+                    onClose={onClose}
+                    user_id={selectedMember}
+                    channelData={channelData}
+                    channelMembers={channelMembers}
+                    updateMembers={updateMembers} />
+            </AlertDialog.Content>
+        </AlertDialog.Root>
     )
 }

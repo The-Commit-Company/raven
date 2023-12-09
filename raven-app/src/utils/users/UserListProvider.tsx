@@ -1,10 +1,9 @@
 import { useFrappeDocTypeEventListener, useFrappeGetCall } from "frappe-react-sdk";
 import { PropsWithChildren, createContext } from "react";
 import { User } from "../../../../types/Core/User";
-import { Box, Button, Center } from "@chakra-ui/react";
 import { ErrorBanner } from "@/components/layout/AlertBanner";
 import { FullPageLoader } from "@/components/layout/Loaders";
-import { FaChevronRight } from "react-icons/fa";
+import { Box, Flex, Link } from "@radix-ui/themes";
 
 
 export const UserListContext = createContext<{ users: UserFields[] }>({
@@ -16,7 +15,7 @@ export type UserFields = Pick<User, 'name' | 'full_name' | 'user_image' | 'first
 export const UserListProvider = ({ children }: PropsWithChildren) => {
 
 
-    const { data, error: usersError, mutate, isLoading } = useFrappeGetCall<{ message: UserFields[] }>('raven.api.raven_users.get_list', undefined, undefined, {
+    const { data, error: usersError, mutate, isLoading } = useFrappeGetCall<{ message: UserFields[] }>('raven.api.raven_users.get_list', undefined, 'raven.api.raven_users.get_list', {
         revalidateOnFocus: false,
         revalidateOnReconnect: false,
     })
@@ -27,13 +26,13 @@ export const UserListProvider = ({ children }: PropsWithChildren) => {
         return <FullPageLoader />
     }
     if (usersError) {
-        return <Center px='4' mx='auto' w='50vw' h='100vh'>
-            <ErrorBanner error={usersError} status="info">
-                <Box>
-                    <Button colorScheme='blue' size='xs' as={'a'} href={'/app/raven-user'} rightIcon={<FaChevronRight />}>View Raven Users</Button>
+        return <Flex align='center' justify='center' px='4' mx='auto' className="w-[50vw] h-screen">
+            <ErrorBanner error={usersError}>
+                <Box py='2'>
+                    <Link href={'/app/raven-user'}>View Raven Users</Link>
                 </Box>
             </ErrorBanner>
-        </Center>
+        </Flex>
     }
 
     return <UserListContext.Provider value={{ users: data?.message ?? [] }}>

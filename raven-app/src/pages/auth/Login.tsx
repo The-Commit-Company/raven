@@ -1,27 +1,29 @@
-import { useState, useEffect, useContext } from "react";
-import { Box, Button, Flex, FormControl, FormLabel, Image, IconButton, Input, InputGroup, InputRightElement, Stack, useDisclosure, chakra, FormErrorMessage, useColorModeValue } from "@chakra-ui/react";
+import { useState, useContext } from "react";
 import { useForm } from "react-hook-form";
-import { HiEye, HiEyeOff } from "react-icons/hi";
-import { Link, useNavigate } from "react-router-dom";
-import { AlertBanner } from "../../components/layout/AlertBanner";
+import { BiShow, BiHide } from "react-icons/bi";
+import { Link } from "react-router-dom";
+import { ErrorBanner } from "../../components/layout/AlertBanner";
 import { UserContext } from "../../utils/auth/UserProvider";
 import { isEmailValid } from "../../utils/validations";
-import raven_logo_light from "../../assets/raven_logo_light.png"
-import raven_logo_dark from "../../assets/raven_logo_dark.png"
 import { FullPageLoader } from "../../components/layout/Loaders";
+import { Box, Button, Flex, IconButton, Text, TextField } from "@radix-ui/themes";
+import { FrappeError } from "frappe-react-sdk";
+import { Loader } from "@/components/common/Loader";
+import { ErrorText, Label } from "@/components/common/Form";
 
 type Inputs = {
     email: string;
     password: string;
 };
-export const Login = () => {
-    const [error, setError] = useState<Error | null>(null)
+
+export const Component = () => {
+    const [error, setError] = useState<FrappeError | null>(null)
     const { login, isLoading } = useContext(UserContext)
-    const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<Inputs>();
-    const { isOpen, onToggle } = useDisclosure();
-    const logo = useColorModeValue(raven_logo_light, raven_logo_dark)
+    const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<Inputs>()
+    const [isOpen, setIsOpen] = useState(false)
+
     const onClickReveal = () => {
-        onToggle()
+        setIsOpen(!isOpen)
     }
 
     async function onSubmit(values: Inputs) {
@@ -31,62 +33,46 @@ export const Login = () => {
     }
 
     return (
-        <Box minH="100vh">
-            <Flex justify="center" align="center" height="100vh" width="full">
+        <Box className={'min-h-screen'}>
+            <Flex justify='center' align='center' className={'h-screen w-full'}>
                 {isLoading ? <FullPageLoader /> :
-                    <Box w="full" maxW="lg" mx="auto">
-                        <Box w="full" maxW="lg" mx="auto">
-                            <Stack spacing="8" rounded={{ md: "2xl" }} p={{ base: "4", md: "10" }} borderWidth={{ md: "1px" }} shadow={{ lg: "inner" }}>
-                                <Link to="/" tabIndex={-1}>
-                                    <Flex justify="center">
-                                        <Image src={logo} objectFit="cover" alt="Raven" width={180} />
-                                    </Flex>
-                                </Link>
+                    <Box className={'w-full max-w-xl'}>
+                        <Flex direction='column' gap='6' className={'w-full bg-white rounded-lg shadow dark:border dark:bg-gray-900 dark:border-gray-700 p-8'}>
 
-                                <chakra.form onSubmit={handleSubmit(onSubmit)}>
+                            <Link to="/" tabIndex={-1}>
+                                <Flex justify="center">
+                                    <Text as='span' size='9' className='cal-sans'>raven</Text>
+                                </Flex>
+                            </Link>
 
-                                    {error != null &&
-                                        <AlertBanner status="error" mb="3">{error.message}</AlertBanner>
-                                    }
-                                    <Stack spacing="6">
-                                        <FormControl
-                                            id="email"
-                                            isInvalid={!!errors?.email}
-                                            isRequired
-                                            isDisabled={isSubmitting}
-                                        >
-                                            <FormLabel htmlFor="email">Email address</FormLabel>
-                                            <Input {...register("email",
-                                                {
-                                                    validate: (email) => isEmailValid(email) || "Please enter a valid email address.",
-                                                    required: "Email is required."
-                                                })}
-                                                name="email"
-                                                type="email"
-                                                autoComplete="email"
-                                                required
-                                                placeholder="e.g. example@gmail.com"
-                                                tabIndex={0} />
-                                            <FormErrorMessage>{errors?.email?.message}</FormErrorMessage>
-                                        </FormControl>
-                                        <FormControl
-                                            id="password"
-                                            isRequired
-                                            isInvalid={!!errors?.password}
-                                            isDisabled={isSubmitting}
-                                        >
-                                            <FormLabel htmlFor="password">Password</FormLabel>
-                                            <InputGroup>
-                                                <InputRightElement>
-                                                    <IconButton
-                                                        bg="transparent !important"
-                                                        variant="ghost"
-                                                        aria-label={isOpen ? "Mask password" : "Reveal password"}
-                                                        icon={isOpen ? <HiEyeOff /> : <HiEye />}
-                                                        onClick={onClickReveal}
-                                                        tabIndex={-1} />
-                                                </InputRightElement>
-                                                <Input
+                            <ErrorBanner error={error} />
+
+                            <form onSubmit={handleSubmit(onSubmit)}>
+                                <Flex direction='column' gap='6'>
+                                    <Flex direction='column' gap='4'>
+
+                                        <Flex direction='column' gap='2'>
+                                            <Label htmlFor='email' isRequired>Email address</Label>
+                                            <TextField.Root>
+                                                <TextField.Input {...register("email",
+                                                    {
+                                                        validate: (email) => isEmailValid(email) || "Please enter a valid email address.",
+                                                        required: "Email is required."
+                                                    })}
+                                                    name="email"
+                                                    type="email"
+                                                    autoComplete="email"
+                                                    required
+                                                    placeholder="e.g. example@gmail.com"
+                                                    tabIndex={0} />
+                                            </TextField.Root>
+                                            {errors?.email && <ErrorText>{errors?.email?.message}</ErrorText>}
+                                        </Flex>
+
+                                        <Flex direction='column' gap='2'>
+                                            <Label htmlFor='password' isRequired>Password</Label>
+                                            <TextField.Root>
+                                                <TextField.Input
                                                     {...register("password",
                                                         {
                                                             required: "Password is required.",
@@ -97,19 +83,33 @@ export const Login = () => {
                                                     autoComplete="current-password"
                                                     required
                                                     placeholder="***********" />
-                                            </InputGroup>
-                                            <FormErrorMessage>{errors?.password?.message}</FormErrorMessage>
-                                        </FormControl>
-                                        <Button type="submit" isLoading={isSubmitting}>
-                                            Login
-                                        </Button>
-                                    </Stack>
-                                </chakra.form>
-                            </Stack>
-                        </Box>
+                                                <TextField.Slot>
+                                                    <IconButton
+                                                        type='button'
+                                                        size='1'
+                                                        variant='ghost'
+                                                        aria-label={isOpen ? "Mask password" : "Reveal password"}
+                                                        onClick={onClickReveal}
+                                                        tabIndex={-1}>
+                                                        {isOpen ? <BiHide /> : <BiShow />}
+                                                    </IconButton>
+                                                </TextField.Slot>
+                                            </TextField.Root>
+                                            {errors?.password && <ErrorText>{errors.password?.message}</ErrorText>}
+                                        </Flex>
+                                    </Flex>
+
+                                    <Button type='submit' disabled={isSubmitting}>
+                                        {isSubmitting ? <Loader /> : 'Login'}
+                                    </Button>
+                                </Flex>
+                            </form>
+                        </Flex>
                     </Box>
                 }
             </Flex>
         </Box>
     )
 }
+
+Component.displayName = "LoginPage";

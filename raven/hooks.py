@@ -71,7 +71,7 @@ after_install = "raven.install.after_install"
 # ------------
 
 # before_uninstall = "raven.uninstall.before_uninstall"
-# after_uninstall = "raven.uninstall.after_uninstall"
+after_uninstall = "raven.uninstall.after_uninstall"
 
 # Desk Notifications
 # ------------------
@@ -105,7 +105,8 @@ after_install = "raven.install.after_install"
 
 doc_events = {
     "User": {
-        "validate": "raven.raven.doctype.raven_user.raven_user.validate_raven_user_role",
+        "after_insert": "raven.raven.doctype.raven_user.raven_user.add_user_to_raven",
+        "before_validate": "raven.raven.doctype.raven_user.raven_user.add_user_to_raven",
     }
 }
 
@@ -193,6 +194,11 @@ doc_events = {
 website_route_rules = [
     {'from_route': '/raven/<path:app_path>', 'to_route': 'raven'},
     {'from_route': '/raven_mobile/<path:app_path>', 'to_route': 'raven_mobile'}, ]
+
+permission_query_conditions = {
+    "Raven Channel": "raven.permissions.raven_channel_query",
+    "Raven Message": "raven.permissions.raven_message_query",
+}
 
 has_permission = {
     "Raven Channel": "raven.permissions.channel_has_permission",

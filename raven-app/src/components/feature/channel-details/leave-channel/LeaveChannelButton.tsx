@@ -1,31 +1,34 @@
 import { ChannelListItem } from '@/utils/channel/ChannelListProvider'
-import { Button } from '@chakra-ui/react'
 import { LeaveChannelModal } from './LeaveChannelModal'
-import { ModalTypes, useModalManager } from '@/hooks/useModalManager'
+import { useState } from 'react'
+import { AlertDialog, Button } from '@radix-ui/themes'
+import { DIALOG_CONTENT_CLASS } from '@/utils/layout/dialog'
 
 interface LeaveChannelButtonProps {
     channelData: ChannelListItem,
     onClose: () => void
 }
 
-export const LeaveChannelButton = ({ channelData, onClose }: LeaveChannelButtonProps) => {
+export const LeaveChannelButton = ({ channelData, onClose: onParentClose }: LeaveChannelButtonProps) => {
 
-    const modalManager = useModalManager()
-
-    const onLeaveChannelModalOpen = () => {
-        modalManager.openModal(ModalTypes.LeaveChannel)
+    const [open, setOpen] = useState(false)
+    const onClose = () => {
+        setOpen(false)
     }
 
     return (
-        <>
-            <Button colorScheme='red' variant='link' size='sm' w='fit-content' onClick={onLeaveChannelModalOpen}>
-                Leave channel
-            </Button>
-            <LeaveChannelModal
-                isOpen={modalManager.modalType === ModalTypes.LeaveChannel}
-                onClose={modalManager.closeModal}
-                closeDetailsModal={onClose}
-                channelData={channelData} />
-        </>
+        <AlertDialog.Root open={open} onOpenChange={setOpen}>
+            <AlertDialog.Trigger>
+                <Button color='red' variant='ghost' className={'text-left w-fit'}>
+                    Leave channel
+                </Button>
+            </AlertDialog.Trigger>
+            <AlertDialog.Content className={DIALOG_CONTENT_CLASS}>
+                <LeaveChannelModal
+                    onClose={onClose}
+                    closeDetailsModal={onParentClose}
+                    channelData={channelData} />
+            </AlertDialog.Content>
+        </AlertDialog.Root>
     )
 }
