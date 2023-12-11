@@ -135,6 +135,19 @@ def get_channel_list(hide_archived=False):
     return query.run(as_dict=True)
 
 
+@frappe.whitelist()
+def get_channels(hide_archived=False):
+    channels = get_channel_list(hide_archived)
+    for channel in channels:
+        peer_user_id = get_peer_user_id(channel.get('name'), channel.get(
+            'is_direct_message'), channel.get('is_self_message'))
+        channel['peer_user_id'] = peer_user_id
+        if peer_user_id:
+            user_full_name = frappe.db.get_value(
+                'User', peer_user_id, 'full_name')
+            channel['full_name'] = user_full_name
+    return channels
+
 def get_peer_user_id(channel_id, is_direct_message, is_self_message=False):
     '''
     For a given channel, fetches the user id of the peer
