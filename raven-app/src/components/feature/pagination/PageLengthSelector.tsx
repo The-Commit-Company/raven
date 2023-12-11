@@ -1,4 +1,4 @@
-import { Select } from '@chakra-ui/react'
+import { Select } from "@radix-ui/themes"
 
 interface Props {
     options?: number[],
@@ -12,22 +12,20 @@ interface Props {
  */
 export const PageLengthSelector = ({ options = [20, 50, 100, 200, 500], updateValue, selectedValue }: Props) => {
 
-    const handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-        let numValue = parseInt(event.target.value)
+    const handleChange = (value: string) => {
+        let numValue = parseInt(value)
         updateValue(numValue)
     }
 
     // if parent has provided options render those else use default options
     return (
-        <Select
-            size='xs'
-            width='fit-content'
-            borderRadius={6}
-            value={selectedValue}
-            onChange={handleChange}>
-            {options?.map((option, index) => (
-                <option key={index} value={option}>{option} rows</option>
-            ))}
-        </Select>
+        <Select.Root size='1' onValueChange={handleChange} value={selectedValue.toString()}>
+            <Select.Trigger variant="soft" color="gray" />
+            <Select.Content>
+                {options?.map((option) => (
+                    <Select.Item key={option} value={option.toString()}>{option} rows</Select.Item>
+                ))}
+            </Select.Content>
+        </Select.Root>
     )
 }

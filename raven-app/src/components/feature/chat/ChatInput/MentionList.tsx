@@ -1,9 +1,9 @@
-// import './MentionList.scss'
-
+import { UserAvatar } from '@/components/common/UserAvatar'
 import { useIsUserActive } from '@/hooks/useIsUserActive'
 import { UserFields } from '@/utils/users/UserListProvider'
-import { Avatar, AvatarBadge, HStack, Stack, StackDivider, Text, useColorModeValue } from '@chakra-ui/react'
+import { Flex, Text, Theme } from '@radix-ui/themes'
 import { ReactRendererOptions } from '@tiptap/react'
+import { clsx } from 'clsx'
 import {
     forwardRef, useEffect, useImperativeHandle,
     useState,
@@ -11,7 +11,6 @@ import {
 
 export default forwardRef((props: ReactRendererOptions['props'], ref) => {
 
-    const buttonGroupBgColor = useColorModeValue('white', 'gray.900')
     const [selectedIndex, setSelectedIndex] = useState(0)
 
     const selectItem = (index: number) => {
@@ -58,21 +57,27 @@ export default forwardRef((props: ReactRendererOptions['props'], ref) => {
     }))
 
     return (
-        <Stack divider={<StackDivider />} spacing='0' overflowY={'scroll'} maxH='480px' rounded='md' shadow='dark-lg' bgColor={buttonGroupBgColor}>
-            {props?.items.length
-                ? props.items.map((item: UserFields, index: number) => (
-                    <MentionItem
-                        item={item}
-                        index={index}
-                        selectItem={selectItem}
-                        selectedIndex={selectedIndex}
-                        key={item.name}
-                        itemsLength={props.items.length}
-                    />
-                ))
-                : <div className="item">No result</div>
-            }
-        </Stack>
+        <Theme accentColor='iris' panelBackground='translucent'>
+            <Flex
+                direction='column'
+                gap='0'
+                className='shadow-lg dark:backdrop-blur-[8px] dark:bg-panel-translucent bg-white overflow-y-scroll max-h-64 rounded-md'
+            >
+                {props?.items.length
+                    ? props.items.map((item: UserFields, index: number) => (
+                        <MentionItem
+                            item={item}
+                            index={index}
+                            selectItem={selectItem}
+                            selectedIndex={selectedIndex}
+                            key={item.name}
+                            itemsLength={props.items.length}
+                        />
+                    ))
+                    : <div className="item">No result</div>
+                }
+            </Flex>
+        </Theme>
     )
 })
 
@@ -80,34 +85,28 @@ const MentionItem = ({ item, index, selectItem, selectedIndex, itemsLength }: { 
 
     const isActive = useIsUserActive(item.name)
 
-    const { selectedBgColor, selectedColor, textColor, backgroundColor } = useColorModeValue({
-        selectedBgColor: 'gray.900',
-        selectedColor: 'gray.50',
-        textColor: 'gray.900',
-        backgroundColor: 'white'
-    }, {
-        selectedBgColor: 'gray.100',
-        selectedColor: 'gray.900',
-        textColor: 'gray.100',
-        backgroundColor: 'gray.700'
-    })
-    return <HStack
-        as={'button'}
-        rounded='md'
-        roundedBottom={index === itemsLength - 1 ? 'md' : 'none'}
-        roundedTop={index === 0 ? 'md' : 'none'}
-        px='3'
-        py='1.5'
-        textAlign={'left'}
-        // colorScheme='blue'
-        bgColor={index === selectedIndex ? selectedBgColor : backgroundColor}
-        color={index === selectedIndex ? selectedColor : textColor}
+
+    return <Flex
+        role='button'
+        align='center'
+        title={item.full_name}
+        aria-label={`Mention ${item.full_name}`}
+        className={clsx('px-3 py-1.5 gap-2 rounded-md',
+            index === itemsLength - 1 ? 'rounded-b-md' : 'rounded-b-none',
+            index === 0 ? 'rounded-t-md' : 'rounded-t-none',
+            index === selectedIndex ? 'bg-accent-a5' : 'bg-panel-translucent'
+        )}
         key={index}
         onClick={() => selectItem(index)}
     >
-        <Avatar name={item.full_name} src={item.user_image} size='xs'>
-            {isActive && <AvatarBadge boxSize='0.8em' bg='green.400' borderColor='green.200' />}
-        </Avatar>
-        <Text as='span'> {item.full_name}</Text>
-    </HStack>
+        <UserAvatar
+            src={item.user_image}
+            alt={item.full_name}
+            loading='lazy'
+            variant='solid'
+            radius='full'
+            isActive={isActive}
+        />
+        <Text as='span' weight='medium' size='2'> {item.full_name}</Text>
+    </Flex >
 }

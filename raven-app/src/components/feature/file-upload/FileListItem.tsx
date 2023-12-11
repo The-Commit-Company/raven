@@ -1,10 +1,11 @@
-import { Text, Stack, IconButton, HStack, Icon, Image, Center, CircularProgress, CircularProgressLabel, useColorModeValue } from '@chakra-ui/react'
-import { TbTrash } from 'react-icons/tb'
+import { BiTrash } from 'react-icons/bi'
 import { useGetFilePreviewUrl } from '../../../hooks/useGetFilePreviewUrl'
-import { getFileExtensionIcon } from '../../../utils/layout/fileExtensionIcon'
+import { FileExtensionIcon } from '../../../utils/layout/FileExtIcon'
 import { getFileExtension } from '../../../utils/operations'
 import { CustomFile } from './FileDrop'
 import { FileUploadProgress } from '../chat/ChatInput/FileInput/useFileUpload'
+import { IconButton, Flex, Text } from '@radix-ui/themes'
+import { Loader } from '@/components/common/Loader'
 
 interface FileListItemProps {
     file: CustomFile,
@@ -14,13 +15,6 @@ interface FileListItemProps {
 
 export const FileListItem = ({ file, removeFile, uploadProgress }: FileListItemProps) => {
 
-    const { borderColor, bgColor } = useColorModeValue({
-        borderColor: 'gray.200',
-        bgColor: 'white'
-    }, {
-        borderColor: 'gray.800',
-        bgColor: 'gray.900'
-    })
     const previewURL = useGetFilePreviewUrl(file)
     const fileSizeString = getFileSize(file)
 
@@ -28,35 +22,41 @@ export const FileListItem = ({ file, removeFile, uploadProgress }: FileListItemP
     const progress = uploadProgress?.[file.fileID]?.progress ?? 0
 
     return (
-        <HStack w='full' justify={'flex-start'} border={'2px'} borderColor={borderColor} bgColor={bgColor} p='2' rounded='md'>
-            <Center maxW='50px'>
-                {previewURL ? <Image src={previewURL} alt='File preview' boxSize={'32px'} rounded='md' /> : <Icon as={getFileExtensionIcon(getFileExtension(file.name) ?? '')} boxSize="8" />}
-            </Center>
-            <HStack justify="space-between" width="calc(100% - 50px)">
-                <Stack spacing={0} w='full' whiteSpace="nowrap" overflow="hidden">
-                    <Text as="span" fontSize="sm" overflow="hidden" whiteSpace="nowrap" textOverflow="ellipsis">{file.name}</Text>
-                    <Text fontSize="2xs" fontStyle="italic" color="gray.400">
+        <Flex width='100%' justify={'start'} gap='2' className='border rounded-md border-slate-8 dark:bg-slate-5 bg-slate-2' px='1' py='1'>
+            <Flex align='center' justify='center' className='w-12 h-12'>
+                {previewURL ? <img src={previewURL} alt='File preview' className='w-10 h-10 aspect-square object-cover rounded-md' /> : <FileExtensionIcon ext={getFileExtension(file.name)} className='h-10' />}
+            </Flex>
+            <Flex justify="between" className='w-48' align='center'>
+                <Flex direction='column' width='100%' pr='2' className='overflow-hidden whitespace-nowrap'>
+                    <Text as="span" size="2" className='overflow-hidden text-ellipsis whitespace-nowrap'>{file.name}</Text>
+                    <Text size='1' className='italic' color='gray'>
                         {fileSizeString}
                     </Text>
-                </Stack>
-                {!isUploadComplete && progress > 0
-                    &&
-                    <CircularProgress size='30px' thickness='6px' color='green.500' value={progress}>
-                        <CircularProgressLabel>{progress}%</CircularProgressLabel>
-                    </CircularProgress>
-                }
-                {
-                    uploadProgress?.[file.fileID] === undefined &&
-                    <IconButton
-                        onClick={removeFile}
-                        size="sm"
-                        title='Remove File'
-                        variant="ghost"
-                        icon={<TbTrash />}
-                        aria-label="Remove File" />
-                }
-            </HStack>
-        </HStack>
+                </Flex>
+                <Flex height='100%' align='center' justify='center'>
+                    {!isUploadComplete && progress > 0
+                        &&
+                        <Flex align='center' gap='1'>
+                            <Loader />
+                            <Text size='1' color='gray' className='w-[4.5ch] tabular-nums'>{progress}%</Text>
+                        </Flex>
+                    }
+                    {
+                        uploadProgress?.[file.fileID] === undefined &&
+                        <IconButton
+                            onClick={removeFile}
+                            size="1"
+                            mx='1'
+                            color='red'
+                            title='Remove File'
+                            variant="ghost"
+                            aria-label="Remove File">
+                            <BiTrash />
+                        </IconButton>
+                    }
+                </Flex>
+            </Flex>
+        </Flex>
     )
 }
 

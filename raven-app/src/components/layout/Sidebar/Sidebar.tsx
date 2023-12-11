@@ -1,22 +1,19 @@
-import { Stack, StackDivider } from "@chakra-ui/react";
-import { PropsWithChildren } from "react";
 import { SidebarHeader } from "./SidebarHeader";
 import { SidebarFooter } from "./SidebarFooter";
 import { SidebarBody } from "./SidebarBody";
+import { Box, Flex, Separator } from "@radix-ui/themes";
 
-interface SidebarProps extends PropsWithChildren<{}> {
-    isUserActive: boolean
-}
-
-export const Sidebar = ({ isUserActive }: SidebarProps) => {
-
+export const Sidebar = () => {
     return (
-        <Stack justifyContent={'space-between'} h='full' w='full'>
-            <Stack px={2} divider={<StackDivider />}>
+        <Flex justify='between' direction='row' gap='2'>
+            <Flex direction='column' gap='2' width='100%'>
                 <SidebarHeader />
+                <Box px='3'>
+                    <Separator size='4' className={`bg-gray-4 dark:bg-gray-6`} />
+                </Box>
                 <SidebarBody />
-            </Stack>
-            <SidebarFooter isUserActive={isUserActive} />
-        </Stack>
+            </Flex>
+            <SidebarFooter />
+        </Flex>
     )
 }

@@ -1,15 +1,18 @@
-import { ButtonGroup, HStack, IconButton, Popover, PopoverContent, PopoverTrigger, StackDivider } from '@chakra-ui/react'
 import { useCurrentEditor } from '@tiptap/react'
-import { BiAt, BiHash, BiSend, BiSmile } from 'react-icons/bi'
-import { ICON_PROPS } from './ToolPanel'
-import { EmojiPicker } from '../../../common/EmojiPicker/EmojiPicker'
+import { BiAt, BiHash, BiSmile, BiPaperclip, BiSolidSend } from 'react-icons/bi'
+import { DEFAULT_BUTTON_STYLE, ICON_PROPS } from './ToolPanel'
 import { ToolbarFileProps } from './Tiptap'
-import { AiOutlinePaperClip } from 'react-icons/ai'
+import { Flex, IconButton, Inset, Popover, Separator } from '@radix-ui/themes'
+import { Loader } from '@/components/common/Loader'
+import { Suspense, lazy } from 'react'
+
+const EmojiPicker = lazy(() => import('@/components/common/EmojiPicker/EmojiPicker'))
 
 type RightToolbarButtonsProps = {
     fileProps?: ToolbarFileProps,
     sendMessage: (html: string, json: any) => Promise<void>,
-    messageSending: boolean
+    messageSending: boolean,
+    setContent: (content: string) => void
 }
 /**
  * Component to render the right toolbar buttons:
@@ -23,14 +26,15 @@ type RightToolbarButtonsProps = {
  */
 export const RightToolbarButtons = ({ fileProps, ...sendProps }: RightToolbarButtonsProps) => {
     return (
-        <HStack divider={<StackDivider />}>
+        <Flex gap='2' align='center' px='1' py='1'>
             <MentionButtons />
-            <ButtonGroup size='xs' variant={'ghost'}>
+            <Separator orientation='vertical' />
+            <Flex gap='3' align='center'>
                 <EmojiPickerButton />
                 {fileProps && <FilePickerButton fileProps={fileProps} />}
                 <SendButton {...sendProps} />
-            </ButtonGroup>
-        </HStack>
+            </Flex>
+        </Flex>
     )
 }
 
@@ -41,32 +45,40 @@ const MentionButtons = () => {
         return null
     }
 
-    return <ButtonGroup size='xs' variant={'ghost'}>
+    return <Flex gap='3'>
         <IconButton
             onClick={() => editor.chain().focus().insertContent('#').run()}
             aria-label='mention channel'
             title='Mention a channel'
-            icon={<BiHash {...ICON_PROPS} />}
-            isDisabled={
+            className={DEFAULT_BUTTON_STYLE}
+            variant='ghost'
+            size='1'
+            disabled={
                 !editor.can()
                     .chain()
                     .focus()
                     .insertContent('#')
                     .run() || !editor.isEditable
-            } />
+            }>
+            <BiHash {...ICON_PROPS} />
+        </IconButton>
         <IconButton
             onClick={() => editor.chain().focus().insertContent('@').run()}
             aria-label='mention user'
+            variant='ghost'
+            className={DEFAULT_BUTTON_STYLE}
+            size='1'
             title='Mention a user'
-            icon={<BiAt {...ICON_PROPS} />}
-            isDisabled={
+            disabled={
                 !editor.can()
                     .chain()
                     .focus()
                     .insertContent('@')
                     .run() || !editor.isEditable
-            } />
-    </ButtonGroup>
+            }>
+            <BiAt {...ICON_PROPS} />
+        </IconButton>
+    </Flex>
 }
 
 
@@ -77,22 +89,26 @@ const EmojiPickerButton = () => {
         return null
     }
 
-    return <Popover
-        placement='top-end'
-        isLazy
-    >
-        <PopoverTrigger>
+    return <Popover.Root>
+        <Popover.Trigger>
             <IconButton
-                size='xs'
+                size='1'
                 variant='ghost'
+                className={DEFAULT_BUTTON_STYLE}
                 title='Add emoji'
-                isDisabled={!editor.can().chain().focus().insertContent('😅').run() || !editor.isEditable}
-                aria-label={"add emoji"} icon={<BiSmile {...ICON_PROPS} />} />
-        </PopoverTrigger>
-        <PopoverContent border={'none'} rounded='dark-lg' mr='4' shadow={'md'}>
-            <EmojiPicker onSelect={(e) => editor.chain().focus().insertContent(e).run()} />
-        </PopoverContent>
-    </Popover>
+                disabled={!editor.can().chain().focus().insertContent('😅').run() || !editor.isEditable}
+                aria-label={"add emoji"}>
+                <BiSmile {...ICON_PROPS} />
+            </IconButton>
+        </Popover.Trigger>
+        <Popover.Content>
+            <Inset>
+                <Suspense fallback={<Loader />}>
+                    <EmojiPicker onSelect={(e) => editor.chain().focus().insertContent(e).run()} />
+                </Suspense>
+            </Inset>
+        </Popover.Content>
+    </Popover.Root>
 }
 
 const FilePickerButton = ({ fileProps }: { fileProps: ToolbarFileProps }) => {
@@ -104,18 +120,22 @@ const FilePickerButton = ({ fileProps }: { fileProps: ToolbarFileProps }) => {
     }
 
     return <IconButton
-        size='xs'
+        size='1'
         onClick={fileButtonClicked}
         variant='ghost'
-        isDisabled={editor?.isEditable === false}
+        className={DEFAULT_BUTTON_STYLE}
+        disabled={editor?.isEditable === false}
         title='Attach file'
-        aria-label={"attach file"} icon={<AiOutlinePaperClip {...ICON_PROPS} />} />
+        aria-label={"attach file"}>
+        <BiPaperclip {...ICON_PROPS} />
+    </IconButton>
 }
 
 
-const SendButton = ({ sendMessage, messageSending }: {
+const SendButton = ({ sendMessage, messageSending, setContent }: {
     sendMessage: RightToolbarButtonsProps['sendMessage'],
-    messageSending: boolean
+    messageSending: boolean,
+    setContent: RightToolbarButtonsProps['setContent']
 }) => {
     const { editor } = useCurrentEditor()
     const onClick = () => {
@@ -133,7 +153,8 @@ const SendButton = ({ sendMessage, messageSending }: {
             editor.setEditable(false)
             sendMessage(html, json)
                 .then(() => {
-                    editor.chain().focus().clearContent().run()
+                    setContent('')
+                    editor.chain().focus().clearContent(true).run()
                     editor.setEditable(true)
                 })
                 .catch(() => {
@@ -145,8 +166,12 @@ const SendButton = ({ sendMessage, messageSending }: {
     return <IconButton
         aria-label='send message'
         title='Send message'
-        isLoading={messageSending}
+        variant='ghost'
+        size='1'
         onClick={onClick}
-        icon={<BiSend {...ICON_PROPS} />}
-    />
+    >
+        {messageSending ? <Loader /> :
+            <BiSolidSend {...ICON_PROPS} />
+        }
+    </IconButton>
 }

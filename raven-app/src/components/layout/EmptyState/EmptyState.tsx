@@ -1,8 +1,3 @@
-import { Flex, VStack, Text, HStack, Link, Box, Stack, Avatar, Heading, Button, ButtonGroup, useDisclosure, useColorMode, AvatarBadge } from "@chakra-ui/react"
-import { BiBookmark, BiGlobe, BiHash, BiLockAlt } from "react-icons/bi"
-import { DateObjectToFormattedDateString } from "../../../utils/operations"
-import { UserProfileDrawer } from "../../feature/user-details/UserProfileDrawer"
-import { useUserData } from "@/hooks/useUserData"
 import { ChannelListItem, DMChannelListItem } from "@/utils/channel/ChannelListProvider"
 import { useCurrentChannelData } from "@/hooks/useCurrentChannelData"
 import { useContext } from "react"
@@ -11,20 +6,23 @@ import { EditDescriptionButton } from "@/components/feature/channel-details/edit
 import { AddMembersButton } from "@/components/feature/channel-member-details/add-members/AddMembersButton"
 import { UserContext } from "@/utils/auth/UserProvider"
 import { useGetUserRecords } from "@/hooks/useGetUserRecords"
+import { Box, Flex, Heading, Link, Text } from "@radix-ui/themes"
+import { UserAvatar } from "@/components/common/UserAvatar"
+import { ChannelIcon } from "@/utils/layout/channelIcon"
+import { BiBookmark } from "react-icons/bi"
+import { DateMonthYear } from "@/utils/dateConversions"
 
 export const EmptyStateForSearch = () => {
     return (
-        <Flex justify="center" align="center" height="50vh" width="full">
-            <VStack>
-                <Text fontWeight="bold" align="center" fontSize='md'>Nothing turned up</Text>
-                <Text align="center" w="30vw" fontSize='sm'>You may want to try using different keywords, checking for typos or adjusting your filters.</Text>
-                <HStack spacing={1}>
-                    <Text fontSize='xs'>Not the results that you expected? File an issue on</Text>
-                    <Link href="https://github.com/The-Commit-Company/Raven" target="_blank" rel="noreferrer">
-                        <Text color='blue.500' fontSize='xs'>GitHub.</Text>
-                    </Link>.
-                </HStack>
-            </VStack>
+        <Flex justify="center" align="center" className={'w-full h-64'}>
+            <Flex direction='column' gap='1' className="text-center">
+                <Text weight="bold" size='5'>Nothing turned up</Text>
+                <Text as='span' size='2'>You may want to try using different keywords, checking for typos or adjusting your filters.</Text>
+                <Text as='span' size='2'>Not the results that you expected? File an issue on <Link href="https://github.com/The-Commit-Company/Raven" target="_blank" rel="noreferrer">
+                    <Text color='blue' size='2'>GitHub</Text>
+                </Link>.
+                </Text>
+            </Flex>
         </Flex>
     )
 }
@@ -41,22 +39,20 @@ const EmptyStateForChannel = ({ channelData, channelMembers, updateMembers }: Em
     const users = useGetUserRecords()
 
     return (
-        <Stack py='4' px='2'>
-            <Stack spacing={1}>
-                <HStack alignItems={'center'} pb='1'>
-                    {channelData?.type === 'Private' && <BiLockAlt fontSize={'1.4rem'} />}
-                    {channelData?.type === 'Public' && <BiHash fontSize={'1.4rem'} />}
-                    {channelData?.type === 'Open' && <BiGlobe fontSize={'1.4rem'} />}
-                    <Heading size={'md'}>{channelData?.channel_name}</Heading>
-                </HStack>
-                <Text>{users[channelData.owner]?.full_name} created this channel on {DateObjectToFormattedDateString(new Date(channelData?.creation ?? ''))}. This is the very beginning of the <strong>{channelData?.channel_name}</strong> channel.</Text>
-                {channelData?.channel_description && <Text fontSize={'sm'} color={'gray.500'}>{channelData?.channel_description}</Text>}
-            </Stack>
-            {channelData?.is_archived == 0 && channelMembers[currentUser] && <ButtonGroup size={'xs'} colorScheme="blue" variant={'link'} spacing={4} zIndex={1}>
-                <EditDescriptionButton channelData={channelData} size={'xs'} />
-                {channelData?.type !== 'Open' && <AddMembersButton channelData={channelData} updateMembers={updateMembers} is_in_empty_state={true} />}
-            </ButtonGroup>}
-        </Stack>
+        <Flex direction='column' className={'py-4 px-2'} gap='2'>
+            <Flex direction='column' gap='2'>
+                <Flex align={'center'} gap='1'>
+                    <ChannelIcon type={channelData?.type} />
+                    <Heading size='4'>{channelData?.channel_name}</Heading>
+                </Flex>
+                <Text size='2'>{users[channelData.owner]?.full_name} created this channel on <DateMonthYear date={channelData?.creation} />. This is the very beginning of the <strong>{channelData?.channel_name}</strong> channel.</Text>
+                {channelData?.channel_description && <Text size={'1'} color='gray'>{channelData?.channel_description}</Text>}
+            </Flex>
+            {channelData?.is_archived == 0 && channelMembers[currentUser] && <Flex gap='4' className={'z-1'}>
+                <EditDescriptionButton channelData={channelData} />
+                {channelData?.type !== 'Open' && <AddMembersButton channelData={channelData} updateMembers={updateMembers} channelMembers={channelMembers} />}
+            </Flex>}
+        </Flex>
     )
 }
 
@@ -68,35 +64,30 @@ const EmptyStateForDM = ({ channelData }: EmptyStateForDMProps) => {
 
     const peer = channelData.peer_user_id
     const users = useGetUserRecords()
-    const { isOpen: isUserProfileDetailsDrawerOpen, onOpen: onUserProfileDetailsDrawerOpen, onClose: onUserProfileDetailsDrawerClose } = useDisclosure()
-
-    const { colorMode } = useColorMode()
-    const textColor = colorMode === 'light' ? 'gray.600' : 'gray.400'
 
     return (
-        <Box py='4' px='2'>
+        <Box className={'py-4 px-2'}>
             {channelData?.is_direct_message == 1 &&
-                <Stack>
-                    <HStack>
-                        <Avatar name={users?.[peer]?.full_name ?? peer} src={users?.[peer]?.user_image ?? ''} borderRadius={'md'} boxSize='42px' />
-                        <Stack spacing={0}>
-                            <Text fontWeight={'semibold'}>{users?.[peer]?.full_name}</Text>
-                            <Text fontSize={'xs'} color={textColor}>{users?.[peer]?.name}</Text>
-                        </Stack>
-                    </HStack>
+                <Flex direction='column' gap='2'>
+                    <Flex gap='2'>
+                        <UserAvatar alt={users?.[peer]?.full_name ?? peer} src={users?.[peer]?.user_image ?? ''} size='3' skeletonSize='7' />
+                        <Flex direction='column' gap='0'>
+                            <Heading size='4'>{users?.[peer]?.full_name}</Heading>
+                            <Text size='1' color='gray'>{users?.[peer]?.name}</Text>
+                        </Flex>
+                    </Flex>
                     {channelData?.is_self_message == 1 ?
-                        <Stack spacing={0}>
-                            <Text><strong>This space is all yours.</strong> Draft messages, list your to-dos, or keep links and files handy. </Text>
-                            <Text>And if you ever feel like talking to yourself, don't worry, we won't judge - just remember to bring your own banter to the table.</Text>
-                        </Stack>
+                        <Flex direction='column' gap='0'>
+                            <Text size='2'><strong>This space is all yours.</strong> Draft messages, list your to-dos, or keep links and files handy. </Text>
+                            <Text size='2'>And if you ever feel like talking to yourself, don't worry, we won't judge - just remember to bring your own banter to the table.</Text>
+                        </Flex>
                         :
-                        <HStack spacing={1}>
-                            <Text>This is a Direct Message channel between you and <strong>{users?.[peer]?.full_name ?? peer}</strong>. Check out their profile to learn more about them.</Text>
-                            <Button variant='link' colorScheme="blue" zIndex={1} onClick={() => onUserProfileDetailsDrawerOpen()}>View profile</Button>
-                        </HStack>
+                        <Flex gap='2' align='center'>
+                            <Text size='2'>This is a Direct Message channel between you and <strong>{users?.[peer]?.full_name ?? peer}</strong>. Check out their profile to learn more about them.</Text>
+                            {/* <Button size='2' variant='ghost' className={'z-1'}>View profile</Button> */}
+                        </Flex>
                     }
-                    <UserProfileDrawer isOpen={isUserProfileDetailsDrawerOpen} onClose={onUserProfileDetailsDrawerClose} user={users?.[peer]} />
-                </Stack>
+                </Flex>
             }
         </Box>
     )
@@ -104,20 +95,17 @@ const EmptyStateForDM = ({ channelData }: EmptyStateForDMProps) => {
 
 export const EmptyStateForSavedMessages = () => {
     return (
-        <Stack mt='75px' px='4' spacing={4}>
-            <HStack>
-                <BiBookmark fontSize={'1.4rem'} />
-                <Heading size={'md'}>Your saved messages will appear here</Heading>
-            </HStack>
-            <Stack>
-                <Text>Saved messages are a convenient way to keep track of important information or messages you want to refer back to later.</Text>
-                <HStack spacing={1}>
-                    <Text>You can save messages by simply clicking on the bookmark icon</Text>
-                    <BiBookmark fontSize={'1rem'} />
-                    <Text>in message actions.</Text>
-                </HStack>
-            </Stack>
-        </Stack>
+        <Flex direction='column' className={'pt-24 h-screen px-4'} gap='6'>
+            <Heading as='h2' size='7' className="cal-sans">Your saved messages will appear here</Heading>
+            <Flex direction='column' gap='1'>
+                <Text size='3'>Saved messages are a convenient way to keep track of important information or messages you want to refer back to later.</Text>
+                <Flex align='center' gap='1'>
+                    <Text size='3'>You can save messages by simply clicking on the bookmark icon</Text>
+                    <BiBookmark />
+                    <Text size='3'>in message actions.</Text>
+                </Flex>
+            </Flex>
+        </Flex>
     )
 }
 

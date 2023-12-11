@@ -1,10 +1,10 @@
 import { PageHeader } from "@/components/layout/Heading/PageHeader"
-import { PageHeading } from "@/components/layout/Heading/PageHeading"
 import { useIsUserActive } from "@/hooks/useIsUserActive"
 import { DMChannelListItem } from "@/utils/channel/ChannelListProvider"
 import { ChannelMembers } from "@/utils/channel/ChannelMembersProvider"
-import { Text, Avatar, AvatarBadge, HStack } from "@chakra-ui/react"
 import { SearchButton } from "./SearchButton"
+import { Flex, Heading } from "@radix-ui/themes"
+import { UserAvatar } from "@/components/common/UserAvatar"
 
 interface DMChannelHeaderProps {
     channelData: DMChannelListItem,
@@ -21,14 +21,15 @@ export const DMChannelHeader = ({ channelData, channelMembers }: DMChannelHeader
 
     return (
         <PageHeader>
-            <PageHeading>
-                <HStack>
-                    <Avatar key={peer} name={channelMembers?.[peer]?.full_name ?? peer} src={channelMembers?.[peer]?.user_image ?? ''} borderRadius={'lg'} size="sm" >
-                        <AvatarBadge hidden={!isActive} boxSize='0.88em' bg='green.500' />
-                    </Avatar>
-                    <Text>{channelMembers?.[peer]?.full_name ?? peer}</Text>
-                </HStack>
-            </PageHeading>
+            <Flex gap='2' align='center'>
+                <UserAvatar
+                    key={peer}
+                    alt={channelMembers?.[peer]?.full_name ?? peer} src={channelMembers?.[peer]?.user_image ?? ''}
+                    isActive={isActive}
+                    skeletonSize='6'
+                    size='2' />
+                <Heading size='5'>{channelMembers?.[peer]?.full_name ?? peer}</Heading>
+            </Flex>
             <SearchButton />
         </PageHeader>
     )

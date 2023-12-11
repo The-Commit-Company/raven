@@ -1,13 +1,13 @@
-import { Text, HStack, Icon, Stack, Link, Box, useColorMode, IconButton, Center, Image, useDisclosure, Flex } from "@chakra-ui/react"
-import { getFileExtensionIcon } from "../../../utils/layout/fileExtensionIcon";
+import { FileExtensionIcon } from "../../../utils/layout/FileExtIcon";
 import { useFrappeGetCall } from "frappe-react-sdk";
 import { useParams } from "react-router-dom";
 import { ErrorBanner } from "../../layout/AlertBanner";
-import { DateObjectToFormattedDateString, getFileExtension, getFileName } from "../../../utils/operations";
-import { BsDownload } from "react-icons/bs";
+import { getFileExtension, getFileName } from "../../../utils/operations";
+import { BiDownload } from "react-icons/bi";
 import { FileMessage } from "../../../../../types/Messaging/Message";
-import { scrollbarStyles } from "../../../styles";
 import { ChannelMembers } from "@/utils/channel/ChannelMembersProvider";
+import { Box, Flex, IconButton, Link, Text } from "@radix-ui/themes";
+import { DateMonthYear } from "@/utils/dateConversions";
 
 interface ChannelFile extends FileMessage {
     name: string,
@@ -26,69 +26,51 @@ export const FilesSharedInChannel = ({ channelMembers }: FilesSharedInChannelPro
     }, undefined, {
         revalidateOnFocus: false
     })
-    const { isOpen: isGlobalSearchModalOpen, onOpen: onGlobalSearchModalOpen, onClose: onGlobalSearchModalClose } = useDisclosure()
-
-    const { colorMode } = useColorMode()
-    const BOXSTYLE = {
-        p: '4',
-        rounded: 'md',
-        border: '1px solid',
-        borderColor: colorMode === 'light' ? 'gray.200' : 'gray.600'
-    }
 
     return (
-        <Stack spacing={4}>
+        <Flex direction='column' gap='4' className={'h-96'}>
             {data?.message && data.message.length > 0 &&
-                <Text fontWeight={'semibold'} fontSize={'sm'}>Recently shared files</Text>
+                <Text weight='medium' size='2'>Recently shared files</Text>
             }
             <ErrorBanner error={error} />
-            <Box maxH='320px' overflow='hidden' overflowY='scroll' sx={scrollbarStyles(colorMode)}>
-                <Stack>
+            <Box className={'max-h-96 overflow-hidden overflow-y-scroll'}>
+                <Flex direction='column' gap='2'>
                     {data?.message && data.message.length > 0 && data.message.map((f: FileMessage) => {
                         return (
-                            <Box {...BOXSTYLE} key={f.name}>
-                                <HStack justifyContent='space-between'>
-                                    <HStack spacing={3}>
-                                        <Center maxW='50px'>
-                                            {f.message_type === 'File' && <Icon as={getFileExtensionIcon(getFileExtension(f.file))} boxSize="9" />}
-                                            {f.message_type === 'Image' && <Image src={f.file} alt='File preview' boxSize={'36px'} rounded='md' fit='cover' />}
-                                        </Center>
-                                        <Stack spacing={0}>
-                                            <Text fontSize='sm' as={Link} href={f.file} isExternal>{getFileName(f.file)}</Text>
-                                            <Text fontSize='xs' color='gray.500'>Shared by {channelMembers[f.owner]?.full_name} on {DateObjectToFormattedDateString(new Date(f.creation ?? ''))}</Text>
-                                        </Stack>
-                                    </HStack>
-                                    <IconButton
-                                        as={Link}
-                                        href={f.file}
-                                        isExternal
-                                        aria-label="download file"
-                                        size='xs'
-                                        variant='ghost'
-                                        icon={<Icon as={BsDownload} />} />
-                                </HStack>
+                            <Box key={f.name} className={'p-2 rounded-md border border-gray-6'}>
+                                <Flex justify='between' align={'center'}>
+                                    <Flex gap='3'>
+                                        <Flex align='center' justify='center' className="h-8 w-8">
+                                            {f.message_type === 'File' && <FileExtensionIcon width='18px' fill='var(--gray-12)' ext={getFileExtension(f.file)} />}
+                                            {f.message_type === 'Image' && <img src={f.file} alt='File preview' className={'h-8 w-8 rounded-md object-cover'} />}
+                                        </Flex>
+                                        <Flex direction='column' gap='0'>
+                                            <Link size='1' href={f.file} target='_blank' aria-label='download file'>{getFileName(f.file)}</Link>
+                                            {f.creation && <Text size='1' color='gray' as='span'>Shared by {channelMembers[f.owner]?.full_name} on <DateMonthYear date={f.creation} /></Text>}
+                                        </Flex>
+                                    </Flex>
+                                    <Link href={f.file} target='_blank' aria-label='download file'>
+                                        <IconButton
+                                            className={'mr-2 mt-1'}
+                                            aria-label="download file"
+                                            size='1'
+                                            color='gray'
+                                            variant='ghost'>
+                                            <BiDownload />
+                                        </IconButton>
+                                    </Link>
+                                </Flex>
                             </Box>
                         )
                     })}
-                </Stack>
+                </Flex>
             </Box>
             {data?.message && data.message.length === 0 &&
-                <Flex>
-                    <Text fontSize='sm' color='gray.500' textAlign={'center'}>
-                        No files have been shared in this channel yet. Drag and drop any file into the message pane to add it to this conversation.
+                <Flex align={'center'}>
+                    <Text size='1' color='gray' className={'text-center'}>
+                        No files have been shared in this channel yet. Drag and drop any files into the message pane to add them to this conversation.
                     </Text>
                 </Flex>}
-            {/* {data?.message && data.message.length > 0 &&
-                <Button
-                    width={'fit-content'}
-                    variant='link'
-                    onClick={onGlobalSearchModalOpen}
-                    color='blue.500'
-                    size={'sm'}>
-                    Show more
-                </Button>
-            }
-            <GlobalSearch isOpen={isGlobalSearchModalOpen} onClose={onGlobalSearchModalClose} tabIndex={1} input={""} /> */}
-        </Stack>
+        </Flex>
     )
 }

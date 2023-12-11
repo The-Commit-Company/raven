@@ -1,26 +1,27 @@
 import { ChannelSpace } from "@/components/feature/chat/chat-space/ChannelSpace"
 import { DirectMessageSpace } from "@/components/feature/chat/chat-space/DirectMessageSpace"
-import { AlertBanner, ErrorBanner } from "@/components/layout/AlertBanner"
+import { ErrorBanner } from "@/components/layout/AlertBanner"
 import { FullPageLoader } from "@/components/layout/Loaders"
 import { useCurrentChannelData } from "@/hooks/useCurrentChannelData"
 import { ChannelMembersProvider } from "@/utils/channel/ChannelMembersProvider"
-import { Box } from "@chakra-ui/react"
 import { useEffect } from "react"
+import { Box } from '@radix-ui/themes'
 import { useParams } from "react-router-dom"
-import { FrappeError, useSWRConfig } from "frappe-react-sdk"
+import { useSWRConfig } from "frappe-react-sdk"
 
-export const ChatSpace = () => {
+const ChatSpace = () => {
 
     // only if channelID is present render ChatSpaceArea component'
     const { channelID } = useParams<{ channelID: string }>()
+    // const className = 'bg-white dark:from-accent-1 dark:to-95% dark:to-accent-2 dark:bg-gradient-to-b'
 
-    if (channelID) {
-        return <ChatSpaceArea channelID={channelID} />
-    }
-
-    return <Box p={2}><AlertBanner status="error" heading="No channel found" /></Box>
+    return <Box>
+        {channelID && <ChatSpaceArea channelID={channelID} />}
+    </Box>
 
 }
+
+export const Component = ChatSpace
 
 const ChatSpaceArea = ({ channelID }: { channelID: string }) => {
 
@@ -41,31 +42,14 @@ const ChatSpaceArea = ({ channelID }: { channelID: string }) => {
         }
     }, [channelID])
 
-    if (isLoading) {
-        <FullPageLoader />
-    }
-
-    if (error) {
-        return <Box p={2}><ErrorBanner error={error} /></Box>
-    }
-
-    if (channel) {
-        // depending on channel type render ChannelSpace or DirectMessageSpace
-        return (
-            <ChannelMembersProvider channelID={channelID}>
-                {channel.type === "dm" ?
-                    <DirectMessageSpace channelData={channel.channelData} />
-                    : <ChannelSpace channelData={channel.channelData} />
-                }
-            </ChannelMembersProvider>
-        )
-    }
-
-    return <Box p={2}><ErrorBanner error={
-        {
-            message: "No channel found",
-            exception: `Channel ${channelID} not found`
-
-        } as FrappeError
-    } /></Box>
+    return <Box>
+        {isLoading && <FullPageLoader />}
+        <ErrorBanner error={error} />
+        {channel && <ChannelMembersProvider channelID={channelID}>
+            {channel.type === "dm" ?
+                <DirectMessageSpace channelData={channel.channelData} />
+                : <ChannelSpace channelData={channel.channelData} />
+            }
+        </ChannelMembersProvider>}
+    </Box>
 }

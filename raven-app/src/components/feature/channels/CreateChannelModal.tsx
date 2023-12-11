@@ -1,42 +1,15 @@
-import { Button, ButtonGroup, chakra, FormControl, FormErrorMessage, FormHelperText, FormLabel, HStack, Icon, Input, InputGroup, InputLeftElement, InputRightElement, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Radio, RadioGroup, Stack, Text, useDisclosure, useToast } from '@chakra-ui/react'
 import { useFrappeCreateDoc } from 'frappe-react-sdk'
-import { ChangeEvent, useCallback, useMemo } from 'react'
+import { ChangeEvent, useCallback, useMemo, useState } from 'react'
 import { Controller, FormProvider, useForm } from 'react-hook-form'
 import { BiGlobe, BiHash, BiLockAlt } from 'react-icons/bi'
 import { useNavigate } from 'react-router-dom'
 import { ErrorBanner } from '../../layout/AlertBanner'
-import { SidebarButtonItem, SidebarItemLabel } from '@/components/layout/Sidebar'
-import { IoAdd } from 'react-icons/io5'
-
-export const CreateChannelButton = ({ updateChannelList }: { updateChannelList: VoidFunction }) => {
-    const { isOpen, onOpen, onClose } = useDisclosure()
-    let navigate = useNavigate()
-
-    const handleClose = (channel_name?: string) => {
-        if (channel_name) {
-            // Update channel list when name is provided.
-            // Also navigate to new channel
-            updateChannelList()
-            navigate(`/channel/${channel_name}`)
-        }
-        onClose()
-    }
-
-    return <SidebarButtonItem onClick={onOpen}>
-        <Icon as={IoAdd} fontSize={'md'} />
-        <SidebarItemLabel>Add channel</SidebarItemLabel>
-        <Modal isOpen={isOpen} onClose={handleClose} size='lg'>
-            <ModalOverlay />
-            <ModalContent>
-                <CreateChannelModal onClose={handleClose} />
-            </ModalContent>
-        </Modal>
-    </SidebarButtonItem>
-
-}
-interface ChannelModalProps {
-    onClose: (channel_name?: string) => void
-}
+import { Box, Button, Dialog, Flex, IconButton, RadioGroup, Text, TextArea, TextField } from '@radix-ui/themes'
+import { BiPlus } from 'react-icons/bi'
+import { ErrorText, HelperText, Label } from '@/components/common/Form'
+import { Loader } from '@/components/common/Loader'
+import { DIALOG_CONTENT_CLASS } from '@/utils/layout/dialog'
+import { useToast } from '@/hooks/useToast'
 
 interface ChannelCreationForm {
     channel_name: string,
@@ -44,8 +17,8 @@ interface ChannelCreationForm {
     type: 'Public' | 'Private' | 'Open'
 }
 
-export const CreateChannelModal = ({ onClose }: ChannelModalProps) => {
-
+export const CreateChannelButton = ({ updateChannelList }: { updateChannelList: VoidFunction }) => {
+    let navigate = useNavigate()
     const methods = useForm<ChannelCreationForm>({
         defaultValues: {
             type: 'Public',
@@ -53,11 +26,35 @@ export const CreateChannelModal = ({ onClose }: ChannelModalProps) => {
             channel_description: ''
         }
     })
+    const { register, handleSubmit, watch, formState: { errors }, control, setValue, reset: resetForm } = methods
 
-    const { register, handleSubmit, watch, formState: { errors }, control, setValue } = methods
+    const { createDoc, error: channelCreationError, loading: creatingChannel, reset: resetCreateHook } = useFrappeCreateDoc()
+    const [isOpen, setIsOpen] = useState(false)
 
-    const { createDoc, error: channelCreationError, loading: creatingChannel } = useFrappeCreateDoc()
-    const toast = useToast()
+    const onClose = (channel_name?: string) => {
+        if (channel_name) {
+            // Update channel list when name is provided.
+            // Also navigate to new channel
+            updateChannelList()
+            navigate(`/channel/${channel_name}`)
+        }
+        setIsOpen(false)
+
+        reset()
+    }
+
+    const reset = () => {
+        resetCreateHook()
+        resetForm()
+    }
+
+    const onOpenChange = (open: boolean) => {
+        setIsOpen(open)
+        reset()
+    }
+
+
+    const { toast } = useToast()
 
     const channelType = watch('type')
 
@@ -66,37 +63,14 @@ export const CreateChannelModal = ({ onClose }: ChannelModalProps) => {
             if (result) {
                 toast({
                     title: "Channel Created",
-                    status: "success",
-                    duration: 2000,
-                    isClosable: true
+                    variant: "success",
+                    duration: 1000,
                 })
                 onClose(result.name)
-            }
-        }).catch((err) => {
-            if (err.httpStatus === 409) {
-                toast({
-                    title: "Error creating channel",
-                    description: "Channel name already exists",
-                    status: "error",
-                    duration: 2000,
-                    isClosable: true
-                })
-            }
-            else {
-                toast({
-                    title: "Error creating channel",
-                    description: err.httpStatusText,
-                    status: "error",
-                    duration: 2000,
-                    isClosable: true
-                })
             }
         })
     }
 
-    const handleClose = () => {
-        onClose()
-    }
     const handleNameChange = useCallback((event: ChangeEvent<HTMLInputElement>) => {
         setValue('channel_name', event.target.value?.toLowerCase().replace(' ', '-'))
     }, [setValue])
@@ -124,112 +98,137 @@ export const CreateChannelModal = ({ onClose }: ChannelModalProps) => {
         }
     }, [channelType])
 
-    return (
-        <FormProvider {...methods}>
-            <chakra.form onSubmit={handleSubmit(onSubmit)}>
-                <ModalHeader fontSize='2xl'>
-                    {header}
-                </ModalHeader>
-                <ModalCloseButton isDisabled={creatingChannel} />
-                <ModalBody>
-                    <Stack spacing={8}>
-
-                        <Text fontSize='sm' fontWeight='light'>
-                            Channels are where your team communicates. They are best when organized around a topic - #development, for example.
-                        </Text>
-
-                        <Stack spacing={6}>
-                            <ErrorBanner error={channelCreationError} />
-                            <FormControl isRequired isInvalid={!!errors.channel_name}>
-                                <FormLabel htmlFor='channel_name'>Name</FormLabel>
-
-                                <Controller
-                                    name='channel_name'
-                                    control={control}
-                                    rules={{
-                                        required: "Please add a channel name",
-                                        maxLength: 50,
-                                        pattern: {
-                                            // no special characters allowed
-                                            // cannot start with a space
-                                            value: /^[a-zA-Z0-9][a-zA-Z0-9-]*$/,
-                                            message: "Channel name can only contain letters, numbers and hyphens."
-                                        }
-                                    }}
-                                    render={({ field }) => (
-                                        <InputGroup>
-                                            <InputLeftElement
-                                                pointerEvents='none'
-                                                children={channelIcon}
-                                            />
-                                            <Input
-                                                maxLength={50}
-                                                autoFocus
-                                                placeholder='e.g. testing' fontSize='sm'
-                                                onChange={handleNameChange}
-                                                value={field.value} />
-                                            <InputRightElement>
-                                                <Text fontSize='sm' fontWeight='light' color='gray.500'>{50 - field.value.length}</Text>
-                                            </InputRightElement>
-                                        </InputGroup>
-                                    )}
-                                />
-                                <FormErrorMessage>{errors.channel_name?.message}</FormErrorMessage>
-                            </FormControl>
-
-                            <FormControl isInvalid={!!errors.channel_description}>
-                                <FormLabel htmlFor='channel_description'>
-                                    <HStack>
-                                        <Text>Description</Text>
-                                        <Text fontWeight='light' fontSize='sm'>(optional)</Text>
-                                    </HStack>
-                                </FormLabel>
-                                <Input {...register('channel_description', {
+    return <Dialog.Root open={isOpen} onOpenChange={onOpenChange}>
+        <Dialog.Trigger>
+            <IconButton variant='ghost' size='1' color='gray' aria-label='Create Channel' className='h-[18px]' title='Create Channel'>
+                <BiPlus className='text-slate-12 mt-0.5' />
+            </IconButton>
+        </Dialog.Trigger>
+        <Dialog.Content className={DIALOG_CONTENT_CLASS}>
+            <Dialog.Title>
+                {header}
+            </Dialog.Title>
+            <Dialog.Description size='2'>
+                Channels are where your team communicates. They are best when organized around a topic - #development, for example.
+            </Dialog.Description>
+            <FormProvider {...methods}>
+                <form onSubmit={handleSubmit(onSubmit)}>
+                    <Flex direction='column' gap='4' py='4'>
+                        <ErrorBanner error={channelCreationError} />
+                        <Box>
+                            <Label htmlFor='channel_name' isRequired>Name</Label>
+                            <Controller
+                                name='channel_name'
+                                control={control}
+                                rules={{
+                                    required: "Please add a channel name",
                                     maxLength: {
-                                        value: 200,
-                                        message: "Channel description cannot be more than 200 characters."
+                                        value: 50,
+                                        message: "Channel name cannot be more than 50 characters."
+                                    },
+                                    minLength: {
+                                        value: 3,
+                                        message: "Channel name cannot be less than 3 characters."
+                                    },
+                                    pattern: {
+                                        // no special characters allowed
+                                        // cannot start with a space
+                                        value: /^[a-zA-Z0-9][a-zA-Z0-9-]*$/,
+                                        message: "Channel name can only contain letters, numbers and hyphens."
                                     }
-                                })} />
-                                <FormHelperText>What is this channel about?</FormHelperText>
-                                <FormErrorMessage>{errors.channel_description?.message}</FormErrorMessage>
-                            </FormControl>
+                                }}
+                                render={({ field, fieldState: { error } }) => (
+                                    <TextField.Root>
+                                        <TextField.Slot>
+                                            {channelIcon}
+                                        </TextField.Slot>
+                                        <TextField.Input
+                                            maxLength={50}
+                                            required
+                                            autoFocus
+                                            placeholder='e.g. red-wedding-planning, joffrey-memes'
+                                            color={error ? 'red' : undefined}
+                                            {...field}
+                                            aria-invalid={error ? 'true' : 'false'}
+                                            onChange={handleNameChange}
+                                        />
+                                        <TextField.Slot>
+                                            <Text size='2' weight='light' color='gray'>{50 - field.value.length}</Text>
+                                        </TextField.Slot>
+                                    </TextField.Root>
+                                )}
+                            />
+                            {errors?.channel_name && <ErrorText>{errors.channel_name?.message}</ErrorText>}
+                        </Box>
 
-                            <FormControl>
-                                <Stack>
-                                    <FormLabel htmlFor='channel_type' mb='0'>
-                                        Channel Type
-                                    </FormLabel>
-                                    <Controller
-                                        name='type'
-                                        control={control}
-                                        render={({ field }) => (<RadioGroup id='type' onChange={field.onChange} value={field.value}>
-                                            <Stack direction='row'>
-                                                <Radio value='Public'>Public</Radio>
-                                                <Radio value='Private'>Private</Radio>
-                                                <Radio value='Open'>Open</Radio>
-                                            </Stack>
-                                        </RadioGroup>
-                                        )}
-                                    />
-                                    <Text fontSize='xs' fontWeight='light'>
-                                        {helperText}
-                                    </Text>
-
-                                </Stack>
-                            </FormControl>
-                        </Stack>
-                    </Stack>
-
-                </ModalBody>
-
-                <ModalFooter>
-                    <ButtonGroup>
-                        <Button variant='ghost' onClick={handleClose} isDisabled={creatingChannel}>Cancel</Button>
-                        <Button colorScheme='blue' type='submit' isLoading={creatingChannel}>Save</Button>
-                    </ButtonGroup>
-                </ModalFooter>
-
-            </chakra.form>
-        </FormProvider>
-    )
+                        <Box>
+                            <Label htmlFor='channel_description'>Description <Text as='span' weight='light'>(optional)</Text></Label>
+                            <TextArea
+                                maxLength={140}
+                                id='channel_description'
+                                placeholder='Great wine and food. What could go wrong?'
+                                {...register('channel_description', {
+                                    maxLength: {
+                                        value: 140,
+                                        message: "Channel description cannot be more than 140 characters."
+                                    }
+                                })}
+                                aria-invalid={errors.channel_description ? 'true' : 'false'}
+                            />
+                            <HelperText>What is this channel about?</HelperText>
+                            {errors?.channel_description && <ErrorText>{errors.channel_description?.message}</ErrorText>}
+                        </Box>
+                        <Flex gap='2' direction='column'>
+                            <Label htmlFor='channel_type'>Channel Type</Label>
+                            <Controller
+                                name='type'
+                                control={control}
+                                render={({ field }) => (
+                                    <RadioGroup.Root
+                                        defaultValue="1"
+                                        variant='soft'
+                                        id='channel_type'
+                                        value={field.value}
+                                        onValueChange={field.onChange}>
+                                        <Flex gap="4">
+                                            <Text as="label" size="2">
+                                                <Flex gap="2">
+                                                    <RadioGroup.Item value="Public" /> Public
+                                                </Flex>
+                                            </Text>
+                                            <Text as="label" size="2">
+                                                <Flex gap="2">
+                                                    <RadioGroup.Item value="Private" /> Private
+                                                </Flex>
+                                            </Text>
+                                            <Text as="label" size="2">
+                                                <Flex gap="2">
+                                                    <RadioGroup.Item value="Open" /> Open
+                                                </Flex>
+                                            </Text>
+                                        </Flex>
+                                    </RadioGroup.Root>
+                                )}
+                            />
+                            {/* Added min height to avoid layout shift when two lines of text are shown */}
+                            <Text size='1' weight='light' className='min-h-[2rem]'>
+                                {helperText}
+                            </Text>
+                        </Flex>
+                    </Flex>
+                    <Flex gap="3" mt="4" justify="end">
+                        <Dialog.Close disabled={creatingChannel}>
+                            <Button variant="soft" color="gray">
+                                Cancel
+                            </Button>
+                        </Dialog.Close>
+                        <Button type='submit' disabled={creatingChannel}>
+                            {creatingChannel && <Loader />}
+                            {creatingChannel ? "Saving" : "Save"}
+                        </Button>
+                    </Flex>
+                </form>
+            </FormProvider>
+        </Dialog.Content>
+    </Dialog.Root>
 }

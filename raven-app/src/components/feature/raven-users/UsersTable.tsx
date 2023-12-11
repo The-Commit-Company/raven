@@ -1,7 +1,8 @@
-import { Table, TableContainer, Tbody, Td, Th, Thead, Tr, Checkbox, Avatar } from "@chakra-ui/react"
 import { User } from "@/types/Core/User"
 import { useMemo } from "react"
-import { convertFrappeTimestampToReadableDate } from "@/utils/operations"
+import { Checkbox, Flex, Table } from "@radix-ui/themes"
+import { UserAvatar } from "@/components/common/UserAvatar"
+import { StandardDate } from "@/utils/dateConversions"
 
 interface UsersTableProps {
     data: User[],
@@ -54,32 +55,34 @@ export const UsersTable = ({ data, selected, setSelected, defaultSelected }: Use
     }
 
     return (
-        <TableContainer p={0} overflowY={'auto'} h={'60vh'}>
-            <Table size={'sm'}>
-                <Thead h='30px'>
-                    <Tr>
-                        <Th><Checkbox isChecked={isAllChecked} onChange={(e) => setAllChecked(e.target.checked)} /></Th>
-                        <Th></Th>
-                        <Th>Full name</Th>
-                        <Th>User ID</Th>
-                        <Th>Created on</Th>
-                    </Tr>
-                </Thead>
-                <Tbody>
-                    {data?.map((user: User, index) => {
-                        const isSelected = selected.includes(user.name) || defaultSelected.includes(user.name)
-                        return (
-                            <Tr key={index}>
-                                <Td><Checkbox isChecked={isSelected} isDisabled={defaultSelected.includes(user.name)} onChange={() => onCheckboxChange(user.name)} /></Td>
-                                <Td><Avatar borderRadius={'sm'} boxSize={'10'} name={user.full_name ?? user.name} src={user.user_image ?? ''} /></Td>
-                                <Td>{user.full_name ?? '-'}</Td>
-                                <Td>{user.name}</Td>
-                                <Td>{convertFrappeTimestampToReadableDate(user.creation)}</Td>
-                            </Tr>
-                        )
-                    })}
-                </Tbody>
-            </Table>
-        </TableContainer>
+        <Table.Root variant="surface">
+            <Table.Header>
+                <Table.Row>
+                    <Table.ColumnHeaderCell><Checkbox checked={isAllChecked} onCheckedChange={(e) => setAllChecked(e.valueOf() ? true : false)} /></Table.ColumnHeaderCell>
+                    <Table.ColumnHeaderCell>Name</Table.ColumnHeaderCell>
+                    <Table.ColumnHeaderCell>User ID</Table.ColumnHeaderCell>
+                    <Table.ColumnHeaderCell>Created on</Table.ColumnHeaderCell>
+                </Table.Row>
+            </Table.Header>
+            <Table.Body>
+                {data?.map((user: User, index) => {
+                    const isSelected = selected.includes(user.name) || defaultSelected.includes(user.name)
+                    return (
+                        <Table.Row key={index}>
+                            <Table.RowHeaderCell><Checkbox checked={isSelected} disabled={defaultSelected.includes(user.name)} onCheckedChange={() => onCheckboxChange(user.name)} /></Table.RowHeaderCell>
+                            <Table.Cell>
+                                <Flex gap='2' align='center'>
+                                    <UserAvatar src={user.user_image} alt={user.full_name} />
+                                    {user.full_name ?? '-'}
+                                </Flex>
+                            </Table.Cell>
+
+                            <Table.Cell>{user.name}</Table.Cell>
+                            <Table.Cell><StandardDate date={user.creation} /></Table.Cell>
+                        </Table.Row>
+                    )
+                })}
+            </Table.Body>
+        </Table.Root>
     )
 }

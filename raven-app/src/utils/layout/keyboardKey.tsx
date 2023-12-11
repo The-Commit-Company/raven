@@ -1,8 +1,8 @@
-import { IconType } from "react-icons"
-import { BsArrowReturnLeft, BsOption } from "react-icons/bs"
-import { ImArrowDown2, ImArrowLeft2, ImArrowRight2, ImArrowUp2, ImCommand, ImCtrl, ImShift } from "react-icons/im"
-import { IoBackspaceOutline } from "react-icons/io5"
-import { MdKeyboardTab, MdOutlineSpaceBar } from "react-icons/md"
+import { IconBaseProps } from 'react-icons'
+import { BiSpaceBar, BiCommand, BiChevronUp } from 'react-icons/bi'
+import { BsOption, BsArrowReturnLeft } from 'react-icons/bs'
+import { FiDelete } from 'react-icons/fi'
+import { LuArrowBigLeft, LuArrowBigDown, LuArrowBigRight, LuArrowBigUp, LuArrowBigUpDash, LuArrowRightToLine } from 'react-icons/lu'
 
 export const getKeyboardMetaKeyString = () => {
     if (navigator.platform.toUpperCase().indexOf('MAC') >= 0) {
@@ -31,28 +31,33 @@ export const KEYBOARD_KEY_STRING_MAP: Record<KEY_TYPE, string> = {
     'return': '⏎',
 
 }
-export const getKeyboardMetaKeyIcon = () => {
+export const KeyboardMetaKeyIcon = ({ ...props }: IconBaseProps) => {
     if (navigator.platform.toUpperCase().indexOf('MAC') >= 0) {
-        return ImCommand
+        return <BiCommand {...props} />
     } else {
-        return ImCtrl
+        return <BiChevronUp {...props} />
     }
 }
-export const KEYBOARD_KEY_ICON_MAP: Record<KEY_TYPE, IconType> = {
-    'shift': ImShift,
-    'ctrl': ImCtrl,
-    'alt': BsOption,
-    'meta': getKeyboardMetaKeyIcon(),
-    'left': ImArrowLeft2,
-    'up': ImArrowUp2,
-    'right': ImArrowRight2,
-    'tab': MdKeyboardTab,
-    'down': ImArrowDown2,
-    'space': MdOutlineSpaceBar,
-    'backspace': IoBackspaceOutline,
-    'delete': IoBackspaceOutline,
-    'del': IoBackspaceOutline,
-    'enter': BsArrowReturnLeft,
-    'return': BsArrowReturnLeft,
 
+interface KeyboardKeyIconProps extends IconBaseProps {
+    key: KEY_TYPE
+}
+export const KeyboardKeyIcon = ({ key, ...props }: KeyboardKeyIconProps) => {
+    switch (key) {
+        case 'meta': return <KeyboardMetaKeyIcon {...props} />;
+        case 'shift': return <LuArrowBigUpDash {...props} />
+        case 'ctrl': return <BiChevronUp {...props} />
+        case 'alt': return <BsOption {...props} />
+        case 'backspace': return <FiDelete {...props} />
+        case 'del': return <FiDelete {...props} />
+        case 'delete': return <FiDelete {...props} />
+        case 'return': return <BsArrowReturnLeft {...props} />
+        case 'enter': return <BsArrowReturnLeft {...props} />
+        case 'space': return <BiSpaceBar {...props} />
+        case 'tab': return <LuArrowRightToLine {...props} />
+        case 'up': return <LuArrowBigUp {...props} />
+        case 'down': return <LuArrowBigDown {...props} />
+        case 'left': return <LuArrowBigLeft {...props} />
+        case 'right': return <LuArrowBigRight {...props} />
+    }
 }

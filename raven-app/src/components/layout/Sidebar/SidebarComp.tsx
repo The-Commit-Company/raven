@@ -1,153 +1,111 @@
 import React, { ReactNode, useState } from 'react'
-import { Stack, Box, Text, HStack, BoxProps, StackProps, TextProps, useColorMode, IconButton, ButtonProps } from '@chakra-ui/react'
 import { NavLink } from 'react-router-dom'
-import { BsFillCaretDownFill, BsFillCaretRightFill } from 'react-icons/bs';
+import { Flex, IconButton, Text, Badge } from '@radix-ui/themes';
+import { FlexProps } from '@radix-ui/themes/dist/cjs/components/flex';
+import { TextProps } from '@radix-ui/themes/dist/cjs/components/text';
+import { IconButtonProps } from '@radix-ui/themes/dist/cjs/components/icon-button';
+import { BadgeProps } from '@radix-ui/themes/dist/cjs/components/badge';
+import { clsx } from 'clsx';
+import { BsCaretDownFill, BsCaretRightFill } from 'react-icons/bs';
 
-interface SidebarGroupProps extends StackProps {
+interface SidebarGroupProps extends FlexProps {
     children: ReactNode;
 }
 
 export const SidebarGroup = ({ children, ...props }: SidebarGroupProps) => {
 
     return (
-        <Stack spacing="2" {...props}>
+        <Flex direction='column' gap="2" {...props}>
             {children}
-        </Stack>
+        </Flex>
     )
 }
 
-interface SidebarGroupItemProps extends StackProps {
+interface SidebarGroupItemProps extends FlexProps {
     children: ReactNode
 }
 export const SidebarGroupItem = ({ children, ...props }: SidebarGroupItemProps) => {
 
     return (
-        <HStack w="full" {...props}>
+        <Flex align='center' {...props}>
             {children}
-        </HStack>
+        </Flex>
     )
 }
 
-interface SidebarGroupLabelProps extends TextProps {
+type SidebarGroupLabelProps = TextProps & {
     children: ReactNode
 }
 
 export const SidebarGroupLabel = ({ children, ...props }: SidebarGroupLabelProps) => {
-
     return (
-        <Text fontSize={'sm'} fontWeight={'medium'} {...props}>
+        <Text size='2' weight='medium' {...props}>
             {children}
         </Text>
     )
 }
 
-interface SidebarGroupListProps extends StackProps {
+interface SidebarGroupListProps extends FlexProps {
     children: ReactNode
 }
 export const SidebarGroupList = ({ children, ...props }: SidebarGroupListProps) => {
 
     return (
-        <Stack spacing="0.5" {...props}>
+        <Flex gap='1' direction='column' {...props}>
             {children}
-        </Stack>
+        </Flex>
     )
 }
 
-interface SidebarItemProps extends StackProps {
+interface SidebarItemProps extends FlexProps {
     to: string;
     children: React.ReactNode,
-    subtle?: boolean,
     end?: boolean,
     active?: boolean,
     activeStyles?: Record<string, string>
 }
 
-export const SidebarItem = ({ to, children, subtle, end, active = false, activeStyles, ...props }: SidebarItemProps) => {
+export const SidebarItem = ({ to, children, end, active = false, activeStyles, className, ...props }: SidebarItemProps) => {
 
-    const { colorMode } = useColorMode()
-
-    const isActiveStyleLight = {
-        backgroundColor: "var(--chakra-colors-gray-200)",
-        borderRadius: 'var(--chakra-radii-md)'
-    }
-
-    const isActiveStyleDark = {
-        backgroundColor: "var(--chakra-colors-gray-700)",
-        borderRadius: 'var(--chakra-radii-md)'
-    }
+    const activeClass = 'bg-[#EBEBEB] dark:bg-gray-6 text-gray-12'
 
     return (
         <NavLink
-            style={({ isActive }) => (isActive ? activeStyles ?? (colorMode === "light" ? isActiveStyleLight : isActiveStyleDark) : {})}
             to={to}
             end={end}
+            className='no-underline'
         >
-            <HStack
-                w="full"
-                px="3"
-                py="1.5"
-                cursor="pointer"
-                userSelect="none"
-                rounded="md"
-                transition="all 0.2s"
-                _hover={{ bg: colorMode === "light" ? "gray.100" : "gray.600" }}
-                color={subtle ? (colorMode === "light" ? "gray.500" : "gray.200") : (colorMode === "light" ? "gray.700" : "gray.100")}
-                bg={active ? (colorMode === "light" ? "gray.100" : "gray.700") : "transparent"}
-                {...props}
-            >
-                {children}
-            </HStack>
+            {({ isActive }) => {
+                return (
+                    <Flex
+                        gap='2'
+                        align='center'
+                        px='3'
+                        className={clsx('cursor-pointer text-black dark:text-gray-100 user-select-none rounded-md no-underline transition-all duration-200 hover:bg-gray-3 dark:hover:bg-gray-5', isActive ? activeClass : '', className)}
+                        {...props}>
+                        {children}
+                    </Flex>
+                )
+            }}
         </NavLink>
     )
 }
 
-interface SidebarIconProps extends BoxProps {
+interface SidebarIconProps extends FlexProps {
     subtle?: boolean,
     children: React.ReactNode
 }
 export const SidebarIcon = ({ subtle, children, ...props }: SidebarIconProps) => {
-
     return (
-        <Box fontSize="md" {...props}>
+        <Flex align='center' justify='center' className='text-slate-11' {...props}>
             {children}
-        </Box>
-    )
-}
-
-interface SidebarItemLabelProps extends BoxProps {
-    children: React.ReactNode,
-    subtle?: boolean
-}
-export const SidebarItemLabel = ({ subtle, children, ...props }: SidebarItemLabelProps) => {
-
-    return (
-        <Box fontWeight="inherit" fontSize="small" {...props}>
-            {children}
-        </Box>
-    )
-}
-
-interface NestedChildProps extends BoxProps {
-    children: React.ReactNode,
-}
-
-export const NestedChild = ({ children, ...props }: NestedChildProps) => {
-
-    return (
-        <Box pl="4" {...props}>
-            <Box
-                borderLeft="1px solid var(--chakra-colors-gray-300)"
-                pl="2"
-                ml='2'
-            >
-                {children}
-            </Box>
-        </Box>
+        </Flex>
     )
 }
 
 
-interface SidebarButtonItemProps extends StackProps {
+
+interface SidebarButtonItemProps extends FlexProps {
     children: React.ReactNode,
     subtle?: boolean,
     onClick?: () => void,
@@ -157,29 +115,23 @@ interface SidebarButtonItemProps extends StackProps {
 
 export const SidebarButtonItem = ({ children, subtle, onClick, isLoading, active, ...props }: SidebarButtonItemProps) => {
 
-    const { colorMode } = useColorMode()
+    const cursor = isLoading ? "cursor-progress" : "cursor-pointer"
 
     return (
-        <HStack
-            w="full"
-            px="3"
-            py="1.5"
-            cursor={isLoading ? "progress" : "pointer"}
-            userSelect="none"
-            rounded="md"
-            transition="all 0.2s"
+        <Flex
+            gap='2'
+            align='center'
+            px='3'
+            className={'user-select-none rounded-md py-1.5 transition-all duration-200 hover:bg-slate-3 hover:text-slate-11 ' + cursor}
             onClick={onClick}
-            _hover={{ bg: colorMode === "light" ? "gray.100" : "gray.600" }}
-            color={subtle ? (colorMode === "light" ? "gray.500" : "gray.200") : (colorMode === "light" ? "gray.700" : "gray.100")}
-            bg={active ? (colorMode === "light" ? "gray.100" : "gray.700") : "transparent"}
             {...props}
         >
             {children}
-        </HStack>
+        </Flex>
     )
 }
 
-interface SidebarViewMoreButtonProps extends ButtonProps {
+interface SidebarViewMoreButtonProps extends IconButtonProps {
     onClick: () => void
 }
 
@@ -190,37 +142,33 @@ export const SidebarViewMoreButton = ({ onClick, ...props }: SidebarViewMoreButt
     return (
         <IconButton
             aria-label={"view"}
-            size='xs'
+            title='View'
+            variant='ghost'
+            size='1'
+            className='cursor-pointer text-slate-12 bg-transparent hover:text-gray-12'
+            highContrast
             onClick={() => {
                 setIsViewMore(!isViewMore)
                 onClick()
             }}
-            {...props}
-            icon={isViewMore ? <BsFillCaretRightFill fontSize={'0.8rem'} /> : <BsFillCaretDownFill fontSize={'0.8rem'} />}
-        />
+            {...props}>
+            {isViewMore ? <BsCaretRightFill size='13' /> : <BsCaretDownFill size='13' />}
+        </IconButton>
     )
 }
 
-export const SidebarBadge = ({ children, ...props }: BoxProps) => {
-    const { colorMode } = useColorMode()
+export const SidebarBadge = ({ children, ...props }: BadgeProps) => {
 
     return (
-        <Box
-            fontSize="12"
-            fontWeight="semibold"
-            lineHeight="none"
-            color={colorMode === "light" ? "white" : "black"}
-            bg={colorMode === "light" ? "gray.600" : "gray.200"}
-            rounded="full"
-            boxSize="fit-content"
-            display="flex"
-            alignItems="center"
-            justifyContent="center"
-            px="2"
-            py="0.5"
+        <Badge
+            color='gray'
+            variant='solid'
+            size='1'
+            radius="large"
+            highContrast
             {...props}
         >
             {children}
-        </Box>
+        </Badge>
     )
 }

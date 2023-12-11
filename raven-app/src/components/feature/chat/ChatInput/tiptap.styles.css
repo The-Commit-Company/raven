@@ -1,5 +1,5 @@
-.tiptap p.is-editor-empty:first-child::before {
-    color: var(--chakra-colors-gray-500);
+.tiptap-editor p.is-editor-empty:first-child::before {
+    color: var(--gray-9);
     content: attr(data-placeholder);
     float: left;
     font-size: 14px;
@@ -7,30 +7,37 @@
     pointer-events: none;
 }
 
-.tiptap.ProseMirror {
+.tiptap-editor.ProseMirror {
     min-height: 60px;
     max-height: 150px;
     overflow: auto;
-    padding: var(--chakra-space-2);
+    padding: var(--space-3);
+    border-top-left-radius: var(--radius-4);
+    border-top-right-radius: var(--radius-4);
 }
 
-.tiptap blockquote {
-    border-left: 3px solid var(--chakra-colors-gray-300);
+.tiptap-editor.ProseMirror:focus {
+    outline: 1.5px solid var(--color-focus-root);
+    outline-offset: -1.5px;
+}
+
+.tiptap-editor blockquote {
+    border-left: 3px solid var(--gray-11);
     padding-left: 0.8rem;
     margin: 1rem;
 }
 
-.tiptap ul,
-.tiptap ol {
-    padding-left: var(--chakra-space-8);
+.tiptap-editor ul,
+.tiptap-editor ol {
+    padding-left: var(--space-5);
 }
 
-.tiptap a,
-.tiptap .mention {
-    color: var(--chakra-colors-blue-500);
+.tiptap-editor a,
+.tiptap-editor .mention {
+    color: var(--accent-11);
 }
 
-.tiptap a {
+.tiptap-editor a {
     text-decoration: underline;
     cursor: pointer;
 }

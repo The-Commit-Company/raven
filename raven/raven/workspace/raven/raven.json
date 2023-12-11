@@ -1,7 +1,8 @@
 {
  "charts": [],
- "content": "[{\"id\":\"MKitHAnT4f\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\"><a href=\\\"/raven\\\">Raven</a></span>\",\"col\":12}},{\"id\":\"_TmvmGAvy7\",\"type\":\"paragraph\",\"data\":{\"text\":\"Click <a href=\\\"/raven\\\">here</a>&nbsp;to visit the Raven app\",\"col\":12}},{\"id\":\"ZcawYU5brv\",\"type\":\"card\",\"data\":{\"card_name\":\"DocTypes\",\"col\":4}}]",
+ "content": "[{\"id\":\"MKitHAnT4f\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\"><a href=\\\"/raven\\\">Raven</a></span>\",\"col\":12}},{\"id\":\"gBy2HFBNf4\",\"type\":\"onboarding\",\"data\":{\"onboarding_name\":\"Raven\",\"col\":12}},{\"id\":\"_TmvmGAvy7\",\"type\":\"paragraph\",\"data\":{\"text\":\"<span class=\\\"h5\\\" style=\\\"\\\"><a href=\\\"/raven\\\">Raven Web App</a></span>\",\"col\":3}},{\"id\":\"dTTc81zZMk\",\"type\":\"paragraph\",\"data\":{\"text\":\"<a href=\\\"/raven_mobile\\\">Raven Mobile App</a>\",\"col\":3}},{\"id\":\"67QcssSvSh\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"ZcawYU5brv\",\"type\":\"card\",\"data\":{\"card_name\":\"DocTypes\",\"col\":4}}]",
  "creation": "2023-06-22 20:12:29.687295",
+ "custom_blocks": [],
  "docstatus": 0,
  "doctype": "Workspace",
  "for_user": "",
@@ -15,9 +16,29 @@
    "hidden": 0,
    "is_query_report": 0,
    "label": "DocTypes",
-   "link_count": 4,
+   "link_count": 6,
    "onboard": 0,
    "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Raven Settings",
+   "link_count": 0,
+   "link_to": "Raven Settings",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Raven Users",
+   "link_count": 0,
+   "link_to": "Raven User",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
   },
   {
    "hidden": 0,
@@ -60,7 +81,7 @@
    "type": "Link"
   }
  ],
- "modified": "2023-06-22 20:14:45.643069",
+ "modified": "2023-12-08 06:50:53.082343",
  "modified_by": "Administrator",
  "module": "Raven",
  "name": "Raven",

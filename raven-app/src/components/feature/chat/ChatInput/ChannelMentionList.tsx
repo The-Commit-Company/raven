@@ -1,7 +1,8 @@
 import { ChannelListItem } from '@/utils/channel/ChannelListProvider'
-import { getChannelIcon } from '@/utils/layout/channelIcon'
-import { HStack, Icon, Stack, StackDivider, Text, useColorModeValue } from '@chakra-ui/react'
+import { ChannelIcon } from '@/utils/layout/channelIcon'
+import { Flex, Theme, Text } from '@radix-ui/themes'
 import { ReactRendererOptions } from '@tiptap/react'
+import { clsx } from 'clsx'
 import {
     forwardRef, useEffect, useImperativeHandle,
     useState,
@@ -9,7 +10,6 @@ import {
 
 export default forwardRef((props: ReactRendererOptions['props'], ref) => {
 
-    const buttonGroupBgColor = useColorModeValue('white', 'gray.900')
     const [selectedIndex, setSelectedIndex] = useState(0)
 
     const selectItem = (index: number) => {
@@ -55,52 +55,47 @@ export default forwardRef((props: ReactRendererOptions['props'], ref) => {
     }))
 
     return (
-        <Stack divider={<StackDivider />} spacing='0' rounded='md' overflowY={'scroll'} maxH='480px' shadow='dark-lg' bgColor={buttonGroupBgColor}>
-            {props?.items.length
-                ? props.items.map((item: ChannelListItem, index: number) => (
-                    <MentionItem
-                        item={item}
-                        index={index}
-                        selectItem={selectItem}
-                        selectedIndex={selectedIndex}
-                        key={item.name}
-                        itemsLength={props.items.length}
-                    />
-                ))
-                : <div className="item">No result</div>
-            }
-        </Stack>
+        <Theme accentColor='iris' panelBackground='translucent'>
+            <Flex
+                direction='column'
+                gap='0'
+                className='shadow-lg dark:backdrop-blur-[8px] dark:bg-panel-translucent bg-white overflow-y-scroll max-h-64 rounded-md'
+            >
+                {props?.items.length
+                    ? props.items.map((item: ChannelListItem, index: number) => (
+                        <MentionItem
+                            item={item}
+                            index={index}
+                            selectItem={selectItem}
+                            selectedIndex={selectedIndex}
+                            key={item.name}
+                            itemsLength={props.items.length}
+                        />
+                    ))
+                    : <div className="item">No result</div>
+                }
+            </Flex>
+        </Theme>
     )
 })
 
 const MentionItem = ({ item, index, selectItem, selectedIndex, itemsLength }: { itemsLength: number, selectedIndex: number, index: number, item: ChannelListItem, selectItem: (index: number) => void }) => {
 
-    const { selectedBgColor, selectedColor, textColor, backgroundColor } = useColorModeValue({
-        selectedBgColor: 'gray.900',
-        selectedColor: 'gray.50',
-        textColor: 'gray.900',
-        backgroundColor: 'white'
-    }, {
-        selectedBgColor: 'gray.100',
-        selectedColor: 'gray.900',
-        textColor: 'gray.100',
-        backgroundColor: 'gray.700'
-    })
-    return <HStack
-        as={'button'}
-        rounded='md'
-        roundedBottom={index === itemsLength - 1 ? 'md' : 'none'}
-        roundedTop={index === 0 ? 'md' : 'none'}
-        px='3'
-        py='1.5'
-        textAlign={'left'}
-        // colorScheme='blue'
-        bgColor={index === selectedIndex ? selectedBgColor : backgroundColor}
-        color={index === selectedIndex ? selectedColor : textColor}
+
+    return <Flex
+        role='button'
+        align='center'
+        title={item.channel_name}
+        aria-label={`Mention channel ${item.channel_name}`}
+        className={clsx('px-3 py-2 gap-2 rounded-md',
+            index === itemsLength - 1 ? 'rounded-b-md' : 'rounded-b-none',
+            index === 0 ? 'rounded-t-md' : 'rounded-t-none',
+            index === selectedIndex ? 'bg-accent-a5' : 'bg-panel-translucent'
+        )}
         key={index}
         onClick={() => selectItem(index)}
     >
-        <Icon as={getChannelIcon(item.type)} />
-        <Text as='span' fontSize='sm'>{item.channel_name}</Text>
-    </HStack>
+        <ChannelIcon type={item.type} size='18' />
+        <Text as='span' weight='medium' size='2'> {item.channel_name}</Text>
+    </Flex>
 }

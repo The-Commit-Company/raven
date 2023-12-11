@@ -1,8 +1,8 @@
 import { FrappeError, useFrappeDocTypeEventListener, useFrappeGetCall } from 'frappe-react-sdk'
 import { PropsWithChildren, createContext } from 'react'
 import { KeyedMutator } from 'swr'
-import { useToast } from '@chakra-ui/react'
 import { RavenChannel } from '../../../../types/RavenChannelManagement/RavenChannel'
+import { useToast } from '@/hooks/useToast'
 
 export type ExtraUsersData = {
     name: string,
@@ -57,14 +57,14 @@ export const ChannelListProvider = ({ children }: PropsWithChildren) => {
  */
 export const useFetchChannelList = (): ChannelListContextType => {
 
-    const toast = useToast()
+    const { toast } = useToast()
     const { data, mutate, ...rest } = useFrappeGetCall<{ message: ChannelList }>("raven.raven_channel_management.doctype.raven_channel.raven_channel.get_all_channels", undefined, undefined, {
         revalidateOnFocus: false,
         revalidateIfStale: false,
         onError: (error) => {
             toast({
                 title: error.message,
-                status: 'error'
+                variant: 'destructive'
             })
         }
     })

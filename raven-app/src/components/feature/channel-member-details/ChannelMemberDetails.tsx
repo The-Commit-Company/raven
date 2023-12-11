@@ -1,16 +1,13 @@
-import { SearchIcon } from "@chakra-ui/icons"
-import { Text, Avatar, HStack, Icon, Input, InputGroup, InputLeftElement, List, ListItem, Stack, useColorMode, Box, Center } from "@chakra-ui/react"
 import { useContext, useState } from "react"
-import { BsFillCircleFill, BsCircle } from "react-icons/bs"
 import { useDebounce } from "../../../hooks/useDebounce"
 import { UserContext } from "../../../utils/auth/UserProvider"
-import { RiVipCrownFill } from "react-icons/ri"
-import { scrollbarStyles } from "../../../styles"
 import { ChannelListItem } from "@/utils/channel/ChannelListProvider"
 import { ChannelMembers } from "@/utils/channel/ChannelMembersProvider"
 import { AddMembersButton } from "./add-members/AddMembersButton"
 import { RemoveMemberButton } from "./remove-members/RemoveMemberButton"
-
+import { Box, Flex, TextField, Text } from "@radix-ui/themes"
+import { BiSearch, BiCircle, BiSolidCrown } from "react-icons/bi"
+import { UserAvatar } from "@/components/common/UserAvatar"
 interface MemberDetailsProps {
     channelData: ChannelListItem,
     channelMembers: ChannelMembers,
@@ -19,12 +16,6 @@ interface MemberDetailsProps {
 }
 
 export const ChannelMemberDetails = ({ channelData, channelMembers, activeUsers, updateMembers }: MemberDetailsProps) => {
-
-    const { colorMode } = useColorMode()
-    const LISTHOVERSTYLE = {
-        bg: colorMode === 'light' ? 'gray.100' : 'gray.600',
-        cursor: 'pointer'
-    }
 
     const [searchText, setSearchText] = useState("")
     const debouncedText = useDebounce(searchText, 50)
@@ -42,75 +33,83 @@ export const ChannelMemberDetails = ({ channelData, channelMembers, activeUsers,
     )
 
     return (
-        <Stack spacing={4}>
+        <Flex direction='column' gap='4' className={'h-96'}>
 
-            <InputGroup>
-                <InputLeftElement
-                    pointerEvents='none'
-                    children={<SearchIcon color='gray.300' />} />
-                <Input
-                    autoFocus
-                    onChange={handleChange}
-                    type='text'
-                    placeholder='Find members'
-                    value={debouncedText} />
-            </InputGroup>
-
-            <Box maxH='340px' overflow='hidden' overflowY='scroll' sx={scrollbarStyles(colorMode)}>
-
-                <List spacing={2}>
-                    {/* if current user is a channel member and the channel is not a open channel, user can add more members to the channel */}
-                    {channelMembers[currentUser] && channelData.type !== 'Open' && channelData.is_archived == 0 && (
+            <Flex gap='2'>
+                <div className={'w-full'}>
+                    <TextField.Root>
+                        <TextField.Slot>
+                            <BiSearch />
+                        </TextField.Slot>
+                        <TextField.Input autoFocus placeholder='Find members' onChange={handleChange} value={debouncedText} />
+                    </TextField.Root>
+                </div>
+                {/* if current user is a channel member and the channel is not a open channel, user can add more members to the channel */}
+                {channelMembers[currentUser] && channelData.type !== 'Open' && channelData.is_archived == 0 &&
+                    <div className={'w-48'}>
                         <AddMembersButton
                             channelData={channelData}
                             updateMembers={updateMembers}
-                            style={LISTHOVERSTYLE}
-                            is_in_list={true} />
-                    )}
+                            channelMembers={channelMembers}
+                            variant='soft'
+                            size='2'
+                        />
+                    </div>
+                }
+            </Flex>
+
+
+            <Box className={'overflow-hidden overflow-y-scroll'}>
+
+                <Flex direction='column' gap='2'>
 
                     {filteredMembers.length > 0 ? (
-                        <List>
+                        <Flex direction='column'>
                             {filteredMembers.map(member => (
-                                <ListItem key={member.name} _hover={{ ...LISTHOVERSTYLE }} rounded='md'>
-                                    <HStack justifyContent='space-between' pr='3'>
-                                        <HStack p='2' spacing={3}>
-                                            <Avatar size='sm' src={member.user_image ?? ''} name={member.full_name} borderRadius='md' />
-                                            <HStack spacing={1}>
-                                                <Text fontWeight='semibold'>{member.first_name}</Text>
+                                <Box key={member.name} className={'hover:bg-slate-3 rounded-md'}>
+                                    <Flex justify='between' className={'pr-3'}>
+                                        <Flex className={'p-2'} gap='3'>
+                                            <UserAvatar src={member.user_image ?? ''} alt={member.full_name} size='2' isActive={activeUsers.includes(member.name)} />
+                                            <Flex gap='2' align={'center'}>
+                                                <Text weight='medium'>{member.first_name}</Text>
                                                 {activeUsers.includes(member.name) ? (
-                                                    <Icon as={BsFillCircleFill} color='green.500' h='8px' />
+                                                    <BiCircle color='green' />
                                                 ) : (
-                                                    <Icon as={BsCircle} h='8px' />
+                                                    <BiCircle />
                                                 )}
-                                                <Text fontWeight='light'>{member.full_name}</Text>
-                                                {member.name === currentUser && <Text fontWeight='light'>(You)</Text>}
-                                                {channelMembers[member.name].is_admin == 1 && <Icon as={RiVipCrownFill} color='yellow.400' h='14px' />}
-                                            </HStack>
-                                        </HStack>
+                                                <Flex gap='1'>
+                                                    <Text weight='light' size='1'>{member.full_name}</Text>
+                                                    {member.name === currentUser && <Text weight='light' size='1'>(You)</Text>}
+                                                    {channelMembers[member.name].is_admin == 1 && <Flex align="center"><BiSolidCrown color='#FFC53D' /></Flex>}
+                                                </Flex>
+                                            </Flex>
+                                        </Flex>
                                         {/* if current user is a channel member and admin they can remove users other than themselves if the channel is not open */}
                                         {channelMembers[currentUser] &&
                                             channelMembers[currentUser].is_admin === 1 &&
                                             member.name !== currentUser &&
-                                            channelData?.type !== 'Open' && channelData.is_archived == 0 && (
+                                            channelData?.type !== 'Open' && channelData.is_archived == 0 &&
+                                            <Flex align="center">
                                                 <RemoveMemberButton
                                                     channelData={channelData}
                                                     channelMembers={channelMembers}
                                                     updateMembers={updateMembers}
                                                     selectedMember={member.name} />
-                                            )}
-                                    </HStack>
-                                </ListItem>
+                                            </Flex>
+                                        }
+                                    </Flex>
+                                </Box>
                             ))}
-                        </List>
+                        </Flex>
                     ) : (
-                        <Center h='10vh'>
-                            <Text textAlign='center' fontSize='sm'>
+                        <Box className={'text-center h-10'}>
+                            <Text size='1'>
                                 No matches found for <strong>{searchText}</strong>
                             </Text>
-                        </Center>
+                        </Box>
                     )}
-                </List>
+                </Flex>
             </Box>
-        </Stack>
+        </Flex>
     )
 }

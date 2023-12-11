@@ -1,11 +1,10 @@
-import { Icon, Stack, useColorMode } from '@chakra-ui/react'
-import { IoBookmarkOutline } from 'react-icons/io5'
 import { ChannelList } from '../../feature/channels/ChannelList'
 import { DirectMessageList } from '../../feature/direct-messages/DirectMessageList'
-import { SidebarItem, SidebarGroupLabel } from './SidebarComp'
+import { SidebarItem } from './SidebarComp'
 import { useFrappeEventListener, useFrappeGetCall } from 'frappe-react-sdk'
 import { UnreadCountData } from '../../../utils/channel/ChannelListProvider'
-import { scrollbarStyles } from '../../../styles'
+import { AccessibleIcon, Box, Flex, ScrollArea, Text } from '@radix-ui/themes'
+import { BiBookmark } from 'react-icons/bi'
 
 export const SidebarBody = () => {
 
@@ -14,20 +13,26 @@ export const SidebarBody = () => {
         'unread_channel_count', {
         // revalidateOnFocus: false,
     })
-    useFrappeEventListener('unread_channel_count_updated', () => {
+    useFrappeEventListener('raven:unread_channel_count_updated', () => {
         update_count()
     })
 
-    const { colorMode } = useColorMode()
-
     return (
-        <Stack overflowY='scroll' h={'calc(100vh - 145px)'} px={-2} sx={scrollbarStyles(colorMode)} overflowX='hidden'>
-            <SidebarItem to={'saved-messages'}>
-                <Icon fontSize={'md'} as={IoBookmarkOutline} />
-                <SidebarGroupLabel pl='1'>Saved Messages</SidebarGroupLabel>
-            </SidebarItem>
-            <ChannelList unread_count={unread_count?.message} />
-            <DirectMessageList unread_count={unread_count?.message} />
-        </Stack>
+        <ScrollArea type="hover" scrollbars="vertical" className='h-[calc(100vh-7rem)]'>
+            <Flex direction='column' gap='2' className='overflow-x-hidden' px='2'>
+                <Box>
+                    <SidebarItem to={'saved-messages'} className='pl-1.5 py-0.5'>
+                        <AccessibleIcon label='Saved Messages'>
+                            <BiBookmark className='text-slate-12 mt-0.5' size='14' />
+                        </AccessibleIcon>
+                        <Box>
+                            <Text size='2' className='cal-sans' as='span'>Saved Messages</Text>
+                        </Box>
+                    </SidebarItem>
+                </Box>
+                <ChannelList unread_count={unread_count?.message} />
+                <DirectMessageList unread_count={unread_count?.message} />
+            </Flex>
+        </ScrollArea>
     )
 }

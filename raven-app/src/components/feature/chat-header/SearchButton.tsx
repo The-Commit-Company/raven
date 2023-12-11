@@ -1,37 +1,51 @@
-import { Tooltip, Button } from '@chakra-ui/react'
-import { HiOutlineSearch } from 'react-icons/hi'
+import { BiSearch } from 'react-icons/bi'
 import { CommandPalette } from '../command-palette'
-import { ModalTypes, useModalManager } from '@/hooks/useModalManager'
+import { useEffect } from 'react'
+import { Button, Dialog, Tooltip } from '@radix-ui/themes'
+import { DIALOG_CONTENT_CLASS } from '@/utils/layout/dialog'
+import { useBoolean } from '@/hooks/useBoolean'
+import { clsx } from 'clsx'
 
 export const SearchButton = () => {
 
-    const modalManager = useModalManager()
+    const [open, {
+        off,
+        toggle
+    }, setOpen] = useBoolean(false)
 
-    const onCommandPaletteOpen = () => {
-        modalManager.openModal(ModalTypes.CommandPalette)
-    }
+    useEffect(() => {
+        const down = (e: any) => {
+            if (e.key === 'k' && (e.metaKey || e.ctrlKey)) {
+                e.preventDefault()
+                toggle()
+            }
+        }
 
-    const onCommandPaletteToggle = () => {
-        modalManager.toggleModal(ModalTypes.CommandPalette)
-    }
+        document.addEventListener('keydown', down)
+        return () => document.removeEventListener('keydown', down)
+    }, [])
 
     return (
-        <>
-            <Tooltip hasArrow label='search' placement='bottom-start' rounded={'md'}>
-                <Button
-                    size={"sm"}
-                    aria-label="search"
-                    leftIcon={<HiOutlineSearch />}
-                    onClick={onCommandPaletteOpen}
-                    fontWeight='light'>
-                    Search
-                </Button>
+        <Dialog.Root open={open} onOpenChange={setOpen}>
+            <Tooltip content='search'>
+                <Dialog.Trigger>
+                    <Button
+                        color='gray'
+                        size='2'
+                        variant='soft'
+                        aria-label="search">
+                        <BiSearch />
+                        Search
+                        {/* <Kbd size='3'><KeyboardMetaKeyIcon size='12' />&nbsp;K</Kbd> */}
+                    </Button>
+                </Dialog.Trigger>
             </Tooltip>
-            <CommandPalette
-                isOpen={modalManager.modalType === ModalTypes.CommandPalette}
-                onClose={modalManager.closeModal}
-                onToggle={onCommandPaletteToggle}
-            />
-        </>
+            <Dialog.Content className={clsx(DIALOG_CONTENT_CLASS, 'p-3 min-h-[420px]')}>
+                <CommandPalette
+                    isOpen={open}
+                    onClose={off}
+                />
+            </Dialog.Content>
+        </Dialog.Root >
     )
 }

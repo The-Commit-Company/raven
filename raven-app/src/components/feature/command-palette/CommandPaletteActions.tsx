@@ -1,27 +1,27 @@
-import { Avatar, Box, Button, Center, HStack, Icon, Spinner, Stack, Text, useModalContext, Image, Link } from "@chakra-ui/react"
 import { Command } from "cmdk"
 import { useFrappeGetCall } from "frappe-react-sdk"
 import { useContext, useMemo, useState } from "react"
-import { BiGlobe, BiHash, BiLockAlt } from "react-icons/bi"
-import { BsFillCircleFill, BsCircle } from "react-icons/bs"
-import { TbFiles, TbHash, TbListSearch, TbMessages, TbSearch, TbUsers } from "react-icons/tb"
+import { LuMailSearch, LuUsers } from "react-icons/lu"
+import { BiSearch, BiHash } from "react-icons/bi"
 import { useNavigate, useParams } from "react-router-dom"
 import { GetFileSearchResult } from "../../../../../types/Search/Search"
 import { UserContext } from "../../../utils/auth/UserProvider"
-import { getFileExtensionIcon } from "../../../utils/layout/fileExtensionIcon"
-import GlobalSearch from "../global-search/GlobalSearch"
+import GlobalSearch from "../GlobalSearch/GlobalSearch"
 import { getFileExtension, getFileName } from "../../../utils/operations"
-import { useModalManager, ModalTypes } from "../../../hooks/useModalManager"
-import { FilePreviewModal } from "../file-preview/FilePreviewModal"
-import { FileSearchResult } from "../global-search/FileSearch"
 import { UserFields } from "@/utils/users/UserListProvider"
 import { useCurrentChannelData } from "@/hooks/useCurrentChannelData"
 import { ChannelListContext, ChannelListContextType, ChannelListItem, DMChannelListItem } from "@/utils/channel/ChannelListProvider"
 import { useGetUserRecords } from "@/hooks/useGetUserRecords"
-
+import { ChannelIcon } from "@/utils/layout/channelIcon"
+import { FileExtensionIcon } from "@/utils/layout/FileExtIcon"
+import { TbFileSearch, TbMessages } from "react-icons/tb"
+import { Button, Flex, Text, Link, Box } from "@radix-ui/themes"
+import { Loader } from "@/components/common/Loader"
+import { UserAvatar } from "@/components/common/UserAvatar"
 interface Props {
     searchChange: Function
     input: string
+    onClose: VoidFunction
     isGlobalSearchModalOpen: boolean
     onGlobalSearchModalOpen: () => void
     onGlobalSearchModalClose: () => void
@@ -36,6 +36,7 @@ interface PeopleProps {
     gotoDMChannel?: Function
     currentUser?: string
     tabIndex?: number
+    onClose: VoidFunction
     isChild?: boolean
     isGlobalSearchModalOpen: boolean
     onGlobalSearchModalOpen: () => void
@@ -46,20 +47,22 @@ interface ChannelsProps {
     input: string
     isGlobalSearchModalOpen: boolean
     isChild?: boolean
+    onClose: VoidFunction
     onGlobalSearchModalOpen: () => void
     onGlobalSearchModalClose: () => void
 }
 
 interface FindInProps {
     input: string
-    tabIndex: number
+    tabIndex: number,
+    onClose: VoidFunction
     placeholder?: string
     isGlobalSearchModalOpen: boolean
     onGlobalSearchModalOpen: () => void
     onGlobalSearchModalClose: () => void
 }
 
-export const Home = ({ searchChange, input, isGlobalSearchModalOpen, children, inputRef, onGlobalSearchModalOpen, onGlobalSearchModalClose }: Props) => {
+export const Home = ({ searchChange, input, isGlobalSearchModalOpen, onClose, children, inputRef, onGlobalSearchModalOpen, onGlobalSearchModalClose }: Props) => {
 
     const { currentUser } = useContext(UserContext)
     const style = { paddingBottom: 2, paddingTop: 2 }
@@ -70,11 +73,15 @@ export const Home = ({ searchChange, input, isGlobalSearchModalOpen, children, i
     const channelData = channel?.channelData as ChannelListItem
     const channelDMData = channel?.channelData as DMChannelListItem
     const users = useGetUserRecords()
-    const { onClose } = useModalContext()
+
+    const onSearchChange = (value: string) => {
+        searchChange(value)
+        if (inputRef) { inputRef.current?.focus() }
+    }
 
     return (
         <Command.List>
-            <CommandPaletteEmptyState input={input} placeholder='messages, files and more' tabIndex={0} isGlobalSearchModalOpen={isGlobalSearchModalOpen} onGlobalSearchModalOpen={onGlobalSearchModalOpen} onGlobalSearchModalClose={onGlobalSearchModalClose} />
+            <CommandPaletteEmptyState onClose={onClose} input={input} placeholder='messages, files and more' tabIndex={0} isGlobalSearchModalOpen={isGlobalSearchModalOpen} onGlobalSearchModalOpen={onGlobalSearchModalOpen} onGlobalSearchModalClose={onGlobalSearchModalClose} />
             <Command.Group style={style}>
                 <Item
                     onSelect={() => {
@@ -87,7 +94,7 @@ export const Home = ({ searchChange, input, isGlobalSearchModalOpen, children, i
                         }
                     }}
                 >
-                    <TbListSearch fontSize={20} />
+                    <LuMailSearch size='18' />
                     {channelData.is_direct_message ?
                         (channelData.is_self_message ?
                             `Find in direct messages with ${users[currentUser].first_name}` :
@@ -98,86 +105,62 @@ export const Home = ({ searchChange, input, isGlobalSearchModalOpen, children, i
                 </Item>
             </Command.Group>
             {children}
-            {!input &&
-                <Command.Group heading="I'm looking for..." style={style} >
-                    <HStack p={1} spacing={3}>
-                        <Button
-                            leftIcon={<TbMessages fontSize={20} />}
-                            variant="outline"
-                            fontSize={12}
-                            h={8}
-                            onClick={() => {
-                                searchChange('messages')
-                                if (inputRef) { inputRef.current?.focus() }
-                            }}
-                        >
-                            Messages
-                        </Button>
-                        <Button
-                            leftIcon={<TbFiles fontSize={20} />}
-                            variant="outline"
-                            fontSize={12}
-                            h={8}
-                            onClick={() => {
-                                searchChange('files')
-                                if (inputRef) { inputRef.current?.focus() }
-                            }}
-                        >
-                            Files
-                        </Button>
-                        <Button
-                            leftIcon={<TbHash fontSize={20} />}
-                            variant="outline"
-                            fontSize={12}
-                            h={8}
-                            onClick={() => {
-                                searchChange('channels')
-                                if (inputRef) { inputRef.current?.focus() }
-                            }}
-                        >
-                            Channels
-                        </Button>
-                        <Button
-                            leftIcon={<TbUsers fontSize={20} />}
-                            variant="outline"
-                            fontSize={12}
-                            h={8}
-                            onClick={() => {
-                                searchChange('people')
-                                if (inputRef) { inputRef.current?.focus() }
-                            }}
-                        >
-                            People
-                        </Button>
-                    </HStack>
-                </Command.Group>}
+            {
+                !input &&
+                <Command.Group heading="I'm looking for..." >
+                    <Command.Item onSelect={() => {
+                        onSearchChange('messages')
+                    }}>
+                        <TbMessages size='18' />
+                        Messages
+                    </Command.Item>
+
+                    <Command.Item onSelect={() => {
+                        onSearchChange('files')
+                    }}>
+                        <TbFileSearch size='18' />
+                        Files
+                    </Command.Item>
+
+                    <Command.Item onSelect={() => {
+                        onSearchChange('channels')
+                    }}>
+                        <BiHash size='18' />
+                        Channels
+                    </Command.Item>
+
+                    <Command.Item onSelect={() => {
+                        onSearchChange('people')
+                    }}>
+                        <LuUsers size='18' />
+                        People
+                    </Command.Item>
+                </Command.Group>
+            }
             <GlobalSearch isOpen={isGlobalSearchModalOpen} onClose={onGlobalSearchModalClose} tabIndex={0} input={input} inFilter={inFilter} withFilter={withFilter} onCommandPaletteClose={onClose} />
-        </Command.List>
+        </Command.List >
     )
 }
 
-export const Messages = ({ searchChange, input, isGlobalSearchModalOpen, onGlobalSearchModalOpen, onGlobalSearchModalClose }: Props) => {
-    const { onClose } = useModalContext()
+export const Messages = ({ searchChange, input, onClose, isGlobalSearchModalOpen, onGlobalSearchModalOpen, onGlobalSearchModalClose }: Props) => {
     return (
         <Command.List>
-            <CommandPaletteEmptyState input={input} placeholder='messages' tabIndex={0} isGlobalSearchModalOpen={isGlobalSearchModalOpen} onGlobalSearchModalOpen={onGlobalSearchModalOpen} onGlobalSearchModalClose={onGlobalSearchModalClose} />
+            <CommandPaletteEmptyState onClose={onClose} input={input} placeholder='messages' tabIndex={0} isGlobalSearchModalOpen={isGlobalSearchModalOpen} onGlobalSearchModalOpen={onGlobalSearchModalOpen} onGlobalSearchModalClose={onGlobalSearchModalClose} />
             {!input && <Command.Group heading="Narrow your search">
                 <Item onSelect={() => {
                     searchChange('in')
-                }}><TbSearch />in a channel</Item>
+                }}><BiSearch />in a channel</Item>
                 <Item onSelect={() => {
                     searchChange('from')
-                }}><TbSearch />from anyone on Raven</Item>
+                }}><BiSearch />from anyone on Raven</Item>
             </Command.Group>}
         </Command.List>
     )
 }
 
-export const Files = ({ searchChange, input, isGlobalSearchModalOpen, onGlobalSearchModalOpen, onGlobalSearchModalClose }: Props) => {
+export const Files = ({ searchChange, input, onClose, isGlobalSearchModalOpen, onGlobalSearchModalOpen, onGlobalSearchModalClose }: Props) => {
 
-    const { onClose } = useModalContext()
-
-    const { data, isValidating } = useFrappeGetCall<{ message: GetFileSearchResult[] }>("raven.api.search.get_search_result", {
+    const { data, isLoading } = useFrappeGetCall<{ message: GetFileSearchResult[] }>("raven.api.search.get_search_result", {
         filter_type: 'File',
         doctype: 'Raven Message',
         search_text: input,
@@ -185,60 +168,62 @@ export const Files = ({ searchChange, input, isGlobalSearchModalOpen, onGlobalSe
     }, undefined, {
         revalidateOnFocus: false
     })
-    const modalManager = useModalManager()
+
+    const [selectedFile, setSelectedFile] = useState<GetFileSearchResult>()
 
     return (
         <Command.List>
-            <CommandPaletteEmptyState input={input} placeholder='files' tabIndex={1} isGlobalSearchModalOpen={isGlobalSearchModalOpen} onGlobalSearchModalOpen={onGlobalSearchModalOpen} onGlobalSearchModalClose={onGlobalSearchModalClose} />
+            <CommandPaletteEmptyState onClose={onClose} input={input} placeholder='files' tabIndex={1} isGlobalSearchModalOpen={isGlobalSearchModalOpen} onGlobalSearchModalOpen={onGlobalSearchModalOpen} onGlobalSearchModalClose={onGlobalSearchModalClose} />
             {!input && <Command.Group heading="Narrow your search">
                 <Item onSelect={() => {
                     searchChange('in')
-                }}><TbSearch />in a channel</Item>
+                }}><BiSearch />in a channel</Item>
                 <Item onSelect={() => {
                     searchChange('from')
-                }}><TbSearch />from anyone on Raven</Item>
+                }}><BiSearch />from anyone on Raven</Item>
             </Command.Group>}
             <Command.Group heading={data?.message.length ? "Recent files" : ""}>
-                {isValidating && !data?.message.length && <Text py='4' color='gray.500' textAlign='center' fontSize='sm'>No results found.</Text>}
-                {isValidating && <Command.Loading>
-                    <Center px='4' pb='2'>
-                        <Box><Spinner size={'xs'} color='gray.400' /></Box>
-                    </Center>
+                {isLoading && !data?.message.length && <Box width='100%' className="text-center"><Text weight='medium' size='1' color='gray'>No results found.</Text></Box>}
+                {isLoading && <Command.Loading>
+                    <Flex align='center' justify='center' px='4' pb='2'>
+                        <Box><Loader /></Box>
+                    </Flex>
                 </Command.Loading>}
-                {data?.message?.map((f: FileSearchResult) => {
-                    const onFilePreviewModalOpen = () => {
-                        modalManager.openModal(ModalTypes.FilePreview, {
-                            file: f.file,
-                            owner: f.owner,
-                            creation: f.creation,
-                            message_type: f.message_type
-                        })
-                    }
+                {data?.message?.map((f) => {
                     return (<Item key={f.name}>
-                        <HStack spacing={3}>
-                            <Center maxW='50px'>
-                                {f.message_type === 'File' && <Icon as={getFileExtensionIcon(getFileExtension(f.file))} boxSize="6" />}
-                                {f.message_type === 'Image' && <Image src={f.file} alt='File preview' boxSize={6} rounded='md' fit='cover' />}
-                            </Center>
-                            <Stack spacing={0}>
-                                {f.file && <Link fontSize='sm' onClick={onFilePreviewModalOpen}>{getFileName(f.file)}</Link>}
-                            </Stack>
-                        </HStack></Item>)
+                        <Flex gap='3' align='center'>
+                            <Flex className="w-8 h-8" align='center' justify='center'>
+                                {f.message_type === 'File' && <FileExtensionIcon ext={getFileExtension(f.file)} />}
+                                {f.message_type === 'Image' && <img src={f.file} alt='File preview' className="object-cover w-8 h-8 rounded-sm" />}
+                            </Flex>
+                            <Box>
+                                {f.file && <Link size='1' color='gray' className="text-accent-12" onClick={() => setSelectedFile(f)}>{getFileName(f.file)}</Link>}
+                            </Box>
+                        </Flex></Item>)
                 })}
             </Command.Group>
-            <FilePreviewModal
+            {/* <FilePreviewModal
                 isOpen={modalManager.modalType === ModalTypes.FilePreview}
                 onClose={modalManager.closeModal}
                 {...modalManager.modalContent}
-            />
+            /> */}
         </Command.List>
     )
 }
 
-export const Channels = ({ input, isGlobalSearchModalOpen, isChild, onGlobalSearchModalOpen, onGlobalSearchModalClose }: ChannelsProps) => {
+export const Channels = ({ input, isGlobalSearchModalOpen, onClose, isChild, onGlobalSearchModalOpen, onGlobalSearchModalClose }: ChannelsProps) => {
 
+    return (
+        <Command.List>
+            {!isChild && <CommandPaletteEmptyState onClose={onClose} input={input} placeholder='channels' tabIndex={2} isGlobalSearchModalOpen={isGlobalSearchModalOpen} onGlobalSearchModalOpen={onGlobalSearchModalOpen} onGlobalSearchModalClose={onGlobalSearchModalClose} />}
+            <ChannelGroup input={input} isChild={isChild} onClose={onClose} />
+        </Command.List>
+    )
+}
+
+type ChannelGroupProps = Pick<ChannelsProps, 'input' | 'isChild' | 'onClose'>
+export const ChannelGroup = ({ input, isChild, onClose }: ChannelGroupProps) => {
     const navigate = useNavigate()
-    const { onClose } = useModalContext()
     const { channels } = useContext(ChannelListContext) as ChannelListContextType
 
     const results_count = channels.reduce((count, channel) => {
@@ -247,37 +232,45 @@ export const Channels = ({ input, isGlobalSearchModalOpen, isChild, onGlobalSear
         }
         return count;
     }, 0)
+    if (isChild && !input) {
+        return null
+    }
 
-    return (
-        <Command.List>
-            {!isChild && <CommandPaletteEmptyState input={input} placeholder='channels' tabIndex={2} isGlobalSearchModalOpen={isGlobalSearchModalOpen} onGlobalSearchModalOpen={onGlobalSearchModalOpen} onGlobalSearchModalClose={onGlobalSearchModalClose} />}
-            <Command.Group heading={results_count > 0 ? "Recent channels" : ""} style={isChild ?
-                {
-                    visibility: !!input ? 'visible' : 'hidden',
-                    maxHeight: !!input ? '300px' : '0px'
-                }
-                : {}
-            }>
-                {results_count === 0 && <Text py='4' color='gray.500' textAlign='center' fontSize='sm'>No results found.</Text>}
-                {channels?.map((channel: ChannelListItem) => {
-                    if (channel?.channel_name?.toLowerCase().includes(input.toLowerCase())) {
-                        return (
-                            <Item key={channel.name} value={channel.channel_name} onSelect={() => {
-                                navigate(`/channel/${channel.name}`)
-                                onClose()
-                            }}>{channel?.type === "Private" && <BiLockAlt /> || channel?.type === "Public" && <BiHash /> || channel?.type === "Open" && <BiGlobe />}{channel.channel_name} {channel.is_archived ? '(archived)' : ''}</Item>)
-                    }
-                }
-                )}
-            </Command.Group>
-        </Command.List>
-    )
+
+    return <Command.Group heading={results_count > 0 ? "Recent channels" : ""} style={isChild ?
+        {
+            visibility: !!input ? 'visible' : 'hidden',
+            maxHeight: !!input ? '300px' : '0px'
+        }
+        : {}
+    }>
+        {results_count === 0 && <Box width='100%' className="text-center"><Text weight='medium' size='1' color='gray'>No results found.</Text></Box>}
+        {channels?.map((channel: ChannelListItem) => {
+            if (channel?.channel_name?.toLowerCase().includes(input.toLowerCase())) {
+                return (
+                    <Item key={channel.name} value={channel.channel_name} onSelect={() => {
+                        navigate(`/channel/${channel.name}`)
+                        onClose()
+                    }}><ChannelIcon type={channel?.type} />{channel.channel_name} {channel.is_archived ? '(archived)' : ''}</Item>)
+            }
+        }
+        )}
+    </Command.Group>
+
 }
 
-export const People = ({ input, users, activeUsers, gotoDMChannel, currentUser, isChild }: PeopleProps) => {
+export const People = ({ isChild, ...props }: PeopleProps) => {
 
-    const { onClose } = useModalContext()
 
+    return <Command.List>
+        {!isChild && <Command.Empty>
+            <Text>No results found.</Text>
+        </Command.Empty>}
+        <PeopleGroup isChild={isChild} {...props} />
+    </Command.List>
+}
+
+export const PeopleGroup = ({ input, users, activeUsers, gotoDMChannel, currentUser, isChild, onClose }: PeopleProps) => {
     const lowerCasedInput = useMemo(() => input.toLowerCase(), [input])
 
     const results_count = users.reduce((count, user) => {
@@ -286,44 +279,38 @@ export const People = ({ input, users, activeUsers, gotoDMChannel, currentUser, 
         }
         return count;
     }, 0)
-    return <Command.List>
-        {!isChild && <Command.Empty>
-            <Text>No results found.</Text>
-        </Command.Empty>}
-        < Command.Group heading={results_count > 0 ? "Recent direct messages" : ""} style={isChild ?
-            {
-                visibility: !!input ? 'visible' : 'hidden',
-                maxHeight: !!input ? '300px' : '0px'
+
+    if (isChild && !input) {
+        return null
+    }
+    return <Command.Group heading={results_count > 0 ? "Recent direct messages" : ""} style={isChild ?
+        {
+            visibility: !!input ? 'visible' : 'hidden',
+            maxHeight: !!input ? '300px' : '0px'
+        }
+        : {}
+    }>
+        {users.map(user => {
+            if (user?.full_name?.toLowerCase().includes(lowerCasedInput) && gotoDMChannel && activeUsers && user.name !== "Administrator") {
+                return (
+                    <Item key={user.name}
+                        onSelect={() => {
+                            gotoDMChannel(user.name)
+                            onClose()
+                        }}>
+                        <Flex p='1' gap='2' align='center'>
+                            <UserAvatar src={user.user_image} alt={user.full_name} size='1' isActive={activeUsers.includes(user.name)} />
+                            <Flex gap='2'>
+                                {user.name === currentUser ? <Text as='span'>{user.full_name} (you)</Text> : <Text as='span'>{user.full_name}</Text>}
+                            </Flex>
+                        </Flex>
+                    </Item>)
             }
-            : {}
-        }>
-            {users.map(user => {
-                if (user?.full_name?.toLowerCase().includes(lowerCasedInput) && gotoDMChannel && activeUsers && user.name !== "Administrator") {
-                    return (
-                        <Item key={user.name}
-                            onSelect={() => {
-                                gotoDMChannel(user.name)
-                                onClose()
-                            }}>
-                            <HStack p='2' spacing={3}>
-                                <Avatar size='xs' src={user.user_image} name={user.full_name} borderRadius='md' />
-                                <HStack spacing={2}>
-                                    {user.name === currentUser ? <Text>{user.full_name} (you)</Text> : <Text>{user.full_name}</Text>}
-                                    {activeUsers.includes(user.name) ?
-                                        <Icon as={BsFillCircleFill} color='green.500' h='8px' /> :
-                                        <Icon as={BsCircle} h='8px' />}
-                                </HStack>
-                            </HStack>
-                        </Item>)
-                }
-            })}
-        </Command.Group>
-    </Command.List>
+        })}
+    </Command.Group>
 }
 
-export const FindIn = ({ input, tabIndex, isGlobalSearchModalOpen, onGlobalSearchModalOpen, onGlobalSearchModalClose }: FindInProps) => {
-
-    const { onClose } = useModalContext()
+export const FindIn = ({ input, tabIndex, isGlobalSearchModalOpen, onClose, onGlobalSearchModalOpen, onGlobalSearchModalClose }: FindInProps) => {
 
     const { channels } = useContext(ChannelListContext) as ChannelListContextType
     const [inFilter, setInFilter] = useState<string>()
@@ -337,9 +324,9 @@ export const FindIn = ({ input, tabIndex, isGlobalSearchModalOpen, onGlobalSearc
 
     return (
         <Command.List>
-            <CommandPaletteEmptyState input={input} placeholder='messages' tabIndex={0} isGlobalSearchModalOpen={isGlobalSearchModalOpen} onGlobalSearchModalOpen={onGlobalSearchModalOpen} onGlobalSearchModalClose={onGlobalSearchModalClose} />
+            <CommandPaletteEmptyState onClose={onClose} input={input} placeholder='messages' tabIndex={0} isGlobalSearchModalOpen={isGlobalSearchModalOpen} onGlobalSearchModalOpen={onGlobalSearchModalOpen} onGlobalSearchModalClose={onGlobalSearchModalClose} />
             <Command.Group heading={results_count > 0 ? "Recent channels" : ""} >
-                {results_count === 0 && <Text py='4' color='gray.500' textAlign='center' fontSize='sm'>No results found.</Text>}
+                {results_count === 0 && <Box width='100%' className="text-center"><Text weight='medium' size='1' color='gray'>No results found.</Text></Box>}
                 {channels?.map((channel: ChannelListItem) => {
                     if (channel?.channel_name?.toLowerCase().includes(input.toLowerCase())) {
                         return (
@@ -348,7 +335,7 @@ export const FindIn = ({ input, tabIndex, isGlobalSearchModalOpen, onGlobalSearc
                                     onGlobalSearchModalOpen()
                                     setInFilter(channel.name)
                                 }}>
-                                {channel?.type === "Private" && <BiLockAlt /> || channel?.type === "Public" && <BiHash /> || channel?.type === "Open" && <BiGlobe />}{channel.channel_name}</Item>)
+                                <ChannelIcon type={channel?.type} /> {channel.channel_name}</Item>)
                     }
                 })}
             </Command.Group>
@@ -357,9 +344,7 @@ export const FindIn = ({ input, tabIndex, isGlobalSearchModalOpen, onGlobalSearc
     )
 }
 
-export const FindFrom = ({ input, users, tabIndex, isGlobalSearchModalOpen, onGlobalSearchModalOpen, onGlobalSearchModalClose }: PeopleProps) => {
-
-    const { onClose } = useModalContext()
+export const FindFrom = ({ input, users, tabIndex, isGlobalSearchModalOpen, onClose, onGlobalSearchModalOpen, onGlobalSearchModalClose }: PeopleProps) => {
 
     const results_count = users.reduce((count, user) => {
         if (user?.full_name?.toLowerCase().includes(input.toLowerCase())) {
@@ -370,7 +355,7 @@ export const FindFrom = ({ input, users, tabIndex, isGlobalSearchModalOpen, onGl
     const [fromFilter, setFromFilter] = useState<string>()
     return (
         <Command.List>
-            <CommandPaletteEmptyState input={input} placeholder='messages' tabIndex={0} isGlobalSearchModalOpen={isGlobalSearchModalOpen} onGlobalSearchModalOpen={onGlobalSearchModalOpen} onGlobalSearchModalClose={onGlobalSearchModalClose} />
+            <CommandPaletteEmptyState onClose={onClose} input={input} placeholder='messages' tabIndex={0} isGlobalSearchModalOpen={isGlobalSearchModalOpen} onGlobalSearchModalOpen={onGlobalSearchModalOpen} onGlobalSearchModalClose={onGlobalSearchModalClose} />
             <Command.Group heading={results_count > 0 ? "Recent direct messages" : ""} >
                 {users.map(user => {
                     if (user?.full_name?.toLowerCase().includes(input.toLowerCase())) {
@@ -380,10 +365,10 @@ export const FindFrom = ({ input, users, tabIndex, isGlobalSearchModalOpen, onGl
                                     onGlobalSearchModalOpen()
                                     setFromFilter(user.name)
                                 }}>
-                                <HStack p='2' spacing={3}>
-                                    <Avatar size='sm' src={user.user_image} name={user.full_name} borderRadius='md' />
-                                    <Text>{user.full_name}</Text>
-                                </HStack>
+                                <Flex p='1' gap='2' align='center'>
+                                    <UserAvatar src={user.user_image} alt={user.full_name} size='1' />
+                                    <Text as='span'>{user.full_name}</Text>
+                                </Flex>
                             </Item>)
                     }
                 })}
@@ -421,13 +406,11 @@ export const Item = ({
     )
 }
 
-export const CommandPaletteEmptyState = ({ input, placeholder, tabIndex, isGlobalSearchModalOpen, onGlobalSearchModalOpen, onGlobalSearchModalClose }: FindInProps) => {
-
-    const { onClose } = useModalContext()
+export const CommandPaletteEmptyState = ({ input, placeholder, tabIndex, isGlobalSearchModalOpen, onClose, onGlobalSearchModalOpen, onGlobalSearchModalClose }: FindInProps) => {
 
     return (
         <Command.Empty>
-            <Button w='full' fontWeight="light" variant='ghost' alignContent='end' onClick={() => {
+            <Button variant='soft' className="cursor-pointer" onClick={() => {
                 onGlobalSearchModalOpen()
             }}>{input} - Search {placeholder}</Button>
             <GlobalSearch isOpen={isGlobalSearchModalOpen} onClose={onGlobalSearchModalClose} tabIndex={tabIndex} input={input} onCommandPaletteClose={onClose} />

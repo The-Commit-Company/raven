@@ -1,63 +1,48 @@
-import { Text, HStack, IconButton, ListItem, Tooltip, Button } from "@chakra-ui/react"
-import { AddChannelMemberModal } from "./AddChannelMemberModal"
-import { RiUserAddLine } from "react-icons/ri"
-import { ModalTypes, useModalManager } from "@/hooks/useModalManager"
+import { AddChannelMembersModalContent } from "./AddChannelMemberModal"
 import { ChannelListItem } from "@/utils/channel/ChannelListProvider"
+import { useState } from "react"
+import { Button, Dialog, IconButton } from "@radix-ui/themes"
+import { ButtonProps } from "@radix-ui/themes/dist/cjs/components/button"
+import { ChannelMembers } from "@/utils/channel/ChannelMembersProvider"
+import { DIALOG_CONTENT_CLASS } from "@/utils/layout/dialog"
 import { BiUserPlus } from "react-icons/bi"
 
-interface AddMembersButtonProps {
+interface AddMembersButtonProps extends ButtonProps {
     channelData: ChannelListItem,
     updateMembers: () => void,
-    style?: {
-        bg: string,
-        cursor: string
-    },
-    is_in_list?: boolean,
-    is_in_empty_state?: boolean
+    isIconButton?: boolean,
+    channelMembers?: ChannelMembers
 }
 
-export const AddMembersButton = ({ channelData, updateMembers, style, is_in_list, is_in_empty_state }: AddMembersButtonProps) => {
+export const AddMembersButton = ({ channelData, updateMembers, isIconButton = false, channelMembers, ...props }: AddMembersButtonProps) => {
 
-    const modalManager = useModalManager()
-
-    const onAddMembersModalOpen = () => {
-        modalManager.openModal(ModalTypes.AddChannelMember)
+    const [open, setOpen] = useState(false)
+    const onClose = () => {
+        setOpen(false)
     }
 
     return (
-        <>
-            {is_in_list && <ListItem _hover={{ ...style }} rounded='md' onClick={onAddMembersModalOpen}>
-                <HStack p='2' spacing={3}>
-                    <IconButton
-                        size='sm'
-                        aria-label='add members'
-                        icon={<RiUserAddLine />}
-                        colorScheme='blue'
-                        variant='outline'
-                    />
-                    <Text>Add members</Text>
-                </HStack>
-            </ListItem>}
+        <Dialog.Root open={open} onOpenChange={setOpen}>
 
-            {is_in_empty_state &&
-                <Button leftIcon={<BiUserPlus fontSize={'1.1rem'} />} onClick={onAddMembersModalOpen}>Add people</Button>
-            }
+            {isIconButton ? <Dialog.Trigger>
+                <IconButton variant='surface' color='gray' aria-label={"add members to channel"} {...props}>
+                    <BiUserPlus size='18' />
+                </IconButton>
+            </Dialog.Trigger> : <Dialog.Trigger>
+                <Button variant="ghost" size='1' {...props}>
+                    <BiUserPlus size='16' />Add members</Button>
+            </Dialog.Trigger>}
 
-            {!is_in_empty_state && !is_in_list && <Tooltip hasArrow label='add members' placement='bottom-start' rounded={'md'}>
-                <IconButton
-                    onClick={onAddMembersModalOpen}
-                    aria-label={"add members to channel"}
-                    icon={<RiUserAddLine />}
-                />
-            </Tooltip>}
+            <Dialog.Content className={DIALOG_CONTENT_CLASS}>
+                <AddChannelMembersModalContent
+                    onClose={onClose}
+                    channelMembers={channelMembers}
+                    channelID={channelData.name}
+                    channel_name={channelData.channel_name}
+                    type={channelData.type}
+                    updateMembers={updateMembers} />
+            </Dialog.Content>
 
-            <AddChannelMemberModal
-                isOpen={modalManager.modalType === ModalTypes.AddChannelMember}
-                onClose={modalManager.closeModal}
-                channelID={channelData.name}
-                type={channelData.type}
-                channel_name={channelData.channel_name}
-                updateMembers={updateMembers} />
-        </>
+        </Dialog.Root>
     )
 }

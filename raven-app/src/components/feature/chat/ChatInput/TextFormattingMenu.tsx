@@ -1,174 +1,200 @@
-import { Box, ButtonGroup, HStack, IconButton, StackDivider, border, useColorModeValue } from '@chakra-ui/react'
 import { useCurrentEditor } from '@tiptap/react'
-import { BiBold, BiCode, BiCodeAlt, BiHighlight, BiItalic, BiLink, BiListOl, BiListUl, BiStrikethrough, BiUnderline } from 'react-icons/bi'
-import { BsBlockquoteLeft } from 'react-icons/bs'
-import { ICON_PROPS } from './ToolPanel'
+import { BiBold, BiCodeAlt, BiHighlight, BiItalic, BiLink, BiListOl, BiListUl, BiStrikethrough, BiUnderline, BiSolidQuoteAltRight } from 'react-icons/bi'
+import { DEFAULT_BUTTON_STYLE, ICON_PROPS } from './ToolPanel'
+import { Box, Flex, IconButton, Separator, Tooltip } from '@radix-ui/themes'
+import { getKeyboardMetaKeyString } from '@/utils/layout/keyboardKey'
 
-type Props = {}
-export const TextFormattingMenu = (props: Props) => {
+export const TextFormattingMenu = () => {
 
     const { editor } = useCurrentEditor()
 
-    const highlightBgColor = useColorModeValue('blue.50', 'blue.900')
+    const highlightBgColor = 'bg-accent-a3'
 
     if (!editor) {
         return <Box></Box>
     }
     return (
-        // <BubbleMenu tippyOptions={{
-        //     maxWidth: '600px',
-        // }}>
-        <HStack divider={<StackDivider />}>
-            <ButtonGroup size='xs' variant={'ghost'}>
-                <IconButton
-                    onClick={() => editor.chain().focus().toggleBold().run()}
-                    aria-label='bold'
-                    title='Bold'
-                    icon={<BiBold {...ICON_PROPS} />}
-                    colorScheme={editor.isActive('bold') ? 'blue' : 'gray'}
-                    bgColor={editor.isActive('bold') ? highlightBgColor : 'transparent'}
-                    isDisabled={
-                        !editor.can()
-                            .chain()
-                            .focus()
-                            .toggleBold()
-                            .run()
-                    } />
-
-                <IconButton
-                    onClick={() => editor.chain().focus().toggleItalic().run()}
-                    aria-label='italic'
-                    title='Italic'
-                    icon={<BiItalic size='18px' />}
-                    colorScheme={editor.isActive('italic') ? 'blue' : 'gray'}
-                    bgColor={editor.isActive('italic') ? highlightBgColor : 'transparent'}
-                    isDisabled={
-                        !editor.can()
-                            .chain()
-                            .focus()
-                            .toggleItalic()
-                            .run()
-                    } />
-                <IconButton
-                    onClick={() => editor.chain().focus().toggleUnderline().run()}
-                    aria-label='underline'
-                    title='Underline'
-                    icon={<BiUnderline {...ICON_PROPS} />}
-                    colorScheme={editor.isActive('underline') ? 'blue' : 'gray'}
-                    bgColor={editor.isActive('underline') ? highlightBgColor : 'transparent'}
-                    isDisabled={
-                        !editor.can()
-                            .chain()
-                            .focus()
-                            .toggleUnderline()
-                            .run()
-                    }
-                />
-
-
-            </ButtonGroup>
-            <ButtonGroup size='xs' variant='ghost'>
-
-                <IconButton
-                    onClick={() => editor.chain().focus().toggleCodeBlock().run()}
-                    aria-label='code'
-                    title='Code'
-                    icon={<BiCodeAlt {...ICON_PROPS} />}
-                    colorScheme={editor.isActive('codeBlock') ? 'blue' : 'gray'}
-                    bgColor={editor.isActive('codeBlock') ? highlightBgColor : 'transparent'}
-                    isDisabled={
-                        !editor.can()
-                            .chain()
-                            .focus()
-                            .toggleCodeBlock()
-                            .run()
-                    }
-                />
+        <Flex gap='2' align='center' px='1' py='1'>
+            <Flex gap='3' align='center'>
+                <Tooltip content={getKeyboardMetaKeyString() + ' + B'} aria-label={getKeyboardMetaKeyString() + ' + B'}>
+                    <IconButton
+                        onClick={() => editor.chain().focus().toggleBold().run()}
+                        aria-label='bold'
+                        variant='ghost'
+                        title='Bold'
+                        size='1'
+                        className={editor.isActive('bold') ? highlightBgColor : DEFAULT_BUTTON_STYLE}
+                        disabled={
+                            !editor.can()
+                                .chain()
+                                .focus()
+                                .toggleBold()
+                                .run()
+                        }>
+                        <BiBold {...ICON_PROPS} />
+                    </IconButton>
+                </Tooltip>
+                <Tooltip content={getKeyboardMetaKeyString() + ' + I'} aria-label={getKeyboardMetaKeyString() + ' + I'}>
+                    <IconButton
+                        onClick={() => editor.chain().focus().toggleItalic().run()}
+                        aria-label='italic'
+                        title='Italic'
+                        variant='ghost'
+                        size='1'
+                        className={editor.isActive('italic') ? highlightBgColor : DEFAULT_BUTTON_STYLE}
+                        disabled={
+                            !editor.can()
+                                .chain()
+                                .focus()
+                                .toggleItalic()
+                                .run()
+                        }>
+                        <BiItalic {...ICON_PROPS} />
+                    </IconButton>
+                </Tooltip>
+                <Tooltip content={getKeyboardMetaKeyString() + ' + U'} aria-label={getKeyboardMetaKeyString() + ' + U'}>
+                    <IconButton
+                        onClick={() => editor.chain().focus().toggleUnderline().run()}
+                        aria-label='underline'
+                        title='Underline'
+                        variant='ghost'
+                        size='1'
+                        className={editor.isActive('underline') ? highlightBgColor : DEFAULT_BUTTON_STYLE}
+                        disabled={
+                            !editor.can()
+                                .chain()
+                                .focus()
+                                .toggleUnderline()
+                                .run()
+                        }
+                    >
+                        <BiUnderline {...ICON_PROPS} />
+                    </IconButton>
+                </Tooltip>
+            </Flex>
+            <Separator orientation='vertical' />
+            <Flex gap='3' align='center'>
+                <Tooltip content={getKeyboardMetaKeyString() + ' + E'} aria-label={getKeyboardMetaKeyString() + ' + E'}>
+                    <IconButton
+                        onClick={() => editor.chain().focus().toggleCodeBlock().run()}
+                        aria-label='code'
+                        variant='ghost'
+                        size='1'
+                        title='Code'
+                        className={editor.isActive('codeBlock') ? highlightBgColor : DEFAULT_BUTTON_STYLE}
+                        disabled={
+                            !editor.can()
+                                .chain()
+                                .focus()
+                                .toggleCodeBlock()
+                                .run()
+                        }
+                    >
+                        <BiCodeAlt {...ICON_PROPS} />
+                    </IconButton>
+                </Tooltip>
+                {/* <Tooltip content={getKeyboardMetaKeyString() + ' + Shift + X'} aria-label={getKeyboardMetaKeyString() + ' + Shift + X'}> */}
                 <IconButton
                     onClick={() => editor.chain().focus().toggleStrike().run()}
                     aria-label='strike'
+                    variant='ghost'
+                    size='1'
                     title='Strike'
-                    icon={<BiStrikethrough {...ICON_PROPS} />}
-                    colorScheme={editor.isActive('strike') ? 'blue' : 'gray'}
-                    bgColor={editor.isActive('strike') ? highlightBgColor : 'transparent'}
-                    isDisabled={
+                    className={editor.isActive('strike') ? highlightBgColor : DEFAULT_BUTTON_STYLE}
+                    disabled={
                         !editor.can()
                             .chain()
                             .focus()
                             .toggleStrike()
                             .run()
                     }
-                />
-
-
-
+                >
+                    <BiStrikethrough {...ICON_PROPS} />
+                </IconButton>
+                {/* </Tooltip> */}
+                {/* <Tooltip content={getKeyboardMetaKeyString() + ' + Shift + B'} aria-label={getKeyboardMetaKeyString() + ' + Shift + B'}> */}
                 <IconButton
                     onClick={() => editor.chain().focus().toggleBlockquote().run()}
                     aria-label='blockquote'
-                    bgColor={editor.isActive('blockquote') ? highlightBgColor : 'transparent'}
+                    className={editor.isActive('blockquote') ? highlightBgColor : DEFAULT_BUTTON_STYLE}
                     title='Blockquote'
-                    isDisabled={
+                    size='1'
+                    variant='ghost'
+                    disabled={
                         !editor.can()
                             .chain()
                             .focus()
                             .toggleBlockquote()
                             .run()
                     }
-                    icon={<BsBlockquoteLeft {...ICON_PROPS} />}
-                    colorScheme={editor.isActive('blockquote') ? 'blue' : 'gray'}
-                />
-            </ButtonGroup>
-            <ButtonGroup size='xs' variant={'ghost'}>
-                <IconButton
-                    onClick={() => editor.chain().focus().toggleOrderedList().run()}
-                    aria-label='ordered list'
-                    title='Ordered List'
-                    icon={<BiListOl {...ICON_PROPS} />}
-                    colorScheme={editor.isActive('orderedList') ? 'blue' : 'gray'}
-                    bgColor={editor.isActive('orderedList') ? highlightBgColor : 'transparent'}
-                    isDisabled={
-                        !editor.can()
-                            .chain()
-                            .focus()
-                            .toggleOrderedList()
-                            .run()
-                    }
-                />
-                <IconButton
-                    onClick={() => editor.chain().focus().liftEmptyBlock().toggleBulletList().run()}
-                    aria-label='bullet list'
-                    title='Bullet List'
-                    bgColor={editor.isActive('bulletList') ? highlightBgColor : 'transparent'}
-                    icon={<BiListUl {...ICON_PROPS} />}
-                    colorScheme={editor.isActive('bulletList') ? 'blue' : 'gray'}
-                    isDisabled={
-                        !editor.can()
-                            .chain()
-                            .focus()
-                            .toggleBulletList()
-                            .run()
-                    }
-                />
-
-            </ButtonGroup>
-
-            <ButtonGroup size='xs' variant={'ghost'}>
-                <IconButton
-                    aria-label='highlight'
-                    onClick={() => editor.chain().focus().toggleHighlight().run()}
-                    title='Highlight'
-                    bgColor={editor.isActive('highlight') ? highlightBgColor : 'transparent'}
-                    icon={<BiHighlight fontSize='18px' />}
-                    isDisabled={
-                        !editor.can()
-                            .chain()
-                            .focus()
-                            .toggleHighlight()
-                            .run()
-                    }
-                />
-            </ButtonGroup>
-        </HStack>
-        // </BubbleMenu>
+                >
+                    <BiSolidQuoteAltRight {...ICON_PROPS} />
+                </IconButton>
+                {/* </Tooltip> */}
+            </Flex>
+            <Separator orientation='vertical' />
+            <Flex gap='3' align='center'>
+                <Tooltip content={getKeyboardMetaKeyString() + ' + Shift + 7'} aria-label={getKeyboardMetaKeyString() + ' + Shift + 7'}>
+                    <IconButton
+                        onClick={() => editor.chain().focus().toggleOrderedList().run()}
+                        aria-label='ordered list'
+                        title='Ordered List'
+                        size='1'
+                        variant='ghost'
+                        className={editor.isActive('orderedList') ? highlightBgColor : DEFAULT_BUTTON_STYLE}
+                        disabled={
+                            !editor.can()
+                                .chain()
+                                .focus()
+                                .toggleOrderedList()
+                                .run()
+                        }
+                    >
+                        <BiListOl {...ICON_PROPS} />
+                    </IconButton>
+                </Tooltip>
+                <Tooltip content={getKeyboardMetaKeyString() + ' + Shift + 8'} aria-label={getKeyboardMetaKeyString() + ' + Shift + 8'}>
+                    <IconButton
+                        onClick={() => editor.chain().focus().liftEmptyBlock().toggleBulletList().run()}
+                        aria-label='bullet list'
+                        title='Bullet List'
+                        size='1'
+                        variant='ghost'
+                        className={editor.isActive('bulletList') ? highlightBgColor : DEFAULT_BUTTON_STYLE}
+                        disabled={
+                            !editor.can()
+                                .chain()
+                                .focus()
+                                .toggleBulletList()
+                                .run()
+                        }
+                    >
+                        <BiListUl {...ICON_PROPS} />
+                    </IconButton>
+                </Tooltip>
+            </Flex>
+            <Separator orientation='vertical' />
+            <Flex gap='3' align='center'>
+                <Tooltip content={getKeyboardMetaKeyString() + ' + Shift + H'} aria-label={getKeyboardMetaKeyString() + ' + Shift + H'}>
+                    <IconButton
+                        aria-label='highlight'
+                        onClick={() => editor.chain().focus().toggleHighlight().run()}
+                        title='Highlight'
+                        variant='ghost'
+                        size='1'
+                        className={editor.isActive('highlight') ? highlightBgColor : DEFAULT_BUTTON_STYLE}
+                        disabled={
+                            !editor.can()
+                                .chain()
+                                .focus()
+                                .toggleHighlight()
+                                .run()
+                        }
+                    >
+                        <BiHighlight {...ICON_PROPS} />
+                    </IconButton>
+                </Tooltip>
+            </Flex>
+        </Flex>
     )
 }

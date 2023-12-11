@@ -1,4 +1,6 @@
-import { Box, BoxProps, Center, Stack, Text, useColorModeValue, useToast } from "@chakra-ui/react"
+import { useToast } from "@/hooks/useToast"
+import { Flex, Text } from "@radix-ui/themes"
+import { FlexProps } from "@radix-ui/themes/dist/cjs/components/flex"
 import { forwardRef, useImperativeHandle, useState } from "react"
 import { Accept, useDropzone } from "react-dropzone"
 
@@ -8,7 +10,7 @@ export interface CustomFile extends File {
     uploadProgress?: number
 }
 
-export interface FileDropProps extends BoxProps {
+export interface FileDropProps extends FlexProps {
     /** Array of files */
     files: CustomFile[],
     /** Function to set files in parent */
@@ -29,7 +31,7 @@ export interface FileDropProps extends BoxProps {
 export const FileDrop = forwardRef((props: FileDropProps, ref) => {
 
     const { files, onFileChange, maxFiles, accept, maxFileSize, children, ...compProps } = props
-    const toast = useToast()
+    const { toast } = useToast()
 
     const [onDragEnter, setOnDragEnter] = useState(false)
 
@@ -37,10 +39,8 @@ export const FileDrop = forwardRef((props: FileDropProps, ref) => {
         if (maxFileSize && file.size > maxFileSize * 1000000) {
             toast({
                 title: `Uh Oh! ${file.name} exceeded the maximum file size required.`,
-                status: 'warning',
-                position: 'top',
-                duration: 2500,
-                isClosable: true
+                variant: 'destructive',
+                duration: 2500
             })
             return {
                 code: "size-too-large",
@@ -59,10 +59,8 @@ export const FileDrop = forwardRef((props: FileDropProps, ref) => {
             if (maxFiles && maxFiles < fileRejections.length) {
                 toast({
                     title: `Uh Oh! Maximum ${maxFiles} files can be uploaded. Please try again.`,
-                    status: "warning",
-                    position: "top",
+                    variant: 'destructive',
                     duration: 1800,
-                    isClosable: true,
                 })
             }
         },
@@ -83,43 +81,34 @@ export const FileDrop = forwardRef((props: FileDropProps, ref) => {
         }
     }));
 
-    const { borderColor, textColor, bgColor } = useColorModeValue({
-        borderColor: "gray.300",
-        textColor: "gray.600",
-        // Using hex values to add opacity
-        bgColor: "#F7FAFCAA"
-    }, {
-        borderColor: "gray.700",
-        textColor: "white",
-        bgColor: "#171923AA"
-    })
-
     return (
-        <Stack
-            w='full'
-            h='calc(100vh - 80px)'
+        <Flex
+            direction='column'
+            style={{
+                height: 'calc(100vh - 80px)',
+            }}
+            width='100%'
             {...getRootProps()}
             {...compProps}>
             {children}
 
             {(maxFiles === undefined || files.length < maxFiles) &&
-                <Center
-                    pos='fixed'
+                <Flex
+                    align='center'
+                    justify='center'
+                    className="fixed top-14 border-2 border-dashed rounded-md border-gray-6 dark:bg-[#171923AA] bg-[#F7FAFCAA]"
+                    style={{
+                        width: 'calc(100vw - var(--sidebar-width) - var(--space-8))',
+                        height: 'calc(100vh - 80px)',
+                        zIndex: 9999
+                    }}
                     display={onDragEnter ? "flex" : "none"}
-                    w='calc(100vw - var(--sidebar-width) - var(--chakra-space-8))'
-                    h='calc(100vh - 80px)'
-                    zIndex='9999'
-                    top={'14'}
-                    border="2px dashed"
-                    borderRadius="md"
-                    borderColor={borderColor}
-                    bgColor={bgColor}
                 >
-                    <Text fontSize="sm" color={textColor}>Drop your files here. A Raven will pick it up.</Text>
+                    <Text as='span' size='2' color='gray'>Drop your files here. A Raven will pick it up.</Text>
                     <input type='file' style={{ display: 'none' }} {...getInputProps()} />
-                </Center>
+                </Flex>
             }
 
-        </Stack>
+        </Flex>
     )
 })
