@@ -1,10 +1,12 @@
 // Timeline button for Frappe
 $(document).on('app_ready', function () {
   $.each(frappe.boot.user.can_read, function (i, doctype) {
+    let buttonAdded = false; // Track if the button has been added
+
     frappe.ui.form.on(doctype, {
-      onload: function (frm) {
+      refresh: function (frm) {
         if (!frm.is_new()) {
-          if (frm.footer?.frm?.timeline) {
+          if (frm.footer?.frm?.timeline && !buttonAdded) {
             let send_message_modal = (channels) => {
               if (channels && channels.message && channels.message.length > 0) {
                 let channel_id = [];
@@ -80,6 +82,10 @@ $(document).on('app_ready', function () {
                   const attachment_rows = $(select_attachments.wrapper).find(
                     '.attach-list'
                   );
+
+                  // Clear existing attachments
+                  attachment_rows.empty();
+
                   if (attachment) {
                     attachment_rows.append(
                       get_attachment_row(attachment, true)
@@ -109,15 +115,14 @@ $(document).on('app_ready', function () {
                 };
 
                 let get_attachment_row = (attachment, checked) => {
-                  return $(`<p class="checkbox flex">
-                    <label class="ellipsis" title="${attachment.file_name}">
-                      <input
-                        type="checkbox"
-                        data-file-name="${attachment.name}"
+                  return $(`<p class="flex">
+                    <span class="ellipsis" title="${attachment.file_name}">
+                      <input type="radio"
+                       data-file-name="${attachment.name}" 
                         ${checked ? 'checked' : ''}>
-                      </input>
+                        </input>
                       <span class="ellipsis">${attachment.file_name}</span>
-                    </label>
+                    </span>
                     &nbsp;
                     <a href="${
                       attachment.file_url
@@ -128,67 +133,67 @@ $(document).on('app_ready', function () {
                 };
 
                 let get_attachments = () => {
-                  const selected_attachments = $.map(
-                    $(dialog.wrapper).find('[data-file-name]:checked'),
-                    function (element) {
-                      return $(element).attr('data-file-name');
-                    }
-                  );
-                  return selected_attachments;
+                  const selected_attachment = $(dialog.wrapper)
+                    .find('[data-file-name]:checked')
+                    .attr('data-file-name');
+                  return selected_attachment ? selected_attachment : '';
                 };
 
-                let dialog = new frappe.ui.Dialog({
-                  title: __('Send raven'),
-                  fields: [
-                    {
-                      fieldname: 'type',
-                      label: 'Type',
-                      fieldtype: 'Select',
-                      options: ['DM', 'Channel'],
-                      default: 'Channel',
-                      onchange: function () {
-                        let field = dialog.get_field('channel');
-                        if (this.value === 'DM') {
-                          field.df.options = dm_list;
-                        } else {
-                          field.df.options = channel_list;
-                        }
-                        field.refresh();
+                let dialog;
+                if (!dialog) {
+                  dialog = new frappe.ui.Dialog({
+                    title: __('Send raven'),
+                    fields: [
+                      {
+                        fieldname: 'type',
+                        label: 'Type',
+                        fieldtype: 'Select',
+                        options: ['DM', 'Channel'],
+                        default: 'Channel',
+                        onchange: function () {
+                          let field = dialog.get_field('channel');
+                          if (this.value === 'DM') {
+                            field.df.options = dm_list;
+                          } else {
+                            field.df.options = channel_list;
+                          }
+                          field.refresh();
+                        },
                       },
+                      {
+                        fieldname: 'channel',
+                        label: 'Channel/DM',
+                        fieldtype: 'Select',
+                        options: channel_list,
+                        reqd: 1,
+                      },
+                      {
+                        fieldname: 'message',
+                        label: 'Message',
+                        fieldtype: 'Text Editor',
+                        // reqd: 1,
+                      },
+                      { fieldtype: 'Section Break' },
+                      {
+                        label: __('Select Attachments'),
+                        fieldtype: 'HTML',
+                        fieldname: 'select_attachments',
+                      },
+                    ],
+                    primary_action_label: __('Send'),
+                    primary_action(values) {
+                      let attachments = get_attachments();
+                      send_message(values, channel_id, attachments);
+                      dialog.hide();
                     },
-                    {
-                      fieldname: 'channel',
-                      label: 'Channel/DM',
-                      fieldtype: 'Select',
-                      options: channel_list,
-                      reqd: 1,
+                    secondary_action_label: __('Discard'),
+                    secondary_action() {
+                      dialog.hide();
                     },
-                    {
-                      fieldname: 'message',
-                      label: 'Message',
-                      fieldtype: 'Text Editor',
-                      // reqd: 1,
-                    },
-                    { fieldtype: 'Section Break' },
-                    {
-                      label: __('Select Attachments'),
-                      fieldtype: 'HTML',
-                      fieldname: 'select_attachments',
-                    },
-                  ],
-                  primary_action_label: __('Send'),
-                  primary_action(values) {
-                    let attachments = get_attachments();
-                    send_message(values, channel_id, attachments);
-                    dialog.hide();
-                  },
-                  secondary_action_label: __('Discard'),
-                  secondary_action() {
-                    dialog.hide();
-                  },
-                  // size: 'small',
-                  minimizable: true,
-                });
+                    // size: 'small',
+                    minimizable: true,
+                  });
+                }
                 setup_attach();
                 dialog.show();
               } else {
@@ -224,22 +229,16 @@ $(document).on('app_ready', function () {
               let message = values.message.replace(/<[^>]*>?/gm, '');
 
               frappe.db
-                .insert({
-                  doctype: 'Raven Message',
-                  channel_id: channel,
-                  text: message,
-                  message_type: 'Text',
-                  link_doctype: frm.doctype,
-                  link_document: frm.docname,
-                })
-                .then((doc) => {
-                  frappe.call({
-                    method:
-                      'raven.raven_messaging.doctype.raven_message.raven_message.add_attachments',
-                    args: {
-                      name: doc.name,
-                      attachments: JSON.stringify(attachments),
-                    },
+                .get_value('File', { name: attachments }, 'file_url')
+                .then((res) => {
+                  return frappe.db.insert({
+                    doctype: 'Raven Message',
+                    channel_id: channel,
+                    text: message,
+                    message_type: 'Text',
+                    file: res?.message?.file_url || '',
+                    link_doctype: frm.doctype,
+                    link_document: frm.docname,
                   });
                 })
                 .then(() => {
@@ -260,13 +259,15 @@ $(document).on('app_ready', function () {
             };
 
             var timeline = frm.footer.frm.timeline;
-            // check the button is not already added
+            // check the button is not already added by checking the class name 'send-raven-button'
+
             timeline.add_action_button(
               __('Send raven'),
               send_raven,
               'share',
               'btn-secondary send-raven-button'
             );
+            buttonAdded = true;
           }
         }
       },
