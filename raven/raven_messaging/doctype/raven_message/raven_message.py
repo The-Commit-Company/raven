@@ -6,6 +6,8 @@ from frappe.model.document import Document
 from datetime import timedelta
 from frappe.query_builder.functions import Count, Coalesce
 from frappe.query_builder import Case
+from collections.abc import Iterable
+import json
 from raven.raven_channel_management.doctype.raven_channel.raven_channel import get_peer_user_id
 
 channel = frappe.qb.DocType("Raven Channel")
@@ -282,7 +284,7 @@ def get_unread_count_for_channels():
 def get_timeline_message_content(doctype, docname):
 
     query = (frappe.qb.from_(message)
-             .select(message.creation, message.owner, message.text, message.file, channel.name.as_('channel_id'), channel.channel_name, channel.type, channel.is_direct_message, user.full_name)
+             .select(message.creation, message.owner, message.name, message.text, channel.name.as_('channel_id'), channel.channel_name, channel.type, channel.is_direct_message, user.full_name, channel.is_self_message)
              .left_join(channel).on(message.channel_id == channel.name)
              .left_join(channel_member).on(channel.name == channel_member.channel_id)
              .left_join(user).on(message.owner == user.name)
@@ -292,6 +294,14 @@ def get_timeline_message_content(doctype, docname):
 
     timeline_contents = []
     for log in data:
+        log['files'] = get_all_attachments('Raven Message', log.name)
+
+        if log.is_direct_message:
+            peer_user_id = get_peer_user_id(
+                log.channel_id, log.is_direct_message, log.is_self_message)
+            if peer_user_id:
+                log['peer_user'] = frappe.db.get_value(
+                    "User", peer_user_id, "full_name")
         timeline_contents.append({
             "icon": "share",
             "is_card": True,
@@ -301,3 +311,55 @@ def get_timeline_message_content(doctype, docname):
         })
 
     return timeline_contents
+
+
+def get_all_attachments(doctype, docname):
+    files = frappe.db.get_list('File', filters={
+        'attached_to_doctype': doctype,
+        'attached_to_name': docname}, fields=['name', 'file_url',  'is_private'])
+
+    return files
+
+
+@frappe.whitelist()
+def add_attachments(name, attachments) -> None:
+    """Add attachments to the given Raven Message.
+
+    :param name: Raven Message name
+    :param attachments: File names or dicts with keys "fname" and "fcontent"
+    """
+    # loop through attachments
+    # make sure attachments is a list
+    attachments = json.loads(attachments)
+    for a in attachments:
+
+        if isinstance(a, str):
+
+            attach = frappe.db.get_value(
+                "File", a, ["file_url", "is_private"], as_dict=1)
+
+            file_args = {
+                "file_url": attach.file_url,
+                "is_private": attach.is_private,
+            }
+        elif isinstance(a, dict) and "fcontent" in a and "fname" in a:
+            # dict returned by frappe.attach_print()
+            file_args = {
+                "file_name": a["fname"],
+                "content": a["fcontent"],
+                "is_private": 1,
+            }
+        else:
+            continue
+
+        file_args.update(
+            {
+                "attached_to_doctype": "Raven Message",
+                "attached_to_name": name,
+                "folder": "Home/Attachments",
+            }
+        )
+
+        _file = frappe.new_doc("File")
+        _file.update(file_args)
+        _file.save(ignore_permissions=True)
