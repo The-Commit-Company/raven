@@ -1,6 +1,6 @@
-<div class="timeline-message-box" style="padding: 2px;">
+<div class="timeline-message-box" style="padding: 2px; overflow: hidden;">
     <div class="message-header"
-        style="align-items: flex-start; margin-bottom: 10px;">
+        style="align-items: flex-start; margin-bottom: 10px; display: flex; flex-direction: column;">
         <div class="actions" style="flex-shrink: 0; display: flex; align-items: center; padding-bottom: 4px; padding-left: 2px;">
             
             {% if (is_direct_message) { %}
@@ -37,11 +37,13 @@
         </div>
         <div class="user-info" style="display: flex; align-items: flex-start;">
             {{ frappe.avatar(owner, "avatar-medium") }}
-            <div class="user-details" style="display: flex; flex-direction: column; align-items: flex-start; margin-left: 8px;">
+            <div class="user-details"
+                style="display: flex; flex-direction: column; align-items: flex-start; margin-left: 8px; width: 90%;">
                 <span style="font-weight: bold;">
                     {{ full_name || frappe.user.full_name(owner) }}
                 </span>
-                <span style="font-weight: normal;">
+                <span
+                    style="font-weight: normal; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;">
                     {{text}}
                 </span>
             </div>
