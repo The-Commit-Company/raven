@@ -1,0 +1,39 @@
+.raven-channel-list {
+    overflow-y: auto;
+    height: var(--raven-content-height);
+    transition: all 0.3s ease-in-out;
+}
+
+.raven-channel-list-item {
+    padding: 0.5rem 1rem;
+    display: flex;
+    width: 100%;
+    background-color: transparent;
+    gap: 0.5rem;
+    align-items: center;
+    border: none;
+    font-family: 'Cal Sans', 'Inter', sans-serif;
+    border-bottom: 1px solid var(--border-color);
+    cursor: pointer;
+
+    &:hover {
+        background-color: var(--bg-light-gray);
+    }
+
+    .skeleton {
+        height: 1rem;
+        display: block;
+        border-radius: var(--border-radius-md);
+    }
+
+    .raven-channel-icon {
+        height: 2rem;
+        display: flex;
+        fill: var(--heading-color);
+        align-items: center;
+        justify-content: center;
+        width: 2rem;
+    }
+
+
+}
