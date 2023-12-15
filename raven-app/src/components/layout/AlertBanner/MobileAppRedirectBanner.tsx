@@ -13,9 +13,9 @@ export const MobileAppRedirectBanner = () => {
             }}
         >
             <Box style={{ textAlign: 'center' }}>
-                <Heading>My Lord / Lady!</Heading>
+                <Heading className='cal-sans'>My Lord / Lady!</Heading>
                 <Heading>Should you prefer to use Raven on your mobile device?</Heading>
-                <Text>Send ravens from anywhere, including your mobile.</Text>
+                <Text className='cal-sans'>Send ravens from anywhere, including your mobile.</Text>
             </Box>
             <Box py="4">
                 <Button onClick={() => window.location.href = '/raven_mobile'}>Go to Mobile App</Button>
