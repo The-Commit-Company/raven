@@ -10,24 +10,36 @@ import useGetUser from "../../hooks/useGetUser";
  * - Expand button
  */
 const Header = ({
-    toggle, selectedChannel, isOpen, setSelectedChannel
+    toggle, selectedChannel, isOpen, setSelectedChannel, unreadMessageCount
 }) => {
 
     const closeChannel = () => {
         setSelectedChannel('')
     }
+
+    const toggleRaven = () => {
+        closeChannel()
+        toggle()
+    }
+
     return <div className="raven-header">
         {selectedChannel ? <ChannelHeader channelID={selectedChannel} onBackClick={closeChannel} /> :
-            <span role='button' className="raven-logo cal-sans" onClick={toggle}>raven</span>
-        }
+            <div>
+                <span role='button' className="raven-logo cal-sans" onClick={toggle}>raven</span>
+            </div>
 
-        <button className="btn btn-md back-button" onClick={toggle}>
-            {isOpen ?
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="m16.192 6.344-4.243 4.242-4.242-4.242-1.414 1.414L10.535 12l-4.242 4.242 1.414 1.414 4.242-4.242 4.243 4.242 1.414-1.414L13.364 12l4.242-4.242z"></path></svg>
-                :
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="m6.293 13.293 1.414 1.414L12 10.414l4.293 4.293 1.414-1.414L12 7.586z"></path></svg>
-            }
-        </button>
+        }
+        <div>
+            {unreadMessageCount ? <span className="raven-unread-count">{unreadMessageCount} unread</span> : null}
+            <button className="btn btn-md back-button" onClick={toggleRaven}>
+                {isOpen ?
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="m16.192 6.344-4.243 4.242-4.242-4.242-1.414 1.414L10.535 12l-4.242 4.242 1.414 1.414 4.242-4.242 4.243 4.242 1.414-1.414L13.364 12l4.242-4.242z"></path></svg>
+                    :
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="m6.293 13.293 1.414 1.414L12 10.414l4.293 4.293 1.414-1.414L12 7.586z"></path></svg>
+                }
+            </button>
+        </div>
+
     </div>
 }
 

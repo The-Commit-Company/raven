@@ -12,4 +12,5 @@ $(document).on('app_ready', function () {
             wrapper: chat_element,
         });
     });
+
 });

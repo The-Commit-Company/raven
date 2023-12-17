@@ -1,0 +1,23 @@
+.raven-chat-view {
+    transition: all 0.3s ease-in-out;
+    overflow-x: hidden;
+
+    .raven-chat-view-container {
+        position: relative;
+        width: var(--raven-content-width);
+        height: var(--raven-content-height);
+        overflow-x: hidden;
+
+        .raven-chat-input {
+            position: fixed;
+            bottom: 0;
+            display: flex;
+            gap: 0.5rem;
+            min-height: 42px;
+            padding: 4px;
+            border-top: 1px solid var(--border-color);
+            width: var(--raven-content-width);
+        }
+    }
+
+}

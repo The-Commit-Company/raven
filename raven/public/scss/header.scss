@@ -16,10 +16,23 @@
     }
 }
 
+.raven-content-container {
+    position: relative;
+}
+
 .raven-content-container[data-channel-list-view="false"] {
     .raven-channel-list {
         width: 0;
+        position: absolute;
+        left: -100%;
         opacity: 0;
+    }
+
+    .raven-chat-view {
+        width: 100%;
+        position: absolute;
+        left: 0;
+        opacity: 1;
     }
 }
 
@@ -27,6 +40,15 @@
     .raven-channel-list {
         width: 100%;
         opacity: 1;
+        position: absolute;
+        left: 0;
+    }
+
+    .raven-chat-view {
+        width: 0;
+        left: 100%;
+        position: absolute;
+        opacity: 0;
     }
 }
 
@@ -40,6 +62,11 @@
 
     .back-button {
         padding: 4px;
+
+        svg {
+            fill: var(--heading-color);
+        }
+
         // padding-right: 4px;
 
         &:hover {
@@ -50,8 +77,20 @@
 
 .raven-logo {
     font-weight: 700;
-    font-size: 1.25rem;
+    font-size: 1.4rem;
     color: var(--heading-color);
+    padding-right: 4px;
+}
+
+.raven-unread-count {
+    background-color: var(--red-avatar-bg);
+    color: var(--red-avatar-color);
+    padding: 0.1rem 0.5rem;
+    margin-bottom: -0.3rem;
+    margin-right: 4px;
+    border-radius: var(--border-radius-sm);
+    font-size: 0.7rem;
+    font-weight: 700;
 }
 
 .raven-channel-header-name {
