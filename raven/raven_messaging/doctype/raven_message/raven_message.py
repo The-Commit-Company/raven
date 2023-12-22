@@ -191,7 +191,7 @@ def get_messages(channel_id):
     messages = frappe.db.get_all('Raven Message',
                                   filters={'channel_id': channel_id},
                                   fields=['name', 'owner', 'creation', 'text',
-                                          'file', 'message_type', 'message_reactions', 'is_reply', 'linked_message', '_liked_by', 'channel_id', 'thumbnail_width', 'thumbnail_height', 'file_thumbnail'],
+                                          'file', 'message_type', 'message_reactions', 'is_reply', 'linked_message', '_liked_by', 'channel_id', 'thumbnail_width', 'thumbnail_height', 'file_thumbnail', 'link_doctype', 'link_document'],
                                   order_by='creation asc'
                                   )
 
@@ -321,11 +321,12 @@ def get_timeline_message_content(doctype, docname):
 
     query = (frappe.qb.from_(message)
              .select(message.creation, message.owner, message.name, message.text, message.file, channel.name.as_('channel_id'), channel.channel_name, channel.type, channel.is_direct_message, user.full_name, channel.is_self_message)
-             .left_join(channel).on(message.channel_id == channel.name)
-             .left_join(channel_member).on(channel.name == channel_member.channel_id)
-             .left_join(user).on(message.owner == user.name)
-             .where(((channel.type != "Private") | (channel_member.user_id == frappe.session.user)) & (message.link_doctype == doctype) & (message.link_document == docname) & (channel.is_archived == 0))
-             )
+             .join(channel).on(message.channel_id == channel.name)
+             .join(channel_member).on((message.channel_id == channel_member.channel_id) & (message.owner == channel_member.user_id))
+             .join(user).on(message.owner == user.name)
+             .where((channel.type != "Private") | (channel_member.user_id == frappe.session.user))
+             .where(message.link_doctype == doctype)
+             .where(message.link_document == docname))
     data = query.run(as_dict=True)
 
     timeline_contents = []

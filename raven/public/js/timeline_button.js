@@ -115,21 +115,25 @@ $(document).on('app_ready', function () {
                 };
 
                 let get_attachment_row = (attachment, checked) => {
-                  return $(`<p class="flex">
-                    <span class="ellipsis" title="${attachment.file_name}">
-                      <input type="radio"
-                       data-file-name="${attachment.name}" 
-                        ${checked ? 'checked' : ''}>
+                  const radioGroupName = 'attachmentRadioGroup';
+
+                  return $(`
+                    <p class="flex">
+                      <label class="attachment-radio">
+                        <input type="radio" name="${radioGroupName}" 
+                               data-file-name="${attachment.name}" ${
+                    checked ? 'checked' : ''
+                  }>
                         </input>
-                      <span class="ellipsis">${attachment.file_name}</span>
-                    </span>
-                    &nbsp;
-                    <a href="${
-                      attachment.file_url
-                    }" target="_blank" class="btn-linkF">
-                      ${frappe.utils.icon('link-url')}
-                    </a>
-                  </p>`);
+                        <span class="ellipsis">${attachment.file_name}</span>
+                      </label>
+                      &nbsp;
+                      <a href="${
+                        attachment.file_url
+                      }" target="_blank" class="btn-linkF">
+                        ${frappe.utils.icon('link-url')}
+                      </a>
+                    </p>`);
                 };
 
                 let get_attachments = () => {
@@ -142,7 +146,7 @@ $(document).on('app_ready', function () {
                 let dialog;
                 if (!dialog) {
                   dialog = new frappe.ui.Dialog({
-                    title: __('Send raven'),
+                    title: __('Send a Raven'),
                     fields: [
                       {
                         fieldname: 'type',
@@ -198,7 +202,7 @@ $(document).on('app_ready', function () {
                 dialog.show();
               } else {
                 frappe.msgprint({
-                  title: __('Send raven'),
+                  title: __('Send a Raven'),
                   indicator: 'blue',
                   message: __('No channels found'),
                 });
@@ -228,6 +232,28 @@ $(document).on('app_ready', function () {
               // get message from values.message and clean it up, remove html tags
               let message = values.message.replace(/<[^>]*>?/gm, '');
 
+              let get_type = (url) => {
+                if (url) {
+                  let fileExt = [
+                    'jpg',
+                    'JPG',
+                    'jpeg',
+                    'JPEG',
+                    'png',
+                    'PNG',
+                    'gif',
+                    'GIF',
+                  ];
+                  let ext = url.split('.').pop();
+                  if (fileExt.includes(ext)) {
+                    return 'Image';
+                  } else {
+                    return 'File';
+                  }
+                }
+                return 'Text';
+              };
+
               frappe.db
                 .get_value('File', { name: attachments }, 'file_url')
                 .then((res) => {
@@ -235,7 +261,7 @@ $(document).on('app_ready', function () {
                     doctype: 'Raven Message',
                     channel_id: channel,
                     text: message,
-                    message_type: 'Text',
+                    message_type: get_type(res?.message?.file_url),
                     file: res?.message?.file_url || '',
                     link_doctype: frm.doctype,
                     link_document: frm.docname,
@@ -262,7 +288,7 @@ $(document).on('app_ready', function () {
             // check the button is not already added by checking the class name 'send-raven-button'
 
             timeline.add_action_button(
-              __('Send raven'),
+              __('Send a Raven'),
               send_raven,
               'share',
               'btn-secondary send-raven-button'
