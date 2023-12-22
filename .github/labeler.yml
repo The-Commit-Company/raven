@@ -6,3 +6,11 @@
 # Add 'backend' label to all PRs that touch json / py files in the 'raven' directory.
 "backend":
   - "raven/**/*.{json,py}"
+
+# Add '💻 webapp' label to all PRs that files in the 'raven-app' directory.
+"💻 webapp":
+  - "raven-app/src/**/*.{ts,tsx,css}"
+
+# Add '📱 mobile' label to all PRs that files in the 'mobile' directory.
+"📱 mobile app":
+  - "mobile/src/**/*.{ts,tsx,css}"
