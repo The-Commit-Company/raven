@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react'
 import ChatInput from './ChatInput/ChatInput'
+import MessageStream from './MessageStream/MessageStream'
 
 const ChatView = ({ selectedChannel }) => {
 
@@ -23,7 +24,7 @@ const ChatView = ({ selectedChannel }) => {
         <div className='raven-chat-view'>
             {show &&
                 <div className='raven-chat-view-container'>
-                    ChatView {selectedChannel}
+                    <MessageStream channelID={selectedChannel} />
                     <ChatInput />
                 </div>
             }

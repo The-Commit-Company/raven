@@ -11,9 +11,7 @@ const useUnreadCount = () => {
         fetcher(key).then(data => next(null, data))
 
         frappe.realtime.on('raven:unread_channel_count_updated', (event) => {
-
-            //TODO: Only play sound if the channel is not open
-            if (currentChannel !== event.channel_id) {
+            if (event.play_sound) {
                 frappe.utils.play_sound("raven_notification");
             }
             fetcher(key).then(data => next(null, data))

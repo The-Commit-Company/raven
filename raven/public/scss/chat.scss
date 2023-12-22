@@ -18,6 +18,16 @@
             border-top: 1px solid var(--border-color);
             width: var(--raven-content-width);
         }
+
+        .raven-message-stream-container {
+            display: flex;
+            flex-direction: column-reverse;
+            gap: 0.5rem;
+            padding: 0.5rem;
+            height: calc(var(--raven-content-height) - 64px);
+            width: 100%;
+            overflow-y: scroll;
+        }
     }
 
 }
