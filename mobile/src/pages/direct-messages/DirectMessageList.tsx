@@ -2,9 +2,10 @@ import { IonContent, IonHeader, IonPage, IonSearchbar, IonTitle, IonToolbar } fr
 import { PrivateMessages } from "../../components/features/direct-messages"
 import { useMemo, useState } from "react"
 import { UserFields, useUserList } from "@/utils/users/UserListProvider"
-import { DMChannelListItem, useChannelList } from "@/utils/channel/ChannelListProvider"
+import { DMChannelListItem, UnreadCountData, useChannelList } from "@/utils/channel/ChannelListProvider"
 import { ChannelListLoader } from "@/components/layout/loaders"
 import { ErrorBanner } from "@/components/layout"
+import { useFrappeEventListener, useFrappeGetCall } from "frappe-react-sdk"
 
 export interface DMUser extends UserFields {
     channel?: DMChannelListItem,
@@ -21,6 +22,15 @@ export const DirectMessageList = () => {
         if (!searchTerm) return users
         return users.filter(user => user.full_name.toLowerCase().includes(searchTerm))
     }, [users, searchInput])
+
+    const { data: unread_count, mutate: update_count } = useFrappeGetCall<{ message: UnreadCountData }>("raven.raven_messaging.doctype.raven_message.raven_message.get_unread_count_for_channels",
+        undefined,
+        'unread_channel_count', {
+        // revalidateOnFocus: false,
+    })
+    useFrappeEventListener('raven:unread_channel_count_updated', () => {
+        update_count()
+    })
 
     return (
         <IonPage>
@@ -43,7 +53,7 @@ export const DirectMessageList = () => {
                 </IonToolbar>
                 {isLoading && <ChannelListLoader />}
                 {error && <ErrorBanner error={error} />}
-                <PrivateMessages users={filteredUsers} />
+                <PrivateMessages users={filteredUsers} unread_count={unread_count?.message}/>
             </IonContent>
         </IonPage>
     )
