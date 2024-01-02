@@ -51,15 +51,15 @@ interface DMChannel extends DMUser {
 }
 const DMChannelItem = ({ user, unreadCount }: { user: DMChannel, unreadCount: UnreadCountData['channels'] }) => {
 
-    const unreadCountForChannel = useMemo(() => unreadCount.find((unread) => unread.name == user.name)?.unread_count, [user.name, unreadCount])
+    const unreadCountForChannel = useMemo(() => unreadCount.find((unread) => unread.name == user.channel.name)?.unread_count, [user.channel.name, unreadCount])
     const isActive = useIsUserActive(user.name)
 
     return <IonItem className='py-1' key={user.name} detail={false} lines='none' routerLink={`channel/${user.channel.name}`}>
-        <div slot='start' className='flex items-center space-x-4 w-9/12'>
+        <div slot='start' className='flex items-center space-x-4 w-5/6'>
             <SquareAvatar slot='start' alt={user.full_name} src={user.user_image} isActive={isActive} />
-            <IonLabel className='w-5/6'>{user.full_name} qjwx wxjhqwbx qwxjhqwbx wqxjhbwwe</IonLabel>
+            <IonLabel className='w-5/6'>{user.full_name}</IonLabel>
         </div>
-        {unreadCountForChannel ? <IonBadge>{unreadCountForChannel}</IonBadge> : null}
+        {unreadCountForChannel ? <IonBadge>{unreadCountForChannel < 100 ? unreadCountForChannel : '99'}</IonBadge> : null}
     </IonItem>
 }
 
