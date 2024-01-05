@@ -5,7 +5,7 @@ from frappe import _
 from frappe.model.document import Document
 from datetime import timedelta
 from frappe.query_builder.functions import Count, Coalesce
-from frappe.query_builder import Case, Order,JoinType
+from frappe.query_builder import Case, Order, JoinType
 
 
 class RavenMessage(Document):
@@ -77,9 +77,10 @@ class RavenMessage(Document):
             'sender': frappe.session.user,
             'message_id': self.name,
             'type': type,
-            }, 
-            doctype='Raven Channel', 
-            docname=self.channel_id,  # Adding this to automatically add the room for the event via Frappe
+        },
+            doctype='Raven Channel',
+            # Adding this to automatically add the room for the event via Frappe
+            docname=self.channel_id,
             after_commit=True)
         frappe.db.commit()
 
@@ -91,6 +92,7 @@ class RavenMessage(Document):
         if frappe.db.get_value('Raven Channel', self.channel_id, 'type') != 'Private' or frappe.db.exists("Raven Channel Member", {"channel_id": self.channel_id, "user_id": frappe.session.user}):
             track_visit(self.channel_id)
 
+
 def on_doctype_update():
     '''
     Add indexes to Raven Message table
@@ -98,6 +100,7 @@ def on_doctype_update():
     # Index the selector (channel or message type) first for faster queries (less rows to sort in the next step)
     frappe.db.add_index("Raven Message", ["channel_id", "creation"])
     frappe.db.add_index("Raven Message", ["message_type", "creation"])
+
 
 def track_visit(channel_id, commit=False):
     '''
@@ -117,9 +120,9 @@ def track_visit(channel_id, commit=False):
             "last_visit": frappe.utils.now()
         }).insert()
     frappe.publish_realtime(
-            'raven:unread_channel_count_updated', {
-                'channel_id': channel_id,
-            }, after_commit=True)
+        'raven:unread_channel_count_updated', {
+            'channel_id': channel_id,
+        }, after_commit=True)
     # Need to commit the changes to the database if the request is a GET request
     if commit:
         frappe.db.commit()
@@ -164,15 +167,15 @@ def fetch_recent_files(channel_id):
         frappe.throw(
             "You don't have permission to view this channel", frappe.PermissionError)
     files = frappe.db.get_all('Raven Message',
-                               filters={
-                                   'channel_id': channel_id,
-                                   'message_type': ['in', ['Image', 'File']]
-                               },
-                               fields=['name', 'file', 'owner',
-                                       'creation', 'message_type'],
-                               order_by='creation desc',
-                               limit_page_length=10
-                               )
+                              filters={
+                                  'channel_id': channel_id,
+                                  'message_type': ['in', ['Image', 'File']]
+                              },
+                              fields=['name', 'file', 'owner',
+                                      'creation', 'message_type'],
+                              order_by='creation desc',
+                              limit_page_length=10
+                              )
 
     return files
 
@@ -180,11 +183,11 @@ def fetch_recent_files(channel_id):
 def get_messages(channel_id):
 
     messages = frappe.db.get_all('Raven Message',
-                                  filters={'channel_id': channel_id},
-                                  fields=['name', 'owner', 'creation', 'text',
-                                          'file', 'message_type', 'message_reactions', 'is_reply', 'linked_message', '_liked_by', 'channel_id', 'thumbnail_width', 'thumbnail_height', 'file_thumbnail'],
-                                  order_by='creation asc'
-                                  )
+                                 filters={'channel_id': channel_id},
+                                 fields=['name', 'owner', 'creation', 'text',
+                                         'file', 'message_type', 'message_reactions', 'is_reply', 'linked_message', '_liked_by', 'channel_id', 'thumbnail_width', 'thumbnail_height', 'file_thumbnail'],
+                                 order_by='creation asc'
+                                 )
 
     return messages
 
@@ -201,16 +204,17 @@ def get_saved_messages():
     raven_channel_member = frappe.qb.DocType('Raven Channel Member')
 
     query = (frappe.qb.from_(raven_message)
-                .join(raven_channel, JoinType.left)
-                .on(raven_message.channel_id == raven_channel.name)
-                .join(raven_channel_member, JoinType.left)
-                .on(raven_channel.name == raven_channel_member.channel_id)
-                .select(raven_message.name, raven_message.owner, raven_message.creation, raven_message.text, raven_message.channel_id,
-                        raven_message.file, raven_message.message_type, raven_message.message_reactions, raven_message._liked_by)
-                .where(raven_message._liked_by.like('%'+frappe.session.user+'%'))
-                .where((raven_channel.type == "Open") | (raven_channel_member.user_id == frappe.session.user))
-                .orderby(raven_message.creation, order=Order.asc))
-    
+             .join(raven_channel, JoinType.left)
+             .on(raven_message.channel_id == raven_channel.name)
+             .join(raven_channel_member, JoinType.left)
+             .on(raven_channel.name == raven_channel_member.channel_id)
+             .select(raven_message.name, raven_message.owner, raven_message.creation, raven_message.text, raven_message.channel_id,
+                     raven_message.file, raven_message.message_type, raven_message.message_reactions, raven_message._liked_by)
+             .where(raven_message._liked_by.like('%'+frappe.session.user+'%'))
+             .where((raven_channel.type.isin(['Open', 'Public'])) | (raven_channel_member.user_id == frappe.session.user))
+             .orderby(raven_message.creation, order=Order.asc)
+             .distinct())  # Add DISTINCT keyword to retrieve only unique messages
+
     messages = query.run(as_dict=True)
 
     return messages
