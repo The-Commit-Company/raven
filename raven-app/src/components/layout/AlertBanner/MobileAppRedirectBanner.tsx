@@ -13,8 +13,8 @@ export const MobileAppRedirectBanner = () => {
             }}
         >
             <Box style={{ textAlign: 'center' }}>
-                <Heading className='cal-sans'>My Lord / Lady!</Heading>
-                <Heading>Should you prefer to use Raven on your mobile device?</Heading>
+                <Heading className='cal-sans'>Your Highness</Heading>
+                <Heading>Would you prefer to use Raven on your mobile device?</Heading>
                 <Text className='cal-sans'>Send ravens from anywhere, including your mobile.</Text>
             </Box>
             <Box py="4">
