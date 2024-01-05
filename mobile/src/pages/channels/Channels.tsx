@@ -4,8 +4,9 @@ import { ErrorBanner } from '../../components/layout';
 import { ChannelList } from '../../components/features/channels/ChannelList';
 import { AddChannel } from '../../components/features/channels';
 import { useMemo, useRef, useState } from 'react';
-import { useChannelList } from '@/utils/channel/ChannelListProvider';
+import { UnreadCountData, useChannelList } from '@/utils/channel/ChannelListProvider';
 import { ChannelListLoader } from '../../components/layout/loaders/ChannelListLoader';
+import { useFrappeEventListener, useFrappeGetCall } from 'frappe-react-sdk';
 
 export const Channels = () => {
 
@@ -24,6 +25,15 @@ export const Channels = () => {
         if (!searchTerm) return activeChannels
         return activeChannels.filter(channel => channel.channel_name.includes(searchTerm))
     }, [searchInput, channels])
+
+    const { data: unread_count, mutate: update_count } = useFrappeGetCall<{ message: UnreadCountData }>("raven.raven_messaging.doctype.raven_message.raven_message.get_unread_count_for_channels",
+        undefined,
+        'unread_channel_count', {
+        // revalidateOnFocus: false,
+    })
+    useFrappeEventListener('raven:unread_channel_count_updated', () => {
+        update_count()
+    })
 
     return (
         <IonPage ref={pageRef}>
@@ -54,7 +64,7 @@ export const Channels = () => {
                         Add Channel
                     </IonLabel>
                 </IonItem>
-                <ChannelList data={filteredChannels ?? []} />
+                <ChannelList data={filteredChannels ?? []} unread_count={unread_count?.message}/>
                 <AddChannel isOpen={isOpen} onDismiss={() => setIsOpen(false)} presentingElement={pageRef.current} />
             </IonContent>
         </IonPage>

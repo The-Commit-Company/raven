@@ -58,14 +58,19 @@ export const getUsers = (usersList: string[], count: number, currentUser: string
                 const otherUser = usersList.find((user, index) => index !== currentUserIndex)
                 return `You and ${userArray.find((user) => user.name == otherUser)?.full_name ?? otherUser}`
             } else {
-                return usersList.join(' and ')
+                const user_1 = userArray.find((user) => user.name == usersList[0])?.full_name
+                const user_2 = userArray.find((user) => user.name == usersList[1])?.full_name
+                return `${user_1} and ${user_2}`
             }
         } else if (count === 3) {
             if (currentUserInList) {
                 const otherUsers = usersList.filter((user, index) => index !== currentUserIndex)
                 return `You, ${userArray.find((user) => user.name == otherUsers[0])?.full_name} and ${userArray.find((user) => user.name == otherUsers[1])?.full_name}`
             } else {
-                return usersList.join(', ')
+                const user_1 = userArray.find((user) => user.name == usersList[0])?.full_name
+                const user_2 = userArray.find((user) => user.name == usersList[1])?.full_name
+                const user_3 = userArray.find((user) => user.name == usersList[2])?.full_name
+                return `${user_1}, ${user_2} and ${user_3}`
             }
         } else if (count > 3) {
             if (currentUserInList) {
