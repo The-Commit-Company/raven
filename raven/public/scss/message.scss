@@ -31,3 +31,25 @@
 
 
 }
+
+.raven-tiptap-renderer {
+
+    color: var(--text-color);
+
+    a,
+    .user-mention,
+    .channel-mention {
+        color: var(--blue-500);
+    }
+
+    ol,
+    ul {
+        padding-left: 1rem;
+    }
+
+    blockquote {
+        border-left: 2px solid var(--gray-400);
+        padding-left: 0.5rem;
+        margin-left: 0.5rem;
+    }
+}

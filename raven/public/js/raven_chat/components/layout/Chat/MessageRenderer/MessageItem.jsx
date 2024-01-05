@@ -2,6 +2,7 @@ import React from 'react'
 import useGetUser from '../../../../hooks/useGetUser'
 import Avatar from '../../../common/Avatar'
 import ImageMessageBlock from './renderers/ImageMessageBlock'
+import TiptapRenderer from './renderers/TiptapRenderer'
 const MessageItem = ({ message }) => {
 
     const { name, owner: userID, creation: timestamp, message_reactions, is_continuation, is_reply, linked_message } = message
@@ -10,7 +11,7 @@ const MessageItem = ({ message }) => {
     const isOwner = frappe.session.user === userID
 
     return (
-        <div style={{ paddingLeft: '4px', paddingRight: '4px  ' }} id={`raven-message-${message.name}`} className='message-item'>
+        <div style={{ paddingLeft: '4px', paddingRight: '4px  ' }} data-message-id={message.name} className='message-item'>
             <MessageLeftElement message={message} user={user} isActive={isActive} />
             <div>
                 <MessageHeader message={message} user={user} />
@@ -60,6 +61,10 @@ const MessageHeader = ({ message, user }) => {
 
 const MessageContent = ({ message, user }) => {
     return <div>
+        {message.text && <TiptapRenderer message={{
+            ...message,
+            message_type: 'Text'
+        }} />}
         {message.message_type === 'Image' && <ImageMessageBlock message={message} user={user} />}
         {/* {message.content} */}
     </div>

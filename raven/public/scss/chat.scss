@@ -27,6 +27,7 @@
             height: calc(var(--raven-content-height) - 54px);
             width: 100%;
             overflow-y: scroll;
+            overflow-x: hidden;
         }
     }
 
