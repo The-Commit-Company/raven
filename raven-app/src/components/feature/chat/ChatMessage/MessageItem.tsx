@@ -19,6 +19,7 @@ import { UserContext } from '@/utils/auth/UserProvider'
 import { ReplyMessage } from './ReplyMessageBox/ReplyMessageBox'
 import { generateAvatarColor } from '../../select-member/GenerateAvatarColor'
 import { Skeleton } from '@/components/common/Skeleton'
+import { DoctypeLinkRenderer } from './Renderers/DoctypeLinkRenderer'
 
 interface MessageBlockProps {
     message: MessageBlock['data'],
@@ -88,6 +89,11 @@ export const MessageItem = ({ message, setDeleteMessage, onReplyMessageClick, se
                                 user={user}
                                 isScrolling={isScrolling}
                                 className={clsx(message.is_continuation ? 'ml-0.5' : '')} />
+
+                            {message.link_doctype && message.link_document && <Box className={clsx(message.is_continuation ? 'ml-0.5' : '-ml-0.5')}>
+                                <DoctypeLinkRenderer doctype={message.link_doctype} docname={message.link_document} />
+                            </Box>}
+
                             {message_reactions?.length &&
                                 <MessageReactions
                                     messageID={name}
@@ -211,8 +217,11 @@ interface MessageContentProps extends BoxProps {
 export const MessageContent = ({ message, user, isScrolling = false, ...props }: MessageContentProps) => {
 
     return <Box {...props}>
+        {message.text ? <TiptapRenderer message={{
+            ...message,
+            message_type: 'Text'
+        }} user={user} isScrolling={isScrolling} /> : null}
         {message.message_type === 'Image' && <ImageMessageBlock message={message} user={user} isScrolling={isScrolling} />}
         {message.message_type === 'File' && <FileMessageBlock message={message} user={user} />}
-        {message.message_type === 'Text' && <TiptapRenderer message={message} user={user} isScrolling={isScrolling} />}
     </Box>
 }

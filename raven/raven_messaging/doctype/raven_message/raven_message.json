@@ -20,7 +20,9 @@
   "thumbnail_height",
   "message_reactions",
   "is_reply",
-  "linked_message"
+  "linked_message",
+  "link_doctype",
+  "link_document"
  ],
  "fields": [
   {
@@ -95,11 +97,23 @@
    "fieldname": "thumbnail_height",
    "fieldtype": "Data",
    "label": "Thumbnail Height"
+  },
+  {
+   "fieldname": "link_doctype",
+   "fieldtype": "Link",
+   "label": "Link Doctype",
+   "options": "DocType"
+  },
+  {
+   "fieldname": "link_document",
+   "fieldtype": "Dynamic Link",
+   "label": "Link Document",
+   "options": "link_doctype"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-11-24 18:46:53.805799",
+ "modified": "2023-12-22 18:25:02.237368",
  "modified_by": "Administrator",
  "module": "Raven Messaging",
  "name": "Raven Message",

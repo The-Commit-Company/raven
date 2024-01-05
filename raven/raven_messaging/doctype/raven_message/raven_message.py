@@ -5,8 +5,14 @@ from frappe import _
 from frappe.model.document import Document
 from datetime import timedelta
 from frappe.query_builder.functions import Count, Coalesce
-from frappe.query_builder import Case, Order, JoinType
-
+from frappe.query_builder import Case, Order,JoinType
+from collections.abc import Iterable
+import json
+from raven.raven_channel_management.doctype.raven_channel.raven_channel import get_peer_user_id
+channel = frappe.qb.DocType("Raven Channel")
+channel_member = frappe.qb.DocType("Raven Channel Member")
+message = frappe.qb.DocType('Raven Message')
+user = frappe.qb.DocType("User")
 
 class RavenMessage(Document):
     # begin: auto-generated types
@@ -24,6 +30,8 @@ class RavenMessage(Document):
         image_width: DF.Data | None
         is_reply: DF.Check
         json: DF.JSON | None
+        link_doctype: DF.Link | None
+        link_document: DF.DynamicLink | None
         linked_message: DF.Link | None
         message_reactions: DF.JSON | None
         message_type: DF.Literal["Text", "Image", "File"]
@@ -183,11 +191,11 @@ def fetch_recent_files(channel_id):
 def get_messages(channel_id):
 
     messages = frappe.db.get_all('Raven Message',
-                                 filters={'channel_id': channel_id},
-                                 fields=['name', 'owner', 'creation', 'text',
-                                         'file', 'message_type', 'message_reactions', 'is_reply', 'linked_message', '_liked_by', 'channel_id', 'thumbnail_width', 'thumbnail_height', 'file_thumbnail'],
-                                 order_by='creation asc'
-                                 )
+                                  filters={'channel_id': channel_id},
+                                  fields=['name', 'owner', 'creation', 'text',
+                                          'file', 'message_type', 'message_reactions', 'is_reply', 'linked_message', '_liked_by', 'channel_id', 'thumbnail_width', 'thumbnail_height', 'file_thumbnail', 'link_doctype', 'link_document'],
+                                  order_by='creation asc'
+                                  )
 
     return messages
 
@@ -309,3 +317,36 @@ def get_unread_count_for_channels():
         'channels': channels_query
     }
     return result
+
+
+@frappe.whitelist()
+def get_timeline_message_content(doctype, docname):
+
+    query = (frappe.qb.from_(message)
+             .select(message.creation, message.owner, message.name, message.text, message.file, channel.name.as_('channel_id'), channel.channel_name, channel.type, channel.is_direct_message, user.full_name, channel.is_self_message)
+             .join(channel).on(message.channel_id == channel.name)
+             .join(channel_member).on((message.channel_id == channel_member.channel_id) & (message.owner == channel_member.user_id))
+             .join(user).on(message.owner == user.name)
+             .where((channel.type != "Private") | (channel_member.user_id == frappe.session.user))
+             .where(message.link_doctype == doctype)
+             .where(message.link_document == docname))
+    data = query.run(as_dict=True)
+
+    timeline_contents = []
+    for log in data:
+
+        if log.is_direct_message:
+            peer_user_id = get_peer_user_id(
+                log.channel_id, log.is_direct_message, log.is_self_message)
+            if peer_user_id:
+                log['peer_user'] = frappe.db.get_value(
+                    "User", peer_user_id, "full_name")
+        timeline_contents.append({
+            "icon": "share",
+            "is_card": True,
+            "creation": log.creation,
+            "template": "send_message",
+            "template_data": log
+        })
+
+    return timeline_contents
