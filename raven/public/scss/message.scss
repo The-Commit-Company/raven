@@ -1,0 +1,33 @@
+.message-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+
+    .raven-message-item-header {
+
+        .raven-message-item-header-name {
+            font-weight: 600;
+            font-size: 0.8rem;
+            color: var(--text-color);
+        }
+
+        .raven-message-item-header-time {
+            font-size: 0.70rem;
+            padding-left: 0.3rem;
+            margin-left: 0.3rem;
+            border-left: 1px solid var(--border-color);
+            color: var(--text-light);
+        }
+    }
+
+    .raven-message-image-link {
+        text-decoration: none;
+        font-weight: 500;
+        font-size: 0.8rem;
+        color: var(--text-color);
+        border-bottom: 1px solid var(--gray-400);
+        padding-bottom: 0.1rem;
+    }
+
+
+}

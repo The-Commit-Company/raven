@@ -56,10 +56,10 @@ const ChannelHeader = ({ channelID, onBackClick }) => {
         </button>
 
         {channel?.is_direct_message ? <DMChannelHeader channel={channel} /> :
-            <>
+            <a href={`/raven/channel/${channelID}`} target="_blank" title="Open channel in Raven">
                 <ChannelIcon channelType={channel?.channel_type} />
                 <span className="raven-channel-header-name cal-sans">{channel?.channel_name ?? channelID}</span>
-            </>
+            </a>
 
         }
     </div>
@@ -68,9 +68,9 @@ const ChannelHeader = ({ channelID, onBackClick }) => {
 const DMChannelHeader = ({ channel }) => {
 
     const user = useGetUser(channel.peer_user_id)
-    return <div className="raven-dm-channel-header">
+    return <a title="Open channel in Raven" className="raven-dm-channel-header" href={`/raven/channel/${channel.name}`} target="_blank">
         <Avatar user={user} fallback={channel.peer_user_id} />
         <span className="raven-channel-header-name cal-sans">{user?.full_name ?? user?.name}</span>
-    </div>
+    </a>
 
 }

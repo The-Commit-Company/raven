@@ -108,6 +108,12 @@
         fill: var(--heading-color);
     }
 
+    a {
+        display: flex;
+        align-items: center;
+        gap: 0.1rem;
+    }
+
     .raven-dm-channel-header {
         display: flex;
         align-items: center;

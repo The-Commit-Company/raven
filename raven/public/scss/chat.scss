@@ -21,10 +21,10 @@
 
         .raven-message-stream-container {
             display: flex;
-            flex-direction: column-reverse;
+            flex-direction: column;
             gap: 0.5rem;
             padding: 0.5rem;
-            height: calc(var(--raven-content-height) - 64px);
+            height: calc(var(--raven-content-height) - 54px);
             width: 100%;
             overflow-y: scroll;
         }

@@ -10,9 +10,10 @@ import { CurrentChannelContext } from "./hooks/useCurrentChannel";
 
 export function App() {
 
-  const [isOpen, { on, toggle }] = useBoolean()
+  //TODO: Set this to false after testing
+  const [isOpen, { on, toggle }] = useBoolean(true)
 
-  const [initOpen, setInitOpen] = React.useState(false)
+  const [initOpen, setInitOpen] = React.useState(true)
 
   React.useEffect(() => {
     if (isOpen) {

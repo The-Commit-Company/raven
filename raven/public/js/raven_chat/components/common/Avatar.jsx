@@ -25,8 +25,8 @@ export const getInitials = (name) => {
     const [firstName, lastName] = name.split(' ')
     return firstName[0] + (lastName?.[0] ?? '')
 }
-
-const Avatar = ({ user, fallback }) => {
+//TODO: isActive is not implemented
+const Avatar = ({ user, fallback, isActive }) => {
 
     const color = generateAvatarColor(user?.full_name)
     return (
