@@ -5,11 +5,15 @@ import { LeaveChannelButton } from "@/components/features/channels/LeaveChannel"
 import { IonBackButton, IonButtons, IonContent, IonHeader, IonItem, IonItemDivider, IonItemGroup, IonLabel, IonList, IonListHeader, IonPage, IonTitle, IonToolbar } from "@ionic/react"
 import { useRef } from "react"
 import { useParams } from "react-router-dom"
+import { useGetChannelData } from "@/hooks/useGetChannelData"
+import { ChannelInfoButton } from "@/components/features/channels/ChannelInfo"
 
 export const ChannelSettings = () => {
 
     const pageRef = useRef()
     const { channelID } = useParams<{ channelID: string }>()
+
+    const { channel } = useGetChannelData(channelID)
 
     return (
         <IonPage ref={pageRef}>
@@ -26,8 +30,12 @@ export const ChannelSettings = () => {
             <IonContent fullscreen={true}>
                 <IonList>
 
-                    <ViewChannelMembersButton pageRef={pageRef} channelID={channelID} />
-                    <AddChannelMembersButton pageRef={pageRef} channelID={channelID} />
+                    {channel && <ChannelInfoButton channel={channel} pageRef={pageRef} />}
+
+                    {channel && channel?.type === 'Open' ? null : <>
+                        <ViewChannelMembersButton pageRef={pageRef} channelID={channelID} />
+                        <AddChannelMembersButton pageRef={pageRef} channelID={channelID} />
+                    </>}
                     <IonItemGroup className="py-2">
                         <LeaveChannelButton channelID={channelID} />
                     </IonItemGroup>
