@@ -127,7 +127,7 @@ export const ChatInterface = ({ channel }: { channel: ChannelListItem | DMChanne
                     <ChatHeader channel={channel} />
                     <IonButtons slot='end'>
                         {/* do not show settings button for open channels */}
-                        {channel.type !== 'Open' && !channel.is_direct_message && <IonButton color='medium' slot='icon-only' routerLink={`${channel.name}/channel-settings`}>
+                        {!channel.is_direct_message && <IonButton color='medium' slot='icon-only' routerLink={`${channel.name}/channel-settings`}>
                             <IonIcon icon={peopleOutline} />
                         </IonButton>}
                     </IonButtons>
