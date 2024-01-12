@@ -6,7 +6,7 @@ app_publisher = "The Commit Company"
 app_description = "Messaging Application"
 app_email = "support@thecommit.company"
 app_license = "AGPLv3"
-
+required_apps = []
 # Includes in <head>
 # ------------------
 
