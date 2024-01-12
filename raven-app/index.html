@@ -18,7 +18,7 @@
 
     window.frappePushNotification = new FrappePushNotification("raven");
     document.addEventListener("DOMContentLoaded", () => {
-      window.frappePushNotification.appendConfigToServiceWorkerURL("/assets/raven/raven/frappe-notification-sw.js")
+      window.frappePushNotification.appendConfigToServiceWorkerURL("/assets/raven/raven/frappe-push-notification-sw.js")
         .then((url) => {
           navigator.serviceWorker.register(url, {
             type: "module",
