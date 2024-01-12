@@ -85,8 +85,9 @@ class RavenMessage(Document):
             if frappe.db.get_value('Raven Channel', self.channel_id, 'type') == 'Open':
                 raven_users = frappe.db.get_all('Raven Channel Member', filters={
                     'channel_id': self.channel_id,
-                    'user_id': ['!=', frappe.session.user]
-                }, pluck=['user_id'])
+                    # TODO: Add this to avoid self notifications
+                    # 'user_id': ['!=', frappe.session.user]
+                }, pluck='user_id')
 
                 for user in raven_users:
                     link = urlparse(frappe.utils.get_url()).hostname
