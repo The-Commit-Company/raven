@@ -9,4 +9,5 @@ readme = "README.md"
 dynamic = ["version"]
 dependencies = [
  "linkpreview",
+ "redisearch"
 ]

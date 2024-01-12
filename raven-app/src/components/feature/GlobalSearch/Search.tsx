@@ -28,7 +28,7 @@ export const RedisSearch = () => {
 const SearchModalContent = ({ onClose }: { onClose: () => void }) => {
 
     const { data, error, isLoading, mutate } = useFrappeGetCall<any>('raven.api.command_palette.search', {
-        'query': 'boop',
+        'query': 'hi',
         'start': 0,
     }, undefined, {
         revalidateOnFocus: false
