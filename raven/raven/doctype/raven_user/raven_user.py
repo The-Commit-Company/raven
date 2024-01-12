@@ -80,13 +80,13 @@ def add_user_to_raven(doc,method):
 				if not doc.full_name:
 					raven_user.full_name = doc.first_name
 				raven_user.enabled = 1
-				raven_user.save()
+				raven_user.save(ignore_permissions=True)
 			else:
 				raven_user = frappe.get_doc("Raven User", {"user": doc.name})
 				if not doc.full_name:
 					raven_user.full_name = doc.first_name
 				raven_user.enabled = 0
-				raven_user.save()
+				raven_user.save(ignore_permissions=True)
 		else:
 			# Raven user does not exist. Check if the user is a system user.
 			if doc.user_type == "System User":
@@ -102,7 +102,7 @@ def add_user_to_raven(doc,method):
 						if not doc.full_name:
 							raven_user.full_name = doc.first_name
 						raven_user.enabled = 1
-						raven_user.insert()
+						raven_user.insert(ignore_permissions=True)
 					else:
 						if "Raven User" in [d.role for d in doc.get("roles")]:
 							# Create a Raven User record for the user.
@@ -111,4 +111,4 @@ def add_user_to_raven(doc,method):
 							if not doc.full_name:
 								raven_user.full_name = doc.first_name
 							raven_user.enabled = 1
-							raven_user.insert()
+							raven_user.insert(ignore_permissions=True)
