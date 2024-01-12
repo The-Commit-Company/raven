@@ -8,5 +8,8 @@ requires-python = ">=3.10"
 readme = "README.md"
 dynamic = ["version"]
 dependencies = [
- "linkpreview",
+ "linkpreview"
 ]
+
+[tool.setuptools]
+packages = ["raven"]
