@@ -2,13 +2,17 @@
 # For license information, please see license.txt
 import frappe
 from frappe import _
+from frappe.utils import strip_html_tags
 from frappe.model.document import Document
 from datetime import timedelta
 from frappe.query_builder.functions import Count, Coalesce
 from frappe.query_builder import Case, Order,JoinType
 from collections.abc import Iterable
 import json
+from frappe.push_notification import PushNotification
 from raven.raven_channel_management.doctype.raven_channel.raven_channel import get_peer_user_id
+from urllib.parse import urlparse
+
 channel = frappe.qb.DocType("Raven Channel")
 channel_member = frappe.qb.DocType("Raven Channel Member")
 message = frappe.qb.DocType('Raven Message')
@@ -72,6 +76,32 @@ class RavenMessage(Document):
             'raven:unread_channel_count_updated', {
                 'channel_id': self.channel_id,
             })
+        
+        self.send_notification()
+
+    def send_notification(self):
+        try:
+            # TODO: Extend this for all channel types
+            if frappe.db.get_value('Raven Channel', self.channel_id, 'type') == 'Open':
+                raven_users = frappe.db.get_all('Raven Channel Member', filters={
+                    'channel_id': self.channel_id,
+                    'user_id': ['!=', frappe.session.user]
+                }, pluck=['user_id'])
+
+                for user in raven_users:
+                    link = urlparse(frappe.utils.get_url()).hostname
+                    push_notification = PushNotification()
+                    if push_notification.is_enabled():
+                        PushNotification().send_notification_to_user(
+                            user,
+                            "Raven Message",
+                            strip_html_tags(self.text),
+                            link="https://{}/raven/channel/{}".format(link, self.channel_id),
+                            truncate_body=True
+                        )
+        except Exception as e:
+            frappe.log_error(e)
+
 
     def after_delete(self):
         self.send_update_event(type="delete")
