@@ -16,6 +16,24 @@ export const SidebarFooter = () => {
 
     const canAddUsers = isSystemManager()
 
+    const subscribeToNotification = () => {
+        //@ts-ignore
+        window.frappePushNotification.enableNotification()
+            .then((data: any) => {
+                console.log(data);
+                let permission_granted = data?.permission_granted;
+                let token = data?.token;
+                if (permission_granted) {
+                    console.log("Notification Activated", token)
+                } else {
+                    console.log("Permission Denied ! Retry again later");
+                }
+            })
+            .catch((err: any) => {
+                console.error(err);
+            })
+    }
+
     return (
         <Flex
             gap='1'
@@ -56,6 +74,9 @@ export const SidebarFooter = () => {
                                 <Link href="/raven_mobile" className='no-underline'>
                                     Mobile App
                                 </Link>
+                            </DropdownMenu.Item>
+                            <DropdownMenu.Item color='gray' onClick={subscribeToNotification}>
+                                Subscribe to Notifications
                             </DropdownMenu.Item>
                             <DropdownMenu.Item onClick={logout} color='red' className='cursor-pointer'>
                                 Log Out
