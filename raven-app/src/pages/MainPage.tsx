@@ -1,6 +1,6 @@
 import { Flex, Box } from '@radix-ui/themes'
 import { Outlet } from 'react-router-dom'
-import { lazy, Suspense } from 'react'
+import { lazy, Suspense, useEffect } from 'react'
 import { Sidebar } from '../components/layout/Sidebar/Sidebar'
 import { VirtuosoRefProvider } from '../utils/message/VirtuosoRefProvider'
 import { ChannelListProvider } from '../utils/channel/ChannelListProvider'
@@ -15,6 +15,29 @@ const AddRavenUsersPage = lazy(() => import('@/pages/AddRavenUsersPage'))
 
 export const MainPage = () => {
     const isRavenUser = hasRavenUserRole()
+
+    useEffect(() => {
+
+        const subscribeToNotification = () => {
+            //@ts-ignore
+            window.frappePushNotification.enableNotification()
+                .then((data: any) => {
+                    console.log(data);
+                    let permission_granted = data?.permission_granted;
+                    let token = data?.token;
+                    if (permission_granted) {
+                        console.log("Notification Activated", token)
+                    } else {
+                        console.log("Permission Denied ! Retry again later");
+                    }
+                })
+                .catch((err: any) => {
+                    console.error(err);
+                })
+        }
+
+        subscribeToNotification()
+    }, [])
 
     if (isRavenUser) {
         return (

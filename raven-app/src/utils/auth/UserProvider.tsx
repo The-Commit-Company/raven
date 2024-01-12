@@ -25,6 +25,10 @@ export const UserProvider: FC<PropsWithChildren> = ({ children }) => {
 
     const handleLogout = async () => {
         localStorage.removeItem('ravenLastChannel')
+
+        //@ts-ignore
+        await window.frappePushNotification.disableNotification()
+
         return logout()
             .then(() => {
                 //Clear cache on logout
@@ -39,7 +43,10 @@ export const UserProvider: FC<PropsWithChildren> = ({ children }) => {
     }
 
     const handleLogin = async (username: string, password: string) => {
-        return login(username, password)
+        return login({
+            username,
+            password
+        })
             .then(() => {
                 //Reload the page so that the boot info is fetched again
                 const URL = import.meta.env.VITE_BASE_NAME ? `/${import.meta.env.VITE_BASE_NAME}` : ``

@@ -12,6 +12,31 @@
   <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#000000">
   <meta name="msapplication-TileColor" content="#000000">
   <meta name="theme-color" content="#ffffff">
+
+  <!-- Import Frappe Notification JS -->
+  <script type="module">
+    import FrappePushNotification from "./public/frappe-push-notification";
+
+    window.frappePushNotification = new FrappePushNotification("raven");
+    document.addEventListener("DOMContentLoaded", () => {
+      window.frappePushNotification.appendConfigToServiceWorkerURL("/assets/raven/raven/frappe-notification-sw.js")
+        .then((url) => {
+          navigator.serviceWorker.register(url, {
+            type: "module",
+          }).then((registration) => {
+            window.frappePushNotification.initialize(registration).then(() => {
+              console.log("Frappe Notification Initialized");
+            });
+          })
+        })
+        .catch((err) => {
+          console.error(err);
+        });
+    });
+
+  </script>
+  <!-- END ! Import Frappe Notification JS -->
+
 </head>
 
 <body>
