@@ -1,7 +1,7 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getMessaging, onBackgroundMessage } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging-sw.js";
 
-const jsonConfig = new URL(location).searchParams.get('config');
+const jsonConfig = window.push_config;
 const firebaseApp = initializeApp(JSON.parse(jsonConfig));
 const messaging = getMessaging(firebaseApp);
 function isChrome() {

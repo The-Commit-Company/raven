@@ -73,8 +73,11 @@ class FrappePushNotification {
      */
     async appendConfigToServiceWorkerURL(url, parameter_name = "config") {
         let config = await this.fetchWebConfig();
+
+        window.push_config = config;
         const encode_config = encodeURIComponent(JSON.stringify(config));
-        return `${url}?${parameter_name}=${encode_config}`;
+        return url
+        // return `${url}?${parameter_name}=${encode_config}`;
     }
 
     /**
