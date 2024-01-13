@@ -91,9 +91,9 @@ class RavenMessage(Document):
 
                 for user in raven_users:
                     link = urlparse(frappe.utils.get_url()).hostname
-                    push_notification = PushNotification()
+                    push_notification = PushNotification("raven")
                     if push_notification.is_enabled():
-                        PushNotification().send_notification_to_user(
+                        push_notification.send_notification_to_user(
                             user,
                             "Raven Message",
                             strip_html_tags(self.text),
