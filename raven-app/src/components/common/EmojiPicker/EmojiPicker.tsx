@@ -1,13 +1,14 @@
 import { createElement, useEffect, useRef } from "react"
 import 'emoji-picker-element'
 import './emojiPicker.styles.css'
+import { useTheme } from "@/ThemeProvider"
 
 const EmojiPicker = ({ onSelect }: { onSelect: (emoji: string) => void }) => {
 
     const ref = useRef<any>(null)
+    const { appearance } = useTheme()
 
     useEffect(() => {
-
         const handler = (event: any) => {
             onSelect(event.detail.unicode)
         }
@@ -15,7 +16,7 @@ const EmojiPicker = ({ onSelect }: { onSelect: (emoji: string) => void }) => {
         ref.current.skinToneEmoji = '👍'
 
         const style = document.createElement('style');
-        style.textContent = `.picker { border-radius: var(--radius-4); box-shadow: var(--shadow-6); }`
+        style.textContent = `.picker { border-radius: var(--radius-4); box-shadow: var(--shadow-6); } input.search{ color: ${appearance === 'light' ? '#020617' : '#f1f5f9' } }`
         ref.current.shadowRoot.appendChild(style);
 
         return () => {
