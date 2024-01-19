@@ -3,9 +3,10 @@
 import frappe
 from frappe import _
 from frappe.model.document import Document
+from frappe.utils import strip_html_tags
 from datetime import timedelta
 from frappe.query_builder.functions import Count, Coalesce
-from frappe.query_builder import Case, Order,JoinType
+from frappe.query_builder import Case, Order, JoinType
 from collections.abc import Iterable
 import json
 from raven.raven_channel_management.doctype.raven_channel.raven_channel import get_peer_user_id
@@ -13,6 +14,7 @@ channel = frappe.qb.DocType("Raven Channel")
 channel_member = frappe.qb.DocType("Raven Channel Member")
 message = frappe.qb.DocType('Raven Message')
 user = frappe.qb.DocType("User")
+
 
 class RavenMessage(Document):
     # begin: auto-generated types
@@ -24,6 +26,7 @@ class RavenMessage(Document):
         from frappe.types import DF
 
         channel_id: DF.Link
+        content: DF.LongText | None
         file: DF.Attach | None
         file_thumbnail: DF.Attach | None
         image_height: DF.Data | None
@@ -148,6 +151,7 @@ def send_message(channel_id, text, is_reply, linked_message=None, json=None):
                 'doctype': 'Raven Message',
                 'channel_id': channel_id,
                 'text': clean_text,
+                'content': strip_html_tags(clean_text).replace('\ufeff', '').replace('&nbsp;', ' '),
                 'message_type': 'Text',
                 'is_reply': is_reply,
                 'linked_message': linked_message,
@@ -158,6 +162,7 @@ def send_message(channel_id, text, is_reply, linked_message=None, json=None):
                 'doctype': 'Raven Message',
                 'channel_id': channel_id,
                 'text': clean_text,
+                'content': strip_html_tags(clean_text).replace('\ufeff', '').replace('&nbsp;', ' '),
                 'message_type': 'Text',
                 'json': json
             })
@@ -191,11 +196,11 @@ def fetch_recent_files(channel_id):
 def get_messages(channel_id):
 
     messages = frappe.db.get_all('Raven Message',
-                                  filters={'channel_id': channel_id},
-                                  fields=['name', 'owner', 'creation', 'text',
-                                          'file', 'message_type', 'message_reactions', 'is_reply', 'linked_message', '_liked_by', 'channel_id', 'thumbnail_width', 'thumbnail_height', 'file_thumbnail', 'link_doctype', 'link_document'],
-                                  order_by='creation asc'
-                                  )
+                                 filters={'channel_id': channel_id},
+                                 fields=['name', 'owner', 'creation', 'text',
+                                         'file', 'message_type', 'message_reactions', 'is_reply', 'linked_message', '_liked_by', 'channel_id', 'thumbnail_width', 'thumbnail_height', 'file_thumbnail', 'link_doctype', 'link_document'],
+                                 order_by='creation asc'
+                                 )
 
     return messages
 
