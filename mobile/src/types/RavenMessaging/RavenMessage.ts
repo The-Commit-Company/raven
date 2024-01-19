@@ -36,4 +36,12 @@ export interface RavenMessage{
 	is_reply?: 0 | 1
 	/**	Linked Message : Link - Raven Message	*/
 	linked_message?: string
+	/**	Link Doctype : Link - DocType	*/
+	link_doctype?: string
+	/**	Link Document : Dynamic Link	*/
+	link_document?: string
+	/**	Is Bot Message : Check	*/
+	is_bot_message?: 0 | 1
+	/**	Bot : Link - Raven User	*/
+	bot?: string
 }
