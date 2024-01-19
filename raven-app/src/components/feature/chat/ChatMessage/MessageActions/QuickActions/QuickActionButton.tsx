@@ -7,7 +7,7 @@ interface QuickActionButtonProps extends IconButtonProps {
     tooltip: string
 }
 
-export const QUICK_ACTION_BUTTON_CLASS = 'bg-gray-2 dark:bg-gray-3 hover:bg-gray-4 dark:hover:bg-gray-6 text-gray-12 hover:text-gray-12'
+export const QUICK_ACTION_BUTTON_CLASS = 'bg-gray-2 dark:bg-gray-2 hover:bg-gray-4 dark:hover:bg-gray-5 text-gray-12 hover:text-gray-12'
 export const QuickActionButton = forwardRef(({ className, tooltip, ...props }: QuickActionButtonProps, ref) => {
     return (
         <Tooltip content={tooltip}>
