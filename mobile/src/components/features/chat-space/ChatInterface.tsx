@@ -65,7 +65,7 @@ export const ChatInterface = ({ channel }: { channel: ChannelListItem | DMChanne
      * 
      * */
     // Fetch all the messages in the channel
-    const { data: messages, error: messagesError, mutate: refreshMessages, isLoading: isMessageLoading } = useFrappeGetCall<{ message: MessagesWithDate }>("raven.raven_messaging.doctype.raven_message.raven_message.get_messages_with_dates", {
+    const { data: messages, error: messagesError, mutate: refreshMessages, isLoading: isMessageLoading } = useFrappeGetCall<{ message: MessagesWithDate }>("raven.api.raven_message.get_messages_with_dates", {
         channel_id: channel.name
     }, `get_messages_for_channel_${channel.name}`, {
         keepPreviousData: true,

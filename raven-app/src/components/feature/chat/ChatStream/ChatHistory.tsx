@@ -82,7 +82,7 @@ export const ChatHistory = ({ parsedMessages, replyToMessage, channelData }: Cha
 
     const onReplyMessageClick = (messageID: string) => {
         if (virtuosoRef?.current) {
-            call.get('raven.raven_messaging.doctype.raven_message.raven_message.get_index_of_message', {
+            call.get('raven.api.raven_message.get_index_of_message', {
                 channel_id: channelData.name,
                 message_id: messageID
             }).then((result) => {

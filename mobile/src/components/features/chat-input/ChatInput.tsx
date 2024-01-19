@@ -14,7 +14,7 @@ type Props = {
 }
 export const ChatInput = ({ channelID, allChannels, allMembers, onMessageSend }: Props) => {
 
-    const { call, loading } = useFrappePostCall('raven.raven_messaging.doctype.raven_message.raven_message.send_message')
+    const { call, loading } = useFrappePostCall('raven.api.raven_message.send_message')
 
     const [files, setFiles] = useState<File[]>([])
 
