@@ -32,7 +32,8 @@ def track_visit(channel_id, commit=False):
     frappe.publish_realtime(
         'raven:unread_channel_count_updated', {
             'channel_id': channel_id,
-        }, after_commit=True)
+            'play_sound': False
+        }, user=frappe.session.user, after_commit=True)
     # Need to commit the changes to the database if the request is a GET request
     if commit:
         frappe.db.commit()
