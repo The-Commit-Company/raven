@@ -193,7 +193,7 @@ doc_events = {
 # ]
 
 additional_timeline_content = {
-    "*": ['raven.raven_messaging.doctype.raven_message.raven_message.get_timeline_message_content']
+    "*": ['raven.api.raven_message.get_timeline_message_content']
 }
 
 website_route_rules = [

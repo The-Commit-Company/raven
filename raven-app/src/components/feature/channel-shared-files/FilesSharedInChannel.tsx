@@ -21,7 +21,7 @@ interface FilesSharedInChannelProps {
 export const FilesSharedInChannel = ({ channelMembers }: FilesSharedInChannelProps) => {
 
     const { channelID } = useParams()
-    const { data, error } = useFrappeGetCall<{ message: ChannelFile[] }>("raven.raven_messaging.doctype.raven_message.raven_message.fetch_recent_files", {
+    const { data, error } = useFrappeGetCall<{ message: ChannelFile[] }>("raven.api.raven_message.fetch_recent_files", {
         channel_id: channelID
     }, undefined, {
         revalidateOnFocus: false
