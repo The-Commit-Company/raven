@@ -3,8 +3,10 @@
 import frappe
 from frappe import _
 from frappe.model.document import Document
+from frappe.utils import strip_html_tags
 import json
 from raven.api.raven_message import track_visit
+
 
 class RavenMessage(Document):
     # begin: auto-generated types
@@ -16,6 +18,7 @@ class RavenMessage(Document):
         from frappe.types import DF
 
         channel_id: DF.Link
+        content: DF.LongText | None
         file: DF.Attach | None
         file_thumbnail: DF.Attach | None
         image_height: DF.Data | None
@@ -91,3 +94,12 @@ class RavenMessage(Document):
     def before_save(self):
         if frappe.db.get_value('Raven Channel', self.channel_id, 'type') != 'Private' or frappe.db.exists("Raven Channel Member", {"channel_id": self.channel_id, "user_id": frappe.session.user}):
             track_visit(self.channel_id)
+
+
+def on_doctype_update():
+    '''
+    Add indexes to Raven Message table
+    '''
+    # Index the selector (channel or message type) first for faster queries (less rows to sort in the next step)
+    frappe.db.add_index("Raven Message", ["channel_id", "creation"])
+    frappe.db.add_index("Raven Message", ["message_type", "creation"])
