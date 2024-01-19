@@ -31,7 +31,7 @@ const AddRavenUsersContent = ({ onClose }: { onClose: VoidFunction }) => {
     const [sortOrder, setSortOder] = useState<"asc" | "desc">("desc")
 
     const { data, error } = useFrappeGetDocList<User>("User", {
-        fields: ["name", "full_name", "user_image", "creation", "enabled", "user_type"],
+        fields: ["name", "full_name", "user_image", "creation", "enabled", "user_type", "role_profile_name"],
         filters,
         orderBy: {
             field: 'creation',
