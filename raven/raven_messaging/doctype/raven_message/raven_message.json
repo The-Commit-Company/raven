@@ -23,7 +23,8 @@
   "linked_message",
   "link_doctype",
   "link_document",
-  "content"
+  "content",
+  "is_edited"
  ],
  "fields": [
   {
@@ -116,11 +117,17 @@
    "fieldtype": "Long Text",
    "label": "Content",
    "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "is_edited",
+   "fieldtype": "Check",
+   "label": "Is Edited"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-01-19 14:56:44.534433",
+ "modified": "2024-01-19 17:14:52.266110",
  "modified_by": "Administrator",
  "module": "Raven Messaging",
  "name": "Raven Message",

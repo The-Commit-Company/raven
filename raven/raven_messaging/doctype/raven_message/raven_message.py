@@ -22,6 +22,7 @@ class RavenMessage(Document):
         file_thumbnail: DF.Attach | None
         image_height: DF.Data | None
         image_width: DF.Data | None
+        is_edited: DF.Check
         is_reply: DF.Check
         json: DF.JSON | None
         link_doctype: DF.Link | None
@@ -41,6 +42,11 @@ class RavenMessage(Document):
                     '\ufeff', '').replace('&nbsp;', ' ')
         except Exception:
             pass
+
+        if not self.is_new():
+            # this is not a new message, so it's a previous message being edited
+            self.is_edited = True
+
     def validate(self):
         '''
         1. Message can be created if the channel is open

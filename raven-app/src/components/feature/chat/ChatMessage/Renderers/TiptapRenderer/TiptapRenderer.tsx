@@ -1,8 +1,8 @@
-import { EditorContent, EditorContext, EditorProvider, Extension, ReactRenderer, useEditor } from '@tiptap/react'
-import { Message, TextMessage } from '../../../../../../../../types/Messaging/Message'
+import { EditorContent, EditorContext, useEditor } from '@tiptap/react'
+import { TextMessage } from '../../../../../../../../types/Messaging/Message'
 import { UserFields } from '@/utils/users/UserListProvider'
 import { BoxProps } from '@radix-ui/themes/dist/cjs/components/box'
-import { Box } from '@radix-ui/themes'
+import { Box, Text } from '@radix-ui/themes'
 import Highlight from '@tiptap/extension-highlight'
 import StarterKit from '@tiptap/starter-kit'
 import css from 'highlight.js/lib/languages/css'
@@ -93,6 +93,7 @@ export const TiptapRenderer = ({ message, user, isScrolling = false, isTruncated
           editor={editor}
           readOnly />
         {showLinkPreview && <LinkPreview isScrolling={isScrolling} />}
+        {message.is_edited === 1 && <Text size='1' className='text-gray-10'>(edited)</Text>}
       </EditorContext.Provider>
     </Box>
   )

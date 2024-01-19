@@ -14,6 +14,7 @@ export interface BaseMessage {
     linked_message?: string | null
     link_doctype?: string
     link_document?: string
+    is_edited: 1 | 0
 }
 
 export interface FileMessage extends BaseMessage {
