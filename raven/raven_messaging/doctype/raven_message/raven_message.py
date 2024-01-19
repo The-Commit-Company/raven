@@ -8,7 +8,7 @@ from frappe.query_builder.functions import Count, Coalesce
 from frappe.query_builder import Case, Order,JoinType
 from collections.abc import Iterable
 import json
-from raven.raven_channel_management.doctype.raven_channel.raven_channel import get_peer_user_id
+from raven.api.raven_channel import get_peer_user_id
 channel = frappe.qb.DocType("Raven Channel")
 channel_member = frappe.qb.DocType("Raven Channel Member")
 message = frappe.qb.DocType('Raven Message')

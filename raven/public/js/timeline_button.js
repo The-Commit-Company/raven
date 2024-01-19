@@ -211,8 +211,7 @@ $(document).on('app_ready', function () {
 
             let get_channels = () => {
               return frappe.call({
-                method:
-                  'raven.raven_channel_management.doctype.raven_channel.raven_channel.get_channels',
+                method: 'raven.api.raven_channel.get_channels',
                 args: {
                   hide_archived: true,
                 },
