@@ -20,11 +20,11 @@ const SavedMessages = () => {
 
     const { virtuosoRef } = useContext(VirtuosoRefContext)
 
-    const { data, error } = useFrappeGetCall<{ message: Message[] }>("raven.raven_messaging.doctype.raven_message.raven_message.get_saved_messages", undefined, undefined, {
+    const { data, error } = useFrappeGetCall<{ message: Message[] }>("raven.api.raven_message.get_saved_messages", undefined, undefined, {
         revalidateOnFocus: false
     })
 
-    const { call, error: indexingError, reset } = useFrappePostCall<{ message: string }>("raven.raven_messaging.doctype.raven_message.raven_message.get_index_of_message")
+    const { call, error: indexingError, reset } = useFrappePostCall<{ message: string }>("raven.api.raven_message.get_index_of_message")
 
     const handleNavigateToChannel = (channelID: string, _callback: VoidFunction) => {
         navigate(`/channel/${channelID}`)
