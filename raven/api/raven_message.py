@@ -94,7 +94,7 @@ def get_messages(channel_id):
 
     messages = frappe.db.get_all('Raven Message',
                                  filters={'channel_id': channel_id},
-                                 fields=['name', 'owner', 'creation', 'text',
+                                 fields=['name', 'owner', 'creation', 'modified', 'text',
                                          'file', 'message_type', 'message_reactions', 'is_reply', 'linked_message', '_liked_by', 'channel_id', 'thumbnail_width', 'thumbnail_height', 'file_thumbnail', 'link_doctype', 'link_document'],
                                  order_by='creation asc'
                                  )
