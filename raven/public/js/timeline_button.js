@@ -249,7 +249,8 @@ $(document).on('app_ready', function () {
                 (channel) => channel.name == values.channel
               ).value;
               // get message from values.message and clean it up, remove html tags
-              let message = values.message.replace(/<[^>]*>?/gm, '');
+              // let message = values.message.replace(/<[^>]*>?/gm, '');
+              let message = values.message;
 
               let get_type = (url) => {
                 if (url) {
