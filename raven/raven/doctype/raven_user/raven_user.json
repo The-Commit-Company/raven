@@ -65,7 +65,7 @@
    "fieldname": "type",
    "fieldtype": "Select",
    "label": "Type",
-   "options": "Human\nBot",
+   "options": "User\nBot",
    "reqd": 1
   },
   {
@@ -78,7 +78,7 @@
  ],
  "image_field": "user_image",
  "links": [],
- "modified": "2024-01-19 16:53:51.574064",
+ "modified": "2024-01-19 17:53:07.854127",
  "modified_by": "Administrator",
  "module": "Raven",
  "name": "Raven User",
