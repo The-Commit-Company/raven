@@ -71,7 +71,7 @@ const useFetchChannelList = (): ChannelListContextType => {
             position: 'bottom',
         });
     };
-    const { data, mutate, ...rest } = useFrappeGetCall<{ message: ChannelList }>("raven.raven_channel_management.doctype.raven_channel.raven_channel.get_all_channels", undefined, isLoggedIn ? undefined : null, {
+    const { data, mutate, ...rest } = useFrappeGetCall<{ message: ChannelList }>("raven.api.raven_channel.get_all_channels", undefined, isLoggedIn ? undefined : null, {
         revalidateOnFocus: false,
         revalidateIfStale: false,
         onError: (error) => {

@@ -41,7 +41,7 @@ interface ChatBoxBodyProps {
 export const ChatBoxBody = ({ channelData }: ChatBoxBodyProps) => {
 
     const { currentUser } = useContext(UserContext)
-    const { data, error, mutate, isLoading } = useFrappeGetCall<{ message: MessagesWithDate }>("raven.raven_messaging.doctype.raven_message.raven_message.get_messages_with_dates", {
+    const { data, error, mutate, isLoading } = useFrappeGetCall<{ message: MessagesWithDate }>("raven.api.raven_message.get_messages_with_dates", {
         channel_id: channelData.name
     }, `get_messages_for_channel_${channelData.name}`, {
         revalidateOnFocus: false

@@ -12,6 +12,8 @@ app_license = "AGPLv3"
 
 # include js, css files in header of desk.html
 app_include_css = "raven.bundle.css"
+# app_include_css = "/assets/raven/css/raven.css"
+# app_include_js = "/assets/raven/js/raven.js"                 ]
 app_include_js = "raven.bundle.js"
 
 
@@ -194,6 +196,10 @@ doc_events = {
 # auth_hooks = [
 # "raven.auth.validate"
 # ]
+
+additional_timeline_content = {
+    "*": ['raven.api.raven_message.get_timeline_message_content']
+}
 
 website_route_rules = [
     {'from_route': '/raven/<path:app_path>', 'to_route': 'raven'},

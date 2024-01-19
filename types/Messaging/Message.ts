@@ -6,19 +6,24 @@ export interface BaseMessage {
     _liked_by: string,
     channel_id: string,
     creation: string,
+    modified: string,
     message_type: 'Text' | 'File' | 'Image',
     message_reactions?: string | null,
     is_continuation: 1 | 0
     is_reply: 1 | 0
     linked_message?: string | null
+    link_doctype?: string
+    link_document?: string
 }
 
 export interface FileMessage extends BaseMessage {
+    text: string,
     file: string,
     message_type: 'File'
 }
 
 export interface ImageMessage extends BaseMessage {
+    text: string,
     file: string,
     message_type: 'Image'
     thumbnail_width?: number,

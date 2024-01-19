@@ -53,7 +53,7 @@ export const ViewChannelMembers = ({ presentingElement, isOpen, onDismiss, chann
     }
 
     const removeMember = () => {
-        return call.post('raven.raven_channel_management.doctype.raven_channel_member.raven_channel_member.remove_channel_member', {
+        return call.post('raven.api.raven_channel_member.remove_channel_member', {
             user_id: selectedMember?.name,
             channel_id: channelID
         }).then(() => {

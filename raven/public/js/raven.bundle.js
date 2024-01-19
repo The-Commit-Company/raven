@@ -14,3 +14,5 @@ $(document).on('app_ready', function () {
     });
 
 });
+import './templates/send_message.html';
+import './timeline_button';
