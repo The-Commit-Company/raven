@@ -4,7 +4,6 @@ import frappe
 from frappe import _
 from frappe.model.document import Document
 from frappe.utils import strip_html_tags
-import json
 from raven.api.raven_message import track_visit
 
 
@@ -35,6 +34,13 @@ class RavenMessage(Document):
         thumbnail_width: DF.Data | None
     # end: auto-generated types
 
+    def before_validate(self):
+        try:
+            if self.text:
+                self.content = strip_html_tags(self.text).replace(
+                    '\ufeff', '').replace('&nbsp;', ' ')
+        except Exception:
+            pass
     def validate(self):
         '''
         1. Message can be created if the channel is open

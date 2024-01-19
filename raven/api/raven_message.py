@@ -12,15 +12,6 @@ message = frappe.qb.DocType('Raven Message')
 user = frappe.qb.DocType("User")
 
 
-def on_doctype_update():
-    '''
-    Add indexes to Raven Message table
-    '''
-    # Index the selector (channel or message type) first for faster queries (less rows to sort in the next step)
-    frappe.db.add_index("Raven Message", ["channel_id", "creation"])
-    frappe.db.add_index("Raven Message", ["message_type", "creation"])
-
-
 def track_visit(channel_id, commit=False):
     '''
     Track the last visit of the user to the channel.
