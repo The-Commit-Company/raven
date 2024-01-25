@@ -21,7 +21,7 @@ export const DateTooltipShort = ({ timestamp }: { timestamp: string }) => {
         <Tooltip content={<DateMonthAtHourMinuteAmPm date={timestamp} />}>
             <Link
                 asChild
-                size='1'
+                style={{ fontSize: '0.68rem' }}
                 color="gray"
             >
                 <span><HourMinuteAmPm date={timestamp} amPm={false} /></span>

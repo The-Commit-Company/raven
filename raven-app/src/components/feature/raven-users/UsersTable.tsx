@@ -1,8 +1,9 @@
 import { User } from "@/types/Core/User"
 import { useMemo } from "react"
-import { Checkbox, Flex, Table } from "@radix-ui/themes"
+import { Badge, Box, Checkbox, Flex, Table, Tooltip } from "@radix-ui/themes"
 import { UserAvatar } from "@/components/common/UserAvatar"
 import { StandardDate } from "@/utils/dateConversions"
+import { FiAlertTriangle } from "react-icons/fi"
 
 interface UsersTableProps {
     data: User[],
@@ -62,6 +63,7 @@ export const UsersTable = ({ data, selected, setSelected, defaultSelected }: Use
                     <Table.ColumnHeaderCell>Name</Table.ColumnHeaderCell>
                     <Table.ColumnHeaderCell>User ID</Table.ColumnHeaderCell>
                     <Table.ColumnHeaderCell>Created on</Table.ColumnHeaderCell>
+                    <Table.ColumnHeaderCell></Table.ColumnHeaderCell>
                 </Table.Row>
             </Table.Header>
             <Table.Body>
@@ -79,6 +81,16 @@ export const UsersTable = ({ data, selected, setSelected, defaultSelected }: Use
 
                             <Table.Cell>{user.name}</Table.Cell>
                             <Table.Cell><StandardDate date={user.creation} /></Table.Cell>
+                            <Table.Cell>
+                                {user.role_profile_name ?
+                                    <Box>
+                                        <Tooltip content={<span>A role profile has been assigned to this user.<br />If you want to add the user to Raven, please change their role profile.</span>}>
+                                            <Badge color='red' variant="solid">
+                                                <FiAlertTriangle size='12' />
+                                                Role Profile Added</Badge>
+                                        </Tooltip>
+                                    </Box> : null}
+                            </Table.Cell>
                         </Table.Row>
                     )
                 })}

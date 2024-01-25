@@ -41,7 +41,7 @@ $(document).on('app_ready', function () {
                     folder: 'Home/Attachments',
                     on_success: (attachment) => {
                       frm.attachments.push(attachment);
-                      render_attachment_rows(attachment);
+                      render_attachment_rows();
                     },
                   };
 
@@ -52,7 +52,7 @@ $(document).on('app_ready', function () {
                       folder: 'Home/Attachments',
                       on_success: (attachment) => {
                         frm.attachments.attachment_uploaded(attachment);
-                        render_attachment_rows(attachment);
+                        render_attachment_rows();
                       },
                     };
                   }
@@ -92,11 +92,31 @@ $(document).on('app_ready', function () {
                     );
                   } else {
                     let files = [];
+                    // Add attachments from form
+                    // check if attachment already exists in files array
+
                     if (frm.attachments && frm.attachments.length) {
-                      files = files.concat(frm.attachments);
+                      // files = files.concat(frm.attachments);
+                      files = files.concat(
+                        frm.attachments.filter((attachment, index, array) => {
+                          return !array
+                            .slice(0, index)
+                            .some(
+                              (obj) => obj.file_name === attachment.file_name
+                            );
+                        })
+                      );
                     }
                     if (frm) {
                       files = files.concat(frm.get_files());
+
+                      files = files.filter((attachment, index, array) => {
+                        return !array
+                          .slice(0, index)
+                          .some(
+                            (obj) => obj.file_name === attachment.file_name
+                          );
+                      });
                     }
 
                     if (files.length) {
@@ -194,7 +214,6 @@ $(document).on('app_ready', function () {
                     secondary_action() {
                       dialog.hide();
                     },
-                    // size: 'small',
                     minimizable: true,
                   });
                 }
@@ -211,8 +230,7 @@ $(document).on('app_ready', function () {
 
             let get_channels = () => {
               return frappe.call({
-                method:
-                  'raven.raven_channel_management.doctype.raven_channel.raven_channel.get_channels',
+                method: 'raven.api.raven_channel.get_channels',
                 args: {
                   hide_archived: true,
                 },
@@ -230,7 +248,8 @@ $(document).on('app_ready', function () {
                 (channel) => channel.name == values.channel
               ).value;
               // get message from values.message and clean it up, remove html tags
-              let message = values.message.replace(/<[^>]*>?/gm, '');
+              // let message = values.message.replace(/<[^>]*>?/gm, '');
+              let message = values.message;
 
               let get_type = (url) => {
                 if (url) {
