@@ -5,11 +5,11 @@ import { ProtectedRoute } from './utils/auth/ProtectedRoute'
 import { UserProvider } from './utils/auth/UserProvider'
 import { ChannelRedirect } from './utils/channel/ChannelRedirect'
 import "cal-sans";
-import { useState } from 'react'
 import { ThemeProvider } from './ThemeProvider'
 import { Toaster } from './components/common/Toast/Toaster'
 import { FullPageLoader } from './components/layout/Loaders'
 import { useStickyState } from './hooks/useStickyState'
+import { Settings } from './pages/settings/Settings'
 
 
 const router = createBrowserRouter(
@@ -22,6 +22,12 @@ const router = createBrowserRouter(
           <Route index element={<ChannelRedirect />} />
           <Route path="saved-messages" lazy={() => import('./components/feature/saved-messages/SavedMessages')} />
           <Route path=":channelID" lazy={() => import('@/pages/ChatSpace')} />
+        </Route>
+        <Route path='settings' element={<Settings />}>
+          <Route path='integrations'>
+            <Route path='webhooks' element={<p>Webhooks</p>} />
+            <Route path='server-scripts' element={<p>SS</p>} />
+          </Route>
         </Route>
       </Route>
     </>
