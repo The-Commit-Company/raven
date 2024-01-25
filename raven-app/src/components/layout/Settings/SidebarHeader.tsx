@@ -16,6 +16,7 @@ export const SidebarHeader = (props: Props) => {
                 gap={'3'}
                 pt='1'
                 height='8'
+                className="cursor-pointer"
                 onClick={() => navigate('/channel')}
             >
                 <BiChevronLeft size={'24px'} color="gray" />
