@@ -8,7 +8,7 @@ import { BiBookmark } from 'react-icons/bi'
 
 export const SidebarBody = () => {
 
-    const { data: unread_count, mutate: update_count } = useFrappeGetCall<{ message: UnreadCountData }>("raven.raven_messaging.doctype.raven_message.raven_message.get_unread_count_for_channels",
+    const { data: unread_count, mutate: update_count } = useFrappeGetCall<{ message: UnreadCountData }>("raven.api.raven_message.get_unread_count_for_channels",
         undefined,
         'unread_channel_count', {
         // revalidateOnFocus: false,

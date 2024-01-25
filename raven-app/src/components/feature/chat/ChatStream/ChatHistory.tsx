@@ -82,7 +82,7 @@ export const ChatHistory = ({ parsedMessages, replyToMessage, channelData }: Cha
 
     const onReplyMessageClick = (messageID: string) => {
         if (virtuosoRef?.current) {
-            call.get('raven.raven_messaging.doctype.raven_message.raven_message.get_index_of_message', {
+            call.get('raven.api.raven_message.get_index_of_message', {
                 channel_id: channelData.name,
                 message_id: messageID
             }).then((result) => {
@@ -102,8 +102,8 @@ export const ChatHistory = ({ parsedMessages, replyToMessage, channelData }: Cha
                 itemContent={(index, data, context) => <RenderItem block={parsedMessages[index]} index={index} {...data} {...context} isScrolling={isScrolling} />}
                 initialTopMostItemIndex={parsedMessages.length - 1}
                 components={{
-                    Header: () => <ChannelHistoryFirstMessage channelID={channelData?.name} />,
-                    Footer: () => <Box p='4' className="z-10 relative"></Box>
+                    Header,
+                    Footer,
                 }}
                 isScrolling={setIsScrolling}
                 context={{ channelData, replyToMessage, onReplyMessageClick, setDeleteMessage, updateMessages, setEditMessage }}
@@ -117,6 +117,9 @@ export const ChatHistory = ({ parsedMessages, replyToMessage, channelData }: Cha
         </Box>
     )
 }
+const Header = ({ context: { channelData } }: any) => <ChannelHistoryFirstMessage channelID={channelData?.name} />
+const Footer = () => <Box p='4' className="z-10 relative"></Box>
+
 
 const RenderItem = ({ index, replyToMessage, updateMessages, block, onReplyMessageClick, channelData, setEditMessage, setDeleteMessage, isScrolling, ...props }: {
     index: number,
@@ -140,6 +143,7 @@ const RenderItem = ({ index, replyToMessage, updateMessages, block, onReplyMessa
                     message={block.data}
                     isScrolling={isScrolling}
                     updateMessages={updateMessages}
+                    key={`${block.data.name}_${block.data.modified}`}
                     onReplyMessageClick={onReplyMessageClick}
                     setEditMessage={setEditMessage}
                     replyToMessage={replyToMessage}
