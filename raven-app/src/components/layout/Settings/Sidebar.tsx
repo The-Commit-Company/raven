@@ -18,7 +18,7 @@ export const Sidebar = (props: Props) => {
                 </Box>
                 <SidebarBody />
             </Flex>
-            <SidebarFooter />
+            <SidebarFooter isSettingsPage />
         </Flex>
     )
 }
