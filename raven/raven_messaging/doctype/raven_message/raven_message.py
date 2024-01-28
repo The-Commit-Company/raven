@@ -72,6 +72,8 @@ class RavenMessage(Document):
         frappe.publish_realtime(
             'raven:unread_channel_count_updated', {
                 'channel_id': self.channel_id,
+                'play_sound': True,
+                'sent_by': self.owner,
             })
 
     def after_delete(self):
