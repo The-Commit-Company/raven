@@ -1,54 +1,64 @@
-import React, { useLayoutEffect } from 'react'
-import useSWR from 'swr'
-import { fetcher } from '../../../../hooks/useFetch'
-import MessageItem from '../MessageRenderer/MessageItem'
-import DateItem from '../MessageRenderer/DateItem'
-
+import React, { useLayoutEffect } from "react";
+import { fetcher } from "../../../../hooks/useFetch";
+import MessageItem from "../MessageRenderer/MessageItem";
+import DateItem from "../MessageRenderer/DateItem";
+import useSWRSubscription from "swr/subscription";
 /** Fetches messages from the backend and renders them */
 const MessageStream = ({ channelID }) => {
+  const containerRef = React.useRef(null);
 
+  const scrollToBottom = () => {
+    const scrollHeight = containerRef.current?.scrollHeight;
+    const height = containerRef.current?.clientHeight;
+    containerRef.current?.scrollTo({
+      top: scrollHeight - height,
+      left: 0,
+    });
+  };
 
-    const containerRef = React.useRef(null)
+  const { data } = useSWRSubscription(
+    `raven.api.raven_message.get_messages_with_dates?channel_id=${channelID}`,
+    (key, { next }) => {
+      //Initial load
+      fetcher(key).then((data) => next(null, data));
 
-    const scrollToBottom = () => {
-        const scrollHeight = containerRef.current?.scrollHeight
-        const height = containerRef.current?.clientHeight
-        containerRef.current?.scrollTo({
-            top: scrollHeight - height,
-            left: 0
-        })
-    }
+      frappe.realtime.doc_subscribe("Raven Channel", channelID);
 
+      frappe.realtime.on("message_updated", (event) => {
+        if (event.channel_id !== channelID) return
+        fetcher(key).then((data) => next(null, data));
+      });
 
-    const { data, error, isLoading } = useSWR(`raven.raven_messaging.doctype.raven_message.raven_message.get_messages_with_dates?channel_id=${channelID}`, fetcher, {
-        keepPreviousData: true
-    })
+      return () => {
+        frappe.realtime.off("message_updated");
+        frappe.realtime.doc_unsubscribe("Raven Channel", channelID);
+      }
+    }, { keepPreviousData: true }
+  );
 
-    useLayoutEffect(() => {
-        scrollToBottom()
-    }, [scrollToBottom, data])
+  useLayoutEffect(() => {
+    // Wait for the content to paint before scrolling
+    setTimeout(() => {
+      scrollToBottom();
+    }, 200);
+  }, [scrollToBottom, data]);
 
+  return (
+    <div>
+      {/* TODO: Add Loading and Error states */}
+      <div className="raven-message-stream-container" ref={containerRef}>
+        {data?.message.map((message) => {
+          if (message.block_type === "date") {
+            return <DateItem date={message.data} key={message.data} />;
+          } else {
+            return (
+              <MessageItem message={message.data} key={message.data.name} />
+            );
+          }
+        })}
+      </div>
+    </div>
+  );
+};
 
-
-    return (
-        <div>
-            {/* TODO: Add Loading and Error states */}
-            <div className='raven-message-stream-container' ref={containerRef}>
-                {data?.message.map((message) => {
-                    if (message.block_type === 'date') {
-                        return <DateItem date={message.data} key={message.data} />
-                    } else {
-                        return (
-                            <MessageItem message={message.data} key={message.data.name} />
-                        )
-                    }
-
-                })
-                }
-            </div>
-
-        </div>
-    )
-}
-
-export default MessageStream
+export default MessageStream;

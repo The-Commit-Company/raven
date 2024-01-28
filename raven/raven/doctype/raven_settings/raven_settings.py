@@ -15,5 +15,7 @@ class RavenSettings(Document):
 		from frappe.types import DF
 
 		auto_add_system_users: DF.Check
+		show_raven_on_desk: DF.Check
 	# end: auto-generated types
+
 	pass

@@ -11,7 +11,10 @@ class RavenChat {
 	}
 
 	init() {
-		this.setup_app();
+		console.log(frappe.boot.show_raven_chat_on_desk)
+		if (frappe.boot.show_raven_chat_on_desk) {
+			this.setup_app();
+		}
 	}
 
 	setup_app() {

@@ -23,10 +23,14 @@
     .raven-message-image-link {
         text-decoration: none;
         font-weight: 500;
-        font-size: 0.8rem;
+        font-size: 0.85rem;
         color: var(--text-color);
         border-bottom: 1px solid var(--gray-400);
-        padding-bottom: 0.1rem;
+        padding-bottom: 0.05rem;
+
+        &:hover {
+            border-bottom: 1px solid var(--gray-600);
+        }
     }
 
 

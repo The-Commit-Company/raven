@@ -3,6 +3,7 @@ import useGetUser from '../../../../hooks/useGetUser'
 import Avatar from '../../../common/Avatar'
 import ImageMessageBlock from './renderers/ImageMessageBlock'
 import TiptapRenderer from './renderers/TiptapRenderer'
+import FileMessageBlock from './renderers/FileMessageBlock'
 const MessageItem = ({ message }) => {
 
     const { name, owner: userID, creation: timestamp, message_reactions, is_continuation, is_reply, linked_message } = message
@@ -66,7 +67,7 @@ const MessageContent = ({ message, user }) => {
             message_type: 'Text'
         }} />}
         {message.message_type === 'Image' && <ImageMessageBlock message={message} user={user} />}
-        {/* {message.content} */}
+        {message.message_type === 'File' && <FileMessageBlock message={message} user={user} />}
     </div>
 }
 

@@ -21,11 +21,11 @@ const ChatView = ({ selectedChannel }) => {
 
 
     return (
-        <div className='raven-chat-view'>
+        <div className={`raven-chat-view`}>
             {show &&
                 <div className='raven-chat-view-container'>
                     <MessageStream channelID={selectedChannel} />
-                    <ChatInput />
+                    <ChatInput channelID={selectedChannel} />
                 </div>
             }
         </div>

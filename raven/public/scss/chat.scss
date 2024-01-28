@@ -1,6 +1,8 @@
 .raven-chat-view {
     transition: all 0.3s ease-in-out;
     overflow-x: hidden;
+    width: var(--raven-content-width);
+    clip-path: inset(0 0 0 0);
 
     .raven-chat-view-container {
         position: relative;
@@ -13,10 +15,28 @@
             bottom: 0;
             display: flex;
             gap: 0.5rem;
-            min-height: 42px;
-            padding: 4px;
+            min-height: 60px;
+            padding: 6px;
             border-top: 1px solid var(--border-color);
             width: var(--raven-content-width);
+
+            textarea {
+                width: 100%;
+                max-height: 60px;
+            }
+
+            .send-button {
+
+                svg {
+                    fill: var(--gray-8);
+                }
+
+                // padding-right: 4px;
+
+                &:hover {
+                    background-color: var(--control-bg);
+                }
+            }
         }
 
         .raven-message-stream-container {
@@ -24,7 +44,7 @@
             flex-direction: column;
             gap: 0.5rem;
             padding: 0.5rem;
-            height: calc(var(--raven-content-height) - 54px);
+            height: calc(var(--raven-content-height) - 68px);
             width: 100%;
             overflow-y: scroll;
             overflow-x: hidden;

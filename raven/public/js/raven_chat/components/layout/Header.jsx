@@ -24,8 +24,21 @@ const Header = ({
 
     return <div className="raven-header">
         {selectedChannel ? <ChannelHeader channelID={selectedChannel} onBackClick={closeChannel} /> :
-            <div>
+            <div style={{
+                display: 'flex',
+                alignItems: 'baseline',
+                gap: '0.2rem',
+            }}>
                 <span role='button' className="raven-logo cal-sans" onClick={toggle}>raven</span>
+
+                <a href='/raven' target='_blank' className='btn btn-xs btn-ghost icon-btn' style={{
+                    lineHeight: '1.4rem',
+                    marginBottom: '0.2rem',
+                }} title='Open Raven'>
+                    <svg className="es-icon ml-0 icon-xs">
+                        <use href="#es-line-web-link"></use>
+                    </svg>
+                </a>
             </div>
 
         }

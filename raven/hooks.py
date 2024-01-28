@@ -20,6 +20,8 @@ app_include_js = "raven.bundle.js"
 sounds = [
 	{"name": "raven_notification", "src": "/assets/raven/sounds/raven_notification.mp3", "volume": 0.2},
 ]
+
+extend_bootinfo = "raven.boot.boot_session"
 # include js, css files in header of web template
 # web_include_css = "/assets/raven/css/raven.css"
 # web_include_js = "/assets/raven/js/raven.js"

@@ -7,7 +7,8 @@
  "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
-  "auto_add_system_users"
+  "auto_add_system_users",
+  "show_raven_on_desk"
  ],
  "fields": [
   {
@@ -15,12 +16,18 @@
    "fieldname": "auto_add_system_users",
    "fieldtype": "Check",
    "label": "Automatically add system users to Raven"
+  },
+  {
+   "default": "1",
+   "fieldname": "show_raven_on_desk",
+   "fieldtype": "Check",
+   "label": "Show Raven on Desk"
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2023-12-08 03:29:04.723967",
+ "modified": "2024-01-28 19:42:25.061578",
  "modified_by": "Administrator",
  "module": "Raven",
  "name": "Raven Settings",
