@@ -22,16 +22,23 @@ const MessageStream = ({ channelID }) => {
       //Initial load
       fetcher(key).then((data) => next(null, data));
 
-      frappe.realtime.doc_subscribe("Raven Channel", channelID);
-
-      frappe.realtime.on("message_updated", (event) => {
-        if (event.channel_id !== channelID) return
-        fetcher(key).then((data) => next(null, data));
-      });
+      if (channelID) {
+        frappe.socketio.doc_subscribe("Raven Channel", channelID);
+        frappe.socketio.doc_open("Raven Channel", channelID)
+        frappe.realtime.on("message_updated", (event) => {
+          if (event.channel_id !== channelID) return
+          fetcher(key).then((data) => next(null, data));
+        });
+      }
 
       return () => {
         frappe.realtime.off("message_updated");
-        frappe.realtime.doc_unsubscribe("Raven Channel", channelID);
+        frappe.socketio.doc_close("Raven Channel", channelID);
+        try {
+          frappe.socketio.doc_unsubscribe("Raven Channel", channelID);
+        } catch (e) {
+          // console.log(e)
+        }
       }
     }, { keepPreviousData: true }
   );

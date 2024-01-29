@@ -60,6 +60,22 @@
     justify-content: space-between;
     padding-block: 0.5rem;
 
+    .open-raven-button {
+        padding: 4px;
+        box-shadow: none;
+        border: none;
+
+        svg {
+            fill: var(--text-muted);
+        }
+
+        // padding-right: 4px;
+
+        &:hover {
+            background-color: var(--control-bg);
+        }
+    }
+
     .back-button {
         padding: 4px;
 

@@ -5,7 +5,7 @@
 
 :root {
     --raven-header-height: 42px; // Equal to the height of the email widget
-    --raven-expanded-height: 94vh;
+    --raven-expanded-height: 84vh;
     --raven-content-height: calc(var(--raven-expanded-height) - var(--raven-header-height));
     --raven-content-width: 400px;
 }
