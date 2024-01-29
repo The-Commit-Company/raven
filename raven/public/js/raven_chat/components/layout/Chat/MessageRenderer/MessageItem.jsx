@@ -55,7 +55,7 @@ const MessageLeftElement = ({ message, user, isActive }) => {
 const MessageHeader = ({ message, user }) => {
     if (message.is_continuation) return null
     return <div className='raven-message-item-header'>
-        <span className='raven-message-item-header-name'>{user.full_name}</span>
+        <span className='raven-message-item-header-name'>{user?.full_name}</span>
         <span className='raven-message-item-header-time'>{moment(message.creation, frappe.defaultDatetimeFormat).format('HH:mm A')}</span>
     </div>
 }

@@ -31,7 +31,7 @@ const Avatar = ({ user, fallback, isActive }) => {
     const color = generateAvatarColor(user?.full_name)
     return (
         <div>
-            {user?.user_image ? <img src={user.user_image} alt={user.full_name} className='raven-avatar' /> : <span
+            {user?.user_image ? <img src={user.user_image} alt={user?.full_name} className='raven-avatar' /> : <span
                 style={{
                     backgroundColor: `var(--${color}-avatar-bg)`,
                     color: `var(--${color}-avatar-color)`
