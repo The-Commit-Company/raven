@@ -40,6 +40,10 @@ export interface RavenMessage{
 	link_doctype?: string
 	/**	Link Document : Dynamic Link	*/
 	link_document?: string
+	/**	Is Bot Message : Check	*/
+	is_bot_message?: 0 | 1
+	/**	Bot : Link - Raven User	*/
+	bot?: string
 	/**	Content : Long Text	*/
 	content?: string
 }
