@@ -1,9 +1,11 @@
 import { StandardDate } from "@/utils/dateConversions"
-import { Flex, Table } from "@radix-ui/themes"
+import { Box, Button, DropdownMenu, Flex, Table } from "@radix-ui/themes"
 import { BsThreeDots } from "react-icons/bs"
 import { FileInChannel } from "./ViewFilesContent"
 import { UserAvatar } from "@/components/common/UserAvatar"
 import { formatBytes } from "@/utils/operations"
+import { useToast } from "@/hooks/useToast"
+import { BiDownload, BiExit, BiLink } from "react-icons/bi"
 
 export const FilesTable = ({ data }: { data: FileInChannel[] }) => {
     return (
@@ -39,12 +41,68 @@ export const FilesTable = ({ data }: { data: FileInChannel[] }) => {
                             </Table.Cell>
                             <Table.Cell><StandardDate date={file.creation} /></Table.Cell>
                             <Table.Cell>
-                                <BsThreeDots />
+                                <Box className='relative'>
+                                    <DropdownMenu.Root>
+                                        <DropdownMenu.Trigger>
+                                            <Button variant="soft" color="gray" size={'1'}>
+                                                <BsThreeDots />
+                                            </Button>
+                                        </DropdownMenu.Trigger>
+                                        <FileActionsMenu file={file.file_url} />
+                                    </DropdownMenu.Root>
+                                </Box>
                             </Table.Cell>
                         </Table.Row>
                     )
                 })}
             </Table.Body>
         </Table.Root>
+    )
+}
+
+const FileActionsMenu = ({ file }: { file: string }) => {
+
+    const { toast } = useToast()
+    const copy = () => {
+        if (file.startsWith('http') || file.startsWith('https')) {
+            navigator.clipboard.writeText(file)
+        }
+        else {
+            navigator.clipboard.writeText(window.location.origin + file)
+        }
+        toast({
+            title: 'Link copied',
+            duration: 800,
+            variant: 'accent'
+        })
+    }
+
+    return (
+        <DropdownMenu.Content>
+            <DropdownMenu.Item onClick={copy}>
+                <Flex gap='2'>
+                    <BiLink size='18' />
+                    Copy link
+                </Flex>
+            </DropdownMenu.Item>
+
+            <DropdownMenu.Item>
+                <a download href={file}>
+                    <Flex gap='2'>
+                        <BiDownload size='18' />
+                        Download
+                    </Flex>
+                </a>
+            </DropdownMenu.Item>
+
+            <DropdownMenu.Item>
+                <a href={file} target='_blank' rel='noreferrer'>
+                    <Flex gap='2'>
+                        <BiExit size='18' />
+                        Open in new tab
+                    </Flex>
+                </a>
+            </DropdownMenu.Item>
+        </DropdownMenu.Content>
     )
 }
