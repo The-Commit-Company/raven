@@ -55,7 +55,7 @@ export const MessageSearch = ({ onToggleMyChannels, isOpenMyChannels, onToggleSa
     const { virtuosoRef } = useContext(VirtuosoRefContext)
     const navigate = useNavigate()
 
-    const { call, reset } = useFrappePostCall<{ message: string }>("raven.raven_messaging.doctype.raven_message.raven_message.get_index_of_message")
+    const { call, reset } = useFrappePostCall<{ message: string }>("raven.api.raven_message.get_index_of_message")
 
     const handleNavigateToChannel = (channelID: string) => {
         onClose()

@@ -44,4 +44,6 @@ export interface RavenMessage{
 	is_bot_message?: 0 | 1
 	/**	Bot : Link - Raven User	*/
 	bot?: string
+	/**	Content : Long Text	*/
+	content?: string
 }

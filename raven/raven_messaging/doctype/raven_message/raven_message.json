@@ -25,6 +25,7 @@
   "link_document",
   "is_bot_message",
   "bot"
+  "content"
  ],
  "fields": [
   {
@@ -125,6 +126,10 @@
    "label": "Bot",
    "mandatory_depends_on": "eval: doc.is_bot_message == 1",
    "options": "Raven User"
+   "fieldname": "content",
+   "fieldtype": "Long Text",
+   "label": "Content",
+   "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,
