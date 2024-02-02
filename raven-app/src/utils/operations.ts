@@ -86,3 +86,21 @@ export const getUsers = (usersList: string[], count: number, currentUser: string
         }
     }
 }
+
+/**
+ * Function to format bytes to human readable format
+ * @param bytes size in bytes
+ * @param decimals number of decimal places
+ * @returns string of human readable size
+ */
+export const formatBytes = (bytes: number, decimals = 2) => {
+
+    if (bytes === 0) return '0 Bytes'
+
+    const k = 1024
+    const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB']
+
+    const i = Math.floor(Math.log(bytes) / Math.log(k))
+
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(decimals)) + ' ' + sizes[i]
+}

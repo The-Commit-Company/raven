@@ -252,3 +252,36 @@ def get_timeline_message_content(doctype, docname):
         })
 
     return timeline_contents
+
+
+@frappe.whitelist()
+def get_all_files_shared_in_channel(channel_id, file_name=None, file_type=None, start_after=0, page_length=None, sort_field="creation", sort_order="desc"):
+
+    # check if the user has permission to view the channel
+    check_permission(channel_id)
+
+    message = frappe.qb.DocType("Raven Message")
+    user = frappe.qb.DocType("Raven User")
+    file = frappe.qb.DocType("File")
+
+    query = (frappe.qb.from_(message)
+             .select(file.name, file.file_name, file.file_type, file.file_size, file.file_url,
+                     message.owner, message.creation,
+                     user.full_name, user.user_image)
+             .join(file).on(message.name == file.attached_to_name)
+             .join(user).on(message.owner == user.name)
+             .where(message.channel_id == channel_id)
+             .groupby(file.name))
+
+    files = query.orderby(message[sort_field], order=Order[sort_order]).limit(
+        page_length).offset(start_after).run(as_dict=True)
+
+    # search for file name
+    if file_name:
+        query = query.where(file.file_name.like("%" + file_name + "%"))
+
+    # search for file type
+    if file_type:
+        query = query.where(file.file_type == file_type)
+
+    return files

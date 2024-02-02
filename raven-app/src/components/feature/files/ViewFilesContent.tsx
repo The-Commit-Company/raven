@@ -1,6 +1,6 @@
 import { useDebounce } from "@/hooks/useDebounce"
 import { usePaginationWithDoctype } from "@/hooks/usePagination"
-import { Filter, useFrappeGetDocList } from "frappe-react-sdk"
+import { Filter, useFrappeGetCall } from "frappe-react-sdk"
 import { ChangeEvent, useState } from "react"
 import { Dialog, Flex, IconButton, Text, TextField } from "@radix-ui/themes"
 import { BiSearch } from "react-icons/bi"
@@ -11,8 +11,20 @@ import { ErrorBanner } from "@/components/layout/AlertBanner"
 import { TableLoader } from "@/components/layout/Loaders/TableLoader"
 import { PageSelector } from "../pagination/PageSelector"
 import { FilesTable } from "./FilesTable"
-import { RavenMessage } from "@/types/RavenMessaging/RavenMessage"
 import { useParams } from "react-router-dom"
+
+export type FileInChannel = {
+    name: string,
+    channel_id: string,
+    owner: string,
+    full_name: string,
+    user_image: string,
+    creation: string,
+    file_name: string,
+    file_size: number,
+    file_type: string,
+    file_url: string,
+}
 
 const ViewFilesContent = () => {
 
@@ -25,21 +37,22 @@ const ViewFilesContent = () => {
 
     const { channelID } = useParams<{ channelID: string }>()
 
-    const filters: Filter[] = [['channel_id', '=', channelID ?? ''], ['message_type', '!=', 'Text'], ['file', 'like', `%${debouncedText}%`]]
+    const filters: Filter[] = [['channel_id', '=', channelID ?? ''], ['message_type', '=', 'Image']]
 
     const { start, count, selectedPageLength, setPageLength, nextPage, previousPage } = usePaginationWithDoctype("Raven Message", 10, filters)
     const [sortOrder, setSortOder] = useState<"asc" | "desc">("desc")
+    const [sortByField, setSortByField] = useState<string>('creation')
 
-    const { data, error } = useFrappeGetDocList<RavenMessage>("Raven Message", {
-        fields: ["name", "file", "file_thumbnail", "owner", "creation", "message_type", "channel_id"],
-        filters,
-        orderBy: {
-            field: 'creation',
-            order: sortOrder
-        },
-        limit_start: start > 0 ? (start - 1) : 0,
-        limit: selectedPageLength
+    const { data, error } = useFrappeGetCall<{ message: FileInChannel[] }>("raven.api.raven_message.get_all_files_shared_in_channel", {
+        "channel_id": channelID,
+        "file_name": debouncedText,
+        // "file_type":,
+        "start_after": start > 0 ? (start - 1) : 0,
+        "page_length": selectedPageLength,
+        "sort_field": sortByField !== '' ? sortByField : 'creation',
+        "sort_order": sortOrder,
     })
+
 
     console.log(data)
 
@@ -88,12 +101,12 @@ const ViewFilesContent = () => {
 
                 {!data && !error && <TableLoader columns={3} />}
 
-                {data && data.length === 0 && (debouncedText.length >= 2 || debouncedText.length == 0) &&
+                {data && data.message.length === 0 && (debouncedText.length >= 2 || debouncedText.length == 0) &&
                     <Flex align='center' justify='center' className="min-h-[32rem]">
                         <Text size='2' align='center'>No files found</Text>
                     </Flex>}
 
-                {data && data.length !== 0 && <FilesTable data={data} />}
+                {data && data.message.length !== 0 && <FilesTable data={data.message} />}
 
             </Flex>
         </div>
