@@ -22,7 +22,8 @@
   "is_reply",
   "linked_message",
   "link_doctype",
-  "link_document"
+  "link_document",
+  "content"
  ],
  "fields": [
   {
@@ -109,11 +110,17 @@
    "fieldtype": "Dynamic Link",
    "label": "Link Document",
    "options": "link_doctype"
+  },
+  {
+   "fieldname": "content",
+   "fieldtype": "Long Text",
+   "label": "Content",
+   "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-12-22 18:25:02.237368",
+ "modified": "2024-01-19 14:56:44.534433",
  "modified_by": "Administrator",
  "module": "Raven Messaging",
  "name": "Raven Message",
