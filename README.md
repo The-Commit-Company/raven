@@ -155,6 +155,13 @@ yarn dev
 <hr>
 
 
+## Contributors
+
+<a href="https://github.com/The-Commit-Company/Raven/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=The-Commit-Company/Raven" />
+</a>
+
+
 ## Future Plans
 
 We are currently working or will be working on the following features. Please head to our Github issues page and feel free to contribute:
