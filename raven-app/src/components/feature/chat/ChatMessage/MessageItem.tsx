@@ -16,7 +16,7 @@ import { TiptapRenderer } from './Renderers/TiptapRenderer/TiptapRenderer'
 import { QuickActions } from './MessageActions/QuickActions/QuickActions'
 import { memo, useContext } from 'react'
 import { UserContext } from '@/utils/auth/UserProvider'
-import { ReplyMessage } from './ReplyMessageBox/ReplyMessageBox'
+import { ReplyMessageBox } from './ReplyMessageBox/ReplyMessageBox'
 import { generateAvatarColor } from '../../select-member/GenerateAvatarColor'
 import { Skeleton } from '@/components/common/Skeleton'
 import { DoctypeLinkRenderer } from './Renderers/DoctypeLinkRenderer'
@@ -33,7 +33,7 @@ interface MessageBlockProps {
 
 export const MessageItem = ({ message, setDeleteMessage, onReplyMessageClick, setEditMessage, isScrolling, replyToMessage, updateMessages }: MessageBlockProps) => {
 
-    const { name, owner: userID, creation: timestamp, message_reactions, is_continuation, is_reply, linked_message } = message
+    const { name, owner: userID, creation: timestamp, message_reactions, is_continuation, is_reply, linked_message, replied_message_details } = message
 
     const { user, isActive } = useGetUserDetails(userID)
 
@@ -78,12 +78,13 @@ export const MessageItem = ({ message, setDeleteMessage, onReplyMessageClick, se
                             {/* Message content goes here */}
 
                             {/* If it's a reply, then show the linked message */}
-                            {linked_message && <ReplyMessage
+                            {linked_message && replied_message_details && <ReplyMessageBox
                                 className='min-w-[32rem] cursor-pointer mb-1'
                                 role='button'
                                 onClick={() => onReplyMessageClick(linked_message)}
-                                messageID={linked_message} />}
-                            {/* Show message according to type */}
+                                message={JSON.parse(replied_message_details)} />
+                            }
+                            { /* Show message according to type */}
                             <MessageContent
                                 message={message}
                                 user={user}

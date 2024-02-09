@@ -97,12 +97,3 @@ export const TiptapRenderer = ({ message, user, isScrolling = false, isTruncated
     </Box>
   )
 }
-
-export const TruncatedTiptapRenderer = ({ message, user, showLinkPreview = false, ...props }: TiptapRendererProps) => {
-
-
-  return <Box className='text-ellipsis overflow-hidden line-clamp-3'>
-    <TiptapRenderer message={message} user={user} showLinkPreview={showLinkPreview} isTruncated {...props} />
-  </Box>
-
-}
