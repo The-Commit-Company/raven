@@ -296,7 +296,7 @@ export const Tiptap = ({ onMessageSend, messageSending, defaultText = '' }: Tipt
             </div>
             <div className='mb-1'>
                 <button
-                    className='p-1.5 text-white rounded-full bg-blue-500 hover:bg-blue-600 focus:outline-none disabled:opacity-30 disabled:cursor-not-allowed'
+                    className='p-1.5 text-white rounded-full bg-[var(--ion-color-primary)] hover:bg-[var(--ion-color-primary-shade)] focus:outline-none disabled:opacity-30 disabled:cursor-not-allowed'
                     aria-disabled={messageSending || isEditorEmpty}
                     disabled={messageSending || isEditorEmpty}
                     onClick={onSubmit}>
