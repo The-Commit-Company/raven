@@ -10,6 +10,9 @@ import { Toaster } from './components/common/Toast/Toaster'
 import { FullPageLoader } from './components/layout/Loaders'
 import { useStickyState } from './hooks/useStickyState'
 import { Settings } from './pages/settings/Settings'
+import { CreateWebhook } from './components/feature/integrations/webhooks/CreateWebhook'
+import ViewWebhook from './components/feature/integrations/webhooks/ViewWebhook'
+import { WebhookList } from './components/feature/integrations/webhooks/WebhookList'
 
 
 const router = createBrowserRouter(
@@ -25,7 +28,9 @@ const router = createBrowserRouter(
         </Route>
         <Route path='settings' element={<Settings />}>
           <Route path='integrations'>
-            <Route path='webhooks' element={<p>Webhooks</p>} />
+            <Route path='webhooks' element={<WebhookList />} />
+            <Route path='webhooks/create' element={<CreateWebhook />} />
+            <Route path='webhooks/:ID' element={<ViewWebhook />} />
             <Route path='server-scripts' element={<p>SS</p>} />
           </Route>
         </Route>
