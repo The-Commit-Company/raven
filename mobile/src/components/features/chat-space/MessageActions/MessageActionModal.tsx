@@ -13,6 +13,7 @@ import { SaveMessageAction } from './SaveMessageAction';
 import { NonContinuationMessageBlock } from '../chat-view/MessageBlock';
 import { useGetUser } from '@/hooks/useGetUser';
 import { ShareAction } from './ShareAction';
+import { EmojiAction } from './EmojiAction';
 
 interface MessageActionModalProps {
     selectedMessage?: MessageBlock,
@@ -65,7 +66,7 @@ export const MessageActionModal = ({ selectedMessage, onDismiss }: MessageAction
 
                         </div>
 
-                        {/* <EmojiAction /> */}
+                        <EmojiAction message={selectedMessage} onSuccess={onDismiss} />
                         {/* <IonItem className='py-1'>
                             <IonIcon slot="start" icon={createOutline} />
                             <IonLabel className='font-semibold'>Edit</IonLabel>

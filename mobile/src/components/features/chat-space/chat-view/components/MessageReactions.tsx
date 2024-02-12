@@ -1,11 +1,8 @@
-import { UserContext } from "@/utils/auth/UserProvider"
-import { MessageBlock } from "../../../../../../../types/Messaging/Message"
-import { useCallback, useContext, useMemo } from "react"
+import { useCallback, useMemo } from "react"
 import { useFrappePostCall } from "frappe-react-sdk"
 import { useGetUserRecords } from "@/hooks/useGetUserRecords"
-import { IonText } from "@ionic/react"
 
-interface ReactionObject {
+export interface ReactionObject {
     // The emoji
     reaction: string,
     // The users who reacted with this emoji
