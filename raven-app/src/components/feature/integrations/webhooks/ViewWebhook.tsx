@@ -2,7 +2,7 @@ import { ErrorBanner } from "@/components/layout/AlertBanner"
 import { FullPageLoader } from "@/components/layout/Loaders"
 import { Webhook } from "@/types/Integrations/Webhook"
 import { removeFrappeFields } from "@/utils/removeFrappeFields"
-import { AlertDialog, Box, Button, DropdownMenu, Flex, IconButton, Separator, Text } from "@radix-ui/themes"
+import { AlertDialog, Badge, Box, Button, DropdownMenu, Flex, IconButton, Separator, Text } from "@radix-ui/themes"
 import { FrappeDoc, useFrappeGetDoc, useFrappeUpdateDoc } from "frappe-react-sdk"
 import { FieldValues, FormProvider, useForm } from "react-hook-form"
 import { useParams } from "react-router-dom"
@@ -102,9 +102,10 @@ export const ViewWebhookPage = ({ data, mutate }: { data: FrappeDoc<Webhook>, mu
                 <BackToList />
                 <Flex direction='column' gap='4' width='100%' px={'2'}>
                     <Flex direction={'row'} gap={'2'} justify={'between'} align={'center'}>
-                        <header>
-                            <Text size='6' weight='bold'>Edit Webhook</Text>
-                        </header>
+                        <Flex direction={'row'} gap={'2'} align={'center'}>
+                            <Text size='6' weight='bold'>{data?.name}</Text>
+                            <Badge color={data.enabled ? 'green' : 'red'}>{data.enabled ? 'Enabled' : 'Disabled'}</Badge>
+                        </Flex>
                         <DropdownMenu.Root>
                             <DropdownMenu.Trigger>
                                 <IconButton aria-label='Options' color='gray' variant='ghost' style={{

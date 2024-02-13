@@ -1,37 +1,13 @@
 import { HelperText } from "@/components/common/Form";
 import { Webhook } from "@/types/Integrations/Webhook";
-import { Flex, Box, Heading, Table, TextFieldInput, IconButton, Button, Select, Tooltip, Text, Dialog, Badge } from "@radix-ui/themes";
+import { Flex, Box, Heading, Table, TextFieldInput, IconButton, Button, Select, Text, Dialog, Badge } from "@radix-ui/themes";
 import { useCallback, useMemo, useState } from "react";
 import { Controller, useFieldArray, useFormContext } from "react-hook-form";
 import { BiInfoCircle, BiMinusCircle } from "react-icons/bi";
-import { BsPlus } from "react-icons/bs";
+import { BsEye, BsPlus } from "react-icons/bs";
 import { FieldsData } from "./utils";
 import { DoctypeFieldList } from './utils'
 import { DIALOG_CONTENT_CLASS } from "@/utils/layout/dialog";
-import { EditorContent, useEditor } from "@tiptap/react";
-import StarterKit from "@tiptap/starter-kit";
-import CodeBlockLowlight from "@tiptap/extension-code-block-lowlight";
-import { CustomBlockquote } from "../../chat/ChatMessage/Renderers/TiptapRenderer/Blockquote";
-import { CustomBold } from "../../chat/ChatMessage/Renderers/TiptapRenderer/Bold";
-import { CustomItalic } from "../../chat/ChatMessage/Renderers/TiptapRenderer/Italic";
-import { CustomLink } from "../../chat/ChatMessage/Renderers/TiptapRenderer/Link";
-import { CustomUserMention } from "../../chat/ChatMessage/Renderers/TiptapRenderer/Mention";
-import { CustomUnderline } from "../../chat/ChatMessage/Renderers/TiptapRenderer/Underline";
-import { createLowlight, common } from "lowlight";
-import css from 'highlight.js/lib/languages/css'
-import js from 'highlight.js/lib/languages/javascript'
-import ts from 'highlight.js/lib/languages/typescript'
-import html from 'highlight.js/lib/languages/xml'
-import json from 'highlight.js/lib/languages/json'
-import python from 'highlight.js/lib/languages/python'
-const lowlight = createLowlight(common)
-
-lowlight.register('html', html)
-lowlight.register('css', css)
-lowlight.register('js', js)
-lowlight.register('ts', ts)
-lowlight.register('json', json)
-lowlight.register('python', python)
 
 export const WebhookData = () => {
     const { register, control, watch, setValue, getValues } = useFormContext<Webhook>()
@@ -64,6 +40,12 @@ export const WebhookData = () => {
         setFieldIndex(null)
     }
 
+    // const [previewOpen, setPreviewOpen] = useState(false);
+
+    // const onPreviewClose = () => {
+    //     setPreviewOpen(false)
+    // }
+
     return (
         <Box>
             <Flex direction='column' gap='2' width='100%'>
@@ -72,10 +54,24 @@ export const WebhookData = () => {
                         <Heading size='4'>Response Data</Heading>
                         <HelperText>The fields you want to return in the webhook response.</HelperText>
                     </Flex>
-                    <Button size={'1'} type="button" onClick={() => append({ fieldname: '', key: '' })} variant="outline" style={{
-                        width: 'fit-content',
-                    }}><BsPlus size={'14'} />
-                        Add</Button>
+                    <Flex direction={'row'} gap={'4'} align={'center'}>
+                        {/* <Dialog.Root open={previewOpen} onOpenChange={setPreviewOpen}>
+                            <Dialog.Trigger>
+                                <Button size={'1'} type="button" onClick={() => { }} variant="ghost" color="gray" style={{
+                                    width: 'fit-content',
+                                }}>
+                                    <BsEye size={'14'} />
+                                    Preview</Button>
+                            </Dialog.Trigger>
+                            <Dialog.Content className={DIALOG_CONTENT_CLASS}>
+                                <PreviewModal onClose={onPreviewClose} />
+                            </Dialog.Content>
+                        </Dialog.Root> */}
+                        <Button size={'1'} type="button" onClick={() => append({ fieldname: '', key: '' })} variant="outline" style={{
+                            width: 'fit-content',
+                        }}><BsPlus size={'14'} />
+                            Add</Button>
+                    </Flex>
                 </Flex>
                 <Table.Root variant='surface'>
                     <Table.Header>
@@ -179,43 +175,6 @@ export const FieldInfoModal = ({ fieldIndex, doctype, onClose }: { fieldIndex: n
         return DoctypeFieldList?.find(field => field.doctype === doctype)?.fields.find(field => field.fieldname === fieldname)
     }, [fieldIndex, doctype])
 
-    const editor = useEditor({
-        content: fieldData?.example,
-        editable: false,
-        enableCoreExtensions: true,
-        extensions: [
-            StarterKit.configure({
-                heading: false,
-                codeBlock: false,
-                bold: false,
-                blockquote: false,
-                italic: false,
-                listItem: {
-                    HTMLAttributes: {
-                        class: 'ml-5 rt-Text rt-r-size-2'
-                    }
-                },
-                paragraph: {
-                    HTMLAttributes: {
-                        class: 'rt-Text rt-r-size-2'
-                    }
-                }
-            }),
-            CustomUnderline,
-            CodeBlockLowlight.configure({
-                lowlight
-            }),
-            CustomBlockquote,
-            CustomBold,
-            CustomUserMention,
-            CustomLink,
-            CustomItalic
-            // TODO: Add channel mention
-            // CustomChannelMention
-        ]
-    })
-
-
     return (
         <Flex direction={'column'} gap={'4'} width={'100%'}>
             <Dialog.Title>
@@ -230,11 +189,16 @@ export const FieldInfoModal = ({ fieldIndex, doctype, onClose }: { fieldIndex: n
                 </Flex>
             </Dialog.Title>
 
-            <Flex direction='column' gap='2' width='100%'>
+            {fieldData?.example && <> <Flex direction='column' gap='2' width='100%'>
                 <Text size={'2'} >Example:</Text>
             </Flex>
 
-            <EditorContent editor={editor} />
+                <pre className={'rounded-md p-4 bg-gray-700'}>
+                    <code>
+                        {JSON.parse(JSON.stringify(fieldData?.example || ''))}
+                    </code>
+                </pre></>}
+
             <Flex gap="3" mt="4" justify="end" align='center'>
                 <Dialog.Close>
                     <Button variant="soft" color="gray">Close</Button>
@@ -243,4 +207,27 @@ export const FieldInfoModal = ({ fieldIndex, doctype, onClose }: { fieldIndex: n
         </Flex>
     )
 
+}
+
+export const PreviewModal = ({ onClose }: { onClose: () => void }) => {
+
+    const { register, watch } = useFormContext<Webhook>()
+
+    return (
+        <Flex direction={'column'} gap={'4'} width={'100%'}>
+            <Dialog.Title>
+                <Heading size={'4'}>Preview</Heading>
+            </Dialog.Title>
+            <Flex direction={'column'} gap={'2'} width={'100%'}>
+                <Box>
+
+                </Box>
+            </Flex>
+            <Flex gap="3" mt="4" justify="end" align='center'>
+                <Dialog.Close>
+                    <Button variant="soft" color="gray">Close</Button>
+                </Dialog.Close>
+            </Flex>
+        </Flex>
+    )
 }

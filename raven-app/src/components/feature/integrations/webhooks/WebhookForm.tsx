@@ -43,7 +43,7 @@ export const WebhookForm = ({ isEdit = false }: { isEdit?: boolean }) => {
 
     return (
         <Flex direction='column' gap='4' >
-            <Box>
+            {isEdit === false ? <Box>
                 <Label htmlFor='name' isRequired>Name</Label>
                 <TextFieldInput {...register('name', {
                     required: 'Name is required', maxLength: {
@@ -51,9 +51,9 @@ export const WebhookForm = ({ isEdit = false }: { isEdit?: boolean }) => {
                         message: "Name should not exceed 140 characters"
                     }
 
-                })} readOnly={isEdit} />
+                })} />
                 {errors?.name && <ErrorText>{errors.name.message}</ErrorText>}
-            </Box>
+            </Box> : null}
             <Box>
                 <Label htmlFor='request_url' isRequired>Request URL</Label>
                 <TextFieldInput {...register('request_url', {
