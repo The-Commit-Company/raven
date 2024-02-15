@@ -47,7 +47,9 @@ class RavenMessage(Document):
 
         if not self.is_new():
             # this is not a new message, so it's a previous message being edited
-            self.is_edited = True
+            old_doc = self.get_doc_before_save()
+            if old_doc.text != self.text:
+                self.is_edited = True
 
     def validate(self):
         '''
