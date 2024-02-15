@@ -25,7 +25,9 @@
   "thumbnail_width",
   "thumbnail_height",
   "link_doctype",
-  "link_document"
+  "link_document",
+  "content",
+  "is_edited"
  ],
  "fields": [
   {
@@ -118,6 +120,12 @@
    "fieldtype": "Long Text",
    "label": "Content",
    "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "is_edited",
+   "fieldtype": "Check",
+   "label": "Is Edited"
   },
   {
    "fieldname": "column_break_wvje",
