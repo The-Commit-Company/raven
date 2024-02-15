@@ -57,6 +57,7 @@ export const NonContinuationMessageBlock = ({ message, user }: { message: Messag
                 <IonText className='text-xs pl-1.5 text-zinc-500'>{DateObjectToTimeString(message.data.creation)}</IonText>
             </div>
             <MessageContent message={message} />
+            {message.data.is_edited === 1 && <IonText className='text-xs' color={'medium'}>(edited)</IonText>}
         </div>
     </div>
 }

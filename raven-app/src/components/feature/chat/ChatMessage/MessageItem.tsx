@@ -94,7 +94,7 @@ export const MessageItem = ({ message, setDeleteMessage, onReplyMessageClick, se
                             {message.link_doctype && message.link_document && <Box className={clsx(message.is_continuation ? 'ml-0.5' : '-ml-0.5')}>
                                 <DoctypeLinkRenderer doctype={message.link_doctype} docname={message.link_document} />
                             </Box>}
-
+                            {message.is_edited === 1 && <Text size='1' className='text-gray-10'>(edited)</Text>}
                             {message_reactions?.length &&
                                 <MessageReactions
                                     messageID={name}
