@@ -11,16 +11,23 @@
   "channel_id",
   "text",
   "json",
+  "message_reactions",
+  "is_reply",
+  "linked_message",
+  "replied_message_details",
+  "column_break_wvje",
   "message_type",
+  "content",
   "file",
   "image_width",
   "image_height",
   "file_thumbnail",
   "thumbnail_width",
   "thumbnail_height",
-  "message_reactions",
-  "is_reply",
-  "linked_message"
+  "link_doctype",
+  "link_document",
+  "content",
+  "is_edited"
  ],
  "fields": [
   {
@@ -68,7 +75,7 @@
   {
    "fieldname": "linked_message",
    "fieldtype": "Link",
-   "label": "Linked Message",
+   "label": "Replied Message ID",
    "options": "Raven Message"
   },
   {
@@ -95,11 +102,44 @@
    "fieldname": "thumbnail_height",
    "fieldtype": "Data",
    "label": "Thumbnail Height"
+  },
+  {
+   "fieldname": "link_doctype",
+   "fieldtype": "Link",
+   "label": "Link Doctype",
+   "options": "DocType"
+  },
+  {
+   "fieldname": "link_document",
+   "fieldtype": "Dynamic Link",
+   "label": "Link Document",
+   "options": "link_doctype"
+  },
+  {
+   "fieldname": "content",
+   "fieldtype": "Long Text",
+   "label": "Content",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "is_edited",
+   "fieldtype": "Check",
+   "label": "Is Edited"
+  },
+  {
+   "fieldname": "column_break_wvje",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "replied_message_details",
+   "fieldtype": "JSON",
+   "label": "Replied Message Details"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-11-24 18:46:53.805799",
+ "modified": "2024-02-09 18:15:42.424300",
  "modified_by": "Administrator",
  "module": "Raven Messaging",
  "name": "Raven Message",

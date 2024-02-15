@@ -78,7 +78,7 @@ const DirectMessageItem = ({ channel, unreadCount }: { channel: DMChannelListIte
 const ExtraUsersItemList = () => {
 
     const { extra_users, mutate } = useContext(ChannelListContext) as ChannelListContextType
-    const { call } = useFrappePostCall<{ message: string }>("raven.raven_channel_management.doctype.raven_channel.raven_channel.create_direct_message_channel")
+    const { call } = useFrappePostCall<{ message: string }>("raven.api.raven_channel.create_direct_message_channel")
 
     const { toast } = useToast()
     const navigate = useNavigate()

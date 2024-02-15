@@ -16,9 +16,10 @@ import { TiptapRenderer } from './Renderers/TiptapRenderer/TiptapRenderer'
 import { QuickActions } from './MessageActions/QuickActions/QuickActions'
 import { memo, useContext } from 'react'
 import { UserContext } from '@/utils/auth/UserProvider'
-import { ReplyMessage } from './ReplyMessageBox/ReplyMessageBox'
+import { ReplyMessageBox } from './ReplyMessageBox/ReplyMessageBox'
 import { generateAvatarColor } from '../../select-member/GenerateAvatarColor'
 import { Skeleton } from '@/components/common/Skeleton'
+import { DoctypeLinkRenderer } from './Renderers/DoctypeLinkRenderer'
 
 interface MessageBlockProps {
     message: MessageBlock['data'],
@@ -32,7 +33,7 @@ interface MessageBlockProps {
 
 export const MessageItem = ({ message, setDeleteMessage, onReplyMessageClick, setEditMessage, isScrolling, replyToMessage, updateMessages }: MessageBlockProps) => {
 
-    const { name, owner: userID, creation: timestamp, message_reactions, is_continuation, is_reply, linked_message } = message
+    const { name, owner: userID, creation: timestamp, message_reactions, is_continuation, is_reply, linked_message, replied_message_details } = message
 
     const { user, isActive } = useGetUserDetails(userID)
 
@@ -77,17 +78,23 @@ export const MessageItem = ({ message, setDeleteMessage, onReplyMessageClick, se
                             {/* Message content goes here */}
 
                             {/* If it's a reply, then show the linked message */}
-                            {linked_message && <ReplyMessage
+                            {linked_message && replied_message_details && <ReplyMessageBox
                                 className='min-w-[32rem] cursor-pointer mb-1'
                                 role='button'
                                 onClick={() => onReplyMessageClick(linked_message)}
-                                messageID={linked_message} />}
-                            {/* Show message according to type */}
+                                message={JSON.parse(replied_message_details)} />
+                            }
+                            { /* Show message according to type */}
                             <MessageContent
                                 message={message}
                                 user={user}
                                 isScrolling={isScrolling}
                                 className={clsx(message.is_continuation ? 'ml-0.5' : '')} />
+
+                            {message.link_doctype && message.link_document && <Box className={clsx(message.is_continuation ? 'ml-0.5' : '-ml-0.5')}>
+                                <DoctypeLinkRenderer doctype={message.link_doctype} docname={message.link_document} />
+                            </Box>}
+                            {message.is_edited === 1 && <Text size='1' className='text-gray-10'>(edited)</Text>}
                             {message_reactions?.length &&
                                 <MessageReactions
                                     messageID={name}
@@ -135,7 +142,7 @@ const MessageLeftElement = ({ message, className, user, isActive, isScrolling, .
     // If it's a continuation, then show the timestamp
 
     // Else, show the avatar
-    return <Box className={clsx(message.is_continuation ? 'invisible group-hover:visible' : '', className)} {...props}>
+    return <Box className={clsx(message.is_continuation ? 'invisible group-hover:visible flex items-center max-w-[32px] w-[32px]' : '', className)} {...props}>
         {message.is_continuation ?
             <DateTooltipShort timestamp={message.creation} />
             : <MessageSenderAvatar userID={message.owner} user={user} isActive={isActive} isScrolling={isScrolling} />
@@ -211,8 +218,11 @@ interface MessageContentProps extends BoxProps {
 export const MessageContent = ({ message, user, isScrolling = false, ...props }: MessageContentProps) => {
 
     return <Box {...props}>
+        {message.text ? <TiptapRenderer message={{
+            ...message,
+            message_type: 'Text'
+        }} user={user} isScrolling={isScrolling} /> : null}
         {message.message_type === 'Image' && <ImageMessageBlock message={message} user={user} isScrolling={isScrolling} />}
         {message.message_type === 'File' && <FileMessageBlock message={message} user={user} />}
-        {message.message_type === 'Text' && <TiptapRenderer message={message} user={user} isScrolling={isScrolling} />}
     </Box>
 }

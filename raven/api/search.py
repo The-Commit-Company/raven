@@ -20,7 +20,7 @@ def get_search_result(filter_type, doctype, search_text=None, from_user=None, in
     }
 
     query = frappe.qb.from_(doctype).select(
-        doctype.name, doctype.file, doctype.owner, doctype.creation, doctype.message_type, doctype.channel_id, doctype.text).join(channel, JoinType.left).on(doctype.channel_id == channel.name).join(channel_member, JoinType.left).on(
+        doctype.name, doctype.file, doctype.owner, doctype.creation, doctype.message_type, doctype.channel_id, doctype.text, doctype.content).join(channel, JoinType.left).on(doctype.channel_id == channel.name).join(channel_member, JoinType.left).on(
             channel_member.channel_id == doctype.channel_id).where((channel.type != 'Private') | (channel_member.user_id == frappe.session.user))
 
     if filter_type == 'File':
@@ -40,7 +40,7 @@ def get_search_result(filter_type, doctype, search_text=None, from_user=None, in
             query = query.where(doctype.file.like(
                 "/private/files/%" + search_text + "%"))
         elif filter_type == 'Message':
-            query = query.where(doctype.text.like("%" + search_text + "%"))
+            query = query.where(doctype.content.like("%" + search_text + "%"))
         elif filter_type == 'Channel':
             query = query.where(
                 doctype.channel_name.like("%" + search_text + "%"))
