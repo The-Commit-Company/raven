@@ -151,11 +151,11 @@ export const ChatBoxBody = ({ channelData }: ChatBoxBodyProps) => {
                             />
                         </Suspense>
                     }
-                    {channelData?.is_archived == 0 && (!isUserInChannel && channelData?.type !== 'Open' &&
+                    {channelData?.is_archived == 0 && !isUserInChannel && channelData?.type !== 'Open' &&
                         <JoinChannelBox
                             channelData={channelData}
                             channelMembers={channelMembers}
-                            user={user} />)}
+                            user={user} />}
                     {channelData && channelData.is_archived == 1 && <ArchivedChannelBox channelData={channelData} channelMembers={channelMembers} />}
                 </FileDrop>
             </Flex>

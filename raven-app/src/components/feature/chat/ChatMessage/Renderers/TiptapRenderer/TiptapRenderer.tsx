@@ -1,5 +1,6 @@
 import { EditorContent, EditorContext, useEditor } from '@tiptap/react'
 import { TextMessage } from '../../../../../../../../types/Messaging/Message'
+import { Message, TextMessage } from '../../../../../../../../types/Messaging/Message'
 import { UserFields } from '@/utils/users/UserListProvider'
 import { BoxProps } from '@radix-ui/themes/dist/cjs/components/box'
 import { Box, Text } from '@radix-ui/themes'
@@ -97,13 +98,4 @@ export const TiptapRenderer = ({ message, user, isScrolling = false, isTruncated
       </EditorContext.Provider>
     </Box>
   )
-}
-
-export const TruncatedTiptapRenderer = ({ message, user, showLinkPreview = false, ...props }: TiptapRendererProps) => {
-
-
-  return <Box className='text-ellipsis overflow-hidden line-clamp-3'>
-    <TiptapRenderer message={message} user={user} showLinkPreview={showLinkPreview} isTruncated {...props} />
-  </Box>
-
 }

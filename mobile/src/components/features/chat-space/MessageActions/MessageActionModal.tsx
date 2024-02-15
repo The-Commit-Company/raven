@@ -5,7 +5,6 @@ import {
     IonContent,
     IonList,
 } from '@ionic/react';
-import { EmojiAction } from './EmojiAction';
 import './messageActionModal.styles.css'
 import { DeleteAction } from './DeleteAction';
 import { UserContext } from '@/utils/auth/UserProvider';
