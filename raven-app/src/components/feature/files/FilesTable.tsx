@@ -1,15 +1,16 @@
 import { StandardDate } from "@/utils/dateConversions"
-import { Box, Button, DropdownMenu, Flex, Table } from "@radix-ui/themes"
-import { BsThreeDots } from "react-icons/bs"
+import { Box, Button, DropdownMenu, Flex, Table, Text, Tooltip } from "@radix-ui/themes"
 import { FileInChannel } from "./ViewFilesContent"
 import { UserAvatar } from "@/components/common/UserAvatar"
 import { formatBytes } from "@/utils/operations"
 import { useToast } from "@/hooks/useToast"
-import { BiDownload, BiExit, BiLink } from "react-icons/bi"
+import { BiDownload, BiLink, BiLinkExternal } from "react-icons/bi"
+import { FileExtensionIcon } from "@/utils/layout/FileExtIcon"
 
 export const FilesTable = ({ data }: { data: FileInChannel[] }) => {
+
     return (
-        <Table.Root variant="surface">
+        <Table.Root variant="surface" className='overflow-scroll'>
             <Table.Header>
                 <Table.Row>
                     <Table.ColumnHeaderCell>Preview</Table.ColumnHeaderCell>
@@ -26,10 +27,21 @@ export const FilesTable = ({ data }: { data: FileInChannel[] }) => {
                     return (
                         <Table.Row key={index}>
                             <Table.Cell>
-                                <img src={file.file_url} alt={file.file_name} height={'35px'} width={'35px'} />
+                                {file.message_type === 'File' ?
+                                    <FileExtensionIcon ext={file.file_type.toLowerCase()} style={{ paddingLeft: '4' }} />
+                                    : <img style={{ borderRadius: '4px' }} src={file.file_url} alt={file.file_name} height={'25px'} width={'25px'} />}
                             </Table.Cell>
-                            <Table.Cell style={{ maxWidth: '250px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                                {file.file_name}
+                            <Table.Cell>
+                                <Box className='relative' style={{ cursor: 'pointer', maxWidth: '250px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                                    <DropdownMenu.Root>
+                                        <DropdownMenu.Trigger>
+                                            <Text>
+                                                {file.file_name}
+                                            </Text>
+                                        </DropdownMenu.Trigger>
+                                        <FileActionsMenu file={file.file_url} />
+                                    </DropdownMenu.Root>
+                                </Box>
                             </Table.Cell>
                             <Table.Cell>{file.file_type}</Table.Cell>
                             <Table.Cell>{formatBytes(file.file_size)}</Table.Cell>
@@ -41,22 +53,55 @@ export const FilesTable = ({ data }: { data: FileInChannel[] }) => {
                             </Table.Cell>
                             <Table.Cell><StandardDate date={file.creation} /></Table.Cell>
                             <Table.Cell>
-                                <Box className='relative'>
-                                    <DropdownMenu.Root>
-                                        <DropdownMenu.Trigger>
-                                            <Button variant="soft" color="gray" size={'1'}>
-                                                <BsThreeDots />
-                                            </Button>
-                                        </DropdownMenu.Trigger>
-                                        <FileActionsMenu file={file.file_url} />
-                                    </DropdownMenu.Root>
-                                </Box>
+                                <FileButtons file={file.file_url} />
                             </Table.Cell>
                         </Table.Row>
                     )
                 })}
             </Table.Body>
         </Table.Root>
+    )
+}
+
+const FileButtons = ({ file }: { file: string }) => {
+
+    const { toast } = useToast()
+    const copy = () => {
+        if (file.startsWith('http') || file.startsWith('https')) {
+            navigator.clipboard.writeText(file)
+        }
+        else {
+            navigator.clipboard.writeText(window.location.origin + file)
+        }
+        toast({
+            title: 'Link copied',
+            duration: 800,
+            variant: 'accent'
+        })
+    }
+
+    return (
+        <Flex gap='2'>
+            <Tooltip content='Copy link'>
+                <Button variant='soft' color='gray' size='1' onClick={copy}>
+                    <BiLink size='16' />
+                </Button>
+            </Tooltip>
+            <Tooltip content='Download'>
+                <a download href={file}>
+                    <Button variant='soft' color='gray' size='1'>
+                        <BiDownload size='16' />
+                    </Button>
+                </a>
+            </Tooltip>
+            <Tooltip content='Open in new tab'>
+                <a href={file} target='_blank' rel='noreferrer'>
+                    <Button variant='soft' color='gray' size='1'>
+                        <BiLinkExternal size='14' />
+                    </Button>
+                </a>
+            </Tooltip>
+        </Flex>
     )
 }
 
@@ -98,7 +143,7 @@ const FileActionsMenu = ({ file }: { file: string }) => {
             <DropdownMenu.Item>
                 <a href={file} target='_blank' rel='noreferrer'>
                     <Flex gap='2'>
-                        <BiExit size='18' />
+                        <BiLinkExternal size='16' />
                         Open in new tab
                     </Flex>
                 </a>

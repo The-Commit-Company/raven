@@ -1,17 +1,18 @@
 import { useDebounce } from "@/hooks/useDebounce"
-import { usePaginationWithDoctype } from "@/hooks/usePagination"
-import { Filter, useFrappeGetCall } from "frappe-react-sdk"
+import { usePagination } from "@/hooks/usePagination"
+import { useFrappeGetCall } from "frappe-react-sdk"
 import { ChangeEvent, useState } from "react"
-import { Dialog, Flex, IconButton, Text, TextField } from "@radix-ui/themes"
+import { Box, Dialog, Flex, Heading, IconButton, Select, Text, TextField } from "@radix-ui/themes"
 import { BiSearch } from "react-icons/bi"
 import { IoMdClose } from "react-icons/io"
-import { Sort } from "../sorting"
 import { PageLengthSelector } from "../pagination/PageLengthSelector"
 import { ErrorBanner } from "@/components/layout/AlertBanner"
 import { TableLoader } from "@/components/layout/Loaders/TableLoader"
 import { PageSelector } from "../pagination/PageSelector"
 import { FilesTable } from "./FilesTable"
 import { useParams } from "react-router-dom"
+import { Loader } from "@/components/common/Loader"
+import { FileExtensionIcon } from "@/utils/layout/FileExtIcon"
 
 export type FileInChannel = {
     name: string,
@@ -24,6 +25,7 @@ export type FileInChannel = {
     file_size: number,
     file_type: string,
     file_url: string,
+    message_type: 'File' | 'Image'
 }
 
 const ViewFilesContent = () => {
@@ -36,54 +38,98 @@ const ViewFilesContent = () => {
     }
 
     const { channelID } = useParams<{ channelID: string }>()
+    const [fileType, setFileType] = useState<string | undefined>()
 
-    const filters: Filter[] = [['channel_id', '=', channelID ?? ''], ['message_type', '=', 'Image']]
-
-    const { start, count, selectedPageLength, setPageLength, nextPage, previousPage } = usePaginationWithDoctype("Raven Message", 10, filters)
-    const [sortOrder, setSortOder] = useState<"asc" | "desc">("desc")
-    const [sortByField, setSortByField] = useState<string>('creation')
-
-    const { data, error } = useFrappeGetCall<{ message: FileInChannel[] }>("raven.api.raven_message.get_all_files_shared_in_channel", {
+    const { data: count, error: countError } = useFrappeGetCall<{ message: number }>("raven.api.raven_message.get_count_for_pagination_of_files", {
         "channel_id": channelID,
         "file_name": debouncedText,
-        // "file_type":,
-        "start_after": start > 0 ? (start - 1) : 0,
-        "page_length": selectedPageLength,
-        "sort_field": sortByField !== '' ? sortByField : 'creation',
-        "sort_order": sortOrder,
+        "file_type": fileType === 'any' ? undefined : fileType
     })
 
+    const { start, selectedPageLength, setPageLength, nextPage, previousPage } = usePagination(10, count?.message ?? 0)
 
-    console.log(data)
+    const { data, error, isLoading } = useFrappeGetCall<{ message: FileInChannel[] }>("raven.api.raven_message.get_all_files_shared_in_channel", {
+        "channel_id": channelID,
+        "file_name": debouncedText,
+        "file_type": fileType === 'any' ? undefined : fileType,
+        "start_after": start > 0 ? (start - 1) : 0,
+        "page_length": selectedPageLength
+    })
 
     return (
         <div>
             <Flex justify='between' gap='2'>
-                <Dialog.Title>Files</Dialog.Title>
+                <Dialog.Title>Files shared in this channel</Dialog.Title>
                 <Dialog.Close>
                     <IconButton size='1' color='gray' variant="soft" aria-label="close dialog">
                         <IoMdClose />
                     </IconButton>
                 </Dialog.Close>
             </Flex>
-            <Flex direction='column' gap='4' pt='4' className='max-h-[80vh]'>
+            <Flex direction='column' gap='4' pt='4' className='max-h-[75vh] min-h-[75vh]'>
                 <Flex justify='between' gap='2'>
                     <Flex gap='2' align='center'>
-                        <TextField.Root style={{ width: '360px' }}>
+                        <TextField.Root style={{ width: '400px' }}>
                             <TextField.Slot>
                                 <BiSearch />
                             </TextField.Slot>
                             <TextField.Input
                                 onChange={handleChange}
                                 type='text'
-                                placeholder='Search for file' />
+                                placeholder='Search for file' autoFocus />
+                            <TextField.Slot>
+                                {isLoading && <Loader />}
+                            </TextField.Slot>
                         </TextField.Root>
+                        <Select.Root value={fileType} onValueChange={setFileType}>
+                            <Select.Trigger placeholder='File Type' style={{ width: '200px' }} />
+                            <Select.Content>
+                                <Select.Group>
+                                    <Select.Label>File Type</Select.Label>
+                                    <Select.Item value='any'>
+                                        <Flex align='center' gap='1'>
+                                            <Box width='4'>
+                                                🤷🏻‍♀️
+                                            </Box>
+                                            Any
+                                        </Flex>
+                                    </Select.Item>
+                                    <Select.Item value='pdf'>
+                                        <Flex gap='2'>
+                                            <FileExtensionIcon ext={'pdf'} size='14' style={{ paddingTop: 2 }} />
+                                            PDF
+                                        </Flex>
+                                    </Select.Item>
+                                    <Select.Item value='doc'>
+                                        <Flex gap='2'>
+                                            <FileExtensionIcon ext={'doc'} size='14' style={{ paddingTop: 2 }} />
+                                            Documents (.doc)
+                                        </Flex>
+                                    </Select.Item>
+                                    <Select.Item value='ppt'>
+                                        <Flex gap='2'>
+                                            <FileExtensionIcon ext={'ppt'} size='14' style={{ paddingTop: 2 }} />
+                                            Presentations (.ppt)
+                                        </Flex>
+                                    </Select.Item>
+                                    <Select.Item value='xls'>
+                                        <Flex gap='2'>
+                                            <FileExtensionIcon ext={'xls'} size='14' style={{ paddingTop: 2 }} />
+                                            Spreadsheets (.xls)
+                                        </Flex>
+                                    </Select.Item>
+                                    <Select.Item value='image'>
+                                        <Flex gap='2'>
+                                            <FileExtensionIcon ext='jpg' size='14' style={{ paddingTop: 2 }} />
+                                            Images
+                                        </Flex>
+                                    </Select.Item>
+                                </Select.Group>
+                            </Select.Content>
+                        </Select.Root>
                         {debouncedText.length > 0 && debouncedText.length < 2 && <Text size='1' color="gray">Continue typing...</Text>}
                     </Flex>
                     <Flex justify='end' gap='2' align='center'>
-                        <Sort
-                            sortOrder={sortOrder}
-                            onSortOrderChange={(order) => setSortOder(order)} />
                         <PageLengthSelector
                             options={[10, 20, 50, 100]}
                             selectedValue={selectedPageLength}
@@ -91,19 +137,21 @@ const ViewFilesContent = () => {
                         <PageSelector
                             rowsPerPage={selectedPageLength}
                             start={start}
-                            totalRows={count!}
+                            totalRows={count?.message ?? 0}
                             gotoNextPage={() => nextPage()}
                             gotoPreviousPage={() => previousPage()} />
                     </Flex>
                 </Flex>
 
                 <ErrorBanner error={error} />
+                <ErrorBanner error={countError} />
 
                 {!data && !error && <TableLoader columns={3} />}
 
                 {data && data.message.length === 0 && (debouncedText.length >= 2 || debouncedText.length == 0) &&
-                    <Flex align='center' justify='center' className="min-h-[32rem]">
-                        <Text size='2' align='center'>No files found</Text>
+                    <Flex align='center' justify='center' direction='column' gap='2' className="min-h-[32rem]">
+                        <Heading size='3'>Nothing to see here</Heading>
+                        <Text size='2' align='center'>No files found in this channel</Text>
                     </Flex>}
 
                 {data && data.message.length !== 0 && <FilesTable data={data.message} />}

@@ -255,26 +255,29 @@ def get_timeline_message_content(doctype, docname):
 
 
 @frappe.whitelist()
-def get_all_files_shared_in_channel(channel_id, file_name=None, file_type=None, start_after=0, page_length=None, sort_field="creation", sort_order="desc"):
+def get_all_files_shared_in_channel(channel_id, file_name=None, file_type=None, start_after=0, page_length=None):
 
     # check if the user has permission to view the channel
     check_permission(channel_id)
+
+    file_extensions = {
+        'doc': ['doc', 'docx', 'odt', 'ott', 'rtf', 'txt', 'dot', 'dotx', 'docm', 'dotm', 'pages'],
+        'ppt': ['ppt', 'pptx', 'odp', 'otp', 'pps', 'ppsx', 'pot', 'potx', 'pptm', 'ppsm', 'potm', 'ppam', 'ppa', 'key'],
+        'xls': ['xls', 'xlsx', 'csv', 'ods', 'ots', 'xlsb', 'xlsm', 'xlt', 'xltx', 'xltm', 'xlam', 'xla', 'numbers'],
+    }
 
     message = frappe.qb.DocType("Raven Message")
     user = frappe.qb.DocType("Raven User")
     file = frappe.qb.DocType("File")
 
     query = (frappe.qb.from_(message)
-             .select(file.name, file.file_name, file.file_type, file.file_size, file.file_url,
-                     message.owner, message.creation,
-                     user.full_name, user.user_image)
              .join(file).on(message.name == file.attached_to_name)
              .join(user).on(message.owner == user.name)
+             .select(file.name, file.file_name, file.file_type, file.file_size, file.file_url,
+                     message.owner, message.creation, message.message_type,
+                     user.full_name, user.user_image)
              .where(message.channel_id == channel_id)
-             .groupby(file.name))
-
-    files = query.orderby(message[sort_field], order=Order[sort_order]).limit(
-        page_length).offset(start_after).run(as_dict=True)
+             .groupby(message.name))
 
     # search for file name
     if file_name:
@@ -282,6 +285,61 @@ def get_all_files_shared_in_channel(channel_id, file_name=None, file_type=None, 
 
     # search for file type
     if file_type:
-        query = query.where(file.file_type == file_type)
+        if file_type == 'image':
+            query = query.where(message.message_type == 'Image')
+        elif file_type == 'pdf':
+            query = query.where(file.file_type == 'pdf')
+        else:
+            # Get the list of extensions for the given file type
+            extensions = file_extensions.get(file_type)
+            if extensions:
+                query = query.where((file.file_type).isin(extensions))
+
+    files = query.orderby(message.creation, order=Order['desc']).limit(
+        page_length).offset(start_after).run(as_dict=True)
 
     return files
+
+
+@frappe.whitelist()
+def get_count_for_pagination_of_files(channel_id, file_name=None, file_type=None):
+
+    # check if the user has permission to view the channel
+    check_permission(channel_id)
+
+    file_extensions = {
+        'doc': ['doc', 'docx', 'odt', 'ott', 'rtf', 'txt', 'dot', 'dotx', 'docm', 'dotm', 'pages'],
+        'ppt': ['ppt', 'pptx', 'odp', 'otp', 'pps', 'ppsx', 'pot', 'potx', 'pptm', 'ppsm', 'potm', 'ppam', 'ppa', 'key'],
+        'xls': ['xls', 'xlsx', 'csv', 'ods', 'ots', 'xlsb', 'xlsm', 'xlt', 'xltx', 'xltm', 'xlam', 'xla', 'numbers'],
+    }
+
+    message = frappe.qb.DocType("Raven Message")
+    user = frappe.qb.DocType("Raven User")
+    file = frappe.qb.DocType("File")
+
+    query = (frappe.qb.from_(message)
+             .join(file).on(message.name == file.attached_to_name)
+             .join(user).on(message.owner == user.name)
+             .select(Count(message.name).as_('count'))
+             .where(message.channel_id == channel_id)
+             .groupby(message.name))
+
+    # search for file name
+    if file_name:
+        query = query.where(file.file_name.like("%" + file_name + "%"))
+
+    # search for file type
+    if file_type:
+        if file_type == 'image':
+            query = query.where(message.message_type == 'Image')
+        elif file_type == 'pdf':
+            query = query.where(file.file_type == 'pdf')
+        else:
+            # Get the list of extensions for the given file type
+            extensions = file_extensions.get(file_type)
+            if extensions:
+                query = query.where((file.file_type).isin(extensions))
+
+    count = query.run(as_dict=True)
+
+    return len(count)
