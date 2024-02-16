@@ -2,6 +2,7 @@
 # For license information, please see license.txt
 
 import frappe
+from frappe import scrub
 from frappe.modules.export_file import export_to_files
 from frappe.model.document import Document
 from raven.api.raven_channel_member import remove_channel_member
@@ -170,3 +171,14 @@ class RavenBot(Document):
             filters["creation"] = [">", date]
 
         return frappe.get_all("Raven Message", filters=filters, order_by="creation desc", pluck='name')
+
+    def get_bot_dotted_path(self):
+        return (frappe.local.module_app[scrub(self.module)] + "." + scrub(self.module) + ".raven_bot." + scrub(self.name) + "." + scrub(self.name))
+
+    def on_mention(self):
+        method_path = self.get_bot_dotted_path() + ".on_mention"
+        method = frappe.get_attr(method_path)
+        if method:
+            method()
+        else:
+            print("Method not found")
