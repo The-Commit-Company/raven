@@ -28,11 +28,15 @@ def upload_JPEG_wrt_EXIF(content, filename):
             buffer = buffer.getvalue()
     else:
         buffer = decoded_content
-
+    print("Here")
     return frappe.get_doc({
         "doctype": "File",
         "file_name": filename,
         "content": buffer,
+        "attached_to_doctype": "Raven Message",
+        "attached_to_name": frappe.form_dict.docname,
+        "is_private": 1,
+        "attached_to_field": "file"
     }).insert()
 
 
