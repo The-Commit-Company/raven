@@ -1,5 +1,5 @@
 import { StandardDate } from "@/utils/dateConversions"
-import { Box, Button, DropdownMenu, Flex, Table, Text, Tooltip } from "@radix-ui/themes"
+import { Box, Button, DropdownMenu, Flex, HoverCard, Inset, Table, Text, Tooltip } from "@radix-ui/themes"
 import { FileInChannel } from "./ViewFilesContent"
 import { UserAvatar } from "@/components/common/UserAvatar"
 import { formatBytes } from "@/utils/operations"
@@ -29,7 +29,7 @@ export const FilesTable = ({ data }: { data: FileInChannel[] }) => {
                             <Table.Cell>
                                 {file.message_type === 'File' ?
                                     <FileExtensionIcon ext={file.file_type.toLowerCase()} style={{ paddingLeft: '4' }} />
-                                    : <img style={{ borderRadius: '4px' }} src={file.file_url} alt={file.file_name} height={'25px'} width={'25px'} />}
+                                    : <ImagePreview file={file} />}
                             </Table.Cell>
                             <Table.Cell>
                                 <Box className='relative' style={{ cursor: 'pointer', maxWidth: '250px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
@@ -61,6 +61,23 @@ export const FilesTable = ({ data }: { data: FileInChannel[] }) => {
             </Table.Body>
         </Table.Root>
     )
+}
+
+const ImagePreview = ({ file }: { file: FileInChannel }) => {
+
+    return <HoverCard.Root>
+        <HoverCard.Trigger>
+            <img style={{ borderRadius: '4px' }} src={file.file_url} alt={file.file_name} height={'25px'} width={'25px'} className="object-cover" />
+        </HoverCard.Trigger>
+        <HoverCard.Content>
+            <Inset side='all' mb='0' className="-mb-6">
+                <img
+                    src={file.file_thumbnail || file.file_url}
+                    alt={file.file_name}
+                    height={file.thumbnail_height || '200px'} width={file.thumbnail_width || '200px'} className="object-cover" />
+            </Inset>
+        </HoverCard.Content>
+    </HoverCard.Root>
 }
 
 const FileButtons = ({ file }: { file: string }) => {

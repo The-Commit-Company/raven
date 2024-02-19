@@ -25,7 +25,10 @@ export type FileInChannel = {
     file_size: number,
     file_type: string,
     file_url: string,
-    message_type: 'File' | 'Image'
+    message_type: 'File' | 'Image',
+    thumbnail_width?: number,
+    thumbnail_height?: number,
+    file_thumbnail?: string
 }
 
 const ViewFilesContent = () => {
