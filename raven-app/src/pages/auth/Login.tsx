@@ -47,25 +47,22 @@ export const Component = () => {
                             {error && <ErrorCallout>
                                 {error.message}
                             </ErrorCallout>}
-                            {/* <ErrorBanner error={error} /> */}
-
+                           
                             <form onSubmit={handleSubmit(onSubmit)}>
                                 <Flex direction='column' gap='6'>
                                     <Flex direction='column' gap='4'>
 
                                         <Flex direction='column' gap='2'>
-                                            <Label htmlFor='email' isRequired>Email address</Label>
+                                            <Label htmlFor='email' isRequired>Email / Username</Label>
                                             <TextField.Root>
                                                 <TextField.Input {...register("email",
                                                     {
-                                                        // validate: (email) => isEmailValid(email) || "Please enter a valid email address.",
-                                                        required: "Email is required."
+                                                        required: "Email or Username is required."
                                                     })}
                                                     name="email"
                                                     type="text"
-                                                    // autoComplete="email"
                                                     required
-                                                    placeholder="e.g. example@gmail.com"
+                                                    placeholder="jane@example.com"
                                                     tabIndex={0} />
                                             </TextField.Root>
                                             {errors?.email && <ErrorText>{errors?.email?.message}</ErrorText>}
