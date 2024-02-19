@@ -33,6 +33,10 @@ def upload_JPEG_wrt_EXIF(content, filename):
         "doctype": "File",
         "file_name": filename,
         "content": buffer,
+        "attached_to_doctype": "Raven Message",
+        "attached_to_name": frappe.form_dict.docname,
+        "is_private": 1,
+        "attached_to_field": "file"
     }).insert()
 
 
@@ -52,6 +56,7 @@ def upload_file_with_message():
     thumbnailExt = ['jpg', 'JPG', 'jpeg', 'JPEG', 'png', 'PNG']
 
     frappe.form_dict.doctype = "Raven Message"
+    frappe.form_dict.fieldname = "file"
 
     message_doc = frappe.new_doc("Raven Message")
     message_doc.channel_id = frappe.form_dict.channelID
