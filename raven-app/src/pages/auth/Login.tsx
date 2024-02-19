@@ -2,14 +2,13 @@ import { useState, useContext } from "react";
 import { useForm } from "react-hook-form";
 import { BiShow, BiHide } from "react-icons/bi";
 import { Link } from "react-router-dom";
-import { ErrorBanner } from "../../components/layout/AlertBanner";
 import { UserContext } from "../../utils/auth/UserProvider";
-import { isEmailValid } from "../../utils/validations";
 import { FullPageLoader } from "../../components/layout/Loaders";
 import { Box, Button, Flex, IconButton, Text, TextField } from "@radix-ui/themes";
 import { FrappeError } from "frappe-react-sdk";
 import { Loader } from "@/components/common/Loader";
 import { ErrorText, Label } from "@/components/common/Form";
+import { ErrorCallout } from "@/components/layout/AlertBanner/ErrorBanner";
 
 type Inputs = {
     email: string;
@@ -45,7 +44,10 @@ export const Component = () => {
                                 </Flex>
                             </Link>
 
-                            <ErrorBanner error={error} />
+                            {error && <ErrorCallout>
+                                {error.message}
+                            </ErrorCallout>}
+                            {/* <ErrorBanner error={error} /> */}
 
                             <form onSubmit={handleSubmit(onSubmit)}>
                                 <Flex direction='column' gap='6'>
@@ -56,12 +58,12 @@ export const Component = () => {
                                             <TextField.Root>
                                                 <TextField.Input {...register("email",
                                                     {
-                                                        validate: (email) => isEmailValid(email) || "Please enter a valid email address.",
+                                                        // validate: (email) => isEmailValid(email) || "Please enter a valid email address.",
                                                         required: "Email is required."
                                                     })}
                                                     name="email"
-                                                    type="email"
-                                                    autoComplete="email"
+                                                    type="text"
+                                                    // autoComplete="email"
                                                     required
                                                     placeholder="e.g. example@gmail.com"
                                                     tabIndex={0} />
