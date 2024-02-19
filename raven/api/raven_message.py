@@ -253,18 +253,17 @@ def get_timeline_message_content(doctype, docname):
 
     return timeline_contents
 
+file_extensions = {
+        'doc': ['doc', 'docx', 'odt', 'ott', 'rtf', 'txt', 'dot', 'dotx', 'docm', 'dotm', 'pages'],
+        'ppt': ['ppt', 'pptx', 'odp', 'otp', 'pps', 'ppsx', 'pot', 'potx', 'pptm', 'ppsm', 'potm', 'ppam', 'ppa', 'key'],
+        'xls': ['xls', 'xlsx', 'csv', 'ods', 'ots', 'xlsb', 'xlsm', 'xlt', 'xltx', 'xltm', 'xlam', 'xla', 'numbers'],
+}
 
 @frappe.whitelist()
 def get_all_files_shared_in_channel(channel_id, file_name=None, file_type=None, start_after=0, page_length=None):
 
     # check if the user has permission to view the channel
     check_permission(channel_id)
-
-    file_extensions = {
-        'doc': ['doc', 'docx', 'odt', 'ott', 'rtf', 'txt', 'dot', 'dotx', 'docm', 'dotm', 'pages'],
-        'ppt': ['ppt', 'pptx', 'odp', 'otp', 'pps', 'ppsx', 'pot', 'potx', 'pptm', 'ppsm', 'potm', 'ppam', 'ppa', 'key'],
-        'xls': ['xls', 'xlsx', 'csv', 'ods', 'ots', 'xlsb', 'xlsm', 'xlt', 'xltx', 'xltm', 'xlam', 'xla', 'numbers'],
-    }
 
     message = frappe.qb.DocType("Raven Message")
     user = frappe.qb.DocType("Raven User")
@@ -275,9 +274,10 @@ def get_all_files_shared_in_channel(channel_id, file_name=None, file_type=None, 
              .join(user).on(message.owner == user.name)
              .select(file.name, file.file_name, file.file_type, file.file_size, file.file_url,
                      message.owner, message.creation, message.message_type,
-                     user.full_name, user.user_image)
+                     message.thumbnail_width, message.thumbnail_height, message.file_thumbnail,
+                     user.full_name, user.user_image, message.name.as_('message_id'))
              .where(message.channel_id == channel_id)
-             .groupby(message.name))
+             )
 
     # search for file name
     if file_name:
@@ -294,6 +294,8 @@ def get_all_files_shared_in_channel(channel_id, file_name=None, file_type=None, 
             extensions = file_extensions.get(file_type)
             if extensions:
                 query = query.where((file.file_type).isin(extensions))
+    else:
+        query = query.where(message.message_type.isin(['Image', 'File']))
 
     files = query.orderby(message.creation, order=Order['desc']).limit(
         page_length).offset(start_after).run(as_dict=True)
@@ -307,22 +309,16 @@ def get_count_for_pagination_of_files(channel_id, file_name=None, file_type=None
     # check if the user has permission to view the channel
     check_permission(channel_id)
 
-    file_extensions = {
-        'doc': ['doc', 'docx', 'odt', 'ott', 'rtf', 'txt', 'dot', 'dotx', 'docm', 'dotm', 'pages'],
-        'ppt': ['ppt', 'pptx', 'odp', 'otp', 'pps', 'ppsx', 'pot', 'potx', 'pptm', 'ppsm', 'potm', 'ppam', 'ppa', 'key'],
-        'xls': ['xls', 'xlsx', 'csv', 'ods', 'ots', 'xlsb', 'xlsm', 'xlt', 'xltx', 'xltm', 'xlam', 'xla', 'numbers'],
-    }
-
     message = frappe.qb.DocType("Raven Message")
-    user = frappe.qb.DocType("Raven User")
+    # user = frappe.qb.DocType("Raven User")
     file = frappe.qb.DocType("File")
 
     query = (frappe.qb.from_(message)
-             .join(file).on(message.name == file.attached_to_name)
-             .join(user).on(message.owner == user.name)
+             .join(file, JoinType.left)
+             .on(message.name == file.attached_to_name)
              .select(Count(message.name).as_('count'))
              .where(message.channel_id == channel_id)
-             .groupby(message.name))
+    )
 
     # search for file name
     if file_name:
@@ -339,7 +335,8 @@ def get_count_for_pagination_of_files(channel_id, file_name=None, file_type=None
             extensions = file_extensions.get(file_type)
             if extensions:
                 query = query.where((file.file_type).isin(extensions))
-
+    else:
+        query = query.where(message.message_type.isin(['Image', 'File']))
     count = query.run(as_dict=True)
 
-    return len(count)
+    return count[0]['count']
