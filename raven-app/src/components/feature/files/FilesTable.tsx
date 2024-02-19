@@ -3,9 +3,9 @@ import { Box, Button, DropdownMenu, Flex, Table, Text, Tooltip } from "@radix-ui
 import { FileInChannel } from "./ViewFilesContent"
 import { UserAvatar } from "@/components/common/UserAvatar"
 import { formatBytes } from "@/utils/operations"
-import { useToast } from "@/hooks/useToast"
 import { BiDownload, BiLink, BiLinkExternal } from "react-icons/bi"
 import { FileExtensionIcon } from "@/utils/layout/FileExtIcon"
+import useFileURLCopy from "@/hooks/useFileURLCopy"
 
 export const FilesTable = ({ data }: { data: FileInChannel[] }) => {
 
@@ -65,20 +65,7 @@ export const FilesTable = ({ data }: { data: FileInChannel[] }) => {
 
 const FileButtons = ({ file }: { file: string }) => {
 
-    const { toast } = useToast()
-    const copy = () => {
-        if (file.startsWith('http') || file.startsWith('https')) {
-            navigator.clipboard.writeText(file)
-        }
-        else {
-            navigator.clipboard.writeText(window.location.origin + file)
-        }
-        toast({
-            title: 'Link copied',
-            duration: 800,
-            variant: 'accent'
-        })
-    }
+    const copy = useFileURLCopy(file)
 
     return (
         <Flex gap='2'>
@@ -107,20 +94,7 @@ const FileButtons = ({ file }: { file: string }) => {
 
 const FileActionsMenu = ({ file }: { file: string }) => {
 
-    const { toast } = useToast()
-    const copy = () => {
-        if (file.startsWith('http') || file.startsWith('https')) {
-            navigator.clipboard.writeText(file)
-        }
-        else {
-            navigator.clipboard.writeText(window.location.origin + file)
-        }
-        toast({
-            title: 'Link copied',
-            duration: 800,
-            variant: 'accent'
-        })
-    }
+    const copy = useFileURLCopy(file)
 
     return (
         <DropdownMenu.Content>
