@@ -52,6 +52,7 @@ def upload_file_with_message():
     thumbnailExt = ['jpg', 'JPG', 'jpeg', 'JPEG', 'png', 'PNG']
 
     frappe.form_dict.doctype = "Raven Message"
+    frappe.form_dict.fieldname = "file"
 
     message_doc = frappe.new_doc("Raven Message")
     message_doc.channel_id = frappe.form_dict.channelID
