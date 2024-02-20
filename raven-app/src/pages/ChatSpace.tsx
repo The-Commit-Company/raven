@@ -29,6 +29,10 @@ const ChatSpaceArea = ({ channelID }: { channelID: string }) => {
     const { mutate, cache } = useSWRConfig()
 
     useEffect(() => {
+        
+        // setting last visited channel in local storage
+        localStorage.setItem("ravenLastChannel", channelID)
+
         //If the cached value of unread message count is 0, then no need to update it
         const channels = cache.get('unread_channel_count')?.data?.message?.channels
         if (channels) {
