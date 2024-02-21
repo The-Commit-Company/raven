@@ -23,7 +23,6 @@ import { BiX } from "react-icons/bi"
 const Tiptap = lazy(() => import("../ChatInput/Tiptap"))
 
 const COOL_PLACEHOLDERS = [
-    "Sure - you can send your message via pigeons, only if you want them covered in poop 😷",
     "Delivering messages atop dragons 🐉 is available on a chargeable basis.",
     "Note 🚨: Service beyond the wall is currently disrupted due to bad weather.",
     "Pigeons just have better brand recognition tbh 🤷🏻",
