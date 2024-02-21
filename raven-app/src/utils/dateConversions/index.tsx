@@ -34,7 +34,9 @@ export const DateMonthYear = (props: Props) => {
     }
     return (
         <Suspense fallback={parseDateString(props.date)}>
-            <MomentConverter {...props} format="Do MMMM YYYY" />
+            {parseDateString(Date()) === parseDateString(props.date) ?
+                "Today" :
+                <MomentConverter {...props} format="Do MMMM YYYY" />}
         </Suspense>
     )
 }
