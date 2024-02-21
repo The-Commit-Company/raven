@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from 'react'
+import { useContext, useEffect, useRef, useState } from 'react'
 import { MessageBlock } from '../../../../../../types/Messaging/Message'
 import {
     IonModal,
@@ -10,10 +10,10 @@ import { DeleteAction } from './DeleteAction';
 import { UserContext } from '@/utils/auth/UserProvider';
 import { CopyAction } from './CopyAction';
 import { SaveMessageAction } from './SaveMessageAction';
-import { NonContinuationMessageBlock } from '../chat-view/MessageBlock';
 import { useGetUser } from '@/hooks/useGetUser';
 import { ShareAction } from './ShareAction';
 import { EmojiAction } from './EmojiAction';
+import MessagePreview from './MessagePreview';
 
 interface MessageActionModalProps {
     selectedMessage?: MessageBlock,
@@ -24,6 +24,7 @@ export const MessageActionModal = ({ selectedMessage, onDismiss }: MessageAction
     const { currentUser } = useContext(UserContext)
     const isOwnMessage = currentUser === selectedMessage?.data?.owner
 
+    const modalRef = useRef<HTMLIonModalElement>(null)
 
 
     /**
@@ -37,7 +38,7 @@ export const MessageActionModal = ({ selectedMessage, onDismiss }: MessageAction
     useEffect(() => {
         const timeout = setTimeout(() => {
             setEnablePointerEvents(true)
-        }, 1000)
+        }, 800)
         return () => {
             clearTimeout(timeout)
             setEnablePointerEvents(false)
@@ -51,6 +52,7 @@ export const MessageActionModal = ({ selectedMessage, onDismiss }: MessageAction
             isOpen={!!selectedMessage}
             breakpoints={[0, 0.75, 0.9]}
             id='message-action-modal'
+            ref={modalRef}
             initialBreakpoint={0.75}
             onWillDismiss={onDismiss}>
             <IonContent className="ion-padding" style={{
@@ -59,14 +61,15 @@ export const MessageActionModal = ({ selectedMessage, onDismiss }: MessageAction
                 {selectedMessage &&
                     <IonList lines='none' className='bg-zinc-900'>
                         <div className='rounded-md pb-2 flex bg-zinc-800'>
-                            <NonContinuationMessageBlock message={selectedMessage} user={user} />
+                            <MessagePreview message={selectedMessage} user={user} />
                         </div>
 
                         <div className='h-[2px] bg-zinc-800 my-2'>
 
                         </div>
 
-                        <EmojiAction message={selectedMessage} onSuccess={onDismiss} />
+                        <EmojiAction message={selectedMessage} onSuccess={onDismiss}
+                            presentingElement={modalRef.current} />
                         {/* <IonItem className='py-1'>
                             <IonIcon slot="start" icon={createOutline} />
                             <IonLabel className='font-semibold'>Edit</IonLabel>

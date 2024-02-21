@@ -71,7 +71,7 @@ export const NonContinuationMessageBlock = ({ message, user, onMessageSelect }: 
     </div>
 }
 
-const UserAvatarBlock = ({ message, user }: { message: MessageBlock, user?: UserFields }) => {
+export const UserAvatarBlock = ({ message, user }: { message: MessageBlock, user?: UserFields }) => {
 
     const isActive = useIsUserActive(user?.name ?? message.data.owner)
     return <div className='w-11 mt-0.5'>
@@ -91,7 +91,7 @@ const ContinuationMessageBlock = ({ message, onMessageSelect }: { message: Messa
 
     return <div>
         {/* @ts-expect-error */}
-        <div className='px-2 flex rounded-md  active:bg-[color:var(--ion-color-light)]' {...longPressEvent}>
+        <div className='px-2 py-0.5 flex rounded-md  active:bg-[color:var(--ion-color-light)]' {...longPressEvent}>
             <div className='w-11'>
             </div>
             <div>

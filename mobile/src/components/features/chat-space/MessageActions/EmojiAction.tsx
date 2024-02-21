@@ -1,54 +1,90 @@
 import { useFrappePostCall } from "frappe-react-sdk"
-import { BiBookAdd } from "react-icons/bi"
+import { BiSmile } from "react-icons/bi"
 import { ActionProps } from "./common"
-import { useCallback, useMemo } from "react"
-import { ReactionObject } from "../chat-view/components/MessageReactions"
+import { useCallback } from "react"
+import { IonButton, IonContent, IonModal } from "@ionic/react"
+import { Haptics, ImpactStyle } from "@capacitor/haptics"
+import EmojiPicker from "@/components/common/EmojiPicker"
+import './emojiAction.styles.css'
 
 
 const STANDARD_EMOJIS = ['👍', '✅', '❤️', '🎉', '👀']
-export const EmojiAction = ({ message, onSuccess }: ActionProps) => {
 
-    const { data: { name: messageID, message_reactions } } = message
+interface EmojiActionProps extends ActionProps {
+    presentingElement: any
+}
+export const EmojiAction = ({ message, onSuccess, presentingElement }: EmojiActionProps) => {
+
+    const { data: { name: messageID } } = message
     const { call: reactToMessage } = useFrappePostCall('raven.api.reactions.react')
 
-    const saveReaction = useCallback((emoji: string) => {
+    const saveReaction = useCallback(async (emoji: string) => {
+        Haptics.impact({
+            style: ImpactStyle.Light
+        })
         return reactToMessage({
             message_id: messageID,
             reaction: emoji
         })
-        // .then(() => updateMessages())
+            .then(() => onSuccess())
     }, [messageID, reactToMessage])
 
-    const reactions: ReactionObject[] = useMemo(() => {
-        //Parse the string to a JSON object and get an array of reactions
-        const parsed_json = JSON.parse(message_reactions ?? '{}') as Record<string, ReactionObject>
-        return Object.values(parsed_json)
-    }, [message_reactions])
-
-    const hasReaction = (emoji: string) => {
-        return reactions.some(r => r.reaction === emoji)
-    }
-
     return (
-        <div className="p-4 text-center grid grid-cols-6 gap-2">
+        <div className="px-1 pb-2 text-center grid grid-cols-6 gap-2">
             {STANDARD_EMOJIS.map(emoji => <QuickEmojiAction
                 key={emoji}
                 emoji={emoji} onClick={() => saveReaction(emoji)}
-                isActive={hasReaction(emoji)} />)
+            />)
             }
+            <OtherEmojiAction
+                presentingElement={presentingElement}
+                onClick={saveReaction}
+            />
         </div>
     )
 }
 
 
-const QuickEmojiAction = ({ emoji, onClick, isActive = false }: { emoji: string, onClick: VoidFunction, isActive?: boolean }) => {
+const QuickEmojiAction = ({ emoji, onClick }: { emoji: string, onClick: VoidFunction }) => {
     return <div>
-        <div
-            role='button'
-            className={"flex items-center flex-col"}
+        <IonButton
+            slot='icon-only'
+            shape="round"
+            fill='clear'
+            className={"flex items-center flex-col bg-zinc-800 aspect-square justify-center rounded-full"}
             onClick={onClick}>
-            <span className="text-2xl block rounded-md w-9">{emoji}</span>
-        </div>
+            <span className="text-lg block rounded-md w-9">{emoji}</span>
+        </IonButton>
+    </div>
+}
+
+const OtherEmojiAction = ({ presentingElement, onClick }: { presentingElement: any, onClick: (emoji: string) => void }) => {
+    return <div>
+        <IonButton
+            slot='icon-only'
+            shape="round"
+            id='emoji-picker'
+            fill='clear'
+            className={"flex items-center flex-col bg-zinc-800 text-zinc-300 aspect-square justify-center rounded-full"}
+        >
+            <span>
+                <BiSmile size='24' />
+            </span>
+        </IonButton>
+        <IonModal
+            trigger="emoji-picker"
+            id='emoji-picker-modal'
+            handle
+            presentingElement={presentingElement}
+            // handleBehavior="cycle"
+            canDismiss
+        >
+            <IonContent className="ion-padding">
+                <div>
+                    <EmojiPicker onSelect={onClick} />
+                </div>
+            </IonContent>
+        </IonModal>
     </div>
 }
 
