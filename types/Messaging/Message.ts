@@ -13,7 +13,8 @@ export interface BaseMessage {
     is_reply: 1 | 0
     linked_message?: string | null
     link_doctype?: string
-    link_document?: string,
+    link_document?: string
+    is_edited: 1 | 0
     /** JSON as string */
     replied_message_details?: string
 }

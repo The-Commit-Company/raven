@@ -141,16 +141,14 @@ $(document).on('app_ready', function () {
                     <p class="flex">
                       <label class="attachment-radio">
                         <input type="radio" name="${radioGroupName}" 
-                               data-file-name="${attachment.name}" ${
-                    checked ? 'checked' : ''
-                  }>
+                               data-file-name="${attachment.name}" ${checked ? 'checked' : ''
+                    }>
                         </input>
                         <span class="ellipsis">${attachment.file_name}</span>
                       </label>
                       &nbsp;
-                      <a href="${
-                        attachment.file_url
-                      }" target="_blank" class="btn-linkF">
+                      <a href="${attachment.file_url
+                    }" target="_blank" class="btn-linkF">
                         ${frappe.utils.icon('link-url')}
                       </a>
                     </p>`);
@@ -194,7 +192,7 @@ $(document).on('app_ready', function () {
                       {
                         fieldname: 'message',
                         label: 'Message',
-                        fieldtype: 'Text Editor',
+                        fieldtype: 'Long Text',
                         // reqd: 1,
                       },
                       { fieldtype: 'Section Break' },
@@ -280,6 +278,20 @@ $(document).on('app_ready', function () {
                     doctype: 'Raven Message',
                     channel_id: channel,
                     text: message,
+                    json: {
+                      "content": [
+                        {
+                          "content": [
+                            {
+                              "text": message,
+                              "type": "text"
+                            }
+                          ],
+                          "type": "paragraph"
+                        }
+                      ],
+                      "type": "doc"
+                    },
                     message_type: get_type(res?.message?.file_url),
                     file: res?.message?.file_url || '',
                     link_doctype: frm.doctype,
