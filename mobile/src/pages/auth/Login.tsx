@@ -3,7 +3,7 @@ import { ErrorBanner } from '../../components/layout'
 import raven_logo from '../../assets/raven_logo.png'
 import { useContext, useState } from 'react'
 import { UserContext } from '../../utils/auth/UserProvider'
-import { Controller, useForm } from 'react-hook-form'
+import { Controller, set, useForm } from 'react-hook-form'
 import { isEmailValid } from '../../utils/validations/validations'
 
 type Inputs = {
@@ -16,10 +16,12 @@ export const Login = () => {
     const [error, setError] = useState<Error | null>(null)
     const { login, isLoading } = useContext(UserContext)
     const { control, handleSubmit, formState: { errors } } = useForm<Inputs>()
+    const [loading, setLoading] = useState(false)
 
     async function onSubmit(values: Inputs) {
         setError(null)
-        return login(values.email, values.password).catch((error) => { setError(error) })
+        setLoading(true)
+        return login(values.email, values.password).catch((error) => { setError(error) }).finally(() => setLoading(false))
     }
 
     return (
@@ -43,16 +45,14 @@ export const Login = () => {
                                 name="email"
                                 control={control}
                                 rules={{
-                                    required: "Email is required",
-                                    validate: (e) => isEmailValid(e) ? true : "Please enter a valid email"
+                                    required: "Email/Username is required",
                                 }}
                                 render={({ field }) => <IonInput
-                                    type="email"
                                     onIonChange={(e) => field.onChange(e.detail.value)}
                                     required
                                     placeholder='sally@example.com'
                                     className={!!errors?.email ? 'ion-invalid ion-touched' : ''}
-                                    label='Email'
+                                    label='Email/Username'
                                     errorText={errors?.email?.message}
                                     inputMode='email'
                                     labelPlacement='stacked'
@@ -82,7 +82,7 @@ export const Login = () => {
                             type="submit"
                             className='ion-margin-top'
                             expand="block">
-                            {isLoading ? <IonSpinner name="crescent" /> : "Login"}
+                            {loading ? <IonSpinner name="crescent" /> : "Login"}
                         </IonButton>
                     </form>
                 </div>

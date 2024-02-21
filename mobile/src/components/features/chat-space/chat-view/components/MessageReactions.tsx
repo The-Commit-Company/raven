@@ -1,6 +1,9 @@
-import { useCallback, useMemo } from "react"
+import { useCallback, useContext, useMemo } from "react"
 import { useFrappePostCall } from "frappe-react-sdk"
 import { useGetUserRecords } from "@/hooks/useGetUserRecords"
+import { Haptics, ImpactStyle } from "@capacitor/haptics"
+import { IonButton } from "@ionic/react"
+import { UserContext } from "@/utils/auth/UserProvider"
 
 export interface ReactionObject {
     // The emoji
@@ -15,6 +18,9 @@ const MessageReactions = ({ messageID, message_reactions }: { messageID: string,
     const { call: reactToMessage } = useFrappePostCall('raven.api.reactions.react')
 
     const saveReaction = useCallback((emoji: string) => {
+        Haptics.impact({
+            style: ImpactStyle.Light
+        })
         return reactToMessage({
             message_id: messageID,
             reaction: emoji
@@ -43,18 +49,33 @@ const ReactionButton = ({ reaction, onReactionClick, allUsers }: ReactionButtonP
 
     const { count, reaction: emoji } = reaction
 
-    return <div
-        role='button'
-        onClick={() => onReactionClick(emoji)}
-        className="bg-zinc-800 px-1.5 py-0.5 rounded-md flex items-center justify-center gap-1">
-        <span className="font-bold text-sm">
+    const { currentUser } = useContext(UserContext)
+
+    const currentUserReacted = useMemo(() => {
+        return reaction.users.includes(currentUser)
+    }, [reaction.users, currentUser])
+
+    const onClick = useCallback(() => {
+        onReactionClick(emoji)
+    }, [emoji])
+
+    const className = "active:bg-zinc-700 rounded-md flex items-center justify-center border " + (currentUserReacted ? "border-iris-8 bg-iris-2" : "border-transparent bg-zinc-800")
+
+    return <IonButton
+        size='small'
+        type="button"
+        fill='clear'
+        buttonType="button"
+        className={className}
+        onClick={onClick}
+    >
+        <span className="font-bold block text-xs">
             {emoji}
         </span>
-        <span className="font-bold text-xs text-gray-100">
+        <span className="font-bold block text-xs text-gray-100 pl-1">
             {count}
         </span>
-
-    </div>
+    </IonButton>
 }
 
 export default MessageReactions
