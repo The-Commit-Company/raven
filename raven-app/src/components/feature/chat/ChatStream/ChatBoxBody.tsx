@@ -18,6 +18,7 @@ import { Loader } from "@/components/common/Loader"
 import { Flex, Box, IconButton } from "@radix-ui/themes"
 import { ReplyMessageBox } from "../ChatMessage/ReplyMessageBox/ReplyMessageBox"
 import { BiX } from "react-icons/bi"
+import { VirtuosoRefContext } from "@/utils/message/VirtuosoRefProvider"
 
 
 const Tiptap = lazy(() => import("../ChatInput/Tiptap"))
@@ -39,6 +40,7 @@ interface ChatBoxBodyProps {
 
 export const ChatBoxBody = ({ channelData }: ChatBoxBodyProps) => {
 
+    const { virtuosoRef } = useContext(VirtuosoRefContext)
     const { currentUser } = useContext(UserContext)
     const { data, error, mutate, isLoading } = useFrappeGetCall<{ message: MessagesWithDate }>("raven.api.raven_message.get_messages_with_dates", {
         channel_id: channelData.name
@@ -54,6 +56,8 @@ export const ChatBoxBody = ({ channelData }: ChatBoxBodyProps) => {
             //If the sender is not the current user
             if (data.sender !== currentUser) {
                 mutate()
+            } else {
+                virtuosoRef?.current?.scrollToIndex({ index: 'LAST', align: 'end', behavior: 'smooth' })
             }
         }
     })
@@ -138,6 +142,7 @@ export const ChatBoxBody = ({ channelData }: ChatBoxBodyProps) => {
                                 }}
                                 clearReplyMessage={handleCancelReply}
                                 placeholder={randomPlaceholder}
+                                replyMessage={selectedMessage}
                                 sessionStorageKey={`tiptap-${channelData.name}`}
                                 onMessageSend={sendMessage}
                                 messageSending={loading}
