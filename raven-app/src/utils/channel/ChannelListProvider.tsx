@@ -60,7 +60,7 @@ export const useFetchChannelList = (): ChannelListContextType => {
     const { toast } = useToast()
     const { data, mutate, ...rest } = useFrappeGetCall<{ message: ChannelList }>("raven.api.raven_channel.get_all_channels", {
         hide_archived: false
-    }, undefined, {
+    }, `channel_list`, {
         revalidateOnFocus: false,
         revalidateIfStale: false,
         onError: (error) => {

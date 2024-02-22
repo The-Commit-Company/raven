@@ -1,4 +1,4 @@
-import { useFrappeDocTypeEventListener, useFrappeGetCall } from "frappe-react-sdk";
+import { useFrappeDocTypeEventListener, useFrappeGetCall, useSWRConfig } from "frappe-react-sdk";
 import { PropsWithChildren, createContext } from "react";
 import { User } from "../../../../types/Core/User";
 import { ErrorBanner } from "@/components/layout/AlertBanner";
@@ -15,12 +15,18 @@ export type UserFields = Pick<User, 'name' | 'full_name' | 'user_image' | 'first
 export const UserListProvider = ({ children }: PropsWithChildren) => {
 
 
+    const { mutate: globalMutate } = useSWRConfig()
     const { data, error: usersError, mutate, isLoading } = useFrappeGetCall<{ message: UserFields[] }>('raven.api.raven_users.get_list', undefined, 'raven.api.raven_users.get_list', {
         revalidateOnFocus: false,
         revalidateOnReconnect: false,
     })
 
-    useFrappeDocTypeEventListener('User', () => mutate())
+    useFrappeDocTypeEventListener('Raven User', () => {
+        mutate()
+
+        // Mutate the channel list as well
+        globalMutate(`channel_list`)
+    })
 
     if (isLoading) {
         return <FullPageLoader />
