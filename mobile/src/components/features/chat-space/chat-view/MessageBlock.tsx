@@ -65,7 +65,7 @@ export const NonContinuationMessageBlock = ({ message, user, onMessageSelect }: 
             </div>
         </div>
         <div className='pl-12 m-1'>
-            <MessageReactions messageID={message.data.name} message_reactions={message.data.message_reactions} />
+            <MessageReactions messageID={message.data.name} channelID={message.data.channel_id} message_reactions={message.data.message_reactions} />
         </div>
 
     </div>
@@ -102,7 +102,7 @@ const ContinuationMessageBlock = ({ message, onMessageSelect }: { message: Messa
         </div>
 
         <div className='pl-12 m-1'>
-            <MessageReactions messageID={message.data.name} message_reactions={message.data.message_reactions} />
+            <MessageReactions messageID={message.data.name} channelID={message.data.channel_id} message_reactions={message.data.message_reactions} />
         </div>
     </div>
 }
