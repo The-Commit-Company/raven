@@ -1,7 +1,7 @@
-import { Editor, EditorContent, EditorContext, Extension, ReactRenderer, useEditor } from '@tiptap/react'
+import { EditorContent, EditorContext, Extension, ReactRenderer, useEditor } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import Underline from '@tiptap/extension-underline'
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useContext, useEffect } from 'react'
 import { TextFormattingMenu } from './TextFormattingMenu'
 import Highlight from '@tiptap/extension-highlight'
 import Link from '@tiptap/extension-link'
@@ -27,6 +27,7 @@ import python from 'highlight.js/lib/languages/python'
 import { Plugin } from 'prosemirror-state'
 import { Box } from '@radix-ui/themes'
 import { useSessionStickyState } from '@/hooks/useStickyState'
+import { Message } from '../../../../../../types/Messaging/Message'
 const lowlight = createLowlight(common)
 
 lowlight.register('html', html)
@@ -49,7 +50,8 @@ type TiptapEditorProps = {
     fileProps?: ToolbarFileProps,
     onMessageSend: (message: string, json: any) => Promise<void>,
     messageSending: boolean,
-    defaultText?: string
+    defaultText?: string,
+    replyMessage?: Message | null
 }
 
 export const UserMention = Mention.extend({
@@ -71,7 +73,7 @@ export const ChannelMention = Mention.extend({
             pluginKey: new PluginKey('channelMention'),
         }
     })
-const Tiptap = ({ slotBefore, fileProps, onMessageSend, clearReplyMessage, placeholder = 'Type a message...', messageSending, sessionStorageKey = 'tiptap-editor', disableSessionStorage = false, defaultText = '' }: TiptapEditorProps) => {
+const Tiptap = ({ slotBefore, fileProps, onMessageSend, replyMessage, clearReplyMessage, placeholder = 'Type a message...', messageSending, sessionStorageKey = 'tiptap-editor', disableSessionStorage = false, defaultText = '' }: TiptapEditorProps) => {
 
     const { enabledUsers } = useContext(UserListContext)
 
@@ -424,23 +426,25 @@ const Tiptap = ({ slotBefore, fileProps, onMessageSend, clearReplyMessage, place
         content,
         editorProps: {
             attributes: {
-                class: 'tiptap-editor'
+                class: 'tiptap-editor' + (replyMessage ? ' replying' : '')
             }
         },
         onUpdate({ editor }) {
             setContent(editor.getHTML())
         }
-    }, [onMessageSend])
+    }, [replyMessage])
 
 
 
     useEffect(() => {
-        editor?.commands.setContent(content)
-    }, [onMessageSend])
+        setTimeout(() => {
+            editor?.chain().focus().run()
+        }, 50)
+    }, [replyMessage, editor])
 
 
     return (
-        <Box className='border rounded-radius4 border-gray-300 dark:border-gray-500 dark:bg-gray-3 shadow-md '>
+        <Box className='border rounded-radius2 border-gray-300 dark:border-gray-500 dark:bg-gray-3 shadow-md '>
             <EditorContext.Provider value={{ editor }}>
                 {slotBefore}
                 <EditorContent editor={editor} />
