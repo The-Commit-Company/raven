@@ -29,12 +29,26 @@ def add_users_to_raven(users):
     if isinstance(users, str):
         users = json.loads(users)
     
+    failed_users = []
+    success_users = []
+
     for user in users:
         user_doc = frappe.get_doc("User", user)
-        user_doc.append("roles", {
-            "role": "Raven User"
-        })
-        user_doc.save()
+
+        if user_doc.role_profile_name:
+            failed_users.append(user_doc)
+        
+        elif hasattr(user_doc, 'role_profiles') and len(user_doc.role_profiles) > 0:
+            failed_users.append(user_doc)
+        else:
+            user_doc.append("roles", {
+                "role": "Raven User"
+            })
+            user_doc.save()
+            success_users.append(user_doc)
     
-    return "success"
+    return {
+        "success_users": success_users,
+        "failed_users": failed_users
+    }
             
