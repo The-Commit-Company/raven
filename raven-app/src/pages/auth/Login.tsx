@@ -1,16 +1,15 @@
 import { useState, useContext } from "react";
 import { useForm } from "react-hook-form";
-import { BiShow, BiHide } from "react-icons/bi";
+import { BiShow, BiHide, BiCheckCircle } from "react-icons/bi";
 import { Link } from "react-router-dom";
 import { UserContext } from "../../utils/auth/UserProvider";
 import { FullPageLoader } from "../../components/layout/Loaders";
-import { Box, Button, Flex, IconButton, Text, TextField, Link as LinkButton } from "@radix-ui/themes";
+import { Box, Button, Flex, IconButton, Text, TextField, Link as LinkButton, Callout } from "@radix-ui/themes";
 import { FrappeContext, FrappeError, FrappeConfig } from "frappe-react-sdk";
 import { Loader } from "@/components/common/Loader";
 import { ErrorText, Label } from "@/components/common/Form";
 import { ErrorCallout } from "@/components/layout/AlertBanner/ErrorBanner";
 import { isEmailValid } from "@/utils/validations";
-import { useToast } from "@/hooks/useToast";
 
 type Inputs = {
     email: string;
@@ -21,17 +20,20 @@ export const Component = () => {
     const [error, setError] = useState<FrappeError | null>(null)
     const { login, isLoading } = useContext(UserContext)
     const { register, handleSubmit, formState: { errors, isSubmitting }, getValues, setValue } = useForm<Inputs>()
-    const [isPasswordOpen, setIsPasswordOpen] = useState(false)
-    const [isLoginWithEmailLink, setIsLoginWithEmailLink] = useState(false)
-    const [isLoginWithEmailSubmitting, setIsLoginWithEmailSubmitting] = useState(false)
+    const [isPasswordOpen, setIsPasswordOpen] = useState<boolean>(false)
+    const [isLoginWithEmailLink, setIsLoginWithEmailLink] = useState<boolean>(false)
+    const [successCallout, setSuccessCallout] = useState<boolean>(false)
+    const [isLoginWithEmailSubmitting, setIsLoginWithEmailSubmitting] = useState<boolean>(false)
     const { call } = useContext(FrappeContext) as FrappeConfig
-    const { toast } = useToast()
 
     const onClickReveal = () => {
         setIsPasswordOpen(!isPasswordOpen)
     }
 
     const onClickLoginWithEmail = () =>{
+        setError(null)
+        setSuccessCallout(false)
+        
         // If input is username then reset the value, else persist with email upon switching
         if(isEmailValid(getValues().email) === false)
             setValue("email","")
@@ -44,10 +46,7 @@ export const Component = () => {
         call.post('frappe.www.login.send_login_link',{
             email
         }).then((result) => {
-            toast({
-                title:'Login Link sent on Email',
-                variant:'accent',
-            })
+            setSuccessCallout(true)
         }).catch((err)=>{
             setError(err)
         })
@@ -76,6 +75,18 @@ export const Component = () => {
                             {error && <ErrorCallout>
                                 {error.message}
                             </ErrorCallout>}
+
+                            {
+                                successCallout &&
+                                <Callout.Root color="green">
+                                <Callout.Icon>
+                                <BiCheckCircle />
+                                </Callout.Icon>
+                                <Callout.Text>
+                                    Login Link sent on Email
+                                </Callout.Text>
+                                </Callout.Root>
+                            }  
                            
                            { isLoginWithEmailLink ? 
                            <Box>
@@ -86,7 +97,7 @@ export const Component = () => {
                                         <TextField.Input {...register("email",
                                             {
                                                 validate: (email) => isEmailValid(email) || "Please enter a valid email address.",
-                                                required: "Email is required."
+                                                required: "Email is required.",
                                             })}
                                             name="email"
                                             type="email"
