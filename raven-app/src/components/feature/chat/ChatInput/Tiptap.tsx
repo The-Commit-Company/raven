@@ -73,7 +73,7 @@ export const ChannelMention = Mention.extend({
     })
 const Tiptap = ({ slotBefore, fileProps, onMessageSend, clearReplyMessage, placeholder = 'Type a message...', messageSending, sessionStorageKey = 'tiptap-editor', disableSessionStorage = false, defaultText = '' }: TiptapEditorProps) => {
 
-    const { users } = useContext(UserListContext)
+    const { enabledUsers } = useContext(UserListContext)
 
     const { channels } = useContext(ChannelListContext) as ChannelListContextType
 
@@ -264,7 +264,7 @@ const Tiptap = ({ slotBefore, fileProps, onMessageSend, clearReplyMessage, place
             },
             suggestion: {
                 items: (query) => {
-                    return users.filter((user) => user.full_name.toLowerCase().startsWith(query.query.toLowerCase()))
+                    return enabledUsers.filter((user) => user.full_name.toLowerCase().startsWith(query.query.toLowerCase()))
                         .slice(0, 10);
                 },
                 // char: '@',
