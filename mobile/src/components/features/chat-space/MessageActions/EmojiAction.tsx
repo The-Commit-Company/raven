@@ -1,4 +1,4 @@
-import { useFrappePostCall } from "frappe-react-sdk"
+import { useFrappePostCall, useSWRConfig } from "frappe-react-sdk"
 import { BiSmile } from "react-icons/bi"
 import { ActionProps } from "./common"
 import { useCallback } from "react"
@@ -18,6 +18,8 @@ export const EmojiAction = ({ message, onSuccess, presentingElement }: EmojiActi
     const { data: { name: messageID } } = message
     const { call: reactToMessage } = useFrappePostCall('raven.api.reactions.react')
 
+    const { mutate } = useSWRConfig()
+
     const saveReaction = useCallback(async (emoji: string) => {
         Haptics.impact({
             style: ImpactStyle.Light
@@ -26,6 +28,7 @@ export const EmojiAction = ({ message, onSuccess, presentingElement }: EmojiActi
             message_id: messageID,
             reaction: emoji
         })
+            .then(() => mutate(`get_messages_for_channel_${message.data.channel_id}`))
             .then(() => onSuccess())
     }, [messageID, reactToMessage])
 

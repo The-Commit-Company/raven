@@ -1,5 +1,5 @@
 import { useCallback, useContext, useMemo } from "react"
-import { useFrappePostCall } from "frappe-react-sdk"
+import { useFrappePostCall, useSWRConfig } from "frappe-react-sdk"
 import { useGetUserRecords } from "@/hooks/useGetUserRecords"
 import { Haptics, ImpactStyle } from "@capacitor/haptics"
 import { IonButton } from "@ionic/react"
@@ -13,9 +13,10 @@ export interface ReactionObject {
     // The number of users who reacted with this emoji
     count: number
 }
-const MessageReactions = ({ messageID, message_reactions }: { messageID: string, message_reactions?: string | null }) => {
+const MessageReactions = ({ messageID, channelID, message_reactions }: { messageID: string, channelID: string, message_reactions?: string | null }) => {
 
     const { call: reactToMessage } = useFrappePostCall('raven.api.reactions.react')
+    const { mutate } = useSWRConfig()
 
     const saveReaction = useCallback((emoji: string) => {
         Haptics.impact({
@@ -25,6 +26,7 @@ const MessageReactions = ({ messageID, message_reactions }: { messageID: string,
             message_id: messageID,
             reaction: emoji
         })
+            .then(() => mutate(`get_messages_for_channel_${channelID}`))
         // .then(() => updateMessages())
     }, [messageID, reactToMessage])
 
