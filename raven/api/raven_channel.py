@@ -97,10 +97,11 @@ def get_extra_users(dm_channels):
                       for dm_channel in dm_channels]
     existing_users.append('Administrator')
     existing_users.append('Guest')
-    return frappe.db.get_list('User', filters=[
+
+    # Skip permissions since we are only fetching user_id, full_name, and user_image and have applied filters
+    return frappe.db.get_all('User', filters=[
         ['name', 'not in', existing_users],
         ['enabled', '=', 1],
-        ['user_type', '=', 'System User'],
         ["Has Role", "role", "=", 'Raven User']], fields=['name', 'full_name', 'user_image'])
 
 
