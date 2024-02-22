@@ -1,16 +1,17 @@
 import { useFrappeDocTypeEventListener, useFrappeGetCall, useSWRConfig } from "frappe-react-sdk";
-import { PropsWithChildren, createContext } from "react";
-import { User } from "../../../../types/Core/User";
+import { PropsWithChildren, createContext, useMemo } from "react";
 import { ErrorBanner } from "@/components/layout/AlertBanner";
 import { FullPageLoader } from "@/components/layout/Loaders";
 import { Box, Flex, Link } from "@radix-ui/themes";
+import { RavenUser } from "@/types/Raven/RavenUser";
 
 
-export const UserListContext = createContext<{ users: UserFields[] }>({
-    users: []
+export const UserListContext = createContext<{ users: UserFields[], enabledUsers: UserFields[] }>({
+    users: [],
+    enabledUsers: []
 })
 
-export type UserFields = Pick<User, 'name' | 'full_name' | 'user_image' | 'first_name'>
+export type UserFields = Pick<RavenUser, 'name' | 'full_name' | 'user_image' | 'first_name' | 'enabled'>
 
 export const UserListProvider = ({ children }: PropsWithChildren) => {
 
@@ -28,6 +29,13 @@ export const UserListProvider = ({ children }: PropsWithChildren) => {
         globalMutate(`channel_list`)
     })
 
+    const { users, enabledUsers } = useMemo(() => {
+        return {
+            users: data?.message ?? [],
+            enabledUsers: data?.message?.filter(user => user.enabled === 1) ?? []
+        }
+    }, [data])
+
     if (isLoading) {
         return <FullPageLoader />
     }
@@ -41,7 +49,7 @@ export const UserListProvider = ({ children }: PropsWithChildren) => {
         </Flex>
     }
 
-    return <UserListContext.Provider value={{ users: data?.message ?? [] }}>
+    return <UserListContext.Provider value={{ users, enabledUsers }}>
         {children}
     </UserListContext.Provider>
 }

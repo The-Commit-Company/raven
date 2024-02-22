@@ -42,7 +42,7 @@ const AddRavenUsersContent = ({ onClose }: { onClose: VoidFunction }) => {
     })
 
     const users = useContext(UserListContext)
-    const ravenUsersArray = users.users.map(user => user.name)
+    const ravenUsersArray = users.enabledUsers.map(user => user.name)
 
     const [selected, setSelected] = useState<string[]>([])
     const { loading, call, error: postError } = useFrappePostCall('raven.api.raven_users.add_users_to_raven')
