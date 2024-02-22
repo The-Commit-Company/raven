@@ -1,5 +1,5 @@
 
-export interface RavenMessage{
+export interface RavenMessage {
 	creation: string
 	name: string
 	modified: string
@@ -16,8 +16,18 @@ export interface RavenMessage{
 	text?: string
 	/**	JSON : JSON	*/
 	json?: any
+	/**	Message Reactions : JSON	*/
+	message_reactions?: any
+	/**	Is Reply : Check	*/
+	is_reply?: 0 | 1
+	/**	Replied Message ID : Link - Raven Message	*/
+	linked_message?: string
+	/**	Replied Message Details : JSON	*/
+	replied_message_details?: any
 	/**	Message Type : Select	*/
 	message_type?: "Text" | "Image" | "File"
+	/**	Content : Long Text	*/
+	content?: string
 	/**	File : Attach	*/
 	file?: string
 	/**	Image Width : Data	*/
@@ -30,16 +40,10 @@ export interface RavenMessage{
 	thumbnail_width?: string
 	/**	Thumbnail Height : Data	*/
 	thumbnail_height?: string
-	/**	Message Reactions : JSON	*/
-	message_reactions?: any
-	/**	Is Reply : Check	*/
-	is_reply?: 0 | 1
-	/**	Linked Message : Link - Raven Message	*/
-	linked_message?: string
 	/**	Link Doctype : Link - DocType	*/
 	link_doctype?: string
 	/**	Link Document : Dynamic Link	*/
 	link_document?: string
-	/**	Content : Long Text	*/
-	content?: string
+	/**	Is Edited : Check	*/
+	is_edited?: 0 | 1
 }

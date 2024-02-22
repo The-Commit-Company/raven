@@ -12,4 +12,6 @@ export interface RavenSettings{
 	idx?: number
 	/**	Automatically add system users to Raven : Check	*/
 	auto_add_system_users?: 0 | 1
+	/**	Show Raven on Desk : Check	*/
+	show_raven_on_desk?: 0 | 1
 }
