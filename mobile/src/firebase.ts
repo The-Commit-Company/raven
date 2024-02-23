@@ -1,0 +1,71 @@
+// Import the functions you need from the SDKs you need
+import { initializeApp } from "firebase/app";
+import { getMessaging, getToken, onMessage, GetTokenOptions } from "firebase/messaging";
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
+
+// Your web app's Firebase configuration
+const firebaseConfig = {
+    apiKey: "AIzaSyA9ItYZ5fQsLEdsfRD9RUAbYrfssLLQGbI",
+    authDomain: "raven-dev-frappe.firebaseapp.com",
+    projectId: "raven-dev-frappe",
+    storageBucket: "raven-dev-frappe.appspot.com",
+    messagingSenderId: "856329963312",
+    appId: "1:856329963312:web:882dcbf15ac67ca5e52af5"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+
+const messaging = getMessaging(app);
+
+export const fetchToken = async () => {
+    const options: GetTokenOptions = {
+        vapidKey: 'BG_Q8fItODexgL5ZLh-WgQYGD0c-HCvo-S7shjiRKNFiFabO9FJNSADVU-G_vuftlETyjll6u_KIQmi7CtaugBI'
+    }
+
+    const configJSON = encodeURIComponent(JSON.stringify(firebaseConfig))
+
+    const url = `/assets/raven/raven_mobile/firebase-messaging-sw.js?config=${configJSON}`
+    options.serviceWorkerRegistration = await navigator.serviceWorker.register(url, {
+        scope: '/assets/raven/raven_mobile/',
+        type: 'classic'
+    })
+
+    console.log('options:', options)
+
+    return getToken(messaging, options).then((currentToken) => {
+        if (currentToken) {
+            console.log('Token:', currentToken);
+        } else {
+            console.log('No registration token available. Request permission to generate one.');
+            requestPermission();
+        }
+    })
+
+}
+// getToken(messaging, { vapidKey: 'BG_Q8fItODexgL5ZLh-WgQYGD0c-HCvo-S7shjiRKNFiFabO9FJNSADVU-G_vuftlETyjll6u_KIQmi7CtaugBI' }).then((currentToken) => {
+//     if (currentToken) {
+//         console.log('Token:', currentToken);
+//     } else {
+//         console.log('No registration token available. Request permission to generate one.');
+//         requestPermission();
+//     }
+// })
+
+function requestPermission() {
+    Notification.requestPermission().then((permission) => {
+        if (permission === 'granted') {
+            console.log('Notification permission granted.');
+            // TODO(developer): Retrieve a registration token for use with FCM.
+            // ...
+        } else {
+            console.log('Unable to get permission to notify.');
+        }
+    });
+}
+
+onMessage(messaging, (payload) => {
+    console.log('Message received. ', payload);
+    // ...
+});
