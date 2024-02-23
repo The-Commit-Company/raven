@@ -371,3 +371,392 @@ export const DoctypeFieldList: {
             ]
         }
     ]
+
+export const SampleData = [
+    {
+        trigger_event: ['Channel Created', 'Channel Deleted'],
+        examples: [
+            {
+                name: 'general',
+                fields: [
+                    {
+                        field: 'channel_name',
+                        value: 'general'
+                    },
+                    {
+                        field: 'channel_description',
+                        value: 'General discussion'
+                    },
+                    {
+                        field: 'type',
+                        value: 'Public'
+                    },
+                    {
+                        field: 'is_direct_message',
+                        value: '0'
+                    },
+                    {
+                        field: 'is_self_message',
+                        value: '0'
+                    },
+                    {
+                        field: 'is_archived',
+                        value: '0'
+                    }
+                ]
+            },
+            {
+                name: 'kings-landing',
+                fields: [
+                    {
+                        field: 'channel_name',
+                        value: 'kings-landing'
+                    },
+                    {
+                        field: 'channel_description',
+                        value: 'The capital of Westeros and the Seven Kingdoms.'
+                    },
+                    {
+                        field: 'type',
+                        value: 'Public'
+                    },
+                    {
+                        field: 'is_direct_message',
+                        value: '0'
+                    },
+                    {
+                        field: 'is_self_message',
+                        value: '0'
+                    },
+                    {
+                        field: 'is_archived',
+                        value: '0'
+                    }
+                ]
+            },
+            {
+                name: 'winterfell',
+                fields: [
+                    {
+                        field: 'channel_name',
+                        value: 'winterfell'
+                    },
+                    {
+                        field: 'channel_description',
+                        value: 'The ancestral home of House Stark.'
+                    },
+                    {
+                        field: 'type',
+                        value: 'Public'
+                    },
+                    {
+                        field: 'is_direct_message',
+                        value: '0'
+                    },
+                    {
+                        field: 'is_self_message',
+                        value: '0'
+                    },
+                    {
+                        field: 'is_archived',
+                        value: '0'
+                    }
+                ]
+            },
+            {
+                name: 'dragons-bay',
+                fields: [
+                    {
+                        field: 'channel_name',
+                        value: 'dragons-bay'
+                    },
+                    {
+                        field: 'channel_description',
+                        value: 'The place where dragons are born.'
+                    },
+                    {
+                        field: 'type',
+                        value: 'Public'
+                    },
+                    {
+                        field: 'is_direct_message',
+                        value: '0'
+                    },
+                    {
+                        field: 'is_self_message',
+                        value: '0'
+                    },
+                    {
+                        field: 'is_archived',
+                        value: '0'
+                    }
+                ]
+            },
+            {
+                name: 'white-walkers',
+                fields: [
+                    {
+                        field: 'channel_name',
+                        value: 'white-walkers'
+                    },
+                    {
+                        field: 'channel_description',
+                        value: 'The army of the dead.'
+                    },
+                    {
+                        field: 'type',
+                        value: 'Private'
+                    },
+                    {
+                        field: 'is_direct_message',
+                        value: '0'
+                    },
+                    {
+                        field: 'is_self_message',
+                        value: '0'
+                    },
+                    {
+                        field: 'is_archived',
+                        value: '0'
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        trigger_event: ['Message Sent', 'Message Edited', 'Message Deleted'],
+        examples: [
+            {
+                name: 'Hello, World!',
+                fields: [
+                    {
+                        field: 'channel_id',
+                        value: 'general'
+                    },
+                    {
+                        field: 'text',
+                        value: 'Hello, World!'
+                    },
+                    {
+                        field: 'message_type',
+                        value: 'Text'
+                    },
+                    {
+                        field: 'is_reply',
+                        value: '0'
+                    }
+                ]
+            },
+            {
+                name: 'The Iron Throne is mine!',
+                fields: [
+                    {
+                        field: 'channel_id',
+                        value: 'kings-landing'
+                    },
+                    {
+                        field: 'text',
+                        value: 'The Iron Throne is mine!'
+                    },
+                    {
+                        field: 'message_type',
+                        value: 'Text'
+                    },
+                    {
+                        field: 'is_reply',
+                        value: '0'
+                    }
+                ]
+            },
+            {
+                name: 'Winter is coming.',
+                fields: [
+                    {
+                        field: 'channel_id',
+                        value: 'winterfell'
+                    },
+                    {
+                        field: 'text',
+                        value: 'Winter is coming.'
+                    },
+                    {
+                        field: 'message_type',
+                        value: 'Text'
+                    },
+                    {
+                        field: 'is_reply',
+                        value: '0'
+                    }
+                ]
+            },
+            {
+                name: 'Dracarys!',
+                fields: [
+                    {
+                        field: 'channel_id',
+                        value: 'dragons-bay'
+                    },
+                    {
+                        field: 'text',
+                        value: 'Dracarys!'
+                    },
+                    {
+                        field: 'message_type',
+                        value: 'Text'
+                    },
+                    {
+                        field: 'is_reply',
+                        value: '0'
+                    }
+                ]
+            },
+            {
+                name: 'The Night King is coming.',
+                fields: [
+                    {
+                        field: 'channel_id',
+                        value: 'white-walkers'
+                    },
+                    {
+                        field: 'text',
+                        value: 'The Night King is coming.'
+                    },
+                    {
+                        field: 'message_type',
+                        value: 'Text'
+                    },
+                    {
+                        field: 'is_reply',
+                        value: '0'
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        trigger_event: ['Channel Member Added', 'Channel Member Deleted'],
+        examples: [
+            {
+                name: 'Jon snow',
+                fields: [
+                    {
+                        field: 'channel_id',
+                        value: 'general'
+                    },
+                    {
+                        field: 'user_id',
+                        value: 'jon-snow'
+                    },
+                    {
+                        field: 'is_admin',
+                        value: '1'
+                    }
+                ]
+            },
+            {
+                name: 'Daenerys Targaryen',
+                fields: [
+                    {
+                        field: 'channel_id',
+                        value: 'kings-landing'
+                    },
+                    {
+                        field: 'user_id',
+                        value: 'daenerys-targaryen'
+                    },
+                    {
+                        field: 'is_admin',
+                        value: '1'
+                    }
+                ]
+            },
+            {
+                name: 'Arya Stark',
+                fields: [
+                    {
+                        field: 'channel_id',
+                        value: 'winterfell'
+                    },
+                    {
+                        field: 'user_id',
+                        value: 'arya-stark'
+                    },
+                    {
+                        field: 'is_admin',
+                        value: '1'
+                    }
+                ]
+            },
+        ]
+    },
+    {
+        trigger_event: ['User Added', 'User Deleted'],
+        examples: [
+            {
+                name: 'Jon Snow',
+                fields: [
+                    {
+                        field: 'user',
+                        value: 'jon-snow'
+                    },
+                    {
+                        field: 'full_name',
+                        value: 'Jon Snow'
+                    },
+                    {
+                        field: 'first_name',
+                        value: 'Jon'
+                    },
+                    {
+                        field: 'enabled',
+                        value: '1'
+                    }
+                ]
+            },
+            {
+                name: 'Daenerys Targaryen',
+                fields: [
+                    {
+                        field: 'user',
+                        value: 'daenerys-targaryen'
+                    },
+                    {
+                        field: 'full_name',
+                        value: 'Daenerys Targaryen'
+                    },
+                    {
+                        field: 'first_name',
+                        value: 'Daenerys'
+                    },
+                    {
+                        field: 'enabled',
+                        value: '1'
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        trigger_event: ['Message Reacted On'],
+        examples: [
+            {
+                name: '👍',
+                fields: [
+                    {
+                        field: 'reaction',
+                        value: '👍'
+                    }
+                ]
+            },
+            {
+                name: '👎',
+                fields: [
+                    {
+                        field: 'reaction',
+                        value: '👎'
+                    }
+                ]
+            }
+        ]
+    }
+]

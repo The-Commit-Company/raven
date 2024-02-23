@@ -39,9 +39,7 @@ class RavenWebhook(Document):
 	def validate(self):
 		# 1. Check if webhook name is unique
 		# 2. Check if webhook_data and webhook_headers are unique
-		# 3. Check if webhook ID is exists
-		# 4. If exist then update the webhook
-		# 5. If not exist then create the webhook
+
 
 
 		# 1. Check if webhook name is unique
@@ -58,13 +56,18 @@ class RavenWebhook(Document):
 		if len(webhook_header_keys) != len(set(webhook_header_keys)):
 			frappe.throw('Webhook Headers keys should be unique')
 
-		# 3. Check if webhook ID is exists
+	def before_save(self):
+		# 1. Check if webhook ID is exists
+		# 2. If exist then update the webhook
+		# 3. If not exist then create the webhook
+
+		# 1. Check if webhook ID is exists
 		if self.webhook:
-			# 4. Update the webhook
+			# 2. Update the webhook
 			self.update_webhook()
 
 		else:
-			# 5. Create the webhook
+			# 3. Create the webhook
 			self.create_webhook()
 
 
