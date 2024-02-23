@@ -1,5 +1,5 @@
 
-export interface RavenUser{
+export interface RavenUser {
 	creation: string
 	name: string
 	modified: string
@@ -17,5 +17,6 @@ export interface RavenUser{
 	/**	First Name : Data	*/
 	first_name?: string
 	/**	User Image : Attach Image	*/
-	user_image?: string
+	user_image?: string,
+	enabled: 0 | 1
 }

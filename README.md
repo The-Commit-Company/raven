@@ -1,16 +1,36 @@
 <p align="center">
+  <a href="https://github.com/The-Commit-Company/Raven">
   <img src="raven_logo.png" alt="Raven logo" height="100" />
-  <p align="center">Simple, open source team messaging platform</p>
+     </a>
+
+   <h3 align="center">Raven</h3>
+  <p align="center">Simple, open source team messaging platform
+     <br />
+    <br />
+    <a href="https://frappecloud.com/marketplace/apps/raven"><strong>Install on Frappe Cloud»</strong></a>
+    <br />
+    <br />
+    <a href="https://ravenapp.info"><strong>Learn More »</strong></a>
+    <br />
+    <br />
+    <a href="https://github.com/The-Commit-Company/Raven/issues">Issues</a>
+    ·
+    <a href="https://github.com/The-Commit-Company/Raven/discussions">Discussions</a>
+     ·
+    <a href="https://github.com/sponsors/The-Commit-Company?frequency=one-time">Sponsor Us!</a>
+  </p>
 </p>
 <p align="center">
   <a href="https://github.com/The-Commit-Company/Raven/blob/main/LICENSE">
     <img alt="license" src="https://img.shields.io/badge/license-AGPLv3-blue">
   </a>
+     <a href="https://github.com/The-Commit-Company/Raven/stargazers"><img src="https://img.shields.io/github/stars/The-Commit-Company/Raven" alt="Github Stars"></a>
+     <a href="https://github.com/The-Commit-Company/Raven/pulse"><img src="https://img.shields.io/github/commit-activity/m/The-Commit-Company/Raven" alt="Commits-per-month"></a>
 </p>
 
 <br>
 
-Raven is a simple work messaging tool that is built using [Frappe Framework](https://frappeframework.com) and can be installed on any new or existing Frappe site (e.g. in addition to ERPNext or [Gameplan](https://github.com/frappe/gameplan)). It is designed to help teams collaborate and communicate with each other and get work done. Teams can create their own channels (publically viewable or private) and send messages, emojis, files and images. 
+Raven is a simple work messaging tool that is built using [Frappe](https://frappeframework.com) and can be installed on any new or existing Frappe site (e.g. in addition to [ERPNext](https://erpnext.com/) or [FrappeHR](https://frappehr.com/)). It is designed to help teams collaborate and communicate with each other and get work done. Teams can create their own channels (publically viewable or private) and send messages, emojis, files and images. 
 
 <hr>
 
@@ -38,7 +58,7 @@ Raven was born out of a need to have a simple work communication tool that could
 
 <hr>
 
-## Tech Stack
+## Built with
 
 Raven is built using the [Frappe Framework](https://frappeframework.com) - an open-source full stack development framework. 
 
@@ -49,11 +69,11 @@ These are some of the tools it's built on:
 - [Socket.io](https://socket.io/)
 
 The frontend is built using React and the following tools:
-1. [ChakraUI](https://chakra-ui.com) - UI components
-2. [frappe-react-sdk](https://github.com/nikkothari22/frappe-react-sdk) - simple React hooks to interface with a Frappe framework backend - built and maintained by us at The Commit Company.
-3. [react-icons](https://react-icons.github.io) - Icon set
-4. [Framer Motion](https://www.framer.com/motion/) - Animations
-5. [Tiptap](https://www.tiptap.dev)
+- [RadixUI](https://radix-ui.com)
+- [frappe-react-sdk](https://github.com/nikkothari22/frappe-react-sdk) - simple React hooks to interface with a Frappe framework backend - built and maintained by us at The Commit Company.
+- [react-icons](https://react-icons.github.io)
+- [Tiptap](https://www.tiptap.dev)
+- [Tailwind CSS](https://tailwindcss.com/)
 
 The mobile app is built using [Ionic](https://ionicframework.com), [Tailwind CSS](tailwindcss.com) and [Capacitor](https://capacitorjs.com).
 
@@ -154,16 +174,15 @@ yarn dev
 
 <hr>
 
+## Repo Activity
 
-## Future Plans
+![Alt](https://repobeats.axiom.co/api/embed/044c9b441a0b61c450cebe6356051b9bacb4a3b4.svg "Repobeats analytics image")
 
-We are currently working or will be working on the following features. Please head to our Github issues page and feel free to contribute:
+## Contributors
 
-1. Mobile app for Raven
-2. Push notifications
-3. Integration service - allowing other applications to create bots and send messages. Some popular services we are looking at are [Github](https://github.com), [Linear](https://linear.app), [Sentry](https://sentry.io), [Frappe Desk](https://frappedesk.com). 
-
-<hr>
+<a href="https://github.com/The-Commit-Company/Raven/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=The-Commit-Company/Raven" />
+</a>
 
 
 ## Reporting Bugs
@@ -176,13 +195,3 @@ If you find any bugs, feel free to report them here on [GitHub Issues](https://g
 ## License
 
 AGPLv3
-
-<hr>
-
-## Maintainers
-
-| Maintainer     | GitHub                                          | Social                                                       |
-| -------------- | ----------------------------------------------- | ------------------------------------------------------------ |
-| Janhvi Patil   | [janhvipatil](https://github.com/janhvipatil)   | [@janhvipatil\_](https://twitter.com/janhvipatil_)           |
-| Aditya Patil   | [TITANiumRox](https://github.com/TITANiumRox) | |                                                              |
-| Nikhil Kothari | [nikkothari22](https://github.com/nikkothari22) | [@nik_kothari22](https://twitter.com/nik_kothari22)          |

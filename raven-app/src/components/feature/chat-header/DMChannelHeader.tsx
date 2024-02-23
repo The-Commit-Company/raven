@@ -5,6 +5,7 @@ import { ChannelMembers } from "@/utils/channel/ChannelMembersProvider"
 import { SearchButton } from "./SearchButton"
 import { Flex, Heading } from "@radix-ui/themes"
 import { UserAvatar } from "@/components/common/UserAvatar"
+import { ViewFilesButton } from "../files/ViewFilesButton"
 
 interface DMChannelHeaderProps {
     channelData: DMChannelListItem,
@@ -30,7 +31,10 @@ export const DMChannelHeader = ({ channelData, channelMembers }: DMChannelHeader
                     size='2' />
                 <Heading size='5'>{channelMembers?.[peer]?.full_name ?? peer}</Heading>
             </Flex>
-            <SearchButton />
+            <Flex gap='2'>
+                <ViewFilesButton />
+                <SearchButton />
+            </Flex>
         </PageHeader>
     )
 }

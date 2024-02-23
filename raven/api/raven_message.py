@@ -22,7 +22,7 @@ def track_visit(channel_id, commit=False):
     if doc:
         frappe.db.set_value("Raven Channel Member", doc,
                             "last_visit", frappe.utils.now())
-    elif frappe.db.get_value('Raven Channel', channel_id, 'type') == 'Open':
+    elif frappe.get_cached_value('Raven Channel', channel_id, 'type') == 'Open':
         frappe.get_doc({
             "doctype": "Raven Channel Member",
             "channel_id": channel_id,
@@ -165,7 +165,7 @@ def parse_messages(messages):
 
 
 def check_permission(channel_id):
-    if frappe.db.get_value('Raven Channel', channel_id, 'type') == 'Private':
+    if frappe.get_cached_value('Raven Channel', channel_id, 'type') == 'Private':
         if frappe.db.exists("Raven Channel Member", {"channel_id": channel_id, "user_id": frappe.session.user}):
             pass
         elif frappe.session.user == "Administrator":
@@ -203,6 +203,7 @@ def get_unread_count_for_channels():
              .left_join(channel_member)
              .on((channel.name == channel_member.channel_id) & (channel_member.user_id == frappe.session.user))
              .where((channel.type == "Open") | (channel_member.user_id == frappe.session.user))
+             .where(channel.is_archived == 0)
              .left_join(message).on(channel.name == message.channel_id))
 
     channels_query = query.select(channel.name, channel.is_direct_message, Count(Case().when(message.creation > Coalesce(channel_member.last_visit, '2000-11-11'), 1)).as_(
@@ -255,3 +256,91 @@ def get_timeline_message_content(doctype, docname):
         })
 
     return timeline_contents
+
+file_extensions = {
+        'doc': ['doc', 'docx', 'odt', 'ott', 'rtf', 'txt', 'dot', 'dotx', 'docm', 'dotm', 'pages'],
+        'ppt': ['ppt', 'pptx', 'odp', 'otp', 'pps', 'ppsx', 'pot', 'potx', 'pptm', 'ppsm', 'potm', 'ppam', 'ppa', 'key'],
+        'xls': ['xls', 'xlsx', 'csv', 'ods', 'ots', 'xlsb', 'xlsm', 'xlt', 'xltx', 'xltm', 'xlam', 'xla', 'numbers'],
+}
+
+@frappe.whitelist()
+def get_all_files_shared_in_channel(channel_id, file_name=None, file_type=None, start_after=0, page_length=None):
+
+    # check if the user has permission to view the channel
+    check_permission(channel_id)
+
+    message = frappe.qb.DocType("Raven Message")
+    user = frappe.qb.DocType("Raven User")
+    file = frappe.qb.DocType("File")
+
+    query = (frappe.qb.from_(message)
+             .join(file).on(message.name == file.attached_to_name)
+             .join(user).on(message.owner == user.name)
+             .select(file.name, file.file_name, file.file_type, file.file_size, file.file_url,
+                     message.owner, message.creation, message.message_type,
+                     message.thumbnail_width, message.thumbnail_height, message.file_thumbnail,
+                     user.full_name, user.user_image, message.name.as_('message_id'))
+             .where(message.channel_id == channel_id)
+             )
+
+    # search for file name
+    if file_name:
+        query = query.where(file.file_name.like("%" + file_name + "%"))
+
+    # search for file type
+    if file_type:
+        if file_type == 'image':
+            query = query.where(message.message_type == 'Image')
+        elif file_type == 'pdf':
+            query = query.where(file.file_type == 'pdf')
+        else:
+            # Get the list of extensions for the given file type
+            extensions = file_extensions.get(file_type)
+            if extensions:
+                query = query.where((file.file_type).isin(extensions))
+    else:
+        query = query.where(message.message_type.isin(['Image', 'File']))
+
+    files = query.orderby(message.creation, order=Order['desc']).limit(
+        page_length).offset(start_after).run(as_dict=True)
+
+    return files
+
+
+@frappe.whitelist()
+def get_count_for_pagination_of_files(channel_id, file_name=None, file_type=None):
+
+    # check if the user has permission to view the channel
+    check_permission(channel_id)
+
+    message = frappe.qb.DocType("Raven Message")
+    # user = frappe.qb.DocType("Raven User")
+    file = frappe.qb.DocType("File")
+
+    query = (frappe.qb.from_(message)
+             .join(file, JoinType.left)
+             .on(message.name == file.attached_to_name)
+             .select(Count(message.name).as_('count'))
+             .where(message.channel_id == channel_id)
+    )
+
+    # search for file name
+    if file_name:
+        query = query.where(file.file_name.like("%" + file_name + "%"))
+
+    # search for file type
+    if file_type:
+        if file_type == 'image':
+            query = query.where(message.message_type == 'Image')
+        elif file_type == 'pdf':
+            query = query.where(file.file_type == 'pdf')
+        else:
+            # Get the list of extensions for the given file type
+            extensions = file_extensions.get(file_type)
+            if extensions:
+                query = query.where((file.file_type).isin(extensions))
+    else:
+        query = query.where(message.message_type.isin(['Image', 'File']))
+    count = query.run(as_dict=True)
+
+    return count[0]['count']
