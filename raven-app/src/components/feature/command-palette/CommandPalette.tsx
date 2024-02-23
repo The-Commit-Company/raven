@@ -38,7 +38,7 @@ export const CommandPalette = ({ isOpen, onClose }: CommandPaletteProps) => {
     const debouncedText = useDebounce(inputValue, 200)
     const { currentUser } = useContext(UserContext)
     const activeUsers = useContext(ActiveUsersContext)
-    const { call, reset } = useFrappePostCall<{ message: string }>("raven.raven_channel_management.doctype.raven_channel.raven_channel.create_direct_message_channel")
+    const { call, reset } = useFrappePostCall<{ message: string }>("raven.api.raven_channel.create_direct_message_channel")
     let navigate = useNavigate()
 
     const gotoDMChannel = async (user: string) => {

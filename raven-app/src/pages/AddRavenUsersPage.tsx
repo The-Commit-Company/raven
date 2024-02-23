@@ -21,7 +21,7 @@ import { Loader } from '@/components/common/Loader'
 const AddRavenUsersPage = () => {
 
     const canAddRavenUsers = isSystemManager()
-    console.log('canAddRavenUsers', canAddRavenUsers)
+
     return (
         <Container>
             <Flex align='center' justify='center' className='h-screen'>

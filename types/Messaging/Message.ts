@@ -14,6 +14,9 @@ export interface BaseMessage {
     linked_message?: string | null
     link_doctype?: string
     link_document?: string
+    is_edited: 1 | 0
+    /** JSON as string */
+    replied_message_details?: string
 }
 
 export interface FileMessage extends BaseMessage {
@@ -33,7 +36,8 @@ export interface ImageMessage extends BaseMessage {
 
 export interface TextMessage extends BaseMessage {
     text: string,
-    message_type: 'Text'
+    message_type: 'Text',
+    content?: string
 }
 
 export type DateBlock = {

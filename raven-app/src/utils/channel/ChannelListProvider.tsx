@@ -58,7 +58,9 @@ export const ChannelListProvider = ({ children }: PropsWithChildren) => {
 export const useFetchChannelList = (): ChannelListContextType => {
 
     const { toast } = useToast()
-    const { data, mutate, ...rest } = useFrappeGetCall<{ message: ChannelList }>("raven.api.raven_channel.get_all_channels", undefined, undefined, {
+    const { data, mutate, ...rest } = useFrappeGetCall<{ message: ChannelList }>("raven.api.raven_channel.get_all_channels", {
+        hide_archived: false
+    }, `channel_list`, {
         revalidateOnFocus: false,
         revalidateIfStale: false,
         onError: (error) => {

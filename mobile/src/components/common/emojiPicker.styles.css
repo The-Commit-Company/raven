@@ -1,0 +1,23 @@
+emoji-picker {
+    --indicator-color: var(--ion-color-primary);
+    --input-padding: 0.6rem;
+    width: 100%;
+    /* --emoji-size: 1.8rem; */
+    /* --num-columns: 8; */
+    height: 100%;
+    --input-font-size: 0.8rem;
+    --background: rgb(24 24 27);
+    --indicator-height: 4px;
+    --border-color: transparent;
+    --input-border-color: rgb(63 63 70);
+    --input-border-size: 2px;
+    --input-font-color: rgb(244 244 245);
+    --button-active-background: color: rgb(39 39 42);
+    --button-hover-background: rgb(39 39 42);
+    --input-placeholder-color: rgb(82 82 91);
+    --outline-color: #5958B1;
+}
+
+.picker {
+    --border-size: 2px;
+}

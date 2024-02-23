@@ -60,7 +60,7 @@ const ChannelMention = Mention.extend({
     })
 export const Tiptap = ({ onMessageSend, messageSending, defaultText = '' }: TiptapEditorProps) => {
 
-    const { users } = useContext(UserListContext)
+    const { enabledUsers } = useContext(UserListContext)
 
     const { channels } = useContext(ChannelListContext) as ChannelListContextType
 
@@ -114,7 +114,7 @@ export const Tiptap = ({ onMessageSend, messageSending, defaultText = '' }: Tipt
             },
             suggestion: {
                 items: (query) => {
-                    return users.filter((user) => user.full_name.toLowerCase().startsWith(query.query.toLowerCase()))
+                    return enabledUsers.filter((user) => user.full_name.toLowerCase().startsWith(query.query.toLowerCase()))
                         .slice(0, 10);
                 },
                 // char: '@',
@@ -296,7 +296,7 @@ export const Tiptap = ({ onMessageSend, messageSending, defaultText = '' }: Tipt
             </div>
             <div className='mb-1'>
                 <button
-                    className='p-1.5 text-white rounded-full bg-blue-500 hover:bg-blue-600 focus:outline-none disabled:opacity-30 disabled:cursor-not-allowed'
+                    className='p-1.5 text-white rounded-full bg-[var(--ion-color-primary)] hover:bg-[var(--ion-color-primary-shade)] focus:outline-none disabled:opacity-30 disabled:cursor-not-allowed'
                     aria-disabled={messageSending || isEditorEmpty}
                     disabled={messageSending || isEditorEmpty}
                     onClick={onSubmit}>

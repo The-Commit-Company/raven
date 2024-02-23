@@ -3,9 +3,9 @@
 import frappe
 from frappe import _
 from frappe.model.document import Document
-from frappe.utils import strip_html_tags
 from raven.api.raven_message import track_visit
-
+from frappe.core.utils import html2text
+import datetime
 
 class RavenMessage(Document):
     # begin: auto-generated types
@@ -22,6 +22,7 @@ class RavenMessage(Document):
         file_thumbnail: DF.Attach | None
         image_height: DF.Data | None
         image_width: DF.Data | None
+        is_edited: DF.Check
         is_reply: DF.Check
         json: DF.JSON | None
         link_doctype: DF.Link | None
@@ -29,6 +30,7 @@ class RavenMessage(Document):
         linked_message: DF.Link | None
         message_reactions: DF.JSON | None
         message_type: DF.Literal["Text", "Image", "File"]
+        replied_message_details: DF.JSON | None
         text: DF.LongText | None
         thumbnail_height: DF.Data | None
         thumbnail_width: DF.Data | None
@@ -37,28 +39,23 @@ class RavenMessage(Document):
     def before_validate(self):
         try:
             if self.text:
-                self.content = strip_html_tags(self.text).replace(
-                    '\ufeff', '').replace('&nbsp;', ' ')
+                content = html2text(self.text)
+                # Remove trailing new line characters and white spaces
+                self.content = content.rstrip()
         except Exception:
             pass
+
+        if not self.is_new():
+            # this is not a new message, so it's a previous message being edited
+            old_doc = self.get_doc_before_save()
+            if old_doc.text != self.text:
+                self.is_edited = True
+
     def validate(self):
         '''
-        1. Message can be created if the channel is open
-        2. If the channel is private/public, the user creating the message should be a member of the channel
-        3. If there is a linked message, the linked message should be in the same channel
+        1. If there is a linked message, the linked message should be in the same channel
         '''
-        # self.validate_membership()
         self.validate_linked_message()
-
-    def validate_membership(self):
-        '''
-            If the channel is private/public, the user creating the message should be a member of the channel
-        '''
-        channel_type = frappe.db.get_value(
-            "Raven Channel", self.channel_id, "type")
-        if channel_type != "Open":
-            if not frappe.db.exists("Raven Channel Member", {"channel_id": self.channel_id, "user_id": self.owner}):
-                frappe.throw(_("You are not a member of this channel"))
 
     def validate_linked_message(self):
         '''
@@ -68,10 +65,27 @@ class RavenMessage(Document):
             if frappe.db.get_value("Raven Message", self.linked_message, "channel_id") != self.channel_id:
                 frappe.throw(_("Linked message should be in the same channel"))
 
+    def before_insert(self):
+        '''
+        If the message is a reply, update the replied_message_details field
+        '''
+        if self.is_reply and self.linked_message:
+            details = frappe.db.get_value(
+                "Raven Message", self.linked_message, ["text", "content", "file", "message_type", "owner", "creation"], as_dict=True)
+            self.replied_message_details = {
+                "text": details.text,
+                "content": details.content,
+                "file": details.file,
+                "message_type": details.message_type,
+                "owner": details.owner,
+                "creation": datetime.datetime.strftime(details.creation, "%Y-%m-%d %H:%M:%S")
+            }
     def after_insert(self):
         frappe.publish_realtime(
             'raven:unread_channel_count_updated', {
                 'channel_id': self.channel_id,
+                'play_sound': True,
+                'sent_by': self.owner,
             })
 
     def after_delete(self):
@@ -98,7 +112,8 @@ class RavenMessage(Document):
         frappe.db.delete("Raven Message Reaction", {"message": self.name})
 
     def before_save(self):
-        if frappe.db.get_value('Raven Channel', self.channel_id, 'type') != 'Private' or frappe.db.exists("Raven Channel Member", {"channel_id": self.channel_id, "user_id": frappe.session.user}):
+        #TODO: Remove this
+        if frappe.get_cached_value('Raven Channel', self.channel_id, 'type') != 'Private' or frappe.db.exists("Raven Channel Member", {"channel_id": self.channel_id, "user_id": frappe.session.user}):
             track_visit(self.channel_id)
 
 

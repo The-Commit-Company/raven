@@ -9,8 +9,8 @@ def react(message_id: str, reaction: str):
     If yes, then unreacts (deletes), else reacts (creates).
     '''
 
-    channel_id = frappe.db.get_value('Raven Message', message_id, 'channel_id')
-    channel_type = frappe.db.get_value('Raven Channel', channel_id, 'type')
+    channel_id = frappe.get_cached_value('Raven Message', message_id, 'channel_id')
+    channel_type = frappe.get_cached_value('Raven Channel', channel_id, 'type')
 
     if channel_type == 'Private':
         if not frappe.db.exists('Raven Channel Member', {

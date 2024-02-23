@@ -1,5 +1,5 @@
 import { useToast } from "@/hooks/useToast"
-import { Flex, IconButton, Link, Text } from "@radix-ui/themes"
+import { Flex, IconButton, Link } from "@radix-ui/themes"
 import { BiLink, BiRightArrowAlt } from "react-icons/bi"
 import { FiExternalLink } from "react-icons/fi"
 
@@ -34,7 +34,7 @@ export const DoctypeLinkRenderer = ({ doctype, docname }: { doctype: string, doc
             className="border-2 bg-gray-2 dark:bg-gray-4 rounded-md border-gray-4  dark:border-gray-6 shadow-sm">
             <Flex align='center' gap='2'>
                 <BiRightArrowAlt />
-                <Link size='2' underline="always" target="_blank" href={route}>Linked with {doctype}: {docname}</Link>
+                <Link size='2' underline="always" target="_blank" href={route}>{doctype}: {docname}</Link>
             </Flex>
 
             <Flex align='center' gap='2'>

@@ -37,7 +37,10 @@ export const UserProvider: FC<PropsWithChildren> = ({ children }) => {
     }
 
     const handleLogin = async (username: string, password: string) => {
-        return login(username, password)
+        return login({
+            username,
+            password,
+        })
             .then(() => {
                 //Reload the page so that the boot info is fetched again
                 window.location.reload()
