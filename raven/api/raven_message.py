@@ -22,7 +22,7 @@ def track_visit(channel_id, commit=False):
     if doc:
         frappe.db.set_value("Raven Channel Member", doc,
                             "last_visit", frappe.utils.now())
-    elif frappe.db.get_value('Raven Channel', channel_id, 'type') == 'Open':
+    elif frappe.get_cached_value('Raven Channel', channel_id, 'type') == 'Open':
         frappe.get_doc({
             "doctype": "Raven Channel Member",
             "channel_id": channel_id,
@@ -165,7 +165,7 @@ def parse_messages(messages):
 
 
 def check_permission(channel_id):
-    if frappe.db.get_value('Raven Channel', channel_id, 'type') == 'Private':
+    if frappe.get_cached_value('Raven Channel', channel_id, 'type') == 'Private':
         if frappe.db.exists("Raven Channel Member", {"channel_id": channel_id, "user_id": frappe.session.user}):
             pass
         elif frappe.session.user == "Administrator":

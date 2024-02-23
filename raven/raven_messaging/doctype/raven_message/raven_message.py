@@ -53,22 +53,9 @@ class RavenMessage(Document):
 
     def validate(self):
         '''
-        1. Message can be created if the channel is open
-        2. If the channel is private/public, the user creating the message should be a member of the channel
-        3. If there is a linked message, the linked message should be in the same channel
+        1. If there is a linked message, the linked message should be in the same channel
         '''
-        # self.validate_membership()
         self.validate_linked_message()
-
-    def validate_membership(self):
-        '''
-            If the channel is private/public, the user creating the message should be a member of the channel
-        '''
-        channel_type = frappe.db.get_value(
-            "Raven Channel", self.channel_id, "type")
-        if channel_type != "Open":
-            if not frappe.db.exists("Raven Channel Member", {"channel_id": self.channel_id, "user_id": self.owner}):
-                frappe.throw(_("You are not a member of this channel"))
 
     def validate_linked_message(self):
         '''
@@ -126,7 +113,7 @@ class RavenMessage(Document):
 
     def before_save(self):
         #TODO: Remove this
-        if frappe.db.get_value('Raven Channel', self.channel_id, 'type') != 'Private' or frappe.db.exists("Raven Channel Member", {"channel_id": self.channel_id, "user_id": frappe.session.user}):
+        if frappe.get_cached_value('Raven Channel', self.channel_id, 'type') != 'Private' or frappe.db.exists("Raven Channel Member", {"channel_id": self.channel_id, "user_id": frappe.session.user}):
             track_visit(self.channel_id)
 
 

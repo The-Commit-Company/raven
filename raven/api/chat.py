@@ -14,7 +14,7 @@ def get_channel_members(channel_id):
         if frappe.db.exists("Raven Channel", channel_id):
             channel_member = frappe.qb.DocType('Raven Channel Member')
             user = frappe.qb.DocType('Raven User')
-            if frappe.db.get_value("Raven Channel", channel_id, "type") == "Open":
+            if frappe.get_cached_value("Raven Channel", channel_id, "type") == "Open":
                 member_array = get_list()
             else:
                 member_query = (frappe.qb.from_(channel_member)
