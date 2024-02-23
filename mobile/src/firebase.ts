@@ -5,43 +5,56 @@ import { getMessaging, getToken, onMessage, GetTokenOptions } from "firebase/mes
 // https://firebase.google.com/docs/web/setup#available-libraries
 
 // Your web app's Firebase configuration
-const firebaseConfig = {
-    apiKey: "AIzaSyA9ItYZ5fQsLEdsfRD9RUAbYrfssLLQGbI",
-    authDomain: "raven-dev-frappe.firebaseapp.com",
-    projectId: "raven-dev-frappe",
-    storageBucket: "raven-dev-frappe.appspot.com",
-    messagingSenderId: "856329963312",
-    appId: "1:856329963312:web:882dcbf15ac67ca5e52af5"
-};
+// @ts-expect-error
+const firebaseConfig = JSON.parse(window.frappe?.boot.raven_push_notifications?.firebase_client_configuration ?? '{}')
+
+//     {
+//     apiKey: "AIzaSyA9ItYZ5fQsLEdsfRD9RUAbYrfssLLQGbI",
+//     authDomain: "raven-dev-frappe.firebaseapp.com",
+//     projectId: "raven-dev-frappe",
+//     storageBucket: "raven-dev-frappe.appspot.com",
+//     messagingSenderId: "856329963312",
+//     appId: "1:856329963312:web:882dcbf15ac67ca5e52af5"
+// };
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 
 const messaging = getMessaging(app);
 
-export const fetchToken = async () => {
-    const options: GetTokenOptions = {
-        vapidKey: 'BG_Q8fItODexgL5ZLh-WgQYGD0c-HCvo-S7shjiRKNFiFabO9FJNSADVU-G_vuftlETyjll6u_KIQmi7CtaugBI'
-    }
+export const fetchToken = async (): Promise<string | undefined> => {
 
-    const configJSON = encodeURIComponent(JSON.stringify(firebaseConfig))
-
-    const url = `/assets/raven/raven_mobile/firebase-messaging-sw.js?config=${configJSON}`
-    options.serviceWorkerRegistration = await navigator.serviceWorker.register(url, {
-        scope: '/assets/raven/raven_mobile/',
-        type: 'classic'
-    })
-
-    console.log('options:', options)
-
-    return getToken(messaging, options).then((currentToken) => {
-        if (currentToken) {
-            console.log('Token:', currentToken);
-        } else {
-            console.log('No registration token available. Request permission to generate one.');
-            requestPermission();
+    //@ts-expect-error
+    if (window.frappe?.boot.raven_push_notifications
+        //@ts-expect-error
+        && window.frappe?.boot.raven_push_notifications?.enabled
+        //@ts-expect-error
+        && window.frappe?.boot.raven_push_notifications?.method === "Self-managed FCM") {
+        const options: GetTokenOptions = {
+            //@ts-expect-error
+            vapidKey: window.frappe?.boot.raven_push_notifications?.vapid_public_key
         }
-    })
+
+        const configJSON = encodeURIComponent(JSON.stringify(firebaseConfig))
+
+        const url = `/assets/raven/raven_mobile/firebase-messaging-sw.js?config=${configJSON}`
+        options.serviceWorkerRegistration = await navigator.serviceWorker.register(url, {
+            scope: '/assets/raven/raven_mobile/',
+            type: 'classic'
+        })
+
+        console.log('options:', options)
+
+        return getToken(messaging, options).then((currentToken) => {
+            if (currentToken) {
+                console.log('Token:', currentToken);
+                return currentToken
+            } else {
+                console.log('No registration token available. Request permission to generate one.');
+                requestPermission();
+            }
+        })
+    }
 
 }
 // getToken(messaging, { vapidKey: 'BG_Q8fItODexgL5ZLh-WgQYGD0c-HCvo-S7shjiRKNFiFabO9FJNSADVU-G_vuftlETyjll6u_KIQmi7CtaugBI' }).then((currentToken) => {

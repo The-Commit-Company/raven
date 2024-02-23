@@ -29,8 +29,6 @@ import { UserListProvider } from './utils/users/UserListProvider';
 import { ActiveUsersProvider } from './utils/users/ActiveUsersProvider';
 import { createAnimation, iosTransitionAnimation } from '@ionic/core';
 import { isPlatform } from '@ionic/react';
-import { fetchToken } from './firebase'
-import { useEffect } from 'react';
 
 const animationBuilder: AnimationBuilder = (baseEl, opts) => {
   if (opts.direction === "back") {
@@ -59,9 +57,6 @@ function App() {
 
   }
 
-  useEffect(() => {
-    fetchToken()
-  }, [])
   return (
     <IonApp>
       <FrappeProvider

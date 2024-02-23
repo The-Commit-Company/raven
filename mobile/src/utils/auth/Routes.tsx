@@ -9,6 +9,7 @@ import { App } from '@capacitor/app';
 import { FrappeConfig, FrappeContext, useSWRConfig } from 'frappe-react-sdk'
 import { wifi } from 'ionicons/icons'
 import { ChannelSettings } from '@/pages/channels/ChannelSettings'
+import { fetchToken } from '@/firebase'
 
 export const Routes = () => {
     const { isLoggedIn } = useContext(UserContext)
@@ -62,6 +63,8 @@ export const Routes = () => {
     useEffect(() => {
         if (isLoggedIn) {
             App.addListener('appStateChange', ({ isActive }) => {
+
+                // Refresh active state
                 call.get('raven.api.user_availability.refresh_user_active_state', {
                     deactivate: !isActive
                 }).then(() => {
@@ -69,6 +72,17 @@ export const Routes = () => {
                         mutate('active_users', undefined, true)
                     }
                 })
+
+                fetchToken()
+                    .then(token => {
+                        if (token) {
+                            call.post('raven.api.notification.add_push_token', {
+                                token,
+                                platform: 'Mobile',
+                                //TODO: Add device and OS info
+                            })
+                        }
+                    })
             })
         }
 

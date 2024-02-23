@@ -8,7 +8,13 @@
  "engine": "InnoDB",
  "field_order": [
   "auto_add_system_users",
-  "show_raven_on_desk"
+  "show_raven_on_desk",
+  "push_notifications_tab",
+  "enable_push_notifications",
+  "push_notification_method",
+  "firebase_admin_credential",
+  "vapid_public_key",
+  "firebase_client_configuration"
  ],
  "fields": [
   {
@@ -22,12 +28,56 @@
    "fieldname": "show_raven_on_desk",
    "fieldtype": "Check",
    "label": "Show Raven on Desk"
+  },
+  {
+   "fieldname": "push_notifications_tab",
+   "fieldtype": "Tab Break",
+   "label": "Push Notifications"
+  },
+  {
+   "default": "Self-managed FCM",
+   "depends_on": "eval: doc.enable_push_notifications",
+   "fieldname": "push_notification_method",
+   "fieldtype": "Select",
+   "label": "Method",
+   "mandatory_depends_on": "eval: doc.enable_push_notifications",
+   "options": "Self-managed FCM"
+  },
+  {
+   "depends_on": "eval: doc.enable_push_notifications",
+   "fieldname": "firebase_admin_credential",
+   "fieldtype": "JSON",
+   "in_list_view": 1,
+   "label": "Firebase Admin Credential",
+   "mandatory_depends_on": "eval: doc.enable_push_notifications"
+  },
+  {
+   "depends_on": "eval: doc.enable_push_notifications",
+   "fieldname": "vapid_public_key",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "VAPID Public Key",
+   "mandatory_depends_on": "eval: doc.enable_push_notifications"
+  },
+  {
+   "depends_on": "eval: doc.enable_push_notifications",
+   "description": "Auto-generated configuration sent to the browser",
+   "fieldname": "firebase_client_configuration",
+   "fieldtype": "JSON",
+   "label": "Firebase Client Configuration",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "enable_push_notifications",
+   "fieldtype": "Check",
+   "label": "Enable Push Notifications"
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2024-01-28 19:42:25.061578",
+ "modified": "2024-02-23 11:36:23.658183",
  "modified_by": "Administrator",
  "module": "Raven",
  "name": "Raven Settings",

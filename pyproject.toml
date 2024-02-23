@@ -9,4 +9,5 @@ readme = "README.md"
 dynamic = ["version"]
 dependencies = [
  "linkpreview",
+ "firebase-admin~=6.2.0"
 ]
