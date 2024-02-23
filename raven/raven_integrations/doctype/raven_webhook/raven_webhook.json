@@ -137,7 +137,7 @@
    "fieldname": "webhook_trigger",
    "fieldtype": "Select",
    "label": "Webhook Trigger",
-   "options": "Message Sent\nMessage Edited\nMessage Deleted\nMessage Reaction\nChannel Created\nChannel Deleted\nChannel Member Added\nChannel Member Deleted\nRaven User Added\nRaven User Deleted",
+   "options": "Message Sent\nMessage Edited\nMessage Deleted\nMessage Reacted On\nChannel Created\nChannel Deleted\nChannel Member Added\nChannel Member Deleted\nUser Added\nUser Deleted",
    "reqd": 1,
    "set_only_once": 1
   },
@@ -193,7 +193,7 @@
    "link_fieldname": "webhook"
   }
  ],
- "modified": "2024-02-23 13:58:26.721842",
+ "modified": "2024-02-23 18:29:18.230912",
  "modified_by": "Administrator",
  "module": "Raven Integrations",
  "name": "Raven Webhook",

@@ -32,8 +32,8 @@ class RavenWebhook(Document):
 		webhook_data: DF.Table[WebhookData]
 		webhook_headers: DF.Table[WebhookHeader]
 		webhook_secret: DF.Password | None
-		webhook_trigger: DF.Literal["Message Sent", "Message Edited", "Message Deleted", "Message Reaction", "Channel Created",
-                              "Channel Deleted", "Channel Member Added", "Channel Member Deleted", "Raven User Added", "Raven User Deleted"]
+		webhook_trigger: DF.Literal["Message Sent", "Message Edited", "Message Deleted", "Message Reacted On",
+                              "Channel Created", "Channel Deleted", "Channel Member Added", "Channel Member Deleted", "User Added", "User Deleted"]
 	# end: auto-generated types
 
 	def validate(self):
@@ -60,7 +60,7 @@ class RavenWebhook(Document):
 	def on_trash(self):
 		# Delete the webhook
 		if self.webhook:
-			frappe.delete_doc('Webhook', self.webhook)
+			frappe.db.delete('Webhook', self.webhook)
 
 	def create_webhook(self):
 		# Create a new webhook
@@ -76,16 +76,16 @@ class RavenWebhook(Document):
 		webhook_doc.webhook_secret = self.webhook_secret
 		webhook_doc.request_method = 'POST'
 		webhook_doc.request_structure = 'Form URL-Encoded'
-		webhook_doc.webhook_headers = self.webhook_headers
-		webhook_doc.webhook_data = self.webhook_data
+		self.set_webhook_data_and_headers(webhook_doc)
 		webhook_doc.webhook_doctype = doctype
 		webhook_doc.webhook_docevent = event
 		webhook_doc.condition = conditions
-		webhook_doc.save()
+		webhook_doc.insert()
 		self.webhook = webhook_doc.name
 
 	def update_webhook(self):
 		# Update the webhook
+
 		conditions = self.get_conditions()
 		webhook_doc = frappe.get_doc('Webhook', self.webhook)
 		webhook_doc.request_url = self.request_url
@@ -93,10 +93,22 @@ class RavenWebhook(Document):
 		webhook_doc.timeout = self.timeout
 		webhook_doc.enable_security = self.enable_security
 		webhook_doc.webhook_secret = self.webhook_secret
-		webhook_doc.webhook_headers = self.webhook_headers
-		webhook_doc.webhook_data = self.webhook_data
 		webhook_doc.condition = conditions
+		self.set_webhook_data_and_headers(webhook_doc)
 		webhook_doc.save()
+
+	def set_webhook_data_and_headers(self, webhook_doc):
+		for data in self.webhook_data:
+			webhook_doc.append('webhook_data', {
+				'key': data.key,
+				'fieldname': data.fieldname,
+			})
+
+		for data in self.webhook_headers:
+			webhook_doc.append('webhook_headers', {
+				'key': data.key,
+				'value': data.value,
+			})
 
 	def get_doctype_and_event(self):
 		doctypes_and_events = [
@@ -119,7 +131,7 @@ class RavenWebhook(Document):
 			},
 			{
 
-				'label': 'Message Reaction',
+				'label': 'Message Reacted On',
                   		   					'doctype': 'Raven Message Reaction',
                   		   					'event': 'after_insert'
 			},
@@ -146,12 +158,12 @@ class RavenWebhook(Document):
                   		   					'event': 'on_trash'
 			},
 			{
-				'label': 'Raven User Added',
+				'label': 'User Added',
                   		   					'doctype': 'Raven User',
                   		   					'event': 'after_insert'
 			},
 			{
-				'label': 'Raven User Deleted',
+				'label': 'User Deleted',
                   		   					'doctype': 'Raven User',
                   		   					'event': 'on_trash'
 			}
