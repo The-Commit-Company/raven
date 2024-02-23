@@ -1,5 +1,4 @@
 import { lazy, Suspense } from "react";
-import { convertFrappeTimestampToUserTimezone } from './utils'
 const MomentConverter = lazy(() => import("./MomentConverter"));
 import { USER_TIMEZONE } from "./utils";
 
