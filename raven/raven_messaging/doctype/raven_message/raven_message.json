@@ -1,182 +1,189 @@
 {
- "actions": [],
- "allow_rename": 1,
- "autoname": "hash",
- "creation": "2023-02-12 17:29:25.498988",
- "default_view": "List",
- "doctype": "DocType",
- "editable_grid": 1,
- "engine": "InnoDB",
- "field_order": [
-  "channel_id",
-  "text",
-  "json",
-  "message_reactions",
-  "is_reply",
-  "linked_message",
-  "replied_message_details",
-  "column_break_wvje",
-  "message_type",
-  "content",
-  "file",
-  "image_width",
-  "image_height",
-  "file_thumbnail",
-  "thumbnail_width",
-  "thumbnail_height",
-  "link_doctype",
-  "link_document",
-  "is_edited"
- ],
- "fields": [
-  {
-   "fieldname": "channel_id",
-   "fieldtype": "Link",
-   "in_list_view": 1,
-   "in_standard_filter": 1,
-   "label": "Channel ID",
-   "options": "Raven Channel",
-   "reqd": 1,
-   "search_index": 1
-  },
-  {
-   "fieldname": "text",
-   "fieldtype": "Long Text",
-   "label": "Text"
-  },
-  {
-   "fieldname": "json",
-   "fieldtype": "JSON",
-   "label": "JSON"
-  },
-  {
-   "fieldname": "file",
-   "fieldtype": "Attach",
-   "label": "File"
-  },
-  {
-   "fieldname": "message_type",
-   "fieldtype": "Select",
-   "label": "Message Type",
-   "options": "Text\nImage\nFile"
-  },
-  {
-   "fieldname": "message_reactions",
-   "fieldtype": "JSON",
-   "label": "Message Reactions"
-  },
-  {
-   "default": "0",
-   "fieldname": "is_reply",
-   "fieldtype": "Check",
-   "label": "Is Reply"
-  },
-  {
-   "fieldname": "linked_message",
-   "fieldtype": "Link",
-   "label": "Replied Message ID",
-   "options": "Raven Message"
-  },
-  {
-   "fieldname": "file_thumbnail",
-   "fieldtype": "Attach",
-   "label": "File Thumbnail"
-  },
-  {
-   "fieldname": "image_width",
-   "fieldtype": "Data",
-   "label": "Image Width"
-  },
-  {
-   "fieldname": "image_height",
-   "fieldtype": "Data",
-   "label": "Image Height"
-  },
-  {
-   "fieldname": "thumbnail_width",
-   "fieldtype": "Data",
-   "label": "Thumbnail Width"
-  },
-  {
-   "fieldname": "thumbnail_height",
-   "fieldtype": "Data",
-   "label": "Thumbnail Height"
-  },
-  {
-   "fieldname": "link_doctype",
-   "fieldtype": "Link",
-   "label": "Link Doctype",
-   "options": "DocType"
-  },
-  {
-   "fieldname": "link_document",
-   "fieldtype": "Dynamic Link",
-   "label": "Link Document",
-   "options": "link_doctype"
-  },
-  {
-   "fieldname": "content",
-   "fieldtype": "Long Text",
-   "label": "Content",
-   "read_only": 1
-  },
-  {
-   "default": "0",
-   "fieldname": "is_edited",
-   "fieldtype": "Check",
-   "label": "Is Edited"
-  },
-  {
-   "fieldname": "column_break_wvje",
-   "fieldtype": "Column Break"
-  },
-  {
-   "fieldname": "replied_message_details",
-   "fieldtype": "JSON",
-   "label": "Replied Message Details"
-  }
- ],
- "index_web_pages_for_search": 1,
- "links": [],
- "modified": "2024-02-09 18:15:42.424300",
- "modified_by": "Administrator",
- "module": "Raven Messaging",
- "name": "Raven Message",
- "naming_rule": "Random",
- "owner": "Administrator",
- "permissions": [
-  {
-   "create": 1,
-   "delete": 1,
-   "email": 1,
-   "export": 1,
-   "print": 1,
-   "read": 1,
-   "report": 1,
-   "role": "System Manager",
-   "select": 1,
-   "share": 1,
-   "write": 1
-  },
-  {
-   "create": 1,
-   "delete": 1,
-   "email": 1,
-   "export": 1,
-   "if_owner": 1,
-   "print": 1,
-   "report": 1,
-   "role": "Raven User",
-   "share": 1,
-   "write": 1
-  },
-  {
-   "read": 1,
-   "role": "Raven User"
-  }
- ],
- "search_fields": "text",
- "sort_field": "modified",
- "sort_order": "DESC",
- "states": []
+    "actions": [],
+    "allow_rename": 1,
+    "autoname": "hash",
+    "creation": "2023-02-12 17:29:25.498988",
+    "default_view": "List",
+    "doctype": "DocType",
+    "editable_grid": 1,
+    "engine": "InnoDB",
+    "field_order": [
+        "channel_id",
+        "text",
+        "json",
+        "message_reactions",
+        "is_reply",
+        "linked_message",
+        "replied_message_details",
+        "column_break_wvje",
+        "message_type",
+        "content",
+        "file",
+        "image_width",
+        "image_height",
+        "file_thumbnail",
+        "thumbnail_width",
+        "thumbnail_height",
+        "link_doctype",
+        "link_document",
+        "is_edited",
+        "mentions"
+    ],
+    "fields": [
+        {
+            "fieldname": "channel_id",
+            "fieldtype": "Link",
+            "in_list_view": 1,
+            "in_standard_filter": 1,
+            "label": "Channel ID",
+            "options": "Raven Channel",
+            "reqd": 1,
+            "search_index": 1
+        },
+        {
+            "fieldname": "text",
+            "fieldtype": "Long Text",
+            "label": "Text"
+        },
+        {
+            "fieldname": "json",
+            "fieldtype": "JSON",
+            "label": "JSON"
+        },
+        {
+            "fieldname": "file",
+            "fieldtype": "Attach",
+            "label": "File"
+        },
+        {
+            "fieldname": "message_type",
+            "fieldtype": "Select",
+            "label": "Message Type",
+            "options": "Text\nImage\nFile"
+        },
+        {
+            "fieldname": "message_reactions",
+            "fieldtype": "JSON",
+            "label": "Message Reactions"
+        },
+        {
+            "default": "0",
+            "fieldname": "is_reply",
+            "fieldtype": "Check",
+            "label": "Is Reply"
+        },
+        {
+            "fieldname": "linked_message",
+            "fieldtype": "Link",
+            "label": "Replied Message ID",
+            "options": "Raven Message"
+        },
+        {
+            "fieldname": "file_thumbnail",
+            "fieldtype": "Attach",
+            "label": "File Thumbnail"
+        },
+        {
+            "fieldname": "image_width",
+            "fieldtype": "Data",
+            "label": "Image Width"
+        },
+        {
+            "fieldname": "image_height",
+            "fieldtype": "Data",
+            "label": "Image Height"
+        },
+        {
+            "fieldname": "thumbnail_width",
+            "fieldtype": "Data",
+            "label": "Thumbnail Width"
+        },
+        {
+            "fieldname": "thumbnail_height",
+            "fieldtype": "Data",
+            "label": "Thumbnail Height"
+        },
+        {
+            "fieldname": "link_doctype",
+            "fieldtype": "Link",
+            "label": "Link Doctype",
+            "options": "DocType"
+        },
+        {
+            "fieldname": "link_document",
+            "fieldtype": "Dynamic Link",
+            "label": "Link Document",
+            "options": "link_doctype"
+        },
+        {
+            "fieldname": "content",
+            "fieldtype": "Long Text",
+            "label": "Content",
+            "read_only": 1
+        },
+        {
+            "default": "0",
+            "fieldname": "is_edited",
+            "fieldtype": "Check",
+            "label": "Is Edited"
+        },
+        {
+            "fieldname": "column_break_wvje",
+            "fieldtype": "Column Break"
+        },
+        {
+            "fieldname": "replied_message_details",
+            "fieldtype": "JSON",
+            "label": "Replied Message Details"
+        },
+        {
+            "fieldname": "mentions",
+            "fieldtype": "Table",
+            "label": "Mentions",
+            "options": "Raven Mention"
+        }
+    ],
+    "index_web_pages_for_search": 1,
+    "links": [],
+    "modified": "2024-02-23 16:55:50.503786",
+    "modified_by": "Administrator",
+    "module": "Raven Messaging",
+    "name": "Raven Message",
+    "naming_rule": "Random",
+    "owner": "Administrator",
+    "permissions": [
+        {
+            "create": 1,
+            "delete": 1,
+            "email": 1,
+            "export": 1,
+            "print": 1,
+            "read": 1,
+            "report": 1,
+            "role": "System Manager",
+            "select": 1,
+            "share": 1,
+            "write": 1
+        },
+        {
+            "create": 1,
+            "delete": 1,
+            "email": 1,
+            "export": 1,
+            "if_owner": 1,
+            "print": 1,
+            "report": 1,
+            "role": "Raven User",
+            "share": 1,
+            "write": 1
+        },
+        {
+            "read": 1,
+            "role": "Raven User"
+        }
+    ],
+    "search_fields": "text",
+    "sort_field": "modified",
+    "sort_order": "DESC",
+    "states": []
 }
