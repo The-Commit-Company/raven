@@ -8,17 +8,18 @@ import { FieldValues, FormProvider, useForm } from "react-hook-form"
 import { useParams } from "react-router-dom"
 import { KeyedMutator } from 'swr'
 import { BackToList } from "./CreateWebhook"
-import { WebhookForm, WebhookFormField } from "./WebhookForm"
+import { WebhookForm } from "./WebhookForm"
 import { useToast } from "@/hooks/useToast"
 import { BiDotsVerticalRounded } from "react-icons/bi"
 import { useState } from "react"
 import { DIALOG_CONTENT_CLASS } from "@/utils/layout/dialog"
 import { Loader } from "@/components/common/Loader"
+import { RavenWebhook } from "@/types/RavenIntegrations/RavenWebhook"
 
 const ViewWebhook = () => {
 
     const { ID } = useParams<{ ID: string }>()
-    const { data, error, isLoading, mutate } = useFrappeGetDoc<Webhook>('Webhook', ID, undefined, {
+    const { data, error, isLoading, mutate } = useFrappeGetDoc<RavenWebhook>('Raven Webhook', ID, undefined, {
         shouldRetryOnError: false,
     })
 
@@ -35,13 +36,12 @@ const ViewWebhook = () => {
 export default ViewWebhook
 ViewWebhook.displayName = 'ViewWebhook'
 
-export const ViewWebhookPage = ({ data, mutate }: { data: FrappeDoc<Webhook>, mutate: KeyedMutator<FrappeDoc<Webhook>> }) => {
+export const ViewWebhookPage = ({ data, mutate }: { data: FrappeDoc<RavenWebhook>, mutate: KeyedMutator<FrappeDoc<RavenWebhook>> }) => {
 
     const formFields = removeFrappeFields(data)
-    const methods = useForm<WebhookFormField>({
+    const methods = useForm<RavenWebhook>({
         defaultValues: {
             ...formFields,
-            need_condition: data.condition ? true : false,
             docstatus: data.docstatus
         }
     })
@@ -53,7 +53,7 @@ export const ViewWebhookPage = ({ data, mutate }: { data: FrappeDoc<Webhook>, mu
     const isDirty = methods.formState.isDirty
 
     const onSubmit = async (data: FieldValues) => {
-        return updateDoc('Webhook', data.name, data)
+        return updateDoc('Raven Webhook', data.name, data)
             .then((doc) => {
                 toast({
                     title: "Webhook updated successfully.",
@@ -65,7 +65,6 @@ export const ViewWebhookPage = ({ data, mutate }: { data: FrappeDoc<Webhook>, mu
                     const formFields = removeFrappeFields(doc)
                     methods.reset({
                         ...formFields,
-                        need_condition: doc.condition ? true : false,
                         docstatus: doc.docstatus
                     })
                 }
@@ -78,7 +77,7 @@ export const ViewWebhookPage = ({ data, mutate }: { data: FrappeDoc<Webhook>, mu
     }
 
     const onUpdateEnabled = () => {
-        updateDoc('Webhook', data.name, {
+        updateDoc('Raven Webhook', data.name, {
             enabled: !data.enabled
         }).then((doc) => {
             toast({

@@ -5,31 +5,23 @@ import { useCallback, useMemo, useState } from "react";
 import { Controller, useFieldArray, useFormContext } from "react-hook-form";
 import { BiInfoCircle, BiMinusCircle } from "react-icons/bi";
 import { BsEye, BsPlus } from "react-icons/bs";
-import { FieldsData } from "./utils";
+import { FieldsData, TriggerEvents } from "./utils";
 import { DoctypeFieldList } from './utils'
 import { DIALOG_CONTENT_CLASS } from "@/utils/layout/dialog";
+import { RavenWebhook } from "@/types/RavenIntegrations/RavenWebhook";
 
 export const WebhookData = () => {
-    const { register, control, watch, setValue, getValues } = useFormContext<Webhook>()
+    const { register, control, watch, setValue, getValues } = useFormContext<RavenWebhook>()
 
     const { fields, append, remove } = useFieldArray({
         name: 'webhook_data'
     });
 
-    const webhookDoctype = watch('webhook_doctype')
+    const webhookTrigger = watch('webhook_trigger')
 
     const webhookDataFieldName = useMemo<FieldsData[]>(() => {
-        return DoctypeFieldList?.find(field => field.doctype === webhookDoctype)?.fields || []
-    }, [webhookDoctype])
-
-    const getDoctypeField = useCallback((index: number) => {
-        const webhookData = getValues('webhook_data')
-        const fieldname = webhookData?.[index]?.fieldname
-        if (fieldname) {
-            return webhookDataFieldName?.find(field => field.fieldname === fieldname)
-        }
-        return undefined
-    }, [webhookDataFieldName])
+        return DoctypeFieldList?.find(field => field.events.includes(webhookTrigger))?.fields || []
+    }, [webhookTrigger])
 
     const [fieldIndex, setFieldIndex] = useState<number | null>(null)
 
@@ -137,7 +129,7 @@ export const WebhookData = () => {
                                                 </IconButton>
                                             </Dialog.Trigger>
                                             <Dialog.Content className={DIALOG_CONTENT_CLASS}>
-                                                {fieldIndex !== null && <FieldInfoModal fieldIndex={fieldIndex} doctype={webhookDoctype} onClose={onClose} key={index} />}
+                                                {fieldIndex !== null && <FieldInfoModal fieldIndex={fieldIndex} triggerEvent={webhookTrigger} onClose={onClose} key={index} />}
                                             </Dialog.Content>
                                         </Dialog.Root>
                                     </Table.Cell>
@@ -167,13 +159,13 @@ export const WebhookData = () => {
         </Box>
     )
 }
-export const FieldInfoModal = ({ fieldIndex, doctype, onClose }: { fieldIndex: number, doctype: string, onClose: () => void }) => {
+export const FieldInfoModal = ({ fieldIndex, triggerEvent, onClose }: { fieldIndex: number, triggerEvent: string, onClose: () => void }) => {
 
     const { watch } = useFormContext<Webhook>()
     const fieldData = useMemo(() => {
         const fieldname = watch(`webhook_data.${fieldIndex}.fieldname`)
-        return DoctypeFieldList?.find(field => field.doctype === doctype)?.fields.find(field => field.fieldname === fieldname)
-    }, [fieldIndex, doctype])
+        return DoctypeFieldList?.find(field => field.events.includes(triggerEvent))?.fields.find(field => field.fieldname === fieldname)
+    }, [fieldIndex, triggerEvent])
 
     return (
         <Flex direction={'column'} gap={'4'} width={'100%'}>

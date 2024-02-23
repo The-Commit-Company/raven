@@ -5,29 +5,25 @@ import { useNavigate } from 'react-router-dom'
 import { Button, Flex, Separator, Text } from '@radix-ui/themes'
 import { BiChevronLeft } from 'react-icons/bi'
 import { ErrorBanner } from '@/components/layout/AlertBanner'
-import { WebhookForm, WebhookFormField } from './WebhookForm'
+import { WebhookForm } from './WebhookForm'
 import { useToast } from '@/hooks/useToast'
+import { RavenWebhook } from '@/types/RavenIntegrations/RavenWebhook'
 
 export const CreateWebhook = () => {
 
     const navigate = useNavigate()
 
-    const methods = useForm<WebhookFormField>({
+    const methods = useForm<RavenWebhook>({
         defaultValues: {
-            webhook_docevent: 'after_insert',
-            timeout: 5,
-            request_method: 'POST',
             enabled: 1,
-            request_structure: 'Form URL-Encoded',
-            need_condition: false,
         }
     })
     const { createDoc, loading, reset, error } = useFrappeCreateDoc()
 
     const { toast } = useToast()
 
-    const onSubmit = (data: Webhook) => {
-        createDoc('Webhook', data)
+    const onSubmit = (data: RavenWebhook) => {
+        createDoc('Raven Webhook', data)
             .then((doc) => {
                 reset()
                 methods.reset()

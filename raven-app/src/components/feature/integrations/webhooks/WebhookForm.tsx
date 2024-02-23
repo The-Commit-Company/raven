@@ -1,45 +1,22 @@
-import React, { useMemo } from 'react';
+import React, { useContext } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
-import { Webhook } from '@/types/Integrations/Webhook'
 import { Box, Checkbox, Flex, TextFieldInput, Select, TextArea, Heading, Text } from '@radix-ui/themes';
 import { ErrorText, HelperText, Label } from '@/components/common/Form';
 import { WebhookData } from './WebhookReturnDataFieldTable';
 import { WebhookHeaders } from './WebhookHeaders';
 import { TriggerEvents } from './utils';
-
-export interface WebhookFormField extends Webhook {
-    need_condition: boolean
-}
+import { RavenWebhook } from '@/types/RavenIntegrations/RavenWebhook';
+import { UserListContext } from '@/utils/users/UserListProvider';
+import { ChannelListContext, ChannelListContextType } from '@/utils/channel/ChannelListProvider';
 
 export const WebhookForm = ({ isEdit = false }: { isEdit?: boolean }) => {
-    const { register, formState: { errors }, control, setValue, watch } = useFormContext<WebhookFormField>()
-
-    const onTriggerEventChange = (value: string) => {
-        if (value) {
-            setValue('webhook_data', [])
-            const field = TriggerEvents?.find(event => event.key === value)
-            if (field) {
-                setValue('webhook_doctype', field.doctype)
-                setValue('webhook_docevent', field.event)
-            }
-        }
-    }
-
-    const webhookDoctype = watch('webhook_doctype')
-
-    const webhookDocevent = watch('webhook_docevent')
+    const { register, formState: { errors }, control, setValue, watch } = useFormContext<RavenWebhook>()
 
     const security = watch('enable_security')
 
-    const needCondition = watch('need_condition')
+    const needCondition = watch('trigger_webhook_on_condition')
 
-    const triggerValue = useMemo(() => {
-        if (webhookDoctype && webhookDocevent) {
-            const field = TriggerEvents?.find(event => event.doctype === webhookDoctype && event.event === webhookDocevent)
-            return field?.key
-        }
-        return ''
-    }, [webhookDoctype, webhookDocevent])
+    const conditionOn = watch('conditions_on')
 
     return (
         <Flex direction='column' gap='4' >
@@ -102,25 +79,39 @@ export const WebhookForm = ({ isEdit = false }: { isEdit?: boolean }) => {
             <Box>
                 <Flex direction='column' gap='2'>
                     <Label isRequired>Trigger Event</Label>
-                    <Select.Root value={triggerValue} onValueChange={onTriggerEventChange} required disabled={isEdit}>
-                        <Select.Trigger placeholder='Trigger Events' />
-                        <Select.Content>
-                            <Select.Group>
-                                <Select.Label>Trigger Events</Select.Label>
-                                {
-                                    TriggerEvents?.map((event, index) => (
-                                        <Select.Item key={index} value={event.key}>{event.label}</Select.Item>
-                                    ))
+                    <Controller
+                        control={control}
+                        name='webhook_trigger'
+                        rules={{
+                            onChange: (e) => {
+                                if (e.target.value) {
+                                    setValue('webhook_data', [])
+
                                 }
-                            </Select.Group>
-                        </Select.Content>
-                    </Select.Root>
+                            }
+                        }}
+                        render={({ field }) => (
+                            <Select.Root value={field.value} onValueChange={field.onChange} required disabled={isEdit}>
+                                <Select.Trigger placeholder='Trigger Events' />
+                                <Select.Content>
+                                    <Select.Group>
+                                        <Select.Label>Trigger Events</Select.Label>
+                                        {
+                                            TriggerEvents?.map((event, index) => (
+                                                <Select.Item key={index} value={event.label}>{event.label}</Select.Item>
+                                            ))
+                                        }
+                                    </Select.Group>
+                                </Select.Content>
+                            </Select.Root>
+                        )}
+                    />
                 </Flex>
             </Box>
             <Box>
                 <Controller
                     control={control}
-                    name='need_condition'
+                    name='trigger_webhook_on_condition'
                     render={({ field }) => (
                         <Flex direction={'row'} gap={'2'} align={'center'}>
                             <Checkbox checked={field.value ? true : false} onClick={() => field.onChange(!field.value)} />
@@ -134,6 +125,30 @@ export const WebhookForm = ({ isEdit = false }: { isEdit?: boolean }) => {
                 {errors?.enable_security && <ErrorText>{errors.enable_security.message}</ErrorText>}
             </Box>
             {needCondition && <Box>
+                <Flex direction={'column'} gap={'2'}>
+                    <Label htmlFor='condition'>Condition On</Label>
+                    <Controller
+                        control={control}
+                        name='conditions_on'
+                        render={({ field }) => (
+                            <Select.Root value={field.value} onValueChange={field.onChange} required>
+                                <Select.Trigger placeholder='Select Field' />
+                                <Select.Content>
+                                    <Select.Group>
+                                        <Select.Label>Condition On</Select.Label>
+                                        <Select.Item value='Channel'>Channel</Select.Item>
+                                        <Select.Item value='User'>User</Select.Item>
+                                        <Select.Item value='Channel Type' >Channel Type</Select.Item>
+                                        <Select.Item value='Custom'>Custom</Select.Item>
+                                    </Select.Group>
+                                </Select.Content>
+                            </Select.Root>
+                        )}
+                    />
+                    <HelperText>Field on which the condition will be applied</HelperText>
+                </Flex>
+            </Box>}
+            {conditionOn === 'Custom' ? <Box>
                 <Flex direction={'row'} gap={'8'} align={'start'}>
                     <Flex direction={'column'} gap={'2'} style={{
                         width: '60%'
@@ -150,7 +165,37 @@ export const WebhookForm = ({ isEdit = false }: { isEdit?: boolean }) => {
                         </Flex>
                     </Flex>
                 </Flex>
-            </Box>}
+            </Box> : conditionOn === 'Channel' ? <Box>
+                <Label htmlFor='channel_id'>Channel ID</Label>
+                <TextFieldInput {...register('channel_id')} />
+                <HelperText>Channel ID on which the condition will be applied</HelperText>
+            </Box> : conditionOn === 'User' ? <Box>
+                <Label htmlFor='user_id'>User ID</Label>
+                <TextFieldInput {...register('user')} />
+                <HelperText>User ID on which the condition will be applied</HelperText>
+            </Box> : conditionOn === 'Channel Type' ? <Box>
+                <Label htmlFor='channel_type'>Channel Type</Label>
+                <Controller
+                    control={control}
+                    name='channel_type'
+                    render={({ field }) => (
+                        <Select.Root value={field.value} onValueChange={field.onChange} required>
+                            <Select.Trigger placeholder='Select Field' />
+                            <Select.Content>
+                                <Select.Group>
+                                    <Select.Label>Channel Type</Select.Label>
+                                    <Select.Item value='Public'>Public</Select.Item>
+                                    <Select.Item value='Private'>Private</Select.Item>
+                                    <Select.Item value='Open'>Open</Select.Item>
+                                    <Select.Item value='DM'>Direct Message</Select.Item>
+                                    <Select.Item value='Self Message'>Self Message</Select.Item>
+                                </Select.Group>
+                            </Select.Content>
+                        </Select.Root>
+                    )}
+                />
+                <HelperText>Channel Type on which the condition will be applied</HelperText>
+            </Box> : null}
             <WebhookData />
             <WebhookHeaders />
         </Flex>

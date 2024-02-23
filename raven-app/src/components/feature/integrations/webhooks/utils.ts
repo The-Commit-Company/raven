@@ -45,13 +45,13 @@ export const TriggerEvents: TriggerEventField[] = [
     },
     {
         key: 'channel_member_added',
-        label: 'Member Added to the Channel',
+        label: 'Channel Member Added',
         doctype: 'Raven Channel Member',
         event: 'after_insert'
     },
     {
         key: 'channel_member_deleted',
-        label: 'Member Deleted from the Channel',
+        label: 'Channel Member Deleted',
         doctype: 'Raven Channel Member',
         event: 'on_trash'
     },
@@ -116,10 +116,12 @@ const commonFields = [
 
 export const DoctypeFieldList: {
     doctype: 'Raven Message' | 'Raven Channel' | 'Raven Channel Member' | 'Raven User' | 'Raven Message Reaction',
+    events: string[]
     fields: FieldsData[]
 }[] = [
         {
             doctype: 'Raven Message',
+        events: ['Message Sent', 'Message Edited', 'Message Deleted'],
             fields: [
                 {
                     fieldname: 'channel_id',
@@ -215,6 +217,7 @@ export const DoctypeFieldList: {
         },
         {
             doctype: 'Raven Channel',
+            events: ['Channel Created', 'Channel Deleted'],
             fields: [
                 {
                     fieldname: 'channel_name',
@@ -264,6 +267,7 @@ export const DoctypeFieldList: {
         },
         {
             'doctype': 'Raven Channel Member',
+            events: ['Channel Member Added', 'Channel Member Deleted'],
             fields: [
                 {
                     fieldname: 'channel_id',
@@ -298,6 +302,7 @@ export const DoctypeFieldList: {
         },
         {
             doctype: 'Raven User',
+            events: ['Raven User Added', 'Raven User Deleted'],
             fields: [
                 {
                     fieldname: 'user',
@@ -339,6 +344,7 @@ export const DoctypeFieldList: {
         },
         {
             doctype: 'Raven Message Reaction',
+            events: ['Message Reaction'],
             fields: [
                 {
                     fieldname: 'reaction',

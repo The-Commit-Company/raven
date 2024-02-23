@@ -4,6 +4,7 @@ import { ErrorBanner } from "@/components/layout/AlertBanner"
 import { FullPageLoader } from "@/components/layout/Loaders"
 import { useToast } from "@/hooks/useToast"
 import { Webhook } from "@/types/Integrations/Webhook"
+import { RavenWebhook } from "@/types/RavenIntegrations/RavenWebhook"
 import { DateMonthYear } from "@/utils/dateConversions"
 import { DIALOG_CONTENT_CLASS } from "@/utils/layout/dialog"
 import { Flex, Separator, Button, Text, Badge, IconButton, AlertDialog } from "@radix-ui/themes"
@@ -14,7 +15,7 @@ import { Link, useNavigate } from "react-router-dom"
 
 export const WebhookList = () => {
 
-    const { data, error, isLoading, mutate } = useFrappeGetDocList<Webhook>('Webhook', {
+    const { data, error, isLoading, mutate } = useFrappeGetDocList<RavenWebhook>('Raven Webhook', {
         fields: ['name', 'request_url', 'enabled', 'owner', 'creation']
     })
 
@@ -63,7 +64,7 @@ export const WebhookList = () => {
     )
 }
 
-export const WebhookItem = ({ webhook, mutate }: { webhook: Webhook, mutate: () => void }) => {
+export const WebhookItem = ({ webhook, mutate }: { webhook: RavenWebhook, mutate: () => void }) => {
 
     const navigate = useNavigate()
 
@@ -135,7 +136,7 @@ export const DeleteWebhookAlertContent = ({ webhhookID, onClose, mutate }: { web
     const { toast } = useToast()
 
     const onDelete = () => {
-        deleteDoc('Webhook', webhhookID).then(() => {
+        deleteDoc('Raven Webhook', webhhookID).then(() => {
             mutate()
             onClose()
             toast({

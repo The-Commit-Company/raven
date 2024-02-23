@@ -1,5 +1,5 @@
 import { HelperText } from "@/components/common/Form";
-import { Webhook } from "@/types/Integrations/Webhook";
+import { RavenWebhook } from "@/types/RavenIntegrations/RavenWebhook";
 import { Flex, Box, Heading, Table, TextFieldInput, IconButton, Button } from "@radix-ui/themes";
 import { useState } from "react";
 import { useFieldArray, useFormContext } from "react-hook-form";
@@ -7,7 +7,7 @@ import { BiMinusCircle } from "react-icons/bi";
 import { BsPlus } from "react-icons/bs";
 
 export const WebhookHeaders = () => {
-    const { register } = useFormContext<Webhook>()
+    const { register } = useFormContext<RavenWebhook>()
 
     const { fields, append, remove } = useFieldArray({
         name: 'webhook_headers'
