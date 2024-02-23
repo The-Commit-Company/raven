@@ -16,6 +16,7 @@ export const CreateWebhook = () => {
     const methods = useForm<RavenWebhook>({
         defaultValues: {
             enabled: 1,
+            timeout: 5
         }
     })
     const { createDoc, loading, reset, error } = useFrappeCreateDoc()
@@ -59,7 +60,7 @@ export const CreateWebhook = () => {
                         </form>
                     </FormProvider>
                     <Button onClick={methods.handleSubmit(onSubmit)} disabled={loading} variant='solid' style={{
-                        width: 'fit-content',
+                        alignSelf: 'flex-end'
                     }} >
                         Create Webhook
                     </Button>

@@ -131,7 +131,7 @@ export const ViewWebhookPage = ({ data, mutate }: { data: FrappeDoc<RavenWebhook
                         </form>
                     </FormProvider>
                     <Button onClick={methods.handleSubmit(onSubmit)} disabled={loading || !isDirty} variant='solid' style={{
-                        width: 'fit-content',
+                        alignSelf: 'flex-end'
                     }}>
                         Save Webhook
                     </Button>

@@ -27,7 +27,7 @@ export const TriggerEvents: TriggerEventField[] = [
     },
     {
         key: 'emoji_reaction',
-        label: 'Message Reaction',
+        label: 'Message Reactied On',
         doctype: 'Raven Message Reaction',
         event: 'after_insert'
     },
@@ -57,13 +57,13 @@ export const TriggerEvents: TriggerEventField[] = [
     },
     {
         key: 'raven_user_added',
-        label: 'Raven User Added',
+        label: 'User Added',
         doctype: 'Raven User',
         event: 'after_insert'
     },
     {
         key: 'raven_user_deleted',
-        label: 'Raven User Deleted',
+        label: 'User Deleted',
         doctype: 'Raven User',
         event: 'on_trash'
     }
@@ -302,7 +302,7 @@ export const DoctypeFieldList: {
         },
         {
             doctype: 'Raven User',
-            events: ['Raven User Added', 'Raven User Deleted'],
+            events: ['User Added', 'User Deleted'],
             fields: [
                 {
                     fieldname: 'user',
@@ -344,7 +344,7 @@ export const DoctypeFieldList: {
         },
         {
             doctype: 'Raven Message Reaction',
-            events: ['Message Reaction'],
+            events: ['Message Reacted On'],
             fields: [
                 {
                     fieldname: 'reaction',
