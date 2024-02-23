@@ -1,12 +1,12 @@
-import { IonPage, IonHeader, IonContent, IonToolbar, IonTitle, IonList, IonText, IonItem, IonIcon, useIonLoading, useIonAlert, IonLabel } from '@ionic/react'
+import { IonPage, IonHeader, IonContent, IonToolbar, IonTitle, IonList, IonText, IonItem, IonIcon, IonLabel } from '@ionic/react'
 import { FrappeConfig, FrappeContext, useFrappeGetDoc } from 'frappe-react-sdk'
-import { logOutOutline, pizza } from 'ionicons/icons'
+import { logOutOutline, notificationsOutline } from 'ionicons/icons'
 import { useContext } from 'react'
 import { ErrorBanner } from '../../components/layout'
 import { UserContext } from '../../utils/auth/UserProvider'
-import { FullPageLoader } from '@/components/layout/loaders'
 import { ProfileLoader } from '@/components/layout/loaders/ProfileLoader'
 import { UserAvatar } from '@/components/common/UserAvatar'
+import { fetchToken } from '@/firebase'
 
 interface User {
     name: string
@@ -17,6 +17,7 @@ interface User {
 }
 export const Profile = () => {
 
+    const { call } = useContext(FrappeContext) as FrappeConfig
     const { currentUser, logout } = useContext(UserContext)
 
     const { url } = useContext(FrappeContext) as FrappeConfig
@@ -25,6 +26,19 @@ export const Profile = () => {
 
     const handleLogout = () => {
         logout()
+    }
+
+    const onNotificationEnable = () => {
+        fetchToken()
+            .then(token => {
+                if (token) {
+                    call.post('raven.api.notification.add_push_token', {
+                        token,
+                        platform: 'Mobile',
+                        //TODO: Add device and OS info
+                    })
+                }
+            })
     }
 
     return (
@@ -50,6 +64,10 @@ export const Profile = () => {
                             <span><IonText color="primary">{data.email}</IonText></span>
                         </div>
                     }
+                    <IonItem button onClick={onNotificationEnable}>
+                        <IonIcon slot='start' icon={notificationsOutline} />
+                        <IonLabel>Enable Notifications</IonLabel>
+                    </IonItem>
                     <IonItem button onClick={handleLogout}>
                         <IonIcon slot="start" icon={logOutOutline} />
                         Logout
