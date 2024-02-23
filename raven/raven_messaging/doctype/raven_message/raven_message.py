@@ -3,9 +3,8 @@
 import frappe
 from frappe import _
 from frappe.model.document import Document
-from frappe.utils import strip_html_tags
 from raven.api.raven_message import track_visit
-
+from frappe.core.utils import html2text
 
 class RavenMessage(Document):
     # begin: auto-generated types
@@ -37,8 +36,7 @@ class RavenMessage(Document):
     def before_validate(self):
         try:
             if self.text:
-                self.content = strip_html_tags(self.text).replace(
-                    '\ufeff', '').replace('&nbsp;', ' ')
+                self.content = html2text(self.text)
         except Exception:
             pass
     def validate(self):
@@ -72,6 +70,8 @@ class RavenMessage(Document):
         frappe.publish_realtime(
             'raven:unread_channel_count_updated', {
                 'channel_id': self.channel_id,
+                'play_sound': True,
+                'sent_by': self.owner,
             })
 
     def after_delete(self):

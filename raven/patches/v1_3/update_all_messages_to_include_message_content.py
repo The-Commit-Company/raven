@@ -1,6 +1,5 @@
 import frappe
-from frappe.utils import strip_html_tags
-
+from frappe.core.utils import html2text
 
 def execute():
     update_old_messages_to_include_message_content()
@@ -18,8 +17,7 @@ def update_old_messages_to_include_message_content():
                                  'name', 'text', 'message_type'])
     for message in messages:
         if message.text:
-            cleaned_text = strip_html_tags(message.text).replace(
-                '\ufeff', '').replace('&nbsp;', ' ')
+            cleaned_text = html2text(message.text)
             content = cleaned_text
             frappe.db.set_value(
                 'Raven Message', message.name, 'content', content)
