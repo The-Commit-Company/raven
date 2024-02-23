@@ -1,59 +1,37 @@
 import { useState, useContext } from "react";
 import { useForm } from "react-hook-form";
-import { BiShow, BiHide, BiCheckCircle } from "react-icons/bi";
+import { BiShow, BiHide } from "react-icons/bi";
 import { Link } from "react-router-dom";
 import { UserContext } from "../../utils/auth/UserProvider";
 import { FullPageLoader } from "../../components/layout/Loaders";
-import { Box, Button, Flex, IconButton, Text, TextField, Link as LinkButton, Callout } from "@radix-ui/themes";
-import { FrappeContext, FrappeError, FrappeConfig } from "frappe-react-sdk";
+import { Box, Button, Flex, IconButton, Text, TextField } from "@radix-ui/themes";
+import { FrappeError } from "frappe-react-sdk";
 import { Loader } from "@/components/common/Loader";
 import { ErrorText, Label } from "@/components/common/Form";
-import { ErrorCallout } from "@/components/layout/AlertBanner/ErrorBanner";
-import { isEmailValid } from "@/utils/validations";
-
-type Inputs = {
-    email: string;
-    password: string;
-};
+import { SuccessCallout, ErrorCallout, CalloutObject } from "@/components/common/Callouts";
+import { LoginWithEmail } from "@/pages/auth/LoginWithEmail";
+import { LoginInputs } from "@/types/Auth/Login";
 
 export const Component = () => {
     const [error, setError] = useState<FrappeError | null>(null)
     const { login, isLoading } = useContext(UserContext)
-    const { register, handleSubmit, formState: { errors, isSubmitting }, getValues, setValue } = useForm<Inputs>()
+    const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<LoginInputs>()
     const [isPasswordOpen, setIsPasswordOpen] = useState<boolean>(false)
+    const [callout, setCallout] = useState<CalloutObject | null>(null)
     const [isLoginWithEmailLink, setIsLoginWithEmailLink] = useState<boolean>(false)
-    const [successCallout, setSuccessCallout] = useState<boolean>(false)
-    const [isLoginWithEmailSubmitting, setIsLoginWithEmailSubmitting] = useState<boolean>(false)
-    const { call } = useContext(FrappeContext) as FrappeConfig
 
     const onClickReveal = () => {
         setIsPasswordOpen(!isPasswordOpen)
     }
 
+    // to show/unshow login with email section
     const onClickLoginWithEmail = () =>{
         setError(null)
-        setSuccessCallout(false)
-        
-        // If input is username then reset the value, else persist with email upon switching
-        if(isEmailValid(getValues().email) === false)
-            setValue("email","")
-        setIsLoginWithEmailLink(!isLoginWithEmailLink)
-        
+        setCallout(null)
+        setIsLoginWithEmailLink(!isLoginWithEmailLink)   
     }
 
-    const sendEmailLink = (email: string) =>{
-        setIsLoginWithEmailSubmitting(true)
-        call.post('frappe.www.login.send_login_link',{
-            email
-        }).then((result) => {
-            setSuccessCallout(true)
-        }).catch((err)=>{
-            setError(err)
-        })
-        setIsLoginWithEmailSubmitting(false)
-    }
-
-    async function onSubmit(values: Inputs) {
+    async function onSubmit(values: LoginInputs) {
         setError(null)
         return login(values.email, values.password)
             .catch((error) => { setError(error) })
@@ -72,53 +50,16 @@ export const Component = () => {
                                 </Flex>
                             </Link>
 
-                            {error && <ErrorCallout>
-                                {error.message}
-                            </ErrorCallout>}
+                            { error && <ErrorCallout message={error.message}/> }
 
-                            {
-                                successCallout &&
-                                <Callout.Root color="green">
-                                <Callout.Icon>
-                                <BiCheckCircle />
-                                </Callout.Icon>
-                                <Callout.Text>
-                                    Login Link sent on Email
-                                </Callout.Text>
-                                </Callout.Root>
-                            }  
+                            { callout && <SuccessCallout message={callout.message}/> }  
                            
                            { isLoginWithEmailLink ? 
-                           <Box>
-                            <Flex direction='column' gap='4'>
-                                <Flex direction='column' gap='2'>
-                                    <Label htmlFor='email' isRequired>Email</Label>
-                                    <TextField.Root>
-                                        <TextField.Input {...register("email",
-                                            {
-                                                validate: (email) => isEmailValid(email) || "Please enter a valid email address.",
-                                                required: "Email is required.",
-                                            })}
-                                            name="email"
-                                            type="email"
-                                            required
-                                            placeholder="jane@example.com"
-                                            tabIndex={0} />
-                                    </TextField.Root>
-                                    {errors?.email && <ErrorText>{errors?.email?.message}</ErrorText>}
-                                </Flex>
-                                <Flex direction='column' gap='2'>
-                                    <Button type='button' disabled={isLoginWithEmailSubmitting} onClick={()=>{sendEmailLink(getValues().email)}}>
-                                        {isLoginWithEmailSubmitting ? <Loader /> : 'Send Login Link'}
-                                    </Button>
-                                </Flex>
-                                <Flex direction='column' gap='2' align='center'>
-                                <LinkButton onClick={onClickLoginWithEmail} size='2' >
-                                    Back to Login
-                                </LinkButton>
-                                </Flex>
-                            </Flex>
-                           </Box>:
+                           <LoginWithEmail 
+                                setCallout={setCallout}
+                                onClickLoginWithEmail={onClickLoginWithEmail} 
+                                setError={setError}
+                            />:
                            <Box>
                             <form onSubmit={handleSubmit(onSubmit)}>
                                 <Flex direction='column' gap='6'>
