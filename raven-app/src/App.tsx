@@ -20,7 +20,7 @@ const router = createBrowserRouter(
     <>
       <Route path='/login' lazy={() => import('@/pages/auth/Login')} />
       <Route path="/" element={<ProtectedRoute />}>
-        <Route index element={<ChannelRedirect />} />
+        <Route path="/" element={<ChannelRedirect />}>
         <Route path="channel" element={<MainPage />} >
           <Route index element={<ChannelRedirect />} />
           <Route path="saved-messages" lazy={() => import('./components/feature/saved-messages/SavedMessages')} />
@@ -33,6 +33,7 @@ const router = createBrowserRouter(
             <Route path='webhooks/:ID' element={<ViewWebhook />} />
             <Route path='server-scripts' element={<p>SS</p>} />
           </Route>
+        </Route>
         </Route>
       </Route>
     </>
