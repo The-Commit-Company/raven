@@ -203,6 +203,7 @@ def get_unread_count_for_channels():
              .left_join(channel_member)
              .on((channel.name == channel_member.channel_id) & (channel_member.user_id == frappe.session.user))
              .where((channel.type == "Open") | (channel_member.user_id == frappe.session.user))
+             .where(channel.is_archived == 0)
              .left_join(message).on(channel.name == message.channel_id))
 
     channels_query = query.select(channel.name, channel.is_direct_message, Count(Case().when(message.creation > Coalesce(channel_member.last_visit, '2000-11-11'), 1)).as_(

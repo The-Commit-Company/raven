@@ -25,7 +25,10 @@
         "link_document",
         "is_bot_message",
         "bot",
-        "content"
+        "content",
+        "is_edited",
+        "replied_message_details",
+        "mentions"
     ],
     "fields": [
         {
@@ -73,7 +76,7 @@
         {
             "fieldname": "linked_message",
             "fieldtype": "Link",
-            "label": "Linked Message",
+            "label": "Replied Message ID",
             "options": "Raven Message"
         },
         {
@@ -132,11 +135,32 @@
             "fieldtype": "Long Text",
             "label": "Content",
             "read_only": 1
+        },
+        {
+            "default": "0",
+            "fieldname": "is_edited",
+            "fieldtype": "Check",
+            "label": "Is Edited"
+        },
+        {
+            "fieldname": "column_break_wvje",
+            "fieldtype": "Column Break"
+        },
+        {
+            "fieldname": "replied_message_details",
+            "fieldtype": "JSON",
+            "label": "Replied Message Details"
+        },
+        {
+            "fieldname": "mentions",
+            "fieldtype": "Table",
+            "label": "Mentions",
+            "options": "Raven Mention"
         }
     ],
     "index_web_pages_for_search": 1,
     "links": [],
-    "modified": "2024-01-19 17:41:28.463058",
+    "modified": "2024-02-23 16:55:50.503786",
     "modified_by": "Administrator",
     "module": "Raven Messaging",
     "name": "Raven Message",

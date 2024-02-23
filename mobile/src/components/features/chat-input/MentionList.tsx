@@ -89,6 +89,7 @@ const MentionItem = ({ item, index, selectItem, selectedIndex, itemsLength }: { 
     const roundedBottom = index === itemsLength - 1 ? ' rounded-b-md' : ''
 
     return <li
+        role='button'
         className={'py-2 px-3 text-zinc-200 text-md active:bg-blue-500 focus:bg-blue-500 focus-visible:bg-blue-500 hover:bg-blue-500' + roundedBottom + roundedTop}
         onClick={() => selectItem(index)}
     >

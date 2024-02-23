@@ -107,10 +107,11 @@ def add_user_to_raven(doc, method):
                 raven_user.enabled = 0
                 raven_user.save(ignore_permissions=True)
         else:
-            # Raven user does not exist. Check if the user is a system user.
-            if doc.user_type == "System User":
-                # Only create raven user if it exists in the system.
-                if frappe.db.exists("User", doc.name):
+            # Raven user does not exist.
+            # Only create raven user if it exists in the system.
+            if frappe.db.exists("User", doc.name):
+                # Check if the user is a system user.
+                if doc.user_type == "System User":
                     auto_add = frappe.db.get_single_value(
                         "Raven Settings", "auto_add_system_users")
 
@@ -123,12 +124,12 @@ def add_user_to_raven(doc, method):
                             raven_user.full_name = doc.first_name
                         raven_user.enabled = 1
                         raven_user.insert(ignore_permissions=True)
-                    else:
-                        if "Raven User" in [d.role for d in doc.get("roles")]:
-                            # Create a Raven User record for the user.
-                            raven_user = frappe.new_doc("Raven User")
-                            raven_user.user = doc.name
-                            if not doc.full_name:
-                                raven_user.full_name = doc.first_name
-                            raven_user.enabled = 1
-                            raven_user.insert(ignore_permissions=True)
+                else:
+                    if "Raven User" in [d.role for d in doc.get("roles")]:
+                        # Create a Raven User record for the user.
+                        raven_user = frappe.new_doc("Raven User")
+                        raven_user.user = doc.name
+                        if not doc.full_name:
+                            raven_user.full_name = doc.first_name
+                        raven_user.enabled = 1
+                        raven_user.insert(ignore_permissions=True)
