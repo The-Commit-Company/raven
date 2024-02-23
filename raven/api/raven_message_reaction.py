@@ -31,7 +31,7 @@ def calculate_message_reaction(message_id):
                 'users': [reaction_item.owner],
                 'reaction': reaction_item.reaction
             }
-    channel_id = frappe.db.get_value("Raven Message", message_id, "channel_id")
+    channel_id = frappe.get_cached_value("Raven Message", message_id, "channel_id")
     frappe.db.set_value('Raven Message', message_id, 'message_reactions', json.dumps(
         total_reactions), update_modified=False)
     frappe.db.commit()

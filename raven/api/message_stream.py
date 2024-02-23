@@ -54,7 +54,7 @@ def check_permission(channel_id):
     '''
         Check if the user has permission to view the messages in the channel
     '''
-    if frappe.db.get_value('Raven Channel', channel_id, 'type') == 'Private':
+    if frappe.get_cached_value('Raven Channel', channel_id, 'type') == 'Private':
         if frappe.db.exists("Raven Channel Member", {"channel_id": channel_id, "user_id": frappe.session.user}):
             pass
         elif frappe.session.user == "Administrator":

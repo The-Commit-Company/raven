@@ -68,7 +68,7 @@ def get_channels(hide_archived=False):
             'is_direct_message'), channel.get('is_self_message'))
         channel['peer_user_id'] = peer_user_id
         if peer_user_id:
-            user_full_name = frappe.db.get_value(
+            user_full_name = frappe.get_cached_value(
                 'User', peer_user_id, 'full_name')
             channel['full_name'] = user_full_name
     return channels
@@ -114,6 +114,7 @@ def create_direct_message_channel(user_id):
         2. If not, create a new channel
         3. Check if the user_id is the current user and set is_self_message accordingly
     '''
+    # TODO: this logic might break if the user_id changes
     channel_name = frappe.db.get_value("Raven Channel", filters={
         "is_direct_message": 1,
         "channel_name": ["in", [frappe.session.user + " _ " + user_id, user_id + " _ " + frappe.session.user]]

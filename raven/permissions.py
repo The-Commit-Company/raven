@@ -1,7 +1,7 @@
 import frappe
 
 
-def channel_has_permission(doc, user=None, permission_type=None):
+def channel_has_permission(doc, user=None, ptype=None):
 
     if doc.type == "Open" or doc.type == "Public":
         return True
@@ -16,13 +16,13 @@ def channel_has_permission(doc, user=None, permission_type=None):
             return False
 
 
-def channel_member_has_permission(doc, user=None, permission_type=None):
+def channel_member_has_permission(doc, user=None, ptype=None):
 
     # Allow self to modify their own channel member document
     if doc.user_id == user:
         return True
 
-    channel_type = frappe.db.get_value("Raven Channel", doc.channel_id, "type")
+    channel_type = frappe.get_cached_value("Raven Channel", doc.channel_id, "type")
 
     if channel_type == "Open" or channel_type == "Public":
         return True
@@ -37,20 +37,29 @@ def channel_member_has_permission(doc, user=None, permission_type=None):
             return False
 
 
-def message_has_permission(doc, user=None, permission_type=None):
+def message_has_permission(doc, user=None, ptype=None):
 
-    channel_type = frappe.db.get_value("Raven Channel", doc.channel_id, "type")
-    # If the channel is open, a user can post a message. Ownership check is provided in the ORM
+    channel_type = frappe.get_cached_value("Raven Channel", doc.channel_id, "type")
+
+    # If the channel is open, a user can post a message. 
+    # For creating or deleting a message, the permission check is added in the validate method of Raven Message
     if channel_type == "Open":
-        return True
+        if ptype == "read":
+            return True
+        else:
+            return doc.owner == user
     
-    # Allow self to modify their own message document
-    if doc.owner == user and permission_type in ["write", "delete"]:
-        return True
+    # If the channel is public, a user can read a message.
+    if channel_type == "Public":
+        if ptype == "read":
+            return True
 
 
     if frappe.db.exists("Raven Channel Member", {"channel_id": doc.channel_id, "user_id": user}):
-        return True
+        if ptype == "read":
+            return True
+        else:
+            return doc.owner == user
     elif user == "Administrator":
         return True
     else:
