@@ -7,6 +7,7 @@ from raven.api.raven_message import track_visit
 from frappe.core.utils import html2text
 import datetime
 
+
 class RavenMessage(Document):
     # begin: auto-generated types
     # This code is auto-generated. Do not modify anything in this block.
@@ -15,6 +16,7 @@ class RavenMessage(Document):
 
     if TYPE_CHECKING:
         from frappe.types import DF
+        from raven.raven_messaging.doctype.raven_mention.raven_mention import RavenMention
 
         channel_id: DF.Link
         content: DF.LongText | None
@@ -28,6 +30,7 @@ class RavenMessage(Document):
         link_doctype: DF.Link | None
         link_document: DF.DynamicLink | None
         linked_message: DF.Link | None
+        mentions: DF.Table[RavenMention]
         message_reactions: DF.JSON | None
         message_type: DF.Literal["Text", "Image", "File"]
         replied_message_details: DF.JSON | None
@@ -80,6 +83,7 @@ class RavenMessage(Document):
                 "owner": details.owner,
                 "creation": datetime.datetime.strftime(details.creation, "%Y-%m-%d %H:%M:%S")
             }
+
     def after_insert(self):
         frappe.publish_realtime(
             'raven:unread_channel_count_updated', {
@@ -87,6 +91,15 @@ class RavenMessage(Document):
                 'play_sound': True,
                 'sent_by': self.owner,
             })
+        self.process_mentions()
+
+    def process_mentions(self):
+        users = []
+        content = self.json['content'][0]['content']
+        for item in content:
+            if item['type'] == 'userMention':
+                users.append(item['attrs']['id'])
+        print(users)
 
     def after_delete(self):
         self.send_update_event(type="delete")
@@ -112,7 +125,7 @@ class RavenMessage(Document):
         frappe.db.delete("Raven Message Reaction", {"message": self.name})
 
     def before_save(self):
-        #TODO: Remove this
+        # TODO: Remove this
         if frappe.get_cached_value('Raven Channel', self.channel_id, 'type') != 'Private' or frappe.db.exists("Raven Channel Member", {"channel_id": self.channel_id, "user_id": frappe.session.user}):
             track_visit(self.channel_id)
 
