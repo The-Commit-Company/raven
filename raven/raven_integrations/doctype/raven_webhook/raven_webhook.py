@@ -38,9 +38,11 @@ class RavenWebhook(Document):
 
 	def validate(self):
 		# 1. Check if webhook name is unique
-		# 2. Check if webhook ID is exists
-		# 3. If exist then update the webhook
-		# 4. If not exist then create the webhook
+		# 2. Check if webhook_data and webhook_headers are unique
+		# 3. Check if webhook ID is exists
+		# 4. If exist then update the webhook
+		# 5. If not exist then create the webhook
+
 
 		# 1. Check if webhook name is unique
 		webhook = frappe.get_all('Raven Webhook', filters={
@@ -48,14 +50,23 @@ class RavenWebhook(Document):
 		if webhook:
 			frappe.throw('Webhook name already exists')
 
-		# 2. Check if webhook ID is exists
+		# 2. Check if webhook_data and webhook_headers are unique
+		webhook_data_keys = [data.key for data in self.webhook_data]
+		webhook_header_keys = [data.key for data in self.webhook_headers]
+		if len(webhook_data_keys) != len(set(webhook_data_keys)):
+			frappe.throw('Webhook Data keys should be unique')
+		if len(webhook_header_keys) != len(set(webhook_header_keys)):
+			frappe.throw('Webhook Headers keys should be unique')
+
+		# 3. Check if webhook ID is exists
 		if self.webhook:
-			# Update the webhook
+			# 4. Update the webhook
 			self.update_webhook()
 
 		else:
-			# Create the webhook
+			# 5. Create the webhook
 			self.create_webhook()
+
 
 	def on_trash(self):
 		# Delete the webhook
@@ -98,17 +109,32 @@ class RavenWebhook(Document):
 		webhook_doc.save()
 
 	def set_webhook_data_and_headers(self, webhook_doc):
+		# Set the webhook data and headers
+
+		# get the existing webhook data and headers
+		webhook_header = webhook_doc.get('webhook_headers', [])
+		webhook_data = webhook_doc.get('webhook_data', [])
+
+		# get the existing webhook data and headers keys
+		webhook_data_keys = [data.key for data in self.webhook_data]
+		webhook_header_keys = [data.key for data in self.webhook_headers]
+
+		# remove the existing webhook data and headers
+		# which are not in the current webhook data and headers
+		# and append the new webhook data and headers
 		for data in self.webhook_data:
-			webhook_doc.append('webhook_data', {
-				'key': data.key,
-				'fieldname': data.fieldname,
-			})
+			if data.key not in webhook_data_keys:
+				webhook_doc.append('webhook_data', {
+					'key': data.key,
+					'fieldname': data.fieldname,
+				})
 
 		for data in self.webhook_headers:
-			webhook_doc.append('webhook_headers', {
-				'key': data.key,
-				'value': data.value,
-			})
+			if data.key not in webhook_header_keys:
+				webhook_doc.append('webhook_headers', {
+					'key': data.key,
+					'value': data.value,
+				})
 
 	def get_doctype_and_event(self):
 		doctypes_and_events = [
