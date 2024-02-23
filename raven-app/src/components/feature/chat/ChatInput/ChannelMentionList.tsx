@@ -5,6 +5,7 @@ import { ReactRendererOptions } from '@tiptap/react'
 import { clsx } from 'clsx'
 import {
     forwardRef, useEffect, useImperativeHandle,
+    useRef,
     useState,
 } from 'react'
 
@@ -81,10 +82,16 @@ export default forwardRef((props: ReactRendererOptions['props'], ref) => {
 
 const MentionItem = ({ item, index, selectItem, selectedIndex, itemsLength }: { itemsLength: number, selectedIndex: number, index: number, item: ChannelListItem, selectItem: (index: number) => void }) => {
 
+    const ref = useRef<HTMLDivElement>(null)
+
+    useEffect(() => {
+        if (index === selectedIndex) ref.current?.scrollIntoView({ block: 'nearest' })
+    }, [selectedIndex, index])
 
     return <Flex
         role='button'
         align='center'
+        ref={ref}
         title={item.channel_name}
         aria-label={`Mention channel ${item.channel_name}`}
         className={clsx('px-3 py-2 gap-2 rounded-md',

@@ -34,10 +34,20 @@ const MessageReactions = ({ messageID, channelID, message_reactions }: { message
     const reactions: ReactionObject[] = useMemo(() => {
         //Parse the string to a JSON object and get an array of reactions
         const parsed_json = JSON.parse(message_reactions ?? '{}') as Record<string, ReactionObject>
-        return Object.values(parsed_json)
+
+        const allReactions = Object.values(parsed_json)
+
+        if (allReactions.length > 8) {
+            const firstEight = allReactions.slice(0, 8)
+            const others = allReactions.slice(8)
+            return firstEight.concat({ reaction: `${others.length} more...`, users: [], count: 0 })
+        } else {
+            return allReactions
+        }
+
     }, [message_reactions])
 
-    return <div className="flex gap-2">
+    return <div className="flex gap-x-1.5 flex-wrap">
         {reactions.map((reaction) => <ReactionButton key={reaction.reaction} reaction={reaction} onReactionClick={saveReaction} allUsers={allUsers} />)}
     </div>
 }
@@ -71,12 +81,14 @@ const ReactionButton = ({ reaction, onReactionClick, allUsers }: ReactionButtonP
         className={className}
         onClick={onClick}
     >
-        <span className="font-bold block text-xs">
+        <span className="font-bold block text-xs text-gray-300">
             {emoji}
         </span>
-        <span className="font-bold block text-xs text-gray-100 pl-1">
-            {count}
-        </span>
+        {count ?
+            <span className="font-bold block text-xs text-gray-100 pl-1">
+                {count}
+            </span> : null
+        }
     </IonButton>
 }
 
