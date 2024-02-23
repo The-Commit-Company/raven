@@ -21,13 +21,15 @@
    "default": "1",
    "fieldname": "auto_add_system_users",
    "fieldtype": "Check",
-   "label": "Automatically add system users to Raven"
+   "label": "Automatically add system users to Raven",
+   "permlevel": 1
   },
   {
    "default": "1",
    "fieldname": "show_raven_on_desk",
    "fieldtype": "Check",
-   "label": "Show Raven on Desk"
+   "label": "Show Raven on Desk",
+   "permlevel": 1
   },
   {
    "fieldname": "push_notifications_tab",
@@ -49,7 +51,8 @@
    "fieldtype": "JSON",
    "in_list_view": 1,
    "label": "Firebase Admin Credential",
-   "mandatory_depends_on": "eval: doc.enable_push_notifications"
+   "mandatory_depends_on": "eval: doc.enable_push_notifications",
+   "permlevel": 1
   },
   {
    "depends_on": "eval: doc.enable_push_notifications",
@@ -77,7 +80,7 @@
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2024-02-23 11:36:23.658183",
+ "modified": "2024-02-23 14:28:05.901373",
  "modified_by": "Administrator",
  "module": "Raven",
  "name": "Raven Settings",
@@ -87,6 +90,20 @@
    "create": 1,
    "delete": 1,
    "email": 1,
+   "print": 1,
+   "read": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "read": 1,
+   "role": "Guest"
+  },
+  {
+   "delete": 1,
+   "email": 1,
+   "permlevel": 1,
    "print": 1,
    "read": 1,
    "role": "System Manager",

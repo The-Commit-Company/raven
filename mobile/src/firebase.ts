@@ -1,10 +1,11 @@
 // Import the functions you need from the SDKs you need
-import { initializeApp } from "firebase/app";
-import { getMessaging, getToken, onMessage, GetTokenOptions } from "firebase/messaging";
+import { FirebaseApp, initializeApp } from "firebase/app";
+import { getMessaging, getToken, GetTokenOptions, Messaging } from "firebase/messaging";
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
 // Your web app's Firebase configuration
+
 // @ts-expect-error
 const firebaseConfig = JSON.parse(window.frappe?.boot.raven_push_notifications?.firebase_client_configuration ?? '{}')
 
@@ -18,9 +19,19 @@ const firebaseConfig = JSON.parse(window.frappe?.boot.raven_push_notifications?.
 // };
 
 // Initialize Firebase
-const app = initializeApp(firebaseConfig);
+let app: FirebaseApp | null = null
+let messaging: Messaging | null = null
+export const init = () => {
 
-const messaging = getMessaging(app);
+    //@ts-expect-error
+    if (window.frappe?.boot.raven_push_notifications?.firebase_client_configuration) {
+        app = initializeApp(firebaseConfig);
+        messaging = getMessaging(app);
+    }
+
+}
+
+
 
 export const fetchToken = async (): Promise<string | undefined> => {
 
@@ -29,7 +40,8 @@ export const fetchToken = async (): Promise<string | undefined> => {
         //@ts-expect-error
         && window.frappe?.boot.raven_push_notifications?.enabled
         //@ts-expect-error
-        && window.frappe?.boot.raven_push_notifications?.method === "Self-managed FCM") {
+        && window.frappe?.boot.raven_push_notifications?.method === "Self-managed FCM"
+        && messaging) {
         const options: GetTokenOptions = {
             //@ts-expect-error
             vapidKey: window.frappe?.boot.raven_push_notifications?.vapid_public_key
@@ -43,7 +55,7 @@ export const fetchToken = async (): Promise<string | undefined> => {
             type: 'classic'
         })
 
-        console.log('options:', options)
+        // console.log('options:', options)
 
         return getToken(messaging, options).then((currentToken) => {
             if (currentToken) {
@@ -78,7 +90,7 @@ function requestPermission() {
     });
 }
 
-onMessage(messaging, (payload) => {
-    console.log('Message received. ', payload);
-    // ...
-});
+// onMessage(messaging, (payload) => {
+//     console.log('Message received. ', payload);
+//     // ...
+// });

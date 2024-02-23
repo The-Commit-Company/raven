@@ -74,6 +74,7 @@ class RavenSettings(Document):
 			Clear the cache
 		'''
 		frappe.cache().delete_value("raven_firebase_credentials")
+		frappe.cache().delete_value("raven_firebase_project_id")
 
 
 	def generate_web_config(self) -> str:

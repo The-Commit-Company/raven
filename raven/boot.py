@@ -2,7 +2,7 @@ import frappe
 
 def boot_session(bootinfo):
 
-    raven_settings = frappe.get_single("Raven Settings")
+    raven_settings = frappe.get_cached_doc("Raven Settings")
     bootinfo.show_raven_chat_on_desk = raven_settings.show_raven_on_desk
     bootinfo.raven_push_notifications = {
         "enabled": raven_settings.enable_push_notifications,

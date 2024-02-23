@@ -9,7 +9,7 @@ import { App } from '@capacitor/app';
 import { FrappeConfig, FrappeContext, useSWRConfig } from 'frappe-react-sdk'
 import { wifi } from 'ionicons/icons'
 import { ChannelSettings } from '@/pages/channels/ChannelSettings'
-import { fetchToken } from '@/firebase'
+import { fetchToken, init } from '@/firebase'
 
 export const Routes = () => {
     const { isLoggedIn } = useContext(UserContext)
@@ -72,24 +72,26 @@ export const Routes = () => {
                         mutate('active_users', undefined, true)
                     }
                 })
-
-                fetchToken()
-                    .then(token => {
-                        if (token) {
-                            call.post('raven.api.notification.add_push_token', {
-                                token,
-                                platform: 'Mobile',
-                                //TODO: Add device and OS info
-                            })
-                        }
-                    })
             })
+
+            init()
+            fetchToken()
+                .then(token => {
+                    if (token) {
+                        call.post('raven.api.notification.add_push_token', {
+                            token,
+                            platform: 'Mobile',
+                            //TODO: Add device and OS info
+                        })
+                    }
+                })
         }
 
         return () => {
             App.removeAllListeners()
         }
     }, [isLoggedIn])
+
     return (
         // @ts-ignore
         <IonReactRouter basename={import.meta.env.VITE_BASE_NAME ?? ''}>
