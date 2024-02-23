@@ -6,9 +6,6 @@ import { getMessaging, getToken, GetTokenOptions, Messaging } from "firebase/mes
 
 // Your web app's Firebase configuration
 
-// @ts-expect-error
-const firebaseConfig = JSON.parse(window.frappe?.boot.raven_push_notifications?.firebase_client_configuration ?? '{}')
-
 //     {
 //     apiKey: "AIzaSyA9ItYZ5fQsLEdsfRD9RUAbYrfssLLQGbI",
 //     authDomain: "raven-dev-frappe.firebaseapp.com",
@@ -25,8 +22,17 @@ export const init = () => {
 
     //@ts-expect-error
     if (window.frappe?.boot.raven_push_notifications?.firebase_client_configuration) {
+        // @ts-expect-error
+        const firebaseConfig = JSON.parse(window.frappe?.boot.raven_push_notifications?.firebase_client_configuration)
         app = initializeApp(firebaseConfig);
         messaging = getMessaging(app);
+        const configJSON = encodeURIComponent(JSON.stringify(firebaseConfig))
+
+        const url = `/assets/raven/raven_mobile/firebase-messaging-sw.js?config=${configJSON}`
+        navigator.serviceWorker.register(url, {
+            scope: '/assets/raven/raven_mobile/',
+            type: 'classic'
+        })
     }
 
 }
@@ -46,7 +52,8 @@ export const fetchToken = async (): Promise<string | undefined> => {
             //@ts-expect-error
             vapidKey: window.frappe?.boot.raven_push_notifications?.vapid_public_key
         }
-
+        // @ts-expect-error
+        const firebaseConfig = JSON.parse(window.frappe?.boot.raven_push_notifications?.firebase_client_configuration ?? '{}')
         const configJSON = encodeURIComponent(JSON.stringify(firebaseConfig))
 
         const url = `/assets/raven/raven_mobile/firebase-messaging-sw.js?config=${configJSON}`
