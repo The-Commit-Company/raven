@@ -109,7 +109,7 @@ export const Tiptap = ({ onMessageSend, messageSending, defaultText = '' }: Tipt
             HTMLAttributes: {
                 class: 'mention text-blue-500',
             },
-            renderLabel({ options, node }) {
+            renderText({ options, node }) {
                 return `${options.suggestion.char}${node.attrs.label ?? node.attrs.id}`
             },
             suggestion: {
@@ -179,7 +179,7 @@ export const Tiptap = ({ onMessageSend, messageSending, defaultText = '' }: Tipt
             HTMLAttributes: {
                 class: 'mention text-blue-500',
             },
-            renderLabel({ options, node }) {
+            renderText({ options, node }) {
                 return `${options.suggestion.char}${node.attrs.label ?? node.attrs.id}`
             },
             suggestion: {
