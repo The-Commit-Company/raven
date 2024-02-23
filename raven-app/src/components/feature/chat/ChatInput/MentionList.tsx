@@ -6,6 +6,7 @@ import { ReactRendererOptions } from '@tiptap/react'
 import { clsx } from 'clsx'
 import {
     forwardRef, useEffect, useImperativeHandle,
+    useRef,
     useState,
 } from 'react'
 
@@ -61,7 +62,7 @@ export default forwardRef((props: ReactRendererOptions['props'], ref) => {
             <Flex
                 direction='column'
                 gap='0'
-                className='shadow-lg dark:backdrop-blur-[8px] dark:bg-panel-translucent bg-white overflow-y-scroll max-h-64 rounded-md'
+                className='shadow-lg dark:backdrop-blur-[8px] dark:bg-panel-translucent bg-white overflow-y-scroll max-h-96 rounded-md'
             >
                 {props?.items.length
                     ? props.items.map((item: UserFields, index: number) => (
@@ -85,9 +86,16 @@ const MentionItem = ({ item, index, selectItem, selectedIndex, itemsLength }: { 
 
     const isActive = useIsUserActive(item.name)
 
+    const ref = useRef<HTMLDivElement>(null)
+
+    useEffect(() => {
+        if (index === selectedIndex) ref.current?.scrollIntoView({ block: 'nearest' })
+    }, [selectedIndex, index])
+
 
     return <Flex
         role='button'
+        ref={ref}
         align='center'
         title={item.full_name}
         aria-label={`Mention ${item.full_name}`}
