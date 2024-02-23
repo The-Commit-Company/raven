@@ -54,6 +54,8 @@ class RavenMessage(Document):
             if old_doc.text != self.text:
                 self.is_edited = True
 
+        self.process_mentions()
+
     def validate(self):
         '''
         1. If there is a linked message, the linked message should be in the same channel
@@ -91,15 +93,23 @@ class RavenMessage(Document):
                 'play_sound': True,
                 'sent_by': self.owner,
             })
-        self.process_mentions()
 
     def process_mentions(self):
-        users = []
-        content = self.json['content'][0]['content']
+        if not self.json:
+            return
+
+        try:
+            content = self.json.get('content', [{}])[0].get('content', [])
+        except (IndexError, AttributeError):
+            return
+
+        entered_ids = set()
         for item in content:
-            if item['type'] == 'userMention':
-                users.append(item['attrs']['id'])
-        print(users)
+            if item.get('type') == 'userMention':
+                user_id = item.get('attrs', {}).get('id')
+                if user_id and user_id not in entered_ids:
+                    self.append('mentions', {'user': user_id})
+                    entered_ids.add(user_id)
 
     def after_delete(self):
         self.send_update_event(type="delete")
