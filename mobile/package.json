@@ -1,7 +1,7 @@
 {
   "name": "mobile",
   "private": true,
-  "version": "1.4.1",
+  "version": "1.4.2",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -47,7 +47,13 @@
     "rehype-sanitize": "^6.0.0",
     "remark-gfm": "^4.0.0",
     "tippy.js": "^6.3.7",
-    "turndown": "^7.1.2"
+    "turndown": "^7.1.2",
+    "@vitejs/plugin-react": "^4.2.1",
+    "autoprefixer": "^10.4.17",
+    "postcss": "^8.4.35",
+    "tailwindcss": "^3.4.1",
+    "vite": "^5.1.4",
+    "vite-plugin-pwa": "^0.19.0"
   },
   "devDependencies": {
     "@capacitor/cli": "^5.7.0",
@@ -56,12 +62,6 @@
     "@types/react-router": "5.1.11",
     "@types/react-router-dom": "^5.3.3",
     "@types/turndown": "^5.0.4",
-    "@vitejs/plugin-react": "^4.2.1",
-    "autoprefixer": "^10.4.17",
-    "postcss": "^8.4.35",
-    "tailwindcss": "^3.4.1",
-    "typescript": "^4.9.3",
-    "vite": "^5.1.4",
-    "vite-plugin-pwa": "^0.19.0"
+    "typescript": "^4.9.3"
   }
 }
