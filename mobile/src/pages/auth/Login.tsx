@@ -1,10 +1,11 @@
-import { IonButton, IonContent, IonHeader, IonImg, IonInput, IonItem, IonPage, IonSpinner, IonTitle, IonToolbar } from '@ionic/react'
+import { IonButton, IonContent, IonHeader, IonImg, IonInput, IonItem, IonPage, IonSpinner, IonTitle, IonToolbar, IonText, IonRow } from '@ionic/react'
 import { ErrorBanner } from '../../components/layout'
+import {SuccessCallout, CalloutObject} from '@/components/common/SuccessCallout'
 import raven_logo from '../../assets/raven_logo.png'
 import { useContext, useState } from 'react'
 import { UserContext } from '../../utils/auth/UserProvider'
-import { Controller, set, useForm } from 'react-hook-form'
-import { isEmailValid } from '../../utils/validations/validations'
+import { Controller, useForm } from 'react-hook-form'
+import { LoginWithEmail } from '@/pages/auth'
 
 type Inputs = {
     email: string,
@@ -14,9 +15,18 @@ type Inputs = {
 export const Login = () => {
 
     const [error, setError] = useState<Error | null>(null)
-    const { login, isLoading } = useContext(UserContext)
+    const { login } = useContext(UserContext)
     const { control, handleSubmit, formState: { errors } } = useForm<Inputs>()
     const [loading, setLoading] = useState(false)
+    const [callout, setCallout] = useState<CalloutObject | null>(null)
+    const [isLoginWithEmailLink, setIsLoginWithEmailLink] = useState<boolean>(false)
+
+     // to show/unshow login with email section
+     const onClickLoginWithEmail = () =>{
+        setError(null)
+        setCallout(null)
+        setIsLoginWithEmailLink(!isLoginWithEmailLink)   
+    }
 
     async function onSubmit(values: Inputs) {
         setError(null)
@@ -39,7 +49,16 @@ export const Login = () => {
                         </IonToolbar>
                     </IonHeader>
                     {error && <ErrorBanner overrideHeading={error.message} />}
-                    <form onSubmit={handleSubmit(onSubmit)}>
+                    { callout && <SuccessCallout message={callout.message}/> }  
+                    {
+                        isLoginWithEmailLink ? 
+                        <LoginWithEmail 
+                             setCallout={setCallout}
+                             onClickLoginWithEmail={onClickLoginWithEmail} 
+                             setError={setError}
+                         />:
+                         <div>
+                        <form onSubmit={handleSubmit(onSubmit)}>
                         <IonItem>
                             <Controller
                                 name="email"
@@ -50,7 +69,7 @@ export const Login = () => {
                                 render={({ field }) => <IonInput
                                     onIonChange={(e) => field.onChange(e.detail.value)}
                                     required
-                                    placeholder='sally@example.com'
+                                    placeholder='jane@example.com'
                                     className={!!errors?.email ? 'ion-invalid ion-touched' : ''}
                                     label='Email/Username'
                                     errorText={errors?.email?.message}
@@ -81,12 +100,28 @@ export const Login = () => {
                         <IonButton
                             type="submit"
                             className='ion-margin-top'
-                            expand="block">
+                            expand="block"
+                            >
                             {loading ? <IonSpinner name="crescent" /> : "Login"}
                         </IonButton>
                     </form>
-                </div>
-            </IonContent>
+                    <IonRow class="ion-justify-content-center ion-margin-top ion-margin-bottom">
+                        <IonText color="medium" >
+                            or
+                        </IonText>
+                    </IonRow>
+                    <IonButton
+                        type="button"
+                        onClick={onClickLoginWithEmail}
+                        expand="block"
+                    >
+                        {loading ? <IonSpinner name="crescent" /> : "Login With Email Link"}    
+                    </IonButton>
+            </div>
+                    }
+                    
+        </div>
+        </IonContent>
 
         </IonPage>
     )
