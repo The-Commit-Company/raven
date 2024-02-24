@@ -74,7 +74,7 @@ export const Profile = () => {
                     </IonItem>
                 </IonList>
                 <div className="ion-text-center mt-16">
-                    <IonText><span className='cal-sans text-lg tracking-[0.03em]'>Raven</span> <span className='text-zinc-500'>v1.4.0</span></IonText>
+                    <IonText><span className='cal-sans text-lg tracking-[0.03em]'>Raven</span> <span className='text-zinc-500'>v1.4.2</span></IonText>
                     <br />
                     <p className='text-zinc-500'>Made by <IonText className='font-bold'>The Commit Company</IonText></p>
                 </div>

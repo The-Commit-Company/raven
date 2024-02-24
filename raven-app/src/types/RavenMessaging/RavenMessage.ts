@@ -1,3 +1,4 @@
+import { RavenMention } from './RavenMention'
 
 export interface RavenMessage {
 	creation: string
@@ -46,4 +47,6 @@ export interface RavenMessage {
 	link_document?: string
 	/**	Is Edited : Check	*/
 	is_edited?: 0 | 1
+	/**	Mentions : Table - Raven Mention	*/
+	mentions?: RavenMention[]
 }
