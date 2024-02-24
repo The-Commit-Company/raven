@@ -59,7 +59,8 @@ def send_notification_to_user(user: str, notification_type: str, title: str, bod
 					# Status code ref : https://firebase.google.com/docs/reference/fcm/rest/v1/ErrorCode
                     if res[2] in [403, 404]:
 						# delete token
-                        frappe.db.delete("Raven Notification Token", {"fcm_token": token})
+                        frappe.db.delete(
+                            "Raven Notification Token", {"token": token})
                     elif res[2] in [429, 500, 503]:
 						# TODO: retry
                         pass

@@ -1,6 +1,6 @@
 // Import the functions you need from the SDKs you need
 import { FirebaseApp, initializeApp } from "firebase/app";
-import { getMessaging, getToken, GetTokenOptions, Messaging } from "firebase/messaging";
+import { getMessaging, getToken, GetTokenOptions, Messaging, onMessage } from "firebase/messaging";
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -29,9 +29,16 @@ export const init = () => {
         const configJSON = encodeURIComponent(JSON.stringify(firebaseConfig))
 
         const url = `/assets/raven/raven_mobile/firebase-messaging-sw.js?config=${configJSON}`
-        navigator.serviceWorker.register(url, {
-            scope: '/assets/raven/raven_mobile/',
-            type: 'classic'
+        // navigator.serviceWorker.register(url, {
+        //     scope: '/assets/raven/raven_mobile/',
+        //     type: 'classic'
+        // })
+
+        console.log("init")
+
+        onMessage(messaging, (payload) => {
+            console.log('Message received. ', payload);
+        // ...
         })
     }
 
@@ -57,6 +64,8 @@ export const fetchToken = async (): Promise<string | undefined> => {
         const configJSON = encodeURIComponent(JSON.stringify(firebaseConfig))
 
         const url = `/assets/raven/raven_mobile/firebase-messaging-sw.js?config=${configJSON}`
+
+        console.log("Here")
         options.serviceWorkerRegistration = await navigator.serviceWorker.register(url, {
             scope: '/assets/raven/raven_mobile/',
             type: 'classic'

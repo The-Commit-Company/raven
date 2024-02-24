@@ -142,7 +142,20 @@
     if (!window.frappe) window.frappe = {};
 
     frappe.boot = JSON.parse({{ boot }});
-    frappe._messages = frappe.boot["__messages"];
+          frappe._messages = frappe.boot["__messages"];
+
+  if (frappe.boot.raven_push_notifications && frappe.boot.raven_push_notifications.firebase_client_configuration) {
+    const configJSON = encodeURIComponent(JSON.stringify(JSON.parse(frappe.boot.raven_push_notifications.firebase_client_configuration)))
+
+    const url = `/assets/raven/raven_mobile/firebase-messaging-sw.js?config=${configJSON}`
+
+    console.log('Registering service worker')
+    navigator.serviceWorker.register(url, {
+      scope: '/assets/raven/raven_mobile/',
+      type: 'classic'
+    })
+  }
+
   </script>
   <script type="module" src="/src/main.tsx"></script>
 </body>

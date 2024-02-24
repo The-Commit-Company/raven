@@ -41,7 +41,7 @@ class RavenMessageReaction(Document):
 
         trimmed_content = content[:50] + '...' if len(content) > 50 else content
         full_name, user_image = frappe.db.get_value('Raven User', {'user': self.owner}, ['full_name', 'user_image'])
-        if message_owner != self.owner:
+        if message_owner == self.owner:
             send_notification_to_user(
                 message_owner,
                 'message_reaction',
