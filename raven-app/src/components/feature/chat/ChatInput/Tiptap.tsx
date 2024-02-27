@@ -261,7 +261,7 @@ const Tiptap = ({ slotBefore, fileProps, onMessageSend, replyMessage, clearReply
             HTMLAttributes: {
                 class: 'mention',
             },
-            renderText({ options, node }) {
+            renderHTML({ options, node }) {
                 return `${options.suggestion.char}${node.attrs.label ?? node.attrs.id}`
             },
             suggestion: {
@@ -331,7 +331,7 @@ const Tiptap = ({ slotBefore, fileProps, onMessageSend, replyMessage, clearReply
             HTMLAttributes: {
                 class: 'mention',
             },
-            renderText({ options, node }) {
+            renderHTML({ options, node }) {
                 return `${options.suggestion.char}${node.attrs.label ?? node.attrs.id}`
             },
             suggestion: {

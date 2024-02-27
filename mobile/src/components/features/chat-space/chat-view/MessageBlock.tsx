@@ -12,6 +12,7 @@ import { useIsUserActive } from '@/hooks/useIsUserActive'
 import { useInView } from 'react-intersection-observer';
 import useLongPress from '@/hooks/useLongPress'
 import MessageReactions from './components/MessageReactions'
+import parse from 'html-react-parser';
 
 type Props = {
     message: MessageBlock,
@@ -214,7 +215,7 @@ const ReplyBlock = ({ message }: { message: Message }) => {
                 <IonText className='font-bold text-sm'>{user?.full_name ?? message.owner}</IonText>
                 {date && <IonText className='font-normal text-xs pl-2' color='medium'>on {DateObjectToFormattedDateStringWithoutYear(date)} at {DateObjectToTimeString(date)}</IonText>}
             </div>
-            {message.message_type === 'Text' && <div className='text-sm text-neutral-400 line-clamp-3'>{message.content}</div>}
+            {message.message_type === 'Text' && <div className='text-sm text-neutral-400 line-clamp-3'>{parse(message.content ?? '')}</div>}
             {message.message_type === 'Image' && <div className='flex items-center space-x-2'>
                 <img src={message.file} alt={`Image`} className='inline-block w-10 h-10 rounded-md' />
                 <p className='text-sm font-semibold'>📸 &nbsp;Image</p>

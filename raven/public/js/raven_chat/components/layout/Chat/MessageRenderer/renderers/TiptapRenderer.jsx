@@ -48,8 +48,8 @@ const TiptapRenderer = ({ message, isTruncated = false, showLinkPreview = true }
             }),
             Link.configure({
                 HTMLAttributes: {
-                    class: 'line-clamp-3 break-all'
-                }
+                    class: 'break-all'
+                },
             }),
             CustomUserMention.configure({
                 HTMLAttributes: {
