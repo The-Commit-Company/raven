@@ -14,7 +14,7 @@ import { Button, Dialog, Em, Flex, Strong, Text, TextField } from "@radix-ui/the
 import { Loader } from "@/components/common/Loader"
 import { BiSearch } from "react-icons/bi"
 import { useToast } from "@/hooks/useToast"
-import { ErrorCallout } from "@/components/layout/AlertBanner/ErrorBanner"
+import { ErrorCallout } from "@/components/common/Callouts"
 
 interface AddUsersResponse {
     failed_users: User[],
