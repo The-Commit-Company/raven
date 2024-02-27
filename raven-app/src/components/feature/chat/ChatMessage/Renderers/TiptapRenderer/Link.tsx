@@ -16,7 +16,8 @@ export const CustomLink = TiptapLink.extend({
         ];
     },
 }).configure({
-    protocols: ['mailto', 'https', 'http']
+    protocols: ['mailto', 'https', 'http'],
+    openOnClick: false,
 })
 
 export type LinkPreviewDetails = {
