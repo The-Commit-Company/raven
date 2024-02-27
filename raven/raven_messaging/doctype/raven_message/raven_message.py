@@ -16,7 +16,6 @@ class RavenMessage(Document):
 
     if TYPE_CHECKING:
         from frappe.types import DF
-        from raven.raven_messaging.doctype.raven_mention.raven_mention import RavenMention
 
         channel_id: DF.Link
         content: DF.LongText | None
@@ -30,11 +29,10 @@ class RavenMessage(Document):
         link_doctype: DF.Link | None
         link_document: DF.DynamicLink | None
         linked_message: DF.Link | None
-        mentions: DF.Table[RavenMention]
         message_reactions: DF.JSON | None
         message_type: DF.Literal["Text", "Image", "File"]
         replied_message_details: DF.JSON | None
-        text: DF.LongText | None
+        text: DF.TextEditor | None
         thumbnail_height: DF.Data | None
         thumbnail_width: DF.Data | None
     # end: auto-generated types
