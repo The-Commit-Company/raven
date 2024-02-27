@@ -107,9 +107,9 @@ export const Tiptap = ({ onMessageSend, messageSending, defaultText = '' }: Tipt
         }),
         UserMention.configure({
             HTMLAttributes: {
-                class: 'mention text-blue-500',
+                class: 'mention',
             },
-            renderText({ options, node }) {
+            renderHTML({ options, node }) {
                 return `${options.suggestion.char}${node.attrs.label ?? node.attrs.id}`
             },
             suggestion: {
@@ -177,9 +177,9 @@ export const Tiptap = ({ onMessageSend, messageSending, defaultText = '' }: Tipt
         }),
         ChannelMention.configure({
             HTMLAttributes: {
-                class: 'mention text-blue-500',
+                class: 'mention',
             },
-            renderText({ options, node }) {
+            renderHTML({ options, node }) {
                 return `${options.suggestion.char}${node.attrs.label ?? node.attrs.id}`
             },
             suggestion: {

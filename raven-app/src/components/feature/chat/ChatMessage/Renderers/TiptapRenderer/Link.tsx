@@ -10,13 +10,14 @@ export const CustomLink = TiptapLink.extend({
         return [
             "a",
             mergeAttributes(HTMLAttributes, {
-                class: 'rt-Text rt-reset rt-Link rt-underline-auto break-all line-clamp-3'
+                class: 'rt-Text rt-reset rt-Link rt-underline-auto break-all'
             }), // mergeAttributes is a exported function from @tiptap/core
             0,
         ];
     },
 }).configure({
-    protocols: ['mailto', 'https', 'http']
+    protocols: ['mailto', 'https', 'http'],
+    openOnClick: false,
 })
 
 export type LinkPreviewDetails = {
