@@ -26,7 +26,8 @@
   "thumbnail_height",
   "link_doctype",
   "link_document",
-  "is_edited"
+  "is_edited",
+  "mentions"
  ],
  "fields": [
   {
@@ -41,7 +42,7 @@
   },
   {
    "fieldname": "text",
-   "fieldtype": "Text Editor",
+   "fieldtype": "Long Text",
    "label": "Text"
   },
   {
@@ -134,11 +135,17 @@
    "fieldname": "replied_message_details",
    "fieldtype": "JSON",
    "label": "Replied Message Details"
+  },
+  {
+   "fieldname": "mentions",
+   "fieldtype": "Table",
+   "label": "Mentions",
+   "options": "Raven Mention"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-02-28 03:29:07.182408",
+ "modified": "2024-02-28 03:48:53.487969",
  "modified_by": "Administrator",
  "module": "Raven Messaging",
  "name": "Raven Message",

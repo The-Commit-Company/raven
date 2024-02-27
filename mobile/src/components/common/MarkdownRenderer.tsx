@@ -2,6 +2,7 @@ import React, { useMemo } from 'react'
 import rehypeRaw from 'rehype-raw'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
+import './renderer.css'
 
 interface MarkdownRendererProps {
   content: string,
@@ -21,6 +22,7 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content, tru
 
   return <ReactMarkdown
     remarkPlugins={[remarkGfm]}
+    className='content'
     // @ts-ignore
     rehypePlugins={[rehypeRaw]}>
     {truncatedContent}
