@@ -1,7 +1,7 @@
 {
   "name": "mobile",
   "private": true,
-  "version": "1.4.3",
+  "version": "1.4.4",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -53,7 +53,7 @@
     "tailwindcss": "^3.4.1",
     "tippy.js": "^6.3.7",
     "turndown": "^7.1.2",
-    "vite": "^5.1.4",
+    "vite": "^4.5.2",
     "vite-plugin-pwa": "^0.19.0"
   },
   "devDependencies": {
