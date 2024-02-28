@@ -1,7 +1,7 @@
 {
   "name": "raven-app",
   "private": true,
-  "version": "1.4.3",
+  "version": "1.4.4",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -50,7 +50,7 @@
     "tailwindcss-animate": "^1.0.7",
     "tippy.js": "^6.3.7",
     "turndown": "^7.1.2",
-    "vite": "^5.1.1",
+    "vite": "^4.5.2",
     "vite-plugin-pwa": "^0.17.5",
     "vite-plugin-svgr": "^4.2.0"
   },
