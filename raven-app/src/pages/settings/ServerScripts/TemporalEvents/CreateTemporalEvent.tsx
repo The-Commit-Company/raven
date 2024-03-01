@@ -1,5 +1,4 @@
-import { APIEventsForm } from "@/components/feature/settings/api-events/APIEventsForm"
-import { TemporalEventsForm } from "@/components/feature/settings/temporal-events/TemporalEventsForm"
+import { SchedulerEventForm, TemporalEventsForm } from "@/components/feature/settings/temporal-events/TemporalEventsForm"
 import { ErrorBanner } from "@/components/layout/AlertBanner"
 import { useToast } from "@/hooks/useToast"
 import { Box, Button, Flex, Heading, Section } from "@radix-ui/themes"
@@ -8,9 +7,7 @@ import { FormProvider, useForm } from "react-hook-form"
 import { FiArrowLeft } from "react-icons/fi"
 import { useNavigate } from "react-router-dom"
 
-export interface Props { }
-
-export const CreateTemporalEvent = (props: Props) => {
+export const CreateTemporalEvent = () => {
 
     const navigate = useNavigate()
 
@@ -20,17 +17,31 @@ export const CreateTemporalEvent = (props: Props) => {
 
     const { toast } = useToast()
 
-    const onSubmit = (data: any) => {
-        let cronFormat = ''
-        if (data.event_frequency === 'Cron') {
-            cronFormat = data.cron_format?.minute + data.cron_format?.hour + data.cron_format?.day + data.cron_format?.month + data.cron_format?.dayOfWeek
+    const onSubmit = (data: Partial<SchedulerEventForm>) => {
+        let cron_expression = ''
+        if (data.event_frequency === 'Every Day') {
+            cron_expression = `${data.minute} ${data.hour} * * *`
         }
-        createDoc('Server Script', {
-            name: data.name,
-            script_type: 'Scheduler Event',
+        if (data.event_frequency === 'Every Day of the week') {
+            cron_expression = `${data.minute} ${data.hour} * * ${data.day}`
+        }
+        if (data.event_frequency === 'Date of the month') {
+            cron_expression = `${data.minute} ${data.hour} ${data.date} * *`
+        }
+        if (data.event_frequency === 'Cron') {
+            cron_expression = `${data.minute} ${data.hour} ${data.date} ${data.month} ${data.day}`
+        }
+        // console.log(data, cron_expression)
+        createDoc('Raven Scheduler Event', {
+            event_name: data.event_name,
+            disabled: 0,
+            send_to: data.send_to,
+            channel: data.channel ?? '',
+            dm: data.dm ? data.dm : '',
+            bot: data.bot,
             event_frequency: data.event_frequency,
-            cron_format: cronFormat,
-            script: data.script,
+            cron_expression: cron_expression,
+            content: data.content,
         })
             .then((doc) => {
                 if (doc) {

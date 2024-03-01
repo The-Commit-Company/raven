@@ -1,6 +1,7 @@
 {
  "actions": [],
  "allow_rename": 1,
+ "autoname": "field:event_name",
  "creation": "2024-02-23 13:05:16.692071",
  "doctype": "DocType",
  "engine": "InnoDB",
@@ -23,7 +24,8 @@
    "fieldtype": "Data",
    "in_list_view": 1,
    "label": "Name",
-   "reqd": 1
+   "reqd": 1,
+   "unique": 1
   },
   {
    "default": "0",
@@ -35,10 +37,9 @@
    "fieldname": "event_frequency",
    "fieldtype": "Select",
    "label": "Event Frequency",
-   "options": "Hourly\nDaily\nWeekly\nMonthly\nYearly\nHourly Long\nDaily Long\nWeekly Long\nMonthly Long\nCron"
+   "options": "Every Day\nEvery Day of the week\nDate of the month\nCron"
   },
   {
-   "depends_on": "eval: doc.event_frequency === \"Cron\"",
    "fieldname": "cron_expression",
    "fieldtype": "Data",
    "label": "CRON Expression"
@@ -70,8 +71,8 @@
    "fieldname": "dm",
    "fieldtype": "Link",
    "label": "DM",
-   "options": "Raven Channel",
-   "reqd": 1
+   "mandatory_depends_on": "eval: doc.send_to === \"DM\"",
+   "options": "Raven Channel"
   },
   {
    "fieldname": "content",
@@ -92,10 +93,11 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-02-23 13:25:29.515386",
+ "modified": "2024-02-23 19:45:34.463902",
  "modified_by": "Administrator",
  "module": "Raven Integrations",
  "name": "Raven Scheduler Event",
+ "naming_rule": "By fieldname",
  "owner": "Administrator",
  "permissions": [
   {

@@ -10,9 +10,8 @@ export const TemporalEvents = (props: Props) => {
 
     const navigate = useNavigate()
 
-    const { data, error } = useFrappeGetDocList('Server Script', {
-        fields: ['name', 'script_type', 'event_frequency', 'creation', 'modified', 'disabled'],
-        filters: [['script_type', '=', 'Scheduler Event']],
+    const { data, error } = useFrappeGetDocList('Raven Scheduler Event', {
+        fields: ['name', 'event_frequency', 'creation', 'modified', 'disabled'],
     })
 
     return (

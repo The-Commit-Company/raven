@@ -35,6 +35,7 @@ const ViewTemporalEventPage = ({ data, onUpdate }: { data: any, onUpdate: () => 
     const methods = useForm({
         defaultValues: {
             name: data.name,
+            send_to: data.send_to,
             event_frequency: data.event_frequency,
             script: data.script,
             cron_format: {

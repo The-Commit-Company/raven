@@ -1,7 +1,15 @@
 import { Label, HelperText } from "@/components/common/Form"
-import { Flex, Box, TextField, TextArea, Link, Select } from "@radix-ui/themes"
+import { RavenSchedulerEvent } from "@/types/RavenIntegrations/RavenSchedulerEvent"
+import { Flex, Box, TextField, Select, RadioGroup, Grid, TextArea } from "@radix-ui/themes"
 import { Controller, useFormContext } from "react-hook-form"
 
+export interface SchedulerEventForm extends RavenSchedulerEvent {
+    hour: string
+    minute: string
+    date: string
+    day: string
+    month: string
+}
 
 export interface Props {
     edit?: boolean
@@ -9,16 +17,17 @@ export interface Props {
 
 export const TemporalEventsForm = ({ edit = false }: Props) => {
 
-    const { register, watch, control } = useFormContext()
+    const { register, watch, control } = useFormContext<SchedulerEventForm>()
 
     const frequency = watch('event_frequency')
+    const sendTo = watch('send_to') ?? 'Channel'
 
     return (
         <Flex direction="column" gap={'5'}>
             {!edit && <Box>
-                <Label htmlFor="name" isRequired>Name</Label>
+                <Label htmlFor="event_name" isRequired>Name</Label>
                 <TextField.Input
-                    {...register('name', { required: "Name is required.", maxLength: { value: 140, message: "Name cannot be more than 140 characters." } })}
+                    {...register('event_name', { required: "Name is required.", maxLength: { value: 140, message: "Name cannot be more than 140 characters." } })}
                     id="name"
                     placeholder="e.g. Sales Invoice - Daily Reminder"
                     autoFocus
@@ -26,61 +35,222 @@ export const TemporalEventsForm = ({ edit = false }: Props) => {
             </Box>}
 
             <Box>
+                <Flex align="center" gap="5" mt={'2'}>
+                    <Label>Where should this event be triggered?</Label>
+                    <Controller
+                        control={control}
+                        name="send_to"
+                        render={({ field }) => (
+                            <RadioGroup.Root size="2" defaultValue="Channel" {...field} onValueChange={(value) => field.onChange(value)}>
+                                <Flex align="center" gap="6" direction={'row'}>
+                                    <Flex align="center" gap="2">
+                                        <RadioGroup.Item value="Channel" />
+                                        <Label>Channel</Label>
+                                    </Flex>
+                                    <Flex align="center" gap="2">
+                                        <RadioGroup.Item value="DM" />
+                                        <Label>DM</Label>
+                                    </Flex>
+                                </Flex>
+                            </RadioGroup.Root>
+                        )}
+                    />
+                </Flex>
+            </Box>
+
+            <Grid columns={'2'} gap={'4'}>
+                {sendTo === "Channel" ? <Box>
+                    <Label>In Channel</Label>
+                    <Controller
+                        control={control}
+                        name="channel"
+                        render={({ field }) => (
+                            <Select.Root {...field} onValueChange={(value) => field.onChange(value)}>
+                                <Select.Trigger style={{ width: "100%" }} />
+                                <Select.Content>
+                                    <Select.Group>
+                                        <Select.Label>Channel name</Select.Label>
+                                        <Select.Item value="general">General</Select.Item>
+                                        <Select.Item value="Random">Random</Select.Item>
+                                    </Select.Group>
+                                </Select.Content>
+                            </Select.Root>
+                        )}
+                    />
+                </Box> :
+                    <Box>
+                        <Label>Recipient</Label>
+                        <Controller
+                            control={control}
+                            name="dm"
+                            render={({ field }) => (
+                                <Select.Root {...field} onValueChange={(value) => field.onChange(value)}>
+                                    <Select.Trigger style={{ width: "100%" }} />
+                                    <Select.Content>
+                                        <Select.Group>
+                                            <Select.Label>DM</Select.Label>
+                                            <Select.Item value="wall-e">Wall-E</Select.Item>
+                                            <Select.Item value="Raven Bot">Raven Bot</Select.Item>
+                                        </Select.Group>
+                                    </Select.Content>
+                                </Select.Root>
+                            )}
+                        />
+                    </Box>}
+
+                <Box>
+                    <Label>Which bot should trigger this event?</Label>
+                    <Controller
+                        control={control}
+                        name="bot"
+                        render={({ field }) => (
+                            <Select.Root {...field} onValueChange={(value) => field.onChange(value)}>
+                                <Select.Trigger style={{ width: "100%" }} placeholder="Select Bot" />
+                                <Select.Content>
+                                    <Select.Group>
+                                        <Select.Label>Bot</Select.Label>
+                                        <Select.Item value="wall-e">Wall-E</Select.Item>
+                                        <Select.Item value="Raven Bot">Raven Bot</Select.Item>
+                                    </Select.Group>
+                                </Select.Content>
+                            </Select.Root>
+                        )}
+                    />
+                </Box>
+            </Grid>
+
+            <Box>
                 <Label htmlFor="event_frequency">How often should this event be triggered?</Label>
                 <Controller
                     control={control}
                     name="event_frequency"
                     render={({ field }) => (
-                        <Select.Root {...field} onValueChange={(value) => field.onChange(value)} defaultValue="Daily">
+                        <Select.Root {...field} onValueChange={(value) => field.onChange(value)}>
                             <Select.Trigger style={{ width: "100%" }} placeholder="Select Frequency" autoFocus={edit} />
                             <Select.Content>
                                 <Select.Group>
                                     <Select.Label>Temporal Events</Select.Label>
-                                    <Select.Item value='Daily'>Daily</Select.Item>
-                                    <Select.Item value='Weekly'>Weekly</Select.Item>
-                                    <Select.Item value='Monthly'>Monthly</Select.Item>
-                                    <Select.Item value='Yearly'>Yearly</Select.Item>
-                                    <Select.Item value='Daily Long'>Daily Long</Select.Item>
-                                    <Select.Item value='Weekly Long'>Weekly Long</Select.Item>
-                                    <Select.Item value='Monthly Long'>Monthly Long</Select.Item>
-                                    <Select.Item value='Yearly Long'>Yearly Long</Select.Item>
+                                    <Select.Item value='Every Day'>Every Day</Select.Item>
+                                    <Select.Item value='Every Day of the week'>Every Day of the week</Select.Item>
+                                    <Select.Item value='Date of the month'>Date of the month</Select.Item>
                                     <Select.Item value='Cron'>Custom</Select.Item>
                                 </Select.Group>
                             </Select.Content>
                         </Select.Root>
                     )}
                 />
-                <HelperText>The frequency at which this event will be triggered.</HelperText>
             </Box>
 
+            {frequency === 'Every Day' && <Box>
+                <Flex gap={'4'}>
+                    <Box>
+                        <Label>Hour</Label>
+                        <TextField.Input
+                            {...register('hour', { required: "Time is required." })}
+                            placeholder="e.g. 10"
+                        />
+                    </Box>
+                    <Box>
+                        <Label>Minute</Label>
+                        <TextField.Input
+                            {...register('minute', { required: "Minute is required." })}
+                            placeholder="e.g. 30"
+                        />
+                    </Box>
+                </Flex>
+                <HelperText>This event will be triggered on the specified time every day</HelperText>
+            </Box>}
+
+            {frequency === 'Every Day of the week' && <Box>
+                <Flex gap={'4'}>
+                    <Box width={'max-content'}>
+                        <Label>Day</Label>
+                        <Controller
+                            control={control}
+                            name="day"
+                            render={({ field }) => (
+                                <Select.Root {...field} onValueChange={(value) => field.onChange(value)} defaultValue="1">
+                                    <Select.Trigger style={{ width: "100%" }} placeholder="Select Day" autoFocus={edit} />
+                                    <Select.Content>
+                                        <Select.Group>
+                                            <Select.Label>Day of the week</Select.Label>
+                                            <Select.Item value='1'>Monday</Select.Item>
+                                            <Select.Item value='2'>Tuesday</Select.Item>
+                                            <Select.Item value='3'>Wednesday</Select.Item>
+                                            <Select.Item value='4'>Thursday</Select.Item>
+                                            <Select.Item value='5'>Friday</Select.Item>
+                                            <Select.Item value='6'>Saturday</Select.Item>
+                                            <Select.Item value='0'>Sunday</Select.Item>
+                                        </Select.Group>
+                                    </Select.Content>
+                                </Select.Root>
+                            )}
+                        />
+                    </Box>
+                    <Box>
+                        <Label>Hour</Label>
+                        <TextField.Input
+                            {...register('hour', { required: "Time is required." })}
+                            placeholder="e.g. 10"
+                        />
+                    </Box>
+                    <Box>
+                        <Label>Minute</Label>
+                        <TextField.Input
+                            {...register('minute', { required: "Minute is required." })}
+                            placeholder="e.g. 30"
+                        />
+                    </Box>
+                </Flex>
+                <HelperText>This event will be triggered on the specified day & time of every week</HelperText>
+            </Box>}
+
+            {frequency === 'Date of the month' && <Box>
+                <Flex gap={'4'}>
+                    <Box>
+                        <Label>Date</Label>
+                        <TextField.Input
+                            {...register('date', { required: "Date is required." })}
+                            placeholder="e.g. 10"
+                        />
+                    </Box>
+                    <Box>
+                        <Label>Hour</Label>
+                        <TextField.Input
+                            {...register('hour', { required: "Time is required." })}
+                            placeholder="e.g. 10"
+                        />
+                    </Box>
+                    <Box>
+                        <Label>Minute</Label>
+                        <TextField.Input
+                            {...register('minute', { required: "Minute is required." })}
+                            placeholder="e.g. 30"
+                        />
+                    </Box>
+                </Flex>
+                <HelperText>This event will be triggered on the specified date & time of every month</HelperText>
+            </Box>}
+
+
             {frequency === 'Cron' && <Box>
-                <Label htmlFor="cron_format" isRequired>Cron Format</Label>
-                {/* <TextField.Input
-                    {...register('cron_format', { required: "Cron Format is required." })}
-                    id="cron_format"
-                    placeholder="e.g. 0 0 * * *"
-                    autoFocus={edit}
-                /> */}
+                <Label htmlFor="cron_format" isRequired>Customize your event frequency</Label>
 
                 {/* //FIXME: Needs work - unstable component */}
                 <AdvancedCronInput name="cron_format" label="Cron Format" />
-                <HelperText>Starts with minute, hour, day of month, month, day of week. <Link href="https://crontab.guru/" target="_blank" rel="noreferrer">Learn more about cron format</Link></HelperText>
             </Box>}
 
             <Box>
-                {/* TODO: Add a script editor here (maybe use Monaco Editor) */}
-                <Label htmlFor="script" isRequired>Script</Label>
+                <Label htmlFor="content" isRequired>Content</Label>
                 <TextArea
-                    {...register('script', { required: "Script is required." })}
-                    rows={14}
-                    placeholder={"Your script goes here"}
+                    {...register('content', { required: "Message is required." })}
+                    placeholder="e.g. Hello, this is a reminder to pay your dues."
+                    rows={5}
                 />
-                <HelperText>Your custom script to be be called via this API event.</HelperText>
             </Box>
         </Flex >
     )
 }
-
 
 
 /**
@@ -90,50 +260,70 @@ export const TemporalEventsForm = ({ edit = false }: Props) => {
  * */
 const AdvancedCronInput = ({ name, label, ...props }: { name: string; label: string }) => {
 
-    const { register, setValue, watch, formState } = useFormContext();
-
-    const error = formState.errors[name];
-    const hasError = Boolean(error);
-
-    const cronParts = ['minute', 'hour', 'day', 'month', 'dayOfWeek'];
+    const { register, control } = useFormContext<SchedulerEventForm>()
 
     return (
-        <div>
-            <div style={{ display: 'flex', gap: '8px' }}>
-                {cronParts.map((part, index) => (
-                    <input
-                        key={part}
-                        type="text"
-                        maxLength={part === 'dayOfWeek' ? 1 : 2}
-                        pattern="\d*"
-                        {...register(`${name}.${part}`, {
-                            required: 'This field is required',
-                            pattern: {
-                                value: /^\d+$/,
-                                message: 'Please enter a valid number',
-                            },
-                        })}
-                        autoFocus={watch('event_frequency') === 'Custom'}
-                        onChange={(event) => setValue(`${name}.${part}`, event.target.value)}
-                        style={{
-                            width: '40px',
-                            height: '40px',
-                            textAlign: 'center',
-                            fontSize: '16px',
-                            border: `1px solid ${hasError ? 'red' : 'gray'}`,
-                            borderRadius: '4px',
-                            borderColor: hasError ? 'red' : 'blue',
-                        }}
+        <>
+            <Flex gap={'4'}>
+                <Box>
+                    <Label>Minute</Label>
+                    <TextField.Input
+                        {...props}
+                        {...register('minute', { required: "Minute is required." })}
+                        placeholder="e.g. 30"
                     />
-                ))}
-            </div>
-            {hasError && (
-                <div role="alert" style={{ color: 'red' }}>
-                    {String(error?.message)}
-                </div>
-            )}
-        </div>
-    );
+                </Box>
+                <Box>
+                    <Label>Hour</Label>
+                    <TextField.Input
+                        {...props}
+                        {...register('hour', { required: "Hour is required." })}
+                        placeholder="e.g. 10"
+                    />
+                </Box>
+                <Box>
+                    <Label>Date</Label>
+                    <TextField.Input
+                        {...props}
+                        {...register('date', { required: "Date is required." })}
+                        placeholder="e.g. 10"
+                    />
+                </Box>
+                <Box>
+                    <Label>Month</Label>
+                    <TextField.Input
+                        {...props}
+                        {...register('month', { required: "Month is required." })}
+                        placeholder="e.g. 10"
+                    />
+                </Box>
+                <Box>
+                    <Label>Day of week</Label>
+                    <Controller
+                        control={control}
+                        name="day"
+                        render={({ field }) => (
+                            <Select.Root {...field} onValueChange={(value) => field.onChange(value)} defaultValue="1">
+                                <Select.Trigger style={{ width: "100%" }} placeholder="Select Day" />
+                                <Select.Content>
+                                    <Select.Group>
+                                        <Select.Label>Day of the week</Select.Label>
+                                        <Select.Item value='1'>Monday</Select.Item>
+                                        <Select.Item value='2'>Tuesday</Select.Item>
+                                        <Select.Item value='3'>Wednesday</Select.Item>
+                                        <Select.Item value='4'>Thursday</Select.Item>
+                                        <Select.Item value='5'>Friday</Select.Item>
+                                        <Select.Item value='6'>Saturday</Select.Item>
+                                        <Select.Item value='0'>Sunday</Select.Item>
+                                    </Select.Group>
+                                </Select.Content>
+                            </Select.Root>
+                        )}
+                    />
+                </Box>
+            </Flex>
+        </>
+    )
 };
 
 export default AdvancedCronInput;
