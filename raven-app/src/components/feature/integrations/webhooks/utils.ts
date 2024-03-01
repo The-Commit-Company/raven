@@ -538,12 +538,51 @@ export const SampleData = [
                         value: 'Hello, World!'
                     },
                     {
+                        field: 'json',
+                        value: `{
+                            content: [
+                                {
+                                    content: [
+                                        {
+                                            text: "Hello, World!",
+                                            type: "text"
+                                        }
+                                    ],
+                                    type: "paragraph"
+                                }
+                            ],
+                            type: "doc"
+                        }`
+                    },
+                    {
                         field: 'message_type',
                         value: 'Text'
                     },
                     {
+                        field: 'file',
+                        value: 'https://ravenapp.info/_astro/app-screenshot.e5f6e34e.png'
+                    },
+                    {
+                        field: 'message_reactions',
+                        value: `{
+                            'unicode_string 1':{
+                                'count': 1,
+                                'users':['user1'],
+                                'reaction': 'unicode_string 1'
+                            }
+                        }`
+                    },
+                    {
                         field: 'is_reply',
                         value: '0'
+                    },
+                    {
+                        field: 'linked_message',
+                        value: 'message-id'
+                    },
+                    {
+                        field: 'content',
+                        value: 'Hello, World!'
                     }
                 ]
             },
@@ -565,6 +604,45 @@ export const SampleData = [
                     {
                         field: 'is_reply',
                         value: '0'
+                    },
+                    {
+                        field: 'linked_message',
+                        value: 'message-id'
+                    },
+                    {
+                        field: 'content',
+                        value: 'The Iron Throne is mine!'
+                    },
+                    {
+                        field: 'message_reactions',
+                        value: `{
+                            'unicode_string 1':{
+                                'count': 1,
+                                'users':['user1'],
+                                'reaction': 'unicode_string 1'
+                            }
+                        }`
+                    },
+                    {
+                        field: 'file',
+                        value: 'https://ravenapp.info/_astro/app-screenshot.e5f6e34e.png'
+                    },
+                    {
+                        field: 'json',
+                        value: `{
+                            content: [
+                                {
+                                    content: [
+                                        {
+                                            text: "The Iron Throne is mine!",
+                                            type: "text"
+                                        }
+                                    ],
+                                    type: "paragraph"
+                                }
+                            ],
+                            type: "doc"
+                        }`
                     }
                 ]
             },
@@ -586,6 +664,45 @@ export const SampleData = [
                     {
                         field: 'is_reply',
                         value: '0'
+                    },
+                    {
+                        field: 'linked_message',
+                        value: 'message-id'
+                    },
+                    {
+                        field: 'content',
+                        value: 'Winter is coming.'
+                    },
+                    {
+                        field: 'message_reactions',
+                        value: `{
+                            'unicode_string 1':{
+                                'count': 1,
+                                'users':['user1'],
+                                'reaction': 'unicode_string 1'
+                            }
+                        }`
+                    },
+                    {
+                        field: 'file',
+                        value: 'https://ravenapp.info/_astro/app-screenshot.e5f6e34e.png'
+                    },
+                    {
+                        field: 'json',
+                        value: `{
+                            content: [
+                                {
+                                    content: [
+                                        {
+                                            text: "Winter is coming.",
+                                            type: "text"
+                                        }
+                                    ],
+                                    type: "paragraph"
+                                }
+                            ],
+                            type: "doc"
+                        }`
                     }
                 ]
             },
@@ -607,6 +724,45 @@ export const SampleData = [
                     {
                         field: 'is_reply',
                         value: '0'
+                    },
+                    {
+                        field: 'linked_message',
+                        value: 'message-id'
+                    },
+                    {
+                        field: 'content',
+                        value: 'Dracarys!'
+                    },
+                    {
+                        field: 'message_reactions',
+                        value: `{
+                            'unicode_string 1':{
+                                'count': 1,
+                                'users':['user1'],
+                                'reaction': 'unicode_string 1'
+                            }
+                        }`
+                    },
+                    {
+                        field: 'file',
+                        value: 'https://ravenapp.info/_astro/app-screenshot.e5f6e34e.png'
+                    },
+                    {
+                        field: 'json',
+                        value: `{
+                            content: [
+                                {
+                                    content: [
+                                        {
+                                            text: "Dracarys!",
+                                            type: "text"
+                                        }
+                                    ],
+                                    type: "paragraph"
+                                }
+                            ],
+                            type: "doc"
+                        }`
                     }
                 ]
             },
@@ -628,6 +784,45 @@ export const SampleData = [
                     {
                         field: 'is_reply',
                         value: '0'
+                    },
+                    {
+                        field: 'linked_message',
+                        value: 'message-id'
+                    },
+                    {
+                        field: 'content',
+                        value: 'The Night King is coming.'
+                    },
+                    {
+                        field: 'message_reactions',
+                        value: `{
+                            'unicode_string 1':{
+                                'count': 1,
+                                'users':['user1'],
+                                'reaction': 'unicode_string 1'
+                            }
+                        }`
+                    },
+                    {
+                        field: 'file',
+                        value: 'https://ravenapp.info/_astro/app-screenshot.e5f6e34e.png'
+                    },
+                    {
+                        field: 'json',
+                        value: `{
+                            content: [
+                                {
+                                    content: [
+                                        {
+                                            text: "The Night King is coming.",
+                                            type: "text"
+                                        }
+                                    ],
+                                    type: "paragraph"
+                                }
+                            ],
+                            type: "doc"
+                        }`
                     }
                 ]
             }
@@ -650,6 +845,10 @@ export const SampleData = [
                     {
                         field: 'is_admin',
                         value: '1'
+                    },
+                    {
+                        field: 'last_visit',
+                        value: '2021-08-12 12:00:00'
                     }
                 ]
             },
@@ -667,6 +866,10 @@ export const SampleData = [
                     {
                         field: 'is_admin',
                         value: '1'
+                    },
+                    {
+                        field: 'last_visit',
+                        value: '2021-08-12 12:00:00'
                     }
                 ]
             },
@@ -684,6 +887,10 @@ export const SampleData = [
                     {
                         field: 'is_admin',
                         value: '1'
+                    },
+                    {
+                        field: 'last_visit',
+                        value: '2021-08-12 12:00:00'
                     }
                 ]
             },
@@ -710,6 +917,10 @@ export const SampleData = [
                     {
                         field: 'enabled',
                         value: '1'
+                    },
+                    {
+                        field: 'user_image',
+                        value: 'https://example.com/image.jpg'
                     }
                 ]
             },
@@ -731,6 +942,10 @@ export const SampleData = [
                     {
                         field: 'enabled',
                         value: '1'
+                    },
+                    {
+                        field: 'user_image',
+                        value: 'https://example.com/image.jpg'
                     }
                 ]
             }
@@ -745,6 +960,14 @@ export const SampleData = [
                     {
                         field: 'reaction',
                         value: '👍'
+                    },
+                    {
+                        field: 'message',
+                        value: 'message-id'
+                    },
+                    {
+                        field: 'reaction_escaped',
+                        value: '\\ud83d\\udc4d'
                     }
                 ]
             },
@@ -754,6 +977,14 @@ export const SampleData = [
                     {
                         field: 'reaction',
                         value: '👎'
+                    },
+                    {
+                        field: 'message',
+                        value: 'message-id'
+                    },
+                    {
+                        field: 'reaction_escaped',
+                        value: '\\ud83d\\udc4e'
                     }
                 ]
             }
