@@ -7,7 +7,7 @@ import { Profile } from "../../pages/profile"
 import { PropsWithChildren, useContext } from "react"
 import { UserContext } from "../../utils/auth/UserProvider"
 import { FullPageLoader } from "./loaders/FullPageLoader"
-import { Login } from "../../pages/auth"
+import { Login } from "../../pages/auth/Login"
 
 export const Navbar = () => {
     const { currentUser, isLoading } = useContext(UserContext)
