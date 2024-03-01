@@ -1,3 +1,4 @@
+import { RavenMention } from './RavenMention'
 
 export interface RavenMessage {
 	creation: string
@@ -52,4 +53,6 @@ export interface RavenMessage {
 	bot?: string
 	/**	Content : Long Text	*/
 	content?: string
+	/**	Mentions : Table - Raven Mention	*/
+	mentions?: RavenMention[]
 }

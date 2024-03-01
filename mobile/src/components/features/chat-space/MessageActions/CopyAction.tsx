@@ -42,7 +42,7 @@ const CopyActionItem = ({ message, onSuccess }: ActionProps) => {
         turndownService.addRule('links', {
             filter: 'a',
             replacement: function (content, node, options) {
-                return content
+                return node.textContent ?? content
             }
         })
         var markdown = turndownService.turndown(text)

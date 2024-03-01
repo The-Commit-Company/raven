@@ -6,7 +6,7 @@ import { FileExtensionIcon } from "@/utils/layout/FileExtIcon"
 import { getFileExtension, getFileName } from "@/utils/operations"
 import { FlexProps } from "@radix-ui/themes/dist/cjs/components/flex"
 import { clsx } from "clsx"
-
+import parse from 'html-react-parser';
 interface ReplyMessageBoxProps extends FlexProps {
     message: Partial<Message>
 }
@@ -35,7 +35,7 @@ export const ReplyMessageBox = ({ message, children, className, ...props }: Repl
                             {message.message_type === 'Image' && <img src={message.file} alt={`Image sent by ${message.owner}`} height='30' width='30' className="object-cover rounded-md" />}
                             <Text as='span' size='2'>{getFileName((message as FileMessage).file)}</Text>
                         </Flex>
-                        : <Text as='span' size='2' className="line-clamp-2">{(message as TextMessage).content}</Text>
+                        : <Text as='span' size='2' className="line-clamp-2">{parse((message as TextMessage).content ?? '')}</Text>
                     }
                 </Box>
             </Flex>
