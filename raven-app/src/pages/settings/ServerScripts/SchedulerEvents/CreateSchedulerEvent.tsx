@@ -1,4 +1,4 @@
-import { SchedulerEventForm, TemporalEventsForm } from "@/components/feature/settings/temporal-events/TemporalEventsForm"
+import { SchedulerEventForm, SchedulerEventsForm } from "@/components/feature/settings/scheduler-events/SchedulerEventsForm"
 import { ErrorBanner } from "@/components/layout/AlertBanner"
 import { useToast } from "@/hooks/useToast"
 import { Box, Button, Flex, Heading, Section } from "@radix-ui/themes"
@@ -7,7 +7,7 @@ import { FormProvider, useForm } from "react-hook-form"
 import { FiArrowLeft } from "react-icons/fi"
 import { useNavigate } from "react-router-dom"
 
-export const CreateTemporalEvent = () => {
+export const CreateSchedulerEvent = () => {
 
     const navigate = useNavigate()
 
@@ -59,15 +59,15 @@ export const CreateTemporalEvent = () => {
             <form onSubmit={methods.handleSubmit(onSubmit)}>
                 <Box className="lg:mx-[10rem] md:mx-[5rem] mt-9">
                     <Button variant="ghost" onClick={() => navigate('../../scheduled-scripts')}>
-                        <FiArrowLeft /> Temporal Events
+                        <FiArrowLeft /> Scheduler Events
                     </Button>
                     <Flex justify={'between'} mt={'6'}>
-                        <Heading>New Temporal Event</Heading>
+                        <Heading>New Scheduler Event</Heading>
                         <Button type='submit'>Save</Button>
                     </Flex>
                     <Section size={'2'}>
                         <ErrorBanner error={error} />
-                        <TemporalEventsForm />
+                        <SchedulerEventsForm />
                     </Section>
                 </Box>
             </form>

@@ -197,81 +197,81 @@ export const WebhookForm = ({ isEdit = false }: { isEdit?: boolean }) => {
                     </Flex>
                 </Flex>
             </Box> : conditionOn === 'Channel' ? <Box>
-                    <Flex direction={'column'}>
-                        <Label htmlFor='channel_id'>Channel</Label>
-                        <Controller
-                            control={control}
-                            name='channel_id'
-                            render={({ field }) => (
-                                <Select.Root value={field.value} onValueChange={field.onChange} required>
-                                    <Select.Trigger placeholder='Select Field' />
-                                    <Select.Content>
-                                        <Select.Group>
-                                            <Select.Label>Channel</Select.Label>
-                                            {
-                                                channels.map((channel, index) => (
-                                                    <Select.Item key={index} value={channel.name}>
-                                                        <ChannelItem channel={channel} />
-                                                    </Select.Item>
-                                                ))
-                                            }
-                                        </Select.Group>
-                                    </Select.Content>
-                                </Select.Root>
-                            )}
-                        />
-                        <HelperText>Channel ID on which the condition will be applied</HelperText>
-                    </Flex>
+                <Flex direction={'column'}>
+                    <Label htmlFor='channel_id'>Channel</Label>
+                    <Controller
+                        control={control}
+                        name='channel_id'
+                        render={({ field }) => (
+                            <Select.Root value={field.value} onValueChange={field.onChange} required>
+                                <Select.Trigger placeholder='Select Field' />
+                                <Select.Content>
+                                    <Select.Group>
+                                        <Select.Label>Channel</Select.Label>
+                                        {
+                                            channels.map((channel, index) => (
+                                                <Select.Item key={index} value={channel.name}>
+                                                    <ChannelItem channel={channel} />
+                                                </Select.Item>
+                                            ))
+                                        }
+                                    </Select.Group>
+                                </Select.Content>
+                            </Select.Root>
+                        )}
+                    />
+                    <HelperText>Channel ID on which the condition will be applied</HelperText>
+                </Flex>
             </Box> : conditionOn === 'User' ? <Box>
-                        <Flex direction={'column'} >
-                            <Label htmlFor='user_id'>User</Label>
-                            <Controller
-                                control={control}
-                                name='user'
-                                render={({ field }) => (
-                                    <Select.Root value={field.value} onValueChange={field.onChange} required>
-                                        <Select.Trigger placeholder='Select Field' />
-                                        <Select.Content>
-                                            <Select.Group>
-                                                <Select.Label>User</Select.Label>
-                                                {
-                                                    users.map((user, index) => (
-                                                        <Select.Item key={index} value={user.name}>
-                                                            <DirectMessageItem user={user} />
-                                                        </Select.Item>
-                                                    ))
-                                                }
-                                            </Select.Group>
-                                        </Select.Content>
-                                    </Select.Root>
-                                )}
-                            />
-                            <HelperText>User ID on which the condition will be applied</HelperText>
-                        </Flex>
+                <Flex direction={'column'} >
+                    <Label htmlFor='user_id'>User</Label>
+                    <Controller
+                        control={control}
+                        name='user'
+                        render={({ field }) => (
+                            <Select.Root value={field.value} onValueChange={field.onChange} required>
+                                <Select.Trigger placeholder='Select Field' />
+                                <Select.Content>
+                                    <Select.Group>
+                                        <Select.Label>User</Select.Label>
+                                        {
+                                            users.map((user, index) => (
+                                                <Select.Item key={index} value={user.name}>
+                                                    <DirectMessageItem user={user} />
+                                                </Select.Item>
+                                            ))
+                                        }
+                                    </Select.Group>
+                                </Select.Content>
+                            </Select.Root>
+                        )}
+                    />
+                    <HelperText>User ID on which the condition will be applied</HelperText>
+                </Flex>
             </Box> : conditionOn === 'Channel Type' ? <Box>
-                            <Flex direction={'column'} >
-                                <Label htmlFor='channel_type'>Channel Type</Label>
-                                <Controller
-                                    control={control}
-                                    name='channel_type'
-                                    render={({ field }) => (
-                                        <Select.Root value={field.value} onValueChange={field.onChange} required>
-                                            <Select.Trigger placeholder='Select Field' />
-                                            <Select.Content>
-                                                <Select.Group>
-                                                    <Select.Label>Channel Type</Select.Label>
-                                                    <Select.Item value='Public'>Public</Select.Item>
-                                                    <Select.Item value='Private'>Private</Select.Item>
-                                                    <Select.Item value='Open'>Open</Select.Item>
-                                                    <Select.Item value='DM'>Direct Message</Select.Item>
-                                                    <Select.Item value='Self Message'>Self Message</Select.Item>
-                                                </Select.Group>
-                                            </Select.Content>
-                                        </Select.Root>
-                                    )}
-                                />
-                                <HelperText>Channel Type on which the condition will be applied</HelperText>
-                            </Flex>
+                <Flex direction={'column'} >
+                    <Label htmlFor='channel_type'>Channel Type</Label>
+                    <Controller
+                        control={control}
+                        name='channel_type'
+                        render={({ field }) => (
+                            <Select.Root value={field.value} onValueChange={field.onChange} required>
+                                <Select.Trigger placeholder='Select Field' />
+                                <Select.Content>
+                                    <Select.Group>
+                                        <Select.Label>Channel Type</Select.Label>
+                                        <Select.Item value='Public'>Public</Select.Item>
+                                        <Select.Item value='Private'>Private</Select.Item>
+                                        <Select.Item value='Open'>Open</Select.Item>
+                                        <Select.Item value='DM'>Direct Message</Select.Item>
+                                        <Select.Item value='Self Message'>Self Message</Select.Item>
+                                    </Select.Group>
+                                </Select.Content>
+                            </Select.Root>
+                        )}
+                    />
+                    <HelperText>Channel Type on which the condition will be applied</HelperText>
+                </Flex>
             </Box> : null}
             <Flex direction={'column'} gap={'4'} py={'2'} >
                 <WebhookData />
@@ -281,7 +281,7 @@ export const WebhookForm = ({ isEdit = false }: { isEdit?: boolean }) => {
     )
 }
 
-const DirectMessageItem = ({ user }: { user: UserFields }) => {
+export const DirectMessageItem = ({ user }: { user: UserFields }) => {
 
     const userData = useGetUser(user?.name)
 
@@ -297,7 +297,7 @@ const DirectMessageItem = ({ user }: { user: UserFields }) => {
     </Flex>
 }
 
-const ChannelItem = ({ channel }: { channel: ChannelListItem }) => {
+export const ChannelItem = ({ channel }: { channel: ChannelListItem }) => {
     return <Flex direction={'row'} gap={'2'} align={'center'}>
         <ChannelIcon type={channel.type} size='18' />
         <Flex justify='between' align={'center'} width='100%'>

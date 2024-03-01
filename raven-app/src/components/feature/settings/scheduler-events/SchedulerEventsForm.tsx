@@ -1,7 +1,11 @@
 import { Label, HelperText } from "@/components/common/Form"
 import { RavenSchedulerEvent } from "@/types/RavenIntegrations/RavenSchedulerEvent"
+import { ChannelListContext, ChannelListContextType } from "@/utils/channel/ChannelListProvider"
 import { Flex, Box, TextField, Select, RadioGroup, Grid, TextArea } from "@radix-ui/themes"
+import { useContext } from "react"
 import { Controller, useFormContext } from "react-hook-form"
+import { ChannelItem } from "../../integrations/webhooks/WebhookForm"
+import { useFrappeGetDocList } from "frappe-react-sdk"
 
 export interface SchedulerEventForm extends RavenSchedulerEvent {
     hour: string
@@ -15,12 +19,17 @@ export interface Props {
     edit?: boolean
 }
 
-export const TemporalEventsForm = ({ edit = false }: Props) => {
+export const SchedulerEventsForm = ({ edit = false }: Props) => {
 
     const { register, watch, control } = useFormContext<SchedulerEventForm>()
 
+    const { channels } = useContext(ChannelListContext) as ChannelListContextType
+
+    const { data: bots } = useFrappeGetDocList('Raven Bot', {
+        fields: ['name'],
+    })
+
     const frequency = watch('event_frequency')
-    const sendTo = watch('send_to') ?? 'Channel'
 
     return (
         <Flex direction="column" gap={'5'}>
@@ -34,69 +43,31 @@ export const TemporalEventsForm = ({ edit = false }: Props) => {
                 />
             </Box>}
 
-            <Box>
-                <Flex align="center" gap="5" mt={'2'}>
-                    <Label>Where should this event be triggered?</Label>
-                    <Controller
-                        control={control}
-                        name="send_to"
-                        render={({ field }) => (
-                            <RadioGroup.Root size="2" defaultValue="Channel" {...field} onValueChange={(value) => field.onChange(value)}>
-                                <Flex align="center" gap="6" direction={'row'}>
-                                    <Flex align="center" gap="2">
-                                        <RadioGroup.Item value="Channel" />
-                                        <Label>Channel</Label>
-                                    </Flex>
-                                    <Flex align="center" gap="2">
-                                        <RadioGroup.Item value="DM" />
-                                        <Label>DM</Label>
-                                    </Flex>
-                                </Flex>
-                            </RadioGroup.Root>
-                        )}
-                    />
-                </Flex>
-            </Box>
-
             <Grid columns={'2'} gap={'4'}>
-                {sendTo === "Channel" ? <Box>
-                    <Label>In Channel</Label>
+                <Box>
+                    <Label>Where do you want to send this?</Label>
                     <Controller
                         control={control}
                         name="channel"
                         render={({ field }) => (
                             <Select.Root {...field} onValueChange={(value) => field.onChange(value)}>
-                                <Select.Trigger style={{ width: "100%" }} />
+                                <Select.Trigger style={{ width: "100%" }} placeholder="Select Channel" />
                                 <Select.Content>
                                     <Select.Group>
                                         <Select.Label>Channel name</Select.Label>
-                                        <Select.Item value="general">General</Select.Item>
-                                        <Select.Item value="Random">Random</Select.Item>
+                                        {
+                                            channels.map((channel, index) => (
+                                                <Select.Item key={index} value={channel.name}>
+                                                    <ChannelItem channel={channel} />
+                                                </Select.Item>
+                                            ))
+                                        }
                                     </Select.Group>
                                 </Select.Content>
                             </Select.Root>
                         )}
                     />
-                </Box> :
-                    <Box>
-                        <Label>Recipient</Label>
-                        <Controller
-                            control={control}
-                            name="dm"
-                            render={({ field }) => (
-                                <Select.Root {...field} onValueChange={(value) => field.onChange(value)}>
-                                    <Select.Trigger style={{ width: "100%" }} />
-                                    <Select.Content>
-                                        <Select.Group>
-                                            <Select.Label>DM</Select.Label>
-                                            <Select.Item value="wall-e">Wall-E</Select.Item>
-                                            <Select.Item value="Raven Bot">Raven Bot</Select.Item>
-                                        </Select.Group>
-                                    </Select.Content>
-                                </Select.Root>
-                            )}
-                        />
-                    </Box>}
+                </Box>
 
                 <Box>
                     <Label>Which bot should trigger this event?</Label>
@@ -109,8 +80,11 @@ export const TemporalEventsForm = ({ edit = false }: Props) => {
                                 <Select.Content>
                                     <Select.Group>
                                         <Select.Label>Bot</Select.Label>
-                                        <Select.Item value="wall-e">Wall-E</Select.Item>
-                                        <Select.Item value="Raven Bot">Raven Bot</Select.Item>
+                                        {
+                                            bots?.map((bot: any, index: number) => (
+                                                <Select.Item key={index} value={bot.name}>{bot.name}</Select.Item>
+                                            ))
+                                        }
                                     </Select.Group>
                                 </Select.Content>
                             </Select.Root>
@@ -241,7 +215,7 @@ export const TemporalEventsForm = ({ edit = false }: Props) => {
             </Box>}
 
             <Box>
-                <Label htmlFor="content" isRequired>Content</Label>
+                <Label htmlFor="content" isRequired>Message</Label>
                 <TextArea
                     {...register('content', { required: "Message is required." })}
                     placeholder="e.g. Hello, this is a reminder to pay your dues."

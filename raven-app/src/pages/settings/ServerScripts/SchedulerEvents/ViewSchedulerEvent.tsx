@@ -1,5 +1,5 @@
 import { DeleteAlert } from "@/components/feature/settings/common/DeleteAlert"
-import { TemporalEventsForm } from "@/components/feature/settings/temporal-events/TemporalEventsForm"
+import { SchedulerEventsForm } from "@/components/feature/settings/scheduler-events/SchedulerEventsForm"
 import { ErrorBanner } from "@/components/layout/AlertBanner"
 import { useToast } from "@/hooks/useToast"
 import { Badge, Box, Button, DropdownMenu, Flex, Heading, Section } from "@radix-ui/themes"
@@ -11,22 +11,22 @@ import { useNavigate, useParams } from "react-router-dom"
 
 export interface Props { }
 
-export const ViewTemporalEvent = (props: Props) => {
+export const ViewSchedulerEvent = (props: Props) => {
 
     const { scriptID } = useParams<{ scriptID: string }>()
 
-    const { data: eventData, error, mutate } = useFrappeGetDoc('Server Script', scriptID)
+    const { data: eventData, error, mutate } = useFrappeGetDoc('Raven Scheduler Event', scriptID)
 
     return (
         <>
             {error && <ErrorBanner error={error} />}
-            {eventData && <ViewTemporalEventPage data={eventData} onUpdate={mutate} />}
+            {eventData && <ViewSchedulerEventPage data={eventData} onUpdate={mutate} />}
         </>
     )
 }
 
 
-const ViewTemporalEventPage = ({ data, onUpdate }: { data: any, onUpdate: () => void }) => {
+const ViewSchedulerEventPage = ({ data, onUpdate }: { data: any, onUpdate: () => void }) => {
 
     const [isOpen, setIsOpen] = useState(false)
 
@@ -37,14 +37,15 @@ const ViewTemporalEventPage = ({ data, onUpdate }: { data: any, onUpdate: () => 
             name: data.name,
             send_to: data.send_to,
             event_frequency: data.event_frequency,
-            script: data.script,
-            cron_format: {
-                'minute': data.cron_format?.slice(0, 2) ?? '',
-                'hour': data.cron_format?.slice(2, 4) ?? '',
-                'day': data.cron_format?.slice(4, 6) ?? '',
-                'month': data.cron_format?.slice(6, 8) ?? '',
-                'dayOfWeek': data.cron_format?.slice(8, 10) ?? '',
-            }
+            channel: data.channel,
+            dm: data.dm,
+            bot: data.bot,
+            content: data.content,
+            hour: data.cron_expression ? data.cron_expression.split(' ')[1] : '',
+            minute: data.cron_expression ? data.cron_expression.split(' ')[0] : '',
+            date: data.cron_expression ? data.cron_expression.split(' ')[2] : '',
+            month: data.cron_expression ? data.cron_expression.split(' ')[3] : '',
+            day: data.cron_expression ? data.cron_expression.split(' ')[4] : '',
         }
     })
 
@@ -57,7 +58,7 @@ const ViewTemporalEventPage = ({ data, onUpdate }: { data: any, onUpdate: () => 
         if (data.event_frequency === 'Cron') {
             cronFormat = data.cron_format?.minute + data.cron_format?.hour + data.cron_format?.day + data.cron_format?.month + data.cron_format?.dayOfWeek
         }
-        updateDoc('Server Script', data.name, {
+        updateDoc('Raven Scheduler Event', data.name, {
             event_frequency: data.event_frequency,
             cron_format: cronFormat,
             script: data.script,
@@ -65,20 +66,20 @@ const ViewTemporalEventPage = ({ data, onUpdate }: { data: any, onUpdate: () => 
             .then(() => {
                 onUpdate()
                 toast({
-                    title: `Temporal Event ${data.name} updated`,
+                    title: `Scheduler Event ${data.name} updated`,
                     variant: 'success',
                 })
             })
     }
 
     const onStatusToggle = () => {
-        updateDoc('Server Script', data.name, {
+        updateDoc('Raven Scheduler Event', data.name, {
             disabled: !data.disabled
         })
             .then(() => {
                 onUpdate()
                 toast({
-                    title: `Temporal Event ${data.name} ${data.disabled ? "enabled" : "disabled"}`,
+                    title: `Scheduler Event ${data.name} ${data.disabled ? "enabled" : "disabled"}`,
                     variant: 'success',
                 })
             })
@@ -93,7 +94,7 @@ const ViewTemporalEventPage = ({ data, onUpdate }: { data: any, onUpdate: () => 
             <form onSubmit={methods.handleSubmit(onSubmit)}>
                 <Box className="lg:mx-[10rem] md:mx-[5rem] mt-9">
                     <Button variant="ghost" onClick={() => navigate('../../scheduled-scripts')}>
-                        <FiArrowLeft /> Temporal Events
+                        <FiArrowLeft /> Scheduler Events
                     </Button>
                     <Flex justify={'between'} mt={'6'}>
                         <Flex align={'center'} gap={'3'}>
@@ -122,7 +123,7 @@ const ViewTemporalEventPage = ({ data, onUpdate }: { data: any, onUpdate: () => 
                     </Flex>
                     <Section size={'2'}>
                         <ErrorBanner error={error} />
-                        <TemporalEventsForm edit />
+                        <SchedulerEventsForm edit />
                     </Section>
                 </Box>
             </form>

@@ -39,6 +39,23 @@ class RavenSchedulerEvent(Document):
             # server_script.script = self.get_scheduler_event_script()
             server_script.save()
 
+    def on_update(self):
+        '''
+        1. If the 'scheduler_event_id' is set, and the 'disabled' field is updated, update the 'disabled' field of the Server Script of type 'Scheduler Event' with the name 'scheduler_event_id'.
+        '''
+        if self.scheduler_event_id:
+            server_script = frappe.get_doc(
+                'Server Script', self.scheduler_event_id)
+            server_script.disabled = self.disabled
+            server_script.save()
+
+    def on_trash(self):
+        '''
+        1. If the 'scheduler_event_id' is set, delete the Server Script of type 'Scheduler Event' with the name 'scheduler_event_id'.
+        '''
+        if self.scheduler_event_id:
+            frappe.delete_doc('Server Script', self.scheduler_event_id)
+
     def create_scheduler_event(self):
         '''
             Create a Server Script of type 'Scheduler Event' and set the 'scheduler_event_id' to the name of the Server Script.
