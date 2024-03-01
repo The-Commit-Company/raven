@@ -1,7 +1,7 @@
 import { DateSeparator } from "../../../layout/Divider/DateSeparator";
 import { DateBlock, Message, MessageBlock, MessagesWithDate } from "../../../../../../types/Messaging/Message";
 import { ChannelHistoryFirstMessage } from "../../../layout/EmptyState/EmptyState";
-import { useCallback, useContext, useRef, useState } from "react";
+import { useCallback, useContext, useRef } from "react";
 import { Virtuoso } from 'react-virtuoso';
 import { VirtuosoRefContext } from "../../../../utils/message/VirtuosoRefProvider";
 import { ChannelListItem, DMChannelListItem } from "@/utils/channel/ChannelListProvider";
@@ -10,7 +10,7 @@ import { DateMonthYear } from "@/utils/dateConversions";
 import { MessageItem } from "../ChatMessage/MessageItem";
 import { DeleteMessageDialog, useDeleteMessage } from "../ChatMessage/MessageActions/DeleteMessage";
 import { EditMessageDialog, useEditMessage } from "../ChatMessage/MessageActions/EditMessage";
-import { FrappeConfig, FrappeContext, useSWRConfig } from "frappe-react-sdk";
+import { FrappeConfig, FrappeContext } from "frappe-react-sdk";
 
 /**
  * Anatomy of a message
@@ -68,10 +68,7 @@ export const ChatHistory = ({ parsedMessages, replyToMessage, channelData }: Cha
 
     const { call } = useContext(FrappeContext) as FrappeConfig
 
-    const { mutate } = useSWRConfig()
-
     const updateMessages = useCallback(() => {
-        mutate(`get_messages_for_channel_${channelData.name}`)
     }, [channelData.name])
 
     const boxRef = useRef<HTMLDivElement>(null)

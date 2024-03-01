@@ -9,6 +9,8 @@ import { UIEventHandler, useEffect, useRef, useState } from 'react'
 import { Flex, ScrollArea } from '@radix-ui/themes'
 import { Loader } from '@/components/common/Loader'
 import ChatStreamLoader from './ChatStreamLoader'
+import clsx from 'clsx'
+import { DateSeparator } from '@/components/layout/Divider/DateSeparator'
 
 type Props = {
     // TODO: Need to change this later to include date blocks
@@ -75,22 +77,30 @@ const ChatStream = ({ replyToMessage }: Props) => {
 
     return (
         <div className='h-full flex flex-col-reverse overflow-y-auto' ref={scrollRef} onScroll={handleScroll}>
-            {isLoading ? <ChatStreamLoader /> : <div className='flex flex-col-reverse pb-4 z-50'>
+            {isLoading && <ChatStreamLoader />}
+            <div className={clsx('flex flex-col-reverse pb-4 z-50 transition-opacity duration-400 ease-in-out', isLoading ? 'opacity-0' : 'opacity-100')}>
                 {messages?.map(message => {
-                    return <div key={`${message.name}_${message.modified}`} id={`message-${message.name}`}>
-                        <div className="w-full overflow-x-clip overflow-y-visible text-ellipsis">
-                            <MessageItem
-                                message={message}
-                                isHighlighted={highlightedMessage === message.name}
-                                onReplyMessageClick={onReplyMessageClick}
-                                setEditMessage={setEditMessage}
-                                replyToMessage={replyToMessage}
-                                setDeleteMessage={setDeleteMessage} />
+                    if (message.message_type === 'date') {
+                        return <DateSeparator key={`date-${message.creation}`} className='p-2 z-10 relative'>
+                            {message.creation}
+                        </DateSeparator>
+                    } else {
+                        return <div key={`${message.name}_${message.modified}`} id={`message-${message.name}`}>
+                            <div className="w-full overflow-x-clip overflow-y-visible text-ellipsis">
+                                <MessageItem
+                                    message={message}
+                                    isHighlighted={highlightedMessage === message.name}
+                                    onReplyMessageClick={onReplyMessageClick}
+                                    setEditMessage={setEditMessage}
+                                    replyToMessage={replyToMessage}
+                                    setDeleteMessage={setDeleteMessage} />
+                            </div>
                         </div>
-                    </div>
-                })}
-
-            </div>}
+                    }
+                }
+                )}
+            </div>
+            {/* } */}
             {loadingOlderMessages && <Flex className='w-full min-h-16 justify-center items-center'>
                 <Loader />
             </Flex>}
