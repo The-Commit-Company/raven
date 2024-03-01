@@ -19,9 +19,9 @@ import { ViewDocTypeEvent } from './pages/settings/ServerScripts/ViewDocTypeEven
 import { APIEvents } from './pages/settings/ServerScripts/APIEvents/APIEvents'
 import { CreateAPIEvent } from './pages/settings/ServerScripts/APIEvents/CreateAPIEvents'
 import { ViewAPIEvent } from './pages/settings/ServerScripts/APIEvents/ViewAPIEvents'
-import { TemporalEvents } from './pages/settings/ServerScripts/TemporalEvents/TemporalEvents'
-import { ViewTemporalEvent } from './pages/settings/ServerScripts/TemporalEvents/ViewTemporalEvent'
-import { CreateTemporalEvent } from './pages/settings/ServerScripts/TemporalEvents/CreateTemporalEvent'
+import { TemporalEvents } from './pages/settings/ServerScripts/SchedulerEvents/SchedulerEvents'
+import { CreateSchedulerEvent } from './pages/settings/ServerScripts/SchedulerEvents/CreateSchedulerEvent'
+import { ViewSchedulerEvent } from './pages/settings/ServerScripts/SchedulerEvents/ViewSchedulerEvent'
 
 
 const router = createBrowserRouter(
@@ -30,33 +30,33 @@ const router = createBrowserRouter(
       <Route path='/login' lazy={() => import('@/pages/auth/Login')} />
       <Route path="/" element={<ProtectedRoute />}>
         <Route path="/" element={<ChannelRedirect />}>
-        <Route path="channel" element={<MainPage />} >
-          <Route index element={<ChannelRedirect />} />
-          <Route path="saved-messages" lazy={() => import('./components/feature/saved-messages/SavedMessages')} />
-          <Route path=":channelID" lazy={() => import('@/pages/ChatSpace')} />
-        </Route>
-        <Route path='settings' element={<Settings />}>
-          <Route path='integrations'>
-            <Route path='webhooks' element={<WebhookList />} />
-            <Route path='webhooks/create' element={<CreateWebhook />} />
-            <Route path='webhooks/:ID' element={<ViewWebhook />} />
+          <Route path="channel" element={<MainPage />} >
+            <Route index element={<ChannelRedirect />} />
+            <Route path="saved-messages" lazy={() => import('./components/feature/saved-messages/SavedMessages')} />
+            <Route path=":channelID" lazy={() => import('@/pages/ChatSpace')} />
+          </Route>
+          <Route path='settings' element={<Settings />}>
+            <Route path='integrations'>
+              <Route path='webhooks' element={<WebhookList />} />
+              <Route path='webhooks/create' element={<CreateWebhook />} />
+              <Route path='webhooks/:ID' element={<ViewWebhook />} />
               <Route path='doctype-events' element={<Outlet />}>
-              <Route index element={<DocTypeEvents />} />
-              <Route path='create' element={<CreateDocTypeEvent />} />
-              <Route path=':eventID' element={<ViewDocTypeEvent />} />
-            </Route>
-            <Route path='scheduled-scripts' element={<Outlet />}>
-              <Route index element={<TemporalEvents />} />
-              <Route path='create' element={<CreateTemporalEvent />} />
-              <Route path=':scriptID' element={<ViewTemporalEvent />} />
-            </Route>
-            <Route path='api-events' element={<Outlet />}>
-              <Route index element={<APIEvents />} />
-              <Route path='create' element={<CreateAPIEvent />} />
-              <Route path=':apiID' element={<ViewAPIEvent />} />
+                <Route index element={<DocTypeEvents />} />
+                <Route path='create' element={<CreateDocTypeEvent />} />
+                <Route path=':eventID' element={<ViewDocTypeEvent />} />
+              </Route>
+              <Route path='scheduled-scripts' element={<Outlet />}>
+                <Route index element={<TemporalEvents />} />
+                <Route path='create' element={<CreateSchedulerEvent />} />
+                <Route path=':scriptID' element={<ViewSchedulerEvent />} />
+              </Route>
+              <Route path='api-events' element={<Outlet />}>
+                <Route index element={<APIEvents />} />
+                <Route path='create' element={<CreateAPIEvent />} />
+                <Route path=':apiID' element={<ViewAPIEvent />} />
+              </Route>
             </Route>
           </Route>
-        </Route>
         </Route>
       </Route>
     </>

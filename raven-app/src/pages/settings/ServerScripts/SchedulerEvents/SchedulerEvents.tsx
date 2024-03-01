@@ -17,13 +17,13 @@ export const TemporalEvents = (props: Props) => {
     return (
         <Box className="lg:mx-[10rem] md:mx-[5rem] mt-9">
             <Flex justify={'between'}>
-                <Heading>Temporal Events</Heading>
+                <Heading>Scheduler Events</Heading>
                 <Button onClick={() => navigate('create')}>Add Event</Button>
             </Flex>
             <Section size={'2'}>
                 <Blockquote size={'2'}>
                     Lets say you want to pay your dues every month. You can write a script that runs every month and pays your dues.
-                    Temporal Events enables you to write custom scripts that are triggered by time or interval.
+                    Scheduler Events can be used to send messages to a channel, by a bot at a specific time.
                 </Blockquote>
             </Section>
             <Flex>

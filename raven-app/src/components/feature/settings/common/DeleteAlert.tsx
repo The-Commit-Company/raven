@@ -46,7 +46,7 @@ const AlertContent = ({ onClose, docname, path }: DeleteDocModalProps) => {
 
     const onSubmit = () => {
         if (docname) {
-            deleteDoc('Server Script', docname)
+            deleteDoc('Raven Scheduler Event', docname)
                 .then(() => {
                     onClose()
                     navigate(path)

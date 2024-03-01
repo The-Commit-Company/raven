@@ -1,5 +1,5 @@
 
-export interface RavenMessage {
+export interface RavenMessage{
 	creation: string
 	name: string
 	modified: string
@@ -46,10 +46,4 @@ export interface RavenMessage {
 	link_document?: string
 	/**	Is Edited : Check	*/
 	is_edited?: 0 | 1
-	/**	Is Bot Message : Check	*/
-	is_bot_message?: 0 | 1
-	/**	Bot : Link - Raven User	*/
-	bot?: string
-	/**	Content : Long Text	*/
-	content?: string
 }

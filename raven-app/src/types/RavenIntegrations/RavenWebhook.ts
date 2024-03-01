@@ -25,7 +25,7 @@ export interface RavenWebhook{
 	/**	Condition : Small Text - The webhook will be triggered if this expression is true	*/
 	condition?: string
 	/**	Webhook Trigger : Select	*/
-	webhook_trigger: "Message Sent" | "Message Edited" | "Message Deleted" | "Message Reaction" | "Channel Created" | "Channel Deleted" | "Channel Member Added" | "Channel Member Deleted" | "Raven User Added" | "Raven User Deleted"
+	webhook_trigger: "Message Sent" | "Message Edited" | "Message Deleted" | "Message Reacted On" | "Channel Created" | "Channel Deleted" | "Channel Member Added" | "Channel Member Deleted" | "User Added" | "User Deleted"
 	/**	Conditions On : Select	*/
 	conditions_on?: "" | "Channel" | "User" | "Channel Type" | "Custom"
 	/**	Request URL : Data	*/
