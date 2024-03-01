@@ -305,16 +305,14 @@ export const SchedulerEventsForm = ({ edit = false }: Props) => {
 
             <Box>
                 <Label htmlFor="content" isRequired>Message</Label>
-                <TextField.Root>
-                    <TextArea
-                        {...register('content', { required: "Message is required." })}
-                        placeholder="e.g. Hello, this is a reminder to pay your dues."
-                        rows={5}
-                        aria-describedby={errors.content ? 'content-error' : undefined}
-                        aria-invalid={errors.content ? 'true' : 'false'}
-                        color={errors.content ? 'red' : 'gray'}
-                    />
-                </TextField.Root>
+                <TextArea
+                    {...register('content', { required: "Message is required." })}
+                    placeholder="e.g. Hello, this is a reminder to pay your dues."
+                    rows={5}
+                    aria-describedby={errors.content ? 'content-error' : undefined}
+                    aria-invalid={errors.content ? 'true' : 'false'}
+                    color={errors.content ? 'red' : 'gray'}
+                />
                 {errors.content && <ErrorText className="pt-1" id="content-error">{errors.content.message}</ErrorText>}
             </Box>
         </Flex>
