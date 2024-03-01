@@ -1,7 +1,7 @@
 import { Flex, Box, Separator } from "@radix-ui/themes"
-import { SidebarBody } from "./SidebarBody"
+import { SidebarBody } from "./SettingsSidebarBody"
 import { SidebarFooter } from "../Sidebar/SidebarFooter"
-import { SidebarHeader } from "./SidebarHeader"
+import { SidebarHeader } from "./SettingsSidebarHeader"
 
 export interface Props { }
 

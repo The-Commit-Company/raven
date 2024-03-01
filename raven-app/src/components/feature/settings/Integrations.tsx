@@ -19,9 +19,6 @@ export const Integrations = (props: Props) => {
             <SidebarGroup>
                 <SidebarGroupList>
                     <IntegrationsItem route='/settings/integrations/webhooks' label='Webhooks' />
-                    <IntegrationsItem route='/settings/integrations/doctype-events' label='DocType Events' />
-                    <IntegrationsItem route='/settings/integrations/scheduled-scripts' label='Temporal Events' />
-                    <IntegrationsItem route='/settings/integrations/api-events' label='API Events' />
                 </SidebarGroupList>
             </SidebarGroup>
         </SidebarGroup>

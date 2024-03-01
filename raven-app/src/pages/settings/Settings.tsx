@@ -1,4 +1,4 @@
-import { Sidebar } from "@/components/layout/Settings/Sidebar"
+import { Sidebar } from "@/components/layout/Settings/SettingsSidebar"
 import { Flex, Box } from "@radix-ui/themes"
 import { Outlet } from "react-router-dom"
 
