@@ -17,14 +17,15 @@ export const useMessageCopy = (message: Message) => {
             })
 
             // We want the links to not be converted to markdown links
-
+            // Do not escape the "underscores" in the link text
             turndownService.addRule('links', {
                 filter: 'a',
                 replacement: function (content, node, options) {
-                    return content
+                    return node.textContent ?? content
                 }
             })
             var markdown = turndownService.turndown(text)
+
             if (markdown) {
                 navigator.clipboard.writeText(markdown)
                 toast({
