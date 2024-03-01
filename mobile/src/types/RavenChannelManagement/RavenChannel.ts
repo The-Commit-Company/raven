@@ -16,6 +16,8 @@ export interface RavenChannel{
 	channel_description?: string
 	/**	Type : Select	*/
 	type: "Private" | "Public" | "Open"
+	/**	Organization : Link - Raven Organization	*/
+	organization?: string
 	/**	Is Direct Message : Check	*/
 	is_direct_message?: 0 | 1
 	/**	Is Self Message : Check	*/

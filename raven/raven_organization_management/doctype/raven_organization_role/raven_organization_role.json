@@ -1,0 +1,66 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "field:role_name",
+ "creation": "2024-03-01 16:33:24.372632",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "role_name",
+  "permissions_section",
+  "manage_channels",
+  "manage_chat"
+ ],
+ "fields": [
+  {
+   "fieldname": "role_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Role Name",
+   "reqd": 1,
+   "unique": 1
+  },
+  {
+   "fieldname": "permissions_section",
+   "fieldtype": "Section Break",
+   "label": "Permissions"
+  },
+  {
+   "default": "0",
+   "fieldname": "manage_channels",
+   "fieldtype": "Check",
+   "label": "Manage Channels"
+  },
+  {
+   "default": "0",
+   "fieldname": "manage_chat",
+   "fieldtype": "Check",
+   "label": "Manage Chat"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2024-03-01 16:36:24.219656",
+ "modified_by": "Administrator",
+ "module": "Raven Organization Management",
+ "name": "Raven Organization Role",
+ "naming_rule": "By fieldname",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

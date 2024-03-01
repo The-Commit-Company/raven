@@ -19,6 +19,7 @@ class RavenChannel(Document):
         is_archived: DF.Check
         is_direct_message: DF.Check
         is_self_message: DF.Check
+        organization: DF.Link | None
         type: DF.Literal["Private", "Public", "Open"]
     # end: auto-generated types
 

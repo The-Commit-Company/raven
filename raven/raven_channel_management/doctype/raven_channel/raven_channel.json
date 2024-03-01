@@ -10,6 +10,7 @@
   "channel_name",
   "channel_description",
   "type",
+  "organization",
   "section_break_evg4",
   "is_direct_message",
   "column_break_puci",
@@ -81,6 +82,12 @@
    "in_list_view": 1,
    "in_standard_filter": 1,
    "label": "Is Archived"
+  },
+  {
+   "fieldname": "organization",
+   "fieldtype": "Link",
+   "label": "Organization",
+   "options": "Raven Organization"
   }
  ],
  "index_web_pages_for_search": 1,
@@ -94,7 +101,7 @@
    "link_fieldname": "channel_id"
   }
  ],
- "modified": "2023-11-24 16:22:29.544819",
+ "modified": "2024-03-01 16:38:58.008426",
  "modified_by": "Administrator",
  "module": "Raven Channel Management",
  "name": "Raven Channel",
