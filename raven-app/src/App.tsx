@@ -45,7 +45,7 @@ const router = createBrowserRouter(
                 <Route path='create' element={<CreateDocTypeEvent />} />
                 <Route path=':eventID' element={<ViewDocTypeEvent />} />
               </Route>
-              <Route path='scheduled-scripts' element={<Outlet />}>
+              <Route path='scheduled-messages' element={<Outlet />}>
                 <Route index element={<TemporalEvents />} />
                 <Route path='create' element={<CreateSchedulerEvent />} />
                 <Route path=':scriptID' element={<ViewSchedulerEvent />} />
