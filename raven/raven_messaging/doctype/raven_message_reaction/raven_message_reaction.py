@@ -4,7 +4,7 @@
 import frappe
 from frappe.model.document import Document
 import json
-from raven.api.raven_message_reaction import calculate_message_reaction
+from raven.api.reactions import calculate_message_reaction
 
 class RavenMessageReaction(Document):
     # begin: auto-generated types

@@ -112,23 +112,73 @@ class RavenMessage(Document):
                     entered_ids.add(user_id)
 
     def after_delete(self):
-        self.send_update_event(type="delete")
-
-    def on_update(self):
-        self.send_update_event(type="update")
-
-    def send_update_event(self, type):
-        frappe.publish_realtime('message_updated', {
+        frappe.publish_realtime('message_deleted', {
             'channel_id': self.channel_id,
             'sender': frappe.session.user,
             'message_id': self.name,
-            'type': type,
         },
             doctype='Raven Channel',
             # Adding this to automatically add the room for the event via Frappe
             docname=self.channel_id,
-            after_commit=True)
-        frappe.db.commit()
+            )
+
+    def on_update(self):
+        if self.is_edited:
+            frappe.publish_realtime('message_edited', {
+            'channel_id': self.channel_id,
+            'sender': frappe.session.user,
+            'message_id': self.name,
+            'message_details' : {
+                'text': self.text,
+                'content': self.content,
+                'file': self.file,
+                'message_type': self.message_type,
+                'is_edited': 1 if self.is_edited else 0,
+                'is_reply': self.is_reply,
+                'modified': self.modified,
+                'linked_message': self.linked_message,
+                'replied_message_details': self.replied_message_details,
+                'link_doctype': self.link_doctype,
+                'link_document': self.link_document,
+                'message_reactions': self.message_reactions
+            }
+            
+        },
+            doctype='Raven Channel',
+            # Adding this to automatically add the room for the event via Frappe
+            docname=self.channel_id)
+        else:
+            frappe.publish_realtime('message_created', {
+            'channel_id': self.channel_id,
+            'sender': frappe.session.user,
+            'message_id': self.name,
+            'message_details': {
+                'text': self.text,
+                'content': self.content,
+                'file': self.file,
+                'message_type': self.message_type,
+                'is_edited': 1 if self.is_edited else 0,
+                'is_reply': self.is_reply,
+                'creation': self.creation,
+                'owner': self.owner,
+                'modified_by': self.modified_by,
+                'modified': self.modified,
+                'linked_message': self.linked_message,
+                'replied_message_details': self.replied_message_details,
+                'link_doctype': self.link_doctype,
+                'link_document': self.link_document,
+                'message_reactions': self.message_reactions,
+                'thumbnail_width': self.thumbnail_width,
+                'thumbnail_height': self.thumbnail_height,
+                'file_thumbnail': self.file_thumbnail,
+                'image_width': self.image_width,
+                'image_height': self.image_height,
+                'name': self.name,
+            }
+        },
+            doctype='Raven Channel',
+            # Adding this to automatically add the room for the event via Frappe
+            docname=self.channel_id)
 
     def on_trash(self):
         # delete all the reactions for the message

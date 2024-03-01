@@ -6,11 +6,15 @@ import { HiReply } from 'react-icons/hi'
 import { MouseEventHandler, useContext, useRef } from 'react'
 import { FrappeConfig, FrappeContext } from 'frappe-react-sdk'
 import { EmojiPickerButton } from './EmojiPickerButton'
+import { UserContext } from '@/utils/auth/UserProvider'
 
 const QUICK_EMOJIS = ['👍', '✅', '👀', '🎉']
 
-export const QuickActions = ({ message, onReply, onEdit, updateMessages, isOwner }: MessageContextMenuProps) => {
+export const QuickActions = ({ message, onReply, onEdit }: MessageContextMenuProps) => {
 
+    const { currentUser } = useContext(UserContext)
+
+    const isOwner = currentUser === message?.owner
     const toolbarRef = useRef<HTMLDivElement>(null)
 
     const { call } = useContext(FrappeContext) as FrappeConfig
@@ -36,10 +40,11 @@ export const QuickActions = ({ message, onReply, onEdit, updateMessages, isOwner
     }
 
     const onEmojiReact = (emoji: string) => {
+        // TODO: Show error toast
         call.post('raven.api.reactions.react', {
-            message_id: message.name,
+            message_id: message?.name,
             reaction: emoji
-        }).then(() => updateMessages())
+        })
     }
 
     return (

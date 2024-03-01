@@ -1,6 +1,5 @@
 import frappe
 from frappe import _
-from frappe.model.document import Document
 from datetime import timedelta
 from frappe.query_builder.functions import Count, Coalesce
 from frappe.query_builder import Case, Order, JoinType
@@ -104,6 +103,24 @@ def get_messages(channel_id):
 
     return messages
 
+@frappe.whitelist()
+def save_message(message_id, add=False):
+    '''
+        Save the message as a bookmark
+    '''
+    from frappe.desk.like import toggle_like
+
+    toggle_like('Raven Message', message_id, add)
+
+    liked_by = frappe.db.get_value('Raven Message', message_id, '_liked_by')
+
+    frappe.publish_realtime('raven:message_saved', {
+        'message_id': message_id,
+        'liked_by': liked_by,
+    }, user=frappe.session.user)
+
+
+    return "message saved"
 
 @frappe.whitelist()
 def get_saved_messages():
