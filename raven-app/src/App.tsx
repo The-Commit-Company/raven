@@ -10,6 +10,9 @@ import { Toaster } from './components/common/Toast/Toaster'
 import { FullPageLoader } from './components/layout/Loaders'
 import { useStickyState } from './hooks/useStickyState'
 import { Settings } from './pages/settings/Settings'
+import { CreateWebhook } from './components/feature/integrations/webhooks/CreateWebhook'
+import ViewWebhook from './components/feature/integrations/webhooks/ViewWebhook'
+import { WebhookList } from './components/feature/integrations/webhooks/WebhookList'
 import { DocTypeEvents } from './pages/settings/ServerScripts/DocTypeEvents'
 import { CreateDocTypeEvent } from './pages/settings/ServerScripts/CreateDocTypeEvent'
 import { ViewDocTypeEvent } from './pages/settings/ServerScripts/ViewDocTypeEvent'
@@ -26,7 +29,7 @@ const router = createBrowserRouter(
     <>
       <Route path='/login' lazy={() => import('@/pages/auth/Login')} />
       <Route path="/" element={<ProtectedRoute />}>
-        <Route index element={<ChannelRedirect />} />
+        <Route path="/" element={<ChannelRedirect />}>
         <Route path="channel" element={<MainPage />} >
           <Route index element={<ChannelRedirect />} />
           <Route path="saved-messages" lazy={() => import('./components/feature/saved-messages/SavedMessages')} />
@@ -34,7 +37,10 @@ const router = createBrowserRouter(
         </Route>
         <Route path='settings' element={<Settings />}>
           <Route path='integrations'>
-            <Route path='doctype-events' element={<Outlet />}>
+            <Route path='webhooks' element={<WebhookList />} />
+            <Route path='webhooks/create' element={<CreateWebhook />} />
+            <Route path='webhooks/:ID' element={<ViewWebhook />} />
+              <Route path='doctype-events' element={<Outlet />}>
               <Route index element={<DocTypeEvents />} />
               <Route path='create' element={<CreateDocTypeEvent />} />
               <Route path=':eventID' element={<ViewDocTypeEvent />} />
@@ -51,7 +57,8 @@ const router = createBrowserRouter(
             </Route>
           </Route>
         </Route>
-      </Route >
+        </Route>
+      </Route>
     </>
   ), {
   basename: `/${import.meta.env.VITE_BASE_NAME}` ?? '',

@@ -62,7 +62,7 @@ export const AddChannelMembers = ({ presentingElement, isOpen, onDismiss, channe
     const [searchText, setSearchText] = useState('')
 
     const filteredUsers = useMemo(() => {
-        return users.users.filter(member => {
+        return users.enabledUsers.filter(member => {
             return member.name.toLowerCase().includes(searchText.toLowerCase())
         })
     }, [users, searchText])

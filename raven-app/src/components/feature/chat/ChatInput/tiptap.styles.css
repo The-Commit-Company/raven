@@ -12,8 +12,13 @@
     max-height: 150px;
     overflow: auto;
     padding: var(--space-3);
-    border-top-left-radius: var(--radius-4);
-    border-top-right-radius: var(--radius-4);
+    border-top-left-radius: var(--radius-2);
+    border-top-right-radius: var(--radius-2);
+}
+
+.tiptap-editor.replying.ProseMirror {
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
 }
 
 .tiptap-editor.ProseMirror:focus {

@@ -5,6 +5,7 @@ import { ViewOrAddMembersButton } from "@/components/feature/chat-header/ViewOrA
 import { EditChannelNameButton } from "../channel-details/rename-channel/EditChannelNameButton"
 import { SearchButton } from "./SearchButton"
 import { Flex, Heading } from "@radix-ui/themes"
+import { ViewFilesButton } from "../files/ViewFilesButton"
 
 interface ChannelHeaderProps {
     channelData: ChannelListItem
@@ -24,6 +25,7 @@ export const ChannelHeader = ({ channelData }: ChannelHeaderProps) => {
                 <EditChannelNameButton channelID={channelData.name} channel_name={channelData.channel_name} channelType={channelData.type} disabled={channelData.is_archived == 1} />
             </Flex>
             <Flex gap='2'>
+                <ViewFilesButton />
                 <SearchButton />
                 <ViewOrAddMembersButton channelData={channelData} />
             </Flex>

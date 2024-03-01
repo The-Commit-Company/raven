@@ -21,7 +21,7 @@ const AddMembersDropdown = ({ channelMembers, label = 'Select users', selectedUs
     const users = useContext(UserListContext)
 
     //Options for dropdown
-    const nonChannelMembers = users.users?.filter((m: UserFields) => !channelMembers?.[m.name]) ?? []
+    const nonChannelMembers = users.enabledUsers?.filter((m: UserFields) => !channelMembers?.[m.name]) ?? []
 
     /** Function to filter users */
     function getFilteredUsers(selectedUsers: UserFields[], inputValue: string) {
@@ -170,7 +170,7 @@ const AddMembersDropdown = ({ channelMembers, label = 'Select users', selectedUs
                     </TextField.Root>
                 </div >
                 <ul
-                    className={`absolute w-inherit bg-background rounded-b-md mt-1 shadow-md max-h-36 overflow-scroll p-0 z-50 ${!(isOpen && items.length) && 'hidden'
+                    className={`absolute w-96 bg-background rounded-b-md mt-1 shadow-md max-h-96 overflow-scroll p-0 z-50 ${!(isOpen && items.length) && 'hidden'
                         }`}
                     {...getMenuProps()}
                 >

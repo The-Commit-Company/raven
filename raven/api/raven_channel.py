@@ -2,12 +2,8 @@ import frappe
 from frappe import _
 from frappe.model.document import Document
 
-channel = frappe.qb.DocType("Raven Channel")
-channel_member = frappe.qb.DocType("Raven Channel Member")
-
-
 @frappe.whitelist()
-def get_all_channels(hide_archived=False):
+def get_all_channels(hide_archived=True):
     '''
         Fetches all channels where current user is a member - both channels and DMs
         To be used on the web app. 
@@ -48,6 +44,8 @@ def get_all_channels(hide_archived=False):
 
 def get_channel_list(hide_archived=False):
     # get List of all channels where current user is a member (all includes public, private, open, and DM channels)
+    channel = frappe.qb.DocType("Raven Channel")
+    channel_member = frappe.qb.DocType("Raven Channel Member")
     query = (frappe.qb.from_(channel)
              .select(channel.name, channel.channel_name, channel.type, channel.channel_description, channel.is_archived, channel.is_direct_message, channel.is_self_message, channel.creation, channel.owner).distinct()
              .left_join(channel_member)
@@ -68,7 +66,7 @@ def get_channels(hide_archived=False):
             'is_direct_message'), channel.get('is_self_message'))
         channel['peer_user_id'] = peer_user_id
         if peer_user_id:
-            user_full_name = frappe.db.get_value(
+            user_full_name = frappe.get_cached_value(
                 'User', peer_user_id, 'full_name')
             channel['full_name'] = user_full_name
     return channels
@@ -97,10 +95,11 @@ def get_extra_users(dm_channels):
                       for dm_channel in dm_channels]
     existing_users.append('Administrator')
     existing_users.append('Guest')
-    return frappe.db.get_list('User', filters=[
+
+    # Skip permissions since we are only fetching user_id, full_name, and user_image and have applied filters
+    return frappe.db.get_all('User', filters=[
         ['name', 'not in', existing_users],
         ['enabled', '=', 1],
-        ['user_type', '=', 'System User'],
         ["Has Role", "role", "=", 'Raven User']], fields=['name', 'full_name', 'user_image'])
 
 
@@ -113,6 +112,7 @@ def create_direct_message_channel(user_id):
         2. If not, create a new channel
         3. Check if the user_id is the current user and set is_self_message accordingly
     '''
+    # TODO: this logic might break if the user_id changes
     channel_name = frappe.db.get_value("Raven Channel", filters={
         "is_direct_message": 1,
         "channel_name": ["in", [frappe.session.user + " _ " + user_id, user_id + " _ " + frappe.session.user]]

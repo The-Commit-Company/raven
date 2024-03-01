@@ -1,6 +1,6 @@
 {
   "name": "raven",
-  "version": "1.3.2",
+  "version": "1.4.0",
   "description": "Messaging Application",
   "main": "index.js",
   "scripts": {
@@ -10,7 +10,8 @@
     "build": "yarn build-web && yarn build-mobile",
     "build-web": "cd raven-app && yarn build",
     "build-mobile": "cd mobile && yarn build",
-    "postinstall": "yarn install-web && yarn install-mobile",
+    "postinstall": "yarn install-web && yarn install-mobile && yarn install-desk",
+    "install-desk": "cd raven && yarn install",
     "install-web": "cd raven-app && yarn install",
     "install-mobile": "cd mobile && yarn install"
   },

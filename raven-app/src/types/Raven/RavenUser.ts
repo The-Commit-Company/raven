@@ -1,5 +1,5 @@
 
-export interface RavenUser{
+export interface RavenUser {
 	creation: string
 	name: string
 	modified: string
