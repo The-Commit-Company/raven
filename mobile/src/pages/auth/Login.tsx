@@ -5,7 +5,7 @@ import raven_logo from '../../assets/raven_logo.png'
 import { useContext, useState } from 'react'
 import { UserContext } from '../../utils/auth/UserProvider'
 import { Controller, useForm } from 'react-hook-form'
-import { LoginWithEmail } from '@/pages/auth'
+import { LoginWithEmail } from '@/pages/auth/LoginWithEmail'
 
 type Inputs = {
     email: string,
@@ -54,8 +54,8 @@ export const Login = () => {
                         isLoginWithEmailLink ? 
                         <LoginWithEmail 
                              setCallout={setCallout}
-                             onClickLoginWithEmail={onClickLoginWithEmail} 
                              setError={setError}
+                             onClickLoginWithEmail={onClickLoginWithEmail} 
                          />:
                          <div>
                         <form onSubmit={handleSubmit(onSubmit)}>
