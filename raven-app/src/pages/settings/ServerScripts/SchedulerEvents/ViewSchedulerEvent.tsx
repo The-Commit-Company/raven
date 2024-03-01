@@ -54,14 +54,25 @@ const ViewSchedulerEventPage = ({ data, onUpdate }: { data: any, onUpdate: () =>
     const { toast } = useToast()
 
     const onSubmit = (data: any) => {
-        let cronFormat = ''
+        let cron_expression = ''
+        if (data.event_frequency === 'Every Day') {
+            cron_expression = `${data.minute} ${data.hour} * * *`
+        }
+        if (data.event_frequency === 'Every Day of the week') {
+            cron_expression = `${data.minute} ${data.hour} * * ${data.day}`
+        }
+        if (data.event_frequency === 'Date of the month') {
+            cron_expression = `${data.minute} ${data.hour} ${data.date} * *`
+        }
         if (data.event_frequency === 'Cron') {
-            cronFormat = data.cron_format?.minute + data.cron_format?.hour + data.cron_format?.day + data.cron_format?.month + data.cron_format?.dayOfWeek
+            cron_expression = `${data.minute} ${data.hour} ${data.date} ${data.month} ${data.day}`
         }
         updateDoc('Raven Scheduler Event', data.name, {
+            channel: data.channel,
+            bot: data.bot,
             event_frequency: data.event_frequency,
-            cron_format: cronFormat,
-            script: data.script,
+            cron_expression: cron_expression,
+            content: data.content,
         })
             .then(() => {
                 onUpdate()

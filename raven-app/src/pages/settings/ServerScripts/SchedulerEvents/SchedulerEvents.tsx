@@ -12,6 +12,10 @@ export const TemporalEvents = (props: Props) => {
 
     const { data, error } = useFrappeGetDocList('Raven Scheduler Event', {
         fields: ['name', 'event_frequency', 'creation', 'modified', 'disabled'],
+        orderBy: {
+            field: 'modified',
+            order: 'desc'
+        }
     })
 
     return (

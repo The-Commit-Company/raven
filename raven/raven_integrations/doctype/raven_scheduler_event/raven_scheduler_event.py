@@ -36,7 +36,8 @@ class RavenSchedulerEvent(Document):
         else:
             server_script = frappe.get_doc(
                 'Server Script', self.scheduler_event_id)
-            # server_script.script = self.get_scheduler_event_script()
+            server_script.cron_format = self.cron_expression
+            server_script.script = self.get_scheduler_event_script()
             server_script.save()
 
     def on_update(self):
@@ -76,4 +77,12 @@ class RavenSchedulerEvent(Document):
         '''
             Get the script for the Scheduler Event
         '''
-        return '''#hello world'''
+        # bot = frappe.get_doc('Raven Bot', self.bot)
+        # bot.send_message(self.channel, {'text': self.content})
+        # return code snippet with bot & content as values
+        message = {'text': self.content}
+        script = f'''
+bot = frappe.get_doc('Raven Bot', '{self.bot}')\n
+bot.send_message('{self.channel}', {message})
+'''
+        return script

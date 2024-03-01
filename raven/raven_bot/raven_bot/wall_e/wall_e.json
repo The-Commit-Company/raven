@@ -1,0 +1,15 @@
+{
+ "bot_name": "wall-e",
+ "creation": "2024-02-23 18:27:55.053089",
+ "docstatus": 0,
+ "doctype": "Raven Bot",
+ "enabled": 1,
+ "idx": 0,
+ "image": "/private/files/Walle7c7f711.jpg",
+ "is_standard": 1,
+ "modified": "2024-03-01 14:20:26.906899",
+ "modified_by": "Administrator",
+ "module": "Raven Bot",
+ "name": "wall-e",
+ "owner": "Administrator"
+}
