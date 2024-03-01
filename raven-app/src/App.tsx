@@ -1,5 +1,5 @@
 import { FrappeProvider } from 'frappe-react-sdk'
-import { Route, RouterProvider, createBrowserRouter, createRoutesFromElements } from 'react-router-dom'
+import { Outlet, Route, RouterProvider, createBrowserRouter, createRoutesFromElements } from 'react-router-dom'
 import { MainPage } from './pages/MainPage'
 import { ProtectedRoute } from './utils/auth/ProtectedRoute'
 import { UserProvider } from './utils/auth/UserProvider'
@@ -10,6 +10,18 @@ import { Toaster } from './components/common/Toast/Toaster'
 import { FullPageLoader } from './components/layout/Loaders'
 import { useStickyState } from './hooks/useStickyState'
 import { Settings } from './pages/settings/Settings'
+import { CreateWebhook } from './components/feature/integrations/webhooks/CreateWebhook'
+import ViewWebhook from './components/feature/integrations/webhooks/ViewWebhook'
+import { WebhookList } from './components/feature/integrations/webhooks/WebhookList'
+import { DocTypeEvents } from './pages/settings/ServerScripts/DocTypeEvents'
+import { CreateDocTypeEvent } from './pages/settings/ServerScripts/CreateDocTypeEvent'
+import { ViewDocTypeEvent } from './pages/settings/ServerScripts/ViewDocTypeEvent'
+import { APIEvents } from './pages/settings/ServerScripts/APIEvents/APIEvents'
+import { CreateAPIEvent } from './pages/settings/ServerScripts/APIEvents/CreateAPIEvents'
+import { ViewAPIEvent } from './pages/settings/ServerScripts/APIEvents/ViewAPIEvents'
+import { TemporalEvents } from './pages/settings/ServerScripts/TemporalEvents/TemporalEvents'
+import { ViewTemporalEvent } from './pages/settings/ServerScripts/TemporalEvents/ViewTemporalEvent'
+import { CreateTemporalEvent } from './pages/settings/ServerScripts/TemporalEvents/CreateTemporalEvent'
 
 
 const router = createBrowserRouter(
@@ -17,7 +29,7 @@ const router = createBrowserRouter(
     <>
       <Route path='/login' lazy={() => import('@/pages/auth/Login')} />
       <Route path="/" element={<ProtectedRoute />}>
-        <Route index element={<ChannelRedirect />} />
+        <Route path="/" element={<ChannelRedirect />}>
         <Route path="channel" element={<MainPage />} >
           <Route index element={<ChannelRedirect />} />
           <Route path="saved-messages" lazy={() => import('./components/feature/saved-messages/SavedMessages')} />
@@ -25,9 +37,26 @@ const router = createBrowserRouter(
         </Route>
         <Route path='settings' element={<Settings />}>
           <Route path='integrations'>
-            <Route path='webhooks' element={<p>Webhooks</p>} />
-            <Route path='server-scripts' element={<p>SS</p>} />
+            <Route path='webhooks' element={<WebhookList />} />
+            <Route path='webhooks/create' element={<CreateWebhook />} />
+            <Route path='webhooks/:ID' element={<ViewWebhook />} />
+              <Route path='doctype-events' element={<Outlet />}>
+              <Route index element={<DocTypeEvents />} />
+              <Route path='create' element={<CreateDocTypeEvent />} />
+              <Route path=':eventID' element={<ViewDocTypeEvent />} />
+            </Route>
+            <Route path='scheduled-scripts' element={<Outlet />}>
+              <Route index element={<TemporalEvents />} />
+              <Route path='create' element={<CreateTemporalEvent />} />
+              <Route path=':scriptID' element={<ViewTemporalEvent />} />
+            </Route>
+            <Route path='api-events' element={<Outlet />}>
+              <Route index element={<APIEvents />} />
+              <Route path='create' element={<CreateAPIEvent />} />
+              <Route path=':apiID' element={<ViewAPIEvent />} />
+            </Route>
           </Route>
+        </Route>
         </Route>
       </Route>
     </>

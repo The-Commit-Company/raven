@@ -51,6 +51,8 @@ export interface RavenMessage {
 	is_bot_message?: 0 | 1
 	/**	Bot : Link - Raven User	*/
 	bot?: string
-	/**	Mentions : Table - Raven Mention	*/
+	/**	Content : Long Text	*/
+	content?: string
+  /**	Mentions : Table - Raven Mention	*/
 	mentions?: RavenMention[]
 }
