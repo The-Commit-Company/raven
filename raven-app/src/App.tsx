@@ -5,7 +5,6 @@ import { ProtectedRoute } from './utils/auth/ProtectedRoute'
 import { UserProvider } from './utils/auth/UserProvider'
 import { ChannelRedirect } from './utils/channel/ChannelRedirect'
 import "cal-sans";
-import { useState } from 'react'
 import { ThemeProvider } from './ThemeProvider'
 import { Toaster } from './components/common/Toast/Toaster'
 import { FullPageLoader } from './components/layout/Loaders'
@@ -16,6 +15,7 @@ const router = createBrowserRouter(
   createRoutesFromElements(
     <>
       <Route path='/login' lazy={() => import('@/pages/auth/Login')} />
+      <Route path='/login-with-email' lazy={()=> import('@/pages/auth/LoginWithEmail')} />
       <Route path="/" element={<ProtectedRoute />}>
         <Route index element={<ChannelRedirect />} />
         <Route path="channel" element={<MainPage />} >
