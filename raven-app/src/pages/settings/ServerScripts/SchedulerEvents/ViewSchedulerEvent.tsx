@@ -6,7 +6,7 @@ import { Badge, Box, Button, DropdownMenu, Flex, Heading, Section } from "@radix
 import { useFrappeGetDoc, useFrappeUpdateDoc } from "frappe-react-sdk"
 import { useState } from "react"
 import { FormProvider, useForm } from "react-hook-form"
-import { FiArrowLeft } from "react-icons/fi"
+import { FiArrowLeft, FiChevronDown } from "react-icons/fi"
 import { useNavigate, useParams } from "react-router-dom"
 
 export interface Props { }
@@ -103,9 +103,9 @@ const ViewSchedulerEventPage = ({ data, onUpdate }: { data: any, onUpdate: () =>
     return (
         <FormProvider {...methods}>
             <form onSubmit={methods.handleSubmit(onSubmit)}>
-                <Box className="lg:mx-[10rem] md:mx-[5rem] mt-9">
-                    <Button variant="ghost" onClick={() => navigate('../../scheduled-scripts')}>
-                        <FiArrowLeft /> Scheduler Events
+                <Box className="lg:mx-[10rem] md:mx-[5rem] mt-9 h-screen">
+                    <Button variant="ghost" color="gray" onClick={() => navigate('../../scheduled-messages')}>
+                        <FiArrowLeft /> Scheduled Messages
                     </Button>
                     <Flex justify={'between'} mt={'6'}>
                         <Flex align={'center'} gap={'3'}>
@@ -115,9 +115,9 @@ const ViewSchedulerEventPage = ({ data, onUpdate }: { data: any, onUpdate: () =>
                         <Flex gap={'3'}>
                             <DropdownMenu.Root>
                                 <DropdownMenu.Trigger>
-                                    <Button variant="soft">
+                                    <Button variant="soft" color="gray">
                                         Actions
-                                        {/* <CaretDownIcon /> */}
+                                        <FiChevronDown />
                                     </Button>
                                 </DropdownMenu.Trigger>
                                 <DropdownMenu.Content>
@@ -128,7 +128,7 @@ const ViewSchedulerEventPage = ({ data, onUpdate }: { data: any, onUpdate: () =>
                                     </DropdownMenu.Item>
                                 </DropdownMenu.Content>
                             </DropdownMenu.Root>
-                            <DeleteAlert docname={data.name} isOpen={isOpen} onClose={onClose} path={'../../scheduled-scripts'} />
+                            <DeleteAlert docname={data.name} isOpen={isOpen} onClose={onClose} path={'../../scheduled-messages'} />
                             <Button type='submit'>Save</Button>
                         </Flex>
                     </Flex>

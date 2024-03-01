@@ -1,4 +1,5 @@
 import { ErrorBanner } from "@/components/layout/AlertBanner"
+import { RavenSchedulerEvent } from "@/types/RavenIntegrations/RavenSchedulerEvent"
 import { DateMonthAtHourMinuteAmPm } from "@/utils/dateConversions"
 import { Box, Flex, Heading, Button, Section, Blockquote, Badge, Card, Table, Text, Code } from "@radix-ui/themes"
 import { useFrappeGetDocList } from "frappe-react-sdk"
@@ -10,8 +11,8 @@ export const TemporalEvents = (props: Props) => {
 
     const navigate = useNavigate()
 
-    const { data, error } = useFrappeGetDocList('Raven Scheduler Event', {
-        fields: ['name', 'event_frequency', 'creation', 'modified', 'disabled'],
+    const { data, error } = useFrappeGetDocList<RavenSchedulerEvent>('Raven Scheduler Event', {
+        fields: ['name', 'disabled', 'event_frequency', 'modified'],
         orderBy: {
             field: 'modified',
             order: 'desc'
@@ -19,27 +20,26 @@ export const TemporalEvents = (props: Props) => {
     })
 
     return (
-        <Box className="lg:mx-[10rem] md:mx-[5rem] mt-9">
+        <Box className="lg:mx-[10rem] md:mx-[5rem] mt-9 h-screen">
             <Flex justify={'between'}>
-                <Heading>Scheduler Events</Heading>
-                <Button onClick={() => navigate('create')}>Add Event</Button>
+                <Heading>Scheduled Messages</Heading>
+                <Button onClick={() => navigate('create')}>Add</Button>
             </Flex>
             <Section size={'2'}>
                 <Blockquote size={'2'}>
-                    Lets say you want to pay your dues every month. You can write a script that runs every month and pays your dues.
-                    Scheduler Events can be used to send messages to a channel, by a bot at a specific time.
+                    Lets say you want to be reminded to file your GST returns every month on the 10th. You can create a scheduled message & a bot will remind you to do so.
                 </Blockquote>
             </Section>
             <Flex>
                 {error && <ErrorBanner error={error} />}
-                {data && <List data={data} />}
+                {data?.length === 0 ? <EmptyState /> : <List data={data ?? []} />}
             </Flex>
         </Box>
     )
 }
 
 
-const List = ({ data }: { data: any }) => {
+const List = ({ data }: { data: RavenSchedulerEvent[] }) => {
     return (
         <Box width={'100%'}>
             <Card>
@@ -74,5 +74,17 @@ const List = ({ data }: { data: any }) => {
                 </Table.Root>
             </Card>
         </Box>
+    )
+}
+
+
+const EmptyState = () => {
+    return (
+        <Flex direction='column' gap='4' width='100%'>
+            <Text size='2' color="gray">Its empty here...no scheduled messages found. <Link to={'create'} style={{
+                textDecoration: 'underline'
+            }}>Schedule one</Link>.
+            </Text>
+        </Flex>
     )
 }

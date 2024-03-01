@@ -57,12 +57,12 @@ export const CreateSchedulerEvent = () => {
     return (
         <FormProvider {...methods}>
             <form onSubmit={methods.handleSubmit(onSubmit)}>
-                <Box className="lg:mx-[10rem] md:mx-[5rem] mt-9">
-                    <Button variant="ghost" onClick={() => navigate('../../scheduled-scripts')}>
-                        <FiArrowLeft /> Scheduler Events
+                <Box className="lg:mx-[10rem] md:mx-[5rem] mt-9 h-screen">
+                    <Button variant="ghost" color="gray" onClick={() => navigate('../../scheduled-messages')}>
+                        <FiArrowLeft /> Scheduled Messages
                     </Button>
                     <Flex justify={'between'} mt={'6'}>
-                        <Heading>New Scheduler Event</Heading>
+                        <Heading>New Scheduled Message</Heading>
                         <Button type='submit'>Save</Button>
                     </Flex>
                     <Section size={'2'}>
