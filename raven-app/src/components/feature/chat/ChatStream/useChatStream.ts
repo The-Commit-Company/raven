@@ -211,6 +211,7 @@ const useChatStream = (scrollRef: MutableRefObject<HTMLDivElement | null>) => {
     return {
         messages,
         hasOlderMessages,
+        loadingOlderMessages,
         isLoading,
         error,
         loadOlderMessages

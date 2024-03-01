@@ -6,7 +6,8 @@ import { ChannelHistoryFirstMessage } from '@/components/layout/EmptyState'
 import { useParams } from 'react-router-dom'
 import useChatStream from './useChatStream'
 import { UIEventHandler, useEffect, useRef, useState } from 'react'
-import { ScrollArea } from '@radix-ui/themes'
+import { Flex, ScrollArea } from '@radix-ui/themes'
+import { Loader } from '@/components/common/Loader'
 
 type Props = {
     // TODO: Need to change this later to include date blocks
@@ -21,7 +22,7 @@ const ChatStream = ({ replyToMessage }: Props) => {
 
     const scrollRef = useRef<HTMLDivElement | null>(null)
 
-    const { messages, hasOlderMessages, loadOlderMessages } = useChatStream(scrollRef)
+    const { messages, hasOlderMessages, loadOlderMessages, loadingOlderMessages } = useChatStream(scrollRef)
     const { setDeleteMessage, ...deleteProps } = useDeleteMessage()
 
     const { setEditMessage, ...editProps } = useEditMessage()
@@ -74,6 +75,7 @@ const ChatStream = ({ replyToMessage }: Props) => {
     return (
         <div className='h-full flex flex-col-reverse overflow-y-auto' ref={scrollRef} onScroll={handleScroll}>
             <div className='flex flex-col-reverse pb-4 z-50'>
+
                 {messages?.map(message => {
                     return <div key={`${message.name}_${message.modified}`} id={`message-${message.name}`}>
                         <div className="w-full overflow-x-clip overflow-y-visible text-ellipsis">
@@ -87,7 +89,11 @@ const ChatStream = ({ replyToMessage }: Props) => {
                         </div>
                     </div>
                 })}
+
             </div>
+            {loadingOlderMessages && <Flex className='w-full min-h-16 justify-center items-center'>
+                <Loader />
+            </Flex>}
             {!hasOlderMessages && <ChannelHistoryFirstMessage channelID={channelID ?? ''} />}
             <DeleteMessageDialog {...deleteProps} />
             <EditMessageDialog {...editProps} />
