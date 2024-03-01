@@ -1,7 +1,7 @@
 import { FrappeError } from 'frappe-react-sdk'
 import { useMemo } from 'react'
 import React from 'react'
-import { ErrorCallout } from "@/components/common/Callouts"
+import { ErrorCallout } from "@/components/common/Callouts/ErrorCallouts"
 
 interface ErrorBannerProps {
     error?: FrappeError | null,

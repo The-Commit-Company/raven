@@ -7,9 +7,9 @@ import { FrappeError, useFrappeGetCall } from "frappe-react-sdk";
 import { UserContext } from "@/utils/auth/UserProvider";
 import { Loader } from "@/components/common/Loader";
 import { ErrorText, Label } from "@/components/common/Form";
-import { ErrorCallout } from "@/components/common/Callouts";
 import { LoginInputs, LoginContext } from "@/types/Auth/Login";
-import { Auth } from "@/pages/auth/Auth"
+import AuthContainer from "@/components/layout/AuthContainer";
+import { ErrorCallout } from "@/components/common/Callouts/ErrorCallouts";
 
 const SocialProviderIcons = {
     "github": <BiLogoGithub size="18" />,
@@ -54,7 +54,7 @@ export const Component = () => {
     }
 
     return (
-        <Auth>
+        <AuthContainer>
             {error && <ErrorCallout message={error.message} />}
 
             <Box>
@@ -156,7 +156,7 @@ export const Component = () => {
                         </Flex> : null
                 }
             </Box>
-        </Auth>
+        </AuthContainer>
     )
 }
 

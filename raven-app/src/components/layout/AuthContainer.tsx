@@ -1,12 +1,12 @@
-import React, { PropsWithChildren, useContext, useState } from 'react'
+import { PropsWithChildren, useContext } from 'react'
 import { Box, Flex, Text } from '@radix-ui/themes';
-import { FullPageLoader } from "../../components/layout/Loaders";
+import { FullPageLoader } from "./Loaders";
 import { Link } from 'react-router-dom';
 import { UserContext } from '@/utils/auth/UserProvider';
 
 
-export const Auth = ({ children, ...props }: PropsWithChildren) => {
-    const { login, isLoading } = useContext(UserContext)
+const AuthContainer = ({ children, ...props }: PropsWithChildren) => {
+    const { isLoading } = useContext(UserContext)
 
     return (
         <Box className={'min-h-screen'}>
@@ -33,5 +33,4 @@ export const Auth = ({ children, ...props }: PropsWithChildren) => {
 
 }
 
-
-// Component.displayName = "AuthPage";
+export default AuthContainer;

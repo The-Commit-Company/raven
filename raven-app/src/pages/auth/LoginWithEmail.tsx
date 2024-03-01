@@ -1,7 +1,7 @@
-import { useContext, useState } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Link } from "react-router-dom";
-import { FrappeContext, FrappeConfig, FrappeError } from "frappe-react-sdk";
+import { useFrappePostCall } from "frappe-react-sdk";
 import {
     Box,
     Button,
@@ -11,10 +11,12 @@ import {
 } from "@radix-ui/themes";
 import { ErrorText, Label } from "@/components/common/Form";
 import { Loader } from "@/components/common/Loader";
-import { SuccessCallout, ErrorCallout, CalloutObject } from "@/components/common/Callouts";
+import { CalloutObject } from "@/components/common/Callouts/CustomCallout";
+import { ErrorCallout } from "@/components/common/Callouts/ErrorCallouts";
+import { SuccessCallout } from "@/components/common/Callouts/SuccessCallout";
 import { isEmailValid } from "@/utils/validations";
 import { LoginInputs } from "@/types/Auth/Login";
-import { Auth } from "@/pages/auth/Auth";
+import AuthContainer from "@/components/layout/AuthContainer";
 
 
 export const Component = () => {
@@ -23,15 +25,13 @@ export const Component = () => {
         handleSubmit,
         formState: { errors, isSubmitting },
     } = useForm<LoginInputs>();
-    const { call } = useContext(FrappeContext) as FrappeConfig;
-    const [error, setError] = useState<FrappeError | null>(null)
     const [callout, setCallout] = useState<CalloutObject | null>(null)
 
+    // POST Call to send login link (settings for social logins, email link etc)
+    const { call, error } = useFrappePostCall('frappe.www.login.send_login_link')
 
     async function sendEmailLink(values: LoginInputs) {
-        setError(null)
-        return call
-            .post("frappe.www.login.send_login_link", {
+        return call({
                 email: values.email,
             })
             .then((result) => {
@@ -40,13 +40,10 @@ export const Component = () => {
                     message: "Login Link sent on Email",
                 });
             })
-            .catch((err) => {
-                setError(err);
-            });
     }
 
     return (
-        <Auth>
+        <AuthContainer>
 
             {error && <ErrorCallout message={error.message} />}
             {callout && <SuccessCallout message={callout.message} />}
@@ -95,7 +92,7 @@ export const Component = () => {
                     </Flex>
                 </form>
             </Box>
-        </Auth>
+        </AuthContainer>
     );
 };
 
