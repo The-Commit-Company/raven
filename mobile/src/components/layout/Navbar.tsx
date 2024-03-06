@@ -1,13 +1,13 @@
 import { IonIcon, IonLabel, IonRouterOutlet, IonTabBar, IonTabButton, IonTabs } from "@ionic/react"
 import { BiChat, BiHash, BiUser } from "react-icons/bi"
-import { Redirect, Route } from "react-router-dom"
+import { Route } from "react-router-dom"
 import { Channels } from "../../pages/channels"
 import { DirectMessageList } from "../../pages/direct-messages/DirectMessageList"
 import { Profile } from "../../pages/profile"
 import { PropsWithChildren, useContext } from "react"
 import { UserContext } from "../../utils/auth/UserProvider"
 import { FullPageLoader } from "./loaders/FullPageLoader"
-import { Login } from "../../pages/auth/Login"
+import AuthContainer from "./AuthContainer"
 
 export const Navbar = () => {
     const { currentUser, isLoading } = useContext(UserContext)
@@ -68,7 +68,7 @@ export const ProtectedRoute = ({ children }: PropsWithChildren) => {
         return <FullPageLoader />
     }
     if (!currentUser || currentUser === 'Guest') {
-        return <Login />
+        return <AuthContainer />
     } else {
         return children
     }
