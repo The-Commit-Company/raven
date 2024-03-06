@@ -114,6 +114,7 @@ export const Login = (props: LoginWithEmailProps) => {
                                     type="submit"
                                     className='ion-margin-top'
                                     expand="block"
+                                    disabled={isSubmitting}
                                 >
                                     {isSubmitting ? <IonSpinner name="crescent" /> : "Login"}
                                 </IonButton>
@@ -131,7 +132,7 @@ export const Login = (props: LoginWithEmailProps) => {
                         {
                             loginContext?.message?.social_login ? loginContext?.message?.provider_logins.map((soc: SocialProvider, i: number) => {
                                 return (
-                                        <IonButton className='ion-margin-top' fill="outline" type="button" expand="block" size="default" href={soc.auth_url}>
+                                        <IonButton disabled={isSubmitting} className='ion-margin-top' fill="outline" type="button" expand="block" size="default" href={soc.auth_url}>
                                             {/* <Link to={soc.auth_url} className="items-center"> */}
                                                 <div className='flex items-center'>
                                                     <div className='flex mr-1'>
