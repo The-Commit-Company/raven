@@ -12,7 +12,8 @@ export interface LoginContext {
         login_with_email_link: boolean,
         provider_logins: [],
         social_login: boolean,
-        two_factor_is_enabled: boolean
+        two_factor_is_enabled: boolean,
+        disable_signup: 0 | 1 
     } | undefined
 }
 

@@ -13,6 +13,7 @@ export interface LoginContext {
         provider_logins: [],
         social_login: boolean,
         two_factor_is_enabled: boolean
+        disable_signup:0 | 1
     } | undefined
 }
 

@@ -62,4 +62,6 @@ def get_context():
 
     context["two_factor_is_enabled"]=two_factor_is_enabled()
 
+    context["disable_signup"] = frappe.get_website_settings("disable_signup")
+
     return context

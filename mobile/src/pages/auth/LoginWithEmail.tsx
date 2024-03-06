@@ -1,15 +1,13 @@
 import { useState } from "react";
 import { useFrappePostCall } from "frappe-react-sdk";
-import { IonButton, IonInput, IonItem, IonSpinner } from '@ionic/react'
+import { IonButton, IonInput, IonItem, IonRouterLink, IonSpinner } from '@ionic/react'
 import { SuccessCallout, CalloutObject, ErrorCallout } from '@/components/common/Callouts'
 import { Controller, useForm } from 'react-hook-form'
 import { LoginInputs } from "@/types/Auth/Login";
+import { ActiveScreenProps } from "@/components/layout/AuthContainer";
 
-export type LoginWithEmailProps = {
-    setIsLoginWithEmailScreen: (state: boolean)=>void
-}
 
-export const LoginWithEmail = (props: LoginWithEmailProps) => {
+export const LoginWithEmail = (props: ActiveScreenProps) => {
     const {
         control,
         handleSubmit,
@@ -81,15 +79,16 @@ export const LoginWithEmail = (props: LoginWithEmailProps) => {
                         )}
                     </IonButton>
                 </form>
-                <IonButton
-                    type="button"
-                    onClick={()=>props.setIsLoginWithEmailScreen(false)}
-                    expand="block"
-                    fill="clear"
-                >
-                    Back to Login
-                </IonButton>
+                <div className="flex justify-center">
+                    <IonRouterLink
+                        onClick={() => props.setActiveScreen({ login: true, loginWithEmail: false, signup: false })}
+
+                        className='cursor-pointer ml-1'
+                    >
+                        Back to Login
+                    </IonRouterLink>
+                </div>
             </div>
-            </>
+        </>
     );
 };

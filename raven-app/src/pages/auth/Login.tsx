@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { BiShow, BiHide, BiLogoGithub, BiLogoGoogle, BiLogoFacebookCircle, BiMailSend } from "react-icons/bi";
 import { Link } from "react-router-dom";
-import { Box, Button, Flex, IconButton, Text, TextField, Separator } from "@radix-ui/themes";
+import { Box, Button, Flex, IconButton, Text, TextField, Separator, Link as LinkButton } from "@radix-ui/themes";
 import { FrappeError, useFrappeGetCall, useFrappeAuth, AuthResponse } from "frappe-react-sdk";
 import { Loader } from "@/components/common/Loader";
 import { ErrorText, Label } from "@/components/common/Form";
@@ -175,6 +175,20 @@ export const Component = () => {
                                 </Flex> : null
                         }
                     </Box>
+            }
+            {
+                loginContext?.message?.disable_signup === 0 ?
+                    <Flex gap="1" justify="center" className="mt-4">
+                        <Text size="2" color="gray">Don't have account?</Text>
+                        <LinkButton
+                            size="2"
+                            asChild
+                        >
+                            <Link to="/signup">
+                                <Text>Sign Up</Text>
+                            </Link>
+                        </LinkButton>
+                    </Flex> : null
             }
 
         </AuthContainer>

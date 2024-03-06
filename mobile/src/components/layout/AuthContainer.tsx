@@ -3,10 +3,27 @@ import { IonContent, IonHeader, IonImg, IonPage, IonTitle, IonToolbar } from '@i
 import raven_logo from '../../assets/raven_logo.png'
 import { LoginWithEmail } from '@/pages/auth/LoginWithEmail';
 import { Login } from '@/pages/auth/Login';
+import { SignUp } from '@/pages/auth/SignUp';
 
+type ActiveScreenType = {
+    login: boolean,
+    loginWithEmail: boolean,
+    signup: boolean;
+}
+
+export type ActiveScreenProps = {
+    setActiveScreen: (screen: ActiveScreenType) => void
+}
 
 const AuthContainer = ({ children, ...props }: PropsWithChildren) => {
-    const [isLoginWithEmailScreen, setIsLoginWithEmailScreen] = useState<boolean>(false)
+
+    // default active screen should be login and others should be shown depending on action by user
+    const [activeScreen, setActiveScreen] = useState<ActiveScreenType>({
+        login: true,
+        loginWithEmail: false,
+        signup: false
+    })
+
 
     return (
         <IonPage>
@@ -25,14 +42,17 @@ const AuthContainer = ({ children, ...props }: PropsWithChildren) => {
 
                     <div className='w-100'>
                         {
-                            isLoginWithEmailScreen ? <LoginWithEmail setIsLoginWithEmailScreen={setIsLoginWithEmailScreen}/> : <Login setIsLoginWithEmailScreen={setIsLoginWithEmailScreen}/>
+                            <>
+                                {activeScreen.login && <Login setActiveScreen={setActiveScreen}></Login>}
+                                {activeScreen.loginWithEmail && <LoginWithEmail setActiveScreen={setActiveScreen}></LoginWithEmail>}
+                                {activeScreen.signup && <SignUp setActiveScreen={setActiveScreen}></SignUp>}
+                            </>
                         }
                     </div>
                 </div>
             </IonContent>
         </IonPage>
     )
-
 }
 
 export default AuthContainer;
