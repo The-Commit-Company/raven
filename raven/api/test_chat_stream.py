@@ -23,6 +23,7 @@ def create_messages():
             'doctype': 'Raven Message',
             'name': f'{CHANNEL_ID}-{i}',
             'text': f'Test Message {i}',
+            'content': f'Test Message {i}',
             'channel_id': CHANNEL_ID,
             'message_type': 'Text',
             'creation': creation,

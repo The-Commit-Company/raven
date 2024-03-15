@@ -1,5 +1,5 @@
 import { useFrappeDocumentEventListener, useFrappeEventListener, useFrappeGetCall, useFrappePostCall } from 'frappe-react-sdk'
-import { MutableRefObject, useMemo } from 'react'
+import { MutableRefObject, useMemo, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { Message } from '../../../../../../types/Messaging/Message'
 import { convertFrappeTimestampToUserTimezone } from '@/utils/dateConversions/utils'
@@ -25,11 +25,14 @@ const useChatStream = (scrollRef: MutableRefObject<HTMLDivElement | null>) => {
 
     const { channelID } = useParams()
 
+    const [baseMessage, setBaseMessage] = useState<string | undefined>()
+
     const { call, loading: loadingOlderMessages } = useFrappePostCall('raven.api.chat_stream.get_older_messages')
 
     const { data, isLoading, error, mutate } = useFrappeGetCall<GetMessagesResponse>('raven.api.chat_stream.get_messages', {
         'channel_id': channelID,
-    }, `get_messages_for_channel_${channelID}`, {
+        'base_message': baseMessage
+    }, baseMessage ? `get_messages_for_channel_${channelID}_${baseMessage}` : `get_messages_for_channel_${channelID}`, {
         revalidateOnFocus: false,
         onSuccess: () => {
             scrollRef.current?.scrollTo(0, scrollRef.current?.scrollHeight)
@@ -181,7 +184,7 @@ const useChatStream = (scrollRef: MutableRefObject<HTMLDivElement | null>) => {
 
 
     // If a message is saved/unsaved, update the message
-    useFrappeEventListener('raven:message_saved', (event) => {
+    useFrappeEventListener('message_saved', (event) => {
 
         mutate((d) => {
             if (event.message_id && d) {
@@ -296,6 +299,10 @@ const useChatStream = (scrollRef: MutableRefObject<HTMLDivElement | null>) => {
         }
     }, [data])
 
+    const changeBaseMessage = (messageID: string) => {
+        setBaseMessage(messageID)
+    }
+
     return {
         messages,
         hasOlderMessages: data?.message.has_old_messages ?? false,
@@ -303,7 +310,8 @@ const useChatStream = (scrollRef: MutableRefObject<HTMLDivElement | null>) => {
         loadingOlderMessages,
         isLoading,
         error,
-        loadOlderMessages
+        loadOlderMessages,
+        changeBaseMessage
     }
 }
 
