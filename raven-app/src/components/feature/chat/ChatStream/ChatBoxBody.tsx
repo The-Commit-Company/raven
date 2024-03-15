@@ -102,15 +102,7 @@ export const ChatBoxBody = ({ channelData }: ChatBoxBodyProps) => {
                 maxFileSize={10000000}>
                 <ChatStream
                     replyToMessage={handleReplyAction}
-                // hasOlderMessages={hasOlderMessages}
-                // messages={messages} />
                 />
-                {/* {isLoading ? <FullPageLoader className="w-full" /> :
-                        <ChatHistory
-                            parsedMessages={data.message}
-                            replyToMessage={handleReplyAction}
-                            channelData={channelData} />
-                    } */}
                 {channelData?.is_archived == 0 && (isUserInChannel || channelData?.type === 'Open')
                     &&
                     <Suspense fallback={<Flex align='center' justify='center' width='100%' height='9'><Loader /></Flex>}>
