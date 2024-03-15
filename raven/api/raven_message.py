@@ -114,7 +114,7 @@ def save_message(message_id, add=False):
 
     liked_by = frappe.db.get_value('Raven Message', message_id, '_liked_by')
 
-    frappe.publish_realtime('raven:message_saved', {
+    frappe.publish_realtime('message_saved', {
         'message_id': message_id,
         'liked_by': liked_by,
     }, user=frappe.session.user)
@@ -198,16 +198,6 @@ def get_messages_with_dates(channel_id):
     messages = get_messages(channel_id)
     track_visit(channel_id, True)
     return parse_messages(messages)
-
-
-@frappe.whitelist()
-def get_index_of_message(channel_id, message_id):
-    messages = get_messages(channel_id)
-    parsed_messages = parse_messages(messages)
-    for i in range(len(parsed_messages)):
-        if parsed_messages[i]['block_type'] == 'message' and parsed_messages[i]['data']['name'] == message_id:
-            return i
-    return -1
 
 
 @frappe.whitelist()
