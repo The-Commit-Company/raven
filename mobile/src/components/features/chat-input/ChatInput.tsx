@@ -22,7 +22,7 @@ export const ChatInput = ({ channelID, allChannels, allMembers, onMessageSend }:
         return call({
             channel_id: channelID,
             text: message,
-            json,
+            json_content: json,
             is_reply: 0,
             linked_message: null,
         }).then(() => {
