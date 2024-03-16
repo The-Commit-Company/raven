@@ -110,6 +110,29 @@ class RavenMessage(Document):
                 if user_id and user_id not in entered_ids:
                     self.append('mentions', {'user': user_id})
                     entered_ids.add(user_id)
+                    self.send_notification_for_mentions(user_id)
+        
+    
+    def send_notification_for_mentions(self, user):
+        print("Sending notification for mentions", user)
+        try:
+            from frappe.push_notification import PushNotification
+            push_notification = PushNotification("raven")
+            
+            if push_notification.is_enabled():
+                push_notification.send_notification_to_user(
+					user,
+                    "You were mentioned",
+					self.content
+					# icon=f"{frappe.utils.get_url()}/assets/hrms/manifest/favicon-196.png",
+				)
+        except ImportError:
+			# push notifications are not supported in the current framework version
+            pass
+        
+        except Exception:
+            print(f"Error sending push notification: {self.name}")
+            # self.log_error(f"Error sending push notification: {self.name}")
 
     def after_delete(self):
         self.send_update_event(type="delete")

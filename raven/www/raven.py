@@ -20,6 +20,7 @@ def get_context(context):
             boot = frappe.sessions.get()
         except Exception as e:
             raise frappe.SessionBootFailed from e
+    boot["push_relay_server_url"] = frappe.conf.get("push_relay_server_url")
     boot_json = frappe.as_json(boot, indent=None, separators=(",", ":"))
     boot_json = SCRIPT_TAG_PATTERN.sub("", boot_json)
 
@@ -29,7 +30,7 @@ def get_context(context):
     context.update({
         "build_version": frappe.utils.get_build_version(),
         "boot": boot_json,
-        "csrf_token": csrf_token,
+        "csrf_token": csrf_token
     })
 
     return context
@@ -48,6 +49,7 @@ def get_boot():
     except Exception as e:
         raise frappe.SessionBootFailed from e
 
+    boot["push_relay_server_url"] = frappe.conf.get("push_relay_server_url")
     boot_json = frappe.as_json(boot, indent=None, separators=(",", ":"))
     boot_json = SCRIPT_TAG_PATTERN.sub("", boot_json)
 
