@@ -1,6 +1,7 @@
 import frappe
 import json
 import frappe.sessions
+from frappe.utils.telemetry import capture
 import re
 
 no_cache = 1
@@ -25,6 +26,9 @@ def get_context(context):
 
     boot_json = CLOSING_SCRIPT_TAG_PATTERN.sub("", boot_json)
     boot_json = json.dumps(boot_json)
+
+    if frappe.session.user != 'Guest':
+         capture('active_site:mobile', 'raven')
 
     context.update({
         "build_version": frappe.utils.get_build_version(),
