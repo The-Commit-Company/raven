@@ -14,7 +14,6 @@ import { Loader } from "@/components/common/Loader"
 import { Flex, Box, IconButton } from "@radix-ui/themes"
 import { ReplyMessageBox } from "../ChatMessage/ReplyMessageBox/ReplyMessageBox"
 import { BiX } from "react-icons/bi"
-import { VirtuosoRefContext } from "@/utils/message/VirtuosoRefProvider"
 import ChatStream from "./ChatStream"
 
 

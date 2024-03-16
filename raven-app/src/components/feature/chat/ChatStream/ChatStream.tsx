@@ -5,12 +5,12 @@ import { MessageItem } from '../ChatMessage/MessageItem'
 import { ChannelHistoryFirstMessage } from '@/components/layout/EmptyState'
 import { useParams } from 'react-router-dom'
 import useChatStream from './useChatStream'
-import { UIEventHandler, useEffect, useRef, useState } from 'react'
-import { Flex } from '@radix-ui/themes'
+import { useRef } from 'react'
 import { Loader } from '@/components/common/Loader'
 import ChatStreamLoader from './ChatStreamLoader'
 import clsx from 'clsx'
 import { DateSeparator } from '@/components/layout/Divider/DateSeparator'
+import { useInView } from 'react-intersection-observer'
 
 /**
  * Anatomy of a message
@@ -66,8 +66,9 @@ const ChatStream = ({ replyToMessage }: Props) => {
     const { channelID } = useParams()
 
     const scrollRef = useRef<HTMLDivElement | null>(null)
+    // const prevScrollTop = useRef(0)
 
-    const { messages, hasOlderMessages, loadOlderMessages, loadingOlderMessages, isLoading, changeBaseMessage } = useChatStream(scrollRef)
+    const { messages, hasOlderMessages, loadOlderMessages, loadingOlderMessages, hasNewMessages, loadNewerMessages, isLoading, highlightedMessage, scrollToMessage } = useChatStream(scrollRef)
     const { setDeleteMessage, ...deleteProps } = useDeleteMessage()
 
     const { setEditMessage, ...editProps } = useEditMessage()
@@ -76,53 +77,39 @@ const ChatStream = ({ replyToMessage }: Props) => {
         scrollToMessage(messageID)
     }
 
-    const [highlightedMessage, setHighlightedMessage] = useState<string | null>(null)
+    const { ref: oldLoaderRef } = useInView({
+        fallbackInView: true,
+        initialInView: false,
+        skip: !hasOlderMessages,
+        onChange: (async (inView) => {
+            if (inView && hasOlderMessages) {
+                const lastMessage = messages ? messages[messages.length - 1] : null;
+                await loadOlderMessages()
+                // Restore the scroll position to the last message before loading more
+                document.getElementById(`message-${lastMessage?.name}`)?.scrollIntoView()
+            }
+        })
+    });
 
-    useEffect(() => {
-        let timer: NodeJS.Timeout | null = null;
-        // Clear the highlighted message after 4 seconds
-        if (highlightedMessage) {
-            timer = setTimeout(() => {
-                setHighlightedMessage(null)
-            }, 4000)
-        }
-
-        return () => {
-            if (timer)
-                clearTimeout(timer)
-        }
-    }, [highlightedMessage])
-
-    const scrollToMessage = (messageID: string) => {
-        // Check if the message is in the messages array
-        const messageIndex = messages?.findIndex(message => message.name === messageID)
-        // If it is, scroll to it
-        if (messageIndex !== undefined && messageIndex !== -1) {
-            // Found the message
-            // Use the id to scroll to the message
-            document.getElementById(`message-${messageID}`)?.scrollIntoView({ behavior: 'smooth', block: 'center' })
-            setHighlightedMessage(messageID)
-        } else {
-
-            // TODO: If not, change the base message, fetch the message and scroll to it.
-            console.log("Changing base message")
-            changeBaseMessage(messageID)
-            setHighlightedMessage(messageID)
-        }
-
-    }
-
-    const handleScroll: UIEventHandler<HTMLDivElement> = (e) => {
-        if (hasOlderMessages) {
-            if (e.currentTarget.scrollTop - e.currentTarget.clientHeight + e.currentTarget.scrollHeight < 100) {
-                loadOlderMessages()
+    const { ref: newLoaderRef } = useInView({
+        fallbackInView: true,
+        skip: !hasNewMessages,
+        initialInView: false,
+        onChange: (inView) => {
+            if (inView && hasNewMessages) {
+                loadNewerMessages()
             }
         }
-    }
-
+    });
 
     return (
-        <div className='h-full flex flex-col-reverse overflow-y-auto' ref={scrollRef} onScroll={handleScroll}>
+        <div className='h-full flex flex-col overflow-y-auto' ref={scrollRef}>
+            <div ref={oldLoaderRef}>
+                {hasOlderMessages && !isLoading && <div className='flex w-full min-h-8 pb-4 justify-center items-center' >
+                    <Loader />
+                </div>}
+            </div>
+            {!isLoading && !hasOlderMessages && <ChannelHistoryFirstMessage channelID={channelID ?? ''} />}
             {isLoading && <ChatStreamLoader />}
             <div className={clsx('flex flex-col-reverse pb-4 z-50 transition-opacity duration-400 ease-in-out', isLoading ? 'opacity-0' : 'opacity-100')}>
                 {messages?.map(message => {
@@ -132,7 +119,7 @@ const ChatStream = ({ replyToMessage }: Props) => {
                         </DateSeparator>
                     } else {
                         return <div key={`${message.name}_${message.modified}`} id={`message-${message.name}`}>
-                            <div className="w-full overflow-x-clip overflow-y-visible text-ellipsis">
+                            <div className="w-full overflow-x-clip overflow-y-visible text-ellipsis animate-fadein">
                                 <MessageItem
                                     message={message}
                                     isHighlighted={highlightedMessage === message.name}
@@ -146,10 +133,11 @@ const ChatStream = ({ replyToMessage }: Props) => {
                 }
                 )}
             </div>
-            {loadingOlderMessages && <Flex className='w-full min-h-16 justify-center items-center'>
-                <Loader />
-            </Flex>}
-            {!isLoading && !hasOlderMessages && <ChannelHistoryFirstMessage channelID={channelID ?? ''} />}
+            {hasNewMessages && <div ref={newLoaderRef}>
+                <div className='flex w-full min-h-8 pb-4 justify-center items-center'>
+                    <Loader />
+                </div>
+            </div>}
             <DeleteMessageDialog {...deleteProps} />
             <EditMessageDialog {...editProps} />
         </div>

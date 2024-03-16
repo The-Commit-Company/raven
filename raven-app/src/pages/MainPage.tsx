@@ -2,7 +2,6 @@ import { Flex, Box } from '@radix-ui/themes'
 import { Outlet } from 'react-router-dom'
 import { lazy, Suspense } from 'react'
 import { Sidebar } from '../components/layout/Sidebar/Sidebar'
-import { VirtuosoRefProvider } from '../utils/message/VirtuosoRefProvider'
 import { ChannelListProvider } from '../utils/channel/ChannelListProvider'
 import { UserListProvider } from '@/utils/users/UserListProvider'
 import { ActiveUsersProvider } from '@/utils/users/ActiveUsersProvider'
@@ -27,9 +26,7 @@ export const MainPage = () => {
                                     <Sidebar />
                                 </Box>
                                 <Box className='ml-[var(--sidebar-width)] w-[calc(100vw-var(--sidebar-width))] dark:bg-gray-2'>
-                                    <VirtuosoRefProvider>
-                                        <Outlet />
-                                    </VirtuosoRefProvider>
+                                    <Outlet />
                                 </Box>
                             </Flex>
                         </div>

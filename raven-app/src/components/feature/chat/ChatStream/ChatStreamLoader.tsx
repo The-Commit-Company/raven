@@ -2,7 +2,7 @@ import { Separator, Skeleton } from '@radix-ui/themes'
 
 const ChatStreamLoader = () => {
     return (
-        <div className='py-4'>
+        <div className='py-4 animate-fadein'>
             <MessageItemLoader isContinuation={true} isShortText />
             <MessageItemLoader isContinuation={false} isImage />
             <MessageItemLoader isContinuation={false} isShortText />

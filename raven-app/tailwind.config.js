@@ -140,7 +140,17 @@ export default {
         radius4: 'var(--radius-4)',
         radius5: 'var(--radius-5)',
         radius6: 'var(--radius-6)',
-      }
+      },
+      animation: {
+        fadein: 'fadeIn .3s ease-in',
+      },
+
+      keyframes: {
+        fadeIn: {
+          from: { opacity: 0 },
+          to: { opacity: 1 },
+        },
+      },
     },
   },
   darkMode: 'class',

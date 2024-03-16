@@ -14,7 +14,7 @@ import { ImageMessageBlock } from './Renderers/ImageMessage'
 import { FileMessageBlock } from './Renderers/FileMessage'
 import { TiptapRenderer } from './Renderers/TiptapRenderer/TiptapRenderer'
 import { QuickActions } from './MessageActions/QuickActions/QuickActions'
-import { memo, useState } from 'react'
+import { memo, useMemo, useState } from 'react'
 import { ReplyMessageBox } from './ReplyMessageBox/ReplyMessageBox'
 import { generateAvatarColor } from '../../select-member/GenerateAvatarColor'
 import { DoctypeLinkRenderer } from './Renderers/DoctypeLinkRenderer'
@@ -59,6 +59,14 @@ export const MessageItem = ({ message, setDeleteMessage, isHighlighted, onReplyM
 
     }
 
+    const replyMessageDetails = useMemo(() => {
+        if (typeof replied_message_details === 'string') {
+            return JSON.parse(replied_message_details)
+        } else {
+            return replied_message_details
+        }
+    }, [replied_message_details])
+
     return (
         <Box className='relative'>
             <ContextMenu.Root>
@@ -95,7 +103,7 @@ export const MessageItem = ({ message, setDeleteMessage, isHighlighted, onReplyM
                                 className='min-w-[32rem] cursor-pointer mb-1'
                                 role='button'
                                 onClick={() => onReplyMessageClick(linked_message)}
-                                message={JSON.parse(replied_message_details)} />
+                                message={replyMessageDetails} />
                             }
                             { /* Show message according to type */}
                             <MessageContent

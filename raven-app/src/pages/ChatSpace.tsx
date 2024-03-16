@@ -15,9 +15,9 @@ const ChatSpace = () => {
     const { channelID } = useParams<{ channelID: string }>()
     // const className = 'bg-white dark:from-accent-1 dark:to-95% dark:to-accent-2 dark:bg-gradient-to-b'
 
-    return <Box>
+    return <div className="scroll-smooth">
         {channelID && <ChatSpaceArea channelID={channelID} />}
-    </Box>
+    </div>
 
 }
 

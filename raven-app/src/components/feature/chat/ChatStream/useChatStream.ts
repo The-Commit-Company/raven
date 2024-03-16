@@ -1,8 +1,9 @@
 import { useFrappeDocumentEventListener, useFrappeEventListener, useFrappeGetCall, useFrappePostCall } from 'frappe-react-sdk'
-import { MutableRefObject, useMemo, useState } from 'react'
-import { useParams } from 'react-router-dom'
+import { MutableRefObject, useEffect, useLayoutEffect, useMemo, useState } from 'react'
+import { useBeforeUnload, useLocation, useNavigate, useParams } from 'react-router-dom'
 import { Message } from '../../../../../../types/Messaging/Message'
 import { convertFrappeTimestampToUserTimezone } from '@/utils/dateConversions/utils'
+import { useDebounce } from '@/hooks/useDebounce'
 
 interface GetMessagesResponse {
     message: {
@@ -25,19 +26,79 @@ const useChatStream = (scrollRef: MutableRefObject<HTMLDivElement | null>) => {
 
     const { channelID } = useParams()
 
-    const [baseMessage, setBaseMessage] = useState<string | undefined>()
+    const location = useLocation()
+    const navigate = useNavigate()
+    const { state } = location
 
-    const { call, loading: loadingOlderMessages } = useFrappePostCall('raven.api.chat_stream.get_older_messages')
 
+    const [highlightedMessage, setHighlightedMessage] = useState<string | null>(state?.baseMessage ? state.baseMessage : null)
+
+    /** On page reload, we need to clear the state */
+    useBeforeUnload(() => {
+        window.history.replaceState({}, '')
+    })
+    useEffect(() => {
+        let timer: NodeJS.Timeout | null = null;
+        // Clear the highlighted message after 4 seconds
+        if (highlightedMessage) {
+            timer = setTimeout(() => {
+                setHighlightedMessage(null)
+            }, 4000)
+        }
+
+        return () => {
+            if (timer)
+                clearTimeout(timer)
+        }
+    }, [highlightedMessage])
+
+    const { call: fetchOlderMessages, loading: loadingOlderMessages } = useFrappePostCall('raven.api.chat_stream.get_older_messages')
+    const { call: fetchNewerMessages, loading: loadingNewerMessages } = useFrappePostCall('raven.api.chat_stream.get_newer_messages')
+
+    const [done, setDone] = useState(false)
     const { data, isLoading, error, mutate } = useFrappeGetCall<GetMessagesResponse>('raven.api.chat_stream.get_messages', {
         'channel_id': channelID,
-        'base_message': baseMessage
-    }, baseMessage ? `get_messages_for_channel_${channelID}_${baseMessage}` : `get_messages_for_channel_${channelID}`, {
+        'base_message': state?.baseMessage ? state.baseMessage : undefined
+    }, { path: `get_messages_for_channel_${channelID}`, baseMessage: state?.baseMessage }, {
         revalidateOnFocus: false,
-        onSuccess: () => {
-            scrollRef.current?.scrollTo(0, scrollRef.current?.scrollHeight)
+        onSuccess: (data) => {
+            if (!highlightedMessage) {
+                if (!data.message.has_new_messages) {
+                    setDone(true)
+                }
+            } else {
+                setTimeout(() => {
+                    document.getElementById(`message-${highlightedMessage}`)?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+                }, 100)
+            }
         }
     })
+
+    /** When loading is complete, scroll down to the bottom
+     *
+     * Need to scroll down twice because the scrollHeight is not updated immediately after the first scroll
+     */
+    useLayoutEffect(() => {
+        if (done) {
+
+            setTimeout(() => {
+                scrollRef.current?.scroll({
+                    top: scrollRef.current?.scrollHeight,
+                    // behavior: 'smooth',
+                })
+            }, 50)
+
+            setTimeout(() => {
+                scrollRef.current?.scroll({
+                    top: scrollRef.current?.scrollHeight,
+                    // behavior: 'smooth',
+                })
+            }, 200)
+
+
+            scrollRef.current?.scrollTo(0, scrollRef.current?.scrollHeight)
+        }
+    }, [done, channelID])
 
     /**
      * Instead of maintaining two arrays for messages and previous messages, we can maintain a single array
@@ -215,13 +276,16 @@ const useChatStream = (scrollRef: MutableRefObject<HTMLDivElement | null>) => {
 
     })
 
+    // Do not loader older messages if the first request is just completed
+    const doneDebounced = useDebounce(done, 1000)
+
     /** Callback to load older messages */
     const loadOlderMessages = () => {
 
-        if (loadingOlderMessages || !data?.message.has_old_messages) {
-            return
+        if (!doneDebounced || loadingOlderMessages || !data?.message.has_old_messages) {
+            return Promise.resolve()
         }
-        mutate((d) => {
+        return mutate((d) => {
             let oldestMessage: Message | null = null;
             if (d && d.message.messages.length > 0) {
                 if (d.message.has_old_messages) {
@@ -229,12 +293,10 @@ const useChatStream = (scrollRef: MutableRefObject<HTMLDivElement | null>) => {
 
                     if (oldestMessage) {
 
-                        return call({
+                        return fetchOlderMessages({
                             channel_id: channelID,
                             from_message: oldestMessage.name,
                         }).then((res) => {
-                            // console.log(res?.message.messages.map(m => m.name))
-                            // console.log(oldestMessage?.name)
 
                             const mergedMessages = [...d.message.messages, ...res?.message.messages ?? []]
 
@@ -257,8 +319,54 @@ const useChatStream = (scrollRef: MutableRefObject<HTMLDivElement | null>) => {
         }, {
             revalidate: false,
         })
+    }
 
+    /** Callback to load newer messages */
+    const loadNewerMessages = () => {
 
+        if (loadingNewerMessages || !data?.message.has_new_messages) {
+            Promise.resolve()
+        }
+
+        if (highlightedMessage) {
+            // Do not load new messages when we are scrolling to a specific message via base message
+            return Promise.resolve()
+        }
+        mutate((d) => {
+            let newestMessage: Message | null = null;
+            if (d && d.message.messages.length > 0) {
+                if (d.message.has_new_messages) {
+                    newestMessage = d.message.messages[0]
+
+                    if (newestMessage) {
+
+                        return fetchNewerMessages({
+                            channel_id: channelID,
+                            from_message: newestMessage.name,
+                            limit: 10
+                        }).then((res: any) => {
+
+                            const mergedMessages = [...res?.message.messages ?? [], ...d.message.messages]
+
+                            return {
+                                message: {
+                                    messages: mergedMessages,
+                                    has_old_messages: d?.message.has_old_messages ?? false,
+                                    has_new_messages: res?.message.has_new_messages ?? false
+                                }
+                            }
+
+                        }).catch(() => {
+                            // TODO: Handle errors here
+                            return d
+                        })
+                    }
+                }
+            }
+            return d
+        }, {
+            revalidate: false,
+        })
     }
 
     const messages = useMemo(() => {
@@ -299,8 +407,25 @@ const useChatStream = (scrollRef: MutableRefObject<HTMLDivElement | null>) => {
         }
     }, [data])
 
-    const changeBaseMessage = (messageID: string) => {
-        setBaseMessage(messageID)
+    const scrollToMessage = (messageID: string) => {
+        // Check if the message is in the messages array
+        const messageIndex = messages?.findIndex(message => message.name === messageID)
+        // If it is, scroll to it
+        if (messageIndex !== undefined && messageIndex !== -1) {
+            // Found the message
+            // Use the id to scroll to the message
+            document.getElementById(`message-${messageID}`)?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+            setHighlightedMessage(messageID)
+        } else {
+            // If not, change the base message, fetch the message and scroll to it.
+            navigate(location, {
+                state: {
+                    baseMessage: messageID
+                }
+            })
+            setHighlightedMessage(messageID)
+        }
+
     }
 
     return {
@@ -310,8 +435,10 @@ const useChatStream = (scrollRef: MutableRefObject<HTMLDivElement | null>) => {
         loadingOlderMessages,
         isLoading,
         error,
+        loadNewerMessages,
         loadOlderMessages,
-        changeBaseMessage
+        scrollToMessage,
+        highlightedMessage
     }
 }
 
