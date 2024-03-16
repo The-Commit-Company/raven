@@ -1,6 +1,7 @@
 import datetime
 
 import frappe
+from frappe import _
 from frappe.query_builder import Order
 
 from raven.api.raven_message import track_visit
@@ -15,7 +16,7 @@ def get_messages(channel_id: str, limit: int = 20, base_message: str | None = No
 
 	# Check permission for channel access
 	if not frappe.has_permission(doctype="Raven Channel", doc=channel_id, ptype="read"):
-		frappe.throw("You do not have permission to access this channel", frappe.PermissionError)
+		frappe.throw(_("You do not have permission to access this channel"), frappe.PermissionError)
 
 	# Fetch messages for the channel
 	if base_message:
@@ -112,7 +113,7 @@ def get_older_messages(channel_id: str, from_message: str, limit: int = 20):
 
 	# Check permission for channel access
 	if not frappe.has_permission(doctype="Raven Channel", doc=channel_id, ptype="read"):
-		frappe.throw("You do not have permission to access this channel", frappe.PermissionError)
+		frappe.throw(_("You do not have permission to access this channel"), frappe.PermissionError)
 	# Fetch older messages for the channel
 	from_timestamp = frappe.get_cached_value("Raven Message", from_message, "creation")
 
@@ -191,7 +192,7 @@ def get_newer_messages(channel_id: str, from_message: str, limit: int = 20):
 
 	# Check permission for channel access
 	if not frappe.has_permission(doctype="Raven Channel", doc=channel_id, ptype="read"):
-		frappe.throw("You do not have permission to access this channel", frappe.PermissionError)
+		frappe.throw(_("You do not have permission to access this channel"), frappe.PermissionError)
 
 	# Fetch older messages for the channel
 	from_timestamp = frappe.get_cached_value("Raven Message", from_message, "creation")

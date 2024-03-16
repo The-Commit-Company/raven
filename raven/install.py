@@ -13,7 +13,8 @@ def create_general_channel():
 		channel.name = "general"
 		channel.type = "Open"
 		channel.save(ignore_permissions=True)
-		frappe.db.commit()
+		# Part of installation, hence needs to be committed manually
+		frappe.db.commit()  # nosemgrep
 
 
 def add_standard_navbar_items():

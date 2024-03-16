@@ -36,9 +36,10 @@ def refresh_user_active_state(deactivate=False):
 	else:
 		set_user_active()
 
+	# // nosemgrep This has to be published to all the users
 	frappe.publish_realtime(
 		"raven:user_active_state_updated",
 		{"user": frappe.session.user, "active": not deactivate},
-	)
+	)  # nosemgrep
 
 	return "ok"

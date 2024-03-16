@@ -1,4 +1,5 @@
 import frappe
+from frappe import _
 
 
 @frappe.whitelist()
@@ -10,8 +11,7 @@ def remove_channel_member(user_id, channel_id):
 	# Delete raven channel member
 	if member:
 		frappe.delete_doc("Raven Channel Member", member)
-		frappe.db.commit()
 	else:
-		frappe.throw("User is not a member of this channel")
+		frappe.throw(_("User is not a member of this channel"))
 
 	return True

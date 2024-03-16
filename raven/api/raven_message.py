@@ -8,11 +8,6 @@ from frappe.query_builder.functions import Coalesce, Count
 
 from raven.api.raven_channel import get_peer_user_id
 
-channel = frappe.qb.DocType("Raven Channel")
-channel_member = frappe.qb.DocType("Raven Channel Member")
-message = frappe.qb.DocType("Raven Message")
-user = frappe.qb.DocType("User")
-
 
 def track_visit(channel_id, commit=False):
 	"""
@@ -43,7 +38,7 @@ def track_visit(channel_id, commit=False):
 	)
 	# Need to commit the changes to the database if the request is a GET request
 	if commit:
-		frappe.db.commit()
+		frappe.db.commit()  # nosemgrep
 
 
 @frappe.whitelist(methods=["POST"])
@@ -86,7 +81,7 @@ def fetch_recent_files(channel_id):
 	Check if the user has permission to view the channel
 	"""
 	if not frappe.has_permission("Raven Channel", doc=channel_id):
-		frappe.throw("You don't have permission to view this channel", frappe.PermissionError)
+		frappe.throw(_("You don't have permission to view this channel"), frappe.PermissionError)
 	files = frappe.db.get_all(
 		"Raven Message",
 		filters={"channel_id": channel_id, "message_type": ["in", ["Image", "File"]]},
@@ -229,7 +224,7 @@ def check_permission(channel_id):
 		elif frappe.session.user == "Administrator":
 			pass
 		else:
-			frappe.throw("You don't have permission to view this channel", frappe.PermissionError)
+			frappe.throw(_("You don't have permission to view this channel"), frappe.PermissionError)
 
 
 @frappe.whitelist()
@@ -288,7 +283,10 @@ def get_unread_count_for_channels():
 
 @frappe.whitelist()
 def get_timeline_message_content(doctype, docname):
-
+	channel = frappe.qb.DocType("Raven Channel")
+	channel_member = frappe.qb.DocType("Raven Channel Member")
+	message = frappe.qb.DocType("Raven Message")
+	user = frappe.qb.DocType("User")
 	query = (
 		frappe.qb.from_(message)
 		.select(

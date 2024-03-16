@@ -11,4 +11,5 @@ def remove_standard_navbar_items():
 		"Navbar Item",
 		{"item_label": "Raven", "is_standard": 1, "item_type": "Route", "route": "/raven"},
 	)
-	frappe.db.commit()
+	# This will run in a post uninstall hook hence needs to be committed manually
+	frappe.db.commit()  # nosemgrep

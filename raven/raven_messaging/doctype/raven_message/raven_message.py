@@ -94,6 +94,8 @@ class RavenMessage(Document):
 			}
 
 	def after_insert(self):
+
+		# // nosemgrep This event needs to be published to all users on Raven
 		frappe.publish_realtime(
 			"raven:unread_channel_count_updated",
 			{
@@ -101,7 +103,7 @@ class RavenMessage(Document):
 				"play_sound": True,
 				"sent_by": self.owner,
 			},
-		)
+		)  # nosemgrep
 
 	def process_mentions(self):
 		if not self.json:

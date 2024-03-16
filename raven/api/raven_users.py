@@ -17,7 +17,7 @@ def get_list():
 			_(
 				"You do not have a <b>Raven User</b> role. Please contact your administrator to add your user profile as a <b>Raven User</b>."
 			),
-			title="Insufficient permissions. Please contact your administrator.",
+			title=_("Insufficient permissions. Please contact your administrator."),
 		)
 
 	if not frappe.db.exists("Raven User", {"user": frappe.session.user}):
@@ -25,7 +25,7 @@ def get_list():
 			_(
 				"You do not have a <b>Raven User</b> profile. Please contact your administrator to add your user profile as a <b>Raven User</b>."
 			),
-			title="Insufficient permissions. Please contact your administrator.",
+			title=_("Insufficient permissions. Please contact your administrator."),
 		)
 
 	users = frappe.db.get_all(

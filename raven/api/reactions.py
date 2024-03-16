@@ -1,6 +1,7 @@
 import json
 
 import frappe
+from frappe import _
 
 
 @frappe.whitelist(methods=["POST"])
@@ -19,7 +20,7 @@ def react(message_id: str, reaction: str):
 		if not frappe.db.exists(
 			"Raven Channel Member", {"channel_id": channel_id, "user_id": frappe.session.user}
 		):
-			frappe.throw("You do not have permission to react to this message", frappe.PermissionError)
+			frappe.throw(_("You do not have permission to react to this message"), frappe.PermissionError)
 	reaction_escaped = reaction.encode("unicode-escape").decode("utf-8").replace("\\u", "")
 	user = frappe.session.user
 	existing_reaction = frappe.db.exists(
@@ -42,7 +43,6 @@ def react(message_id: str, reaction: str):
 				"owner": user,
 			}
 		).insert(ignore_permissions=True)
-	frappe.db.commit()
 	return "Ok"
 
 
@@ -82,7 +82,6 @@ def calculate_message_reaction(message_id):
 		json.dumps(total_reactions),
 		update_modified=False,
 	)
-	frappe.db.commit()
 	frappe.publish_realtime(
 		"message_reacted",
 		{

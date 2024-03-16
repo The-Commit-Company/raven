@@ -3,6 +3,7 @@ import re
 
 import frappe
 import frappe.sessions
+from frappe import _
 from frappe.utils.telemetry import capture
 
 no_cache = 1
@@ -13,8 +14,8 @@ CLOSING_SCRIPT_TAG_PATTERN = re.compile(r"</script\>")
 
 def get_context(context):
 	csrf_token = frappe.sessions.get_csrf_token()
-	frappe.db.commit()
-	# context.csrf_token = csrf_token
+	# Manually commit the CSRF token here
+	frappe.db.commit()  # nosemgrep
 
 	if frappe.session.user == "Guest":
 		boot = frappe.website.utils.get_boot_data()
@@ -46,7 +47,7 @@ def get_context(context):
 @frappe.whitelist(methods=["POST"], allow_guest=True)
 def get_context_for_dev():
 	if not frappe.conf.developer_mode:
-		frappe.throw("This method is only meant for developer mode")
+		frappe.throw(_("This method is only meant for developer mode"))
 	return json.loads(get_boot())
 
 

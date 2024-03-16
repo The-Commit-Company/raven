@@ -2,6 +2,7 @@
 # For license information, please see license.txt
 
 import frappe
+from frappe import _
 from frappe.model.document import Document
 
 
@@ -12,7 +13,7 @@ class RavenChannelMember(Document):
 	def validate(self):
 		if not self.check_if_user_is_member():
 			frappe.throw(
-				"You don't have permission to add/modify members in this channel",
+				_("You don't have permission to add/modify members in this channel"),
 				frappe.PermissionError,
 			)
 
@@ -21,7 +22,7 @@ class RavenChannelMember(Document):
 		if frappe.db.exists(
 			"Raven Channel Member", {"channel_id": self.channel_id, "user_id": self.user_id}
 		):
-			frappe.throw("You are already a member of this channel", frappe.DuplicateEntryError)
+			frappe.throw(_("You are already a member of this channel"), frappe.DuplicateEntryError)
 		# if there are no members in the channel, then the member becomes admin
 		if frappe.db.count("Raven Channel Member", {"channel_id": self.channel_id}) == 0:
 			self.is_admin = 1
@@ -61,10 +62,9 @@ class RavenChannelMember(Document):
 			frappe.db.set_value("Raven Channel Member", first_member.name, "is_admin", 1)
 		if not self.check_if_user_is_member():
 			frappe.throw(
-				"You don't have permission to remove members from this channel",
+				_("You don't have permission to remove members from this channel"),
 				frappe.PermissionError,
 			)
-		frappe.db.commit()
 
 	def check_if_user_is_member(self):
 		is_member = True

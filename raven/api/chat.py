@@ -42,7 +42,7 @@ def get_channel_members(channel_id):
 			return member_object
 
 		else:
-			frappe.throw(_(f"Channel {channel_id} does not exist"), frappe.DoesNotExistError)
+			frappe.throw(_("Channel {} does not exist").format(channel_id), frappe.DoesNotExistError)
 
 	else:
 		frappe.throw(_("You do not have permission to view this channel"), frappe.PermissionError)
