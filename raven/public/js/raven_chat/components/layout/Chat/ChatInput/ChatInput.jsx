@@ -13,7 +13,7 @@ const ChatInput = ({ channelID }) => {
         frappe.call('raven.api.raven_message.send_message', {
             channel_id: channelID,
             text: content,
-            json: {
+            json_content: {
                 "content": [
                     {
                         "content": [

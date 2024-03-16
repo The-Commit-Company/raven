@@ -3,7 +3,7 @@ import { CustomFile } from '../components/feature/file-upload/FileDrop'
 
 /**
  * Hook takes in a file and returns a blob URL for previewing the file if image
- * @param file 
+ * @param file
  * @returns File url
  */
 export const useGetFilePreviewUrl = (file: CustomFile): string => {

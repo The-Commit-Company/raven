@@ -140,7 +140,7 @@ $(document).on('app_ready', function () {
                   return $(`
                     <p class="flex">
                       <label class="attachment-radio">
-                        <input type="radio" name="${radioGroupName}" 
+                        <input type="radio" name="${radioGroupName}"
                                data-file-name="${attachment.name}" ${checked ? 'checked' : ''
                     }>
                         </input>

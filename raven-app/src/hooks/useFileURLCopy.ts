@@ -2,8 +2,8 @@ import { useToast } from "./useToast"
 
 /**
  * Simple hook to copy a file URL to the clipboard and present a toast message
- * @param file 
- * @returns 
+ * @param file
+ * @returns
  */
 const useFileURLCopy = (file: string) => {
 

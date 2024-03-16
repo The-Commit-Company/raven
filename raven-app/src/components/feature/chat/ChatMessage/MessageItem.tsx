@@ -66,11 +66,11 @@ export const MessageItem = ({ message, setDeleteMessage, isHighlighted, onReplyM
                     onMouseEnter={onMouseEnter}
                     onMouseLeave={onMouseLeave}
                     // disabled={!isHoveredDebounced}
-                    className={clsx(`group 
+                    className={clsx(`group
                             hover:bg-gray-100
                             hover:transition-all
                             hover:delay-100
-                            dark:hover:bg-gray-3 
+                            dark:hover:bg-gray-3
                             data-[state=open]:bg-accent-2
                             dark:data-[state=open]:bg-gray-4
                             data-[state=open]:shadow-sm

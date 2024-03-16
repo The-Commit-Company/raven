@@ -48,13 +48,13 @@ export const QuickActions = ({ message, onReply, onEdit }: MessageContextMenuPro
     }
 
     return (
-        <Box ref={toolbarRef} className='absolute 
-        -top-6 
+        <Box ref={toolbarRef} className='absolute
+        -top-6
         right-4
         group-hover:visible
         group-hover:transition-all
         group-hover:delay-100
-        z-50 
+        z-50
         p-1
         shadow-md
         rounded-md

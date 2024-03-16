@@ -29,7 +29,7 @@ const ChatSpaceArea = ({ channelID }: { channelID: string }) => {
     const { mutate, cache } = useSWRConfig()
 
     useEffect(() => {
-        
+
         // setting last visited channel in local storage
         localStorage.setItem("ravenLastChannel", channelID)
 

@@ -12,8 +12,8 @@ interface ReplyMessageBoxProps extends FlexProps {
 }
 /**
  * UI component to show the message being replied to
- * @param props 
- * @returns 
+ * @param props
+ * @returns
  */
 export const ReplyMessageBox = ({ message, children, className, ...props }: ReplyMessageBoxProps) => {
 

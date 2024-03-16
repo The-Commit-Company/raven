@@ -1,17 +1,20 @@
 import frappe
+
+
 def after_install():
 	add_standard_navbar_items()
 	create_general_channel()
 
 
 def create_general_channel():
-    if not frappe.db.exists("Raven Channel", "general"):
-        channel = frappe.new_doc("Raven Channel")
-        channel.channel_name = "General"
-        channel.name = "general"
-        channel.type = "Open"
-        channel.save(ignore_permissions=True)
-        frappe.db.commit()
+	if not frappe.db.exists("Raven Channel", "general"):
+		channel = frappe.new_doc("Raven Channel")
+		channel.channel_name = "General"
+		channel.name = "general"
+		channel.type = "Open"
+		channel.save(ignore_permissions=True)
+		frappe.db.commit()
+
 
 def add_standard_navbar_items():
 	navbar_settings = frappe.get_single("Navbar Settings")

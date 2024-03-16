@@ -42,23 +42,23 @@ const useChatStream = (scrollRef: MutableRefObject<HTMLDivElement | null>) => {
     /**
      * Instead of maintaining two arrays for messages and previous messages, we can maintain a single array
      * This is maintained by the useSWR hook (useFrappeGetCall) here.
-     * 
+     *
      * We use the mutate method to update the messages array when messages are received, updated, deleted, etc.
      * Even if the user scrolls up and loads older messages, the hook is mutated by concatenating the older messages to the existing messages array
-     * 
+     *
      * Since we are using Web Socket events, this saves multiple round-trips to the server to fetch messages (pre Raven v1.5)
-     * 
+     *
      * When the page changes and the user comes back to the chat, the messages are fetched again and hence the messages array is updated with only new messages
-     * 
-     * This also helps when the user goes directly to a specific message from somewhere(notification, search etc.). 
+     *
+     * This also helps when the user goes directly to a specific message from somewhere(notification, search etc.).
      * We just shift the base message and fire the `get_messages` API to get the messages around the base message.
      * Post that, the behaviour is the same - if the user scrolls up or down, we just mutate the messages array directly.
      * If a new messages comes in while the user is viewing the base message (i.e. the latest messages are not visible), we do not update the messages array.
      * This is tracked using the `has_new_messages` flag in the response from the `get_messages` API
-     * 
+     *
      * Below are the Web Socket events and they are all handled by mutating the messages array directly
-     * 
-     * Refer: https://swr.vercel.app/docs/mutation 
+     *
+     * Refer: https://swr.vercel.app/docs/mutation
      */
 
     useFrappeDocumentEventListener('Raven Channel', channelID ?? '', () => { })
@@ -88,7 +88,7 @@ const useChatStream = (scrollRef: MutableRefObject<HTMLDivElement | null>) => {
             }, {
                 revalidate: false,
             }).then(() => {
-                // If the user is focused on the page, then we also need to 
+                // If the user is focused on the page, then we also need to
                 if (scrollRef.current) {
                     // We only scroll to the bottom if the user is close to the bottom
                     // TODO: Else we show a notification that there are new messages

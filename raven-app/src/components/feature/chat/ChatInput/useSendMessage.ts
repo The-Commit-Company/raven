@@ -11,7 +11,7 @@ export const useSendMessage = (channelID: string, noOfFiles: number, uploadFiles
             return call({
                 channel_id: channelID,
                 text: content,
-                json: json,
+                json_content: json,
                 is_reply: selectedMessage ? 1 : 0,
                 linked_message: selectedMessage ? selectedMessage.name : null
             })
