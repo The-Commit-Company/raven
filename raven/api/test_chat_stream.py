@@ -9,8 +9,6 @@ def create_messages():
         Create test messages in the channel
         Higher the number, newer the message
     '''
-    
-    frappe.set_user('Administrator')
 
     # Create 100 messages
     for i in range(100):
