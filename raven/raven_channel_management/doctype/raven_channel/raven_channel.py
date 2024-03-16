@@ -99,7 +99,7 @@ class RavenChannel(Document):
 			self.is_direct_message = 1
 
 		if self.is_direct_message == 1:
-			self.type == "Private"
+			self.type = "Private"
 		if self.is_direct_message == 0:
 			self.channel_name = self.channel_name.strip().lower().replace(" ", "-")
 

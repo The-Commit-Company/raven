@@ -28,7 +28,7 @@ def upload_JPEG_wrt_EXIF(content, filename):
 			# get the value of the buffer
 			buffer = buffer.getvalue()
 	else:
-		buffer = decoded_content
+		buffer = base64.b64decode(content)
 
 	return frappe.get_doc(
 		{
