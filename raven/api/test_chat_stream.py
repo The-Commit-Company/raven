@@ -25,9 +25,7 @@ def create_messages():
             'channel_id': CHANNEL_ID,
             'message_type': 'Text',
             'creation': creation,
-            'owner': 'Administrator',
             'modified': creation,
-            'modified_by': 'Administrator'
         })
         message.db_insert()
 
