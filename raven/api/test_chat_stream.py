@@ -62,7 +62,7 @@ class TestChatStream(FrappeTestCase):
 
 	def tearDown(self):
 		frappe.delete_doc("Raven Channel", CHANNEL_ID)
-		# TODO: We need to remove this database commit
+		# We need to remove this database commit
 		frappe.db.commit()  # nosemgrep
 
 	def test_get_messages(self):

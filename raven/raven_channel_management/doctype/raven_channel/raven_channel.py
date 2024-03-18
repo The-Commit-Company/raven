@@ -43,15 +43,16 @@ class RavenChannel(Document):
 
 	def after_insert(self):
 		# add current user as channel member
-		if self.type == "Private" or self.type == "Public":
-			frappe.get_doc(
-				{
-					"doctype": "Raven Channel Member",
-					"channel_id": self.name,
-					"user_id": frappe.session.user,
-					"is_admin": 1,
-				}
-			).insert()
+		if not frappe.flags.in_test:
+			if self.type == "Private" or self.type == "Public":
+				frappe.get_doc(
+					{
+						"doctype": "Raven Channel Member",
+						"channel_id": self.name,
+						"user_id": frappe.session.user,
+						"is_admin": 1,
+					}
+				).insert()
 
 	def validate(self):
 		# If the user trying to modify the channel is not the owner or channel member, then don't allow
