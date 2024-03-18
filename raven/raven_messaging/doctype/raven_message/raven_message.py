@@ -87,12 +87,27 @@ class RavenMessage(Document):
             }
 
     def after_insert(self):
-        frappe.publish_realtime(
-            'raven:unread_channel_count_updated', {
-                'channel_id': self.channel_id,
-                'play_sound': True,
-                'sent_by': self.owner,
-            })
+        # If the message is a direct message, then we can only send it to one user
+        is_direct_message = frappe.get_cached_value(
+            'Raven Channel', self.channel_id, 'is_direct_message')
+        
+        if is_direct_message:
+            peer_user_id = frappe.db.get_value(
+                'Raven Channel Member', {'channel_id': self.channel_id, 'user': ('!=', frappe.session.user)}, 'user')
+            frappe.publish_realtime(
+                'raven:unread_channel_count_updated', {
+                    'channel_id': self.channel_id,
+                    'play_sound': True,
+                    'sent_by': self.owner,
+                }, user=peer_user_id)
+        
+        else:
+            frappe.publish_realtime(
+                'raven:unread_channel_count_updated', {
+                    'channel_id': self.channel_id,
+                    'play_sound': False,
+                    'sent_by': self.owner,
+                })
 
     def process_mentions(self):
         if not self.json:
