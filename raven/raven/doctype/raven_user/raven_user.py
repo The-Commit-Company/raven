@@ -29,6 +29,12 @@ class RavenUser(Document):
 	def before_save(self):
 		self.update_photo_from_user()
 
+	def on_trash(self):
+		"""
+		Remove the Raven User from all channels
+		"""
+		frappe.db.delete("Raven Channel Member", {"user_id": self.user})
+
 	def after_delete(self):
 		"""
 		Remove the Raven User role from the user.
@@ -115,3 +121,11 @@ def add_user_to_raven(doc, method):
 							raven_user.full_name = doc.first_name
 						raven_user.enabled = 1
 						raven_user.insert(ignore_permissions=True)
+
+
+def remove_user_from_raven(doc, method):
+	# called when the user is deleted
+	# If the user is deleted, then delete the Raven User record for the user.
+	if frappe.db.exists("Raven User", {"user": doc.name}):
+		raven_user = frappe.get_doc("Raven User", {"user": doc.name})
+		raven_user.delete(ignore_permissions=True)
