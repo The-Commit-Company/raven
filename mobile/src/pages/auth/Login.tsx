@@ -3,7 +3,7 @@ import { ErrorCallout } from '@/components/common/Callouts'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { useFrappeGetCall, FrappeError, useFrappeAuth, AuthResponse } from 'frappe-react-sdk'
-import { LoginContext, LoginInputs } from '@/types/Auth/Login'
+import { AuthContext, LoginInputs } from '@/types/Auth/Login'
 import { TwoFactor } from '@/pages/auth/TwoFactor'
 import { ActiveScreenProps } from '@/components/layout/AuthContainer'
 import { Input } from '@/components/ui/input'
@@ -16,7 +16,7 @@ export const Login = (props: ActiveScreenProps) => {
 
     const form = useForm<LoginInputs>()
     // GET call for Login Context (settings for social logins, email link etc)
-    const { data: loginContext, mutate } = useFrappeGetCall<LoginContext>('raven.api.login.get_context', {
+    const { data: loginContext, mutate } = useFrappeGetCall<AuthContext>('raven.api.login.get_context', {
         "redirect-to": "/raven"
     }, 'raven.api.login.get_context', {
         revalidateIfStale: false,
