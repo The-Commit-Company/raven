@@ -1,4 +1,5 @@
 import { PropsWithChildren } from "react";
+import { FiAlertCircle, FiInfo } from "react-icons/fi";
 
 export type CalloutObject = {
     state: boolean;
@@ -11,11 +12,12 @@ export const SuccessCallout = ({
 }: PropsWithChildren<{ message?: string }>) => {
     return (
         <div
-            key="success"
-            className="ion-margin bg-zinc-900 rounded-md border-2 border-green-400 p-2"
-            role="complementary"
+            className="bg-accent-green/10 rounded-md px-2 py-2.5 flex items-center gap-4"
         >
-            <p className="font-normal text-green-400">{props.message}</p>
+            <FiInfo size="18" className="text-accent-green"/>
+            <div>
+                <span className="font-normal text-sm text-white/80">{props.message}</span>
+            </div>
         </div>
     );
 };
@@ -27,11 +29,12 @@ export const ErrorCallout = ({
 }: PropsWithChildren<{ message?: string }>) => {
     return (
         <div
-            key="success"
-            className="ion-margin bg-zinc-900 rounded-md border-2 border-red-500 p-2"
-            role="alert"
+            className="bg-rose-600/10 rounded-md px-2 py-2.5 flex items-center gap-4"
         >
-            <p className="font-normal text-red-400">{props.message}</p>
+            <FiAlertCircle size="18" className="text-destructive"/>
+            <div>
+                <span className="font-normal text-sm text-white/80">{props.message}</span>
+            </div>
         </div>
     );
 };
