@@ -2,9 +2,6 @@ import { IonSpinner } from '@ionic/react'
 import { ErrorCallout } from '@/components/common/Callouts'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
-import { BiEnvelope } from 'react-icons/bi'
-import { FaGithub, FaFacebook } from "react-icons/fa"
-import { FcGoogle } from "react-icons/fc"
 import { useFrappeGetCall, FrappeError, useFrappeAuth, AuthResponse } from 'frappe-react-sdk'
 import { LoginContext, LoginInputs } from '@/types/Auth/Login'
 import { TwoFactor } from '@/pages/auth/TwoFactor'
@@ -12,24 +9,7 @@ import { ActiveScreenProps } from '@/components/layout/AuthContainer'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
-import { Link } from 'react-router-dom'
-
-const SocialProviderIcons = {
-    "github": <FaGithub size="24" />,
-    "google": <FcGoogle size="24" />,
-    "facebook": <FaFacebook fill="#316FF6" size="24" />
-}
-
-interface SocialProvider {
-    name: 'github' | 'google' | 'facebook'
-    provider_name: string,
-    auth_url: string,
-    redirect_to: string,
-    icon: {
-        src: string,
-        alt: string
-    },
-}
+import { OAuthProviderInterface, OAuthProvider, EmailLoginProvider, SocialSeparator } from '@/components/auth/SocialProviders'
 
 
 export const Login = (props: ActiveScreenProps) => {
@@ -126,6 +106,7 @@ export const Login = (props: ActiveScreenProps) => {
                                         <Button
                                             type="submit"
                                             variant="default"
+                                            disabled={form.formState.isSubmitting}
                                         >
                                             {form.formState.isSubmitting ? <IonSpinner name="crescent" /> : <span className="font-medium text-sm leading-normal">Login</span>}
                                         </Button>
@@ -135,28 +116,15 @@ export const Login = (props: ActiveScreenProps) => {
                             {/* Show Separator only when either Email Link or Social Logins are enabled */}
                             {
                                 loginContext?.message?.login_with_email_link || loginContext?.message?.social_login ?
-                                    <div className="flex gap-4 w-full items-center">
-                                        <div className="flex-grow border-t border-white border-opacity-20"></div>
-                                        <span className="flex-shrink text-white text-opacity-30">OR</span>
-                                        <div className="flex-grow border-t border-white border-opacity-20"></div>
-                                    </div>
+                                    <SocialSeparator/>
                                     : null
                             }
                             {/* Map all social oauth providers */}
                             <div className='flex flex-col gap-2'>
                                 {
-                                    loginContext?.message?.social_login ? loginContext?.message?.provider_logins.map((soc: SocialProvider, i: number) => {
+                                    loginContext?.message?.social_login ? loginContext?.message?.provider_logins.map((soc: OAuthProviderInterface, i: number) => {
                                         return (
-                                            <Button variant="outline" type="button" asChild key={i}>
-                                                <Link to={soc.auth_url}>
-                                                    <div className='flex items-center gap-3'>
-                                                        <div>
-                                                            {SocialProviderIcons[soc.name] ? SocialProviderIcons[soc.name] : <img src={soc.icon.src} alt={soc.icon.alt} ></img>}
-                                                        </div>
-                                                        <span className="font-medium text-sm leading-normal">Continue with {soc.provider_name}</span>
-                                                    </div>
-                                                </Link>
-                                            </Button>
+                                            <OAuthProvider key={i} soc={soc}/>
                                         )
                                     }) : null
                                 }
@@ -164,19 +132,7 @@ export const Login = (props: ActiveScreenProps) => {
                                 <div className='flex flex-col gap-2'>
                                     {
                                         loginContext?.message?.login_with_email_link ?
-                                            <Button
-                                                disabled={form.formState.isSubmitting}
-                                                variant="outline"
-                                                type="button"
-                                                onClick={() => props.setActiveScreen({ login: false, loginWithEmail: true, signup: false })}
-                                                asChild
-                                                className='cursor-pointer'
-                                            >
-                                                <div className="flex items-center gap-3">
-                                                    <BiEnvelope size="24" />
-                                                    <span className="font-medium text-sm leading-normal">Continue with Email Link</span>
-                                                </div>
-                                            </Button>
+                                            <EmailLoginProvider setActiveScreen={props.setActiveScreen} isSubmitting={form.formState.isSubmitting} />
                                             : null
                                     }
                                 </div>

@@ -11,7 +11,7 @@ type ActiveScreenType = {
     signup: boolean;
 }
 
-export type ActiveScreenProps = {
+export interface ActiveScreenProps {
     setActiveScreen: (screen: ActiveScreenType) => void
 }
 
