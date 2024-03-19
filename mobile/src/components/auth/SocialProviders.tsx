@@ -1,6 +1,5 @@
 import { FaGithub, FaFacebook } from "react-icons/fa"
 import { FcGoogle } from "react-icons/fc"
-import { Link } from "react-router-dom"
 import { Button } from "../ui/button"
 import { BiEnvelope } from "react-icons/bi"
 import { ActiveScreenProps } from "../layout/AuthContainer"
@@ -33,14 +32,14 @@ export interface EmailLoginProviderProps extends ActiveScreenProps {
 export const OAuthProvider = ({ soc }: OAuthProviderProps) => {
     return (
         <Button variant="outline" type="button" asChild>
-            <Link to={soc.auth_url}>
+            <a href={soc.auth_url}>
                 <div className='flex items-center gap-3'>
                     <div>
                         {OAuthProviderIcons[soc.name] ? OAuthProviderIcons[soc.name] : <img src={soc.icon.src} alt={soc.icon.alt} ></img>}
                     </div>
                     <span className="font-medium text-sm leading-normal">Continue with {soc.provider_name}</span>
                 </div>
-            </Link>
+            </a>
         </Button>
     )
 }
