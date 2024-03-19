@@ -5,7 +5,6 @@ import { ChannelListItem, DMChannelListItem } from "@/utils/channel/ChannelListP
 import { JoinChannelBox } from "../chat-footer/JoinChannelBox"
 import { useUserData } from "@/hooks/useUserData"
 import { ChannelMembersContext, ChannelMembersContextType } from "@/utils/channel/ChannelMembersProvider"
-import { UserContext } from "@/utils/auth/UserProvider"
 import useFileUpload from "../ChatInput/FileInput/useFileUpload"
 import { CustomFile, FileDrop } from "../../file-upload/FileDrop"
 import { FileListItem } from "../../file-upload/FileListItem"
@@ -15,7 +14,6 @@ import { Flex, Box, IconButton } from "@radix-ui/themes"
 import { ReplyMessageBox } from "../ChatMessage/ReplyMessageBox/ReplyMessageBox"
 import { BiX } from "react-icons/bi"
 import ChatStream from "./ChatStream"
-
 
 const Tiptap = lazy(() => import("../ChatInput/Tiptap"))
 
@@ -80,16 +78,6 @@ export const ChatBoxBody = ({ channelData }: ChatBoxBodyProps) => {
         return null
     }
 
-    // if (isLoading) {
-    //     //TODO: Replace with skeleton loader
-    //     return <FullPageLoader />
-    // }
-
-    // if (error) {
-    //     return <Box p='2' pt='9' className="h-screen"><ErrorBanner error={error} /></Box>
-    // }
-
-    // if (messages) {
     return (
         <Flex height='100%' direction='column' justify={'end'} p='4' pt='9' className="overflow-hidden">
 
@@ -135,7 +123,5 @@ export const ChatBoxBody = ({ channelData }: ChatBoxBodyProps) => {
             </FileDrop>
         </Flex>
     )
-    // }
 
-    // return null
 }
