@@ -1,6 +1,5 @@
 import { PropsWithChildren, useState } from 'react'
-import { IonContent, IonHeader, IonImg, IonPage, IonTitle, IonToolbar } from '@ionic/react';
-import raven_logo from '../../assets/raven_logo.png'
+import { IonPage } from '@ionic/react';
 import { LoginWithEmail } from '@/pages/auth/LoginWithEmail';
 import { Login } from '@/pages/auth/Login';
 import { SignUp } from '@/pages/auth/SignUp';

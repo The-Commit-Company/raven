@@ -23,7 +23,6 @@ export interface OAuthProviderInterface {
 }
 
 type OAuthProviderProps = {
-    key: number,
     soc: OAuthProviderInterface
 }
 
@@ -31,9 +30,9 @@ export interface EmailLoginProviderProps extends ActiveScreenProps {
     isSubmitting: boolean,
 }
 
-export const OAuthProvider = ({ key, soc }: OAuthProviderProps) => {
+export const OAuthProvider = ({ soc }: OAuthProviderProps) => {
     return (
-        <Button variant="outline" type="button" asChild key={key}>
+        <Button variant="outline" type="button" asChild>
             <Link to={soc.auth_url}>
                 <div className='flex items-center gap-3'>
                     <div>
