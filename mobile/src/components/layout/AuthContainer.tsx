@@ -27,19 +27,11 @@ const AuthContainer = ({ children, ...props }: PropsWithChildren) => {
 
     return (
         <IonPage>
-            <IonHeader translucent>
-                <IonToolbar>
-                    <IonTitle>Raven</IonTitle>
-                </IonToolbar>
-            </IonHeader>
-            <IonContent className='ion-padding'>
+            <div className='ion-padding'>
                 <div className="left-0 right-0 top-1/4 p-2 transform justify-center items-center">
-                    <IonHeader collapse="condense" translucent>
-                        <IonToolbar>
-                            <IonImg src={raven_logo} alt="Raven Logo" className="block m-auto mb-4 w-40" />
-                        </IonToolbar>
-                    </IonHeader>
-
+                        <div className='pb-4'>
+                            <span className='cal-sans text-5xl font-semibold leading-normal'>raven</span>
+                        </div>
                     <div className='w-100'>
                         {
                             <>
@@ -50,7 +42,7 @@ const AuthContainer = ({ children, ...props }: PropsWithChildren) => {
                         }
                     </div>
                 </div>
-            </IonContent>
+            </div>
         </IonPage>
     )
 }

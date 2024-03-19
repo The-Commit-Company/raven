@@ -1,17 +1,23 @@
-import { IonButton, IonInput, IonItem, IonSpinner, IonText, IonRouterLink } from '@ionic/react'
+import { IonSpinner } from '@ionic/react'
 import { ErrorCallout } from '@/components/common/Callouts'
 import { useState } from 'react'
-import { Controller, useForm } from 'react-hook-form'
-import { BiLogoFacebookCircle, BiLogoGithub, BiLogoGoogle, BiMailSend } from 'react-icons/bi'
+import { useForm } from 'react-hook-form'
+import { BiEnvelope } from 'react-icons/bi'
+import { FaGithub, FaFacebook } from "react-icons/fa"
+import { FcGoogle } from "react-icons/fc"
 import { useFrappeGetCall, FrappeError, useFrappeAuth, AuthResponse } from 'frappe-react-sdk'
 import { LoginContext, LoginInputs } from '@/types/Auth/Login'
-import { TwoFactor } from './TwoFactor'
+import { TwoFactor } from '@/pages/auth/TwoFactor'
 import { ActiveScreenProps } from '@/components/layout/AuthContainer'
+import { Input } from '@/components/ui/input'
+import { Button } from '@/components/ui/button'
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
+import { Link } from 'react-router-dom'
 
 const SocialProviderIcons = {
-    "github": <BiLogoGithub size="18" />,
-    "google": <BiLogoGoogle size="18" />,
-    "facebook": <BiLogoFacebookCircle size="18" />
+    "github": <FaGithub size="24" />,
+    "google": <FcGoogle size="24" />,
+    "facebook": <FaFacebook fill="#316FF6" size="24" />
 }
 
 interface SocialProvider {
@@ -28,7 +34,7 @@ interface SocialProvider {
 
 export const Login = (props: ActiveScreenProps) => {
 
-    const { control, handleSubmit, formState: { errors, isSubmitting } } = useForm<LoginInputs>()
+    const form = useForm<LoginInputs>()
     // GET call for Login Context (settings for social logins, email link etc)
     const { data: loginContext, mutate } = useFrappeGetCall<LoginContext>('raven.api.login.get_context', {
         "redirect-to": "/raven"
@@ -67,113 +73,132 @@ export const Login = (props: ActiveScreenProps) => {
 
     return (
         <>
-            {error && <ErrorCallout message={error.message} />}
-            {
-                isTwoFactorEnabled ? <TwoFactor loginWithTwoFAResponse={loginWithTwoFAResponse} setIsTwoFactorEnabled={setIsTwoFactorEnabled} /> :
-                    <div>
-                        <form onSubmit={handleSubmit(onSubmit)}>
-                            <IonItem>
-                                <Controller
-                                    name="email"
-                                    control={control}
-                                    rules={{
-                                        required: "Email/Username is required",
-                                    }}
-                                    render={({ field }) => <IonInput
-                                        onIonChange={(e) => field.onChange(e.detail.value)}
-                                        required
-                                        placeholder='jane@example.com'
-                                        className={!!errors?.email ? 'ion-invalid ion-touched' : ''}
-                                        label='Email/Username'
-                                        errorText={errors?.email?.message}
-                                        inputMode='email'
-                                        labelPlacement='stacked'
-                                    />}
-                                />
-                            </IonItem>
-                            <IonItem>
-                                <Controller
-                                    name="password"
-                                    control={control}
-                                    rules={{
-                                        required: "Password is required."
-                                    }}
-                                    render={({ field }) => <IonInput
-                                        type="password"
-                                        onIonChange={(e) => field.onChange(e.detail.value)}
-                                        required
-                                        errorText={errors?.password?.message}
-                                        placeholder='********'
-                                        className={!!errors?.password ? 'ion-invalid ion-touched' : ''}
-                                        label='Password'
-                                        labelPlacement='stacked'
-                                    />}
-                                />
-                            </IonItem>
-                            <IonButton
-                                type="submit"
-                                className='ion-margin-top'
-                                expand="block"
-                            >
-                                {isSubmitting ? <IonSpinner name="crescent" /> : "Login"}
-                            </IonButton>
-                        </form>
-                        {/* Show Separator only when either Email Link or Social Logins are enabled */}
-                        {
-                            loginContext?.message?.login_with_email_link || loginContext?.message?.social_login ?
-                                <div className="flex flex-col w-full items-center">
-                                    <IonText>OR</IonText>
-                                </div>
-                                : null
-                        }
-                        {/* Map all social oauth providers */}
-                        {
-                            loginContext?.message?.social_login ? loginContext?.message?.provider_logins.map((soc: SocialProvider, i: number) => {
-                                return (
-                                    <IonButton className='ion-margin-top' fill="outline" type="button" expand="block" size="default" href={soc.auth_url}>
-                                        <div className='flex items-center'>
-                                            <div className='flex mr-1'>
-                                                {SocialProviderIcons[soc.name] ? SocialProviderIcons[soc.name] : <img src={soc.icon.src} alt={soc.icon.alt} ></img>}
-                                            </div>
-                                            <IonText color="dark">Login with {soc.provider_name}</IonText>
+            <div className='flex flex-col gap-y-6'>
+                {error && <ErrorCallout message={error.message} />}
+                {
+                    isTwoFactorEnabled ? <TwoFactor loginWithTwoFAResponse={loginWithTwoFAResponse} setIsTwoFactorEnabled={setIsTwoFactorEnabled} /> :
+                        <div className='flex flex-col gap-y-6'>
+                            <Form {...form}>
+                                <form onSubmit={form.handleSubmit(onSubmit)}>
+                                    <div className='flex flex-col gap-y-6'>
+                                        <div className='flex flex-col gap-2'>
+                                            <FormField
+                                                control={form.control}
+                                                name="email"
+                                                rules={{
+                                                    required: "Email/Username is required",
+                                                }}
+                                                render={({ field, formState }) => (
+                                                    <FormItem>
+                                                        <FormLabel>Email/Username <span className='text-rose-600'>*</span></FormLabel>
+                                                        <FormControl>
+                                                            {/* Type=text as email/username both are allowed */}
+                                                            <Input type="text" placeholder='jane@example.com' {...field} />
+                                                        </FormControl>
+                                                        {formState.errors.email && <FormMessage>{formState.errors.email.message}</FormMessage>}
+                                                    </FormItem>
+                                                )}
+                                            />
                                         </div>
-                                    </IonButton>
+                                        <div className='flex flex-col gap-2'>
+                                            <FormField
+                                                control={form.control}
+                                                name="password"
+                                                rules={{
+                                                    required: "Password is required.",
+                                                    minLength: {
+                                                        value: 6,
+                                                        message: "Password must be atleast 6 characters."
+                                                    }
+                                                }}
+                                                render={({ field, formState }) => (
+                                                    <FormItem>
+                                                        <FormLabel>Password <span className='text-rose-600'>*</span></FormLabel>
+                                                        <FormControl>
+                                                            <Input type="password" placeholder="******" {...field} />
+                                                        </FormControl>
+                                                        {formState.errors.password && <FormMessage>{formState.errors.password.message}</FormMessage>}
+                                                    </FormItem>
+                                                )}
+                                            />
 
-                                )
-                            }) : null
-                        }
+                                        </div>
+                                        <Button
+                                            type="submit"
+                                            variant="default"
+                                        >
+                                            {form.formState.isSubmitting ? <IonSpinner name="crescent" /> : <span className="font-medium text-sm leading-normal">Login</span>}
+                                        </Button>
+                                    </div>
+                                </form>
+                            </Form>
+                            {/* Show Separator only when either Email Link or Social Logins are enabled */}
+                            {
+                                loginContext?.message?.login_with_email_link || loginContext?.message?.social_login ?
+                                    <div className="flex gap-4 w-full items-center">
+                                        <div className="flex-grow border-t border-white border-opacity-20"></div>
+                                        <span className="flex-shrink text-white text-opacity-30">OR</span>
+                                        <div className="flex-grow border-t border-white border-opacity-20"></div>
+                                    </div>
+                                    : null
+                            }
+                            {/* Map all social oauth providers */}
+                            <div className='flex flex-col gap-2'>
+                                {
+                                    loginContext?.message?.social_login ? loginContext?.message?.provider_logins.map((soc: SocialProvider, i: number) => {
+                                        return (
+                                            <Button variant="outline" type="button" asChild key={i}>
+                                                <Link to={soc.auth_url}>
+                                                    <div className='flex items-center gap-3'>
+                                                        <div>
+                                                            {SocialProviderIcons[soc.name] ? SocialProviderIcons[soc.name] : <img src={soc.icon.src} alt={soc.icon.alt} ></img>}
+                                                        </div>
+                                                        <span className="font-medium text-sm leading-normal">Continue with {soc.provider_name}</span>
+                                                    </div>
+                                                </Link>
+                                            </Button>
+                                        )
+                                    }) : null
+                                }
 
-                        {
-                            loginContext?.message?.login_with_email_link ?
+                                <div className='flex flex-col gap-2'>
+                                    {
+                                        loginContext?.message?.login_with_email_link ?
+                                            <Button
+                                                disabled={form.formState.isSubmitting}
+                                                variant="outline"
+                                                type="button"
+                                                onClick={() => props.setActiveScreen({ login: false, loginWithEmail: true, signup: false })}
+                                                asChild
+                                                className='cursor-pointer'
+                                            >
+                                                <div className="flex items-center gap-3">
+                                                    <BiEnvelope size="24" />
+                                                    <span className="font-medium text-sm leading-normal">Continue with Email Link</span>
+                                                </div>
+                                            </Button>
+                                            : null
+                                    }
+                                </div>
+                            </div>
 
-                                <IonButton
-                                    disabled={isSubmitting}
-                                    expand="block"
-                                    className="ion-margin-top cursor-default"
-                                    fill='outline'
-                                    type='button'
-                                    size="default"
-                                    onClick={() => props.setActiveScreen({ login: false, loginWithEmail: true, signup: false })}
-                                >
-                                    <BiMailSend size="18" className="mr-1" />
-                                    <IonText color="dark">Login with Email Link</IonText>
-                                </IonButton>
-                                : null
-                        }
-                    </div>
-            }
-            {
-                loginContext?.message?.disable_signup === 0 ?
-                    <div className="mt-4 flex justify-center items-center">
-                        <IonText className='flex self-center' color="gray">Don't have account?</IonText>
-                        <IonRouterLink
-                            onClick={() => props.setActiveScreen({ login: false, loginWithEmail: false, signup: true })}
-                            className='cursor-pointer ml-1'
-                        >
-                            Sign Up
-                        </IonRouterLink>
-                    </div> : null
-            }
+                        </div>
+                }
+
+                {
+                    loginContext?.message?.disable_signup === 0 ?
+                        <div className="flex justify-center items-center">
+                            <span className='flex self-center text-sm font-medium leading-normal'>Don't have an account yet?&nbsp;</span>
+                            <Button
+                                variant='link'
+                                className='px-0'
+                                onClick={() => props.setActiveScreen({ login: false, loginWithEmail: false, signup: true })}
+                            >
+                                Sign Up
+                            </Button>
+                        </div> : null
+                }
+            </div>
         </>
     )
 }
