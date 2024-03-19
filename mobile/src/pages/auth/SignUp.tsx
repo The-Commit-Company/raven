@@ -20,7 +20,13 @@ export type SignUpInputs = {
 
 export const SignUp = (props: ActiveScreenProps) => {
 
-    const form = useForm<SignUpInputs>();
+    const form = useForm<SignUpInputs>({
+        defaultValues:{
+            email: "",
+            full_name: "",
+            redirect_to: ""
+        }
+    });
     const [callout, setCallout] = useState<CalloutObject | null>(null)
 
     // GET call for Signup Context[same as Login Context] (settings for social logins, email link etc)
@@ -63,7 +69,7 @@ export const SignUp = (props: ActiveScreenProps) => {
                                 <div className='flex flex-col gap-2'>
                                     <FormField
                                         control={form.control}
-                                        name="email"
+                                        name="full_name"
                                         rules={{
                                             required: "Full Name is required",
                                         }}

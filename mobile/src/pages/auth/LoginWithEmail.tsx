@@ -13,7 +13,11 @@ import { Button } from "@/components/ui/button";
 
 export const LoginWithEmail = (props: ActiveScreenProps) => {
 
-    const form = useForm<LoginInputs>();
+    const form = useForm<LoginInputs>({
+        defaultValues:{
+            email: "",
+        }
+    });
     const [callout, setCallout] = useState<CalloutObject | null>(null)
 
     // POST Call to send login link (settings for social logins, email link etc)

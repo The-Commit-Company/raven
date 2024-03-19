@@ -14,7 +14,14 @@ import { OAuthProviderInterface, OAuthProvider, EmailLoginProvider, SocialSepara
 
 export const Login = (props: ActiveScreenProps) => {
 
-    const form = useForm<LoginInputs>()
+    const form = useForm<LoginInputs>({
+        defaultValues:{
+            email: "",
+            password: "",
+            otp: "",
+            tmp_id:""
+        }
+    })
     // GET call for Login Context (settings for social logins, email link etc)
     const { data: loginContext, mutate } = useFrappeGetCall<AuthContext>('raven.api.login.get_context', {
         "redirect-to": "/raven"
