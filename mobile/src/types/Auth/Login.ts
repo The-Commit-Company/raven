@@ -6,14 +6,15 @@ export type LoginInputs = {
     tmp_id?: string
 };
 
-export interface LoginContext {
+// AuthContext -> Can be used in both Login And SignUp
+export interface AuthContext {
     message: {
         login_label: string,
         login_with_email_link: boolean,
         provider_logins: [],
         social_login: boolean,
-        two_factor_is_enabled: boolean
-        disable_signup:0 | 1
+        two_factor_is_enabled: boolean,
+        disable_signup: 0 | 1 
     } | undefined
 }
 
