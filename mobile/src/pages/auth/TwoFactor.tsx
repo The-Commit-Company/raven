@@ -1,9 +1,12 @@
-import { IonButton, IonInput, IonSpinner, IonText } from '@ionic/react'
-import { Controller, useForm } from "react-hook-form";
+import { IonSpinner } from '@ionic/react'
+import { useForm } from "react-hook-form";
 import { AuthResponse, FrappeError, OTPCredentials, useFrappeAuth } from "frappe-react-sdk";
 import { LoginInputs, VerificationType } from "@/types/Auth/Login";
 import { ErrorCallout } from '@/components/common/Callouts';
 import { useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { InputOTP, InputOTPGroup, InputOTPSeparator, InputOTPSlot } from '@/components/ui/input-otp';
 
 const VerificationMethods: { [key: string]: string; } = {
     "Email": "Email",
@@ -18,7 +21,12 @@ type TwoFactorProps = {
 
 export const TwoFactor = ({ loginWithTwoFAResponse, setIsTwoFactorEnabled }: TwoFactorProps) => {
 
-    const { control, handleSubmit, formState: { errors, isSubmitting } } = useForm<LoginInputs>()
+    const form = useForm<LoginInputs>({
+        defaultValues:{
+            otp: "",
+            tmp_id:""
+        }
+    })
     const { login } = useFrappeAuth()
     const [error, setError] = useState<FrappeError | null>(null)
 
@@ -32,7 +40,7 @@ export const TwoFactor = ({ loginWithTwoFAResponse, setIsTwoFactorEnabled }: Two
             //Reload the page so that the boot info is fetched again
             const URL = import.meta.env.VITE_BASE_NAME ? `/${import.meta.env.VITE_BASE_NAME}` : ``
             window.location.replace(`${URL}/channels`)
-        }).catch((err)=>{
+        }).catch((err) => {
             setError(err);
         })
     }
@@ -47,68 +55,67 @@ export const TwoFactor = ({ loginWithTwoFAResponse, setIsTwoFactorEnabled }: Two
 
     return (
         <div>
-
-            <form onSubmit={handleSubmit(onSubmit)}>
-                <div >
-                    <div>
-                        {
-                            error && <ErrorCallout message={error.message} />
-                        }
-                        {
-                            <IonText>
-                                {loginWithTwoFAResponse?.verification?.setup ? getVerificationPrompt(loginWithTwoFAResponse?.verification)
-                                    : `Verification ${VerificationMethods[loginWithTwoFAResponse?.verification?.method]} not sent. Please contact Administrator.`}
-                            </IonText>
-                        }
-                    </div>
-                    <div className='mt-2'>
-                        <Controller
-                            name="otp"
-                            control={control}
-                            rules={{
-                                required: "OTP is required",
-                            }}
-                            render={({ field }) => (
-                                <IonInput
-                                    onIonChange={(e) =>
-                                        field.onChange(e.detail.value)
-                                    }
-                                    required
-                                    className={
-                                        !!errors?.otp
-                                            ? "ion-invalid ion-touched"
-                                            : ""
-                                    }
-                                    errorText={errors?.otp?.message}
-                                    name="otp"
-                                    type="text"
-                                    placeholder="Verification Code"
-                                    autoFocus
-                                    tabIndex={0}
-                                />
-                            )}
-                        />
-                    </div>
-                    <div className='mt-2'>
-                        <IonButton
+            <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)}>
+                <div className="flex flex-col gap-y-8">
+                    {
+                        error && <ErrorCallout message={error.message} />
+                    }
+                    <FormField
+                        control={form.control}
+                        name="otp"
+                        render={({ field }) => (
+                            <FormItem className='flex flex-col gap-y-8'>
+                                <div>
+                                    <FormLabel className="text-xl">One-Time Password</FormLabel>
+                                    <FormDescription className='pt-1'>
+                                    {loginWithTwoFAResponse?.verification?.setup ? getVerificationPrompt(loginWithTwoFAResponse?.verification)
+                                        : `Verification ${VerificationMethods[loginWithTwoFAResponse?.verification?.method]} not sent. Please contact Administrator.`}
+                                    </FormDescription>
+                                </div>
+                                <div>
+                                <FormControl>
+                                    <InputOTP maxLength={6} {...field} >
+                                        <InputOTPGroup>
+                                            <InputOTPSlot index={0} />
+                                            <InputOTPSlot index={1} />
+                                            <InputOTPSlot index={2} />
+                                        </InputOTPGroup>
+                                        <InputOTPSeparator/>
+                                        <InputOTPGroup>
+                                            <InputOTPSlot index={3} />
+                                            <InputOTPSlot index={4} />
+                                            <InputOTPSlot index={5} />
+                                        </InputOTPGroup>
+                                    </InputOTP>
+                                </FormControl>
+                                <FormMessage />
+                                </div>
+                            </FormItem>
+                        )}
+                    />
+                    <div className="flex flex-col gap-2">
+                        <Button
                             type="submit"
-                            expand="block"
-                            disabled={isSubmitting}
+                            // keep the verify button disabled until otp length is equal to 6
+                            disabled={form.formState.isSubmitting || form.watch("otp")?.length!==6}
+                            className="cursor-pointer"
                         >
-                            {isSubmitting ? <IonSpinner name="crescent" /> : "Verify"}
-                        </IonButton>
-                    </div>
-                    <div className='mt-1'>
-                        <IonButton
-                            fill="clear"
-                            expand="block"
+                            {form.formState.isSubmitting ? <IonSpinner name="crescent" /> : "Verify"}
+                        </Button>
+
+                        <Button
+                            type="button"
+                            variant="secondary"
+                            className="cursor-pointer"
                             onClick={() => setIsTwoFactorEnabled(false)}
                         >
                             Cancel
-                        </IonButton>
+                        </Button>
                     </div>
                 </div>
             </form>
+            </Form>
         </div>
     )
 }
