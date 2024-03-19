@@ -1,18 +1,19 @@
 import { useState } from "react";
 import { useFrappePostCall } from "frappe-react-sdk";
-import { IonButton, IonInput, IonItem, IonRouterLink, IonSpinner } from '@ionic/react'
+import { IonSpinner } from '@ionic/react'
 import { SuccessCallout, CalloutObject, ErrorCallout } from '@/components/common/Callouts'
-import { Controller, useForm } from 'react-hook-form'
+import { useForm } from 'react-hook-form'
 import { LoginInputs } from "@/types/Auth/Login";
 import { ActiveScreenProps } from "@/components/layout/AuthContainer";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { isEmailValid } from "@/utils/validations/validations";
+import { Button } from "@/components/ui/button";
 
 
 export const LoginWithEmail = (props: ActiveScreenProps) => {
-    const {
-        control,
-        handleSubmit,
-        formState: { errors, isSubmitting },
-    } = useForm<LoginInputs>();
+
+    const form = useForm<LoginInputs>();
     const [callout, setCallout] = useState<CalloutObject | null>(null)
 
     // POST Call to send login link (settings for social logins, email link etc)
@@ -35,58 +36,52 @@ export const LoginWithEmail = (props: ActiveScreenProps) => {
             {error && <ErrorCallout message={error.message} />}
             {callout && <SuccessCallout message={callout.message} />}
 
-            <div>
-                <form onSubmit={handleSubmit(sendEmailLink)}>
-                    <IonItem>
-                        <Controller
-                            name="email"
-                            control={control}
-                            rules={{
-                                required: "Email is required",
-                            }}
-                            render={({ field }) => (
-                                <IonInput
-                                    onIonChange={(e) =>
-                                        field.onChange(e.detail.value)
-                                    }
-                                    required
-                                    placeholder="jane@example.com"
-                                    className={
-                                        !!errors?.email
-                                            ? "ion-invalid ion-touched"
-                                            : ""
-                                    }
-                                    label="Email"
-                                    errorText={errors?.email?.message}
-                                    inputMode="email"
-                                    labelPlacement="stacked"
-                                    autoFocus
-                                />
-                            )}
-                        />
-                    </IonItem>
+            <div className="flex flex-col gap-y-6">
+                <div>
+                <Form {...form}>
+                    <form onSubmit={form.handleSubmit(sendEmailLink)}>
+                    <div className='flex flex-col gap-y-6'>
+                        <div className='flex flex-col gap-2'>
+                            <FormField
+                                control={form.control}
+                                name="email"
+                                rules={{
+                                    required: "Email is required",
+                                    validate: (email) =>
+                                        isEmailValid(email) || "Please enter a valid email address."
+                                }}
+                                render={({ field, formState }) => (
+                                    <FormItem>
+                                        <FormLabel>Email <span className='text-rose-600'>*</span></FormLabel>
+                                        <FormControl>
+                                            {/* Type=email as email is allowed */}
+                                            <Input type="email" placeholder='jane@example.com' {...field} />
+                                        </FormControl>
+                                        {formState.errors.email && <FormMessage>{formState.errors.email.message}</FormMessage>}
+                                    </FormItem>
+                                )}
+                            />
+                        </div>
 
-                    <IonButton
-                        type="submit"
-                        className="ion-margin-top"
-                        expand="block"
-                        disabled={isSubmitting}
-                    >
-                        {isSubmitting ? (
-                            <IonSpinner name="crescent" />
-                        ) : (
-                            "Send Login Link"
-                        )}
-                    </IonButton>
-                </form>
+                        <Button
+                            type="submit"
+                            variant="default"
+                            disabled={form.formState.isSubmitting}
+                        >
+                            {form.formState.isSubmitting ? <IonSpinner name="crescent" /> : <span className="font-medium text-sm leading-normal">Send Login Link</span>}
+                        </Button>
+                        </div>
+                    </form>
+                </Form>
+                </div>
                 <div className="flex justify-center">
-                    <IonRouterLink
+                    <Button
+                        variant='link'
+                        className='px-0'
                         onClick={() => props.setActiveScreen({ login: true, loginWithEmail: false, signup: false })}
-
-                        className='cursor-pointer ml-1'
                     >
-                        Back to Login
-                    </IonRouterLink>
+                        Back to Login?
+                    </Button>
                 </div>
             </div>
         </>
