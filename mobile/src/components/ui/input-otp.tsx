@@ -10,6 +10,7 @@ const InputOTP = React.forwardRef<
 >(({ className, containerClassName, ...props }, ref) => (
   <OTPInput
     ref={ref}
+    autoFocus
     containerClassName={cn(
       "flex items-center justify-center gap-2 has-[:disabled]:opacity-50",
       containerClassName

@@ -21,7 +21,7 @@ import { DoctypeLinkRenderer } from './Renderers/DoctypeLinkRenderer'
 import { useDebounce } from '@/hooks/useDebounce'
 
 interface MessageBlockProps {
-    message: MessageBlock['data'],
+    message: Message,
     setDeleteMessage: (message: Message) => void,
     setEditMessage: (message: Message) => void,
     replyToMessage: (message: Message) => void,

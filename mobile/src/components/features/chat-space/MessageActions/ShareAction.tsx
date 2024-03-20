@@ -42,15 +42,15 @@ const ShareActionItem = ({ message, onSuccess }: ActionProps) => {
 
         // If the message is a file, we need to download it first
         let blob: Blob | null = null
-        if (message.data.message_type === 'Image' || message.data.message_type === 'File') {
+        if (message.message_type === 'Image' || message.message_type === 'File') {
 
-            blob = await downloadFile(message.data.file)
+            blob = await downloadFile(message.file)
         }
 
         if (webShareSupported) {
-            if (message.data.message_type === 'Image' || message.data.message_type === 'File') {
+            if (message.message_type === 'Image' || message.message_type === 'File') {
 
-                const fileName = getFileName(message.data.file)
+                const fileName = getFileName(message.file)
 
                 if (blob) {
                     shareOptions.files = [
@@ -60,8 +60,8 @@ const ShareActionItem = ({ message, onSuccess }: ActionProps) => {
                     ]
                     shareOptions.title = fileName
                 }
-            } else if (message.data.message_type === 'Text') {
-                let text = message.data.text
+            } else if (message.message_type === 'Text') {
+                let text = message.text
 
                 // Remove all empty lines
                 text = text.replace(/^\s*[\r\n]/gm, "")
@@ -111,12 +111,12 @@ const ShareActionItem = ({ message, onSuccess }: ActionProps) => {
                 }
             }
         }
-        if (message.data.message_type === 'Image' || message.data.message_type === 'File') {
+        if (message.message_type === 'Image' || message.message_type === 'File') {
             if (blob) {
                 // Fallback implementation.
                 console.log('Fallback to download', blob)
                 const a = document.createElement('a');
-                a.download = getFileName(message.data.file);
+                a.download = getFileName(message.file);
                 a.style.display = 'none';
                 a.href = URL.createObjectURL(blob);
                 a.addEventListener('click', () => {
@@ -152,7 +152,7 @@ const ShareActionItem = ({ message, onSuccess }: ActionProps) => {
 
     };
 
-    const isFile = message.data.message_type !== 'Text'
+    const isFile = message.message_type !== 'Text'
 
     const isDownload = isFile && !webShareSupported
 

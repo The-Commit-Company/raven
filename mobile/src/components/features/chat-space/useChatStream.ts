@@ -1,9 +1,14 @@
 import { useFrappeDocumentEventListener, useFrappeEventListener, useFrappeGetCall, useFrappePostCall } from 'frappe-react-sdk'
-import { MutableRefObject, useEffect, useLayoutEffect, useMemo, useState } from 'react'
-import { useBeforeUnload, useLocation, useNavigate, useParams } from 'react-router-dom'
-import { Message } from '../../../../../../types/Messaging/Message'
-import { convertFrappeTimestampToUserTimezone } from '@/utils/dateConversions/utils'
+import { RefObject, useEffect, useLayoutEffect, useMemo, useState } from 'react'
+import { DateObjectToFormattedDateString } from '@/utils/operations/operations'
 import { useDebounce } from '@/hooks/useDebounce'
+import { Message } from '../../../../../types/Messaging/Message'
+import { useIonViewWillLeave } from '@ionic/react'
+
+const parseDateString = (date: string) => {
+    const dateObj = new Date(date)
+    return DateObjectToFormattedDateString(dateObj)
+}
 
 interface GetMessagesResponse {
     message: {
@@ -13,7 +18,7 @@ interface GetMessagesResponse {
     }
 }
 
-type MessageDateBlock = Message | {
+export type MessageDateBlock = Message | {
     /**  */
     creation: string
     message_type: 'date',
@@ -22,21 +27,16 @@ type MessageDateBlock = Message | {
 /**
  * Hook to fetch messages to be rendered on the chat interface
  */
-const useChatStream = (scrollRef: MutableRefObject<HTMLDivElement | null>) => {
-
-    const { channelID } = useParams()
-
-    const location = useLocation()
-    const navigate = useNavigate()
-    const { state } = location
+const useChatStream = (channelID: string, scrollRef: RefObject<HTMLIonContentElement>, baseMessage?: string, onBaseMessageChange?: (messageID: string) => void) => {
 
 
-    const [highlightedMessage, setHighlightedMessage] = useState<string | null>(state?.baseMessage ? state.baseMessage : null)
+    const [highlightedMessage, setHighlightedMessage] = useState<string | null>(baseMessage ? baseMessage : null)
 
     /** On page reload, we need to clear the state */
-    useBeforeUnload(() => {
+    useIonViewWillLeave(() => {
         window.history.replaceState({}, '')
     })
+
     useEffect(() => {
         let timer: NodeJS.Timeout | null = null;
         // Clear the highlighted message after 4 seconds
@@ -58,8 +58,8 @@ const useChatStream = (scrollRef: MutableRefObject<HTMLDivElement | null>) => {
     const [done, setDone] = useState(false)
     const { data, isLoading, error, mutate } = useFrappeGetCall<GetMessagesResponse>('raven.api.chat_stream.get_messages', {
         'channel_id': channelID,
-        'base_message': state?.baseMessage ? state.baseMessage : undefined
-    }, { path: `get_messages_for_channel_${channelID}`, baseMessage: state?.baseMessage }, {
+        'base_message': baseMessage ? baseMessage : undefined
+    }, { path: `get_messages_for_channel_${channelID}`, baseMessage: baseMessage }, {
         revalidateOnFocus: false,
         onSuccess: (data) => {
             if (!highlightedMessage) {
@@ -82,21 +82,14 @@ const useChatStream = (scrollRef: MutableRefObject<HTMLDivElement | null>) => {
         if (done) {
 
             setTimeout(() => {
-                scrollRef.current?.scroll({
-                    top: scrollRef.current?.scrollHeight,
-                    // behavior: 'smooth',
-                })
+                scrollRef.current?.scrollToBottom()
             }, 50)
 
             setTimeout(() => {
-                scrollRef.current?.scroll({
-                    top: scrollRef.current?.scrollHeight,
-                    // behavior: 'smooth',
-                })
+                scrollRef.current?.scrollToBottom()
             }, 200)
 
-
-            scrollRef.current?.scrollTo(0, scrollRef.current?.scrollHeight)
+            scrollRef.current?.scrollToBottom()
         }
     }, [done, channelID])
 
@@ -152,7 +145,7 @@ const useChatStream = (scrollRef: MutableRefObject<HTMLDivElement | null>) => {
                 // If the user is focused on the page, then we also need to
                 if (scrollRef.current) {
                     // We only scroll to the bottom if the user is close to the bottom
-                    scrollRef.current?.scrollTo(0, scrollRef.current?.scrollHeight)
+                    scrollRef.current.scrollToBottom()
                     // TODO: Else we show a notification that there are new messages
                     if (scrollRef.current.scrollTop !== 0) {
 
@@ -388,7 +381,7 @@ const useChatStream = (scrollRef: MutableRefObject<HTMLDivElement | null>) => {
                 let currentDateTime = new Date(messages[messages.length - 1].creation.split('.')[0]).getTime()
 
                 messagesWithDateSeparators.push({
-                    creation: convertFrappeTimestampToUserTimezone(`${currentDate} 00:00:00`).format('Do MMMM YYYY'),
+                    creation: parseDateString(currentDate),
                     message_type: 'date',
                     name: currentDate
                 })
@@ -403,7 +396,7 @@ const useChatStream = (scrollRef: MutableRefObject<HTMLDivElement | null>) => {
 
                     if (messageDate !== currentDate) {
                         messagesWithDateSeparators.push({
-                            creation: convertFrappeTimestampToUserTimezone(`${messageDate} 00:00:00`).format('Do MMMM YYYY'),
+                            creation: parseDateString(messageDate),
                             message_type: 'date',
                             name: messageDate
                         })
@@ -440,11 +433,7 @@ const useChatStream = (scrollRef: MutableRefObject<HTMLDivElement | null>) => {
             setHighlightedMessage(messageID)
         } else {
             // If not, change the base message, fetch the message and scroll to it.
-            navigate(location, {
-                state: {
-                    baseMessage: messageID
-                }
-            })
+            onBaseMessageChange?.(messageID)
             setHighlightedMessage(messageID)
         }
 

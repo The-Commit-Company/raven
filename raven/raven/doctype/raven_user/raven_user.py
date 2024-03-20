@@ -62,7 +62,7 @@ class RavenUser(Document):
 					"attached_to_field": "user_image",
 					"is_private": 1,
 				}
-			).insert()
+			).insert(ignore_permissions=True)
 			self.user_image = image_file.file_url
 
 	pass

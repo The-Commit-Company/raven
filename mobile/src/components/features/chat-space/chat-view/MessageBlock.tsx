@@ -1,5 +1,5 @@
 import { useContext, useMemo } from 'react'
-import { FileMessage, ImageMessage, Message, MessageBlock, TextMessage } from '../../../../../../types/Messaging/Message'
+import { FileMessage, ImageMessage, Message, TextMessage } from '../../../../../../types/Messaging/Message'
 import { IonIcon, IonSkeletonText, IonText } from '@ionic/react'
 import { SquareAvatar } from '@/components/common/UserAvatar'
 import { MarkdownRenderer } from '@/components/common/MarkdownRenderer'
@@ -15,8 +15,8 @@ import MessageReactions from './components/MessageReactions'
 import parse from 'html-react-parser';
 
 type Props = {
-    message: MessageBlock,
-    onMessageSelect: (message: MessageBlock) => void
+    message: Message,
+    onMessageSelect: (message: Message) => void
 }
 
 export const MessageBlockItem = ({ message, onMessageSelect }: Props) => {
@@ -29,11 +29,11 @@ export const MessageBlockItem = ({ message, onMessageSelect }: Props) => {
      * 3. Message Type - Text, Image, File - will need to show the content accordingly
      */
 
-    const user = members[message.data.owner]
+    const user = members[message.owner]
 
     return (
-        <div className='px-2 my-0' id={`message-${message.data.name}`}>
-            {message.data.is_continuation === 0 ? <NonContinuationMessageBlock
+        <div className='px-2 my-0 animate-fadein' id={`message-${message.name}`}>
+            {message.is_continuation === 0 ? <NonContinuationMessageBlock
                 message={message}
                 onMessageSelect={onMessageSelect}
                 user={user} /> :
@@ -42,7 +42,7 @@ export const MessageBlockItem = ({ message, onMessageSelect }: Props) => {
     )
 }
 
-export const NonContinuationMessageBlock = ({ message, user, onMessageSelect }: { message: MessageBlock, user?: UserFields, onMessageSelect: (message: MessageBlock) => void }) => {
+export const NonContinuationMessageBlock = ({ message, user, onMessageSelect }: { message: Message, user?: UserFields, onMessageSelect: (message: Message) => void }) => {
 
     const onLongPress = () => {
         Haptics.impact({
@@ -58,29 +58,29 @@ export const NonContinuationMessageBlock = ({ message, user, onMessageSelect }: 
             <UserAvatarBlock message={message} user={user} />
             <div>
                 <div className='flex items-end'>
-                    <IonText className='font-black text-sm'>{user?.full_name ?? message.data.owner}</IonText>
-                    <IonText className='text-xs pl-1.5 text-zinc-500'>{DateObjectToTimeString(message.data.creation)}</IonText>
+                    <IonText className='font-black text-sm'>{user?.full_name ?? message.owner}</IonText>
+                    <IonText className='text-xs pl-1.5 text-zinc-500'>{DateObjectToTimeString(message.creation)}</IonText>
                 </div>
                 <MessageContent message={message} />
-                {message.data.is_edited === 1 && <IonText className='text-xs' color={'medium'}>(edited)</IonText>}
+                {message.is_edited === 1 && <IonText className='text-xs' color={'medium'}>(edited)</IonText>}
             </div>
         </div>
         <div className='pl-12 m-1'>
-            <MessageReactions messageID={message.data.name} channelID={message.data.channel_id} message_reactions={message.data.message_reactions} />
+            <MessageReactions messageID={message.name} channelID={message.channel_id} message_reactions={message.message_reactions} />
         </div>
 
     </div>
 }
 
-export const UserAvatarBlock = ({ message, user }: { message: MessageBlock, user?: UserFields }) => {
+export const UserAvatarBlock = ({ message, user }: { message: Message, user?: UserFields }) => {
 
-    const isActive = useIsUserActive(user?.name ?? message.data.owner)
+    const isActive = useIsUserActive(user?.name ?? message.owner)
     return <div className='w-11 mt-0.5'>
-        <SquareAvatar alt={user?.full_name ?? message.data.owner} src={user?.user_image} isActive={isActive} />
+        <SquareAvatar alt={user?.full_name ?? message.owner} src={user?.user_image} isActive={isActive} />
     </div>
 }
 
-const ContinuationMessageBlock = ({ message, onMessageSelect }: { message: MessageBlock, onMessageSelect: (message: MessageBlock) => void }) => {
+const ContinuationMessageBlock = ({ message, onMessageSelect }: { message: Message, onMessageSelect: (message: Message) => void }) => {
     const onLongPress = () => {
         Haptics.impact({
             style: ImpactStyle.Medium
@@ -97,24 +97,24 @@ const ContinuationMessageBlock = ({ message, onMessageSelect }: { message: Messa
             </div>
             <div>
                 <MessageContent message={message} />
-                {message.data.is_edited === 1 && <IonText className='text-xs' color={'medium'}>(edited)</IonText>}
+                {message.is_edited === 1 && <IonText className='text-xs' color={'medium'}>(edited)</IonText>}
             </div>
 
         </div>
 
         <div className='pl-12 m-1'>
-            <MessageReactions messageID={message.data.name} channelID={message.data.channel_id} message_reactions={message.data.message_reactions} />
+            <MessageReactions messageID={message.name} channelID={message.channel_id} message_reactions={message.message_reactions} />
         </div>
     </div>
 }
 
-const MessageContent = ({ message }: { message: MessageBlock }) => {
+const MessageContent = ({ message }: { message: Message }) => {
 
     return <div className='min-w-[100px] max-w-[280px]'>
-        {message.data.is_reply === 1 && message.data.linked_message && message.data.replied_message_details && <ReplyBlock message={JSON.parse(message.data.replied_message_details)} />}
-        {message.data.message_type === 'Text' && <div className='text-zinc-100 text-md'><TextMessageBlock message={message.data} /></div>}
-        {message.data.message_type === 'Image' && <ImageMessageBlock message={message.data} />}
-        {message.data.message_type === 'File' && <FileMessageBlock message={message.data} />}
+        {message.is_reply === 1 && message.linked_message && message.replied_message_details && <ReplyBlock message={JSON.parse(message.replied_message_details)} />}
+        {message.message_type === 'Text' && <div className='text-zinc-100 text-md'><TextMessageBlock message={message} /></div>}
+        {message.message_type === 'Image' && <ImageMessageBlock message={message} />}
+        {message.message_type === 'File' && <FileMessageBlock message={message} />}
     </div>
 }
 
