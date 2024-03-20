@@ -92,8 +92,9 @@ class RavenMessage(Document):
             'Raven Channel', self.channel_id, 'is_direct_message')
         
         if is_direct_message:
-            peer_user_id = frappe.db.get_value(
-                'Raven Channel Member', {'channel_id': self.channel_id, 'user': ('!=', frappe.session.user)}, 'user')
+            peer_raven_user = frappe.db.get_value(
+                'Raven Channel Member', {'channel_id': self.channel_id, 'user_id': ('!=', frappe.session.user)}, 'user_id')
+            peer_user_id = frappe.get_cached_value("Raven User", peer_raven_user, "user")
             frappe.publish_realtime(
                 'raven:unread_channel_count_updated', {
                     'channel_id': self.channel_id,
