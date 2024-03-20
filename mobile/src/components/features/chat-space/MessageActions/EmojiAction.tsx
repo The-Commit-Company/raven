@@ -15,7 +15,7 @@ interface EmojiActionProps extends ActionProps {
 }
 export const EmojiAction = ({ message, onSuccess, presentingElement }: EmojiActionProps) => {
 
-    const { data: { name: messageID } } = message
+    const { name: messageID } = message
     const { call: reactToMessage } = useFrappePostCall('raven.api.reactions.react')
 
     const { mutate } = useSWRConfig()
@@ -28,7 +28,7 @@ export const EmojiAction = ({ message, onSuccess, presentingElement }: EmojiActi
             message_id: messageID,
             reaction: emoji
         })
-            .then(() => mutate(`get_messages_for_channel_${message.data.channel_id}`))
+            .then(() => mutate(`get_messages_for_channel_${message.channel_id}`))
             .then(() => onSuccess())
     }, [messageID, reactToMessage])
 

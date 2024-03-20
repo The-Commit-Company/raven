@@ -14,7 +14,7 @@ export const DeleteAction = ({ message, onSuccess }: ActionProps) => {
     const [present] = useIonToast();
 
     const deleteMessage = () => {
-        deleteDoc('Raven Message', message.data.name)
+        deleteDoc('Raven Message', message.name)
 
             .then(() => {
                 return present({
@@ -32,7 +32,7 @@ export const DeleteAction = ({ message, onSuccess }: ActionProps) => {
                     message: "Error: Could not delete message",
                 })
             })
-            .then(() => mutate(`get_messages_for_channel_${message.data.channel_id}`))
+            .then(() => mutate(`get_messages_for_channel_${message.channel_id}`))
             .then(() => onSuccess())
 
 
