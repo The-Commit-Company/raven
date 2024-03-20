@@ -152,6 +152,7 @@ const useChatStream = (scrollRef: MutableRefObject<HTMLDivElement | null>) => {
                 // If the user is focused on the page, then we also need to
                 if (scrollRef.current) {
                     // We only scroll to the bottom if the user is close to the bottom
+                    scrollRef.current?.scrollTo(0, scrollRef.current?.scrollHeight)
                     // TODO: Else we show a notification that there are new messages
                     if (scrollRef.current.scrollTop !== 0) {
 
@@ -379,14 +380,26 @@ const useChatStream = (scrollRef: MutableRefObject<HTMLDivElement | null>) => {
             // Messages are already sorted by date - from latest to oldest
             // Date separator is added whenever the date changes
             // Add date separators
+
+            // Add `is_continuation` to the messages that are only apart by 2 minutes
             const messagesWithDateSeparators: MessageDateBlock[] = []
             if (messages.length > 0) {
-                let currentDate = messages[0].creation.split(' ')[0]
+                let currentDate = messages[messages.length - 1].creation.split(' ')[0]
+                let currentDateTime = new Date(messages[messages.length - 1].creation.split('.')[0]).getTime()
 
+                messagesWithDateSeparators.push({
+                    creation: convertFrappeTimestampToUserTimezone(`${currentDate} 00:00:00`).format('Do MMMM YYYY'),
+                    message_type: 'date',
+                    name: currentDate
+                })
+
+                messagesWithDateSeparators.push({ ...messages[messages.length - 1], is_continuation: 0 })
                 // Loop through the messages and add date separators if the date changes
-                for (let i = 0; i < messages.length; i++) {
+                for (let i = messages.length - 2; i >= 0; i--) {
+
                     const message = messages[i]
                     const messageDate = message.creation.split(' ')[0]
+                    let messageDateTime = new Date(message.creation.split('.')[0]).getTime()
 
                     if (messageDate !== currentDate) {
                         messagesWithDateSeparators.push({
@@ -394,9 +407,18 @@ const useChatStream = (scrollRef: MutableRefObject<HTMLDivElement | null>) => {
                             message_type: 'date',
                             name: messageDate
                         })
-                        currentDate = messageDate
                     }
-                    messagesWithDateSeparators.push(message)
+
+                    if (messageDateTime - currentDateTime > 120000) {
+                        messagesWithDateSeparators.push({
+                            ...message,
+                            is_continuation: 0
+                        })
+                    } else {
+                        messagesWithDateSeparators.push({ ...message, is_continuation: 1 })
+                    }
+                    currentDate = messageDate
+                    currentDateTime = new Date(message.creation).getTime()
                 }
 
                 return messagesWithDateSeparators
