@@ -1,4 +1,4 @@
-import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonItem, IonLabel, IonSearchbar, useIonModal } from '@ionic/react';
+import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar } from '@ionic/react';
 import { IoAdd } from 'react-icons/io5';
 import { ErrorBanner } from '../../components/layout';
 import { ChannelList } from '../../components/features/channels/ChannelList';
@@ -7,6 +7,10 @@ import { useMemo, useRef, useState } from 'react';
 import { UnreadCountData, useChannelList } from '@/utils/channel/ChannelListProvider';
 import { ChannelListLoader } from '../../components/layout/loaders/ChannelListLoader';
 import { useFrappeEventListener, useFrappeGetCall } from 'frappe-react-sdk';
+import { Label } from '@/components/ui/label';
+import { SearchInput } from '@/components/ui/input';
+import { BiChevronRight, BiSearch } from 'react-icons/bi';
+import { Button } from '@/components/ui/button';
 
 export const Channels = () => {
 
@@ -49,21 +53,32 @@ export const Channels = () => {
                     </IonToolbar>
                 </IonHeader>
                 <IonToolbar>
-                    <IonSearchbar
+                    <SearchInput
                         spellCheck
-                        onIonInput={(e) => setSearchInput(e.detail.value!)}>
-                    </IonSearchbar>
+                        slotStart={<BiSearch size={18}/>}
+                        onChange={(e) => setSearchInput(e.target.value!)}
+                        className='text-foreground'
+                        placeholder='Search'
+                    >
+                    </SearchInput>
                 </IonToolbar>
                 {isLoading && <ChannelListLoader />}
                 {error && <ErrorBanner error={error} />}
-                <IonItem lines='none' button onClick={() => setIsOpen(true)}>
-                    <div slot='start'>
-                        <IoAdd size='24' color='var(--ion-color-medium)' />
+                <li className='list-none'>
+                    <Button variant="ghost" className='w-full flex justify-between items-center hover:bg-transparent ' onClick={() => setIsOpen(true)}>
+                    <div className='flex items-center justify-start gap-3'>
+                        <span>
+                            <IoAdd size='24' className='text-foreground/80' />
+                        </span>
+                        <Label className="text-foreground/80">
+                            Add Channel
+                        </Label>
                     </div>
-                    <IonLabel color='medium'>
-                        Add Channel
-                    </IonLabel>
-                </IonItem>
+                    <span>
+                        <BiChevronRight size='24' color='text-foreground/80'/>
+                    </span>
+                    </Button>
+                </li>
                 <ChannelList data={filteredChannels ?? []} unread_count={unread_count?.message}/>
                 <AddChannel isOpen={isOpen} onDismiss={() => setIsOpen(false)} presentingElement={pageRef.current} />
             </IonContent>
