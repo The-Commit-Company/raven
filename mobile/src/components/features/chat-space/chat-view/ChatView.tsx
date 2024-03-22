@@ -1,14 +1,15 @@
 import { IonList } from '@ionic/react'
 import { createContext } from 'react'
-import { DateBlock, MessageBlock } from '../../../../../../types/Messaging/Message'
 import { DateSeparator } from './DateSeparator'
 import { ChannelMembersMap } from '../ChatInterface'
 import { MessageBlockItem } from './MessageBlock'
+import { MessageDateBlock } from '../useChatStream'
+import { Message } from '../../../../../../types/Messaging/Message'
 
 type ChatViewProps = {
-    messages: (DateBlock | MessageBlock)[],
+    messages: MessageDateBlock[],
     members: ChannelMembersMap,
-    onMessageSelected: (message: MessageBlock) => void
+    onMessageSelected: (message: Message) => void
 }
 
 export const ChannelMembersContext = createContext<ChannelMembersMap>({})
@@ -21,14 +22,15 @@ export const ChatView = ({ messages, members, onMessageSelected }: ChatViewProps
     return (
         <ChannelMembersContext.Provider value={members}>
             <IonList lines='none' className='flex flex-col'>
-                {messages.map((message: DateBlock | MessageBlock) => {
-                    if (message.block_type === "date") {
-                        return <DateSeparator key={message.data} date={message.data} />
-                    }
-                    if (message.block_type === "message")
+                {messages.map((message) => {
+
+                    if (message.message_type === "date") {
+                        return <DateSeparator key={`date-${message.creation}`} date={message.creation} />
+                    } else {
                         return (
-                            <MessageBlockItem key={message.data.name} message={message} onMessageSelect={onMessageSelected} />
+                            <MessageBlockItem key={`${message.name}_${message.modified}`} message={message} onMessageSelect={onMessageSelected} />
                         )
+                    }
                 }
                 )}
             </IonList>

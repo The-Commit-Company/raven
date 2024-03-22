@@ -13,6 +13,7 @@ import { Haptics, ImpactStyle } from '@capacitor/haptics'
 import { UserContext } from '@/utils/auth/UserProvider'
 import { ChatLoader } from '@/components/layout/loaders/ChatLoader'
 import { MessageActionModal, useMessageActionModal } from './MessageActions/MessageActionModal'
+import useChatStream from './useChatStream'
 
 export type ChannelMembersMap = Record<string, UserFields>
 
@@ -65,42 +66,30 @@ export const ChatInterface = ({ channel }: { channel: ChannelListItem | DMChanne
      * 
      * */
     // Fetch all the messages in the channel
-    const { data: messages, error: messagesError, mutate: refreshMessages, isLoading: isMessageLoading } = useFrappeGetCall<{ message: MessagesWithDate }>("raven.api.raven_message.get_messages_with_dates", {
-        channel_id: channel.name
-    }, `get_messages_for_channel_${channel.name}`, {
-        keepPreviousData: true,
-        onSuccess: (data) => {
-            onNewMessageLoaded()
-        }
-    })
 
-    useFrappeDocumentEventListener('Raven Channel', channel.name, () => { })
-
-    /** Realtime event listener to update messages */
-    useFrappeEventListener('message_updated', (data) => {
-        //If the message is sent on the current channel
-        if (data.channel_id === channel.name) {
-            //If the sender is not the current user
-            if (data.sender !== currentUser) {
-                refreshMessages()
-            }
-        }
-    })
+    const { messages, error, isLoading } = useChatStream(channel.name, conRef)
+    // const { data: messages, error: messagesError, mutate: refreshMessages, isLoading: isMessageLoading } = useFrappeGetCall<{ message: MessagesWithDate }>("raven.api.raven_message.get_messages_with_dates", {
+    //     channel_id: channel.name
+    // }, `get_messages_for_channel_${channel.name}`, {
+    //     keepPreviousData: true,
+    //     onSuccess: (data) => {
+    //         onNewMessageLoaded()
+    //     }
+    // })
 
     const { data: channelMembers } = useFrappeGetCall<{ message: ChannelMembersMap }>('raven.api.chat.get_channel_members', {
         channel_id: channel.name
     }, undefined, {
         revalidateOnFocus: false,
+        revalidateIfStale: false,
+        revalidateOnReconnect: false
     })
 
     const onMessageSend = () => {
         Haptics.impact({
             style: ImpactStyle.Light
         })
-        refreshMessages()
-            .then(() => {
-                scrollToBottom(0, 100)
-            })
+        scrollToBottom(0, 100)
     }
 
     const { selectedMessage, onMessageSelected, onDismiss } = useMessageActionModal()
@@ -134,9 +123,11 @@ export const ChatInterface = ({ channel }: { channel: ChannelListItem | DMChanne
                 </IonToolbar>
             </IonHeader>
             <IonContent className='flex flex-col-reverse' fullscreen ref={conRef}>
-                {isMessageLoading && <ChatLoader />}
-                {messagesError && <ErrorBanner error={messagesError} />}
-                <ChatView messages={messages?.message ?? []} members={channelMembers?.message ?? {}} onMessageSelected={onMessageSelected} />
+                {isLoading && <ChatLoader />}
+                {error && <ErrorBanner error={error} />}
+                {messages &&
+                    <ChatView messages={messages} members={channelMembers?.message ?? {}} onMessageSelected={onMessageSelected} />
+                }
 
                 {/* Commented out the button because it was unreliable. We only scroll to bottom when the user is at the bottom. */}
                 {/* <IonButton
@@ -157,7 +148,7 @@ export const ChatInterface = ({ channel }: { channel: ChannelListItem | DMChanne
             </IonContent>
 
             <IonFooter
-                hidden={!!messagesError}>
+                hidden={!!error}>
                 <div className='overflow-visible 
             text-slate-100
             bg-[color:var(--ion-background-color)]

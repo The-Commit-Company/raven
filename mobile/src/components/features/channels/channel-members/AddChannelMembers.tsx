@@ -44,8 +44,10 @@ export const AddChannelMembers = ({ presentingElement, isOpen, onDismiss, channe
 
     const { data, error, isLoading, mutate } = useFrappeGetCall<{ message: ChannelMembers }>('raven.api.chat.get_channel_members', {
         channel_id: channelID
-    }, undefined, {
-        revalidateOnFocus: false
+    }, `raven.api.chat.get_channel_members:${channelID}`, {
+        revalidateOnFocus: false,
+        revalidateIfStale: false,
+        revalidateOnReconnect: false
     })
     const { createDoc, error: errorAddingMembers, loading: addingMembers } = useFrappeCreateDoc()
 

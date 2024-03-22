@@ -102,7 +102,7 @@ export const Component = () => {
                             <ErrorText>{errors?.email?.message}</ErrorText>
                         )}
                     </Flex>
-                    
+
                     <Flex direction="column" gap="2">
                         <Button type="submit" disabled={isSubmitting}>
                             {isSubmitting ? <Loader /> : "Sign Up"}

@@ -1,5 +1,5 @@
 import { useContext, useEffect, useRef, useState } from 'react'
-import { MessageBlock } from '../../../../../../types/Messaging/Message'
+import { Message } from '../../../../../../types/Messaging/Message'
 import {
     IonModal,
     IonContent,
@@ -16,13 +16,13 @@ import { EmojiAction } from './EmojiAction';
 import MessagePreview from './MessagePreview';
 
 interface MessageActionModalProps {
-    selectedMessage?: MessageBlock,
+    selectedMessage?: Message,
     onDismiss: VoidFunction,
 }
 
 export const MessageActionModal = ({ selectedMessage, onDismiss }: MessageActionModalProps) => {
     const { currentUser } = useContext(UserContext)
-    const isOwnMessage = currentUser === selectedMessage?.data?.owner
+    const isOwnMessage = currentUser === selectedMessage?.owner
 
     const modalRef = useRef<HTMLIonModalElement>(null)
 
@@ -45,7 +45,7 @@ export const MessageActionModal = ({ selectedMessage, onDismiss }: MessageAction
         }
     }, [selectedMessage])
 
-    const user = useGetUser(selectedMessage?.data.owner)
+    const user = useGetUser(selectedMessage?.owner)
 
     return (
         <IonModal
@@ -107,7 +107,7 @@ export const MessageActionModal = ({ selectedMessage, onDismiss }: MessageAction
 
 export const useMessageActionModal = (mutate?: VoidFunction) => {
 
-    const [selectedMessage, setSelectedMessage] = useState<MessageBlock | undefined>(undefined)
+    const [selectedMessage, setSelectedMessage] = useState<Message | undefined>(undefined)
 
     // const [present, dismiss] = useIonModal(MessageActionModal, {
     //     selectedMessage,
@@ -129,7 +129,7 @@ export const useMessageActionModal = (mutate?: VoidFunction) => {
     //     });
     // }
 
-    const onMessageSelected = (m: MessageBlock) => {
+    const onMessageSelected = (m: Message) => {
         setSelectedMessage(m)
         // openModal()
     }

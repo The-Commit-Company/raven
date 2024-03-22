@@ -7,6 +7,7 @@ import { UserContext } from '../../utils/auth/UserProvider'
 import { FullPageLoader } from '@/components/layout/loaders'
 import { ProfileLoader } from '@/components/layout/loaders/ProfileLoader'
 import { UserAvatar } from '@/components/common/UserAvatar'
+import PushNotificationSetting from './PushNotificationSetting'
 
 interface User {
     name: string
@@ -50,6 +51,7 @@ export const Profile = () => {
                             <span><IonText color="primary">{data.email}</IonText></span>
                         </div>
                     }
+                    <PushNotificationSetting />
                     <IonItem button onClick={handleLogout}>
                         <IonIcon slot="start" icon={logOutOutline} />
                         Logout

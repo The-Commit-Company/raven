@@ -3,10 +3,11 @@ import { useToast } from '@/hooks/useToast'
 import turndown from 'turndown'
 type Props = {}
 
-export const useMessageCopy = (message: Message) => {
+export const useMessageCopy = (message?: Message | null) => {
     const { toast } = useToast()
 
     const copy = () => {
+        if (!message) return
         if (message.message_type === 'Text') {
 
             // Remove all empty lines
