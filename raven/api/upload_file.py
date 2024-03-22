@@ -55,7 +55,7 @@ def upload_file_with_message():
 	3. If the file is an image, we need to measure it's dimensions
 	4. Store the file URL and the dimensions in the Raven Message Doc
 	"""
-	fileExt = ["jpg", "JPG", "jpeg", "JPEG", "png", "PNG", "gif", "GIF"]
+	fileExt = ["jpg", "JPG", "jpeg", "JPEG", "png", "PNG", "gif", "GIF", "webp", "WEBP"]
 	thumbnailExt = ["jpg", "JPG", "jpeg", "JPEG", "png", "PNG"]
 
 	frappe.form_dict.doctype = "Raven Message"
