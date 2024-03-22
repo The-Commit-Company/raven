@@ -159,7 +159,20 @@ const useChatStream = (scrollRef: MutableRefObject<HTMLDivElement | null>) => {
                 if (d && d.message.has_new_messages === false) {
                     // Update the array of messages - append the new message in it and then sort it by date
                     const existingMessages = d.message.messages ?? []
-                    const newMessages = [...existingMessages, event.message_details]
+
+                    const newMessages = [...existingMessages]
+                    if (event.message_details) {
+                        // Check if the message is already present in the messages array
+                        const messageIndex = existingMessages.findIndex(message => message.name === event.message_details.name)
+
+                        if (messageIndex !== -1) {
+                            // If the message is already present, update the message
+                            newMessages[messageIndex] = event.message_details
+                        } else {
+                            // If the message is not present, add the message to the array
+                            newMessages.push(event.message_details)
+                        }
+                    }
 
                     newMessages.sort((a, b) => {
                         return new Date(b.creation).getTime() - new Date(a.creation).getTime()
