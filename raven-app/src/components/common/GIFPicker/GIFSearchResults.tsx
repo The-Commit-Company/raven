@@ -1,10 +1,9 @@
 import { useSWR } from "frappe-react-sdk"
 import { TENOR_SEARCH_API_ENDPOINT_BASE } from "./GIFPicker"
-import { TenorCredentials } from "@/types/RavenMessaging/TenorCredentials"
 import { GIFGallerySkeleton } from "./GIFGallerySkeleton"
 
 export interface Props {
-    apiCreds: TenorCredentials
+    apiCreds: any
     query: string
     onSelect: (gif: Result) => void
 }

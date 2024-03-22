@@ -25,7 +25,7 @@ export const GIFPicker = ({ onSelect }: GIFPickerProps) => {
     const [searchText, setSearchText] = useState("")
     const debouncedText = useDebounce(searchText, 200)
 
-    const { data: tenorCredentials, error } = useFrappeGetDoc('Tenor Credentials', 'Tenor Credentials')
+    const tenorCredentials = {}
 
     return (
         <Flex className="h-[550px] w-[450px] justify-center">
