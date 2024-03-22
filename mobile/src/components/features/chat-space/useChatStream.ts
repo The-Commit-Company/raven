@@ -401,8 +401,12 @@ const useChatStream = (channelID: string, scrollRef: RefObject<HTMLIonContentEle
                             name: messageDate
                         })
                     }
-
-                    if (messageDateTime - currentDateTime > 120000) {
+                    if (message.owner !== messages[i + 1].owner) {
+                        messagesWithDateSeparators.push({
+                            ...message,
+                            is_continuation: 0
+                        })
+                    } else if (messageDateTime - currentDateTime > 120000) {
                         messagesWithDateSeparators.push({
                             ...message,
                             is_continuation: 0
