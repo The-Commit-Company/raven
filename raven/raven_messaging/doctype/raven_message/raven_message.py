@@ -32,7 +32,8 @@ class RavenMessage(Document):
         linked_message: DF.Link | None
         mentions: DF.Table[RavenMention]
         message_reactions: DF.JSON | None
-        message_type: DF.Literal["Text", "Image", "File"]
+        message_type: DF.Literal["Text", "Image", "File", "Poll"]
+        poll_id: DF.Link | None
         replied_message_details: DF.JSON | None
         text: DF.LongText | None
         thumbnail_height: DF.Data | None
