@@ -11,7 +11,8 @@
   "options",
   "section_break_poll_settings",
   "is_anonymous",
-  "is_multi_choice"
+  "is_multi_choice",
+  "is_disabled"
  ],
  "fields": [
   {
@@ -35,7 +36,8 @@
    "fieldname": "options",
    "fieldtype": "Table",
    "label": "Options",
-   "options": "Raven Poll Option"
+   "options": "Raven Poll Option",
+   "reqd": 1
   },
   {
    "fieldname": "section_break_poll_settings",
@@ -53,11 +55,17 @@
    "fieldname": "is_multi_choice",
    "fieldtype": "Check",
    "label": "Is Multi Choice"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_disabled",
+   "fieldtype": "Check",
+   "label": "Is Disabled"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-03-22 16:21:07.222485",
+ "modified": "2024-03-22 17:02:55.993296",
  "modified_by": "Administrator",
  "module": "Raven Messaging",
  "name": "Raven Poll",

@@ -10,7 +10,7 @@
   "section_break_poll",
   "poll_id",
   "section_break_vote",
-  "vote_for"
+  "option"
  ],
  "fields": [
   {
@@ -45,16 +45,15 @@
    "label": "Vote"
   },
   {
-   "fieldname": "vote_for",
-   "fieldtype": "Link",
-   "label": "Vote",
-   "options": "Raven Poll Option",
+   "fieldname": "option",
+   "fieldtype": "Data",
+   "label": "Option",
    "reqd": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-03-22 16:21:38.083189",
+ "modified": "2024-03-22 18:30:37.565382",
  "modified_by": "Administrator",
  "module": "Raven Messaging",
  "name": "Raven Poll Vote",
