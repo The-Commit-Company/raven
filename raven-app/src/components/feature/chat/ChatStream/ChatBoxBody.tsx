@@ -78,6 +78,9 @@ export const ChatBoxBody = ({ channelData }: ChatBoxBodyProps) => {
         return null
     }
 
+
+    const isDM = channelData?.is_direct_message === 1 || channelData?.is_self_message === 1
+
     return (
         <Flex height='100%' direction='column' justify={'end'} p='4' pt='9' className="overflow-hidden">
 
@@ -114,12 +117,14 @@ export const ChatBoxBody = ({ channelData }: ChatBoxBodyProps) => {
                         />
                     </Suspense>
                 }
-                {channelData?.is_archived == 0 && !isUserInChannel && channelData?.type !== 'Open' &&
-                    <JoinChannelBox
-                        channelData={channelData}
-                        channelMembers={channelMembers}
-                        user={user} />}
-                {channelData && channelData.is_archived == 1 && <ArchivedChannelBox channelData={channelData} channelMembers={channelMembers} />}
+                {channelData && <>
+                    {channelData.is_archived == 0 && !isUserInChannel && channelData.type !== 'Open' && !isDM &&
+                        <JoinChannelBox
+                            channelData={channelData}
+                            channelMembers={channelMembers}
+                            user={user} />}
+                    {channelData.is_archived == 1 && <ArchivedChannelBox channelData={channelData} channelMembers={channelMembers} />}
+                </>}
             </FileDrop>
         </Flex>
     )
