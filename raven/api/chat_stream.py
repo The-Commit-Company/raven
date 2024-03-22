@@ -4,7 +4,7 @@ import frappe
 from frappe import _
 from frappe.query_builder import Order
 
-from raven.api.raven_message import track_visit
+from raven.utils import track_channel_visit
 
 
 @frappe.whitelist()
@@ -72,7 +72,7 @@ def get_messages(channel_id: str, limit: int = 20, base_message: str | None = No
 		if len(older_message) > 0:
 			has_old_messages = True
 
-	track_visit(channel_id=channel_id, commit=True)
+	track_channel_visit(channel_id=channel_id, commit=True)
 	return {
 		"messages": messages,
 		"has_old_messages": has_old_messages,
@@ -197,9 +197,18 @@ def get_newer_messages(channel_id: str, from_message: str, limit: int = 20):
 	# Fetch older messages for the channel
 	from_timestamp = frappe.get_cached_value("Raven Message", from_message, "creation")
 
-	return fetch_newer_messages(
+	response = fetch_newer_messages(
 		channel_id, from_message, from_timestamp, limit, include_from_message=False
 	)
+
+	if response.get("has_new_messages") == False:
+		# If no newer messages are available, we can track it as a visit to the channel
+		# There are cases when we want to publish the unread count update event for a specific user
+		# Example: The user is viewing an older message in a channel. If a new message comes up, the sidebar shows an unread count
+		# Now if the user scrolls to the bottom, we need to update the unread count
+		track_channel_visit(channel_id=channel_id, commit=True, publish_event_for_user=True)
+
+	return response
 
 
 def fetch_newer_messages(

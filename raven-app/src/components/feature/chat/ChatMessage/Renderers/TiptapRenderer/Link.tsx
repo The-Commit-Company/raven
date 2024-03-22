@@ -77,7 +77,6 @@ export const LinkPreview = memo(({ isScrolling }: { isScrolling?: boolean }) => 
 
     // const href = editor?.getAttributes('link').href
 
-    // console.log(editor?.state)
 
     const { data, isLoading } = useFrappeGetCall<{ message: LinkPreviewDetails[] }>('raven.api.preview_links.get_preview_link', {
         urls: JSON.stringify([href])

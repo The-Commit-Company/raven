@@ -1,5 +1,5 @@
 import { useFrappeDocumentEventListener, useFrappeEventListener, useFrappeGetCall, useFrappePostCall } from 'frappe-react-sdk'
-import { MutableRefObject, useEffect, useLayoutEffect, useMemo, useState } from 'react'
+import { MutableRefObject, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { useBeforeUnload, useLocation, useNavigate, useParams } from 'react-router-dom'
 import { Message } from '../../../../../../types/Messaging/Message'
 import { convertFrappeTimestampToUserTimezone } from '@/utils/dateConversions/utils'
@@ -37,6 +37,7 @@ const useChatStream = (scrollRef: MutableRefObject<HTMLDivElement | null>) => {
     useBeforeUnload(() => {
         window.history.replaceState({}, '')
     })
+
     useEffect(() => {
         let timer: NodeJS.Timeout | null = null;
         // Clear the highlighted message after 4 seconds
@@ -55,7 +56,15 @@ const useChatStream = (scrollRef: MutableRefObject<HTMLDivElement | null>) => {
     const { call: fetchOlderMessages, loading: loadingOlderMessages } = useFrappePostCall('raven.api.chat_stream.get_older_messages')
     const { call: fetchNewerMessages, loading: loadingNewerMessages } = useFrappePostCall('raven.api.chat_stream.get_newer_messages')
 
+    /** State variable used to track if the latest messages have been fetched and to scroll to the bottom of the chat stream */
     const [done, setDone] = useState(false)
+
+    /**
+     * Ref that is updated when no new messages are available
+     * Used to track visit when the user leaves the channel
+     */
+    const latestMessagesLoaded = useRef(false)
+
     const { data, isLoading, error, mutate } = useFrappeGetCall<GetMessagesResponse>('raven.api.chat_stream.get_messages', {
         'channel_id': channelID,
         'base_message': state?.baseMessage ? state.baseMessage : undefined
@@ -65,6 +74,7 @@ const useChatStream = (scrollRef: MutableRefObject<HTMLDivElement | null>) => {
             if (!highlightedMessage) {
                 if (!data.message.has_new_messages) {
                     setDone(true)
+                    latestMessagesLoaded.current = true
                 }
             } else {
                 setTimeout(() => {
@@ -74,8 +84,8 @@ const useChatStream = (scrollRef: MutableRefObject<HTMLDivElement | null>) => {
         }
     })
 
-    /** When loading is complete, scroll down to the bottom
-     *
+    /**
+     * When loading is complete, scroll down to the bottom
      * Need to scroll down twice because the scrollHeight is not updated immediately after the first scroll
      */
     useLayoutEffect(() => {
@@ -99,6 +109,23 @@ const useChatStream = (scrollRef: MutableRefObject<HTMLDivElement | null>) => {
             scrollRef.current?.scrollTo(0, scrollRef.current?.scrollHeight)
         }
     }, [done, channelID])
+
+
+    /** If the user has already loaded all the latest messages and exits the channel, we update the timestamp of last visit  */
+
+    const { call: trackVisit } = useFrappePostCall('raven.api.raven_channel_member.track_visit')
+    /**
+     * Track visit when unmounting if new messages were loaded.
+     * We are using a ref since the hook is not re-executed when the data is updated
+     */
+    useEffect(() => {
+        /** Call */
+        return () => {
+            if (latestMessagesLoaded.current) {
+                trackVisit({ channel_id: channelID })
+            }
+        }
+    }, [channelID])
 
     /**
      * Instead of maintaining two arrays for messages and previous messages, we can maintain a single array
@@ -129,7 +156,7 @@ const useChatStream = (scrollRef: MutableRefObject<HTMLDivElement | null>) => {
         if (event.channel_id === channelID) {
 
             mutate((d) => {
-                if (d) {
+                if (d && d.message.has_new_messages === false) {
                     // Update the array of messages - append the new message in it and then sort it by date
                     const existingMessages = d.message.messages ?? []
                     const newMessages = [...existingMessages, event.message_details]
@@ -144,22 +171,22 @@ const useChatStream = (scrollRef: MutableRefObject<HTMLDivElement | null>) => {
                             has_new_messages: d.message.has_new_messages ?? false
                         }
                     })
+                } else {
+                    return d
                 }
 
             }, {
                 revalidate: false,
             }).then(() => {
-                // If the user is focused on the page, then we also need to
-                if (scrollRef.current) {
-                    // We only scroll to the bottom if the user is close to the bottom
-                    scrollRef.current?.scrollTo(0, scrollRef.current?.scrollHeight)
-                    // TODO: Else we show a notification that there are new messages
-                    if (scrollRef.current.scrollTop !== 0) {
-
+                if (data?.message.has_new_messages === false) {
+                    // If the user is focused on the page, then we also need to
+                    if (scrollRef.current) {
+                        // We only scroll to the bottom if the user is close to the bottom
+                        scrollRef.current?.scrollTo(0, scrollRef.current?.scrollHeight)
+                        // TODO: Else we show a notification that there are new messages
                     }
                 }
             })
-
         }
     })
 
@@ -367,6 +394,10 @@ const useChatStream = (scrollRef: MutableRefObject<HTMLDivElement | null>) => {
             return d
         }, {
             revalidate: false,
+        }).then((res) => {
+            if (res?.message.has_new_messages === false) {
+                latestMessagesLoaded.current = true
+            }
         })
     }
 

@@ -7,7 +7,7 @@ from frappe import _
 from frappe.core.utils import html2text
 from frappe.model.document import Document
 
-from raven.api.raven_message import track_visit
+from raven.utils import track_channel_visit
 
 
 class RavenMessage(Document):
@@ -95,6 +95,9 @@ class RavenMessage(Document):
 
 	def after_insert(self):
 		# TODO: Enqueue this
+		self.publish_unread_count_event()
+
+	def publish_unread_count_event(self):
 		# If the message is a direct message, then we can only send it to one user
 		is_direct_message = frappe.get_cached_value(
 			"Raven Channel", self.channel_id, "is_direct_message"
@@ -114,9 +117,10 @@ class RavenMessage(Document):
 					"sent_by": self.owner,
 				},
 				user=peer_user_id,
+				after_commit=True,
 			)
 		else:
-			# // nosemgrep This event needs to be published to all users on Raven
+			# This event needs to be published to all users on Raven (desk + website)
 			frappe.publish_realtime(
 				"raven:unread_channel_count_updated",
 				{
@@ -124,7 +128,9 @@ class RavenMessage(Document):
 					"play_sound": False,
 					"sent_by": self.owner,
 				},
-			)  # nosemgrep
+				after_commit=True,
+				room="website",
+			)
 
 	def process_mentions(self):
 		if not self.json:
@@ -175,6 +181,8 @@ class RavenMessage(Document):
 			# Adding this to automatically add the room for the event via Frappe
 			docname=self.channel_id,
 		)
+
+		self.publish_unread_count_event()
 
 	def on_update(self):
 		if self.is_edited:
@@ -242,20 +250,12 @@ class RavenMessage(Document):
 				# Adding this to automatically add the room for the event via Frappe
 				docname=self.channel_id,
 			)
+			# track the visit of the user to the channel if a new message is created
+			frappe.enqueue(method=track_channel_visit, channel_id=self.channel_id, user=self.owner)
 
 	def on_trash(self):
 		# delete all the reactions for the message
 		frappe.db.delete("Raven Message Reaction", {"message": self.name})
-
-	def before_save(self):
-		# TODO: Remove this
-		if frappe.get_cached_value(
-			"Raven Channel", self.channel_id, "type"
-		) != "Private" or frappe.db.exists(
-			"Raven Channel Member",
-			{"channel_id": self.channel_id, "user_id": frappe.session.user},
-		):
-			track_visit(self.channel_id)
 
 
 def on_doctype_update():

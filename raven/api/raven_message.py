@@ -7,38 +7,7 @@ from frappe.query_builder import Case, JoinType, Order
 from frappe.query_builder.functions import Coalesce, Count
 
 from raven.api.raven_channel import get_peer_user_id
-
-
-def track_visit(channel_id, commit=False):
-	"""
-	Track the last visit of the user to the channel.
-	If the user is not a member of the channel, create a new member record
-	"""
-	doc = frappe.db.get_value(
-		"Raven Channel Member",
-		{"channel_id": channel_id, "user_id": frappe.session.user},
-		"name",
-	)
-	if doc:
-		frappe.db.set_value("Raven Channel Member", doc, "last_visit", frappe.utils.now())
-	elif frappe.get_cached_value("Raven Channel", channel_id, "type") == "Open":
-		frappe.get_doc(
-			{
-				"doctype": "Raven Channel Member",
-				"channel_id": channel_id,
-				"user_id": frappe.session.user,
-				"last_visit": frappe.utils.now(),
-			}
-		).insert()
-	frappe.publish_realtime(
-		"raven:unread_channel_count_updated",
-		{"channel_id": channel_id, "play_sound": False},
-		user=frappe.session.user,
-		after_commit=True,
-	)
-	# Need to commit the changes to the database if the request is a GET request
-	if commit:
-		frappe.db.commit()  # nosemgrep
+from raven.utils import get_channel_member
 
 
 @frappe.whitelist(methods=["POST"])
@@ -231,7 +200,6 @@ def check_permission(channel_id):
 def get_messages_with_dates(channel_id):
 	check_permission(channel_id)
 	messages = get_messages(channel_id)
-	track_visit(channel_id, True)
 	return parse_messages(messages)
 
 
@@ -279,6 +247,33 @@ def get_unread_count_for_channels():
 		"channels": channels_query,
 	}
 	return result
+
+
+@frappe.whitelist()
+def get_unread_count_for_channel(channel_id):
+	channel_member = get_channel_member(channel_id=channel_id)
+	if channel_member:
+		last_timestamp = frappe.get_cached_value("Raven Channel Member", channel_member, "last_visit")
+
+		return frappe.db.count(
+			"Raven Message",
+			filters={
+				"channel_id": channel_id,
+				"creation": (">", last_timestamp),
+			},
+		)
+	else:
+		if frappe.get_cached_value("Raven Channel", channel_id, "type") == "Open":
+			return frappe.db.count(
+				"Raven Message",
+				filters={
+					"channel_id": channel_id,
+				},
+			)
+		else:
+			return 0
+
+	return 0
 
 
 @frappe.whitelist()
