@@ -1,5 +1,6 @@
 import frappe
 
+
 @frappe.whitelist()
 def are_push_notifications_enabled() -> bool:
 	try:
