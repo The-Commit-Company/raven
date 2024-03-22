@@ -204,6 +204,10 @@ class RavenMessage(Document):
 				docname=self.channel_id,
 			)
 		else:
+			if self.message_type == "File" or self.message_type == "Image":
+				if not self.file:
+					return
+
 			frappe.publish_realtime(
 				"message_created",
 				{
