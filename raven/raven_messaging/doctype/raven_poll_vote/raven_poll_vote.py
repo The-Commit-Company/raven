@@ -19,20 +19,22 @@ class RavenPollVote(Document):
 		user_id: DF.Link
 	# end: auto-generated types
 
-
 	def after_insert(self):
 		update_poll_votes(self.poll_id)
 
 	def after_delete(self):
 		update_poll_votes(self.poll_id)
-	
+
 
 def update_poll_votes(poll_id):
 	poll = frappe.get_cached_doc("Raven Poll", poll_id)
 	# get votes for each option
-	poll_votes = frappe.get_all("Raven Poll Vote", 
-							filters={"poll_id": poll_id}, fields=["option", "count(name) as votes"], 
-							group_by="option")
+	poll_votes = frappe.get_all(
+		"Raven Poll Vote",
+		filters={"poll_id": poll_id},
+		fields=["option", "count(name) as votes"],
+		group_by="option",
+	)
 
 	# update the votes for each option in the poll
 	for vote in poll_votes:

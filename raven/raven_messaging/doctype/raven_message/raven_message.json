@@ -147,12 +147,13 @@
    "fieldname": "poll_id",
    "fieldtype": "Link",
    "label": "Poll ID",
-   "options": "Raven Poll"
+   "options": "Raven Poll",
+   "unique": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-03-22 16:20:25.293723",
+ "modified": "2024-03-22 20:32:00.832777",
  "modified_by": "Administrator",
  "module": "Raven Messaging",
  "name": "Raven Message",

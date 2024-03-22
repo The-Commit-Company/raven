@@ -13,6 +13,7 @@ class RavenPoll(Document):
 
 	if TYPE_CHECKING:
 		from frappe.types import DF
+
 		from raven.raven_messaging.doctype.raven_poll_option.raven_poll_option import RavenPollOption
 
 		is_anonymous: DF.Check
@@ -21,7 +22,7 @@ class RavenPoll(Document):
 		options: DF.Table[RavenPollOption]
 		question: DF.SmallText
 	# end: auto-generated types
-		
+
 	def on_trash(self):
 		# Delete all poll votes
 		frappe.db.delete("Raven Poll Vote", {"poll_id": self.name})
