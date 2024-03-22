@@ -1,5 +1,5 @@
 import { useFrappeDocumentEventListener, useFrappeEventListener, useFrappeGetCall, useFrappePostCall } from 'frappe-react-sdk'
-import { RefObject, useEffect, useLayoutEffect, useMemo, useState } from 'react'
+import { RefObject, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { DateObjectToFormattedDateString } from '@/utils/operations/operations'
 import { useDebounce } from '@/hooks/useDebounce'
 import { Message } from '../../../../../types/Messaging/Message'
@@ -32,11 +32,6 @@ const useChatStream = (channelID: string, scrollRef: RefObject<HTMLIonContentEle
 
     const [highlightedMessage, setHighlightedMessage] = useState<string | null>(baseMessage ? baseMessage : null)
 
-    /** On page reload, we need to clear the state */
-    useIonViewWillLeave(() => {
-        window.history.replaceState({}, '')
-    })
-
     useEffect(() => {
         let timer: NodeJS.Timeout | null = null;
         // Clear the highlighted message after 4 seconds
@@ -55,7 +50,15 @@ const useChatStream = (channelID: string, scrollRef: RefObject<HTMLIonContentEle
     const { call: fetchOlderMessages, loading: loadingOlderMessages } = useFrappePostCall('raven.api.chat_stream.get_older_messages')
     const { call: fetchNewerMessages, loading: loadingNewerMessages } = useFrappePostCall('raven.api.chat_stream.get_newer_messages')
 
+    /** State variable used to track if the latest messages have been fetched and to scroll to the bottom of the chat stream */
     const [done, setDone] = useState(false)
+
+    /**
+     * Ref that is updated when no new messages are available
+     * Used to track visit when the user leaves the channel
+     */
+    const latestMessagesLoaded = useRef(false)
+
     const { data, isLoading, error, mutate } = useFrappeGetCall<GetMessagesResponse>('raven.api.chat_stream.get_messages', {
         'channel_id': channelID,
         'base_message': baseMessage ? baseMessage : undefined
@@ -65,12 +68,28 @@ const useChatStream = (channelID: string, scrollRef: RefObject<HTMLIonContentEle
             if (!highlightedMessage) {
                 if (!data.message.has_new_messages) {
                     setDone(true)
+                    latestMessagesLoaded.current = true
                 }
             } else {
                 setTimeout(() => {
                     document.getElementById(`message-${highlightedMessage}`)?.scrollIntoView({ behavior: 'smooth', block: 'center' })
                 }, 100)
             }
+        }
+    })
+
+    /** If the user has already loaded all the latest messages and exits the channel, we update the timestamp of last visit  */
+
+    const { call: trackVisit } = useFrappePostCall('raven.api.raven_channel_member.track_visit')
+    /**
+     * Track visit when unmounting if new messages were loaded.
+     * We are using a ref since the hook is not re-executed when the data is updated
+     * On page reload, we need to clear the state 
+     */
+    useIonViewWillLeave(() => {
+        window.history.replaceState({}, '')
+        if (latestMessagesLoaded.current) {
+            trackVisit({ channel_id: channelID })
         }
     })
 
@@ -125,8 +144,20 @@ const useChatStream = (channelID: string, scrollRef: RefObject<HTMLIonContentEle
                 if (d) {
                     // Update the array of messages - append the new message in it and then sort it by date
                     const existingMessages = d.message.messages ?? []
-                    const newMessages = [...existingMessages, event.message_details]
 
+                    const newMessages = [...existingMessages]
+                    if (event.message_details) {
+                        // Check if the message is already present in the messages array
+                        const messageIndex = existingMessages.findIndex(message => message.name === event.message_details.name)
+
+                        if (messageIndex !== -1) {
+                            // If the message is already present, update the message
+                            newMessages[messageIndex] = event.message_details
+                        } else {
+                            // If the message is not present, add the message to the array
+                            newMessages.push(event.message_details)
+                        }
+                    }
                     newMessages.sort((a, b) => {
                         return new Date(b.creation).getTime() - new Date(a.creation).getTime()
                     })
@@ -360,6 +391,10 @@ const useChatStream = (channelID: string, scrollRef: RefObject<HTMLIonContentEle
             return d
         }, {
             revalidate: false,
+        }).then((res) => {
+            if (res?.message.has_new_messages === false) {
+                latestMessagesLoaded.current = true
+            }
         })
     }
 

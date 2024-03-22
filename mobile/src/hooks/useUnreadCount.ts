@@ -58,7 +58,6 @@ const useUnreadMessageCount = () => {
                         })
 
                         const total_unread_count_in_channels = newChannels.reduce((acc: number, c) => {
-                            console.log(c)
                             if (!c.is_direct_message) {
                                 return acc + c.unread_count
                             } else {

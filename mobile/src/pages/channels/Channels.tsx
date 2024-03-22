@@ -1,4 +1,4 @@
-import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonItem, IonLabel, IonSearchbar, useIonModal } from '@ionic/react';
+import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonItem, IonLabel, IonSearchbar } from '@ionic/react';
 import { IoAdd } from 'react-icons/io5';
 import { ErrorBanner } from '../../components/layout';
 import { ChannelList } from '../../components/features/channels/ChannelList';
@@ -6,8 +6,7 @@ import { AddChannel } from '../../components/features/channels';
 import { useMemo, useRef, useState } from 'react';
 import { UnreadCountData, useChannelList } from '@/utils/channel/ChannelListProvider';
 import { ChannelListLoader } from '../../components/layout/loaders/ChannelListLoader';
-import { useFrappeEventListener, useFrappeGetCall } from 'frappe-react-sdk';
-import useUnreadMessageCount from '@/hooks/useUnreadCount';
+import { useFrappeGetCall } from 'frappe-react-sdk';
 
 export const Channels = () => {
 
@@ -27,7 +26,13 @@ export const Channels = () => {
         return activeChannels.filter(channel => channel.channel_name.includes(searchTerm))
     }, [searchInput, channels])
 
-    const unread_count = useUnreadMessageCount()
+    const { data: unreadCount } = useFrappeGetCall<{ message: UnreadCountData }>("raven.api.raven_message.get_unread_count_for_channels",
+        undefined,
+        'unread_channel_count', {
+        revalidateOnFocus: false,
+        revalidateIfStale: false,
+        revalidateOnReconnect: true,
+    })
 
     return (
         <IonPage ref={pageRef}>
@@ -58,7 +63,7 @@ export const Channels = () => {
                         Add Channel
                     </IonLabel>
                 </IonItem>
-                <ChannelList data={filteredChannels ?? []} unread_count={unread_count?.message} />
+                <ChannelList data={filteredChannels ?? []} unread_count={unreadCount?.message} />
                 <AddChannel isOpen={isOpen} onDismiss={() => setIsOpen(false)} presentingElement={pageRef.current} />
             </IonContent>
         </IonPage>
