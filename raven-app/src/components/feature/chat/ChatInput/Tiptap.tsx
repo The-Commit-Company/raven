@@ -28,6 +28,7 @@ import { Plugin } from 'prosemirror-state'
 import { Box } from '@radix-ui/themes'
 import { useSessionStickyState } from '@/hooks/useStickyState'
 import { Message } from '../../../../../../types/Messaging/Message'
+import Image from '@tiptap/extension-image'
 const lowlight = createLowlight(common)
 
 lowlight.register('html', html)
@@ -413,6 +414,9 @@ const Tiptap = ({ slotBefore, fileProps, onMessageSend, replyMessage, clearReply
         }),
         CodeBlockLowlight.configure({
             lowlight
+        }),
+        Image.configure({
+            inline: true,
         }),
         KeyboardHandler
     ]
