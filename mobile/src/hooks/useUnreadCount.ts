@@ -2,7 +2,6 @@ import { UserContext } from "@/utils/auth/UserProvider"
 import { UnreadCountData } from "@/utils/channel/ChannelListProvider"
 import { useFrappeGetCall, FrappeContext, FrappeConfig, useFrappeEventListener } from "frappe-react-sdk"
 import { useContext } from "react"
-import { useParams, useLocation } from "react-router-dom"
 
 /**
  *
@@ -59,6 +58,7 @@ const useUnreadMessageCount = () => {
                         })
 
                         const total_unread_count_in_channels = newChannels.reduce((acc: number, c) => {
+                            console.log(c)
                             if (!c.is_direct_message) {
                                 return acc + c.unread_count
                             } else {
@@ -94,19 +94,13 @@ const useUnreadMessageCount = () => {
         })
     }
 
-    const { channelID } = useParams()
-    const { state } = useLocation()
-
     useFrappeEventListener('raven:unread_channel_count_updated', (event) => {
         // If the event is published by the current user, then don't update the unread count
         if (event.sent_by !== currentUser) {
             // If the user is already on the channel and is at the bottom of the chat (no base message), then don't update the unread count
-            if (channelID === event.channel_id && !state?.baseMessage) {
-            } else {
-                //TODO: perf: Can try to just increment the count by one instead of fetching the count again
-                // https://github.com/The-Commit-Company/Raven/pull/745#issuecomment-2014313429
-                fetchUnreadCountForChannel(event.channel_id)
-            }
+            //TODO: perf: Can try to just increment the count by one instead of fetching the count again
+            // https://github.com/The-Commit-Company/Raven/pull/745#issuecomment-2014313429
+            fetchUnreadCountForChannel(event.channel_id)
         }
     })
 

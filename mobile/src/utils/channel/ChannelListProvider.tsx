@@ -14,7 +14,7 @@ export type ExtraUsersData = {
 export type UnreadCountData = {
     total_unread_count_in_channels: number,
     total_unread_count_in_dms: number,
-    channels: { name: string, user_id?: string, unread_count: number }[]
+    channels: { name: string, user_id?: string, unread_count: number, is_direct_message: 0 | 1 }[]
 }
 
 export type ChannelListItem = Pick<RavenChannel, 'name' | 'channel_name' | 'type' | 'channel_description' | 'is_direct_message' | 'is_self_message' | 'is_archived'>
