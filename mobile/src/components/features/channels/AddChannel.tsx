@@ -58,7 +58,7 @@ export const AddChannel = ({ presentingElement, isOpen, onDismiss }: AddChannelP
         createDoc('Raven Channel', {
             channel_name: data.channel_name,
             channel_description: data.channel_description,
-            type: channelType
+            type: data.channel_type
         }).catch((err) => {
             if (err.httpStatus === 409) {
                 presentToast("Channel name already exists.", 'danger')
@@ -109,7 +109,10 @@ export const AddChannel = ({ presentingElement, isOpen, onDismiss }: AddChannelP
                                             control={form.control}
                                             rules={{
                                                 required: "Channel name is required",
-                                                maxLength: 50,
+                                                maxLength: {
+                                                    value: 50,
+                                                    message:"Channel name can be atmost 50 characters."
+                                                },
                                                 pattern: {
                                                     // no special characters allowed
                                                     // cannot start with a space
