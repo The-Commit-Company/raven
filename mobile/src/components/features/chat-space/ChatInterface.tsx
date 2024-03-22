@@ -33,8 +33,6 @@ export const ChatInterface = ({ channel }: { channel: ChannelListItem | DMChanne
         scrollToBottom(0, 0)
     })
 
-
-
     const onNewMessageLoaded = useCallback(() => {
         /**
                  * We need to scroll to the bottom of the chat interface if the user is already at the bottom.
@@ -83,6 +81,8 @@ export const ChatInterface = ({ channel }: { channel: ChannelListItem | DMChanne
         channel_id: channel.name
     }, undefined, {
         revalidateOnFocus: false,
+        revalidateIfStale: false,
+        revalidateOnReconnect: false
     })
 
     const onMessageSend = () => {
