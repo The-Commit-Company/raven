@@ -34,6 +34,14 @@ def get_context(context):
 		{"build_version": frappe.utils.get_build_version(), "boot": boot_json, "csrf_token": csrf_token}
 	)
 
+	app_name = frappe.get_website_settings("app_name") or frappe.get_system_settings("app_name")
+
+	if app_name and app_name != "Frappe":
+		context["app_name"] = app_name + " | " + "Raven"
+
+	else:
+		context["app_name"] = "Raven"
+
 	if frappe.session.user != "Guest":
 		capture("active_site:mobile", "raven")
 
