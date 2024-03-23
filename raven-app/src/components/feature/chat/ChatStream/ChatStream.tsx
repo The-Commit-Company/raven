@@ -11,6 +11,8 @@ import ChatStreamLoader from './ChatStreamLoader'
 import clsx from 'clsx'
 import { DateSeparator } from '@/components/layout/Divider/DateSeparator'
 import { useInView } from 'react-intersection-observer'
+import { Button } from '@radix-ui/themes'
+import { FiArrowDown } from 'react-icons/fi'
 
 /**
  * Anatomy of a message
@@ -68,7 +70,7 @@ const ChatStream = ({ replyToMessage }: Props) => {
     const scrollRef = useRef<HTMLDivElement | null>(null)
     // const prevScrollTop = useRef(0)
 
-    const { messages, hasOlderMessages, loadOlderMessages, loadingOlderMessages, hasNewMessages, loadNewerMessages, isLoading, highlightedMessage, scrollToMessage } = useChatStream(scrollRef)
+    const { messages, hasOlderMessages, loadOlderMessages, goToLatestMessages, hasNewMessages, loadNewerMessages, isLoading, highlightedMessage, scrollToMessage } = useChatStream(scrollRef)
     const { setDeleteMessage, ...deleteProps } = useDeleteMessage()
 
     const { setEditMessage, ...editProps } = useEditMessage()
@@ -103,7 +105,7 @@ const ChatStream = ({ replyToMessage }: Props) => {
     });
 
     return (
-        <div className='h-full flex flex-col overflow-y-auto' ref={scrollRef}>
+        <div className='relative h-full flex flex-col overflow-y-auto' ref={scrollRef}>
             <div ref={oldLoaderRef}>
                 {hasOlderMessages && !isLoading && <div className='flex w-full min-h-8 pb-4 justify-center items-center' >
                     <Loader />
@@ -137,6 +139,15 @@ const ChatStream = ({ replyToMessage }: Props) => {
                 <div className='flex w-full min-h-8 pb-4 justify-center items-center'>
                     <Loader />
                 </div>
+            </div>}
+
+            {hasNewMessages && <div className='fixed bottom-36 z-50 right-5'>
+                <Button
+                    className='shadow-lg'
+                    onClick={goToLatestMessages}>
+                    Scroll to new messages
+                    <FiArrowDown size={18} />
+                </Button>
             </div>}
             <DeleteMessageDialog {...deleteProps} />
             <EditMessageDialog {...editProps} />
