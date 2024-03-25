@@ -1,4 +1,4 @@
-import { IonButton, IonButtons, IonContent, ToastOptions, IonHeader, IonModal, IonText, IonTitle, IonToolbar, useIonToast } from "@ionic/react";
+import { IonContent, ToastOptions, IonHeader, IonModal, IonText, IonToolbar, useIonToast } from "@ionic/react";
 import { useFrappeCreateDoc } from "frappe-react-sdk";
 import { useRef, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -9,8 +9,8 @@ import { useChannelList } from "@/utils/channel/ChannelListProvider";
 import { FormField, FormItem, FormLabel, FormControl, FormDescription, FormMessage, Form } from "@/components/ui/form";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
-import { Separator } from "@/components/ui/separator";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Button } from "@/components/ui/button";
 
 interface AddChannelProps {
     presentingElement: HTMLElement | undefined,
@@ -85,17 +85,21 @@ export const AddChannel = ({ presentingElement, isOpen, onDismiss }: AddChannelP
 
     return (
         <IonModal ref={modal} onDidDismiss={handleCancel} isOpen={isOpen} presentingElement={presentingElement}>
-            <IonHeader>
-                <IonToolbar>
-                    <IonButtons slot="start">
-                        <IonButton color={'medium'} onClick={handleCancel}>Cancel</IonButton>
-                    </IonButtons>
-                    <IonTitle>Create Channel</IonTitle>
-                    <IonButtons slot="end">
-                        <IonButton color={'primary'} onClick={form.handleSubmit(onSubmit)}>Create</IonButton>
-                    </IonButtons>
-                </IonToolbar>
-            </IonHeader>
+            <div className='block relative z-10 w-full'>
+                <div className='px-4 py-2 inset-x-0 top-0 overflow-hidden items-center min-h-5 bg-background border-b-foreground/10 border-b'>
+                    <div className='flex gap-5 items-center justify-around'>
+                        <div>
+                            <Button variant="ghost" className="hover:bg-transparent hover:text-foreground/80" onClick={handleCancel}>
+                                Cancel
+                            </Button>
+                        </div>
+                        <span className="text-base font-medium">Create Channel</span>
+                        <div>
+                            <Button variant="ghost" className="text-primary hover:bg-transparent" onClick={form.handleSubmit(onSubmit)}>Create</Button>
+                        </div>
+                    </div>
+                </div>
+            </div>
             <IonContent className="ion-padding">
                 <ErrorBanner error={channelCreationError} />
                 <Form {...form}>
@@ -111,7 +115,7 @@ export const AddChannel = ({ presentingElement, isOpen, onDismiss }: AddChannelP
                                                 required: "Channel name is required",
                                                 maxLength: {
                                                     value: 50,
-                                                    message:"Channel name can be atmost 50 characters."
+                                                    message: "Channel name can be atmost 50 characters."
                                                 },
                                                 pattern: {
                                                     // no special characters allowed
@@ -132,7 +136,7 @@ export const AddChannel = ({ presentingElement, isOpen, onDismiss }: AddChannelP
                                                                 placeholder='bugs-bugs-bugs'
                                                                 aria-label="Channel Name"
                                                                 {...field}
-                                                                onChange={(e) => field.onChange(e.target.value?.toLowerCase().replace(' ', '-') ?? '')}                       
+                                                                onChange={(e) => field.onChange(e.target.value?.toLowerCase().replace(' ', '-') ?? '')}
                                                             />
                                                         </FormControl>
                                                     </div>
@@ -143,7 +147,6 @@ export const AddChannel = ({ presentingElement, isOpen, onDismiss }: AddChannelP
                                     </div>
                                 </li>
                             </div>
-                            <Separator />
                             <div>
                                 <li className="list-none">
                                     <div className="p-2">
@@ -167,7 +170,6 @@ export const AddChannel = ({ presentingElement, isOpen, onDismiss }: AddChannelP
                                     </div>
                                 </li>
                             </div>
-                            <Separator />
                             <div>
                                 <div className="p-2">
                                     <FormField
@@ -182,7 +184,7 @@ export const AddChannel = ({ presentingElement, isOpen, onDismiss }: AddChannelP
                                                         defaultValue={field.value}
                                                         className="flex flex-col"
                                                     >
-                                                        <FormItem className="flex items-center space-y-0 p-1">
+                                                        <FormItem className="flex items-center space-y-1 p-1">
                                                             <FormLabel className="font-normal flex gap-2 grow">
                                                                 <BiHash size='16' />
                                                                 <span>Public</span>
@@ -191,8 +193,7 @@ export const AddChannel = ({ presentingElement, isOpen, onDismiss }: AddChannelP
                                                                 <RadioGroupItem value="Public" />
                                                             </FormControl>
                                                         </FormItem>
-                                                        <Separator />
-                                                        <FormItem className="flex items-center space-y-0 p-1">
+                                                        <FormItem className="flex items-center space-y-1 p-1">
                                                             <FormLabel className="font-normal flex gap-2 grow">
                                                                 <BiLockAlt size='16' />
                                                                 <span>Private</span>
@@ -201,8 +202,7 @@ export const AddChannel = ({ presentingElement, isOpen, onDismiss }: AddChannelP
                                                                 <RadioGroupItem value="Private" />
                                                             </FormControl>
                                                         </FormItem>
-                                                        <Separator />
-                                                        <FormItem className="flex items-center space-y-0 p-1">
+                                                        <FormItem className="flex items-center space-y-1 p-1">
                                                             <FormLabel className="font-normal flex gap-2 grow">
                                                                 <BiGlobe size='16' />
                                                                 <span>Open</span>
@@ -211,13 +211,12 @@ export const AddChannel = ({ presentingElement, isOpen, onDismiss }: AddChannelP
                                                                 <RadioGroupItem value="Open" />
                                                             </FormControl>
                                                         </FormItem>
-                                                        <Separator />
                                                     </RadioGroup>
                                                 </FormControl>
                                                 <FormDescription>
-                                                    {form.watch("channel_type") === 'Public' && <IonText className="text-sm" color='medium'>When a channel is set to public, anyone can join the channel and read messages, but only members can post messages.</IonText>}
-                                                    {form.watch("channel_type") === 'Private' && <IonText className="text-sm" color='medium'>When a channel is set to private, it can only be viewed or joined by invitation.</IonText>}
-                                                    {form.watch("channel_type") === 'Open' && <IonText className="text-sm" color='medium'>When a channel is set to open, everyone is a member.</IonText>}
+                                                    {form.watch("channel_type") === 'Public' && <span className="text-sm text-foreground/80">When a channel is set to public, anyone can join the channel and read messages, but only members can post messages.</span>}
+                                                    {form.watch("channel_type") === 'Private' && <span className="text-sm text-foreground/80">When a channel is set to private, it can only be viewed or joined by invitation.</span>}
+                                                    {form.watch("channel_type") === 'Open' && <span className="text-sm text-foreground/80">When a channel is set to open, everyone is a member.</span>}
                                                 </FormDescription>
                                                 <FormMessage />
                                             </FormItem>
