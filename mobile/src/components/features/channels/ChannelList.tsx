@@ -1,4 +1,3 @@
-import { IonBadge } from '@ionic/react'
 import { BiGlobe, BiHash, BiLockAlt } from 'react-icons/bi'
 import { ChannelListItem, UnreadCountData } from '@/utils/channel/ChannelListProvider'
 import { useMemo } from 'react'
@@ -27,19 +26,19 @@ const ChannelItem = ({ channel, unreadCount }: { channel: ChannelListItem, unrea
     const unreadCountForChannel = useMemo(() => unreadCount.find((unread) => unread.name == channel.name)?.unread_count, [channel.name, unreadCount])
 
     return (
-        <li key={channel.name} className="list-none px-4 py-3">
-            <Link to={`/channel/${channel.name}`}>
-                <div className='flex justify-between items-center'>
-                    <div className='flex items-center space-x-4 w-5/6'>
+        <Link to={`/channel/${channel.name}`}>
+            <li key={channel.name} className="list-none px-4 py-3 active:bg-foreground/10 active:rounded">
+                <div className='flex justify-between items-center text-foreground'>
+                    <div className='flex items-center space-x-2 w-5/6'>
                         <div>
-                            {channel.type === "Private" ? <BiLockAlt size='24' /> : channel.type === "Public" ? <BiHash size='24' /> :
-                                <BiGlobe size='24' className='text-foreground' />}
+                            {channel.type === "Private" ? <BiLockAlt size='18' /> : channel.type === "Public" ? <BiHash size='18' /> :
+                                <BiGlobe size='18' />}
                         </div>
-                        <Label className='text-foreground'>{channel.channel_name}</Label>
+                        <Label className='w-5/6 cursor-pointer'>{channel.channel_name}</Label>
                     </div>
                     {unreadCountForChannel ? <Badge>{unreadCountForChannel < 100 ? unreadCountForChannel : '99'}</Badge> : null}
                 </div>
-            </Link>
-        </li>
+            </li>
+        </Link>
     )
 }

@@ -1,4 +1,4 @@
-import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar } from '@ionic/react';
+import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonSearchbar } from '@ionic/react';
 import { IoAdd } from 'react-icons/io5';
 import { ErrorBanner } from '../../components/layout';
 import { ChannelList } from '../../components/features/channels/ChannelList';
@@ -8,8 +8,6 @@ import { UnreadCountData, useChannelList } from '@/utils/channel/ChannelListProv
 import { ChannelListLoader } from '../../components/layout/loaders/ChannelListLoader';
 import { useFrappeEventListener, useFrappeGetCall } from 'frappe-react-sdk';
 import { Label } from '@/components/ui/label';
-import { SearchInput } from '@/components/ui/input';
-import { BiChevronRight, BiSearch } from 'react-icons/bi';
 import { Button } from '@/components/ui/button';
 
 export const Channels = () => {
@@ -53,30 +51,24 @@ export const Channels = () => {
                     </IonToolbar>
                 </IonHeader>
                 <IonToolbar>
-                    <SearchInput
-                        spellCheck
-                        slotStart={<BiSearch size={18}/>}
-                        onChange={(e) => setSearchInput(e.target.value!)}
-                        className='text-foreground'
+                    <IonSearchbar
                         placeholder='Search'
+                        onIonInput={(e) => setSearchInput(e.target.value!)}
                     >
-                    </SearchInput>
+                    </IonSearchbar>
                 </IonToolbar>
                 {isLoading && <ChannelListLoader />}
                 {error && <ErrorBanner error={error} />}
-                <li className='list-none'>
+                <li className='list-none active:bg-foreground/10 active:rounded'>
                     <Button variant="ghost" className='w-full flex justify-between items-center hover:bg-transparent ' onClick={() => setIsOpen(true)}>
-                    <div className='flex items-center justify-start gap-3'>
+                    <div className='flex items-center justify-start gap-2'>
                         <span>
-                            <IoAdd size='24' className='text-foreground/80' />
+                            <IoAdd size='18' className='text-foreground/80' />
                         </span>
-                        <Label className="text-foreground/80">
+                        <Label className="text-foreground/80 cursor-pointer">
                             Add Channel
                         </Label>
                     </div>
-                    <span>
-                        <BiChevronRight size='24' color='text-foreground/80'/>
-                    </span>
                     </Button>
                 </li>
                 <ChannelList data={filteredChannels ?? []} unread_count={unread_count?.message}/>
