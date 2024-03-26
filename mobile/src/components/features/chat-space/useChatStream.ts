@@ -175,15 +175,10 @@ const useChatStream = (channelID: string, scrollRef: RefObject<HTMLIonContentEle
             }).then(() => {
                 // If the user is focused on the page, then we also need to
                 if (scrollRef.current) {
-                    // We only scroll to the bottom if the user is close to the bottom
-                    scrollRef.current.scrollToBottom()
-                    // TODO: Else we show a notification that there are new messages
-                    if (scrollRef.current.scrollTop !== 0) {
-
-                    }
+                    // TODO: We only scroll to the bottom if the user is close to the bottom
+                    scrollRef.current.scrollToBottom(200)
                 }
             })
-
         }
     })
 
@@ -475,7 +470,6 @@ const useChatStream = (channelID: string, scrollRef: RefObject<HTMLIonContentEle
             onBaseMessageChange?.(messageID)
             setHighlightedMessage(messageID)
         }
-
     }
 
     return {
