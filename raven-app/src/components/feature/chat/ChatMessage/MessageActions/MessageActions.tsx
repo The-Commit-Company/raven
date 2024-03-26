@@ -9,65 +9,67 @@ import { useMessageCopy } from './useMessageCopy'
 import { useToast } from '@/hooks/useToast'
 
 export interface MessageContextMenuProps {
-    message: Message,
+    message?: Message | null,
     onDelete: VoidFunction
     onEdit: VoidFunction,
     onReply: VoidFunction,
-    updateMessages: VoidFunction,
-    isOwner: boolean
 }
 
-export const MessageContextMenu = ({ message, onDelete, onEdit, onReply, updateMessages, isOwner }: MessageContextMenuProps) => {
+export const MessageContextMenu = ({ message, onDelete, onEdit, onReply }: MessageContextMenuProps) => {
 
     const copy = useMessageCopy(message)
+    const { currentUser } = useContext(UserContext)
+
+    const isOwner = currentUser === message?.owner
 
     return (
         <ContextMenu.Content>
-            <ContextMenu.Item onClick={onReply}>
-                <Flex gap='2'>
-                    <HiReply size='18' />
-                    Reply
-                </Flex>
-            </ContextMenu.Item>
-            <ContextMenu.Separator />
-            <ContextMenu.Group>
-                {message.message_type === 'Text' &&
-                    <ContextMenu.Item onClick={copy}>
-                        <Flex gap='2'>
-                            <BiCopy size='18' />
-                            Copy
-                        </Flex>
-                    </ContextMenu.Item>
-                }
-
-                {['File', 'Image'].includes(message.message_type) &&
-                    <ContextMenu.Group>
+            {message ? <>
+                <ContextMenu.Item onClick={onReply}>
+                    <Flex gap='2'>
+                        <HiReply size='18' />
+                        Reply
+                    </Flex>
+                </ContextMenu.Item>
+                <ContextMenu.Separator />
+                <ContextMenu.Group>
+                    {message.message_type === 'Text' &&
                         <ContextMenu.Item onClick={copy}>
                             <Flex gap='2'>
-                                <BiLink size='18' />
-                                Copy link
+                                <BiCopy size='18' />
+                                Copy
                             </Flex>
                         </ContextMenu.Item>
+                    }
 
-                        <ContextMenu.Item asChild>
-                            <a download href={(message as FileMessage).file}>
+                    {['File', 'Image'].includes(message.message_type) &&
+                        <ContextMenu.Group>
+                            <ContextMenu.Item onClick={copy}>
                                 <Flex gap='2'>
-                                    <BiDownload size='18' />
-                                    Download
+                                    <BiLink size='18' />
+                                    Copy link
                                 </Flex>
-                            </a>
-                        </ContextMenu.Item>
-                    </ContextMenu.Group>
-                }
+                            </ContextMenu.Item>
 
-            </ContextMenu.Group>
+                            <ContextMenu.Item asChild>
+                                <a download href={(message as FileMessage).file}>
+                                    <Flex gap='2'>
+                                        <BiDownload size='18' />
+                                        Download
+                                    </Flex>
+                                </a>
+                            </ContextMenu.Item>
+                        </ContextMenu.Group>
+                    }
 
-            <ContextMenu.Separator />
-            <ContextMenu.Group>
+                </ContextMenu.Group>
 
-                <SaveMessageAction message={message} updateMessages={updateMessages} />
+                <ContextMenu.Separator />
+                <ContextMenu.Group>
 
-                {/* <ContextMenu.Item>
+                    <SaveMessageAction message={message} />
+
+                    {/* <ContextMenu.Item>
                     <Flex gap='2'>
                         <HiOutlineDocumentAdd size='18' />
                         Link with document
@@ -81,35 +83,36 @@ export const MessageContextMenu = ({ message, onDelete, onEdit, onReply, updateM
                     </Flex>
                 </ContextMenu.Item> */}
 
-            </ContextMenu.Group>
+                </ContextMenu.Group>
 
 
 
 
-            {isOwner && <ContextMenu.Group>
-                <ContextMenu.Separator />
-                {message.message_type === 'Text' &&
-                    <ContextMenu.Item onClick={onEdit}>
+                {isOwner && <ContextMenu.Group>
+                    <ContextMenu.Separator />
+                    {message.message_type === 'Text' &&
+                        <ContextMenu.Item onClick={onEdit}>
+                            <Flex gap='2'>
+                                <BiEditAlt size='18' />
+                                Edit
+                            </Flex>
+                        </ContextMenu.Item>
+                    }
+                    <ContextMenu.Item color="red" onClick={onDelete}>
                         <Flex gap='2'>
-                            <BiEditAlt size='18' />
-                            Edit
+                            <BiTrash size='18' />
+                            Delete
                         </Flex>
                     </ContextMenu.Item>
-                }
-                <ContextMenu.Item color="red" onClick={onDelete}>
-                    <Flex gap='2'>
-                        <BiTrash size='18' />
-                        Delete
-                    </Flex>
-                </ContextMenu.Item>
-            </ContextMenu.Group>}
+                </ContextMenu.Group>}
+            </> : null}
 
         </ContextMenu.Content>
     )
 }
 
 
-const SaveMessageAction = ({ message, updateMessages }: { message: Message, updateMessages: VoidFunction }) => {
+const SaveMessageAction = ({ message }: { message: Message }) => {
 
     const { currentUser } = useContext(UserContext)
     const isSaved = JSON.parse(message._liked_by ?? '[]').includes(currentUser)
@@ -119,9 +122,9 @@ const SaveMessageAction = ({ message, updateMessages }: { message: Message, upda
     const { toast } = useToast()
 
     const handleLike = () => {
-        call.post('frappe.desk.like.toggle_like', {
-            doctype: 'Raven Message',
-            name: message.name,
+        call.post('raven.api.raven_message.save_message', {
+            // doctype: 'Raven Message',
+            message_id: message.name,
             add: isSaved ? 'No' : 'Yes'
         }).then(() => {
             toast({
@@ -129,7 +132,6 @@ const SaveMessageAction = ({ message, updateMessages }: { message: Message, upda
                 variant: 'accent',
                 duration: 800,
             })
-            updateMessages()
         })
             .catch(() => {
                 toast({

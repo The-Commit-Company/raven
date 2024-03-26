@@ -11,6 +11,8 @@ export default defineConfig(({ command, mode }) => {
     plugins: [react(),
     VitePWA({
       registerType: 'autoUpdate',
+      strategies: "injectManifest",
+      injectRegister: null,
       outDir: '../raven/public/raven_mobile',
       workbox: {
         importScripts: [],

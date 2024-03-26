@@ -1,6 +1,6 @@
 import { useFrappePostCall } from "frappe-react-sdk"
 import { useContext, useMemo, useState } from "react"
-import { useNavigate } from "react-router-dom"
+import { useNavigate, useParams } from "react-router-dom"
 import { SidebarGroup, SidebarGroupItem, SidebarGroupLabel, SidebarGroupList, SidebarIcon, SidebarButtonItem } from "../../layout/Sidebar"
 import { SidebarBadge, SidebarItem, SidebarViewMoreButton } from "../../layout/Sidebar/SidebarComp"
 import { UserContext } from "../../../utils/auth/UserProvider"
@@ -62,15 +62,19 @@ const DirectMessageItem = ({ channel, unreadCount }: { channel: DMChannelListIte
     const userData = useGetUser(channel.peer_user_id)
     const isActive = useIsUserActive(channel.peer_user_id)
 
+    const { channelID } = useParams()
+
+    const showUnread = unreadCountForChannel && channelID !== channel.name
+
     return <SidebarItem to={channel.name} className={'py-0.5'}>
         <SidebarIcon>
             <UserAvatar src={userData?.user_image} alt={userData?.full_name} isActive={isActive} size='1' />
         </SidebarIcon>
         <Flex justify='between' width='100%'>
-            <Text size='2' className="text-ellipsis line-clamp-1" weight={unreadCountForChannel ? 'bold' : 'regular'}>
+            <Text size='2' className="text-ellipsis line-clamp-1" weight={showUnread ? 'bold' : 'regular'}>
                 {channel.peer_user_id !== currentUser ? userData?.full_name ?? channel.peer_user_id : `${userData?.full_name} (You)`}
             </Text>
-            {unreadCountForChannel ? <SidebarBadge>{unreadCountForChannel}</SidebarBadge> : null}
+            {showUnread ? <SidebarBadge>{unreadCountForChannel}</SidebarBadge> : null}
         </Flex>
     </SidebarItem>
 }

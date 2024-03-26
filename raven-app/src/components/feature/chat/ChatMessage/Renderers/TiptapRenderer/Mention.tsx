@@ -62,7 +62,7 @@ const UserMentionRenderer = ({ node }: NodeViewRendererProps) => {
 
 const ChannelMentionRenderer = ({ node }: NodeViewRendererProps) => {
 
-    // console.log(node)
+
     return (
         <NodeViewWrapper as={'span'}>
             <Link asChild>

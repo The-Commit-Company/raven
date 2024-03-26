@@ -21,7 +21,6 @@ export const ErrorBanner = ({ error, overrideHeading, children }: ErrorBannerPro
     // exc: With entire traceback - useful for reporting maybe
     // httpStatus and httpStatusText - not needed
     // _server_messages: Array of messages - useful for showing to user
-    // console.log(JSON.parse(error?._server_messages!))
 
     const messages = useMemo(() => {
         if (!error) return []
