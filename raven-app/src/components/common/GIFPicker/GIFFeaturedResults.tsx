@@ -1,17 +1,16 @@
 import { useSWR } from "frappe-react-sdk"
-import { TENOR_FEATURED_API_ENDPOINT_BASE } from "./GIFPicker"
+import { TENOR_API_KEY, TENOR_CLIENT_KEY, TENOR_FEATURED_API_ENDPOINT_BASE } from "./GIFPicker"
 import { GIFGallerySkeleton } from "./GIFGallerySkeleton"
 
 export interface Props {
-  apiCreds: any
   onSelect: (gif: Result) => void
 }
 
 const fetcher = (url: string) => fetch(url).then(res => res.json())
 
-export const GIFFeaturedResults = ({ apiCreds, onSelect }: Props) => {
-  const { data: GIFS, isLoading } = useSWR<TenorResultObject>(`${TENOR_FEATURED_API_ENDPOINT_BASE}?&key=${apiCreds?.client_secret}&client_key=${apiCreds?.client_key}`, fetcher)
-  console.log(GIFS?.results?.length)
+export const GIFFeaturedResults = ({ onSelect }: Props) => {
+
+  const { data: GIFS, isLoading } = useSWR<TenorResultObject>(`${TENOR_FEATURED_API_ENDPOINT_BASE}?&key=${TENOR_API_KEY}&client_key=${TENOR_CLIENT_KEY}`, fetcher)
 
   return (
     <div className="overflow-y-auto h-[455px] w-[420px]">

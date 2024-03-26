@@ -4,10 +4,13 @@ import { useState } from "react"
 import { BiSearch } from "react-icons/bi"
 import { GIFSearchResults } from "./GIFSearchResults"
 import { GIFFeaturedResults } from "./GIFFeaturedResults"
-import { useFrappeGetDoc } from "frappe-react-sdk"
 
 export const TENOR_SEARCH_API_ENDPOINT_BASE = `https://tenor.googleapis.com/v2/search`
 export const TENOR_FEATURED_API_ENDPOINT_BASE = `https://tenor.googleapis.com/v2/featured`
+// @ts-expect-error
+export const TENOR_API_KEY = window.frappe?.boot.tenor_api_key
+// @ts-expect-error
+export const TENOR_CLIENT_KEY = import.meta.env.DEV ? `dev::${window.frappe?.boot.sitename}` : window.frappe?.boot.sitename
 
 export interface GIFPickerProps {
     onSelect: (gif: any) => void
@@ -24,8 +27,6 @@ export const GIFPicker = ({ onSelect }: GIFPickerProps) => {
 
     const [searchText, setSearchText] = useState("")
     const debouncedText = useDebounce(searchText, 200)
-
-    const tenorCredentials = {}
 
     return (
         <Flex className="h-[550px] w-[450px] justify-center">
@@ -44,9 +45,9 @@ export const GIFPicker = ({ onSelect }: GIFPickerProps) => {
                 </Box>
 
                 {debouncedText.length >= 2 ? (
-                    <GIFSearchResults query={debouncedText} onSelect={onSelect} apiCreds={tenorCredentials} />
+                    <GIFSearchResults query={debouncedText} onSelect={onSelect} />
                 ) : (
-                    <GIFFeaturedResults onSelect={onSelect} apiCreds={tenorCredentials} />
+                    <GIFFeaturedResults onSelect={onSelect} />
                 )}
 
                 <Box position={'fixed'} className="bottom-0 pb-2 bg-inherit">
