@@ -8,26 +8,47 @@
  "engine": "InnoDB",
  "field_order": [
   "auto_add_system_users",
-  "show_raven_on_desk"
+  "show_raven_on_desk",
+  "integrations_tab",
+  "integrations_section",
+  "tenor_api_key"
  ],
  "fields": [
   {
    "default": "1",
    "fieldname": "auto_add_system_users",
    "fieldtype": "Check",
-   "label": "Automatically add system users to Raven"
+   "label": "Automatically add system users to Raven",
+   "permlevel": 1
   },
   {
    "default": "1",
    "fieldname": "show_raven_on_desk",
    "fieldtype": "Check",
-   "label": "Show Raven on Desk"
+   "label": "Show Raven on Desk",
+   "permlevel": 1
+  },
+  {
+   "fieldname": "integrations_tab",
+   "fieldtype": "Tab Break",
+   "label": "Integrations"
+  },
+  {
+   "fieldname": "tenor_api_key",
+   "fieldtype": "Data",
+   "label": "Tenor API Key",
+   "length": 320,
+   "permlevel": 1
+  },
+  {
+   "fieldname": "integrations_section",
+   "fieldtype": "Section Break"
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2024-01-28 19:42:25.061578",
+ "modified": "2024-03-26 22:40:35.358702",
  "modified_by": "Administrator",
  "module": "Raven",
  "name": "Raven Settings",
@@ -37,6 +58,20 @@
    "create": 1,
    "delete": 1,
    "email": 1,
+   "print": 1,
+   "read": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "read": 1,
+   "role": "All"
+  },
+  {
+   "delete": 1,
+   "email": 1,
+   "permlevel": 1,
    "print": 1,
    "read": 1,
    "role": "System Manager",
