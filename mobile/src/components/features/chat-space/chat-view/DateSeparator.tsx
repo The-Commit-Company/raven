@@ -6,7 +6,7 @@ type Props = {
 
 export const DateSeparator = ({ date }: Props) => {
     return (
-        <div className='relative my-2 px-2'>
+        <div className='relative my-2 px-2' id={`date-${date}`}>
             <div className="absolute inset-0 flex items-center mx-4" aria-hidden="true">
                 <div className="w-full border-t border-t-zinc-800" />
             </div>

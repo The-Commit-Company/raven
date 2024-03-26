@@ -15,11 +15,11 @@ import { OAuthProviderInterface, OAuthProvider, EmailLoginProvider, SocialSepara
 export const Login = (props: ActiveScreenProps) => {
 
     const form = useForm<LoginInputs>({
-        defaultValues:{
+        defaultValues: {
             email: "",
             password: "",
             otp: "",
-            tmp_id:""
+            tmp_id: ""
         }
     })
     // GET call for Login Context (settings for social logins, email link etc)
@@ -93,10 +93,6 @@ export const Login = (props: ActiveScreenProps) => {
                                                 name="password"
                                                 rules={{
                                                     required: "Password is required.",
-                                                    minLength: {
-                                                        value: 6,
-                                                        message: "Password must be atleast 6 characters."
-                                                    }
                                                 }}
                                                 render={({ field, formState }) => (
                                                     <FormItem>
@@ -123,7 +119,7 @@ export const Login = (props: ActiveScreenProps) => {
                             {/* Show Separator only when either Email Link or Social Logins are enabled */}
                             {
                                 loginContext?.message?.login_with_email_link || loginContext?.message?.social_login ?
-                                    <SocialSeparator/>
+                                    <SocialSeparator />
                                     : null
                             }
                             {/* Map all social oauth providers */}
@@ -131,7 +127,7 @@ export const Login = (props: ActiveScreenProps) => {
                                 {
                                     loginContext?.message?.social_login ? loginContext?.message?.provider_logins.map((soc: OAuthProviderInterface, i: number) => {
                                         return (
-                                            <OAuthProvider key={i} soc={soc}/>
+                                            <OAuthProvider key={i} soc={soc} />
                                         )
                                     }) : null
                                 }

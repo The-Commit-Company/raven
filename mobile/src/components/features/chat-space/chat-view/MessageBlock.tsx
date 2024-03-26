@@ -5,7 +5,7 @@ import { SquareAvatar } from '@/components/common/UserAvatar'
 import { MarkdownRenderer } from '@/components/common/MarkdownRenderer'
 import { UserFields } from '@/utils/users/UserListProvider'
 import { DateObjectToFormattedDateStringWithoutYear, DateObjectToTimeString } from '@/utils/operations/operations'
-import { ChannelMembersContext } from './ChatView'
+import { ChannelMembersContext } from '../ChatInterface'
 import { openOutline } from 'ionicons/icons'
 import { Haptics, ImpactStyle } from '@capacitor/haptics'
 import { useIsUserActive } from '@/hooks/useIsUserActive'
@@ -13,13 +13,16 @@ import { useInView } from 'react-intersection-observer';
 import useLongPress from '@/hooks/useLongPress'
 import MessageReactions from './components/MessageReactions'
 import parse from 'html-react-parser';
+import clsx from 'clsx'
 
 type Props = {
     message: Message,
-    onMessageSelect: (message: Message) => void
+    onMessageSelect: (message: Message) => void,
+    isHighlighted?: boolean,
+    onReplyMessageClick: (messageID: string) => void
 }
 
-export const MessageBlockItem = ({ message, onMessageSelect }: Props) => {
+export const MessageBlockItem = ({ message, onMessageSelect, isHighlighted = false, onReplyMessageClick }: Props) => {
     const members = useContext(ChannelMembersContext)
     /**
      * Displays a message block in the chat interface
@@ -35,14 +38,27 @@ export const MessageBlockItem = ({ message, onMessageSelect }: Props) => {
         <div className='px-2 my-0 animate-fadein' id={`message-${message.name}`}>
             {message.is_continuation === 0 ? <NonContinuationMessageBlock
                 message={message}
+                isHighlighted={isHighlighted}
                 onMessageSelect={onMessageSelect}
+                onReplyMessageClick={onReplyMessageClick}
                 user={user} /> :
-                <ContinuationMessageBlock message={message} onMessageSelect={onMessageSelect} />}
+                <ContinuationMessageBlock
+                    message={message}
+                    isHighlighted={isHighlighted}
+                    onReplyMessageClick={onReplyMessageClick}
+                    onMessageSelect={onMessageSelect} />}
         </div>
     )
 }
 
-export const NonContinuationMessageBlock = ({ message, user, onMessageSelect }: { message: Message, user?: UserFields, onMessageSelect: (message: Message) => void }) => {
+interface NonContinuationMessageBlockProps {
+    message: Message,
+    user?: UserFields,
+    onMessageSelect: (message: Message) => void,
+    isHighlighted: boolean,
+    onReplyMessageClick: (messageID: string) => void
+}
+export const NonContinuationMessageBlock = ({ message, user, onMessageSelect, isHighlighted, onReplyMessageClick }: NonContinuationMessageBlockProps) => {
 
     const onLongPress = () => {
         Haptics.impact({
@@ -54,14 +70,15 @@ export const NonContinuationMessageBlock = ({ message, user, onMessageSelect }: 
     const longPressEvent = useLongPress(onLongPress)
     return <div>
         {/* @ts-expect-error */}
-        <div className='px-2 mt-3 py-1 rounded-md flex active:bg-[color:var(--ion-color-light)]' {...longPressEvent}>
+        <div className={clsx('px-2 mt-3 py-1 rounded-md flex active:bg-[color:var(--ion-color-light)]',
+            isHighlighted ? 'bg-yellow-300/20 dark:bg-yellow-300/20' : '')} {...longPressEvent}>
             <UserAvatarBlock message={message} user={user} />
             <div>
                 <div className='flex items-end'>
                     <IonText className='font-black text-sm'>{user?.full_name ?? message.owner}</IonText>
                     <IonText className='text-xs pl-1.5 text-zinc-500'>{DateObjectToTimeString(message.creation)}</IonText>
                 </div>
-                <MessageContent message={message} />
+                <MessageContent message={message} onReplyMessageClick={onReplyMessageClick} />
                 {message.is_edited === 1 && <IonText className='text-xs' color={'medium'}>(edited)</IonText>}
             </div>
         </div>
@@ -80,7 +97,13 @@ export const UserAvatarBlock = ({ message, user }: { message: Message, user?: Us
     </div>
 }
 
-const ContinuationMessageBlock = ({ message, onMessageSelect }: { message: Message, onMessageSelect: (message: Message) => void }) => {
+interface ContinuationMessageBlockProps {
+    message: Message,
+    onMessageSelect: (message: Message) => void,
+    isHighlighted: boolean
+    onReplyMessageClick: (messageID: string) => void
+}
+const ContinuationMessageBlock = ({ message, onMessageSelect, isHighlighted, onReplyMessageClick }: ContinuationMessageBlockProps) => {
     const onLongPress = () => {
         Haptics.impact({
             style: ImpactStyle.Medium
@@ -92,11 +115,12 @@ const ContinuationMessageBlock = ({ message, onMessageSelect }: { message: Messa
 
     return <div>
         {/* @ts-expect-error */}
-        <div className='px-2 py-0.5 flex rounded-md  active:bg-[color:var(--ion-color-light)]' {...longPressEvent}>
+        <div className={clsx('px-2 py-0.5 flex rounded-md  active:bg-[color:var(--ion-color-light)]',
+            isHighlighted ? 'bg-yellow-300/20 dark:bg-yellow-300/20' : '')} {...longPressEvent}>
             <div className='w-11'>
             </div>
             <div>
-                <MessageContent message={message} />
+                <MessageContent message={message} onReplyMessageClick={onReplyMessageClick} />
                 {message.is_edited === 1 && <IonText className='text-xs' color={'medium'}>(edited)</IonText>}
             </div>
 
@@ -108,10 +132,21 @@ const ContinuationMessageBlock = ({ message, onMessageSelect }: { message: Messa
     </div>
 }
 
-const MessageContent = ({ message }: { message: Message }) => {
-
-    return <div className='min-w-[100px] max-w-[280px]'>
-        {message.is_reply === 1 && message.linked_message && message.replied_message_details && <ReplyBlock message={JSON.parse(message.replied_message_details)} />}
+const MessageContent = ({ message, onReplyMessageClick }: { message: Message, onReplyMessageClick: (messageID: string) => void }) => {
+    const scrollToMessage = () => {
+        if (message.linked_message) {
+            Haptics.impact({
+                style: ImpactStyle.Light
+            })
+            onReplyMessageClick(message.linked_message)
+        }
+    }
+    return <div className='min-w-[100px] max-w-[320px]'>
+        {message.is_reply === 1 && message.linked_message && message.replied_message_details &&
+            <div role='button' onClick={scrollToMessage}>
+                <ReplyBlock message={JSON.parse(message.replied_message_details)} />
+            </div>
+        }
         {message.message_type === 'Text' && <div className='text-zinc-100 text-md'><TextMessageBlock message={message} /></div>}
         {message.message_type === 'Image' && <ImageMessageBlock message={message} />}
         {message.message_type === 'File' && <FileMessageBlock message={message} />}
@@ -201,15 +236,10 @@ const ReplyBlock = ({ message }: { message: Message }) => {
         }
     }, [message])
 
-    const scrollToMessage = () => {
-        Haptics.impact({
-            style: ImpactStyle.Light
-        })
-        document.getElementById(`message-${message.name}`)?.scrollIntoView({ behavior: 'smooth' })
-    }
+
 
     const date = message ? new Date(message?.creation) : null
-    return <div onClick={scrollToMessage} className='px-2 py-1.5 my-2 rounded-e-sm bg-neutral-900 border-l-4 border-l-neutral-500'>
+    return <div className='px-2 py-1.5 my-2 rounded-e-sm bg-neutral-900 border-l-4 border-l-neutral-500'>
         {message && <div>
             <div className='flex items-end pb-1'>
                 <IonText className='font-bold text-sm'>{user?.full_name ?? message.owner}</IonText>
