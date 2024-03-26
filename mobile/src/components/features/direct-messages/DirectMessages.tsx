@@ -57,7 +57,7 @@ const DMChannelItem = ({ user, unreadCount }: { user: DMChannel, unreadCount: Un
     const isActive = useIsUserActive(user.name)
 
     return <Link to={`channel/${user.channel.name}`}>
-        <li className='list-none px-4 py-2 active:bg-foreground/10 active:rounded' key={user.name}>
+        <li className='list-none px-4 py-2 active:bg-accent active:rounded' key={user.name}>
             <div className='flex justify-between items-center'>
                 <div className='flex items-center space-x-2 w-5/6'>
                     <SquareAvatar alt={user.full_name} src={user.user_image} isActive={isActive} />
@@ -71,7 +71,7 @@ const DMChannelItem = ({ user, unreadCount }: { user: DMChannel, unreadCount: Un
 
 const UserItem = ({ user, onChannelCreate }: { user: DMUser, onChannelCreate: (user_id: string) => void }) => {
     const isActive = useIsUserActive(user.name)
-    return <li className="px-4 py-2 flex active:bg-foreground/10 active:rounded" key={user.name} >
+    return <li className="px-4 py-2 flex active:bg-accent active:rounded" key={user.name} >
         <button onClick={() => onChannelCreate(user.name)} className='flex justify-between items-center w-full'>
             <div className="flex items-center space-x-2 w-full">
                 <SquareAvatar alt={user.full_name} src={user.user_image} isActive={isActive} />

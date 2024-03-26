@@ -27,7 +27,7 @@ const ChannelItem = ({ channel, unreadCount }: { channel: ChannelListItem, unrea
 
     return (
         <Link to={`/channel/${channel.name}`}>
-            <li key={channel.name} className="list-none px-4 py-3 active:bg-foreground/10 active:rounded">
+            <li key={channel.name} className="list-none px-4 py-3 active:bg-accent active:rounded">
                 <div className='flex justify-between items-center text-foreground'>
                     <div className='flex items-center space-x-2 w-5/6'>
                         <div>

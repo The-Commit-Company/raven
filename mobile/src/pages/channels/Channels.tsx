@@ -59,7 +59,7 @@ export const Channels = () => {
                 </IonToolbar>
                 {isLoading && <ChannelListLoader />}
                 {error && <ErrorBanner error={error} />}
-                <li className='list-none active:bg-foreground/10 active:rounded'>
+                <li className='list-none active:bg-accent active:rounded'>
                     <Button variant="ghost" className='w-full flex justify-between items-center hover:bg-transparent ' onClick={() => setIsOpen(true)}>
                     <div className='flex items-center justify-start gap-2'>
                         <span>

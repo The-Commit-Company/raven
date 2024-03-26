@@ -301,7 +301,7 @@ export const Tiptap = ({ onMessageSend, messageSending, defaultText = '', onPick
                 </div>
                 <div className="flex items-center px-1">
                     <input multiple type='file' hidden ref={fileRef} onChange={onGetFiles} />
-                    <IconButton size="md" icon={AiOutlinePaperClip} onClick={onPickFiles} variant="ghost" className='text-foreground/80'/>
+                    <IconButton size="md" icon={AiOutlinePaperClip} onClick={onPickFiles} variant="ghost" className='text-foreground/80 active:bg-accent'/>
                 </div>
             </div>
             <div className='flex items-center py-1'>
