@@ -17,7 +17,7 @@ export const PageSelector = ({ start, rowsPerPage, totalRows, gotoPreviousPage, 
 
     const end = Math.min(start + rowsPerPage - 1, totalRows)
 
-    // If previous page is not avaialbe or next page is not available then disable 
+    // If previous page is not avaialbe or next page is not available then disable
     // the previous or next page button accordingly
     return (
         <Flex gap='2'>

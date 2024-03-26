@@ -5,7 +5,7 @@ import { useContext, useMemo, useState } from "react"
 import { ChannelListContext, ChannelListContextType, ChannelListItem, UnreadCountData } from "../../../utils/channel/ChannelListProvider"
 import { ChannelIcon } from "@/utils/layout/channelIcon"
 import { Flex, Text } from "@radix-ui/themes"
-import { clsx } from "clsx"
+import { useLocation, useParams } from "react-router-dom"
 
 export const ChannelList = ({ unread_count }: { unread_count?: UnreadCountData }) => {
 
@@ -45,12 +45,22 @@ const ChannelItem = ({ channel, unreadCount }: { channel: ChannelListItem, unrea
 
     const unreadCountForChannel = useMemo(() => unreadCount.find((unread) => unread.name == channel.name)?.unread_count, [channel.name, unreadCount])
 
+    const { channelID } = useParams()
+
+    const { state } = useLocation()
+
+    /**
+     * Show the unread count if it exists and either the channel is not the current channel,
+     * or if it is the current channel, the user is viewing a base message
+     */
+    const showUnread = unreadCountForChannel && (channelID !== channel.name || state?.baseMessage)
+
     return (
         <SidebarItem to={channel.name} className={'py-1.5'}>
             <ChannelIcon type={channel.type} size='18' />
             <Flex justify='between' align={'center'} width='100%'>
-                <Text size='2' className="text-ellipsis line-clamp-1" as='span' weight={unreadCountForChannel ? 'bold' : 'regular'}>{channel.channel_name}</Text>
-                {unreadCountForChannel ? <SidebarBadge>{unreadCountForChannel}</SidebarBadge> : null}
+                <Text size='2' className="text-ellipsis line-clamp-1" as='span' weight={showUnread ? 'bold' : 'regular'}>{channel.channel_name}</Text>
+                {showUnread ? <SidebarBadge>{unreadCountForChannel}</SidebarBadge> : null}
             </Flex>
         </SidebarItem>
     )

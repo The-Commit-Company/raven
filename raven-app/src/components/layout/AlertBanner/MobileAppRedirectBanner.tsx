@@ -1,25 +1,20 @@
-import { Box, Heading, Text, Button } from '@radix-ui/themes';
+import { Heading, Text, Button } from '@radix-ui/themes';
 
 export const MobileAppRedirectBanner = () => {
     return (
-        <Box
-            style={{
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                height: '100vh',
-                flexDirection: 'column',
-                padding: "0 1rem"
-            }}
+        <div
+            className='flex items-center h-screen px-4'
         >
-            <Box style={{ textAlign: 'center' }}>
-                <Heading className='cal-sans'>Your Highness</Heading>
-                <Heading>Would you prefer to use Raven on your mobile device?</Heading>
-                <Text className='cal-sans'>Send ravens from anywhere, including your mobile.</Text>
-            </Box>
-            <Box py="4">
-                <Button onClick={() => window.location.href = '/raven_mobile'}>Go to Mobile App</Button>
-            </Box>
-        </Box>
+            <div className='space-y-8'>
+                <span className='text-5xl cal-sans block'>raven</span>
+                <div>
+                    <Heading className='cal-sans text-gray-12 pb-2' size='6'>Download the mobile app</Heading>
+                    <Text size='4' >Send ravens from anywhere, including your mobile.</Text>
+                </div>
+                <Button asChild size='3'>
+                    <a href='/raven_mobile' className='text-white'>Open the app</a>
+                </Button>
+            </div>
+        </div>
     );
 };

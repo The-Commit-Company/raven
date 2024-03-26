@@ -21,8 +21,8 @@ type RightToolbarButtonsProps = {
  * 3. Emoji picker
  * 4. File upload
  * 5. Send button
- * @param props 
- * @returns 
+ * @param props
+ * @returns
  */
 export const RightToolbarButtons = ({ fileProps, ...sendProps }: RightToolbarButtonsProps) => {
     return (
