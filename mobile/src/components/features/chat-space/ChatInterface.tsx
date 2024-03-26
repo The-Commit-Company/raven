@@ -1,4 +1,4 @@
-import { IonBackButton, IonButton, IonButtons, IonContent, IonFooter, IonHeader, IonIcon, IonToolbar, useIonViewWillEnter } from '@ionic/react'
+import { IonHeader, IonFooter, IonContent, useIonViewWillEnter } from '@ionic/react'
 import { useFrappeDocumentEventListener, useFrappeEventListener, useFrappeGetCall } from 'frappe-react-sdk'
 import { useCallback, useContext, useMemo, useRef } from 'react'
 import { MessagesWithDate } from '../../../../../types/Messaging/Message'
@@ -8,11 +8,15 @@ import { ChatView } from './chat-view/ChatView'
 import { ChatHeader } from './chat-header'
 import { ChannelListItem, DMChannelListItem, useChannelList } from '@/utils/channel/ChannelListProvider'
 import { UserFields } from '@/utils/users/UserListProvider'
-import { peopleOutline } from 'ionicons/icons'
 import { Haptics, ImpactStyle } from '@capacitor/haptics'
 import { UserContext } from '@/utils/auth/UserProvider'
 import { ChatLoader } from '@/components/layout/loaders/ChatLoader'
 import { MessageActionModal, useMessageActionModal } from './MessageActions/MessageActionModal'
+import { Button } from '@/components/ui/button'
+import { BsPeople } from "react-icons/bs";
+import { BiChevronLeft } from "react-icons/bi";
+import { Link, useHistory } from 'react-router-dom'
+import { IconButton } from '@/components/ui/icon-button'
 
 export type ChannelMembersMap = Record<string, UserFields>
 
@@ -117,21 +121,34 @@ export const ChatInterface = ({ channel }: { channel: ChannelListItem | DMChanne
         }
         return []
     }, [channelMembers])
+
+    const checkIsOpenChannel = () => (channel.type !== 'Open' && !channel.is_direct_message)
+
+    const history = useHistory()
+
     return (
         <>
             <IonHeader>
-                <IonToolbar>
-                    <IonButtons slot='start'>
-                        <IonBackButton color='medium' text=' ' className='px-2' defaultHref="/channels" />
-                    </IonButtons>
-                    <ChatHeader channel={channel} />
-                    <IonButtons slot='end'>
-                        {/* do not show settings button for open channels */}
-                        {channel.type !== 'Open' && !channel.is_direct_message && <IonButton color='medium' slot='icon-only' routerLink={`${channel.name}/channel-settings`}>
-                            <IonIcon icon={peopleOutline} />
-                        </IonButton>}
-                    </IonButtons>
-                </IonToolbar>
+                <div className='px-4 py-2 inset-x-0 top-0 overflow-hidden min-h-5 bg-background border-b-foreground/10 border-b'>
+                    <div className='flex gap-5 items-center'>
+                        <div className='flex items-center'>
+                            <IconButton variant="ghost" icon={BiChevronLeft} onClick={() => history.goBack()} className='focus:bg-accent/40' />
+                        </div>
+                        <div className='flex items-center justify-between gap-2 w-full'>
+                            <ChatHeader channel={channel} />
+                            {
+                                checkIsOpenChannel() && <div className='flex items-center'>
+                                    {/* do not show settings button for open channels */}
+                                    <Button variant="ghost" asChild className='hover:bg-transparent px-0 py-0 h-auto'>
+                                        <Link to={`${channel.name}/channel-settings`}>
+                                            <BsPeople size="18" className='text-foreground/80' />
+                                        </Link>
+                                    </Button>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
             </IonHeader>
             <IonContent className='flex flex-col-reverse' fullscreen ref={conRef}>
                 {isMessageLoading && <ChatLoader />}
@@ -157,13 +174,18 @@ export const ChatInterface = ({ channel }: { channel: ChannelListItem | DMChanne
             </IonContent>
 
             <IonFooter
-                hidden={!!messagesError}>
-                <div className='overflow-visible 
-            text-slate-100
-            bg-[color:var(--ion-background-color)]
-            border-t-zinc-900 border-t-[1px]
-            pb-6
-            pt-1'>
+                hidden={!!messagesError}
+                className='block relative z-10 order-1 w-full'
+            >
+                <div
+                    className='overflow-visible 
+                    text-foreground
+                    bg-background
+                    border-t-foreground/10 
+                    border-t-[1px]
+                    pb-6
+                    pt-1'
+                >
                     <ChatInput channelID={channel.name} allMembers={parsedMembers} allChannels={parsedChannels} onMessageSend={onMessageSend} />
                 </div>
             </IonFooter>
