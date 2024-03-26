@@ -13,6 +13,7 @@ import { DateSeparator } from '@/components/layout/Divider/DateSeparator'
 import { useInView } from 'react-intersection-observer'
 import { Button } from '@radix-ui/themes'
 import { FiArrowDown } from 'react-icons/fi'
+import { ErrorBanner } from '@/components/layout/AlertBanner'
 
 /**
  * Anatomy of a message
@@ -68,9 +69,8 @@ const ChatStream = ({ replyToMessage }: Props) => {
     const { channelID } = useParams()
 
     const scrollRef = useRef<HTMLDivElement | null>(null)
-    // const prevScrollTop = useRef(0)
 
-    const { messages, hasOlderMessages, loadOlderMessages, goToLatestMessages, hasNewMessages, loadNewerMessages, isLoading, highlightedMessage, scrollToMessage } = useChatStream(scrollRef)
+    const { messages, hasOlderMessages, loadOlderMessages, goToLatestMessages, hasNewMessages, error, loadNewerMessages, isLoading, highlightedMessage, scrollToMessage } = useChatStream(scrollRef)
     const { setDeleteMessage, ...deleteProps } = useDeleteMessage()
 
     const { setEditMessage, ...editProps } = useEditMessage()
@@ -85,10 +85,15 @@ const ChatStream = ({ replyToMessage }: Props) => {
         skip: !hasOlderMessages,
         onChange: (async (inView) => {
             if (inView && hasOlderMessages) {
-                const lastMessage = messages ? messages[messages.length - 1] : null;
+                const lastMessage = messages ? messages[0] : null;
                 await loadOlderMessages()
                 // Restore the scroll position to the last message before loading more
-                document.getElementById(`message-${lastMessage?.name}`)?.scrollIntoView()
+                if (lastMessage?.message_type === 'date') {
+                    document.getElementById(`date-${lastMessage?.creation}`)?.scrollIntoView()
+                } else {
+                    document.getElementById(`message-${lastMessage?.name}`)?.scrollIntoView()
+                }
+
             }
         })
     });
@@ -113,10 +118,11 @@ const ChatStream = ({ replyToMessage }: Props) => {
             </div>
             {!isLoading && !hasOlderMessages && <ChannelHistoryFirstMessage channelID={channelID ?? ''} />}
             {isLoading && <ChatStreamLoader />}
+            {error && <ErrorBanner error={error} />}
             <div className={clsx('flex flex-col pb-4 z-50 transition-opacity duration-400 ease-in-out', isLoading ? 'opacity-0' : 'opacity-100')}>
                 {messages?.map(message => {
                     if (message.message_type === 'date') {
-                        return <DateSeparator key={`date-${message.creation}`} className='p-2 z-10 relative'>
+                        return <DateSeparator key={`date-${message.creation}`} id={`date-${message.creation}`} className='p-2 z-10 relative'>
                             {message.creation}
                         </DateSeparator>
                     } else {
