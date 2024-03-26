@@ -499,6 +499,12 @@ const useChatStream = (scrollRef: MutableRefObject<HTMLDivElement | null>) => {
 
     }
 
+    const goToLatestMessages = () => {
+        navigate(location, {
+            replace: true
+        })
+    }
+
     return {
         messages,
         hasOlderMessages: data?.message.has_old_messages ?? false,
@@ -509,7 +515,8 @@ const useChatStream = (scrollRef: MutableRefObject<HTMLDivElement | null>) => {
         loadNewerMessages,
         loadOlderMessages,
         scrollToMessage,
-        highlightedMessage
+        highlightedMessage,
+        goToLatestMessages
     }
 }
 

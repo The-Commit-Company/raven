@@ -3288,10 +3288,10 @@ frappe-js-sdk@^1.5.0:
   dependencies:
     axios "^1.6.7"
 
-frappe-react-sdk@^1.5.0:
-  version "1.5.0"
-  resolved "https://registry.yarnpkg.com/frappe-react-sdk/-/frappe-react-sdk-1.5.0.tgz#91718ec6286634d53716a79c7c9b5dae8a4e6c84"
-  integrity sha512-S+FbiwWQJNyzbyY8n0LBcTA2dj9k1k95aMA4FfA9FB+oZz20WkZNcXnKOqrGvd+dMmdOnKTlbmAP7wO4CClJfQ==
+frappe-react-sdk@^1.5.1:
+  version "1.5.1"
+  resolved "https://registry.yarnpkg.com/frappe-react-sdk/-/frappe-react-sdk-1.5.1.tgz#e6d3224e34c210c66a1882da3d140a067d5ccbbc"
+  integrity sha512-DhkQNWnEwBclUSQF33jFQG1pEwqA7/UBHDnY0AybRaxLN0CeVfMu9Ju6JwMCkS8hAGXVAaKo9fpNJCle3OIi5Q==
   dependencies:
     frappe-js-sdk "^1.5.0"
     socket.io-client "4.7.1"
@@ -4795,6 +4795,7 @@ sourcemap-codec@^1.4.8:
   integrity sha512-9NykojV5Uih4lgo5So5dtw+f0JgJX30KCNI8gwhz2J9A15wD0Ml6tjHKwf6fTSa6fAdVBdZeNOs9eJ71qCk8vA==
 
 "string-width-cjs@npm:string-width@^4.2.0", string-width@^4.1.0:
+  name string-width-cjs
   version "4.2.3"
   resolved "https://registry.yarnpkg.com/string-width/-/string-width-4.2.3.tgz#269c7117d27b05ad2e536830a8ec895ef9c6d010"
   integrity sha512-wKyQRQpjJ0sIp62ErSZdGsjMJWsap5oRNihHhu6G7JVO/9jIB6UyevL+tXuOqrng8j/cxKTWyWUwvSTriiZz/g==
@@ -4868,6 +4869,7 @@ stringify-object@^3.3.0:
     is-regexp "^1.0.0"
 
 "strip-ansi-cjs@npm:strip-ansi@^6.0.1", strip-ansi@^6.0.0, strip-ansi@^6.0.1:
+  name strip-ansi-cjs
   version "6.0.1"
   resolved "https://registry.yarnpkg.com/strip-ansi/-/strip-ansi-6.0.1.tgz#9e26c63d30f53443e9489495b2105d37b67a85d9"
   integrity sha512-Y38VPSHcqkFrCpFnQ9vuSXmquuv5oXOKpGeT6aGrr3o3Gc9AlVa6JBfUSOCnbxGGZF+/0ooI7KrPuUSztUdU5A==
