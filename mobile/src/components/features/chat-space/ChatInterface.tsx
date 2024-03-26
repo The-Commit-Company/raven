@@ -13,6 +13,7 @@ import useChatStream from './useChatStream'
 import { useInView } from 'react-intersection-observer'
 import { DateSeparator } from './chat-view/DateSeparator'
 import { MessageBlockItem } from './chat-view/MessageBlock'
+import ChatViewFirstMessage from './chat-view/ChatViewFirstMessage'
 
 export type ChannelMembersMap = Record<string, UserFields>
 export const ChannelMembersContext = createContext<ChannelMembersMap>({})
@@ -118,6 +119,7 @@ export const ChatInterface = ({ channel }: { channel: ChannelListItem | DMChanne
                         <IonSpinner name='lines' />
                     </div>}
                 </div>
+                {!isLoading && !hasOlderMessages && <ChatViewFirstMessage channel={channel} />}
                 {isLoading && <ChatLoader />}
                 {error && <ErrorBanner error={error} />}
 
