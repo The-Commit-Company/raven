@@ -139,7 +139,7 @@ const GIFPickerButton = () => {
             <Inset>
                 <Suspense fallback={<Loader />}>
                     {/* FIXME: 1. Handle 'HardBreak' coz it adds newline (empty); and if user doesn't write any text, then newline is added as text content.
-                               2. Also if you write first & then add GIF there's no 'HardBreak'. 
+                               2. Also if you write first & then add GIF there's no 'HardBreak'.
                     */}
                     <GIFPicker onSelect={(gif) => editor.chain().focus().setImage({ src: gif.media_formats.gif.url }).setHardBreak().run()} />
                 </Suspense>
