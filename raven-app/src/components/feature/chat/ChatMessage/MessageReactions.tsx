@@ -14,7 +14,7 @@ interface ReactionObject {
     // The number of users who reacted with this emoji
     count: number
 }
-export const MessageReactions = ({ messageID, message_reactions, updateMessages }: { messageID: string, message_reactions?: string | null, updateMessages: VoidFunction }) => {
+export const MessageReactions = ({ messageID, message_reactions }: { messageID: string, message_reactions?: string | null }) => {
 
     const { currentUser } = useContext(UserContext)
 
@@ -25,9 +25,9 @@ export const MessageReactions = ({ messageID, message_reactions, updateMessages 
             return reactToMessage({
                 message_id: messageID,
                 reaction: emoji
-            }).then(() => updateMessages())
+            })
         }
-    }, [messageID, updateMessages, reactToMessage])
+    }, [messageID, reactToMessage])
 
     const allUsers = useGetUserRecords()
     const reactions: ReactionObject[] = useMemo(() => {
