@@ -163,8 +163,6 @@ class RavenMessage(Document):
 			"Raven Channel", self.channel_id, "is_direct_message"
 		)
 
-		self.owner_name = frappe.get_cached_value("Raven User", self.owner, "full_name")
-
 		if is_direct_message:
 			is_self_message = frappe.get_cached_value(
 				"Raven Channel Member", self.channel_id, "is_self_message"
@@ -193,6 +191,12 @@ class RavenMessage(Document):
 			else:
 				return self.text
 
+	def get_message_owner_name(self):
+		"""
+		Get the full name of the message owner
+		"""
+		return frappe.get_cached_value("Raven User", self.owner, "full_name")
+
 	def send_notification_for_direct_message(self):
 		"""
 		The message is sent on a DM channel. Get the other user in the channel and send a push notification
@@ -205,10 +209,12 @@ class RavenMessage(Document):
 
 		message = self.get_notification_message_content()
 
+		owner_name = self.get_message_owner_name()
+
 		send_notification_to_user(
 			user_id=peer_raven_user,
 			user_image_id=self.owner,
-			title=self.owner_name,
+			title=owner_name,
 			message=message,
 			data={
 				"message_id": self.name,
@@ -230,7 +236,8 @@ class RavenMessage(Document):
 
 		channel_name = frappe.get_cached_value("Raven Channel", self.channel_id, "channel_name")
 
-		title = f"{self.owner_name} in #{channel_name}"
+		owner_name = self.get_message_owner_name()
+		title = f"{owner_name} in #{channel_name}"
 
 		send_notification_to_topic(
 			channel_id=self.channel_id,
