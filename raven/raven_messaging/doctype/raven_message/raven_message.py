@@ -208,7 +208,7 @@ class RavenMessage(Document):
 			data={
 				"message_id": self.name,
 				"channel_id": self.channel_id,
-				"message_type": self.message_type,
+				"raven_message_type": self.message_type,
 				"channel_type": "DM",
 				"from_user": self.owner,
 				"type": "New message",
