@@ -12,20 +12,31 @@ export const showNotification = (payload: any) => {
     }
     if (payload?.data?.notification_icon) {
         // @ts-ignore
-        notificationOptions["badge"] = payload.data.notification_icon
+        notificationOptions["icon"] = payload.data.notification_icon
     }
+
+    if (payload.data.raven_message_type === "Image") {
+        // @ts-ignore
+        notificationOptions["image"] = payload.data.content
+    }
+
+    if (payload.data.creation) {
+        // @ts-ignore
+        notificationOptions["timestamp"] = payload.data.creation
+    }
+    const url = `${payload.data.base_url}/raven_mobile/channel/${payload.data.channel_id}`
     if (isChrome()) {
         // @ts-ignore
         notificationOptions["data"] = {
-            url: payload?.data?.click_action,
+            url: url,
         }
     } else {
         if (payload?.data?.click_action) {
             // @ts-ignore
             notificationOptions["actions"] = [
                 {
-                    action: payload.data.click_action,
-                    title: "View Details",
+                    action: url,
+                    title: "View",
                 },
             ]
         }

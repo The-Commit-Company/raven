@@ -6,6 +6,7 @@ import frappe
 from frappe import _
 from frappe.core.utils import html2text
 from frappe.model.document import Document
+from frappe.utils.data import get_timestamp
 
 from raven.notification import send_notification_to_user
 from raven.utils import track_channel_visit
@@ -162,6 +163,8 @@ class RavenMessage(Document):
 			"Raven Channel", self.channel_id, "is_direct_message"
 		)
 
+		self.owner_name = frappe.get_cached_value("Raven User", self.owner, "full_name")
+
 		if is_direct_message:
 			is_self_message = frappe.get_cached_value(
 				"Raven Channel Member", self.channel_id, "is_self_message"
@@ -174,6 +177,22 @@ class RavenMessage(Document):
 			pass
 			# channel_type = frappe.get_cached_value("Raven Channel", self.channel_id, "channel_type")
 
+	def get_notification_message_content(self):
+		"""
+		Gets the content of the message for the push notification
+		"""
+		if self.message_type == "File":
+			file_name = self.file.split("/")[-1]
+			return f"📄 Sent a file - {file_name}"
+		elif self.message_type == "Image":
+			return "📷 Sent a photo"
+		elif self.text:
+			# Check if the message is a GIF
+			if "<img src=https://media.tenor.com" in self.text:
+				return "Sent a GIF"
+			else:
+				return self.text
+
 	def send_notification_for_direct_message(self):
 		"""
 		The message is sent on a DM channel. Get the other user in the channel and send a push notification
@@ -184,33 +203,22 @@ class RavenMessage(Document):
 			"user_id",
 		)
 
-		owner_name = frappe.get_cached_value("Raven User", self.owner, "full_name")
-		message = None
-
-		if self.message_type == "File":
-			file_name = self.file.split("/")[-1]
-			message = f"Sent a file - {file_name}"
-		elif self.message_type == "Image":
-			message = "Sent an image"
-		elif self.text:
-			# Check if the message is a GIF
-			if "<img src=https://media.tenor.com" in self.text:
-				message = "GIF"
-			else:
-				message = self.text
+		message = self.get_notification_message_content()
 
 		send_notification_to_user(
 			user_id=peer_raven_user,
 			user_image_id=self.owner,
-			title=owner_name,
+			title=self.owner_name,
 			message=message,
 			data={
 				"message_id": self.name,
 				"channel_id": self.channel_id,
 				"raven_message_type": self.message_type,
 				"channel_type": "DM",
+				"content": self.content if self.message_type == "Text" else self.file,
 				"from_user": self.owner,
 				"type": "New message",
+				"creation": str(get_timestamp(self.creation)),
 			},
 		)
 
