@@ -25,4 +25,4 @@ def send_notification_to_user(user_id, title, message, data=None, user_image_id=
 		# push notifications are not supported in the current framework version
 		pass
 	except Exception:
-		frappe.log_error(frappe.get_traceback())
+		frappe.log_error("Failed to send push notification")

@@ -99,7 +99,6 @@ class RavenMessage(Document):
 	def after_insert(self):
 		# TODO: Enqueue this
 		self.publish_unread_count_event()
-		self.send_push_notification()
 
 	def publish_unread_count_event(self):
 		# If the message is a direct message, then we can only send it to one user
@@ -277,7 +276,10 @@ class RavenMessage(Document):
 				docname=self.channel_id,
 			)
 		else:
+			after_commit = False
 			if self.message_type == "File" or self.message_type == "Image":
+				# If the message is a file or an image, then we need to wait for the file to be uploaded
+				after_commit = True
 				if not self.file:
 					return
 
@@ -314,9 +316,12 @@ class RavenMessage(Document):
 				doctype="Raven Channel",
 				# Adding this to automatically add the room for the event via Frappe
 				docname=self.channel_id,
+				after_commit=after_commit,
 			)
 			# track the visit of the user to the channel if a new message is created
 			frappe.enqueue(method=track_channel_visit, channel_id=self.channel_id, user=self.owner)
+
+			self.send_push_notification()
 
 	def on_trash(self):
 		# delete all the reactions for the message
