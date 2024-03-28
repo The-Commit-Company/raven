@@ -7,6 +7,7 @@ from frappe import _
 from frappe.core.utils import html2text
 from frappe.model.document import Document
 
+from raven.notification import send_notification_to_user
 from raven.utils import track_channel_visit
 
 
@@ -70,7 +71,9 @@ class RavenMessage(Document):
 		If there is a linked message, the linked message should be in the same channel
 		"""
 		if self.linked_message:
-			if frappe.db.get_value("Raven Message", self.linked_message, "channel_id") != self.channel_id:
+			if (
+				frappe.get_cached_value("Raven Message", self.linked_message, "channel_id") != self.channel_id
+			):
 				frappe.throw(_("Linked message should be in the same channel"))
 
 	def before_insert(self):
@@ -96,6 +99,7 @@ class RavenMessage(Document):
 	def after_insert(self):
 		# TODO: Enqueue this
 		self.publish_unread_count_event()
+		self.send_push_notification()
 
 	def publish_unread_count_event(self):
 		# If the message is a direct message, then we can only send it to one user
@@ -148,7 +152,59 @@ class RavenMessage(Document):
 				if user_id and user_id not in entered_ids:
 					self.append("mentions", {"user": user_id})
 					entered_ids.add(user_id)
-					self.send_notification_for_mentions(user_id)
+
+	def send_push_notification(self):
+		# TODO: Send Push Notification for the following:
+		# 1. If the message is a direct message, send a push notification to the other user
+		# 2. If the message has mentions, send a push notification to the mentioned users if they belong to the channel
+		# 3. If the message is a reply, send a push notification to the user who is being replied to
+		# 4. If the message is in a channel, send a push notification to all the users in the channel (topic)
+		if self.is_direct_message:
+			if not self.is_self_message:
+				self.send_notification_for_direct_message()
+		else:
+			# The message was sent on a channel
+			pass
+			# channel_type = frappe.get_cached_value("Raven Channel", self.channel_id, "channel_type")
+
+	def send_notification_for_direct_message(self):
+		"""
+		The message is sent on a DM channel. Get the other user in the channel and send a push notification
+		"""
+		peer_raven_user = frappe.db.get_value(
+			"Raven Channel Member",
+			{"channel_id": self.channel_id, "user_id": ("!=", self.owner)},
+			"user_id",
+		)
+
+		owner_name = frappe.get_cached_value("Raven User", self.owner, "full_name")
+		message = None
+
+		if self.message_type == "File":
+			file_name = self.file.split("/")[-1]
+			message = f"Sent a file - {file_name}"
+		elif self.message_type == "Image":
+			message = "Sent an image"
+		elif self.text:
+			if self.text.includes("<img src=https://media.tenor.com"):
+				message = "GIF"
+			else:
+				message = self.text
+
+		send_notification_to_user(
+			user_id=peer_raven_user,
+			user_image_id=self.owner,
+			title=owner_name,
+			message=message,
+			data={
+				"message_id": self.name,
+				"channel_id": self.channel_id,
+				"message_type": self.message_type,
+				"is_direct_message": True,
+				"from_user": self.owner,
+				"type": "New message",
+			},
+		)
 
 	def send_notification_for_mentions(self, user):
 		try:
