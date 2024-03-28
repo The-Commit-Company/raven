@@ -8,7 +8,7 @@ from frappe.core.utils import html2text
 from frappe.model.document import Document
 from frappe.utils.data import get_timestamp
 
-from raven.notification import send_notification_to_user
+from raven.notification import send_notification_to_topic, send_notification_to_user
 from raven.utils import track_channel_visit
 
 
@@ -174,7 +174,7 @@ class RavenMessage(Document):
 				self.send_notification_for_direct_message()
 		else:
 			# The message was sent on a channel
-			pass
+			self.send_notification_for_channel_message()
 			# channel_type = frappe.get_cached_value("Raven Channel", self.channel_id, "channel_type")
 
 	def get_notification_message_content(self):
@@ -215,6 +215,33 @@ class RavenMessage(Document):
 				"channel_id": self.channel_id,
 				"raven_message_type": self.message_type,
 				"channel_type": "DM",
+				"content": self.content if self.message_type == "Text" else self.file,
+				"from_user": self.owner,
+				"type": "New message",
+				"creation": str(get_timestamp(self.creation)),
+			},
+		)
+
+	def send_notification_for_channel_message(self):
+		"""
+		The message was sent on a channel. Send a push notification to all the users in the channel (topic)
+		"""
+		message = self.get_notification_message_content()
+
+		channel_name = frappe.get_cached_value("Raven Channel", self.channel_id, "channel_name")
+
+		title = f"{self.owner_name} in #{channel_name}"
+
+		send_notification_to_topic(
+			channel_id=self.channel_id,
+			user_image_id=self.owner,
+			title=title,
+			message=message,
+			data={
+				"message_id": self.name,
+				"channel_id": self.channel_id,
+				"raven_message_type": self.message_type,
+				"channel_type": "Channel",
 				"content": self.content if self.message_type == "Text" else self.file,
 				"from_user": self.owner,
 				"type": "New message",
