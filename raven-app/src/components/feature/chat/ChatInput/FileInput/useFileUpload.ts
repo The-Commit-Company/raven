@@ -51,7 +51,7 @@ export default function useFileUpload(channelID: string, selectedMessage?: Messa
             fieldname: 'file',
           },
           (bytesUploaded, totalBytes) => {
-            const percentage = Math.round((bytesUploaded / totalBytes) * 100)
+            const percentage = Math.round((bytesUploaded / (totalBytes ?? f.size)) * 100)
 
             setFileUploadProgress(p => ({
               ...p,
