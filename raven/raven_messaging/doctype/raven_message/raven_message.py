@@ -194,7 +194,8 @@ class RavenMessage(Document):
 		elif self.message_type == "Image":
 			message = "Sent an image"
 		elif self.text:
-			if self.text.includes("<img src=https://media.tenor.com"):
+			# Check if the message is a GIF
+			if "<img src=https://media.tenor.com" in self.text:
 				message = "GIF"
 			else:
 				message = self.text

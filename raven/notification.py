@@ -15,7 +15,9 @@ def send_notification_to_user(user_id, title, message, data=None, user_image_id=
 			icon_url = None
 			if user_image_id:
 				icon = frappe.get_cached_value("Raven User", user_image_id, "user_image")
-				icon_url = frappe.utils.get_url() + icon
+				if icon:
+					icon_url = frappe.utils.get_url() + icon
+
 			push_notification.send_notification_to_user(
 				user_id=user_id, title=title, body=message, icon=icon_url, data=data
 			)
