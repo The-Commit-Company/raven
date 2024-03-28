@@ -159,8 +159,16 @@ class RavenMessage(Document):
 		# 2. If the message has mentions, send a push notification to the mentioned users if they belong to the channel
 		# 3. If the message is a reply, send a push notification to the user who is being replied to
 		# 4. If the message is in a channel, send a push notification to all the users in the channel (topic)
-		if self.is_direct_message:
-			if not self.is_self_message:
+		is_direct_message = frappe.get_cached_value(
+			"Raven Channel", self.channel_id, "is_direct_message"
+		)
+
+		if is_direct_message:
+			is_self_message = frappe.get_cached_value(
+				"Raven Channel Member", self.channel_id, "is_self_message"
+			)
+			if not is_self_message:
+				# The message was sent on a direct message channel
 				self.send_notification_for_direct_message()
 		else:
 			# The message was sent on a channel
