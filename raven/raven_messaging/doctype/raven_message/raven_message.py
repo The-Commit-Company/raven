@@ -209,7 +209,7 @@ class RavenMessage(Document):
 				"message_id": self.name,
 				"channel_id": self.channel_id,
 				"message_type": self.message_type,
-				"is_direct_message": True,
+				"channel_type": "DM",
 				"from_user": self.owner,
 				"type": "New message",
 			},
