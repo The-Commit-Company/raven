@@ -26,7 +26,7 @@ try {
             body: payload.data.body || "",
         }
         if (payload.data.notification_icon) {
-            notificationOptions["icon"] = payload.data.notification_icon
+            notificationOptions["badge"] = payload.data.notification_icon
         }
         if (isChrome()) {
             notificationOptions["data"] = {

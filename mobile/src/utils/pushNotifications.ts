@@ -12,7 +12,7 @@ export const showNotification = (payload: any) => {
     }
     if (payload?.data?.notification_icon) {
         // @ts-ignore
-        notificationOptions["icon"] = payload.data.notification_icon
+        notificationOptions["badge"] = payload.data.notification_icon
     }
     if (isChrome()) {
         // @ts-ignore
