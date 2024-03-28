@@ -40,7 +40,7 @@ def send_notification_to_user(user_id, title, message, data=None, user_image_id=
 
 def send_notification_to_topic(channel_id, title, message, data=None, user_image_id=None):
 	"""
-	Send a push notification to a user
+	Send a push notification to a channel
 	"""
 
 	try:
@@ -64,10 +64,29 @@ def send_notification_to_topic(channel_id, title, message, data=None, user_image
 			if data.get("channel_id"):
 				link = frappe.utils.get_url() + "/raven_mobile/channel/" + data.get("channel_id", "")
 			push_notification.send_notification_to_topic(
-				topic=channel_id, title=title, body=message, icon=icon_url, data=data, link=link
+				topic_name=channel_id, title=title, body=message, icon=icon_url, data=data, link=link
 			)
 	except ImportError:
 		# push notifications are not supported in the current framework version
 		pass
 	except Exception:
 		frappe.log_error("Failed to send push notification")
+
+
+def subscribe_user_to_topic(channel_id, user_id):
+	"""
+	Subscribe a user to a topic (channel name)
+	"""
+
+	try:
+		from frappe.push_notification import PushNotification
+
+		push_notification = PushNotification("raven")
+
+		if push_notification.is_enabled():
+			push_notification.subscribe_topic(user_id=user_id, topic_name=channel_id)
+	except ImportError:
+		# push notifications are not supported in the current framework version
+		pass
+	except Exception:
+		frappe.log_error("Failed to subscribe user to channel")
