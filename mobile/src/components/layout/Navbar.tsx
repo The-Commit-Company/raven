@@ -4,16 +4,28 @@ import { Route } from "react-router-dom"
 import { Channels } from "../../pages/channels"
 import { DirectMessageList } from "../../pages/direct-messages/DirectMessageList"
 import { Profile } from "../../pages/profile"
-import { PropsWithChildren, useContext } from "react"
+import { PropsWithChildren, useContext, useEffect } from "react"
 import { UserContext } from "../../utils/auth/UserProvider"
 import { FullPageLoader } from "./loaders/FullPageLoader"
 import AuthContainer from "./AuthContainer"
 import useUnreadMessageCount from "@/hooks/useUnreadCount"
+import { showNotification } from "@/utils/pushNotifications"
 
 export const Navbar = () => {
     const { currentUser, isLoading } = useContext(UserContext)
 
     const unread_count = useUnreadMessageCount()
+
+    useEffect(() => {
+        if (currentUser) {
+            //@ts-expect-error
+            window?.frappePushNotification?.onMessage((payload) => {
+                showNotification(payload, currentUser)
+            })
+
+            window.localStorage.setItem("currentUser", currentUser)
+        }
+    }, [currentUser])
 
     return <IonTabs>
         <IonRouterOutlet>

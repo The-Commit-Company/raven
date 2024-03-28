@@ -1,10 +1,14 @@
 export const isChrome = () =>
     navigator.userAgent.toLowerCase().includes("chrome")
 
-export const showNotification = (payload: any) => {
+export const showNotification = (payload: any, currentUser: string) => {
     // @ts-ignore
     const registration = window.frappePushNotification.serviceWorkerRegistration
     if (!registration) return
+
+    if (currentUser === "Guest") return
+
+    if (currentUser === payload?.data?.from_user) return
 
     const notificationTitle = payload?.data?.title
     const notificationOptions = {
