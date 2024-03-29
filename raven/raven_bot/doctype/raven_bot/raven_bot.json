@@ -65,9 +65,10 @@
    "fieldtype": "Column Break"
   }
  ],
+ "image_field": "image",
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-03-29 20:25:43.901057",
+ "modified": "2024-03-29 23:16:44.406120",
  "modified_by": "Administrator",
  "module": "Raven Bot",
  "name": "Raven Bot",
