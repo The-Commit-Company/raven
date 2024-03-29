@@ -11,13 +11,15 @@ export interface RavenBot{
 	parenttype?: string
 	idx?: number
 	/**	Bot Name : Data	*/
-	bot_name?: string
-	/**	Description : Data	*/
-	description?: string
+	bot_name: string
 	/**	Image : Attach Image	*/
 	image?: string
 	/**	Enabled : Check	*/
 	enabled?: 0 | 1
+	/**	Raven User : Link - Raven User	*/
+	raven_user?: string
+	/**	Description : Small Text	*/
+	description?: string
 	/**	Is Standard : Check	*/
 	is_standard?: 0 | 1
 	/**	Module : Link - Module Def	*/

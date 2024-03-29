@@ -3,182 +3,204 @@
 
 import frappe
 from frappe import scrub
-from frappe.modules.export_file import export_to_files
 from frappe.model.document import Document
-from raven.api.raven_channel_member import remove_channel_member
 
 
 class RavenBot(Document):
-    def on_update(self):
-        if frappe.conf.developer_mode and self.is_standard:
-            export_to_files(
-                record_list=[["Raven Bot", self.name]], record_module=self.module
-            )
+	# begin: auto-generated types
+	# This code is auto-generated. Do not modify anything in this block.
 
-    def check_membership(self, channel_id):
-        raven_user = frappe.get_value(
-            "Raven User", {"bot": self.name}, ["name"])
-        if not raven_user:
-            frappe.throw("Raven User not found for this Raven Bot")
-        member_id = frappe.db.exists("Raven Channel Member", {
-                                     "channel_id": channel_id, "user_id": raven_user})
-        if member_id:
-            return True
-        return False
+	from typing import TYPE_CHECKING
 
-    def add_to_channel(self, channel_id):
-        raven_user = frappe.get_value(
-            "Raven User", {"bot": self.name}, ["name"])
-        if not raven_user:
-            frappe.throw("Raven User not found for this Raven Bot")
+	if TYPE_CHECKING:
+		from frappe.types import DF
 
-        if not self.check_membership(channel_id):
-            raven_channel_member = frappe.get_doc(
-                doctype="Raven Channel Member",
-                user_id=raven_user,
-                channel_id=channel_id
-            )
-            raven_channel_member.insert()
-            frappe.db.commit()
+		bot_name: DF.Data
+		description: DF.SmallText | None
+		enabled: DF.Check
+		image: DF.AttachImage | None
+		is_standard: DF.Check
+		module: DF.Link | None
+		raven_user: DF.Link | None
+	# end: auto-generated types
 
-    def remove_from_channel(self, channel_id):
-        raven_user = frappe.get_value(
-            "Raven User", {"bot": self.name}, ["name"])
-        if not raven_user:
-            frappe.throw("Raven User not found for this Raven Bot")
+	# TODO: Developer integration
+	# def on_update(self):
+	#     if frappe.conf.developer_mode and self.is_standard:
+	#         export_to_files(
+	#             record_list=[["Raven Bot", self.name]], record_module=self.module
+	#         )
 
-        if self.check_membership(channel_id):
-            remove_channel_member(raven_user, channel_id)
+	def is_member(self, channel_id: str) -> None | str:
+		"""
+		Check if the bot is a member of the channel
+		Returns None if the bot is not a member of the channel
+		Returns the member_id if the bot is a member of the channel
+		"""
+		member_id = frappe.db.exists(
+			"Raven Channel Member", {"channel_id": channel_id, "user_id": self.raven_user}
+		)
+		if member_id:
+			return member_id
+		return None
 
-    # message is a dictionary
+	def add_to_channel(self, channel_id: str) -> str:
+		"""
+		Add the bot to a channel as a member
 
-    def send_message(self, channel_id, message):
-        raven_user = frappe.get_value(
-            "Raven User", {"bot": self.name}, ["name"])
-        if not raven_user:
-            frappe.throw("Raven User not found for this Raven Bot")
-        raven_channel = frappe.get_doc("Raven Channel", channel_id)
-        if not raven_channel:
-            frappe.throw("Raven Channel not found")
-        if message.get('is_reply', False):
-            doc = frappe.get_doc({
-                'owner': raven_user,
-                'doctype': 'Raven Message',
-                'channel_id': channel_id,
-                'text': message.get('text', ''),
-                'message_type': 'Text',
-                'is_reply': message.get('is_reply', 0),
-                'linked_message': message.get('linked_message', None),
-                'json': message.get('json', None),
-                'is_bot_message': 1,
-                'bot': self.name
-            })
-        else:
-            doc = frappe.get_doc({
-                'owner': raven_user,
-                'doctype': 'Raven Message',
-                'channel_id': channel_id,
-                'text': message.get('text', ''),
-                'message_type': 'Text',
-                'json': message.get('json', None),
-                'is_bot_message': 1,
-                'bot': self.name
-            })
-        doc.insert()
-        return "message sent"
+		If the bot is already a member of the channel, this function does nothing
 
-    def send_direct_message(self, user_id, message):
-        raven_user = frappe.get_value(
-            "Raven User", {"bot": self.name}, ["name"])
-        if not raven_user:
-            frappe.throw("Raven User not found for this Raven Bot")
+		Returns the member_id of the bot in the channel
+		"""
 
-        channel_name = self.get_dm_channel_id(user_id)
-        if channel_name:
-            channel_id = channel_name
-        else:
-            channel = frappe.get_doc({
-                "doctype": "Raven Channel",
-                "channel_name": raven_user + " _ " + user_id,
-                "is_direct_message": 1,
-            })
-            channel.insert()
-            channel.add_members([user_id, raven_user], 1)
-            channel_id = channel.name
-        if message.get('is_reply', False):
-            doc = frappe.get_doc({
-                'owner': raven_user,
-                'doctype': 'Raven Message',
-                'channel_id': channel_id,
-                'text': message.get('text', ''),
-                'message_type': 'Text',
-                'is_reply': message.get('is_reply', 0),
-                'linked_message': message.get('linked_message', None),
-                'json': message.get('json', None),
-                'is_bot_message': 1,
-                'bot': self.name
-            })
-        else:
-            doc = frappe.get_doc({
-                'owner': raven_user,
-                'doctype': 'Raven Message',
-                'channel_id': channel_id,
-                'text': message.get('text', ''),
-                'message_type': 'Text',
-                'json': message.get('json', None),
-                'is_bot_message': 1,
-                'bot': self.name
-            })
-        doc.insert()
-        return "message sent"
+		existing_member = self.is_member(channel_id)
 
-    def get_dm_channel_id(self, user_id):
-        raven_user = frappe.get_value(
-            "Raven User", {"bot": self.name}, ["name"])
-        if not raven_user:
-            frappe.throw("Raven User not found for this Raven Bot")
+		if not existing_member:
+			raven_channel_member = frappe.get_doc(
+				doctype="Raven Channel Member", user_id=self.raven_user, channel_id=channel_id
+			)
+			raven_channel_member.insert()
+			return raven_channel_member.name
+		else:
+			return existing_member
 
-        channel_name = frappe.db.get_value("Raven Channel", filters={
-            "is_direct_message": 1,
-            "channel_name": ["in", [raven_user + " _ " + user_id, user_id + " _ " + raven_user]]
-        }, fieldname="name")
-        if channel_name:
-            return channel_name
-        return None
+	def remove_from_channel(self, channel_id: str) -> None:
+		"""
+		Remove the bot from a channel as a member
+		"""
 
-    def get_last_message(self, channel_id=None, message_type=None, link_document=None, date=None):
-        filters = {"bot": self.name}
-        if channel_id is not None:
-            filters["channel_id"] = channel_id
-        if message_type is not None:
-            filters["message_type"] = message_type
-        if link_document is not None:
-            filters["link_document"] = link_document
-        if date is not None:
-            filters["creation"] = [">", date]
+		existing_member = self.is_member(channel_id)
+		if existing_member:
+			frappe.delete_doc("Raven Channel Member", existing_member)
 
-        return frappe.get_last_doc("Raven Message", filters=filters, order_by="creation desc")
+	def get_dm_channel_id(self, user_id: str) -> str | None:
+		"""
+		Get the channel_id of a Direct Message channel with a user
+		"""
+		# The User's Raven User ID
+		user_raven_user = frappe.db.get_value("Raven User", {"user": user_id}, "name")
+		if not user_raven_user:
+			return None
+		channel_name = frappe.db.get_value(
+			"Raven Channel",
+			filters={
+				"is_direct_message": 1,
+				"channel_name": [
+					"in",
+					[self.raven_user + " _ " + user_raven_user, user_raven_user + " _ " + self.raven_user],
+				],
+			},
+		)
+		if channel_name:
+			return channel_name
+		return None
 
-    def get_previous_messages(self, channel_id=None, message_type=None, link_document=None, date=None):
-        filters = {"bot": self.name}
-        if channel_id is not None:
-            filters["channel_id"] = channel_id
-        if message_type is not None:
-            filters["message_type"] = message_type
-        if link_document is not None:
-            filters["link_document"] = link_document
-        if date is not None:
-            filters["creation"] = [">", date]
+	def send_message(
+		self, channel_id: str, text: str = None, link_doctype: str = None, link_document: str = None
+	) -> str:
+		"""
+		Send a text message to a channel
 
-        return frappe.get_all("Raven Message", filters=filters, order_by="creation desc", pluck='name')
+		channel_id: The channel_id of the channel to send the message to
 
-    def get_bot_dotted_path(self):
-        return (frappe.local.module_app[scrub(self.module)] + "." + scrub(self.module) + ".raven_bot." + scrub(self.name) + "." + scrub(self.name))
+		You need to provide either text or link_doctype and link_document
+		text: The text of the message in HTML format (markdown is not supported)
 
-    def on_mention(self):
-        method_path = self.get_bot_dotted_path() + ".on_mention"
-        method = frappe.get_attr(method_path)
-        if method:
-            method()
-        else:
-            print("Method not found")
+		Optional:
+		link_doctype: The doctype of the document to link the message to
+		link_document: The name of the document to link the message to
+
+		Returns the message ID of the message sent
+		"""
+		doc = frappe.get_doc(
+			{
+				"doctype": "Raven Message",
+				"channel_id": channel_id,
+				"text": text,
+				"message_type": "Text",
+				"is_bot_message": 1,
+				"bot": self.raven_user,
+				"link_doctype": link_doctype,
+				"link_document": link_document,
+			}
+		)
+		doc.insert()
+		return doc.name
+
+	def create_direct_message_channel(self, user_id: str) -> str:
+		"""
+		Creates a direct message channel between the bot and a user
+
+		If the channel already exists, returns the channel_id of the existing channel
+
+		Throws an error if the user is not a Raven User
+		"""
+		channel_id = self.get_dm_channel_id(user_id)
+
+		if channel_id:
+			return channel_id
+		else:
+			# The user's raven_user document
+			user_raven_user = frappe.db.get_value("Raven User", {"user": user_id}, "name")
+			if not user_raven_user:
+				frappe.throw(f"User {user_id} is not added as a Raven User")
+			channel = frappe.get_doc(
+				{
+					"doctype": "Raven Channel",
+					"channel_name": self.raven_user + " _ " + user_raven_user,
+					"is_direct_message": 1,
+				}
+			)
+			channel.insert()
+			return channel.name
+
+	def send_direct_message(
+		self, user_id: str, text: str = None, link_doctype: str = None, link_document: str = None
+	) -> str:
+		"""
+		Send a text message to a user in a Direct Message channel
+
+		user_id: The User's 'name' field to send the message to
+
+		You need to provide either text or link_doctype and link_document
+		text: The text of the message in HTML format (markdown is not supported)
+
+		Optional:
+		link_doctype: The doctype of the document to link the message to
+		link_document: The name of the document to link the message to
+
+		Returns the message ID of the message sent
+		"""
+
+		channel_id = self.create_direct_message_channel(user_id)
+
+		if channel_id:
+			return self.send_message(channel_id, text, link_doctype, link_document)
+
+	def get_last_message(self, channel_id: str = None, message_type: str = None) -> Document | None:
+		"""
+		Gets the last message sent by the bot
+		"""
+		filters = {"bot": self.name}
+		if channel_id is not None:
+			filters["channel_id"] = channel_id
+		if message_type is not None:
+			filters["message_type"] = message_type
+
+		return frappe.get_last_doc("Raven Message", filters=filters, order_by="creation desc")
+
+	def get_previous_messages(
+		self, channel_id: str = None, message_type: str = None, date: str = None
+	) -> list[str]:
+		"""
+		Gets the previous messages sent by the bot
+		"""
+		filters = {"bot": self.name}
+		if channel_id is not None:
+			filters["channel_id"] = channel_id
+		if message_type is not None:
+			filters["message_type"] = message_type
+		if date is not None:
+			filters["creation"] = [">", date]
+
+		return frappe.get_all("Raven Message", filters=filters, order_by="creation desc", pluck="name")

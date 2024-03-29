@@ -9,16 +9,18 @@
  "engine": "InnoDB",
  "field_order": [
   "bot_name",
-  "description",
   "image",
   "enabled",
+  "raven_user",
+  "column_break_lhoo",
+  "description",
   "is_standard",
   "module"
  ],
  "fields": [
   {
    "fieldname": "description",
-   "fieldtype": "Data",
+   "fieldtype": "Small Text",
    "label": "Description"
   },
   {
@@ -30,31 +32,51 @@
    "default": "0",
    "fieldname": "enabled",
    "fieldtype": "Check",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
    "label": "Enabled"
   },
   {
    "fieldname": "bot_name",
    "fieldtype": "Data",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
    "label": "Bot Name",
+   "reqd": 1,
    "unique": 1
   },
   {
    "default": "0",
    "fieldname": "is_standard",
    "fieldtype": "Check",
+   "hidden": 1,
    "label": "Is Standard"
   },
   {
    "fieldname": "module",
    "fieldtype": "Link",
+   "hidden": 1,
    "label": "Module",
    "mandatory_depends_on": "eval: doc.is_standard == 1",
    "options": "Module Def"
+  },
+  {
+   "fieldname": "raven_user",
+   "fieldtype": "Link",
+   "in_standard_filter": 1,
+   "label": "Raven User",
+   "options": "Raven User",
+   "read_only": 1,
+   "set_only_once": 1
+  },
+  {
+   "fieldname": "column_break_lhoo",
+   "fieldtype": "Column Break"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-01-19 17:31:56.102999",
+ "modified": "2024-03-29 18:50:16.166146",
  "modified_by": "Administrator",
  "module": "Raven Bot",
  "name": "Raven Bot",
