@@ -2,8 +2,9 @@
 # For license information, please see license.txt
 
 import frappe
-from frappe import scrub
 from frappe.model.document import Document
+
+from raven.utils import get_raven_user
 
 
 class RavenBot(Document):
@@ -17,7 +18,6 @@ class RavenBot(Document):
 
 		bot_name: DF.Data
 		description: DF.SmallText | None
-		enabled: DF.Check
 		image: DF.AttachImage | None
 		is_standard: DF.Check
 		module: DF.Link | None
@@ -37,7 +37,7 @@ class RavenBot(Document):
 			raven_user.full_name = self.bot_name
 			raven_user.first_name = self.bot_name
 			raven_user.user_image = self.image
-			raven_user.enabled = self.enabled
+			raven_user.enabled = 1
 			raven_user.save()
 		else:
 			raven_user = frappe.new_doc("Raven User")
@@ -46,7 +46,7 @@ class RavenBot(Document):
 			raven_user.full_name = self.bot_name
 			raven_user.first_name = self.bot_name
 			raven_user.user_image = self.image
-			raven_user.enabled = self.enabled
+			raven_user.enabled = 1
 			raven_user.save()
 
 			self.db_set("raven_user", raven_user.name)
@@ -161,7 +161,7 @@ class RavenBot(Document):
 			return channel_id
 		else:
 			# The user's raven_user document
-			user_raven_user = frappe.db.get_value("Raven User", {"user": user_id}, "name")
+			user_raven_user = get_raven_user(user_id)
 			if not user_raven_user:
 				frappe.throw(f"User {user_id} is not added as a Raven User")
 			channel = frappe.get_doc(
@@ -171,6 +171,7 @@ class RavenBot(Document):
 					"is_direct_message": 1,
 				}
 			)
+			channel.flags.is_created_by_bot = True
 			channel.insert()
 			return channel.name
 

@@ -2,7 +2,7 @@
  "actions": [],
  "allow_rename": 1,
  "autoname": "field:bot_name",
- "creation": "2024-01-19 16:05:10.754915",
+ "creation": "2024-03-29 20:25:13.529714",
  "default_view": "List",
  "doctype": "DocType",
  "editable_grid": 1,
@@ -10,7 +10,6 @@
  "field_order": [
   "bot_name",
   "image",
-  "enabled",
   "raven_user",
   "column_break_lhoo",
   "description",
@@ -27,14 +26,6 @@
    "fieldname": "image",
    "fieldtype": "Attach Image",
    "label": "Image"
-  },
-  {
-   "default": "0",
-   "fieldname": "enabled",
-   "fieldtype": "Check",
-   "in_list_view": 1,
-   "in_standard_filter": 1,
-   "label": "Enabled"
   },
   {
    "fieldname": "bot_name",
@@ -76,7 +67,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-03-29 18:50:16.166146",
+ "modified": "2024-03-29 20:25:43.901057",
  "modified_by": "Administrator",
  "module": "Raven Bot",
  "name": "Raven Bot",

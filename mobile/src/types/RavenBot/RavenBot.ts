@@ -14,8 +14,6 @@ export interface RavenBot{
 	bot_name: string
 	/**	Image : Attach Image	*/
 	image?: string
-	/**	Enabled : Check	*/
-	enabled?: 0 | 1
 	/**	Raven User : Link - Raven User	*/
 	raven_user?: string
 	/**	Description : Small Text	*/
