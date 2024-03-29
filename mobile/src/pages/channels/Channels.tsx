@@ -6,7 +6,7 @@ import { AddChannel } from '../../components/features/channels';
 import { useMemo, useRef, useState } from 'react';
 import { UnreadCountData, useChannelList } from '@/utils/channel/ChannelListProvider';
 import { ChannelListLoader } from '../../components/layout/loaders/ChannelListLoader';
-import { useFrappeEventListener, useFrappeGetCall } from 'frappe-react-sdk';
+import { useFrappeGetCall } from 'frappe-react-sdk';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 
@@ -28,13 +28,12 @@ export const Channels = () => {
         return activeChannels.filter(channel => channel.channel_name.includes(searchTerm))
     }, [searchInput, channels])
 
-    const { data: unread_count, mutate: update_count } = useFrappeGetCall<{ message: UnreadCountData }>("raven.api.raven_message.get_unread_count_for_channels",
+    const { data: unreadCount } = useFrappeGetCall<{ message: UnreadCountData }>("raven.api.raven_message.get_unread_count_for_channels",
         undefined,
         'unread_channel_count', {
-        // revalidateOnFocus: false,
-    })
-    useFrappeEventListener('raven:unread_channel_count_updated', () => {
-        update_count()
+        revalidateOnFocus: false,
+        revalidateIfStale: false,
+        revalidateOnReconnect: true,
     })
 
     return (
@@ -53,26 +52,29 @@ export const Channels = () => {
                 <IonToolbar>
                     <IonSearchbar
                         placeholder='Search'
+                        autocapitalize="off"
                         onIonInput={(e) => setSearchInput(e.target.value!)}
                     >
                     </IonSearchbar>
                 </IonToolbar>
                 {isLoading && <ChannelListLoader />}
                 {error && <ErrorBanner error={error} />}
-                <li className='list-none active:bg-accent active:rounded'>
-                    <Button variant="ghost" className='w-full flex justify-between items-center hover:bg-transparent ' onClick={() => setIsOpen(true)}>
-                    <div className='flex items-center justify-start gap-2'>
-                        <span>
-                            <IoAdd size='18' className='text-foreground/80' />
-                        </span>
-                        <Label className="text-foreground/80 cursor-pointer">
-                            Add Channel
-                        </Label>
-                    </div>
-                    </Button>
-                </li>
-                <ChannelList data={filteredChannels ?? []} unread_count={unread_count?.message}/>
+                <ul>
+                    <li className='list-none active:bg-accent active:rounded'>
+                        <Button variant="ghost" className='w-full flex justify-between items-center hover:bg-transparent ' onClick={() => setIsOpen(true)}>
+                        <div className='flex items-center justify-start gap-2'>
+                            <span>
+                                <IoAdd size='18' className='text-foreground/80' />
+                            </span>
+                            <Label className="text-foreground/80 cursor-pointer">
+                                Add Channel
+                            </Label>
+                        </div>
+                        </Button>
+                    </li>
+                <ChannelList data={filteredChannels ?? []} unread_count={unreadCount?.message}/>
                 <AddChannel isOpen={isOpen} onDismiss={() => setIsOpen(false)} presentingElement={pageRef.current} />
+                </ul>
             </IonContent>
         </IonPage>
     )

@@ -1,0 +1,16 @@
+meta {
+  name: login
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{url}}:{{port}}/api/method/login?usr=Administrator&pwd=admin
+  body: none
+  auth: none
+}
+
+query {
+  usr: Administrator
+  pwd: admin
+}

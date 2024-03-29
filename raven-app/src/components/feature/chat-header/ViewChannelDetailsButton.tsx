@@ -33,7 +33,7 @@ export const ViewChannelDetailsButton = ({ channelData, allowAddMembers, channel
                     <Button className={clsx('pr-2 pl-1 w-fit cursor-pointer', allowAddMembers ? 'rounded-r-none' : '')}
                         variant='surface'
                         color='gray'>
-                        {Object.keys(channelMembers).length > 0 ? <div className={'flex -space-x-2 rtl:space-x-reverse'}>
+                        {Object.keys(channelMembers).length > 0 ? <div className={'flex -space-x-2 rtl:space-x-reverse animate-fadein'}>
                             {Object.entries(channelMembers).map(([name, member], index) => {
                                 if (index < 3)
                                     return <UserAvatar
