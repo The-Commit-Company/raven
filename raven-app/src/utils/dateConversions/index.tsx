@@ -7,8 +7,8 @@ interface Props {
 }
 /**
  * Returns a date in the standard format that the user has set in their preferences
- * @param props 
- * @returns 
+ * @param props
+ * @returns
  */
 export const StandardDate = (props: Props) => {
 
@@ -43,7 +43,7 @@ interface HourMinuteAmPmProps extends Props {
     amPm?: boolean
 }
 /**
- * 
+ *
  * @returns JSX Element of the format hh:mm AM/PM
  * @example 08:15 PM or 12:00 AM
  */

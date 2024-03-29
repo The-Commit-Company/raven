@@ -10,13 +10,14 @@ export const CustomLink = TiptapLink.extend({
         return [
             "a",
             mergeAttributes(HTMLAttributes, {
-                class: 'rt-Text rt-reset rt-Link rt-underline-auto break-all line-clamp-3'
+                class: 'rt-Text rt-reset rt-Link rt-underline-auto break-all'
             }), // mergeAttributes is a exported function from @tiptap/core
             0,
         ];
     },
 }).configure({
-    protocols: ['mailto', 'https', 'http']
+    protocols: ['mailto', 'https', 'http'],
+    openOnClick: false,
 })
 
 export type LinkPreviewDetails = {
@@ -76,7 +77,6 @@ export const LinkPreview = memo(({ isScrolling }: { isScrolling?: boolean }) => 
 
     // const href = editor?.getAttributes('link').href
 
-    // console.log(editor?.state)
 
     const { data, isLoading } = useFrappeGetCall<{ message: LinkPreviewDetails[] }>('raven.api.preview_links.get_preview_link', {
         urls: JSON.stringify([href])

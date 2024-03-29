@@ -226,10 +226,12 @@ export const PreviewModal = ({ onClose }: { onClose: () => void }) => {
 
         const webhookTriggerKeys = webhookData?.map(data => data.key)
         const obj = {}
-        webhookTriggerKeys?.forEach(key => {
+        if (exampleData) {
+            webhookTriggerKeys?.forEach(key => {
             // @ts-ignore
-            obj[key as string] = exampleData?.fields?.find(field => field.field === key)?.value
+                obj[key as string] = exampleData?.fields?.find(field => field.field === key)?.value
         })
+        }
         return JSON.stringify(obj, null, 2)
     }, [examples, webhookData, webhookTrigger])
 
@@ -263,7 +265,8 @@ export const PreviewModal = ({ onClose }: { onClose: () => void }) => {
                     </Label>
                     <Box>
                         <pre className={'rounded-md bg-slate-3 p-2 m-0'} style={{
-                            minHeight: '200px'
+                            minHeight: '200px',
+                            whiteSpace: 'pre-wrap'
                         }}>
                             <code>
                                 {jsonData}

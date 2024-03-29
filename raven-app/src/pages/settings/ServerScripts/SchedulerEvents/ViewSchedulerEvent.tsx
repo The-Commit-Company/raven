@@ -13,9 +13,9 @@ export interface Props { }
 
 export const ViewSchedulerEvent = (props: Props) => {
 
-    const { scriptID } = useParams<{ scriptID: string }>()
+    const { ID } = useParams<{ ID: string }>()
 
-    const { data: eventData, error, mutate } = useFrappeGetDoc('Raven Scheduler Event', scriptID)
+    const { data: eventData, error, mutate } = useFrappeGetDoc('Raven Scheduler Event', ID)
 
     return (
         <>

@@ -19,6 +19,7 @@ import { CustomUserMention } from './Mention'
 import { CustomLink, LinkPreview } from './Link'
 import { CustomItalic } from './Italic'
 import { CustomUnderline } from './Underline'
+import { Image } from '@tiptap/extension-image'
 import { clsx } from 'clsx'
 const lowlight = createLowlight(common)
 
@@ -79,7 +80,13 @@ export const TiptapRenderer = ({ message, user, isScrolling = false, isTruncated
       CustomBold,
       CustomUserMention,
       CustomLink,
-      CustomItalic
+      CustomItalic,
+      Image.configure({
+        HTMLAttributes: {
+          class: 'w-full h-auto'
+        },
+        inline: true
+      }),
       // TODO: Add channel mention
       // CustomChannelMention
     ]

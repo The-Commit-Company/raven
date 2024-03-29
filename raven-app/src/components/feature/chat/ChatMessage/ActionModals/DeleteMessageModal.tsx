@@ -1,4 +1,4 @@
-import { useFrappeDeleteDoc, useSWRConfig } from "frappe-react-sdk"
+import { useFrappeDeleteDoc } from "frappe-react-sdk"
 import { ErrorBanner } from "../../../../layout/AlertBanner"
 import { AlertDialog, Button, Callout, Flex, Text } from "@radix-ui/themes"
 import { Loader } from "@/components/common/Loader"
@@ -16,8 +16,6 @@ export const DeleteMessageModal = ({ onClose, message }: DeleteMessageModalProps
     const { deleteDoc, error, loading: deletingDoc } = useFrappeDeleteDoc()
     const { toast } = useToast()
 
-    const { mutate } = useSWRConfig()
-
     const onSubmit = async () => {
         return deleteDoc('Raven Message', message.name
         ).then(() => {
@@ -26,7 +24,6 @@ export const DeleteMessageModal = ({ onClose, message }: DeleteMessageModalProps
                 duration: 1000,
                 variant: 'destructive'
             })
-            mutate(`get_messages_for_channel_${message.channel_id}`)
             onClose()
         })
     }

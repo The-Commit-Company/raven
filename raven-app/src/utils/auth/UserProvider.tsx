@@ -5,7 +5,6 @@ import { createContext } from 'react'
 interface UserContextProps {
     isLoading: boolean,
     currentUser: string,
-    login: (username: string, password: string) => Promise<void>,
     logout: () => Promise<void>,
     updateCurrentUser: VoidFunction,
 }
@@ -13,7 +12,6 @@ interface UserContextProps {
 export const UserContext = createContext<UserContextProps>({
     currentUser: '',
     isLoading: false,
-    login: () => Promise.resolve(),
     logout: () => Promise.resolve(),
     updateCurrentUser: () => { },
 })
@@ -21,7 +19,7 @@ export const UserContext = createContext<UserContextProps>({
 export const UserProvider: FC<PropsWithChildren> = ({ children }) => {
 
     const { mutate } = useSWRConfig()
-    const { login, logout, currentUser, updateCurrentUser, isLoading } = useFrappeAuth()
+    const { logout, currentUser, updateCurrentUser, isLoading } = useFrappeAuth()
 
     const handleLogout = async () => {
         localStorage.removeItem('ravenLastChannel')
@@ -38,19 +36,8 @@ export const UserProvider: FC<PropsWithChildren> = ({ children }) => {
             })
     }
 
-    const handleLogin = async (username: string, password: string) => {
-        return login({
-            username,
-            password
-        })
-            .then(() => {
-                //Reload the page so that the boot info is fetched again
-                const URL = import.meta.env.VITE_BASE_NAME ? `/${import.meta.env.VITE_BASE_NAME}` : ``
-                window.location.replace(`${URL}/channel`)
-            })
-    }
     return (
-        <UserContext.Provider value={{ isLoading, updateCurrentUser, login: handleLogin, logout: handleLogout, currentUser: currentUser ?? "" }}>
+        <UserContext.Provider value={{ isLoading, updateCurrentUser, logout: handleLogout, currentUser: currentUser ?? "" }}>
             {children}
         </UserContext.Provider>
     )

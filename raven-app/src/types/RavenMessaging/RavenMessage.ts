@@ -1,6 +1,6 @@
 import { RavenMention } from './RavenMention'
 
-export interface RavenMessage{
+export interface RavenMessage {
 	creation: string
 	name: string
 	modified: string

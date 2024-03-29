@@ -1,0 +1,47 @@
+exclude: "node_modules|.git"
+default_stages: [commit]
+fail_fast: false
+
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.3.0
+    hooks:
+      - id: trailing-whitespace
+        files: "raven.*"
+        exclude: ".*json$|.*txt$|.*csv|.*md|.*svg"
+      - id: check-yaml
+      - id: check-merge-conflict
+      - id: check-ast
+      - id: check-json
+      - id: check-toml
+      - id: debug-statements
+
+  - repo: https://github.com/asottile/pyupgrade
+    rev: v2.34.0
+    hooks:
+      - id: pyupgrade
+        args: ["--py310-plus"]
+
+  - repo: https://github.com/adityahase/black
+    rev: 9cb0a69f4d0030cdf687eddf314468b39ed54119
+    hooks:
+      - id: black
+        additional_dependencies: ["click==8.0.4"]
+
+  - repo: https://github.com/PyCQA/flake8
+    rev: 6.0.0
+    hooks:
+      - id: flake8
+        additional_dependencies: ["flake8-bugbear", "flake8-tuple"]
+        args: ["--config", ".github/helper/flake8.conf"]
+
+  - repo: https://github.com/PyCQA/isort
+    rev: 5.12.0
+    hooks:
+      - id: isort
+        exclude: ".*setup.py$"
+
+ci:
+  autoupdate_schedule: weekly
+  skip: []
+  submodules: false

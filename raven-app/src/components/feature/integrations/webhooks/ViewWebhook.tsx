@@ -1,7 +1,5 @@
 import { ErrorBanner } from "@/components/layout/AlertBanner"
 import { FullPageLoader } from "@/components/layout/Loaders"
-import { Webhook } from "@/types/Integrations/Webhook"
-import { removeFrappeFields } from "@/utils/removeFrappeFields"
 import { AlertDialog, Badge, Box, Button, DropdownMenu, Flex, IconButton, Separator, Text } from "@radix-ui/themes"
 import { FrappeDoc, useFrappeGetDoc, useFrappeUpdateDoc } from "frappe-react-sdk"
 import { FieldValues, FormProvider, useForm } from "react-hook-form"
@@ -38,10 +36,9 @@ ViewWebhook.displayName = 'ViewWebhook'
 
 export const ViewWebhookPage = ({ data, mutate }: { data: FrappeDoc<RavenWebhook>, mutate: KeyedMutator<FrappeDoc<RavenWebhook>> }) => {
 
-    const formFields = removeFrappeFields(data)
     const methods = useForm<RavenWebhook>({
         defaultValues: {
-            ...formFields,
+            ...data,
             docstatus: data.docstatus
         }
     })
@@ -62,9 +59,8 @@ export const ViewWebhookPage = ({ data, mutate }: { data: FrappeDoc<RavenWebhook
                 reset()
                 mutate()
                 if (doc) {
-                    const formFields = removeFrappeFields(doc)
                     methods.reset({
-                        ...formFields,
+                        ...doc,
                         docstatus: doc.docstatus
                     })
                 }

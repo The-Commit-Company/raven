@@ -1,5 +1,5 @@
 import { BiSearch } from 'react-icons/bi'
-import { useFrappeGetCall, useFrappePostCall } from 'frappe-react-sdk'
+import { useFrappeGetCall } from 'frappe-react-sdk'
 import { useContext, useState, useMemo } from 'react'
 import { useDebounce } from '../../../hooks/useDebounce'
 import { GetMessageSearchResult } from '../../../../../types/Search/Search'
@@ -7,11 +7,9 @@ import { ErrorBanner } from '../../layout/AlertBanner'
 import { EmptyStateForSearch } from '../../layout/EmptyState/EmptyState'
 import { useNavigate } from 'react-router-dom'
 import { MessageBox } from './MessageBox'
-import { VirtuosoRefContext } from '../../../utils/message/VirtuosoRefProvider'
 import { useGetUserRecords } from '@/hooks/useGetUserRecords'
 import { ChannelListContext, ChannelListContextType } from '@/utils/channel/ChannelListProvider'
 import { ChannelIcon } from '@/utils/layout/channelIcon'
-import { useToast } from '@/hooks/useToast'
 import { Box, Checkbox, Flex, Select, TextField, Text, Grid, ScrollArea } from '@radix-ui/themes'
 import { UserAvatar } from '@/components/common/UserAvatar'
 import { dateOption } from './GlobalSearch'
@@ -52,37 +50,20 @@ export const MessageSearch = ({ onToggleMyChannels, isOpenMyChannels, onToggleSa
 
     const [dateFilter, setDateFilter] = useState<string | undefined>()
 
-    const { virtuosoRef } = useContext(VirtuosoRefContext)
     const navigate = useNavigate()
 
-    const { call, reset } = useFrappePostCall<{ message: string }>("raven.api.raven_message.get_index_of_message")
-
-    const handleNavigateToChannel = (channelID: string) => {
+    const handleNavigateToChannel = (channelID: string, baseMessage?: string) => {
         onClose()
         onCommandPaletteClose()
-        navigate(`/channel/${channelID}`)
+        navigate(`/channel/${channelID}`, {
+            state: {
+                baseMessage
+            }
+        })
     }
 
-    const { toast } = useToast()
-
     const handleScrollToMessage = async (messageName: string, channelID: string) => {
-        reset()
-        handleNavigateToChannel(channelID)
-        const result = call({
-            channel_id: channelID,
-            message_id: messageName
-        }).then((result) => {
-            if (virtuosoRef) {
-                virtuosoRef.current?.scrollToIndex({ index: parseInt(result.message) ?? 'LAST', align: 'center' })
-            }
-        }).catch(() => {
-            toast({
-                description: "There was an error while indexing the message.",
-                duration: 1000,
-                variant: "destructive"
-            })
-        })
-
+        handleNavigateToChannel(channelID, messageName)
     }
 
     const users = useGetUserRecords()

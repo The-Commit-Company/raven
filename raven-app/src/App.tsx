@@ -1,5 +1,5 @@
 import { FrappeProvider } from 'frappe-react-sdk'
-import { Outlet, Route, RouterProvider, createBrowserRouter, createRoutesFromElements } from 'react-router-dom'
+import { Route, RouterProvider, createBrowserRouter, createRoutesFromElements } from 'react-router-dom'
 import { MainPage } from './pages/MainPage'
 import { ProtectedRoute } from './utils/auth/ProtectedRoute'
 import { UserProvider } from './utils/auth/UserProvider'
@@ -13,12 +13,6 @@ import { Settings } from './pages/settings/Settings'
 import { CreateWebhook } from './components/feature/integrations/webhooks/CreateWebhook'
 import ViewWebhook from './components/feature/integrations/webhooks/ViewWebhook'
 import { WebhookList } from './components/feature/integrations/webhooks/WebhookList'
-import { DocTypeEvents } from './pages/settings/ServerScripts/DocTypeEvents'
-import { CreateDocTypeEvent } from './pages/settings/ServerScripts/CreateDocTypeEvent'
-import { ViewDocTypeEvent } from './pages/settings/ServerScripts/ViewDocTypeEvent'
-import { APIEvents } from './pages/settings/ServerScripts/APIEvents/APIEvents'
-import { CreateAPIEvent } from './pages/settings/ServerScripts/APIEvents/CreateAPIEvents'
-import { ViewAPIEvent } from './pages/settings/ServerScripts/APIEvents/ViewAPIEvents'
 import { TemporalEvents } from './pages/settings/ServerScripts/SchedulerEvents/SchedulerEvents'
 import { CreateSchedulerEvent } from './pages/settings/ServerScripts/SchedulerEvents/CreateSchedulerEvent'
 import { ViewSchedulerEvent } from './pages/settings/ServerScripts/SchedulerEvents/ViewSchedulerEvent'
@@ -28,6 +22,8 @@ const router = createBrowserRouter(
   createRoutesFromElements(
     <>
       <Route path='/login' lazy={() => import('@/pages/auth/Login')} />
+      <Route path='/login-with-email' lazy={() => import('@/pages/auth/LoginWithEmail')} />
+      <Route path='/signup' lazy={() => import('@/pages/auth/SignUp')} />
       <Route path="/" element={<ProtectedRoute />}>
         <Route path="/" element={<ChannelRedirect />}>
           <Route path="channel" element={<MainPage />} >
@@ -40,21 +36,9 @@ const router = createBrowserRouter(
               <Route path='webhooks' element={<WebhookList />} />
               <Route path='webhooks/create' element={<CreateWebhook />} />
               <Route path='webhooks/:ID' element={<ViewWebhook />} />
-              <Route path='doctype-events' element={<Outlet />}>
-                <Route index element={<DocTypeEvents />} />
-                <Route path='create' element={<CreateDocTypeEvent />} />
-                <Route path=':eventID' element={<ViewDocTypeEvent />} />
-              </Route>
-              <Route path='scheduled-messages' element={<Outlet />}>
-                <Route index element={<TemporalEvents />} />
-                <Route path='create' element={<CreateSchedulerEvent />} />
-                <Route path=':scriptID' element={<ViewSchedulerEvent />} />
-              </Route>
-              <Route path='api-events' element={<Outlet />}>
-                <Route index element={<APIEvents />} />
-                <Route path='create' element={<CreateAPIEvent />} />
-                <Route path=':apiID' element={<ViewAPIEvent />} />
-              </Route>
+              <Route path='schedules-messages' element={<TemporalEvents />} />
+              <Route path='schedules-messages/create' element={<CreateSchedulerEvent />} />
+              <Route path='schedules-messages/:ID' element={<ViewSchedulerEvent />} />
             </Route>
           </Route>
         </Route>
