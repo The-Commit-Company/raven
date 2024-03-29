@@ -11,7 +11,7 @@ export const UserListContext = createContext<{ users: UserFields[], enabledUsers
     enabledUsers: []
 })
 
-export type UserFields = Pick<RavenUser, 'name' | 'full_name' | 'user_image' | 'first_name' | 'enabled'>
+export type UserFields = Pick<RavenUser, 'name' | 'full_name' | 'user_image' | 'first_name' | 'enabled' | 'type'>
 
 export const UserListProvider = ({ children }: PropsWithChildren) => {
 
