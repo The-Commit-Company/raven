@@ -104,7 +104,8 @@ def add_vote(poll_id, channel_id, option_id):
 					"user_id": frappe.session.user,
 				}
 			).insert()
-
-	frappe.db.commit()
+	
+	# Update total votes count in the poll
+	poll.total_votes = len(frappe.get_all("Raven Poll Vote", filters={"poll_id": poll_id}))
 
 	return poll

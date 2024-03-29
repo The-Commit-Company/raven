@@ -31,7 +31,7 @@ export const MessageContextMenu = ({ message, onDelete, onEdit, onReply }: Messa
                         Reply
                     </Flex>
                 </ContextMenu.Item>
-                <ContextMenu.Separator />
+                {/* <ContextMenu.Separator /> */}
                 <ContextMenu.Group>
                     {message.message_type === 'Text' &&
                         <ContextMenu.Item onClick={copy}>

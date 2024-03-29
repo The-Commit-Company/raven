@@ -19,9 +19,17 @@ interface CreatePollProps {
 export const CreatePoll = ({ buttonStyle, isDisabled = false }: CreatePollProps) => {
 
     const methods = useForm<RavenPoll>({
-        // Initialize the form with an option field by default
+        // Initialize the form with 2 option fields by default
         defaultValues: {
             options: [{
+                name: '',
+                creation: '',
+                modified: '',
+                owner: '',
+                modified_by: '',
+                docstatus: 0,
+                option: ''
+            }, {
                 name: '',
                 creation: '',
                 modified: '',
@@ -42,21 +50,28 @@ export const CreatePoll = ({ buttonStyle, isDisabled = false }: CreatePollProps)
         name: 'options'
     })
 
+    const optionPlaceholders = ['Cersei Lannister', 'Jon Snow', 'Daenerys Targaryen', 'Tyrion Lannister', 'Night King', 'Arya Stark', 'Sansa Stark', 'Jaime Lannister', 'Bran Stark', 'The Hound']
+
     const handleAddOption = () => {
-        append({
-            name: '',
-            creation: '',
-            modified: '',
-            owner: '',
-            modified_by: '',
-            docstatus: 0,
-            option: ''
-        })
+        // limit the number of options to 10
+        if (fields.length >= 10) {
+            return
+        } else {
+            append({
+                name: '',
+                creation: '',
+                modified: '',
+                owner: '',
+                modified_by: '',
+                docstatus: 0,
+                option: ''
+            })
+        }
     }
 
     const handleRemoveOption = (index: number) => {
-        // Do not remove the last option
-        if (fields.length === 1) {
+        // Do not remove the last 2 options
+        if (fields.length === 2) {
             return
         }
         remove(index)
@@ -138,7 +153,7 @@ export const CreatePoll = ({ buttonStyle, isDisabled = false }: CreatePollProps)
                                     <Flex key={field.id} gap='2' align={'start'}>
                                         <div className={'w-full'}>
                                             <TextField.Root>
-                                                <TextField.Input placeholder={`option ${index + 1}`} {...register(`options.${index}.option`, {
+                                                <TextField.Input placeholder={optionPlaceholders[index]} {...register(`options.${index}.option`, {
                                                     required: 'Option is required',
                                                     minLength: {
                                                         value: 1,
@@ -150,27 +165,30 @@ export const CreatePoll = ({ buttonStyle, isDisabled = false }: CreatePollProps)
                                         </div>
                                         <IconButton
                                             mt='2'
-                                            disabled={fields.length === 1}
+                                            disabled={fields.length === 2}
                                             color="red"
                                             aria-label="delete"
                                             variant={'ghost'}
                                             size={'1'}
                                             title="Remove Option"
                                             onClick={() => handleRemoveOption(index)}>
-                                            <BiTrash />
+                                            <BiTrash size={'12'} />
                                         </IconButton>
                                     </Flex>
                                 ))}
 
-                                <Button
-                                    type='button'
-                                    size={'1'}
-                                    variant='ghost'
-                                    style={{ width: 'fit-content' }}
-                                    onClick={handleAddOption}>
-                                    <BiPlus />
-                                    Add Option
-                                </Button>
+                                <Flex justify={'between'} align={'center'}>
+                                    <Button
+                                        type='button'
+                                        size={'1'}
+                                        variant='ghost'
+                                        style={{ width: 'fit-content' }}
+                                        onClick={handleAddOption}>
+                                        <BiPlus size={'14'} />
+                                        Add Option
+                                    </Button>
+                                    <Text size='1' className="text-gray-500">Maximum of 10 options allowed</Text>
+                                </Flex>
                             </Flex>
                         </Box>
 

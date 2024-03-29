@@ -194,6 +194,10 @@ class RavenMessage(Document):
 		)
 
 		self.publish_unread_count_event()
+		
+		# delete poll if the message is of type poll after deleting the message
+		if self.message_type == "Poll":
+			frappe.delete_doc("Raven Poll", self.poll_id)
 
 	def on_update(self):
 		if self.is_edited:
@@ -269,11 +273,7 @@ class RavenMessage(Document):
 	def on_trash(self):
 		# delete all the reactions for the message
 		frappe.db.delete("Raven Message Reaction", {"message": self.name})
-	
-	def after_delete(self):
-		# delete poll if the message is of type poll after deleting the message
-		if self.message_type == "Poll":
-			frappe.delete_doc("Raven Poll", self.poll_id)
+
 
 
 def on_doctype_update():

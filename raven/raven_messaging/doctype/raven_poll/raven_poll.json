@@ -12,7 +12,9 @@
   "section_break_poll_settings",
   "is_anonymous",
   "is_multi_choice",
-  "is_disabled"
+  "is_disabled",
+  "section_break_poll_votes",
+  "total_votes"
  ],
  "fields": [
   {
@@ -61,11 +63,22 @@
    "fieldname": "is_disabled",
    "fieldtype": "Check",
    "label": "Is Disabled"
+  },
+  {
+   "fieldname": "section_break_poll_votes",
+   "fieldtype": "Section Break",
+   "label": "Poll Votes"
+  },
+  {
+   "fieldname": "total_votes",
+   "fieldtype": "Int",
+   "label": "Total Votes",
+   "non_negative": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-03-29 21:44:37.760971",
+ "modified": "2024-03-30 03:50:41.144880",
  "modified_by": "Administrator",
  "module": "Raven Messaging",
  "name": "Raven Poll",

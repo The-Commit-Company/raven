@@ -20,6 +20,7 @@ class RavenPoll(Document):
 		is_multi_choice: DF.Check
 		options: DF.Table[RavenPollOption]
 		question: DF.SmallText
+		total_votes: DF.Int
 	# end: auto-generated types
 
 	def on_trash(self):
