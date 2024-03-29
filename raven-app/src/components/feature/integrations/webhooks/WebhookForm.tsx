@@ -1,6 +1,6 @@
 import React, { useContext } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
-import { Box, Checkbox, Flex, TextFieldInput, Select, TextArea, Heading, Text, } from '@radix-ui/themes';
+import { Box, Checkbox, Flex, TextFieldInput, Select, TextArea, Heading, Text, Code, } from '@radix-ui/themes';
 import { ErrorText, HelperText, Label } from '@/components/common/Form';
 import { WebhookData } from './WebhookReturnDataFieldTable';
 import { WebhookHeaders } from './WebhookHeaders';
@@ -51,7 +51,7 @@ export const WebhookForm = ({ isEdit = false }: { isEdit?: boolean }) => {
                 {errors?.request_url && <ErrorText>{errors.request_url.message}</ErrorText>}
             </Box>
             <Box>
-                <Label htmlFor='timeout' >Request Timeout</Label>
+                <Label htmlFor='timeout'>Request Timeout</Label>
                 <TextFieldInput type='number' {...register('timeout', {
                     valueAsNumber: true,
                 })} />
@@ -79,7 +79,7 @@ export const WebhookForm = ({ isEdit = false }: { isEdit?: boolean }) => {
                 <TextFieldInput type='password' {...register('webhook_secret', {
                     maxLength: {
                         value: 140,
-                        message: "Webhook Secret should not exceed 140 characters"
+                        message: "Webhook secret should not exceed 140 characters"
                     }
                 })} />
                 {errors?.webhook_secret && <ErrorText>{errors.webhook_secret.message}</ErrorText>}
@@ -145,7 +145,7 @@ export const WebhookForm = ({ isEdit = false }: { isEdit?: boolean }) => {
                 {errors?.enable_security && <ErrorText>{errors.enable_security.message}</ErrorText>}
             </Box>
             {needCondition && <Box>
-                <Flex direction={'column'}>
+                <Flex direction={'column'} gap='1'>
                     <Label htmlFor='condition'>Trigger On</Label>
                     <Controller
                         control={control}
@@ -180,24 +180,22 @@ export const WebhookForm = ({ isEdit = false }: { isEdit?: boolean }) => {
                 </Flex>
             </Box>}
             {conditionOn === 'Custom' ? <Box>
-                <Flex direction={'row'} gap={'8'} align={'start'}>
-                    <Flex direction={'column'} style={{
+                <Flex direction={'row'} gap={'4'} align={'center'}>
+                    <Flex direction={'column'} gap='1' style={{
                         width: '60%'
                     }} >
                         <Label htmlFor='condition'>Condition</Label>
                         <TextArea {...register('condition')} rows={4} />
                         <HelperText>The webhook will be triggered if this expression is true</HelperText>
                     </Flex>
-                    <Flex direction='column' align={'start'}>
-                        <Heading as='h3' size='2'>Condition Examples :</Heading>
-                        <Flex direction='column' gap='1' align={'start'}>
-                            <Text size='2'><span>doc.channel_id == 'general'</span></Text>
-                            <Text size='2'><span>doc.is_direct_message == 1</span></Text>
-                        </Flex>
-                    </Flex>
+                    <Code color='gray' size='2' className='p-2'>
+                        <Text weight='bold' size='2' className='block pb-1'>Try something like:</Text>
+                        doc.channel_id == 'general'<br />
+                        doc.is_direct_message == 1
+                    </Code>
                 </Flex>
             </Box> : conditionOn === 'Channel' ? <Box>
-                <Flex direction={'column'}>
+                <Flex direction={'column'} gap='1'>
                     <Label htmlFor='channel_id'>Channel</Label>
                     <Controller
                         control={control}
@@ -220,10 +218,10 @@ export const WebhookForm = ({ isEdit = false }: { isEdit?: boolean }) => {
                             </Select.Root>
                         )}
                     />
-                    <HelperText>Channel ID on which the condition will be applied</HelperText>
+                    <HelperText>Webhook will trigger only if the message is sent on this channel.</HelperText>
                 </Flex>
             </Box> : conditionOn === 'User' ? <Box>
-                <Flex direction={'column'} >
+                <Flex direction={'column'} gap='1' >
                     <Label htmlFor='user_id'>User</Label>
                     <Controller
                         control={control}
@@ -246,10 +244,10 @@ export const WebhookForm = ({ isEdit = false }: { isEdit?: boolean }) => {
                             </Select.Root>
                         )}
                     />
-                    <HelperText>User ID on which the condition will be applied</HelperText>
+                    <HelperText>Condition for webhook - user</HelperText>
                 </Flex>
             </Box> : conditionOn === 'Channel Type' ? <Box>
-                <Flex direction={'column'} >
+                <Flex direction={'column'} gap='1'>
                     <Label htmlFor='channel_type'>Channel Type</Label>
                     <Controller
                         control={control}
@@ -270,14 +268,15 @@ export const WebhookForm = ({ isEdit = false }: { isEdit?: boolean }) => {
                             </Select.Root>
                         )}
                     />
-                    <HelperText>Channel Type on which the condition will be applied</HelperText>
+                    <HelperText>The webhook will trigger if the channel type is equal to the value selected here.</HelperText>
                 </Flex>
-            </Box> : null}
+            </Box> : null
+            }
             <Flex direction={'column'} gap={'4'} py={'2'} >
                 <WebhookData />
                 <WebhookHeaders />
             </Flex>
-        </Flex>
+        </Flex >
     )
 }
 

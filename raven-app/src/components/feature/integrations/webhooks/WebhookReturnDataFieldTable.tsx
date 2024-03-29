@@ -11,7 +11,7 @@ import { DIALOG_CONTENT_CLASS } from "@/utils/layout/dialog";
 import { RavenWebhook } from "@/types/RavenIntegrations/RavenWebhook";
 
 export const WebhookData = () => {
-    const { register, control, watch, setValue, getValues } = useFormContext<RavenWebhook>()
+    const { register, control, watch, setValue } = useFormContext<RavenWebhook>()
 
     const { fields, append, remove } = useFieldArray({
         name: 'webhook_data'
@@ -43,8 +43,8 @@ export const WebhookData = () => {
             <Flex direction='column' gap='2' width='100%'>
                 <Flex direction='row' align='end' justify={'between'}>
                     <Flex direction={'column'} gap='1'>
-                        <Heading size='4'>Response Data</Heading>
-                        <HelperText>The fields you want to return in the webhook response.</HelperText>
+                        <Heading size='4'>Payload</Heading>
+                        <HelperText>Select the fields you want to send in the webhook request.</HelperText>
                     </Flex>
                     <Flex direction={'row'} gap={'4'} align={'center'}>
                         <Dialog.Root open={previewOpen} onOpenChange={setPreviewOpen}>
@@ -228,9 +228,9 @@ export const PreviewModal = ({ onClose }: { onClose: () => void }) => {
         const obj = {}
         if (exampleData) {
             webhookTriggerKeys?.forEach(key => {
-            // @ts-ignore
+                // @ts-ignore
                 obj[key as string] = exampleData?.fields?.find(field => field.field === key)?.value
-        })
+            })
         }
         return JSON.stringify(obj, null, 2)
     }, [examples, webhookData, webhookTrigger])

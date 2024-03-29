@@ -2,9 +2,7 @@ import { Sidebar } from "@/components/layout/Settings/SettingsSidebar"
 import { Flex, Box } from "@radix-ui/themes"
 import { Outlet } from "react-router-dom"
 
-export interface Props { }
-
-export const Settings = (props: Props) => {
+const Settings = () => {
     return (
         <>
             <Flex>
@@ -18,3 +16,5 @@ export const Settings = (props: Props) => {
         </>
     )
 }
+
+export const Component = Settings

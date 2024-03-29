@@ -27,7 +27,7 @@ export const TriggerEvents: TriggerEventField[] = [
     },
     {
         key: 'emoji_reaction',
-        label: 'Message Reactied On',
+        label: 'Message Reacted On',
         doctype: 'Raven Message Reaction',
         event: 'after_insert'
     },
@@ -121,7 +121,7 @@ export const DoctypeFieldList: {
 }[] = [
         {
             doctype: 'Raven Message',
-        events: ['Message Sent', 'Message Edited', 'Message Deleted'],
+            events: ['Message Sent', 'Message Edited', 'Message Deleted'],
             fields: [
                 {
                     fieldname: 'channel_id',

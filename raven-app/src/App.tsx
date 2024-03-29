@@ -9,13 +9,6 @@ import { ThemeProvider } from './ThemeProvider'
 import { Toaster } from './components/common/Toast/Toaster'
 import { FullPageLoader } from './components/layout/Loaders'
 import { useStickyState } from './hooks/useStickyState'
-import { Settings } from './pages/settings/Settings'
-import { CreateWebhook } from './components/feature/integrations/webhooks/CreateWebhook'
-import ViewWebhook from './components/feature/integrations/webhooks/ViewWebhook'
-import { WebhookList } from './components/feature/integrations/webhooks/WebhookList'
-import { TemporalEvents } from './pages/settings/ServerScripts/SchedulerEvents/SchedulerEvents'
-import { CreateSchedulerEvent } from './pages/settings/ServerScripts/SchedulerEvents/CreateSchedulerEvent'
-import { ViewSchedulerEvent } from './pages/settings/ServerScripts/SchedulerEvents/ViewSchedulerEvent'
 
 
 const router = createBrowserRouter(
@@ -31,16 +24,16 @@ const router = createBrowserRouter(
             <Route path="saved-messages" lazy={() => import('./components/feature/saved-messages/SavedMessages')} />
             <Route path=":channelID" lazy={() => import('@/pages/ChatSpace')} />
           </Route>
-          <Route path='settings' element={<Settings />}>
+          {/* <Route path='settings' lazy={() => import('./pages/settings/Settings')}>
             <Route path='integrations'>
-              <Route path='webhooks' element={<WebhookList />} />
-              <Route path='webhooks/create' element={<CreateWebhook />} />
-              <Route path='webhooks/:ID' element={<ViewWebhook />} />
-              <Route path='schedules-messages' element={<TemporalEvents />} />
-              <Route path='schedules-messages/create' element={<CreateSchedulerEvent />} />
-              <Route path='schedules-messages/:ID' element={<ViewSchedulerEvent />} />
+              <Route path='webhooks' lazy={() => import('./pages/settings/Webhooks/WebhookList')} />
+              <Route path='webhooks/create' lazy={() => import('./pages/settings/Webhooks/CreateWebhook')} />
+              <Route path='webhooks/:ID' lazy={() => import('./pages/settings/Webhooks/ViewWebhook')} />
+              <Route path='scheduled-messages' element={<TemporalEvents />} />
+              <Route path='scheduled-messages/create' element={<CreateSchedulerEvent />} />
+              <Route path='scheduled-messages/:ID' element={<ViewSchedulerEvent />} />
             </Route>
-          </Route>
+          </Route> */}
         </Route>
       </Route>
     </>

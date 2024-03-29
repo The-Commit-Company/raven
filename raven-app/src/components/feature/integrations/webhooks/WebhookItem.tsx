@@ -1,68 +1,14 @@
-import { HelperText } from "@/components/common/Form"
 import { Loader } from "@/components/common/Loader"
 import { ErrorBanner } from "@/components/layout/AlertBanner"
-import { FullPageLoader } from "@/components/layout/Loaders"
 import { useToast } from "@/hooks/useToast"
-import { Webhook } from "@/types/Integrations/Webhook"
 import { RavenWebhook } from "@/types/RavenIntegrations/RavenWebhook"
 import { DateMonthYear } from "@/utils/dateConversions"
 import { DIALOG_CONTENT_CLASS } from "@/utils/layout/dialog"
-import { Flex, Separator, Button, Text, Badge, IconButton, AlertDialog } from "@radix-ui/themes"
-import { useFrappeDeleteDoc, useFrappeGetDocList } from "frappe-react-sdk"
+import { Flex, Badge, IconButton, AlertDialog, Text, Button } from "@radix-ui/themes"
+import { useFrappeDeleteDoc } from "frappe-react-sdk"
 import { useState } from "react"
 import { BiEdit, BiTrash } from "react-icons/bi"
-import { Link, useNavigate } from "react-router-dom"
-
-export const WebhookList = () => {
-
-    const { data, error, isLoading, mutate } = useFrappeGetDocList<RavenWebhook>('Raven Webhook', {
-        fields: ['name', 'request_url', 'enabled', 'owner', 'creation']
-    })
-
-    const navigate = useNavigate()
-
-    return (
-        <Flex direction='column' gap='4' py='4' width={'100%'} height={'100%'} style={{
-            alignItems: 'center',
-            justifyContent: 'start',
-            minHeight: '100vh'
-        }}>
-            <Flex direction='column' gap='4' pt={'4'} width='100%' style={{
-                maxWidth: '700px'
-            }} >
-                <Flex direction='column' gap='4' width='100%' px={'2'}>
-                    <Flex direction={'column'} gap={'2'} >
-                        <header>
-                            <Text size='6' weight='bold'>Webhook</Text>
-                        </header>
-                        <HelperText>Webhooks allow you to receive HTTP requests whenever an entity is created, updated, or deleted.
-                        </HelperText>
-                        <HelperText>
-                            eg. User can create Webhook on Message Send, Delete, Edit.</HelperText>
-                    </Flex>
-                    <Separator size='4' className={`bg-gray-4 dark:bg-gray-6`} />
-                    <ErrorBanner error={error} />
-                    {isLoading && <FullPageLoader />}
-                    {data?.length === 0 ? <Text size='2'>No webhooks found. Create new webhook by &nbsp;
-                        <Link to={'./create'} style={{
-                            textDecoration: 'underline'
-                        }}>click here</Link>.
-                    </Text> : <Flex direction='column' gap='4' width='100%'>
-                        {data?.map((webhook, index) => (
-                            <WebhookItem key={index} webhook={webhook} mutate={mutate} />
-                        ))}
-                    </Flex>}
-                    <Button onClick={() => navigate('./create')} variant='solid' style={{
-                        width: 'fit-content',
-                        marginTop: '1rem'
-                    }} >
-                        New Webhook
-                    </Button>
-                </Flex>
-            </Flex>
-        </Flex>
-    )
-}
+import { useNavigate } from "react-router-dom"
 
 export const WebhookItem = ({ webhook, mutate }: { webhook: RavenWebhook, mutate: () => void }) => {
 
@@ -129,7 +75,7 @@ export const WebhookItem = ({ webhook, mutate }: { webhook: RavenWebhook, mutate
     )
 }
 
-export const DeleteWebhookAlertContent = ({ webhhookID, onClose, mutate }: { webhhookID: string, onClose: () => void, mutate: () => void }) => {
+const DeleteWebhookAlertContent = ({ webhhookID, onClose, mutate }: { webhhookID: string, onClose: () => void, mutate: () => void }) => {
 
     const { deleteDoc, error, loading } = useFrappeDeleteDoc()
 

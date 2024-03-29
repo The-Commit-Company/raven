@@ -3,13 +3,13 @@ import { useFrappeCreateDoc } from 'frappe-react-sdk'
 import { FormProvider, useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router-dom'
 import { Button, Flex, Separator, Text } from '@radix-ui/themes'
-import { BiChevronLeft } from 'react-icons/bi'
 import { ErrorBanner } from '@/components/layout/AlertBanner'
-import { WebhookForm } from './WebhookForm'
+import { WebhookForm } from '../../../components/feature/integrations/webhooks/WebhookForm'
 import { useToast } from '@/hooks/useToast'
 import { RavenWebhook } from '@/types/RavenIntegrations/RavenWebhook'
+import { BackToList } from '@/components/feature/integrations/webhooks/BackToList'
 
-export const CreateWebhook = () => {
+const CreateWebhook = () => {
 
     const navigate = useNavigate()
 
@@ -71,21 +71,4 @@ export const CreateWebhook = () => {
     )
 }
 
-export const BackToList = () => {
-
-    const navigate = useNavigate()
-
-    return (
-        <header>
-            <Flex
-                align='center'
-                gap={'1'}
-                className="cursor-pointer"
-                onClick={() => navigate('/settings/integrations/webhooks')}
-            >
-                <BiChevronLeft size={'18px'} color="gray" />
-                <Text as='span' size='1' weight={'medium'}>Back to the list</Text>
-            </Flex>
-        </header>
-    )
-}
+export const Component = CreateWebhook

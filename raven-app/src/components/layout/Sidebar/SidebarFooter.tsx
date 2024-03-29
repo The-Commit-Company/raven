@@ -48,20 +48,15 @@ export const SidebarFooter = ({ isSettingsPage = false }: { isSettingsPage?: boo
                                 <DropdownMenu.Separator />
                             }
                             <DropdownMenu.Item color='gray' className='group'>
-                                <Link href="/app" className='no-underline'>
-                                    Desk Interface
-                                </Link>
-                            </DropdownMenu.Item>
-                            <DropdownMenu.Item color='gray' className='group'>
                                 <Link href="/raven_mobile" className='no-underline'>
                                     Mobile App
                                 </Link>
                             </DropdownMenu.Item>
-                            {!isSettingsPage && <DropdownMenu.Item color='gray' className='group'>
-                                <Link href="../settings" className='no-underline'>
+                            {/* {!isSettingsPage && canAddUsers && <DropdownMenu.Item color='gray' className='focus-visible:ring-0 focus-visible:outline-none rounded-radius2' asChild>
+                                <Link href="../settings/integrations/webhooks" className='no-underline'>
                                     Settings
                                 </Link>
-                            </DropdownMenu.Item>}
+                            </DropdownMenu.Item>} */}
                             <DropdownMenu.Item onClick={logout} color='red' className='cursor-pointer'>
                                 Log Out
                             </DropdownMenu.Item>

@@ -1,38 +1,16 @@
 import { ErrorBanner } from "@/components/layout/AlertBanner"
-import { FullPageLoader } from "@/components/layout/Loaders"
-import { AlertDialog, Badge, Box, Button, DropdownMenu, Flex, IconButton, Separator, Text } from "@radix-ui/themes"
-import { FrappeDoc, useFrappeGetDoc, useFrappeUpdateDoc } from "frappe-react-sdk"
+import { AlertDialog, Badge, Button, DropdownMenu, Flex, IconButton, Separator, Text } from "@radix-ui/themes"
+import { FrappeDoc, useFrappeUpdateDoc } from "frappe-react-sdk"
 import { FieldValues, FormProvider, useForm } from "react-hook-form"
-import { useParams } from "react-router-dom"
 import { KeyedMutator } from 'swr'
-import { BackToList } from "./CreateWebhook"
-import { WebhookForm } from "./WebhookForm"
 import { useToast } from "@/hooks/useToast"
 import { BiDotsVerticalRounded } from "react-icons/bi"
 import { useState } from "react"
 import { DIALOG_CONTENT_CLASS } from "@/utils/layout/dialog"
 import { Loader } from "@/components/common/Loader"
 import { RavenWebhook } from "@/types/RavenIntegrations/RavenWebhook"
-
-const ViewWebhook = () => {
-
-    const { ID } = useParams<{ ID: string }>()
-    const { data, error, isLoading, mutate } = useFrappeGetDoc<RavenWebhook>('Raven Webhook', ID, undefined, {
-        shouldRetryOnError: false,
-    })
-
-    return (
-        <Box className='p-4'>
-            {isLoading && <FullPageLoader />}
-            {error && <ErrorBanner error={error} />}
-            {data && <ViewWebhookPage data={data} mutate={mutate} />}
-
-        </Box>
-    )
-}
-
-export default ViewWebhook
-ViewWebhook.displayName = 'ViewWebhook'
+import { BackToList } from "./BackToList"
+import { WebhookForm } from "./WebhookForm"
 
 export const ViewWebhookPage = ({ data, mutate }: { data: FrappeDoc<RavenWebhook>, mutate: KeyedMutator<FrappeDoc<RavenWebhook>> }) => {
 

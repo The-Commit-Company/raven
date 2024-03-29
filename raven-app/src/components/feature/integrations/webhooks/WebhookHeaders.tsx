@@ -19,7 +19,7 @@ export const WebhookHeaders = () => {
                 <Flex direction='row' align='end' justify={'between'}>
                     <Flex direction={'column'} gap='1'>
                         <Heading size='4'>Headers</Heading>
-                        <HelperText>The headers will be sent with the request. You can add multiple headers.</HelperText>
+                        <HelperText>Add the headers that you want to send with the request.</HelperText>
                     </Flex>
                     <Button size={'1'} type="button" onClick={() => append({ fieldname: '', key: '' })} variant="outline" style={{
                         width: 'fit-content',
