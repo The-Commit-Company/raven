@@ -2,11 +2,11 @@
     <div class="message-header"
         style="align-items: flex-start; margin-bottom: 10px; display: flex; flex-direction: column;">
         <div class="actions" style="flex-shrink: 0; display: flex; align-items: center; padding-bottom: 4px; padding-left: 2px;">
-            
+
             {% if (is_direct_message) { %}
             <span style="font-weight: 500; font-size: 12px;">Direct Message with &nbsp;</span>
             {% } %}
-            
+
             <a class="action-btn" href="/raven/channel/{{channel_id}}" title="Open {{ channel_name }}" target="_blank"
                 style="text-decoration: underline; font-weight: 500; font-size: 12px; margin: 0;">
                 {% if (is_direct_message) { %}

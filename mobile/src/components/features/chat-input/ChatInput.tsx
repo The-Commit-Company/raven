@@ -5,24 +5,30 @@ import { documentAttachOutline } from 'ionicons/icons';
 import { FileUploadModal } from './FileUploadModal';
 import { Tiptap } from './Tiptap';
 import { AiOutlinePaperClip } from 'react-icons/ai';
+import { Haptics, ImpactStyle } from '@capacitor/haptics';
 
 type Props = {
     channelID: string,
     allMembers: { id: string; value: string }[],
     allChannels: { id: string; value: string; }[],
-    onMessageSend: () => void,
 }
-export const ChatInput = ({ channelID, allChannels, allMembers, onMessageSend }: Props) => {
+export const ChatInput = ({ channelID, allChannels, allMembers }: Props) => {
 
     const { call, loading } = useFrappePostCall('raven.api.raven_message.send_message')
 
     const [files, setFiles] = useState<File[]>([])
 
+    const onMessageSend = useCallback(() => {
+        Haptics.impact({
+            style: ImpactStyle.Light
+        })
+    }, [])
+
     const onSubmit = async (message: string, json: any) => {
         return call({
             channel_id: channelID,
             text: message,
-            json,
+            json_content: json,
             is_reply: 0,
             linked_message: null,
         }).then(() => {

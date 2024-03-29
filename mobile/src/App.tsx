@@ -29,6 +29,8 @@ import { UserListProvider } from './utils/users/UserListProvider';
 import { ActiveUsersProvider } from './utils/users/ActiveUsersProvider';
 import { createAnimation, iosTransitionAnimation } from '@ionic/core';
 import { isPlatform } from '@ionic/react';
+import { useEffect } from 'react';
+import { showNotification } from './utils/pushNotifications';
 
 const animationBuilder: AnimationBuilder = (baseEl, opts) => {
   if (opts.direction === "back") {
@@ -56,6 +58,7 @@ function App() {
     return import.meta.env.VITE_SITE_NAME
 
   }
+
   return (
     <IonApp>
       <FrappeProvider

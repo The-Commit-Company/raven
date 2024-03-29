@@ -6,8 +6,9 @@ import { useCurrentChannelData } from "@/hooks/useCurrentChannelData"
 import { ChannelMembersProvider } from "@/utils/channel/ChannelMembersProvider"
 import { useEffect } from "react"
 import { Box } from '@radix-ui/themes'
-import { useParams } from "react-router-dom"
+import { useLocation, useParams } from "react-router-dom"
 import { useSWRConfig } from "frappe-react-sdk"
+import { UnreadChannelCountItem, UnreadCountData } from "@/utils/channel/ChannelListProvider"
 
 const ChatSpace = () => {
 
@@ -15,9 +16,9 @@ const ChatSpace = () => {
     const { channelID } = useParams<{ channelID: string }>()
     // const className = 'bg-white dark:from-accent-1 dark:to-95% dark:to-accent-2 dark:bg-gradient-to-b'
 
-    return <Box>
+    return <div className="scroll-smooth">
         {channelID && <ChatSpaceArea channelID={channelID} />}
-    </Box>
+    </div>
 
 }
 
@@ -28,23 +29,70 @@ const ChatSpaceArea = ({ channelID }: { channelID: string }) => {
     const { channel, error, isLoading } = useCurrentChannelData(channelID)
     const { mutate, cache } = useSWRConfig()
 
+    const { state } = useLocation()
+
     useEffect(() => {
-        
+
         // setting last visited channel in local storage
         localStorage.setItem("ravenLastChannel", channelID)
 
-        //If the cached value of unread message count is 0, then no need to update it
-        const channels = cache.get('unread_channel_count')?.data?.message?.channels
-        if (channels) {
-            const cached_channel = channels.find((channel: any) => channel.name === channelID)
-            if (cached_channel && cached_channel.unread_count === 0) {
-            } else {
-                mutate('unread_channel_count')
+        const unread_count = cache.get('unread_channel_count')
+
+        // If unread count is present
+        if (unread_count?.data) {
+            // If the user entered the channel without a base message
+            if (!state?.baseMessage) {
+                // Mutate the unread channel count to set the unread count of the current channel to 0
+                //@ts-ignore
+                mutate('unread_channel_count', (d: { message: UnreadCountData } | undefined) => {
+                    if (d) {
+                        const newChannels: UnreadChannelCountItem[] = d.message.channels.map(c => {
+                            if (c.name === channelID)
+                                return {
+                                    ...c,
+                                    unread_count: 0
+                                }
+                            return c
+                        })
+
+                        const total_unread_count_in_channels = newChannels.reduce((acc: number, c) => {
+                            if (!c.user_id) {
+                                return acc + c.unread_count
+                            } else {
+                                return acc
+                            }
+                        }, 0)
+
+                        const total_unread_count_in_dms = newChannels.reduce((acc: number, c) => {
+                            if (c.user_id) {
+                                return acc + c.unread_count
+                            } else {
+                                return acc
+                            }
+                        }, 0)
+
+
+                        return {
+                            message: {
+                                ...d.message,
+                                channels: newChannels,
+                                total_unread_count_in_channels,
+                                total_unread_count_in_dms
+                            }
+                        }
+                    }
+                    else {
+                        return d
+                    }
+
+
+                }, {
+                    revalidate: false
+                })
             }
-        } else {
-            mutate('unread_channel_count')
         }
-    }, [channelID])
+
+    }, [channelID, state?.baseMessage])
 
     return <Box>
         {isLoading && <FullPageLoader />}

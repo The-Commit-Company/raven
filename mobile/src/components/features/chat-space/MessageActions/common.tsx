@@ -1,9 +1,9 @@
 import { IonIcon, IonItem, IonLabel, IonSpinner } from '@ionic/react'
 import React, { PropsWithChildren } from 'react'
-import { MessageBlock } from '../../../../../../types/Messaging/Message'
+import { Message } from '../../../../../../types/Messaging/Message'
 
 export interface ActionProps {
-    message: MessageBlock,
+    message: Message,
     onSuccess: () => void,
 }
 interface ActionItemProps {
