@@ -24,12 +24,32 @@ class RavenBot(Document):
 		raven_user: DF.Link | None
 	# end: auto-generated types
 
-	# TODO: Developer integration
-	# def on_update(self):
-	#     if frappe.conf.developer_mode and self.is_standard:
-	#         export_to_files(
-	#             record_list=[["Raven Bot", self.name]], record_module=self.module
-	#         )
+	def on_update(self):
+		"""
+		When a bot is updated, create/update the Raven User for it
+
+		TODO: Generate JSON files when a Standard Bot is created or updated
+		"""
+		if self.raven_user:
+			raven_user = frappe.get_doc("Raven User", self.raven_user)
+			raven_user.type = "Bot"
+			raven_user.bot = self.name
+			raven_user.full_name = self.bot_name
+			raven_user.first_name = self.bot_name
+			raven_user.user_image = self.image
+			raven_user.enabled = self.enabled
+			raven_user.save()
+		else:
+			raven_user = frappe.new_doc("Raven User")
+			raven_user.type = "Bot"
+			raven_user.bot = self.name
+			raven_user.full_name = self.bot_name
+			raven_user.first_name = self.bot_name
+			raven_user.user_image = self.image
+			raven_user.enabled = self.enabled
+			raven_user.save()
+
+			self.db_set("raven_user", raven_user.name)
 
 	def is_member(self, channel_id: str) -> None | str:
 		"""
