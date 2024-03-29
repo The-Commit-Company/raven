@@ -294,27 +294,40 @@ export const Tiptap = ({ onMessageSend, messageSending, defaultText = '', onPick
     }
 
     return (
-        <div className='flex justify-between items-end content-start overflow-visible space-x-2 w-full'>
-            <div className='w-full flex items-end rounded-md border border-foreground/10 text-md overflow-hidden py-1'>
-                <div className='flex-grow focus:outline-none'>
-                    <EditorContent editor={editor} />
+        <div className="flex flex-col">
+            <div className='rounded-md border border-foreground/10 text-md overflow-hidden py-1 px-1'>
+                <div className="flex items-end">
+                    <div className="flex-grow min-w-0 mr-2">
+                        <EditorContent editor={editor} className="break-words max-w-full" />
+                    </div>
+                    <div className="flex-shrink-0">
+                        <input
+                            multiple
+                            type="file"
+                            hidden
+                            ref={fileRef}
+                            onChange={onGetFiles}
+                        />
+                        {
+                            isEditorEmpty ? <IconButton
+                            size="md"
+                            icon={AiOutlinePaperClip}
+                            onClick={onPickFiles}
+                            variant="ghost"
+                            className="text-foreground/80 active:bg-accent"
+                            /> :
+                            <IconButton
+                                size="md"
+                                icon={BiSend}
+                                onClick={onSubmit}
+                                variant="default"
+                                className='disabled:opacity-30 disabled:cursor-not-allowed'
+                                disabled={messageSending}
+                                aria-disabled={messageSending}
+                            />
+                        }    
+                    </div>
                 </div>
-                <div className="flex items-center px-1">
-                    <input multiple type='file' hidden ref={fileRef} onChange={onGetFiles} />
-                    <IconButton size="md" icon={AiOutlinePaperClip} onClick={onPickFiles} variant="ghost" className='text-foreground/80 active:bg-accent'/>
-                </div>
-            </div>
-            <div className='flex items-center py-1'>
-                <IconButton
-                    className='disabled:opacity-30 disabled:cursor-not-allowed'
-                    aria-disabled={messageSending || isEditorEmpty}
-                    disabled={messageSending || isEditorEmpty}
-                    onClick={onSubmit}
-                    icon={BiSend}
-                    size="md"
-                    variant="default"
-                >
-                </IconButton>
             </div>
         </div>
 
