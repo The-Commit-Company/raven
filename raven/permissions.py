@@ -117,7 +117,7 @@ def raven_poll_has_permission(doc, user=None, ptype=None):
 			elif user == "Administrator":
 				return True
 			else:
-				if ptype == "read":
+				if ptype in ["read", "create"]:
 					return True
 
 	return False

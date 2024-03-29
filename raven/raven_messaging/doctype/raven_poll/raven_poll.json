@@ -65,7 +65,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-03-22 20:06:00.593543",
+ "modified": "2024-03-29 21:44:37.760971",
  "modified_by": "Administrator",
  "module": "Raven Messaging",
  "name": "Raven Poll",
@@ -91,6 +91,7 @@
    "role": "Raven User"
   },
   {
+   "create": 1,
    "read": 1,
    "role": "Raven User"
   }

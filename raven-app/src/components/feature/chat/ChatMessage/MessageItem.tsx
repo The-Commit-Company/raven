@@ -12,6 +12,7 @@ import { BsFillCircleFill } from 'react-icons/bs'
 import { MessageReactions } from './MessageReactions'
 import { ImageMessageBlock } from './Renderers/ImageMessage'
 import { FileMessageBlock } from './Renderers/FileMessage'
+import { PollMessageBlock } from './Renderers/PollMessage'
 import { TiptapRenderer } from './Renderers/TiptapRenderer/TiptapRenderer'
 import { QuickActions } from './MessageActions/QuickActions/QuickActions'
 import { memo, useMemo, useState } from 'react'
@@ -229,5 +230,6 @@ export const MessageContent = ({ message, user, ...props }: MessageContentProps)
         }} user={user} /> : null}
         {message.message_type === 'Image' && <ImageMessageBlock message={message} user={user} />}
         {message.message_type === 'File' && <FileMessageBlock message={message} user={user} />}
+        {message.message_type === 'Poll' && <PollMessageBlock message={message} user={user} />}
     </Box>
 }

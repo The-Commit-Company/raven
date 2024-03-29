@@ -1,4 +1,4 @@
-export type Message = FileMessage | TextMessage | ImageMessage
+export type Message = FileMessage | TextMessage | ImageMessage | PollMessage
 
 export interface BaseMessage {
     name: string,
@@ -39,6 +39,12 @@ export interface TextMessage extends BaseMessage {
     text: string,
     message_type: 'Text',
     content?: string
+}
+
+export interface PollMessage extends BaseMessage {
+    text: string,
+    message_type: 'Poll',
+    poll_id: string,
 }
 
 export type DateBlock = {

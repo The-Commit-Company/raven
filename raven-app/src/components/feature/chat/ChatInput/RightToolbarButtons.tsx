@@ -5,6 +5,7 @@ import { ToolbarFileProps } from './Tiptap'
 import { Flex, IconButton, Inset, Popover, Separator } from '@radix-ui/themes'
 import { Loader } from '@/components/common/Loader'
 import { Suspense, lazy } from 'react'
+import { CreatePoll } from '../../polls/CreatePoll'
 
 const EmojiPicker = lazy(() => import('@/components/common/EmojiPicker/EmojiPicker'))
 
@@ -28,6 +29,7 @@ export const RightToolbarButtons = ({ fileProps, ...sendProps }: RightToolbarBut
     return (
         <Flex gap='2' align='center' px='1' py='1'>
             <MentionButtons />
+            <CreatePollButton />
             <Separator orientation='vertical' />
             <Flex gap='3' align='center'>
                 <EmojiPickerButton />
@@ -174,4 +176,12 @@ const SendButton = ({ sendMessage, messageSending, setContent }: {
             <BiSolidSend {...ICON_PROPS} />
         }
     </IconButton>
+}
+
+const CreatePollButton = () => {
+    const { editor } = useCurrentEditor()
+
+    return <CreatePoll
+        buttonStyle={DEFAULT_BUTTON_STYLE}
+        isDisabled={editor?.isEditable === false} />
 }
