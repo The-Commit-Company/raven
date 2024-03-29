@@ -99,7 +99,7 @@ export const ChatInterface = ({ channel }: { channel: ChannelListItem | DMChanne
         return []
     }, [channelMembers])
 
-    const checkIsOpenChannel = () => (channel.type !== 'Open' && !channel.is_direct_message)
+    const checkIsNotOpenChannel = () => (channel.type !== 'Open' && !channel.is_direct_message)
 
     return (
         <>
@@ -107,21 +107,22 @@ export const ChatInterface = ({ channel }: { channel: ChannelListItem | DMChanne
                 <div className='px-2 py-2 inset-x-0 top-0 overflow-hidden min-h-5 bg-background border-b-foreground/10 border-b'>
                     <div className='flex gap-2 items-center'>
                         <div className='flex items-center'>
-                            <IonBackButton color="dark" text="" className='back-button'/>
+                            <IonBackButton color="dark" text="" className='back-button' />
                         </div>
                         <div className='flex items-center justify-between gap-2 w-full'>
                             <div className='grow p-1'>
                                 {
-                                    checkIsOpenChannel() ? 
-                                    <ChatHeader channel={channel} /> :
+                                    checkIsNotOpenChannel() ? 
                                     <Link to={`${channel.name}/channel-settings`}>
                                         <ChatHeader channel={channel} />
-                                    </Link>
+                                    </Link> :
+                                    <ChatHeader channel={channel} />
+
                                 }
                             </div>
                             {/* TO-DO: Add Other optional buttons here later */}
                             <div hidden aria-hidden>
-                                <IconButton variant="ghost" icon={BsThreeDotsVertical} className='active:bg-accent'/>
+                                <IconButton variant="ghost" icon={BsThreeDotsVertical} className='active:bg-accent' />
                             </div>
                         </div>
                     </div>
