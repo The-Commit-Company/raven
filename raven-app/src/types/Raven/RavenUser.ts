@@ -17,7 +17,7 @@ export interface RavenUser{
 	/**	Bot : Link - Raven Bot	*/
 	bot?: string
 	/**	Full Name : Data	*/
-	full_name?: string
+	full_name: string
 	/**	First Name : Data	*/
 	first_name?: string
 	/**	User Image : Attach Image	*/

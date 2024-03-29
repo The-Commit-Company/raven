@@ -15,10 +15,12 @@ class RavenUser(Document):
 	if TYPE_CHECKING:
 		from frappe.types import DF
 
+		bot: DF.Link | None
 		enabled: DF.Check
 		first_name: DF.Data | None
-		full_name: DF.Data
-		user: DF.Link
+		full_name: DF.Data | None
+		type: DF.Literal["User", "Bot"]
+		user: DF.Link | None
 		user_image: DF.AttachImage | None
 	# end: auto-generated types
 
@@ -29,6 +31,8 @@ class RavenUser(Document):
 			self.name = self.user
 
 	def before_validate(self):
+		if self.user:
+			self.type = "User"
 		if not self.full_name:
 			self.full_name = self.first_name
 
