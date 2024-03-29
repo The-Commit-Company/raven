@@ -15,7 +15,7 @@ export const ViewChannelMembersButton = ({ pageRef, channelID }: ViewChannelMemb
         <>
             <div>
                 <Button variant="link" onClick={() => setIsOpen(true)}>
-                    <span className="text-xs">See all</span>
+                    <span className="text-xs text-link">See all</span>
                 </Button>
             </div>
             <ViewChannelMembers
