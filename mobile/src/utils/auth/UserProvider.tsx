@@ -28,15 +28,19 @@ export const UserProvider: FC<PropsWithChildren> = ({ children }) => {
     const isLoggedIn = currentUser !== undefined && currentUser !== null && currentUser !== "Guest"
 
     const handleLogout = async () => {
-        return logout()
-            .then(() => {
-                //Clear cache on logout
-                return mutate(() => true, undefined, false)
-            })
-            .then(() => {
-                // @ts-expect-error
-                window.frappePushNotification?.disableNotification()
-            })
+        // @ts-expect-error
+        window.frappePushNotification?.disableNotification()
+        .then(() => logout())
+        .then(() => {
+            //Clear cache on logout
+            return mutate((key) => {
+                if (key === 'raven.api.login.get_context'){
+                    return false
+                }
+                return true
+            }, undefined, false)
+        })
+          
     }
 
     const handleLogin = async (username: string, password: string) => {

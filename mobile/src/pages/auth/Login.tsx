@@ -24,12 +24,8 @@ export const Login = (props: ActiveScreenProps) => {
     })
     // GET call for Login Context (settings for social logins, email link etc)
     const { data: loginContext, mutate } = useFrappeGetCall<AuthContext>('raven.api.login.get_context', {
-        "redirect-to": "/raven"
-    }, 'raven.api.login.get_context', {
-        revalidateIfStale: false,
-        revalidateOnReconnect: false,
-        revalidateOnFocus: false
-    })
+        "redirect-to": "/raven_mobile"
+    }, 'raven.api.login.get_context')
     const [error, setError] = useState<FrappeError | null>(null)
 
     const { login } = useFrappeAuth()
@@ -57,6 +53,8 @@ export const Login = (props: ActiveScreenProps) => {
             }).catch((error) => { setError(error) })
         }
     }
+
+    console.log(loginContext)
 
     return (
         <>
