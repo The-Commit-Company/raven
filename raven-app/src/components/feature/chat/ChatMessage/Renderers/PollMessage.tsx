@@ -27,7 +27,7 @@ export const PollMessageBlock = memo(({ message, user, ...props }: PollMessageBl
 
 const PollMessageBox = ({ data }: { data: RavenPoll }) => {
     return (
-        <Flex align='center' gap='4' p='2' className="bg-gray-2 dark:bg-gray-3 rounded-md">
+        <Flex align='center' gap='4' p='2' className="bg-gray-2 dark:bg-gray-4 rounded-md">
             <Flex direction='column' gap='2' p='2'>
                 <Text size='3' weight={'medium'}>{data.question}</Text>
                 <RadioGroup.Root>

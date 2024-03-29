@@ -101,24 +101,18 @@ def raven_poll_has_permission(doc, user=None, ptype=None):
 		user = frappe.session.user
 	
 	"""
-		Check if user has access to the channel where the poll message is posted
 		Allowed users can create a poll and read polls. 
 		Only the poll creator can delete the poll
 	"""
 
-	raven_message = frappe.get_all("Raven Message", filters={"poll_id": doc.name}, fields=["channel_id"])
-	if raven_message:
-		channel_id = raven_message[0].channel_id
-		channel_has_permission(frappe.get_doc("Raven Channel", channel_id), user, ptype)
-
-		if ptype in ["read", "create", "delete"]:
-			if doc.owner == user:
+	if ptype in ["read", "create", "delete"]:
+		if doc.owner == user:
+			return True
+		elif user == "Administrator":
+			return True
+		else:
+			if ptype in ["read", "create"]:
 				return True
-			elif user == "Administrator":
-				return True
-			else:
-				if ptype in ["read", "create"]:
-					return True
 
 	return False
 

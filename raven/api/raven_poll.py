@@ -2,6 +2,50 @@ import frappe
 
 from raven.api.raven_message import check_permission
 
+@frappe.whitelist(methods=["POST"])
+def create_poll(channel_id: str, question: str, options:any, is_multi_choice:bool = None, is_anonymous:bool=None) -> str:
+	"""
+	Create a new poll in the Raven Poll doctype.
+	"""
+	# Check if the current user has access to the channel to create a poll.
+	check_permission(channel_id)
+
+	poll = frappe.get_doc(
+		{
+			"doctype": "Raven Poll",
+			"question": question,
+			"is_multi_choice": is_multi_choice,
+			"is_anonymous": is_anonymous,
+			"channel_id": channel_id,
+		}
+	)
+
+	for option in options:
+		poll.append('options', option)
+
+	poll.insert()
+
+	# Poll message content is the poll question and options separated by a newline. (This would help with the searchability of the poll)
+	poll_message_content = f"{question}\n"
+
+	for option in options:
+		poll_message_content += f" {option['option']}\n"
+
+	# Send a message to the channel with type "poll" and the poll_id.
+	message = frappe.get_doc(
+				{
+					"doctype": "Raven Message",
+					"channel_id": channel_id,
+					"text": '',
+					"content": poll_message_content,
+					"message_type": "Poll",
+					"poll_id": poll.name,
+				}
+			)
+	message.insert()
+
+	return poll.name
+
 
 @frappe.whitelist()
 def get_poll(poll_id, channel_id):

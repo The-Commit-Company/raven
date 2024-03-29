@@ -269,7 +269,9 @@ class RavenMessage(Document):
 	def on_trash(self):
 		# delete all the reactions for the message
 		frappe.db.delete("Raven Message Reaction", {"message": self.name})
-		# delete poll if the message is of type poll
+	
+	def after_delete(self):
+		# delete poll if the message is of type poll after deleting the message
 		if self.message_type == "Poll":
 			frappe.delete_doc("Raven Poll", self.poll_id)
 

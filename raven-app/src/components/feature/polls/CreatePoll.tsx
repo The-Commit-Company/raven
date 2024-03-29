@@ -4,10 +4,12 @@ import { useToast } from "@/hooks/useToast"
 import { RavenPoll } from "@/types/RavenMessaging/RavenPoll"
 import { DIALOG_CONTENT_CLASS } from "@/utils/layout/dialog"
 import { Button, Checkbox, Dialog, Flex, IconButton, TextArea, TextField, Text, Box } from "@radix-ui/themes"
-import { useFrappeCreateDoc } from "frappe-react-sdk"
+import { useFrappePostCall } from "frappe-react-sdk"
 import { useState } from "react"
 import { Controller, FormProvider, useFieldArray, useForm } from "react-hook-form"
-import { BiPlus, BiPoll, BiTrash } from "react-icons/bi"
+import { BiPlus, BiTrash } from "react-icons/bi"
+import { MdOutlineBarChart } from "react-icons/md"
+import { useParams } from "react-router-dom"
 
 interface CreatePollProps {
     buttonStyle?: string,
@@ -17,6 +19,7 @@ interface CreatePollProps {
 export const CreatePoll = ({ buttonStyle, isDisabled = false }: CreatePollProps) => {
 
     const methods = useForm<RavenPoll>({
+        // Initialize the form with an option field by default
         defaultValues: {
             options: [{
                 name: '',
@@ -30,19 +33,14 @@ export const CreatePoll = ({ buttonStyle, isDisabled = false }: CreatePollProps)
         }
     })
 
-    const { register, handleSubmit, formState: { errors }, control, setValue, reset: resetForm } = methods
-
-    const { createDoc, error, loading, reset: resetCreateHook } = useFrappeCreateDoc()
+    const { register, handleSubmit, formState: { errors }, control, reset: resetForm } = methods
     const [isOpen, setIsOpen] = useState(false)
-
     const { toast } = useToast()
 
     const { fields, remove, append } = useFieldArray({
         control: control,
         name: 'options'
     })
-
-    // Initialize the form with an option field by default
 
     const handleAddOption = () => {
         append({
@@ -65,7 +63,6 @@ export const CreatePoll = ({ buttonStyle, isDisabled = false }: CreatePollProps)
     }
 
     const reset = () => {
-        resetCreateHook()
         resetForm()
     }
 
@@ -79,21 +76,25 @@ export const CreatePoll = ({ buttonStyle, isDisabled = false }: CreatePollProps)
         reset()
     }
 
-    const handleChecked = (name: 'is_multi_choice' | 'is_anonymous', value: 0 | 1 | undefined) => {
-        setValue(name, value)
-    }
+    const { call: createPoll, error } = useFrappePostCall('raven.api.raven_poll.create_poll')
+    const { channelID } = useParams<{ channelID: string }>()
 
     const onSubmit = (data: RavenPoll) => {
-        console.log(data)
-        createDoc('Raven Poll', data).then(result => {
-            if (result) {
-                toast({
-                    title: "Poll Created",
-                    variant: "success",
-                    duration: 1000,
-                })
-                onClose()
-            }
+        return createPoll({
+            ...data,
+            "channel_id": channelID
+        }).then(() => {
+            toast({
+                title: "Poll created successfully",
+                variant: 'success',
+            })
+            onClose()
+        }).catch((err) => {
+            toast({
+                title: "Error creating poll",
+                description: err.message,
+                variant: "destructive",
+            })
         })
     }
 
@@ -106,7 +107,7 @@ export const CreatePoll = ({ buttonStyle, isDisabled = false }: CreatePollProps)
                 disabled={isDisabled}
                 title='Create Poll'
                 aria-label={"create poll"}>
-                <BiPoll />
+                <MdOutlineBarChart />
             </IconButton>
         </Dialog.Trigger>
         <Dialog.Content className={DIALOG_CONTENT_CLASS}>
@@ -119,6 +120,7 @@ export const CreatePoll = ({ buttonStyle, isDisabled = false }: CreatePollProps)
             <FormProvider {...methods}>
                 <form onSubmit={handleSubmit(onSubmit)}>
                     <Flex direction='column' gap='4' py='2'>
+
                         <ErrorBanner error={error} />
 
                         <Box>
@@ -161,6 +163,7 @@ export const CreatePoll = ({ buttonStyle, isDisabled = false }: CreatePollProps)
                                 ))}
 
                                 <Button
+                                    type='button'
                                     size={'1'}
                                     variant='ghost'
                                     style={{ width: 'fit-content' }}
@@ -179,10 +182,10 @@ export const CreatePoll = ({ buttonStyle, isDisabled = false }: CreatePollProps)
                                         <Controller
                                             name={'is_multi_choice'}
                                             control={control}
-                                            render={({ field }) => (
+                                            render={({ field: { onChange, ...f } }) => (
                                                 <Checkbox
-                                                    {...field}
-                                                    onCheckedChange={() => handleChecked('is_multi_choice', 1)} />
+                                                    {...f}
+                                                    onCheckedChange={(v) => onChange(v ? 1 : 0)} />
                                             )}
                                         />
                                         Allow users to select multiple options
@@ -194,10 +197,10 @@ export const CreatePoll = ({ buttonStyle, isDisabled = false }: CreatePollProps)
                                         <Controller
                                             name='is_anonymous'
                                             control={control}
-                                            render={({ field }) => (
+                                            render={({ field: { onChange, ...f } }) => (
                                                 <Checkbox
-                                                    {...field}
-                                                    onCheckedChange={() => handleChecked('is_anonymous', 1)} />
+                                                    {...f}
+                                                    onCheckedChange={(v) => onChange(v ? 1 : 0)} />
                                             )}
                                         />
                                         Make this poll anonymous

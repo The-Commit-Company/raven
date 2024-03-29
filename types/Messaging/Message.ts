@@ -45,6 +45,7 @@ export interface PollMessage extends BaseMessage {
     text: string,
     message_type: 'Poll',
     poll_id: string,
+    content?: string
 }
 
 export type DateBlock = {

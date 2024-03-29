@@ -19,9 +19,10 @@ type RightToolbarButtonsProps = {
  * Component to render the right toolbar buttons:
  * 1. User Mention
  * 2. Channel Mention
- * 3. Emoji picker
- * 4. File upload
- * 5. Send button
+ * 3. Poll creation
+ * 4. Emoji picker
+ * 5. File upload
+ * 6. Send button
  * @param props
  * @returns
  */
@@ -29,6 +30,7 @@ export const RightToolbarButtons = ({ fileProps, ...sendProps }: RightToolbarBut
     return (
         <Flex gap='2' align='center' px='1' py='1'>
             <MentionButtons />
+            <Separator orientation='vertical' />
             <CreatePollButton />
             <Separator orientation='vertical' />
             <Flex gap='3' align='center'>
@@ -179,6 +181,7 @@ const SendButton = ({ sendMessage, messageSending, setContent }: {
 }
 
 const CreatePollButton = () => {
+
     const { editor } = useCurrentEditor()
 
     return <CreatePoll
