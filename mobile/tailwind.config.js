@@ -81,9 +81,18 @@ module.exports = {
       fontFamily: {
         'sans': ['Inter', 'sans-serif'],
       },
-      fontSize:{
-        'xxs':'10px'
-      }
+      fontSize: {
+        'xxs': '10px'
+      },
+      utilities: {
+        'hidden-scroll-bar': {
+          '-ms-overflow-style': 'none',
+          'scrollbar-width': 'none',
+          '&::-webkit-scrollbar': {
+            display: 'none',
+          },
+        },
+      },
     },
   },
   plugins: [require("tailwindcss-animate")],

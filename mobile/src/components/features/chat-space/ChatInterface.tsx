@@ -1,8 +1,6 @@
-import { IonHeader, IonFooter, IonContent, useIonViewWillEnter } from '@ionic/react'
+import { IonHeader, IonFooter, IonContent, useIonViewWillEnter, IonBackButton, IonButton, IonIcon, IonSpinner } from '@ionic/react'
 import { useFrappeGetCall } from 'frappe-react-sdk'
-import { useMemo, useRef } from 'react'
-import { IonButton, IonIcon, IonSpinner } from '@ionic/react'
-import { createContext } from 'react'
+import { useMemo, useRef, createContext } from 'react'
 import { ErrorBanner } from '../../layout'
 import { ChatInput } from '../chat-input'
 import { ChatHeader } from './chat-header'
@@ -10,10 +8,8 @@ import { ChannelListItem, DMChannelListItem, useChannelList } from '@/utils/chan
 import { UserFields } from '@/utils/users/UserListProvider'
 import { ChatLoader } from '@/components/layout/loaders/ChatLoader'
 import { MessageActionModal, useMessageActionModal } from './MessageActions/MessageActionModal'
-import { Button } from '@/components/ui/button'
-import { BsPeople } from "react-icons/bs"
-import { BiChevronLeft } from "react-icons/bi"
-import { Link, useHistory } from 'react-router-dom'
+import { Link } from 'react-router-dom'
+import { BsThreeDotsVertical } from "react-icons/bs";
 import { IconButton } from '@/components/ui/icon-button'
 import { arrowDownOutline } from 'ionicons/icons'
 import useChatStream from './useChatStream'
@@ -105,28 +101,28 @@ export const ChatInterface = ({ channel }: { channel: ChannelListItem | DMChanne
 
     const checkIsOpenChannel = () => (channel.type !== 'Open' && !channel.is_direct_message)
 
-    const history = useHistory()
-
     return (
         <>
             <IonHeader>
-                <div className='px-4 py-2 inset-x-0 top-0 overflow-hidden min-h-5 bg-background border-b-foreground/10 border-b'>
-                    <div className='flex gap-5 items-center'>
+                <div className='px-2 py-2 inset-x-0 top-0 overflow-hidden min-h-5 bg-background border-b-foreground/10 border-b'>
+                    <div className='flex gap-2 items-center'>
                         <div className='flex items-center'>
-                            <IconButton variant="ghost" icon={BiChevronLeft} onClick={() => history.goBack()} className='focus:bg-accent/40' />
+                            <IonBackButton color="dark" text="" className='back-button'/>
                         </div>
                         <div className='flex items-center justify-between gap-2 w-full'>
-                            <ChatHeader channel={channel} />
-                            {
-                                checkIsOpenChannel() && <div className='flex items-center'>
-                                    {/* do not show settings button for open channels */}
-                                    <Button variant="ghost" asChild className='hover:bg-transparent px-0 py-0 h-auto'>
-                                        <Link to={`${channel.name}/channel-settings`}>
-                                            <BsPeople size="18" className='text-foreground/80' />
-                                        </Link>
-                                    </Button>
-                                </div>
-                            }
+                            <div className='grow p-1'>
+                                {
+                                    checkIsOpenChannel() ? 
+                                    <ChatHeader channel={channel} /> :
+                                    <Link to={`${channel.name}/channel-settings`}>
+                                        <ChatHeader channel={channel} />
+                                    </Link>
+                                }
+                            </div>
+                            {/* TO-DO: Add Other optional buttons here later */}
+                            <div hidden aria-hidden>
+                                <IconButton variant="ghost" icon={BsThreeDotsVertical} className='active:bg-accent'/>
+                            </div>
                         </div>
                     </div>
                 </div>

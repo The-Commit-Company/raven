@@ -1,12 +1,8 @@
 import { useContext, useMemo, useRef, useState } from 'react';
 import {
-    IonButtons,
-    IonButton,
     IonModal,
     IonHeader,
     IonContent,
-    IonToolbar,
-    IonTitle,
     IonList,
     IonItem,
     IonLabel,
@@ -15,9 +11,11 @@ import {
     useIonToast,
     ToastOptions,
 } from '@ionic/react';
-import { useFrappeCreateDoc, useFrappeGetCall } from 'frappe-react-sdk';
+import { useFrappeCreateDoc } from 'frappe-react-sdk';
 import { UserListContext } from '@/utils/users/UserListProvider';
-import { SquareAvatar } from '@/components/common/UserAvatar';
+import { Button } from '@/components/ui/button';
+import { useGetChannelMembers } from '@/hooks/useGetChannelMembers';
+import { CustomAvatar } from '@/components/ui/avatar';
 
 interface AddChannelMembersProps {
     presentingElement: HTMLElement | undefined,
@@ -42,24 +40,10 @@ export const AddChannelMembers = ({ presentingElement, isOpen, onDismiss, channe
 
     const modal = useRef<HTMLIonModalElement>(null)
 
-    const { data, error, isLoading, mutate } = useFrappeGetCall<{ message: ChannelMembers }>('raven.api.chat.get_channel_members', {
-        channel_id: channelID
-    }, `raven.api.chat.get_channel_members:${channelID}`, {
-        revalidateOnFocus: false,
-        revalidateIfStale: false,
-        revalidateOnReconnect: false
-    })
+    const { channelMembers, mutate, error } = useGetChannelMembers(channelID)
     const { createDoc, error: errorAddingMembers, loading: addingMembers } = useFrappeCreateDoc()
 
     const users = useContext(UserListContext)
-
-    const channelMembers = useMemo(() => {
-        if (data?.message) {
-            return Object.values(data.message)
-        } else {
-            return []
-        }
-    }, [data])
 
     const [searchText, setSearchText] = useState('')
 
@@ -105,23 +89,19 @@ export const AddChannelMembers = ({ presentingElement, isOpen, onDismiss, channe
         <IonModal ref={modal} onDidDismiss={onDismiss} isOpen={isOpen} presentingElement={presentingElement}>
 
             <IonHeader>
-                <IonToolbar>
-                    <IonButtons slot="start">
-                        <IonButton color="medium" onClick={() => onDismiss()}>
-                            Cancel
-                        </IonButton>
-                    </IonButtons>
-                    <IonTitle>
-                        <div className='flex flex-col items-center justify-start'>
-                            <h1>Add Members</h1>
+                <div className='py-2 inset-x-0 top-0 overflow-hidden items-center min-h-5 bg-background border-b-foreground/10 border-b'>
+                    <div className='flex gap-4 items-center justify-around'>
+                        <div>
+                            <Button variant="ghost" className="hover:bg-transparent hover:text-foreground/80" onClick={() => onDismiss()}>
+                                Cancel
+                            </Button>
                         </div>
-                    </IonTitle>
-                    <IonButtons slot="end">
-                        <IonButton onClick={addMembers} strong={true}>
-                            Add
-                        </IonButton>
-                    </IonButtons>
-                </IonToolbar>
+                        <span className="text-base font-medium">Add Members</span>
+                        <div>
+                            <Button variant="ghost" className="text-primary hover:bg-transparent" onClick={addMembers}>Add</Button>
+                        </div>
+                    </div>
+                </div>
             </IonHeader>
 
             <IonContent>
@@ -129,6 +109,7 @@ export const AddChannelMembers = ({ presentingElement, isOpen, onDismiss, channe
                 <IonSearchbar
                     placeholder="Search"
                     debounce={1000}
+                    autocapitalize='off'
                     onIonInput={(e) => setSearchText(e.target.value?.toString() || '')}
                 />
 
@@ -138,12 +119,12 @@ export const AddChannelMembers = ({ presentingElement, isOpen, onDismiss, channe
                             {channelMembers.some((member) => member.name === user.name) ? (
                                 // User is already a channel member
                                 <div className='justify-between flex w-full py-2'>
-                                    <div className='flex gap-4'>
-                                        <SquareAvatar sizeClass='w-10 h-10' slot='start' alt={user.full_name} src={user.user_image} />
-                                        <IonLabel>
-                                            <h2>{user.full_name}</h2>
-                                            <p>{user.name}</p>
-                                        </IonLabel>
+                                    <div className='flex items-center gap-4'>
+                                        <CustomAvatar alt={user.full_name} src={user.user_image} sizeClass='w-10 h-10'/>
+                                        <div className='flex flex-col text-ellipsis leading-tight'>
+                                            <span>{user.full_name}</span>
+                                            <span className='text-foreground/40 text-sm'>{user.name}</span>
+                                        </div>
                                     </div>
                                     <IonLabel color='medium'>added</IonLabel>
                                 </div>
@@ -159,12 +140,12 @@ export const AddChannelMembers = ({ presentingElement, isOpen, onDismiss, channe
                                             setSelectedMembers(selectedMembers.filter(id => id !== user.name))
                                         }
                                     }}>
-                                    <div className='flex gap-4'>
-                                        <SquareAvatar sizeClass='w-10 h-10' slot='start' alt={user.full_name} src={user.user_image} />
-                                        <IonLabel>
-                                            <h2>{user.full_name}</h2>
-                                            <p>{user.name}</p>
-                                        </IonLabel>
+                                    <div className='flex items-center gap-4'>
+                                        <CustomAvatar alt={user.full_name} src={user.user_image} sizeClass='w-10 h-10'/>
+                                        <div className='flex flex-col text-ellipsis leading-tight'>
+                                            <span>{user.full_name}</span>
+                                            <span className='text-foreground/40 text-sm'>{user.name}</span>
+                                        </div>
                                     </div>
                                 </IonCheckbox>
                             )}

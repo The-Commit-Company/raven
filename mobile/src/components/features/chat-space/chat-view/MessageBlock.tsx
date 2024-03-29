@@ -1,7 +1,6 @@
 import { useContext, useMemo } from 'react'
 import { FileMessage, ImageMessage, Message, TextMessage } from '../../../../../../types/Messaging/Message'
 import { IonIcon, IonSkeletonText, IonText } from '@ionic/react'
-import { SquareAvatar } from '@/components/common/UserAvatar'
 import { MarkdownRenderer } from '@/components/common/MarkdownRenderer'
 import { UserFields } from '@/utils/users/UserListProvider'
 import { DateObjectToFormattedDateStringWithoutYear, DateObjectToTimeString } from '@/utils/operations/operations'
@@ -14,6 +13,7 @@ import useLongPress from '@/hooks/useLongPress'
 import MessageReactions from './components/MessageReactions'
 import parse from 'html-react-parser';
 import clsx from 'clsx'
+import { CustomAvatar } from '@/components/ui/avatar'
 
 type Props = {
     message: Message,
@@ -93,7 +93,7 @@ export const UserAvatarBlock = ({ message, user }: { message: Message, user?: Us
 
     const isActive = useIsUserActive(user?.name ?? message.owner)
     return <div className='w-11 mt-0.5'>
-        <SquareAvatar alt={user?.full_name ?? message.owner} src={user?.user_image} isActive={isActive} />
+        <CustomAvatar alt={user?.full_name ?? message.owner} src={user?.user_image} isActive={isActive} />
     </div>
 }
 

@@ -3,11 +3,11 @@ import { useFrappePostCall } from 'frappe-react-sdk'
 import { Link, useHistory } from 'react-router-dom';
 import { DMUser } from '@/pages/direct-messages/DirectMessageList';
 import { DMChannelListItem, UnreadCountData, useChannelList } from '@/utils/channel/ChannelListProvider';
-import { SquareAvatar } from '@/components/common/UserAvatar';
 import { useIsUserActive } from '@/hooks/useIsUserActive';
 import { useMemo } from 'react';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
+import { CustomAvatar } from '@/components/ui/avatar';
 
 export const PrivateMessages = ({ users, unread_count }: { users: DMUser[], unread_count?: UnreadCountData }) => {
 
@@ -60,7 +60,7 @@ const DMChannelItem = ({ user, unreadCount }: { user: DMChannel, unreadCount: Un
         <li className='list-none px-4 py-2 active:bg-accent active:rounded' key={user.name}>
             <div className='flex justify-between items-center'>
                 <div className='flex items-center space-x-2 w-5/6'>
-                    <SquareAvatar alt={user.full_name} src={user.user_image} isActive={isActive} />
+                    <CustomAvatar alt={user.full_name} src={user.user_image} isActive={isActive}/>
                     <Label className='text-foreground w-5/6 cursor-pointer'>{user.full_name}</Label>
                 </div>
                 {unreadCountForChannel ? <Badge>{unreadCountForChannel < 100 ? unreadCountForChannel : '99'}</Badge> : null}
@@ -74,7 +74,7 @@ const UserItem = ({ user, onChannelCreate }: { user: DMUser, onChannelCreate: (u
     return <li className="px-4 py-2 flex active:bg-accent active:rounded" key={user.name} >
         <button onClick={() => onChannelCreate(user.name)} className='flex justify-between items-center w-full'>
             <div className="flex items-center space-x-2 w-full">
-                <SquareAvatar alt={user.full_name} src={user.user_image} isActive={isActive} />
+                <CustomAvatar alt={user.full_name} src={user.user_image} isActive={isActive}/>
                 <Label className="text-foreground cursor-pointer">{user.full_name}</Label>
             </div>
         </button>

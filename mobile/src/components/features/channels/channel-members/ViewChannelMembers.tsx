@@ -1,16 +1,19 @@
-import { IonAlert, IonButton, IonButtons, IonContent, IonHeader, IonItem, IonItemOption, IonItemOptions, IonItemSliding, IonLabel, IonList, IonModal, IonSearchbar, IonTitle, IonToolbar, ToastOptions, useIonToast } from "@ionic/react"
-import { FrappeConfig, FrappeContext, useFrappeGetCall } from "frappe-react-sdk"
+import { IonAlert, IonContent, IonHeader, IonItem, IonItemOption, IonItemOptions, IonItemSliding, IonLabel, IonList, IonModal, IonSearchbar, ToastOptions, useIonToast } from "@ionic/react"
+import { FrappeConfig, FrappeContext } from "frappe-react-sdk"
 import { useContext, useMemo, useRef, useState } from "react"
-import { ChannelMembers, Member } from "./AddChannelMembers"
-import { SquareAvatar } from "@/components/common/UserAvatar"
+import { Member } from "./AddChannelMembers"
 import { UserContext } from "@/utils/auth/UserProvider"
 import { ErrorBanner } from "@/components/layout"
+import { useGetChannelMembers } from "@/hooks/useGetChannelMembers"
+import { Button } from "@/components/ui/button"
+import { CustomAvatar } from "@/components/ui/avatar"
+import { BiSolidCrown } from "react-icons/bi"
 
 interface ViewChannelMembersProps {
     presentingElement: HTMLElement | undefined,
     isOpen: boolean,
     onDismiss: VoidFunction,
-    channelID: string
+    channelID: string,
 }
 
 export const ViewChannelMembers = ({ presentingElement, isOpen, onDismiss, channelID }: ViewChannelMembersProps) => {
@@ -18,19 +21,7 @@ export const ViewChannelMembers = ({ presentingElement, isOpen, onDismiss, chann
     const modal = useRef<HTMLIonModalElement>(null)
     const { currentUser } = useContext(UserContext)
 
-    const { data, error, mutate } = useFrappeGetCall<{ message: ChannelMembers }>('raven.api.chat.get_channel_members', {
-        channel_id: channelID
-    }, undefined, {
-        revalidateOnFocus: false
-    })
-
-    const channelMembers = useMemo(() => {
-        if (data?.message) {
-            return Object.values(data.message)
-        } else {
-            return []
-        }
-    }, [data])
+    const { channelMembers, mutate, error } = useGetChannelMembers(channelID)
 
     const isCurrentUserAdmin = useMemo(() => {
         return channelMembers.find(member => member.name === currentUser)?.is_admin
@@ -76,24 +67,24 @@ export const ViewChannelMembers = ({ presentingElement, isOpen, onDismiss, chann
         <IonModal ref={modal} onDidDismiss={onDismiss} isOpen={isOpen} presentingElement={presentingElement}>
 
             <IonHeader>
-                <IonToolbar>
-                    <IonButtons slot="start">
-                        <IonButton color="medium" onClick={() => onDismiss()}>
-                            Cancel
-                        </IonButton>
-                    </IonButtons>
-                    <IonTitle>
-                        <div className='flex flex-col items-center justify-start'>
-                            <h1>Channel Members</h1>
+                <div className='py-2 inset-x-0 top-0 overflow-hidden items-center min-h-5 bg-background border-b-foreground/10 border-b'>
+                    <div className='flex items-center'>
+                        <div className="flex flex-1">
+                            <Button variant="ghost" className="hover:bg-transparent hover:text-foreground/80" onClick={() => onDismiss()}>
+                                Cancel
+                            </Button>
                         </div>
-                    </IonTitle>
-                </IonToolbar>
+                        <div className="flex flex-auto">
+                            <span className="text-base font-medium">Channel Members</span>
+                        </div>
+                    </div>
+                </div>
             </IonHeader>
 
             <IonContent>
-
                 <IonSearchbar
                     placeholder="Search"
+                    autocapitalize="off"
                     debounce={1000}
                     onIonInput={(e) => setSearchText(e.target.value?.toString() || '')}
                 />
@@ -104,15 +95,15 @@ export const ViewChannelMembers = ({ presentingElement, isOpen, onDismiss, chann
                     {filteredUsers && filteredUsers.length > 0 ? filteredUsers.map((user) => (
                         <IonItemSliding key={user.name}>
                             <IonItem>
-                                <div className='justify-between flex w-full py-2'>
-                                    <div className='flex gap-4'>
-                                        <SquareAvatar sizeClass='w-10 h-10' slot='start' alt={user.full_name} src={user.user_image} />
-                                        <IonLabel>
-                                            <h2>{user.full_name}</h2>
-                                            <p>{user.name}</p>
-                                        </IonLabel>
+                                <div className='flex justify-between items-center w-full py-2'>
+                                    <div className='flex items-center gap-4'>
+                                        <CustomAvatar alt={user.full_name} src={user.user_image} sizeClass='w-10 h-10'/>
+                                        <div className='flex flex-col text-ellipsis leading-tight'>
+                                            <span>{user.full_name}</span>
+                                            <span className='text-foreground/40 text-sm'>{user.name}</span>
+                                        </div>
                                     </div>
-                                    {user.is_admin ? <IonLabel color='medium'>admin</IonLabel> : null}
+                                    {user.is_admin ? <BiSolidCrown color='#FFC53D'/> : null}
                                 </div>
                             </IonItem>
                             {(isCurrentUserAdmin && user.name !== currentUser) ? <IonItemOptions

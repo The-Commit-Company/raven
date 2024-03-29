@@ -1,4 +1,4 @@
-import { SquareAvatar } from '@/components/common/UserAvatar'
+import { CustomAvatar } from '@/components/ui/avatar'
 import { useGetUser } from '@/hooks/useGetUser'
 import { ChannelListItem, DMChannelListItem } from '@/utils/channel/ChannelListProvider'
 import { BiGlobe, BiHash, BiLock } from 'react-icons/bi'
@@ -55,7 +55,7 @@ const DirectMessageHeader = ({ channel }: { channel: DMChannelListItem }) => {
         return <div className='py-4 px-2'>
             <div className='flex flex-col gap-4'>
                 <div className='flex gap-2'>
-                    <SquareAvatar alt={peerUser.full_name} src={peerUser.user_image} sizeClass='w-12 h-12' />
+                    <CustomAvatar alt={peerUser.full_name} src={peerUser.user_image} sizeClass='w-12 h-12'/>
                     <div className='flex flex-col gap-0'>
                         <h2 className='cal-sans text-xl font-normal tracking-wide text-white'>{peerUser.full_name}</h2>
                         <p className='text-sm text-zinc-300'>{peerUser.name}</p>
