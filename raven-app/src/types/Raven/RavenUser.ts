@@ -10,8 +10,12 @@ export interface RavenUser{
 	parentfield?: string
 	parenttype?: string
 	idx?: number
+	/**	Type : Select	*/
+	type: "User" | "Bot"
 	/**	User : Link - User	*/
-	user: string
+	user?: string
+	/**	Bot : Link - Raven Bot	*/
+	bot?: string
 	/**	Full Name : Data	*/
 	full_name: string
 	/**	First Name : Data	*/

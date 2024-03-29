@@ -1,16 +1,17 @@
 import { ChannelListItem, DMChannelListItem } from "@/utils/channel/ChannelListProvider"
 import { useCurrentChannelData } from "@/hooks/useCurrentChannelData"
-import { useContext } from "react"
+import { useContext, useMemo } from "react"
 import { ChannelMembers, ChannelMembersContext, ChannelMembersContextType } from "@/utils/channel/ChannelMembersProvider"
 import { EditDescriptionButton } from "@/components/feature/channel-details/edit-channel-description/EditDescriptionButton"
 import { AddMembersButton } from "@/components/feature/channel-member-details/add-members/AddMembersButton"
 import { UserContext } from "@/utils/auth/UserProvider"
 import { useGetUserRecords } from "@/hooks/useGetUserRecords"
-import { Box, Flex, Heading, Link, Text } from "@radix-ui/themes"
+import { Badge, Box, Flex, Heading, Link, Text } from "@radix-ui/themes"
 import { UserAvatar } from "@/components/common/UserAvatar"
 import { ChannelIcon } from "@/utils/layout/channelIcon"
 import { BiBookmark } from "react-icons/bi"
 import { DateMonthYear } from "@/utils/dateConversions"
+import { useGetUser } from "@/hooks/useGetUser"
 
 export const EmptyStateForSearch = () => {
     return (
@@ -63,17 +64,29 @@ interface EmptyStateForDMProps {
 const EmptyStateForDM = ({ channelData }: EmptyStateForDMProps) => {
 
     const peer = channelData.peer_user_id
-    const users = useGetUserRecords()
+
+    const peerData = useGetUser(peer)
+
+    const { fullName, userImage, isBot } = useMemo(() => {
+        const isBot = peerData?.type === 'Bot'
+        return {
+            fullName: peerData?.full_name ?? peer,
+            userImage: peerData?.user_image ?? '',
+            isBot
+        }
+    }, [peerData, peer])
 
     return (
         <Box className={'py-4 px-2'}>
             {channelData?.is_direct_message == 1 &&
-                <Flex direction='column' gap='2'>
-                    <Flex gap='2'>
-                        <UserAvatar alt={users?.[peer]?.full_name ?? peer} src={users?.[peer]?.user_image ?? ''} size='3' skeletonSize='7' />
+                <Flex direction='column' gap='3'>
+                    <Flex gap='3' align='center'>
+                        <UserAvatar alt={fullName} src={userImage} size='3' skeletonSize='7' isBot={isBot} />
                         <Flex direction='column' gap='0'>
-                            <Heading size='4'>{users?.[peer]?.full_name}</Heading>
-                            <Text size='1' color='gray'>{users?.[peer]?.name}</Text>
+                            <Heading size='4'>{fullName}</Heading>
+                            <div>
+                                {isBot ? <Badge color='gray' className="py-0 px-1">Bot</Badge> : <Text size='1' color='gray'>{peer}</Text>}
+                            </div>
                         </Flex>
                     </Flex>
                     {channelData?.is_self_message == 1 ?
@@ -83,7 +96,7 @@ const EmptyStateForDM = ({ channelData }: EmptyStateForDMProps) => {
                         </Flex>
                         :
                         <Flex gap='2' align='center'>
-                            <Text size='2'>This is a Direct Message channel between you and <strong>{users?.[peer]?.full_name ?? peer}</strong>. Check out their profile to learn more about them.</Text>
+                            <Text size='2'>This is a Direct Message channel between you and <strong>{fullName}</strong>.</Text>
                             {/* <Button size='2' variant='ghost' className={'z-1'}>View profile</Button> */}
                         </Flex>
                     }

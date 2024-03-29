@@ -16,7 +16,9 @@ export interface BaseMessage {
     link_document?: string
     is_edited: 1 | 0
     /** JSON as string */
-    replied_message_details?: string
+    replied_message_details?: string,
+    is_bot_message?: 1 | 0,
+    bot?: string
 }
 
 export interface FileMessage extends BaseMessage {
