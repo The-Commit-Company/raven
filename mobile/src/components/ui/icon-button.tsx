@@ -10,7 +10,7 @@ const iconButtonVariants = cva(
       variant: {
         default: 'bg-primary text-primary-foreground hover:bg-primary/90',
         outline:
-          'border border-input hover:bg-accent hover:text-accent-foreground',
+          'border border-solid border-input hover:bg-accent hover:text-accent-foreground',
         ghost: 'hover:bg-accent hover:text-accent-foreground focus:bg-accent/20 focus:ring-0',
         link: 'underline-offset-4 hover:underline text-primary',
       },

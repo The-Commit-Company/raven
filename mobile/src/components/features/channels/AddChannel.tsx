@@ -1,4 +1,4 @@
-import { IonContent, ToastOptions, IonModal, useIonToast } from "@ionic/react";
+import { IonContent, ToastOptions, IonModal, useIonToast, IonHeader } from "@ionic/react";
 import { useFrappeCreateDoc } from "frappe-react-sdk";
 import { useRef, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -85,8 +85,8 @@ export const AddChannel = ({ presentingElement, isOpen, onDismiss }: AddChannelP
 
     return (
         <IonModal ref={modal} onDidDismiss={handleCancel} isOpen={isOpen} presentingElement={presentingElement}>
-            <div className='block relative z-10 w-full'>
-                <div className='px-4 py-2 inset-x-0 top-0 overflow-hidden items-center min-h-5 bg-background border-b-foreground/10 border-b'>
+            <IonHeader>
+                <div className='py-2 inset-x-0 top-0 overflow-hidden items-center min-h-5 bg-background border-b-foreground/10 border-b'>
                     <div className='flex gap-5 items-center justify-around'>
                         <div>
                             <Button variant="ghost" className="hover:bg-transparent hover:text-foreground/80" onClick={handleCancel}>
@@ -99,7 +99,7 @@ export const AddChannel = ({ presentingElement, isOpen, onDismiss }: AddChannelP
                         </div>
                     </div>
                 </div>
-            </div>
+            </IonHeader>
             <IonContent className="ion-padding">
                 <ErrorBanner error={channelCreationError} />
                 <Form {...form}>

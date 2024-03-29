@@ -7,7 +7,7 @@ import 'tailwindcss/tailwind.css';
 import '@ionic/react/css/core.css';
 
 /* Basic CSS for apps built with Ionic */
-// import '@ionic/react/css/normalize.css'; // commented as radio button styling gets messed up
+import '@ionic/react/css/normalize.css';
 import '@ionic/react/css/structure.css';
 import '@ionic/react/css/typography.css';
 import "cal-sans";
@@ -29,6 +29,8 @@ import { UserListProvider } from './utils/users/UserListProvider';
 import { ActiveUsersProvider } from './utils/users/ActiveUsersProvider';
 import { createAnimation, iosTransitionAnimation } from '@ionic/core';
 import { isPlatform } from '@ionic/react';
+import { useEffect } from 'react';
+import { showNotification } from './utils/pushNotifications';
 
 const animationBuilder: AnimationBuilder = (baseEl, opts) => {
   if (opts.direction === "back") {
@@ -56,6 +58,14 @@ function App() {
     return import.meta.env.VITE_SITE_NAME
 
   }
+
+  useEffect(() => {
+    //@ts-expect-error
+    window?.frappePushNotification?.onMessage((payload) => {
+      showNotification(payload)
+    })
+  }, [])
+
   return (
     <IonApp>
       <FrappeProvider
