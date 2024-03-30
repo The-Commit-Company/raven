@@ -2,7 +2,7 @@ import {
   IonApp, setupIonicReact, AnimationBuilder
 } from '@ionic/react';
 
-import 'tailwindcss/tailwind.css';
+// import 'tailwindcss/tailwind.css';
 /* Core CSS required for Ionic components to work properly */
 import '@ionic/react/css/core.css';
 
@@ -29,8 +29,7 @@ import { UserListProvider } from './utils/users/UserListProvider';
 import { ActiveUsersProvider } from './utils/users/ActiveUsersProvider';
 import { createAnimation, iosTransitionAnimation } from '@ionic/core';
 import { isPlatform } from '@ionic/react';
-import { useEffect } from 'react';
-import { showNotification } from './utils/pushNotifications';
+import { Theme } from '@radix-ui/themes';
 
 const animationBuilder: AnimationBuilder = (baseEl, opts) => {
   if (opts.direction === "back") {
@@ -65,15 +64,22 @@ function App() {
         socketPort={import.meta.env.VITE_SOCKET_PORT ? import.meta.env.VITE_SOCKET_PORT : undefined}
         //@ts-ignore
         siteName={getSiteName()}>
-        <UserProvider>
-          <UserListProvider>
-            <ChannelListProvider>
-              <ActiveUsersProvider>
-                <Routes />
-              </ActiveUsersProvider>
-            </ChannelListProvider>
-          </UserListProvider>
-        </UserProvider>
+        <Theme
+          appearance={'dark'}
+          // grayColor='slate'
+          accentColor='iris'
+          panelBackground='translucent'
+        >
+          <UserProvider>
+            <UserListProvider>
+              <ChannelListProvider>
+                <ActiveUsersProvider>
+                  <Routes />
+                </ActiveUsersProvider>
+              </ChannelListProvider>
+            </UserListProvider>
+          </UserProvider>
+        </Theme>
       </FrappeProvider>
     </IonApp>
   )

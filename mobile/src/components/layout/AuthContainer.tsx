@@ -26,12 +26,12 @@ const AuthContainer = ({ children, ...props }: PropsWithChildren) => {
 
     return (
         <IonPage>
-            <div className='ion-padding'>
+            <div className='ion-padding pt-16'>
                 <div className="left-0 right-0 top-1/4 p-2 transform justify-center items-center">
-                        <div className='pb-4'>
-                            <span className='cal-sans text-5xl font-semibold leading-normal'>raven</span>
-                        </div>
-                    <div className='w-100'>
+                    <div className='pb-4'>
+                        <span className='cal-sans text-5xl font-semibold leading-normal'>raven</span>
+                    </div>
+                    <div className='w-full'>
                         {
                             <>
                                 {activeScreen.login && <Login setActiveScreen={setActiveScreen}></Login>}

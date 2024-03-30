@@ -1,4 +1,4 @@
-import { PropsWithChildren } from "react";
+import { Callout } from "@radix-ui/themes";
 import { FiAlertCircle, FiInfo } from "react-icons/fi";
 
 export type CalloutObject = {
@@ -6,35 +6,29 @@ export type CalloutObject = {
     message: string;
 };
 
-export const SuccessCallout = ({
-    children,
-    ...props
-}: PropsWithChildren<{ message?: string }>) => {
+export const SuccessCallout = ({ message }: { message: string }) => {
     return (
-        <div
-            className="bg-accent-green/10 rounded-md px-2 py-2.5 flex items-center gap-4"
-        >
-            <FiInfo size="18" className="text-accent-green"/>
-            <div>
-                <span className="font-normal text-sm text-white/80">{props.message}</span>
-            </div>
-        </div>
+        <Callout.Root color='green' variant='soft'>
+            <Callout.Icon>
+                <FiInfo size="18" />
+            </Callout.Icon>
+            <Callout.Text>
+                {message}
+            </Callout.Text>
+        </Callout.Root>
     );
 };
 
 
-export const ErrorCallout = ({
-    children,
-    ...props
-}: PropsWithChildren<{ message?: string }>) => {
+export const ErrorCallout = ({ message }: { message: string }) => {
     return (
-        <div
-            className="bg-rose-600/10 rounded-md px-2 py-2.5 flex items-center gap-4"
-        >
-            <FiAlertCircle size="18" className="text-destructive"/>
-            <div>
-                <span className="font-normal text-sm text-white/80">{props.message}</span>
-            </div>
-        </div>
+        <Callout.Root color='red' variant='soft'>
+            <Callout.Icon>
+                <FiAlertCircle size="18" />
+            </Callout.Icon>
+            <Callout.Text>
+                {message}
+            </Callout.Text>
+        </Callout.Root>
     );
 };

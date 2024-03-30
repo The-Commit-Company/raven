@@ -1,32 +1,27 @@
 import * as React from "react"
 
 import { cn } from "@/lib/utils"
+import { RootProps } from "@radix-ui/themes/dist/cjs/components/text-field"
+import { TextField } from "@radix-ui/themes"
 
 export interface InputProps
   extends React.InputHTMLAttributes<HTMLInputElement> { }
 
-const Input = React.forwardRef<HTMLInputElement, InputProps>(
-  ({ className, type, ...props }, ref) => {
+const Input = React.forwardRef((props: RootProps, ref: React.LegacyRef<HTMLInputElement>) => {
 
-    return (
-      <input
-        type={type}
-        className={cn(
-          "flex h-10 w-full rounded-md border border-solid border-input/20 bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 focus:invalid:ring-rose-600 focus:invalid:ring-2",
-          props["aria-invalid"] ? "focus-visible:ring-rose-600 focus-visible:ring-2" : "",
-          className
-        )}
-        ref={ref}
-        {...props}
-      />
-    )
-  }
-)
+  return (
+    <TextField.Root
+      size='3'
+      ref={ref}
+      {...props}
+    />
+  )
+})
 
 export interface SearchInputProps
   extends React.InputHTMLAttributes<HTMLInputElement> {
-    slotStart?: React.ReactNode
-  }
+  slotStart?: React.ReactNode
+}
 
 const SearchInput = React.forwardRef<HTMLInputElement, SearchInputProps>(
   ({ className, type, slotStart, ...props }, ref) => {

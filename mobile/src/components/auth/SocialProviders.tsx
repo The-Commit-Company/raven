@@ -1,11 +1,11 @@
 import { FaGithub, FaFacebook } from "react-icons/fa"
 import { FcGoogle } from "react-icons/fc"
-import { Button } from "../ui/button"
 import { BiEnvelope } from "react-icons/bi"
 import { ActiveScreenProps } from "../layout/AuthContainer"
+import { Button } from "@radix-ui/themes"
 
 const OAuthProviderIcons = {
-    "github": <FaGithub size="24" />,
+    "github": <FaGithub size="24" fill='white' />,
     "google": <FcGoogle size="24" />,
     "facebook": <FaFacebook fill="#316FF6" size="24" />
 }
@@ -30,14 +30,15 @@ export interface EmailLoginProviderProps extends ActiveScreenProps {
 }
 
 export const OAuthProvider = ({ soc }: OAuthProviderProps) => {
+
     return (
-        <Button variant="outline" type="button" asChild>
+        <Button variant="outline" type="button" color='gray' size='3' asChild>
             <a href={soc.auth_url}>
                 <div className='flex items-center gap-3'>
                     <div>
-                        {OAuthProviderIcons[soc.name] ? OAuthProviderIcons[soc.name] : <img src={soc.icon.src} alt={soc.icon.alt} ></img>}
+                        {OAuthProviderIcons[soc.name] ? OAuthProviderIcons[soc.name] : <img className="w-6 text-white h-6" src={soc.icon.src} alt={soc.icon.alt} ></img>}
                     </div>
-                    <span className="font-medium text-sm leading-normal">Continue with {soc.provider_name}</span>
+                    <span className="font-medium text-sm text-white leading-normal">Continue with {soc.provider_name}</span>
                 </div>
             </a>
         </Button>
@@ -50,13 +51,14 @@ export const EmailLoginProvider = ({ isSubmitting, setActiveScreen }: EmailLogin
             disabled={isSubmitting}
             variant="outline"
             type="button"
+            color='gray'
+            size='3'
             onClick={() => setActiveScreen({ login: false, loginWithEmail: true, signup: false })}
-            asChild
             className='cursor-pointer'
         >
             <div className="flex items-center gap-3">
-                <BiEnvelope size="24" />
-                <span className="font-medium text-sm leading-normal">Continue with Email Link</span>
+                <BiEnvelope size="24" fill='#fff' />
+                <span className="text-white text-sm font-medium leading-normal">Continue with Email Link</span>
             </div>
         </Button>
     )
@@ -65,9 +67,9 @@ export const EmailLoginProvider = ({ isSubmitting, setActiveScreen }: EmailLogin
 export const SocialSeparator = () => {
     return (
         <div className="flex gap-4 w-full items-center">
-            <div className="grow border-t border-white border-opacity-20"></div>
-            <span className="shrink text-white text-opacity-30">OR</span>
-            <div className="grow border-t border-white border-opacity-20"></div>
+            <div className="grow border-t border-gray-7"></div>
+            <span className="shrink text-gray-7">OR</span>
+            <div className="grow border-t border-gray-7"></div>
         </div>
     )
 }
