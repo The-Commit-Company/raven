@@ -15,19 +15,37 @@ class RavenUser(Document):
 	if TYPE_CHECKING:
 		from frappe.types import DF
 
+		bot: DF.Link | None
 		enabled: DF.Check
 		first_name: DF.Data | None
-		full_name: DF.Data
-		user: DF.Link
+		full_name: DF.Data | None
+		type: DF.Literal["User", "Bot"]
+		user: DF.Link | None
 		user_image: DF.AttachImage | None
 	# end: auto-generated types
 
+	def autoname(self):
+		if self.type == "Bot":
+			self.name = self.bot
+		else:
+			self.name = self.user
+
 	def before_validate(self):
+		if self.user:
+			self.type = "User"
 		if not self.full_name:
 			self.full_name = self.first_name
 
+	def validate(self):
+		if self.type == "Bot" and not self.bot:
+			frappe.throw(_("Bot is mandatory"))
+
+		if self.type == "User" and not self.user:
+			frappe.throw(_("User is mandatory"))
+
 	def before_save(self):
-		self.update_photo_from_user()
+		if self.type != "Bot":
+			self.update_photo_from_user()
 
 	def on_trash(self):
 		"""
@@ -64,8 +82,6 @@ class RavenUser(Document):
 				}
 			).insert(ignore_permissions=True)
 			self.user_image = image_file.file_url
-
-	pass
 
 
 def add_user_to_raven(doc, method):

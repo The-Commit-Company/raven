@@ -27,7 +27,9 @@
   "link_doctype",
   "link_document",
   "is_edited",
-  "mentions"
+  "mentions",
+  "is_bot_message",
+  "bot"
  ],
  "fields": [
   {
@@ -116,6 +118,20 @@
    "options": "link_doctype"
   },
   {
+   "default": "0",
+   "fieldname": "is_bot_message",
+   "fieldtype": "Check",
+   "label": "Is Bot Message"
+  },
+  {
+   "depends_on": "eval: doc.is_bot_message == 1",
+   "fieldname": "bot",
+   "fieldtype": "Link",
+   "label": "Bot",
+   "mandatory_depends_on": "eval: doc.is_bot_message == 1",
+   "options": "Raven User"
+  },
+  {
    "fieldname": "content",
    "fieldtype": "Long Text",
    "label": "Content",
@@ -145,7 +161,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-02-28 03:48:53.487969",
+ "modified": "2024-03-30 15:32:15.182210",
  "modified_by": "Administrator",
  "module": "Raven Messaging",
  "name": "Raven Message",

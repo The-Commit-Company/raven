@@ -13,6 +13,7 @@ import '../components/layout/AlertBanner/styles.css'
 const AddRavenUsersPage = lazy(() => import('@/pages/AddRavenUsersPage'))
 
 export const MainPage = () => {
+
     const isRavenUser = hasRavenUserRole()
 
     if (isRavenUser) {

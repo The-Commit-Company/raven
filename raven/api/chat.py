@@ -28,6 +28,7 @@ def get_channel_members(channel_id):
 						user.full_name,
 						user.user_image,
 						user.first_name,
+						user.type,
 						channel_member.is_admin,
 					)
 					.where(channel_member.channel_id == channel_id)

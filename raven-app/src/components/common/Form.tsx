@@ -27,6 +27,6 @@ export const HelperText = (props: TextProps) => {
 export const ErrorText = (props: TextProps) => {
     return (
         //@ts-expect-error
-        <Text as='span' size='1' color='red' {...props} />
+        <Text as='p' size='1' color='red' {...props} />
     )
 }

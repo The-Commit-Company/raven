@@ -23,12 +23,14 @@ class RavenMessage(Document):
 
 		from raven.raven_messaging.doctype.raven_mention.raven_mention import RavenMention
 
+		bot: DF.Link | None
 		channel_id: DF.Link
 		content: DF.LongText | None
 		file: DF.Attach | None
 		file_thumbnail: DF.Attach | None
 		image_height: DF.Data | None
 		image_width: DF.Data | None
+		is_bot_message: DF.Check
 		is_edited: DF.Check
 		is_reply: DF.Check
 		json: DF.JSON | None
@@ -311,6 +313,8 @@ class RavenMessage(Document):
 						"link_doctype": self.link_doctype,
 						"link_document": self.link_document,
 						"message_reactions": self.message_reactions,
+						"is_bot_message": self.is_bot_message,
+						"bot": self.bot,
 					},
 				},
 				doctype="Raven Channel",
@@ -353,6 +357,8 @@ class RavenMessage(Document):
 						"image_width": self.image_width,
 						"image_height": self.image_height,
 						"name": self.name,
+						"is_bot_message": self.is_bot_message,
+						"bot": self.bot,
 					},
 				},
 				doctype="Raven Channel",
