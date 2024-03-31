@@ -23,8 +23,16 @@ class RavenPoll(Document):
 		total_votes: DF.Int
 	# end: auto-generated types
 
+	def before_validate(self):
+		total_votes = 0
+		for option in self.options:
+			total_votes += option.votes or 0
+		
+		self.total_votes = total_votes
+
 	def on_trash(self):
 		# Delete all poll votes
 		frappe.db.delete("Raven Poll Vote", {"poll_id": self.name})
+
 
 	pass

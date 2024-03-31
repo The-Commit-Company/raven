@@ -18,6 +18,35 @@ class RavenPollVote(Document):
 		poll_id: DF.Link
 		user_id: DF.Link
 	# end: auto-generated types
+	
+	def before_insert(self):
+		# check if the user has already voted
+		if frappe.db.exists(
+			"Raven Poll Vote",
+			{
+				"poll_id": self.poll_id,
+				"user_id": self.user_id,
+			},
+		): frappe.throw("You have already voted in this poll.")
+
+		# check if the option is valid
+		if not frappe.db.exists(
+			"Raven Poll Option",
+			{
+				"parent": self.poll_id,
+				"name": self.option,
+			},
+		): frappe.throw("Invalid option selected.")
+
+		# check if the poll is still open
+		poll = frappe.get_cached_doc("Raven Poll", self.poll_id)
+		if poll.is_disabled:
+			frappe.throw("This poll is closed.")
+	
+	def validate(self):
+		# Check if the user_id is the same as the logged in user
+		if self.user_id != frappe.session.user:
+			frappe.throw("You can only vote for yourself.")
 
 	def after_insert(self):
 		update_poll_votes(self.poll_id)
@@ -37,10 +66,11 @@ def update_poll_votes(poll_id):
 	)
 
 	# update the votes for each option in the poll
-	for vote in poll_votes:
-		for option in poll.options:
+	for option in poll.options:
+		option.votes = 0
+		for vote in poll_votes:
 			if option.name == vote.option:
 				option.votes = vote.votes
 				break
 
-	poll.save()
+	poll.save(ignore_permissions=True)

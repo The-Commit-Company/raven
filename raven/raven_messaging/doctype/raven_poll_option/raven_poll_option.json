@@ -30,13 +30,14 @@
    "fieldtype": "Int",
    "in_list_view": 1,
    "label": "Votes",
-   "non_negative": 1
+   "non_negative": 1,
+   "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2024-03-22 16:21:26.664401",
+ "modified": "2024-03-31 18:33:28.158318",
  "modified_by": "Administrator",
  "module": "Raven Messaging",
  "name": "Raven Poll Option",
