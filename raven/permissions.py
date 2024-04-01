@@ -142,3 +142,16 @@ def raven_message_query(user):
       but needed for security since we do not want users to be able to view messages from channels they are not a member of
     """
 	return f"`tabRaven Message`.owner = {frappe.db.escape(user)}"
+
+
+def raven_poll_vote_query(user):
+	if not user:
+		user = frappe.session.user
+
+	"""
+	  Only show votes created by the user using a WHERE clause
+
+	  Hence, we are adding a WHERE clause to the query - this is inconsequential since we will never use the standard get_list query for Raven Poll Vote,
+	  but needed for security since we do not want users to be able to view votes from polls they did not vote for
+	"""
+	return f"`tabRaven Poll Vote`.owner = {frappe.db.escape(user)}"
