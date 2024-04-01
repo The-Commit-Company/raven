@@ -30,7 +30,7 @@ def get_list():
 
 	users = frappe.db.get_all(
 		"Raven User",
-		fields=["full_name", "user_image", "name", "first_name", "enabled"],
+		fields=["full_name", "user_image", "name", "first_name", "enabled", "type"],
 		order_by="full_name",
 	)
 	return users

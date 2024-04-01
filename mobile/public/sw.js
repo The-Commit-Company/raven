@@ -28,19 +28,26 @@ try {
         if (payload.data.notification_icon) {
             notificationOptions["icon"] = payload.data.notification_icon
         }
+
+        if (payload.data.raven_message_type === "Image") {
+            notificationOptions["image"] = payload.data.content
+        }
+
+        if (payload.data.creation) {
+            notificationOptions["timestamp"] = payload.data.creation
+        }
+        const url = `${payload.data.base_url}/raven_mobile/channel/${payload.data.channel_id}`
         if (isChrome()) {
             notificationOptions["data"] = {
-                url: payload.data.click_action,
+                url: url,
             }
         } else {
-            if (payload.data.click_action) {
-                notificationOptions["actions"] = [
-                    {
-                        action: payload.data.click_action,
-                        title: "View",
-                    },
-                ]
-            }
+            notificationOptions["actions"] = [
+                {
+                    action: url,
+                    title: "View",
+                },
+            ]
         }
         self.registration.showNotification(notificationTitle, notificationOptions)
     })

@@ -1,6 +1,5 @@
 import { FrappeError, useFrappeGetCall } from 'frappe-react-sdk'
 import { PropsWithChildren, createContext } from 'react'
-import { useParams } from 'react-router-dom'
 import { KeyedMutator } from 'swr'
 
 export type Member = {
@@ -8,7 +7,8 @@ export type Member = {
     full_name: string
     user_image: string | null
     first_name: string
-    is_admin: 1 | 0
+    is_admin: 1 | 0,
+    type?: 'User' | 'Bot'
 }
 
 export type ChannelMembers = {

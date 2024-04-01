@@ -1,6 +1,5 @@
 import frappe
 from frappe import _
-from frappe.model.document import Document
 
 
 @frappe.whitelist()
@@ -157,6 +156,4 @@ def create_direct_message_channel(user_id):
 			}
 		)
 		channel.insert()
-		if frappe.session.user != user_id:
-			channel.add_members([user_id], 1)
 		return channel.name

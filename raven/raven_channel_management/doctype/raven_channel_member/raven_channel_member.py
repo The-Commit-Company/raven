@@ -5,17 +5,12 @@ import frappe
 from frappe import _
 from frappe.model.document import Document
 
+from raven.notification import subscribe_user_to_topic
+
 
 class RavenChannelMember(Document):
 	def before_validate(self):
 		self.last_visit = frappe.utils.now()
-
-	def validate(self):
-		if not self.check_if_user_is_member():
-			frappe.throw(
-				_("You don't have permission to add/modify members in this channel"),
-				frappe.PermissionError,
-			)
 
 	def before_insert(self):
 		# 1. A user cannot be a member of a channel more than once
@@ -89,6 +84,15 @@ class RavenChannelMember(Document):
 			else:
 				is_member = False
 		return is_member
+
+	def after_insert(self):
+		"""
+		Subscribe the user to the topic if the channel is not a DM
+		"""
+		is_direct_message = frappe.db.get_value("Raven Channel", self.channel_id, "is_direct_message")
+
+		if not is_direct_message:
+			subscribe_user_to_topic(self.channel_id, self.user_id)
 
 	def get_admin_count(self):
 		return frappe.db.count("Raven Channel Member", {"channel_id": self.channel_id, "is_admin": 1})

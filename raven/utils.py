@@ -53,3 +53,11 @@ def get_channel_member(channel_id, user=None):
 	return frappe.db.get_value(
 		"Raven Channel Member", {"channel_id": channel_id, "user_id": frappe.session.user}, "name"
 	)
+
+
+def get_raven_user(user_id: str) -> str:
+	"""
+	Get the Raven User ID of a user
+	"""
+	# TODO: Run this via cache
+	return frappe.db.get_value("Raven User", {"user": user_id}, "name")

@@ -1,81 +1,77 @@
-import { IonBackButton, IonButton, IonButtons, IonContent, IonFooter, IonHeader, IonIcon, IonToolbar, useIonViewWillEnter } from '@ionic/react'
-import { useFrappeDocumentEventListener, useFrappeEventListener, useFrappeGetCall } from 'frappe-react-sdk'
-import { useCallback, useContext, useMemo, useRef } from 'react'
-import { MessagesWithDate } from '../../../../../types/Messaging/Message'
+import { IonBackButton, IonButton, IonButtons, IonContent, IonFooter, IonHeader, IonIcon, IonSpinner, IonToolbar, useIonViewWillEnter } from '@ionic/react'
+import { useFrappeGetCall } from 'frappe-react-sdk'
+import { createContext, useMemo, useRef } from 'react'
 import { ErrorBanner } from '../../layout'
 import { ChatInput } from '../chat-input'
-import { ChatView } from './chat-view/ChatView'
 import { ChatHeader } from './chat-header'
 import { ChannelListItem, DMChannelListItem, useChannelList } from '@/utils/channel/ChannelListProvider'
 import { UserFields } from '@/utils/users/UserListProvider'
-import { peopleOutline } from 'ionicons/icons'
-import { Haptics, ImpactStyle } from '@capacitor/haptics'
-import { UserContext } from '@/utils/auth/UserProvider'
+import { arrowDownOutline, peopleOutline } from 'ionicons/icons'
 import { ChatLoader } from '@/components/layout/loaders/ChatLoader'
 import { MessageActionModal, useMessageActionModal } from './MessageActions/MessageActionModal'
 import useChatStream from './useChatStream'
+import { useInView } from 'react-intersection-observer'
+import { DateSeparator } from './chat-view/DateSeparator'
+import { MessageBlockItem } from './chat-view/MessageBlock'
+import ChatViewFirstMessage from './chat-view/ChatViewFirstMessage'
 
 export type ChannelMembersMap = Record<string, UserFields>
+export const ChannelMembersContext = createContext<ChannelMembersMap>({})
 
 export const ChatInterface = ({ channel }: { channel: ChannelListItem | DMChannelListItem }) => {
 
-    const { currentUser } = useContext(UserContext)
-    const initialDataLoaded = useRef(false)
     const conRef = useRef<HTMLIonContentElement>(null);
 
-    const scrollToBottom = useCallback((duration = 0, delay = 0) => {
-        setTimeout(() => {
-            conRef.current?.scrollToBottom(duration)
-        }, delay)
-    }, [])
-
     useIonViewWillEnter(() => {
-        scrollToBottom(0, 0)
+        conRef.current?.scrollToBottom()
     })
 
-    const onNewMessageLoaded = useCallback(() => {
-        /**
-                 * We need to scroll to the bottom of the chat interface if the user is already at the bottom.
-                 * If the user is not at the bottom, we need to show a button to scroll to the bottom.
-        */
-        if (conRef.current && !initialDataLoaded.current) {
-            scrollToBottom(0, 100)
-            initialDataLoaded.current = true
-        } else {
-            conRef.current?.getScrollElement().then((scrollElement) => {
+    const {
+        messages,
+        hasOlderMessages,
+        loadOlderMessages,
+        hasNewMessages,
+        loadNewerMessages,
+        loadingOlderMessages,
+        highlightedMessage,
+        scrollToMessage,
+        goToLatestMessages,
+        error,
+        isLoading } = useChatStream(channel.name, conRef)
 
-                const scrollHeight = scrollElement.scrollHeight
-                const clientHeight = scrollElement.clientHeight
-                const scrollTop = scrollElement.scrollTop
-                const isAtBottom = scrollHeight <= scrollTop + clientHeight
-                if (isAtBottom) {
-                    scrollToBottom(0, 100)
+
+    const onReplyMessageClick = (messageID: string) => {
+        scrollToMessage(messageID)
+    }
+
+    const { ref: oldLoaderRef } = useInView({
+        fallbackInView: true,
+        initialInView: false,
+        skip: !hasOlderMessages || loadingOlderMessages,
+        onChange: (async (inView) => {
+            if (inView && hasOlderMessages) {
+                const lastMessage = messages ? messages[0] : null;
+                await loadOlderMessages()
+                // Restore the scroll position to the last message before loading more
+                if (lastMessage?.message_type === 'date') {
+                    document.getElementById(`date-${lastMessage?.creation}`)?.scrollIntoView()
                 } else {
-                    // setNewMessagesAvailable(true)
+                    document.getElementById(`message-${lastMessage?.name}`)?.scrollIntoView()
                 }
-            })
+            }
+        })
+    });
+
+    const { ref: newLoaderRef } = useInView({
+        fallbackInView: true,
+        skip: !hasNewMessages,
+        initialInView: false,
+        onChange: (inView) => {
+            if (inView && hasNewMessages) {
+                loadNewerMessages()
+            }
         }
-
-    }, [scrollToBottom, conRef])
-
-    /**
-     * We have the channel data. We also have the channel list in a global context.
-     * Now we need to fetch:
-     * 1. All the messages in the channel - this is done outside and then sent to the ChatHistory component
-     * 2. All the users in the channel
-     * 
-     * */
-    // Fetch all the messages in the channel
-
-    const { messages, error, isLoading } = useChatStream(channel.name, conRef)
-    // const { data: messages, error: messagesError, mutate: refreshMessages, isLoading: isMessageLoading } = useFrappeGetCall<{ message: MessagesWithDate }>("raven.api.raven_message.get_messages_with_dates", {
-    //     channel_id: channel.name
-    // }, `get_messages_for_channel_${channel.name}`, {
-    //     keepPreviousData: true,
-    //     onSuccess: (data) => {
-    //         onNewMessageLoaded()
-    //     }
-    // })
+    });
 
     const { data: channelMembers } = useFrappeGetCall<{ message: ChannelMembersMap }>('raven.api.chat.get_channel_members', {
         channel_id: channel.name
@@ -84,13 +80,6 @@ export const ChatInterface = ({ channel }: { channel: ChannelListItem | DMChanne
         revalidateIfStale: false,
         revalidateOnReconnect: false
     })
-
-    const onMessageSend = () => {
-        Haptics.impact({
-            style: ImpactStyle.Light
-        })
-        scrollToBottom(0, 100)
-    }
 
     const { selectedMessage, onMessageSelected, onDismiss } = useMessageActionModal()
 
@@ -106,6 +95,7 @@ export const ChatInterface = ({ channel }: { channel: ChannelListItem | DMChanne
         }
         return []
     }, [channelMembers])
+
     return (
         <>
             <IonHeader>
@@ -122,27 +112,62 @@ export const ChatInterface = ({ channel }: { channel: ChannelListItem | DMChanne
                     </IonButtons>
                 </IonToolbar>
             </IonHeader>
-            <IonContent className='flex flex-col-reverse' fullscreen ref={conRef}>
+            <IonContent className='flex flex-col' fullscreen ref={conRef}>
+
+                <div ref={oldLoaderRef}>
+                    {hasOlderMessages && !isLoading && <div className='flex w-full min-h-8 py-4 justify-center items-center' >
+                        <IonSpinner name='lines' />
+                    </div>}
+                </div>
+                {!isLoading && !hasOlderMessages && <ChatViewFirstMessage channel={channel} />}
                 {isLoading && <ChatLoader />}
                 {error && <ErrorBanner error={error} />}
+
+
                 {messages &&
-                    <ChatView messages={messages} members={channelMembers?.message ?? {}} onMessageSelected={onMessageSelected} />
+                    <ChannelMembersContext.Provider value={channelMembers?.message ?? {}}>
+                        <div className='flex flex-col'>
+                            {messages.map((message) => {
+
+                                if (message.message_type === "date") {
+                                    return <DateSeparator
+                                        key={`date-${message.creation}`}
+                                        date={message.creation} />
+                                } else {
+                                    return (
+                                        <MessageBlockItem
+                                            key={`${message.name}_${message.modified}`}
+                                            message={message}
+                                            isHighlighted={highlightedMessage === message.name}
+                                            onReplyMessageClick={onReplyMessageClick}
+                                            onMessageSelect={onMessageSelected} />
+                                    )
+                                }
+                            }
+                            )}
+                        </div>
+                    </ChannelMembersContext.Provider>
                 }
 
+                {hasNewMessages && <div ref={newLoaderRef}>
+                    <div className='flex w-full min-h-8 pb-4 justify-center items-center'>
+                        <IonSpinner name='lines' />
+                    </div>
+                </div>}
+
                 {/* Commented out the button because it was unreliable. We only scroll to bottom when the user is at the bottom. */}
-                {/* <IonButton
+                {hasNewMessages && <IonButton
                     size='small'
                     type="button"
-                    onClick={() => scrollToBottom(200, 0)}
-                    hidden={!newMessagesAvailable}
+                    onClick={goToLatestMessages}
                     shape='round'
                     // fill="outline"
                     className="fixed bottom-24 left-1/2 -translate-x-1/2 "
                 >
-
                     New messages
                     <IonIcon slot="end" icon={arrowDownOutline} />
-                </IonButton> */}
+                </IonButton>
+                }
                 <div className='h-8'>
                 </div>
             </IonContent>
@@ -155,7 +180,7 @@ export const ChatInterface = ({ channel }: { channel: ChannelListItem | DMChanne
             border-t-zinc-900 border-t-[1px]
             pb-6
             pt-1'>
-                    <ChatInput channelID={channel.name} allMembers={parsedMembers} allChannels={parsedChannels} onMessageSend={onMessageSend} />
+                    <ChatInput channelID={channel.name} allMembers={parsedMembers} allChannels={parsedChannels} />
                 </div>
             </IonFooter>
             <MessageActionModal selectedMessage={selectedMessage} onDismiss={onDismiss} />

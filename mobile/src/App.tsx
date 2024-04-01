@@ -59,13 +59,6 @@ function App() {
 
   }
 
-  useEffect(() => {
-    //@ts-expect-error
-    window?.frappePushNotification?.onMessage((payload) => {
-      showNotification(payload)
-    })
-  }, [])
-
   return (
     <IonApp>
       <FrappeProvider

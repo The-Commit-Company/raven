@@ -40,7 +40,7 @@ export const ChatSpace: React.FC<RouteComponentProps<IdentityParam>> = (props) =
           })
 
           const total_unread_count_in_channels = newChannels.reduce((acc: number, c) => {
-            if (!c.user_id) {
+            if (!c.is_direct_message) {
               return acc + c.unread_count
             } else {
               return acc
@@ -48,7 +48,7 @@ export const ChatSpace: React.FC<RouteComponentProps<IdentityParam>> = (props) =
           }, 0)
 
           const total_unread_count_in_dms = newChannels.reduce((acc: number, c) => {
-            if (c.user_id) {
+            if (c.is_direct_message) {
               return acc + c.unread_count
             } else {
               return acc

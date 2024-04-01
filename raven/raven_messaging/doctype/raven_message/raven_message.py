@@ -6,7 +6,9 @@ import frappe
 from frappe import _
 from frappe.core.utils import html2text
 from frappe.model.document import Document
+from frappe.utils.data import get_timestamp
 
+from raven.notification import send_notification_to_topic, send_notification_to_user
 from raven.utils import track_channel_visit
 
 
@@ -20,12 +22,14 @@ class RavenMessage(Document):
 		from frappe.types import DF
 		from raven.raven_messaging.doctype.raven_mention.raven_mention import RavenMention
 
+		bot: DF.Link | None
 		channel_id: DF.Link
 		content: DF.LongText | None
 		file: DF.Attach | None
 		file_thumbnail: DF.Attach | None
 		image_height: DF.Data | None
 		image_width: DF.Data | None
+		is_bot_message: DF.Check
 		is_edited: DF.Check
 		is_reply: DF.Check
 		json: DF.JSON | None
@@ -74,7 +78,9 @@ class RavenMessage(Document):
 		If there is a linked message, the linked message should be in the same channel
 		"""
 		if self.linked_message:
-			if frappe.db.get_value("Raven Message", self.linked_message, "channel_id") != self.channel_id:
+			if (
+				frappe.get_cached_value("Raven Message", self.linked_message, "channel_id") != self.channel_id
+			):
 				frappe.throw(_("Linked message should be in the same channel"))
 	
 	def validate_poll_id(self):
@@ -159,7 +165,111 @@ class RavenMessage(Document):
 				if user_id and user_id not in entered_ids:
 					self.append("mentions", {"user": user_id})
 					entered_ids.add(user_id)
-					self.send_notification_for_mentions(user_id)
+
+	def send_push_notification(self):
+		# TODO: Send Push Notification for the following:
+		# 1. If the message is a direct message, send a push notification to the other user
+		# 2. If the message has mentions, send a push notification to the mentioned users if they belong to the channel
+		# 3. If the message is a reply, send a push notification to the user who is being replied to
+		# 4. If the message is in a channel, send a push notification to all the users in the channel (topic)
+		is_direct_message = frappe.get_cached_value(
+			"Raven Channel", self.channel_id, "is_direct_message"
+		)
+
+		if is_direct_message:
+			is_self_message = frappe.get_cached_value(
+				"Raven Channel Member", self.channel_id, "is_self_message"
+			)
+			if not is_self_message:
+				# The message was sent on a direct message channel
+				self.send_notification_for_direct_message()
+		else:
+			# The message was sent on a channel
+			self.send_notification_for_channel_message()
+			# channel_type = frappe.get_cached_value("Raven Channel", self.channel_id, "channel_type")
+
+	def get_notification_message_content(self):
+		"""
+		Gets the content of the message for the push notification
+		"""
+		if self.message_type == "File":
+			file_name = self.file.split("/")[-1]
+			return f"📄 Sent a file - {file_name}"
+		elif self.message_type == "Image":
+			return "📷 Sent a photo"
+		elif self.message_type == "Poll":
+			return "📊 Sent a poll"
+		elif self.text:
+			# Check if the message is a GIF
+			if "<img src=https://media.tenor.com" in self.text:
+				return "Sent a GIF"
+			else:
+				return self.text
+
+	def get_message_owner_name(self):
+		"""
+		Get the full name of the message owner
+		"""
+		return frappe.get_cached_value("Raven User", self.owner, "full_name")
+
+	def send_notification_for_direct_message(self):
+		"""
+		The message is sent on a DM channel. Get the other user in the channel and send a push notification
+		"""
+		peer_raven_user = frappe.db.get_value(
+			"Raven Channel Member",
+			{"channel_id": self.channel_id, "user_id": ("!=", self.owner)},
+			"user_id",
+		)
+
+		message = self.get_notification_message_content()
+
+		owner_name = self.get_message_owner_name()
+
+		send_notification_to_user(
+			user_id=peer_raven_user,
+			user_image_id=self.owner,
+			title=owner_name,
+			message=message,
+			data={
+				"message_id": self.name,
+				"channel_id": self.channel_id,
+				"raven_message_type": self.message_type,
+				"channel_type": "DM",
+				"content": self.content if self.message_type == "Text" else self.file,
+				"from_user": self.owner,
+				"type": "New message",
+				"creation": str(get_timestamp(self.creation)),
+			},
+		)
+
+	def send_notification_for_channel_message(self):
+		"""
+		The message was sent on a channel. Send a push notification to all the users in the channel (topic)
+		"""
+		message = self.get_notification_message_content()
+
+		channel_name = frappe.get_cached_value("Raven Channel", self.channel_id, "channel_name")
+
+		owner_name = self.get_message_owner_name()
+		title = f"{owner_name} in #{channel_name}"
+
+		send_notification_to_topic(
+			channel_id=self.channel_id,
+			user_image_id=self.owner,
+			title=title,
+			message=message,
+			data={
+				"message_id": self.name,
+				"channel_id": self.channel_id,
+				"raven_message_type": self.message_type,
+				"channel_type": "Channel",
+				"content": self.content if self.message_type == "Text" else self.file,
+				"from_user": self.owner,
+				"type": "New message",
+				"creation": str(get_timestamp(self.creation)),
+			},
+		)
 
 	def send_notification_for_mentions(self, user):
 		try:
@@ -221,6 +331,8 @@ class RavenMessage(Document):
 						"link_doctype": self.link_doctype,
 						"link_document": self.link_document,
 						"message_reactions": self.message_reactions,
+						"is_bot_message": self.is_bot_message,
+						"bot": self.bot,
 					},
 				},
 				doctype="Raven Channel",
@@ -228,7 +340,10 @@ class RavenMessage(Document):
 				docname=self.channel_id,
 			)
 		else:
+			after_commit = False
 			if self.message_type == "File" or self.message_type == "Image":
+				# If the message is a file or an image, then we need to wait for the file to be uploaded
+				after_commit = True
 				if not self.file:
 					return
 
@@ -261,14 +376,19 @@ class RavenMessage(Document):
 						"image_width": self.image_width,
 						"image_height": self.image_height,
 						"name": self.name,
+						"is_bot_message": self.is_bot_message,
+						"bot": self.bot,
 					},
 				},
 				doctype="Raven Channel",
 				# Adding this to automatically add the room for the event via Frappe
 				docname=self.channel_id,
+				after_commit=after_commit,
 			)
 			# track the visit of the user to the channel if a new message is created
 			frappe.enqueue(method=track_channel_visit, channel_id=self.channel_id, user=self.owner)
+
+			self.send_push_notification()
 
 	def on_trash(self):
 		# delete all the reactions for the message

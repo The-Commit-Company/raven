@@ -33,7 +33,10 @@ export const UserProvider: FC<PropsWithChildren> = ({ children }) => {
                 //Clear cache on logout
                 return mutate(() => true, undefined, false)
             })
-            .then(() => { })
+            .then(() => {
+                // @ts-expect-error
+                window.frappePushNotification?.disableNotification()
+            })
     }
 
     const handleLogin = async (username: string, password: string) => {

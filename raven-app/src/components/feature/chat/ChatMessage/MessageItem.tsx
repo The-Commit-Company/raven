@@ -1,4 +1,4 @@
-import { Avatar, Box, ContextMenu, Flex, HoverCard, Link, Separator, Text } from '@radix-ui/themes'
+import { Avatar, Badge, Box, ContextMenu, Flex, HoverCard, Link, Separator, Text, Theme } from '@radix-ui/themes'
 import { Message, MessageBlock } from '../../../../../../types/Messaging/Message'
 import { MessageContextMenu } from './MessageActions/MessageActions'
 import { DateTooltip, DateTooltipShort } from './Renderers/DateTooltip'
@@ -20,6 +20,7 @@ import { ReplyMessageBox } from './ReplyMessageBox/ReplyMessageBox'
 import { generateAvatarColor } from '../../select-member/GenerateAvatarColor'
 import { DoctypeLinkRenderer } from './Renderers/DoctypeLinkRenderer'
 import { useDebounce } from '@/hooks/useDebounce'
+import { RiRobot2Fill } from 'react-icons/ri'
 
 interface MessageBlockProps {
     message: Message,
@@ -32,9 +33,9 @@ interface MessageBlockProps {
 
 export const MessageItem = ({ message, setDeleteMessage, isHighlighted, onReplyMessageClick, setEditMessage, replyToMessage }: MessageBlockProps) => {
 
-    const { name, owner: userID, creation: timestamp, message_reactions, is_continuation, linked_message, replied_message_details } = message
+    const { name, owner: userID, is_bot_message, bot, creation: timestamp, message_reactions, is_continuation, linked_message, replied_message_details } = message
 
-    const { user, isActive } = useGetUserDetails(userID)
+    const { user, isActive } = useGetUserDetails(is_bot_message && bot ? bot : userID)
 
     const onDelete = () => {
         setDeleteMessage(message)
@@ -182,36 +183,50 @@ interface UserProps {
 export const MessageSenderAvatar = memo(({ user, userID, isActive = false }: UserProps) => {
 
     const alt = user?.full_name ?? userID
-    return <span className="relative inline-block">
-        <Avatar color={generateAvatarColor(user?.full_name ?? userID)} src={user?.user_image} alt={user?.full_name ?? userID} loading='lazy' fallback={getInitials(alt)} size={'2'} radius={'medium'} />
+
+    const isBot = user?.type === 'Bot'
+    const color = useMemo(() => generateAvatarColor(user?.full_name ?? userID), [user?.full_name, userID])
+    return <Theme accentColor={color}><span className="relative inline-block">
+        <Avatar src={user?.user_image} alt={user?.full_name ?? userID} loading='lazy' fallback={getInitials(alt)} size={'2'} radius={'medium'} />
         {isActive &&
             <span className={clsx("absolute block translate-x-1/2 translate-y-1/2 transform rounded-full", 'bottom-0.5 right-0.5')}>
                 <span className="block h-2 w-2 rounded-full border border-slate-2 bg-green-600 shadow-md" />
             </span>
         }
+        {isBot && <span className="absolute block translate-x-1/2 translate-y-1/2 transform rounded-full bottom-0.5 right-0.5">
+            <RiRobot2Fill className="text-accent-11 dark:text-accent-11" size="1rem" />
+        </span>}
     </span>
+    </Theme>
 })
 
 export const UserHoverCard = memo(({ user, userID, isActive }: UserProps) => {
 
+    const { isBot, fullName, userImage } = useMemo(() => {
+        return {
+            fullName: user?.full_name ?? userID,
+            userImage: user?.user_image ?? '',
+            isBot: user?.type === 'Bot'
+        }
+    }, [user, userID])
     return <HoverCard.Root>
         <HoverCard.Trigger>
-            <Link className='text-gray-12' weight='medium' size='2'>
-                {user?.full_name ?? userID}
+            <Link className='text-gray-12 flex items-center gap-1' weight='medium' size='2'>
+                {fullName} {isBot && <Badge color='gray' className='font-semibold px-1 py-0'>Bot</Badge>}
             </Link>
         </HoverCard.Trigger>
         <HoverCard.Content size='1'>
             <Flex gap='2' align='center'>
-                <UserAvatar src={user?.user_image} alt={user?.full_name ?? userID} size='4' />
+                <UserAvatar src={userImage} alt={fullName} size='4' isBot={isBot} />
                 <Flex direction='column'>
                     <Flex gap='3' align='center'>
-                        <Text className='text-gray-12' weight='bold' size='3'>{user?.full_name ?? userID}</Text>
+                        <Text className='text-gray-12' weight='bold' size='3'>{fullName}</Text>
                         {isActive && <Flex gap='1' align='center'>
                             <BsFillCircleFill className='text-green-500' size='8' />
                             <Text className='text-gray-10' size='1'>Online</Text>
                         </Flex>}
                     </Flex>
-                    {user && <Text className='text-gray-11' size='1'>{user?.name}</Text>}
+                    {user && !isBot && <Text className='text-gray-11' size='1'>{user?.name}</Text>}
                 </Flex>
             </Flex>
         </HoverCard.Content>

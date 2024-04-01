@@ -1,9 +1,10 @@
 import { useFrappeDocumentEventListener, useFrappeEventListener, useFrappeGetCall, useFrappePostCall } from 'frappe-react-sdk'
-import { MutableRefObject, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
+import { MutableRefObject, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { useBeforeUnload, useLocation, useNavigate, useParams } from 'react-router-dom'
 import { Message } from '../../../../../../types/Messaging/Message'
 import { convertFrappeTimestampToUserTimezone } from '@/utils/dateConversions/utils'
 import { useDebounce } from '@/hooks/useDebounce'
+import { UserContext } from '@/utils/auth/UserProvider'
 
 interface GetMessagesResponse {
     message: {
@@ -29,6 +30,8 @@ const useChatStream = (scrollRef: MutableRefObject<HTMLDivElement | null>) => {
     const location = useLocation()
     const navigate = useNavigate()
     const { state } = location
+
+    const { currentUser } = useContext(UserContext)
 
 
     const [highlightedMessage, setHighlightedMessage] = useState<string | null>(state?.baseMessage ? state.baseMessage : null)
@@ -195,8 +198,12 @@ const useChatStream = (scrollRef: MutableRefObject<HTMLDivElement | null>) => {
                     // If the user is focused on the page, then we also need to
                     if (scrollRef.current) {
                         // We only scroll to the bottom if the user is close to the bottom
-                        scrollRef.current?.scrollTo(0, scrollRef.current?.scrollHeight)
-                        // TODO: Else we show a notification that there are new messages
+                        if (scrollRef.current.scrollTop + scrollRef.current.clientHeight >= scrollRef.current.scrollHeight - 100) {
+                            scrollRef.current?.scrollTo(0, scrollRef.current?.scrollHeight)
+                        } else if (event.message_details.owner === currentUser) {
+                            // If the user is the sender of the message, scroll to the bottom
+                            scrollRef.current?.scrollTo(0, scrollRef.current?.scrollHeight)
+                        }
                     }
                 }
             })
@@ -487,6 +494,7 @@ const useChatStream = (scrollRef: MutableRefObject<HTMLDivElement | null>) => {
             // Use the id to scroll to the message
             document.getElementById(`message-${messageID}`)?.scrollIntoView({ behavior: 'smooth', block: 'center' })
             setHighlightedMessage(messageID)
+
         } else {
             // If not, change the base message, fetch the message and scroll to it.
             navigate(location, {
@@ -499,6 +507,12 @@ const useChatStream = (scrollRef: MutableRefObject<HTMLDivElement | null>) => {
 
     }
 
+    const goToLatestMessages = () => {
+        navigate(location, {
+            replace: true
+        })
+    }
+
     return {
         messages,
         hasOlderMessages: data?.message.has_old_messages ?? false,
@@ -509,7 +523,8 @@ const useChatStream = (scrollRef: MutableRefObject<HTMLDivElement | null>) => {
         loadNewerMessages,
         loadOlderMessages,
         scrollToMessage,
-        highlightedMessage
+        highlightedMessage,
+        goToLatestMessages
     }
 }
 

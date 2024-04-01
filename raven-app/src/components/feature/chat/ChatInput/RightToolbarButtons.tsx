@@ -6,6 +6,9 @@ import { Flex, IconButton, Inset, Popover, Separator } from '@radix-ui/themes'
 import { Loader } from '@/components/common/Loader'
 import { Suspense, lazy } from 'react'
 import { CreatePoll } from '../../polls/CreatePoll'
+import { HiOutlineGif } from "react-icons/hi2";
+import { GIFPicker } from '@/components/common/GIFPicker/GIFPicker'
+
 
 const EmojiPicker = lazy(() => import('@/components/common/EmojiPicker/EmojiPicker'))
 
@@ -35,6 +38,7 @@ export const RightToolbarButtons = ({ fileProps, ...sendProps }: RightToolbarBut
             <Separator orientation='vertical' />
             <Flex gap='3' align='center'>
                 <EmojiPickerButton />
+                <GIFPickerButton />
                 {fileProps && <FilePickerButton fileProps={fileProps} />}
                 <SendButton {...sendProps} />
             </Flex>
@@ -115,6 +119,39 @@ const EmojiPickerButton = () => {
     </Popover.Root>
 }
 
+const GIFPickerButton = () => {
+
+    const { editor } = useCurrentEditor()
+
+    if (!editor) {
+        return null
+    }
+
+    return <Popover.Root>
+        <Popover.Trigger>
+            <IconButton
+                size='1'
+                variant='ghost'
+                className={DEFAULT_BUTTON_STYLE}
+                title='Add GIF'
+                // disabled
+                aria-label={"add GIF"}>
+                <HiOutlineGif {...ICON_PROPS} />
+            </IconButton>
+        </Popover.Trigger>
+        <Popover.Content>
+            <Inset>
+                <Suspense fallback={<Loader />}>
+                    {/* FIXME: 1. Handle 'HardBreak' coz it adds newline (empty); and if user doesn't write any text, then newline is added as text content.
+                               2. Also if you write first & then add GIF there's no 'HardBreak'.
+                    */}
+                    <GIFPicker onSelect={(gif) => editor.chain().focus().setImage({ src: gif.media_formats.gif.url }).setHardBreak().run()} />
+                </Suspense>
+            </Inset>
+        </Popover.Content>
+    </Popover.Root>
+}
+
 const FilePickerButton = ({ fileProps }: { fileProps: ToolbarFileProps }) => {
     const { editor } = useCurrentEditor()
     const fileButtonClicked = () => {
@@ -148,9 +185,13 @@ const SendButton = ({ sendMessage, messageSending, setContent }: {
 
             const hasContent = editor.getText().trim().length > 0
 
+            console.log("Editor content: ", editor.getJSON())
+
+            const hasInlineImage = editor.getHTML().includes('img')
+
             let html = ''
             let json = {}
-            if (hasContent) {
+            if (hasContent || hasInlineImage) {
                 html = editor.getHTML()
                 json = editor.getJSON()
             }

@@ -1,9 +1,10 @@
 import { useFrappeDocumentEventListener, useFrappeEventListener, useFrappeGetCall, useFrappePostCall } from 'frappe-react-sdk'
-import { RefObject, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
+import { RefObject, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { DateObjectToFormattedDateString } from '@/utils/operations/operations'
 import { useDebounce } from '@/hooks/useDebounce'
 import { Message } from '../../../../../types/Messaging/Message'
 import { useIonViewWillLeave } from '@ionic/react'
+import { UserContext } from '@/utils/auth/UserProvider'
 
 const parseDateString = (date: string) => {
     const dateObj = new Date(date)
@@ -27,9 +28,11 @@ export type MessageDateBlock = Message | {
 /**
  * Hook to fetch messages to be rendered on the chat interface
  */
-const useChatStream = (channelID: string, scrollRef: RefObject<HTMLIonContentElement>, baseMessage?: string, onBaseMessageChange?: (messageID: string) => void) => {
+const useChatStream = (channelID: string, scrollRef: RefObject<HTMLIonContentElement>) => {
 
 
+    const { currentUser } = useContext(UserContext)
+    const [baseMessage, setBaseMessage] = useState<string | null>(null)
     const [highlightedMessage, setHighlightedMessage] = useState<string | null>(baseMessage ? baseMessage : null)
 
     useEffect(() => {
@@ -175,15 +178,23 @@ const useChatStream = (channelID: string, scrollRef: RefObject<HTMLIonContentEle
             }).then(() => {
                 // If the user is focused on the page, then we also need to
                 if (scrollRef.current) {
-                    // We only scroll to the bottom if the user is close to the bottom
-                    scrollRef.current.scrollToBottom()
-                    // TODO: Else we show a notification that there are new messages
-                    if (scrollRef.current.scrollTop !== 0) {
-
+                    if (event.message_details.owner === currentUser) {
+                        // If the message is sent by the current user, scroll to the bottom
+                        scrollRef.current.scrollToBottom(100)
+                    } else {
+                        scrollRef.current?.getScrollElement().then((scrollElement) => {
+                            // We only scroll to the bottom if the user is close to the bottom
+                            const scrollHeight = scrollElement.scrollHeight
+                            const clientHeight = scrollElement.clientHeight
+                            const scrollTop = scrollElement.scrollTop
+                            const isAtBottom = scrollHeight <= scrollTop + clientHeight
+                            if (isAtBottom) {
+                                scrollRef.current?.scrollToBottom(100)
+                            }
+                        })
                     }
                 }
             })
-
         }
     })
 
@@ -472,10 +483,15 @@ const useChatStream = (channelID: string, scrollRef: RefObject<HTMLIonContentEle
             setHighlightedMessage(messageID)
         } else {
             // If not, change the base message, fetch the message and scroll to it.
-            onBaseMessageChange?.(messageID)
+            setBaseMessage?.(messageID)
             setHighlightedMessage(messageID)
         }
+    }
 
+    const goToLatestMessages = () => {
+        setBaseMessage(null)
+        setHighlightedMessage(null)
+        scrollRef.current?.scrollToBottom(200)
     }
 
     return {
@@ -488,7 +504,8 @@ const useChatStream = (channelID: string, scrollRef: RefObject<HTMLIonContentEle
         loadNewerMessages,
         loadOlderMessages,
         scrollToMessage,
-        highlightedMessage
+        highlightedMessage,
+        goToLatestMessages
     }
 }
 
