@@ -50,10 +50,10 @@ export const MessageActionModal = ({ selectedMessage, onDismiss }: MessageAction
     return (
         <IonModal
             isOpen={!!selectedMessage}
-            breakpoints={[0, 0.75, 0.9]}
+            breakpoints={[0, 0.45, 0.9]}
             id='message-action-modal'
             ref={modalRef}
-            initialBreakpoint={0.75}
+            initialBreakpoint={0.45}
             onWillDismiss={onDismiss}>
             <IonContent className="ion-padding" style={{
                 pointerEvents: enablePointerEvents ? 'all' : 'none'

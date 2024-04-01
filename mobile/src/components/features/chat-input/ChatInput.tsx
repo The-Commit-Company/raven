@@ -55,9 +55,9 @@ export const ChatInput = ({ channelID, allChannels, allMembers }: Props) => {
     }
 
     return (
-        <div className='flex justify-between items-end content-start px-4 py-2 overflow-visible space-x-2'>
+        <div className='flex justify-between items-end content-start px-2 overflow-visible space-x-2'>
             <div className='overflow-x-hidden w-full'>
-                <Tiptap onMessageSend={onSubmit} messageSending={loading} onPickFiles={pickFiles} onGetFiles={getFiles} fileRef={fileInputRef}/>
+                <Tiptap onMessageSend={onSubmit} messageSending={loading} onPickFiles={pickFiles} onGetFiles={getFiles} fileRef={fileInputRef} />
             </div>
             <FileUploadModal channelID={channelID} files={files} setFiles={setFiles} pickFiles={pickFiles} onMessageSend={onMessageSend} />
         </div>

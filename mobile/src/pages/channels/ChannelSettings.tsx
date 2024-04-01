@@ -21,9 +21,9 @@ export const ChannelSettings = () => {
     return (
         <IonPage ref={pageRef}>
             <IonHeader>
-                <div className='px-2 py-2 inset-x-0 top-0 overflow-hidden flex gap-2 items-center min-h-5 bg-background border-b-foreground/10 border-b'>
+                <div className='px-2 py-2 inset-x-0 top-0 overflow-hidden flex gap-2 items-center min-h-5 bg-background border-b-gray-4 border-b'>
                     <div className='flex items-center justify-start'>
-                        <IonBackButton color="dark" text="" className='back-button' />
+                        <IonBackButton color="medium" text="" className='back-button' />
                     </div>
                 </div>
             </IonHeader>
@@ -72,7 +72,7 @@ export const ChannelSettings = () => {
                             {
                                 channelMembers.map((member) => (
                                     <div className="flex flex-col items-center rounded-lg shadow-sm gap-y-1" key={member.name}>
-                                        <CustomAvatar alt={member.full_name} src={member.user_image} sizeClass="w-12 h-12"/>
+                                        <CustomAvatar alt={member.full_name} src={member.user_image} sizeClass="w-12 h-12" />
                                         <span className="text-xs font-medium text-center line-clamp-2 overflow-ellipsis w-16">{member.full_name}</span>
                                     </div>
                                 ))

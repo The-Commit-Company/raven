@@ -1,6 +1,9 @@
 import { FrappeError } from 'frappe-react-sdk'
 import { useMemo } from 'react'
 import { MarkdownRenderer } from '../common/MarkdownRenderer'
+import { ErrorCallout } from '../common/Callouts'
+import { Callout, Text } from '@radix-ui/themes'
+import { FiAlertCircle } from 'react-icons/fi'
 
 interface ErrorBannerProps {
     error?: FrappeError | null,
@@ -63,9 +66,14 @@ export const ErrorBanner = ({ error, overrideHeading, ...props }: ErrorBannerPro
 
     if (messages.length === 0) return null
     return (
-        <div key='error' className="ion-margin bg-zinc-900 border-l-4 border-red-500 p-4" role="alert">
-            <p className="font-bold text-red-400">{overrideHeading ?? parseHeading(messages[0])}</p>
-            {messages.map((m, i) => <MarkdownRenderer key={i} content={m.message} />)}
-        </div>
+        <Callout.Root color='red' variant='soft'>
+            <Callout.Icon>
+                <FiAlertCircle size="18" />
+            </Callout.Icon>
+            <Callout.Text>
+                <Text weight='bold'>{overrideHeading ?? parseHeading(messages[0])}</Text>
+                {messages.map((m, i) => <MarkdownRenderer key={i} content={m.message} />)}
+            </Callout.Text>
+        </Callout.Root>
     )
 }

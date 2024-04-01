@@ -1,6 +1,6 @@
 import { Message } from '../../../../../../types/Messaging/Message'
 import { UserFields } from '@/utils/users/UserListProvider'
-import { UserAvatarBlock } from '../chat-view/MessageBlock'
+import { MessageSenderAvatar } from '../chat-view/MessageBlock'
 import { IonText } from '@ionic/react'
 import { DateObjectToTimeString } from '@/utils/operations/operations'
 import parse from 'html-react-parser';
@@ -9,9 +9,9 @@ type MessagePreview = { message: Message, user?: UserFields }
 
 const MessagePreview = ({ message, user }: MessagePreview) => {
     return (
-        <div className='px-2 mt-3 py-1 rounded-md flex'>
-            <div>
-                <UserAvatarBlock message={message} user={user} />
+        <div className='px-2 mt-2 py-1 rounded-md flex'>
+            <div className='-mt-0.5'>
+                <MessageSenderAvatar user={user} userID={user?.name ?? ''} />
             </div>
             <div className='overflow-x-clip'>
                 <div className='flex items-end pb-1.5'>

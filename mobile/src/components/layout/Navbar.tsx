@@ -56,13 +56,13 @@ export const Navbar = () => {
                 <IonBadge color='light' hidden={unread_count?.message.total_unread_count_in_channels === 0}>{unread_count?.message.total_unread_count_in_channels}</IonBadge>
                 <IonIcon hidden />
                 <BiHash size={24} className="mb-0.5" />
-                <IonLabel className="font-semibold">Channels</IonLabel>
+                <IonLabel>Channels</IonLabel>
             </IonTabButton>
             <IonTabButton tab="direct-messages" href="/direct-messages">
                 <IonBadge color='light' hidden={unread_count?.message.total_unread_count_in_dms === 0}>{unread_count?.message.total_unread_count_in_dms}</IonBadge>
                 <IonIcon hidden />
                 <BiChat size={24} className="mb-0.5" />
-                <IonLabel className="font-semibold">DM's</IonLabel>
+                <IonLabel>DM's</IonLabel>
             </IonTabButton>
             {/* <IonTabButton tab="search" href="/search">
                 <BiSearch size={30} />
@@ -73,7 +73,7 @@ export const Navbar = () => {
             <IonTabButton tab="profile" href="/profile">
                 <IonIcon hidden />
                 <BiUser size={24} />
-                <IonLabel className="font-semibold">Profile</IonLabel>
+                <IonLabel>Profile</IonLabel>
             </IonTabButton>
         </IonTabBar>
     </IonTabs>

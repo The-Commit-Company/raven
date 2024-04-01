@@ -13,7 +13,7 @@ const Avatar = React.forwardRef<
   <AvatarPrimitive.Root
     ref={ref}
     className={cn(
-      "relative flex h-10 w-10 shrink-0 overflow-hidden rounded-lg",
+      "relative flex h-10 w-10 shrink-0 overflow-hidden rounded-md",
       className
     )}
     {...props}
@@ -27,7 +27,7 @@ const AvatarImage = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <AvatarPrimitive.Image
     ref={ref}
-    className={cn("aspect-square h-full w-full rounded-lg", className)}
+    className={cn("aspect-square h-full w-full rounded-md", className)}
     {...props}
   />
 ))
@@ -65,7 +65,7 @@ const CustomAvatar = ({ src, alt, slot, sizeClass = 'w-8 h-8', isActive, ...prop
       <AvatarFallback className={getAvatarColor(alt)} >{getFallbackInitials(alt)}</AvatarFallback>
     </Avatar>
     {isActive &&
-      <span className="absolute bottom-0.5 right-0.5 block translate-x-1/2 translate-y-1/2 transform rounded-lg">
+      <span className="absolute bottom-0.5 right-0.5 block translate-x-1/2 translate-y-1/2 transform rounded-md">
         <span className="block h-2 w-2 rounded-lg shadow-md bg-green-600" />
       </span>
     }

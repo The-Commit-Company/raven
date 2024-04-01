@@ -1566,6 +1566,11 @@
     ionicons "^7.2.2"
     tslib "^2.1.0"
 
+"@ionic/react-hooks@^0.0.8":
+  version "0.0.8"
+  resolved "https://registry.yarnpkg.com/@ionic/react-hooks/-/react-hooks-0.0.8.tgz#3d036aaeffbb7b136ac411c896e907fb59bdbf92"
+  integrity sha512-0U9hoPByJxd4/Sdx/uad2sDYCgQmQdG0nt+UNEzkk6IF4TjNVAQPcFQ6nJIc2oiUAMjaxzoLKmG8ziamuyfZaQ==
+
 "@ionic/react-router@^7.7.3":
   version "7.8.1"
   resolved "https://registry.yarnpkg.com/@ionic/react-router/-/react-router-7.8.1.tgz#4553a9a36ae364cf9f844aa099f1e40469550f8f"
@@ -2902,6 +2907,11 @@
   dependencies:
     "@types/node" "*"
 
+"@types/scheduler@*":
+  version "0.23.0"
+  resolved "https://registry.yarnpkg.com/@types/scheduler/-/scheduler-0.23.0.tgz#0a6655b3e2708eaabca00b7372fafd7a792a7b09"
+  integrity sha512-YIoDCTH3Af6XM5VuwGG/QL/CJqga1Zm3NkU3HZ4ZHK2fRMPYP1VczsTUqtsf43PH/iJNVlPHAo2oWX7BSdB2Hw==
+
 "@types/slice-ansi@^4.0.0":
   version "4.0.0"
   resolved "https://registry.yarnpkg.com/@types/slice-ansi/-/slice-ansi-4.0.0.tgz#eb40dfbe3ac5c1de61f6bcb9ed471f54baa989d6"
@@ -2926,6 +2936,11 @@
   version "2.0.10"
   resolved "https://registry.yarnpkg.com/@types/unist/-/unist-2.0.10.tgz#04ffa7f406ab628f7f7e97ca23e290cd8ab15efc"
   integrity sha512-IfYcSBWE3hLpBg8+X2SEa8LVkJdJEkT2Ese2aaLs3ptGdVtABxndrMaxuFlQ1qdFf9Q5rDvDpxI3WwgvKFAsQA==
+
+"@uidotdev/usehooks@^2.4.1":
+  version "2.4.1"
+  resolved "https://registry.yarnpkg.com/@uidotdev/usehooks/-/usehooks-2.4.1.tgz#4b733eaeae09a7be143c6c9ca158b56cc1ea75bf"
+  integrity sha512-1I+RwWyS+kdv3Mv0Vmc+p0dPYH0DTRAo04HLyXReYBL9AeseDWUJyi4THuksBJcu9F0Pih69Ak150VDnqbVnXg==
 
 "@ungap/structured-clone@^1.0.0", "@ungap/structured-clone@^1.2.0":
   version "1.2.0"

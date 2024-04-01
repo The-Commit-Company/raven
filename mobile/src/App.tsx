@@ -20,7 +20,7 @@ import '@ionic/react/css/flex-utils.css';
 import '@ionic/react/css/display.css';
 
 // import './styles/global.css';
-import './styles/variables.css';
+
 import { FrappeProvider } from 'frappe-react-sdk';
 import { UserProvider } from './utils/auth/UserProvider';
 import { Routes } from './utils/auth/Routes';
@@ -30,6 +30,7 @@ import { ActiveUsersProvider } from './utils/users/ActiveUsersProvider';
 import { createAnimation, iosTransitionAnimation } from '@ionic/core';
 import { isPlatform } from '@ionic/react';
 import { Theme } from '@radix-ui/themes';
+import './styles/variables.css';
 
 const animationBuilder: AnimationBuilder = (baseEl, opts) => {
   if (opts.direction === "back") {

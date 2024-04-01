@@ -2,8 +2,7 @@ import { BiGlobe, BiHash, BiLockAlt } from 'react-icons/bi'
 import { ChannelListItem, UnreadCountData } from '@/utils/channel/ChannelListProvider'
 import { useMemo } from 'react'
 import { Link } from 'react-router-dom'
-import { Label } from '@/components/ui/label'
-import { Badge } from '@/components/ui/badge'
+import { Badge, Text } from '@radix-ui/themes'
 
 interface ChannelListProps {
     data: ChannelListItem[],
@@ -12,12 +11,12 @@ interface ChannelListProps {
 
 export const ChannelList = ({ data, unread_count }: ChannelListProps) => {
     return (
-        <div className='pb-4'>
+        <ul className='pb-4'>
             {data?.map(channel => <ChannelItem
                 channel={channel}
                 unreadCount={unread_count?.channels ?? []}
                 key={channel.name} />)}
-        </div>
+        </ul>
     )
 }
 
@@ -26,19 +25,19 @@ const ChannelItem = ({ channel, unreadCount }: { channel: ChannelListItem, unrea
     const unreadCountForChannel = useMemo(() => unreadCount.find((unread) => unread.name == channel.name)?.unread_count, [channel.name, unreadCount])
 
     return (
-        <Link to={`/channel/${channel.name}`}>
-            <li key={channel.name} className="list-none px-4 py-3 active:bg-accent active:rounded">
+        <li key={channel.name} className="list-none">
+            <Link to={`/channel/${channel.name}`} className='block px-4 py-2.5 active:bg-accent active:rounded'>
                 <div className='flex justify-between items-center text-foreground'>
-                    <div className='flex items-center space-x-2 w-5/6'>
+                    <div className='flex items-center space-x-2'>
                         <div>
-                            {channel.type === "Private" ? <BiLockAlt size='18' /> : channel.type === "Public" ? <BiHash size='18' /> :
-                                <BiGlobe size='18' />}
+                            {channel.type === "Private" ? <BiLockAlt size='20' /> : channel.type === "Public" ? <BiHash size='20' /> :
+                                <BiGlobe size='20' />}
                         </div>
-                        <Label className='w-5/6 cursor-pointer'>{channel.channel_name}</Label>
+                        <Text size='3' weight='medium'>{channel.channel_name}</Text>
                     </div>
-                    {unreadCountForChannel ? <Badge>{unreadCountForChannel < 100 ? unreadCountForChannel : '99'}</Badge> : null}
+                    {unreadCountForChannel ? <Badge radius='large' size='2' variant='solid'>{unreadCountForChannel < 100 ? unreadCountForChannel : '99'}</Badge> : null}
                 </div>
-            </li>
-        </Link>
+            </Link>
+        </li>
     )
 }

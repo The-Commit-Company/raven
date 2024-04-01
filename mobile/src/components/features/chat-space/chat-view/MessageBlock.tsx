@@ -1,4 +1,4 @@
-import { useContext, useMemo } from 'react'
+import { memo, useContext, useMemo } from 'react'
 import { FileMessage, ImageMessage, Message, TextMessage } from '../../../../../../types/Messaging/Message'
 import { IonIcon, IonSkeletonText, IonText } from '@ionic/react'
 import { MarkdownRenderer } from '@/components/common/MarkdownRenderer'
@@ -9,21 +9,34 @@ import { openOutline } from 'ionicons/icons'
 import { Haptics, ImpactStyle } from '@capacitor/haptics'
 import { useIsUserActive } from '@/hooks/useIsUserActive'
 import { useInView } from 'react-intersection-observer';
-import useLongPress from '@/hooks/useLongPress'
+import { useLongPress } from "@uidotdev/usehooks";
 import MessageReactions from './components/MessageReactions'
 import parse from 'html-react-parser';
 import clsx from 'clsx'
-import { CustomAvatar } from '@/components/ui/avatar'
+import { Avatar, Badge, Text, Theme } from '@radix-ui/themes'
+import { useGetUser } from '@/hooks/useGetUser'
+import { generateAvatarColor, getInitials } from '@/components/common/UserAvatar'
+import { RiRobot2Fill } from 'react-icons/ri'
 
 type Props = {
     message: Message,
     onMessageSelect: (message: Message) => void,
     isHighlighted?: boolean,
-    onReplyMessageClick: (messageID: string) => void
+    onReplyMessageClick: (messageID: string) => void,
+    isScrolling: boolean
 }
 
-export const MessageBlockItem = ({ message, onMessageSelect, isHighlighted = false, onReplyMessageClick }: Props) => {
-    const members = useContext(ChannelMembersContext)
+export const useGetUserDetails = (userID: string) => {
+
+    const user = useGetUser(userID)
+
+    const isActive = useIsUserActive(userID)
+
+    return { user, isActive }
+}
+
+export const MessageBlockItem = ({ message, onMessageSelect, isScrolling, isHighlighted = false, onReplyMessageClick }: Props) => {
+
     /**
      * Displays a message block in the chat interface
      * A message can have the following properties:
@@ -32,18 +45,18 @@ export const MessageBlockItem = ({ message, onMessageSelect, isHighlighted = fal
      * 3. Message Type - Text, Image, File - will need to show the content accordingly
      */
 
-    const user = members[message.owner]
-
     return (
-        <div className='px-2 my-0 animate-fadein' id={`message-${message.name}`}>
+        <div className='px-2 my-0' id={`message-${message.name}`}>
             {message.is_continuation === 0 ? <NonContinuationMessageBlock
                 message={message}
                 isHighlighted={isHighlighted}
+                isScrolling={isScrolling}
                 onMessageSelect={onMessageSelect}
                 onReplyMessageClick={onReplyMessageClick}
-                user={user} /> :
+            /> :
                 <ContinuationMessageBlock
                     message={message}
+                    isScrolling={isScrolling}
                     isHighlighted={isHighlighted}
                     onReplyMessageClick={onReplyMessageClick}
                     onMessageSelect={onMessageSelect} />}
@@ -53,33 +66,38 @@ export const MessageBlockItem = ({ message, onMessageSelect, isHighlighted = fal
 
 interface NonContinuationMessageBlockProps {
     message: Message,
-    user?: UserFields,
     onMessageSelect: (message: Message) => void,
     isHighlighted: boolean,
-    onReplyMessageClick: (messageID: string) => void
+    onReplyMessageClick: (messageID: string) => void,
+    isScrolling: boolean
 }
-export const NonContinuationMessageBlock = ({ message, user, onMessageSelect, isHighlighted, onReplyMessageClick }: NonContinuationMessageBlockProps) => {
 
-    const onLongPress = () => {
+export const NonContinuationMessageBlock = ({ message, onMessageSelect, isScrolling, isHighlighted, onReplyMessageClick }: NonContinuationMessageBlockProps) => {
+
+    const { user, isActive } = useGetUserDetails(message.is_bot_message && message.bot ? message.bot : message.owner)
+
+    const longPressEvent = useLongPress((e) => {
+        if (isScrolling) return
         Haptics.impact({
             style: ImpactStyle.Medium
         })
         onMessageSelect(message)
-    }
+    })
 
-    const longPressEvent = useLongPress(onLongPress)
+    const isBot = user?.type === 'Bot'
+    // const color = useMemo(() => generateAvatarColor(user?.full_name ?? userID), [user?.full_name, userID])
     return <div>
-        {/* @ts-expect-error */}
-        <div className={clsx('px-2 mt-3 py-1 rounded-md flex active:bg-[color:var(--ion-color-light)]',
+        <div className={clsx('px-2 mt-1 py-1 rounded-md select-none flex active:bg-gray-3 focus:bg-gray-3 focus-visible:bg-gray-3 focus-within:bg-gray-3',
             isHighlighted ? 'bg-yellow-300/20 dark:bg-yellow-300/20' : '')} {...longPressEvent}>
-            <UserAvatarBlock message={message} user={user} />
+            <MessageSenderAvatar user={user} userID={message.owner} isActive={isActive} />
             <div>
                 <div className='flex items-baseline'>
-                    <p className="text-foreground text-sm font-medium leading-normal tracking-normal">{user?.full_name ?? message.owner}</p>
-                    <p className='text-xs pl-1.5 text-foreground/50'>{DateObjectToTimeString(message.creation)}</p>
+                    <Text as='span' className='font-semibold' size='3'>{user?.full_name ?? message.owner}</Text>
+                    {isBot && <Badge className='ml-2' color='gray'>Bot</Badge>}
+                    <Text as='span' size='1' className='pl-1.5 text-gray-10'>{DateObjectToTimeString(message.creation)}</Text>
                 </div>
                 <MessageContent message={message} onReplyMessageClick={onReplyMessageClick} />
-                {message.is_edited === 1 && <IonText className='text-xs' color={'medium'}>(edited)</IonText>}
+                {message.is_edited === 1 && <Text size='1' color='gray'>(edited)</Text>}
             </div>
         </div>
         <div className='pl-12 m-1'>
@@ -89,33 +107,54 @@ export const NonContinuationMessageBlock = ({ message, user, onMessageSelect, is
     </div>
 }
 
-export const UserAvatarBlock = ({ message, user }: { message: Message, user?: UserFields }) => {
-
-    const isActive = useIsUserActive(user?.name ?? message.owner)
-    return <div className='w-11 mt-0.5'>
-        <CustomAvatar alt={user?.full_name ?? message.owner} src={user?.user_image} isActive={isActive} />
-    </div>
+interface UserProps {
+    user?: UserFields
+    userID: string,
+    isActive?: boolean
 }
+
+export const MessageSenderAvatar = memo(({ user, userID, isActive = false }: UserProps) => {
+
+    const alt = user?.full_name ?? userID
+
+    const isBot = user?.type === 'Bot'
+    const color = useMemo(() => generateAvatarColor(user?.full_name ?? userID), [user?.full_name, userID])
+    return <Theme accentColor={color}>
+        <div className='w-11 mt-1'>
+            <span className="relative inline-block">
+                <Avatar src={user?.user_image} alt={user?.full_name ?? userID} loading='lazy' fallback={getInitials(alt)} size={'2'} radius={'medium'} />
+                {isActive &&
+                    <span className={clsx("absolute block translate-x-1/2 translate-y-1/2 transform rounded-full", 'bottom-0.5 right-0.5')}>
+                        <span className="block h-2.5 w-2.5 rounded-full border border-slate-2 bg-green-600 shadow-md" />
+                    </span>
+                }
+                {isBot && <span className="absolute block translate-x-1/2 translate-y-1/2 transform rounded-full bottom-0.5 right-1">
+                    <RiRobot2Fill className="text-accent-11 dark:text-accent-11" size="1rem" />
+                </span>}
+            </span>
+        </div>
+    </Theme>
+})
 
 interface ContinuationMessageBlockProps {
     message: Message,
     onMessageSelect: (message: Message) => void,
     isHighlighted: boolean
-    onReplyMessageClick: (messageID: string) => void
+    onReplyMessageClick: (messageID: string) => void,
+    isScrolling: boolean
 }
-const ContinuationMessageBlock = ({ message, onMessageSelect, isHighlighted, onReplyMessageClick }: ContinuationMessageBlockProps) => {
-    const onLongPress = () => {
+const ContinuationMessageBlock = ({ message, onMessageSelect, isScrolling, isHighlighted, onReplyMessageClick }: ContinuationMessageBlockProps) => {
+
+    const longPressEvent = useLongPress((e) => {
+        if (isScrolling) return
         Haptics.impact({
             style: ImpactStyle.Medium
         })
         onMessageSelect(message)
-    }
-
-    const longPressEvent = useLongPress(onLongPress)
+    })
 
     return <div>
-        {/* @ts-expect-error */}
-        <div className={clsx('px-2 py-0.5 flex rounded-md  active:bg-[color:var(--ion-color-light)]',
+        <div className={clsx('px-2 py-1 flex rounded-md select-none active:bg-gray-3 focus:bg-gray-3 focus-visible:bg-gray-3 focus-within:bg-gray-3',
             isHighlighted ? 'bg-yellow-300/20 dark:bg-yellow-300/20' : '')} {...longPressEvent}>
             <div className='w-11'>
             </div>
@@ -147,7 +186,7 @@ const MessageContent = ({ message, onReplyMessageClick }: { message: Message, on
                 <ReplyBlock message={JSON.parse(message.replied_message_details)} />
             </div>
         }
-        {message.message_type === 'Text' && <div className='text-foreground text-sm font-normal leading-normal tracking-normal'><TextMessageBlock message={message} /></div>}
+        {message.text && <div><TextMessageBlock message={message as TextMessage} /></div>}
         {message.message_type === 'Image' && <ImageMessageBlock message={message} />}
         {message.message_type === 'File' && <FileMessageBlock message={message} />}
     </div>

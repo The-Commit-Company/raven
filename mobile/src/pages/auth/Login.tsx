@@ -22,7 +22,7 @@ export const Login = (props: ActiveScreenProps) => {
         }
     })
     // GET call for Login Context (settings for social logins, email link etc)
-    const { data: loginContext, mutate } = useFrappeGetCall<AuthContext>('raven.api.login.get_context', {
+    const { data: loginContext } = useFrappeGetCall<AuthContext>('raven.api.login.get_context', {
         "redirect-to": "/raven_mobile"
     }, 'raven.api.login.get_context')
     const [error, setError] = useState<FrappeError | null>(null)

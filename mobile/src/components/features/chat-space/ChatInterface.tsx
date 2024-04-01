@@ -1,6 +1,6 @@
 import { IonHeader, IonFooter, IonContent, useIonViewWillEnter, IonBackButton, IonButton, IonIcon, IonSpinner } from '@ionic/react'
 import { useFrappeGetCall } from 'frappe-react-sdk'
-import { useMemo, useRef, createContext } from 'react'
+import { useMemo, useRef, createContext, useState } from 'react'
 import { ErrorBanner } from '../../layout'
 import { ChatInput } from '../chat-input'
 import { ChatHeader } from './chat-header'
@@ -99,36 +99,44 @@ export const ChatInterface = ({ channel }: { channel: ChannelListItem | DMChanne
         return []
     }, [channelMembers])
 
-    const checkIsNotOpenChannel = () => (channel.type !== 'Open' && !channel.is_direct_message)
+    const isOpenChannel = channel.type === 'Open'
+
+    const [isScrolling, setIsScrolling] = useState(false)
 
     return (
         <>
             <IonHeader>
-                <div className='px-2 py-2 inset-x-0 top-0 overflow-hidden min-h-5 bg-background border-b-foreground/10 border-b'>
+                <div className='px-2 py-2 inset-x-0 top-0 overflow-hidden min-h-5 bg-background border-b border-b-gray-4'>
                     <div className='flex gap-2 items-center'>
                         <div className='flex items-center'>
-                            <IonBackButton color="dark" text="" className='back-button' />
+                            <IonBackButton color='medium' text="" className='back-button' />
                         </div>
                         <div className='flex items-center justify-between gap-2 w-full'>
                             <div className='grow p-1'>
                                 {
-                                    checkIsNotOpenChannel() ? 
-                                    <Link to={`${channel.name}/channel-settings`}>
-                                        <ChatHeader channel={channel} />
-                                    </Link> :
-                                    <ChatHeader channel={channel} />
+                                    isOpenChannel ?
+
+                                        <ChatHeader channel={channel} /> :
+                                        <Link to={`${channel.name}/channel-settings`}>
+                                            <ChatHeader channel={channel} />
+                                        </Link>
 
                                 }
                             </div>
                             {/* TO-DO: Add Other optional buttons here later */}
-                            <div hidden aria-hidden>
+                            {/* <div hidden aria-hidden>
                                 <IconButton variant="ghost" icon={BsThreeDotsVertical} className='active:bg-accent' />
-                            </div>
+                            </div> */}
                         </div>
                     </div>
                 </div>
             </IonHeader>
-            <IonContent className='flex flex-col' fullscreen ref={conRef}>
+            <IonContent
+                className='flex flex-col'
+                onIonScrollStart={() => setIsScrolling(true)}
+                onIonScrollEnd={() => setIsScrolling(false)}
+                fullscreen
+                ref={conRef}>
 
                 <div ref={oldLoaderRef}>
                     {hasOlderMessages && !isLoading && <div className='flex w-full min-h-8 py-4 justify-center items-center' >
@@ -154,6 +162,7 @@ export const ChatInterface = ({ channel }: { channel: ChannelListItem | DMChanne
                                         <MessageBlockItem
                                             key={`${message.name}_${message.modified}`}
                                             message={message}
+                                            isScrolling={isScrolling}
                                             isHighlighted={highlightedMessage === message.name}
                                             onReplyMessageClick={onReplyMessageClick}
                                             onMessageSelect={onMessageSelected} />
@@ -196,9 +205,10 @@ export const ChatInterface = ({ channel }: { channel: ChannelListItem | DMChanne
                     className='overflow-visible 
                     text-foreground
                     bg-background
-                    border-t-foreground/10 
-                    border-t-[1px]
-                    pb-6
+                    border-t-gray-4
+                    border-t
+                    px-1
+                    pb-2
                     pt-1'
                 >
                     <ChatInput channelID={channel.name} allMembers={parsedMembers} allChannels={parsedChannels} />

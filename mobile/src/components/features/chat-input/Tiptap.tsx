@@ -1,7 +1,7 @@
-import { EditorContent, ReactRenderer, useEditor } from '@tiptap/react'
+import { EditorContent, EditorContext, ReactRenderer, useEditor } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import Underline from '@tiptap/extension-underline'
-import { useContext } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import Highlight from '@tiptap/extension-highlight'
 import Link from '@tiptap/extension-link'
 import Placeholder from '@tiptap/extension-placeholder'
@@ -21,9 +21,13 @@ import ts from 'highlight.js/lib/languages/typescript'
 import html from 'highlight.js/lib/languages/xml'
 import json from 'highlight.js/lib/languages/json'
 import python from 'highlight.js/lib/languages/python'
-import { BiSend } from 'react-icons/bi'
+import { BiSend, BiSolidSend } from 'react-icons/bi'
 import { AiOutlinePaperClip } from 'react-icons/ai';
-import { IconButton } from '@/components/ui/icon-button'
+import { IconButton } from '@radix-ui/themes'
+import { useKeyboardState } from '@ionic/react-hooks/keyboard';
+import MessageInputActions from './MessageInputActions'
+import { useClickAway } from '@uidotdev/usehooks'
+import { FiPlus } from 'react-icons/fi'
 
 const lowlight = createLowlight(common)
 
@@ -270,14 +274,34 @@ export const Tiptap = ({ onMessageSend, messageSending, defaultText = '', onPick
         }),
     ]
 
+    const [focused, setFocused] = useState(false)
+
+    const { isOpen } = useKeyboardState();
+
+    useEffect(() => {
+        if (!isOpen) {
+            setFocused(false)
+        }
+    }, [isOpen])
+
+
     const editor = useEditor({
         extensions,
         content: defaultText,
         editorProps: {
             attributes: {
-                class: 'focus:outline-none text-base py-1.5 px-2'
+                class: 'tiptap-editor focus:outline-none text-base py-1.5 px-2'
             }
         }
+    })
+
+
+    const boxRef = useClickAway<HTMLDivElement>((e) => {
+        // Do not close if a mention is clicked
+        // @ts-ignore
+        if (e.target?.dataset?.isToolbarElement) return
+        setFocused(false)
+        editor?.chain().blur().run()
     })
 
     const isEditorEmpty = editor?.isEmpty ?? true
@@ -294,41 +318,74 @@ export const Tiptap = ({ onMessageSend, messageSending, defaultText = '', onPick
     }
 
     return (
-        <div className="flex flex-col">
-            <div className='rounded-md border border-foreground/10 text-md overflow-hidden py-1 px-1'>
-                <div className="flex items-end">
-                    <div className="flex-grow min-w-0 mr-2">
-                        <EditorContent editor={editor} className="break-words max-w-full" />
-                    </div>
-                    <div className="flex-shrink-0">
-                        <input
-                            multiple
-                            type="file"
-                            hidden
-                            ref={fileRef}
-                            onChange={onGetFiles}
-                        />
-                        {
-                            isEditorEmpty ? <IconButton
-                            size="md"
-                            icon={AiOutlinePaperClip}
-                            onClick={onPickFiles}
-                            variant="ghost"
-                            className="text-foreground/80 active:bg-accent"
-                            /> :
-                            <IconButton
-                                size="md"
-                                icon={BiSend}
-                                onClick={onSubmit}
-                                variant="default"
-                                className='disabled:opacity-30 disabled:cursor-not-allowed'
-                                disabled={messageSending}
-                                aria-disabled={messageSending}
+        <div className="flex flex-col" ref={boxRef}>
+            <EditorContext.Provider value={{ editor }}>
+                <div className='rounded-md text-md overflow-hidden py-2 px-0'>
+                    <div className="flex items-center pb-4">
+                        {!focused &&
+                            <div className='px-1'>
+                                <IconButton
+                                    size='2'
+                                    color='gray'
+                                    radius='full'
+                                    onClick={onPickFiles}
+                                    variant="soft"
+                                // className="text-foreground/80 active:bg-accent"
+                                ><FiPlus size='22' /></IconButton>
+                            </div>
+                        }
+                        <div className="flex-grow min-w-0 mr-0" onClick={() => setFocused(true)}>
+                            <EditorContent editor={editor} className="break-words max-w-full" />
+                        </div>
+                        <div className="flex-shrink-0 h-10 flex items-center justify-center">
+                            <input
+                                multiple
+                                type="file"
+                                hidden
+                                ref={fileRef}
+                                onChange={onGetFiles}
                             />
-                        }    
+                            {/* {
+                            !isEditorEmpty &&
+                            <IconButton
+                                size="2"
+                                onClick={onSubmit}
+                                radius='full'
+                                className='animate-ping'
+                                // className='disabled:opacity-30 disabled:cursor-not-allowed'
+                                loading={messageSending}
+                            ><BiSend /></IconButton>
+                        } */}
+                        </div>
                     </div>
+                    {focused && <div data-is-toolbar-element={true} className='flex justify-between items-center'>
+                        <div data-is-toolbar-element={true}>
+                            <MessageInputActions
+                                onFileClick={onPickFiles} />
+                            {/* <IconButton
+                                size='2'
+                                color='gray'
+                                radius='full'
+                                onClick={onPickFiles}
+                                variant="soft"
+                            // className="text-foreground/80 active:bg-accent"
+                            ><AiOutlinePaperClip /></IconButton> */}
+                        </div>
+                        <div className='px-2'>
+                            <IconButton
+                                size='4'
+                                data-is-toolbar-element={true}
+                                onClick={onSubmit}
+                                radius='full'
+                                variant='ghost'
+                                disabled={isEditorEmpty}
+                                loading={messageSending}
+                            ><BiSolidSend size='22' /></IconButton>
+                        </div>
+
+                    </div>}
                 </div>
-            </div>
+            </EditorContext.Provider>
         </div>
 
     )

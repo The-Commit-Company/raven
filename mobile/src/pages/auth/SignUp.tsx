@@ -59,7 +59,7 @@ export const SignUp = (props: ActiveScreenProps) => {
     return (
         <>
             <div className="flex flex-col gap-y-6">
-                <Heading size='5' as='h2' weight='medium'>Create an account</Heading>
+                <Heading size='5' as='h2' weight='medium' className="not-cal">Create an account</Heading>
                 {error && <ErrorCallout message={error.message} />}
                 {callout && <SuccessCallout message={callout.message} />}
                 <div className='flex flex-col gap-y-6'>
