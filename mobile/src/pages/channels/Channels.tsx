@@ -1,5 +1,4 @@
-import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonSearchbar } from '@ionic/react';
-import { IoAdd } from 'react-icons/io5';
+import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonSearchbar, IonItem, IonLabel } from '@ionic/react';
 import { ErrorBanner } from '../../components/layout';
 import { ChannelList } from '../../components/features/channels/ChannelList';
 import { AddChannel } from '../../components/features/channels';
@@ -7,8 +6,8 @@ import { useMemo, useRef, useState } from 'react';
 import { UnreadCountData, useChannelList } from '@/utils/channel/ChannelListProvider';
 import { ChannelListLoader } from '../../components/layout/loaders/ChannelListLoader';
 import { useFrappeGetCall } from 'frappe-react-sdk';
-import { Label } from '@/components/ui/label';
-import { Button } from '@/components/ui/button';
+import { Text } from '@radix-ui/themes';
+import { FiPlus } from 'react-icons/fi';
 
 export const Channels = () => {
 
@@ -60,20 +59,14 @@ export const Channels = () => {
                 {isLoading && <ChannelListLoader />}
                 {error && <ErrorBanner error={error} />}
                 <ul>
-                    <li className='list-none active:bg-accent active:rounded'>
-                        <Button variant="ghost" className='w-full flex justify-between items-center hover:bg-transparent ' onClick={() => setIsOpen(true)}>
-                        <div className='flex items-center justify-start gap-2'>
-                            <span>
-                                <IoAdd size='18' className='text-foreground/80' />
-                            </span>
-                            <Label className="text-foreground/80 cursor-pointer">
-                                Add Channel
-                            </Label>
-                        </div>
-                        </Button>
-                    </li>
-                <ChannelList data={filteredChannels ?? []} unread_count={unreadCount?.message}/>
-                <AddChannel isOpen={isOpen} onDismiss={() => setIsOpen(false)} presentingElement={pageRef.current} />
+                    <IonItem lines='none' onClick={() => setIsOpen(true)}>
+                        <FiPlus size='20' className='text-gray-11' />
+                        <IonLabel>
+                            <Text size='3' weight='light' as='div' color='gray' className='px-2 font-medium'>Add Channel</Text>
+                        </IonLabel>
+                    </IonItem>
+                    <ChannelList data={filteredChannels ?? []} unread_count={unreadCount?.message} />
+                    <AddChannel isOpen={isOpen} onDismiss={() => setIsOpen(false)} presentingElement={pageRef.current} />
                 </ul>
             </IonContent>
         </IonPage>
