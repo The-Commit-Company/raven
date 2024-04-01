@@ -1,8 +1,6 @@
 import frappe
 from frappe import _
 
-from raven.api.raven_message import check_permission
-
 @frappe.whitelist(methods=["POST"])
 def create_poll(channel_id: str, question: str, options:any, is_multi_choice:bool = None, is_anonymous:bool=None) -> str:
 	"""
@@ -88,45 +86,26 @@ def add_vote(message_id, option_id):
 		frappe.throw(_("You do not have permission to access this message"), frappe.PermissionError)
 	
 	poll_id = frappe.get_cached_value("Raven Message", message_id, "poll_id")
+	is_poll_multi_choice = frappe.get_cached_value("Raven Poll", poll_id, "is_multi_choice")
 
-	poll = frappe.get_cached_doc("Raven Poll", poll_id)
-
-	# Check if the poll is disabled
-	if poll.is_disabled:
-		frappe.throw("Poll is disabled. No more votes allowed.")
-
-	votes = frappe.get_all(
-		"Raven Poll Vote",
-		filters={"poll_id": poll_id, "user_id": frappe.session.user},
-		fields=["name", "option"],
-	)
-
-	if poll.is_multi_choice:
-		# Check if the user has already voted for a option
-		if option_id in [vote.option for vote in votes]:
-			frappe.throw("You have already voted for this option.")
-		else:
-			for option in option_id:
-				frappe.get_doc(
-					{
-						"doctype": "Raven Poll Vote",
-						"poll_id": poll_id,
-						"option": option,
-						"user_id": frappe.session.user,
-					}
-				).insert()
-	else:
-		# Check if the user has already voted
-		if votes:
-			frappe.throw("You have already voted.")
-		else:
+	if is_poll_multi_choice:
+		for option in option_id:
 			frappe.get_doc(
 				{
 					"doctype": "Raven Poll Vote",
 					"poll_id": poll_id,
-					"option": option_id,
+					"option": option,
 					"user_id": frappe.session.user,
 				}
 			).insert()
+	else:
+		frappe.get_doc(
+			{
+				"doctype": "Raven Poll Vote",
+				"poll_id": poll_id,
+				"option": option_id,
+				"user_id": frappe.session.user,
+			}
+		).insert()
 
 	return "Vote added successfully."

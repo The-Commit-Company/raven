@@ -24,15 +24,19 @@ class RavenPoll(Document):
 	# end: auto-generated types
 
 	def before_validate(self):
-		total_votes = 0
-		for option in self.options:
-			total_votes += option.votes or 0
-		
-		self.total_votes = total_votes
+		# Total_votes is the sum of all votes in the poll per user
+		poll_votes = frappe.get_all(
+    		"Raven Poll Vote",
+    		filters={"poll_id": self.name},
+    		fields=["user_id"],
+    		group_by="user_id"
+		)
+
+    	# count the number of unique users who voted
+		self.total_votes = len(poll_votes) if poll_votes else 0
 
 	def on_trash(self):
 		# Delete all poll votes
 		frappe.db.delete("Raven Poll Vote", {"poll_id": self.name})
-
 
 	pass

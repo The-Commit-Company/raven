@@ -20,15 +20,11 @@ class RavenPollVote(Document):
 	# end: auto-generated types
 	
 	def before_insert(self):
-		# check if the user has already voted
-		if frappe.db.exists(
-			"Raven Poll Vote",
-			{
-				"poll_id": self.poll_id,
-				"user_id": self.user_id,
-			},
-		): frappe.throw("You have already voted in this poll.")
-
+		# check if the poll is still open
+		poll = frappe.get_cached_doc("Raven Poll", self.poll_id)
+		if poll.is_disabled:
+			frappe.throw("This poll is closed.")
+			
 		# check if the option is valid
 		if not frappe.db.exists(
 			"Raven Poll Option",
@@ -37,11 +33,16 @@ class RavenPollVote(Document):
 				"name": self.option,
 			},
 		): frappe.throw("Invalid option selected.")
-
-		# check if the poll is still open
-		poll = frappe.get_cached_doc("Raven Poll", self.poll_id)
-		if poll.is_disabled:
-			frappe.throw("This poll is closed.")
+		
+		# check if the user has already voted for this option in this poll
+		if frappe.db.exists(
+			"Raven Poll Vote",
+			{
+				"poll_id": self.poll_id,
+				"user_id": self.user_id,
+				"option": self.option,
+			},
+		): frappe.throw("You have already voted for this option.")
 	
 	def validate(self):
 		# Check if the user_id is the same as the logged in user

@@ -76,7 +76,7 @@ const PollResults = ({ data }: { data: Poll }) => {
             {data.poll.options.map(option => {
                 return <PollOption key={option.name} data={data} option={option} />
             })}
-            <Text as='span' size='1' color='gray' className="px-2">{data.poll.total_votes} votes</Text>
+            <Text as='span' size='1' color='gray' className="px-2">{data.poll.total_votes} vote{data.poll.total_votes > 1 ? 's' : ''}</Text>
         </Flex>
     )
 }
@@ -84,7 +84,9 @@ const PollResults = ({ data }: { data: Poll }) => {
 const PollOption = ({ data, option }: { data: Poll, option: RavenPollOption }) => {
 
     const getPercentage = (votes: number) => {
-        return (votes / data.poll.total_votes) * 100
+        if (data.poll.is_multi_choice) {
+            return (votes / data.poll.options.length) * 100
+        } else return (votes / data.poll.total_votes) * 100
     }
 
     // State to track whether the animation should be triggered
@@ -167,12 +169,13 @@ const MultiChoicePoll = ({ data, messageID }: { data: Poll, messageID: string })
     const handleCheckboxChange = (name: string, value: boolean | string) => {
         if (value) {
             setSelectedOptions((opts) => [...opts, name])
+        } else {
+            setSelectedOptions((opts) => opts.filter(opt => opt !== name))
         }
     }
 
     const { call } = useFrappePostCall('raven.api.raven_poll.add_vote')
     const onVoteSubmit = async () => {
-        console.log('selected options:', selectedOptions)
         return call({
             'message_id': messageID,
             'option_id': selectedOptions
@@ -192,7 +195,7 @@ const MultiChoicePoll = ({ data, messageID }: { data: Poll, messageID: string })
                 <div key={option.name}>
                     <Text as="label" size="2">
                         <Flex gap="2" p='2' className="rounded-sm hover:bg-accent-a2 dark:hover:bg-gray-5">
-                            <Checkbox value={option.name} checked={selectedOptions.includes(option.name)} onCheckedChange={(v) => handleCheckboxChange(option.name, v)} />
+                            <Checkbox value={option.name} onCheckedChange={(v) => handleCheckboxChange(option.name, v)} />
                             {option.option}
                         </Flex>
                     </Text>
