@@ -57,7 +57,7 @@ class RavenChannel(Document):
 
 			if self.is_direct_message == 1:
 				# Add both users as members
-				raven_users = self.name.split(" _ ")
+				raven_users = self.channel_name.split(" _ ")
 				unique_raven_users = list(set(raven_users))
 				self.add_members(unique_raven_users)
 			else:
@@ -141,10 +141,8 @@ class RavenChannel(Document):
 						"is_admin": is_admin,
 					}
 				)
-				channel_member.insert()
+				channel_member.insert(ignore_permissions=True)
 
 	def autoname(self):
 		if self.is_direct_message == 0:
 			self.name = self.channel_name.strip().lower().replace(" ", "-")
-		else:
-			self.name = self.channel_name
