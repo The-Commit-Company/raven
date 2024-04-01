@@ -1,6 +1,6 @@
 import { IonContent, ToastOptions, IonModal, useIonToast, IonHeader } from "@ionic/react";
 import { useFrappeCreateDoc } from "frappe-react-sdk";
-import { useRef } from "react";
+import { useMemo, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { BiGlobe, BiHash, BiLockAlt } from "react-icons/bi";
 import { useHistory } from "react-router-dom";
@@ -8,7 +8,7 @@ import { ErrorBanner } from "../../layout";
 import { useChannelList } from "@/utils/channel/ChannelListProvider";
 import { FormField, FormItem, FormLabel, FormControl, FormDescription, FormMessage, Form } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Button, RadioGroup, Text, TextArea, Theme } from "@radix-ui/themes";
+import { Button, RadioGroup, Text, TextArea, TextField, Theme } from "@radix-ui/themes";
 
 interface AddChannelProps {
     presentingElement: HTMLElement | undefined,
@@ -79,6 +79,28 @@ export const AddChannel = ({ presentingElement, isOpen, onDismiss }: AddChannelP
         onDismiss()
     }
 
+    const channelType = form.watch("channel_type")
+
+    const { channelIcon, helperText } = useMemo(() => {
+        switch (channelType) {
+            case 'Private':
+                return {
+                    channelIcon: <BiLockAlt />,
+                    helperText: 'When a channel is set to private, it can only be viewed or joined by invitation.'
+                }
+            case 'Open':
+                return {
+                    channelIcon: <BiGlobe />,
+                    helperText: 'When a channel is set to open, everyone is a member.'
+                }
+            default:
+                return {
+                    channelIcon: <BiHash />,
+                    helperText: 'When a channel is set to public, anyone can join the channel and read messages, but only members can post messages.'
+                }
+        }
+    }, [channelType])
+
 
     return (
 
@@ -88,7 +110,7 @@ export const AddChannel = ({ presentingElement, isOpen, onDismiss }: AddChannelP
 
                     <IonHeader>
                         <Theme>
-                            <div className='py-4 flex justify-between px-4 inset-x-0 top-0 overflow-hidden items-center border-b-gray-4 border-b'>
+                            <div className='py-4 flex justify-between px-4 inset-x-0 top-0 overflow-hidden items-center border-b-gray-4 border-b rounded-t-3xl'>
                                 <div className="w-11">
                                     <Button
                                         size='3' variant="ghost" color='gray' onClick={handleCancel}>
@@ -110,7 +132,7 @@ export const AddChannel = ({ presentingElement, isOpen, onDismiss }: AddChannelP
                             </div>
                         </Theme>
                     </IonHeader>
-                    <IonContent className="ion-padding">
+                    <IonContent className="ion-padding bg-gray-2">
                         <Theme accentColor="iris">
                             <ErrorBanner error={channelCreationError} />
                             <div className="flex flex-col p-2 gap-4">
@@ -132,18 +154,29 @@ export const AddChannel = ({ presentingElement, isOpen, onDismiss }: AddChannelP
                                     }}
                                     render={({ field, formState }) => (
                                         <FormItem>
-                                            <FormLabel>Channel Name <span className='text-rose-600'>*</span></FormLabel>
+                                            <FormLabel>Name <span className='text-rose-600'>*</span></FormLabel>
                                             <FormControl>
-                                                <Input
+                                                <TextField.Root
                                                     required
                                                     autoCapitalize="off"
                                                     className="w-full"
                                                     autoComplete="off"
-                                                    placeholder='e.g. red-wedding-planning, joffrey-memes'
+                                                    maxLength={50}
+                                                    size={'3'}
+                                                    placeholder='e.g. red-wedding-planning'
                                                     aria-label="Channel Name"
                                                     {...field}
                                                     onChange={(e) => field.onChange(e.target.value?.toLowerCase().replace(' ', '-') ?? '')}
-                                                />
+                                                >
+                                                    <TextField.Slot side="left">
+                                                        {channelIcon}
+                                                    </TextField.Slot>
+                                                    {field.value &&
+                                                        <TextField.Slot side='right'>
+                                                            <Text size='2' weight='light' color='gray'>{50 - field.value.length}</Text>
+                                                        </TextField.Slot>
+                                                    }
+                                                </TextField.Root>
                                             </FormControl>
                                             <FormMessage>{formState.errors && formState.errors?.channel_name?.message}</FormMessage>
                                         </FormItem>
@@ -154,7 +187,7 @@ export const AddChannel = ({ presentingElement, isOpen, onDismiss }: AddChannelP
                                     name="channel_description"
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel>Channel Description</FormLabel>
+                                            <FormLabel>Description</FormLabel>
                                             <FormControl>
                                                 <TextArea
                                                     size='3'
@@ -210,9 +243,7 @@ export const AddChannel = ({ presentingElement, isOpen, onDismiss }: AddChannelP
                                                 </RadioGroup.Root>
                                             </FormControl>
                                             <FormDescription size='2'>
-                                                {form.watch("channel_type") === 'Public' && <span>When a channel is set to public, anyone can join the channel and read messages, but only members can post messages.</span>}
-                                                {form.watch("channel_type") === 'Private' && <span>When a channel is set to private, it can only be viewed or joined by invitation.</span>}
-                                                {form.watch("channel_type") === 'Open' && <span>When a channel is set to open, everyone is a member.</span>}
+                                                {helperText}
                                             </FormDescription>
                                             <FormMessage />
                                         </FormItem>
