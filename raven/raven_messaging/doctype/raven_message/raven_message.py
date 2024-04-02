@@ -211,7 +211,10 @@ class RavenMessage(Document):
 		"""
 		Get the full name of the message owner
 		"""
-		return frappe.get_cached_value("Raven User", self.owner, "full_name")
+		if self.is_bot_message:
+			return frappe.get_cached_value("Raven User", self.bot, "full_name")
+		else:
+			return frappe.get_cached_value("Raven User", self.owner, "full_name")
 
 	def send_notification_for_direct_message(self):
 		"""
