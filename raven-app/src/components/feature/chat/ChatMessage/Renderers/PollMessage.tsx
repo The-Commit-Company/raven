@@ -1,4 +1,4 @@
-import { Box, Checkbox, Flex, Text, RadioGroup, Button } from "@radix-ui/themes"
+import { Box, Checkbox, Flex, Text, RadioGroup, Button, Badge } from "@radix-ui/themes"
 import { BoxProps } from "@radix-ui/themes/dist/cjs/components/box"
 import { memo, useEffect, useMemo, useState } from "react"
 import { UserFields } from "../../../../../utils/users/UserListProvider"
@@ -55,7 +55,10 @@ const PollMessageBox = ({ data, messageID }: { data: Poll, messageID: string }) 
         w-full
         rounded-md">
             <Flex direction='column' gap='2' p='2' className="w-full">
-                <Text size='2' weight={'medium'}>{data.poll.question}</Text>
+                <Flex justify='between' align='center' gap='2'>
+                    <Text size='2' weight={'medium'}>{data.poll.question}</Text>
+                    {data.poll.is_anonymous ? <Badge color='blue' className={'w-fit'}>Anonymous</Badge> : null}
+                </Flex>
                 {data.current_user_votes.length > 0 ?
                     <PollResults data={data} /> :
                     <>
@@ -65,6 +68,7 @@ const PollMessageBox = ({ data, messageID }: { data: Poll, messageID: string }) 
                         }
                     </>
                 }
+                {data.poll.is_disabled ? <Badge color="gray" className={'w-fit'}>Poll is now closed</Badge> : null}
             </Flex>
         </Flex>
     )
@@ -151,7 +155,7 @@ const SingleChoicePoll = ({ data, messageID }: { data: Poll, messageID: string }
                 <div key={option.name}>
                     <Text as="label" size="2">
                         <Flex gap="2" p='2' className="rounded-sm hover:bg-accent-a2 dark:hover:bg-gray-5">
-                            <RadioGroup.Item value={option.name} onClick={() => onVoteSubmit(option)} />
+                            <RadioGroup.Item disabled={data.poll.is_disabled ? true : false} value={option.name} onClick={() => onVoteSubmit(option)} />
                             {option.option}
                         </Flex>
                     </Text>
@@ -196,7 +200,7 @@ const MultiChoicePoll = ({ data, messageID }: { data: Poll, messageID: string })
                 <div key={option.name}>
                     <Text as="label" size="2">
                         <Flex gap="2" p='2' className="rounded-sm hover:bg-accent-a2 dark:hover:bg-gray-5">
-                            <Checkbox value={option.name} onCheckedChange={(v) => handleCheckboxChange(option.name, v)} />
+                            <Checkbox disabled={data.poll.is_disabled ? true : false} value={option.name} onCheckedChange={(v) => handleCheckboxChange(option.name, v)} />
                             {option.option}
                         </Flex>
                     </Text>
@@ -204,7 +208,7 @@ const MultiChoicePoll = ({ data, messageID }: { data: Poll, messageID: string })
             ))}
             <Flex justify={'between'} align={'center'} gap={'2'}>
                 <Text size='1' className="text-gray-500">To view the poll results, please submit your choice(s)</Text>
-                <Button size={'1'} variant={'soft'} style={{ alignSelf: 'flex-end' }} onClick={onVoteSubmit}>Submit</Button>
+                <Button disabled={data.poll.is_disabled ? true : false} size={'1'} variant={'soft'} style={{ alignSelf: 'flex-end' }} onClick={onVoteSubmit}>Submit</Button>
             </Flex>
         </div>
     )
