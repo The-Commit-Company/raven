@@ -71,11 +71,11 @@ def raven_poll_vote_has_permission(doc, user=None, ptype=None):
 
 	if not user:
 		user = frappe.session.user
-	
+
 	"""
 		Allowed users can add a vote to a poll and read votes (if the poll is not anonymous)
 	"""
-	
+
 	if ptype in ["read", "create"]:
 		if doc.owner == user:
 			return True
@@ -92,13 +92,14 @@ def raven_poll_vote_has_permission(doc, user=None, ptype=None):
 
 	return False
 
+
 def raven_poll_has_permission(doc, user=None, ptype=None):
 
 	if not user:
 		user = frappe.session.user
-	
+
 	"""
-		Allowed users can create a poll and read polls. 
+		Allowed users can create a poll and read polls.
 		Only the poll creator can delete the poll
 	"""
 

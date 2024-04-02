@@ -13,6 +13,7 @@ class RavenPoll(Document):
 
 	if TYPE_CHECKING:
 		from frappe.types import DF
+
 		from raven.raven_messaging.doctype.raven_poll_option.raven_poll_option import RavenPollOption
 
 		is_anonymous: DF.Check
@@ -26,13 +27,10 @@ class RavenPoll(Document):
 	def before_validate(self):
 		# Total_votes is the sum of all votes in the poll per user
 		poll_votes = frappe.get_all(
-    		"Raven Poll Vote",
-    		filters={"poll_id": self.name},
-    		fields=["user_id"],
-    		group_by="user_id"
+			"Raven Poll Vote", filters={"poll_id": self.name}, fields=["user_id"], group_by="user_id"
 		)
 
-    	# count the number of unique users who voted
+		# count the number of unique users who voted
 		self.total_votes = len(poll_votes) if poll_votes else 0
 
 	def on_trash(self):
