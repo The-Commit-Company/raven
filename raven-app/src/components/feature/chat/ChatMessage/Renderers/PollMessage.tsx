@@ -44,14 +44,14 @@ export const PollMessageBlock = memo(({ message, user, ...props }: PollMessageBl
 
 const PollMessageBox = ({ data, messageID }: { data: Poll, messageID: string }) => {
     return (
-        <Flex align='center' gap='4' p='2' className="bg-gray-2 
+        <Flex align='center' gap='4' p='2' className="bg-gray-2
         shadow-sm
         dark:bg-gray-3
         group-hover:bg-accent-a2
-        dark:group-hover:bg-gray-4  
+        dark:group-hover:bg-gray-4
         group-hover:transition-all
         group-hover:delay-100
-        min-w-64 
+        min-w-64
         w-full
         rounded-md">
             <Flex direction='column' gap='2' p='2' className="w-full">
@@ -85,7 +85,8 @@ const PollOption = ({ data, option }: { data: Poll, option: RavenPollOption }) =
 
     const getPercentage = (votes: number) => {
         if (data.poll.is_multi_choice) {
-            return (votes / data.poll.options.length) * 100
+            const totalVotes = data.poll.options.reduce((acc, opt) => acc + (opt.votes ?? 0), 0)
+            return (votes / totalVotes) * 100
         } else return (votes / data.poll.total_votes) * 100
     }
 
@@ -114,7 +115,7 @@ const PollOption = ({ data, option }: { data: Poll, option: RavenPollOption }) =
                 className={`bg-gray-5
                             dark:bg-gray-6
                             h-full
-                            rounded-sm 
+                            rounded-sm
                             data-[is-current-user-vote=true]:bg-accent-a5
                             dark:data-[is-current-user-vote=true]:bg-accent-a6`}
                 style={{ width: triggerAnimation ? width : 0, transition: 'width 0.5s ease-in-out' }}>
