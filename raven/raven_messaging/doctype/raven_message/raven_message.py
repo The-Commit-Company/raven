@@ -20,6 +20,7 @@ class RavenMessage(Document):
 
 	if TYPE_CHECKING:
 		from frappe.types import DF
+
 		from raven.raven_messaging.doctype.raven_mention.raven_mention import RavenMention
 
 		bot: DF.Link | None
@@ -82,7 +83,7 @@ class RavenMessage(Document):
 				frappe.get_cached_value("Raven Message", self.linked_message, "channel_id") != self.channel_id
 			):
 				frappe.throw(_("Linked message should be in the same channel"))
-	
+
 	def validate_poll_id(self):
 		"""
 		If the message is of type Poll, the poll_id should be set
@@ -304,7 +305,7 @@ class RavenMessage(Document):
 		)
 
 		self.publish_unread_count_event()
-		
+
 		# delete poll if the message is of type poll after deleting the message
 		if self.message_type == "Poll":
 			frappe.delete_doc("Raven Poll", self.poll_id)
@@ -341,7 +342,7 @@ class RavenMessage(Document):
 			)
 		else:
 			after_commit = False
-			if self.message_type == "File" or self.message_type == "Image":
+			if self.message_type == "File" or self.message_type == "Image" or self.message_type == "Poll":
 				# If the message is a file or an image, then we need to wait for the file to be uploaded
 				after_commit = True
 				if not self.file:
@@ -393,7 +394,6 @@ class RavenMessage(Document):
 	def on_trash(self):
 		# delete all the reactions for the message
 		frappe.db.delete("Raven Message Reaction", {"message": self.name})
-
 
 
 def on_doctype_update():
