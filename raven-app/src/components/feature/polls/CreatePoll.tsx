@@ -179,6 +179,7 @@ export const CreatePoll = ({ buttonStyle, isDisabled = false }: CreatePollProps)
 
                                 <Flex justify={'between'} align={'center'}>
                                     <Button
+                                        disabled={fields.length >= 10}
                                         type='button'
                                         size={'1'}
                                         variant='ghost'
