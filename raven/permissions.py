@@ -67,6 +67,54 @@ def message_has_permission(doc, user=None, ptype=None):
 		return False
 
 
+def raven_poll_vote_has_permission(doc, user=None, ptype=None):
+
+	if not user:
+		user = frappe.session.user
+
+	"""
+		Allowed users can add a vote to a poll and read votes (if the poll is not anonymous)
+	"""
+
+	if ptype in ["read", "create"]:
+		if doc.owner == user:
+			return True
+		elif user == "Administrator":
+			return True
+		else:
+			is_anonymous = frappe.get_cached_value("Raven Poll", doc.poll_id, "is_anonymous")
+			if not is_anonymous:
+				if ptype == "read":
+					return True
+			else:
+				if ptype == "create":
+					return True
+
+	return False
+
+
+def raven_poll_has_permission(doc, user=None, ptype=None):
+
+	if not user:
+		user = frappe.session.user
+
+	"""
+		Allowed users can create a poll and read polls.
+		Only the poll creator can delete the poll
+	"""
+
+	if ptype in ["read", "create", "delete"]:
+		if doc.owner == user:
+			return True
+		elif user == "Administrator":
+			return True
+		else:
+			if ptype in ["read", "create"]:
+				return True
+
+	return False
+
+
 def raven_channel_query(user):
 	if not user:
 		user = frappe.session.user
@@ -95,3 +143,16 @@ def raven_message_query(user):
       but needed for security since we do not want users to be able to view messages from channels they are not a member of
     """
 	return f"`tabRaven Message`.owner = {frappe.db.escape(user)}"
+
+
+def raven_poll_vote_query(user):
+	if not user:
+		user = frappe.session.user
+
+	"""
+	  Only show votes created by the user using a WHERE clause
+
+	  Hence, we are adding a WHERE clause to the query - this is inconsequential since we will never use the standard get_list query for Raven Poll Vote,
+	  but needed for security since we do not want users to be able to view votes from polls they did not vote for
+	"""
+	return f"`tabRaven Poll Vote`.owner = {frappe.db.escape(user)}"

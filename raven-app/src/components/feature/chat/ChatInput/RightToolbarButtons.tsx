@@ -5,6 +5,7 @@ import { ToolbarFileProps } from './Tiptap'
 import { Flex, IconButton, Inset, Popover, Separator } from '@radix-ui/themes'
 import { Loader } from '@/components/common/Loader'
 import { Suspense, lazy } from 'react'
+import { CreatePoll } from '../../polls/CreatePoll'
 import { HiOutlineGif } from "react-icons/hi2";
 import { GIFPicker } from '@/components/common/GIFPicker/GIFPicker'
 
@@ -21,9 +22,10 @@ type RightToolbarButtonsProps = {
  * Component to render the right toolbar buttons:
  * 1. User Mention
  * 2. Channel Mention
- * 3. Emoji picker
- * 4. File upload
- * 5. Send button
+ * 3. Poll creation
+ * 4. Emoji picker
+ * 5. File upload
+ * 6. Send button
  * @param props
  * @returns
  */
@@ -31,6 +33,8 @@ export const RightToolbarButtons = ({ fileProps, ...sendProps }: RightToolbarBut
     return (
         <Flex gap='2' align='center' px='1' py='1'>
             <MentionButtons />
+            <Separator orientation='vertical' />
+            <CreatePollButton />
             <Separator orientation='vertical' />
             <Flex gap='3' align='center'>
                 <EmojiPickerButton />
@@ -215,4 +219,13 @@ const SendButton = ({ sendMessage, messageSending, setContent }: {
             <BiSolidSend {...ICON_PROPS} />
         }
     </IconButton>
+}
+
+const CreatePollButton = () => {
+
+    const { editor } = useCurrentEditor()
+
+    return <CreatePoll
+        buttonStyle={DEFAULT_BUTTON_STYLE}
+        isDisabled={editor?.isEditable === false} />
 }
