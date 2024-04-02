@@ -447,7 +447,10 @@ const useChatStream = (channelID: string, scrollRef: RefObject<HTMLIonContentEle
                             name: messageDate
                         })
                     }
-                    if (message.owner !== messages[i + 1].owner) {
+
+                    const currentMessageSender = message.is_bot_message ? message.bot : message.owner
+                    const nextMessageSender = messages[i + 1].is_bot_message ? messages[i + 1].bot : messages[i + 1].owner
+                    if (currentMessageSender !== nextMessageSender) {
                         messagesWithDateSeparators.push({
                             ...message,
                             is_continuation: 0

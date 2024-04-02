@@ -12,13 +12,6 @@ class RavenChannelMember(Document):
 	def before_validate(self):
 		self.last_visit = frappe.utils.now()
 
-	def validate(self):
-		if not self.check_if_user_is_member():
-			frappe.throw(
-				_("You don't have permission to add/modify members in this channel"),
-				frappe.PermissionError,
-			)
-
 	def before_insert(self):
 		# 1. A user cannot be a member of a channel more than once
 		if frappe.db.exists(
