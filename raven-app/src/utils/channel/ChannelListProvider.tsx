@@ -3,6 +3,7 @@ import { PropsWithChildren, createContext } from 'react'
 import { KeyedMutator } from 'swr'
 import { RavenChannel } from '../../../../types/RavenChannelManagement/RavenChannel'
 import { useToast } from '@/hooks/useToast'
+import { useSWRConfig } from 'frappe-react-sdk'
 
 export type ExtraUsersData = {
     name: string,
@@ -60,6 +61,7 @@ export const ChannelListProvider = ({ children }: PropsWithChildren) => {
 export const useFetchChannelList = (): ChannelListContextType => {
 
     const { toast } = useToast()
+    const { mutate: globalMutate } = useSWRConfig()
     const { data, mutate, ...rest } = useFrappeGetCall<{ message: ChannelList }>("raven.api.raven_channel.get_all_channels", {
         hide_archived: false
     }, `channel_list`, {
@@ -75,6 +77,9 @@ export const useFetchChannelList = (): ChannelListContextType => {
 
     useFrappeDocTypeEventListener('Raven Channel', () => {
         mutate()
+
+        // Also update the unread channel count
+        globalMutate('unread_channel_count')
     })
 
     return {
