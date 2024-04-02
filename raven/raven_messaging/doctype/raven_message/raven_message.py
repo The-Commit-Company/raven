@@ -342,11 +342,15 @@ class RavenMessage(Document):
 			)
 		else:
 			after_commit = False
-			if self.message_type == "File" or self.message_type == "Image" or self.message_type == "Poll":
+			if self.message_type == "File" or self.message_type == "Image":
 				# If the message is a file or an image, then we need to wait for the file to be uploaded
 				after_commit = True
 				if not self.file:
 					return
+
+			if self.message_type == "Poll":
+				# If the message is a poll, then we need to wait for the poll to be created
+				after_commit = True
 
 			frappe.publish_realtime(
 				"message_created",
