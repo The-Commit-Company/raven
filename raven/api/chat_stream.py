@@ -48,6 +48,7 @@ def get_messages(channel_id: str, limit: int = 20, base_message: str | None = No
 			message.replied_message_details,
 			message.content,
 			message.is_edited,
+			message.poll_id,
 			message.is_bot_message,
 			message.bot,
 		)
@@ -151,6 +152,7 @@ def fetch_older_messages(
 			message.replied_message_details,
 			message.content,
 			message.is_edited,
+			message.poll_id,
 			message.is_bot_message,
 			message.bot,
 		)
@@ -258,6 +260,7 @@ def fetch_newer_messages(
 			message.replied_message_details,
 			message.content,
 			message.is_edited,
+			message.poll_id,
 			message.is_bot_message,
 			message.bot,
 		)
