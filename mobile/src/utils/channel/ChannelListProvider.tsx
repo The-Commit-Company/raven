@@ -4,6 +4,7 @@ import { KeyedMutator } from 'swr'
 import { useIonToast } from '@ionic/react'
 import { RavenChannel } from '../../../../types/RavenChannelManagement/RavenChannel'
 import { UserContext } from '../auth/UserProvider'
+import { useSWRConfig } from 'frappe-react-sdk'
 
 export type ExtraUsersData = {
     name: string,
@@ -73,6 +74,8 @@ const useFetchChannelList = (): ChannelListContextType => {
             position: 'bottom',
         });
     };
+
+    const { mutate: globalMutate } = useSWRConfig()
     const { data, mutate, ...rest } = useFrappeGetCall<{ message: ChannelList }>("raven.api.raven_channel.get_all_channels", {
         hide_archived: false
     }, isLoggedIn ? undefined : null, {
@@ -85,6 +88,9 @@ const useFetchChannelList = (): ChannelListContextType => {
 
     useFrappeDocTypeEventListener('Raven Channel', () => {
         mutate()
+
+        // Also update the unread channel count
+        globalMutate('unread_channel_count')
     })
 
     return {
