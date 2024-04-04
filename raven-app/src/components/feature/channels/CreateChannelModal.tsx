@@ -101,7 +101,7 @@ export const CreateChannelButton = ({ updateChannelList }: { updateChannelList: 
     return <Dialog.Root open={isOpen} onOpenChange={onOpenChange}>
         <Dialog.Trigger>
             <IconButton variant='ghost' size='1' color='gray' aria-label='Create Channel' className='h-[18px]' title='Create Channel'>
-                <BiPlus className='text-slate-12 mt-0.5' />
+                <BiPlus className='text-slate-12' />
             </IconButton>
         </Dialog.Trigger>
         <Dialog.Content className={DIALOG_CONTENT_CLASS}>

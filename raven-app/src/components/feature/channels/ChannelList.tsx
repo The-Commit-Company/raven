@@ -22,7 +22,7 @@ export const ChannelList = ({ unread_count }: { unread_count?: UnreadCountData }
             <SidebarGroupItem gap='2' className={'pl-1.5'}>
                 <SidebarViewMoreButton onClick={toggle} />
                 <Flex width='100%' justify='between' align='center' gap='2'>
-                    <Flex gap='3' align='center'>
+                    <Flex gap='2' align='center'>
                         <SidebarGroupLabel className='cal-sans'>Channels</SidebarGroupLabel>
                         <CreateChannelButton updateChannelList={mutate} />
                     </Flex>
