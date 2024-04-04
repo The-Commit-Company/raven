@@ -1,7 +1,7 @@
 import { useState } from "react"
 import { DeleteChannelAlert } from "."
-import { BiTrash } from "react-icons/bi";
-import { Button } from "@/components/ui/button";
+import { IonIcon, IonItem, IonLabel } from "@ionic/react";
+import { trashOutline } from "ionicons/icons";
 
 
 export const DeleteChannelButton = ({ channelID }: { channelID: string }) => {
@@ -9,10 +9,10 @@ export const DeleteChannelButton = ({ channelID }: { channelID: string }) => {
 
     return (
         <>
-            <Button variant="outline" className="border border-destructive space-x-1" onClick={() => setIsOpen(true)}>
-                <BiTrash size="18" className="text-destructive"/>
-                <span className="text-xs text-destructive">Delete Channel</span>
-            </Button>
+            <IonItem color='light' button onClick={() => setIsOpen(true)}>
+                <IonIcon color='danger' size='small' icon={trashOutline} slot="start" />
+                <IonLabel color='danger'>Delete Channel</IonLabel>
+            </IonItem>
             <DeleteChannelAlert isOpen={isOpen} onDismiss={() => setIsOpen(false)} channelID={channelID} />
         </>
     )

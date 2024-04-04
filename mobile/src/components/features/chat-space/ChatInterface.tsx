@@ -9,8 +9,6 @@ import { UserFields } from '@/utils/users/UserListProvider'
 import { ChatLoader } from '@/components/layout/loaders/ChatLoader'
 import { MessageActionModal, useMessageActionModal } from './MessageActions/MessageActionModal'
 import { Link } from 'react-router-dom'
-import { BsThreeDotsVertical } from "react-icons/bs";
-import { IconButton } from '@/components/ui/icon-button'
 import { arrowDownOutline } from 'ionicons/icons'
 import useChatStream from './useChatStream'
 import { useInView } from 'react-intersection-observer'
@@ -109,7 +107,7 @@ export const ChatInterface = ({ channel }: { channel: ChannelListItem | DMChanne
                 <div className='px-2 py-2 inset-x-0 top-0 overflow-hidden min-h-5 bg-background border-b border-b-gray-4'>
                     <div className='flex gap-2 items-center'>
                         <div className='flex items-center'>
-                            <IonBackButton color='medium' text="" className='back-button' />
+                            <IonBackButton color='dark' text="" className='back-button' />
                         </div>
                         <div className='flex items-center justify-between gap-2 w-full'>
                             <div className='grow p-1'>

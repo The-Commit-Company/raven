@@ -1,17 +1,16 @@
 import { useState } from "react"
 import { ArchiveChannelAlert } from "."
-import { BiArchiveIn } from "react-icons/bi"
-import { Button } from "@/components/ui/button"
+import { IonIcon, IonItem, IonLabel } from "@ionic/react"
+import { archiveOutline } from "ionicons/icons"
 
 export const ArchiveChannelButton = ({ channelID }: { channelID: string }) => {
     const [isOpen, setIsOpen] = useState(false)
-
     return (
         <>
-            <Button variant="outline" className="space-x-1" onClick={() => setIsOpen(true)}>
-                <BiArchiveIn size="18"/>
-                <span className="text-xs">Archive</span>
-            </Button>
+            <IonItem color='light' button onClick={() => setIsOpen(true)}>
+                <IonIcon icon={archiveOutline} size='small' slot="start" />
+                <IonLabel>Archive Channel</IonLabel>
+            </IonItem>
             <ArchiveChannelAlert isOpen={isOpen} onDismiss={() => setIsOpen(false)} channelID={channelID} />
         </>
     )

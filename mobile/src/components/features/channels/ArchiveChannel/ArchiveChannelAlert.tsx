@@ -45,17 +45,20 @@ export const ArchiveChannelAlert = ({ isOpen, onDismiss, channelID }: ArchiveCha
     }
 
     return (
-        <IonAlert onDidDismiss={onDismiss} isOpen={isOpen}
+        <IonAlert
+            onDidDismiss={onDismiss}
+            isOpen={isOpen}
             header="Archive Channel"
             message={`Are you sure you want to archive #${channel?.channel_name}`}
             buttons={[
                 {
                     text: 'No',
                     role: 'cancel',
+                    cssClass: 'text-gray-12',
                 }
                 , {
                     text: 'Yes',
-                    role: 'confirm',
+                    role: 'destructive',
                     cssClass: 'text-danger',
                     handler: archiveChannel
                 }

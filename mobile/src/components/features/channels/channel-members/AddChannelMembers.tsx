@@ -29,7 +29,8 @@ export type Member = {
     full_name: string
     user_image: string | undefined
     first_name: string
-    is_admin?: boolean
+    is_admin?: boolean,
+    type?: 'User' | 'Bot'
 }
 
 export type ChannelMembers = {
@@ -121,8 +122,6 @@ export const AddChannelMembers = ({ presentingElement, isOpen, onDismiss, channe
                     onIonInput={(e) => setSearchText(e.detail.value?.toString() || '')}
                 />
                 <Theme accentColor="iris">
-
-
                     <IonList>
                         {filteredUsers && filteredUsers.length > 0 ? filteredUsers.map((user) => (
                             <IonItem key={user.name}>

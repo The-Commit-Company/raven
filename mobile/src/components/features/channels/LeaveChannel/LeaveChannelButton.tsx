@@ -1,17 +1,17 @@
 import { useState } from "react"
 import { LeaveChannelAlert } from "."
-import { BiExit } from "react-icons/bi";
-import { Button } from "@/components/ui/button"
+import { IonIcon, IonItem, IonLabel } from "@ionic/react";
+import { exitOutline } from "ionicons/icons";
 
-export const LeaveChannelButton = ({ channelID }: { channelID: string }) => {
+export const LeaveChannelButton = ({ channelID, lines = 'inset' }: { channelID: string, lines?: "full" | "inset" | "none" }) => {
     const [isOpen, setIsOpen] = useState(false)
 
     return (
         <>
-            <Button variant="outline" className="border border-destructive space-x-1" onClick={() => setIsOpen(true)}>
-                <BiExit size="18" className="text-destructive"/>
-                <span className="text-xs text-destructive">Leave Channel</span>
-            </Button>
+            <IonItem lines={lines} color='light' button onClick={() => setIsOpen(true)}>
+                <IonIcon icon={exitOutline} size='small' slot="start" />
+                <IonLabel>Leave Channel</IonLabel>
+            </IonItem>
             <LeaveChannelAlert isOpen={isOpen} onDismiss={() => setIsOpen(false)} channelID={channelID} />
         </>
     )

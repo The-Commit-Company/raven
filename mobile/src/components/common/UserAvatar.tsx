@@ -24,11 +24,11 @@ const getIconSize = (size: AvatarProps['size']) => {
         case '2':
             return '1rem'
         case '3':
-            return '1.2rem'
+            return '1rem'
         case '4':
-            return '1.3rem'
+            return '1.1rem'
         case '5':
-            return '1.4rem'
+            return '1.2rem'
         case '6':
             return '1.5rem'
         case '7':

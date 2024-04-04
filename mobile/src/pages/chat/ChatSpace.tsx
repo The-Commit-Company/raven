@@ -92,7 +92,7 @@ const LoadingErrorPage = ({ isLoading, error, channelID }: { isLoading: boolean,
     <IonHeader>
       <IonToolbar>
         <IonButtons>
-          <IonBackButton defaultHref="/channels" text='' className="px-2" color='medium' />
+          <IonBackButton defaultHref="/channels" text='' className="px-2" color='dark' />
         </IonButtons>
         <IonTitle>{channelID ?? "Channel"}</IonTitle>
       </IonToolbar>

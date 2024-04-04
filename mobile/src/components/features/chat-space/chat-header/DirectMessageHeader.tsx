@@ -1,5 +1,4 @@
 import { UserAvatar } from "@/components/common/UserAvatar"
-import { CustomAvatar } from "@/components/ui/avatar"
 import { useGetUser } from "@/hooks/useGetUser"
 import { UserContext } from "@/utils/auth/UserProvider"
 import { DMChannelListItem } from "@/utils/channel/ChannelListProvider"

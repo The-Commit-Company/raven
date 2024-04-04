@@ -134,7 +134,7 @@ export const AddChannel = ({ presentingElement, isOpen, onDismiss }: AddChannelP
                     <IonContent className="ion-padding bg-gray-2">
                         <Theme accentColor="iris">
                             <ErrorBanner error={channelCreationError} />
-                            <div className="flex flex-col p-2 gap-4">
+                            <div className="flex flex-col py-1.5 gap-4">
                                 <FormField
                                     name='channel_name'
                                     control={form.control}
@@ -211,32 +211,38 @@ export const AddChannel = ({ presentingElement, isOpen, onDismiss }: AddChannelP
                                                     color='iris'
                                                 >
                                                     <div className="flex flex-col">
-                                                        <FormItem className="flex items-center space-y-1 py-3">
-                                                            <FormLabel className="font-normal items-center flex gap-2 grow">
-                                                                <BiHash size='20' />
-                                                                <Text size='3' as='span'>Public</Text>
+                                                        <FormItem className="flex w-full items-center space-y-1 py-2">
+                                                            <FormLabel className="font-normal justify-between items-center flex gap-2 grow">
+                                                                <div className="flex gap-2 items-center">
+                                                                    <BiHash size='20' />
+                                                                    <Text size='3' as='span'>Public</Text>
+                                                                </div>
+                                                                <FormControl>
+                                                                    <RadioGroup.Item value="Public" />
+                                                                </FormControl>
                                                             </FormLabel>
-                                                            <FormControl>
-                                                                <RadioGroup.Item value="Public" />
-                                                            </FormControl>
                                                         </FormItem>
                                                         <FormItem className="flex items-center space-y-1 py-3">
-                                                            <FormLabel className="font-normal items-center flex gap-2 grow">
-                                                                <BiLockAlt size='20' />
-                                                                <Text as='span' size='3'>Private</Text>
+                                                            <FormLabel className="font-normal justify-between items-center flex gap-2 grow">
+                                                                <div className="flex gap-2 items-center">
+                                                                    <BiLockAlt size='20' />
+                                                                    <Text as='span' size='3'>Private</Text>
+                                                                </div>
+                                                                <FormControl>
+                                                                    <RadioGroup.Item value="Private" />
+                                                                </FormControl>
                                                             </FormLabel>
-                                                            <FormControl>
-                                                                <RadioGroup.Item value="Private" />
-                                                            </FormControl>
                                                         </FormItem>
                                                         <FormItem className="flex items-center space-y-1 py-3">
-                                                            <FormLabel className="font-normal items-center flex gap-2 grow">
-                                                                <BiGlobe size='18' />
-                                                                <Text as='span' size='3'>Open</Text>
+                                                            <FormLabel className="font-normal justify-between items-center flex gap-2 grow">
+                                                                <div className="flex gap-2 items-center">
+                                                                    <BiGlobe size='18' />
+                                                                    <Text as='span' size='3'>Open</Text>
+                                                                </div>
+                                                                <FormControl>
+                                                                    <RadioGroup.Item value="Open" />
+                                                                </FormControl>
                                                             </FormLabel>
-                                                            <FormControl>
-                                                                <RadioGroup.Item value="Open" />
-                                                            </FormControl>
                                                         </FormItem>
                                                     </div>
                                                 </RadioGroup.Root>
