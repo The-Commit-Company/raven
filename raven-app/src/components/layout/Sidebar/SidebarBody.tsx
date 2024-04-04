@@ -13,7 +13,7 @@ export const SidebarBody = () => {
     return (
         <ScrollArea type="hover" scrollbars="vertical" className='h-[calc(100vh-7rem)]'>
             <Flex direction='column' gap='2' className='overflow-x-hidden' px='2'>
-                <Box pb='2'>
+                <Box>
                     <SidebarItem to={'saved-messages'} className='pl-1.5 py-0.5'>
                         <AccessibleIcon label='Saved Messages'>
                             <BiBookmark className='text-slate-12 mt-0.5' size='14' />
