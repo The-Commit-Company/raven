@@ -4420,6 +4420,13 @@ ionicons@^7.0.0, ionicons@^7.2.2:
   dependencies:
     "@stencil/core" "^4.0.3"
 
+ionicons@^7.3.1:
+  version "7.3.1"
+  resolved "https://registry.yarnpkg.com/ionicons/-/ionicons-7.3.1.tgz#a12a2c1c9290e3b1ee23b1a58b01565e104c7525"
+  integrity sha512-1boG4EQTBBpQ4/0PU60Yi78Iw/k8iNtKu9c0NmsbzHGnWAcwpiovG9Wi/rk5UlF+DC+CR4XDCxKo91YqvAxkww==
+  dependencies:
+    "@stencil/core" "^4.0.3"
+
 is-alphabetical@^1.0.0:
   version "1.0.4"
   resolved "https://registry.yarnpkg.com/is-alphabetical/-/is-alphabetical-1.0.4.tgz#9e7d6b94916be22153745d184c298cbf986a686d"
@@ -7241,10 +7248,10 @@ vfile@^6.0.0:
     unist-util-stringify-position "^4.0.0"
     vfile-message "^4.0.0"
 
-vite-plugin-pwa@^0.19.0:
-  version "0.19.6"
-  resolved "https://registry.yarnpkg.com/vite-plugin-pwa/-/vite-plugin-pwa-0.19.6.tgz#8a12db16b13c946de38cc6b00f39cc24b070df0d"
-  integrity sha512-3hoxgrDGRzh1vidcZ/GSKXBDiZqbL8DRHXkJgkbJ2Xp3+/P4nau6118L5XlJJsm/wXPpwc/JpDj6Mf073s69+A==
+vite-plugin-pwa@^0.19.7:
+  version "0.19.7"
+  resolved "https://registry.yarnpkg.com/vite-plugin-pwa/-/vite-plugin-pwa-0.19.7.tgz#db8e36399a9d508d1deec0d415669c85f26e9df1"
+  integrity sha512-18TECxoGPQE7tVZzKxbf5Icrl5688n1JGMPSgGotTsh89vLDxevY7ICfD3CFVfonZXh8ckuyJXg0NXE5+FAl2A==
   dependencies:
     debug "^4.3.4"
     fast-glob "^3.3.2"
@@ -7252,7 +7259,7 @@ vite-plugin-pwa@^0.19.0:
     workbox-build "^7.0.0"
     workbox-window "^7.0.0"
 
-vite@^4.5.2:
+vite@^4.5.3:
   version "4.5.3"
   resolved "https://registry.yarnpkg.com/vite/-/vite-4.5.3.tgz#d88a4529ea58bae97294c7e2e6f0eab39a50fb1a"
   integrity sha512-kQL23kMeX92v3ph7IauVkXkikdDRsYMGTVl5KY2E9OY4ONLvkHf04MDTbnfo6NKxZiDLWzVpP5oTa8hQD8U3dg==
