@@ -7,7 +7,7 @@ import { UserContext } from "../../../utils/auth/UserProvider"
 import { useGetUser } from "@/hooks/useGetUser"
 import { useIsUserActive } from "@/hooks/useIsUserActive"
 import { ChannelListContext, ChannelListContextType, DMChannelListItem, ExtraUsersData, UnreadCountData } from "../../../utils/channel/ChannelListProvider"
-import { Flex, Text } from "@radix-ui/themes"
+import { Box, Flex, Text } from "@radix-ui/themes"
 import { UserAvatar } from "@/components/common/UserAvatar"
 import { useToast } from "@/hooks/useToast"
 
@@ -27,7 +27,11 @@ export const DirectMessageList = ({ unread_count }: { unread_count?: UnreadCount
                     <Flex gap='2' align='center'>
                         <SidebarGroupLabel className='cal-sans'>Direct Messages</SidebarGroupLabel>
                     </Flex>
-                    {!showData && unread_count && unread_count?.total_unread_count_in_dms > 0 && <SidebarBadge>{unread_count.total_unread_count_in_dms}</SidebarBadge>}
+                    {!showData && unread_count && unread_count?.total_unread_count_in_dms > 0 &&
+                        <Box pr='2'>
+                            <SidebarBadge>{unread_count.total_unread_count_in_dms}</SidebarBadge>
+                        </Box>
+                    }
                 </Flex>
             </SidebarGroupItem>
             <SidebarGroup>
@@ -56,15 +60,22 @@ const DirectMessageItemList = ({ unread_count }: { unread_count?: UnreadCountDat
 
 const DirectMessageItem = ({ channel, unreadCount }: { channel: DMChannelListItem, unreadCount: UnreadCountData['channels'] }) => {
 
-    const { currentUser } = useContext(UserContext)
+
     const unreadCountForChannel = useMemo(() => unreadCount.find((unread) => unread.name == channel.name)?.unread_count, [channel.name, unreadCount])
 
+    return <DirectMessageItemElement channel={channel} unreadCount={unreadCountForChannel} />
+
+}
+
+export const DirectMessageItemElement = ({ channel, unreadCount }: { channel: DMChannelListItem, unreadCount?: number }) => {
+
+    const { currentUser } = useContext(UserContext)
     const userData = useGetUser(channel.peer_user_id)
     const isActive = useIsUserActive(channel.peer_user_id)
 
     const { channelID } = useParams()
 
-    const showUnread = unreadCountForChannel && channelID !== channel.name
+    const showUnread = unreadCount && channelID !== channel.name
 
     return <SidebarItem to={channel.name} className={'py-0.5'}>
         <SidebarIcon>
@@ -74,7 +85,7 @@ const DirectMessageItem = ({ channel, unreadCount }: { channel: DMChannelListIte
             <Text size='2' className="text-ellipsis line-clamp-1" weight={showUnread ? 'bold' : 'regular'}>
                 {channel.peer_user_id !== currentUser ? userData?.full_name ?? channel.peer_user_id : `${userData?.full_name} (You)`}
             </Text>
-            {showUnread ? <SidebarBadge>{unreadCountForChannel}</SidebarBadge> : null}
+            {showUnread ? <SidebarBadge>{unreadCount}</SidebarBadge> : null}
         </Flex>
     </SidebarItem>
 }

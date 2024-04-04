@@ -80,7 +80,7 @@ export const SidebarItem = ({ to, children, end, active = false, activeStyles, c
                     <Flex
                         gap='2'
                         align='center'
-                        px='3'
+                        px='2'
                         className={clsx('cursor-pointer text-black dark:text-gray-100 user-select-none rounded-md no-underline transition-all duration-200 hover:bg-gray-3 dark:hover:bg-gray-5', isActive ? activeClass : '', className)}
                         {...props}>
                         {children}
