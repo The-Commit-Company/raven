@@ -63,7 +63,7 @@
     "tailwindcss-animate": "^1.0.7",
     "tippy.js": "^6.3.7",
     "turndown": "^7.1.2",
-    "vite": "^4.5.2",
+    "vite": "^4.5.3",
     "vite-plugin-pwa": "^0.19.0",
     "workbox-core": "^7.0.0",
     "workbox-precaching": "^7.0.0",
