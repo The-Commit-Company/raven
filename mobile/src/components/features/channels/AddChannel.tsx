@@ -109,19 +109,18 @@ export const AddChannel = ({ presentingElement, isOpen, onDismiss }: AddChannelP
                 <IonModal ref={modal} onDidDismiss={handleCancel} isOpen={isOpen} presentingElement={presentingElement}>
 
                     <IonHeader>
-                        <Theme>
-                            <div className='py-4 flex justify-between px-4 inset-x-0 top-0 overflow-hidden items-center border-b-gray-4 border-b rounded-t-3xl'>
+                        <Theme accentColor="iris">
+                            <div className='py-3 flex justify-between px-4 inset-x-0 top-0 overflow-hidden items-center border-b-gray-4 border-b rounded-t-3xl'>
                                 <div className="w-11">
                                     <Button
                                         size='3' variant="ghost" color='gray' onClick={handleCancel}>
                                         Cancel
                                     </Button>
                                 </div>
-                                <Text className="text-base cal-sans font-medium">Create Channel</Text>
+                                <Text className="cal-sans font-medium" size='4'>Create Channel</Text>
                                 <div>
                                     <Button
                                         variant="ghost"
-                                        color='iris'
                                         size='3'
                                         onClick={form.handleSubmit(onSubmit)}
                                         type='submit'

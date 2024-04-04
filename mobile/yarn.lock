@@ -1557,10 +1557,10 @@
     debug "^4.0.0"
     tslib "^2.0.1"
 
-"@ionic/core@7.8.1":
-  version "7.8.1"
-  resolved "https://registry.yarnpkg.com/@ionic/core/-/core-7.8.1.tgz#ef9710c56232011d99651100911430454dd5de7e"
-  integrity sha512-SsoDy0HaifCcWBlcyRIpTceboz6tSg4gjNr/LRGJyg+r2bWdoG3jeuQDg0Affox8dar7QvODk3AWO/7RFWLOfg==
+"@ionic/core@7.8.3":
+  version "7.8.3"
+  resolved "https://registry.yarnpkg.com/@ionic/core/-/core-7.8.3.tgz#4da064bc314ba6e9e19a99a6d800b62cbe2c5b9b"
+  integrity sha512-5pFoE8gbhbCuyQlZ7BlRk4+S4PmmqgkALw4IAhtUK1TuzsKJ2KLFBlp0rdlWS+VcKEyrec/ptVki8oN5335vRA==
   dependencies:
     "@stencil/core" "^4.12.2"
     ionicons "^7.2.2"
@@ -1571,20 +1571,20 @@
   resolved "https://registry.yarnpkg.com/@ionic/react-hooks/-/react-hooks-0.0.8.tgz#3d036aaeffbb7b136ac411c896e907fb59bdbf92"
   integrity sha512-0U9hoPByJxd4/Sdx/uad2sDYCgQmQdG0nt+UNEzkk6IF4TjNVAQPcFQ6nJIc2oiUAMjaxzoLKmG8ziamuyfZaQ==
 
-"@ionic/react-router@^7.7.3":
-  version "7.8.1"
-  resolved "https://registry.yarnpkg.com/@ionic/react-router/-/react-router-7.8.1.tgz#4553a9a36ae364cf9f844aa099f1e40469550f8f"
-  integrity sha512-RmkucjZkMNE7OK8odL/+L9PLPINliH1uWiY9nObfwOtnyt9iXnPgs8MjxDGO3ndiTEPu+ssRLlol9GEwhxjjvw==
+"@ionic/react-router@^7.8.3":
+  version "7.8.3"
+  resolved "https://registry.yarnpkg.com/@ionic/react-router/-/react-router-7.8.3.tgz#a4031dc27fb1cbb920a9a1caa11636bcd9edc727"
+  integrity sha512-K4gGh1Xs78V6a5KeN490G0tUKUP6r+TbWqY2oqDBJiNLmjk8n4JYPVeL3I6WYWZwuFBbX01UgCXic41L9Jd86A==
   dependencies:
-    "@ionic/react" "7.8.1"
+    "@ionic/react" "7.8.3"
     tslib "*"
 
-"@ionic/react@7.8.1", "@ionic/react@^7.7.3":
-  version "7.8.1"
-  resolved "https://registry.yarnpkg.com/@ionic/react/-/react-7.8.1.tgz#a93176f20c0340325df7ed29ab2ab73c2329a554"
-  integrity sha512-MJgmlsm69lvHiPBFHSUg9ZGbWyjfn5ZDUidYSE8oWA/L0Mtd7XqNl9DMlSXWy87jaOET96R72eSwgsAPZ+FEBA==
+"@ionic/react@7.8.3", "@ionic/react@^7.8.3":
+  version "7.8.3"
+  resolved "https://registry.yarnpkg.com/@ionic/react/-/react-7.8.3.tgz#8d4951b9c83aba2f6e1b7f4532c7453f2e2752fa"
+  integrity sha512-nush+Ra/KNLv4MvxODwxNe7/FVcDRyc0xgkFKwXu9P/ztUv8qqy0zotHxsJVAb9BAd/r78eBpdyaOnUQcLw2Dg==
   dependencies:
-    "@ionic/core" "7.8.1"
+    "@ionic/core" "7.8.3"
     ionicons "^7.0.0"
     tslib "*"
 
@@ -2434,10 +2434,10 @@
   dependencies:
     "@babel/runtime" "^7.13.10"
 
-"@radix-ui/themes@^3.0.1":
-  version "3.0.1"
-  resolved "https://registry.yarnpkg.com/@radix-ui/themes/-/themes-3.0.1.tgz#24b685166109f93bd2212ea6bc5114b9c0d943df"
-  integrity sha512-w0+2XqaifspZlds2ealxgVU2xtZlJ0gSTgHuLd56ectYxnC4hkg/PEOP5kPHOpCQ+vtV9+LI+Cy4RWipGgg3aQ==
+"@radix-ui/themes@^3.0.2":
+  version "3.0.2"
+  resolved "https://registry.yarnpkg.com/@radix-ui/themes/-/themes-3.0.2.tgz#b96d6ac241427b7256f1a5e0fefbd0ac84f98244"
+  integrity sha512-z5drXh8VYAqHT9sfRaY5tGo7XYLhTUKEmV+x0umzfkCVhK+7k6UwzSMDgsSFjrmgbq5LWQON7FzWXGaalr+k1A==
   dependencies:
     "@radix-ui/colors" "^3.0.0"
     "@radix-ui/primitive" "^1.0.1"

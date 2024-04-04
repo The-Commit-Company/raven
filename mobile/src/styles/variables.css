@@ -96,12 +96,12 @@ body {
     --ion-color-warning-shade: #e0ad36;
     --ion-color-warning-tint: #ffcb50;
 
-    --ion-color-danger: #E5484D;
+    --ion-color-danger: var(--red-9);
     --ion-color-danger-rgb: 229, 72, 77;
-    --ion-color-danger-contrast: #000000;
-    --ion-color-danger-contrast-rgb: 0, 0, 0;
-    --ion-color-danger-shade: #ca3f44;
-    --ion-color-danger-tint: #e85a5f;
+    --ion-color-danger-contrast: #ffffff;
+    --ion-color-danger-contrast-rgb: 255, 255, 255;
+    --ion-color-danger-shade: var(--red-8);
+    --ion-color-danger-tint: var(--red-10);
 
     --ion-color-dark: var(--gray-1);
     /* --ion-color-dark-rgb: 244, 245, 248; */
