@@ -43,8 +43,8 @@ export const WebhookData = () => {
             <Flex direction='column' gap='2' width='100%'>
                 <Flex direction='row' align='end' justify={'between'}>
                     <Flex direction={'column'} gap='1'>
-                        <Heading size='4'>Payload</Heading>
-                        <HelperText>Select the fields you want to send in the webhook request.</HelperText>
+                        <Heading size='4'>Webhook Data</Heading>
+                        <HelperText>Select the fields you want in webhook response.</HelperText>
                     </Flex>
                     <Flex direction={'row'} gap={'4'} align={'center'}>
                         <Dialog.Root open={previewOpen} onOpenChange={setPreviewOpen}>
@@ -171,11 +171,13 @@ export const FieldInfoModal = ({ fieldIndex, triggerEvent, onClose }: { fieldInd
         <Flex direction={'column'} gap={'4'} width={'100%'}>
             <Dialog.Title>
                 <Flex direction='column' gap='1' width='100%'>
-                    <Flex direction='row' align='end' gap={'2'} >
+                    <Flex direction='row' align='center' gap={'2'} >
                         <Heading size='6'>
                             {fieldData?.label}
                         </Heading>
-                        <Badge variant='outline' radius="large" color='gray'>{fieldData?.fieldtype}</Badge>
+                        <Badge variant='outline' radius="large" color='gray' style={{
+                            marginTop: '1rem',
+                        }}>{fieldData?.fieldtype}</Badge>
                     </Flex>
                     <HelperText>{fieldData?.description}</HelperText>
                 </Flex>

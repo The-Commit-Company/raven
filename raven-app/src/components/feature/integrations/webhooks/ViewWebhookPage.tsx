@@ -1,5 +1,5 @@
 import { ErrorBanner } from "@/components/layout/AlertBanner"
-import { AlertDialog, Badge, Button, DropdownMenu, Flex, IconButton, Separator, Text } from "@radix-ui/themes"
+import { AlertDialog, Badge, Box, Button, DropdownMenu, Flex, IconButton, Separator, Text } from "@radix-ui/themes"
 import { FrappeDoc, useFrappeUpdateDoc } from "frappe-react-sdk"
 import { FieldValues, FormProvider, useForm } from "react-hook-form"
 import { KeyedMutator } from 'swr'
@@ -64,14 +64,8 @@ export const ViewWebhookPage = ({ data, mutate }: { data: FrappeDoc<RavenWebhook
     }
 
     return (
-        <Flex direction='column' gap='4' py='4' width={'100%'} height={'100%'} style={{
-            alignItems: 'center',
-            justifyContent: 'start',
-            minHeight: '100vh'
-        }}>
-            <Flex direction='column' gap='4' pt={'4'} width='100%' style={{
-                maxWidth: '700px'
-            }} >
+        <Box className="lg:mx-[10rem] md:mx-[5rem] mt-9 h-full">
+            <Flex direction='column' gap='4' width='100%' >
                 <BackToList />
                 <Flex direction='column' gap='4' width='100%' px={'2'}>
                     <Flex direction={'row'} gap={'2'} justify={'between'} align={'center'}>
@@ -105,7 +99,8 @@ export const ViewWebhookPage = ({ data, mutate }: { data: FrappeDoc<RavenWebhook
                         </form>
                     </FormProvider>
                     <Button onClick={methods.handleSubmit(onSubmit)} disabled={loading || !isDirty} variant='solid' style={{
-                        alignSelf: 'flex-end'
+                        alignSelf: 'flex-end',
+                        marginBottom: '1rem'
                     }}>
                         Save Webhook
                     </Button>
@@ -135,6 +130,6 @@ export const ViewWebhookPage = ({ data, mutate }: { data: FrappeDoc<RavenWebhook
                     </Flex>
                 </AlertDialog.Content>
             </AlertDialog.Root>
-        </Flex >
+        </Box >
     )
 }
