@@ -2,7 +2,7 @@ ion-modal#emoji-picker-modal {
     /* --height: 50%; */
     --border-radius: 8px;
     /* --background: rgb(250 250 250); */
-    --ion-background-color: rgb(24 24 27);
+    --ion-background-color: var(--gray-2);
     --height: 90vh;
     /* --backdrop-opacity: 1; */
     /* --box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1); */
