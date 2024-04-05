@@ -39,6 +39,8 @@ export const Component = () => {
                     state: true,
                     message: "Login Link sent on Email",
                 });
+            }).catch((err)=>{
+                setCallout(null)
             })
     }
 

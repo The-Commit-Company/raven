@@ -32,6 +32,8 @@ export const LoginWithEmail = (props: ActiveScreenProps) => {
                     state: true,
                     message: "Login Link sent on Email",
                 });
+            }).catch((err)=>{
+                setCallout(null)
             })
     }
 

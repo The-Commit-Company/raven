@@ -39,6 +39,8 @@ export const Component = () => {
                     state: true,
                     message: "Password reset instructions have been sent to your email.",
                 });
+            }).catch((err)=>{
+                setCallout(null)
             })
     }
 
