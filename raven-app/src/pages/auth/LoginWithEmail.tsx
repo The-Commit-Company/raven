@@ -65,7 +65,6 @@ export const Component = () => {
                                     })}
                                     name="email"
                                     type="email"
-                                    required
                                     placeholder="jane@example.com"
                                     tabIndex={0}
                                 />
