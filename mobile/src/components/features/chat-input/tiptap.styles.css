@@ -1,5 +1,5 @@
 .tiptap p.is-editor-empty:first-child::before {
-    color: rgb(82 82 91);
+    color: var(--gray-8);
     content: attr(data-placeholder);
     float: left;
     text-overflow: ellipsis;
@@ -10,8 +10,22 @@
 }
 
 .tiptap.ProseMirror {
-    max-height: 130px;
+    max-height: 240px;
     overflow: auto;
+}
+
+.tiptap-editor a,
+.tiptap-editor .mention {
+    color: var(--accent-11);
+}
+
+.tiptap-editor .mention {
+    background-color: var(--accent-a3);
+}
+
+.tiptap-editor a {
+    text-decoration: underline;
+    cursor: pointer;
 }
 
 .tiptap pre {

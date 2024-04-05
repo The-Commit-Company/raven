@@ -61,8 +61,8 @@ export const DeleteAction = ({ message, onSuccess }: ActionProps) => {
 
     return (
         <ActionItem onClick={openConfirmation} isLoading={loading}>
-            <ActionIcon icon={trashOutline} />
-            <ActionLabel label='Delete' />
+            <ActionIcon icon={trashOutline} color='danger' />
+            <ActionLabel label='Delete' color='danger' />
         </ActionItem>
     )
 }

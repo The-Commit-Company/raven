@@ -1,7 +1,6 @@
-import { IonItem, IonLabel } from "@ionic/react"
 import { useState } from "react"
-import { IoPeople } from "react-icons/io5"
 import { ViewChannelMembers } from "./ViewChannelMembers"
+import { Button } from "@radix-ui/themes"
 
 interface ViewChannelMembersButtonProps {
     pageRef: React.MutableRefObject<undefined>
@@ -14,19 +13,15 @@ export const ViewChannelMembersButton = ({ pageRef, channelID }: ViewChannelMemb
 
     return (
         <>
-            <IonItem lines="full" button onClick={() => setIsOpen(true)}>
-                <div slot='start'>
-                    <IoPeople size='18' color='var(--ion-color-medium)' />
-                </div>
-                <IonLabel color='medium'>
-                    View Members
-                </IonLabel>
-            </IonItem>
+            <Button variant="ghost" onClick={() => setIsOpen(true)}>
+                See all
+            </Button>
             <ViewChannelMembers
                 isOpen={isOpen}
                 onDismiss={() => setIsOpen(false)}
                 presentingElement={pageRef.current}
-                channelID={channelID} />
+                channelID={channelID}
+            />
         </>
     )
 }

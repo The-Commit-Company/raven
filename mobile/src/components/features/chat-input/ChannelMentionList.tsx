@@ -1,4 +1,5 @@
 import { ChannelListItem } from '@/utils/channel/ChannelListProvider'
+import { Text } from '@radix-ui/themes'
 import { ReactRendererOptions } from '@tiptap/react'
 import {
     forwardRef, useEffect, useImperativeHandle,
@@ -54,7 +55,9 @@ export default forwardRef((props: ReactRendererOptions['props'], ref) => {
 
     if (props?.items.length) {
         return (
-            <ul role="list" className="divide-y divide-zinc-700 bg-zinc-900 border border-zinc-800 shadow-lg shadow-black list-none rounded-md overflow-y-auto max-h-96">
+            <ul role="list"
+                data-is-toolbar-element={true}
+                className="divide-y w-full divide-gray-5 overflow-x-hidden bg-gray-2 border border-gray-5 shadow-lg list-none rounded-md overflow-y-scroll max-h-72">
                 {props.items.map((item: ChannelListItem, index: number) => (
                     <MentionItem
                         item={item}
@@ -81,13 +84,14 @@ const MentionItem = ({ item, index, selectItem, selectedIndex, itemsLength }: { 
     const roundedBottom = index === itemsLength - 1 ? ' rounded-b-md' : ''
 
     return <li
-        className={'py-2 px-3 text-zinc-200 text-md active:bg-blue-500 focus:bg-blue-500 focus-visible:bg-blue-500 hover:bg-blue-500' + roundedBottom + roundedTop}
+        data-is-toolbar-element={true}
+        className={'py-2 px-3 w-[90vw] text-md  active:bg-gray-4 focus:bg-gray-4 focus-visible:bg-gray-4 hover:bg-gray-4' + roundedBottom + roundedTop}
         onClick={() => selectItem(index)}
     >
-        <div className="flex items-center gap-x-3">
-            {item.type === "Private" ? <BiLockAlt size='18' color='var(--ion-color-dark)' /> : item.type === "Public" ? <BiHash size='18' color='var(--ion-color-dark)' /> :
-                <BiGlobe size='18' color='var(--ion-color-dark)' />}
-            <span>{item.channel_name}</span>
+        <div className="flex items-center gap-x-3" data-is-toolbar-element={true}>
+            {item.type === "Private" ? <BiLockAlt size='18' className='text-gray-12' /> : item.type === "Public" ? <BiHash size='18' className='text-gray-12' /> :
+                <BiGlobe size='18' className='text-gray-12' />}
+            <Text as='span' data-is-toolbar-element={true}>{item.channel_name}</Text>
         </div>
     </li>
 }

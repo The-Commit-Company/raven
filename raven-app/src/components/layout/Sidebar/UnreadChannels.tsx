@@ -51,7 +51,7 @@ const UnreadChannels = ({ unread_count }: { unread_count?: UnreadCountData }) =>
 
 
     return (
-        <SidebarGroup>
+        <SidebarGroup pt='2'>
             <SidebarGroupItem gap='2' className={'pl-1.5'}>
                 <MdOutlineMarkChatUnread className='text-slate-12 mt-0.5' size='14' />
                 <Flex width='100%' justify='between' align='center' gap='2'>

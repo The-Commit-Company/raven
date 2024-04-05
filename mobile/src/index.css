@@ -52,11 +52,21 @@
   }
 }
 
-@layer base {
-  * {
-    @apply border-border;
+@layer utilities {
+  .hidden-scroll-bar::-webkit-scrollbar {
+    display: none;
+    /* For Chrome, Safari, and Opera */
   }
-  body {
-    @apply bg-background text-foreground;
+
+  .hidden-scroll-bar {
+    -ms-overflow-style: none;
+    /* For Internet Explorer and Edge */
+    scrollbar-width: none;
+    /* For Firefox */
   }
+}
+
+.back-button {
+  --icon-font-size: 20px;
+  width: 2rem;
 }

@@ -67,6 +67,7 @@ export const Routes = () => {
                 }).then(() => {
                     if (isActive) {
                         mutate('active_users', undefined, true)
+                        mutate('unread_channel_count')
                     }
                 })
             })

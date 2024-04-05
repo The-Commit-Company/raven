@@ -1,15 +1,14 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useFrappeGetCall, useFrappePostCall } from "frappe-react-sdk";
-import { IonSpinner } from '@ionic/react'
 import { ActiveScreenProps } from "@/components/layout/AuthContainer";
 import { CalloutObject, ErrorCallout, SuccessCallout } from "@/components/common/Callouts";
 import { isEmailValid } from "@/utils/validations/validations";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
 import { AuthContext } from "@/types/Auth/Login";
 import { EmailLoginProvider, OAuthProvider, OAuthProviderInterface, SocialSeparator } from "@/components/auth/SocialProviders";
+import { Button, Heading, Link, Text } from "@radix-ui/themes";
 
 
 export type SignUpInputs = {
@@ -21,7 +20,7 @@ export type SignUpInputs = {
 export const SignUp = (props: ActiveScreenProps) => {
 
     const form = useForm<SignUpInputs>({
-        defaultValues:{
+        defaultValues: {
             email: "",
             full_name: "",
             redirect_to: ""
@@ -45,10 +44,10 @@ export const SignUp = (props: ActiveScreenProps) => {
 
     async function signup(values: SignUpInputs) {
         return call({
-                email: values.email,
-                full_name: values.full_name,
-                redirect_to: "/raven"
-            })
+            email: values.email,
+            full_name: values.full_name,
+            redirect_to: "/raven"
+        })
             .then((result) => {
                 setCallout({
                     state: true,
@@ -60,6 +59,7 @@ export const SignUp = (props: ActiveScreenProps) => {
     return (
         <>
             <div className="flex flex-col gap-y-6">
+                <Heading size='5' as='h2' weight='medium' className="not-cal">Create an account</Heading>
                 {error && <ErrorCallout message={error.message} />}
                 {callout && <SuccessCallout message={callout.message} />}
                 <div className='flex flex-col gap-y-6'>
@@ -110,10 +110,11 @@ export const SignUp = (props: ActiveScreenProps) => {
 
                                 <Button
                                     type="submit"
-                                    variant="default"
-                                    disabled={form.formState.isSubmitting}
+                                    size='3'
+                                    mt='2'
+                                    loading={form.formState.isSubmitting}
                                 >
-                                    {form.formState.isSubmitting ? <IonSpinner name="crescent" /> : <span className="font-medium text-sm leading-normal">Sign Up</span>}
+                                    Sign Up
                                 </Button>
 
                             </div>
@@ -146,14 +147,15 @@ export const SignUp = (props: ActiveScreenProps) => {
                     </div>
                 </div>
                 <div className="flex justify-center items-center">
-                    <span className='flex self-center text-sm font-medium leading-normal' color="gray">Already have an account?&nbsp;</span>
-                    <Button
-                        variant='link'
-                        className='px-0'
+                    <Text as='span' size='2' className='font-medium leading-normal'>Already have an account?&nbsp;</Text>
+                    <Link
+                        underline='always'
+                        size='2'
+                        href='#'
                         onClick={() => props.setActiveScreen({ login: true, loginWithEmail: false, signup: false })}
                     >
                         Login
-                    </Button>
+                    </Link>
                 </div>
             </div>
         </>

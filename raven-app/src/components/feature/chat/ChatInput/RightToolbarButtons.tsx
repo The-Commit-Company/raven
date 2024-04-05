@@ -185,8 +185,6 @@ const SendButton = ({ sendMessage, messageSending, setContent }: {
 
             const hasContent = editor.getText().trim().length > 0
 
-            console.log("Editor content: ", editor.getJSON())
-
             const hasInlineImage = editor.getHTML().includes('img')
 
             let html = ''

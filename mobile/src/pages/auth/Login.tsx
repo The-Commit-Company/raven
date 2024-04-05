@@ -1,4 +1,3 @@
-import { IonSpinner } from '@ionic/react'
 import { ErrorCallout } from '@/components/common/Callouts'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
@@ -7,9 +6,9 @@ import { AuthContext, LoginInputs } from '@/types/Auth/Login'
 import { TwoFactor } from '@/pages/auth/TwoFactor'
 import { ActiveScreenProps } from '@/components/layout/AuthContainer'
 import { Input } from '@/components/ui/input'
-import { Button } from '@/components/ui/button'
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { OAuthProviderInterface, OAuthProvider, EmailLoginProvider, SocialSeparator } from '@/components/auth/SocialProviders'
+import { Button, Link, Text } from '@radix-ui/themes'
 
 
 export const Login = (props: ActiveScreenProps) => {
@@ -23,13 +22,9 @@ export const Login = (props: ActiveScreenProps) => {
         }
     })
     // GET call for Login Context (settings for social logins, email link etc)
-    const { data: loginContext, mutate } = useFrappeGetCall<AuthContext>('raven.api.login.get_context', {
-        "redirect-to": "/raven"
-    }, 'raven.api.login.get_context', {
-        revalidateIfStale: false,
-        revalidateOnReconnect: false,
-        revalidateOnFocus: false
-    })
+    const { data: loginContext } = useFrappeGetCall<AuthContext>('raven.api.login.get_context', {
+        "redirect-to": "/raven_mobile"
+    }, 'raven.api.login.get_context')
     const [error, setError] = useState<FrappeError | null>(null)
 
     const { login } = useFrappeAuth()
@@ -79,8 +74,7 @@ export const Login = (props: ActiveScreenProps) => {
                                                     <FormItem>
                                                         <FormLabel>Email/Username <span className='text-rose-600'>*</span></FormLabel>
                                                         <FormControl>
-                                                            {/* Type=text as email/username both are allowed */}
-                                                            <Input type="text" placeholder='jane@example.com' {...field} />
+                                                            <Input {...field} placeholder='jane@example.com' />
                                                         </FormControl>
                                                         {formState.errors.email && <FormMessage>{formState.errors.email.message}</FormMessage>}
                                                     </FormItem>
@@ -108,10 +102,11 @@ export const Login = (props: ActiveScreenProps) => {
                                         </div>
                                         <Button
                                             type="submit"
-                                            variant="default"
-                                            disabled={form.formState.isSubmitting}
+                                            size='3'
+                                            mt='2'
+                                            loading={form.formState.isSubmitting}
                                         >
-                                            {form.formState.isSubmitting ? <IonSpinner name="crescent" /> : <span className="font-medium text-sm leading-normal">Login</span>}
+                                            Login
                                         </Button>
                                     </div>
                                 </form>
@@ -123,7 +118,7 @@ export const Login = (props: ActiveScreenProps) => {
                                     : null
                             }
                             {/* Map all social oauth providers */}
-                            <div className='flex flex-col gap-2'>
+                            <div className='flex flex-col gap-4'>
                                 {
                                     loginContext?.message?.social_login ? loginContext?.message?.provider_logins.map((soc: OAuthProviderInterface, i: number) => {
                                         return (
@@ -132,7 +127,7 @@ export const Login = (props: ActiveScreenProps) => {
                                     }) : null
                                 }
 
-                                <div className='flex flex-col gap-2'>
+                                <div className='flex flex-col gap-4'>
                                     {
                                         loginContext?.message?.login_with_email_link ?
                                             <EmailLoginProvider setActiveScreen={props.setActiveScreen} isSubmitting={form.formState.isSubmitting} />
@@ -147,14 +142,16 @@ export const Login = (props: ActiveScreenProps) => {
                 {
                     loginContext?.message?.disable_signup === 0 ?
                         <div className="flex justify-center items-center">
-                            <span className='flex self-center text-sm font-medium leading-normal'>Don't have an account yet?&nbsp;</span>
-                            <Button
-                                variant='link'
-                                className='px-0'
+                            <Text as='span' size='2' className='font-medium leading-normal'>Don't have an account yet?&nbsp;</Text>
+                            <Link
+                                underline='always'
+                                size='2'
+                                href='#'
                                 onClick={() => props.setActiveScreen({ login: false, loginWithEmail: false, signup: true })}
+
                             >
-                                Sign Up
-                            </Button>
+                                Sign up
+                            </Link>
                         </div> : null
                 }
             </div>

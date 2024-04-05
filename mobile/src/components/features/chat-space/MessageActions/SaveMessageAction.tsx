@@ -48,7 +48,7 @@ export const SaveMessageAction = ({ message, onSuccess }: ActionProps) => {
     return (
         <ActionItem onClick={handleLike} isLoading={loading}>
             <ActionIcon icon={bookmarkOutline} />
-            <ActionLabel label={isMessageLiked ? 'Unsave this message' : 'Save this message'} />
+            <ActionLabel label={isMessageLiked ? 'Unsave' : 'Save'} />
         </ActionItem>
     )
 }

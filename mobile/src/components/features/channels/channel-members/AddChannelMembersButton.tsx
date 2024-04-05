@@ -1,7 +1,7 @@
-import { IonItem, IonLabel } from "@ionic/react"
 import { useState } from "react"
-import { IoPersonAdd } from "react-icons/io5"
 import { AddChannelMembers } from "./AddChannelMembers"
+import { IonIcon, IonItem, IonLabel } from "@ionic/react"
+import { personAddOutline } from "ionicons/icons"
 
 interface AddChannelMembersButtonProps {
     pageRef: React.MutableRefObject<undefined>
@@ -14,19 +14,16 @@ export const AddChannelMembersButton = ({ pageRef, channelID }: AddChannelMember
 
     return (
         <>
-            <IonItem lines="full" button onClick={() => setIsOpen(true)}>
-                <div slot='start'>
-                    <IoPersonAdd size='18' color='var(--ion-color-medium)' />
-                </div>
-                <IonLabel color='medium'>
-                    Add Members
-                </IonLabel>
+            <IonItem color='light' button onClick={() => setIsOpen(true)}>
+                <IonIcon icon={personAddOutline} size='small' slot="start" />
+                <IonLabel>Add Members</IonLabel>
             </IonItem>
             <AddChannelMembers
                 isOpen={isOpen}
                 onDismiss={() => setIsOpen(false)}
                 presentingElement={pageRef.current}
-                channelID={channelID} />
+                channelID={channelID}
+            />
         </>
     )
 }
