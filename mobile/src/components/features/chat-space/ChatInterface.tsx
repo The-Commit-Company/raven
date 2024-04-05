@@ -1,6 +1,6 @@
 import { IonHeader, IonFooter, IonContent, useIonViewWillEnter, IonBackButton, IonButton, IonIcon, IonSpinner } from '@ionic/react'
 import { useFrappeGetCall } from 'frappe-react-sdk'
-import { useMemo, useRef, createContext, useState } from 'react'
+import { useMemo, useRef, createContext, useState, useContext } from 'react'
 import { ErrorBanner } from '../../layout'
 import { ChatInput } from '../chat-input'
 import { ChatHeader } from './chat-header'
@@ -15,6 +15,8 @@ import { useInView } from 'react-intersection-observer'
 import { DateSeparator } from './chat-view/DateSeparator'
 import { MessageBlockItem } from './chat-view/MessageBlock'
 import ChatViewFirstMessage from './chat-view/ChatViewFirstMessage'
+import { UserContext } from '@/utils/auth/UserProvider'
+import JoinChannelButton from './JoinChannelButton'
 
 export type ChannelMembersMap = Record<string, UserFields>
 export const ChannelMembersContext = createContext<ChannelMembersMap>({})
@@ -76,7 +78,7 @@ export const ChatInterface = ({ channel }: { channel: ChannelListItem | DMChanne
 
     const { data: channelMembers } = useFrappeGetCall<{ message: ChannelMembersMap }>('raven.api.chat.get_channel_members', {
         channel_id: channel.name
-    }, undefined, {
+    }, `raven.api.chat.get_channel_members.${channel.name}`, {
         revalidateOnFocus: false,
         revalidateIfStale: false,
         revalidateOnReconnect: false
@@ -100,6 +102,16 @@ export const ChatInterface = ({ channel }: { channel: ChannelListItem | DMChanne
     const isOpenChannel = channel.type === 'Open'
 
     const [isScrolling, setIsScrolling] = useState(false)
+
+    const { currentUser } = useContext(UserContext)
+    const isUserInChannel = useMemo(() => {
+        if (currentUser && channelMembers) {
+            return currentUser in channelMembers.message
+        }
+        return false
+    }, [currentUser, channelMembers])
+
+    const isDM = channel?.is_direct_message === 1 || channel?.is_self_message === 1
 
     return (
         <>
@@ -199,8 +211,11 @@ export const ChatInterface = ({ channel }: { channel: ChannelListItem | DMChanne
                 hidden={!!error}
                 className='block relative z-10 order-1 w-full'
             >
-                <div
-                    className='overflow-visible 
+                {channel && channel.is_archived === 0 && !isDM && !isUserInChannel && channel.type !== 'Open' ?
+                    <JoinChannelButton channelData={channel} /> :
+
+                    <div
+                        className='overflow-visible 
                     text-foreground
                     bg-background
                     border-t-gray-4
@@ -208,9 +223,10 @@ export const ChatInterface = ({ channel }: { channel: ChannelListItem | DMChanne
                     px-1
                     pb-2
                     pt-1'
-                >
-                    <ChatInput channelID={channel.name} allMembers={parsedMembers} allChannels={parsedChannels} />
-                </div>
+                    >
+                        <ChatInput channelID={channel.name} allMembers={parsedMembers} allChannels={parsedChannels} />
+                    </div>
+                }
             </IonFooter>
             <MessageActionModal selectedMessage={selectedMessage} onDismiss={onDismiss} />
         </>

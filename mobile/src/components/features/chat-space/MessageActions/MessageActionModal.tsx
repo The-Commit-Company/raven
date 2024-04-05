@@ -14,7 +14,6 @@ import { useGetUser } from '@/hooks/useGetUser';
 import { ShareAction } from './ShareAction';
 import { EmojiAction } from './EmojiAction';
 import MessagePreview from './MessagePreview';
-import { Separator } from '@radix-ui/themes';
 
 interface MessageActionModalProps {
     selectedMessage?: Message,
@@ -23,7 +22,7 @@ interface MessageActionModalProps {
 
 export const MessageActionModal = ({ selectedMessage, onDismiss }: MessageActionModalProps) => {
     const { currentUser } = useContext(UserContext)
-    const isOwnMessage = currentUser === selectedMessage?.owner
+    const isOwnMessage = selectedMessage?.is_bot_message === 0 ? currentUser === selectedMessage?.owner : false
 
     const modalRef = useRef<HTMLIonModalElement>(null)
 
@@ -46,7 +45,7 @@ export const MessageActionModal = ({ selectedMessage, onDismiss }: MessageAction
         }
     }, [selectedMessage])
 
-    const user = useGetUser(selectedMessage?.owner)
+    const user = useGetUser(selectedMessage?.is_bot_message === 0 ? selectedMessage?.owner : selectedMessage?.bot)
 
     return (
         <IonModal
