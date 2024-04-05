@@ -44,7 +44,7 @@ class RavenWebhook(Document):
 
 		# 1. Check if webhook name is unique
 		webhook = frappe.get_all('Raven Webhook', filters={
-		                         'webhook_name': self.name})
+		                         'name': self.name})
 		if webhook:
 			frappe.throw('Webhook name already exists')
 
