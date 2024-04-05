@@ -1,68 +1,69 @@
 import { useState } from "react";
-import { useFrappePostCall } from "frappe-react-sdk";
-import { IonSpinner } from '@ionic/react'
+import { FrappeError, useFrappePostCall } from "frappe-react-sdk";
 import { SuccessCallout, CalloutObject, ErrorCallout } from '@/components/common/Callouts'
 import { useForm } from 'react-hook-form'
-import { LoginInputs } from "@/types/Auth/Login";
+import { ForgotPasswordInput } from "@/types/Auth/Login";
 import { ActiveScreenProps } from "@/components/layout/AuthContainer";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { isEmailValid } from "@/utils/validations/validations";
-import { Button, Link } from "@radix-ui/themes";
+import { Button } from "@radix-ui/themes";
 
 
-export const LoginWithEmail = (props: ActiveScreenProps) => {
+export const ForgotPassword = (props: ActiveScreenProps) => {
 
-    const form = useForm<LoginInputs>({
+    const form = useForm<ForgotPasswordInput>({
         defaultValues: {
-            email: "",
+            user: "",
         }
     });
     const [callout, setCallout] = useState<CalloutObject | null>(null)
 
-    // POST Call to send login link (settings for social logins, email link etc)
-    const { call, error } = useFrappePostCall('frappe.www.login.send_login_link')
+    // POST Call to send reset password instructions on email
+    const { call, error } = useFrappePostCall('frappe.core.doctype.user.user.reset_password')
 
-    async function sendEmailLink(values: LoginInputs) {
+    async function resetPassword(values: ForgotPasswordInput) {
         return call({
-            email: values.email,
+            user: values.user,
         })
-            .then((result) => {
+            .then((res) => {
                 setCallout({
                     state: true,
-                    message: "Login Link sent on Email",
+                    message: "Password reset instructions have been sent to your email.",
                 });
             })
+    }
+
+    // TO-DO: To be removed once ErrorBanner/ ErrorCallout is fixed.
+    const generateErrorMessage = (error: FrappeError) =>{
+        if (error.exc_type === "ValidationError") return 'Too many requests. Please try after some time.'
+        return 'User does not exist. Please Sign Up.'
     }
 
     return (
         <>
 
-
             <div className="flex flex-col gap-y-6">
-                {error && <ErrorCallout message={error.message} />}
+                {error && <ErrorCallout message={generateErrorMessage(error)} />}
                 {callout && <SuccessCallout message={callout.message} />}
                 <div>
                     <Form {...form}>
-                        <form onSubmit={form.handleSubmit(sendEmailLink)}>
+                        <form onSubmit={form.handleSubmit(resetPassword)}>
                             <div className='flex flex-col gap-y-6'>
                                 <div className='flex flex-col gap-2'>
                                     <FormField
                                         control={form.control}
-                                        name="email"
+                                        name="user"
                                         rules={{
                                             required: "Email is required",
-                                            validate: (email) =>
-                                                isEmailValid(email) || "Please enter a valid email address."
                                         }}
                                         render={({ field, formState }) => (
                                             <FormItem>
                                                 <FormLabel>Email <span className='text-rose-600'>*</span></FormLabel>
-                                                <FormControl>
+                                                <FormControl autoFocus>
                                                     {/* Type=email as email is allowed */}
                                                     <Input type="email" placeholder='jane@example.com' {...field} />
                                                 </FormControl>
-                                                {formState.errors.email && <FormMessage>{formState.errors.email.message}</FormMessage>}
+                                                {formState.errors.user && <FormMessage>{formState.errors.user.message}</FormMessage>}
                                             </FormItem>
                                         )}
                                     />
@@ -73,7 +74,7 @@ export const LoginWithEmail = (props: ActiveScreenProps) => {
                                         size='3'
                                         loading={form.formState.isSubmitting}
                                     >
-                                        Send Login Link
+                                        Reset Password
                                     </Button>
                                     <Button
                                         type="button"
@@ -83,7 +84,7 @@ export const LoginWithEmail = (props: ActiveScreenProps) => {
                                         className="cursor-pointer"
                                         onClick={() => props.setActiveScreen({ login: true, loginWithEmail: false, signup: false, forgotPassword: false })}
                                     >
-                                        Cancel
+                                        Back to Login
                                     </Button>
                                 </div>
                             </div>

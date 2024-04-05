@@ -152,7 +152,7 @@ export const SignUp = (props: ActiveScreenProps) => {
                         underline='always'
                         size='2'
                         href='#'
-                        onClick={() => props.setActiveScreen({ login: true, loginWithEmail: false, signup: false })}
+                        onClick={() => props.setActiveScreen({ login: true, loginWithEmail: false, signup: false, forgotPassword: false })}
                     >
                         Login
                     </Link>
