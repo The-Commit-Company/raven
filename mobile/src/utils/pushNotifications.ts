@@ -14,7 +14,7 @@ export const showNotification = (payload: any) => {
 
     const notificationTitle = payload?.data?.title
     const notificationOptions = {
-        body: payload?.data?.body || "" + " (foreground)",
+        body: (payload?.data?.body + " (foreground)") || "",
     }
     if (payload?.data?.notification_icon) {
         // @ts-ignore

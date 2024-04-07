@@ -29,7 +29,7 @@ try {
 
         const notificationTitle = payload.data.title
         let notificationOptions = {
-            body: payload.data.body || "" + " (background)",
+            body: (payload.data.body + " (background)") || "",
         }
         if (payload.data.notification_icon) {
             notificationOptions["icon"] = payload.data.notification_icon
