@@ -53,7 +53,7 @@ export const EmailLoginProvider = ({ isSubmitting, setActiveScreen }: EmailLogin
             type="button"
             color='gray'
             size='3'
-            onClick={() => setActiveScreen({ login: false, loginWithEmail: true, signup: false })}
+            onClick={() => setActiveScreen({ login: false, loginWithEmail: true, signup: false, forgotPassword: false })}
             className='cursor-pointer'
         >
             <div className="flex items-center gap-3">

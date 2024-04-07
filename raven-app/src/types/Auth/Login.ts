@@ -23,3 +23,7 @@ export type VerificationType = {
     token_delivery?: boolean,
     setup?: boolean
 }
+
+export type ForgotPasswordInput = {
+    user: LoginInputs["email"]
+}
