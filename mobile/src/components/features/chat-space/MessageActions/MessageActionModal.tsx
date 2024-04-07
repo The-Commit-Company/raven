@@ -77,8 +77,8 @@ export const MessageActionModal = ({ selectedMessage, onDismiss }: MessageAction
                             <IonIcon slot="start" icon={returnDownBackOutline} />
                             <IonLabel className='font-semibold'>Reply</IonLabel>
                         </IonItem> */}
-                            <ShareAction message={selectedMessage} onSuccess={onDismiss} />
-                            <CopyAction message={selectedMessage} onSuccess={onDismiss} />
+                            {selectedMessage.message_type !== 'Poll' && <ShareAction message={selectedMessage} onSuccess={onDismiss} />}
+                            {selectedMessage.message_type !== 'Poll' && <CopyAction message={selectedMessage} onSuccess={onDismiss} />}
                             <SaveMessageAction message={selectedMessage} onSuccess={onDismiss} />
 
                             {isOwnMessage &&

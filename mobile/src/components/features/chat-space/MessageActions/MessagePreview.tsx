@@ -1,4 +1,4 @@
-import { Message } from '../../../../../../types/Messaging/Message'
+import { Message, PollMessage } from '../../../../../../types/Messaging/Message'
 import { UserFields } from '@/utils/users/UserListProvider'
 import { MessageSenderAvatar } from '../chat-view/MessageBlock'
 import { IonText } from '@ionic/react'
@@ -25,6 +25,8 @@ const MessagePreview = ({ message, user }: MessagePreview) => {
                 </div>}
                 {message.message_type === 'File' && <p
                     className='text-sm font-semibold'>📎 &nbsp;{message.file?.split('/')[3]}</p>}
+                {message.message_type === 'Poll' && <p className="text-sm font-semibold line-clamp-2 flex items-center">
+                    📊 &nbsp;Poll: {(message as PollMessage).content?.split("\n")?.[0]}</p>}
             </div>
         </div>
     )
