@@ -25,7 +25,7 @@ try {
 
         const currentUser = await localforage.getItem('currentUser')
 
-        if (currentUser === payload.data.from_user) return
+        const isCurrentUser = currentUser && currentUser.name === payload.data.user
 
         const notificationTitle = payload.data.title
         let notificationOptions = {
@@ -59,7 +59,26 @@ try {
                 },
             ]
         }
+
+        if (isCurrentUser) {
+            notificationOptions["silent"] = true
+        }
+
+        // On Safari, we have to show a push notification - else they will revoke the permission after 3 ignored notifications
+        // Show the notification, and then close all notifications of the current channel
+
         self.registration.showNotification(notificationTitle, notificationOptions)
+            .then(() => {
+                // If current user, get the notification and close it.
+                if (isCurrentUser && payload.data.channel_id) {
+                    // get all notifications of the current channel and close it
+                    self.registration.getNotifications({ tag: payload.data.channel_id }).then(notifications => {
+                        notifications.forEach(notification => {
+                            notification.close()
+                        })
+                    })
+                }
+            })
     })
 
     if (isChrome()) {

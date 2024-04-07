@@ -8,9 +8,7 @@ export const showNotification = (payload: any) => {
 
     const currentUser = localStorage.getItem("currentUser")
 
-    if (currentUser === "Guest") return
-
-    if (currentUser === payload?.data?.from_user) return
+    const isCurrentUser = currentUser === payload?.data?.to_user || currentUser === "Guest"
 
     const notificationTitle = payload?.data?.title
     const notificationOptions = {
@@ -52,8 +50,26 @@ export const showNotification = (payload: any) => {
             ]
         }
     }
+    if (isCurrentUser) {
+        // @ts-ignore
+        notificationOptions["silent"] = true
+    }
+
+    // On Safari, we have to show a push notification - else they will revoke the permission after 3 ignored notifications
+    // Show the notification, and then close all notifications of the current channel
 
     registration.showNotification(notificationTitle, notificationOptions)
+        .then(() => {
+            // If current user, get the notification and close it.
+            if (isCurrentUser && payload.data.channel_id) {
+                // get all notifications of the current channel and close it
+                registration.getNotifications({ tag: payload.data.channel_id }).then((notifications: Notification[]) => {
+                    notifications.forEach(notification => {
+                        notification.close()
+                    })
+                })
+            }
+        })
 }
 
 export const clearNotifications = (channelID: string) => {
