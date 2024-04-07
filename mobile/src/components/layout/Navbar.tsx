@@ -19,13 +19,14 @@ export const Navbar = () => {
 
     useEffect(() => {
         if (currentUser) {
-            //@ts-expect-error
-            window?.frappePushNotification?.onMessage((payload) => {
-                showNotification(payload, currentUser)
-            })
-
             window.localStorage.setItem("currentUser", currentUser)
             localforage.setItem("currentUser", currentUser)
+            //@ts-expect-error
+            window?.frappePushNotification?.onMessage((payload) => {
+                showNotification(payload)
+            })
+
+
         }
     }, [currentUser])
 
