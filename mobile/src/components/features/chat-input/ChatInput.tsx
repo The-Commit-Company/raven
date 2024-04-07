@@ -4,6 +4,7 @@ import { FileUploadModal } from './FileUploadModal';
 import { Tiptap } from './Tiptap';
 import { AiOutlinePaperClip } from 'react-icons/ai';
 import { Haptics, ImpactStyle } from '@capacitor/haptics';
+import { CreatePoll } from '../polls/CreatePoll';
 
 type Props = {
     channelID: string,
@@ -54,11 +55,20 @@ export const ChatInput = ({ channelID, allChannels, allMembers }: Props) => {
         setFiles(f => [...f, ...newFiles])
     }
 
+    const [isPollOpen, setIsPollOpen] = useState(false)
+
     return (
         <div className='flex justify-between items-end content-start px-2 overflow-visible space-x-2'>
             <div className='overflow-x-hidden w-full'>
-                <Tiptap onMessageSend={onSubmit} messageSending={loading} onPickFiles={pickFiles} onGetFiles={getFiles} fileRef={fileInputRef} />
+                <Tiptap
+                    onMessageSend={onSubmit}
+                    messageSending={loading}
+                    onPickFiles={pickFiles}
+                    onPollCreate={() => setIsPollOpen(true)}
+                    onGetFiles={getFiles}
+                    fileRef={fileInputRef} />
             </div>
+            {/* <CreatePoll isOpen={isPollOpen} onDismiss={() => setIsPollOpen(false)} /> */}
             <FileUploadModal channelID={channelID} files={files} setFiles={setFiles} pickFiles={pickFiles} onMessageSend={onMessageSend} />
         </div>
     )
