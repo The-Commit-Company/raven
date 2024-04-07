@@ -22,7 +22,7 @@ interface MessageActionModalProps {
 
 export const MessageActionModal = ({ selectedMessage, onDismiss }: MessageActionModalProps) => {
     const { currentUser } = useContext(UserContext)
-    const isOwnMessage = currentUser === selectedMessage?.owner
+    const isOwnMessage = selectedMessage?.is_bot_message === 0 ? currentUser === selectedMessage?.owner : false
 
     const modalRef = useRef<HTMLIonModalElement>(null)
 
@@ -45,7 +45,7 @@ export const MessageActionModal = ({ selectedMessage, onDismiss }: MessageAction
         }
     }, [selectedMessage])
 
-    const user = useGetUser(selectedMessage?.owner)
+    const user = useGetUser(selectedMessage?.is_bot_message === 0 ? selectedMessage?.owner : selectedMessage?.bot)
 
     return (
         <IonModal
@@ -55,41 +55,36 @@ export const MessageActionModal = ({ selectedMessage, onDismiss }: MessageAction
             ref={modalRef}
             initialBreakpoint={0.45}
             onWillDismiss={onDismiss}>
-            <IonContent className="ion-padding" style={{
+            <IonContent style={{
                 pointerEvents: enablePointerEvents ? 'all' : 'none'
             }}>
                 {selectedMessage &&
-                    <IonList lines='none' className='bg-zinc-900'>
-                        <div className='rounded-md pb-2 flex bg-zinc-800'>
+                    <div className='pb-4'>
+                        <div className='rounded-t-md p-2 flex bg-gray-1 border-b border-b-gray-3'>
                             <MessagePreview message={selectedMessage} user={user} />
                         </div>
-
-                        <div className='h-[2px] bg-zinc-800 my-2'>
-
+                        <div className='px-2 pt-2'>
+                            <EmojiAction message={selectedMessage} onSuccess={onDismiss}
+                                presentingElement={modalRef.current} />
                         </div>
 
-                        <EmojiAction message={selectedMessage} onSuccess={onDismiss}
-                            presentingElement={modalRef.current} />
-                        {/* <IonItem className='py-1'>
+                        <IonList inset>
+                            {/* <IonItem className='py-1'>
                             <IonIcon slot="start" icon={createOutline} />
                             <IonLabel className='font-semibold'>Edit</IonLabel>
                         </IonItem> */}
-                        {/* <IonItem className='py-1'>
+                            {/* <IonItem className='py-1'>
                             <IonIcon slot="start" icon={returnDownBackOutline} />
                             <IonLabel className='font-semibold'>Reply</IonLabel>
                         </IonItem> */}
-                        <ShareAction message={selectedMessage} onSuccess={onDismiss} />
-                        <CopyAction message={selectedMessage} onSuccess={onDismiss} />
-                        {/* <IonItem className='py-1'>
-                            <IonIcon slot='start' icon={downloadOutline} />
-                            <IonLabel className='font-semibold'>Download</IonLabel>
-                        </IonItem> */}
-                        <SaveMessageAction message={selectedMessage} onSuccess={onDismiss} />
+                            <ShareAction message={selectedMessage} onSuccess={onDismiss} />
+                            <CopyAction message={selectedMessage} onSuccess={onDismiss} />
+                            <SaveMessageAction message={selectedMessage} onSuccess={onDismiss} />
 
-                        {isOwnMessage &&
-                            <DeleteAction message={selectedMessage} onSuccess={onDismiss} />
-                        }
-                        {/* <IonItem className='py-1'>
+                            {isOwnMessage &&
+                                <DeleteAction message={selectedMessage} onSuccess={onDismiss} />
+                            }
+                            {/* <IonItem className='py-1'>
                             <IonIcon slot="start" icon={documentAttachOutline} />
                             <IonLabel className='font-semibold'>Link to document</IonLabel>
                         </IonItem>
@@ -97,7 +92,10 @@ export const MessageActionModal = ({ selectedMessage, onDismiss }: MessageAction
                             <IonIcon slot='start' icon={mailOutline} />
                             <IonLabel className='font-semibold'>Send in email</IonLabel>
                         </IonItem> */}
-                    </IonList>
+                        </IonList>
+
+
+                    </div>
                 }
             </IonContent>
         </IonModal>

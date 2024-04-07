@@ -5,9 +5,9 @@ import { Member } from "./AddChannelMembers"
 import { UserContext } from "@/utils/auth/UserProvider"
 import { ErrorBanner } from "@/components/layout"
 import { useGetChannelMembers } from "@/hooks/useGetChannelMembers"
-import { Button } from "@/components/ui/button"
-import { CustomAvatar } from "@/components/ui/avatar"
 import { BiSolidCrown } from "react-icons/bi"
+import { UserAvatar } from "@/components/common/UserAvatar"
+import { Button, Text, Theme } from "@radix-ui/themes"
 
 interface ViewChannelMembersProps {
     presentingElement: HTMLElement | undefined,
@@ -43,7 +43,7 @@ export const ViewChannelMembers = ({ presentingElement, isOpen, onDismiss, chann
         })
     }
 
-    const removeMember = () => {
+    const removeMember = async () => {
         return call.post('raven.api.raven_channel_member.remove_channel_member', {
             user_id: selectedMember?.name,
             channel_id: channelID
@@ -67,77 +67,83 @@ export const ViewChannelMembers = ({ presentingElement, isOpen, onDismiss, chann
         <IonModal ref={modal} onDidDismiss={onDismiss} isOpen={isOpen} presentingElement={presentingElement}>
 
             <IonHeader>
-                <div className='py-2 inset-x-0 top-0 overflow-hidden items-center min-h-5 bg-background border-b-foreground/10 border-b'>
-                    <div className='flex items-center'>
-                        <div className="flex flex-1">
-                            <Button variant="ghost" className="hover:bg-transparent hover:text-foreground/80" onClick={() => onDismiss()}>
-                                Cancel
+                <Theme accentColor="iris">
+                    <div className='py-3 flex justify-between px-4 inset-x-0 top-0 overflow-hidden items-center border-b-gray-4 border-b rounded-t-3xl'>
+                        <div className="w-11">
+                            <Button
+                                size='3' variant="ghost" color='gray' onClick={() => onDismiss()}>
+                                Close
                             </Button>
                         </div>
-                        <div className="flex flex-auto">
-                            <span className="text-base font-medium">Channel Members</span>
+                        <Text className="cal-sans font-medium" size='4'>Members</Text>
+                        <div className="w-11">
+
                         </div>
                     </div>
-                </div>
+                </Theme>
             </IonHeader>
 
             <IonContent>
                 <IonSearchbar
                     placeholder="Search"
                     autocapitalize="off"
-                    debounce={1000}
+                    debounce={250}
                     onIonInput={(e) => setSearchText(e.target.value?.toString() || '')}
                 />
 
-                <ErrorBanner error={error} />
+                <Theme accentColor="iris">
 
-                <IonList>
-                    {filteredUsers && filteredUsers.length > 0 ? filteredUsers.map((user) => (
-                        <IonItemSliding key={user.name}>
-                            <IonItem>
-                                <div className='flex justify-between items-center w-full py-2'>
-                                    <div className='flex items-center gap-4'>
-                                        <CustomAvatar alt={user.full_name} src={user.user_image} sizeClass='w-10 h-10'/>
-                                        <div className='flex flex-col text-ellipsis leading-tight'>
-                                            <span>{user.full_name}</span>
-                                            <span className='text-foreground/40 text-sm'>{user.name}</span>
+                    <ErrorBanner error={error} />
+                    <IonList>
+                        {filteredUsers && filteredUsers.length > 0 ? filteredUsers.map((user) => (
+                            <IonItemSliding key={user.name}>
+                                <IonItem>
+                                    <div className='justify-between items-center flex w-full py-2'>
+                                        <div className='flex items-center gap-4'>
+                                            <UserAvatar size='3' alt={user.full_name} src={user.user_image} isBot={user.type === "Bot"} />
+                                            <div className='flex flex-col text-ellipsis leading-tight'>
+                                                <Text as='span' weight='medium'>{user.full_name}</Text>
+                                                {user.type !== "Bot" &&
+                                                    <Text as='span' size='2' color='gray'>{user.name}</Text>
+                                                }
+                                            </div>
                                         </div>
+                                        {user.is_admin ? <BiSolidCrown color='#FFC53D' /> : null}
                                     </div>
-                                    {user.is_admin ? <BiSolidCrown color='#FFC53D'/> : null}
-                                </div>
-                            </IonItem>
-                            {(isCurrentUserAdmin && user.name !== currentUser) ? <IonItemOptions
-                                side="end"
-                                onIonSwipe={() => {
-                                    setSelectedMember(user)
-                                    setIsAlertOpen(true)
-                                }}>
-                                <IonItemOption expandable
-                                    color="danger"
-                                    onClick={() => {
+                                </IonItem>
+                                {(isCurrentUserAdmin && user.name !== currentUser) ? <IonItemOptions
+                                    side="end"
+                                    onIonSwipe={() => {
                                         setSelectedMember(user)
                                         setIsAlertOpen(true)
-                                    }}>Remove</IonItemOption>
-                            </IonItemOptions> : null}
-                        </IonItemSliding>
-                    )) : <IonItem><IonLabel>No members found</IonLabel></IonItem>}
-                </IonList>
+                                    }}>
+                                    <IonItemOption expandable
+                                        color="danger"
+                                        onClick={() => {
+                                            setSelectedMember(user)
+                                            setIsAlertOpen(true)
+                                        }}>Remove</IonItemOption>
+                                </IonItemOptions> : null}
+                            </IonItemSliding>
+                        )) : <IonItem><IonLabel>No members found</IonLabel></IonItem>}
+                    </IonList>
 
-                <IonAlert onDidDismiss={() => setIsAlertOpen(false)} isOpen={isAlertOpen}
-                    header="Remove Member"
-                    message={`Are you sure you want to remove ${selectedMember?.full_name}?`}
-                    buttons={[
-                        {
-                            text: 'No',
-                            role: 'cancel',
-                        }
-                        , {
-                            text: 'Yes',
-                            role: 'destructive',
-                            cssClass: 'text-danger',
-                            handler: removeMember
-                        }
-                    ]} />
+                    <IonAlert onDidDismiss={() => setIsAlertOpen(false)} isOpen={isAlertOpen}
+                        header="Remove Member"
+                        message={`Are you sure you want to remove ${selectedMember?.full_name}?`}
+                        buttons={[
+                            {
+                                text: 'No',
+                                role: 'cancel',
+                            }
+                            , {
+                                text: 'Yes',
+                                role: 'destructive',
+                                cssClass: 'text-danger',
+                                handler: removeMember
+                            }
+                        ]} />
+                </Theme>
             </IonContent>
         </IonModal>
     )

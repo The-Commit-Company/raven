@@ -6,7 +6,7 @@ import { DMChannelListItem, UnreadCountData, useChannelList } from '@/utils/chan
 import { useIsUserActive } from '@/hooks/useIsUserActive';
 import { useMemo } from 'react';
 import { UserAvatar } from '@/components/common/UserAvatar';
-import { Badge, Text } from '@radix-ui/themes';
+import { Badge, Heading, Text } from '@radix-ui/themes';
 
 export const PrivateMessages = ({ users, unread_count }: { users: DMUser[], unread_count?: UnreadCountData }) => {
 
@@ -34,25 +34,56 @@ export const PrivateMessages = ({ users, unread_count }: { users: DMUser[], unre
             })
     }
 
+    const { channels, unreadChannels } = useMemo(() => {
+        if (!users) return { channels: [], unreadChannels: [] }
+        if (!unread_count) return { channels: users.map(d => ({ ...d, unreadCount: 0 })), unreadChannels: [] }
 
-    return <ul className='pb-4'>
-        {users.map(dmUser => {
-            if (dmUser.channel !== undefined) {
-                return <DMChannelItem key={dmUser.name} user={dmUser as DMChannel} unreadCount={unread_count?.channels ?? []} />
-            } else {
-                return <UserItem key={dmUser.name} user={dmUser} onChannelCreate={onChannelCreate} />
-            }
-        })}
-    </ul>
+        const c = users.map(user => {
+            const unreadCountForChannel = unread_count.channels.find((unread) => unread.name == user.channel?.name)?.unread_count
+            return { ...user, unreadCount: unreadCountForChannel ?? 0 }
+        })
+
+        const unreadChannels = c.filter(channel => channel.unreadCount > 0)
+
+        return { channels: c, unreadChannels }
+    }, [users, unread_count])
+
+
+    return <div>
+        {unreadChannels?.length > 0 &&
+            <div className='pb-2'>
+                <Heading as='h4' className='px-4 py-2 not-cal bg-gray-2' weight='medium' size='2'>Unread</Heading>
+                <ul>
+                    {unreadChannels?.map(user => <DMChannelItem
+                        user={user as DMChannel}
+                        unreadCount={user.unreadCount}
+                        key={user.name} />)}
+                </ul>
+            </div>
+        }
+
+        <div className='pb-2'>
+            {unreadChannels?.length > 0 &&
+                <Heading as='h4' className='px-4 py-2 not-cal bg-gray-2' weight='medium' size='2'>All</Heading>
+            }<ul>
+                {channels.map(dmUser => {
+                    if (dmUser.channel !== undefined) {
+                        return <DMChannelItem key={dmUser.name} user={dmUser as DMChannel} unreadCount={dmUser.unreadCount} />
+                    } else {
+                        return <UserItem key={dmUser.name} user={dmUser} onChannelCreate={onChannelCreate} />
+                    }
+                })}
+            </ul>
+        </div>
+    </div>
 }
 
 /** This is to be used for users who have a channel */
 interface DMChannel extends DMUser {
     channel: DMChannelListItem
 }
-const DMChannelItem = ({ user, unreadCount }: { user: DMChannel, unreadCount: UnreadCountData['channels'] }) => {
+const DMChannelItem = ({ user, unreadCount }: { user: DMChannel, unreadCount: number }) => {
 
-    const unreadCountForChannel = useMemo(() => unreadCount.find((unread) => unread.name == user.channel.name)?.unread_count, [user.channel.name, unreadCount])
     const isActive = useIsUserActive(user.name)
 
     return <li className='list-none'>
@@ -67,7 +98,7 @@ const DMChannelItem = ({ user, unreadCount }: { user: DMChannel, unreadCount: Un
                         isBot={user.type === 'Bot'} />
                     <Text size='3' weight='medium' className='cursor-pointer'>{user.full_name}</Text>
                 </div>
-                {unreadCountForChannel ? <Badge radius='large' size='2' variant='solid'>{unreadCountForChannel < 100 ? unreadCountForChannel : '99'}</Badge> : null}
+                {unreadCount ? <Badge radius='large' size='2' variant='solid'>{unreadCount < 100 ? unreadCount : '99+'}</Badge> : null}
             </div>
         </Link>
     </li>

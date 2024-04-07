@@ -13,9 +13,9 @@ import {
 } from '@ionic/react';
 import { useFrappeCreateDoc } from 'frappe-react-sdk';
 import { UserListContext } from '@/utils/users/UserListProvider';
-import { Button } from '@/components/ui/button';
 import { useGetChannelMembers } from '@/hooks/useGetChannelMembers';
-import { CustomAvatar } from '@/components/ui/avatar';
+import { Badge, Button, Text, Theme } from '@radix-ui/themes';
+import { UserAvatar } from '@/components/common/UserAvatar';
 
 interface AddChannelMembersProps {
     presentingElement: HTMLElement | undefined,
@@ -29,7 +29,8 @@ export type Member = {
     full_name: string
     user_image: string | undefined
     first_name: string
-    is_admin?: boolean
+    is_admin?: boolean,
+    type?: 'User' | 'Bot'
 }
 
 export type ChannelMembers = {
@@ -89,76 +90,84 @@ export const AddChannelMembers = ({ presentingElement, isOpen, onDismiss, channe
         <IonModal ref={modal} onDidDismiss={onDismiss} isOpen={isOpen} presentingElement={presentingElement}>
 
             <IonHeader>
-                <div className='py-2 inset-x-0 top-0 overflow-hidden items-center min-h-5 bg-background border-b-foreground/10 border-b'>
-                    <div className='flex gap-4 items-center justify-around'>
-                        <div>
-                            <Button variant="ghost" className="hover:bg-transparent hover:text-foreground/80" onClick={() => onDismiss()}>
+                <Theme accentColor="iris">
+                    <div className='py-3 flex justify-between px-4 inset-x-0 top-0 overflow-hidden items-center border-b-gray-4 border-b rounded-t-3xl'>
+                        <div className="w-11">
+                            <Button
+                                size='3' variant="ghost" color='gray' onClick={() => onDismiss()}>
                                 Cancel
                             </Button>
                         </div>
-                        <span className="text-base font-medium">Add Members</span>
+                        <Text className="cal-sans font-medium" size='4'>Add Members</Text>
                         <div>
-                            <Button variant="ghost" className="text-primary hover:bg-transparent" onClick={addMembers}>Add</Button>
+                            <Button
+                                variant="ghost"
+                                size='3'
+                                onClick={addMembers}
+                                type='submit'
+                            >
+                                Add
+                            </Button>
                         </div>
                     </div>
-                </div>
+                </Theme>
+
             </IonHeader>
 
             <IonContent>
-
                 <IonSearchbar
                     placeholder="Search"
-                    debounce={1000}
-                    autocapitalize='off'
-                    onIonInput={(e) => setSearchText(e.target.value?.toString() || '')}
+                    debounce={250}
+                    value={searchText}
+                    onIonInput={(e) => setSearchText(e.detail.value?.toString() || '')}
                 />
-
-                <IonList>
-                    {filteredUsers && filteredUsers.length > 0 ? filteredUsers.map((user) => (
-                        <IonItem key={user.name}>
-                            {channelMembers.some((member) => member.name === user.name) ? (
-                                // User is already a channel member
-                                <div className='justify-between flex w-full py-2'>
-                                    <div className='flex items-center gap-4'>
-                                        <CustomAvatar alt={user.full_name} src={user.user_image} sizeClass='w-10 h-10'/>
-                                        <div className='flex flex-col text-ellipsis leading-tight'>
-                                            <span>{user.full_name}</span>
-                                            <span className='text-foreground/40 text-sm'>{user.name}</span>
+                <Theme accentColor="iris">
+                    <IonList>
+                        {filteredUsers && filteredUsers.length > 0 ? filteredUsers.map((user) => (
+                            <IonItem key={user.name}>
+                                {channelMembers.some((member) => member.name === user.name) ? (
+                                    // User is already a channel member
+                                    <div className='justify-between items-center flex w-full py-2'>
+                                        <div className='flex items-center gap-4'>
+                                            <UserAvatar alt={user.full_name} src={user.user_image} isBot={user.type === 'Bot'} size='3' />
+                                            <div className='flex flex-col text-ellipsis leading-tight'>
+                                                <Text as='span' weight='medium'>{user.full_name}</Text>
+                                                <Text as='span' size='2' color='gray'>{user.name}</Text>
+                                            </div>
                                         </div>
+                                        <Badge color='gray' size='1'>Added</Badge>
                                     </div>
-                                    <IonLabel color='medium'>added</IonLabel>
-                                </div>
-                            ) : (
-                                // User is not a channel member, show a checkbox for adding them
-                                <IonCheckbox
-                                    justify="space-between"
-                                    checked={selectedMembers.includes(user.name)}
-                                    onIonChange={({ detail: { checked } }) => {
-                                        if (checked) {
-                                            setSelectedMembers([...selectedMembers, user.name])
-                                        } else {
-                                            setSelectedMembers(selectedMembers.filter(id => id !== user.name))
-                                        }
-                                    }}>
-                                    <div className='flex items-center gap-4'>
-                                        <CustomAvatar alt={user.full_name} src={user.user_image} sizeClass='w-10 h-10'/>
-                                        <div className='flex flex-col text-ellipsis leading-tight'>
-                                            <span>{user.full_name}</span>
-                                            <span className='text-foreground/40 text-sm'>{user.name}</span>
+                                ) : (
+                                    // User is not a channel member, show a checkbox for adding them
+                                    <IonCheckbox
+                                        justify="space-between"
+                                        checked={selectedMembers.includes(user.name)}
+                                        onIonChange={({ detail: { checked } }) => {
+                                            if (checked) {
+                                                setSelectedMembers([...selectedMembers, user.name])
+                                            } else {
+                                                setSelectedMembers(selectedMembers.filter(id => id !== user.name))
+                                            }
+                                        }}>
+                                        <div className='flex items-center gap-4'>
+                                            <UserAvatar alt={user.full_name} src={user.user_image} isBot={user.type === 'Bot'} size='3' />
+                                            <div className='flex flex-col text-ellipsis leading-tight'>
+                                                <Text as='span' weight='medium'>{user.full_name}</Text>
+                                                <Text as='span' size='2' color='gray'>{user.name}</Text>
+                                            </div>
                                         </div>
-                                    </div>
-                                </IonCheckbox>
-                            )}
-                        </IonItem>
-                    )) : (
-                        <IonItem>
-                            <IonLabel>
-                                <h3 className='text-gray-400'>No users found</h3>
-                            </IonLabel>
-                        </IonItem>
-                    )}
-                </IonList>
-
+                                    </IonCheckbox>
+                                )}
+                            </IonItem>
+                        )) : (
+                            <IonItem>
+                                <IonLabel>
+                                    <h3 className='text-gray-400'>No users found</h3>
+                                </IonLabel>
+                            </IonItem>
+                        )}
+                    </IonList>
+                </Theme>
             </IonContent>
         </IonModal>
     )

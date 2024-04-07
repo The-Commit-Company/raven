@@ -1557,10 +1557,10 @@
     debug "^4.0.0"
     tslib "^2.0.1"
 
-"@ionic/core@7.8.1":
-  version "7.8.1"
-  resolved "https://registry.yarnpkg.com/@ionic/core/-/core-7.8.1.tgz#ef9710c56232011d99651100911430454dd5de7e"
-  integrity sha512-SsoDy0HaifCcWBlcyRIpTceboz6tSg4gjNr/LRGJyg+r2bWdoG3jeuQDg0Affox8dar7QvODk3AWO/7RFWLOfg==
+"@ionic/core@7.8.3":
+  version "7.8.3"
+  resolved "https://registry.yarnpkg.com/@ionic/core/-/core-7.8.3.tgz#4da064bc314ba6e9e19a99a6d800b62cbe2c5b9b"
+  integrity sha512-5pFoE8gbhbCuyQlZ7BlRk4+S4PmmqgkALw4IAhtUK1TuzsKJ2KLFBlp0rdlWS+VcKEyrec/ptVki8oN5335vRA==
   dependencies:
     "@stencil/core" "^4.12.2"
     ionicons "^7.2.2"
@@ -1571,20 +1571,20 @@
   resolved "https://registry.yarnpkg.com/@ionic/react-hooks/-/react-hooks-0.0.8.tgz#3d036aaeffbb7b136ac411c896e907fb59bdbf92"
   integrity sha512-0U9hoPByJxd4/Sdx/uad2sDYCgQmQdG0nt+UNEzkk6IF4TjNVAQPcFQ6nJIc2oiUAMjaxzoLKmG8ziamuyfZaQ==
 
-"@ionic/react-router@^7.7.3":
-  version "7.8.1"
-  resolved "https://registry.yarnpkg.com/@ionic/react-router/-/react-router-7.8.1.tgz#4553a9a36ae364cf9f844aa099f1e40469550f8f"
-  integrity sha512-RmkucjZkMNE7OK8odL/+L9PLPINliH1uWiY9nObfwOtnyt9iXnPgs8MjxDGO3ndiTEPu+ssRLlol9GEwhxjjvw==
+"@ionic/react-router@^7.8.3":
+  version "7.8.3"
+  resolved "https://registry.yarnpkg.com/@ionic/react-router/-/react-router-7.8.3.tgz#a4031dc27fb1cbb920a9a1caa11636bcd9edc727"
+  integrity sha512-K4gGh1Xs78V6a5KeN490G0tUKUP6r+TbWqY2oqDBJiNLmjk8n4JYPVeL3I6WYWZwuFBbX01UgCXic41L9Jd86A==
   dependencies:
-    "@ionic/react" "7.8.1"
+    "@ionic/react" "7.8.3"
     tslib "*"
 
-"@ionic/react@7.8.1", "@ionic/react@^7.7.3":
-  version "7.8.1"
-  resolved "https://registry.yarnpkg.com/@ionic/react/-/react-7.8.1.tgz#a93176f20c0340325df7ed29ab2ab73c2329a554"
-  integrity sha512-MJgmlsm69lvHiPBFHSUg9ZGbWyjfn5ZDUidYSE8oWA/L0Mtd7XqNl9DMlSXWy87jaOET96R72eSwgsAPZ+FEBA==
+"@ionic/react@7.8.3", "@ionic/react@^7.8.3":
+  version "7.8.3"
+  resolved "https://registry.yarnpkg.com/@ionic/react/-/react-7.8.3.tgz#8d4951b9c83aba2f6e1b7f4532c7453f2e2752fa"
+  integrity sha512-nush+Ra/KNLv4MvxODwxNe7/FVcDRyc0xgkFKwXu9P/ztUv8qqy0zotHxsJVAb9BAd/r78eBpdyaOnUQcLw2Dg==
   dependencies:
-    "@ionic/core" "7.8.1"
+    "@ionic/core" "7.8.3"
     ionicons "^7.0.0"
     tslib "*"
 
@@ -2056,7 +2056,7 @@
     "@babel/runtime" "^7.13.10"
     "@radix-ui/react-use-layout-effect" "1.0.1"
 
-"@radix-ui/react-label@2.0.2", "@radix-ui/react-label@^2.0.2":
+"@radix-ui/react-label@2.0.2":
   version "2.0.2"
   resolved "https://registry.yarnpkg.com/@radix-ui/react-label/-/react-label-2.0.2.tgz#9c72f1d334aac996fdc27b48a8bdddd82108fb6d"
   integrity sha512-N5ehvlM7qoTLx7nWPodsPYPgMzA5WM8zZChQg8nyFJKnDO5WHdba1vv5/H6IO5LtJMfD2Q3wh1qHFGNtK0w3bQ==
@@ -2260,14 +2260,6 @@
     aria-hidden "^1.1.1"
     react-remove-scroll "2.5.5"
 
-"@radix-ui/react-separator@^1.0.3":
-  version "1.0.3"
-  resolved "https://registry.yarnpkg.com/@radix-ui/react-separator/-/react-separator-1.0.3.tgz#be5a931a543d5726336b112f465f58585c04c8aa"
-  integrity sha512-itYmTy/kokS21aiV5+Z56MZB54KrhPgn6eHDKkFeOLR34HMN2s8PaN47qZZAGnvupcjxHaFZnW4pQEh0BvvVuw==
-  dependencies:
-    "@babel/runtime" "^7.13.10"
-    "@radix-ui/react-primitive" "1.0.3"
-
 "@radix-ui/react-slider@^1.1.2":
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/@radix-ui/react-slider/-/react-slider-1.1.2.tgz#330ff2a0e1f6c19aace76590004f229a7e8fbe6c"
@@ -2434,10 +2426,10 @@
   dependencies:
     "@babel/runtime" "^7.13.10"
 
-"@radix-ui/themes@^3.0.1":
-  version "3.0.1"
-  resolved "https://registry.yarnpkg.com/@radix-ui/themes/-/themes-3.0.1.tgz#24b685166109f93bd2212ea6bc5114b9c0d943df"
-  integrity sha512-w0+2XqaifspZlds2ealxgVU2xtZlJ0gSTgHuLd56ectYxnC4hkg/PEOP5kPHOpCQ+vtV9+LI+Cy4RWipGgg3aQ==
+"@radix-ui/themes@^3.0.2":
+  version "3.0.2"
+  resolved "https://registry.yarnpkg.com/@radix-ui/themes/-/themes-3.0.2.tgz#b96d6ac241427b7256f1a5e0fefbd0ac84f98244"
+  integrity sha512-z5drXh8VYAqHT9sfRaY5tGo7XYLhTUKEmV+x0umzfkCVhK+7k6UwzSMDgsSFjrmgbq5LWQON7FzWXGaalr+k1A==
   dependencies:
     "@radix-ui/colors" "^3.0.0"
     "@radix-ui/primitive" "^1.0.1"
@@ -4420,6 +4412,13 @@ ionicons@^7.0.0, ionicons@^7.2.2:
   dependencies:
     "@stencil/core" "^4.0.3"
 
+ionicons@^7.3.1:
+  version "7.3.1"
+  resolved "https://registry.yarnpkg.com/ionicons/-/ionicons-7.3.1.tgz#a12a2c1c9290e3b1ee23b1a58b01565e104c7525"
+  integrity sha512-1boG4EQTBBpQ4/0PU60Yi78Iw/k8iNtKu9c0NmsbzHGnWAcwpiovG9Wi/rk5UlF+DC+CR4XDCxKo91YqvAxkww==
+  dependencies:
+    "@stencil/core" "^4.0.3"
+
 is-alphabetical@^1.0.0:
   version "1.0.4"
   resolved "https://registry.yarnpkg.com/is-alphabetical/-/is-alphabetical-1.0.4.tgz#9e7d6b94916be22153745d184c298cbf986a686d"
@@ -4858,11 +4857,6 @@ lru-cache@^6.0.0:
   version "10.2.0"
   resolved "https://registry.yarnpkg.com/lru-cache/-/lru-cache-10.2.0.tgz#0bd445ca57363465900f4d1f9bd8db343a4d95c3"
   integrity sha512-2bIM8x+VAf6JT4bKAljS1qUWgMsqZRPGJS6FSahIMPVvctcNhyVp7AJu7quxOW9jwkryBReKZY5tY5JYv2n/7Q==
-
-lucide-react@^0.358.0:
-  version "0.358.0"
-  resolved "https://registry.yarnpkg.com/lucide-react/-/lucide-react-0.358.0.tgz#6eceed9275de27dcdb45b728c3686e967aaaef4f"
-  integrity sha512-rBSptRjZTMBm24zsFhR6pK/NgbT18JegZGKcH4+1H3+UigMSRpeoWLtR/fAwMYwYnlJOZB+y8WpeHne9D6X6Kg==
 
 magic-string@^0.25.0, magic-string@^0.25.7:
   version "0.25.9"
@@ -7241,10 +7235,10 @@ vfile@^6.0.0:
     unist-util-stringify-position "^4.0.0"
     vfile-message "^4.0.0"
 
-vite-plugin-pwa@^0.19.0:
-  version "0.19.6"
-  resolved "https://registry.yarnpkg.com/vite-plugin-pwa/-/vite-plugin-pwa-0.19.6.tgz#8a12db16b13c946de38cc6b00f39cc24b070df0d"
-  integrity sha512-3hoxgrDGRzh1vidcZ/GSKXBDiZqbL8DRHXkJgkbJ2Xp3+/P4nau6118L5XlJJsm/wXPpwc/JpDj6Mf073s69+A==
+vite-plugin-pwa@^0.19.7:
+  version "0.19.7"
+  resolved "https://registry.yarnpkg.com/vite-plugin-pwa/-/vite-plugin-pwa-0.19.7.tgz#db8e36399a9d508d1deec0d415669c85f26e9df1"
+  integrity sha512-18TECxoGPQE7tVZzKxbf5Icrl5688n1JGMPSgGotTsh89vLDxevY7ICfD3CFVfonZXh8ckuyJXg0NXE5+FAl2A==
   dependencies:
     debug "^4.3.4"
     fast-glob "^3.3.2"
@@ -7252,7 +7246,7 @@ vite-plugin-pwa@^0.19.0:
     workbox-build "^7.0.0"
     workbox-window "^7.0.0"
 
-vite@^4.5.2:
+vite@^4.5.3:
   version "4.5.3"
   resolved "https://registry.yarnpkg.com/vite/-/vite-4.5.3.tgz#d88a4529ea58bae97294c7e2e6f0eab39a50fb1a"
   integrity sha512-kQL23kMeX92v3ph7IauVkXkikdDRsYMGTVl5KY2E9OY4ONLvkHf04MDTbnfo6NKxZiDLWzVpP5oTa8hQD8U3dg==

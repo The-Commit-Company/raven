@@ -1,6 +1,6 @@
 import { useState } from "react"
 import { ViewChannelMembers } from "./ViewChannelMembers"
-import { Button } from "@/components/ui/button"
+import { Button } from "@radix-ui/themes"
 
 interface ViewChannelMembersButtonProps {
     pageRef: React.MutableRefObject<undefined>
@@ -13,16 +13,14 @@ export const ViewChannelMembersButton = ({ pageRef, channelID }: ViewChannelMemb
 
     return (
         <>
-            <div>
-                <Button variant="link" onClick={() => setIsOpen(true)}>
-                    <span className="text-xs text-link">See all</span>
-                </Button>
-            </div>
+            <Button variant="ghost" onClick={() => setIsOpen(true)}>
+                See all
+            </Button>
             <ViewChannelMembers
                 isOpen={isOpen}
                 onDismiss={() => setIsOpen(false)}
                 presentingElement={pageRef.current}
-                channelID={channelID} 
+                channelID={channelID}
             />
         </>
     )

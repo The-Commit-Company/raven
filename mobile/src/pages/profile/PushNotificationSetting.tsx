@@ -87,7 +87,7 @@ const PushNotificationSetting = () => {
     // @ts-expect-error
     if (window.frappe?.boot.push_relay_server_url && data?.message) {
         return (
-            <IonItem>
+            <IonItem color='light'>
                 {loading ?
                     <>
                         <IonLabel>Enable Push Notifications</IonLabel>

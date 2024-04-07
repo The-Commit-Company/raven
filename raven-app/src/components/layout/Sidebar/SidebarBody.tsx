@@ -1,9 +1,10 @@
 import { ChannelList } from '../../feature/channels/ChannelList'
 import { DirectMessageList } from '../../feature/direct-messages/DirectMessageList'
 import { SidebarItem } from './SidebarComp'
-import { AccessibleIcon, Box, Flex, ScrollArea, Text } from '@radix-ui/themes'
+import { AccessibleIcon, Box, Flex, ScrollArea, Separator, Text } from '@radix-ui/themes'
 import { BiBookmark } from 'react-icons/bi'
 import useUnreadMessageCount from '@/hooks/useUnreadMessageCount'
+import UnreadChannels from './UnreadChannels'
 
 export const SidebarBody = () => {
 
@@ -22,6 +23,11 @@ export const SidebarBody = () => {
                         </Box>
                     </SidebarItem>
                 </Box>
+                <UnreadChannels unread_count={unread_count?.message} />
+                <Box width='100%' py='2'>
+                    <Separator size='4' />
+                </Box>
+
                 <ChannelList unread_count={unread_count?.message} />
                 <DirectMessageList unread_count={unread_count?.message} />
             </Flex>
