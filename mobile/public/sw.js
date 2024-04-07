@@ -25,7 +25,7 @@ try {
 
         const currentUser = await localforage.getItem('currentUser')
 
-        if (!currentUser || currentUser === payload.data.from_user) return
+        if (currentUser === payload.data.from_user) return
 
         const notificationTitle = payload.data.title
         let notificationOptions = {
