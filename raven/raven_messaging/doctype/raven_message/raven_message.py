@@ -398,6 +398,20 @@ class RavenMessage(Document):
 
 			self.send_push_notification()
 
+		# Only send this for Desk interface (TODO: will remove later)
+		frappe.publish_realtime(
+			"message_updated",
+			{
+				"channel_id": self.channel_id,
+				"sender": frappe.session.user,
+				"message_id": self.name,
+			},
+			doctype="Raven Channel",
+			# Adding this to automatically add the room for the event via Frappe
+			docname=self.channel_id,
+			after_commit=True,
+		)
+
 	def on_trash(self):
 		# delete all the reactions for the message
 		frappe.db.delete("Raven Message Reaction", {"message": self.name})
