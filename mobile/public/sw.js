@@ -25,7 +25,7 @@ try {
 
         const currentUser = await localforage.getItem('currentUser')
 
-        const isCurrentUser = currentUser && currentUser.name === payload.data.user
+        const isCurrentUser = currentUser === payload.data.from_user
 
         const notificationTitle = payload.data.title
         let notificationOptions = {

@@ -8,7 +8,7 @@ export const showNotification = (payload: any) => {
 
     const currentUser = localStorage.getItem("currentUser")
 
-    const isCurrentUser = currentUser === payload?.data?.to_user || currentUser === "Guest"
+    const isCurrentUser = currentUser === payload?.data?.from_user || currentUser === "Guest"
 
     const notificationTitle = payload?.data?.title
     const notificationOptions = {
