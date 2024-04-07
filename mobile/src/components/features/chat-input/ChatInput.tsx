@@ -68,7 +68,7 @@ export const ChatInput = ({ channelID, allChannels, allMembers }: Props) => {
                     onGetFiles={getFiles}
                     fileRef={fileInputRef} />
             </div>
-            <CreatePoll isOpen={isPollOpen} onDismiss={() => setIsPollOpen(false)} />
+            {/* <CreatePoll isOpen={isPollOpen} onDismiss={() => setIsPollOpen(false)} /> */}
             <FileUploadModal channelID={channelID} files={files} setFiles={setFiles} pickFiles={pickFiles} onMessageSend={onMessageSend} />
         </div>
     )

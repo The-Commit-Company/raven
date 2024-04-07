@@ -211,52 +211,18 @@ export const CreatePoll = ({ presentingElement, isOpen, onDismiss }: CreatePollP
 
                                     <Flex direction={'column'} gap='2'>
                                         <FormLabel>Settings</FormLabel>
-
                                         <IonList inset>
-                                            <IonItem color='dark'>
+                                            <IonItem color='light'>
                                                 <IonToggle>
                                                     Allow users to select multiple options
                                                 </IonToggle>
                                             </IonItem>
-                                            <IonItem color='dark'>
+                                            <IonItem color='light'>
                                                 <IonToggle>
                                                     Make this poll anonymous
                                                 </IonToggle>
                                             </IonItem>
                                         </IonList>
-
-                                        <FormField
-                                            control={control}
-                                            name="is_multi_choice"
-                                            render={({ field: { onChange, ...f } }) => (
-                                                <FormItem>
-                                                    <FormControl>
-                                                        {/* <Checkbox
-                                                            {...f}
-                                                            onCheckedChange={(v) => onChange(v ? 1 : 0)} /> */}
-                                                        <IonCheckbox labelPlacement="end">Allow users to select multiple options</IonCheckbox>
-                                                    </FormControl>
-                                                    <FormMessage />
-                                                </FormItem>
-                                            )}
-                                        />
-
-                                        <FormField
-                                            control={control}
-                                            name="is_anonymous"
-                                            render={({ field: { onChange, ...f } }) => (
-                                                <FormItem>
-                                                    <FormControl>
-                                                        {/* <Checkbox
-                                                            {...f}
-                                                            onCheckedChange={(v) => onChange(v ? 1 : 0)} /> */}
-                                                        {/* <IonCheckbox labelPlacement="end">Make this poll anonymous</IonCheckbox> */}
-                                                    </FormControl>
-                                                    <IonToggle>Make this poll anonymous</IonToggle>
-                                                    <FormMessage />
-                                                </FormItem>
-                                            )}
-                                        />
                                     </Flex>
 
                                 </div>

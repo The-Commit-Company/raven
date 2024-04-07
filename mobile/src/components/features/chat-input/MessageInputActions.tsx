@@ -30,8 +30,8 @@ const MessageInputActions = ({ onFileClick, onPollCreate }: Props) => {
         <Flex align='center' gap='4' px='2'>
             <FilePickerButton {...DEFAULT_PROPS} onClick={onFileClick} />
             <MentionButtons {...DEFAULT_PROPS} />
-            <PollButton {...DEFAULT_PROPS} onClick={onPollCreate} />
-            <GIFPickerButton {...DEFAULT_PROPS} />
+            {/* <PollButton {...DEFAULT_PROPS} onClick={onPollCreate} /> */}
+            {/* <GIFPickerButton {...DEFAULT_PROPS} /> */}
         </Flex>
     )
 }
