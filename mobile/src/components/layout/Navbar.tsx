@@ -10,6 +10,7 @@ import { FullPageLoader } from "./loaders/FullPageLoader"
 import AuthContainer from "./AuthContainer"
 import useUnreadMessageCount from "@/hooks/useUnreadCount"
 import { showNotification } from "@/utils/pushNotifications"
+import localforage from "localforage"
 
 export const Navbar = () => {
     const { currentUser, isLoading } = useContext(UserContext)
@@ -24,6 +25,7 @@ export const Navbar = () => {
             })
 
             window.localStorage.setItem("currentUser", currentUser)
+            localforage.setItem("currentUser", currentUser)
         }
     }, [currentUser])
 

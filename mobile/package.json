@@ -43,6 +43,7 @@
     "html-react-parser": "^5.1.8",
     "input-otp": "^1.2.2",
     "ionicons": "^7.3.1",
+    "localforage": "^1.10.0",
     "lowlight": "^3.1.0",
     "postcss": "^8.4.35",
     "prop-types": "^15.8.1",

@@ -1,4 +1,5 @@
 import { useFrappeAuth, useSWRConfig } from 'frappe-react-sdk'
+import localforage from 'localforage'
 import { FC, PropsWithChildren } from 'react'
 import { createContext } from 'react'
 
@@ -30,17 +31,21 @@ export const UserProvider: FC<PropsWithChildren> = ({ children }) => {
     const handleLogout = async () => {
         // @ts-expect-error
         window.frappePushNotification?.disableNotification()
-        .then(() => logout())
-        .then(() => {
-            //Clear cache on logout
-            return mutate((key) => {
-                if (key === 'raven.api.login.get_context'){
-                    return false
-                }
-                return true
-            }, undefined, false)
-        })
-          
+            .then(() => logout())
+            .then(() => {
+                window.localStorage.setItem("currentUser", "Guest")
+                localforage.setItem("currentUser", "Guest")
+            })
+            .then(() => {
+                //Clear cache on logout
+                return mutate((key) => {
+                    if (key === 'raven.api.login.get_context') {
+                        return false
+                    }
+                    return true
+                }, undefined, false)
+            })
+
     }
 
     const handleLogin = async (username: string, password: string) => {
