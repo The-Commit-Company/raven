@@ -3,6 +3,8 @@ import { useCurrentEditor } from '@tiptap/react'
 import { BiAt, BiHash, BiPaperclip } from 'react-icons/bi'
 import { HiOutlineGif } from 'react-icons/hi2'
 import { MdOutlineBarChart } from 'react-icons/md'
+import { CreatePoll } from '../polls/CreatePoll'
+import { useRef, useState } from 'react'
 
 export const ICON_PROPS = {
     size: '22'
@@ -18,16 +20,17 @@ const DEFAULT_PROPS: Partial<IconButtonProps> = {
 }
 
 type Props = {
-    onFileClick?: () => void
+    onFileClick?: () => void,
+    onPollCreate: () => void
 
 }
 
-const MessageInputActions = ({ onFileClick }: Props) => {
+const MessageInputActions = ({ onFileClick, onPollCreate }: Props) => {
     return (
         <Flex align='center' gap='4' px='2'>
             <FilePickerButton {...DEFAULT_PROPS} onClick={onFileClick} />
             <MentionButtons {...DEFAULT_PROPS} />
-            <PollButton {...DEFAULT_PROPS} />
+            <PollButton {...DEFAULT_PROPS} onClick={onPollCreate} />
             <GIFPickerButton {...DEFAULT_PROPS} />
         </Flex>
     )
@@ -111,11 +114,9 @@ const PollButton = (props: IconButtonProps) => {
     return <IconButton
         title='Create a poll'
         aria-label='Create a poll'
-        {...props}
-    >
+        {...props}>
         <MdOutlineBarChart {...ICON_PROPS} />
     </IconButton>
-
 }
 
 export default MessageInputActions
