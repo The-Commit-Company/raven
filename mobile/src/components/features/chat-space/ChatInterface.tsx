@@ -17,6 +17,7 @@ import { MessageBlockItem } from './chat-view/MessageBlock'
 import ChatViewFirstMessage from './chat-view/ChatViewFirstMessage'
 import { UserContext } from '@/utils/auth/UserProvider'
 import JoinChannelButton from './JoinChannelButton'
+import { clearNotifications } from '@/utils/pushNotifications'
 
 export type ChannelMembersMap = Record<string, UserFields>
 export const ChannelMembersContext = createContext<ChannelMembersMap>({})
@@ -27,6 +28,9 @@ export const ChatInterface = ({ channel }: { channel: ChannelListItem | DMChanne
 
     useIonViewWillEnter(() => {
         conRef.current?.scrollToBottom()
+
+        // Clear all notifications for this channel
+        clearNotifications(channel.name)
     })
 
     const {

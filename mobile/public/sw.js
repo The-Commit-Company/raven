@@ -29,7 +29,7 @@ try {
 
         const notificationTitle = payload.data.title
         let notificationOptions = {
-            body: (payload.data.body + " (background)") || "",
+            body: payload.data.body || "",
         }
         if (payload.data.notification_icon) {
             notificationOptions["icon"] = payload.data.notification_icon
@@ -41,6 +41,10 @@ try {
 
         if (payload.data.creation) {
             notificationOptions["timestamp"] = payload.data.creation
+        }
+
+        if (payload.data.channel_id) {
+            notificationOptions["tag"] = payload.data.channel_id
         }
         const url = `${payload.data.base_url}/raven_mobile/channel/${payload.data.channel_id}`
         if (isChrome()) {
@@ -61,10 +65,10 @@ try {
     if (isChrome()) {
         self.addEventListener("notificationclick", (event) => {
             event.stopImmediatePropagation()
-            event.notification.close()
             if (event.notification.data && event.notification.data.url) {
                 clients.openWindow(event.notification.data.url)
             }
+            event.notification.close()
         })
     }
 } catch (error) {

@@ -14,7 +14,7 @@ export const showNotification = (payload: any) => {
 
     const notificationTitle = payload?.data?.title
     const notificationOptions = {
-        body: (payload?.data?.body + " (foreground)") || "",
+        body: payload?.data?.body || "",
     }
     if (payload?.data?.notification_icon) {
         // @ts-ignore
@@ -29,6 +29,11 @@ export const showNotification = (payload: any) => {
     if (payload.data.creation) {
         // @ts-ignore
         notificationOptions["timestamp"] = payload.data.creation
+    }
+
+    if (payload.data.channel_id) {
+        // @ts-ignore
+        notificationOptions["tag"] = payload.data.channel_id
     }
     const url = `${payload.data.base_url}/raven_mobile/channel/${payload.data.channel_id}`
     if (isChrome()) {
@@ -49,4 +54,17 @@ export const showNotification = (payload: any) => {
     }
 
     registration.showNotification(notificationTitle, notificationOptions)
+}
+
+export const clearNotifications = (channelID: string) => {
+
+    // @ts-ignore
+    const registration = window.frappePushNotification.serviceWorkerRegistration
+    if (!registration) return
+
+    registration.getNotifications({ tag: channelID }).then((notifications: Notification[]) => {
+        notifications.forEach((notification) => {
+            notification.close()
+        })
+    })
 }
