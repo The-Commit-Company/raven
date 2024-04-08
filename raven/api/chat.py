@@ -19,18 +19,18 @@ def get_channel_members(channel_id):
 			if frappe.get_cached_value("Raven Channel", channel_id, "type") == "Open":
 				# select all users, if channel member exists, get is_admin
 				member_query = (
-    				frappe.qb.from_(user)
-    				.join(channel_member, JoinType.left)
-    				.on((user.name == channel_member.user_id) & (channel_member.channel_id == channel_id))
-    				.select(
-        				user.name,
-        				user.full_name,
-        				user.user_image,
-        				user.first_name,
-        				user.type,
-        				channel_member.is_admin,
-    				)
-    				.orderby(channel_member.creation, order=Order.desc)
+					frappe.qb.from_(user)
+					.join(channel_member, JoinType.left)
+					.on((user.name == channel_member.user_id) & (channel_member.channel_id == channel_id))
+					.select(
+						user.name,
+						user.full_name,
+						user.user_image,
+						user.first_name,
+						user.type,
+						channel_member.is_admin,
+					)
+					.orderby(channel_member.creation, order=Order.desc)
 				)
 			else:
 				member_query = (
