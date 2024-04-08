@@ -120,11 +120,10 @@ def retract_vote(poll_id):
 	# delete all votes by the user for the poll (this takes care of the case where the user has voted for multiple options in the same poll)
 	user = frappe.session.user
 	votes = frappe.get_all(
-		"Raven Poll Vote",
-		filters={"poll_id": poll_id, "user_id": user},
-		fields=["name"])
+		"Raven Poll Vote", filters={"poll_id": poll_id, "user_id": user}, fields=["name"]
+	)
 	if not votes:
 		frappe.throw(_("You have not voted for any option in this poll."))
-	else: 
+	else:
 		for vote in votes:
 			frappe.delete_doc("Raven Poll Vote", vote.name)
