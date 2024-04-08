@@ -76,7 +76,7 @@ def raven_poll_vote_has_permission(doc, user=None, ptype=None):
 		Allowed users can add a vote to a poll and read votes (if the poll is not anonymous)
 	"""
 
-	if ptype in ["read", "create"]:
+	if ptype in ["read", "create", "delete"]:
 		if doc.owner == user:
 			return True
 		elif user == "Administrator":

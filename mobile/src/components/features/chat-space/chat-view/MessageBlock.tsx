@@ -301,7 +301,7 @@ const ReplyBlock = ({ message }: { message: Message }) => {
     </div>
 }
 
-interface Poll {
+export interface Poll {
     'poll': RavenPoll,
     'current_user_votes': { 'option': string }[]
 }
