@@ -13,7 +13,7 @@ import { useLongPress } from "@uidotdev/usehooks";
 import MessageReactions from './components/MessageReactions'
 import parse from 'html-react-parser';
 import clsx from 'clsx'
-import { Avatar, Badge, Box, Button, Checkbox, Flex, RadioGroup, Text, Theme } from '@radix-ui/themes'
+import { Avatar, Badge, Box, Button, Checkbox, Flex, RadioGroup, Separator, Text, Theme } from '@radix-ui/themes'
 import { useGetUser } from '@/hooks/useGetUser'
 import { generateAvatarColor, getInitials } from '@/components/common/UserAvatar'
 import { RiRobot2Fill } from 'react-icons/ri'
@@ -21,6 +21,7 @@ import { useFrappeDocumentEventListener, useFrappeGetCall, useFrappePostCall, us
 import { RavenPoll } from '@/types/RavenMessaging/RavenPoll'
 import { RavenPollOption } from '@/types/RavenMessaging/RavenPollOption'
 import { MdOutlineBarChart } from 'react-icons/md'
+import { ViewPollVotes } from '../../polls/ViewPollVotes'
 
 type Props = {
     message: Message,
@@ -80,8 +81,10 @@ export const NonContinuationMessageBlock = ({ message, onMessageSelect, isScroll
 
     const { user, isActive } = useGetUserDetails(message.is_bot_message && message.bot ? message.bot : message.owner)
 
+    const [disableLongPress, setDisableLongPress] = useState(false)
     const longPressEvent = useLongPress((e) => {
         if (isScrolling) return
+        if (disableLongPress) return
         Haptics.impact({
             style: ImpactStyle.Medium
         })
@@ -100,7 +103,11 @@ export const NonContinuationMessageBlock = ({ message, onMessageSelect, isScroll
                     {isBot && <Badge className='ml-2' color='gray'>Bot</Badge>}
                     <Text as='span' size='1' className='pl-1.5 text-gray-10'>{DateObjectToTimeString(message.creation)}</Text>
                 </div>
-                <MessageContent message={message} onReplyMessageClick={onReplyMessageClick} />
+                <MessageContent
+                    message={message}
+                    onLongPressDisabled={() => setDisableLongPress(true)}
+                    onLongPressEnabled={() => setDisableLongPress(false)}
+                    onReplyMessageClick={onReplyMessageClick} />
                 {message.is_edited === 1 && <Text size='1' color='gray'>(edited)</Text>}
             </div>
         </div>
@@ -149,8 +156,10 @@ interface ContinuationMessageBlockProps {
 }
 const ContinuationMessageBlock = ({ message, onMessageSelect, isScrolling, isHighlighted, onReplyMessageClick }: ContinuationMessageBlockProps) => {
 
+    const [disableLongPress, setDisableLongPress] = useState(false)
     const longPressEvent = useLongPress((e) => {
         if (isScrolling) return
+        if (disableLongPress) return
         Haptics.impact({
             style: ImpactStyle.Medium
         })
@@ -163,7 +172,11 @@ const ContinuationMessageBlock = ({ message, onMessageSelect, isScrolling, isHig
             <div className='w-11'>
             </div>
             <div>
-                <MessageContent message={message} onReplyMessageClick={onReplyMessageClick} />
+                <MessageContent
+                    message={message}
+                    onLongPressDisabled={() => setDisableLongPress(true)}
+                    onLongPressEnabled={() => setDisableLongPress(false)}
+                    onReplyMessageClick={onReplyMessageClick} />
                 {message.is_edited === 1 && <IonText className='text-xs' color={'medium'}>(edited)</IonText>}
             </div>
 
@@ -175,7 +188,13 @@ const ContinuationMessageBlock = ({ message, onMessageSelect, isScrolling, isHig
     </div>
 }
 
-const MessageContent = ({ message, onReplyMessageClick }: { message: Message, onReplyMessageClick: (messageID: string) => void }) => {
+interface MessageContentProps {
+    message: Message,
+    onReplyMessageClick: (messageID: string) => void
+    onLongPressDisabled: () => void
+    onLongPressEnabled: () => void
+}
+const MessageContent = ({ message, onReplyMessageClick, onLongPressDisabled, onLongPressEnabled }: MessageContentProps) => {
     const scrollToMessage = () => {
         if (message.linked_message) {
             Haptics.impact({
@@ -193,7 +212,10 @@ const MessageContent = ({ message, onReplyMessageClick }: { message: Message, on
         {message.text && <div><TextMessageBlock message={message as TextMessage} /></div>}
         {message.message_type === 'Image' && <ImageMessageBlock message={message} />}
         {message.message_type === 'File' && <FileMessageBlock message={message} />}
-        {message.message_type === 'Poll' && <PollMessageBlock message={message} />}
+        {message.message_type === 'Poll' && <PollMessageBlock
+            message={message}
+            onModalClose={onLongPressEnabled}
+            onModalOpen={onLongPressDisabled} />}
     </div>
 }
 
@@ -306,31 +328,50 @@ export interface Poll {
     'current_user_votes': { 'option': string }[]
 }
 
-const PollMessageBlock = ({ message }: { message: PollMessage }) => {
+const PollMessageBlock = ({ message, onModalClose, onModalOpen }: { message: PollMessage, onModalOpen: VoidFunction, onModalClose: VoidFunction }) => {
 
+    const { mutate: globalMutate } = useSWRConfig()
     // fetch poll data using message_id
     const { data, error, mutate } = useFrappeGetCall<{ message: Poll }>('raven.api.raven_poll.get_poll', {
         'message_id': message.name,
     }, `poll_data_${message.poll_id}`, {
         revalidateOnFocus: false,
         revalidateIfStale: false,
-        revalidateOnReconnect: false
+        revalidateOnReconnect: false,
+        revalidateOnMount: true
     })
 
     useFrappeDocumentEventListener('Raven Poll', message.poll_id, () => {
         mutate()
+        globalMutate(`poll_votes_${message.poll_id}`)
     })
 
     return (
         <div className='py-1.5 rounded-lg'>
-            {data && <PollMessageBox data={data.message} messageID={message.name} />}
+            {data && <PollMessageBox
+                data={data.message}
+                messageID={message.name}
+                onModalOpen={onModalOpen}
+                onModalClose={onModalClose}
+            />}
         </div>
     )
 }
 
-const PollMessageBox = ({ data, messageID }: { data: Poll, messageID: string }) => {
+const PollMessageBox = ({ data, messageID, onModalClose, onModalOpen }: { data: Poll, messageID: string, onModalOpen: VoidFunction, onModalClose: VoidFunction }) => {
+
+    const [isOpen, setOpen] = useState<boolean>(false)
+    const onViewClick: React.MouseEventHandler<HTMLButtonElement> = (e) => {
+        setOpen(true)
+        onModalOpen()
+    }
+
+    const closeModal = () => {
+        setOpen(false)
+        onModalClose()
+    }
     return (
-        <Flex align='center' gap='4' p='2' className="bg-gray-2
+        <Flex align='center' direction='column' className="bg-gray-2
         shadow-sm
         dark:bg-gray-3
         group-hover:bg-accent-a2
@@ -340,7 +381,7 @@ const PollMessageBox = ({ data, messageID }: { data: Poll, messageID: string }) 
         min-w-64
         w-full
         rounded-md">
-            <Flex direction='column' gap='2' p='2' className="w-full">
+            <Flex direction='column' gap='2' p='4' className="w-full">
                 <Flex justify='between' align='center' gap='2'>
                     <Text size='2' weight={'medium'}>{data.poll.question}</Text>
                     {data.poll.is_anonymous ? <Badge color='blue' className={'w-fit'}>Anonymous</Badge> : null}
@@ -356,6 +397,17 @@ const PollMessageBox = ({ data, messageID }: { data: Poll, messageID: string }) 
                 }
                 {data.poll.is_disabled ? <Badge color="gray" className={'w-fit'}>Poll is now closed</Badge> : null}
             </Flex>
+            {data.poll.is_anonymous ? null :
+                <>
+                    <Separator size='4' />
+                    <Flex pt='3' pb='3'>
+                        <Button variant='ghost'
+                            onClick={onViewClick}
+                            className='hover:bg-transparent hover:text-accent-10 w-full'>View Votes</Button>
+                    </Flex>
+                    <ViewPollVotes isOpen={isOpen} onDismiss={closeModal} poll={data} />
+                </>
+            }
         </Flex>
     )
 }
