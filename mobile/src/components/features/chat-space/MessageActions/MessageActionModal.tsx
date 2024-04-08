@@ -13,8 +13,8 @@ import { SaveMessageAction } from './SaveMessageAction';
 import { useGetUser } from '@/hooks/useGetUser';
 import { ShareAction } from './ShareAction';
 import { EmojiAction } from './EmojiAction';
-import { RetractVoteAction } from './RetractVoteAction';
 import MessagePreview from './MessagePreview';
+import { PollActions } from './PollActions';
 
 interface MessageActionModalProps {
     selectedMessage?: Message,
@@ -79,8 +79,8 @@ export const MessageActionModal = ({ selectedMessage, onDismiss }: MessageAction
                             <IonLabel className='font-semibold'>Reply</IonLabel>
                         </IonItem> */}
 
-                            {selectedMessage.message_type === 'Poll' &&
-                                <RetractVoteAction message={selectedMessage} onSuccess={onDismiss} />}
+                            {selectedMessage.message_type === 'Poll' && <PollActions message={selectedMessage} onSuccess={onDismiss} />}
+
                             {selectedMessage.message_type !== 'Poll' &&
                                 <ShareAction message={selectedMessage} onSuccess={onDismiss} />}
 
