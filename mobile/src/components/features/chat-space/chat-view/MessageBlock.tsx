@@ -381,9 +381,11 @@ const PollMessageBox = ({ data, messageID, onModalClose, onModalOpen }: { data: 
         min-w-64
         w-full
         rounded-md">
-            <Flex direction='column' gap='2' p='4' className="w-full">
-                <Flex justify='between' align='center' gap='2'>
-                    <Text size='2' weight={'medium'}>{data.poll.question}</Text>
+            <Flex direction='column' gap='3' p='4' className="w-full">
+                <Flex direction='column' gap='2'>
+                    <Text size='2' weight={'medium'}>
+                        {data.poll.question}
+                    </Text>
                     {data.poll.is_anonymous ? <Badge color='blue' className={'w-fit'}>Anonymous</Badge> : null}
                 </Flex>
                 {data.current_user_votes.length > 0 ?
