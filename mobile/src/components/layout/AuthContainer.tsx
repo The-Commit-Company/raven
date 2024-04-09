@@ -3,11 +3,13 @@ import { IonPage } from '@ionic/react';
 import { LoginWithEmail } from '@/pages/auth/LoginWithEmail';
 import { Login } from '@/pages/auth/Login';
 import { SignUp } from '@/pages/auth/SignUp';
+import { ForgotPassword } from '@/pages/auth/ForgotPassword';
 
 type ActiveScreenType = {
     login: boolean,
     loginWithEmail: boolean,
-    signup: boolean;
+    signup: boolean,
+    forgotPassword: boolean
 }
 
 export interface ActiveScreenProps {
@@ -20,7 +22,8 @@ const AuthContainer = ({ children, ...props }: PropsWithChildren) => {
     const [activeScreen, setActiveScreen] = useState<ActiveScreenType>({
         login: true,
         loginWithEmail: false,
-        signup: false
+        signup: false,
+        forgotPassword: false
     })
 
 
@@ -37,6 +40,7 @@ const AuthContainer = ({ children, ...props }: PropsWithChildren) => {
                                 {activeScreen.login && <Login setActiveScreen={setActiveScreen}></Login>}
                                 {activeScreen.loginWithEmail && <LoginWithEmail setActiveScreen={setActiveScreen}></LoginWithEmail>}
                                 {activeScreen.signup && <SignUp setActiveScreen={setActiveScreen}></SignUp>}
+                                {activeScreen.forgotPassword && <ForgotPassword setActiveScreen={setActiveScreen}></ForgotPassword>}
                             </>
                         }
                     </div>

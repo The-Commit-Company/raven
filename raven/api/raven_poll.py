@@ -113,3 +113,62 @@ def add_vote(message_id, option_id):
 		).insert()
 
 	return "Vote added successfully."
+
+
+@frappe.whitelist(methods=["POST"])
+def retract_vote(poll_id):
+	# delete all votes by the user for the poll (this takes care of the case where the user has voted for multiple options in the same poll)
+	user = frappe.session.user
+	votes = frappe.get_all(
+		"Raven Poll Vote", filters={"poll_id": poll_id, "user_id": user}, fields=["name"]
+	)
+	if not votes:
+		frappe.throw(_("You have not voted for any option in this poll."))
+	else:
+		for vote in votes:
+			frappe.delete_doc("Raven Poll Vote", vote.name)
+
+
+@frappe.whitelist()
+def get_all_votes(poll_id):
+
+	# Check if the current user has access to the poll
+	if not frappe.has_permission(doctype="Raven Poll", doc=poll_id, ptype="read"):
+		frappe.throw(_("You do not have permission to access this poll"), frappe.PermissionError)
+
+	# Check if the poll is anonymous
+	is_anonymous = frappe.get_cached_value("Raven Poll", poll_id, "is_anonymous")
+
+	if is_anonymous:
+		frappe.throw(_("This poll is anonymous. You do not have permission to access the votes."), frappe.PermissionError)
+	else:
+		# Get all votes for this poll
+		votes = frappe.get_all(
+			"Raven Poll Vote",
+			filters={"poll_id": poll_id},
+			fields=["name", "option", "user_id"]
+		)
+
+		# Initialize results dictionary
+		results = {}
+
+		# Process votes
+		for vote in votes:
+			option = vote['option']
+			if option not in results:
+				results[option] = {
+					'users': [vote['user_id']],
+					'count': 1
+				}
+			else:
+				results[option]['users'].append(vote['user_id'])
+				results[option]['count'] += 1
+
+		# Calculate total votes
+		total_votes = sum(result['count'] for result in results.values())
+
+		# Calculate percentages
+		for result in results.values():
+			result['percentage'] = (result['count'] / total_votes) * 100
+
+		return results

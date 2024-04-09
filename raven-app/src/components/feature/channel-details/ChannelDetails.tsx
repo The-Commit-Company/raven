@@ -55,7 +55,7 @@ export const ChannelDetails = ({ channelData, channelMembers, onClose }: Channel
                     <Flex direction={'column'} gap='1'>
                         <Text weight='medium' size='2'>Created by</Text>
                         <Flex gap='1'>
-                            {channelData?.owner && <Text size='1'>{users[channelData.owner]?.full_name}</Text>}
+                            {channelData?.owner && <Text size='1'>{users[channelData.owner]?.full_name ?? channelData?.owner}</Text>}
                             {channelData.creation && <Text size='1' color='gray' as='span'>on <DateMonthYear date={channelData?.creation} /></Text>}
                         </Flex>
                     </Flex>

@@ -7,6 +7,7 @@ import { HiReply } from 'react-icons/hi'
 import { FrappeConfig, FrappeContext } from 'frappe-react-sdk'
 import { useMessageCopy } from './useMessageCopy'
 import { useToast } from '@/hooks/useToast'
+import { RetractVote } from './RetractVote'
 
 export interface MessageContextMenuProps {
     message?: Message | null,
@@ -25,6 +26,9 @@ export const MessageContextMenu = ({ message, onDelete, onEdit, onReply }: Messa
     return (
         <ContextMenu.Content>
             {message ? <>
+
+                {message && message.message_type === 'Poll' && <RetractVote message={message} />}
+
                 <ContextMenu.Item onClick={onReply}>
                     <Flex gap='2'>
                         <HiReply size='18' />
