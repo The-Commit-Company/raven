@@ -2,7 +2,7 @@ import { EditorContent, EditorContext, useEditor } from '@tiptap/react'
 import { TextMessage } from '../../../../../../../../types/Messaging/Message'
 import { UserFields } from '@/utils/users/UserListProvider'
 import { BoxProps } from '@radix-ui/themes/dist/cjs/components/box'
-import { Box, Text } from '@radix-ui/themes'
+import { Box } from '@radix-ui/themes'
 import Highlight from '@tiptap/extension-highlight'
 import StarterKit from '@tiptap/starter-kit'
 import css from 'highlight.js/lib/languages/css'
@@ -17,10 +17,10 @@ import { CustomBlockquote } from './Blockquote'
 import { CustomBold } from './Bold'
 import { CustomUserMention } from './Mention'
 import { CustomLink, LinkPreview } from './Link'
-import { CustomItalic } from './Italic'
 import { CustomUnderline } from './Underline'
 import { Image } from '@tiptap/extension-image'
 import { clsx } from 'clsx'
+import Italic from '@tiptap/extension-italic';
 const lowlight = createLowlight(common)
 
 lowlight.register('html', html)
@@ -80,7 +80,7 @@ export const TiptapRenderer = ({ message, user, isScrolling = false, isTruncated
       CustomBold,
       CustomUserMention,
       CustomLink,
-      CustomItalic,
+      Italic,
       Image.configure({
         HTMLAttributes: {
           class: 'w-full h-auto'
