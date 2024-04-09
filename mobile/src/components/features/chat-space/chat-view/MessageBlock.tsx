@@ -236,8 +236,28 @@ const options = {
 const ImageMessageBlock = ({ message }: { message: ImageMessage }) => {
     const { ref, inView } = useInView(options);
 
-    const height = `${message.thumbnail_height ?? 200}px`
-    const width = `${message.thumbnail_width ?? 300}px`
+    const { width, height } = useMemo(() => {
+        let height = message.thumbnail_height ?? 200
+        let width = message.thumbnail_width ?? 300
+
+        // Max width is 280px, so we need to adjust the height accordingly
+        const aspectRatio = width / height
+
+        if (width > 280) {
+            width = 280
+            height = width / aspectRatio
+        }
+
+        return {
+            height: `${height}px`,
+            width: `${width}px`
+        }
+
+    }, [message])
+
+
+    // const height = `${message.thumbnail_height ?? 200}px`
+    // const width = `${message.thumbnail_width ?? 300}px`
     return <div className='py-1.5 rounded-lg' ref={ref} style={{
         minWidth: width,
         minHeight: height
@@ -250,14 +270,12 @@ const ImageMessageBlock = ({ message }: { message: ImageMessage }) => {
                 style={{
                     width: width,
                     height: height,
-                    maxWidth: '280px'
                 }}
             />
             :
             <IonSkeletonText animated className='max-w-60 rounded-md' style={{
                 width: width,
                 height: height,
-                maxWidth: '280px'
             }} />
         }
     </div>
