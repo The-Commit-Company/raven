@@ -16,6 +16,10 @@ export default function useFileUpload(channelID: string, selectedMessage?: Messa
 
   const [files, setFiles] = useState<CustomFile[]>([])
 
+  const filesStateRef = useRef<CustomFile[]>([])
+
+  filesStateRef.current = files
+
   const [fileUploadProgress, setFileUploadProgress] = useState<Record<string, FileUploadProgress>>({})
 
   const addFile = (file: File) => {
@@ -38,7 +42,7 @@ export default function useFileUpload(channelID: string, selectedMessage?: Messa
   }
 
   const uploadFiles = async () => {
-    const newFiles = [...files]
+    const newFiles = [...filesStateRef.current]
     if (newFiles.length > 0) {
       const promises = newFiles.map(async (f: CustomFile) => {
         return file.uploadFile(f,
