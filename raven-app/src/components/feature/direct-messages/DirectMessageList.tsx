@@ -21,12 +21,10 @@ export const DirectMessageList = ({ unread_count }: { unread_count?: UnreadCount
 
     return (
         <SidebarGroup pb='4'>
-            <SidebarGroupItem gap='2' className={'pl-1.5'}>
+            <SidebarGroupItem className={'pl-1.5 gap-1.5'}>
                 <SidebarViewMoreButton onClick={toggle} />
                 <Flex width='100%' justify='between' align='center' gap='2'>
-                    <Flex gap='2' align='center'>
-                        <SidebarGroupLabel className='cal-sans'>Direct Messages</SidebarGroupLabel>
-                    </Flex>
+                    <SidebarGroupLabel className='cal-sans'>Direct Messages</SidebarGroupLabel>
                     {!showData && unread_count && unread_count?.total_unread_count_in_dms > 0 &&
                         <Box pr='2'>
                             <SidebarBadge>{unread_count.total_unread_count_in_dms}</SidebarBadge>

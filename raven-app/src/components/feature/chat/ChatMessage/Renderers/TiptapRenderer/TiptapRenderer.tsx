@@ -57,12 +57,12 @@ export const TiptapRenderer = ({ message, user, isScrolling = false, isTruncated
         italic: false,
         listItem: {
           HTMLAttributes: {
-            class: 'ml-5 rt-Text rt-r-size-2'
+            class: 'ml-5 rt-Text text-sm'
           }
         },
         paragraph: {
           HTMLAttributes: {
-            class: 'rt-Text rt-r-size-2'
+            class: 'rt-Text text-sm'
           }
         }
       }),
