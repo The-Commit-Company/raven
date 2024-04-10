@@ -67,7 +67,7 @@ interface SidebarItemProps extends FlexProps {
 
 export const SidebarItem = ({ to, children, end, active = false, activeStyles, className, ...props }: SidebarItemProps) => {
 
-    const activeClass = 'bg-[#EBEBEB] dark:bg-gray-6 text-gray-12'
+    const activeClass = 'bg-[#EBEBEB] dark:bg-gray-4 text-gray-12'
 
     return (
         <NavLink
@@ -81,7 +81,7 @@ export const SidebarItem = ({ to, children, end, active = false, activeStyles, c
                         gap='2'
                         align='center'
                         px='2'
-                        className={clsx('cursor-pointer text-black dark:text-gray-100 user-select-none rounded-md no-underline transition-all duration-200 hover:bg-gray-3 dark:hover:bg-gray-5', isActive ? activeClass : '', className)}
+                        className={clsx('cursor-pointer text-black dark:text-gray-100 user-select-none rounded-md no-underline transition-all duration-200 hover:bg-gray-3 dark:hover:bg-gray-3', isActive ? activeClass : '', className)}
                         {...props}>
                         {children}
                     </Flex>
@@ -161,7 +161,7 @@ export const SidebarBadge = ({ children, ...props }: BadgeProps) => {
 
     return (
         <Theme accentColor='gray'>
-            <div className='flex items-center justify-center dark:text-accent-a11 dark:bg-accent-a3 bg-accent-a4 text-xs py-0.5 px-2 rounded-radius2
+            <div className='flex items-center justify-center dark:text-accent-a12 dark:bg-accent-a3 bg-accent-a4 text-xs py-0.5 px-2 rounded-radius2
             whitespace-nowrap font-medium
             '>
                 {children}
