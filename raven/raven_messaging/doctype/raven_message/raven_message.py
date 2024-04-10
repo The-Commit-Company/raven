@@ -1,6 +1,7 @@
 # Copyright (c) 2023, The Commit Company and contributors
 # For license information, please see license.txt
 import datetime
+import json
 
 import frappe
 from frappe import _
@@ -116,6 +117,24 @@ class RavenMessage(Document):
 		self.publish_unread_count_event()
 
 	def publish_unread_count_event(self):
+		frappe.db.set_value(
+			"Raven Channel", self.channel_id, "last_message_timestamp", self.creation, update_modified=False
+		)
+		frappe.db.set_value(
+			"Raven Channel",
+			self.channel_id,
+			"last_message_details",
+			json.dumps(
+				{
+					"message_id": self.name,
+					"content": self.content if self.message_type == "Text" else self.file,
+					"message_type": self.message_type,
+					"owner": self.owner,
+					"is_bot_message": self.is_bot_message,
+					"bot": self.bot,
+				}
+			),
+		)
 		# If the message is a direct message, then we can only send it to one user
 		is_direct_message = frappe.get_cached_value(
 			"Raven Channel", self.channel_id, "is_direct_message"
@@ -135,6 +154,18 @@ class RavenMessage(Document):
 					"sent_by": self.owner,
 				},
 				user=peer_user_id,
+				after_commit=True,
+			)
+
+			# Need to send this to sender as well since they need to update the last message timestamp
+			frappe.publish_realtime(
+				"raven:unread_channel_count_updated",
+				{
+					"channel_id": self.channel_id,
+					"play_sound": False,
+					"sent_by": self.owner,
+				},
+				user=self.owner,
 				after_commit=True,
 			)
 		else:
