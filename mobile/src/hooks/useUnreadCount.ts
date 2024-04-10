@@ -1,5 +1,5 @@
 import { UserContext } from "@/utils/auth/UserProvider"
-import { UnreadCountData } from "@/utils/channel/ChannelListProvider"
+import { UnreadCountData, useUpdateLastMessageInChannelList } from "@/utils/channel/ChannelListProvider"
 import { useFrappeGetCall, FrappeContext, FrappeConfig, useFrappeEventListener } from "frappe-react-sdk"
 import { useContext } from "react"
 
@@ -93,6 +93,8 @@ const useUnreadMessageCount = () => {
         })
     }
 
+    const { updateLastMessageInChannelList } = useUpdateLastMessageInChannelList()
+
     useFrappeEventListener('raven:unread_channel_count_updated', (event) => {
         // If the event is published by the current user, then don't update the unread count
         if (event.sent_by !== currentUser) {
@@ -101,6 +103,8 @@ const useUnreadMessageCount = () => {
             // https://github.com/The-Commit-Company/Raven/pull/745#issuecomment-2014313429
             fetchUnreadCountForChannel(event.channel_id)
         }
+
+        updateLastMessageInChannelList(event.channel_id)
     })
 
     return unread_count
