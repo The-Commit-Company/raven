@@ -1,12 +1,12 @@
 import React, { ReactNode, useState } from 'react'
 import { NavLink } from 'react-router-dom'
-import { Flex, IconButton, Text, Badge } from '@radix-ui/themes';
+import { Flex, IconButton, Text, Theme } from '@radix-ui/themes';
 import { FlexProps } from '@radix-ui/themes/dist/cjs/components/flex';
 import { TextProps } from '@radix-ui/themes/dist/cjs/components/text';
 import { IconButtonProps } from '@radix-ui/themes/dist/cjs/components/icon-button';
 import { BadgeProps } from '@radix-ui/themes/dist/cjs/components/badge';
 import { clsx } from 'clsx';
-import { BsCaretDownFill, BsCaretRightFill } from 'react-icons/bs';
+import { FaCaretDown, FaCaretRight } from 'react-icons/fa';
 
 interface SidebarGroupProps extends FlexProps {
     children: ReactNode;
@@ -145,14 +145,14 @@ export const SidebarViewMoreButton = ({ onClick, ...props }: SidebarViewMoreButt
             title='View'
             variant='ghost'
             size='1'
-            className='cursor-pointer text-slate-12 bg-transparent hover:text-gray-12'
+            className='cursor-pointer pb-[4px] text-slate-12 bg-transparent hover:text-gray-12'
             highContrast
             onClick={() => {
                 setIsViewMore(!isViewMore)
                 onClick()
             }}
             {...props}>
-            {isViewMore ? <BsCaretRightFill size='13' /> : <BsCaretDownFill size='13' />}
+            {isViewMore ? <FaCaretRight size='18' /> : <FaCaretDown size='18' />}
         </IconButton>
     )
 }
@@ -160,15 +160,14 @@ export const SidebarViewMoreButton = ({ onClick, ...props }: SidebarViewMoreButt
 export const SidebarBadge = ({ children, ...props }: BadgeProps) => {
 
     return (
-        <Badge
-            color='gray'
-            variant='solid'
-            size='1'
-            radius="large"
-            highContrast
-            {...props}
-        >
-            {children}
-        </Badge>
+        <Theme accentColor='gray'>
+            <div className='flex items-center justify-center dark:text-accent-a11 dark:bg-accent-a3 bg-accent-a4 text-xs py-0.5 px-2 rounded-radius2
+            whitespace-nowrap font-medium
+            '>
+                {children}
+            </div>
+        </Theme>
+
+
     )
 }

@@ -249,12 +249,12 @@ const Tiptap = ({ slotBefore, fileProps, onMessageSend, replyMessage, clearReply
             codeBlock: false,
             listItem: {
                 HTMLAttributes: {
-                    class: 'rt-Text'
+                    class: 'rt-Text text-sm'
                 }
             },
             paragraph: {
                 HTMLAttributes: {
-                    class: 'rt-Text'
+                    class: 'rt-Text text-sm'
                 }
             }
         }),
