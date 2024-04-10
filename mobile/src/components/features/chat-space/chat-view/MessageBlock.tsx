@@ -1,7 +1,6 @@
-import { memo, useContext, useEffect, useMemo, useState } from 'react'
+import { memo, useContext, useEffect, useMemo, useRef, useState } from 'react'
 import { FileMessage, ImageMessage, Message, TextMessage, PollMessage } from '../../../../../../types/Messaging/Message'
 import { IonIcon, IonSkeletonText, IonText } from '@ionic/react'
-import { MarkdownRenderer } from '@/components/common/MarkdownRenderer'
 import { UserFields } from '@/utils/users/UserListProvider'
 import { DateObjectToFormattedDateStringWithoutYear, DateObjectToTimeString } from '@/utils/operations/operations'
 import { ChannelMembersContext } from '../ChatInterface'
@@ -22,6 +21,7 @@ import { RavenPoll } from '@/types/RavenMessaging/RavenPoll'
 import { RavenPollOption } from '@/types/RavenMessaging/RavenPollOption'
 import { MdOutlineBarChart } from 'react-icons/md'
 import { ViewPollVotes } from '../../polls/ViewPollVotes'
+import { TiptapRenderer } from './components/TiptapRenderer/TiptapRenderer'
 
 type Props = {
     message: Message,
@@ -82,8 +82,13 @@ export const NonContinuationMessageBlock = ({ message, onMessageSelect, isScroll
     const { user, isActive } = useGetUserDetails(message.is_bot_message && message.bot ? message.bot : message.owner)
 
     const [disableLongPress, setDisableLongPress] = useState(false)
+
+    const scrollingRef = useRef<boolean>(isScrolling)
+
+    scrollingRef.current = isScrolling
+
     const longPressEvent = useLongPress((e) => {
-        if (isScrolling) return
+        if (scrollingRef.current) return
         if (disableLongPress) return
         Haptics.impact({
             style: ImpactStyle.Medium
@@ -95,7 +100,8 @@ export const NonContinuationMessageBlock = ({ message, onMessageSelect, isScroll
     // const color = useMemo(() => generateAvatarColor(user?.full_name ?? userID), [user?.full_name, userID])
     return <div>
         <div className={clsx('px-2 mt-1 py-1 rounded-md select-none flex active:bg-gray-3 focus:bg-gray-3 focus-visible:bg-gray-3 focus-within:bg-gray-3',
-            isHighlighted ? 'bg-yellow-300/20 dark:bg-yellow-300/20' : '')} {...longPressEvent}>
+            isHighlighted ? 'bg-yellow-300/20 dark:bg-yellow-300/20' : '',
+            isScrolling ? `focus:bg-transparent active:bg-transparent` : '')} {...longPressEvent}>
             <MessageSenderAvatar user={user} userID={message.owner} isActive={isActive} />
             <div>
                 <div className='flex items-baseline'>
@@ -157,8 +163,12 @@ interface ContinuationMessageBlockProps {
 const ContinuationMessageBlock = ({ message, onMessageSelect, isScrolling, isHighlighted, onReplyMessageClick }: ContinuationMessageBlockProps) => {
 
     const [disableLongPress, setDisableLongPress] = useState(false)
+
+    const scrollingRef = useRef<boolean>(isScrolling)
+
+    scrollingRef.current = isScrolling
     const longPressEvent = useLongPress((e) => {
-        if (isScrolling) return
+        if (scrollingRef.current) return
         if (disableLongPress) return
         Haptics.impact({
             style: ImpactStyle.Medium
@@ -168,7 +178,8 @@ const ContinuationMessageBlock = ({ message, onMessageSelect, isScrolling, isHig
 
     return <div>
         <div className={clsx('px-2 py-1 flex rounded-md select-none active:bg-gray-3 focus:bg-gray-3 focus-visible:bg-gray-3 focus-within:bg-gray-3',
-            isHighlighted ? 'bg-yellow-300/20 dark:bg-yellow-300/20' : '')} {...longPressEvent}>
+            isHighlighted ? 'bg-yellow-300/20 dark:bg-yellow-300/20' : '',
+            isScrolling ? `focus:bg-transparent active:bg-transparent` : '')} {...longPressEvent}>
             <div className='w-11'>
             </div>
             <div>
@@ -221,10 +232,7 @@ const MessageContent = ({ message, onReplyMessageClick, onLongPressDisabled, onL
 
 const TextMessageBlock = ({ message, truncate = false }: { message: TextMessage, truncate?: boolean }) => {
 
-
-    return <div className={'py-0.5 rounded-lg' + (truncate ? ' line-clamp-3' : '')}>
-        <MarkdownRenderer content={message.text} truncate={truncate} />
-    </div>
+    return <TiptapRenderer message={message} />
 }
 const options = {
     root: null,

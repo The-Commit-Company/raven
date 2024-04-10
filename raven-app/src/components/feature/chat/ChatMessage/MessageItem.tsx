@@ -111,7 +111,7 @@ export const MessageItem = ({ message, setDeleteMessage, isHighlighted, onReplyM
                             <MessageContent
                                 message={message}
                                 user={user}
-                                className={clsx(message.is_continuation ? 'ml-0.5' : '')} />
+                            />
 
                             {message.link_doctype && message.link_document && <Box className={clsx(message.is_continuation ? 'ml-0.5' : '-ml-0.5')}>
                                 <DoctypeLinkRenderer doctype={message.link_doctype} docname={message.link_document} />

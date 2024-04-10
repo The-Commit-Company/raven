@@ -76,12 +76,9 @@ const useMessageUsersList = () => {
         })
 
         return usersWithChannels.sort((a, b) => {
-            if (a.channel && b.channel) {
-                const bTimestamp = b.channel.last_message_timestamp ? new Date(b.channel.last_message_timestamp).getTime() : 0
-                const aTimestamp = a.channel.last_message_timestamp ? new Date(a.channel.last_message_timestamp).getTime() : 0
-                return new Date(bTimestamp).getTime() - new Date(aTimestamp).getTime()
-            }
-            return 0
+            const bTimestamp = b.channel?.last_message_timestamp ? new Date(b.channel.last_message_timestamp).getTime() : 0
+            const aTimestamp = a.channel?.last_message_timestamp ? new Date(a.channel.last_message_timestamp).getTime() : 0
+            return bTimestamp - aTimestamp
         })
     }, [users, dm_channels])
 
