@@ -21,7 +21,7 @@ export const DirectMessageList = ({ unread_count }: { unread_count?: UnreadCount
 
     return (
         <SidebarGroup pb='4'>
-            <SidebarGroupItem className={'pl-0.5 gap-0.5'}>
+            <SidebarGroupItem className={'pl-1.5 gap-1.5'}>
                 <SidebarViewMoreButton onClick={toggle} />
                 <Flex width='100%' justify='between' align='center' gap='2'>
                     <SidebarGroupLabel className='cal-sans'>Direct Messages</SidebarGroupLabel>

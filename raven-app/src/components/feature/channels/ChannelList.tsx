@@ -19,7 +19,7 @@ export const ChannelList = ({ unread_count }: { unread_count?: UnreadCountData }
 
     return (
         <SidebarGroup>
-            <SidebarGroupItem className={'pl-0.5 gap-0.5'}>
+            <SidebarGroupItem className={'pl-1.5 gap-1.5'}>
                 <SidebarViewMoreButton onClick={toggle} />
                 <Flex width='100%' justify='between' align='center' gap='2'>
                     <Flex gap='2' align='center'>

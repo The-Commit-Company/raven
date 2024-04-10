@@ -39,7 +39,7 @@ type SidebarGroupLabelProps = TextProps & {
 
 export const SidebarGroupLabel = ({ children, ...props }: SidebarGroupLabelProps) => {
     return (
-        <Text size='2' weight='medium' {...props}>
+        <Text size='2' {...props}>
             {children}
         </Text>
     )
