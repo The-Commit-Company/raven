@@ -16,6 +16,7 @@ class RavenSettings(Document):
 
 		auto_add_system_users: DF.Check
 		show_raven_on_desk: DF.Check
+		tenor_api_key: DF.Data | None
 	# end: auto-generated types
 
 	pass

@@ -10,7 +10,7 @@ export const CopyAction = ({ message, onSuccess }: ActionProps) => {
     // The copy action would only be available for text messages
 
     //TODO: Extend this to other message types as well - one can have text content with image/file attachments as well
-    if (message.data.message_type !== 'Text') return null
+    if (message.message_type !== 'Text') return null
 
     return <CopyActionItem message={message} onSuccess={onSuccess} />
 }
@@ -22,13 +22,13 @@ const CopyActionItem = ({ message, onSuccess }: ActionProps) => {
     const [loading, setLoading] = useState(false)
 
     const writeToClipboard = () => {
-        if (message.data.message_type !== 'Text') {
+        if (message.message_type !== 'Text') {
             return
         }
 
         setLoading(true)
 
-        let text = message.data.text
+        let text = message.text
 
         // Remove all empty lines
         text = text.replace(/^\s*[\r\n]/gm, "")
@@ -42,7 +42,7 @@ const CopyActionItem = ({ message, onSuccess }: ActionProps) => {
         turndownService.addRule('links', {
             filter: 'a',
             replacement: function (content, node, options) {
-                return content
+                return node.textContent ?? content
             }
         })
         var markdown = turndownService.turndown(text)

@@ -28,6 +28,7 @@ import { Plugin } from 'prosemirror-state'
 import { Box } from '@radix-ui/themes'
 import { useSessionStickyState } from '@/hooks/useStickyState'
 import { Message } from '../../../../../../types/Messaging/Message'
+import Image from '@tiptap/extension-image'
 const lowlight = createLowlight(common)
 
 lowlight.register('html', html)
@@ -248,12 +249,12 @@ const Tiptap = ({ slotBefore, fileProps, onMessageSend, replyMessage, clearReply
             codeBlock: false,
             listItem: {
                 HTMLAttributes: {
-                    class: 'rt-Text rt-r-size-2'
+                    class: 'rt-Text'
                 }
             },
             paragraph: {
                 HTMLAttributes: {
-                    class: 'rt-Text rt-r-size-2'
+                    class: 'rt-Text'
                 }
             }
         }),
@@ -414,6 +415,9 @@ const Tiptap = ({ slotBefore, fileProps, onMessageSend, replyMessage, clearReply
         CodeBlockLowlight.configure({
             lowlight
         }),
+        Image.configure({
+            inline: true,
+        }),
         KeyboardHandler
     ]
 
@@ -444,7 +448,7 @@ const Tiptap = ({ slotBefore, fileProps, onMessageSend, replyMessage, clearReply
 
 
     return (
-        <Box className='border rounded-radius2 border-gray-300 dark:border-gray-500 dark:bg-gray-3 shadow-md '>
+        <Box className='border rounded-radius2 border-gray-300 dark:border-gray-500 dark:bg-gray-3 shadow-md animate-fadein'>
             <EditorContext.Provider value={{ editor }}>
                 {slotBefore}
                 <EditorContent editor={editor} />

@@ -1,11 +1,11 @@
-import { useFrappeUpdateDoc, useSWRConfig } from "frappe-react-sdk"
+import { useFrappeUpdateDoc } from "frappe-react-sdk"
 import { Suspense, lazy, useEffect } from "react"
 import { ErrorBanner } from "../../../../layout/AlertBanner"
 import { IconButton, Dialog, Flex, Text } from "@radix-ui/themes"
 import { BiX } from "react-icons/bi"
 import { useToast } from "@/hooks/useToast"
 import { Loader } from "@/components/common/Loader"
-import { Message, TextMessage } from "../../../../../../../types/Messaging/Message"
+import { TextMessage } from "../../../../../../../types/Messaging/Message"
 
 const Tiptap = lazy(() => import("../../ChatInput/Tiptap"))
 
@@ -16,7 +16,6 @@ interface EditMessageModalProps {
 
 export const EditMessageModal = ({ onClose, message }: EditMessageModalProps) => {
 
-    const { mutate } = useSWRConfig()
     const { toast } = useToast()
     const { updateDoc, error, loading: updatingDoc, reset } = useFrappeUpdateDoc()
 
@@ -34,7 +33,6 @@ export const EditMessageModal = ({ onClose, message }: EditMessageModalProps) =>
                     variant: "success",
                     duration: 1000,
                 })
-                return mutate(`get_messages_for_channel_${d.channel_id}`)
 
             })
     }

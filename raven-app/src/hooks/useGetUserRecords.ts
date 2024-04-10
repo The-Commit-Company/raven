@@ -13,7 +13,8 @@ export const useGetUserRecords = () => {
                 full_name: user.full_name,
                 user_image: user.user_image ?? '',
                 first_name: user.first_name,
-                enabled: user.enabled
+                enabled: user.enabled,
+                type: user.type
             }
         })
         return usersMap

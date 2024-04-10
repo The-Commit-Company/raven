@@ -5,6 +5,10 @@ import { ToolbarFileProps } from './Tiptap'
 import { Flex, IconButton, Inset, Popover, Separator } from '@radix-ui/themes'
 import { Loader } from '@/components/common/Loader'
 import { Suspense, lazy } from 'react'
+import { CreatePoll } from '../../polls/CreatePoll'
+import { HiOutlineGif } from "react-icons/hi2";
+import { GIFPicker } from '@/components/common/GIFPicker/GIFPicker'
+
 
 const EmojiPicker = lazy(() => import('@/components/common/EmojiPicker/EmojiPicker'))
 
@@ -18,19 +22,23 @@ type RightToolbarButtonsProps = {
  * Component to render the right toolbar buttons:
  * 1. User Mention
  * 2. Channel Mention
- * 3. Emoji picker
- * 4. File upload
- * 5. Send button
- * @param props 
- * @returns 
+ * 3. Poll creation
+ * 4. Emoji picker
+ * 5. File upload
+ * 6. Send button
+ * @param props
+ * @returns
  */
 export const RightToolbarButtons = ({ fileProps, ...sendProps }: RightToolbarButtonsProps) => {
     return (
         <Flex gap='2' align='center' px='1' py='1'>
             <MentionButtons />
             <Separator orientation='vertical' />
+            <CreatePollButton />
+            <Separator orientation='vertical' />
             <Flex gap='3' align='center'>
                 <EmojiPickerButton />
+                <GIFPickerButton />
                 {fileProps && <FilePickerButton fileProps={fileProps} />}
                 <SendButton {...sendProps} />
             </Flex>
@@ -111,6 +119,39 @@ const EmojiPickerButton = () => {
     </Popover.Root>
 }
 
+const GIFPickerButton = () => {
+
+    const { editor } = useCurrentEditor()
+
+    if (!editor) {
+        return null
+    }
+
+    return <Popover.Root>
+        <Popover.Trigger>
+            <IconButton
+                size='1'
+                variant='ghost'
+                className={DEFAULT_BUTTON_STYLE}
+                title='Add GIF'
+                // disabled
+                aria-label={"add GIF"}>
+                <HiOutlineGif {...ICON_PROPS} />
+            </IconButton>
+        </Popover.Trigger>
+        <Popover.Content>
+            <Inset>
+                <Suspense fallback={<Loader />}>
+                    {/* FIXME: 1. Handle 'HardBreak' coz it adds newline (empty); and if user doesn't write any text, then newline is added as text content.
+                               2. Also if you write first & then add GIF there's no 'HardBreak'.
+                    */}
+                    <GIFPicker onSelect={(gif) => editor.chain().focus().setImage({ src: gif.media_formats.gif.url }).setHardBreak().run()} />
+                </Suspense>
+            </Inset>
+        </Popover.Content>
+    </Popover.Root>
+}
+
 const FilePickerButton = ({ fileProps }: { fileProps: ToolbarFileProps }) => {
     const { editor } = useCurrentEditor()
     const fileButtonClicked = () => {
@@ -144,9 +185,11 @@ const SendButton = ({ sendMessage, messageSending, setContent }: {
 
             const hasContent = editor.getText().trim().length > 0
 
+            const hasInlineImage = editor.getHTML().includes('img')
+
             let html = ''
             let json = {}
-            if (hasContent) {
+            if (hasContent || hasInlineImage) {
                 html = editor.getHTML()
                 json = editor.getJSON()
             }
@@ -174,4 +217,13 @@ const SendButton = ({ sendMessage, messageSending, setContent }: {
             <BiSolidSend {...ICON_PROPS} />
         }
     </IconButton>
+}
+
+const CreatePollButton = () => {
+
+    const { editor } = useCurrentEditor()
+
+    return <CreatePoll
+        buttonStyle={DEFAULT_BUTTON_STYLE}
+        isDisabled={editor?.isEditable === false} />
 }

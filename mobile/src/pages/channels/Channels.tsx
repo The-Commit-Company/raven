@@ -1,12 +1,13 @@
-import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonItem, IonLabel, IonSearchbar, useIonModal } from '@ionic/react';
-import { IoAdd } from 'react-icons/io5';
+import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonSearchbar, IonItem, IonLabel } from '@ionic/react';
 import { ErrorBanner } from '../../components/layout';
 import { ChannelList } from '../../components/features/channels/ChannelList';
 import { AddChannel } from '../../components/features/channels';
 import { useMemo, useRef, useState } from 'react';
 import { UnreadCountData, useChannelList } from '@/utils/channel/ChannelListProvider';
 import { ChannelListLoader } from '../../components/layout/loaders/ChannelListLoader';
-import { useFrappeEventListener, useFrappeGetCall } from 'frappe-react-sdk';
+import { useFrappeGetCall } from 'frappe-react-sdk';
+import { Text } from '@radix-ui/themes';
+import { FiPlus } from 'react-icons/fi';
 
 export const Channels = () => {
 
@@ -26,13 +27,12 @@ export const Channels = () => {
         return activeChannels.filter(channel => channel.channel_name.includes(searchTerm))
     }, [searchInput, channels])
 
-    const { data: unread_count, mutate: update_count } = useFrappeGetCall<{ message: UnreadCountData }>("raven.api.raven_message.get_unread_count_for_channels",
+    const { data: unreadCount } = useFrappeGetCall<{ message: UnreadCountData }>("raven.api.raven_message.get_unread_count_for_channels",
         undefined,
         'unread_channel_count', {
-        // revalidateOnFocus: false,
-    })
-    useFrappeEventListener('raven:unread_channel_count_updated', () => {
-        update_count()
+        revalidateOnFocus: false,
+        revalidateIfStale: false,
+        revalidateOnReconnect: true,
     })
 
     return (
@@ -50,22 +50,24 @@ export const Channels = () => {
                 </IonHeader>
                 <IonToolbar>
                     <IonSearchbar
-                        spellCheck
-                        onIonInput={(e) => setSearchInput(e.detail.value!)}>
+                        placeholder='Search'
+                        autocapitalize="off"
+                        onIonInput={(e) => setSearchInput(e.target.value!)}
+                    >
                     </IonSearchbar>
                 </IonToolbar>
                 {isLoading && <ChannelListLoader />}
                 {error && <ErrorBanner error={error} />}
-                <IonItem lines='none' button onClick={() => setIsOpen(true)}>
-                    <div slot='start'>
-                        <IoAdd size='24' color='var(--ion-color-medium)' />
-                    </div>
-                    <IonLabel color='medium'>
-                        Add Channel
-                    </IonLabel>
-                </IonItem>
-                <ChannelList data={filteredChannels ?? []} unread_count={unread_count?.message}/>
-                <AddChannel isOpen={isOpen} onDismiss={() => setIsOpen(false)} presentingElement={pageRef.current} />
+                <ul>
+                    <IonItem lines='none' onClick={() => setIsOpen(true)}>
+                        <FiPlus size='20' className='text-gray-11' />
+                        <IonLabel>
+                            <Text size='3' weight='light' as='div' color='gray' className='px-2 font-medium'>Add Channel</Text>
+                        </IonLabel>
+                    </IonItem>
+                    <ChannelList data={filteredChannels ?? []} unread_count={unreadCount?.message} />
+                    <AddChannel isOpen={isOpen} onDismiss={() => setIsOpen(false)} presentingElement={pageRef.current} />
+                </ul>
             </IonContent>
         </IonPage>
     )

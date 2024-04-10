@@ -1,113 +1,207 @@
-import { useState, useContext } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { BiShow, BiHide } from "react-icons/bi";
+import { BiShow, BiHide, BiLogoGithub, BiLogoGoogle, BiLogoFacebookCircle, BiMailSend } from "react-icons/bi";
 import { Link } from "react-router-dom";
-import { UserContext } from "../../utils/auth/UserProvider";
-import { FullPageLoader } from "../../components/layout/Loaders";
-import { Box, Button, Flex, IconButton, Text, TextField } from "@radix-ui/themes";
-import { FrappeError } from "frappe-react-sdk";
+import { Box, Button, Flex, IconButton, Text, TextField, Separator, Link as LinkButton } from "@radix-ui/themes";
+import { FrappeError, useFrappeGetCall, useFrappeAuth, AuthResponse } from "frappe-react-sdk";
 import { Loader } from "@/components/common/Loader";
 import { ErrorText, Label } from "@/components/common/Form";
-import { ErrorCallout } from "@/components/layout/AlertBanner/ErrorBanner";
+import { LoginInputs, LoginContext } from "@/types/Auth/Login";
+import AuthContainer from "@/components/layout/AuthContainer";
+import { ErrorCallout } from "@/components/common/Callouts/ErrorCallouts";
+import { TwoFactor } from "@/pages/auth/TwoFactor";
 
-type Inputs = {
-    email: string;
-    password: string;
-};
+const SocialProviderIcons = {
+    "github": <BiLogoGithub size="18" />,
+    "google": <BiLogoGoogle size="18" />,
+    "facebook": <BiLogoFacebookCircle size="18" />
+}
+
+interface SocialProvider {
+    name: 'github' | 'google' | 'facebook'
+    provider_name: string,
+    auth_url: string,
+    redirect_to: string,
+    icon: {
+        src: string,
+        alt: string
+    },
+}
 
 export const Component = () => {
+
+    // GET call for Login Context (settings for social logins, email link etc)
+    const { data: loginContext, mutate } = useFrappeGetCall<LoginContext>('raven.api.login.get_context', {
+        "redirect-to": "/raven"
+    }, 'raven.api.login.get_context', {
+        revalidateIfStale: false,
+        revalidateOnReconnect: false,
+        revalidateOnFocus: false
+    })
     const [error, setError] = useState<FrappeError | null>(null)
-    const { login, isLoading } = useContext(UserContext)
-    const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<Inputs>()
-    const [isOpen, setIsOpen] = useState(false)
+
+    const { login } = useFrappeAuth()
+    const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<LoginInputs>()
+    const [isPasswordOpen, setIsPasswordOpen] = useState<boolean>(false)
+    // 2FA switch enabled and 2FA response
+    const [isTwoFactorEnabled, setIsTwoFactorEnabled] = useState<boolean>(false)
+    const [loginWithTwoFAResponse, setLoginWithTwoFAResponse] = useState<AuthResponse | null>(null)
 
     const onClickReveal = () => {
-        setIsOpen(!isOpen)
+        setIsPasswordOpen(!isPasswordOpen)
     }
 
-    async function onSubmit(values: Inputs) {
+    async function onSubmit(values: LoginInputs) {
         setError(null)
-        return login(values.email, values.password)
-            .catch((error) => { setError(error) })
+        if (loginContext?.message?.two_factor_is_enabled) {
+            // first 2FA call to send temp id and verification to user
+            return login({ username: values.email, password: values.password }).then((res: AuthResponse) => {
+                if (res?.verification && res?.tmp_id) {
+                    setIsTwoFactorEnabled(true)
+                    setLoginWithTwoFAResponse(res)
+                }
+            }).catch((error) => setError(error))
+        } else {
+            // if 2FA is disabled, do normal login
+            return login({ username: values.email, password: values.password }).then(() => {
+                //Reload the page so that the boot info is fetched again
+                const URL = import.meta.env.VITE_BASE_NAME ? `/${import.meta.env.VITE_BASE_NAME}` : ``
+                window.location.replace(`${URL}/channel`)
+            }).catch((error) => { setError(error) })
+        }
     }
 
     return (
-        <Box className={'min-h-screen'}>
-            <Flex justify='center' align='center' className={'h-screen w-full'}>
-                {isLoading ? <FullPageLoader /> :
-                    <Box className={'w-full max-w-xl'}>
-                        <Flex direction='column' gap='6' className={'w-full bg-white rounded-lg shadow dark:border dark:bg-gray-900 dark:border-gray-700 p-8'}>
+        <AuthContainer>
+            {error && <ErrorCallout message={error.message} />}
+            {
+                isTwoFactorEnabled ? <TwoFactor loginWithTwoFAResponse={loginWithTwoFAResponse} setError={setError} setIsTwoFactorEnabled={setIsTwoFactorEnabled} /> :
+                    <Box>
+                        <form onSubmit={handleSubmit(onSubmit)}>
+                            <Flex direction='column' gap='6'>
+                                <Flex direction='column' gap='4'>
 
-                            <Link to="/" tabIndex={-1}>
-                                <Flex justify="center">
-                                    <Text as='span' size='9' className='cal-sans'>raven</Text>
-                                </Flex>
-                            </Link>
-
-                            {error && <ErrorCallout>
-                                {error.message}
-                            </ErrorCallout>}
-                           
-                            <form onSubmit={handleSubmit(onSubmit)}>
-                                <Flex direction='column' gap='6'>
-                                    <Flex direction='column' gap='4'>
-
-                                        <Flex direction='column' gap='2'>
-                                            <Label htmlFor='email' isRequired>Email / Username</Label>
-                                            <TextField.Root>
-                                                <TextField.Input {...register("email",
-                                                    {
-                                                        required: "Email or Username is required."
-                                                    })}
-                                                    name="email"
-                                                    type="text"
-                                                    required
-                                                    placeholder="jane@example.com"
-                                                    tabIndex={0} />
-                                            </TextField.Root>
-                                            {errors?.email && <ErrorText>{errors?.email?.message}</ErrorText>}
-                                        </Flex>
-
-                                        <Flex direction='column' gap='2'>
-                                            <Label htmlFor='password' isRequired>Password</Label>
-                                            <TextField.Root>
-                                                <TextField.Input
-                                                    {...register("password",
-                                                        {
-                                                            required: "Password is required.",
-                                                            minLength: { value: 6, message: "Password should be minimum 6 characters." }
-                                                        })}
-                                                    name="password"
-                                                    type={isOpen ? "text" : "password"}
-                                                    autoComplete="current-password"
-                                                    required
-                                                    placeholder="***********" />
-                                                <TextField.Slot>
-                                                    <IconButton
-                                                        type='button'
-                                                        size='1'
-                                                        variant='ghost'
-                                                        aria-label={isOpen ? "Mask password" : "Reveal password"}
-                                                        onClick={onClickReveal}
-                                                        tabIndex={-1}>
-                                                        {isOpen ? <BiHide /> : <BiShow />}
-                                                    </IconButton>
-                                                </TextField.Slot>
-                                            </TextField.Root>
-                                            {errors?.password && <ErrorText>{errors.password?.message}</ErrorText>}
-                                        </Flex>
+                                    <Flex direction='column' gap='2'>
+                                        <Label htmlFor='email' isRequired>{loginContext?.message?.login_label}</Label>
+                                        <TextField.Root>
+                                            <TextField.Input {...register("email",
+                                                {
+                                                    required: `${loginContext?.message?.login_label} is required.`
+                                                })}
+                                                name="email"
+                                                type="text"
+                                                required
+                                                placeholder="jane@example.com"
+                                                tabIndex={0} />
+                                        </TextField.Root>
+                                        {errors?.email && <ErrorText>{errors?.email.message}</ErrorText>}
                                     </Flex>
 
-                                    <Button type='submit' disabled={isSubmitting}>
-                                        {isSubmitting ? <Loader /> : 'Login'}
-                                    </Button>
+                                    <Flex direction='column' gap='2'>
+                                        <Label htmlFor='password' isRequired>Password</Label>
+                                        <TextField.Root>
+                                            <TextField.Input
+                                                {...register("password",
+                                                    {
+                                                        required: "Password is required.",
+                                                        minLength: { value: 6, message: "Password should be minimum 6 characters." }
+                                                    })}
+                                                name="password"
+                                                type={isPasswordOpen ? "text" : "password"}
+                                                autoComplete="current-password"
+                                                required
+                                                placeholder="***********" />
+                                            <TextField.Slot>
+                                                <IconButton
+                                                    type='button'
+                                                    size='1'
+                                                    variant='ghost'
+                                                    aria-label={isPasswordOpen ? "Mask password" : "Reveal password"}
+                                                    onClick={onClickReveal}
+                                                    tabIndex={-1}>
+                                                    {isPasswordOpen ? <BiHide /> : <BiShow />}
+                                                </IconButton>
+                                            </TextField.Slot>
+                                        </TextField.Root>
+                                        {errors?.password && <ErrorText>{errors.password?.message}</ErrorText>}
+                                    </Flex>
+
+                                    <Flex direction='column' gap='2' >
+                                        <Button type='submit' disabled={isSubmitting} >
+                                            {isSubmitting ? <Loader /> : 'Login'}
+                                        </Button>
+                                    </Flex>
+                                    <Flex direction='column' gap='2' align="end">
+                                        <LinkButton
+                                            asChild
+                                            size="2"
+                                        >
+                                        <Link to="/forgot-password">
+                                            Forgot Password?
+                                        </Link>
+                                        </LinkButton>
+                                    </Flex>
                                 </Flex>
-                            </form>
-                        </Flex>
+                            </Flex>
+                        </form>
+                        {/* Show Separator only when either Email Link or Social Logins are enabled */}
+                        {
+                            loginContext?.message?.login_with_email_link || loginContext?.message?.social_login ?
+                                <Flex justify='center' className="mt-8 mb-8">
+                                    <Separator className="w-full" />
+                                </Flex> : null
+                        }
+                        {/* Map all social oauth providers */}
+                        {
+                            loginContext?.message?.social_login ? loginContext?.message?.provider_logins.map((soc: SocialProvider, i: number) => {
+                                return (
+                                    <Flex direction='column' key={i} className="mb-4" >
+                                        <Button variant="soft" highContrast className="cursor-default" disabled={isSubmitting} asChild>
+                                            <Link to={soc.auth_url} className="flex items-center">
+                                                {SocialProviderIcons[soc.name] ? SocialProviderIcons[soc.name] : <img src={soc.icon.src} alt={soc.icon.alt} ></img>}
+                                                Login with {soc.provider_name}
+                                            </Link>
+                                        </Button>
+                                    </Flex>
+                                )
+                            }) : null
+                        }
+
+                        {
+                            loginContext?.message?.login_with_email_link ?
+                                <Flex direction='column' >
+                                    <Button type="button"
+                                        asChild
+                                        variant="soft"
+                                        highContrast
+                                        disabled={isSubmitting}
+                                        className="cursor-default"
+                                    >
+                                        <Link to="/login-with-email">
+                                            <BiMailSend size="18" />
+                                            <Text>Login with Email Link</Text>
+                                        </Link>
+                                    </Button>
+                                </Flex> : null
+                        }
                     </Box>
-                }
-            </Flex>
-        </Box>
+            }
+            {
+                loginContext?.message?.disable_signup === 0 ?
+                    <Flex gap="1" justify="center" className="mt-4">
+                        <Text size="2" color="gray">Don't have account?</Text>
+                        <LinkButton
+                            size="2"
+                            asChild
+                        >
+                            <Link to="/signup">
+                                <Text>Sign Up</Text>
+                            </Link>
+                        </LinkButton>
+                    </Flex> : null
+            }
+
+        </AuthContainer>
     )
 }
 

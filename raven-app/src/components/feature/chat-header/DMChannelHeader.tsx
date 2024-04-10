@@ -3,9 +3,10 @@ import { useIsUserActive } from "@/hooks/useIsUserActive"
 import { DMChannelListItem } from "@/utils/channel/ChannelListProvider"
 import { ChannelMembers } from "@/utils/channel/ChannelMembersProvider"
 import { SearchButton } from "./SearchButton"
-import { Flex, Heading } from "@radix-ui/themes"
+import { Badge, Flex, Heading } from "@radix-ui/themes"
 import { UserAvatar } from "@/components/common/UserAvatar"
 import { ViewFilesButton } from "../files/ViewFilesButton"
+import { useMemo } from "react"
 
 interface DMChannelHeaderProps {
     channelData: DMChannelListItem,
@@ -20,16 +21,36 @@ export const DMChannelHeader = ({ channelData, channelMembers }: DMChannelHeader
     const peer = channelData.peer_user_id
     const isActive = useIsUserActive(channelData.peer_user_id)
 
+    const { isBot, fullName, userImage } = useMemo(() => {
+
+        const peerUserData = channelMembers?.[peer]
+
+        const isBot = peerUserData?.type === 'Bot'
+
+        return {
+            fullName: peerUserData?.full_name ?? peer,
+            userImage: peerUserData?.user_image ?? '',
+            isBot
+        }
+
+    }, [channelMembers, peer])
+
     return (
         <PageHeader>
-            <Flex gap='2' align='center'>
+            <Flex gap='3' align='center'>
                 <UserAvatar
                     key={peer}
-                    alt={channelMembers?.[peer]?.full_name ?? peer} src={channelMembers?.[peer]?.user_image ?? ''}
+                    alt={fullName}
+                    src={userImage}
                     isActive={isActive}
                     skeletonSize='6'
+                    isBot={isBot}
                     size='2' />
-                <Heading size='5'>{channelMembers?.[peer]?.full_name ?? peer}</Heading>
+                <Heading size='5'>
+                    <div className="flex items-center gap-2">
+                        {fullName} {isBot && <Badge color='gray' className='font-semibold px-1.5 py-0.5'>Bot</Badge>}
+                    </div>
+                </Heading>
             </Flex>
             <Flex gap='2'>
                 <ViewFilesButton />

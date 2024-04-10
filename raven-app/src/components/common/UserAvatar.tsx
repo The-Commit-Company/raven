@@ -1,14 +1,17 @@
 import { useInView } from 'react-intersection-observer'
 import { Skeleton } from './Skeleton'
-import { Avatar } from '@radix-ui/themes'
+import { Avatar, Theme } from '@radix-ui/themes'
 import { AvatarProps } from '@radix-ui/themes/dist/cjs/components/avatar'
 import { BoxProps } from '@radix-ui/themes/dist/cjs/components/box'
 import { clsx } from 'clsx'
 import { generateAvatarColor } from '../feature/select-member/GenerateAvatarColor'
+import { RiRobot2Fill } from 'react-icons/ri'
+import { useMemo } from 'react'
 
 interface UserAvatarProps extends Partial<AvatarProps> {
     alt?: string,
     isActive?: boolean,
+    isBot?: boolean,
     skeletonSize?: BoxProps['width'] | BoxProps['height'],
 }
 const options = {
@@ -39,11 +42,12 @@ const radixRadiusToTailwind = (radius: "none" | "small" | "medium" | "large" | "
     }
 }
 
-export const UserAvatar = ({ src, alt, size = '1', radius = 'medium', isActive, skeletonSize = '5', fallback, className, ...props }: UserAvatarProps) => {
+export const UserAvatar = ({ src, alt, size = '1', radius = 'medium', isActive, skeletonSize = '5', fallback, isBot, className, ...props }: UserAvatarProps) => {
     const { ref, inView } = useInView(options)
-    return <span ref={ref} className="relative inline-block">
+    const color = useMemo(() => generateAvatarColor(alt), [alt])
+    return <Theme accentColor={color}><span ref={ref} className="relative inline-block">
         {inView ?
-            <Avatar color={generateAvatarColor(alt)} src={src} alt={alt} loading='lazy' fallback={fallback ?? getInitials(alt)} size={size} radius={radius} className={className} {...props} />
+            <Avatar src={src} alt={alt} loading='lazy' fallback={fallback ?? getInitials(alt)} size={size} radius={radius} className={className} {...props} />
             :
             <Skeleton className={radixRadiusToTailwind(radius)} width={skeletonSize} height={skeletonSize} />
         }
@@ -52,5 +56,9 @@ export const UserAvatar = ({ src, alt, size = '1', radius = 'medium', isActive, 
                 <span className="block h-2 w-2 rounded-full border border-slate-2 bg-green-600 shadow-md" />
             </span>
         }
+        {isBot && <span className={clsx("absolute block translate-x-1/2 translate-y-1/2 transform rounded-full", radius === 'full' ? 'bottom-1 right-1' : 'bottom-0.5 right-0.5')}>
+            <RiRobot2Fill className="text-accent-11 dark:text-accent-11" size="1rem" />
+        </span>}
     </span>
+    </Theme>
 }

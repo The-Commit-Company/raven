@@ -1,4 +1,4 @@
-import { FileMessage, Message, TextMessage } from "../../../../../../../types/Messaging/Message"
+import { FileMessage, Message, PollMessage, TextMessage } from "../../../../../../../types/Messaging/Message"
 import { Box, Flex, Separator, Text } from "@radix-ui/themes"
 import { useGetUser } from "@/hooks/useGetUser"
 import { DateMonthAtHourMinuteAmPm } from "@/utils/dateConversions"
@@ -7,13 +7,14 @@ import { getFileExtension, getFileName } from "@/utils/operations"
 import { FlexProps } from "@radix-ui/themes/dist/cjs/components/flex"
 import { clsx } from "clsx"
 import parse from 'html-react-parser';
+import { MdOutlineBarChart } from "react-icons/md"
 interface ReplyMessageBoxProps extends FlexProps {
     message: Partial<Message>
 }
 /**
  * UI component to show the message being replied to
- * @param props 
- * @returns 
+ * @param props
+ * @returns
  */
 export const ReplyMessageBox = ({ message, children, className, ...props }: ReplyMessageBoxProps) => {
 
@@ -29,13 +30,18 @@ export const ReplyMessageBox = ({ message, children, className, ...props }: Repl
                     </Text>
                 </Flex>
                 <Box className="max-w-3xl">
-                    {['File', 'Image'].includes(message.message_type ?? 'Text') ?
-                        <Flex gap='2' align='center'>
-                            {message.message_type === 'File' && message.file && <FileExtensionIcon ext={getFileExtension(message.file)} size='18' />}
-                            {message.message_type === 'Image' && <img src={message.file} alt={`Image sent by ${message.owner}`} height='30' width='30' className="object-cover rounded-md" />}
-                            <Text as='span' size='2'>{getFileName((message as FileMessage).file)}</Text>
-                        </Flex>
-                        : <Text as='span' size='2' className="line-clamp-2">{parse((message as TextMessage).content ?? '')}</Text>
+                    {message.message_type === 'Poll' ? <Text as='span' size='2' className="line-clamp-2 flex items-center">
+                        <MdOutlineBarChart size='14' className="inline mr-1" />
+                        Poll: {(message as PollMessage).content?.split("\n")?.[0]}</Text>
+                        :
+                        ['File', 'Image'].includes(message.message_type ?? 'Text') ?
+                            <Flex gap='2' align='center'>
+                                {message.message_type === 'File' && message.file && <FileExtensionIcon ext={getFileExtension(message.file)} size='18' />}
+                                {message.message_type === 'Image' && <img src={message.file} alt={`Image sent by ${message.owner}`} height='30' width='30' className="object-cover rounded-md" />}
+
+                                <Text as='span' size='2'>{getFileName((message as FileMessage).file)}</Text>
+                            </Flex>
+                            : <Text as='span' size='2' className="line-clamp-2">{parse((message as TextMessage).content ?? '')}</Text>
                     }
                 </Box>
             </Flex>

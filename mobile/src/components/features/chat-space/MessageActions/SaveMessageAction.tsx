@@ -17,13 +17,13 @@ export const SaveMessageAction = ({ message, onSuccess }: ActionProps) => {
         return JSON.parse(likedBy ?? '[]')?.length > 0 && JSON.parse(likedBy ?? '[]')?.includes(currentUser)
     }
 
-    const isMessageLiked = checkLiked(message.data._liked_by)
+    const isMessageLiked = checkLiked(message._liked_by)
     const handleLike = () => {
 
         const action = isMessageLiked ? 'No' : 'Yes'
         call({
             doctype: 'Raven Message',
-            name: message.data.name,
+            name: message.name,
             add: action
         })
             .then(() => {
@@ -41,14 +41,14 @@ export const SaveMessageAction = ({ message, onSuccess }: ActionProps) => {
                     message: "We ran into an error.",
                 })
             })
-            .then(() => mutate(`get_messages_for_channel_${message.data.channel_id}`))
+            .then(() => mutate(`get_messages_for_channel_${message.channel_id}`))
             .then(() => onSuccess())
 
     }
     return (
         <ActionItem onClick={handleLike} isLoading={loading}>
             <ActionIcon icon={bookmarkOutline} />
-            <ActionLabel label={isMessageLiked ? 'Unsave this message' : 'Save this message'} />
+            <ActionLabel label={isMessageLiked ? 'Unsave' : 'Save'} />
         </ActionItem>
     )
 }

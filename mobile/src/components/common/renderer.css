@@ -1,4 +1,12 @@
 .content .mention,
 .content a {
-    color: #6E6ADE;
+    color: var(--accent-a11);
+}
+
+.content .mention {
+    background-color: var(--accent-a3);
+}
+
+.content .rt-r-size-2 {
+    font-size: 16px;
 }

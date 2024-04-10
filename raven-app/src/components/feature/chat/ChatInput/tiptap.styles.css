@@ -16,6 +16,13 @@
     border-top-right-radius: var(--radius-2);
 }
 
+.tiptap-editor.ProseMirror img {
+    width: 200px;
+    height: auto;
+    object-fit: content;
+
+}
+
 .tiptap-editor.replying.ProseMirror {
     border-top-left-radius: 0;
     border-top-right-radius: 0;

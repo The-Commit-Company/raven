@@ -2,8 +2,8 @@ import { useCallback, useState } from "react";
 
 /**
  * Simple hook to manage boolean (on - off) states
- * @param initialState 
- * @returns 
+ * @param initialState
+ * @returns
  */
 export function useBoolean(initialState: boolean = false) {
 

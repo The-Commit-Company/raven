@@ -14,4 +14,6 @@ export interface RavenSettings{
 	auto_add_system_users?: 0 | 1
 	/**	Show Raven on Desk : Check	*/
 	show_raven_on_desk?: 0 | 1
+	/**	Tenor API Key : Data	*/
+	tenor_api_key?: string
 }

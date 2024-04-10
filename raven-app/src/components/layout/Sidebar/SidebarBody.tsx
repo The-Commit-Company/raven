@@ -1,21 +1,14 @@
 import { ChannelList } from '../../feature/channels/ChannelList'
 import { DirectMessageList } from '../../feature/direct-messages/DirectMessageList'
 import { SidebarItem } from './SidebarComp'
-import { useFrappeEventListener, useFrappeGetCall } from 'frappe-react-sdk'
-import { UnreadCountData } from '../../../utils/channel/ChannelListProvider'
-import { AccessibleIcon, Box, Flex, ScrollArea, Text } from '@radix-ui/themes'
+import { AccessibleIcon, Box, Flex, ScrollArea, Separator, Text } from '@radix-ui/themes'
 import { BiBookmark } from 'react-icons/bi'
+import useUnreadMessageCount from '@/hooks/useUnreadMessageCount'
+import UnreadChannels from './UnreadChannels'
 
 export const SidebarBody = () => {
 
-    const { data: unread_count, mutate: update_count } = useFrappeGetCall<{ message: UnreadCountData }>("raven.api.raven_message.get_unread_count_for_channels",
-        undefined,
-        'unread_channel_count', {
-        // revalidateOnFocus: false,
-    })
-    useFrappeEventListener('raven:unread_channel_count_updated', () => {
-        update_count()
-    })
+    const unread_count = useUnreadMessageCount()
 
     return (
         <ScrollArea type="hover" scrollbars="vertical" className='h-[calc(100vh-7rem)]'>
@@ -30,6 +23,11 @@ export const SidebarBody = () => {
                         </Box>
                     </SidebarItem>
                 </Box>
+                <UnreadChannels unread_count={unread_count?.message} />
+                <Box width='100%' py='2'>
+                    <Separator size='4' />
+                </Box>
+
                 <ChannelList unread_count={unread_count?.message} />
                 <DirectMessageList unread_count={unread_count?.message} />
             </Flex>

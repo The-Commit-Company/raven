@@ -5,7 +5,6 @@ import { ProtectedRoute } from './utils/auth/ProtectedRoute'
 import { UserProvider } from './utils/auth/UserProvider'
 import { ChannelRedirect } from './utils/channel/ChannelRedirect'
 import "cal-sans";
-import { useState } from 'react'
 import { ThemeProvider } from './ThemeProvider'
 import { Toaster } from './components/common/Toast/Toaster'
 import { FullPageLoader } from './components/layout/Loaders'
@@ -16,12 +15,26 @@ const router = createBrowserRouter(
   createRoutesFromElements(
     <>
       <Route path='/login' lazy={() => import('@/pages/auth/Login')} />
+      <Route path='/login-with-email' lazy={() => import('@/pages/auth/LoginWithEmail')} />
+      <Route path='/signup' lazy={() => import('@/pages/auth/SignUp')} />
+      <Route path='/forgot-password' lazy={()=> import('@/pages/auth/ForgotPassword')} />
       <Route path="/" element={<ProtectedRoute />}>
-        <Route index element={<ChannelRedirect />} />
-        <Route path="channel" element={<MainPage />} >
-          <Route index element={<ChannelRedirect />} />
-          <Route path="saved-messages" lazy={() => import('./components/feature/saved-messages/SavedMessages')} />
-          <Route path=":channelID" lazy={() => import('@/pages/ChatSpace')} />
+        <Route path="/" element={<ChannelRedirect />}>
+          <Route path="channel" element={<MainPage />} >
+            <Route index element={<ChannelRedirect />} />
+            <Route path="saved-messages" lazy={() => import('./components/feature/saved-messages/SavedMessages')} />
+            <Route path=":channelID" lazy={() => import('@/pages/ChatSpace')} />
+          </Route>
+          {/* <Route path='settings' lazy={() => import('./pages/settings/Settings')}>
+            <Route path='integrations'>
+              <Route path='webhooks' lazy={() => import('./pages/settings/Webhooks/WebhookList')} />
+              <Route path='webhooks/create' lazy={() => import('./pages/settings/Webhooks/CreateWebhook')} />
+              <Route path='webhooks/:ID' lazy={() => import('./pages/settings/Webhooks/ViewWebhook')} />
+              <Route path='scheduled-messages' element={<TemporalEvents />} />
+              <Route path='scheduled-messages/create' element={<CreateSchedulerEvent />} />
+              <Route path='scheduled-messages/:ID' element={<ViewSchedulerEvent />} />
+            </Route>
+          </Route> */}
         </Route>
       </Route>
     </>

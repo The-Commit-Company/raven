@@ -22,4 +22,8 @@ export interface RavenChannel{
 	is_self_message?: 0 | 1
 	/**	Is Archived : Check	*/
 	is_archived?: 0 | 1
+	/**	Last Message Timestamp : Datetime	*/
+	last_message_timestamp?: string
+	/**	Last Message Details : JSON	*/
+	last_message_details?: any
 }

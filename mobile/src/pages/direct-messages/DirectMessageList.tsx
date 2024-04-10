@@ -5,7 +5,7 @@ import { UserFields, useUserList } from "@/utils/users/UserListProvider"
 import { DMChannelListItem, UnreadCountData, useChannelList } from "@/utils/channel/ChannelListProvider"
 import { ChannelListLoader } from "@/components/layout/loaders"
 import { ErrorBanner } from "@/components/layout"
-import { useFrappeEventListener, useFrappeGetCall } from "frappe-react-sdk"
+import { useFrappeGetCall } from "frappe-react-sdk"
 
 export interface DMUser extends UserFields {
     channel?: DMChannelListItem,
@@ -23,13 +23,12 @@ export const DirectMessageList = () => {
         return users.filter(user => user.full_name.toLowerCase().includes(searchTerm))
     }, [users, searchInput])
 
-    const { data: unread_count, mutate: update_count } = useFrappeGetCall<{ message: UnreadCountData }>("raven.api.raven_message.get_unread_count_for_channels",
+    const { data: unreadCount } = useFrappeGetCall<{ message: UnreadCountData }>("raven.api.raven_message.get_unread_count_for_channels",
         undefined,
         'unread_channel_count', {
-        // revalidateOnFocus: false,
-    })
-    useFrappeEventListener('raven:unread_channel_count_updated', () => {
-        update_count()
+        revalidateOnFocus: false,
+        revalidateIfStale: false,
+        revalidateOnReconnect: true,
     })
 
     return (
@@ -48,12 +47,13 @@ export const DirectMessageList = () => {
                 <IonToolbar>
                     <IonSearchbar
                         spellCheck
+                        autocapitalize="off"
                         onIonInput={(e) => setSearchInput(e.detail.value!)}>
                     </IonSearchbar>
                 </IonToolbar>
                 {isLoading && <ChannelListLoader />}
                 {error && <ErrorBanner error={error} />}
-                <PrivateMessages users={filteredUsers} unread_count={unread_count?.message}/>
+                <PrivateMessages users={filteredUsers} unread_count={unreadCount?.message} />
             </IonContent>
         </IonPage>
     )
@@ -67,12 +67,21 @@ const useMessageUsersList = () => {
     const { dm_channels, isLoading, error } = useChannelList()
     const allUsers: DMUser[] = useMemo(() => {
         if (!users) return []
-        return users.map(user => {
+        const usersWithChannels = users.map(user => {
             const corresponding_dm_channel: DMChannelListItem | undefined = dm_channels?.find(channel => channel.peer_user_id === user.name)
             return {
                 ...user,
                 channel: corresponding_dm_channel
             }
+        })
+
+        return usersWithChannels.sort((a, b) => {
+            if (a.channel && b.channel) {
+                const bTimestamp = b.channel.last_message_timestamp ? new Date(b.channel.last_message_timestamp).getTime() : 0
+                const aTimestamp = a.channel.last_message_timestamp ? new Date(a.channel.last_message_timestamp).getTime() : 0
+                return new Date(bTimestamp).getTime() - new Date(aTimestamp).getTime()
+            }
+            return 0
         })
     }, [users, dm_channels])
 

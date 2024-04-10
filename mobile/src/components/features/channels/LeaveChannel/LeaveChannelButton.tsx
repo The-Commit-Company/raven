@@ -1,16 +1,16 @@
-import { IonIcon, IonItem, IonLabel } from "@ionic/react"
 import { useState } from "react"
 import { LeaveChannelAlert } from "."
-import { exitOutline } from "ionicons/icons"
+import { IonIcon, IonItem, IonLabel } from "@ionic/react";
+import { exitOutline } from "ionicons/icons";
 
-export const LeaveChannelButton = ({ channelID }: { channelID: string }) => {
+export const LeaveChannelButton = ({ channelID, lines = 'inset' }: { channelID: string, lines?: "full" | "inset" | "none" }) => {
     const [isOpen, setIsOpen] = useState(false)
 
     return (
         <>
-            <IonItem button onClick={() => setIsOpen(true)} detail={false}>
-                <IonLabel color='danger'>Leave Channel</IonLabel>
-                <IonIcon slot='end' icon={exitOutline} color='danger' />
+            <IonItem lines={lines} color='light' button onClick={() => setIsOpen(true)}>
+                <IonIcon icon={exitOutline} size='small' slot="start" />
+                <IonLabel>Leave Channel</IonLabel>
             </IonItem>
             <LeaveChannelAlert isOpen={isOpen} onDismiss={() => setIsOpen(false)} channelID={channelID} />
         </>
