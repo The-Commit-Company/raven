@@ -1,7 +1,6 @@
 import { memo, useContext, useEffect, useMemo, useRef, useState } from 'react'
 import { FileMessage, ImageMessage, Message, TextMessage, PollMessage } from '../../../../../../types/Messaging/Message'
 import { IonIcon, IonSkeletonText, IonText } from '@ionic/react'
-import { MarkdownRenderer } from '@/components/common/MarkdownRenderer'
 import { UserFields } from '@/utils/users/UserListProvider'
 import { DateObjectToFormattedDateStringWithoutYear, DateObjectToTimeString } from '@/utils/operations/operations'
 import { ChannelMembersContext } from '../ChatInterface'
@@ -22,6 +21,7 @@ import { RavenPoll } from '@/types/RavenMessaging/RavenPoll'
 import { RavenPollOption } from '@/types/RavenMessaging/RavenPollOption'
 import { MdOutlineBarChart } from 'react-icons/md'
 import { ViewPollVotes } from '../../polls/ViewPollVotes'
+import { TiptapRenderer } from './components/TiptapRenderer/TiptapRenderer'
 
 type Props = {
     message: Message,
@@ -232,10 +232,7 @@ const MessageContent = ({ message, onReplyMessageClick, onLongPressDisabled, onL
 
 const TextMessageBlock = ({ message, truncate = false }: { message: TextMessage, truncate?: boolean }) => {
 
-
-    return <div className={'py-0.5 rounded-lg' + (truncate ? ' line-clamp-3' : '')}>
-        <MarkdownRenderer content={message.text} truncate={truncate} />
-    </div>
+    return <TiptapRenderer message={message} />
 }
 const options = {
     root: null,
