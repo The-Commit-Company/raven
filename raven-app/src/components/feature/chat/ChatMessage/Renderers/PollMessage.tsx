@@ -8,6 +8,7 @@ import { RavenPoll } from "@/types/RavenMessaging/RavenPoll"
 import { ErrorBanner } from "@/components/layout/AlertBanner"
 import { RavenPollOption } from "@/types/RavenMessaging/RavenPollOption"
 import { useToast } from "@/hooks/useToast"
+import { ViewPollVotes } from "@/components/feature/polls/ViewPollVotes"
 
 interface PollMessageBlockProps extends BoxProps {
     message: PollMessage,
@@ -69,6 +70,7 @@ const PollMessageBox = ({ data, messageID }: { data: Poll, messageID: string }) 
                     </>
                 }
                 {data.poll.is_disabled ? <Badge color="gray" className={'w-fit'}>Poll is now closed</Badge> : null}
+                {data.poll.is_anonymous ? null : <ViewPollVotes poll={data} />}
             </Flex>
         </Flex>
     )
