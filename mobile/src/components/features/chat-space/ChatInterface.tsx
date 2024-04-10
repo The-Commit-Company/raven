@@ -144,6 +144,7 @@ export const ChatInterface = ({ channel }: { channel: ChannelListItem | DMChanne
             <IonContent
                 className='flex flex-col'
                 onIonScrollStart={() => setIsScrolling(true)}
+                scrollEvents
                 onIonScrollEnd={() => setIsScrolling(false)}
                 fullscreen
                 ref={conRef}>
