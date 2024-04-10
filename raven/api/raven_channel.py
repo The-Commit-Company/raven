@@ -1,5 +1,6 @@
 import frappe
 from frappe import _
+from frappe.query_builder import Order
 
 
 @frappe.whitelist()
@@ -59,6 +60,8 @@ def get_channel_list(hide_archived=False):
 			channel.is_self_message,
 			channel.creation,
 			channel.owner,
+			channel.last_message_timestamp,
+			channel.last_message_details,
 		)
 		.distinct()
 		.left_join(channel_member)
@@ -69,7 +72,26 @@ def get_channel_list(hide_archived=False):
 	if hide_archived:
 		query = query.where(channel.is_archived == 0)
 
+	query = query.orderby(channel.last_message_timestamp, order=Order.desc)
+
 	return query.run(as_dict=True)
+
+
+@frappe.whitelist()
+def get_last_message_details(channel_id: str):
+
+	if frappe.has_permission(doctype="Raven Channel", doc=channel_id, ptype="read"):
+		last_message_timestamp = frappe.get_cached_value(
+			"Raven Channel", channel_id, "last_message_timestamp"
+		)
+		last_message_details = frappe.get_cached_value(
+			"Raven Channel", channel_id, "last_message_details"
+		)
+
+		return {
+			"last_message_timestamp": last_message_timestamp,
+			"last_message_details": last_message_details,
+		}
 
 
 @frappe.whitelist()
