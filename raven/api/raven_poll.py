@@ -149,7 +149,7 @@ def get_all_votes(poll_id):
 		)
 
 		# Initialize results dictionary
-		results = {option.name: { 'users': [], 'count': option.votes } for option in poll_doc.options}
+		results = {option.name: { 'users': [], 'count': option.votes } for option in poll_doc.options if option.votes}
 
 		# Process votes
 		for vote in votes:
