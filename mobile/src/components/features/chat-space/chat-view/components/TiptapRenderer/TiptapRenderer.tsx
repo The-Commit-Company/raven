@@ -12,7 +12,6 @@ import json from 'highlight.js/lib/languages/json'
 import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight'
 import { common, createLowlight } from 'lowlight'
 import python from 'highlight.js/lib/languages/python'
-import { CustomBlockquote } from './Blockquote'
 import { CustomBold } from './Bold'
 import { CustomUserMention } from './Mention'
 import { CustomLink } from './Link'
@@ -52,7 +51,6 @@ export const TiptapRenderer = ({ message, user, isScrolling = false, isTruncated
         heading: false,
         codeBlock: false,
         bold: false,
-        blockquote: false,
         italic: false,
         listItem: {
           HTMLAttributes: {
@@ -63,7 +61,12 @@ export const TiptapRenderer = ({ message, user, isScrolling = false, isTruncated
           HTMLAttributes: {
             class: 'rt-Text text-base'
           }
-        }
+        },
+        blockquote: {
+          HTMLAttributes: {
+            class: 'pl-4 border-l-4 border-gray-500'
+          }
+        },
       }),
       Highlight.configure({
         multicolor: true,
@@ -75,7 +78,6 @@ export const TiptapRenderer = ({ message, user, isScrolling = false, isTruncated
       CodeBlockLowlight.configure({
         lowlight
       }),
-      CustomBlockquote,
       CustomBold,
       CustomUserMention,
       CustomLink,

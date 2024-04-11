@@ -1,0 +1,5 @@
+.tiptap-renderer blockquote {
+    border-left: 3px solid var(--gray-11);
+    padding-left: 0.8rem;
+    margin: 1rem;
+}
