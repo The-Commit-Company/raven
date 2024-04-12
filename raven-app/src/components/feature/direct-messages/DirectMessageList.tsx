@@ -11,19 +11,20 @@ import { Box, Flex, Text } from "@radix-ui/themes"
 import { UserAvatar } from "@/components/common/UserAvatar"
 import { toast } from "sonner"
 import { getErrorMessage } from "@/components/layout/AlertBanner/ErrorBanner"
+import { useStickyState } from "@/hooks/useStickyState"
 
 export const DirectMessageList = ({ unread_count }: { unread_count?: UnreadCountData }) => {
 
     const { extra_users } = useContext(ChannelListContext) as ChannelListContextType
 
-    const [showData, setShowData] = useState(true)
+    const [showData, setShowData] = useStickyState(true, 'expandDirectMessageList')
 
     const toggle = () => setShowData(d => !d)
 
     return (
         <SidebarGroup pb='4'>
             <SidebarGroupItem className={'pl-1.5 gap-1.5'}>
-                <SidebarViewMoreButton onClick={toggle} />
+                <SidebarViewMoreButton onClick={toggle} expanded={showData} />
                 <Flex width='100%' justify='between' align='center' gap='2'>
                     <SidebarGroupLabel className='cal-sans'>Direct Messages</SidebarGroupLabel>
                     {!showData && unread_count && unread_count?.total_unread_count_in_dms > 0 &&
