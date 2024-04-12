@@ -7,7 +7,7 @@ import { AddMembersButton } from "./add-members/AddMembersButton"
 import { Box, Flex, TextField, Text } from "@radix-ui/themes"
 import { BiSearch, BiCircle, BiSolidCrown } from "react-icons/bi"
 import { UserAvatar } from "@/components/common/UserAvatar"
-import { UserActionsButton } from "./UserActions/UserActionsButton"
+import { UserActionsMenu } from "./UserActions/UserActionsContextMenu"
 
 interface MemberDetailsProps {
     channelData: ChannelListItem,
@@ -91,7 +91,7 @@ export const ChannelMemberDetails = ({ channelData, channelMembers, activeUsers,
                                             member.name !== currentUser &&
                                             channelData?.type !== 'Open' && channelData.is_archived == 0 &&
                                             <Flex align="center">
-                                                <UserActionsButton
+                                                <UserActionsMenu
                                                     channelData={channelData}
                                                     updateMembers={updateMembers}
                                                     selectedMember={member} />
