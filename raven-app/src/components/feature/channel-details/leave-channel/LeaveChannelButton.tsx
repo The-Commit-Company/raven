@@ -19,7 +19,7 @@ export const LeaveChannelButton = ({ channelData, onClose: onParentClose }: Leav
     return (
         <AlertDialog.Root open={open} onOpenChange={setOpen}>
             <AlertDialog.Trigger>
-                <Button color='red' variant='ghost' className={'text-left w-fit'}>
+                <Button variant='ghost' className={'text-left text-red-700 hover:bg-red-3 w-fit not-cal'}>
                     Leave channel
                 </Button>
             </AlertDialog.Trigger>
