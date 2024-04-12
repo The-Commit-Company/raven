@@ -1,17 +1,19 @@
+import { BackToList } from "@/components/feature/integrations/webhooks/BackToList"
 import { DeleteAlert } from "@/components/feature/settings/common/DeleteAlert"
 import { SchedulerEventsForm } from "@/components/feature/settings/scheduler-events/SchedulerEventsForm"
 import { ErrorBanner } from "@/components/layout/AlertBanner"
 import { useToast } from "@/hooks/useToast"
-import { Badge, Box, Button, DropdownMenu, Flex, Heading, Section } from "@radix-ui/themes"
+import { Badge, Box, Button, DropdownMenu, Flex, Heading, IconButton, Section } from "@radix-ui/themes"
 import { useFrappeGetDoc, useFrappeUpdateDoc } from "frappe-react-sdk"
 import { useState } from "react"
 import { FormProvider, useForm } from "react-hook-form"
+import { BiDotsVerticalRounded } from "react-icons/bi"
 import { FiArrowLeft, FiChevronDown } from "react-icons/fi"
 import { useNavigate, useParams } from "react-router-dom"
 
 export interface Props { }
 
-export const ViewSchedulerEvent = (props: Props) => {
+const ViewSchedulerEvent = (props: Props) => {
 
     const { ID } = useParams<{ ID: string }>()
 
@@ -49,11 +51,12 @@ const ViewSchedulerEventPage = ({ data, onUpdate }: { data: any, onUpdate: () =>
         }
     })
 
-    const { updateDoc, error } = useFrappeUpdateDoc()
+    const { updateDoc, error, loading } = useFrappeUpdateDoc()
 
     const { toast } = useToast()
 
     const onSubmit = (data: any) => {
+        console.log('called')
         let cron_expression = ''
         if (data.event_frequency === 'Every Day') {
             cron_expression = `${data.minute} ${data.hour} * * *`
@@ -104,21 +107,24 @@ const ViewSchedulerEventPage = ({ data, onUpdate }: { data: any, onUpdate: () =>
         <FormProvider {...methods}>
             <form onSubmit={methods.handleSubmit(onSubmit)}>
                 <Box className="lg:mx-[10rem] md:mx-[5rem] mt-9 h-screen">
-                    <Button variant="ghost" color="gray" onClick={() => navigate('../../scheduled-messages')}>
-                        <FiArrowLeft /> Scheduled Messages
-                    </Button>
+                    <BackToList label="Scheduled Messages" path="/settings/integrations/scheduled-messages" />
                     <Flex justify={'between'} mt={'6'}>
                         <Flex align={'center'} gap={'3'}>
                             <Heading>{data.name}</Heading>
                             <Badge color={data.disabled ? 'gray' : 'green'}>{data.disabled ? "Disabled" : "Enabled"}</Badge>
                         </Flex>
                         <Flex gap={'3'}>
+                            <Button onClick={() => methods.handleSubmit(onSubmit)} disabled={loading || !methods.formState.isDirty}>Save</Button>
                             <DropdownMenu.Root>
                                 <DropdownMenu.Trigger>
-                                    <Button variant="soft" color="gray">
-                                        Actions
-                                        <FiChevronDown />
-                                    </Button>
+                                    <IconButton aria-label='Options' variant="soft" color="gray" style={{
+                                        // @ts-ignore
+                                        '--icon-button-ghost-padding': '0',
+                                        height: 'var(--base-button-height)',
+                                        width: 'var(--base-button-height)',
+                                    }}>
+                                        <BiDotsVerticalRounded />
+                                    </IconButton>
                                 </DropdownMenu.Trigger>
                                 <DropdownMenu.Content>
                                     <DropdownMenu.Item onClick={onStatusToggle}>{data.disabled ? "Enable" : "Disable"}</DropdownMenu.Item>
@@ -128,8 +134,7 @@ const ViewSchedulerEventPage = ({ data, onUpdate }: { data: any, onUpdate: () =>
                                     </DropdownMenu.Item>
                                 </DropdownMenu.Content>
                             </DropdownMenu.Root>
-                            <DeleteAlert docname={data.name} isOpen={isOpen} onClose={onClose} path={'../../scheduled-messages'} />
-                            <Button type='submit'>Save</Button>
+                            <DeleteAlert doctype="Raven Scheduler Event" docname={data.name} isOpen={isOpen} onClose={onClose} path={'../../scheduled-messages'} />
                         </Flex>
                     </Flex>
                     <Section size={'2'}>
@@ -141,3 +146,5 @@ const ViewSchedulerEventPage = ({ data, onUpdate }: { data: any, onUpdate: () =>
         </FormProvider>
     )
 }
+
+export const Component = ViewSchedulerEvent
