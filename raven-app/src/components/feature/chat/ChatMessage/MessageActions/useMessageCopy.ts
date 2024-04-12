@@ -1,10 +1,9 @@
+import { toast } from 'sonner'
 import { Message } from '../../../../../../../types/Messaging/Message'
-import { useToast } from '@/hooks/useToast'
 import turndown from 'turndown'
 type Props = {}
 
 export const useMessageCopy = (message?: Message | null) => {
-    const { toast } = useToast()
 
     const copy = () => {
         if (!message) return
@@ -29,17 +28,9 @@ export const useMessageCopy = (message?: Message | null) => {
 
             if (markdown) {
                 navigator.clipboard.writeText(markdown)
-                toast({
-                    title: 'Text copied',
-                    duration: 800,
-                    variant: 'accent'
-                })
+                toast.success('Text copied to clipboard')
             } else {
-                toast({
-                    title: 'Could not copy text',
-                    duration: 800,
-                    variant: 'destructive'
-                })
+                toast.error('Could not copy text')
             }
 
         } else {

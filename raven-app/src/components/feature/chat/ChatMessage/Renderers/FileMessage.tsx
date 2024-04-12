@@ -4,12 +4,12 @@ import { UserFields } from "@/utils/users/UserListProvider"
 import { Box, Button, Dialog, Flex, IconButton, Link, Text } from "@radix-ui/themes"
 import { BoxProps } from "@radix-ui/themes/dist/cjs/components/box"
 import { BiDownload, BiLink, BiShow } from "react-icons/bi"
-import { useToast } from "@/hooks/useToast"
 import { DIALOG_CONTENT_CLASS } from "@/utils/layout/dialog"
 import { DateMonthAtHourMinuteAmPm } from "@/utils/dateConversions"
 import { clsx } from "clsx"
 import { FileExtensionIcon } from "@/utils/layout/FileExtIcon"
 import { memo } from "react"
+import { toast } from "sonner"
 
 interface FileMessageBlockProps extends BoxProps {
     message: FileMessage,
@@ -25,7 +25,6 @@ export const FileMessageBlock = memo(({ message, user, ...props }: FileMessageBl
     const isVideo = isVideoFile(fileExtension)
 
     const isPDF = fileExtension === 'pdf'
-    const { toast } = useToast()
 
     const copyLink = () => {
         if (message.file.startsWith('http') || message.file.startsWith('https')) {
@@ -35,11 +34,7 @@ export const FileMessageBlock = memo(({ message, user, ...props }: FileMessageBl
             navigator.clipboard.writeText(window.location.origin + message.file)
         }
 
-        toast({
-            title: 'Link copied',
-            duration: 800,
-            variant: 'accent'
-        })
+        toast.success('Link copied')
     }
 
     return <Box {...props}>

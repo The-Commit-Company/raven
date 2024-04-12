@@ -3,7 +3,8 @@ import { useFrappeGetCall, useFrappePostCall } from 'frappe-react-sdk'
 import { TiArrowBackOutline } from 'react-icons/ti'
 import { Poll } from '../Renderers/PollMessage'
 import { Message } from '../../../../../../../types/Messaging/Message'
-import { toast } from '@/hooks/useToast'
+import { toast } from 'sonner'
+import { getErrorMessage } from '@/components/layout/AlertBanner/ErrorBanner'
 
 interface RetractVoteProps {
     message: Message
@@ -25,16 +26,10 @@ export const RetractVote = ({ message }: RetractVoteProps) => {
         return call({
             poll_id: message?.poll_id,
         }).then(() => {
-            toast({
-                title: 'Vote retracted',
-                variant: 'accent',
-                duration: 800,
-            })
-        }).catch(() => {
-            toast({
-                title: 'Could not retract vote',
-                variant: 'destructive',
-                duration: 800,
+            toast('Vote retracted')
+        }).catch((e) => {
+            toast.error('Could not retract vote', {
+                description: getErrorMessage(e)
             })
         })
     }

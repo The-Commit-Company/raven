@@ -3,7 +3,7 @@ import { ErrorBanner } from '../../../layout/AlertBanner'
 import { ChannelListItem } from '@/utils/channel/ChannelListProvider'
 import { Button, Dialog, Flex, Text } from '@radix-ui/themes'
 import { Loader } from '@/components/common/Loader'
-import { useToast } from '@/hooks/useToast'
+import { toast } from 'sonner'
 
 interface ChangeChannelTypeModalProps {
     onClose: () => void
@@ -13,7 +13,6 @@ interface ChangeChannelTypeModalProps {
 
 export const ChangeChannelTypeModal = ({ onClose, channelData, newChannelType }: ChangeChannelTypeModalProps) => {
 
-    const { toast } = useToast()
     const { mutate } = useSWRConfig()
     const { updateDoc, loading: updatingDoc, error } = useFrappeUpdateDoc()
 
@@ -22,11 +21,7 @@ export const ChangeChannelTypeModal = ({ onClose, channelData, newChannelType }:
             type: newChannelType
         }).then(() => {
             mutate(`raven.api.chat.get_channel_members:${channelData.name}`)
-            toast({
-                title: "Channel type updated",
-                variant: "success",
-                duration: 1000,
-            })
+            toast.success("Channel changed to " + newChannelType.toLocaleLowerCase())
             onClose()
         })
     }

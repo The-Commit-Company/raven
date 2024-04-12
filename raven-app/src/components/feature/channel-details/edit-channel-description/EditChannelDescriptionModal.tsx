@@ -5,8 +5,7 @@ import { ChannelListItem } from "@/utils/channel/ChannelListProvider"
 import { Box, Dialog, Flex, Button, TextArea, Text } from "@radix-ui/themes"
 import { Loader } from "@/components/common/Loader"
 import { ErrorText, Label } from "@/components/common/Form"
-import { useToast } from "@/hooks/useToast"
-import { ToastAction } from "@/components/common/Toast/Toast"
+import { toast } from 'sonner'
 
 interface RenameChannelForm {
     channel_description: string
@@ -26,23 +25,13 @@ export const EditChannelDescriptionModalContent = ({ channelData, onClose }: Ren
     })
     const { register, handleSubmit, formState: { errors } } = methods
     const { updateDoc, loading: updatingDoc, error } = useFrappeUpdateDoc()
-    const { toast } = useToast()
 
     const onSubmit = (data: RenameChannelForm) => {
         updateDoc("Raven Channel", channelData?.name ?? null, {
             channel_description: data.channel_description
         }).then(() => {
-            toast({
-                title: "Channel description updated",
-                variant: 'success',
-            })
+            toast.success("Channel description updated")
             onClose()
-        }).catch((err) => {
-            toast({
-                title: "Error updating channel description",
-                description: err.message,
-                variant: "destructive",
-            })
         })
     }
 

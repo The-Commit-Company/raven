@@ -7,8 +7,9 @@ import { useFrappeDocumentEventListener, useFrappeGetCall, useFrappePostCall } f
 import { RavenPoll } from "@/types/RavenMessaging/RavenPoll"
 import { ErrorBanner } from "@/components/layout/AlertBanner"
 import { RavenPollOption } from "@/types/RavenMessaging/RavenPollOption"
-import { useToast } from "@/hooks/useToast"
+
 import { ViewPollVotes } from "@/components/feature/polls/ViewPollVotes"
+import { toast } from "sonner"
 
 interface PollMessageBlockProps extends BoxProps {
     message: PollMessage,
@@ -136,17 +137,12 @@ const PollOption = ({ data, option }: { data: Poll, option: RavenPollOption }) =
 const SingleChoicePoll = ({ data, messageID }: { data: Poll, messageID: string }) => {
 
     const { call } = useFrappePostCall('raven.api.raven_poll.add_vote')
-    const { toast } = useToast()
     const onVoteSubmit = async (option: RavenPollOption) => {
         return call({
             'message_id': messageID,
             'option_id': option.name
         }).then(() => {
-            toast({
-                title: "Your vote has been submitted!",
-                variant: 'success',
-                duration: 800
-            })
+            toast.success('Your vote has been submitted!')
         })
     }
 
@@ -169,7 +165,6 @@ const SingleChoicePoll = ({ data, messageID }: { data: Poll, messageID: string }
 const MultiChoicePoll = ({ data, messageID }: { data: Poll, messageID: string }) => {
 
     const [selectedOptions, setSelectedOptions] = useState<string[]>([])
-    const { toast } = useToast()
 
     const handleCheckboxChange = (name: string, value: boolean | string) => {
         if (value) {
@@ -185,11 +180,7 @@ const MultiChoicePoll = ({ data, messageID }: { data: Poll, messageID: string })
             'message_id': messageID,
             'option_id': selectedOptions
         }).then(() => {
-            toast({
-                title: "Your vote has been submitted!",
-                variant: 'success',
-                duration: 800
-            })
+            toast.success('Your vote has been submitted!')
         })
     }
 

@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom'
 import { ChannelListItem } from '@/utils/channel/ChannelListProvider'
 import { AlertDialog, Flex, Text, Button } from '@radix-ui/themes'
 import { Loader } from '@/components/common/Loader'
-import { useToast } from '@/hooks/useToast'
+import { toast } from 'sonner'
 
 interface ArchiveChannelModalProps {
     onClose: () => void,
@@ -14,7 +14,6 @@ interface ArchiveChannelModalProps {
 
 export const ArchiveChannelModal = ({ onClose, onCloseViewDetails, channelData }: ArchiveChannelModalProps) => {
 
-    const { toast } = useToast()
     const { updateDoc, loading: archivingDoc, error } = useFrappeUpdateDoc()
     const navigate = useNavigate()
 
@@ -25,11 +24,7 @@ export const ArchiveChannelModal = ({ onClose, onCloseViewDetails, channelData }
             onClose()
             onCloseViewDetails()
             navigate('/channel/general')
-            toast({
-                title: "Channel archived",
-                variant: "success",
-                duration: 1000,
-            })
+            toast('Channel archived')
         })
     }
 

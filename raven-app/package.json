@@ -10,7 +10,6 @@
     "copy-html-entry": "cp ../raven/public/raven/index.html ../raven/www/raven.html"
   },
   "dependencies": {
-    "@radix-ui/react-toast": "^1.1.5",
     "@radix-ui/themes": "^2.0.3",
     "@tiptap/extension-code-block-lowlight": "^2.2.2",
     "@tiptap/extension-highlight": "^2.2.2",
@@ -46,6 +45,7 @@
     "react-idle-timer": "^5.7.2",
     "react-intersection-observer": "^9.8.1",
     "react-router-dom": "^6.22.0",
+    "sonner": "^1.4.41",
     "tailwindcss": "^3.4.1",
     "tailwindcss-animate": "^1.0.7",
     "tippy.js": "^6.3.7",

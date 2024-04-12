@@ -5,9 +5,9 @@ import { useNavigate } from 'react-router-dom'
 import { Button, Flex, Separator, Text } from '@radix-ui/themes'
 import { ErrorBanner } from '@/components/layout/AlertBanner'
 import { WebhookForm } from '../../../components/feature/integrations/webhooks/WebhookForm'
-import { useToast } from '@/hooks/useToast'
 import { RavenWebhook } from '@/types/RavenIntegrations/RavenWebhook'
 import { BackToList } from '@/components/feature/integrations/webhooks/BackToList'
+import { toast } from 'sonner'
 
 const CreateWebhook = () => {
 
@@ -21,17 +21,12 @@ const CreateWebhook = () => {
     })
     const { createDoc, loading, reset, error } = useFrappeCreateDoc()
 
-    const { toast } = useToast()
-
     const onSubmit = (data: RavenWebhook) => {
         createDoc('Raven Webhook', data)
             .then((doc) => {
                 reset()
                 methods.reset()
-                toast({
-                    title: "Webhook created successfully.",
-                    variant: 'success',
-                })
+                toast.success("Webhook created")
                 return doc
             }).then((doc) => {
                 navigate(`../webhooks/${doc.name}`)

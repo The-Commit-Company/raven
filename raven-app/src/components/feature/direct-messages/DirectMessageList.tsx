@@ -9,7 +9,8 @@ import { useIsUserActive } from "@/hooks/useIsUserActive"
 import { ChannelListContext, ChannelListContextType, DMChannelListItem, ExtraUsersData, UnreadCountData } from "../../../utils/channel/ChannelListProvider"
 import { Box, Flex, Text } from "@radix-ui/themes"
 import { UserAvatar } from "@/components/common/UserAvatar"
-import { useToast } from "@/hooks/useToast"
+import { toast } from "sonner"
+import { getErrorMessage } from "@/components/layout/AlertBanner/ErrorBanner"
 
 export const DirectMessageList = ({ unread_count }: { unread_count?: UnreadCountData }) => {
 
@@ -93,7 +94,6 @@ const ExtraUsersItemList = () => {
     const { extra_users, mutate } = useContext(ChannelListContext) as ChannelListContextType
     const { call } = useFrappePostCall<{ message: string }>("raven.api.raven_channel.create_direct_message_channel")
 
-    const { toast } = useToast()
     const navigate = useNavigate()
 
     const createDMChannel = async (user_id: string) => {
@@ -102,12 +102,9 @@ const ExtraUsersItemList = () => {
                 navigate(`${r?.message}`)
                 mutate()
             })
-            .catch(() => {
-                toast({
-                    title: "Error",
-                    description: "Could not create channel.",
-                    variant: 'destructive',
-                    duration: 2000,
+            .catch((e) => {
+                toast.error('Could not create channel', {
+                    description: getErrorMessage(e)
                 })
             })
     }
