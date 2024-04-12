@@ -117,7 +117,7 @@ export const LinkPreview = memo(({ messageID }: { messageID: string }) => {
                     </Box>
                 </a>
             }
-            <Flex className='group'>
+            <Flex className='group pr-2'>
                 <a href={href} target='_blank'>
 
                     <Flex direction='column' gap='1' py='1' className='w-84'>
