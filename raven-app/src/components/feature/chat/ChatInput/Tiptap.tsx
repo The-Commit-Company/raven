@@ -18,6 +18,7 @@ import { ToolPanel } from './ToolPanel'
 import { RightToolbarButtons } from './RightToolbarButtons'
 import { common, createLowlight } from 'lowlight'
 import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight'
+import Code from '@tiptap/extension-code'
 import css from 'highlight.js/lib/languages/css'
 import js from 'highlight.js/lib/languages/javascript'
 import ts from 'highlight.js/lib/languages/typescript'
@@ -167,20 +168,15 @@ const Tiptap = ({ slotBefore, fileProps, onMessageSend, replyMessage, clearReply
                     }
 
                     return false
-                }
-
-                // 'Shift-Enter': () => {
-                //     /**
-                //      * currently we do not have an option to show a soft line break in the posts, so we overwrite
-                //      * the behavior from tiptap with the default behavior on pressing enter
-                //      */
-                //     return this.editor.commands.first(({ commands }) => [
-                //         () => commands.newlineInCode(),
-                //         () => commands.createParagraphNear(),
-                //         () => commands.liftEmptyBlock(),
-                //         () => commands.splitBlock(),
-                //     ]);
-                // },
+                },
+                'Shift-Enter': () => {
+                    return this.editor.commands.first(({ commands }) => [
+                        () => commands.newlineInCode(),
+                        () => commands.createParagraphNear(),
+                        () => commands.liftEmptyBlock(),
+                        () => commands.splitBlock(),
+                    ]);
+                },
             };
         },
         addProseMirrorPlugins() {
@@ -405,15 +401,31 @@ const Tiptap = ({ slotBefore, fileProps, onMessageSend, replyMessage, clearReply
                 class: 'bg-[var(--yellow-6)] dark:bg-[var(--yellow-11)] px-2 py-1'
             }
         }),
-        Link.configure({
-            protocols: ['mailto', 'https', 'http']
+        Link.extend({ inclusive: false }).configure({
+            autolink: true,
+            protocols: ['mailto', 'https', 'http'],
         }),
         Placeholder.configure({
             // Pick a random placeholder from the list.
             placeholder,
         }),
+        // ToDo: can be added later as this breaks existing functionality(existing keyboard shortcuts).
+        // CodeBlockLowlight.extend({
+        //     addKeyboardShortcuts(){
+        //         return {
+        //             'Mod-Shift-E': () => this.editor.commands.toggleCodeBlock(),
+        //         }
+        //     }      
+        // }).configure({
+        //     lowlight
+        // }),
         CodeBlockLowlight.configure({
             lowlight
+        }),
+        Code.configure({
+            HTMLAttributes:{
+                class: 'pt-0.5 px-1 pb-px bg-[var(--gray-a3)] dark:bg-[#0d0d0d] text-[var(--ruby-a11)] dark-[var(--accent-a3)] text text-xs font-mono rounded border border-gray-4 dark:border-gray-6'
+            }
         }),
         Image.configure({
             inline: true,

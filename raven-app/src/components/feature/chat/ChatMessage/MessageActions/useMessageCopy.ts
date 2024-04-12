@@ -33,18 +33,14 @@ export const useMessageCopy = (message?: Message | null) => {
                 toast.error('Could not copy text')
             }
 
-        } else {
+        } else if (message.message_type === "Image" || message.message_type === "File") {
             if (message.file.startsWith('http') || message.file.startsWith('https')) {
                 navigator.clipboard.writeText(message.file)
             }
             else {
                 navigator.clipboard.writeText(window.location.origin + message.file)
             }
-            toast({
-                title: 'Link copied',
-                duration: 800,
-                variant: 'accent'
-            })
+            toast.success('Link copied')
         }
     }
 
