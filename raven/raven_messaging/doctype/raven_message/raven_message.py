@@ -135,27 +135,30 @@ class RavenMessage(Document):
 				}
 			),
 		)
+
+		channel_doc = frappe.get_cached_doc("Raven Channel", self.channel_id)
 		# If the message is a direct message, then we can only send it to one user
-		is_direct_message = frappe.get_cached_value(
-			"Raven Channel", self.channel_id, "is_direct_message"
-		)
-		if is_direct_message:
-			peer_raven_user = frappe.db.get_value(
-				"Raven Channel Member",
-				{"channel_id": self.channel_id, "user_id": ("!=", frappe.session.user)},
-				"user_id",
-			)
-			peer_user_id = frappe.get_cached_value("Raven User", peer_raven_user, "user")
-			frappe.publish_realtime(
-				"raven:unread_channel_count_updated",
-				{
-					"channel_id": self.channel_id,
-					"play_sound": True,
-					"sent_by": self.owner,
-				},
-				user=peer_user_id,
-				after_commit=True,
-			)
+		if channel_doc.is_direct_message:
+
+			if not channel_doc.is_self_message:
+
+				peer_raven_user = frappe.db.get_value(
+					"Raven Channel Member",
+					{"channel_id": self.channel_id, "user_id": ("!=", frappe.session.user)},
+					"user_id",
+				)
+				peer_user_id = frappe.get_cached_value("Raven User", peer_raven_user, "user")
+
+				frappe.publish_realtime(
+					"raven:unread_channel_count_updated",
+					{
+						"channel_id": self.channel_id,
+						"play_sound": True,
+						"sent_by": self.owner,
+					},
+					user=peer_user_id,
+					after_commit=True,
+				)
 
 			# Need to send this to sender as well since they need to update the last message timestamp
 			frappe.publish_realtime(
@@ -204,15 +207,11 @@ class RavenMessage(Document):
 		# 2. If the message has mentions, send a push notification to the mentioned users if they belong to the channel
 		# 3. If the message is a reply, send a push notification to the user who is being replied to
 		# 4. If the message is in a channel, send a push notification to all the users in the channel (topic)
-		is_direct_message = frappe.get_cached_value(
-			"Raven Channel", self.channel_id, "is_direct_message"
-		)
 
-		if is_direct_message:
-			is_self_message = frappe.get_cached_value(
-				"Raven Channel Member", self.channel_id, "is_self_message"
-			)
-			if not is_self_message:
+		channel_doc = frappe.get_cached_doc("Raven Channel", self.channel_id)
+
+		if channel_doc.is_direct_message:
+			if not channel_doc.is_self_message:
 				# The message was sent on a direct message channel
 				self.send_notification_for_direct_message()
 		else:
