@@ -67,6 +67,11 @@ export const TiptapRenderer = ({ message, user, isScrolling = false, isTruncated
             class: 'pl-4 border-l-4 border-gray-500'
           }
         },
+        code: {
+          HTMLAttributes: {
+            class: 'pt-0.5 px-1 pb-px bg-[var(--gray-a3)] dark:bg-[#0d0d0d] text-[var(--ruby-a11)] dark-[var(--accent-a3)] text text-xs font-mono rounded border border-gray-4 dark:border-gray-6'
+          }
+        }
       }),
       Highlight.configure({
         multicolor: true,
