@@ -41,7 +41,7 @@ export const UpdateAdminStatusButton = ({ user, channelID, updateMembers }: Upda
         return <div className={'flex items-center gap-2'}
             onClick={() => updateAdminStatus(0)}>
             <BiCrown />
-            {updatingMember ? 'Updating member status...' : 'Remove channel admin'}
+            {updatingMember ? 'Updating member status...' : 'Dismiss admin'}
         </div>
     } else {
         return <div className={'flex items-center gap-2'}
