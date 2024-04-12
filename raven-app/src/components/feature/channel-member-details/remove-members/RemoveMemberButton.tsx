@@ -1,38 +1,38 @@
 import { RemoveChannelMemberModal } from './RemoveChannelMemberModal'
 import { Member } from '@/utils/channel/ChannelMembersProvider'
-import { ChannelListItem } from '@/utils/channel/ChannelListProvider'
-import { useState } from 'react'
-import { AlertDialog, Button } from '@radix-ui/themes'
+import { useCallback, useState } from 'react'
+import { AlertDialog } from '@radix-ui/themes'
 import { DIALOG_CONTENT_CLASS } from '@/utils/layout/dialog'
-import { FiUserMinus } from 'react-icons/fi'
-interface RemoveMemberButtonProps {
-    channelData: ChannelListItem,
-    updateMembers: () => void,
-    selectedMember: Member,
+
+export const useRemoveMember = () => {
+    const [member, setMember] = useState<null | Member>(null)
+    const onClose = useCallback(() => {
+        setMember(null)
+    }, [])
+    return {
+        member,
+        setRemoveMember: setMember,
+        isOpen: member !== null,
+        onClose
+    }
 }
 
-export const RemoveMemberButton = ({ channelData, updateMembers, selectedMember }: RemoveMemberButtonProps) => {
 
-    const [open, setOpen] = useState(false)
-    const onClose = () => {
-        setOpen(false)
-    }
+interface RemoveMemberDialogProps {
+    member: Member | null,
+    isOpen: boolean,
+    onClose: () => void
+}
 
-    return (
-        <AlertDialog.Root open={open} onOpenChange={setOpen}>
-            <AlertDialog.Trigger>
-                <div className={'flex items-center gap-2'}>
-                    <FiUserMinus />
-                    Remove from channel
-                </div>
-            </AlertDialog.Trigger>
-            <AlertDialog.Content className={DIALOG_CONTENT_CLASS}>
+export const RemoveMemberDialog = ({ member, isOpen, onClose }: RemoveMemberDialogProps) => {
+    return <AlertDialog.Root open={isOpen} onOpenChange={onClose}>
+        <AlertDialog.Content className={DIALOG_CONTENT_CLASS}>
+            {member &&
                 <RemoveChannelMemberModal
                     onClose={onClose}
-                    user={selectedMember}
-                    channelData={channelData}
-                    updateMembers={updateMembers} />
-            </AlertDialog.Content>
-        </AlertDialog.Root>
-    )
+                    member={member}
+                />
+            }
+        </AlertDialog.Content>
+    </AlertDialog.Root>
 }

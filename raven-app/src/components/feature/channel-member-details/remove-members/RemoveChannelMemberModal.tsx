@@ -1,41 +1,46 @@
 import { useFrappeDeleteDoc, useFrappeGetCall } from 'frappe-react-sdk'
 import { ErrorBanner } from '../../../layout/AlertBanner'
-import { ChannelListItem } from '@/utils/channel/ChannelListProvider'
-import { Member } from '@/utils/channel/ChannelMembersProvider'
+import { ChannelMembersContext, ChannelMembersContextType, Member } from '@/utils/channel/ChannelMembersProvider'
 import { ChannelIcon } from '@/utils/layout/channelIcon'
 import { AlertDialog, Button, Flex, Text } from '@radix-ui/themes'
 import { Loader } from '@/components/common/Loader'
 import { useToast } from '@/hooks/useToast'
+import { useParams } from 'react-router-dom'
+import { useCurrentChannelData } from '@/hooks/useCurrentChannelData'
+import { useContext } from 'react'
 
 interface RemoveChannelMemberModalProps {
-    onClose: (refresh?: boolean) => void,
-    user: Member,
-    channelData: ChannelListItem,
-    updateMembers: () => void
+    onClose: () => void,
+    member: Member | null
 }
 
-export const RemoveChannelMemberModal = ({ onClose, user, channelData, updateMembers }: RemoveChannelMemberModalProps) => {
+export const RemoveChannelMemberModal = ({ onClose, member }: RemoveChannelMemberModalProps) => {
 
     const { deleteDoc, error, loading: deletingDoc } = useFrappeDeleteDoc()
     const { toast } = useToast()
 
-    const { data: member, error: errorFetchingChannelMember } = useFrappeGetCall<{ message: { name: string } }>('frappe.client.get_value', {
+    const { channelID } = useParams<{ channelID: string }>()
+    const { channel } = useCurrentChannelData(channelID ?? '')
+    const channelData = channel?.channelData
+    const { mutate: updateMembers } = useContext(ChannelMembersContext) as ChannelMembersContextType
+
+    const { data: memberInfo, error: errorFetchingChannelMember } = useFrappeGetCall<{ message: { name: string } }>('frappe.client.get_value', {
         doctype: "Raven Channel Member",
-        filters: JSON.stringify({ channel_id: channelData?.name, user_id: user.name }),
+        filters: JSON.stringify({ channel_id: channelID, user_id: member?.name }),
         fieldname: JSON.stringify(["name"])
     }, undefined, {
         revalidateOnFocus: false
     })
 
     const onSubmit = async () => {
-        return deleteDoc('Raven Channel Member', member?.message.name).then(() => {
+        return deleteDoc('Raven Channel Member', memberInfo?.message.name).then(() => {
             toast({
                 title: 'Member removed successfully',
                 variant: 'success',
                 duration: 1000
             })
-            updateMembers()
             onClose()
+            updateMembers()
         })
     }
 
@@ -43,8 +48,8 @@ export const RemoveChannelMemberModal = ({ onClose, user, channelData, updateMem
         <>
             <AlertDialog.Title>
                 <Flex gap='1'>
-                    <Text>Remove {user && user?.full_name} from</Text>
-                    <ChannelIcon type={channelData.type} className={'mt-1'} />
+                    <Text>Remove {member && member?.full_name} from</Text>
+                    {channelData?.type && <ChannelIcon type={channelData?.type} className={'mt-1'} />}
                     <Text>{channelData?.channel_name}?</Text>
                 </Flex>
             </AlertDialog.Title>

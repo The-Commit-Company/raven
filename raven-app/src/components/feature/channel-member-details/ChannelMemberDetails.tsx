@@ -7,7 +7,7 @@ import { AddMembersButton } from "./add-members/AddMembersButton"
 import { Box, Flex, TextField, Text } from "@radix-ui/themes"
 import { BiSearch, BiCircle, BiSolidCrown } from "react-icons/bi"
 import { UserAvatar } from "@/components/common/UserAvatar"
-import { UserActionsMenu } from "./UserActions/UserActionsContextMenu"
+import { UserActionsMenu } from "./UserActions/UserActionsMenu"
 
 interface MemberDetailsProps {
     channelData: ChannelListItem,
