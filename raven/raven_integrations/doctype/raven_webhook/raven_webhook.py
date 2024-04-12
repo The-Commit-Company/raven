@@ -36,19 +36,17 @@ class RavenWebhook(Document):
                               "Channel Created", "Channel Deleted", "Channel Member Added", "Channel Member Deleted", "User Added", "User Deleted"]
 	# end: auto-generated types
 
-	def validate(self):
-		# 1. Check if webhook name is unique
-		# 2. Check if webhook_data and webhook_headers are unique
-
-
-
+	def before_insert(self):
 		# 1. Check if webhook name is unique
 		webhook = frappe.get_all('Raven Webhook', filters={
 		                         'name': self.name})
 		if webhook:
 			frappe.throw('Webhook name already exists')
 
-		# 2. Check if webhook_data and webhook_headers are unique
+
+	def validate(self):
+		# 1. Check if webhook_data and webhook_headers are unique
+
 		webhook_data_keys = [data.key for data in self.webhook_data]
 		webhook_header_keys = [data.key for data in self.webhook_headers]
 		if len(webhook_data_keys) != len(set(webhook_data_keys)):
