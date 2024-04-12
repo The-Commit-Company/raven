@@ -6,12 +6,13 @@ import { ChannelListContext, ChannelListContextType, ChannelListItem, UnreadCoun
 import { ChannelIcon } from "@/utils/layout/channelIcon"
 import { Box, Flex, Text } from "@radix-ui/themes"
 import { useLocation, useParams } from "react-router-dom"
+import { useStickyState } from "@/hooks/useStickyState"
 
 export const ChannelList = ({ unread_count }: { unread_count?: UnreadCountData }) => {
 
     const { channels, mutate } = useContext(ChannelListContext) as ChannelListContextType
 
-    const [showData, setShowData] = useState(true)
+    const [showData, setShowData] = useStickyState(true, 'expandChannelList')
 
     const toggle = () => setShowData(d => !d)
 
@@ -20,7 +21,7 @@ export const ChannelList = ({ unread_count }: { unread_count?: UnreadCountData }
     return (
         <SidebarGroup>
             <SidebarGroupItem className={'pl-1.5 gap-1.5'}>
-                <SidebarViewMoreButton onClick={toggle} />
+                <SidebarViewMoreButton onClick={toggle} expanded={showData} />
                 <Flex width='100%' justify='between' align='center' gap='2'>
                     <Flex gap='2' align='center'>
                         <SidebarGroupLabel className='cal-sans'>Channels</SidebarGroupLabel>
