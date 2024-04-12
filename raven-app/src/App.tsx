@@ -29,9 +29,9 @@ const router = createBrowserRouter(
               <Route path='webhooks' lazy={() => import('./pages/settings/Webhooks/WebhookList')} />
               <Route path='webhooks/create' lazy={() => import('./pages/settings/Webhooks/CreateWebhook')} />
               <Route path='webhooks/:ID' lazy={() => import('./pages/settings/Webhooks/ViewWebhook')} />
-              {/* <Route path='scheduled-messages' element={<TemporalEvents />} />
-              <Route path='scheduled-messages/create' element={<CreateSchedulerEvent />} />
-              <Route path='scheduled-messages/:ID' element={<ViewSchedulerEvent />} /> */}
+              <Route path='scheduled-messages' lazy={() => import('./pages/settings/ServerScripts/SchedulerEvents/SchedulerEvents')} />
+              <Route path='scheduled-messages/create' lazy={() => import('./pages/settings/ServerScripts/SchedulerEvents/CreateSchedulerEvent')} />
+              <Route path='scheduled-messages/:ID' lazy={() => import('./pages/settings/ServerScripts/SchedulerEvents/ViewSchedulerEvent')} />
             </Route>
           </Route>
         </Route>
