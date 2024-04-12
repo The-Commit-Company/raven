@@ -11,7 +11,6 @@ import ts from 'highlight.js/lib/languages/typescript'
 import html from 'highlight.js/lib/languages/xml'
 import json from 'highlight.js/lib/languages/json'
 import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight'
-import Code from '@tiptap/extension-code'
 import { common, createLowlight } from 'lowlight'
 import python from 'highlight.js/lib/languages/python'
 import { CustomBold } from './Bold'
@@ -64,6 +63,11 @@ export const TiptapRenderer = ({ message, user, isScrolling = false, isTruncated
           HTMLAttributes: {
             class: 'rt-Text text-sm'
           }
+        },
+        code: {
+          HTMLAttributes: {
+            class: 'pt-0.5 px-1 pb-px bg-[var(--gray-a3)] dark:bg-[#0d0d0d] text-[var(--ruby-a11)] dark-[var(--accent-a3)] text text-xs font-mono rounded border border-gray-4 dark:border-gray-6'
+          }
         }
       }),
       Highlight.configure({
@@ -75,11 +79,6 @@ export const TiptapRenderer = ({ message, user, isScrolling = false, isTruncated
       CustomUnderline,
       CodeBlockLowlight.configure({
         lowlight
-      }),
-      Code.configure({
-        HTMLAttributes:{
-            class: 'pt-0.5 px-1 pb-px bg-[var(--gray-a3)] dark:bg-[#0d0d0d] text-[var(--ruby-a11)] dark-[var(--accent-a3)] text text-xs font-mono rounded border border-gray-4 dark:border-gray-6'
-        }
       }),
       CustomBold,
       CustomUserMention,

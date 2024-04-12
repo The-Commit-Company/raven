@@ -2117,7 +2117,7 @@
   resolved "https://registry.yarnpkg.com/@tiptap/extension-code-block/-/extension-code-block-2.3.0.tgz#9bfaaeaf6abf2452233d1da64b6c5712cab2503b"
   integrity sha512-+Ne6PRBwQt70Pp8aW2PewaEy4bHrNYn4N+y8MObsFtqLutXBz4nXnsXWiNYFQZwzlUY+CHG4XS73mx8oMOFfDw==
 
-"@tiptap/extension-code@^2.3", "@tiptap/extension-code@^2.3.0":
+"@tiptap/extension-code@^2.3.0":
   version "2.3.0"
   resolved "https://registry.yarnpkg.com/@tiptap/extension-code/-/extension-code-2.3.0.tgz#19b5435c59021f11e24ac8427da4434b03596b35"
   integrity sha512-O2FZmosiIRoVbW82fZy8xW4h4gb2xAzxWzHEcsHPlwCbE3vYvcBMmbkQ5p+33eRtuRQInzl3Q/cwupv9ctIepQ==

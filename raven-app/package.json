@@ -19,7 +19,6 @@
     "@tiptap/extension-placeholder": "^2.3",
     "@tiptap/extension-typography": "^2.3",
     "@tiptap/extension-underline": "^2.3",
-    "@tiptap/extension-code":"^2.3",
     "@tiptap/pm": "^2.3",
     "@tiptap/react": "^2.3",
     "@tiptap/starter-kit": "^2.3",
