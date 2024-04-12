@@ -39,7 +39,7 @@ export const AddChannelMembersModalContent = ({ channelID, channel_name, onClose
   const onSubmit = (data: AddChannelMemberForm) => {
     if (data.add_members && data.add_members.length > 0) {
       const promises = data.add_members.map(async (member) => {
-        return createDoc('Raven Channel Member', {
+        return createDoc('Raven Channel Mmber', {
           channel_id: channelID,
           user_id: member.name
         })
