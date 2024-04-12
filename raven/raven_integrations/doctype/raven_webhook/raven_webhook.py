@@ -2,6 +2,7 @@
 # For license information, please see license.txt
 
 import frappe
+from frappe import _
 from frappe.model.document import Document
 
 
@@ -50,7 +51,7 @@ class RavenWebhook(Document):
 		webhook = frappe.get_all('Raven Webhook', filters={
 		                         'name': self.name})
 		if webhook:
-			frappe.throw("Webhook name already exists")
+			frappe.throw(_("Webhook name already exists"))
 
 
 	def validate(self):
@@ -59,9 +60,9 @@ class RavenWebhook(Document):
 		webhook_data_keys = [data.key for data in self.webhook_data]
 		webhook_header_keys = [data.key for data in self.webhook_headers]
 		if len(webhook_data_keys) != len(set(webhook_data_keys)):
-			frappe.throw("Webhook Data keys should be unique")
+			frappe.throw(_("Webhook Data keys should be unique"))
 		if len(webhook_header_keys) != len(set(webhook_header_keys)):
-			frappe.throw("Webhook Headers keys should be unique")
+			frappe.throw(_("Webhook Headers keys should be unique"))
 
 	def before_save(self):
 		# 1. Check if webhook ID is exists
