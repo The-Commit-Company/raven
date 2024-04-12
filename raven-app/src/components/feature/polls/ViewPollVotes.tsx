@@ -89,7 +89,7 @@ const VotesBlock = ({ votesData, poll }: { votesData: PollVotesResponse, poll: P
                         <div>
                             <div key={opt} className='flex items-center justify-between py-2'>
                                 <Flex>
-                                    <Text size='1' color='gray'>{optionName}</Text>
+                                    <Text size='1'>{optionName}</Text>
                                     <Text size='1' color='gray' className='ml-1'>- {option.percentage.toFixed(2)}%</Text>
                                 </Flex>
                                 <Text size='1' color='gray'>{option.count} vote{option.count > 1 ? 's' : ''}</Text>

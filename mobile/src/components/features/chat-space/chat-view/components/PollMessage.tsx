@@ -1,51 +1,62 @@
-import { Box, Checkbox, Flex, Text, RadioGroup, Button, Badge } from "@radix-ui/themes"
-import { BoxProps } from "@radix-ui/themes/dist/cjs/components/box"
-import { useEffect, useMemo, useState } from "react"
-import { UserFields } from "../../../../../utils/users/UserListProvider"
-import { PollMessage } from "../../../../../../../types/Messaging/Message"
-import { useFrappeDocumentEventListener, useFrappeGetCall, useFrappePostCall } from "frappe-react-sdk"
-import { RavenPoll } from "@/types/RavenMessaging/RavenPoll"
-import { ErrorBanner } from "@/components/layout/AlertBanner"
-import { RavenPollOption } from "@/types/RavenMessaging/RavenPollOption"
-import { useToast } from "@/hooks/useToast"
-import { ViewPollVotes } from "@/components/feature/polls/ViewPollVotes"
-
-interface PollMessageBlockProps extends BoxProps {
-    message: PollMessage,
-    user?: UserFields,
-}
+import { useEffect, useMemo, useState } from 'react'
+import { Badge, Box, Button, Checkbox, Flex, RadioGroup, Separator, Text } from '@radix-ui/themes'
+import { useFrappeDocumentEventListener, useFrappeGetCall, useFrappePostCall, useSWRConfig } from 'frappe-react-sdk'
+import { RavenPoll } from '@/types/RavenMessaging/RavenPoll'
+import { RavenPollOption } from '@/types/RavenMessaging/RavenPollOption'
+import { PollMessage } from '../../../../../../../types/Messaging/Message'
+import { ViewPollVotes } from '@/components/features/polls/ViewPollVotes'
 
 export interface Poll {
     'poll': RavenPoll,
     'current_user_votes': { 'option': string }[]
 }
 
-export const PollMessageBlock = ({ message, user, ...props }: PollMessageBlockProps) => {
+const PollMessageBlock = ({ message, onModalClose, onModalOpen }: { message: PollMessage, onModalOpen: VoidFunction, onModalClose: VoidFunction }) => {
 
+    const { mutate: globalMutate } = useSWRConfig()
     // fetch poll data using message_id
     const { data, error, mutate } = useFrappeGetCall<{ message: Poll }>('raven.api.raven_poll.get_poll', {
         'message_id': message.name,
     }, `poll_data_${message.poll_id}`, {
         revalidateOnFocus: false,
         revalidateIfStale: false,
-        revalidateOnReconnect: false
+        revalidateOnReconnect: false,
+        revalidateOnMount: true
     })
 
     useFrappeDocumentEventListener('Raven Poll', message.poll_id, () => {
         mutate()
+        globalMutate(`poll_votes_${message.poll_id}`)
     })
 
     return (
-        <Box {...props} pt='1'>
-            <ErrorBanner error={error} />
-            {data && <PollMessageBox data={data.message} messageID={message.name} />}
-        </Box>
+        <div className='py-1.5 rounded-lg'>
+            {data && <PollMessageBox
+                data={data.message}
+                messageID={message.name}
+                onModalOpen={onModalOpen}
+                onModalClose={onModalClose}
+            />}
+        </div>
     )
 }
 
-const PollMessageBox = ({ data, messageID }: { data: Poll, messageID: string }) => {
+export default PollMessageBlock
+
+const PollMessageBox = ({ data, messageID, onModalClose, onModalOpen }: { data: Poll, messageID: string, onModalOpen: VoidFunction, onModalClose: VoidFunction }) => {
+
+    const [isOpen, setOpen] = useState<boolean>(false)
+    const onViewClick: React.MouseEventHandler<HTMLButtonElement> = (e) => {
+        setOpen(true)
+        onModalOpen()
+    }
+
+    const closeModal = () => {
+        setOpen(false)
+        onModalClose()
+    }
     return (
-        <Flex align='center' gap='4' p='2' className="bg-gray-2
+        <Flex align='center' direction='column' className="bg-gray-2
         shadow-sm
         dark:bg-gray-3
         group-hover:bg-accent-a2
@@ -55,9 +66,11 @@ const PollMessageBox = ({ data, messageID }: { data: Poll, messageID: string }) 
         min-w-64
         w-full
         rounded-md">
-            <Flex direction='column' gap='2' p='2' className="w-full">
-                <Flex justify='between' align='center' gap='2'>
-                    <Text size='2' weight={'medium'}>{data.poll.question}</Text>
+            <Flex direction='column' gap='3' p='4' className="w-full">
+                <Flex direction='column' gap='2'>
+                    <Text size='2' weight={'medium'}>
+                        {data.poll.question}
+                    </Text>
                     {data.poll.is_anonymous ? <Badge color='blue' className={'w-fit'}>Anonymous</Badge> : null}
                 </Flex>
                 {data.current_user_votes.length > 0 ?
@@ -70,8 +83,18 @@ const PollMessageBox = ({ data, messageID }: { data: Poll, messageID: string }) 
                     </>
                 }
                 {data.poll.is_disabled ? <Badge color="gray" className={'w-fit'}>Poll is now closed</Badge> : null}
-                {data.poll.is_anonymous ? null : <ViewPollVotes poll={data} />}
             </Flex>
+            {data.poll.is_anonymous ? null :
+                <>
+                    <Separator size='4' />
+                    <Flex pt='3' pb='3'>
+                        <Button variant='ghost'
+                            onClick={onViewClick}
+                            className='hover:bg-transparent hover:text-accent-10 w-full'>View Votes</Button>
+                    </Flex>
+                    <ViewPollVotes isOpen={isOpen} onDismiss={closeModal} poll={data} />
+                </>
+            }
         </Flex>
     )
 }
@@ -88,6 +111,7 @@ const PollResults = ({ data }: { data: Poll }) => {
 }
 
 const PollOption = ({ data, option }: { data: Poll, option: RavenPollOption }) => {
+
 
     // State to track whether the animation should be triggered
     const [triggerAnimation, setTriggerAnimation] = useState<boolean>(false)
@@ -109,6 +133,7 @@ const PollOption = ({ data, option }: { data: Poll, option: RavenPollOption }) =
                 return (votes / totalVotes) * 100
             } else return (votes / data.poll.total_votes) * 100
         }
+
 
         return getPercentage(option.votes ?? 0)
     }, [option.votes, data])
@@ -135,18 +160,14 @@ const PollOption = ({ data, option }: { data: Poll, option: RavenPollOption }) =
 
 const SingleChoicePoll = ({ data, messageID }: { data: Poll, messageID: string }) => {
 
+    const { mutate } = useSWRConfig()
     const { call } = useFrappePostCall('raven.api.raven_poll.add_vote')
-    const { toast } = useToast()
     const onVoteSubmit = async (option: RavenPollOption) => {
         return call({
             'message_id': messageID,
             'option_id': option.name
         }).then(() => {
-            toast({
-                title: "Your vote has been submitted!",
-                variant: 'success',
-                duration: 800
-            })
+            mutate(`poll_data_${data.poll.name}`)
         })
     }
 
@@ -169,7 +190,7 @@ const SingleChoicePoll = ({ data, messageID }: { data: Poll, messageID: string }
 const MultiChoicePoll = ({ data, messageID }: { data: Poll, messageID: string }) => {
 
     const [selectedOptions, setSelectedOptions] = useState<string[]>([])
-    const { toast } = useToast()
+    const { mutate } = useSWRConfig()
 
     const handleCheckboxChange = (name: string, value: boolean | string) => {
         if (value) {
@@ -185,11 +206,7 @@ const MultiChoicePoll = ({ data, messageID }: { data: Poll, messageID: string })
             'message_id': messageID,
             'option_id': selectedOptions
         }).then(() => {
-            toast({
-                title: "Your vote has been submitted!",
-                variant: 'success',
-                duration: 800
-            })
+            mutate(`poll_data_${data.poll.name}`)
         })
     }
 
