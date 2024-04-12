@@ -1,8 +1,8 @@
-import { useSWR } from "frappe-react-sdk"
 import { TENOR_API_KEY, TENOR_CLIENT_KEY, TENOR_FEATURED_API_ENDPOINT_BASE } from "./GIFPicker"
 import { GIFGallerySkeleton } from "./GIFGallerySkeleton"
 import useSWRInfinite from "swr/infinite";
 import { useMemo } from "react";
+import { Button } from "@radix-ui/themes";
 
 
 export interface Props {
@@ -63,7 +63,9 @@ export const GIFFeaturedResults = ({ onSelect }: Props) => {
           ))}
         </div>
       }
-      {GIFS?.next && <button onClick={() => setSize(size + 1)}>Load more</button>}
+      {GIFS?.next && <div className="flex justify-center py-2">
+        <Button variant="ghost" className="w-full" onClick={() => setSize(size + 1)}>Load more</Button>
+      </div>}
     </div>
   )
 }
