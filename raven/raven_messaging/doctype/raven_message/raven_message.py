@@ -257,6 +257,9 @@ class RavenMessage(Document):
 			"user_id",
 		)
 
+		if not peer_raven_user:
+			return
+
 		message = self.get_notification_message_content()
 
 		owner_name = self.get_message_owner_name()
