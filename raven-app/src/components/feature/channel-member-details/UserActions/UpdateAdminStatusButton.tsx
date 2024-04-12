@@ -1,7 +1,8 @@
 import { Member } from '@/utils/channel/ChannelMembersProvider'
 import { BiCrown, BiSolidCrown } from 'react-icons/bi'
-import { useToast } from '@/hooks/useToast'
 import { useFrappeGetCall, useFrappeUpdateDoc } from 'frappe-react-sdk'
+import { toast } from 'sonner'
+import { getErrorMessage } from '@/components/layout/AlertBanner/ErrorBanner'
 
 interface UpdateAdminStatusButtonProps {
     user: Member,
@@ -12,7 +13,6 @@ interface UpdateAdminStatusButtonProps {
 export const UpdateAdminStatusButton = ({ user, channelID, updateMembers }: UpdateAdminStatusButtonProps) => {
 
     const { updateDoc, loading: updatingMember, reset } = useFrappeUpdateDoc()
-    const { toast } = useToast()
 
     const { data: member } = useFrappeGetCall<{ message: { name: string } }>('frappe.client.get_value', {
         doctype: "Raven Channel Member",
@@ -26,18 +26,12 @@ export const UpdateAdminStatusButton = ({ user, channelID, updateMembers }: Upda
         return updateDoc('Raven Channel Member', member?.message.name ?? '', {
             is_admin: admin
         }).then(() => {
-            toast({
-                title: 'Member has been made an admin successfully',
-                variant: 'success',
-                duration: 1000
-            })
+            toast.success('Member has been made an admin')
             updateMembers()
             reset()
-        }).catch(() => {
-            toast({
-                title: 'Failed to update member status',
-                variant: 'destructive',
-                duration: 1000
+        }).catch((e) => {
+            toast.error('Failed to update member status', {
+                description: getErrorMessage(e)
             })
             reset()
         })
