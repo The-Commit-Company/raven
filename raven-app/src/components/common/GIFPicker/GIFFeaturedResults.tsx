@@ -41,7 +41,7 @@ export const GIFFeaturedResults = ({ onSelect }: Props) => {
 
 
   const GIFS = useMemo(() => {
-    let gifs: any = { results: [], next: null };
+    let gifs: TenorResultObject = { results: [], next: "" };
     // data is an array of objects. Each object is a array called 'results' & cursor called 'next'
     // We need to merge all the 'results' array into one array, and get the last 'next' cursor
     return data?.reduce((acc, val) => {
@@ -50,13 +50,12 @@ export const GIFFeaturedResults = ({ onSelect }: Props) => {
       return gifs;
     }, gifs);
   }, [data]);
-  console.log(data, GIFS);
 
   return (
     <div className="overflow-y-auto h-[455px] w-[420px]">
       {isLoading ? <GIFGallerySkeleton /> :
         <div className="w-full columns-2 gap-2">
-          {GIFS && GIFS?.results?.map((gif, index) => (
+          {GIFS && GIFS?.results?.map((gif: Result, index: number) => (
             <div key={index} className="animate-fadein" onClick={() => onSelect(gif)}>
               <img className="h-full w-full rounded-sm bg-slate-6" src={gif.media_formats.tinygif.url} alt={gif.title} />
             </div>
