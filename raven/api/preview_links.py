@@ -58,3 +58,14 @@ def get_preview_link(urls):
 			message_links.append(data)
 
 	return message_links
+
+
+@frappe.whitelist(methods=["POST"])
+def hide_link_preview(message_id: str):
+	"""
+	Remove the preview from the message
+	"""
+	message = frappe.get_doc("Raven Message", message_id)
+	message.flags.ignore_permissions = True
+	message.hide_link_preview = 1
+	message.save()

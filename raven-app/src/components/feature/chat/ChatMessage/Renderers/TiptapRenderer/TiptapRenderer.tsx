@@ -44,7 +44,7 @@ export const TiptapRenderer = ({ message, user, isScrolling = false, isTruncated
     editable: false,
     editorProps: {
       attributes: {
-        class: isTruncated ? 'tiptap-renderer line-clamp-3' : 'tiptap-renderer' 
+        class: isTruncated ? 'tiptap-renderer line-clamp-3' : 'tiptap-renderer'
       }
     },
     enableCoreExtensions: true,
@@ -97,7 +97,7 @@ export const TiptapRenderer = ({ message, user, isScrolling = false, isTruncated
           contentEditable={false}
           editor={editor}
           readOnly />
-        {showLinkPreview && <LinkPreview isScrolling={isScrolling} />}
+        {showLinkPreview && <LinkPreview messageID={message.name} />}
       </EditorContext.Provider>
     </Box>
   )

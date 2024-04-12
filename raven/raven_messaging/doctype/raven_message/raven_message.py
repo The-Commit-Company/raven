@@ -29,6 +29,7 @@ class RavenMessage(Document):
 		content: DF.LongText | None
 		file: DF.Attach | None
 		file_thumbnail: DF.Attach | None
+		hide_link_preview: DF.Check
 		image_height: DF.Data | None
 		image_width: DF.Data | None
 		is_bot_message: DF.Check
@@ -370,6 +371,7 @@ class RavenMessage(Document):
 						"message_reactions": self.message_reactions,
 						"is_bot_message": self.is_bot_message,
 						"bot": self.bot,
+						"hide_link_preview": self.hide_link_preview,
 					},
 				},
 				doctype="Raven Channel",
@@ -419,6 +421,7 @@ class RavenMessage(Document):
 						"name": self.name,
 						"is_bot_message": self.is_bot_message,
 						"bot": self.bot,
+						"hide_link_preview": self.hide_link_preview,
 					},
 				},
 				doctype="Raven Channel",
