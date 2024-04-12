@@ -48,10 +48,9 @@ class RavenWebhook(Document):
 
 	def before_insert(self):
 		# 1. Check if webhook name is unique
-		webhook = frappe.get_all('Raven Webhook', filters={'name': self.name})
+		webhook = frappe.get_all("Raven Webhook", filters={"name": self.name})
 		if webhook:
 			frappe.throw(_("Webhook name already exists"))
-
 
 	def validate(self):
 		# 1. Check if webhook_data and webhook_headers are unique
