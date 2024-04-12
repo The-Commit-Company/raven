@@ -2,9 +2,9 @@ import { WebhookItem } from "@/components/feature/integrations/webhooks/WebhookI
 import { ErrorBanner } from "@/components/layout/AlertBanner"
 import { FullPageLoader } from "@/components/layout/Loaders"
 import { RavenWebhook } from "@/types/RavenIntegrations/RavenWebhook"
-import { Flex, Separator, Button, Text, Heading, Box } from "@radix-ui/themes"
-import { useFrappeGetDocList } from "frappe-react-sdk"
-import { useNavigate } from "react-router-dom"
+import { Flex, Button, Text, Heading, Box, Blockquote, Section } from "@radix-ui/themes"
+import { useFrappeDocTypeEventListener, useFrappeGetDocList } from "frappe-react-sdk"
+import { Link, useNavigate } from "react-router-dom"
 
 const WebhookList = () => {
 
@@ -14,30 +14,44 @@ const WebhookList = () => {
 
     const navigate = useNavigate()
 
+    useFrappeDocTypeEventListener('Raven Webhook', () => {
+        mutate()
+    })
+
     return (
         <Box className="lg:mx-[10rem] md:mx-[5rem] mt-9 h-screen">
-            <Flex direction='column' gap='4' width='100%' px={'2'}>
-                <Flex direction={'column'} gap={'2'} >
-                    <Heading>Webhook</Heading>
-                    <Text as='span' color='gray' size='2'>Fire webhooks on specific events like when a message is sent or channel is created.</Text>
-                </Flex>
-                <Separator size='4' className={`bg-gray-4 dark:bg-gray-6`} />
+            <Flex justify={'between'}>
+                <Heading>Webhooks</Heading>
+                <Button onClick={() => navigate('./create')}>Add</Button>
+            </Flex>
+            <Section size={'2'}>
+                <Blockquote size={'2'}>
+                    Fire webhooks on specific events like when a message is sent or channel is created.
+                </Blockquote>
+            </Section>
+            <Flex direction={'column'}>
                 <ErrorBanner error={error} />
-                {isLoading && <FullPageLoader className="h-48" text='Loading...' />}
-                {data?.length === 0 ? <Text size='2'>No webhooks created.</Text> : <Flex direction='column' gap='4' width='100%'>
+                {isLoading && <FullPageLoader className="h-auto" text='Loading...' />}
+                {data?.length === 0 ? <EmptyState /> : <Flex direction='column' gap='4' width='100%'>
                     {data?.map((webhook, index) => (
                         <WebhookItem key={index} webhook={webhook} mutate={mutate} />
                     ))}
                 </Flex>}
-                <Button onClick={() => navigate('./create')} variant='solid' style={{
-                    width: 'fit-content',
-                    marginTop: '1rem'
-                }} >
-                    New Webhook
-                </Button>
             </Flex>
         </Box>
     )
 }
 
 export const Component = WebhookList
+
+
+const EmptyState = () => {
+    return (
+        <Flex direction='column' gap='4' width='100%'>
+            <Text size='2' color="gray">Its empty here...no webhooks found. <Link to={'create'} style={{
+                textDecoration: 'underline'
+            }}>Create one</Link>.
+            </Text>
+        </Flex>
+    )
+}

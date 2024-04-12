@@ -1,14 +1,11 @@
-import { Loader } from "@/components/common/Loader"
-import { ErrorBanner } from "@/components/layout/AlertBanner"
-import { useToast } from "@/hooks/useToast"
 import { RavenWebhook } from "@/types/RavenIntegrations/RavenWebhook"
 import { DateMonthYear } from "@/utils/dateConversions"
 import { DIALOG_CONTENT_CLASS } from "@/utils/layout/dialog"
-import { Flex, Badge, IconButton, AlertDialog, Text, Button } from "@radix-ui/themes"
-import { useFrappeDeleteDoc } from "frappe-react-sdk"
+import { Flex, Badge, IconButton, AlertDialog, Text } from "@radix-ui/themes"
 import { useState } from "react"
 import { BiEdit, BiTrash } from "react-icons/bi"
 import { useNavigate } from "react-router-dom"
+import { AlertContent } from "../../settings/common/DeleteAlert"
 
 export const WebhookItem = ({ webhook, mutate }: { webhook: RavenWebhook, mutate: () => void }) => {
 
@@ -25,7 +22,7 @@ export const WebhookItem = ({ webhook, mutate }: { webhook: RavenWebhook, mutate
                 <Flex direction='column' gap='1'>
                     <Flex direction={'row'} gap={'2'}>
                         <Text size={'2'} weight={'bold'}>{webhook.name}</Text>
-                        <Badge variant='outline' color={webhook.enabled ? 'green' : 'red'}>{webhook.enabled ? 'Enabled' : 'Disabled'}</Badge>
+                        <Badge color={webhook.enabled ? 'green' : 'red'}>{webhook.enabled ? 'Enabled' : 'Disabled'}</Badge>
                     </Flex>
                     <Text size='1' style={{
                         fontStyle: 'italic',
@@ -65,56 +62,11 @@ export const WebhookItem = ({ webhook, mutate }: { webhook: RavenWebhook, mutate
                             </IconButton>
                         </AlertDialog.Trigger>
                         <AlertDialog.Content className={DIALOG_CONTENT_CLASS}>
-                            <DeleteWebhookAlertContent webhhookID={webhook.name} onClose={onClose} mutate={mutate} />
+                            <AlertContent doctype="Raven Webhook" docname={webhook.name} onClose={onClose} onUpdate={mutate} />
                         </AlertDialog.Content>
                     </AlertDialog.Root>
                 </Flex>
-
             </Flex>
         </Flex>
     )
-}
-
-const DeleteWebhookAlertContent = ({ webhhookID, onClose, mutate }: { webhhookID: string, onClose: () => void, mutate: () => void }) => {
-
-    const { deleteDoc, error, loading } = useFrappeDeleteDoc()
-
-    const { toast } = useToast()
-
-    const onDelete = () => {
-        deleteDoc('Raven Webhook', webhhookID).then(() => {
-            mutate()
-            onClose()
-            toast({
-                title: "Webhook deleted successfully.",
-                variant: 'success',
-            })
-        })
-    }
-
-    return (
-        <>
-            <AlertDialog.Title>
-                <Text>{webhhookID}</Text>
-            </AlertDialog.Title>
-            <Flex direction={'column'} gap='2'>
-                <ErrorBanner error={error} />
-                <Text size='2'>Are you sure you want to delete this webhook?</Text>
-            </Flex>
-            <Flex gap="3" mt="4" justify="end">
-                <AlertDialog.Cancel>
-                    <Button variant="soft" color="gray" onClick={onClose}>
-                        Cancel
-                    </Button>
-                </AlertDialog.Cancel>
-                <AlertDialog.Action>
-                    <Button variant="solid" color="red" onClick={onDelete} disabled={loading}>
-                        {loading && <Loader />}
-                        {loading ? "Deleting" : `Delete`}
-                    </Button>
-                </AlertDialog.Action>
-            </Flex>
-        </>
-    )
-
 }
