@@ -10,16 +10,17 @@ import { useNavigate } from "react-router-dom"
 export interface Props {
     isOpen: boolean,
     onClose: () => void
+    doctype: string
     docname: string
     path: string
 }
 
-export const DeleteAlert = ({ isOpen, onClose, docname, path }: Props) => {
+export const DeleteAlert = ({ isOpen, onClose, doctype, docname, path }: Props) => {
     return (
         <AlertDialog.Root open={isOpen} onOpenChange={onClose}>
             <AlertDialog.Content style={{ maxWidth: 450 }}>
                 {/* Hii */}
-                <AlertContent onClose={onClose} docname={docname} path={path} />
+                <AlertContent onClose={onClose} doctype={doctype} docname={docname} path={path} />
             </AlertDialog.Content>
         </AlertDialog.Root>
     )
@@ -28,11 +29,13 @@ export const DeleteAlert = ({ isOpen, onClose, docname, path }: Props) => {
 
 type DeleteDocModalProps = {
     onClose: () => void,
+    onUpdate?: () => void
+    doctype: string
     docname: string
-    path: string
+    path?: string
 }
 
-const AlertContent = ({ onClose, docname, path }: DeleteDocModalProps) => {
+export const AlertContent = ({ onClose, onUpdate, doctype, docname, path }: DeleteDocModalProps) => {
 
     const { deleteDoc, error, loading: deletingDoc, reset } = useFrappeDeleteDoc()
 
@@ -46,10 +49,11 @@ const AlertContent = ({ onClose, docname, path }: DeleteDocModalProps) => {
 
     const onSubmit = () => {
         if (docname) {
-            deleteDoc('Raven Scheduler Event', docname)
+            deleteDoc(doctype, docname)
                 .then(() => {
                     onClose()
-                    navigate(path)
+                    if (onUpdate) onUpdate()
+                    if (path) navigate(path)
                     toast({
                         title: `${docname} deleted`,
                         variant: 'success',
@@ -76,13 +80,6 @@ const AlertContent = ({ onClose, docname, path }: DeleteDocModalProps) => {
                         This action is permanent and cannot be undone.
                     </Callout.Text>
                 </Callout.Root>
-                {/* <Text size='2'>When you delete a channel, all messages from this channel will be removed immediately.</Text> */}
-                {/* <Flex direction='column'>
-                    <ul className={'list-inside'}>
-                        <li><Text as='span' size='2'>All messages, including files and images will be removed</Text></li>
-                        <li><Text as='span' size='2'>You can archive this channel instead to preserve your messages</Text></li>
-                    </ul>
-                </Flex> */}
                 <Text size='2' as='label'>
                     <Flex gap="2" align={'center'}>
                         <Checkbox onClick={() => setAllowDelete(!allowDelete)} color='red' />
