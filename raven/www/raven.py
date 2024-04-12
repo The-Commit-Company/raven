@@ -33,7 +33,7 @@ def get_context(context):
 	else:
 		enabled = True
 	boot["server_script_enabled"] = enabled
-	
+
 	boot_json = frappe.as_json(boot, indent=None, separators=(",", ":"))
 	boot_json = SCRIPT_TAG_PATTERN.sub("", boot_json)
 
