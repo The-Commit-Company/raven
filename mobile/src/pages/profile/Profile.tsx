@@ -62,7 +62,7 @@ export const Profile = () => {
                     </IonItem>
                 </IonList>
                 <div className="ion-text-center mt-16">
-                    <Text as='span'><Text as='span' size='6' className='cal-sans'>raven</Text> <Text as='span' color='gray'>v1.5.0</Text></Text>
+                    <Text as='span'><Text as='span' size='6' className='cal-sans'>raven</Text> <Text as='span' color='gray'>v1.5.1</Text></Text>
                     <br />
                     <Text as='span' color='gray'>Made by The Commit Company</Text>
                 </div>

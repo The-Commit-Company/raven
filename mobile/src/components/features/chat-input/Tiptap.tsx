@@ -44,7 +44,8 @@ type TiptapEditorProps = {
     defaultText?: string,
     onPickFiles?: () => void,
     onGetFiles?: (e: React.ChangeEvent<HTMLInputElement>) => void,
-    fileRef?: React.RefObject<HTMLInputElement>
+    fileRef?: React.RefObject<HTMLInputElement>,
+    onPollCreate: VoidFunction
 }
 
 const UserMention = Mention.extend({
@@ -66,7 +67,7 @@ const ChannelMention = Mention.extend({
             pluginKey: new PluginKey('channelMention'),
         }
     })
-export const Tiptap = ({ onMessageSend, messageSending, defaultText = '', onPickFiles, onGetFiles, fileRef }: TiptapEditorProps) => {
+export const Tiptap = ({ onMessageSend, messageSending, defaultText = '', onPickFiles, onGetFiles, fileRef, onPollCreate }: TiptapEditorProps) => {
 
     const { enabledUsers } = useContext(UserListContext)
 
@@ -361,6 +362,7 @@ export const Tiptap = ({ onMessageSend, messageSending, defaultText = '', onPick
                     {focused && <div data-is-toolbar-element={true} className='flex justify-between items-center'>
                         <div data-is-toolbar-element={true}>
                             <MessageInputActions
+                                onPollCreate={onPollCreate}
                                 onFileClick={onPickFiles} />
                             {/* <IconButton
                                 size='2'

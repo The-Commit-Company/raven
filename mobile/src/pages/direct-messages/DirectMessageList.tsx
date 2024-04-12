@@ -67,12 +67,18 @@ const useMessageUsersList = () => {
     const { dm_channels, isLoading, error } = useChannelList()
     const allUsers: DMUser[] = useMemo(() => {
         if (!users) return []
-        return users.map(user => {
+        const usersWithChannels = users.map(user => {
             const corresponding_dm_channel: DMChannelListItem | undefined = dm_channels?.find(channel => channel.peer_user_id === user.name)
             return {
                 ...user,
                 channel: corresponding_dm_channel
             }
+        })
+
+        return usersWithChannels.sort((a, b) => {
+            const bTimestamp = b.channel?.last_message_timestamp ? new Date(b.channel.last_message_timestamp).getTime() : 0
+            const aTimestamp = a.channel?.last_message_timestamp ? new Date(a.channel.last_message_timestamp).getTime() : 0
+            return bTimestamp - aTimestamp
         })
     }, [users, dm_channels])
 

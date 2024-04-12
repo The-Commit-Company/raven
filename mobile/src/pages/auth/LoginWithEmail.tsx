@@ -32,6 +32,8 @@ export const LoginWithEmail = (props: ActiveScreenProps) => {
                     state: true,
                     message: "Login Link sent on Email",
                 });
+            }).catch((err)=>{
+                setCallout(null)
             })
     }
 
@@ -81,7 +83,7 @@ export const LoginWithEmail = (props: ActiveScreenProps) => {
                                         size='3'
                                         variant='soft'
                                         className="cursor-pointer"
-                                        onClick={() => props.setActiveScreen({ login: true, loginWithEmail: false, signup: false })}
+                                        onClick={() => props.setActiveScreen({ login: true, loginWithEmail: false, signup: false, forgotPassword: false })}
                                     >
                                         Cancel
                                     </Button>

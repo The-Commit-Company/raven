@@ -15,7 +15,11 @@
   "column_break_puci",
   "is_self_message",
   "column_break_ubts",
-  "is_archived"
+  "is_archived",
+  "section_break_wlnt",
+  "last_message_timestamp",
+  "column_break_eckt",
+  "last_message_details"
  ],
  "fields": [
   {
@@ -81,6 +85,26 @@
    "in_list_view": 1,
    "in_standard_filter": 1,
    "label": "Is Archived"
+  },
+  {
+   "fieldname": "section_break_wlnt",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "last_message_timestamp",
+   "fieldtype": "Datetime",
+   "label": "Last Message Timestamp",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_eckt",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "last_message_details",
+   "fieldtype": "JSON",
+   "label": "Last Message Details",
+   "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,
@@ -94,7 +118,7 @@
    "link_fieldname": "channel_id"
   }
  ],
- "modified": "2023-11-24 16:22:29.544819",
+ "modified": "2024-04-10 10:02:14.404135",
  "modified_by": "Administrator",
  "module": "Raven Channel Management",
  "name": "Raven Channel",

@@ -39,6 +39,8 @@ export const Component = () => {
                     state: true,
                     message: "Login Link sent on Email",
                 });
+            }).catch((err)=>{
+                setCallout(null)
             })
     }
 
@@ -65,7 +67,6 @@ export const Component = () => {
                                     })}
                                     name="email"
                                     type="email"
-                                    required
                                     placeholder="jane@example.com"
                                     tabIndex={0}
                                 />

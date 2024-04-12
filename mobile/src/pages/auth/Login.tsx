@@ -9,9 +9,10 @@ import { Input } from '@/components/ui/input'
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { OAuthProviderInterface, OAuthProvider, EmailLoginProvider, SocialSeparator } from '@/components/auth/SocialProviders'
 import { Button, Link, Text } from '@radix-ui/themes'
+import { ForgotPasswordButton } from '@/components/auth/ForgotPasswordButton'
 
 
-export const Login = (props: ActiveScreenProps) => {
+export const Login = ({setActiveScreen}: ActiveScreenProps) => {
 
     const form = useForm<LoginInputs>({
         defaultValues: {
@@ -108,6 +109,9 @@ export const Login = (props: ActiveScreenProps) => {
                                         >
                                             Login
                                         </Button>
+
+                                        {/* Forgot password */}
+                                        <ForgotPasswordButton setActiveScreen={setActiveScreen}/>
                                     </div>
                                 </form>
                             </Form>
@@ -130,7 +134,7 @@ export const Login = (props: ActiveScreenProps) => {
                                 <div className='flex flex-col gap-4'>
                                     {
                                         loginContext?.message?.login_with_email_link ?
-                                            <EmailLoginProvider setActiveScreen={props.setActiveScreen} isSubmitting={form.formState.isSubmitting} />
+                                            <EmailLoginProvider setActiveScreen={setActiveScreen} isSubmitting={form.formState.isSubmitting} />
                                             : null
                                     }
                                 </div>
@@ -147,7 +151,7 @@ export const Login = (props: ActiveScreenProps) => {
                                 underline='always'
                                 size='2'
                                 href='#'
-                                onClick={() => props.setActiveScreen({ login: false, loginWithEmail: false, signup: true })}
+                                onClick={() => setActiveScreen({ login: false, loginWithEmail: false, signup: true, forgotPassword: false })}
 
                             >
                                 Sign up

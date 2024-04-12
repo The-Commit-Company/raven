@@ -1,25 +1,26 @@
 import { Box, Checkbox, Flex, Text, RadioGroup, Button, Badge } from "@radix-ui/themes"
 import { BoxProps } from "@radix-ui/themes/dist/cjs/components/box"
-import { memo, useEffect, useMemo, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { UserFields } from "../../../../../utils/users/UserListProvider"
 import { PollMessage } from "../../../../../../../types/Messaging/Message"
-import { useFrappeDocumentEventListener, useFrappeGetCall, useFrappePostCall, useSWRConfig } from "frappe-react-sdk"
+import { useFrappeDocumentEventListener, useFrappeGetCall, useFrappePostCall } from "frappe-react-sdk"
 import { RavenPoll } from "@/types/RavenMessaging/RavenPoll"
 import { ErrorBanner } from "@/components/layout/AlertBanner"
 import { RavenPollOption } from "@/types/RavenMessaging/RavenPollOption"
 import { useToast } from "@/hooks/useToast"
+import { ViewPollVotes } from "@/components/feature/polls/ViewPollVotes"
 
 interface PollMessageBlockProps extends BoxProps {
     message: PollMessage,
     user?: UserFields,
 }
 
-interface Poll {
+export interface Poll {
     'poll': RavenPoll,
     'current_user_votes': { 'option': string }[]
 }
 
-export const PollMessageBlock = memo(({ message, user, ...props }: PollMessageBlockProps) => {
+export const PollMessageBlock = ({ message, user, ...props }: PollMessageBlockProps) => {
 
     // fetch poll data using message_id
     const { data, error, mutate } = useFrappeGetCall<{ message: Poll }>('raven.api.raven_poll.get_poll', {
@@ -40,7 +41,7 @@ export const PollMessageBlock = memo(({ message, user, ...props }: PollMessageBl
             {data && <PollMessageBox data={data.message} messageID={message.name} />}
         </Box>
     )
-})
+}
 
 const PollMessageBox = ({ data, messageID }: { data: Poll, messageID: string }) => {
     return (
@@ -69,6 +70,7 @@ const PollMessageBox = ({ data, messageID }: { data: Poll, messageID: string }) 
                     </>
                 }
                 {data.poll.is_disabled ? <Badge color="gray" className={'w-fit'}>Poll is now closed</Badge> : null}
+                {data.poll.is_anonymous ? null : <ViewPollVotes poll={data} />}
             </Flex>
         </Flex>
     )
@@ -132,7 +134,6 @@ const PollOption = ({ data, option }: { data: Poll, option: RavenPollOption }) =
 
 const SingleChoicePoll = ({ data, messageID }: { data: Poll, messageID: string }) => {
 
-    const { mutate } = useSWRConfig()
     const { call } = useFrappePostCall('raven.api.raven_poll.add_vote')
     const { toast } = useToast()
     const onVoteSubmit = async (option: RavenPollOption) => {
@@ -140,7 +141,6 @@ const SingleChoicePoll = ({ data, messageID }: { data: Poll, messageID: string }
             'message_id': messageID,
             'option_id': option.name
         }).then(() => {
-            mutate(`poll_data_${data.poll.name}`)
             toast({
                 title: "Your vote has been submitted!",
                 variant: 'success',
@@ -168,7 +168,6 @@ const SingleChoicePoll = ({ data, messageID }: { data: Poll, messageID: string }
 const MultiChoicePoll = ({ data, messageID }: { data: Poll, messageID: string }) => {
 
     const [selectedOptions, setSelectedOptions] = useState<string[]>([])
-    const { mutate } = useSWRConfig()
     const { toast } = useToast()
 
     const handleCheckboxChange = (name: string, value: boolean | string) => {
@@ -185,7 +184,6 @@ const MultiChoicePoll = ({ data, messageID }: { data: Poll, messageID: string })
             'message_id': messageID,
             'option_id': selectedOptions
         }).then(() => {
-            mutate(`poll_data_${data.poll.name}`)
             toast({
                 title: "Your vote has been submitted!",
                 variant: 'success',

@@ -1,11 +1,12 @@
+import TiptapBold from '@tiptap/extension-bold'
 import { mergeAttributes } from "@tiptap/react";
-import Italic from '@tiptap/extension-italic';
-export const CustomItalic = Italic.extend({
+
+export const CustomBold = TiptapBold.extend({
     renderHTML({ HTMLAttributes }) {
         return [
-            "em",
+            "strong",
             mergeAttributes(HTMLAttributes, {
-                class: 'rt-Em'
+                class: 'rt-Strong'
             }), // mergeAttributes is a exported function from @tiptap/core
             0,
         ];

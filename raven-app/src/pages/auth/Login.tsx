@@ -131,6 +131,16 @@ export const Component = () => {
                                             {isSubmitting ? <Loader /> : 'Login'}
                                         </Button>
                                     </Flex>
+                                    <Flex direction='column' gap='2' align="end">
+                                        <LinkButton
+                                            asChild
+                                            size="2"
+                                        >
+                                        <Link to="/forgot-password">
+                                            Forgot Password?
+                                        </Link>
+                                        </LinkButton>
+                                    </Flex>
                                 </Flex>
                             </Flex>
                         </form>

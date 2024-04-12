@@ -14,6 +14,7 @@ import { useGetUser } from '@/hooks/useGetUser';
 import { ShareAction } from './ShareAction';
 import { EmojiAction } from './EmojiAction';
 import MessagePreview from './MessagePreview';
+import { PollActions } from './PollActions';
 
 interface MessageActionModalProps {
     selectedMessage?: Message,
@@ -77,13 +78,19 @@ export const MessageActionModal = ({ selectedMessage, onDismiss }: MessageAction
                             <IonIcon slot="start" icon={returnDownBackOutline} />
                             <IonLabel className='font-semibold'>Reply</IonLabel>
                         </IonItem> */}
-                            <ShareAction message={selectedMessage} onSuccess={onDismiss} />
-                            <CopyAction message={selectedMessage} onSuccess={onDismiss} />
+
+                            {selectedMessage.message_type === 'Poll' && <PollActions message={selectedMessage} onSuccess={onDismiss} />}
+
+                            {selectedMessage.message_type !== 'Poll' &&
+                                <ShareAction message={selectedMessage} onSuccess={onDismiss} />}
+
+                            {selectedMessage.message_type !== 'Poll' &&
+                                <CopyAction message={selectedMessage} onSuccess={onDismiss} />}
+
                             <SaveMessageAction message={selectedMessage} onSuccess={onDismiss} />
 
                             {isOwnMessage &&
-                                <DeleteAction message={selectedMessage} onSuccess={onDismiss} />
-                            }
+                                <DeleteAction message={selectedMessage} onSuccess={onDismiss} />}
                             {/* <IonItem className='py-1'>
                             <IonIcon slot="start" icon={documentAttachOutline} />
                             <IonLabel className='font-semibold'>Link to document</IonLabel>

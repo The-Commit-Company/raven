@@ -17,6 +17,7 @@ const router = createBrowserRouter(
       <Route path='/login' lazy={() => import('@/pages/auth/Login')} />
       <Route path='/login-with-email' lazy={() => import('@/pages/auth/LoginWithEmail')} />
       <Route path='/signup' lazy={() => import('@/pages/auth/SignUp')} />
+      <Route path='/forgot-password' lazy={()=> import('@/pages/auth/ForgotPassword')} />
       <Route path="/" element={<ProtectedRoute />}>
         <Route path="/" element={<ChannelRedirect />}>
           <Route path="channel" element={<MainPage />} >
