@@ -4,10 +4,10 @@ import { ChannelMembersContext, ChannelMembersContextType, Member } from '@/util
 import { ChannelIcon } from '@/utils/layout/channelIcon'
 import { AlertDialog, Button, Flex, Text } from '@radix-ui/themes'
 import { Loader } from '@/components/common/Loader'
-import { useToast } from '@/hooks/useToast'
 import { useParams } from 'react-router-dom'
 import { useCurrentChannelData } from '@/hooks/useCurrentChannelData'
 import { useContext } from 'react'
+import { toast } from 'sonner'
 
 interface RemoveChannelMemberModalProps {
     onClose: () => void,
@@ -17,7 +17,6 @@ interface RemoveChannelMemberModalProps {
 export const RemoveChannelMemberModal = ({ onClose, member }: RemoveChannelMemberModalProps) => {
 
     const { deleteDoc, error, loading: deletingDoc } = useFrappeDeleteDoc()
-    const { toast } = useToast()
 
     const { channelID } = useParams<{ channelID: string }>()
     const { channel } = useCurrentChannelData(channelID ?? '')
@@ -34,11 +33,7 @@ export const RemoveChannelMemberModal = ({ onClose, member }: RemoveChannelMembe
 
     const onSubmit = async () => {
         return deleteDoc('Raven Channel Member', memberInfo?.message.name).then(() => {
-            toast({
-                title: 'Member removed successfully',
-                variant: 'success',
-                duration: 1000
-            })
+             toast.success(`Removed`)
             onClose()
             updateMembers()
         })

@@ -44,7 +44,7 @@ export const TiptapRenderer = ({ message, user, isScrolling = false, isTruncated
     editable: false,
     editorProps: {
       attributes: {
-        class: isTruncated ? 'tiptap-renderer line-clamp-3' : 'tiptap-renderer' 
+        class: isTruncated ? 'tiptap-renderer line-clamp-3' : 'tiptap-renderer'
       }
     },
     enableCoreExtensions: true,
@@ -62,6 +62,11 @@ export const TiptapRenderer = ({ message, user, isScrolling = false, isTruncated
         paragraph: {
           HTMLAttributes: {
             class: 'rt-Text text-sm'
+          }
+        },
+        code: {
+          HTMLAttributes: {
+            class: 'pt-0.5 px-1 pb-px bg-[var(--gray-a3)] dark:bg-[#0d0d0d] text-[var(--ruby-a11)] dark-[var(--accent-a3)] text text-xs font-mono rounded border border-gray-4 dark:border-gray-6'
           }
         }
       }),
@@ -97,7 +102,7 @@ export const TiptapRenderer = ({ message, user, isScrolling = false, isTruncated
           contentEditable={false}
           editor={editor}
           readOnly />
-        {showLinkPreview && <LinkPreview isScrolling={isScrolling} />}
+        {showLinkPreview && <LinkPreview messageID={message.name} />}
       </EditorContext.Provider>
     </Box>
   )

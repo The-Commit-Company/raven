@@ -1,4 +1,4 @@
-import { useToast } from "./useToast"
+import { toast } from "sonner"
 
 /**
  * Simple hook to copy a file URL to the clipboard and present a toast message
@@ -7,7 +7,6 @@ import { useToast } from "./useToast"
  */
 const useFileURLCopy = (file: string) => {
 
-    const { toast } = useToast()
     const copy = () => {
         if (file.startsWith('http') || file.startsWith('https')) {
             navigator.clipboard.writeText(file)
@@ -15,11 +14,7 @@ const useFileURLCopy = (file: string) => {
         else {
             navigator.clipboard.writeText(window.location.origin + file)
         }
-        toast({
-            title: 'Link copied',
-            duration: 800,
-            variant: 'accent'
-        })
+        toast.success('Link copied')
     }
 
     return copy

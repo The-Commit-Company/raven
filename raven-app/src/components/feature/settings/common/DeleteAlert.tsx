@@ -1,11 +1,11 @@
 import { Loader } from "@/components/common/Loader"
 import { ErrorBanner } from "@/components/layout/AlertBanner"
-import { useToast } from "@/hooks/useToast"
 import { AlertDialog, Button, Callout, Checkbox, Flex, Text } from "@radix-ui/themes"
 import { useFrappeDeleteDoc } from "frappe-react-sdk"
 import { useState } from "react"
 import { FiAlertTriangle } from "react-icons/fi"
 import { useNavigate } from "react-router-dom"
+import { toast } from "sonner"
 
 export interface Props {
     isOpen: boolean,
@@ -41,7 +41,6 @@ const AlertContent = ({ onClose, docname, path }: DeleteDocModalProps) => {
         reset()
     }
 
-    const { toast } = useToast()
     const navigate = useNavigate()
 
     const onSubmit = () => {
@@ -50,10 +49,7 @@ const AlertContent = ({ onClose, docname, path }: DeleteDocModalProps) => {
                 .then(() => {
                     onClose()
                     navigate(path)
-                    toast({
-                        title: `${docname} deleted`,
-                        variant: 'success',
-                    })
+                    toast(`Event ${docname} deleted.`)
                 })
         }
     }

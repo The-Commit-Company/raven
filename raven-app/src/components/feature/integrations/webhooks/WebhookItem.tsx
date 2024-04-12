@@ -1,6 +1,5 @@
 import { Loader } from "@/components/common/Loader"
 import { ErrorBanner } from "@/components/layout/AlertBanner"
-import { useToast } from "@/hooks/useToast"
 import { RavenWebhook } from "@/types/RavenIntegrations/RavenWebhook"
 import { DateMonthYear } from "@/utils/dateConversions"
 import { DIALOG_CONTENT_CLASS } from "@/utils/layout/dialog"
@@ -9,6 +8,7 @@ import { useFrappeDeleteDoc } from "frappe-react-sdk"
 import { useState } from "react"
 import { BiEdit, BiTrash } from "react-icons/bi"
 import { useNavigate } from "react-router-dom"
+import { toast } from "sonner"
 
 export const WebhookItem = ({ webhook, mutate }: { webhook: RavenWebhook, mutate: () => void }) => {
 
@@ -79,16 +79,11 @@ const DeleteWebhookAlertContent = ({ webhhookID, onClose, mutate }: { webhhookID
 
     const { deleteDoc, error, loading } = useFrappeDeleteDoc()
 
-    const { toast } = useToast()
-
     const onDelete = () => {
         deleteDoc('Raven Webhook', webhhookID).then(() => {
             mutate()
             onClose()
-            toast({
-                title: "Webhook deleted successfully.",
-                variant: 'success',
-            })
+            toast.error('Webhook deleted.')
         })
     }
 

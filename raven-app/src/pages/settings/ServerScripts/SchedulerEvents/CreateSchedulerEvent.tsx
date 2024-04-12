@@ -1,11 +1,11 @@
 import { SchedulerEventForm, SchedulerEventsForm } from "@/components/feature/settings/scheduler-events/SchedulerEventsForm"
 import { ErrorBanner } from "@/components/layout/AlertBanner"
-import { useToast } from "@/hooks/useToast"
 import { Box, Button, Flex, Heading, Section } from "@radix-ui/themes"
 import { useFrappeCreateDoc } from "frappe-react-sdk"
 import { FormProvider, useForm } from "react-hook-form"
 import { FiArrowLeft } from "react-icons/fi"
 import { useNavigate } from "react-router-dom"
+import { toast } from "sonner"
 
 export const CreateSchedulerEvent = () => {
 
@@ -14,8 +14,6 @@ export const CreateSchedulerEvent = () => {
     const methods = useForm()
 
     const { createDoc, error } = useFrappeCreateDoc()
-
-    const { toast } = useToast()
 
     const onSubmit = (data: Partial<SchedulerEventForm>) => {
         let cron_expression = ''
@@ -47,10 +45,7 @@ export const CreateSchedulerEvent = () => {
                 if (doc) {
                     navigate(`../${doc?.name}`)
                 }
-                toast({
-                    title: `Temporal Event created`,
-                    variant: 'success',
-                })
+                toast.success("Scheduler Event created")
             })
     }
     //TODO: Figure out a way to show _server_messages in the UI (especially the script editor might have some errors that we need to show to the user)

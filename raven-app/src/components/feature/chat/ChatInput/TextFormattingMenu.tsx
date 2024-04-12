@@ -1,5 +1,5 @@
 import { useCurrentEditor } from '@tiptap/react'
-import { BiBold, BiCodeAlt, BiHighlight, BiItalic, BiLink, BiListOl, BiListUl, BiStrikethrough, BiUnderline, BiSolidQuoteAltRight } from 'react-icons/bi'
+import { BiBold, BiCodeAlt, BiCodeBlock ,BiHighlight, BiItalic, BiListOl, BiListUl, BiStrikethrough, BiUnderline, BiSolidQuoteAltRight } from 'react-icons/bi'
 import { DEFAULT_BUTTON_STYLE, ICON_PROPS } from './ToolPanel'
 import { Box, Flex, IconButton, Separator, Tooltip } from '@radix-ui/themes'
 import { getKeyboardMetaKeyString } from '@/utils/layout/keyboardKey'
@@ -76,11 +76,30 @@ export const TextFormattingMenu = () => {
             <Flex gap='3' align='center'>
                 <Tooltip content={getKeyboardMetaKeyString() + ' + E'} aria-label={getKeyboardMetaKeyString() + ' + E'}>
                     <IconButton
-                        onClick={() => editor.chain().focus().toggleCodeBlock().run()}
+                        onClick={() => editor.chain().focus().toggleCode().run()}
                         aria-label='code'
                         variant='ghost'
                         size='1'
                         title='Code'
+                        className={editor.isActive('code') ? highlightBgColor : DEFAULT_BUTTON_STYLE}
+                        disabled={
+                            !editor.can()
+                                .chain()
+                                .focus()
+                                .toggleCode()
+                                .run()
+                        }
+                    >
+                        <BiCodeAlt {...ICON_PROPS} />
+                    </IconButton>
+                </Tooltip>
+                <Tooltip content={getKeyboardMetaKeyString() +'+ Shift + E'} aria-label={getKeyboardMetaKeyString() +'+ Shift + E'}>
+                    <IconButton
+                        onClick={() => editor.chain().focus().toggleCodeBlock().run()}
+                        aria-label='code block'
+                        variant='ghost'
+                        size='1'
+                        title='Code Block'
                         className={editor.isActive('codeBlock') ? highlightBgColor : DEFAULT_BUTTON_STYLE}
                         disabled={
                             !editor.can()
@@ -90,7 +109,7 @@ export const TextFormattingMenu = () => {
                                 .run()
                         }
                     >
-                        <BiCodeAlt {...ICON_PROPS} />
+                        <BiCodeBlock {...ICON_PROPS} />
                     </IconButton>
                 </Tooltip>
                 {/* <Tooltip content={getKeyboardMetaKeyString() + ' + Shift + X'} aria-label={getKeyboardMetaKeyString() + ' + Shift + X'}> */}

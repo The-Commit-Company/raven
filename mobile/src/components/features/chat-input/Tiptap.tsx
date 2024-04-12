@@ -21,13 +21,13 @@ import ts from 'highlight.js/lib/languages/typescript'
 import html from 'highlight.js/lib/languages/xml'
 import json from 'highlight.js/lib/languages/json'
 import python from 'highlight.js/lib/languages/python'
-import { BiSend, BiSolidSend } from 'react-icons/bi'
-import { AiOutlinePaperClip } from 'react-icons/ai';
+import { BiSolidSend } from 'react-icons/bi'
 import { IconButton } from '@radix-ui/themes'
 import { useKeyboardState } from '@ionic/react-hooks/keyboard';
 import MessageInputActions from './MessageInputActions'
 import { useClickAway } from '@uidotdev/usehooks'
 import { FiPlus } from 'react-icons/fi'
+import { EmojiSuggestion } from './EmojiSuggestion'
 
 const lowlight = createLowlight(common)
 
@@ -109,7 +109,7 @@ export const Tiptap = ({ onMessageSend, messageSending, defaultText = '', onPick
             },
             code: {
                 HTMLAttributes: {
-                    class: 'font-mono bg-slate-950 text-sm radius-md p-1 text-white'
+                    class: 'pt-0.5 px-1 pb-px bg-[var(--gray-a3)] dark:bg-[#0d0d0d] text-[var(--ruby-a11)] dark-[var(--accent-a3)] text text-xs font-mono rounded border border-gray-4 dark:border-gray-6'
                 }
             },
 
@@ -273,6 +273,7 @@ export const Tiptap = ({ onMessageSend, messageSending, defaultText = '', onPick
         Placeholder.configure({
             placeholder: 'Type a message...'
         }),
+        EmojiSuggestion
     ]
 
     const [focused, setFocused] = useState(false)

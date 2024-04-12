@@ -2,8 +2,9 @@ import { FrappeConfig, FrappeContext, FrappeError, useFrappeDocTypeEventListener
 import { PropsWithChildren, createContext, useContext, useMemo } from 'react'
 import { KeyedMutator } from 'swr'
 import { RavenChannel } from '../../../../types/RavenChannelManagement/RavenChannel'
-import { useToast } from '@/hooks/useToast'
 import { useSWRConfig } from 'frappe-react-sdk'
+import { toast } from 'sonner'
+import { getErrorMessage } from '@/components/layout/AlertBanner/ErrorBanner'
 
 export type ExtraUsersData = {
     name: string,
@@ -62,7 +63,6 @@ export const ChannelListProvider = ({ children }: PropsWithChildren) => {
  */
 export const useFetchChannelList = (): ChannelListContextType => {
 
-    const { toast } = useToast()
     const { mutate: globalMutate } = useSWRConfig()
     const { data, mutate, ...rest } = useFrappeGetCall<{ message: ChannelList }>("raven.api.raven_channel.get_all_channels", {
         hide_archived: false
@@ -70,9 +70,8 @@ export const useFetchChannelList = (): ChannelListContextType => {
         revalidateOnFocus: false,
         revalidateIfStale: false,
         onError: (error) => {
-            toast({
-                title: error.message,
-                variant: 'destructive'
+            toast.error("There was an error while fetching the channel list.", {
+                description: getErrorMessage(error)
             })
         }
     })

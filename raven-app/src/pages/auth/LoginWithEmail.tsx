@@ -17,6 +17,7 @@ import { SuccessCallout } from "@/components/common/Callouts/SuccessCallout";
 import { isEmailValid } from "@/utils/validations";
 import { LoginInputs } from "@/types/Auth/Login";
 import AuthContainer from "@/components/layout/AuthContainer";
+import { ErrorBanner } from "@/components/layout/AlertBanner";
 
 
 export const Component = () => {
@@ -32,14 +33,14 @@ export const Component = () => {
 
     async function sendEmailLink(values: LoginInputs) {
         return call({
-                email: values.email,
-            })
+            email: values.email,
+        })
             .then((result) => {
                 setCallout({
                     state: true,
                     message: "Login Link sent on Email",
                 });
-            }).catch((err)=>{
+            }).catch((err) => {
                 setCallout(null)
             })
     }
@@ -47,7 +48,7 @@ export const Component = () => {
     return (
         <AuthContainer>
 
-            {error && <ErrorCallout message={error.message} />}
+            {error && <ErrorBanner error={error} />}
             {callout && <SuccessCallout message={callout.message} />}
 
             <Box>

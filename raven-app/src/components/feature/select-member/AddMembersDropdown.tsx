@@ -28,8 +28,9 @@ const AddMembersDropdown = ({ channelMembers, label = 'Select users', selectedUs
         const lowerCasedInputValue = inputValue.toLowerCase()
 
         return nonChannelMembers.filter((user: UserFields) => {
+            const isUserSelected = selectedUsers.find(selectedUser => selectedUser.name === user.name)
             return (
-                !selectedUsers.includes(user) &&
+                !isUserSelected &&
                 (user.full_name.toLowerCase().includes(lowerCasedInputValue) ||
                     user.name.toLowerCase().includes(lowerCasedInputValue))
             )

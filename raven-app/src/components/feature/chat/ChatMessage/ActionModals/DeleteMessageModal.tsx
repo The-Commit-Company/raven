@@ -2,9 +2,9 @@ import { useFrappeDeleteDoc } from "frappe-react-sdk"
 import { ErrorBanner } from "../../../../layout/AlertBanner"
 import { AlertDialog, Button, Callout, Flex, Text } from "@radix-ui/themes"
 import { Loader } from "@/components/common/Loader"
-import { useToast } from "@/hooks/useToast"
 import { FiAlertTriangle } from "react-icons/fi"
 import { Message } from "../../../../../../../types/Messaging/Message"
+import { toast } from "sonner"
 
 interface DeleteMessageModalProps {
     onClose: (refresh?: boolean) => void,
@@ -14,16 +14,11 @@ interface DeleteMessageModalProps {
 export const DeleteMessageModal = ({ onClose, message }: DeleteMessageModalProps) => {
 
     const { deleteDoc, error, loading: deletingDoc } = useFrappeDeleteDoc()
-    const { toast } = useToast()
 
     const onSubmit = async () => {
-        return deleteDoc('Raven Message', message.name
-        ).then(() => {
-            toast({
-                title: 'Message deleted',
-                duration: 1000,
-                variant: 'destructive'
-            })
+
+        return deleteDoc('Raven Message', message.name).then(() => {
+            toast('Message deleted')
             onClose()
         })
     }
