@@ -1,35 +1,27 @@
-import { useFrappeDeleteDoc, useFrappeGetCall } from 'frappe-react-sdk'
+import { useFrappeDeleteDoc } from 'frappe-react-sdk'
 import { ErrorBanner } from '../../../layout/AlertBanner'
 import { ChannelListItem } from '@/utils/channel/ChannelListProvider'
-import { ChannelMembers } from '@/utils/channel/ChannelMembersProvider'
 import { ChannelIcon } from '@/utils/layout/channelIcon'
 import { AlertDialog, Button, Flex, Text } from '@radix-ui/themes'
 import { Loader } from '@/components/common/Loader'
 import { useToast } from '@/hooks/useToast'
+import { Member } from '@/utils/channel/ChannelMembersProvider'
 
 interface RemoveChannelMemberModalProps {
     onClose: (refresh?: boolean) => void,
-    user_id: string,
+    user: Member,
     channelData: ChannelListItem,
-    channelMembers: ChannelMembers
-    updateMembers: () => void
+    updateMembers: () => void,
+    memberID: string
 }
 
-export const RemoveChannelMemberModal = ({ onClose, user_id, channelData, channelMembers, updateMembers }: RemoveChannelMemberModalProps) => {
+export const RemoveChannelMemberModal = ({ onClose, user, channelData, updateMembers, memberID }: RemoveChannelMemberModalProps) => {
 
     const { deleteDoc, error, loading: deletingDoc } = useFrappeDeleteDoc()
     const { toast } = useToast()
 
-    const { data: member, error: errorFetchingChannelMember } = useFrappeGetCall<{ message: { name: string } }>('frappe.client.get_value', {
-        doctype: "Raven Channel Member",
-        filters: JSON.stringify({ channel_id: channelData?.name, user_id: user_id }),
-        fieldname: JSON.stringify(["name"])
-    }, undefined, {
-        revalidateOnFocus: false
-    })
-
     const onSubmit = async () => {
-        return deleteDoc('Raven Channel Member', member?.message.name).then(() => {
+        return deleteDoc('Raven Channel Member', memberID).then(() => {
             toast({
                 title: 'Member removed successfully',
                 variant: 'success',
@@ -44,14 +36,13 @@ export const RemoveChannelMemberModal = ({ onClose, user_id, channelData, channe
         <>
             <AlertDialog.Title>
                 <Flex gap='1'>
-                    <Text>Remove {user_id && channelMembers[user_id]?.full_name} from</Text>
+                    <Text>Remove {user && user?.full_name} from</Text>
                     <ChannelIcon type={channelData.type} className={'mt-1'} />
                     <Text>{channelData?.channel_name}?</Text>
                 </Flex>
             </AlertDialog.Title>
 
             <Flex direction={'column'} gap='2'>
-                <ErrorBanner error={errorFetchingChannelMember} />
                 <ErrorBanner error={error} />
                 <Text size='1'>This person will no longer have access to the channel and can only rejoin by invitation.</Text>
             </Flex>

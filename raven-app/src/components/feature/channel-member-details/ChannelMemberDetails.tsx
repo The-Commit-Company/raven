@@ -4,10 +4,11 @@ import { UserContext } from "../../../utils/auth/UserProvider"
 import { ChannelListItem } from "@/utils/channel/ChannelListProvider"
 import { ChannelMembers } from "@/utils/channel/ChannelMembersProvider"
 import { AddMembersButton } from "./add-members/AddMembersButton"
-import { RemoveMemberButton } from "./remove-members/RemoveMemberButton"
 import { Box, Flex, TextField, Text } from "@radix-ui/themes"
 import { BiSearch, BiCircle, BiSolidCrown } from "react-icons/bi"
 import { UserAvatar } from "@/components/common/UserAvatar"
+import { UserActionsButton } from "./UserActions/UserActionsButton"
+
 interface MemberDetailsProps {
     channelData: ChannelListItem,
     channelMembers: ChannelMembers,
@@ -90,11 +91,10 @@ export const ChannelMemberDetails = ({ channelData, channelMembers, activeUsers,
                                             member.name !== currentUser &&
                                             channelData?.type !== 'Open' && channelData.is_archived == 0 &&
                                             <Flex align="center">
-                                                <RemoveMemberButton
+                                                <UserActionsButton
                                                     channelData={channelData}
-                                                    channelMembers={channelMembers}
                                                     updateMembers={updateMembers}
-                                                    selectedMember={member.name} />
+                                                    selectedMember={member} />
                                             </Flex>
                                         }
                                     </Flex>
