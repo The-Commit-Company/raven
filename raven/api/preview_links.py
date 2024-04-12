@@ -46,6 +46,10 @@ def get_preview_link(urls):
 					if preview == None:
 						data = empty_data
 					else:
+
+						# Description might have emojis in them, which comes in with special characters like copyright etc
+						# TODO: We need to replace these special characters with the actual emojis
+
 						data = {
 							"title": preview.title,
 							"description": preview.description,
