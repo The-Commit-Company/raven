@@ -48,8 +48,7 @@ class RavenWebhook(Document):
 
 	def before_insert(self):
 		# 1. Check if webhook name is unique
-		webhook = frappe.get_all('Raven Webhook', filters={
-		                         'name': self.name})
+		webhook = frappe.get_all('Raven Webhook', filters={'name': self.name})
 		if webhook:
 			frappe.throw(_("Webhook name already exists"))
 
@@ -198,13 +197,13 @@ class RavenWebhook(Document):
 				elif doctype == "Raven Message":
 					return f'doc.channel_id == "{self.channel_id}"'
 				elif doctype == "Raven Message Reaction":
-					frappe.throw("Message Reaction cannot be triggered on Channel")
+					frappe.throw(_("Message Reaction cannot be triggered on Channel"))
 				elif doctype == "Raven User":
-					frappe.throw("Raven User cannot be triggered on Channel")
+					frappe.throw(_("Raven User cannot be triggered on Channel"))
 
 			elif self.conditions_on == "User":
 				if doctype == "Raven Channel":
-					frappe.throw("Channel cannot be triggered on User")
+					frappe.throw(_("Channel cannot be triggered on User"))
 				elif doctype == "Raven Channel Member":
 					return f'doc.user_id == "{self.user}"'
 				elif doctype == "Raven Message":
@@ -217,13 +216,13 @@ class RavenWebhook(Document):
 					if self.channel_type in ["Public", "Private", "Open"]:
 						return f'doc.type == "{self.channel_type}"'
 					elif self.channel_type == "DM":
-						return f"doc.is_direct_message == 1"
+						return "doc.is_direct_message == 1"
 					elif self.channel_type == "Self Message":
-						return f"doc.is_self_message == 1"
+						return "doc.is_self_message == 1"
 					else:
-						frappe.throw("Invalid Channel Type")
+						frappe.throw(_("Invalid Channel Type"))
 				else:
-					frappe.throw("Channel Type cannot be triggered on other doctypes")
+					frappe.throw(_("Channel Type cannot be triggered on other doctypes"))
 			elif self.conditions_on == "Custom":
 				return self.condition
 
