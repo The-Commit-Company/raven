@@ -93,7 +93,7 @@ export const TextFormattingMenu = () => {
                         <BiCodeAlt {...ICON_PROPS} />
                     </IconButton>
                 </Tooltip>
-                {/* <Tooltip content={getKeyboardMetaKeyString() +'+ shift + E'} aria-label={getKeyboardMetaKeyString() +'+ shift + E'}> */}
+                <Tooltip content={getKeyboardMetaKeyString() +'+ Shift + E'} aria-label={getKeyboardMetaKeyString() +'+ Shift + E'}>
                     <IconButton
                         onClick={() => editor.chain().focus().toggleCodeBlock().run()}
                         aria-label='code block'
@@ -111,7 +111,7 @@ export const TextFormattingMenu = () => {
                     >
                         <BiCodeBlock {...ICON_PROPS} />
                     </IconButton>
-                {/* </Tooltip> */}
+                </Tooltip>
                 {/* <Tooltip content={getKeyboardMetaKeyString() + ' + Shift + X'} aria-label={getKeyboardMetaKeyString() + ' + Shift + X'}> */}
                 <IconButton
                     onClick={() => editor.chain().focus().toggleStrike().run()}

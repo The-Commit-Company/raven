@@ -409,21 +409,22 @@ const Tiptap = ({ slotBefore, fileProps, onMessageSend, replyMessage, clearReply
             // Pick a random placeholder from the list.
             placeholder,
         }),
-        // ToDo: can be added later as this breaks existing functionality(existing keyboard shortcuts).
-        // CodeBlockLowlight.extend({
-        //     addKeyboardShortcuts(){
-        //         return {
-        //             'Mod-Shift-E': () => this.editor.commands.toggleCodeBlock(),
-        //         }
-        //     }      
-        // }).configure({
-        //     lowlight
-        // }),
+        CodeBlockLowlight.extend({
+            addKeyboardShortcuts() {
+                return {
+                    // this extends existing shortcuts instead of overwriting
+                    ...this.parent?.(),
+                    'Mod-Shift-E': () => this.editor.commands.toggleCodeBlock(),
+                }
+            }
+        }).configure({
+            lowlight
+        }),
         CodeBlockLowlight.configure({
             lowlight
         }),
         Code.configure({
-            HTMLAttributes:{
+            HTMLAttributes: {
                 class: 'pt-0.5 px-1 pb-px bg-[var(--gray-a3)] dark:bg-[#0d0d0d] text-[var(--ruby-a11)] dark-[var(--accent-a3)] text text-xs font-mono rounded border border-gray-4 dark:border-gray-6'
             }
         }),
