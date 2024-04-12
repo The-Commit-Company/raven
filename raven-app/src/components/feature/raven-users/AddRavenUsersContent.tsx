@@ -13,8 +13,8 @@ import { UserListContext } from "@/utils/users/UserListProvider"
 import { Button, Dialog, Em, Flex, Strong, Text, TextField } from "@radix-ui/themes"
 import { Loader } from "@/components/common/Loader"
 import { BiSearch } from "react-icons/bi"
-import { useToast } from "@/hooks/useToast"
 import { ErrorCallout } from "@/components/common/Callouts/ErrorCallouts"
+import { toast } from "sonner"
 
 interface AddUsersResponse {
     failed_users: User[],
@@ -51,7 +51,6 @@ const AddRavenUsersContent = ({ onClose }: { onClose: VoidFunction }) => {
 
     const [selected, setSelected] = useState<string[]>([])
     const { loading, call, error: postError } = useFrappePostCall<{ message: AddUsersResponse }>('raven.api.raven_users.add_users_to_raven')
-    const { toast } = useToast()
 
     const [failedUsers, setFailedUsers] = useState<User[]>([])
 
@@ -63,11 +62,7 @@ const AddRavenUsersContent = ({ onClose }: { onClose: VoidFunction }) => {
                 users: JSON.stringify(selected)
             }).then((res) => {
                 if (res.message.success_users.length !== 0) {
-                    toast({
-                        title: `You have added ${res.message.success_users.length} users to Raven`,
-                        variant: 'success',
-                        duration: 1000
-                    })
+                    toast.success(`You have added ${res.message.success_users.length} users to Raven`)
                 }
 
                 mutate('raven.api.raven_users.get_list')

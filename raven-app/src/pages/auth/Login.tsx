@@ -8,8 +8,8 @@ import { Loader } from "@/components/common/Loader";
 import { ErrorText, Label } from "@/components/common/Form";
 import { LoginInputs, LoginContext } from "@/types/Auth/Login";
 import AuthContainer from "@/components/layout/AuthContainer";
-import { ErrorCallout } from "@/components/common/Callouts/ErrorCallouts";
 import { TwoFactor } from "@/pages/auth/TwoFactor";
+import { ErrorBanner } from "@/components/layout/AlertBanner";
 
 const SocialProviderIcons = {
     "github": <BiLogoGithub size="18" />,
@@ -73,7 +73,7 @@ export const Component = () => {
 
     return (
         <AuthContainer>
-            {error && <ErrorCallout message={error.message} />}
+            {error && <ErrorBanner error={error} />}
             {
                 isTwoFactorEnabled ? <TwoFactor loginWithTwoFAResponse={loginWithTwoFAResponse} setError={setError} setIsTwoFactorEnabled={setIsTwoFactorEnabled} /> :
                     <Box>
@@ -136,9 +136,9 @@ export const Component = () => {
                                             asChild
                                             size="2"
                                         >
-                                        <Link to="/forgot-password">
-                                            Forgot Password?
-                                        </Link>
+                                            <Link to="/forgot-password">
+                                                Forgot Password?
+                                            </Link>
                                         </LinkButton>
                                     </Flex>
                                 </Flex>

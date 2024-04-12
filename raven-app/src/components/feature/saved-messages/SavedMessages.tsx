@@ -6,7 +6,6 @@ import { EmptyStateForSavedMessages } from "../../layout/EmptyState/EmptyState"
 import { PageHeader } from "../../layout/Heading/PageHeader"
 import { MessageBox } from "../GlobalSearch/MessageBox"
 import { Heading } from "@radix-ui/themes"
-import { useToast } from "@/hooks/useToast"
 import { SearchButton } from "../chat-header/SearchButton"
 import { Box, Flex } from '@radix-ui/themes'
 

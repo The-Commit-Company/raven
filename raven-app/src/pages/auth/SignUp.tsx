@@ -15,8 +15,8 @@ import { Loader } from "@/components/common/Loader";
 import { isEmailValid } from "@/utils/validations";
 import AuthContainer from '@/components/layout/AuthContainer';
 import { CalloutObject } from "@/components/common/Callouts/CustomCallout";
-import { ErrorCallout } from "@/components/common/Callouts/ErrorCallouts";
 import { SuccessCallout } from "@/components/common/Callouts/SuccessCallout";
+import { ErrorBanner } from "@/components/layout/AlertBanner";
 
 export type SignUpInputs = {
     email: string,
@@ -45,7 +45,7 @@ export const Component = () => {
             .then((result) => {
                 setCallout({
                     state: true,
-                    message: result?.message[0] ? result?.message[1]:result?.message[1]+". Please Try Login.",
+                    message: result?.message[0] ? result?.message[1] : result?.message[1] + ". Please Try Login.",
                 });
             })
             .catch((err) => {
@@ -55,73 +55,73 @@ export const Component = () => {
 
     return (
         <AuthContainer>
-            {error && <ErrorCallout message={error.message} />}
+            {error && <ErrorBanner error={error} />}
             {callout && <SuccessCallout message={callout.message} />}
-        <Box>
-            <form onSubmit={handleSubmit(signup)}>
-                <Flex direction="column" gap="4">
-                <Flex direction="column" gap="2">
-                    <Label htmlFor="full_name" isRequired>
-                            Full Name
-                        </Label>
-                        <TextField.Root>
-                            <TextField.Input
-                                {...register("full_name")}
-                                name="full_name"
-                                type="text"
-                                required
-                                placeholder="Jane Doe"
-                                tabIndex={0}
-                            />
-                        </TextField.Root>
-                        {errors?.email && (
-                            <ErrorText>{errors?.email?.message}</ErrorText>
-                        )}
-                    </Flex>
+            <Box>
+                <form onSubmit={handleSubmit(signup)}>
+                    <Flex direction="column" gap="4">
+                        <Flex direction="column" gap="2">
+                            <Label htmlFor="full_name" isRequired>
+                                Full Name
+                            </Label>
+                            <TextField.Root>
+                                <TextField.Input
+                                    {...register("full_name")}
+                                    name="full_name"
+                                    type="text"
+                                    required
+                                    placeholder="Jane Doe"
+                                    tabIndex={0}
+                                />
+                            </TextField.Root>
+                            {errors?.email && (
+                                <ErrorText>{errors?.email?.message}</ErrorText>
+                            )}
+                        </Flex>
 
-                    <Flex direction="column" gap="2">
-                        <Label htmlFor="email" isRequired>
-                            Email
-                        </Label>
-                        <TextField.Root>
-                            <TextField.Input
-                                {...register("email", {
-                                    validate: (email) =>
-                                        isEmailValid(email) ||
-                                        "Please enter a valid email address.",
-                                    required: "Email is required.",
-                                })}
-                                name="email"
-                                type="email"
-                                required
-                                placeholder="jane@example.com"
-                                tabIndex={0}
-                            />
-                        </TextField.Root>
-                        {errors?.email && (
-                            <ErrorText>{errors?.email?.message}</ErrorText>
-                        )}
-                    </Flex>
+                        <Flex direction="column" gap="2">
+                            <Label htmlFor="email" isRequired>
+                                Email
+                            </Label>
+                            <TextField.Root>
+                                <TextField.Input
+                                    {...register("email", {
+                                        validate: (email) =>
+                                            isEmailValid(email) ||
+                                            "Please enter a valid email address.",
+                                        required: "Email is required.",
+                                    })}
+                                    name="email"
+                                    type="email"
+                                    required
+                                    placeholder="jane@example.com"
+                                    tabIndex={0}
+                                />
+                            </TextField.Root>
+                            {errors?.email && (
+                                <ErrorText>{errors?.email?.message}</ErrorText>
+                            )}
+                        </Flex>
 
-                    <Flex direction="column" gap="2">
-                        <Button type="submit" disabled={isSubmitting}>
-                            {isSubmitting ? <Loader /> : "Sign Up"}
-                        </Button>
+                        <Flex direction="column" gap="2">
+                            <Button type="submit" disabled={isSubmitting}>
+                                {isSubmitting ? <Loader /> : "Sign Up"}
+                            </Button>
+                        </Flex>
+                        <Flex gap="1" justify="center">
+                            <Text size="2">Have an Account?</Text>
+                            <LinkButton
+                                size="2"
+                                asChild
+                            >
+                                <Link to="/login">
+                                    <Text>Login</Text>
+                                </Link>
+                            </LinkButton>
+                        </Flex>
                     </Flex>
-                    <Flex gap="1" justify="center">
-                        <Text size="2">Have an Account?</Text>
-                        <LinkButton
-                            size="2"
-                            asChild
-                        >
-                            <Link to="/login">
-                            <Text>Login</Text>
-                            </Link>
-                        </LinkButton>
-                    </Flex>
-                </Flex>
-            </form>
-        </Box>
+                </form>
+            </Box>
         </AuthContainer>
     )
 }

@@ -5,8 +5,8 @@ import { ChannelMembers } from "@/utils/channel/ChannelMembersProvider"
 import { useFrappeUpdateDoc } from "frappe-react-sdk"
 import { useContext } from "react"
 import { Box, Button, Flex, Text } from "@radix-ui/themes"
-import { useToast } from "@/hooks/useToast"
 import { Loader } from "@/components/common/Loader"
+import { toast } from "sonner"
 
 interface ArchivedChannelBoxProps {
     channelData: ChannelListItem,
@@ -16,17 +16,12 @@ interface ArchivedChannelBoxProps {
 export const ArchivedChannelBox = ({ channelData, channelMembers }: ArchivedChannelBoxProps) => {
 
     const { updateDoc, error, loading } = useFrappeUpdateDoc()
-    const { toast } = useToast()
 
     const unArchiveChannel = async () => {
         return updateDoc('Raven Channel', channelData.name, {
             is_archived: 0
         }).then(() => {
-            toast({
-                title: 'Channel restored.',
-                variant: 'success',
-                duration: 1000,
-            })
+            toast.success('Channel restored.')
         })
     }
 

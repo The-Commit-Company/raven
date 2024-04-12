@@ -2,7 +2,7 @@ import { useContext, useEffect } from 'react'
 import { useIdleTimer, PresenceType } from 'react-idle-timer'
 import { FrappeContext, FrappeConfig } from 'frappe-react-sdk'
 import { useBoolean } from './useBoolean'
-import { useToast } from './useToast'
+import { toast } from 'sonner'
 
 /**
  * We need to track and sync user's active state with the server
@@ -17,8 +17,6 @@ export const useActiveState = () => {
         on: activate,
         off: deactivate,
     }] = useBoolean(true)
-
-    const { toast } = useToast()
 
     /**
      * Make an API call to the server to refresh the user's active state
@@ -43,11 +41,7 @@ export const useActiveState = () => {
     const showToast = () => {
         // Check if the toast is already active
         // If it is, don't show it again
-        toast({
-            description: "There was an error while refreshing your active state. You may appear offline to other users.",
-            duration: 4000,
-            variant: 'destructive',
-        })
+        toast.error("There was an error while refreshing your active state. You may appear offline to other users.")
     }
 
     /**

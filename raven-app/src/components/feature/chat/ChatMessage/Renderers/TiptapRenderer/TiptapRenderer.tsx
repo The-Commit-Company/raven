@@ -13,7 +13,6 @@ import json from 'highlight.js/lib/languages/json'
 import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight'
 import { common, createLowlight } from 'lowlight'
 import python from 'highlight.js/lib/languages/python'
-import { CustomBlockquote } from './Blockquote'
 import { CustomBold } from './Bold'
 import { CustomUserMention } from './Mention'
 import { CustomLink, LinkPreview } from './Link'
@@ -21,6 +20,7 @@ import { CustomUnderline } from './Underline'
 import { Image } from '@tiptap/extension-image'
 import { clsx } from 'clsx'
 import Italic from '@tiptap/extension-italic';
+import './tiptap-renderer.styles.css'
 const lowlight = createLowlight(common)
 
 lowlight.register('html', html)
@@ -44,7 +44,7 @@ export const TiptapRenderer = ({ message, user, isScrolling = false, isTruncated
     editable: false,
     editorProps: {
       attributes: {
-        class: isTruncated ? 'line-clamp-3' : ''
+        class: isTruncated ? 'tiptap-renderer line-clamp-3' : 'tiptap-renderer'
       }
     },
     enableCoreExtensions: true,
@@ -53,7 +53,6 @@ export const TiptapRenderer = ({ message, user, isScrolling = false, isTruncated
         heading: false,
         codeBlock: false,
         bold: false,
-        blockquote: false,
         italic: false,
         listItem: {
           HTMLAttributes: {
@@ -63,6 +62,11 @@ export const TiptapRenderer = ({ message, user, isScrolling = false, isTruncated
         paragraph: {
           HTMLAttributes: {
             class: 'rt-Text text-sm'
+          }
+        },
+        code: {
+          HTMLAttributes: {
+            class: 'pt-0.5 px-1 pb-px bg-[var(--gray-a3)] dark:bg-[#0d0d0d] text-[var(--ruby-a11)] dark-[var(--accent-a3)] text text-xs font-mono rounded border border-gray-4 dark:border-gray-6'
           }
         }
       }),
@@ -76,7 +80,6 @@ export const TiptapRenderer = ({ message, user, isScrolling = false, isTruncated
       CodeBlockLowlight.configure({
         lowlight
       }),
-      CustomBlockquote,
       CustomBold,
       CustomUserMention,
       CustomLink,
@@ -99,7 +102,7 @@ export const TiptapRenderer = ({ message, user, isScrolling = false, isTruncated
           contentEditable={false}
           editor={editor}
           readOnly />
-        {showLinkPreview && <LinkPreview isScrolling={isScrolling} />}
+        {showLinkPreview && <LinkPreview messageID={message.name} />}
       </EditorContext.Provider>
     </Box>
   )

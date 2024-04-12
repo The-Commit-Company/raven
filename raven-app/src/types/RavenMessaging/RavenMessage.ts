@@ -26,7 +26,7 @@ export interface RavenMessage{
 	/**	Replied Message Details : JSON	*/
 	replied_message_details?: any
 	/**	Message Type : Select	*/
-	message_type?: "Text" | "Image" | "File"
+	message_type?: "Text" | "Image" | "File" | "Poll"
 	/**	Content : Long Text	*/
 	content?: string
 	/**	File : Attach	*/
@@ -49,8 +49,12 @@ export interface RavenMessage{
 	is_edited?: 0 | 1
 	/**	Mentions : Table - Raven Mention	*/
 	mentions?: RavenMention[]
+	/**	Poll ID : Link - Raven Poll	*/
+	poll_id?: string
 	/**	Is Bot Message : Check	*/
 	is_bot_message?: 0 | 1
 	/**	Bot : Link - Raven User	*/
 	bot?: string
+	/**	Hide link preview : Check	*/
+	hide_link_preview?: 0 | 1
 }

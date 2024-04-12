@@ -132,12 +132,11 @@ export const SidebarButtonItem = ({ children, subtle, onClick, isLoading, active
 }
 
 interface SidebarViewMoreButtonProps extends IconButtonProps {
-    onClick: () => void
+    onClick: () => void,
+    expanded: boolean
 }
 
-export const SidebarViewMoreButton = ({ onClick, ...props }: SidebarViewMoreButtonProps) => {
-
-    const [isViewMore, setIsViewMore] = useState(false)
+export const SidebarViewMoreButton = ({ expanded, onClick, ...props }: SidebarViewMoreButtonProps) => {
 
     return (
         <IconButton
@@ -147,12 +146,9 @@ export const SidebarViewMoreButton = ({ onClick, ...props }: SidebarViewMoreButt
             size='1'
             className='cursor-pointer pb-[4px] text-slate-12 bg-transparent hover:text-gray-12'
             highContrast
-            onClick={() => {
-                setIsViewMore(!isViewMore)
-                onClick()
-            }}
+            onClick={onClick}
             {...props}>
-            {isViewMore ? <FaCaretRight size='18' /> : <FaCaretDown size='18' />}
+            {expanded ? <FaCaretDown size='18' /> : <FaCaretRight size='18' />}
         </IconButton>
     )
 }

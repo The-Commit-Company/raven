@@ -1,8 +1,8 @@
-import { useToast } from "@/hooks/useToast"
 import { Flex, Text } from "@radix-ui/themes"
 import { FlexProps } from "@radix-ui/themes/dist/cjs/components/flex"
 import { forwardRef, useImperativeHandle, useState } from "react"
 import { Accept, useDropzone } from "react-dropzone"
+import { toast } from "sonner"
 
 export interface CustomFile extends File {
     fileID: string,
@@ -31,17 +31,12 @@ export interface FileDropProps extends FlexProps {
 export const FileDrop = forwardRef((props: FileDropProps, ref) => {
 
     const { files, onFileChange, maxFiles, accept, maxFileSize, children, ...compProps } = props
-    const { toast } = useToast()
 
     const [onDragEnter, setOnDragEnter] = useState(false)
 
     const fileSizeValidator = (file: any) => {
         if (maxFileSize && file.size > maxFileSize * 1000000) {
-            toast({
-                title: `Uh Oh! ${file.name} exceeded the maximum file size required.`,
-                variant: 'destructive',
-                duration: 2500
-            })
+            toast.error(`Uh Oh! ${file.name} exceeded the maximum file size required.`)
             return {
                 code: "size-too-large",
                 message: `File size is larger than the required size.`
@@ -57,11 +52,7 @@ export const FileDrop = forwardRef((props: FileDropProps, ref) => {
             }))])
 
             if (maxFiles && maxFiles < fileRejections.length) {
-                toast({
-                    title: `Uh Oh! Maximum ${maxFiles} files can be uploaded. Please try again.`,
-                    variant: 'destructive',
-                    duration: 1800,
-                })
+                toast.error(`Uh Oh! Maximum ${maxFiles} files can be uploaded. Please try again.`)
             }
         },
         maxFiles: maxFiles ? maxFiles : 0,

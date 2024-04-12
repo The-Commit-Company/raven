@@ -3,9 +3,9 @@ import { Suspense, lazy, useEffect } from "react"
 import { ErrorBanner } from "../../../../layout/AlertBanner"
 import { IconButton, Dialog, Flex, Text } from "@radix-ui/themes"
 import { BiX } from "react-icons/bi"
-import { useToast } from "@/hooks/useToast"
 import { Loader } from "@/components/common/Loader"
 import { TextMessage } from "../../../../../../../types/Messaging/Message"
+import { toast } from "sonner"
 
 const Tiptap = lazy(() => import("../../ChatInput/Tiptap"))
 
@@ -16,7 +16,6 @@ interface EditMessageModalProps {
 
 export const EditMessageModal = ({ onClose, message }: EditMessageModalProps) => {
 
-    const { toast } = useToast()
     const { updateDoc, error, loading: updatingDoc, reset } = useFrappeUpdateDoc()
 
     useEffect(() => {
@@ -27,13 +26,7 @@ export const EditMessageModal = ({ onClose, message }: EditMessageModalProps) =>
         return updateDoc('Raven Message', message.name,
             { text: html, json }).then((d) => {
                 onClose(true)
-                toast({
-                    title: "Message updated",
-                    description: "Your message has been updated",
-                    variant: "success",
-                    duration: 1000,
-                })
-
+                toast.info("Message updated")
             })
     }
 

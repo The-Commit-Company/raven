@@ -5,7 +5,7 @@ import { ChannelMembers } from '@/utils/channel/ChannelMembersProvider'
 import { ChannelIcon } from '@/utils/layout/channelIcon'
 import { AlertDialog, Button, Flex, Text } from '@radix-ui/themes'
 import { Loader } from '@/components/common/Loader'
-import { useToast } from '@/hooks/useToast'
+import { toast } from 'sonner'
 
 interface RemoveChannelMemberModalProps {
     onClose: (refresh?: boolean) => void,
@@ -18,7 +18,6 @@ interface RemoveChannelMemberModalProps {
 export const RemoveChannelMemberModal = ({ onClose, user_id, channelData, channelMembers, updateMembers }: RemoveChannelMemberModalProps) => {
 
     const { deleteDoc, error, loading: deletingDoc } = useFrappeDeleteDoc()
-    const { toast } = useToast()
 
     const { data: member, error: errorFetchingChannelMember } = useFrappeGetCall<{ message: { name: string } }>('frappe.client.get_value', {
         doctype: "Raven Channel Member",
@@ -30,11 +29,7 @@ export const RemoveChannelMemberModal = ({ onClose, user_id, channelData, channe
 
     const onSubmit = async () => {
         return deleteDoc('Raven Channel Member', member?.message.name).then(() => {
-            toast({
-                title: 'Member removed successfully',
-                variant: 'success',
-                duration: 1000
-            })
+            toast.success(`Removed`)
             updateMembers()
             onClose()
         })

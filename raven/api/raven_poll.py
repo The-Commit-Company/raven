@@ -136,10 +136,9 @@ def get_all_votes(poll_id):
 	if not frappe.has_permission(doctype="Raven Poll", doc=poll_id, ptype="read"):
 		frappe.throw(_("You do not have permission to access this poll"), frappe.PermissionError)
 
-	# Check if the poll is anonymous
-	is_anonymous = frappe.get_cached_value("Raven Poll", poll_id, "is_anonymous")
+	poll_doc = frappe.get_cached_doc("Raven Poll", poll_id)
 
-	if is_anonymous:
+	if poll_doc.is_anonymous:
 		frappe.throw(_("This poll is anonymous. You do not have permission to access the votes."), frappe.PermissionError)
 	else:
 		# Get all votes for this poll
@@ -150,19 +149,12 @@ def get_all_votes(poll_id):
 		)
 
 		# Initialize results dictionary
-		results = {}
+		results = {option.name: { 'users': [], 'count': option.votes } for option in poll_doc.options if option.votes}
 
 		# Process votes
 		for vote in votes:
 			option = vote['option']
-			if option not in results:
-				results[option] = {
-					'users': [vote['user_id']],
-					'count': 1
-				}
-			else:
-				results[option]['users'].append(vote['user_id'])
-				results[option]['count'] += 1
+			results[option]['users'].append(vote['user_id'])
 
 		# Calculate total votes
 		total_votes = sum(result['count'] for result in results.values())

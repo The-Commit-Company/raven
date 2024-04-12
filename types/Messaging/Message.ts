@@ -19,7 +19,8 @@ export interface BaseMessage {
     replied_message_details?: string,
     poll_id?: string
     is_bot_message?: 1 | 0,
-    bot?: string
+    bot?: string,
+    hide_link_preview?: 1 | 0,
 }
 
 export interface FileMessage extends BaseMessage {
