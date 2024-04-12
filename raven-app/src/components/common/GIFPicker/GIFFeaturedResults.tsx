@@ -1,15 +1,13 @@
 import { TENOR_API_KEY, TENOR_CLIENT_KEY, TENOR_FEATURED_API_ENDPOINT_BASE } from "./GIFPicker"
 import { GIFGallerySkeleton } from "./GIFGallerySkeleton"
-import useSWRInfinite from "swr/infinite";
 import { useMemo } from "react";
 import { Button } from "@radix-ui/themes";
+import { useSWRInfinite } from "frappe-react-sdk";
 
 
 export interface Props {
   onSelect: (gif: Result) => void
 }
-
-// const fetcher = (url: string) => fetch(url).then(res => res.json())
 
 const fetcher = async (url: string) => {
   const response = await fetch(url);
@@ -18,8 +16,6 @@ const fetcher = async (url: string) => {
 };
 
 export const GIFFeaturedResults = ({ onSelect }: Props) => {
-
-  // const { data: GIFS, isLoading } = useSWR<TenorResultObject>(`${TENOR_FEATURED_API_ENDPOINT_BASE}?&key=${TENOR_API_KEY}&client_key=${TENOR_CLIENT_KEY}`, fetcher)
 
   const { data, size, setSize, isLoading } = useSWRInfinite(
     (index: any, previousPageData: any) => {
