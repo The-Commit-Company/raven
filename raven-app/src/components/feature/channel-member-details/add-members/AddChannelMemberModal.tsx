@@ -9,7 +9,7 @@ import { ChannelMembers } from '@/utils/channel/ChannelMembersProvider'
 import { Suspense, lazy } from 'react'
 import { UserFields } from '@/utils/users/UserListProvider'
 import { ErrorText } from '@/components/common/Form'
-import { useToast } from '@/hooks/useToast'
+import { toast } from 'sonner'
 const AddMembersDropdown = lazy(() => import('../../select-member/AddMembersDropdown'))
 interface AddChannelMemberForm {
   add_members: UserFields[] | null
@@ -34,12 +34,11 @@ export const AddChannelMembersModalContent = ({ channelID, channel_name, onClose
   })
 
   const { handleSubmit, control } = methods
-  const { toast } = useToast()
 
   const onSubmit = (data: AddChannelMemberForm) => {
     if (data.add_members && data.add_members.length > 0) {
       const promises = data.add_members.map(async (member) => {
-        return createDoc('Raven Channel Member', {
+        return createDoc('Raven Channel Mmber', {
           channel_id: channelID,
           user_id: member.name
         })
@@ -47,11 +46,7 @@ export const AddChannelMembersModalContent = ({ channelID, channel_name, onClose
 
       Promise.all(promises)
         .then(() => {
-          toast({
-            title: 'Members added successfully',
-            variant: 'success',
-            duration: 1000
-          })
+          toast.success("Members added")
           updateMembers()
           onClose()
         })

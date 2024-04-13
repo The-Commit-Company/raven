@@ -1,20 +1,33 @@
+import click
 import frappe
+from frappe.desk.page.setup_wizard.setup_wizard import make_records
 
 
 def after_install():
-	add_standard_navbar_items()
-	create_general_channel()
+	try:
+		print("Setting up Raven...")
+		add_standard_navbar_items()
+		create_general_channel()
+
+		click.secho("Thank you for installing Raven!", fg="green")
+
+	except Exception as e:
+		BUG_REPORT_URL = "https://github.com/The-Commit-Company/Raven/issues/new"
+		click.secho(
+			"Installation for Raven failed due to an error."
+			" Please try re-installing the app or"
+			f" report the issue on {BUG_REPORT_URL} if not resolved.",
+			fg="bright_red",
+		)
+		raise e
 
 
 def create_general_channel():
-	if not frappe.db.exists("Raven Channel", "general"):
-		channel = frappe.new_doc("Raven Channel")
-		channel.channel_name = "General"
-		channel.name = "general"
-		channel.type = "Open"
-		channel.save(ignore_permissions=True)
-		# Part of installation, hence needs to be committed manually
-		frappe.db.commit()  # nosemgrep
+	channel = [
+		{"doctype": "Raven Channel", "name": "general", "type": "Open", "channel_name": "General"}
+	]
+
+	make_records(channel)
 
 
 def add_standard_navbar_items():

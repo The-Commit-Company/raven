@@ -14,6 +14,47 @@ interface ParsedErrorMessage {
     title?: string,
     indicator?: string,
 }
+
+export const getErrorMessage = (error?: FrappeError | null): string => {
+    const messages = getErrorMessages(error)
+    return messages.map(m => m.message).join('\n')
+}
+
+const getErrorMessages = (error?: FrappeError | null): ParsedErrorMessage[] => {
+    if (!error) return []
+    let eMessages: ParsedErrorMessage[] = error?._server_messages ? JSON.parse(error?._server_messages) : []
+    eMessages = eMessages.map((m: any) => {
+        try {
+            return JSON.parse(m)
+        } catch (e) {
+            return m
+        }
+    })
+
+    if (eMessages.length === 0) {
+        // Get the message from the exception by removing the exc_type
+        const indexOfFirstColon = error?.exception?.indexOf(':')
+        if (indexOfFirstColon) {
+            const exception = error?.exception?.slice(indexOfFirstColon + 1)
+            if (exception) {
+                eMessages = [{
+                    message: exception,
+                    title: "Error"
+                }]
+            }
+        }
+
+        if (eMessages.length === 0) {
+            eMessages = [{
+                message: error?.message,
+                title: "Error",
+                indicator: "red"
+            }]
+        }
+    }
+    return eMessages
+
+}
 export const ErrorBanner = ({ error, overrideHeading, children }: ErrorBannerProps) => {
 
 

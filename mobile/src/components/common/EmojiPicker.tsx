@@ -2,12 +2,17 @@ import { createElement, useEffect, useRef } from "react"
 import 'emoji-picker-element'
 import './emojiPicker.styles.css'
 
+import { Database } from "emoji-picker-element";
+
+export const emojiDatabase = new Database();
+
 const EmojiPicker = ({ onSelect }: { onSelect: (emoji: string) => void }) => {
 
     const ref = useRef<any>(null)
 
     useEffect(() => {
         const handler = (event: any) => {
+            emojiDatabase.incrementFavoriteEmojiCount(event.detail.unicode)
             onSelect(event.detail.unicode)
         }
         ref.current?.addEventListener('emoji-click', handler)

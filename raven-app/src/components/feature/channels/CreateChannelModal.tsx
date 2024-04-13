@@ -9,7 +9,7 @@ import { BiPlus } from 'react-icons/bi'
 import { ErrorText, HelperText, Label } from '@/components/common/Form'
 import { Loader } from '@/components/common/Loader'
 import { DIALOG_CONTENT_CLASS } from '@/utils/layout/dialog'
-import { useToast } from '@/hooks/useToast'
+import { toast } from 'sonner'
 
 interface ChannelCreationForm {
     channel_name: string,
@@ -53,19 +53,12 @@ export const CreateChannelButton = ({ updateChannelList }: { updateChannelList: 
         reset()
     }
 
-
-    const { toast } = useToast()
-
     const channelType = watch('type')
 
     const onSubmit = (data: ChannelCreationForm) => {
         createDoc('Raven Channel', data).then(result => {
             if (result) {
-                toast({
-                    title: "Channel Created",
-                    variant: "success",
-                    duration: 1000,
-                })
+                toast.success('Channel created')
                 onClose(result.name)
             }
         })

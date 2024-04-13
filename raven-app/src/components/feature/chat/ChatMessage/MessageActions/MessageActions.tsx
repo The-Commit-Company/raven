@@ -6,8 +6,9 @@ import { BiBookmarkMinus, BiBookmarkPlus, BiCopy, BiDownload, BiEditAlt, BiLink,
 import { HiReply } from 'react-icons/hi'
 import { FrappeConfig, FrappeContext } from 'frappe-react-sdk'
 import { useMessageCopy } from './useMessageCopy'
-import { useToast } from '@/hooks/useToast'
 import { RetractVote } from './RetractVote'
+import { toast } from 'sonner'
+import { getErrorMessage } from '@/components/layout/AlertBanner/ErrorBanner'
 
 export interface MessageContextMenuProps {
     message?: Message | null,
@@ -123,25 +124,21 @@ const SaveMessageAction = ({ message }: { message: Message }) => {
 
     const { call } = useContext(FrappeContext) as FrappeConfig
 
-    const { toast } = useToast()
-
     const handleLike = () => {
         call.post('raven.api.raven_message.save_message', {
             // doctype: 'Raven Message',
             message_id: message.name,
             add: isSaved ? 'No' : 'Yes'
         }).then(() => {
-            toast({
-                title: isSaved ? 'Message unsaved' : 'Message saved',
-                variant: 'accent',
-                duration: 800,
-            })
+            if (isSaved) {
+                toast('Message unsaved')
+            } else {
+                toast.success('Message saved')
+            }
         })
-            .catch(() => {
-                toast({
-                    title: 'Could not perform the action',
-                    variant: 'destructive',
-                    duration: 800,
+            .catch((e) => {
+                toast.error('Could not perform the action', {
+                    description: getErrorMessage(e)
                 })
             })
     }

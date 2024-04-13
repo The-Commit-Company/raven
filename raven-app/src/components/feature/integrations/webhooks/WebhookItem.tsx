@@ -1,3 +1,5 @@
+import { Loader } from "@/components/common/Loader"
+import { ErrorBanner } from "@/components/layout/AlertBanner"
 import { RavenWebhook } from "@/types/RavenIntegrations/RavenWebhook"
 import { DateMonthYear } from "@/utils/dateConversions"
 import { DIALOG_CONTENT_CLASS } from "@/utils/layout/dialog"
@@ -6,6 +8,7 @@ import { useState } from "react"
 import { BiEdit, BiTrash } from "react-icons/bi"
 import { useNavigate } from "react-router-dom"
 import { AlertContent } from "../../settings/common/DeleteAlert"
+import { toast } from "sonner"
 
 export const WebhookItem = ({ webhook, mutate }: { webhook: RavenWebhook, mutate: () => void }) => {
 
@@ -69,4 +72,42 @@ export const WebhookItem = ({ webhook, mutate }: { webhook: RavenWebhook, mutate
             </Flex>
         </Flex>
     )
+
+const DeleteWebhookAlertContent = ({ webhhookID, onClose, mutate }: { webhhookID: string, onClose: () => void, mutate: () => void }) => {
+
+    const { deleteDoc, error, loading } = useFrappeDeleteDoc()
+
+    const onDelete = () => {
+        deleteDoc('Raven Webhook', webhhookID).then(() => {
+            mutate()
+            onClose()
+            toast.error('Webhook deleted.')
+        })
+    }
+
+    return (
+        <>
+            <AlertDialog.Title>
+                <Text>{webhhookID}</Text>
+            </AlertDialog.Title>
+            <Flex direction={'column'} gap='2'>
+                <ErrorBanner error={error} />
+                <Text size='2'>Are you sure you want to delete this webhook?</Text>
+            </Flex>
+            <Flex gap="3" mt="4" justify="end">
+                <AlertDialog.Cancel>
+                    <Button variant="soft" color="gray" onClick={onClose}>
+                        Cancel
+                    </Button>
+                </AlertDialog.Cancel>
+                <AlertDialog.Action>
+                    <Button variant="solid" color="red" onClick={onDelete} disabled={loading}>
+                        {loading && <Loader />}
+                        {loading ? "Deleting" : `Delete`}
+                    </Button>
+                </AlertDialog.Action>
+            </Flex>
+        </>
+    )
+
 }

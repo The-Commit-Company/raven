@@ -1,5 +1,5 @@
 import { useFrappeDeleteDoc, useFrappeGetCall } from 'frappe-react-sdk'
-import { useContext, useRef } from 'react'
+import { useContext } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { UserContext } from '../../../../utils/auth/UserProvider'
 import { ErrorBanner } from '../../../layout/AlertBanner'
@@ -7,7 +7,8 @@ import { ChannelListContext, ChannelListContextType, ChannelListItem } from '@/u
 import { ChannelIcon } from '@/utils/layout/channelIcon'
 import { AlertDialog, Button, Flex, Text } from '@radix-ui/themes'
 import { Loader } from '@/components/common/Loader'
-import { useToast } from '@/hooks/useToast'
+import { toast } from 'sonner'
+import { getErrorMessage } from '@/components/layout/AlertBanner/ErrorBanner'
 
 interface LeaveChannelModalProps {
     onClose: () => void,
@@ -19,7 +20,6 @@ export const LeaveChannelModal = ({ onClose, channelData, closeDetailsModal }: L
 
     const { currentUser } = useContext(UserContext)
     const { deleteDoc, loading: deletingDoc, error } = useFrappeDeleteDoc()
-    const { toast } = useToast()
     const navigate = useNavigate()
 
     const { data: channelMember } = useFrappeGetCall<{ message: { name: string } }>('frappe.client.get_value', {
@@ -33,19 +33,15 @@ export const LeaveChannelModal = ({ onClose, channelData, closeDetailsModal }: L
     const { mutate } = useContext(ChannelListContext) as ChannelListContextType
 
     const onSubmit = async () => {
-        return deleteDoc('Raven Channel Member', channelMember?.message.name).then(() => {
-            toast({
-                title: 'You have left the channel',
-            })
+        return deleteDoc('Raven Chnnel Member', channelMember?.message.name).then(() => {
+            toast('You have left the channel')
             onClose()
             mutate()
             navigate('../general')
             closeDetailsModal()
         }).catch((e) => {
-            toast({
-                title: 'Error: Could leave channel.',
-                variant: 'destructive',
-                description: `${e.message}`
+            toast.error('Could not leave channel', {
+                description: getErrorMessage(e)
             })
         })
     }

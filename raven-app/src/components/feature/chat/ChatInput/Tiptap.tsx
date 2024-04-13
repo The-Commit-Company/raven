@@ -18,6 +18,7 @@ import { ToolPanel } from './ToolPanel'
 import { RightToolbarButtons } from './RightToolbarButtons'
 import { common, createLowlight } from 'lowlight'
 import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight'
+import Code from '@tiptap/extension-code'
 import css from 'highlight.js/lib/languages/css'
 import js from 'highlight.js/lib/languages/javascript'
 import ts from 'highlight.js/lib/languages/typescript'
@@ -29,6 +30,7 @@ import { Box } from '@radix-ui/themes'
 import { useSessionStickyState } from '@/hooks/useStickyState'
 import { Message } from '../../../../../../types/Messaging/Message'
 import Image from '@tiptap/extension-image'
+import { EmojiSuggestion } from './EmojiSuggestion'
 const lowlight = createLowlight(common)
 
 lowlight.register('html', html)
@@ -74,6 +76,7 @@ export const ChannelMention = Mention.extend({
             pluginKey: new PluginKey('channelMention'),
         }
     })
+
 const Tiptap = ({ slotBefore, fileProps, onMessageSend, replyMessage, clearReplyMessage, placeholder = 'Type a message...', messageSending, sessionStorageKey = 'tiptap-editor', disableSessionStorage = false, defaultText = '' }: TiptapEditorProps) => {
 
     const { enabledUsers } = useContext(UserListContext)
@@ -90,13 +93,9 @@ const Tiptap = ({ slotBefore, fileProps, onMessageSend, replyMessage, clearReply
                     const isCodeBlockActive = this.editor.isActive('codeBlock');
                     const isListItemActive = this.editor.isActive('listItem');
 
-
-                    // FIXME: This breaks sometimes when the key is not `userMention$` but a random number appended in front of it
-                    //@ts-expect-error
-                    const isSuggestionOpen = this.editor.state.userMention$?.active || this.editor.state.channelMention$?.active
                     const hasContent = this.editor.getText().trim().length > 0
 
-                    if (isCodeBlockActive || isListItemActive || isSuggestionOpen) {
+                    if (isCodeBlockActive || isListItemActive) {
                         return false;
                     }
                     let html = ''
@@ -167,20 +166,15 @@ const Tiptap = ({ slotBefore, fileProps, onMessageSend, replyMessage, clearReply
                     }
 
                     return false
-                }
-
-                // 'Shift-Enter': () => {
-                //     /**
-                //      * currently we do not have an option to show a soft line break in the posts, so we overwrite
-                //      * the behavior from tiptap with the default behavior on pressing enter
-                //      */
-                //     return this.editor.commands.first(({ commands }) => [
-                //         () => commands.newlineInCode(),
-                //         () => commands.createParagraphNear(),
-                //         () => commands.liftEmptyBlock(),
-                //         () => commands.splitBlock(),
-                //     ]);
-                // },
+                },
+                'Shift-Enter': () => {
+                    return this.editor.commands.first(({ commands }) => [
+                        () => commands.newlineInCode(),
+                        () => commands.createParagraphNear(),
+                        () => commands.liftEmptyBlock(),
+                        () => commands.splitBlock(),
+                    ]);
+                },
             };
         },
         addProseMirrorPlugins() {
@@ -256,8 +250,43 @@ const Tiptap = ({ slotBefore, fileProps, onMessageSend, replyMessage, clearReply
                 HTMLAttributes: {
                     class: 'rt-Text text-sm'
                 }
+            },
+            code: {
+                HTMLAttributes: {
+                    class: 'pt-0.5 px-1 pb-px bg-[var(--gray-a3)] dark:bg-[#0d0d0d] text-[var(--ruby-a11)] dark-[var(--accent-a3)] text text-xs font-mono rounded border border-gray-4 dark:border-gray-6'
+                }
+            },
+        }),
+        Underline,
+        Highlight.configure({
+            multicolor: true,
+            HTMLAttributes: {
+                class: 'bg-[var(--yellow-6)] dark:bg-[var(--yellow-11)] px-2 py-1'
             }
         }),
+        Link.extend({ inclusive: false }).configure({
+            autolink: true,
+            protocols: ['mailto', 'https', 'http'],
+        }),
+        Placeholder.configure({
+            // Pick a random placeholder from the list.
+            placeholder,
+        }),
+        CodeBlockLowlight.extend({
+            addKeyboardShortcuts() {
+                return {
+                    // this extends existing shortcuts instead of overwriting
+                    ...this.parent?.(),
+                    'Mod-Shift-E': () => this.editor.commands.toggleCodeBlock(),
+                }
+            }
+        }).configure({
+            lowlight
+        }),
+        Image.configure({
+            inline: true,
+        }),
+        KeyboardHandler,
         UserMention.configure({
             HTMLAttributes: {
                 class: 'mention',
@@ -398,27 +427,7 @@ const Tiptap = ({ slotBefore, fileProps, onMessageSend, replyMessage, clearReply
 
             }
         }),
-        Underline,
-        Highlight.configure({
-            multicolor: true,
-            HTMLAttributes: {
-                class: 'bg-[var(--yellow-6)] dark:bg-[var(--yellow-11)] px-2 py-1'
-            }
-        }),
-        Link.configure({
-            protocols: ['mailto', 'https', 'http']
-        }),
-        Placeholder.configure({
-            // Pick a random placeholder from the list.
-            placeholder,
-        }),
-        CodeBlockLowlight.configure({
-            lowlight
-        }),
-        Image.configure({
-            inline: true,
-        }),
-        KeyboardHandler
+        EmojiSuggestion
     ]
 
     const [content, setContent] = useSessionStickyState(defaultText, sessionStorageKey, disableSessionStorage)

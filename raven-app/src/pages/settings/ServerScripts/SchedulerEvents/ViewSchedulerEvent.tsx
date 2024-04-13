@@ -2,7 +2,6 @@ import { BackToList } from "@/components/feature/integrations/webhooks/BackToLis
 import { DeleteAlert } from "@/components/feature/settings/common/DeleteAlert"
 import { SchedulerEventsForm } from "@/components/feature/settings/scheduler-events/SchedulerEventsForm"
 import { ErrorBanner } from "@/components/layout/AlertBanner"
-import { useToast } from "@/hooks/useToast"
 import { Badge, Box, Button, DropdownMenu, Flex, Heading, IconButton, Section } from "@radix-ui/themes"
 import { useFrappeGetDoc, useFrappeUpdateDoc } from "frappe-react-sdk"
 import { useState } from "react"
@@ -10,6 +9,7 @@ import { FormProvider, useForm } from "react-hook-form"
 import { BiDotsVerticalRounded } from "react-icons/bi"
 import { FiArrowLeft, FiChevronDown } from "react-icons/fi"
 import { useNavigate, useParams } from "react-router-dom"
+import { toast } from "sonner"
 
 export interface Props { }
 
@@ -53,8 +53,6 @@ const ViewSchedulerEventPage = ({ data, onUpdate }: { data: any, onUpdate: () =>
 
     const { updateDoc, error, loading } = useFrappeUpdateDoc()
 
-    const { toast } = useToast()
-
     const onSubmit = (data: any) => {
         console.log('called')
         let cron_expression = ''
@@ -79,10 +77,7 @@ const ViewSchedulerEventPage = ({ data, onUpdate }: { data: any, onUpdate: () =>
         })
             .then(() => {
                 onUpdate()
-                toast({
-                    title: `Scheduler Event ${data.name} updated`,
-                    variant: 'success',
-                })
+                toast.success("Scheduler Event updated")
             })
     }
 
@@ -92,10 +87,7 @@ const ViewSchedulerEventPage = ({ data, onUpdate }: { data: any, onUpdate: () =>
         })
             .then(() => {
                 onUpdate()
-                toast({
-                    title: `Scheduler Event ${data.name} ${data.disabled ? "enabled" : "disabled"}`,
-                    variant: 'success',
-                })
+                toast(`Scheduler Event ${data.name} ${data.disabled ? "enabled" : "disabled"}`)
             })
     }
 

@@ -1,14 +1,14 @@
 import { useState } from "react";
 import { useFrappePostCall } from "frappe-react-sdk";
-import { IonSpinner } from '@ionic/react'
-import { SuccessCallout, CalloutObject, ErrorCallout } from '@/components/common/Callouts'
+import { SuccessCallout, CalloutObject } from '@/components/common/Callouts'
 import { useForm } from 'react-hook-form'
 import { LoginInputs } from "@/types/Auth/Login";
 import { ActiveScreenProps } from "@/components/layout/AuthContainer";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { isEmailValid } from "@/utils/validations/validations";
-import { Button, Link } from "@radix-ui/themes";
+import { Button } from "@radix-ui/themes";
+import { ErrorBanner } from "@/components/layout";
 
 
 export const LoginWithEmail = (props: ActiveScreenProps) => {
@@ -32,7 +32,7 @@ export const LoginWithEmail = (props: ActiveScreenProps) => {
                     state: true,
                     message: "Login Link sent on Email",
                 });
-            }).catch((err)=>{
+            }).catch((err) => {
                 setCallout(null)
             })
     }
@@ -42,7 +42,7 @@ export const LoginWithEmail = (props: ActiveScreenProps) => {
 
 
             <div className="flex flex-col gap-y-6">
-                {error && <ErrorCallout message={error.message} />}
+                {error && <ErrorBanner error={error} />}
                 {callout && <SuccessCallout message={callout.message} />}
                 <div>
                     <Form {...form}>

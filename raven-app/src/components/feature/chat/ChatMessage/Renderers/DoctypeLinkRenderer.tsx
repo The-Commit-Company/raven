@@ -1,7 +1,7 @@
-import { useToast } from "@/hooks/useToast"
 import { Flex, IconButton, Link } from "@radix-ui/themes"
 import { BiLink, BiRightArrowAlt } from "react-icons/bi"
 import { FiExternalLink } from "react-icons/fi"
+import { toast } from "sonner"
 
 const getRoute = (doctype: string, docname: string) => {
     const lowerCaseDoctype = doctype.toLowerCase().split(' ').join('-')
@@ -10,17 +10,10 @@ const getRoute = (doctype: string, docname: string) => {
 }
 export const DoctypeLinkRenderer = ({ doctype, docname }: { doctype: string, docname: string }) => {
 
-    const { toast } = useToast()
-
     const copyLink = () => {
 
         navigator.clipboard.writeText(window.location.origin + getRoute(doctype, docname))
-
-        toast({
-            title: 'Link copied',
-            duration: 800,
-            variant: 'accent'
-        })
+        toast.success('Link copied')
     }
 
     const route = getRoute(doctype, docname)

@@ -1,6 +1,6 @@
 import { ErrorText, Label } from "@/components/common/Form"
 import { ErrorBanner } from "@/components/layout/AlertBanner"
-import { useToast } from "@/hooks/useToast"
+import { getErrorMessage } from "@/components/layout/AlertBanner/ErrorBanner"
 import { RavenPoll } from "@/types/RavenMessaging/RavenPoll"
 import { DIALOG_CONTENT_CLASS } from "@/utils/layout/dialog"
 import { Button, Checkbox, Dialog, Flex, IconButton, TextArea, TextField, Text, Box } from "@radix-ui/themes"
@@ -10,6 +10,7 @@ import { Controller, FormProvider, useFieldArray, useForm } from "react-hook-for
 import { BiPlus, BiTrash } from "react-icons/bi"
 import { MdOutlineBarChart } from "react-icons/md"
 import { useParams } from "react-router-dom"
+import { toast } from "sonner"
 
 interface CreatePollProps {
     buttonStyle?: string,
@@ -43,7 +44,6 @@ export const CreatePoll = ({ buttonStyle, isDisabled = false }: CreatePollProps)
 
     const { register, handleSubmit, formState: { errors }, control, reset: resetForm } = methods
     const [isOpen, setIsOpen] = useState(false)
-    const { toast } = useToast()
 
     const { fields, remove, append } = useFieldArray({
         control: control,
@@ -94,21 +94,16 @@ export const CreatePoll = ({ buttonStyle, isDisabled = false }: CreatePollProps)
     const { call: createPoll, error } = useFrappePostCall('raven.api.raven_poll.create_poll')
     const { channelID } = useParams<{ channelID: string }>()
 
-    const onSubmit = (data: RavenPoll) => {
+    const onSubmit = async (data: RavenPoll) => {
         return createPoll({
             ...data,
             "channel_id": channelID
         }).then(() => {
-            toast({
-                title: "Poll created successfully",
-                variant: 'success',
-            })
+            toast.success("Poll created")
             onClose()
         }).catch((err) => {
-            toast({
-                title: "Error creating poll",
-                description: err.message,
-                variant: "destructive",
+            toast.error("There was an error.", {
+                description: getErrorMessage(err)
             })
         })
     }

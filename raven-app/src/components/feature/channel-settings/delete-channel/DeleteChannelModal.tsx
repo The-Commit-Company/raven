@@ -5,8 +5,8 @@ import { useFrappeDeleteDoc } from 'frappe-react-sdk'
 import { ChannelListItem } from '@/utils/channel/ChannelListProvider'
 import { AlertDialog, Button, Callout, Checkbox, Flex, Text } from '@radix-ui/themes'
 import { Loader } from '@/components/common/Loader'
-import { useToast } from '@/hooks/useToast'
 import { FiAlertTriangle } from 'react-icons/fi'
+import { toast } from 'sonner'
 
 type DeleteChannelModalProps = {
     onClose: () => void,
@@ -23,7 +23,6 @@ export const DeleteChannelModal = ({ onClose, onCloseParent, channelData }: Dele
         reset()
     }
 
-    const { toast } = useToast()
     const navigate = useNavigate()
 
     const onSubmit = () => {
@@ -34,10 +33,7 @@ export const DeleteChannelModal = ({ onClose, onCloseParent, channelData }: Dele
                     onCloseParent()
                     localStorage.removeItem('ravenLastChannel')
                     navigate('/channel')
-                    toast({
-                        title: `Channel ${channelData.name} deleted`,
-                        variant: 'success',
-                    })
+                    toast(`Channel ${channelData.name} deleted.`)
                 })
         }
     }

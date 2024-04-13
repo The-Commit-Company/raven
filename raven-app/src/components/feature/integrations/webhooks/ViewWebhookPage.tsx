@@ -3,7 +3,6 @@ import { AlertDialog, Badge, Box, Button, DropdownMenu, Flex, IconButton, Sectio
 import { FrappeDoc, useFrappeUpdateDoc } from "frappe-react-sdk"
 import { FieldValues, FormProvider, useForm } from "react-hook-form"
 import { KeyedMutator } from 'swr'
-import { useToast } from "@/hooks/useToast"
 import { BiDotsVerticalRounded } from "react-icons/bi"
 import { useState } from "react"
 import { DIALOG_CONTENT_CLASS } from "@/utils/layout/dialog"
@@ -11,6 +10,7 @@ import { Loader } from "@/components/common/Loader"
 import { RavenWebhook } from "@/types/RavenIntegrations/RavenWebhook"
 import { BackToList } from "./BackToList"
 import { WebhookForm } from "./WebhookForm"
+import { toast } from "sonner"
 
 export const ViewWebhookPage = ({ data, mutate }: { data: FrappeDoc<RavenWebhook>, mutate: KeyedMutator<FrappeDoc<RavenWebhook>> }) => {
 
@@ -23,17 +23,12 @@ export const ViewWebhookPage = ({ data, mutate }: { data: FrappeDoc<RavenWebhook
 
     const { updateDoc, loading, reset, error } = useFrappeUpdateDoc()
 
-    const { toast } = useToast()
-
     const isDirty = methods.formState.isDirty
 
     const onSubmit = async (data: FieldValues) => {
         return updateDoc('Raven Webhook', data.name, data)
             .then((doc) => {
-                toast({
-                    title: "Webhook updated successfully.",
-                    variant: 'success',
-                })
+                toast.success("Webhook updated")
                 reset()
                 mutate()
                 if (doc) {
@@ -54,10 +49,7 @@ export const ViewWebhookPage = ({ data, mutate }: { data: FrappeDoc<RavenWebhook
         updateDoc('Raven Webhook', data.name, {
             enabled: !data.enabled
         }).then((doc) => {
-            toast({
-                title: "Webhook updated successfully.",
-                variant: 'success',
-            })
+            toast.success(`Webhook ${data.enabled ? 'disabled' : 'enabled'}`)
             reset()
             mutate()
         })

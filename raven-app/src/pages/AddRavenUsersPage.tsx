@@ -7,7 +7,6 @@ import { Filter, useFrappeGetDocList, useFrappePostCall } from 'frappe-react-sdk
 import { ChangeEvent, useContext, useState } from 'react'
 import { FaInfo } from 'react-icons/fa'
 import { User } from '../../../types/Core/User'
-import { useToast } from '@/hooks/useToast'
 import { PageLengthSelector } from '@/components/feature/pagination/PageLengthSelector'
 import { PageSelector } from '@/components/feature/pagination/PageSelector'
 import { UsersTable } from '@/components/feature/raven-users/UsersTable'
@@ -17,6 +16,7 @@ import { TableLoader } from '@/components/layout/Loaders/TableLoader'
 import { BiLeftArrowAlt, BiSearch } from 'react-icons/bi'
 import { UserContext } from '@/utils/auth/UserProvider'
 import { Loader } from '@/components/common/Loader'
+import { toast } from 'sonner'
 
 const AddRavenUsersPage = () => {
 
@@ -92,19 +92,13 @@ const AddRavenUsersCard = () => {
 
     const [selected, setSelected] = useState<string[]>([])
 
-    const { toast } = useToast()
-
     const { loading, call, error: postError } = useFrappePostCall('raven.api.raven_users.add_users_to_raven')
 
     const handleAddUsers = () => {
         call({
             users: JSON.stringify([...selected, currentUser])
         }).then(() => {
-            toast({
-                title: `You have added ${selected.length} users to Raven`,
-                variant: 'success',
-                duration: 1000
-            })
+            toast.success(`You have added ${selected.length} users to Raven`)
             window.location.reload()
         })
     }

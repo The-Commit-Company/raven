@@ -46,6 +46,10 @@ def get_preview_link(urls):
 					if preview == None:
 						data = empty_data
 					else:
+
+						# Description might have emojis in them, which comes in with special characters like copyright etc
+						# TODO: We need to replace these special characters with the actual emojis
+
 						data = {
 							"title": preview.title,
 							"description": preview.description,
@@ -58,3 +62,14 @@ def get_preview_link(urls):
 			message_links.append(data)
 
 	return message_links
+
+
+@frappe.whitelist(methods=["POST"])
+def hide_link_preview(message_id: str):
+	"""
+	Remove the preview from the message
+	"""
+	message = frappe.get_doc("Raven Message", message_id)
+	message.flags.ignore_permissions = True
+	message.hide_link_preview = 1
+	message.save()

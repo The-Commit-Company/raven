@@ -6,7 +6,7 @@ import { UserProvider } from './utils/auth/UserProvider'
 import { ChannelRedirect } from './utils/channel/ChannelRedirect'
 import "cal-sans";
 import { ThemeProvider } from './ThemeProvider'
-import { Toaster } from './components/common/Toast/Toaster'
+import { Toaster } from 'sonner'
 import { FullPageLoader } from './components/layout/Loaders'
 import { useStickyState } from './hooks/useStickyState'
 
@@ -17,7 +17,7 @@ const router = createBrowserRouter(
       <Route path='/login' lazy={() => import('@/pages/auth/Login')} />
       <Route path='/login-with-email' lazy={() => import('@/pages/auth/LoginWithEmail')} />
       <Route path='/signup' lazy={() => import('@/pages/auth/SignUp')} />
-      <Route path='/forgot-password' lazy={()=> import('@/pages/auth/ForgotPassword')} />
+      <Route path='/forgot-password' lazy={() => import('@/pages/auth/ForgotPassword')} />
       <Route path="/" element={<ProtectedRoute />}>
         <Route path="/" element={<ChannelRedirect />}>
           <Route path="channel" element={<MainPage />} >
@@ -70,6 +70,7 @@ function App() {
       siteName={getSiteName()}
     >
       <UserProvider>
+        <Toaster richColors />
         <ThemeProvider
           appearance={appearance}
           // grayColor='slate'
@@ -77,7 +78,6 @@ function App() {
           panelBackground='translucent'
           toggleTheme={toggleTheme}>
           <RouterProvider router={router} fallbackElement={<FullPageLoader className='w-screen' />} />
-          <Toaster />
         </ThemeProvider>
       </UserProvider>
     </FrappeProvider>
