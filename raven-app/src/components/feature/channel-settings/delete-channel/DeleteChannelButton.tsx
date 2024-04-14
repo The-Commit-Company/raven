@@ -20,7 +20,7 @@ export const DeleteChannelButton = ({ onClose: onCloseParent, channelData }: Del
     return (
         <AlertDialog.Root open={open} onOpenChange={setOpen}>
             <AlertDialog.Trigger>
-                <Button color='red' variant='surface'>
+                <Button className={'p-6 bg-transparent text-red-700 hover:bg-red-3 not-cal text-left justify-start'}>
                     <BiTrash />
                     Delete channel
                 </Button>
