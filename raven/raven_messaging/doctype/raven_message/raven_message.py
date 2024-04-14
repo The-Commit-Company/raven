@@ -7,7 +7,8 @@ import frappe
 from frappe import _
 from frappe.core.utils import html2text
 from frappe.model.document import Document
-from frappe.utils.data import get_timestamp
+from frappe.utils import get_datetime, get_system_timezone
+from pytz import timezone, utc
 
 from raven.notification import send_notification_to_topic, send_notification_to_user
 from raven.utils import track_channel_visit
@@ -277,7 +278,7 @@ class RavenMessage(Document):
 				"content": self.content if self.message_type == "Text" else self.file,
 				"from_user": self.owner,
 				"type": "New message",
-				"creation": str(get_timestamp(self.creation)),
+				"creation": get_milliseconds_since_epoch(self.creation),
 			},
 		)
 
@@ -305,7 +306,7 @@ class RavenMessage(Document):
 				"content": self.content if self.message_type == "Text" else self.file,
 				"from_user": self.owner,
 				"type": "New message",
-				"creation": str(get_timestamp(self.creation)),
+				"creation": get_milliseconds_since_epoch(self.creation),
 			},
 		)
 
@@ -446,3 +447,21 @@ def on_doctype_update():
 	# Index the selector (channel or message type) first for faster queries (less rows to sort in the next step)
 	frappe.db.add_index("Raven Message", ["channel_id", "creation"])
 	frappe.db.add_index("Raven Message", ["message_type", "creation"])
+
+
+def get_milliseconds_since_epoch(timestamp: str) -> str:
+	"""
+	Returns the milliseconds since epoch for a given timestamp
+	"""
+	datetime_obj = get_datetime(timestamp)
+
+	# Localize the datetime object to system timezone
+	time_zone = get_system_timezone()
+	system_datetime = timezone(time_zone).localize(datetime_obj)
+
+	# Convert the system datetime to UTC
+	utc_datetime = system_datetime.astimezone(utc)
+
+	# Get the timestamp in milliseconds since epoch for the UTC datetime
+	seconds_since_epoch = utc_datetime.timestamp()
+	return str(seconds_since_epoch * 1000)
