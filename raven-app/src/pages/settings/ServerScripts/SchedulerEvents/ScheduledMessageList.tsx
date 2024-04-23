@@ -1,16 +1,25 @@
-import { Loader } from "@/components/common/Loader"
-import { ErrorBanner } from "@/components/layout/AlertBanner"
-import { RavenWebhook } from "@/types/RavenIntegrations/RavenWebhook"
+import { AlertContent } from "@/components/feature/settings/common/DeleteAlert"
+import { RavenSchedulerEvent } from "@/types/RavenIntegrations/RavenSchedulerEvent"
 import { DateMonthYear } from "@/utils/dateConversions"
 import { DIALOG_CONTENT_CLASS } from "@/utils/layout/dialog"
 import { Flex, Badge, IconButton, AlertDialog, Text } from "@radix-ui/themes"
 import { useState } from "react"
 import { BiEdit, BiTrash } from "react-icons/bi"
 import { useNavigate } from "react-router-dom"
-import { AlertContent } from "../../settings/common/DeleteAlert"
-import { toast } from "sonner"
 
-export const WebhookItem = ({ webhook, mutate }: { webhook: RavenWebhook, mutate: () => void }) => {
+export const List = ({ data }: { data: RavenSchedulerEvent[] }) => {
+
+    return (
+        <Flex direction='column' gap='4' width='100%'>
+            {data?.map((item, index) => (
+                <ScheduledMessageItem item={item} key={index} />
+            ))}
+        </Flex>
+    )
+}
+
+
+const ScheduledMessageItem = ({ item }: { item: RavenSchedulerEvent }) => {
 
     const navigate = useNavigate()
 
@@ -24,13 +33,13 @@ export const WebhookItem = ({ webhook, mutate }: { webhook: RavenWebhook, mutate
             <Flex direction='row' align='center' justify='between'>
                 <Flex direction='column' gap='1'>
                     <Flex direction={'row'} gap={'2'}>
-                        <Text size={'2'} weight={'bold'}>{webhook.name}</Text>
-                        <Badge color={webhook.enabled ? 'green' : 'red'}>{webhook.enabled ? 'Enabled' : 'Disabled'}</Badge>
+                        <Text size={'2'} weight={'bold'}>{item.name}</Text>
+                        <Badge color={item.disabled ? 'gray' : 'green'}>{item.disabled ? 'Disabled' : 'Enabled'}</Badge>
                     </Flex>
                     <Text size='1' style={{
                         fontStyle: 'italic',
                         color: 'gray'
-                    }}>Created by {webhook.owner} on <DateMonthYear date={webhook.creation} /></Text>
+                    }}>Created by {item.owner} on <DateMonthYear date={item.creation} /></Text>
                 </Flex>
                 <Flex direction={'row'} gap={'2'} align={'center'}>
                     <IconButton
@@ -38,7 +47,7 @@ export const WebhookItem = ({ webhook, mutate }: { webhook: RavenWebhook, mutate
                         color="gray"
                         aria-label="Click to edit webhook"
                         title='Edit webhook'
-                        onClick={() => navigate(`./${webhook.name}`)}
+                        onClick={() => navigate(`./${item.name}`)}
                         style={{
                             // @ts-ignore
                             '--icon-button-ghost-padding': '0',
@@ -65,49 +74,11 @@ export const WebhookItem = ({ webhook, mutate }: { webhook: RavenWebhook, mutate
                             </IconButton>
                         </AlertDialog.Trigger>
                         <AlertDialog.Content className={DIALOG_CONTENT_CLASS}>
-                            <AlertContent doctype="Raven Webhook" docname={webhook.name} onClose={onClose} onUpdate={mutate} />
+                            <AlertContent doctype="Raven Scheduler Event" docname={item.name} onClose={onClose} />
                         </AlertDialog.Content>
                     </AlertDialog.Root>
                 </Flex>
             </Flex>
         </Flex>
     )
-
-const DeleteWebhookAlertContent = ({ webhhookID, onClose, mutate }: { webhhookID: string, onClose: () => void, mutate: () => void }) => {
-
-    const { deleteDoc, error, loading } = useFrappeDeleteDoc()
-
-    const onDelete = () => {
-        deleteDoc('Raven Webhook', webhhookID).then(() => {
-            mutate()
-            onClose()
-            toast.error('Webhook deleted.')
-        })
-    }
-
-    return (
-        <>
-            <AlertDialog.Title>
-                <Text>{webhhookID}</Text>
-            </AlertDialog.Title>
-            <Flex direction={'column'} gap='2'>
-                <ErrorBanner error={error} />
-                <Text size='2'>Are you sure you want to delete this webhook?</Text>
-            </Flex>
-            <Flex gap="3" mt="4" justify="end">
-                <AlertDialog.Cancel>
-                    <Button variant="soft" color="gray" onClick={onClose}>
-                        Cancel
-                    </Button>
-                </AlertDialog.Cancel>
-                <AlertDialog.Action>
-                    <Button variant="solid" color="red" onClick={onDelete} disabled={loading}>
-                        {loading && <Loader />}
-                        {loading ? "Deleting" : `Delete`}
-                    </Button>
-                </AlertDialog.Action>
-            </Flex>
-        </>
-    )
-
 }

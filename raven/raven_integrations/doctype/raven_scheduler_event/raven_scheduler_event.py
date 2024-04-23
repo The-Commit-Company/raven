@@ -52,7 +52,7 @@ class RavenSchedulerEvent(Document):
 		1. If the 'scheduler_event_id' is set, delete the Server Script of type 'Scheduler Event' with the name 'scheduler_event_id'.
 		"""
 		if self.scheduler_event_id:
-			frappe.delete_doc("Server Script", self.scheduler_event_id)
+			frappe.db.delete("Server Script", self.scheduler_event_id)
 
 	def create_scheduler_event(self):
 		"""
@@ -79,9 +79,8 @@ class RavenSchedulerEvent(Document):
 		# bot = frappe.get_doc('Raven Bot', self.bot)
 		# bot.send_message(self.channel, {'text': self.content})
 		# return code snippet with bot & content as values
-		message = {"text": self.content}
 		script = f"""
 bot = frappe.get_doc('Raven Bot', '{self.bot}')\n
-bot.send_message('{self.channel}', {message})
+bot.send_message('{self.channel}', '{self.content}')
 """
 		return script
