@@ -35,7 +35,7 @@ interface ChatBoxBodyProps {
 export const ChatBoxBody = ({ channelData }: ChatBoxBodyProps) => {
 
     const { name: user } = useUserData()
-    const { channelMembers } = useContext(ChannelMembersContext) as ChannelMembersContextType
+    const { channelMembers, isLoading } = useContext(ChannelMembersContext) as ChannelMembersContextType
 
     const [selectedMessage, setSelectedMessage] = useState<Message | null>(null)
 
@@ -117,7 +117,7 @@ export const ChatBoxBody = ({ channelData }: ChatBoxBodyProps) => {
                         />
                     </Suspense>
                 }
-                {channelData && <>
+                {channelData && !isLoading && <>
                     {channelData.is_archived == 0 && !isUserInChannel && channelData.type !== 'Open' && !isDM &&
                         <JoinChannelBox
                             channelData={channelData}
