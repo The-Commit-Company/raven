@@ -1,28 +1,31 @@
 import { SidebarGroup, SidebarGroupItem, SidebarGroupLabel, SidebarGroupList, SidebarItem } from "@/components/layout/Sidebar"
+import { hasServerScriptEnabled, isSystemManager } from "@/utils/roles"
 import { Flex, Text } from "@radix-ui/themes"
 import { BiPlug } from "react-icons/bi"
 
 export interface Props { }
 
 export const Integrations = (props: Props) => {
+
+    const canAddUsers = isSystemManager()
+
+    const serverScriptEnabled = hasServerScriptEnabled()
+
     return (
         <SidebarGroup>
             <SidebarGroupItem gap='2' className={'pl-1.5'}>
-                {/* <SidebarViewMoreButton onClick={toggle} /> */}
                 <BiPlug />
                 <Flex width='100%' justify='between' align='center' gap='2'>
-                    <Flex gap='3' align='center'>
+                    {canAddUsers && <Flex gap='3' align='center'>
                         <SidebarGroupLabel className='cal-sans'>Integrations</SidebarGroupLabel>
-                    </Flex>
+                    </Flex>}
                 </Flex>
             </SidebarGroupItem>
             <SidebarGroup>
-                <SidebarGroupList>
+                {canAddUsers && <SidebarGroupList>
                     <IntegrationsItem route='/settings/integrations/webhooks' label='Webhooks' />
-                    {/* <IntegrationsItem route='/settings/integrations/doctype-events' label='Document Events' /> */}
-                    <IntegrationsItem route='/settings/integrations/scheduled-messages' label='Scheduled Messages' />
-                    {/* <IntegrationsItem route='/settings/integrations/api-events' label='API Events' /> */}
-                </SidebarGroupList>
+                    {serverScriptEnabled && <IntegrationsItem route='/settings/integrations/scheduled-messages' label='Scheduled Messages' />}
+                </SidebarGroupList>}
             </SidebarGroup>
         </SidebarGroup>
     )

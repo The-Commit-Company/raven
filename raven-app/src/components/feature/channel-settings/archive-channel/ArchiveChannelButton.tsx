@@ -20,7 +20,7 @@ export const ArchiveChannelButton = ({ onClose: onCloseParent, channelData }: Ar
     return (
         <AlertDialog.Root open={open} onOpenChange={setOpen}>
             <AlertDialog.Trigger>
-                <Button variant='surface' color='gray'>
+                <Button className={'p-6 bg-transparent text-zinc-900 dark:text-white not-cal hover:bg-gray-3 text-left justify-start'}>
                     <BiBox />
                     Archive channel
                 </Button>

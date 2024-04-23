@@ -1,4 +1,3 @@
-import { Controller, useFieldArray, useFormContext } from 'react-hook-form'
 import { useContext, useMemo, useState } from 'react'
 import '../../feature/command-palette/styles.css'
 import { UserFields, UserListContext } from '@/utils/users/UserListProvider'
@@ -8,6 +7,7 @@ import { UserAvatar } from '@/components/common/UserAvatar'
 import { useMultipleSelection, useCombobox } from 'downshift'
 import { clsx } from 'clsx'
 import { Label } from '@/components/common/Form'
+
 interface AddMembersDropdownProps {
     channelMembers?: ChannelMembers,
     label?: string,
@@ -169,9 +169,9 @@ const AddMembersDropdown = ({ channelMembers, label = 'Select users', selectedUs
                             </div>
                         </div>
                     </TextField.Root>
-                </div >
+                </div>
                 <ul
-                    className={`absolute w-96 bg-background rounded-b-md mt-1 shadow-md max-h-96 overflow-scroll p-0 z-50 ${!(isOpen && items.length) && 'hidden'
+                    className={`w-[33rem] absolute bg-background rounded-b-md mt-1 shadow-md max-h-96 overflow-scroll p-0 z-50 ${!(isOpen && items.length) && 'hidden'
                         }`}
                     {...getMenuProps()}
                 >

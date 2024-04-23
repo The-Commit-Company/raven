@@ -76,7 +76,7 @@ export const ChatInterface = ({ channel }: { channel: ChannelListItem | DMChanne
         }
     });
 
-    const { data: channelMembers } = useFrappeGetCall<{ message: ChannelMembersMap }>('raven.api.chat.get_channel_members', {
+    const { data: channelMembers, isLoading: channelMembersLoading } = useFrappeGetCall<{ message: ChannelMembersMap }>('raven.api.chat.get_channel_members', {
         channel_id: channel.name
     }, `raven.api.chat.get_channel_members.${channel.name}`, {
         revalidateOnFocus: false,
@@ -123,15 +123,9 @@ export const ChatInterface = ({ channel }: { channel: ChannelListItem | DMChanne
                         </div>
                         <div className='flex items-center justify-between gap-2 w-full'>
                             <div className='grow p-1'>
-                                {
-                                    isOpenChannel ?
-
-                                        <ChatHeader channel={channel} /> :
-                                        <Link to={`${channel.name}/channel-settings`}>
-                                            <ChatHeader channel={channel} />
-                                        </Link>
-
-                                }
+                                <Link to={`${channel.name}/channel-settings`}>
+                                    <ChatHeader channel={channel} />
+                                </Link>
                             </div>
                             {/* TO-DO: Add Other optional buttons here later */}
                             {/* <div hidden aria-hidden>
@@ -212,7 +206,7 @@ export const ChatInterface = ({ channel }: { channel: ChannelListItem | DMChanne
                 hidden={!!error}
                 className='block relative z-10 order-1 w-full'
             >
-                {channel && channel.is_archived === 0 && !isDM && !isUserInChannel && channel.type !== 'Open' ?
+                {channel && !channelMembersLoading && channel.is_archived === 0 && !isDM && !isUserInChannel && channel.type !== 'Open' ?
                     <JoinChannelButton channelData={channel} /> :
 
                     <div

@@ -24,7 +24,8 @@ export const SidebarFooter = ({ isSettingsPage = false }: { isSettingsPage?: boo
             pb='4'
             bottom='0'
             position='fixed'
-            className={`w-[var(--sidebar-width)] bg-gray-2 border-r-gray-3 border-r dark:bg-gray-1`} >
+            className={`w-[var(--sidebar-width)] bg-gray-2 border-r-gray-3 border-r dark:bg-gray-1`}
+        >
             <Flex direction='column' gap='2'>
                 <Separator size='4' className={`bg-gray-4 dark:bg-gray-6`} />
                 <Flex justify="between" align='center' px='1'>
@@ -52,11 +53,11 @@ export const SidebarFooter = ({ isSettingsPage = false }: { isSettingsPage?: boo
                                     Mobile App
                                 </Link>
                             </DropdownMenu.Item>
-                            {/* {!isSettingsPage && canAddUsers && <DropdownMenu.Item color='gray' className='focus-visible:ring-0 focus-visible:outline-none rounded-radius2' asChild>
+                            {!isSettingsPage && <DropdownMenu.Item color='gray' className='focus-visible:ring-0 focus-visible:outline-none rounded-radius2' asChild>
                                 <Link href="../settings/integrations/webhooks" className='no-underline'>
                                     Settings
                                 </Link>
-                            </DropdownMenu.Item>} */}
+                            </DropdownMenu.Item>}
                             <DropdownMenu.Item onClick={logout} color='red' className='cursor-pointer'>
                                 Log Out
                             </DropdownMenu.Item>

@@ -32,7 +32,7 @@ export const SchedulerEventsForm = ({ edit = false }: Props) => {
     const frequency = watch('event_frequency')
 
     return (
-        <Flex direction="column" gap={'5'}>
+        <Flex direction="column" gap={'4'}>
             {!edit && <Box>
                 <Label htmlFor="event_name" isRequired>Name</Label>
                 <TextField.Root>
@@ -55,8 +55,8 @@ export const SchedulerEventsForm = ({ edit = false }: Props) => {
                     <Controller
                         control={control}
                         name="channel"
-                        render={({ field }) => (
-                            <Select.Root {...field} onValueChange={(value) => field.onChange(value)}>
+                        render={({ field: { onChange, value } }) => (
+                            <Select.Root onValueChange={(value) => onChange(value)} value={value}>
                                 <Select.Trigger style={{ width: "100%" }} placeholder="Select Channel" autoFocus={edit} />
                                 <Select.Content>
                                     <Select.Group>
@@ -80,8 +80,8 @@ export const SchedulerEventsForm = ({ edit = false }: Props) => {
                     <Controller
                         control={control}
                         name="bot"
-                        render={({ field }) => (
-                            <Select.Root {...field} onValueChange={(value) => field.onChange(value)}>
+                        render={({ field: { onChange, value } }) => (
+                            <Select.Root onValueChange={(value) => onChange(value)} value={value}>
                                 <Select.Trigger style={{ width: "100%" }} placeholder="Select Bot" />
                                 <Select.Content>
                                     <Select.Group>
@@ -104,8 +104,8 @@ export const SchedulerEventsForm = ({ edit = false }: Props) => {
                 <Controller
                     control={control}
                     name="event_frequency"
-                    render={({ field }) => (
-                        <Select.Root {...field} onValueChange={(value) => field.onChange(value)}>
+                    render={({ field: { onChange, value } }) => (
+                        <Select.Root onValueChange={(value) => onChange(value)} value={value}>
                             <Select.Trigger style={{ width: "100%" }} placeholder="Select Frequency" />
                             <Select.Content>
                                 <Select.Group>
