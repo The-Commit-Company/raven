@@ -9,6 +9,21 @@ from raven.notification import subscribe_user_to_topic
 
 
 class RavenChannelMember(Document):
+	# begin: auto-generated types
+	# This code is auto-generated. Do not modify anything in this block.
+
+	from typing import TYPE_CHECKING
+
+	if TYPE_CHECKING:
+		from frappe.types import DF
+
+		allow_notifications: DF.Check
+		channel_id: DF.Link
+		is_admin: DF.Check
+		last_visit: DF.Datetime
+		user_id: DF.Link
+	# end: auto-generated types
+
 	def before_validate(self):
 		self.last_visit = frappe.utils.now()
 
@@ -96,3 +111,11 @@ class RavenChannelMember(Document):
 
 	def get_admin_count(self):
 		return frappe.db.count("Raven Channel Member", {"channel_id": self.channel_id, "is_admin": 1})
+
+
+def on_doctype_update():
+	"""
+	Add indexes to Raven Channel Member table
+	"""
+	# Index the selector (channel or message type) first for faster queries (less rows to sort in the next step)
+	frappe.db.add_index("Raven Channel Member", ["channel_id", "user_id"])

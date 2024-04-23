@@ -11,7 +11,9 @@
   "channel_id",
   "user_id",
   "is_admin",
-  "last_visit"
+  "last_visit",
+  "notification_settings_section",
+  "allow_notifications"
  ],
  "fields": [
   {
@@ -42,11 +44,22 @@
    "fieldtype": "Datetime",
    "label": "Last Visit",
    "reqd": 1
+  },
+  {
+   "fieldname": "notification_settings_section",
+   "fieldtype": "Section Break",
+   "label": "Notification Settings"
+  },
+  {
+   "default": "1",
+   "fieldname": "allow_notifications",
+   "fieldtype": "Check",
+   "label": "Allow notifications"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-09-06 14:41:27.446983",
+ "modified": "2024-04-24 01:58:30.509553",
  "modified_by": "Administrator",
  "module": "Raven Channel Management",
  "name": "Raven Channel Member",
