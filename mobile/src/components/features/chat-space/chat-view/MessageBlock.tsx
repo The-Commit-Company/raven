@@ -101,8 +101,8 @@ export const NonContinuationMessageBlock = ({ message, onMessageSelect, isScroll
             isScrolling ? `focus:bg-transparent active:bg-transparent` : '')} {...longPressEvent}>
             <MessageSenderAvatar user={user} userID={message.owner} isActive={isActive} />
             <div>
-                <div className='flex items-baseline'>
-                    <Text as='span' className='font-semibold' size='3'>{user?.full_name ?? message.owner}</Text>
+                <div className='flex items-baseline pb-1'>
+                    <Text as='span' className='font-semibold' size='2'>{user?.full_name ?? message.owner}</Text>
                     {isBot && <Badge className='ml-2' color='gray'>Bot</Badge>}
                     <Text as='span' size='1' className='pl-1.5 text-gray-10'>{DateObjectToTimeString(message.creation)}</Text>
                 </div>

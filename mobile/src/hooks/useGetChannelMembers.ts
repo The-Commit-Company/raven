@@ -2,11 +2,11 @@ import { useMemo } from "react"
 import { ChannelMembers } from "@/components/features/channels/channel-members/AddChannelMembers"
 import { useFrappeGetCall } from "frappe-react-sdk"
 
-export const useGetChannelMembers = (channelID: string) =>{
+export const useGetChannelMembers = (channelID: string) => {
 
     const { data, error, mutate } = useFrappeGetCall<{ message: ChannelMembers }>('raven.api.chat.get_channel_members', {
         channel_id: channelID
-    }, undefined, {
+    }, `raven.api.chat.get_channel_members:${channelID}`, {
         revalidateOnFocus: false,
         revalidateIfStale: false,
     })
@@ -19,7 +19,7 @@ export const useGetChannelMembers = (channelID: string) =>{
         }
     }, [data])
 
-    return{
+    return {
         channelMembers,
         mutate,
         error

@@ -38,22 +38,10 @@ const SchedulerEvents = (props: Props) => {
             <Flex direction={'column'}>
                 {error && <ErrorBanner error={error} />}
                 {isLoading && <FullPageLoader className="h-auto" text='Loading...' />}
-                {data?.length === 0 ? <EmptyState /> : <List data={data ?? []} />}
+                {data?.length === 0 ? null : <List data={data ?? []} />}
             </Flex>
         </Box>
     )
 }
 
 export const Component = SchedulerEvents
-
-
-const EmptyState = () => {
-    return (
-        <Flex direction='column' gap='4' width='100%'>
-            <Text size='2' color="gray">Its empty here...no scheduled messages found. <Link to={'create'} style={{
-                textDecoration: 'underline'
-            }}>Schedule one</Link>.
-            </Text>
-        </Flex>
-    )
-}
