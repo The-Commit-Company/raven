@@ -4,7 +4,7 @@ import { FullPageLoader } from "@/components/layout/Loaders"
 import { RavenWebhook } from "@/types/RavenIntegrations/RavenWebhook"
 import { Flex, Button, Text, Heading, Box, Blockquote, Section } from "@radix-ui/themes"
 import { useFrappeDocTypeEventListener, useFrappeGetDocList } from "frappe-react-sdk"
-import { Link, useNavigate } from "react-router-dom"
+import { useNavigate } from "react-router-dom"
 
 const WebhookList = () => {
 
@@ -32,7 +32,7 @@ const WebhookList = () => {
             <Flex direction={'column'}>
                 <ErrorBanner error={error} />
                 {isLoading && <FullPageLoader className="h-auto" text='Loading...' />}
-                {data?.length === 0 ? <EmptyState /> : <Flex direction='column' gap='4' width='100%'>
+                {data?.length === 0 ? null : <Flex direction='column' gap='4' width='100%'>
                     {data?.map((webhook, index) => (
                         <WebhookItem key={index} webhook={webhook} mutate={mutate} />
                     ))}
@@ -43,15 +43,3 @@ const WebhookList = () => {
 }
 
 export const Component = WebhookList
-
-
-const EmptyState = () => {
-    return (
-        <Flex direction='column' gap='4' width='100%'>
-            <Text size='2' color="gray">Its empty here...no webhooks found. <Link to={'create'} style={{
-                textDecoration: 'underline'
-            }}>Create one</Link>.
-            </Text>
-        </Flex>
-    )
-}

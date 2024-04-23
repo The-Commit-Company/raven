@@ -54,7 +54,7 @@ export const SidebarFooter = ({ isSettingsPage = false }: { isSettingsPage?: boo
                                 </Link>
                             </DropdownMenu.Item>
                             {!isSettingsPage && <DropdownMenu.Item color='gray' className='focus-visible:ring-0 focus-visible:outline-none rounded-radius2' asChild>
-                                <Link href="../settings" className='no-underline'>
+                                <Link href="../settings/integrations/webhooks" className='no-underline'>
                                     Settings
                                 </Link>
                             </DropdownMenu.Item>}

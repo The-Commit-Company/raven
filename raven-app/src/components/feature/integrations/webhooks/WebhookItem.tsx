@@ -3,12 +3,13 @@ import { ErrorBanner } from "@/components/layout/AlertBanner"
 import { RavenWebhook } from "@/types/RavenIntegrations/RavenWebhook"
 import { DateMonthYear } from "@/utils/dateConversions"
 import { DIALOG_CONTENT_CLASS } from "@/utils/layout/dialog"
-import { Flex, Badge, IconButton, AlertDialog, Text } from "@radix-ui/themes"
+import { Flex, Badge, IconButton, AlertDialog, Text, Button } from "@radix-ui/themes"
 import { useState } from "react"
 import { BiEdit, BiTrash } from "react-icons/bi"
 import { useNavigate } from "react-router-dom"
 import { AlertContent } from "../../settings/common/DeleteAlert"
 import { toast } from "sonner"
+import { useFrappeDeleteDoc } from "frappe-react-sdk"
 
 export const WebhookItem = ({ webhook, mutate }: { webhook: RavenWebhook, mutate: () => void }) => {
 
@@ -72,7 +73,7 @@ export const WebhookItem = ({ webhook, mutate }: { webhook: RavenWebhook, mutate
             </Flex>
         </Flex>
     )
-
+}
 const DeleteWebhookAlertContent = ({ webhhookID, onClose, mutate }: { webhhookID: string, onClose: () => void, mutate: () => void }) => {
 
     const { deleteDoc, error, loading } = useFrappeDeleteDoc()
