@@ -13,6 +13,9 @@ def are_push_notifications_enabled() -> bool:
 @frappe.whitelist(methods=["POST"])
 def toggle_push_notification_for_channel(member: str, allow_notifications: 0 | 1) -> None:
 	if are_push_notifications_enabled():
-		frappe.db.set_value("Raven Channel Member", member, "allow_notifications", allow_notifications)
+		member_doc = frappe.get_doc("Raven Channel Member", member)
+		if member_doc:
+			member_doc.allow_notifications = allow_notifications
+			member_doc.save()
 	else:
 		frappe.throw("Push notifications are not supported in the current framework version")
