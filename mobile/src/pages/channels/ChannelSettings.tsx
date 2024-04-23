@@ -11,6 +11,7 @@ import { UserContext } from "@/utils/auth/UserProvider"
 import { ChatHeader } from "@/components/features/chat-space/chat-header"
 import { Heading, Text } from "@radix-ui/themes"
 import { UserAvatar } from "@/components/common/UserAvatar"
+import { ChannelPushNotificationToggle } from "@/components/features/channels/channel-members/ChannelPushNotificationToggle"
 
 export const ChannelSettings = () => {
 
@@ -99,6 +100,11 @@ export const ChannelSettings = () => {
                             }
                         </div>
                     </div>
+
+                    {!isDM && <IonList inset>
+                        <ChannelPushNotificationToggle />
+                    </IonList>
+                    }
                     <IonList inset>
                         {canAddMembers && <AddChannelMembersButton pageRef={pageRef} channelID={channelID} />}
                         {canLeaveChannel && <LeaveChannelButton channelID={channelID}

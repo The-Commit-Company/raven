@@ -5,7 +5,7 @@ import frappe
 from frappe import _
 from frappe.model.document import Document
 
-from raven.notification import subscribe_user_to_topic
+from raven.notification import subscribe_user_to_topic, unsubscribe_user_to_topic
 
 
 class RavenChannelMember(Document):
@@ -36,6 +36,8 @@ class RavenChannelMember(Document):
 		# if there are no members in the channel, then the member becomes admin
 		if frappe.db.count("Raven Channel Member", {"channel_id": self.channel_id}) == 0:
 			self.is_admin = 1
+
+		self.allow_notifications = 1
 
 	def after_delete(self):
 		if (
@@ -106,8 +108,23 @@ class RavenChannelMember(Document):
 		"""
 		is_direct_message = frappe.db.get_value("Raven Channel", self.channel_id, "is_direct_message")
 
-		if not is_direct_message:
+		if not is_direct_message and self.allow_notifications:
 			subscribe_user_to_topic(self.channel_id, self.user_id)
+
+	def on_update(self):
+		"""
+		Check if the notification preference is changed and update the subscription
+		"""
+		old_doc = self.get_doc_before_save()
+		if old_doc:
+			if old_doc.allow_notifications != self.allow_notifications:
+				is_direct_message = frappe.db.get_value("Raven Channel", self.channel_id, "is_direct_message")
+
+				if not is_direct_message:
+					if self.allow_notifications:
+						subscribe_user_to_topic(self.channel_id, self.user_id)
+					else:
+						unsubscribe_user_to_topic(self.channel_id, self.user_id)
 
 	def get_admin_count(self):
 		return frappe.db.count("Raven Channel Member", {"channel_id": self.channel_id, "is_admin": 1})

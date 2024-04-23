@@ -51,7 +51,7 @@
    "label": "Notification Settings"
   },
   {
-   "default": "1",
+   "default": "0",
    "fieldname": "allow_notifications",
    "fieldtype": "Check",
    "label": "Allow notifications"
@@ -59,7 +59,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-04-24 01:58:30.509553",
+ "modified": "2024-04-24 02:17:03.827631",
  "modified_by": "Administrator",
  "module": "Raven Channel Management",
  "name": "Raven Channel Member",
