@@ -15,10 +15,13 @@ class RavenUser(Document):
 	if TYPE_CHECKING:
 		from frappe.types import DF
 
+		from raven.raven.doctype.raven_pinned_channels.raven_pinned_channels import RavenPinnedChannels
+
 		bot: DF.Link | None
 		enabled: DF.Check
 		first_name: DF.Data | None
-		full_name: DF.Data | None
+		full_name: DF.Data
+		pinned_channels: DF.Table[RavenPinnedChannels]
 		type: DF.Literal["User", "Bot"]
 		user: DF.Link | None
 		user_image: DF.AttachImage | None

@@ -10,11 +10,14 @@
   "type",
   "user",
   "bot",
+  "enabled",
+  "column_break_dwio",
   "full_name",
   "first_name",
   "user_image",
-  "enabled",
-  "html_xuuw"
+  "html_xuuw",
+  "pinned_channels_section",
+  "pinned_channels"
  ],
  "fields": [
   {
@@ -80,11 +83,25 @@
    "mandatory_depends_on": "eval: doc.type == 'Bot'",
    "options": "Raven Bot",
    "read_only": 1
+  },
+  {
+   "fieldname": "column_break_dwio",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "pinned_channels_section",
+   "fieldtype": "Section Break",
+   "label": "Pinned Channels"
+  },
+  {
+   "fieldname": "pinned_channels",
+   "fieldtype": "Table",
+   "options": "Raven Pinned Channels"
   }
  ],
  "image_field": "user_image",
  "links": [],
- "modified": "2024-03-29 18:34:46.139424",
+ "modified": "2024-04-26 08:17:30.726607",
  "modified_by": "Administrator",
  "module": "Raven",
  "name": "Raven User",

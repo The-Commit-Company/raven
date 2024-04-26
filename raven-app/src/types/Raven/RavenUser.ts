@@ -1,3 +1,4 @@
+import { RavenPinnedChannels } from './RavenPinnedChannels'
 
 export interface RavenUser{
 	creation: string
@@ -16,12 +17,14 @@ export interface RavenUser{
 	user?: string
 	/**	Bot : Link - Raven Bot	*/
 	bot?: string
+	/**	Enabled : Check	*/
+	enabled?: 0 | 1
 	/**	Full Name : Data	*/
 	full_name: string
 	/**	First Name : Data	*/
 	first_name?: string
 	/**	User Image : Attach Image	*/
 	user_image?: string
-	/**	Enabled : Check	*/
-	enabled?: 0 | 1
+	/**	 : Table - Raven Pinned Channels	*/
+	pinned_channels?: RavenPinnedChannels[]
 }

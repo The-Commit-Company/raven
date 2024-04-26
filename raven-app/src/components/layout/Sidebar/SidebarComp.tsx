@@ -1,4 +1,4 @@
-import React, { ReactNode, useState } from 'react'
+import React, { ReactNode } from 'react'
 import { NavLink } from 'react-router-dom'
 import { Flex, IconButton, Text, Theme } from '@radix-ui/themes';
 import { FlexProps } from '@radix-ui/themes/dist/cjs/components/flex';
@@ -39,7 +39,7 @@ type SidebarGroupLabelProps = TextProps & {
 
 export const SidebarGroupLabel = ({ children, ...props }: SidebarGroupLabelProps) => {
     return (
-        <Text size='2' {...props}>
+        <Text size='2' {...props} className={clsx('text-gray-12 dark:text-gray-300', props.className)}>
             {children}
         </Text>
     )
@@ -67,7 +67,7 @@ interface SidebarItemProps extends FlexProps {
 
 export const SidebarItem = ({ to, children, end, active = false, activeStyles, className, ...props }: SidebarItemProps) => {
 
-    const activeClass = 'bg-[#EBEBEB] dark:bg-gray-4 text-gray-12'
+    const activeClass = 'bg-gray-3 dark:bg-gray-3 text-gray-12'
 
     return (
         <NavLink
@@ -81,7 +81,7 @@ export const SidebarItem = ({ to, children, end, active = false, activeStyles, c
                         gap='2'
                         align='center'
                         px='2'
-                        className={clsx('cursor-pointer text-black dark:text-gray-100 user-select-none rounded-md no-underline transition-all duration-200 hover:bg-gray-3 dark:hover:bg-gray-3', isActive ? activeClass : '', className)}
+                        className={clsx('cursor-pointer text-gray-12 user-select-none rounded-md no-underline transition-all duration-200 hover:bg-gray-3 dark:hover:bg-gray-3', isActive ? activeClass : '', className)}
                         {...props}>
                         {children}
                     </Flex>
@@ -144,7 +144,7 @@ export const SidebarViewMoreButton = ({ expanded, onClick, ...props }: SidebarVi
             title='View'
             variant='ghost'
             size='1'
-            className='cursor-pointer pb-[4px] text-slate-12 bg-transparent hover:text-gray-12'
+            className='cursor-pointer pb-[3px] text-gray-12 dark:text-gray-300 bg-transparent'
             highContrast
             onClick={onClick}
             {...props}>
