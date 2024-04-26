@@ -62,7 +62,7 @@ export const ChannelList = ({ unread_count }: { unread_count?: UnreadCountData }
     return (
         <SidebarGroup>
             <SidebarGroupItem className={'gap-1 pl-1'}>
-                <Flex width='100%' justify='between' align='center' gap='2' className="group">
+                <Flex width='100%' justify='between' align='center' gap='2' pr='2' className="group">
                     <Flex align='center' gap='2' width='100%' onClick={toggle} className="cursor-default select-none">
                         <SidebarGroupLabel>Channels</SidebarGroupLabel>
                         <Box className={clsx('transition-opacity ease-in-out duration-200',
@@ -72,7 +72,7 @@ export const ChannelList = ({ unread_count }: { unread_count?: UnreadCountData }
                             </SidebarBadge>
                         </Box>
                     </Flex>
-                    <Flex gap='2'>
+                    <Flex align='center' gap='1'>
                         <CreateChannelButton updateChannelList={mutate} />
                         <SidebarViewMoreButton onClick={toggle} expanded={showData} />
                     </Flex>

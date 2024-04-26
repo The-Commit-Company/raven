@@ -35,7 +35,7 @@ export const DirectMessageList = ({ unread_count }: { unread_count?: UnreadCount
             <SidebarGroupItem className={'gap-1 pl-1'}>
                 <Flex width='100%' justify='between' align='center' gap='2' pr='2' className="group">
                     <Flex align='center' gap='2' width='100%' onClick={toggle} className="cursor-default select-none">
-                        <SidebarGroupLabel>Members</SidebarGroupLabel>
+                        <SidebarGroupLabel className="pt-0.5">Members</SidebarGroupLabel>
                         <Box className={clsx('transition-opacity ease-in-out duration-200', !showData && unread_count && unread_count?.total_unread_count_in_dms > 0 ? 'opacity-100' : 'opacity-0')}>
                             <SidebarBadge>{unread_count?.total_unread_count_in_dms}</SidebarBadge>
                         </Box>
