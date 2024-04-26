@@ -6,7 +6,7 @@ import { TextProps } from '@radix-ui/themes/dist/cjs/components/text';
 import { IconButtonProps } from '@radix-ui/themes/dist/cjs/components/icon-button';
 import { BadgeProps } from '@radix-ui/themes/dist/cjs/components/badge';
 import { clsx } from 'clsx';
-import { FaCaretDown, FaCaretRight } from 'react-icons/fa';
+import { FiChevronDown, FiChevronRight } from 'react-icons/fi';
 
 interface SidebarGroupProps extends FlexProps {
     children: ReactNode;
@@ -39,7 +39,7 @@ type SidebarGroupLabelProps = TextProps & {
 
 export const SidebarGroupLabel = ({ children, ...props }: SidebarGroupLabelProps) => {
     return (
-        <Text size='2' {...props} className={clsx('text-gray-12 dark:text-gray-300', props.className)}>
+        <Text size='2' weight='bold' {...props} className={clsx('cal-sans text-gray-12 dark:text-gray-300', props.className)}>
             {children}
         </Text>
     )
@@ -51,7 +51,7 @@ interface SidebarGroupListProps extends FlexProps {
 export const SidebarGroupList = ({ children, ...props }: SidebarGroupListProps) => {
 
     return (
-        <Flex gap='1' direction='column' {...props}>
+        <Flex gap='1' direction='column' {...props} className={clsx(`transition-all ease-in-out duration-200 overflow-hidden`, props.className)}>
             {children}
         </Flex>
     )
@@ -140,15 +140,16 @@ export const SidebarViewMoreButton = ({ expanded, onClick, ...props }: SidebarVi
 
     return (
         <IconButton
-            aria-label={"view"}
-            title='View'
-            variant='ghost'
+            aria-label={expanded ? 'Collapse' : "Expand"}
+            title={expanded ? 'Collapse' : "Expand"}
+            variant='soft'
             size='1'
-            className='cursor-pointer pb-[3px] text-gray-12 dark:text-gray-300 bg-transparent'
-            highContrast
+            radius='large'
             onClick={onClick}
-            {...props}>
-            {expanded ? <FaCaretDown size='18' /> : <FaCaretRight size='18' />}
+            {...props}
+            className={clsx('cursor-pointer transition-all text-gray-10 dark:text-gray-300 bg-transparent hover:bg-gray-3 invisible group-hover:visible ease-in-out')}
+        >
+            {expanded ? <FiChevronDown /> : <FiChevronRight />}
         </IconButton>
     )
 }
@@ -157,7 +158,7 @@ export const SidebarBadge = ({ children, ...props }: BadgeProps) => {
 
     return (
         <Theme accentColor='gray'>
-            <div className='flex items-center justify-center dark:text-accent-a12 dark:bg-accent-a3 bg-accent-a4 text-xs py-0.5 px-2 rounded-radius2
+            <div className='flex items-center justify-center min-w-2 text-accent-a11 dark:text-accent-a11 dark:bg-accent-a3 bg-accent-a4 text-xs py-0.5 px-2 rounded-radius2
             whitespace-nowrap font-medium
             '>
                 {children}

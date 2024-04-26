@@ -1,7 +1,7 @@
 import { SidebarGroup, SidebarGroupItem, SidebarGroupLabel, SidebarGroupList, SidebarItem } from "../../layout/Sidebar"
 import { SidebarBadge, SidebarViewMoreButton } from "../../layout/Sidebar/SidebarComp"
 import { CreateChannelButton } from "./CreateChannelModal"
-import { useContext, useMemo } from "react"
+import { useContext, useMemo, useRef } from "react"
 import { ChannelListContext, ChannelListContextType, ChannelListItem, UnreadCountData } from "../../../utils/channel/ChannelListProvider"
 import { ChannelIcon } from "@/utils/layout/channelIcon"
 import { Box, ContextMenu, Flex, Text } from "@radix-ui/themes"
@@ -11,6 +11,7 @@ import useCurrentRavenUser from "@/hooks/useCurrentRavenUser"
 import { RiPushpinLine, RiUnpinLine } from "react-icons/ri"
 import { FrappeConfig, FrappeContext } from "frappe-react-sdk"
 import { RavenUser } from "@/types/Raven/RavenUser"
+import clsx from "clsx"
 
 export const ChannelList = ({ unread_count }: { unread_count?: UnreadCountData }) => {
 
@@ -51,26 +52,40 @@ export const ChannelList = ({ unread_count }: { unread_count?: UnreadCountData }
         }
     }, [channels, myProfile, unread_count])
 
+    const ref = useRef<HTMLDivElement>(null)
+
+    const height = ref.current?.clientHeight
+
     return (
         <SidebarGroup>
             <SidebarGroupItem className={'gap-1'}>
-                <SidebarViewMoreButton onClick={toggle} expanded={showData} />
-                <Flex width='100%' justify='between' align='center' gap='2'>
-                    <Flex gap='2' align='center'>
-                        <SidebarGroupLabel className='cal-sans text-gray-12 dark:text-gray-300'>Channels</SidebarGroupLabel>
-                        <CreateChannelButton updateChannelList={mutate} />
+                <Flex width='100%' justify='between' align='center' gap='2' className="group">
+                    <Flex align='center' gap='2' width='100%' onClick={toggle} className="cursor-default select-none">
+                        <SidebarGroupLabel>Channels</SidebarGroupLabel>
+                        <Box className={clsx('transition-opacity ease-in-out duration-200',
+                            !showData && unread_count && totalUnreadCount > 0 ? 'opacity-100' : 'opacity-0')}>
+                            <SidebarBadge>
+                                {totalUnreadCount}
+                            </SidebarBadge>
+                        </Box>
                     </Flex>
-                    {!showData && unread_count && totalUnreadCount > 0 &&
-                        <Box pr='2'>
-                            <SidebarBadge>{totalUnreadCount}</SidebarBadge>
-                        </Box>}
+                    <Flex gap='2'>
+                        <CreateChannelButton updateChannelList={mutate} />
+                        <SidebarViewMoreButton onClick={toggle} expanded={showData} />
+                    </Flex>
                 </Flex>
             </SidebarGroupItem>
             <SidebarGroup>
-                <SidebarGroupList>
-                    {showData && filteredChannels.map((channel) => <ChannelItem
-                        channel={channel}
-                        key={channel.name} />)}
+                <SidebarGroupList
+                    style={{
+                        height: showData ? height : 0
+                    }}
+                >
+                    <div ref={ref} className="flex gap-1 flex-col">
+                        {filteredChannels.map((channel) => <ChannelItem
+                            channel={channel}
+                            key={channel.name} />)}
+                    </div>
                 </SidebarGroupList>
             </SidebarGroup>
         </SidebarGroup>

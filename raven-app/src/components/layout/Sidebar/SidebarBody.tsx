@@ -12,7 +12,7 @@ export const SidebarBody = () => {
 
     return (
         <ScrollArea type="hover" scrollbars="vertical" className='h-[calc(100vh-7rem)]'>
-            <Flex direction='column' gap='4' className='overflow-x-hidden' px='2'>
+            <Flex direction='column' gap='3' className='overflow-x-hidden' px='2'>
                 <Flex direction='column' gap='2'>
                     <Box>
                         <SidebarItem to={'saved-messages'} className='py-1 px-0.5'>
@@ -20,13 +20,12 @@ export const SidebarBody = () => {
                                 <BiSolidBookmark className='text-gray-12 dark:text-gray-300 mt-0.5' size='14' />
                             </AccessibleIcon>
                             <Box>
-                                <Text size='2' className='cal-sans text-gray-12 dark:text-gray-300'>Saved</Text>
+                                <Text size='2' weight='bold' className='text-gray-12 dark:text-gray-300'>Saved</Text>
                             </Box>
                         </SidebarItem>
                     </Box>
                     <PinnedChannels unread_count={unread_count?.message} />
                 </Flex>
-
                 <ChannelList unread_count={unread_count?.message} />
                 <DirectMessageList unread_count={unread_count?.message} />
             </Flex>

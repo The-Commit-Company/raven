@@ -1,5 +1,5 @@
 import { useFrappePostCall } from "frappe-react-sdk"
-import { useContext, useMemo, useState } from "react"
+import { useContext, useMemo, useRef, useState } from "react"
 import { useNavigate, useParams } from "react-router-dom"
 import { SidebarGroup, SidebarGroupItem, SidebarGroupLabel, SidebarGroupList, SidebarIcon, SidebarButtonItem } from "../../layout/Sidebar"
 import { SidebarBadge, SidebarItem, SidebarViewMoreButton } from "../../layout/Sidebar/SidebarComp"
@@ -12,6 +12,7 @@ import { UserAvatar } from "@/components/common/UserAvatar"
 import { toast } from "sonner"
 import { getErrorMessage } from "@/components/layout/AlertBanner/ErrorBanner"
 import { useStickyState } from "@/hooks/useStickyState"
+import clsx from "clsx"
 
 export const DirectMessageList = ({ unread_count }: { unread_count?: UnreadCountData }) => {
 
@@ -21,26 +22,33 @@ export const DirectMessageList = ({ unread_count }: { unread_count?: UnreadCount
 
     const toggle = () => setShowData(d => !d)
 
+    const ref = useRef<HTMLDivElement>(null)
+
+    const height = ref.current?.clientHeight
+
     return (
         <SidebarGroup pb='4'>
             <SidebarGroupItem className={'gap-1'}>
-                <SidebarViewMoreButton onClick={toggle} expanded={showData} />
-                <Flex width='100%' justify='between' align='center' gap='2'>
-                    <SidebarGroupLabel className='cal-sans text-gray-12 dark:text-gray-11'>Direct Messages</SidebarGroupLabel>
-                    {!showData && unread_count && unread_count?.total_unread_count_in_dms > 0 &&
-                        <Box pr='2'>
-                            <SidebarBadge>{unread_count.total_unread_count_in_dms}</SidebarBadge>
+                <Flex width='100%' justify='between' align='center' gap='2' pr='2' className="group">
+                    <Flex align='center' gap='2' width='100%' onClick={toggle} className="cursor-default select-none">
+                        <SidebarGroupLabel>Members</SidebarGroupLabel>
+                        <Box className={clsx('transition-opacity ease-in-out duration-200', !showData && unread_count && unread_count?.total_unread_count_in_dms > 0 ? 'opacity-100' : 'opacity-0')}>
+                            <SidebarBadge>{unread_count?.total_unread_count_in_dms}</SidebarBadge>
                         </Box>
-                    }
+                    </Flex>
+                    <SidebarViewMoreButton onClick={toggle} expanded={showData} />
                 </Flex>
             </SidebarGroupItem>
             <SidebarGroup>
-                {showData &&
-                    <SidebarGroupList>
+                <SidebarGroupList
+                    style={{
+                        height: showData ? height : 0
+                    }}>
+                    <div ref={ref} className="flex gap-1 flex-col">
                         <DirectMessageItemList unread_count={unread_count} />
                         {extra_users && extra_users.length ? <ExtraUsersItemList /> : null}
-                    </SidebarGroupList>
-                }
+                    </div>
+                </SidebarGroupList>
             </SidebarGroup>
         </SidebarGroup>
     )
