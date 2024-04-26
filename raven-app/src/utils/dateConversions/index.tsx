@@ -1,6 +1,4 @@
-import { lazy, Suspense } from "react";
-
-const MomentConverter = lazy(() => import("./MomentConverter"));
+import { getDateObject } from "./utils";
 
 interface Props {
     date: string;
@@ -12,15 +10,7 @@ interface Props {
  */
 export const StandardDate = (props: Props) => {
 
-    const parseDateString = (date: string) => {
-        const dateObj = new Date(date)
-        return dateObj.toLocaleDateString('en-GB', { day: 'numeric', month: 'numeric', year: 'numeric' })
-    }
-    return (
-        <Suspense fallback={parseDateString(props.date)}>
-            <MomentConverter {...props} />
-        </Suspense>
-    )
+    return getDateObject(props.date).format("DD/MM/YYYY")
 }
 
 /**
@@ -28,15 +18,7 @@ export const StandardDate = (props: Props) => {
  */
 export const DateMonthYear = (props: Props) => {
 
-    const parseDateString = (date: string) => {
-        const dateObj = new Date(date)
-        return dateObj.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })
-    }
-    return (
-        <Suspense fallback={parseDateString(props.date)}>
-            <MomentConverter {...props} format="Do MMMM YYYY" />
-        </Suspense>
-    )
+    return getDateObject(props.date).format("Do MMMM YYYY")
 }
 
 interface HourMinuteAmPmProps extends Props {
@@ -49,26 +31,10 @@ interface HourMinuteAmPmProps extends Props {
  */
 export const HourMinuteAmPm = ({ amPm = true, date }: HourMinuteAmPmProps) => {
 
-    const parseDateString = (d: string) => {
-        const dateObj = new Date(d)
-        return dateObj.toLocaleTimeString('en-GB', { hour: 'numeric', minute: 'numeric', hour12: amPm })
-    }
-    return (
-        <Suspense fallback={parseDateString(date)}>
-            <MomentConverter date={date} format={amPm ? "hh:mm A" : "hh:mm"} />
-        </Suspense>
-    )
+    return getDateObject(date).format(amPm ? "hh:mm A" : "hh:mm")
 }
 
 export const DateMonthAtHourMinuteAmPm = (props: Props) => {
 
-    const parseDateString = (date: string) => {
-        const dateObj = new Date(date)
-        return dateObj.toLocaleDateString('en-GB', { month: 'long', day: 'numeric' }) + " at " + dateObj.toLocaleTimeString('en-GB', { hour: 'numeric', minute: 'numeric', hour12: true })
-    }
-    return (
-        <Suspense fallback={parseDateString(props.date)}>
-            <MomentConverter {...props} format="Do MMMM \at hh:mm A" />
-        </Suspense>
-    )
+    return getDateObject(props.date).format("Do MMMM [at] hh:mm A")
 }

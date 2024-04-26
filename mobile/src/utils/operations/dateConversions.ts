@@ -23,3 +23,36 @@ export const getDateObject = (timestamp: string): dayjs.Dayjs => {
 
     return dayjs.tz(timestamp, SYSTEM_TIMEZONE)
 }
+
+/**
+ * Returns a date in the standard format that the user has set in their preferences
+ * @param date
+ * @returns
+ */
+export const toStandardDate = (date: string) => {
+
+    return getDateObject(date).format("DD/MM/YYYY")
+}
+
+/**
+ * Returns a date in DD MMM YYYY format
+ */
+export const toDateMonthYear = (date: string) => {
+
+    return getDateObject(date).format("Do MMMM YYYY")
+}
+
+/**
+ *
+ * @returns string in the format hh:mm AM/PM
+ * @example 08:15 PM or 12:00 AM
+ */
+export const toHourMinuteAmPm = (date: string, amPm: boolean = true) => {
+
+    return getDateObject(date).format(amPm ? "hh:mm A" : "hh:mm")
+}
+
+export const toDateMonthAtHourMinuteAmPm = (date: string) => {
+
+    return getDateObject(date).format("Do MMMM [at] hh:mm A")
+}
