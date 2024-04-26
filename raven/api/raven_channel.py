@@ -2,6 +2,8 @@ import frappe
 from frappe import _
 from frappe.query_builder import Order
 
+from raven.api.raven_users import get_current_raven_user
+
 
 @frappe.whitelist()
 def get_all_channels(hide_archived=True):
@@ -179,3 +181,26 @@ def create_direct_message_channel(user_id):
 		)
 		channel.insert()
 		return channel.name
+
+
+@frappe.whitelist(methods=["POST"])
+def toggle_pinned_channel(channel_id):
+	"""
+	Toggles the pinned status of the channel
+	"""
+	raven_user = get_current_raven_user()
+	pinned_channels = raven_user.pinned_channels or []
+
+	is_pinned = False
+	for pin in pinned_channels:
+		if pin.channel_id == channel_id:
+			raven_user.remove(pin)
+			is_pinned = True
+			break
+
+	if not is_pinned:
+		raven_user.append("pinned_channels", {"channel_id": channel_id})
+
+	raven_user.save()
+
+	return raven_user

@@ -1,8 +1,12 @@
 import { BiGlobe, BiHash, BiLockAlt } from 'react-icons/bi'
 import { ChannelListItem, UnreadCountData } from '@/utils/channel/ChannelListProvider'
-import { useMemo } from 'react'
-import { Link } from 'react-router-dom'
-import { Badge, Heading, Text } from '@radix-ui/themes'
+import { useContext, useMemo, useRef } from 'react'
+import { Badge, Box, Text } from '@radix-ui/themes'
+import { IonItem, IonItemOption, IonItemOptions, IonItemSliding, IonList } from '@ionic/react'
+import { RiPushpinLine, RiUnpinLine } from 'react-icons/ri'
+import useCurrentRavenUser from '@/hooks/useCurrentRavenUser'
+import { FrappeConfig, FrappeContext } from 'frappe-react-sdk'
+import { RavenUser } from '@/types/Raven/RavenUser'
 
 interface ChannelListProps {
     data: ChannelListItem[],
@@ -11,55 +15,70 @@ interface ChannelListProps {
 
 export const ChannelList = ({ data, unread_count }: ChannelListProps) => {
 
-    const { channels, unreadChannels } = useMemo(() => {
-        if (!data) return { channels: [], unreadChannels: [] }
-        if (!unread_count) return { channels: data.map(d => ({ ...d, unreadCount: 0 })), unreadChannels: [] }
+    const { myProfile } = useCurrentRavenUser()
 
-        const c = data.map(channel => {
-            const unreadCountForChannel = unread_count.channels.find((unread) => unread.name == channel.name)?.unread_count
-            return { ...channel, unreadCount: unreadCountForChannel ?? 0 }
-        })
+    const { channels } = useMemo(() => {
+        if (!data) return { channels: [] }
 
-        const unreadChannels = c.filter(channel => channel.unreadCount > 0)
+        const pinnedChannelIDs = myProfile?.pinned_channels?.map(pin => pin.channel_id)
 
-        return { channels: c, unreadChannels }
-    }, [data, unread_count])
+        const channelList = []
+
+        for (const channel of data) {
+            if (channel.is_archived == 1) continue
+            const isPinned = pinnedChannelIDs?.includes(channel.name) ?? false
+            const unreadCountForChannel = unread_count?.channels.find((unread) => unread.name == channel.name)?.unread_count ?? 0
+
+            channelList.push({
+                ...channel,
+                isPinned,
+                unreadCount: unreadCountForChannel
+            })
+        }
+
+        // Sort the channel list by pinned channels first
+        const pinnedChannels = channelList.filter(channel => channel.isPinned)
+        const unpinnedChannels = channelList.filter(channel => !channel.isPinned)
+
+        return { channels: [...pinnedChannels, ...unpinnedChannels] }
+
+    }, [data, unread_count, myProfile])
 
     return (
-        <div>
-            {unreadChannels?.length > 0 &&
-                <div className='pb-2'>
-                    <Heading as='h4' className='px-4 py-2 not-cal bg-gray-2' weight='medium' size='2'>Unread</Heading>
-                    <ul>
-                        {unreadChannels?.map(channel => <ChannelItem
-                            channel={channel}
-                            unreadCount={channel.unreadCount}
-                            key={channel.name} />)}
-                    </ul>
-                </div>
-            }
-
-            <div className='pb-2'>
-                {unreadChannels?.length > 0 &&
-                    <Heading as='h4' className='px-4 py-2 not-cal bg-gray-2' weight='medium' size='2'>All</Heading>
-                }<ul>
-                    {channels?.map(channel => <ChannelItem
-                        channel={channel}
-                        unreadCount={channel.unreadCount}
-                        key={channel.name} />)}
-                </ul>
-            </div>
+        <div className='pb-2'>
+            <IonList>
+                {channels?.map(channel => <ChannelItem
+                    channel={channel}
+                    unreadCount={channel.unreadCount}
+                    key={channel.name} />)}
+            </IonList>
         </div>
-
     )
 }
 
-const ChannelItem = ({ channel, unreadCount }: { channel: ChannelListItem, unreadCount?: number }) => {
+interface ChannelListItemWithPinned extends ChannelListItem {
+    isPinned: boolean
+}
+
+const ChannelItem = ({ channel, unreadCount }: { channel: ChannelListItemWithPinned, unreadCount?: number }) => {
+
+    const ref = useRef<HTMLIonItemSlidingElement>(null)
+
+    const close = () => {
+        ref.current?.close()
+    }
 
     return (
-        <li key={channel.name} className="list-none">
-            <Link to={`/channel/${channel.name}`} className='block px-4 py-2.5 active:bg-accent active:rounded'>
-                <div className='flex justify-between items-center text-foreground'>
+        <IonItemSliding ref={ref}>
+            <IonItemOptions side='start'>
+                <PinAction channelID={channel.name} isPinned={channel.isPinned} onComplete={close} />
+            </IonItemOptions>
+            <IonItem
+                routerLink={`/channel/${channel.name}`}
+                detail={false}
+                // lines='none'
+                className='block'>
+                <div className='flex justify-between w-full items-center text-foreground'>
                     <div className='flex items-center space-x-2'>
                         <div>
                             {channel.type === "Private" ? <BiLockAlt size='20' /> : channel.type === "Public" ? <BiHash size='20' /> :
@@ -67,9 +86,38 @@ const ChannelItem = ({ channel, unreadCount }: { channel: ChannelListItem, unrea
                         </div>
                         <Text size='3' weight='medium'>{channel.channel_name}</Text>
                     </div>
-                    {unreadCount ? <Badge radius='large' size='2' variant='solid'>{unreadCount < 100 ? unreadCount : '99+'}</Badge> : null}
+                    {unreadCount ? <Badge radius='large' size='2' variant='solid'>{unreadCount < 100 ? unreadCount : '99+'}</Badge> :
+                        channel.isPinned ? <Box><RiPushpinLine size='16' className='text-gray-9' /></Box> : null
+                    }
                 </div>
-            </Link>
-        </li>
+            </IonItem>
+
+
+        </IonItemSliding>
+
     )
+}
+
+const PinAction = ({ channelID, isPinned, onComplete }: { channelID: string, isPinned: boolean, onComplete: VoidFunction }) => {
+
+    const { mutate } = useCurrentRavenUser()
+
+    const { call } = useContext(FrappeContext) as FrappeConfig
+
+    const onClick: React.MouseEventHandler<HTMLIonItemOptionElement> = (e) => {
+        call.post('raven.api.raven_channel.toggle_pinned_channel', {
+            channel_id: channelID
+        }).then((res: { message: RavenUser }) => {
+            if (res.message) {
+                mutate({ message: res.message }, { revalidate: false })
+            }
+        })
+        onComplete()
+    }
+    return <IonItemOption onClick={onClick}>
+        <div className='flex gap-2'>
+            {isPinned ? <RiUnpinLine size='20' /> : <RiPushpinLine size='20' />}
+            {isPinned ? 'Unpin' : 'Pin'}
+        </div>
+    </IonItemOption>
 }

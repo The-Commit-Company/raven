@@ -23,10 +23,10 @@ export const DirectMessageList = ({ unread_count }: { unread_count?: UnreadCount
 
     return (
         <SidebarGroup pb='4'>
-            <SidebarGroupItem className={'pl-1.5 gap-1.5'}>
+            <SidebarGroupItem className={'gap-1'}>
                 <SidebarViewMoreButton onClick={toggle} expanded={showData} />
                 <Flex width='100%' justify='between' align='center' gap='2'>
-                    <SidebarGroupLabel className='cal-sans'>Direct Messages</SidebarGroupLabel>
+                    <SidebarGroupLabel className='cal-sans text-gray-12 dark:text-gray-11'>Direct Messages</SidebarGroupLabel>
                     {!showData && unread_count && unread_count?.total_unread_count_in_dms > 0 &&
                         <Box pr='2'>
                             <SidebarBadge>{unread_count.total_unread_count_in_dms}</SidebarBadge>
@@ -77,12 +77,12 @@ export const DirectMessageItemElement = ({ channel, unreadCount }: { channel: DM
 
     const showUnread = unreadCount && channelID !== channel.name
 
-    return <SidebarItem to={channel.name} className={'py-0.5'}>
+    return <SidebarItem to={channel.name} className={'py-0.5 px-2'}>
         <SidebarIcon>
             <UserAvatar src={userData?.user_image} alt={userData?.full_name} isActive={isActive} size='1' />
         </SidebarIcon>
         <Flex justify='between' width='100%'>
-            <Text size='2' className="text-ellipsis line-clamp-1" weight={showUnread ? 'bold' : 'regular'}>
+            <Text size='2' className="text-ellipsis line-clamp-1" weight={showUnread ? 'bold' : 'medium'}>
                 {channel.peer_user_id !== currentUser ? userData?.full_name ?? channel.peer_user_id : `${userData?.full_name} (You)`}
             </Text>
             {showUnread ? <SidebarBadge>{unreadCount}</SidebarBadge> : null}
@@ -136,7 +136,7 @@ const ExtraUsersItem = ({ user, createDMChannel }: { user: ExtraUsersData, creat
             <UserAvatar src={user.user_image} alt={user.full_name} isActive={isActive} />
         </SidebarIcon>
         <Flex justify='between' width='100%'>
-            <Text size='2' className="text-ellipsis line-clamp-1">
+            <Text size='2' className="text-ellipsis line-clamp-1" weight='medium'>
                 {user.name !== currentUser ? user.full_name : `${user.full_name} (You)`}
             </Text>
         </Flex>
