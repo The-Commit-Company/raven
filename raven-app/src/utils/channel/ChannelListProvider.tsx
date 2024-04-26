@@ -5,12 +5,9 @@ import { RavenChannel } from '../../../../types/RavenChannelManagement/RavenChan
 import { useSWRConfig } from 'frappe-react-sdk'
 import { toast } from 'sonner'
 import { getErrorMessage } from '@/components/layout/AlertBanner/ErrorBanner'
+import { RavenUser } from '@/types/Raven/RavenUser'
 
-export type ExtraUsersData = {
-    name: string,
-    full_name: string,
-    user_image: string,
-}
+export type ExtraUsersData = Pick<RavenUser, 'name' | 'full_name' | 'user_image' | 'type'>
 
 export type UnreadChannelCountItem = { name: string, user_id?: string, unread_count: number, is_direct_message: 0 | 1 }
 

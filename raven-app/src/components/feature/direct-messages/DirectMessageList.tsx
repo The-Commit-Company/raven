@@ -1,5 +1,5 @@
 import { useFrappePostCall } from "frappe-react-sdk"
-import { useContext, useMemo, useState } from "react"
+import { useContext, useLayoutEffect, useMemo, useRef, useState } from "react"
 import { useNavigate, useParams } from "react-router-dom"
 import { SidebarGroup, SidebarGroupItem, SidebarGroupLabel, SidebarGroupList, SidebarIcon, SidebarButtonItem } from "../../layout/Sidebar"
 import { SidebarBadge, SidebarItem, SidebarViewMoreButton } from "../../layout/Sidebar/SidebarComp"
@@ -12,35 +12,47 @@ import { UserAvatar } from "@/components/common/UserAvatar"
 import { toast } from "sonner"
 import { getErrorMessage } from "@/components/layout/AlertBanner/ErrorBanner"
 import { useStickyState } from "@/hooks/useStickyState"
+import clsx from "clsx"
 
 export const DirectMessageList = ({ unread_count }: { unread_count?: UnreadCountData }) => {
 
-    const { extra_users } = useContext(ChannelListContext) as ChannelListContextType
+    const { extra_users, dm_channels } = useContext(ChannelListContext) as ChannelListContextType
 
     const [showData, setShowData] = useStickyState(true, 'expandDirectMessageList')
 
     const toggle = () => setShowData(d => !d)
 
+    const ref = useRef<HTMLDivElement>(null)
+
+    const [height, setHeight] = useState(ref?.current?.clientHeight ?? 0)
+
+    useLayoutEffect(() => {
+        setHeight(ref.current?.clientHeight ?? 0)
+    }, [extra_users, dm_channels])
+
     return (
         <SidebarGroup pb='4'>
-            <SidebarGroupItem className={'pl-1.5 gap-1.5'}>
-                <SidebarViewMoreButton onClick={toggle} expanded={showData} />
-                <Flex width='100%' justify='between' align='center' gap='2'>
-                    <SidebarGroupLabel className='cal-sans'>Direct Messages</SidebarGroupLabel>
-                    {!showData && unread_count && unread_count?.total_unread_count_in_dms > 0 &&
-                        <Box pr='2'>
-                            <SidebarBadge>{unread_count.total_unread_count_in_dms}</SidebarBadge>
+            <SidebarGroupItem className={'gap-1 pl-1'}>
+                <Flex width='100%' justify='between' align='center' gap='2' pr='2' className="group">
+                    <Flex align='center' gap='2' width='100%' onClick={toggle} className="cursor-default select-none">
+                        <SidebarGroupLabel className="pt-0.5">Members</SidebarGroupLabel>
+                        <Box className={clsx('transition-opacity ease-in-out duration-200', !showData && unread_count && unread_count?.total_unread_count_in_dms > 0 ? 'opacity-100' : 'opacity-0')}>
+                            <SidebarBadge>{unread_count?.total_unread_count_in_dms}</SidebarBadge>
                         </Box>
-                    }
+                    </Flex>
+                    <SidebarViewMoreButton onClick={toggle} expanded={showData} />
                 </Flex>
             </SidebarGroupItem>
             <SidebarGroup>
-                {showData &&
-                    <SidebarGroupList>
+                <SidebarGroupList
+                    style={{
+                        height: showData ? height : 0
+                    }}>
+                    <div ref={ref} className="flex gap-1 flex-col">
                         <DirectMessageItemList unread_count={unread_count} />
                         {extra_users && extra_users.length ? <ExtraUsersItemList /> : null}
-                    </SidebarGroupList>
-                }
+                    </div>
+                </SidebarGroupList>
             </SidebarGroup>
         </SidebarGroup>
     )
@@ -77,12 +89,14 @@ export const DirectMessageItemElement = ({ channel, unreadCount }: { channel: DM
 
     const showUnread = unreadCount && channelID !== channel.name
 
-    return <SidebarItem to={channel.name} className={'py-0.5'}>
+    return <SidebarItem to={channel.name} className={'py-0.5 px-2'}>
         <SidebarIcon>
-            <UserAvatar src={userData?.user_image} alt={userData?.full_name} isActive={isActive} size='1' />
+            <UserAvatar src={userData?.user_image} alt={userData?.full_name}
+                isBot={userData?.type === 'Bot'}
+                isActive={isActive} size='1' />
         </SidebarIcon>
         <Flex justify='between' width='100%'>
-            <Text size='2' className="text-ellipsis line-clamp-1" weight={showUnread ? 'bold' : 'regular'}>
+            <Text size='2' className="text-ellipsis line-clamp-1" weight={showUnread ? 'bold' : 'medium'}>
                 {channel.peer_user_id !== currentUser ? userData?.full_name ?? channel.peer_user_id : `${userData?.full_name} (You)`}
             </Text>
             {showUnread ? <SidebarBadge>{unreadCount}</SidebarBadge> : null}
@@ -133,10 +147,10 @@ const ExtraUsersItem = ({ user, createDMChannel }: { user: ExtraUsersData, creat
         isLoading={isLoading}
         onClick={onButtonClick}>
         <SidebarIcon>
-            <UserAvatar src={user.user_image} alt={user.full_name} isActive={isActive} />
+            <UserAvatar src={user.user_image} alt={user.full_name} isActive={isActive} isBot={user?.type === 'Bot'} />
         </SidebarIcon>
         <Flex justify='between' width='100%'>
-            <Text size='2' className="text-ellipsis line-clamp-1">
+            <Text size='2' className="text-ellipsis line-clamp-1" weight='medium'>
                 {user.name !== currentUser ? user.full_name : `${user.full_name} (You)`}
             </Text>
         </Flex>

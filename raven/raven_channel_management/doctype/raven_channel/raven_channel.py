@@ -43,6 +43,9 @@ class RavenChannel(Document):
 		# delete all messages when channel is deleted
 		frappe.db.delete("Raven Message", {"channel_id": self.name})
 
+		# Delete the pinned channels
+		frappe.db.delete("Raven Pinned Channels", {"channel_id": self.name})
+
 	def after_insert(self):
 		"""
 		After inserting a channel, we need to check if it is a direct message channel or not.

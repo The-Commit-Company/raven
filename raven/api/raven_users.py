@@ -4,6 +4,25 @@ import frappe
 from frappe import _
 
 
+@frappe.whitelist(methods=["GET"])
+def get_current_raven_user():
+	"""
+	Fetches the current user's Raven User profile
+	"""
+
+	# Check if the user is a Raven User and has he "Raven User" role
+	# If not, then throw an error
+	if "Raven User" not in frappe.get_roles():
+		frappe.throw(
+			_(
+				"You do not have a <b>Raven User</b> role. Please contact your administrator to add your user profile as a <b>Raven User</b>."
+			),
+			title=_("Insufficient permissions. Please contact your administrator."),
+		)
+
+	return frappe.get_cached_doc("Raven User", {"user": frappe.session.user})
+
+
 @frappe.whitelist()
 def get_list():
 	"""

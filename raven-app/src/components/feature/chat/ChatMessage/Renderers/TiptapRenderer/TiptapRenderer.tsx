@@ -54,6 +54,11 @@ export const TiptapRenderer = ({ message, user, isScrolling = false, isTruncated
         codeBlock: false,
         bold: false,
         italic: false,
+        orderedList: {
+          HTMLAttributes: {
+            class: 'list-decimal'
+          }
+        },
         listItem: {
           HTMLAttributes: {
             class: 'ml-5 rt-Text text-sm'
