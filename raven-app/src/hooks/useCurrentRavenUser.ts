@@ -9,7 +9,6 @@ const useCurrentRavenUser = () => {
         {
             revalidateIfStale: false,
             revalidateOnFocus: false,
-            revalidateOnMount: false,
             shouldRetryOnError: false,
             revalidateOnReconnect: true
         }

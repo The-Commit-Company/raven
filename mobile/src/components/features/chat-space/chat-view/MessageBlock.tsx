@@ -2,7 +2,6 @@ import { memo, useContext, useMemo, useRef, useState } from 'react'
 import { FileMessage, ImageMessage, Message, TextMessage, PollMessage } from '../../../../../../types/Messaging/Message'
 import { IonIcon, IonSkeletonText, IonText } from '@ionic/react'
 import { UserFields } from '@/utils/users/UserListProvider'
-import { DateObjectToFormattedDateStringWithoutYear, DateObjectToTimeString } from '@/utils/operations/operations'
 import { ChannelMembersContext } from '../ChatInterface'
 import { openOutline } from 'ionicons/icons'
 import { Haptics, ImpactStyle } from '@capacitor/haptics'
@@ -19,6 +18,7 @@ import { RiRobot2Fill } from 'react-icons/ri'
 import { MdOutlineBarChart } from 'react-icons/md'
 import { TiptapRenderer } from './components/TiptapRenderer/TiptapRenderer'
 import PollMessageBlock from './components/PollMessage'
+import { toDateMonthAtHourMinuteAmPm, toHourMinuteAmPm } from '@/utils/operations/dateConversions'
 
 type Props = {
     message: Message,
@@ -104,7 +104,7 @@ export const NonContinuationMessageBlock = ({ message, onMessageSelect, isScroll
                 <div className='flex items-baseline pb-1'>
                     <Text as='span' className='font-semibold' size='2'>{user?.full_name ?? message.owner}</Text>
                     {isBot && <Badge className='ml-2' color='gray'>Bot</Badge>}
-                    <Text as='span' size='1' className='pl-1.5 text-gray-10'>{DateObjectToTimeString(message.creation)}</Text>
+                    <Text as='span' size='1' className='pl-1.5 text-gray-10'>{toHourMinuteAmPm(message.creation)}</Text>
                 </div>
                 <MessageContent
                     message={message}
@@ -325,12 +325,11 @@ const ReplyBlock = ({ message }: { message: Message }) => {
         }
     }, [message])
 
-    const date = message ? new Date(message?.creation) : null
     return <div className='px-2 py-1.5 my-2 rounded-e-sm bg-neutral-900 border-l-4 border-l-neutral-500'>
         {message && <div>
             <div className='flex items-baseline pb-1'>
                 <p className='text-foreground font-medium text-sm leading-normal tracking-normal'>{user?.full_name ?? message.owner}</p>
-                {date && <p className='text-xs text-foreground/60 font-normal pl-1.5'>on {DateObjectToFormattedDateStringWithoutYear(date)} at {DateObjectToTimeString(date)}</p>}
+                <p className='text-xs text-foreground/60 font-normal pl-1.5'>on {toDateMonthAtHourMinuteAmPm(message.creation)}</p>
             </div>
             {message.message_type === 'Text' && <div className='text-sm text-foreground/60 line-clamp-3'>{parse(message.content ?? '')}</div>}
             {message.message_type === 'Image' && <div className='flex items-center space-x-2'>
