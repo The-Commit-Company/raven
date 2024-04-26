@@ -4,7 +4,6 @@ import { SidebarGroup, SidebarGroupItem, SidebarGroupLabel, SidebarGroupList } f
 import { Box, Flex } from '@radix-ui/themes'
 import { ChannelItemElement } from '@/components/feature/channels/ChannelList'
 import useCurrentRavenUser from '@/hooks/useCurrentRavenUser'
-import { RiPushpinFill } from 'react-icons/ri'
 
 const PinnedChannels = ({ unread_count }: { unread_count?: UnreadCountData }) => {
 
@@ -37,12 +36,9 @@ const PinnedChannels = ({ unread_count }: { unread_count?: UnreadCountData }) =>
 
     return (
         <Box>
-            <SidebarGroup pt='1'>
-                <SidebarGroupItem gap='2' className={'pl-0.5'}>
-                    <RiPushpinFill className='mt-0.5 text-gray-12 dark:text-gray-300' size='16' />
-                    <Flex width='100%' justify='between' align='center' gap='2'>
-                        <SidebarGroupLabel className='cal-sans text-gray-12 dark:text-gray-11'>Pinned</SidebarGroupLabel>
-                    </Flex>
+            <SidebarGroup>
+                <SidebarGroupItem className={'gap-1'}>
+                    <SidebarGroupLabel className='cal-sans'>Pinned</SidebarGroupLabel>
                 </SidebarGroupItem>
                 <SidebarGroup>
                     <SidebarGroupList>

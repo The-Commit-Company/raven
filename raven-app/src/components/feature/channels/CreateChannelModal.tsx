@@ -5,11 +5,11 @@ import { BiGlobe, BiHash, BiLockAlt } from 'react-icons/bi'
 import { useNavigate } from 'react-router-dom'
 import { ErrorBanner } from '../../layout/AlertBanner'
 import { Box, Button, Dialog, Flex, IconButton, RadioGroup, Text, TextArea, TextField } from '@radix-ui/themes'
-import { BiPlus } from 'react-icons/bi'
 import { ErrorText, HelperText, Label } from '@/components/common/Form'
 import { Loader } from '@/components/common/Loader'
 import { DIALOG_CONTENT_CLASS } from '@/utils/layout/dialog'
 import { toast } from 'sonner'
+import { FiPlus } from 'react-icons/fi'
 
 interface ChannelCreationForm {
     channel_name: string,
@@ -93,8 +93,10 @@ export const CreateChannelButton = ({ updateChannelList }: { updateChannelList: 
 
     return <Dialog.Root open={isOpen} onOpenChange={onOpenChange}>
         <Dialog.Trigger>
-            <IconButton variant='ghost' size='1' color='gray' aria-label='Create Channel' title='Create Channel'>
-                <BiPlus className='text-gray-12 dark:text-gray-300 text-md' />
+            <IconButton variant='soft' size='1' radius='large' color='gray' aria-label='Create Channel' title='Create Channel'
+                className='group-hover:visible invisible bg-transparent hover:bg-gray-3 transition-all ease-in-out text-gray-10 dark:text-gray-300'>
+                <FiPlus size='18' />
+                {/* <BiPlus className='text-gray-10 dark:text-gray-300' /> */}
             </IconButton>
         </Dialog.Trigger>
         <Dialog.Content className={DIALOG_CONTENT_CLASS}>
