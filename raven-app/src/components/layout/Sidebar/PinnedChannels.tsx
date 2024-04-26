@@ -37,7 +37,7 @@ const PinnedChannels = ({ unread_count }: { unread_count?: UnreadCountData }) =>
     return (
         <Box>
             <SidebarGroup>
-                <SidebarGroupItem className={'gap-1'}>
+                <SidebarGroupItem className={'gap-1 pl-1'}>
                     <SidebarGroupLabel className='cal-sans'>Pinned</SidebarGroupLabel>
                 </SidebarGroupItem>
                 <SidebarGroup>

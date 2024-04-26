@@ -1,5 +1,5 @@
 import { useFrappePostCall } from "frappe-react-sdk"
-import { useContext, useMemo, useRef, useState } from "react"
+import { useContext, useLayoutEffect, useMemo, useRef, useState } from "react"
 import { useNavigate, useParams } from "react-router-dom"
 import { SidebarGroup, SidebarGroupItem, SidebarGroupLabel, SidebarGroupList, SidebarIcon, SidebarButtonItem } from "../../layout/Sidebar"
 import { SidebarBadge, SidebarItem, SidebarViewMoreButton } from "../../layout/Sidebar/SidebarComp"
@@ -16,7 +16,7 @@ import clsx from "clsx"
 
 export const DirectMessageList = ({ unread_count }: { unread_count?: UnreadCountData }) => {
 
-    const { extra_users } = useContext(ChannelListContext) as ChannelListContextType
+    const { extra_users, dm_channels } = useContext(ChannelListContext) as ChannelListContextType
 
     const [showData, setShowData] = useStickyState(true, 'expandDirectMessageList')
 
@@ -24,11 +24,15 @@ export const DirectMessageList = ({ unread_count }: { unread_count?: UnreadCount
 
     const ref = useRef<HTMLDivElement>(null)
 
-    const height = ref.current?.clientHeight
+    const [height, setHeight] = useState(ref?.current?.clientHeight ?? 0)
+
+    useLayoutEffect(() => {
+        setHeight(ref.current?.clientHeight ?? 0)
+    }, [extra_users, dm_channels])
 
     return (
         <SidebarGroup pb='4'>
-            <SidebarGroupItem className={'gap-1'}>
+            <SidebarGroupItem className={'gap-1 pl-1'}>
                 <Flex width='100%' justify='between' align='center' gap='2' pr='2' className="group">
                     <Flex align='center' gap='2' width='100%' onClick={toggle} className="cursor-default select-none">
                         <SidebarGroupLabel>Members</SidebarGroupLabel>
@@ -87,7 +91,9 @@ export const DirectMessageItemElement = ({ channel, unreadCount }: { channel: DM
 
     return <SidebarItem to={channel.name} className={'py-0.5 px-2'}>
         <SidebarIcon>
-            <UserAvatar src={userData?.user_image} alt={userData?.full_name} isActive={isActive} size='1' />
+            <UserAvatar src={userData?.user_image} alt={userData?.full_name}
+                isBot={userData?.type === 'Bot'}
+                isActive={isActive} size='1' />
         </SidebarIcon>
         <Flex justify='between' width='100%'>
             <Text size='2' className="text-ellipsis line-clamp-1" weight={showUnread ? 'bold' : 'medium'}>
@@ -141,7 +147,7 @@ const ExtraUsersItem = ({ user, createDMChannel }: { user: ExtraUsersData, creat
         isLoading={isLoading}
         onClick={onButtonClick}>
         <SidebarIcon>
-            <UserAvatar src={user.user_image} alt={user.full_name} isActive={isActive} />
+            <UserAvatar src={user.user_image} alt={user.full_name} isActive={isActive} isBot={user?.type === 'Bot'} />
         </SidebarIcon>
         <Flex justify='between' width='100%'>
             <Text size='2' className="text-ellipsis line-clamp-1" weight='medium'>

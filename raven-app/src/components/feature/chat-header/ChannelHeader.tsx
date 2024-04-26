@@ -24,7 +24,7 @@ export const ChannelHeader = ({ channelData }: ChannelHeaderProps) => {
                 </Flex>
                 <EditChannelNameButton channelID={channelData.name} channel_name={channelData.channel_name} channelType={channelData.type} disabled={channelData.is_archived == 1} />
             </Flex>
-            <Flex gap='2' className="animate-fadein">
+            <Flex gap='2' align='center' className="animate-fadein">
                 <ViewFilesButton />
                 <SearchButton />
                 <ViewOrAddMembersButton channelData={channelData} />
