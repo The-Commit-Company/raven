@@ -9,6 +9,7 @@ import { hasRavenUserRole } from '@/utils/roles'
 import { FullPageLoader } from '@/components/layout/Loaders'
 import { MobileAppRedirectBanner } from '@/components/layout/AlertBanner'
 import '../components/layout/AlertBanner/styles.css'
+import CommandMenu from '@/components/feature/CommandMenu/CommandMenu'
 
 const AddRavenUsersPage = lazy(() => import('@/pages/AddRavenUsersPage'))
 
@@ -34,6 +35,7 @@ export const MainPage = () => {
                         <div className='mobile-app-message'>
                             <MobileAppRedirectBanner />
                         </div>
+                        <CommandMenu />
                     </ActiveUsersProvider>
                 </ChannelListProvider>
             </UserListProvider>

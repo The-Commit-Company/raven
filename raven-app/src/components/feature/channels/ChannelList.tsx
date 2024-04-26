@@ -1,7 +1,7 @@
 import { SidebarGroup, SidebarGroupItem, SidebarGroupLabel, SidebarGroupList, SidebarItem } from "../../layout/Sidebar"
 import { SidebarBadge, SidebarViewMoreButton } from "../../layout/Sidebar/SidebarComp"
 import { CreateChannelButton } from "./CreateChannelModal"
-import { useContext, useMemo, useRef } from "react"
+import { useContext, useLayoutEffect, useMemo, useRef, useState } from "react"
 import { ChannelListContext, ChannelListContextType, ChannelListItem, UnreadCountData } from "../../../utils/channel/ChannelListProvider"
 import { ChannelIcon } from "@/utils/layout/channelIcon"
 import { Box, ContextMenu, Flex, Text } from "@radix-ui/themes"
@@ -53,12 +53,15 @@ export const ChannelList = ({ unread_count }: { unread_count?: UnreadCountData }
     }, [channels, myProfile, unread_count])
 
     const ref = useRef<HTMLDivElement>(null)
+    const [height, setHeight] = useState(ref?.current?.clientHeight ?? 0)
 
-    const height = ref.current?.clientHeight
+    useLayoutEffect(() => {
+        setHeight(ref.current?.clientHeight ?? 0)
+    }, [filteredChannels])
 
     return (
         <SidebarGroup>
-            <SidebarGroupItem className={'gap-1'}>
+            <SidebarGroupItem className={'gap-1 pl-1'}>
                 <Flex width='100%' justify='between' align='center' gap='2' className="group">
                     <Flex align='center' gap='2' width='100%' onClick={toggle} className="cursor-default select-none">
                         <SidebarGroupLabel>Channels</SidebarGroupLabel>

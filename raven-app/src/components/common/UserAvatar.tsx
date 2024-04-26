@@ -42,6 +42,32 @@ const radixRadiusToTailwind = (radius: "none" | "small" | "medium" | "large" | "
     }
 }
 
+const getIconSize = (size: AvatarProps['size']) => {
+    switch (size) {
+        case '1':
+            return '0.8rem'
+        case '2':
+            return '1rem'
+        case '3':
+            return '1rem'
+        case '4':
+            return '1.1rem'
+        case '5':
+            return '1.2rem'
+        case '6':
+            return '1.5rem'
+        case '7':
+            return '1.7rem'
+        case '8':
+            return '1.8rem'
+        case '9':
+            return '2rem'
+        default:
+            return '1rem'
+
+    }
+}
+
 export const UserAvatar = ({ src, alt, size = '1', radius = 'medium', isActive, skeletonSize = '5', fallback, isBot, className, ...props }: UserAvatarProps) => {
     const { ref, inView } = useInView(options)
     const color = useMemo(() => generateAvatarColor(alt), [alt])
@@ -57,7 +83,7 @@ export const UserAvatar = ({ src, alt, size = '1', radius = 'medium', isActive, 
             </span>
         }
         {isBot && <span className={clsx("absolute block translate-x-1/2 translate-y-1/2 transform rounded-full", radius === 'full' ? 'bottom-1 right-1' : 'bottom-0.5 right-0.5')}>
-            <RiRobot2Fill className="text-accent-11 dark:text-accent-11" size="1rem" />
+            <RiRobot2Fill className="text-accent-11 dark:text-accent-11" size={getIconSize(size)} />
         </span>}
     </span>
     </Theme>

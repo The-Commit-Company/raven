@@ -13,6 +13,9 @@ def get_all_channels(hide_archived=True):
 	On mobile app, these are separate lists
 	"""
 
+	if hide_archived == "false":
+		hide_archived = False
+
 	# 1. Get "channels" - public, open, private, and DMs
 	channels = get_channel_list(hide_archived)
 
@@ -142,7 +145,7 @@ def get_extra_users(dm_channels):
 			["enabled", "=", 1],
 			["Has Role", "role", "=", "Raven User"],
 		],
-		fields=["name", "full_name", "user_image"],
+		fields=["name", "full_name", "user_image", "type"],
 	)
 
 
