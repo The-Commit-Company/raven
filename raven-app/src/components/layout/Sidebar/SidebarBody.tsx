@@ -24,9 +24,9 @@ export const SidebarBody = () => {
                     </SidebarItem>
                 </Box>
                 <UnreadChannels unread_count={unread_count?.message} />
-                <Box width='100%' py='2'>
+                {!!(unread_count?.message.total_unread_count_in_channels || unread_count?.message.total_unread_count_in_dms) && <Box width='100%' py='2'>
                     <Separator size='4' />
-                </Box>
+                </Box>}
 
                 <ChannelList unread_count={unread_count?.message} />
                 <DirectMessageList unread_count={unread_count?.message} />

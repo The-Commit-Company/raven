@@ -2,10 +2,15 @@ import { useContext, useState } from 'react'
 import { UserContext } from '../../../utils/auth/UserProvider'
 import { useUserData } from '@/hooks/useUserData'
 import { AddRavenUsers } from '@/components/feature/raven-users/AddRavenUsers'
-import { DropdownMenu, Flex, IconButton, Link, Separator, Text } from '@radix-ui/themes'
-import { BiDotsHorizontalRounded } from 'react-icons/bi'
+import { Button, DropdownMenu, Flex, IconButton, Link, Separator, Text } from '@radix-ui/themes'
+import { BiDotsHorizontalRounded, BiSolidCircle } from 'react-icons/bi'
 import { UserAvatar } from '@/components/common/UserAvatar'
 import { isSystemManager } from '@/utils/roles'
+import { MdWatchLater } from 'react-icons/md'
+import { FaCircleDot, FaCircleMinus } from 'react-icons/fa6'
+import { BsEmojiSmileFill } from 'react-icons/bs'
+import { DIALOG_CONTENT_CLASS } from '@/utils/layout/dialog'
+import { SetCustomStatusModal } from '@/components/feature/userSettings/SetCustomStatusModal'
 
 export const SidebarFooter = ({ isSettingsPage = false }: { isSettingsPage?: boolean }) => {
 
@@ -13,6 +18,7 @@ export const SidebarFooter = ({ isSettingsPage = false }: { isSettingsPage?: boo
     const { logout } = useContext(UserContext)
 
     const [isAddUserModalOpen, setIsAddUserModalOpen] = useState(false)
+    const [isUserStatusModalOpen, setUserStatusModalOpen] = useState(false)
 
     const canAddUsers = isSystemManager()
 
@@ -28,10 +34,33 @@ export const SidebarFooter = ({ isSettingsPage = false }: { isSettingsPage?: boo
             <Flex direction='column' gap='2'>
                 <Separator size='4' className={`bg-gray-4 dark:bg-gray-6`} />
                 <Flex justify="between" align='center' px='1'>
-                    <Flex gap='2' align='center'>
-                        <UserAvatar src={userData.user_image} alt={userData.full_name} isActive />
-                        <Text size="2">{userData.full_name}</Text>
-                    </Flex>
+
+                    <DropdownMenu.Root>
+                        <DropdownMenu.Trigger>
+                            <Button variant='ghost' className={'not-cal pt-1.5 pb-2 dark:text-white text-black'} color='gray'>
+                                <UserAvatar src={userData.user_image} alt={userData.full_name} isActive />
+                                <Text size="2" className={'ml-1'}>{userData.full_name}</Text>
+                            </Button>
+                        </DropdownMenu.Trigger>
+                        <DropdownMenu.Content variant='soft'>
+                            <DropdownMenu.Sub>
+                                <DropdownMenu.SubTrigger>
+                                    <Flex gap={'2'} align='center'><BiSolidCircle color={'green'} fontSize={'0.8rem'} /> Online</Flex>
+                                </DropdownMenu.SubTrigger>
+                                <DropdownMenu.SubContent>
+                                    <DropdownMenu.Item className={'flex justify-normal gap-2'} color='gray'><BiSolidCircle color={'green'} fontSize={'0.7rem'} /> Online</DropdownMenu.Item>
+                                    <DropdownMenu.Separator />
+                                    <DropdownMenu.Item className={'flex justify-normal gap-2'} color='gray'><MdWatchLater className={'text-amber-400'} fontSize={'0.75rem'} /> Idle</DropdownMenu.Item>
+                                    <DropdownMenu.Item className={'flex justify-normal gap-2'} color='gray'><FaCircleMinus className={'text-red-600'} fontSize={'0.6rem'} /> Do not disturb</DropdownMenu.Item>
+                                    <DropdownMenu.Item className={'flex justify-normal gap-2'} color='gray'><FaCircleDot className={'text-gray-400'} fontSize={'0.6rem'} />Invisible</DropdownMenu.Item>
+                                </DropdownMenu.SubContent>
+                            </DropdownMenu.Sub>
+                            <DropdownMenu.Item className={'flex justify-normal gap-2'} onClick={() => setUserStatusModalOpen(true)}>
+                                <BsEmojiSmileFill className={'text-gray-400'} /> Set custom status
+                            </DropdownMenu.Item>
+                        </DropdownMenu.Content>
+                    </DropdownMenu.Root>
+
                     <DropdownMenu.Root>
                         <DropdownMenu.Trigger>
                             <IconButton aria-label='Options' color='gray' variant='ghost'>
@@ -64,7 +93,10 @@ export const SidebarFooter = ({ isSettingsPage = false }: { isSettingsPage?: boo
                     </DropdownMenu.Root>
                 </Flex>
             </Flex>
+
+            <SetCustomStatusModal isOpen={isUserStatusModalOpen} onOpenChange={setUserStatusModalOpen} />
             <AddRavenUsers isOpen={isAddUserModalOpen} onOpenChange={setIsAddUserModalOpen} />
+
         </Flex>
     )
 }
