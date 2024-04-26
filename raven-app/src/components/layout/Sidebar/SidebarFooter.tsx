@@ -1,4 +1,4 @@
-import { useContext, useState } from 'react'
+import { useCallback, useContext, useState } from 'react'
 import { UserContext } from '../../../utils/auth/UserProvider'
 import { useUserData } from '@/hooks/useUserData'
 import { AddRavenUsers } from '@/components/feature/raven-users/AddRavenUsers'
@@ -11,6 +11,8 @@ import { FaCircleDot, FaCircleMinus } from 'react-icons/fa6'
 import { BsEmojiSmileFill } from 'react-icons/bs'
 import { DIALOG_CONTENT_CLASS } from '@/utils/layout/dialog'
 import { SetCustomStatusModal } from '@/components/feature/userSettings/SetCustomStatusModal'
+import { useFrappePostCall } from 'frappe-react-sdk'
+import { toast } from 'sonner'
 
 export const SidebarFooter = ({ isSettingsPage = false }: { isSettingsPage?: boolean }) => {
 
@@ -21,6 +23,19 @@ export const SidebarFooter = ({ isSettingsPage = false }: { isSettingsPage?: boo
     const [isUserStatusModalOpen, setUserStatusModalOpen] = useState(false)
 
     const canAddUsers = isSystemManager()
+
+    const { call } = useFrappePostCall('frappe.client.set_value')
+
+    const setAvailabilityStatus = useCallback((status: string) => {
+        call({
+            doctype: 'Raven User',
+            name: userData.name,
+            fieldname: 'availability_status',
+            value: status
+        }).then(() => {
+            toast.success("User availability updated")
+        })
+    }, [userData.name])
 
     return (
         <Flex
@@ -45,14 +60,22 @@ export const SidebarFooter = ({ isSettingsPage = false }: { isSettingsPage?: boo
                         <DropdownMenu.Content variant='soft'>
                             <DropdownMenu.Sub>
                                 <DropdownMenu.SubTrigger>
-                                    <Flex gap={'2'} align='center'><BiSolidCircle color={'green'} fontSize={'0.8rem'} /> Online</Flex>
+                                    <Flex gap={'2'} align='center'>Availability</Flex>
                                 </DropdownMenu.SubTrigger>
                                 <DropdownMenu.SubContent>
-                                    <DropdownMenu.Item className={'flex justify-normal gap-2'} color='gray'><BiSolidCircle color={'green'} fontSize={'0.7rem'} /> Online</DropdownMenu.Item>
+                                    <DropdownMenu.Item className={'flex justify-normal gap-2'} color='gray' onClick={() => setAvailabilityStatus('Online')}>
+                                        <BiSolidCircle color={'green'} fontSize={'0.7rem'} /> Online
+                                    </DropdownMenu.Item>
                                     <DropdownMenu.Separator />
-                                    <DropdownMenu.Item className={'flex justify-normal gap-2'} color='gray'><MdWatchLater className={'text-amber-400'} fontSize={'0.75rem'} /> Idle</DropdownMenu.Item>
-                                    <DropdownMenu.Item className={'flex justify-normal gap-2'} color='gray'><FaCircleMinus className={'text-red-600'} fontSize={'0.6rem'} /> Do not disturb</DropdownMenu.Item>
-                                    <DropdownMenu.Item className={'flex justify-normal gap-2'} color='gray'><FaCircleDot className={'text-gray-400'} fontSize={'0.6rem'} />Invisible</DropdownMenu.Item>
+                                    <DropdownMenu.Item className={'flex justify-normal gap-2'} color='gray' onClick={() => setAvailabilityStatus('Idle')}>
+                                        <MdWatchLater className={'text-amber-400'} fontSize={'0.75rem'} /> Idle
+                                    </DropdownMenu.Item>
+                                    <DropdownMenu.Item className={'flex justify-normal gap-2'} color='gray' onClick={() => setAvailabilityStatus('Do not disturb')}>
+                                        <FaCircleMinus className={'text-red-600'} fontSize={'0.6rem'} /> Do not disturb
+                                    </DropdownMenu.Item>
+                                    <DropdownMenu.Item className={'flex justify-normal gap-2'} color='gray' onClick={() => setAvailabilityStatus('Invisible')}>
+                                        <FaCircleDot className={'text-gray-400'} fontSize={'0.6rem'} /> Invisible
+                                    </DropdownMenu.Item>
                                 </DropdownMenu.SubContent>
                             </DropdownMenu.Sub>
                             <DropdownMenu.Item className={'flex justify-normal gap-2'} onClick={() => setUserStatusModalOpen(true)}>

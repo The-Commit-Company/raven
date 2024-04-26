@@ -15,10 +15,12 @@ class RavenUser(Document):
 	if TYPE_CHECKING:
 		from frappe.types import DF
 
+		availability_status: DF.Literal["Online", "Idle", "Do not disturb", "Invisible"]
 		bot: DF.Link | None
+		custom_status: DF.Data | None
 		enabled: DF.Check
 		first_name: DF.Data | None
-		full_name: DF.Data | None
+		full_name: DF.Data
 		type: DF.Literal["User", "Bot"]
 		user: DF.Link | None
 		user_image: DF.AttachImage | None

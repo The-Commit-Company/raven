@@ -14,7 +14,9 @@
   "first_name",
   "user_image",
   "enabled",
-  "html_xuuw"
+  "html_xuuw",
+  "availability_status",
+  "custom_status"
  ],
  "fields": [
   {
@@ -80,11 +82,22 @@
    "mandatory_depends_on": "eval: doc.type == 'Bot'",
    "options": "Raven Bot",
    "read_only": 1
+  },
+  {
+   "fieldname": "availability_status",
+   "fieldtype": "Select",
+   "label": "Availability Status",
+   "options": "Online\nIdle\nDo not disturb\nInvisible"
+  },
+  {
+   "fieldname": "custom_status",
+   "fieldtype": "Data",
+   "label": "Custom Status"
   }
  ],
  "image_field": "user_image",
  "links": [],
- "modified": "2024-03-29 18:34:46.139424",
+ "modified": "2024-04-26 15:43:39.911902",
  "modified_by": "Administrator",
  "module": "Raven",
  "name": "Raven User",

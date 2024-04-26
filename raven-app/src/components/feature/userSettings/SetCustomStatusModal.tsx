@@ -5,7 +5,7 @@ import { lazy, Suspense } from "react"
 
 const SetCustomStatusContent = lazy(() => import("./SetCustomStatusContent"))
 
-export const SetCustomStatusModal = ({ isOpen, onOpenChange }: any) => {
+export const SetCustomStatusModal = ({ isOpen, onOpenChange }: { isOpen: boolean, onOpenChange: (open: boolean) => void }) => {
 
     const onClose = () => {
         onOpenChange(false)
