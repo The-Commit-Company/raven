@@ -52,7 +52,7 @@ export const DMChannelHeader = ({ channelData, channelMembers }: DMChannelHeader
                     </div>
                 </Heading>
             </Flex>
-            <Flex gap='2'>
+            <Flex gap='4' align='center'>
                 <ViewFilesButton />
                 <SearchButton />
             </Flex>
