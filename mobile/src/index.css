@@ -2,7 +2,15 @@
 @tailwind components;
 @tailwind utilities;
 
+
 @layer base {
+
+  ul,
+  ol {
+    list-style: revert;
+  }
+
+
   :root {
     --background: 0 0% 100%;
     --foreground: 224 71.4% 4.1%;

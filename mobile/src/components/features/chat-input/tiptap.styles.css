@@ -1,4 +1,4 @@
-.tiptap p.is-editor-empty:first-child::before {
+.tiptap-editor p.is-editor-empty:first-child::before {
     color: var(--gray-8);
     content: attr(data-placeholder);
     float: left;
@@ -9,7 +9,7 @@
     pointer-events: none;
 }
 
-.tiptap.ProseMirror {
+.tiptap-editor.ProseMirror {
     max-height: 240px;
     overflow: auto;
 }

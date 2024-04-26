@@ -19,6 +19,8 @@ import { CustomUnderline } from './Underline'
 import { Image } from '@tiptap/extension-image'
 import { clsx } from 'clsx'
 import Italic from '@tiptap/extension-italic';
+import './TiptapRenderer.styles.css'
+
 const lowlight = createLowlight(common)
 
 lowlight.register('html', html)
@@ -42,7 +44,7 @@ export const TiptapRenderer = ({ message, user, isScrolling = false, isTruncated
     editable: false,
     editorProps: {
       attributes: {
-        class: isTruncated ? 'line-clamp-3' : ''
+        class: isTruncated ? 'tiptap-renderer line-clamp-3' : 'tiptap-renderer '
       }
     },
     enableCoreExtensions: true,
