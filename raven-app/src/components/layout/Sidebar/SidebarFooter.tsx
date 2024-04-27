@@ -13,6 +13,8 @@ import { DIALOG_CONTENT_CLASS } from '@/utils/layout/dialog'
 import { SetCustomStatusModal } from '@/components/feature/userSettings/SetCustomStatusModal'
 import { useFrappePostCall } from 'frappe-react-sdk'
 import { toast } from 'sonner'
+import { UserSettingsModal } from '@/components/feature/userSettings/UserSettingsModal'
+import { FiSettings } from 'react-icons/fi'
 
 export const SidebarFooter = ({ isSettingsPage = false }: { isSettingsPage?: boolean }) => {
 
@@ -21,6 +23,7 @@ export const SidebarFooter = ({ isSettingsPage = false }: { isSettingsPage?: boo
 
     const [isAddUserModalOpen, setIsAddUserModalOpen] = useState(false)
     const [isUserStatusModalOpen, setUserStatusModalOpen] = useState(false)
+    const [isUserSettingsModalOpen, setUserSettingsModalOpen] = useState(false)
 
     const canAddUsers = isSystemManager()
 
@@ -84,39 +87,45 @@ export const SidebarFooter = ({ isSettingsPage = false }: { isSettingsPage?: boo
                         </DropdownMenu.Content>
                     </DropdownMenu.Root>
 
-                    <DropdownMenu.Root>
-                        <DropdownMenu.Trigger>
-                            <IconButton aria-label='Options' color='gray' variant='ghost'>
-                                <BiDotsHorizontalRounded />
-                            </IconButton>
-                        </DropdownMenu.Trigger>
-                        <DropdownMenu.Content variant='soft'>
-                            {canAddUsers &&
-                                <DropdownMenu.Item color='gray' onClick={() => setIsAddUserModalOpen(true)} className="cursor-pointer">
-                                    Add users to Raven
+                    <Flex gap='3'>
+                        <IconButton title='User Settings' aria-label='User Settings' variant='ghost' color='gray' onClick={() => setUserSettingsModalOpen(true)}>
+                            <FiSettings />
+                        </IconButton>
+                        <DropdownMenu.Root>
+                            <DropdownMenu.Trigger>
+                                <IconButton aria-label='Options' color='gray' variant='ghost'>
+                                    <BiDotsHorizontalRounded />
+                                </IconButton>
+                            </DropdownMenu.Trigger>
+                            <DropdownMenu.Content variant='soft'>
+                                {canAddUsers &&
+                                    <DropdownMenu.Item color='gray' onClick={() => setIsAddUserModalOpen(true)} className="cursor-pointer">
+                                        Add users to Raven
+                                    </DropdownMenu.Item>
+                                }
+                                {canAddUsers &&
+                                    <DropdownMenu.Separator />
+                                }
+                                <DropdownMenu.Item color='gray' className='group'>
+                                    <Link href="/raven_mobile" className='no-underline'>
+                                        Mobile App
+                                    </Link>
                                 </DropdownMenu.Item>
-                            }
-                            {canAddUsers &&
-                                <DropdownMenu.Separator />
-                            }
-                            <DropdownMenu.Item color='gray' className='group'>
-                                <Link href="/raven_mobile" className='no-underline'>
-                                    Mobile App
-                                </Link>
-                            </DropdownMenu.Item>
-                            {/* {!isSettingsPage && canAddUsers && <DropdownMenu.Item color='gray' className='focus-visible:ring-0 focus-visible:outline-none rounded-radius2' asChild>
+                                {/* {!isSettingsPage && canAddUsers && <DropdownMenu.Item color='gray' className='focus-visible:ring-0 focus-visible:outline-none rounded-radius2' asChild>
                                 <Link href="../settings/integrations/webhooks" className='no-underline'>
                                     Settings
                                 </Link>
                             </DropdownMenu.Item>} */}
-                            <DropdownMenu.Item onClick={logout} color='red' className='cursor-pointer'>
-                                Log Out
-                            </DropdownMenu.Item>
-                        </DropdownMenu.Content>
-                    </DropdownMenu.Root>
+                                <DropdownMenu.Item onClick={logout} color='red' className='cursor-pointer'>
+                                    Log Out
+                                </DropdownMenu.Item>
+                            </DropdownMenu.Content>
+                        </DropdownMenu.Root>
+                    </Flex>
                 </Flex>
             </Flex>
 
+            <UserSettingsModal isOpen={isUserSettingsModalOpen} onOpenChange={setUserSettingsModalOpen} />
             <SetCustomStatusModal isOpen={isUserStatusModalOpen} onOpenChange={setUserStatusModalOpen} />
             <AddRavenUsers isOpen={isAddUserModalOpen} onOpenChange={setIsAddUserModalOpen} />
 
