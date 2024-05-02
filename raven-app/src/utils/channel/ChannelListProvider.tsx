@@ -7,7 +7,7 @@ import { toast } from 'sonner'
 import { getErrorMessage } from '@/components/layout/AlertBanner/ErrorBanner'
 import { RavenUser } from '@/types/Raven/RavenUser'
 
-export type ExtraUsersData = Pick<RavenUser, 'name' | 'full_name' | 'user_image' | 'type'>
+export type ExtraUsersData = Pick<RavenUser, 'name' | 'user' | 'full_name' | 'user_image' | 'type'>
 
 export type UnreadChannelCountItem = { name: string, user_id?: string, unread_count: number, is_direct_message: 0 | 1 }
 

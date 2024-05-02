@@ -91,7 +91,8 @@ export const DirectMessageItemElement = ({ channel, unreadCount }: { channel: DM
 
     return <SidebarItem to={channel.name} className={'py-0.5 px-2'}>
         <SidebarIcon>
-            <UserAvatar src={userData?.user_image} alt={userData?.full_name}
+            <UserAvatar src={userData?.user_image}
+                alt={userData?.full_name}
                 isBot={userData?.type === 'Bot'}
                 isActive={isActive} size='1' />
         </SidebarIcon>
@@ -145,6 +146,7 @@ const ExtraUsersItem = ({ user, createDMChannel }: { user: ExtraUsersData, creat
     const isActive = useIsUserActive(user.name)
     return <SidebarButtonItem
         isLoading={isLoading}
+        className={'py-0.5 px-2'}
         onClick={onButtonClick}>
         <SidebarIcon>
             <UserAvatar src={user.user_image} alt={user.full_name} isActive={isActive} isBot={user?.type === 'Bot'} />
