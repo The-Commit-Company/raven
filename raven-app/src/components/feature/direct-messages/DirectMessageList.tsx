@@ -24,7 +24,7 @@ export const DirectMessageList = ({ unread_count }: { unread_count?: UnreadCount
 
     const ref = useRef<HTMLDivElement>(null)
 
-    const [height, setHeight] = useState(ref?.current?.clientHeight ?? 0)
+    const [height, setHeight] = useState(ref?.current?.clientHeight ?? showData ? (dm_channels.length + extra_users.length) * (34.79) : 0)
 
     useLayoutEffect(() => {
         setHeight(ref.current?.clientHeight ?? 0)
@@ -48,7 +48,7 @@ export const DirectMessageList = ({ unread_count }: { unread_count?: UnreadCount
                     style={{
                         height: showData ? height : 0
                     }}>
-                    <div ref={ref} className="flex gap-1 flex-col">
+                    <div ref={ref} className="flex gap-1 flex-col fade-in">
                         <DirectMessageItemList unread_count={unread_count} />
                         {extra_users && extra_users.length ? <ExtraUsersItemList /> : null}
                     </div>

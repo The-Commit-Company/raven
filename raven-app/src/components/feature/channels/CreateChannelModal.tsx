@@ -94,7 +94,7 @@ export const CreateChannelButton = ({ updateChannelList }: { updateChannelList: 
     return <Dialog.Root open={isOpen} onOpenChange={onOpenChange}>
         <Dialog.Trigger>
             <IconButton variant='soft' size='1' radius='large' color='gray' aria-label='Create Channel' title='Create Channel'
-                className='group-hover:visible invisible transition-all ease-in-out text-gray-10 dark:text-gray-300 bg-transparent hover:bg-gray-3'>
+                className='group-hover:visible invisible transition-all ease-ease text-gray-10 dark:text-gray-300 bg-transparent hover:bg-gray-3'>
                 <FiPlus size='16' />
                 {/* <BiPlus className='text-gray-10 dark:text-gray-300' /> */}
             </IconButton>
