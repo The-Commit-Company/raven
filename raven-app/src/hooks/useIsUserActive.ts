@@ -1,21 +1,22 @@
 import { useContext, useMemo } from 'react';
-import { ActiveUsersContext } from '../utils/users/ActiveUsersProvider';
 import { UserContext } from '@/utils/auth/UserProvider';
+import useFetchActiveUsers from './fetchers/useFetchActiveUsers';
 
 export const useIsUserActive = (userID?: string): boolean => {
 
     const { currentUser } = useContext(UserContext)
-    const activeUsers = useContext(ActiveUsersContext)
+
+    const { data } = useFetchActiveUsers()
 
     const isActive = useMemo(() => {
         if (userID === currentUser) {
             return true
         } else if (userID) {
-            return activeUsers.includes(userID)
+            return data?.message.includes(userID) ?? false
         } else {
             return false
         }
-    }, [userID, activeUsers])
+    }, [userID, data])
 
     return isActive
 }

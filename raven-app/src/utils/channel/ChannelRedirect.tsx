@@ -3,7 +3,6 @@ import { Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { hasRavenUserRole } from '../roles'
 import { FullPageLoader } from '@/components/layout/Loaders'
 import AddRavenUsersPage from '@/pages/AddRavenUsersPage'
-import { ActiveUsersProvider } from '../users/ActiveUsersProvider'
 import { UserListProvider } from '../users/UserListProvider'
 import { ChannelListProvider } from './ChannelListProvider'
 
@@ -30,9 +29,7 @@ export const ChannelRedirect = () => {
         return (
             <UserListProvider>
                 <ChannelListProvider>
-                    <ActiveUsersProvider>
-                        <Outlet />
-                    </ActiveUsersProvider>
+                    <Outlet />
                 </ChannelListProvider>
             </UserListProvider>
         )
