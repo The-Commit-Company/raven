@@ -104,7 +104,6 @@ export const Component = () => {
                                                 {...register("password",
                                                     {
                                                         required: "Password is required.",
-                                                        minLength: { value: 6, message: "Password should be minimum 6 characters." }
                                                     })}
                                                 name="password"
                                                 type={isPasswordOpen ? "text" : "password"}

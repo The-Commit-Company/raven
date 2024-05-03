@@ -92,25 +92,25 @@ const useChatStream = (scrollRef: MutableRefObject<HTMLDivElement | null>) => {
      * Need to scroll down twice because the scrollHeight is not updated immediately after the first scroll
      */
     useLayoutEffect(() => {
-        if (done) {
+        // if (done) {
 
-            setTimeout(() => {
-                scrollRef.current?.scroll({
-                    top: scrollRef.current?.scrollHeight,
-                    // behavior: 'smooth',
-                })
-            }, 50)
+        setTimeout(() => {
+            scrollRef.current?.scroll({
+                top: scrollRef.current?.scrollHeight,
+                // behavior: 'smooth',
+            })
+        }, 50)
 
-            setTimeout(() => {
-                scrollRef.current?.scroll({
-                    top: scrollRef.current?.scrollHeight,
-                    // behavior: 'smooth',
-                })
-            }, 200)
+        setTimeout(() => {
+            scrollRef.current?.scroll({
+                top: scrollRef.current?.scrollHeight,
+                // behavior: 'smooth',
+            })
+        }, 200)
 
 
-            scrollRef.current?.scrollTo(0, scrollRef.current?.scrollHeight)
-        }
+        scrollRef.current?.scrollTo(0, scrollRef.current?.scrollHeight)
+        // }
     }, [done, channelID])
 
 
