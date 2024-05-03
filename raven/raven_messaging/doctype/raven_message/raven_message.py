@@ -348,7 +348,28 @@ class RavenMessage(Document):
 		if self.message_type == "Poll":
 			frappe.delete_doc("Raven Poll", self.poll_id)
 
+		# TEMP: this is a temp fix for the Desk interface
+		self.publish_deprecated_event_for_desk()
+
+	def publish_deprecated_event_for_desk(self):
+		# TEMP: this is a temp fix for the Desk interface
+		frappe.publish_realtime(
+			"message_updated",
+			{
+				"channel_id": self.channel_id,
+				"sender": frappe.session.user,
+				"message_id": self.name,
+			},
+			doctype="Raven Channel",
+			docname=self.channel_id,
+			after_commit=True,
+		)
+
 	def on_update(self):
+
+		# TEMP: this is a temp fix for the Desk interface
+		self.publish_deprecated_event_for_desk()
+
 		if self.is_edited:
 			frappe.publish_realtime(
 				"message_edited",
