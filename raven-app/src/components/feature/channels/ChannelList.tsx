@@ -53,7 +53,7 @@ export const ChannelList = ({ unread_count }: { unread_count?: UnreadCountData }
     }, [channels, myProfile, unread_count])
 
     const ref = useRef<HTMLDivElement>(null)
-    const [height, setHeight] = useState(ref?.current?.clientHeight ?? 0)
+    const [height, setHeight] = useState(ref?.current?.clientHeight ?? showData ? filteredChannels.length * (36) - 4 : 0)
 
     useLayoutEffect(() => {
         setHeight(ref.current?.clientHeight ?? 0)
@@ -81,7 +81,7 @@ export const ChannelList = ({ unread_count }: { unread_count?: UnreadCountData }
             <SidebarGroup>
                 <SidebarGroupList
                     style={{
-                        height: showData ? height : 0
+                        height: showData ? height : 0,
                     }}
                 >
                     <div ref={ref} className="flex gap-1 flex-col">

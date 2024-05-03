@@ -51,7 +51,7 @@ interface SidebarGroupListProps extends FlexProps {
 export const SidebarGroupList = ({ children, ...props }: SidebarGroupListProps) => {
 
     return (
-        <Flex gap='1' direction='column' {...props} className={clsx(`transition-all ease-in-out duration-200 overflow-hidden`, props.className)}>
+        <Flex gap='1' direction='column' {...props} className={clsx(`transition-all ease-ease-out-cubic duration-200 overflow-hidden`, props.className)}>
             {children}
         </Flex>
     )
@@ -147,7 +147,7 @@ export const SidebarViewMoreButton = ({ expanded, onClick, ...props }: SidebarVi
             radius='large'
             onClick={onClick}
             {...props}
-            className={clsx('cursor-pointer transition-all text-gray-10 dark:text-gray-300 bg-transparent hover:bg-gray-3 invisible group-hover:visible ease-in-out')}
+            className={clsx('cursor-pointer transition-all text-gray-10 dark:text-gray-300 bg-transparent hover:bg-gray-3 invisible group-hover:visible ease-ease')}
         >
             {expanded ? <FiChevronDown size='16' /> : <FiChevronRight size='16' />}
         </IconButton>
