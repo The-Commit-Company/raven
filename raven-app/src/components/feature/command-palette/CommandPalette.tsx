@@ -8,9 +8,9 @@ import { useNavigate } from 'react-router-dom'
 import { UserContext } from '../../../utils/auth/UserProvider'
 import { BiSearch, BiX } from 'react-icons/bi'
 import { UserListContext } from '@/utils/users/UserListProvider'
-import { ActiveUsersContext } from '@/utils/users/ActiveUsersProvider'
 import { ModalTypes, useModalManager } from '@/hooks/useModalManager'
 import { Flex, IconButton, Box, Text, Link } from '@radix-ui/themes'
+import useFetchActiveUsers from '@/hooks/fetchers/useFetchActiveUsers'
 
 interface CommandPaletteProps {
     isOpen: boolean,
@@ -37,7 +37,11 @@ export const CommandPalette = ({ isOpen, onClose }: CommandPaletteProps) => {
     const isHome = activePage === ''
     const debouncedText = useDebounce(inputValue, 200)
     const { currentUser } = useContext(UserContext)
-    const activeUsers = useContext(ActiveUsersContext)
+
+    const { data } = useFetchActiveUsers()
+
+    const activeUsers = data?.message ?? []
+
     const { call, reset } = useFrappePostCall<{ message: string }>("raven.api.raven_channel.create_direct_message_channel")
     let navigate = useNavigate()
 

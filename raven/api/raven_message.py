@@ -7,7 +7,7 @@ from frappe.query_builder import Case, JoinType, Order
 from frappe.query_builder.functions import Coalesce, Count
 
 from raven.api.raven_channel import get_peer_user_id
-from raven.utils import get_channel_member
+from raven.utils import get_channel_member, track_channel_visit
 
 
 @frappe.whitelist(methods=["POST"])
@@ -200,6 +200,7 @@ def check_permission(channel_id):
 def get_messages_with_dates(channel_id):
 	check_permission(channel_id)
 	messages = get_messages(channel_id)
+	track_channel_visit(channel_id=channel_id, publish_event_for_user=True, commit=True)
 	return parse_messages(messages)
 
 

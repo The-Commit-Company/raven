@@ -119,7 +119,7 @@ const ChatStream = ({ replyToMessage }: Props) => {
             {!isLoading && !hasOlderMessages && <ChannelHistoryFirstMessage channelID={channelID ?? ''} />}
             {isLoading && <ChatStreamLoader />}
             {error && <ErrorBanner error={error} />}
-            <div className={clsx('flex flex-col pb-4 z-50 transition-opacity duration-400 ease-in-out', isLoading ? 'opacity-0' : 'opacity-100')}>
+            <div className={clsx('flex flex-col pb-4 z-50 transition-opacity duration-400 ease-ease-out-cubic', isLoading ? 'opacity-0' : 'opacity-100')}>
                 {messages?.map(message => {
                     if (message.message_type === 'date') {
                         return <DateSeparator key={`date-${message.creation}`} id={`date-${message.creation}`} className='p-2 z-10 relative'>
