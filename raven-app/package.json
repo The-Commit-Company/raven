@@ -32,7 +32,7 @@
     "dayjs": "^1.11.10",
     "downshift": "^8.3.1",
     "emoji-picker-element": "^1.21.0",
-    "frappe-react-sdk": "^1.6.0",
+    "frappe-react-sdk": "^1.7.0",
     "highlight.js": "^11.9.0",
     "html-react-parser": "^5.1.8",
     "jotai": "^2.8.0",
