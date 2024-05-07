@@ -34,7 +34,6 @@ const useUnreadMessageCount = () => {
         undefined,
         'unread_channel_count', {
         revalidateOnFocus: false,
-        revalidateIfStale: false,
         revalidateOnReconnect: true,
     })
 

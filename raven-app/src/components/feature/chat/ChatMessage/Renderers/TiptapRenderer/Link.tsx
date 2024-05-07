@@ -80,7 +80,6 @@ export const LinkPreview = memo(({ messageID }: { messageID: string }) => {
     const { data } = useFrappeGetCall<{ message: LinkPreviewDetails[] }>('raven.api.preview_links.get_preview_link', {
         urls: JSON.stringify([href])
     }, href ? `link_preview_${href}` : null, {
-        revalidateIfStale: false,
         revalidateOnFocus: false,
         revalidateOnReconnect: false,
         shouldRetryOnError: false,

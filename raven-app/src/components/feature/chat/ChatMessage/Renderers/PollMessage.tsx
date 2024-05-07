@@ -28,7 +28,6 @@ export const PollMessageBlock = ({ message, user, ...props }: PollMessageBlockPr
         'message_id': message.name,
     }, `poll_data_${message.poll_id}`, {
         revalidateOnFocus: false,
-        revalidateIfStale: false,
         revalidateOnReconnect: false
     })
 

@@ -7,7 +7,6 @@ import { ChannelRedirect } from './utils/channel/ChannelRedirect'
 import "cal-sans";
 import { ThemeProvider } from './ThemeProvider'
 import { Toaster } from 'sonner'
-import { FullPageLoader } from './components/layout/Loaders'
 import { useStickyState } from './hooks/useStickyState'
 
 
@@ -80,7 +79,7 @@ function App() {
           accentColor='iris'
           panelBackground='translucent'
           toggleTheme={toggleTheme}>
-          <RouterProvider router={router} fallbackElement={<FullPageLoader className='w-screen' />} />
+          <RouterProvider router={router} />
         </ThemeProvider>
       </UserProvider>
     </FrappeProvider>

@@ -7,7 +7,7 @@ const useCurrentRavenUser = () => {
         undefined,
         'my_profile',
         {
-            revalidateIfStale: false,
+            // revalidateIfStale: false,
             revalidateOnFocus: false,
             shouldRetryOnError: false,
             revalidateOnReconnect: true
