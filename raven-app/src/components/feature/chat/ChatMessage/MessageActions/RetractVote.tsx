@@ -17,7 +17,6 @@ export const RetractVote = ({ message }: RetractVoteProps) => {
         'message_id': message?.name,
     }, `poll_data_${message?.poll_id}`, {
         revalidateOnFocus: false,
-        revalidateIfStale: false,
         revalidateOnReconnect: false
     })
 
