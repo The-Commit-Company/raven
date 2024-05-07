@@ -34,7 +34,7 @@ export const Component = () => {
     const { data: loginContext, mutate } = useFrappeGetCall<LoginContext>('raven.api.login.get_context', {
         "redirect-to": "/raven"
     }, 'raven.api.login.get_context', {
-        revalidateIfStale: false,
+        revalidateOnMount: true,
         revalidateOnReconnect: false,
         revalidateOnFocus: false
     })

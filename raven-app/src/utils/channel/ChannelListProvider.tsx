@@ -65,7 +65,6 @@ export const useFetchChannelList = (): ChannelListContextType => {
         hide_archived: false
     }, `channel_list`, {
         revalidateOnFocus: false,
-        revalidateIfStale: false,
         onError: (error) => {
             toast.error("There was an error while fetching the channel list.", {
                 description: getErrorMessage(error)
