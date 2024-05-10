@@ -72,6 +72,9 @@ class RavenChannelMember(Document):
 				order_by="creation",
 			)
 			frappe.db.set_value("Raven Channel Member", first_member.name, "is_admin", 1)
+
+		if self.flags.ignore_permissions:
+			return
 		if not self.check_if_user_is_member():
 			frappe.throw(
 				_("You don't have permission to remove members from this channel"),
