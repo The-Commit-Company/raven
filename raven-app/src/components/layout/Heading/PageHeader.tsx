@@ -9,8 +9,6 @@ export const PageHeader = ({ children }: PropsWithChildren) => {
             <Box
                 py='3'
                 mx='4'
-                // position='fixed'
-                // top='0'
                 className='border-gray-4 dark:border-gray-6 border-b'
                 style={{
                     width: 'calc(100vw - var(--sidebar-width) - var(--space-6))',
