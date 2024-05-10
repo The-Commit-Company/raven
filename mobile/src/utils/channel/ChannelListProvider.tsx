@@ -6,12 +6,6 @@ import { RavenChannel } from '../../../../types/RavenChannelManagement/RavenChan
 import { UserContext } from '../auth/UserProvider'
 import { useSWRConfig } from 'frappe-react-sdk'
 
-export type ExtraUsersData = {
-    name: string,
-    full_name: string,
-    user_image: string,
-}
-
 export type UnreadChannelCountItem = { name: string, user_id?: string, unread_count: number, is_direct_message: 0 | 1 }
 
 export type UnreadCountData = {
@@ -28,8 +22,7 @@ export interface DMChannelListItem extends ChannelListItem {
 }
 interface ChannelList {
     channels: ChannelListItem[],
-    dm_channels: DMChannelListItem[],
-    extra_users: ExtraUsersData[]
+    dm_channels: DMChannelListItem[]
 }
 
 export interface ChannelListContextType extends ChannelList {
@@ -115,7 +108,6 @@ const useFetchChannelList = (): ChannelListContextType => {
     return {
         channels: sortedChannels,
         dm_channels: sortedDMChannels,
-        extra_users: data?.message.extra_users ?? [],
         mutate,
         ...rest
     }
@@ -180,7 +172,6 @@ export const useUpdateLastMessageInChannelList = () => {
                                 message: {
                                     channels: newChannels,
                                     dm_channels: newDMChannels,
-                                    extra_users: channelList.message.extra_users
                                 }
                             }
                         }

@@ -81,7 +81,7 @@ export const SidebarItem = ({ to, children, end, active = false, activeStyles, c
                         gap='2'
                         align='center'
                         px='2'
-                        className={clsx('cursor-pointer text-gray-12 user-select-none rounded-md no-underline transition-all duration-200 hover:bg-gray-3 dark:hover:bg-gray-3', isActive ? activeClass : '', className)}
+                        className={clsx('cursor-pointer text-gray-12 user-select-none rounded-md no-underline hover:bg-gray-3', isActive ? activeClass : '', className)}
                         {...props}>
                         {children}
                     </Flex>
@@ -113,7 +113,7 @@ interface SidebarButtonItemProps extends FlexProps {
     active?: boolean
 }
 
-export const SidebarButtonItem = ({ children, subtle, onClick, isLoading, active, ...props }: SidebarButtonItemProps) => {
+export const SidebarButtonItem = ({ children, subtle, onClick, isLoading, active, className, ...props }: SidebarButtonItemProps) => {
 
     const cursor = isLoading ? "cursor-progress" : "cursor-pointer"
 
@@ -121,8 +121,8 @@ export const SidebarButtonItem = ({ children, subtle, onClick, isLoading, active
         <Flex
             gap='2'
             align='center'
-            px='3'
-            className={'user-select-none rounded-md py-1.5 transition-all duration-200 hover:bg-slate-3 hover:text-slate-11 ' + cursor}
+            px='2'
+            className={clsx('user-select-none rounded-md py-0.5 text-gray-12 hover:bg-gray-3 ', cursor, className)}
             onClick={onClick}
             {...props}
         >

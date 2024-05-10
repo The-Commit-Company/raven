@@ -1,4 +1,4 @@
-import { useFrappePostCall } from "frappe-react-sdk"
+import { useFrappePostCall, useSWRConfig } from "frappe-react-sdk"
 import { useContext, useLayoutEffect, useMemo, useRef, useState } from "react"
 import { useNavigate, useParams } from "react-router-dom"
 import { SidebarGroup, SidebarGroupItem, SidebarGroupLabel, SidebarGroupList, SidebarIcon, SidebarButtonItem } from "../../layout/Sidebar"
@@ -6,17 +6,18 @@ import { SidebarBadge, SidebarItem, SidebarViewMoreButton } from "../../layout/S
 import { UserContext } from "../../../utils/auth/UserProvider"
 import { useGetUser } from "@/hooks/useGetUser"
 import { useIsUserActive } from "@/hooks/useIsUserActive"
-import { ChannelListContext, ChannelListContextType, DMChannelListItem, ExtraUsersData, UnreadCountData } from "../../../utils/channel/ChannelListProvider"
+import { ChannelListContext, ChannelListContextType, DMChannelListItem, UnreadCountData } from "../../../utils/channel/ChannelListProvider"
 import { Box, Flex, Text } from "@radix-ui/themes"
 import { UserAvatar } from "@/components/common/UserAvatar"
 import { toast } from "sonner"
 import { getErrorMessage } from "@/components/layout/AlertBanner/ErrorBanner"
 import { useStickyState } from "@/hooks/useStickyState"
 import clsx from "clsx"
+import { UserFields, UserListContext } from "@/utils/users/UserListProvider"
 
 export const DirectMessageList = ({ unread_count }: { unread_count?: UnreadCountData }) => {
 
-    const { extra_users, dm_channels } = useContext(ChannelListContext) as ChannelListContextType
+    const { dm_channels } = useContext(ChannelListContext) as ChannelListContextType
 
     const [showData, setShowData] = useStickyState(true, 'expandDirectMessageList')
 
@@ -24,11 +25,11 @@ export const DirectMessageList = ({ unread_count }: { unread_count?: UnreadCount
 
     const ref = useRef<HTMLDivElement>(null)
 
-    const [height, setHeight] = useState(ref?.current?.clientHeight ?? showData ? (dm_channels.length + extra_users.length) * (34.79) : 0)
+    const [height, setHeight] = useState(ref?.current?.clientHeight ?? showData ? (dm_channels.length + (dm_channels.length < 5 ? 5 : 0)) * (34.79) : 0)
 
     useLayoutEffect(() => {
         setHeight(ref.current?.clientHeight ?? 0)
-    }, [extra_users, dm_channels])
+    }, [dm_channels])
 
     return (
         <SidebarGroup pb='4'>
@@ -50,7 +51,7 @@ export const DirectMessageList = ({ unread_count }: { unread_count?: UnreadCount
                     }}>
                     <div ref={ref} className="flex gap-1 flex-col fade-in">
                         <DirectMessageItemList unread_count={unread_count} />
-                        {extra_users && extra_users.length ? <ExtraUsersItemList /> : null}
+                        {dm_channels.length < 5 ? <ExtraUsersItemList /> : null}
                     </div>
                 </SidebarGroupList>
             </SidebarGroup>
@@ -107,7 +108,9 @@ export const DirectMessageItemElement = ({ channel, unreadCount }: { channel: DM
 
 const ExtraUsersItemList = () => {
 
-    const { extra_users, mutate } = useContext(ChannelListContext) as ChannelListContextType
+    const { dm_channels, mutate } = useContext(ChannelListContext) as ChannelListContextType
+
+    const { enabledUsers } = useContext(UserListContext)
     const { call } = useFrappePostCall<{ message: string }>("raven.api.raven_channel.create_direct_message_channel")
 
     const navigate = useNavigate()
@@ -125,14 +128,19 @@ const ExtraUsersItemList = () => {
             })
     }
 
-    return <>{extra_users.map((user) => <ExtraUsersItem
+    const filteredUsers = useMemo(() => {
+        // Show only users who are not in the DM list
+        return enabledUsers.filter((user) => !dm_channels.find((channel) => channel.peer_user_id === user.name)).slice(0, 5)
+    }, [enabledUsers, dm_channels])
+
+    return <>{filteredUsers.map((user) => <ExtraUsersItem
         key={user.name}
         user={user}
         createDMChannel={createDMChannel}
     />)}</>
 }
 
-const ExtraUsersItem = ({ user, createDMChannel }: { user: ExtraUsersData, createDMChannel: (user_id: string) => Promise<void> }) => {
+const ExtraUsersItem = ({ user, createDMChannel }: { user: UserFields, createDMChannel: (user_id: string) => Promise<void> }) => {
 
     const [isLoading, setIsLoading] = useState(false)
     const { currentUser } = useContext(UserContext)
@@ -146,7 +154,6 @@ const ExtraUsersItem = ({ user, createDMChannel }: { user: ExtraUsersData, creat
     const isActive = useIsUserActive(user.name)
     return <SidebarButtonItem
         isLoading={isLoading}
-        className={'py-0.5 px-2'}
         onClick={onButtonClick}>
         <SidebarIcon>
             <UserAvatar src={user.user_image} alt={user.full_name} isActive={isActive} isBot={user?.type === 'Bot'} />
