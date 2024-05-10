@@ -36,14 +36,7 @@ def get_all_channels(hide_archived=True):
 	channel_list = [channel for channel in parsed_channels if not channel.get("is_direct_message")]
 	dm_list = [channel for channel in parsed_channels if channel.get("is_direct_message")]
 
-	# Get extra users if dm channels length is less than 5
-	extra_users = []
-	number_of_dms = len(dm_list)
-
-	if number_of_dms < 5:
-		extra_users = get_extra_users(dm_list)
-
-	return {"channels": channel_list, "dm_channels": dm_list, "extra_users": extra_users}
+	return {"channels": channel_list, "dm_channels": dm_list}
 
 
 def get_channel_list(hide_archived=False):
@@ -125,26 +118,6 @@ def get_peer_user_id(channel_id, is_direct_message, is_self_message=False):
 		"Raven Channel Member",
 		{"channel_id": channel_id, "user_id": ["!=", frappe.session.user]},
 		"user_id",
-	)
-
-
-def get_extra_users(dm_channels):
-	"""
-	Fetch extra users - only when number of DMs is less than 5.
-	Do not repeat users already in the list
-	"""
-	existing_users = [dm_channel.get("peer_user_id") for dm_channel in dm_channels]
-	existing_users.append("Administrator")
-	existing_users.append("Guest")
-
-	# Skip permissions since we are only fetching user_id, full_name, and user_image and have applied filters
-	return frappe.db.get_all(
-		"Raven User",
-		filters=[
-			["user", "not in", existing_users],
-			["enabled", "=", 1],
-		],
-		fields=["user", "name", "full_name", "first_name", "user_image", "type"],
 	)
 
 

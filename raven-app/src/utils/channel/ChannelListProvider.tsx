@@ -5,9 +5,6 @@ import { RavenChannel } from '../../../../types/RavenChannelManagement/RavenChan
 import { useSWRConfig } from 'frappe-react-sdk'
 import { toast } from 'sonner'
 import { getErrorMessage } from '@/components/layout/AlertBanner/ErrorBanner'
-import { RavenUser } from '@/types/Raven/RavenUser'
-
-export type ExtraUsersData = Pick<RavenUser, 'name' | 'user' | 'full_name' | 'user_image' | 'type'>
 
 export type UnreadChannelCountItem = { name: string, user_id?: string, unread_count: number, is_direct_message: 0 | 1 }
 
@@ -32,8 +29,7 @@ export interface SidebarChannelListItem extends ChannelListItem {
 
 interface ChannelList {
     channels: ChannelListItem[],
-    dm_channels: DMChannelListItem[],
-    extra_users: ExtraUsersData[]
+    dm_channels: DMChannelListItem[]
 }
 
 export interface ChannelListContextType extends ChannelList {
@@ -101,7 +97,6 @@ export const useFetchChannelList = (): ChannelListContextType => {
     return {
         channels: sortedChannels,
         dm_channels: sortedDMChannels,
-        extra_users: data?.message.extra_users ?? [],
         mutate,
         ...rest
     }
@@ -167,7 +162,6 @@ export const useUpdateLastMessageInChannelList = () => {
                                 message: {
                                     channels: newChannels,
                                     dm_channels: newDMChannels,
-                                    extra_users: channelList.message.extra_users
                                 }
                             }
                         }
