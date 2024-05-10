@@ -97,8 +97,8 @@ export const LinkPreview = memo(({ messageID }: { messageID: string }) => {
 
     const linkPreview = data?.message?.[0]
 
-    return <Flex direction='column' gap='2' py='2'>
-        {linkPreview ? linkPreview.site_name && linkPreview.description ? <Flex gap='4' width='100%'>
+    return <Box py='2'>
+        {linkPreview ? linkPreview.site_name && linkPreview.description ? <Flex gap='4' className='flex-col sm:flex-row' width='100%'>
             {(linkPreview.absolute_image || linkPreview.image) &&
                 <a href={href} target='_blank'>
                     <Box className='relative min-w-64 min-h-32 w-64 h-32'>
@@ -116,7 +116,7 @@ export const LinkPreview = memo(({ messageID }: { messageID: string }) => {
                     </Box>
                 </a>
             }
-            <Flex className='group pr-2' width='100%' gap='2'>
+            <Flex className='group pr-2 sm:pr-0' width='100%' gap='2'>
                 <a href={href} target='_blank' className='block w-full'>
 
                     <Flex direction='column' gap='1' py='1'>
@@ -145,6 +145,6 @@ export const LinkPreview = memo(({ messageID }: { messageID: string }) => {
 
             null
         }
-    </Flex >
+    </Box>
 
 })
