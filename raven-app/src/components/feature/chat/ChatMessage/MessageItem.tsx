@@ -87,9 +87,9 @@ export const MessageItem = ({ message, setDeleteMessage, isHighlighted, onReplyM
                             transition-colors
                             p-2
                             rounded-md`, isHighlighted ? 'bg-yellow-50 hover:bg-yellow-50 dark:bg-yellow-300/20 dark:hover:bg-yellow-300/20' : '')}>
-                    <Flex gap='3' >
+                    <Flex gap='3'>
                         <MessageLeftElement message={message} user={user} isActive={isActive} />
-                        <Flex direction='column' className='gap-0.5' justify='center'>
+                        <Flex direction='column' className='gap-0.5' justify='center' width='100%'>
                             {!is_continuation ? <Flex align='center' gap='2' mt='-1'>
                                 <UserHoverCard
                                     user={user}
