@@ -26,10 +26,11 @@ export const EditChannelNameButton = ({ channelID, channel_name, channelType, ..
                 <IconButton
                     variant="ghost"
                     color="gray"
+                    className='invisible group-hover:visible'
                     aria-label="Click to edit channel name"
                     title='Edit channel name'
                     {...props}>
-                    <BiEdit size='16' />
+                    <BiEdit size='14' />
                 </IconButton>
             </Dialog.Trigger>
             <Dialog.Content className={DIALOG_CONTENT_CLASS}>
