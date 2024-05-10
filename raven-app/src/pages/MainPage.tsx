@@ -8,7 +8,7 @@ import { hasRavenUserRole } from '@/utils/roles'
 import { FullPageLoader } from '@/components/layout/Loaders'
 import CommandMenu from '@/components/feature/CommandMenu/CommandMenu'
 import { useFetchActiveUsersRealtime } from '@/hooks/fetchers/useFetchActiveUsers'
-import useMediaQuery from '@/hooks/useMediaQuery'
+import { useIsMobile } from '@/hooks/useMediaQuery'
 
 const AddRavenUsersPage = lazy(() => import('@/pages/AddRavenUsersPage'))
 
@@ -34,7 +34,7 @@ const MainPageContent = () => {
 
     useFetchActiveUsersRealtime()
 
-    const isMobile = useMediaQuery('(max-width: 768px)')
+    const isMobile = useIsMobile()
 
     return <UserListProvider>
         <ChannelListProvider>
