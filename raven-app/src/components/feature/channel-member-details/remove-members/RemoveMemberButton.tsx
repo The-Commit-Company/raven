@@ -1,8 +1,8 @@
 import { RemoveChannelMemberModal } from './RemoveChannelMemberModal'
-import { Member } from '@/utils/channel/ChannelMembersProvider'
 import { useCallback, useState } from 'react'
 import { AlertDialog } from '@radix-ui/themes'
 import { DIALOG_CONTENT_CLASS } from '@/utils/layout/dialog'
+import { Member } from '@/hooks/fetchers/useFetchChannelMembers'
 
 export const useRemoveMember = () => {
     const [member, setMember] = useState<null | Member>(null)

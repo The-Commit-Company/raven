@@ -16,6 +16,13 @@
     border-top-right-radius: var(--radius-2);
 }
 
+@media screen and (max-width: 768px) {
+    .tiptap-editor.ProseMirror {
+        min-height: 20px;
+        max-height: 300px;
+    }
+}
+
 .tiptap-editor.ProseMirror img {
     width: 200px;
     height: auto;

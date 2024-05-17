@@ -44,22 +44,22 @@ const CommandMenu = () => {
                         <ChannelList />
                         <UserList />
 
-                        {/* TODO: Make these commands work
-                        <Command.Group heading="Commands">
+                        {/* TODO: Make these commands work */}
+                        {/* <Command.Group heading="Commands">
                             <Command.Item>
-                                <BiSearch size={ICON_SIZE}/>
+                                <BiSearch size={ICON_SIZE} />
                                 Search
                             </Command.Item>
                             <Command.Item>
-                                <BiSearch size={ICON_SIZE}/>
+                                <BiSearch size={ICON_SIZE} />
                                 Search in #general
                             </Command.Item>
                             <Command.Item>
-                                <BiFile size={ICON_SIZE}/>
+                                <BiFile size={ICON_SIZE} />
                                 View files in #general
                             </Command.Item>
                             <Command.Item>
-                                <BiSmile size={ICON_SIZE}/>
+                                <BiSmile size={ICON_SIZE} />
                                 Set status
                             </Command.Item>
                             <Command.Item>

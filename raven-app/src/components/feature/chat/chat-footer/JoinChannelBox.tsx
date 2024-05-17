@@ -1,19 +1,18 @@
 import { ErrorBanner } from "@/components/layout/AlertBanner"
 import { ChannelListItem } from "@/utils/channel/ChannelListProvider"
-import { useFrappeCreateDoc } from "frappe-react-sdk"
-import { useContext } from "react"
-import { ChannelMembers, ChannelMembersContext, ChannelMembersContextType } from "@/utils/channel/ChannelMembersProvider"
+import { useFrappeCreateDoc, useSWRConfig } from "frappe-react-sdk"
 import { Box, Flex, Text, Button } from "@radix-ui/themes"
 import { Loader } from "@/components/common/Loader"
+import { ChannelMembers } from "@/hooks/fetchers/useFetchChannelMembers"
 interface JoinChannelBoxProps {
     channelData: ChannelListItem,
     channelMembers: ChannelMembers,
     user: string
 }
 
-export const JoinChannelBox = ({ channelData, channelMembers, user }: JoinChannelBoxProps) => {
+export const JoinChannelBox = ({ channelData, user }: JoinChannelBoxProps) => {
 
-    const { mutate: updateMembers } = useContext(ChannelMembersContext) as ChannelMembersContextType
+    const { mutate } = useSWRConfig()
 
     const { createDoc, error, loading } = useFrappeCreateDoc()
 
@@ -22,7 +21,7 @@ export const JoinChannelBox = ({ channelData, channelMembers, user }: JoinChanne
             channel_id: channelData?.name,
             user_id: user
         }).then(() => {
-            updateMembers()
+            mutate(["channel_members", channelData?.name])
         })
     }
 

@@ -4,10 +4,10 @@ import { useParams } from "react-router-dom";
 import { ErrorBanner } from "../../layout/AlertBanner";
 import { getFileExtension, getFileName } from "../../../utils/operations";
 import { BiDownload } from "react-icons/bi";
-import { FileMessage } from "../../../../../types/Messaging/Message";
-import { ChannelMembers } from "@/utils/channel/ChannelMembersProvider";
+import { FileMessage, ImageMessage } from "../../../../../types/Messaging/Message";
 import { Box, Flex, IconButton, Link, Text } from "@radix-ui/themes";
 import { DateMonthYear } from "@/utils/dateConversions";
+import { ChannelMembers } from "@/hooks/fetchers/useFetchChannelMembers";
 
 interface ChannelFile extends FileMessage {
     name: string,
@@ -35,7 +35,7 @@ export const FilesSharedInChannel = ({ channelMembers }: FilesSharedInChannelPro
             <ErrorBanner error={error} />
             <Box className={'max-h-96 overflow-hidden overflow-y-scroll'}>
                 <Flex direction='column' gap='2'>
-                    {data?.message && data.message.length > 0 && data.message.map((f: FileMessage) => {
+                    {data?.message && data.message.length > 0 && data.message.map((f: FileMessage | ImageMessage) => {
                         return (
                             <Box key={f.name} className={'p-2 rounded-md border border-gray-6'}>
                                 <Flex justify='between' align={'center'}>

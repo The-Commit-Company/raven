@@ -1,19 +1,18 @@
 import { PageHeader } from "@/components/layout/Heading/PageHeader"
 import { useIsUserActive } from "@/hooks/useIsUserActive"
 import { DMChannelListItem } from "@/utils/channel/ChannelListProvider"
-import { ChannelMembers } from "@/utils/channel/ChannelMembersProvider"
-import { SearchButton } from "./SearchButton"
 import { Badge, Flex, Heading } from "@radix-ui/themes"
 import { UserAvatar } from "@/components/common/UserAvatar"
-import { ViewFilesButton } from "../files/ViewFilesButton"
 import { useMemo } from "react"
+import useFetchChannelMembers from "@/hooks/fetchers/useFetchChannelMembers"
 
 interface DMChannelHeaderProps {
     channelData: DMChannelListItem,
-    channelMembers: ChannelMembers
 }
 
-export const DMChannelHeader = ({ channelData, channelMembers }: DMChannelHeaderProps) => {
+export const DMChannelHeader = ({ channelData }: DMChannelHeaderProps) => {
+
+    const { channelMembers } = useFetchChannelMembers(channelData.name)
 
     // There are two people in a DM channel, the user (you) and the peer (the other person)
     // If channelData.is_self_message is 1, then the user is having a conversation with themself
@@ -53,8 +52,8 @@ export const DMChannelHeader = ({ channelData, channelMembers }: DMChannelHeader
                 </Heading>
             </Flex>
             <Flex gap='4' align='center'>
-                <ViewFilesButton />
-                <SearchButton />
+                {/* <ViewFilesButton /> */}
+                {/* <SearchButton /> */}
             </Flex>
         </PageHeader>
     )

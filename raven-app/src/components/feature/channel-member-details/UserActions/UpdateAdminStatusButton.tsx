@@ -1,8 +1,8 @@
-import { Member } from '@/utils/channel/ChannelMembersProvider'
 import { BiCrown, BiSolidCrown } from 'react-icons/bi'
 import { useFrappeGetCall, useFrappeUpdateDoc } from 'frappe-react-sdk'
 import { toast } from 'sonner'
 import { getErrorMessage } from '@/components/layout/AlertBanner/ErrorBanner'
+import { Member } from '@/hooks/fetchers/useFetchChannelMembers'
 
 interface UpdateAdminStatusButtonProps {
     user: Member,

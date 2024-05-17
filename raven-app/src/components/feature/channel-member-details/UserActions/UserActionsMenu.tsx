@@ -1,10 +1,10 @@
-import { Member } from '@/utils/channel/ChannelMembersProvider'
 import { ChannelListItem } from '@/utils/channel/ChannelListProvider'
 import { Button, DropdownMenu, } from '@radix-ui/themes'
 import { BiDotsHorizontalRounded } from 'react-icons/bi'
 import { UpdateAdminStatusButton } from './UpdateAdminStatusButton'
 import { RemoveMemberDialog, useRemoveMember } from '../remove-members/RemoveMemberButton'
 import { FiUserMinus } from 'react-icons/fi'
+import { Member } from '@/hooks/fetchers/useFetchChannelMembers'
 
 interface UserActionsButtonProps {
     channelData: ChannelListItem,

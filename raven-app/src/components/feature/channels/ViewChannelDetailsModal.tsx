@@ -6,9 +6,9 @@ import { ChannelSettings } from "../channel-settings/ChannelSettings"
 import { UserContext } from "../../../utils/auth/UserProvider"
 import { ChannelIcon } from "@/utils/layout/channelIcon"
 import { ChannelListItem } from "@/utils/channel/ChannelListProvider"
-import { ChannelMembers } from "@/utils/channel/ChannelMembersProvider"
 import { Box, Dialog, Flex, Tabs, Text } from "@radix-ui/themes"
 import { DIALOG_CONTENT_CLASS } from "@/utils/layout/dialog"
+import { ChannelMembers } from "@/hooks/fetchers/useFetchChannelMembers"
 
 interface ViewChannelDetailsModalContentProps {
     onClose: () => void,

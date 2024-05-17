@@ -2,13 +2,13 @@ import { useContext } from "react"
 import { UserContext } from "../../../utils/auth/UserProvider"
 import { ChannelListItem } from "@/utils/channel/ChannelListProvider"
 import { ChannelIcon } from "@/utils/layout/channelIcon"
-import { ChannelMembers } from "@/utils/channel/ChannelMembersProvider"
 import { EditChannelNameButton } from "./rename-channel/EditChannelNameButton"
 import { EditDescriptionButton } from "./edit-channel-description/EditDescriptionButton"
 import { useGetUserRecords } from "@/hooks/useGetUserRecords"
 import { LeaveChannelButton } from "./leave-channel/LeaveChannelButton"
 import { Box, Flex, Separator, Text } from "@radix-ui/themes"
 import { DateMonthYear } from "@/utils/dateConversions"
+import { ChannelMembers } from "@/hooks/fetchers/useFetchChannelMembers"
 
 interface ChannelDetailsProps {
     channelData: ChannelListItem,

@@ -2,12 +2,12 @@ import { useContext, useState } from "react"
 import { useDebounce } from "../../../hooks/useDebounce"
 import { UserContext } from "../../../utils/auth/UserProvider"
 import { ChannelListItem } from "@/utils/channel/ChannelListProvider"
-import { ChannelMembers } from "@/utils/channel/ChannelMembersProvider"
 import { AddMembersButton } from "./add-members/AddMembersButton"
 import { Box, Flex, TextField, Text } from "@radix-ui/themes"
 import { BiSearch, BiCircle, BiSolidCrown } from "react-icons/bi"
 import { UserAvatar } from "@/components/common/UserAvatar"
 import { UserActionsMenu } from "./UserActions/UserActionsMenu"
+import { ChannelMembers } from "@/hooks/fetchers/useFetchChannelMembers"
 
 interface MemberDetailsProps {
     channelData: ChannelListItem,
@@ -50,8 +50,6 @@ export const ChannelMemberDetails = ({ channelData, channelMembers, activeUsers,
                     <div className={'w-48'}>
                         <AddMembersButton
                             channelData={channelData}
-                            updateMembers={updateMembers}
-                            channelMembers={channelMembers}
                             variant='soft'
                             size='2'
                         />

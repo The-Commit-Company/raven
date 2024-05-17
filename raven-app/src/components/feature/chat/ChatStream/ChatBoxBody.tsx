@@ -1,10 +1,9 @@
 import { Message } from "../../../../../../types/Messaging/Message"
-import { useContext, useMemo, useState } from "react"
+import { useMemo, useState } from "react"
 import { ArchivedChannelBox } from "../chat-footer/ArchivedChannelBox"
 import { ChannelListItem, DMChannelListItem } from "@/utils/channel/ChannelListProvider"
 import { JoinChannelBox } from "../chat-footer/JoinChannelBox"
 import { useUserData } from "@/hooks/useUserData"
-import { ChannelMembersContext, ChannelMembersContextType } from "@/utils/channel/ChannelMembersProvider"
 import useFileUpload from "../ChatInput/FileInput/useFileUpload"
 import { CustomFile, FileDrop } from "../../file-upload/FileDrop"
 import { FileListItem } from "../../file-upload/FileListItem"
@@ -14,6 +13,7 @@ import { ReplyMessageBox } from "../ChatMessage/ReplyMessageBox/ReplyMessageBox"
 import { BiX } from "react-icons/bi"
 import ChatStream from "./ChatStream"
 import Tiptap from "../ChatInput/Tiptap"
+import useFetchChannelMembers from "@/hooks/fetchers/useFetchChannelMembers"
 
 const COOL_PLACEHOLDERS = [
     "Delivering messages atop dragons 🐉 is available on a chargeable basis.",
@@ -33,7 +33,7 @@ interface ChatBoxBodyProps {
 export const ChatBoxBody = ({ channelData }: ChatBoxBodyProps) => {
 
     const { name: user } = useUserData()
-    const { channelMembers, isLoading } = useContext(ChannelMembersContext) as ChannelMembersContextType
+    const { channelMembers, isLoading } = useFetchChannelMembers(channelData.name)
 
     const [selectedMessage, setSelectedMessage] = useState<Message | null>(null)
 
