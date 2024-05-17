@@ -2,7 +2,7 @@ import { Webhook } from '@/types/Integrations/Webhook'
 import { useFrappeCreateDoc } from 'frappe-react-sdk'
 import { FormProvider, useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router-dom'
-import { Button, Flex, Separator, Text } from '@radix-ui/themes'
+import { Box, Button, Flex, Heading, Section, Separator, Text } from '@radix-ui/themes'
 import { ErrorBanner } from '@/components/layout/AlertBanner'
 import { WebhookForm } from '../../../components/feature/integrations/webhooks/WebhookForm'
 import { RavenWebhook } from '@/types/RavenIntegrations/RavenWebhook'
@@ -34,35 +34,31 @@ const CreateWebhook = () => {
     }
 
     return (
-        <Flex direction='column' gap='4' py='4' width={'100%'} height={'100%'} style={{
-            alignItems: 'center',
-            justifyContent: 'start',
-            minHeight: '100vh'
-        }}>
-            <Flex direction='column' gap='4' pt={'4'} width='100%' style={{
-                maxWidth: '700px'
-            }} >
-                <BackToList />
-                <Flex direction='column' gap='4' width='100%' px={'2'}>
-                    <header>
-                        <Text size='6' weight='bold'>Create Webhook</Text>
-                    </header>
-                    <Separator size='4' className={`bg-gray-4 dark:bg-gray-6`} />
+        <Box className="lg:mx-[10rem] md:mx-[5rem] mt-9 h-full">
+            <BackToList label="Webhooks" path="/settings/integrations/webhooks" />
+            <Flex direction='column' width='100%' mt={'6'}>
+                <Flex direction={'row'} gap={'3'} justify={'between'} align={'center'}>
+                    <Heading>
+                        Create Webhook
+                    </Heading>
+                    <Button onClick={methods.handleSubmit(onSubmit)} disabled={loading} variant='solid' style={{
+                        alignSelf: 'flex-end',
+                        marginBottom: '1rem'
+                    }} >
+                        Save
+                    </Button>
+                </Flex>
+                <Section size={'2'}>
                     <ErrorBanner error={error} />
                     <FormProvider {...methods}>
                         <form onSubmit={methods.handleSubmit(onSubmit)}>
                             <WebhookForm />
                         </form>
                     </FormProvider>
-                    <Button onClick={methods.handleSubmit(onSubmit)} disabled={loading} variant='solid' style={{
-                        alignSelf: 'flex-end'
-                    }} >
-                        Create Webhook
-                    </Button>
-                </Flex>
-            </Flex>
-        </Flex>
+                </Section>
 
+            </Flex>
+        </Box>
     )
 }
 

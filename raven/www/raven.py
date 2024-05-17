@@ -26,6 +26,14 @@ def get_context(context):
 			raise frappe.SessionBootFailed from e
 
 	boot["push_relay_server_url"] = frappe.conf.get("push_relay_server_url")
+
+	# add server_script_enabled in boot
+	if "server_script_enabled" in frappe.conf:
+		enabled = frappe.conf.server_script_enabled
+	else:
+		enabled = True
+	boot["server_script_enabled"] = enabled
+
 	boot_json = frappe.as_json(boot, indent=None, separators=(",", ":"))
 	boot_json = SCRIPT_TAG_PATTERN.sub("", boot_json)
 

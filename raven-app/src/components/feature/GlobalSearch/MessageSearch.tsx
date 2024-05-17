@@ -198,13 +198,15 @@ export const MessageSearch = ({ onToggleMyChannels, isOpenMyChannels, onToggleSa
                 {data?.message?.length && data?.message.length > 0 ? <Flex direction='column' gap='2'>
                     {data.message.map((message: MessageSearchResult) => {
                         return (
-                            <MessageBox message={{
-                                ...message,
-                                message_type: 'Text',
-                                is_continuation: 0,
-                                is_reply: 0,
-                                _liked_by: '[]',
-                            }} handleScrollToMessage={handleScrollToMessage} />
+                            <MessageBox
+                                key={message.name}
+                                message={{
+                                    ...message,
+                                    message_type: 'Text',
+                                    is_continuation: 0,
+                                    is_reply: 0,
+                                    _liked_by: '[]',
+                                }} handleScrollToMessage={handleScrollToMessage} />
                         )
                     })}
                 </Flex> : !showResults && <Box className='text-center' py='8'>

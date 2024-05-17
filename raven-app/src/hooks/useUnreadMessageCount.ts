@@ -1,7 +1,7 @@
 import { UserContext } from "@/utils/auth/UserProvider"
 import { UnreadCountData, useUpdateLastMessageInChannelList } from "@/utils/channel/ChannelListProvider"
 import { useFrappeGetCall, FrappeContext, FrappeConfig, useFrappeEventListener } from "frappe-react-sdk"
-import { useContext } from "react"
+import { useContext, useEffect } from "react"
 import { useParams, useLocation } from "react-router-dom"
 
 /**
@@ -34,7 +34,6 @@ const useUnreadMessageCount = () => {
         undefined,
         'unread_channel_count', {
         revalidateOnFocus: false,
-        revalidateIfStale: false,
         revalidateOnReconnect: true,
     })
 
@@ -113,6 +112,23 @@ const useUnreadMessageCount = () => {
 
         updateLastMessageInChannelList(event.channel_id)
     })
+
+    useEffect(() => {
+        // @ts-expect-error
+        const app_name = window.app_name || "Raven"
+        if (unread_count) {
+            const total_count = unread_count.message.total_unread_count_in_channels + unread_count.message.total_unread_count_in_dms
+
+            // Update document title with unread message count
+            if (total_count > 0) {
+                document.title = `(${total_count}) ${app_name}`
+            } else {
+                document.title = app_name
+            }
+        } else {
+            document.title = app_name
+        }
+    }, [unread_count])
 
     return unread_count
 }

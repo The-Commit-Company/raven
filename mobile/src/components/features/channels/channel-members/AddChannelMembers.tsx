@@ -30,7 +30,9 @@ export type Member = {
     user_image: string | undefined
     first_name: string
     is_admin?: boolean,
-    type?: 'User' | 'Bot'
+    allow_notifications?: 0 | 1,
+    type?: 'User' | 'Bot',
+    channel_member_name?: string
 }
 
 export type ChannelMembers = {

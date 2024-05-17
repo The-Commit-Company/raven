@@ -1,15 +1,10 @@
 import { useFrappeDocumentEventListener, useFrappeEventListener, useFrappeGetCall, useFrappePostCall } from 'frappe-react-sdk'
 import { RefObject, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
-import { DateObjectToFormattedDateString } from '@/utils/operations/operations'
 import { useDebounce } from '@/hooks/useDebounce'
 import { Message } from '../../../../../types/Messaging/Message'
 import { useIonViewWillLeave } from '@ionic/react'
 import { UserContext } from '@/utils/auth/UserProvider'
-
-const parseDateString = (date: string) => {
-    const dateObj = new Date(date)
-    return DateObjectToFormattedDateString(dateObj)
-}
+import { toDateMonthYear } from '../../../utils/operations/dateConversions'
 
 interface GetMessagesResponse {
     message: {
@@ -427,7 +422,7 @@ const useChatStream = (channelID: string, scrollRef: RefObject<HTMLIonContentEle
                 let currentDateTime = new Date(messages[messages.length - 1].creation.split('.')[0]).getTime()
 
                 messagesWithDateSeparators.push({
-                    creation: parseDateString(currentDate),
+                    creation: toDateMonthYear(currentDate),
                     message_type: 'date',
                     name: currentDate
                 })
@@ -442,7 +437,7 @@ const useChatStream = (channelID: string, scrollRef: RefObject<HTMLIonContentEle
 
                     if (messageDate !== currentDate) {
                         messagesWithDateSeparators.push({
-                            creation: parseDateString(messageDate),
+                            creation: toDateMonthYear(messageDate),
                             message_type: 'date',
                             name: messageDate
                         })

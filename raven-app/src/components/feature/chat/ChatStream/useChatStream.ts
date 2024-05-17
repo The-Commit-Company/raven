@@ -2,7 +2,7 @@ import { useFrappeDocumentEventListener, useFrappeEventListener, useFrappeGetCal
 import { MutableRefObject, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { useBeforeUnload, useLocation, useNavigate, useParams } from 'react-router-dom'
 import { Message } from '../../../../../../types/Messaging/Message'
-import { convertFrappeTimestampToUserTimezone } from '@/utils/dateConversions/utils'
+import { getDateObject } from '@/utils/dateConversions/utils'
 import { useDebounce } from '@/hooks/useDebounce'
 import { UserContext } from '@/utils/auth/UserProvider'
 
@@ -92,25 +92,25 @@ const useChatStream = (scrollRef: MutableRefObject<HTMLDivElement | null>) => {
      * Need to scroll down twice because the scrollHeight is not updated immediately after the first scroll
      */
     useLayoutEffect(() => {
-        if (done) {
+        // if (done) {
 
-            setTimeout(() => {
-                scrollRef.current?.scroll({
-                    top: scrollRef.current?.scrollHeight,
-                    // behavior: 'smooth',
-                })
-            }, 50)
+        setTimeout(() => {
+            scrollRef.current?.scroll({
+                top: scrollRef.current?.scrollHeight,
+                // behavior: 'smooth',
+            })
+        }, 50)
 
-            setTimeout(() => {
-                scrollRef.current?.scroll({
-                    top: scrollRef.current?.scrollHeight,
-                    // behavior: 'smooth',
-                })
-            }, 200)
+        setTimeout(() => {
+            scrollRef.current?.scroll({
+                top: scrollRef.current?.scrollHeight,
+                // behavior: 'smooth',
+            })
+        }, 200)
 
 
-            scrollRef.current?.scrollTo(0, scrollRef.current?.scrollHeight)
-        }
+        scrollRef.current?.scrollTo(0, scrollRef.current?.scrollHeight)
+        // }
     }, [done, channelID])
 
 
@@ -439,7 +439,7 @@ const useChatStream = (scrollRef: MutableRefObject<HTMLDivElement | null>) => {
                 let currentDateTime = new Date(messages[messages.length - 1].creation.split('.')[0]).getTime()
 
                 messagesWithDateSeparators.push({
-                    creation: convertFrappeTimestampToUserTimezone(`${currentDate} 00:00:00`).format('Do MMMM YYYY'),
+                    creation: getDateObject(`${currentDate} 00:00:00`).format('Do MMMM YYYY'),
                     message_type: 'date',
                     name: currentDate
                 })
@@ -454,7 +454,7 @@ const useChatStream = (scrollRef: MutableRefObject<HTMLDivElement | null>) => {
 
                     if (messageDate !== currentDate) {
                         messagesWithDateSeparators.push({
-                            creation: convertFrappeTimestampToUserTimezone(`${messageDate} 00:00:00`).format('Do MMMM YYYY'),
+                            creation: getDateObject(`${messageDate} 00:00:00`).format('Do MMMM YYYY'),
                             message_type: 'date',
                             name: messageDate
                         })

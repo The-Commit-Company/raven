@@ -1,12 +1,12 @@
 import { ViewChannelDetailsModalContent } from "../channels/ViewChannelDetailsModal"
-import { useContext, useState } from "react"
-import { ActiveUsersContext } from "@/utils/users/ActiveUsersProvider"
+import { useState } from "react"
 import { ChannelListItem } from "@/utils/channel/ChannelListProvider"
 import { ChannelMembers } from "@/utils/channel/ChannelMembersProvider"
 import { Button, Dialog, Tooltip } from "@radix-ui/themes"
 import { UserAvatar } from "@/components/common/UserAvatar"
 import { BiSolidUser } from "react-icons/bi"
 import { clsx } from "clsx"
+import useFetchActiveUsers from "@/hooks/fetchers/useFetchActiveUsers"
 
 interface ViewChannelDetailsButtonProps {
     channelData: ChannelListItem,
@@ -23,7 +23,9 @@ export const ViewChannelDetailsButton = ({ channelData, allowAddMembers, channel
         setOpen(false)
     }
 
-    const activeUsers = useContext(ActiveUsersContext)
+    const { data } = useFetchActiveUsers()
+    const activeUsers = data?.message ?? []
+
     const totalMembers = Object.keys(channelMembers).length
 
     return (

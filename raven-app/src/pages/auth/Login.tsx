@@ -34,7 +34,7 @@ export const Component = () => {
     const { data: loginContext, mutate } = useFrappeGetCall<LoginContext>('raven.api.login.get_context', {
         "redirect-to": "/raven"
     }, 'raven.api.login.get_context', {
-        revalidateIfStale: false,
+        revalidateOnMount: true,
         revalidateOnReconnect: false,
         revalidateOnFocus: false
     })
@@ -104,7 +104,6 @@ export const Component = () => {
                                                 {...register("password",
                                                     {
                                                         required: "Password is required.",
-                                                        minLength: { value: 6, message: "Password should be minimum 6 characters." }
                                                     })}
                                                 name="password"
                                                 type={isPasswordOpen ? "text" : "password"}

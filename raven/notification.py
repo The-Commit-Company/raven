@@ -90,3 +90,22 @@ def subscribe_user_to_topic(channel_id, user_id):
 		pass
 	except Exception:
 		frappe.log_error("Failed to subscribe user to channel")
+
+
+def unsubscribe_user_to_topic(channel_id, user_id):
+	"""
+	Unsubscribe a user to a topic (channel name)
+	"""
+
+	try:
+		from frappe.push_notification import PushNotification
+
+		push_notification = PushNotification("raven")
+
+		if push_notification.is_enabled():
+			push_notification.unsubscribe_topic(user_id=user_id, topic_name=channel_id)
+	except ImportError:
+		# push notifications are not supported in the current framework version
+		pass
+	except Exception:
+		frappe.log_error("Failed to unsubscribe user to channel")

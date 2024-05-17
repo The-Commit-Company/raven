@@ -29,6 +29,8 @@ def get_channel_members(channel_id):
 						user.first_name,
 						user.type,
 						channel_member.is_admin,
+						channel_member.allow_notifications,
+						channel_member.name.as_("channel_member_name"),
 					)
 					.orderby(channel_member.creation, order=Order.desc)
 				)
@@ -44,6 +46,8 @@ def get_channel_members(channel_id):
 						user.first_name,
 						user.type,
 						channel_member.is_admin,
+						channel_member.allow_notifications,
+						channel_member.name.as_("channel_member_name"),
 					)
 					.where(channel_member.channel_id == channel_id)
 					.orderby(channel_member.creation, order=Order.desc)

@@ -6,12 +6,6 @@ import { useSWRConfig } from 'frappe-react-sdk'
 import { toast } from 'sonner'
 import { getErrorMessage } from '@/components/layout/AlertBanner/ErrorBanner'
 
-export type ExtraUsersData = {
-    name: string,
-    full_name: string,
-    user_image: string,
-}
-
 export type UnreadChannelCountItem = { name: string, user_id?: string, unread_count: number, is_direct_message: 0 | 1 }
 
 export type UnreadCountData = {
@@ -35,8 +29,7 @@ export interface SidebarChannelListItem extends ChannelListItem {
 
 interface ChannelList {
     channels: ChannelListItem[],
-    dm_channels: DMChannelListItem[],
-    extra_users: ExtraUsersData[]
+    dm_channels: DMChannelListItem[]
 }
 
 export interface ChannelListContextType extends ChannelList {
@@ -68,7 +61,6 @@ export const useFetchChannelList = (): ChannelListContextType => {
         hide_archived: false
     }, `channel_list`, {
         revalidateOnFocus: false,
-        revalidateIfStale: false,
         onError: (error) => {
             toast.error("There was an error while fetching the channel list.", {
                 description: getErrorMessage(error)
@@ -105,7 +97,6 @@ export const useFetchChannelList = (): ChannelListContextType => {
     return {
         channels: sortedChannels,
         dm_channels: sortedDMChannels,
-        extra_users: data?.message.extra_users ?? [],
         mutate,
         ...rest
     }
@@ -171,7 +162,6 @@ export const useUpdateLastMessageInChannelList = () => {
                                 message: {
                                     channels: newChannels,
                                     dm_channels: newDMChannels,
-                                    extra_users: channelList.message.extra_users
                                 }
                             }
                         }

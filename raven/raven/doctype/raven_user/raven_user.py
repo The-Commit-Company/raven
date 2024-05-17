@@ -15,12 +15,15 @@ class RavenUser(Document):
 	if TYPE_CHECKING:
 		from frappe.types import DF
 
+		from raven.raven.doctype.raven_pinned_channels.raven_pinned_channels import RavenPinnedChannels
+
 		availability_status: DF.Literal["Available", "Away", "Do not disturb", "Invisible"]
 		bot: DF.Link | None
 		custom_status: DF.Data | None
 		enabled: DF.Check
 		first_name: DF.Data | None
 		full_name: DF.Data
+		pinned_channels: DF.Table[RavenPinnedChannels]
 		type: DF.Literal["User", "Bot"]
 		user: DF.Link | None
 		user_image: DF.AttachImage | None
@@ -49,6 +52,12 @@ class RavenUser(Document):
 		if self.type != "Bot":
 			self.update_photo_from_user()
 
+	def after_insert(self):
+		self.invalidate_user_list_cache()
+
+	def on_update(self):
+		self.invalidate_user_list_cache()
+
 	def on_trash(self):
 		"""
 		Remove the Raven User from all channels
@@ -64,6 +73,14 @@ class RavenUser(Document):
 		user.flags.deleting_raven_user = True
 		user.remove_roles("Raven User")
 		user.save()
+
+		self.invalidate_user_list_cache()
+
+	def invalidate_user_list_cache(self):
+
+		from raven.api.raven_users import get_users
+
+		get_users.clear_cache()
 
 	def update_photo_from_user(self):
 		"""

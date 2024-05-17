@@ -23,15 +23,26 @@ export const UserProvider: FC<PropsWithChildren> = ({ children }) => {
 
     const handleLogout = async () => {
         localStorage.removeItem('ravenLastChannel')
+        localStorage.removeItem('app-cache')
         return logout()
             .then(() => {
                 //Clear cache on logout
-                return mutate(() => true, undefined, false)
+                return mutate((key) => {
+                    if (key === 'raven.api.login.get_context') {
+                        return false
+                    }
+                    return true
+                }, undefined, false)
             })
             .then(() => {
                 //Reload the page so that the boot info is fetched again
                 const URL = import.meta.env.VITE_BASE_NAME ? `${import.meta.env.VITE_BASE_NAME}` : ``
-                window.location.replace(`/login?redirect-to=${URL}/channel`)
+                if (URL) {
+                    window.location.replace(`/${URL}/login`)
+                } else {
+                    window.location.replace('/login')
+                }
+
                 // window.location.reload()
             })
     }

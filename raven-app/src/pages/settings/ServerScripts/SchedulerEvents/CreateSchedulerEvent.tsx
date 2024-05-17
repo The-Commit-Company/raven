@@ -1,3 +1,4 @@
+import { BackToList } from "@/components/feature/integrations/webhooks/BackToList"
 import { SchedulerEventForm, SchedulerEventsForm } from "@/components/feature/settings/scheduler-events/SchedulerEventsForm"
 import { ErrorBanner } from "@/components/layout/AlertBanner"
 import { Box, Button, Flex, Heading, Section } from "@radix-ui/themes"
@@ -7,7 +8,7 @@ import { FiArrowLeft } from "react-icons/fi"
 import { useNavigate } from "react-router-dom"
 import { toast } from "sonner"
 
-export const CreateSchedulerEvent = () => {
+const CreateSchedulerEvent = () => {
 
     const navigate = useNavigate()
 
@@ -29,7 +30,6 @@ export const CreateSchedulerEvent = () => {
         if (data.event_frequency === 'Cron') {
             cron_expression = `${data.minute} ${data.hour} ${data.date} ${data.month} ${data.day}`
         }
-        // console.log(data, cron_expression)
         createDoc('Raven Scheduler Event', {
             event_name: data.event_name,
             disabled: 0,
@@ -43,7 +43,7 @@ export const CreateSchedulerEvent = () => {
         })
             .then((doc) => {
                 if (doc) {
-                    navigate(`../${doc?.name}`)
+                    navigate(`../scheduled-messages/${doc?.name}`)
                 }
                 toast.success("Scheduler Event created")
             })
@@ -53,9 +53,7 @@ export const CreateSchedulerEvent = () => {
         <FormProvider {...methods}>
             <form onSubmit={methods.handleSubmit(onSubmit)}>
                 <Box className="lg:mx-[10rem] md:mx-[5rem] mt-9 h-screen">
-                    <Button variant="ghost" color="gray" onClick={() => navigate('../../scheduled-messages')}>
-                        <FiArrowLeft /> Scheduled Messages
-                    </Button>
+                    <BackToList label="Scheduled Messages" path="/settings/integrations/scheduled-messages" />
                     <Flex justify={'between'} mt={'6'}>
                         <Heading>New Scheduled Message</Heading>
                         <Button type='submit'>Save</Button>
@@ -69,3 +67,5 @@ export const CreateSchedulerEvent = () => {
         </FormProvider>
     )
 }
+
+export const Component = CreateSchedulerEvent

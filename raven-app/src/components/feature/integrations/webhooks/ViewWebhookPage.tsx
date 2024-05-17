@@ -1,5 +1,5 @@
 import { ErrorBanner } from "@/components/layout/AlertBanner"
-import { AlertDialog, Badge, Button, DropdownMenu, Flex, IconButton, Separator, Text } from "@radix-ui/themes"
+import { AlertDialog, Badge, Box, Button, DropdownMenu, Flex, IconButton, Section, Text } from "@radix-ui/themes"
 import { FrappeDoc, useFrappeUpdateDoc } from "frappe-react-sdk"
 import { FieldValues, FormProvider, useForm } from "react-hook-form"
 import { KeyedMutator } from 'swr'
@@ -56,24 +56,24 @@ export const ViewWebhookPage = ({ data, mutate }: { data: FrappeDoc<RavenWebhook
     }
 
     return (
-        <Flex direction='column' gap='4' py='4' width={'100%'} height={'100%'} style={{
-            alignItems: 'center',
-            justifyContent: 'start',
-            minHeight: '100vh'
-        }}>
-            <Flex direction='column' gap='4' pt={'4'} width='100%' style={{
-                maxWidth: '700px'
-            }} >
-                <BackToList />
-                <Flex direction='column' gap='4' width='100%' px={'2'}>
-                    <Flex direction={'row'} gap={'2'} justify={'between'} align={'center'}>
-                        <Flex direction={'row'} gap={'2'} align={'center'}>
-                            <Text size='6' weight='bold'>{data?.name}</Text>
-                            <Badge color={data.enabled ? 'green' : 'red'}>{data.enabled ? 'Enabled' : 'Disabled'}</Badge>
-                        </Flex>
+        <Box className="lg:mx-[10rem] md:mx-[5rem] mt-9 h-full">
+            <BackToList label="Webhooks" path="/settings/integrations/webhooks" />
+            <Flex direction='column' width='100%' mt={'6'}>
+                <Flex direction={'row'} gap={'3'} justify={'between'} align={'center'}>
+                    <Flex direction={'row'} gap={'2'} align={'center'}>
+                        <Text size='6' weight='bold'>{data?.name}</Text>
+                        <Badge color={data.enabled ? 'green' : 'red'}>{data.enabled ? 'Enabled' : 'Disabled'}</Badge>
+                    </Flex>
+                    <Flex gap={'3'}>
+                        <Button onClick={methods.handleSubmit(onSubmit)} disabled={loading || !isDirty} variant='solid' style={{
+                            alignSelf: 'flex-end',
+                            marginBottom: '1rem'
+                        }}>
+                            Save
+                        </Button>
                         <DropdownMenu.Root>
                             <DropdownMenu.Trigger>
-                                <IconButton aria-label='Options' color='gray' variant='ghost' style={{
+                                <IconButton aria-label='Options' variant="soft" color="gray" style={{
                                     // @ts-ignore
                                     '--icon-button-ghost-padding': '0',
                                     height: 'var(--base-button-height)',
@@ -84,24 +84,20 @@ export const ViewWebhookPage = ({ data, mutate }: { data: FrappeDoc<RavenWebhook
                             </DropdownMenu.Trigger>
                             <DropdownMenu.Content variant='soft'>
                                 <DropdownMenu.Item color='gray' onClick={() => setOpen(true)} className="cursor-pointer">
-                                    {data.enabled ? 'Disable' : 'Enable'} Webhook
+                                    {data.enabled ? 'Disable' : 'Enable'}
                                 </DropdownMenu.Item>
                             </DropdownMenu.Content>
                         </DropdownMenu.Root>
                     </Flex>
-                    <Separator size='4' className={`bg-gray-4 dark:bg-gray-6`} />
+                </Flex>
+                <Section size={'2'}>
                     <ErrorBanner error={error} />
                     <FormProvider {...methods}>
                         <form onSubmit={methods.handleSubmit(onSubmit)}>
                             <WebhookForm isEdit={true} />
                         </form>
                     </FormProvider>
-                    <Button onClick={methods.handleSubmit(onSubmit)} disabled={loading || !isDirty} variant='solid' style={{
-                        alignSelf: 'flex-end'
-                    }}>
-                        Save Webhook
-                    </Button>
-                </Flex>
+                </Section>
             </Flex>
             <AlertDialog.Root open={open} onOpenChange={setOpen}>
                 <AlertDialog.Content className={DIALOG_CONTENT_CLASS}>
@@ -119,7 +115,7 @@ export const ViewWebhookPage = ({ data, mutate }: { data: FrappeDoc<RavenWebhook
                             </Button>
                         </AlertDialog.Cancel>
                         <AlertDialog.Action>
-                            <Button variant="solid" color="green" onClick={onUpdateEnabled} disabled={loading}>
+                            <Button variant="solid" color={data.enabled ? "red" : "green"} onClick={onUpdateEnabled} disabled={loading}>
                                 {loading && <Loader />}
                                 {loading ? "Updating" : data.enabled ? "Disable" : "Enable"}
                             </Button>
@@ -127,6 +123,6 @@ export const ViewWebhookPage = ({ data, mutate }: { data: FrappeDoc<RavenWebhook
                     </Flex>
                 </AlertDialog.Content>
             </AlertDialog.Root>
-        </Flex >
+        </Box >
     )
 }

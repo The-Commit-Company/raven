@@ -1,7 +1,7 @@
 // import { Skeleton } from '@/components/common/Skeleton';
 // import { Box, Flex, Text } from '@radix-ui/themes';
 import TiptapLink from '@tiptap/extension-link'
-import { mergeAttributes, useCurrentEditor } from "@tiptap/react";
+import { mergeAttributes } from "@tiptap/react";
 // import { useFrappeGetCall } from 'frappe-react-sdk';
 // import { memo, useMemo } from 'react';
 
@@ -10,7 +10,7 @@ export const CustomLink = TiptapLink.extend({
         return [
             "a",
             mergeAttributes(HTMLAttributes, {
-                class: 'rt-Text rt-reset rt-Link rt-underline-auto break-all'
+                class: 'rt-Text rt-reset rt-Link rt-underline-always break-all'
             }), // mergeAttributes is a exported function from @tiptap/core
             0,
         ];

@@ -1,1 +1,1 @@
-export const DIALOG_CONTENT_CLASS = 'dark:backdrop-blur-[8px] dark:bg-panel-translucent'
+export const DIALOG_CONTENT_CLASS = 'dark:backdrop-blur-[16px] dark:bg-panel-translucent'

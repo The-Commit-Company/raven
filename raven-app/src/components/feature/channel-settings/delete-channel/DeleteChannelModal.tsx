@@ -77,12 +77,10 @@ export const DeleteChannelModal = ({ onClose, onCloseParent, channelData }: Dele
                         Cancel
                     </Button>
                 </AlertDialog.Cancel>
-                <AlertDialog.Action>
-                    <Button variant="solid" color="red" onClick={onSubmit} disabled={!allowDelete || deletingDoc}>
-                        {deletingDoc && <Loader />}
-                        {deletingDoc ? "Deleting" : "Delete"}
-                    </Button>
-                </AlertDialog.Action>
+                <Button variant="solid" color="red" onClick={onSubmit} disabled={!allowDelete || deletingDoc}>
+                    {deletingDoc && <Loader />}
+                    {deletingDoc ? "Deleting" : "Delete"}
+                </Button>
             </Flex>
         </>
     )

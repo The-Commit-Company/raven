@@ -7,7 +7,6 @@ import { ChannelRedirect } from './utils/channel/ChannelRedirect'
 import "cal-sans";
 import { ThemeProvider } from './ThemeProvider'
 import { Toaster } from 'sonner'
-import { FullPageLoader } from './components/layout/Loaders'
 import { useStickyState } from './hooks/useStickyState'
 
 
@@ -25,16 +24,16 @@ const router = createBrowserRouter(
             <Route path="saved-messages" lazy={() => import('./components/feature/saved-messages/SavedMessages')} />
             <Route path=":channelID" lazy={() => import('@/pages/ChatSpace')} />
           </Route>
-          {/* <Route path='settings' lazy={() => import('./pages/settings/Settings')}>
+          <Route path='settings' lazy={() => import('./pages/settings/Settings')}>
             <Route path='integrations'>
               <Route path='webhooks' lazy={() => import('./pages/settings/Webhooks/WebhookList')} />
               <Route path='webhooks/create' lazy={() => import('./pages/settings/Webhooks/CreateWebhook')} />
               <Route path='webhooks/:ID' lazy={() => import('./pages/settings/Webhooks/ViewWebhook')} />
-              <Route path='scheduled-messages' element={<TemporalEvents />} />
-              <Route path='scheduled-messages/create' element={<CreateSchedulerEvent />} />
-              <Route path='scheduled-messages/:ID' element={<ViewSchedulerEvent />} />
+              <Route path='scheduled-messages' lazy={() => import('./pages/settings/ServerScripts/SchedulerEvents/SchedulerEvents')} />
+              <Route path='scheduled-messages/create' lazy={() => import('./pages/settings/ServerScripts/SchedulerEvents/CreateSchedulerEvent')} />
+              <Route path='scheduled-messages/:ID' lazy={() => import('./pages/settings/ServerScripts/SchedulerEvents/ViewSchedulerEvent')} />
             </Route>
-          </Route> */}
+          </Route>
         </Route>
       </Route>
     </>
@@ -67,6 +66,9 @@ function App() {
       url={import.meta.env.VITE_FRAPPE_PATH ?? ''}
       socketPort={import.meta.env.VITE_SOCKET_PORT ? import.meta.env.VITE_SOCKET_PORT : undefined}
       //@ts-ignore
+      swrConfig={{
+        provider: localStorageProvider
+      }}
       siteName={getSiteName()}
     >
       <UserProvider>
@@ -77,11 +79,25 @@ function App() {
           accentColor='iris'
           panelBackground='translucent'
           toggleTheme={toggleTheme}>
-          <RouterProvider router={router} fallbackElement={<FullPageLoader className='w-screen' />} />
+          <RouterProvider router={router} />
         </ThemeProvider>
       </UserProvider>
     </FrappeProvider>
   )
+}
+
+function localStorageProvider() {
+  // When initializing, we restore the data from `localStorage` into a map.
+  const map = new Map<string, any>(JSON.parse(localStorage.getItem('app-cache') || '[]'))
+
+  // Before unloading the app, we write back all the data into `localStorage`.
+  window.addEventListener('beforeunload', () => {
+    const appCache = JSON.stringify(Array.from(map.entries()))
+    localStorage.setItem('app-cache', appCache)
+  })
+
+  // We still use the map for write & read for performance.
+  return map
 }
 
 export default App

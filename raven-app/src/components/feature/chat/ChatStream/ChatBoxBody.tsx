@@ -1,5 +1,5 @@
 import { Message } from "../../../../../../types/Messaging/Message"
-import { Suspense, lazy, useContext, useMemo, useState } from "react"
+import { useContext, useMemo, useState } from "react"
 import { ArchivedChannelBox } from "../chat-footer/ArchivedChannelBox"
 import { ChannelListItem, DMChannelListItem } from "@/utils/channel/ChannelListProvider"
 import { JoinChannelBox } from "../chat-footer/JoinChannelBox"
@@ -9,13 +9,11 @@ import useFileUpload from "../ChatInput/FileInput/useFileUpload"
 import { CustomFile, FileDrop } from "../../file-upload/FileDrop"
 import { FileListItem } from "../../file-upload/FileListItem"
 import { useSendMessage } from "../ChatInput/useSendMessage"
-import { Loader } from "@/components/common/Loader"
 import { Flex, Box, IconButton } from "@radix-ui/themes"
 import { ReplyMessageBox } from "../ChatMessage/ReplyMessageBox/ReplyMessageBox"
 import { BiX } from "react-icons/bi"
 import ChatStream from "./ChatStream"
-
-const Tiptap = lazy(() => import("../ChatInput/Tiptap"))
+import Tiptap from "../ChatInput/Tiptap"
 
 const COOL_PLACEHOLDERS = [
     "Delivering messages atop dragons 🐉 is available on a chargeable basis.",
@@ -27,7 +25,7 @@ const COOL_PLACEHOLDERS = [
     "Want to know who writes these placeholders? 🤔. No one.",
     "Type a message..."
 ]
-const randomPlaceholder = COOL_PLACEHOLDERS[Math.floor(Math.random() * (COOL_PLACEHOLDERS.length))]
+// const randomPlaceholder = COOL_PLACEHOLDERS[Math.floor(Math.random() * (COOL_PLACEHOLDERS.length))]
 interface ChatBoxBodyProps {
     channelData: ChannelListItem | DMChannelListItem
 }
@@ -35,7 +33,7 @@ interface ChatBoxBodyProps {
 export const ChatBoxBody = ({ channelData }: ChatBoxBodyProps) => {
 
     const { name: user } = useUserData()
-    const { channelMembers } = useContext(ChannelMembersContext) as ChannelMembersContextType
+    const { channelMembers, isLoading } = useContext(ChannelMembersContext) as ChannelMembersContextType
 
     const [selectedMessage, setSelectedMessage] = useState<Message | null>(null)
 
@@ -95,29 +93,27 @@ export const ChatBoxBody = ({ channelData }: ChatBoxBodyProps) => {
                 />
                 {channelData?.is_archived == 0 && (isUserInChannel || channelData?.type === 'Open')
                     &&
-                    <Suspense fallback={<Flex align='center' justify='center' width='100%' height='9'><Loader /></Flex>}>
-                        <Tiptap
-                            key={channelData.name}
-                            fileProps={{
-                                fileInputRef,
-                                addFile
-                            }}
-                            clearReplyMessage={handleCancelReply}
-                            placeholder={randomPlaceholder}
-                            replyMessage={selectedMessage}
-                            sessionStorageKey={`tiptap-${channelData.name}`}
-                            onMessageSend={sendMessage}
-                            messageSending={loading}
-                            slotBefore={<Flex direction='column' justify='center' hidden={!selectedMessage && !files.length}>
-                                {selectedMessage && <PreviousMessagePreview selectedMessage={selectedMessage} />}
-                                {files && files.length > 0 && <Flex gap='2' width='100%' align='end' px='2' p='2' wrap='wrap'>
-                                    {files.map((f: CustomFile) => <Box className="grow-0" key={f.fileID}><FileListItem file={f} uploadProgress={fileUploadProgress} removeFile={() => removeFile(f.fileID)} /></Box>)}
-                                </Flex>}
+                    <Tiptap
+                        key={channelData.name}
+                        fileProps={{
+                            fileInputRef,
+                            addFile
+                        }}
+                        clearReplyMessage={handleCancelReply}
+                        // placeholder={randomPlaceholder}
+                        replyMessage={selectedMessage}
+                        sessionStorageKey={`tiptap-${channelData.name}`}
+                        onMessageSend={sendMessage}
+                        messageSending={loading}
+                        slotBefore={<Flex direction='column' justify='center' hidden={!selectedMessage && !files.length}>
+                            {selectedMessage && <PreviousMessagePreview selectedMessage={selectedMessage} />}
+                            {files && files.length > 0 && <Flex gap='2' width='100%' align='end' px='2' p='2' wrap='wrap'>
+                                {files.map((f: CustomFile) => <Box className="grow-0" key={f.fileID}><FileListItem file={f} uploadProgress={fileUploadProgress} removeFile={() => removeFile(f.fileID)} /></Box>)}
                             </Flex>}
-                        />
-                    </Suspense>
+                        </Flex>}
+                    />
                 }
-                {channelData && <>
+                {channelData && !isLoading && <>
                     {channelData.is_archived == 0 && !isUserInChannel && channelData.type !== 'Open' && !isDM &&
                         <JoinChannelBox
                             channelData={channelData}

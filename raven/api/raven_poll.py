@@ -139,28 +139,31 @@ def get_all_votes(poll_id):
 	poll_doc = frappe.get_cached_doc("Raven Poll", poll_id)
 
 	if poll_doc.is_anonymous:
-		frappe.throw(_("This poll is anonymous. You do not have permission to access the votes."), frappe.PermissionError)
+		frappe.throw(
+			_("This poll is anonymous. You do not have permission to access the votes."),
+			frappe.PermissionError,
+		)
 	else:
 		# Get all votes for this poll
 		votes = frappe.get_all(
-			"Raven Poll Vote",
-			filters={"poll_id": poll_id},
-			fields=["name", "option", "user_id"]
+			"Raven Poll Vote", filters={"poll_id": poll_id}, fields=["name", "option", "user_id"]
 		)
 
 		# Initialize results dictionary
-		results = {option.name: { 'users': [], 'count': option.votes } for option in poll_doc.options if option.votes}
+		results = {
+			option.name: {"users": [], "count": option.votes} for option in poll_doc.options if option.votes
+		}
 
 		# Process votes
 		for vote in votes:
-			option = vote['option']
-			results[option]['users'].append(vote['user_id'])
+			option = vote["option"]
+			results[option]["users"].append(vote["user_id"])
 
 		# Calculate total votes
-		total_votes = sum(result['count'] for result in results.values())
+		total_votes = sum(result["count"] for result in results.values())
 
 		# Calculate percentages
 		for result in results.values():
-			result['percentage'] = (result['count'] / total_votes) * 100
+			result["percentage"] = (result["count"] / total_votes) * 100
 
 		return results

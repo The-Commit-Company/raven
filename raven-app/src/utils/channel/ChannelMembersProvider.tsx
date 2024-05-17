@@ -47,7 +47,6 @@ const useFetchChannelMembers = (channelID: string): ChannelMembersContextType | 
     }, `raven.api.chat.get_channel_members:${channelID}`, {
         revalidateOnFocus: false,
         revalidateOnReconnect: false,
-        revalidateIfStale: false
     })
 
     return {

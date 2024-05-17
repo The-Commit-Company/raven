@@ -2,7 +2,7 @@ import json
 import re
 
 import frappe
-from linkpreview import link_preview
+from linkpreview import Link, LinkGrabber, LinkPreview, link_preview
 
 
 @frappe.whitelist(methods=["GET"])
@@ -39,7 +39,15 @@ def get_preview_link(urls):
 				else:
 					preview = None
 					try:
-						preview = link_preview(url)
+						# If this is a Twitter/X URL, then we need to fetch the preview from the Twitter API
+						# This is because the linkpreview library doesn't support Twitter previews with the default bot
+						if "twitter.com" in url or "x.com" in url:
+							grabber = LinkGrabber()
+							content, url_fetched = grabber.get_content(url, headers="imessagebot")
+							link = Link(url_fetched, content)
+							preview = LinkPreview(link)
+						else:
+							preview = link_preview(url)
 					except Exception:
 						preview = None
 						pass

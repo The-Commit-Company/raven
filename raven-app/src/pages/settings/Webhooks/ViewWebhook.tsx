@@ -14,7 +14,7 @@ const ViewWebhook = () => {
     })
 
     return (
-        <Box className='p-4'>
+        <Box>
             {isLoading && <FullPageLoader />}
             {error && <ErrorBanner error={error} />}
             {data && <ViewWebhookPage data={data} mutate={mutate} />}

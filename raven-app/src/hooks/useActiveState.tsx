@@ -62,8 +62,24 @@ export const useActiveState = () => {
     useEffect(() => {
         // Update user availability when the app is opened
         call.get('raven.api.user_availability.refresh_user_active_state', {
-            deactivate
+            deactivate: false
         })
+
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'visible') {
+                updateUserActiveState().then(activate)
+            }
+            else {
+                updateUserActiveState(true).then(deactivate)
+            }
+        })
+
+        return () => {
+            // Update user availability when the app is closed
+            call.get('raven.api.user_availability.refresh_user_active_state', {
+                deactivate: true
+            })
+        }
     }, [])
 
     return isActive

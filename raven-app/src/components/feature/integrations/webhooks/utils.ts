@@ -4,6 +4,7 @@ export interface TriggerEventField {
     label: string,
     doctype: string,
     event: "after_insert" | "on_update" | "on_submit" | "on_cancel" | "on_trash" | "on_update_after_submit" | "on_change",
+    trigger_on: string[]
 }
 
 export const TriggerEvents: TriggerEventField[] = [
@@ -12,60 +13,70 @@ export const TriggerEvents: TriggerEventField[] = [
         label: 'Message Sent',
         doctype: 'Raven Message',
         event: 'after_insert',
+        trigger_on: ['Channel', 'User', 'Channel Type']
     },
     {
         key: 'message_edited',
         label: 'Message Edited',
         doctype: 'Raven Message',
-        event: 'on_update'
+        event: 'on_update',
+        trigger_on: ['Channel', 'User', 'Channel Type']
     },
     {
         key: 'message_deleted',
         label: 'Message Deleted',
         doctype: 'Raven Message',
-        event: 'on_trash'
+        event: 'on_trash',
+        trigger_on: ['Channel', 'User', 'Channel Type']
     },
     {
         key: 'emoji_reaction',
         label: 'Message Reacted On',
         doctype: 'Raven Message Reaction',
-        event: 'after_insert'
+        event: 'after_insert',
+        trigger_on: ['Channel', 'User', 'Channel Type']
     },
     {
         key: 'channel_created',
         label: 'Channel Created',
         doctype: 'Raven Channel',
-        event: 'after_insert'
+        event: 'after_insert',
+        trigger_on: ['User', 'Channel_Type']
     },
     {
         key: 'channel_deleted',
         label: 'Channel Deleted',
         doctype: 'Raven Channel',
-        event: 'on_trash'
+        event: 'on_trash',
+        trigger_on: ['User', 'Channel_Type']
     },
     {
         key: 'channel_member_added',
         label: 'Channel Member Added',
         doctype: 'Raven Channel Member',
-        event: 'after_insert'
+        event: 'after_insert',
+        trigger_on: ['Channel', 'User', 'Channel Type']
     },
     {
         key: 'channel_member_deleted',
         label: 'Channel Member Deleted',
         doctype: 'Raven Channel Member',
-        event: 'on_trash'
+        event: 'on_trash',
+        trigger_on: ['Channel', 'User', 'Channel Type']
     },
     {
         key: 'raven_user_added',
         label: 'User Added',
         doctype: 'Raven User',
-        event: 'after_insert'
+        event: 'after_insert',
+        trigger_on: ['User']
     },
     {
         key: 'raven_user_deleted',
         label: 'User Deleted',
         doctype: 'Raven User',
-        event: 'on_trash'
+        event: 'on_trash',
+        trigger_on: ['User']
     }
 ]
 
@@ -583,6 +594,26 @@ export const SampleData = [
                     {
                         field: 'content',
                         value: 'Hello, World!'
+                    },
+                    {
+                        field: 'name',
+                        value: 'message-id'
+                    },
+                    {
+                        field: 'creation',
+                        value: '2021-08-12 12:00:00'
+                    },
+                    {
+                        field: 'modified',
+                        value: '2021-08-12 12:00:00'
+                    },
+                    {
+                        field: 'modified_by',
+                        value: 'Administrator'
+                    },
+                    {
+                        field: 'owner',
+                        value: 'Administrator'
                     }
                 ]
             },
@@ -643,6 +674,26 @@ export const SampleData = [
                             ],
                             type: "doc"
                         }`
+                    },
+                    {
+                        field: 'name',
+                        value: 'message-id'
+                    },
+                    {
+                        field: 'creation',
+                        value: '2021-08-12 12:00:00'
+                    },
+                    {
+                        field: 'modified',
+                        value: '2021-08-12 12:00:00'
+                    },
+                    {
+                        field: 'modified_by',
+                        value: 'Administrator'
+                    },
+                    {
+                        field: 'owner',
+                        value: 'Administrator'
                     }
                 ]
             },
@@ -703,6 +754,26 @@ export const SampleData = [
                             ],
                             type: "doc"
                         }`
+                    },
+                    {
+                        field: 'name',
+                        value: 'message-id'
+                    },
+                    {
+                        field: 'creation',
+                        value: '2021-08-12 12:00:00'
+                    },
+                    {
+                        field: 'modified',
+                        value: '2021-08-12 12:00:00'
+                    },
+                    {
+                        field: 'modified_by',
+                        value: 'Administrator'
+                    },
+                    {
+                        field: 'owner',
+                        value: 'Administrator'
                     }
                 ]
             },
@@ -763,6 +834,26 @@ export const SampleData = [
                             ],
                             type: "doc"
                         }`
+                    },
+                    {
+                        field: 'name',
+                        value: 'message-id'
+                    },
+                    {
+                        field: 'creation',
+                        value: '2021-08-12 12:00:00'
+                    },
+                    {
+                        field: 'modified',
+                        value: '2021-08-12 12:00:00'
+                    },
+                    {
+                        field: 'modified_by',
+                        value: 'Administrator'
+                    },
+                    {
+                        field: 'owner',
+                        value: 'Administrator'
                     }
                 ]
             },
@@ -823,6 +914,26 @@ export const SampleData = [
                             ],
                             type: "doc"
                         }`
+                    },
+                    {
+                        field: 'name',
+                        value: 'message-id'
+                    },
+                    {
+                        field: 'creation',
+                        value: '2021-08-12 12:00:00'
+                    },
+                    {
+                        field: 'modified',
+                        value: '2021-08-12 12:00:00'
+                    },
+                    {
+                        field: 'modified_by',
+                        value: 'Administrator'
+                    },
+                    {
+                        field: 'owner',
+                        value: 'Administrator'
                     }
                 ]
             }
@@ -849,6 +960,26 @@ export const SampleData = [
                     {
                         field: 'last_visit',
                         value: '2021-08-12 12:00:00'
+                    },
+                    {
+                        field: 'name',
+                        value: 'channel-member-id'
+                    },
+                    {
+                        field: 'creation',
+                        value: '2021-08-12 12:00:00'
+                    },
+                    {
+                        field: 'modified',
+                        value: '2021-08-12 12:00:00'
+                    },
+                    {
+                        field: 'modified_by',
+                        value: 'Administrator'
+                    },
+                    {
+                        field: 'owner',
+                        value: 'Administrator'
                     }
                 ]
             },
@@ -870,6 +1001,26 @@ export const SampleData = [
                     {
                         field: 'last_visit',
                         value: '2021-08-12 12:00:00'
+                    },
+                    {
+                        field: 'name',
+                        value: 'channel-member-id'
+                    },
+                    {
+                        field: 'creation',
+                        value: '2021-08-12 12:00:00'
+                    },
+                    {
+                        field: 'modified',
+                        value: '2021-08-12 12:00:00'
+                    },
+                    {
+                        field: 'modified_by',
+                        value: 'Administrator'
+                    },
+                    {
+                        field: 'owner',
+                        value: 'Administrator'
                     }
                 ]
             },
@@ -891,6 +1042,26 @@ export const SampleData = [
                     {
                         field: 'last_visit',
                         value: '2021-08-12 12:00:00'
+                    },
+                    {
+                        field: 'name',
+                        value: 'channel-member-id'
+                    },
+                    {
+                        field: 'creation',
+                        value: '2021-08-12 12:00:00'
+                    },
+                    {
+                        field: 'modified',
+                        value: '2021-08-12 12:00:00'
+                    },
+                    {
+                        field: 'modified_by',
+                        value: 'Administrator'
+                    },
+                    {
+                        field: 'owner',
+                        value: 'Administrator'
                     }
                 ]
             },
@@ -921,6 +1092,26 @@ export const SampleData = [
                     {
                         field: 'user_image',
                         value: 'https://example.com/image.jpg'
+                    },
+                    {
+                        field: 'name',
+                        value: 'user-id'
+                    },
+                    {
+                        field: 'creation',
+                        value: '2021-08-12 12:00:00'
+                    },
+                    {
+                        field: 'modified',
+                        value: '2021-08-12 12:00:00'
+                    },
+                    {
+                        field: 'modified_by',
+                        value: 'Administrator'
+                    },
+                    {
+                        field: 'owner',
+                        value: 'Administrator'
                     }
                 ]
             },
@@ -946,6 +1137,26 @@ export const SampleData = [
                     {
                         field: 'user_image',
                         value: 'https://example.com/image.jpg'
+                    },
+                    {
+                        field: 'name',
+                        value: 'user-id'
+                    },
+                    {
+                        field: 'creation',
+                        value: '2021-08-12 12:00:00'
+                    },
+                    {
+                        field: 'modified',
+                        value: '2021-08-12 12:00:00'
+                    },
+                    {
+                        field: 'modified_by',
+                        value: 'Administrator'
+                    },
+                    {
+                        field: 'owner',
+                        value: 'Administrator'
                     }
                 ]
             }
@@ -968,6 +1179,26 @@ export const SampleData = [
                     {
                         field: 'reaction_escaped',
                         value: '\\ud83d\\udc4d'
+                    },
+                    {
+                        field: 'name',
+                        value: 'reaction-id'
+                    },
+                    {
+                        field: 'creation',
+                        value: '2021-08-12 12:00:00'
+                    },
+                    {
+                        field: 'modified',
+                        value: '2021-08-12 12:00:00'
+                    },
+                    {
+                        field: 'modified_by',
+                        value: 'Administrator'
+                    },
+                    {
+                        field: 'owner',
+                        value: 'Administrator'
                     }
                 ]
             },
@@ -985,6 +1216,26 @@ export const SampleData = [
                     {
                         field: 'reaction_escaped',
                         value: '\\ud83d\\udc4e'
+                    },
+                    {
+                        field: 'name',
+                        value: 'reaction-id'
+                    },
+                    {
+                        field: 'creation',
+                        value: '2021-08-12 12:00:00'
+                    },
+                    {
+                        field: 'modified',
+                        value: '2021-08-12 12:00:00'
+                    },
+                    {
+                        field: 'modified_by',
+                        value: 'Administrator'
+                    },
+                    {
+                        field: 'owner',
+                        value: 'Administrator'
                     }
                 ]
             }

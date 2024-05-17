@@ -2,6 +2,8 @@ import frappe
 from frappe import _
 from frappe.query_builder import Order
 
+from raven.api.raven_users import get_current_raven_user
+
 
 @frappe.whitelist()
 def get_all_channels(hide_archived=True):
@@ -10,6 +12,9 @@ def get_all_channels(hide_archived=True):
 	To be used on the web app.
 	On mobile app, these are separate lists
 	"""
+
+	if hide_archived == "false":
+		hide_archived = False
 
 	# 1. Get "channels" - public, open, private, and DMs
 	channels = get_channel_list(hide_archived)
@@ -31,14 +36,7 @@ def get_all_channels(hide_archived=True):
 	channel_list = [channel for channel in parsed_channels if not channel.get("is_direct_message")]
 	dm_list = [channel for channel in parsed_channels if channel.get("is_direct_message")]
 
-	# Get extra users if dm channels length is less than 5
-	extra_users = []
-	number_of_dms = len(dm_list)
-
-	if number_of_dms < 5:
-		extra_users = get_extra_users(dm_list)
-
-	return {"channels": channel_list, "dm_channels": dm_list, "extra_users": extra_users}
+	return {"channels": channel_list, "dm_channels": dm_list}
 
 
 def get_channel_list(hide_archived=False):
@@ -123,27 +121,6 @@ def get_peer_user_id(channel_id, is_direct_message, is_self_message=False):
 	)
 
 
-def get_extra_users(dm_channels):
-	"""
-	Fetch extra users - only when number of DMs is less than 5.
-	Do not repeat users already in the list
-	"""
-	existing_users = [dm_channel.get("peer_user_id") for dm_channel in dm_channels]
-	existing_users.append("Administrator")
-	existing_users.append("Guest")
-
-	# Skip permissions since we are only fetching user_id, full_name, and user_image and have applied filters
-	return frappe.db.get_all(
-		"User",
-		filters=[
-			["name", "not in", existing_users],
-			["enabled", "=", 1],
-			["Has Role", "role", "=", "Raven User"],
-		],
-		fields=["name", "full_name", "user_image"],
-	)
-
-
 @frappe.whitelist(methods=["POST"])
 def create_direct_message_channel(user_id):
 	"""
@@ -179,3 +156,26 @@ def create_direct_message_channel(user_id):
 		)
 		channel.insert()
 		return channel.name
+
+
+@frappe.whitelist(methods=["POST"])
+def toggle_pinned_channel(channel_id):
+	"""
+	Toggles the pinned status of the channel
+	"""
+	raven_user = get_current_raven_user()
+	pinned_channels = raven_user.pinned_channels or []
+
+	is_pinned = False
+	for pin in pinned_channels:
+		if pin.channel_id == channel_id:
+			raven_user.remove(pin)
+			is_pinned = True
+			break
+
+	if not is_pinned:
+		raven_user.append("pinned_channels", {"channel_id": channel_id})
+
+	raven_user.save()
+
+	return raven_user

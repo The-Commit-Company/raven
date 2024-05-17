@@ -4,11 +4,12 @@ import { lazy, Suspense } from 'react'
 import { Sidebar } from '../components/layout/Sidebar/Sidebar'
 import { ChannelListProvider } from '../utils/channel/ChannelListProvider'
 import { UserListProvider } from '@/utils/users/UserListProvider'
-import { ActiveUsersProvider } from '@/utils/users/ActiveUsersProvider'
 import { hasRavenUserRole } from '@/utils/roles'
 import { FullPageLoader } from '@/components/layout/Loaders'
 import { MobileAppRedirectBanner } from '@/components/layout/AlertBanner'
 import '../components/layout/AlertBanner/styles.css'
+import CommandMenu from '@/components/feature/CommandMenu/CommandMenu'
+import { useFetchActiveUsersRealtime } from '@/hooks/fetchers/useFetchActiveUsers'
 
 const AddRavenUsersPage = lazy(() => import('@/pages/AddRavenUsersPage'))
 
@@ -18,25 +19,7 @@ export const MainPage = () => {
 
     if (isRavenUser) {
         return (
-            <UserListProvider>
-                <ChannelListProvider>
-                    <ActiveUsersProvider>
-                        <div className='web-app'>
-                            <Flex>
-                                <Box className={`w-64 bg-gray-2 border-r-gray-3 border-r dark:bg-gray-1`} left="0" top='0' position="fixed">
-                                    <Sidebar />
-                                </Box>
-                                <Box className='ml-[var(--sidebar-width)] w-[calc(100vw-var(--sidebar-width))] dark:bg-gray-2'>
-                                    <Outlet />
-                                </Box>
-                            </Flex>
-                        </div>
-                        <div className='mobile-app-message'>
-                            <MobileAppRedirectBanner />
-                        </div>
-                    </ActiveUsersProvider>
-                </ChannelListProvider>
-            </UserListProvider>
+            <MainPageContent />
         )
     } else {
         // If the user does not have the Raven User role, then show an error message if the user cannot add more people.
@@ -46,4 +29,28 @@ export const MainPage = () => {
         </Suspense>
     }
 
+}
+
+const MainPageContent = () => {
+
+    useFetchActiveUsersRealtime()
+
+    return <UserListProvider>
+        <ChannelListProvider>
+            <div className='web-app'>
+                <Flex>
+                    <Box className={`w-64 bg-gray-2 border-r-gray-3 border-r dark:bg-gray-1`} left="0" top='0' position="fixed">
+                        <Sidebar />
+                    </Box>
+                    <Box className='ml-[var(--sidebar-width)] w-[calc(100vw-var(--sidebar-width))] dark:bg-gray-2'>
+                        <Outlet />
+                    </Box>
+                </Flex>
+            </div>
+            <div className='mobile-app-message'>
+                <MobileAppRedirectBanner />
+            </div>
+            <CommandMenu />
+        </ChannelListProvider>
+    </UserListProvider>
 }

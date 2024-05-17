@@ -96,7 +96,6 @@ const UserVote = ({ user_id }: { user_id: string }) => {
         <IonLabel>
             <div className='flex flex-col -gap-0.5 text-ellipsis justify-center'>
                 <Text as='span' className='block' weight='medium' size='3'>{user?.full_name}</Text>
-                <Text as='span' size='2' color='gray'>{user?.name}</Text>
             </div>
         </IonLabel>
     </IonItem>
