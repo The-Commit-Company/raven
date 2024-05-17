@@ -15,7 +15,7 @@ class RavenUser(Document):
 	if TYPE_CHECKING:
 		from frappe.types import DF
 
-		availability_status: DF.Literal["Online", "Idle", "Do not disturb", "Invisible"]
+		availability_status: DF.Literal["Available", "Away", "Do not disturb", "Invisible"]
 		bot: DF.Link | None
 		custom_status: DF.Data | None
 		enabled: DF.Check
