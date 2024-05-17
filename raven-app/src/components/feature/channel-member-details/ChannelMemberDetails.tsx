@@ -34,10 +34,9 @@ export const ChannelMemberDetails = ({ channelData, channelMembers, activeUsers,
     )
 
     return (
-        <Flex direction='column' gap='4' className={'h-96'}>
-
-            <Flex gap='2'>
-                <div className={'w-full'}>
+        <Flex direction='column' gap='4' className={'h-[66vh] pb-2 sm:h-96'}>
+            <Flex gap='2' justify='between'>
+                <div className={'w-full sm:w-full'}>
                     <TextField.Root>
                         <TextField.Slot>
                             <BiSearch />
@@ -47,7 +46,7 @@ export const ChannelMemberDetails = ({ channelData, channelMembers, activeUsers,
                 </div>
                 {/* if current user is a channel member and the channel is not a open channel, user can add more members to the channel */}
                 {channelMembers[currentUser] && channelData.type !== 'Open' && channelData.is_archived == 0 &&
-                    <div className={'w-48'}>
+                    <div>
                         <AddMembersButton
                             channelData={channelData}
                             variant='soft'

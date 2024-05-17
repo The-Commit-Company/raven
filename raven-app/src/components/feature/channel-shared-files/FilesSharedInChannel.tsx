@@ -28,12 +28,12 @@ export const FilesSharedInChannel = ({ channelMembers }: FilesSharedInChannelPro
     })
 
     return (
-        <Flex direction='column' gap='4' className={'h-96'}>
+        <Flex direction='column' gap='4' className={'h-[66vh] pb-2 sm:h-96'}>
             {data?.message && data.message.length > 0 &&
                 <Text weight='medium' size='2'>Recently shared files</Text>
             }
             <ErrorBanner error={error} />
-            <Box className={'max-h-96 overflow-hidden overflow-y-scroll'}>
+            <Box className={'sm:max-h-96 overflow-hidden overflow-y-scroll'}>
                 <Flex direction='column' gap='2'>
                     {data?.message && data.message.length > 0 && data.message.map((f: FileMessage | ImageMessage) => {
                         return (

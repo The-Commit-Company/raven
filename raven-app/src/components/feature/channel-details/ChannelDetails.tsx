@@ -4,11 +4,11 @@ import { ChannelListItem } from "@/utils/channel/ChannelListProvider"
 import { ChannelIcon } from "@/utils/layout/channelIcon"
 import { EditChannelNameButton } from "./rename-channel/EditChannelNameButton"
 import { EditDescriptionButton } from "./edit-channel-description/EditDescriptionButton"
-import { useGetUserRecords } from "@/hooks/useGetUserRecords"
 import { LeaveChannelButton } from "./leave-channel/LeaveChannelButton"
 import { Box, Flex, Separator, Text } from "@radix-ui/themes"
 import { DateMonthYear } from "@/utils/dateConversions"
 import { ChannelMembers } from "@/hooks/fetchers/useFetchChannelMembers"
+import { useGetUser } from "@/hooks/useGetUser"
 
 interface ChannelDetailsProps {
     channelData: ChannelListItem,
@@ -20,7 +20,8 @@ export const ChannelDetails = ({ channelData, channelMembers, onClose }: Channel
 
     const { currentUser } = useContext(UserContext)
     const admin = Object.values(channelMembers).find(user => user.is_admin === 1)
-    const users = useGetUserRecords()
+
+    const channelOwner = useGetUser(channelData.owner)
 
     return (
         <Flex direction='column' gap='4' className={'h-96'}>
@@ -34,7 +35,12 @@ export const ChannelDetails = ({ channelData, channelMembers, onClose }: Channel
                             <Text size='2'>{channelData?.channel_name}</Text>
                         </Flex>
                     </Flex>
-                    <EditChannelNameButton channelID={channelData.name} channel_name={channelData.channel_name} channelType={channelData.type} disabled={channelData.is_archived == 1} />
+                    <EditChannelNameButton
+                        channelID={channelData.name}
+                        channel_name={channelData.channel_name}
+                        className=""
+                        channelType={channelData.type}
+                        disabled={channelData.is_archived == 1} />
                 </Flex>
             </Box>
 
@@ -55,7 +61,7 @@ export const ChannelDetails = ({ channelData, channelMembers, onClose }: Channel
                     <Flex direction={'column'} gap='1'>
                         <Text weight='medium' size='2'>Created by</Text>
                         <Flex gap='1'>
-                            {channelData?.owner && <Text size='1'>{users[channelData.owner]?.full_name ?? channelData?.owner}</Text>}
+                            {channelData?.owner && <Text size='1'>{channelOwner?.full_name ?? channelData?.owner}</Text>}
                             {channelData.creation && <Text size='1' color='gray' as='span'>on <DateMonthYear date={channelData?.creation} /></Text>}
                         </Flex>
                     </Flex>

@@ -13,6 +13,7 @@ import { FilesTable } from "./FilesTable"
 import { useParams } from "react-router-dom"
 import { Loader } from "@/components/common/Loader"
 import { FileExtensionIcon } from "@/utils/layout/FileExtIcon"
+import { useIsDesktop, useIsMobile } from "@/hooks/useMediaQuery"
 
 export type FileInChannel = {
     name: string,
@@ -59,20 +60,24 @@ const ViewFilesContent = () => {
         "page_length": selectedPageLength
     })
 
+    const isDesktop = useIsDesktop()
+
     return (
         <div>
             <Flex justify='between' gap='2'>
                 <Dialog.Title>Files shared in this channel</Dialog.Title>
-                <Dialog.Close>
-                    <IconButton size='1' color='gray' variant="soft" aria-label="close dialog">
-                        <IoMdClose />
-                    </IconButton>
-                </Dialog.Close>
+                {isDesktop &&
+                    <Dialog.Close>
+                        <IconButton size='1' color='gray' variant="soft" aria-label="close dialog">
+                            <IoMdClose />
+                        </IconButton>
+                    </Dialog.Close>
+                }
             </Flex>
-            <Flex direction='column' gap='4' pt='4' className='max-h-[75vh] min-h-[75vh]'>
-                <Flex justify='between' gap='2'>
-                    <Flex gap='2' align='center'>
-                        <TextField.Root style={{ width: '400px' }}>
+            <Flex direction='column' gap='4' className='pt-0 sm:pt-4 h-[80vh] sm:max-h-[75vh] sm:min-h-[75vh]'>
+                <Flex justify='between' gap='2' className="flex-col sm:flex-row">
+                    <Flex gap='2' className="flex-col sm:flex-row sm:items-center">
+                        <TextField.Root className="w-full sm:w-[400px]">
                             <TextField.Slot>
                                 <BiSearch />
                             </TextField.Slot>
@@ -85,8 +90,8 @@ const ViewFilesContent = () => {
                             </TextField.Slot>
                         </TextField.Root>
                         <Select.Root value={fileType} onValueChange={setFileType}>
-                            <Select.Trigger placeholder='File Type' style={{ width: '200px' }} />
-                            <Select.Content>
+                            <Select.Trigger placeholder='File Type' className="w-full sm:w-[200px]" />
+                            <Select.Content className="z-50">
                                 <Select.Group>
                                     <Select.Label>File Type</Select.Label>
                                     <Select.Item value='any'>

@@ -5,6 +5,7 @@ import { Button, Dialog } from "@radix-ui/themes"
 import { ButtonProps } from "@radix-ui/themes/dist/cjs/components/button"
 import { DIALOG_CONTENT_CLASS } from "@/utils/layout/dialog"
 import { BiUserPlus } from "react-icons/bi"
+import clsx from "clsx"
 
 interface AddMembersButtonProps extends ButtonProps {
     channelData: ChannelListItem,
@@ -20,8 +21,8 @@ export const AddMembersButton = ({ channelData, ...props }: AddMembersButtonProp
     return (
         <Dialog.Root open={open} onOpenChange={setOpen}>
             <Dialog.Trigger>
-                <Button variant="ghost" size='1' {...props}>
-                    <BiUserPlus size='16' />Add members</Button>
+                <Button variant="ghost" size='1' {...props} className={clsx("text-nowrap", props.className)}>
+                    <BiUserPlus size='18' />Add</Button>
             </Dialog.Trigger>
 
             <Dialog.Content className={DIALOG_CONTENT_CLASS}>

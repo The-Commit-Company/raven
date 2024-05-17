@@ -10,6 +10,8 @@ import { Box, Dialog, Flex, Tabs, Text } from "@radix-ui/themes"
 import { DIALOG_CONTENT_CLASS } from "@/utils/layout/dialog"
 import useFetchChannelMembers from "@/hooks/fetchers/useFetchChannelMembers"
 import useFetchActiveUsers from "@/hooks/fetchers/useFetchActiveUsers"
+import { useIsDesktop } from "@/hooks/useMediaQuery"
+import { Drawer, DrawerContent } from "@/components/layout/Drawer"
 
 interface ViewChannelDetailsModalContentProps {
     open: boolean,
@@ -20,13 +22,27 @@ interface ViewChannelDetailsModalContentProps {
 
 const ViewChannelDetailsModal = ({ open, setOpen, channelData }: ViewChannelDetailsModalContentProps) => {
 
-    return (
-        <Dialog.Root open={open} onOpenChange={setOpen}>
-            <Dialog.Content className={DIALOG_CONTENT_CLASS}>
+    const isDesktop = useIsDesktop()
+
+    if (isDesktop) {
+        return (
+            <Dialog.Root open={open} onOpenChange={setOpen}>
+                <Dialog.Content className={DIALOG_CONTENT_CLASS}>
+                    <ViewChannelDetailsModalContent open={open} setOpen={setOpen} channelData={channelData} />
+                </Dialog.Content>
+            </Dialog.Root>
+        )
+    } else {
+        return <Drawer open={open}
+            onOpenChange={setOpen}
+        >
+            <DrawerContent className="h-[80vh]">
                 <ViewChannelDetailsModalContent open={open} setOpen={setOpen} channelData={channelData} />
-            </Dialog.Content>
-        </Dialog.Root>
-    )
+            </DrawerContent>
+        </Drawer>
+    }
+
+
 }
 
 export default ViewChannelDetailsModal

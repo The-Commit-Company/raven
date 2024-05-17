@@ -80,6 +80,8 @@ export const MessageItem = ({ message, setDeleteMessage, isHighlighted, onReplyM
                             hover:bg-gray-2
                             hover:transition-all
                             hover:delay-100
+                            select-none
+                            sm:select-auto
                             dark:hover:bg-gray-3
                             data-[state=open]:bg-accent-2
                             dark:data-[state=open]:bg-gray-4
