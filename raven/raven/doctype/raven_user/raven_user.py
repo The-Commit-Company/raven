@@ -17,7 +17,9 @@ class RavenUser(Document):
 
 		from raven.raven.doctype.raven_pinned_channels.raven_pinned_channels import RavenPinnedChannels
 
+		availability_status: DF.Literal["Available", "Away", "Do not disturb", "Invisible"]
 		bot: DF.Link | None
+		custom_status: DF.Data | None
 		enabled: DF.Check
 		first_name: DF.Data | None
 		full_name: DF.Data
