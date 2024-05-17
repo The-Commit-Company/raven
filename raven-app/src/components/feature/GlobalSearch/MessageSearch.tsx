@@ -22,7 +22,6 @@ interface Props {
     fromFilter?: string,
     inFilter?: string,
     withFilter?: string,
-    onCommandPaletteClose: () => void
     onClose: () => void
     onToggleSaved: () => void
     isSaved: boolean
@@ -36,7 +35,7 @@ interface MessageSearchResult {
     text: string,
 }
 
-export const MessageSearch = ({ onToggleMyChannels, isOpenMyChannels, onToggleSaved, isSaved, input, fromFilter, inFilter, withFilter, onClose, onCommandPaletteClose }: Props) => {
+export const MessageSearch = ({ onToggleMyChannels, isOpenMyChannels, onToggleSaved, isSaved, input, fromFilter, inFilter, withFilter, onClose }: Props) => {
 
     const [searchText, setSearchText] = useState(input)
     const debouncedText = useDebounce(searchText)
@@ -54,7 +53,6 @@ export const MessageSearch = ({ onToggleMyChannels, isOpenMyChannels, onToggleSa
 
     const handleNavigateToChannel = (channelID: string, baseMessage?: string) => {
         onClose()
-        onCommandPaletteClose()
         navigate(`/channel/${channelID}`, {
             state: {
                 baseMessage

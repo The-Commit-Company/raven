@@ -1,5 +1,4 @@
 import { useContext, useMemo, useState } from 'react'
-import '../../feature/command-palette/styles.css'
 import { UserFields, UserListContext } from '@/utils/users/UserListProvider'
 import { Text, TextField } from '@radix-ui/themes'
 import { UserAvatar } from '@/components/common/UserAvatar'

@@ -5,6 +5,7 @@ import { Badge, Flex, Heading } from "@radix-ui/themes"
 import { UserAvatar } from "@/components/common/UserAvatar"
 import { useMemo } from "react"
 import useFetchChannelMembers from "@/hooks/fetchers/useFetchChannelMembers"
+import ChannelHeaderMenu from "./ChannelHeaderMenu"
 
 interface DMChannelHeaderProps {
     channelData: DMChannelListItem,
@@ -52,8 +53,7 @@ export const DMChannelHeader = ({ channelData }: DMChannelHeaderProps) => {
                 </Heading>
             </Flex>
             <Flex gap='4' align='center'>
-                {/* <ViewFilesButton /> */}
-                {/* <SearchButton /> */}
+                <ChannelHeaderMenu channelData={channelData} />
             </Flex>
         </PageHeader>
     )

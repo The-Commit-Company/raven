@@ -1,7 +1,7 @@
 import { DIALOG_CONTENT_CLASS } from '@/utils/layout/dialog'
 import { Dialog } from '@radix-ui/themes'
 import { useCallback } from 'react'
-import { AddChannelMembersModalContent } from './AddChannelMemberModal'
+import { AddChannelMembersModalContent } from './AddChannelMemberModalContent'
 
 type Props = {
     open: boolean,

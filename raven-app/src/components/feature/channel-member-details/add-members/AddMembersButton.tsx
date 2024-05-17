@@ -1,4 +1,4 @@
-import { AddChannelMembersModalContent } from "./AddChannelMemberModal"
+import { AddChannelMembersModalContent } from "./AddChannelMemberModalContent"
 import { ChannelListItem } from "@/utils/channel/ChannelListProvider"
 import { useState } from "react"
 import { Button, Dialog } from "@radix-ui/themes"

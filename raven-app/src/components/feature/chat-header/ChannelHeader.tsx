@@ -2,7 +2,6 @@ import { PageHeader } from "@/components/layout/Heading/PageHeader"
 import { ChannelIcon } from "@/utils/layout/channelIcon"
 import { ChannelListItem } from "@/utils/channel/ChannelListProvider"
 import { EditChannelNameButton } from "../channel-details/rename-channel/EditChannelNameButton"
-import { SearchButton } from "./SearchButton"
 import { Flex, Heading } from "@radix-ui/themes"
 import ChannelHeaderMenu from "./ChannelHeaderMenu"
 import { ViewChannelMemberAvatars } from "./ViewChannelMemberAvatars"
@@ -26,10 +25,7 @@ export const ChannelHeader = ({ channelData }: ChannelHeaderProps) => {
             </Flex>
             <Flex gap='4' align='center' className="animate-fadein">
                 <ViewChannelMemberAvatars channelData={channelData} />
-                <ChannelHeaderMenu />
-                {/* <ViewFilesButton /> */}
-                <SearchButton />
-
+                <ChannelHeaderMenu channelData={channelData} />
             </Flex>
         </PageHeader>
     )

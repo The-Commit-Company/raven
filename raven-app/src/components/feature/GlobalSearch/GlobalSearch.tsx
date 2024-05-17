@@ -13,17 +13,15 @@ interface GlobalSearchModalProps {
     fromFilter?: string,
     inFilter?: string,
     withFilter?: string,
-    onCommandPaletteClose?: () => void
 }
 
-export default function GlobalSearch({ isOpen, onClose, tabIndex, input, fromFilter, inFilter, withFilter, onCommandPaletteClose }: GlobalSearchModalProps) {
+export default function GlobalSearch({ isOpen, onClose, tabIndex, input, fromFilter, inFilter, withFilter }: GlobalSearchModalProps) {
 
     const [isOpenMyChannels, { toggle: onToggleMyChannels }] = useBoolean()
     const [isSaved, { toggle: onToggleSaved }] = useBoolean()
 
     const onCloseAll = () => {
         onClose()
-        onCommandPaletteClose && onCommandPaletteClose()
     }
     const onOpenChange = (open: boolean) => {
         if (!open) {
@@ -48,7 +46,7 @@ export default function GlobalSearch({ isOpen, onClose, tabIndex, input, fromFil
                         </Tabs.List>
                         <Box pt="3" pb="2">
                             <Tabs.Content value="0">
-                                {onCommandPaletteClose && <MessageSearch onToggleMyChannels={onToggleMyChannels} isOpenMyChannels={isOpenMyChannels} onToggleSaved={onToggleSaved} isSaved={isSaved} input={input} fromFilter={fromFilter} inFilter={inFilter} withFilter={withFilter} onCommandPaletteClose={onCommandPaletteClose} onClose={onClose} />}
+                                <MessageSearch onToggleMyChannels={onToggleMyChannels} isOpenMyChannels={isOpenMyChannels} onToggleSaved={onToggleSaved} isSaved={isSaved} input={input} fromFilter={fromFilter} inFilter={inFilter} withFilter={withFilter} onClose={onClose} />
                             </Tabs.Content>
                             <Tabs.Content value="1">
                                 <FileSearch onToggleMyChannels={onToggleMyChannels} isOpenMyChannels={isOpenMyChannels} onToggleSaved={onToggleSaved} isSaved={isSaved} input={input} fromFilter={fromFilter} inFilter={inFilter} withFilter={withFilter} />
