@@ -80,7 +80,7 @@ const ReactionButton = ({ reaction, onReactionClick, currentUser, allUsers }: Re
                 onClick={onClick}
                 radius='large'
                 className={clsx("w-fit sm:h-full text-xs py-0.5 cursor-pointer sm:hover:bg-white sm:dark:hover:bg-gray-10",
-                    currentUserReacted ? "bg-accent-4 dark:bg-gray-8" : "bg-gray-3 dark:bg-gray-7")}>
+                    currentUserReacted ? "bg-accent-4 dark:bg-gray-6" : "bg-gray-3 dark:bg-gray-4")}>
                 <Text as='span' className={clsx("w-fit px-2 text-gray-12")} weight='medium'>
                     {emoji} {count}
                 </Text>
