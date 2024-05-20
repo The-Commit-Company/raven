@@ -91,7 +91,7 @@ export const TiptapRenderer = ({ message, user, isScrolling = false, isTruncated
       Italic,
       Image.configure({
         HTMLAttributes: {
-          class: 'w-full h-auto'
+          class: 'w-full max-w-48 sm:max-w-96 mt-1 h-auto'
         },
         inline: true
       }),
