@@ -9,11 +9,14 @@ interface ThemeProviderProps extends ThemeProps {
 }
 export const ThemeProvider: React.FC<PropsWithChildren<ThemeProviderProps>> = ({ children, toggleTheme, ...props }) => {
     useEffect(() => {
+        const metaThemeColor = document.querySelector("meta[name=theme-color]");
         switch (props.appearance) {
             case 'light': {
                 if (document?.body) {
                     document.body.classList.remove('light', 'dark');
                     document.body.classList.add('light');
+                    metaThemeColor?.setAttribute('content', '#FFFFFF');
+
                 }
 
                 break;
@@ -22,6 +25,7 @@ export const ThemeProvider: React.FC<PropsWithChildren<ThemeProviderProps>> = ({
                 if (document?.body) {
                     document.body.classList.remove('light', 'dark');
                     document.body.classList.add('dark');
+                    metaThemeColor?.setAttribute('content', '#191919');
                 }
 
                 break;

@@ -475,7 +475,7 @@ const Tiptap = ({ slotBefore, fileProps, onMessageSend, replyMessage, clearReply
 
         )
     } else {
-        return <Box className='pt-2'>
+        return <Box className='pt-2 pb-6'>
             <EditorContext.Provider value={{ editor }}>
                 {slotBefore}
                 <Flex align='end' gap='2' className='relative'>
