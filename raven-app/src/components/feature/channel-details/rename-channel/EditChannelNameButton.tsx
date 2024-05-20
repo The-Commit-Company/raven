@@ -5,6 +5,8 @@ import { BiEdit } from 'react-icons/bi'
 import { IconButtonProps } from '@radix-ui/themes/dist/cjs/components/icon-button'
 import { useState } from "react"
 import { DIALOG_CONTENT_CLASS } from '@/utils/layout/dialog'
+import { useIsDesktop } from '@/hooks/useMediaQuery'
+import { DrawerContent, DrawerTrigger, Drawer } from '@/components/layout/Drawer'
 
 interface EditChannelNameButtonProps extends IconButtonProps {
     channelID: string,
@@ -20,9 +22,34 @@ export const EditChannelNameButton = ({ channelID, channel_name, channelType, ..
         setOpen(false)
     }
 
-    return (
-        <Dialog.Root open={open} onOpenChange={setOpen}>
-            <Dialog.Trigger>
+    const isDesktop = useIsDesktop()
+
+    if (isDesktop) {
+        return (
+            <Dialog.Root open={open} onOpenChange={setOpen}>
+                <Dialog.Trigger>
+                    <IconButton
+                        variant="ghost"
+                        color="gray"
+                        className='invisible group-hover:visible'
+                        aria-label="Click to edit channel name"
+                        title='Edit channel name'
+                        {...props}>
+                        <BiEdit size='14' />
+                    </IconButton>
+                </Dialog.Trigger>
+                <Dialog.Content className={DIALOG_CONTENT_CLASS}>
+                    <RenameChannelModalContent
+                        channelID={channelID}
+                        channelName={channel_name}
+                        onClose={onClose}
+                        type={channelType} />
+                </Dialog.Content>
+            </Dialog.Root>
+        )
+    } else {
+        return <Drawer open={open} onOpenChange={setOpen}>
+            <DrawerTrigger asChild>
                 <IconButton
                     variant="ghost"
                     color="gray"
@@ -32,14 +59,18 @@ export const EditChannelNameButton = ({ channelID, channel_name, channelType, ..
                     {...props}>
                     <BiEdit size='14' />
                 </IconButton>
-            </Dialog.Trigger>
-            <Dialog.Content className={DIALOG_CONTENT_CLASS}>
-                <RenameChannelModalContent
-                    channelID={channelID}
-                    channelName={channel_name}
-                    onClose={onClose}
-                    type={channelType} />
-            </Dialog.Content>
-        </Dialog.Root>
-    )
+            </DrawerTrigger>
+            <DrawerContent>
+                <div className='pb-16 min-h-48 px-1 overflow-auto'>
+                    <RenameChannelModalContent
+                        channelID={channelID}
+                        channelName={channel_name}
+                        onClose={onClose}
+                        type={channelType} />
+                </div>
+            </DrawerContent>
+        </Drawer>
+    }
+
+
 }

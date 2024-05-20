@@ -28,7 +28,7 @@ export const FilesSharedInChannel = ({ channelMembers }: FilesSharedInChannelPro
     })
 
     return (
-        <Flex direction='column' gap='4' className={'h-[66vh] pb-2 sm:h-96'}>
+        <Flex direction='column' gap='4' className={'h-[66vh] pb-8 sm:h-96'}>
             {data?.message && data.message.length > 0 &&
                 <Text weight='medium' size='2'>Recently shared files</Text>
             }

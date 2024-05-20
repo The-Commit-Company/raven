@@ -36,7 +36,7 @@ const ViewChannelDetailsModal = ({ open, setOpen, channelData }: ViewChannelDeta
         return <Drawer open={open}
             onOpenChange={setOpen}
         >
-            <DrawerContent className="h-[80vh]">
+            <DrawerContent>
                 <ViewChannelDetailsModalContent open={open} setOpen={setOpen} channelData={channelData} />
             </DrawerContent>
         </Drawer>

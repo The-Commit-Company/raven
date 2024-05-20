@@ -24,7 +24,7 @@ export const ChannelDetails = ({ channelData, channelMembers, onClose }: Channel
     const channelOwner = useGetUser(channelData.owner)
 
     return (
-        <Flex direction='column' gap='4' className={'h-96'}>
+        <Flex direction='column' gap='4' className={'h-[66vh] pb-2 sm:h-96'}>
 
             <Box className={'p-4 rounded-md border border-gray-6'}>
                 <Flex justify={'between'}>
