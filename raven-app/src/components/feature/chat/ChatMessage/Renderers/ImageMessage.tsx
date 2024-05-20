@@ -1,12 +1,14 @@
 import { getFileName } from '@/utils/operations'
 import { ImageMessage } from '../../../../../../../types/Messaging/Message'
 import { Box, Button, Dialog, Flex, Link } from '@radix-ui/themes'
-import { memo, useState } from 'react'
+import { Suspense, lazy, memo, useState } from 'react'
 import { DIALOG_CONTENT_CLASS } from '@/utils/layout/dialog'
 import { BiDownload } from 'react-icons/bi'
 import { UserFields } from '@/utils/users/UserListProvider'
 import { DateMonthAtHourMinuteAmPm } from '@/utils/dateConversions'
 import { clsx } from 'clsx'
+
+const ImageViewer = lazy(() => import('@/components/common/ImageViewer'))
 
 interface ImageMessageProps {
     message: ImageMessage,
@@ -24,6 +26,7 @@ export const ImageMessageBlock = memo(({ message, isScrolling = false, user }: I
     const width = message.thumbnail_width ?? '300'
 
     const fileName = getFileName(message.file)
+
     return (
         <Flex direction='column' gap='1'>
             <Link
@@ -71,18 +74,29 @@ export const ImageMessageBlock = memo(({ message, isScrolling = false, user }: I
             </Box>
             {!isScrolling &&
                 <Dialog.Root open={isOpen} onOpenChange={setIsOpen}>
-                    <Dialog.Content className={clsx(DIALOG_CONTENT_CLASS, 'max-w-[88vw]')}>
+                    <Dialog.Content className={clsx(DIALOG_CONTENT_CLASS, 'sm:max-w-[88vw]')}>
                         <Dialog.Title size='3'>{fileName}</Dialog.Title>
                         <Dialog.Description color='gray' size='1'>{user?.full_name ?? message.owner} on <DateMonthAtHourMinuteAmPm date={message.creation} /></Dialog.Description>
-                        <Box my='4'>
-                            <img
+                        <Box my='4' className='w-full mx-auto items-center flex justify-center'>
+                            <Suspense fallback={<img
                                 src={message.file}
                                 loading='lazy'
                                 width='100%'
                                 // height='300'
                                 className='rounded-md shadow-md object-contain max-h-[600px]'
                                 alt={`Image file sent by ${message.owner} at ${message.creation}`}
-                            />
+                            />}>
+                                <ImageViewer>
+                                    <img
+                                        src={message.file}
+                                        loading='lazy'
+                                        width='100%'
+                                        className='rounded-md shadow-md object-contain max-h-[90vh] sm:max-h-[600px]'
+                                        alt={`Image file sent by ${message.owner} at ${message.creation}`}
+                                    />
+                                </ImageViewer>
+                            </Suspense>
+
                         </Box>
                         <Flex justify='end' gap='2' mt='3'>
                             <Button variant='soft' color='gray' asChild>
