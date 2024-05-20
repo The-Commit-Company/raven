@@ -475,7 +475,7 @@ const Tiptap = ({ slotBefore, fileProps, onMessageSend, replyMessage, clearReply
 
         )
     } else {
-        return <Box className='pt-2 pb-6'>
+        return <Box className='pt-2 pb-8 w-full fixed bottom-0 left-0 px-4 bg-white dark:bg-gray-2 z-50 border-t border-t-gray-3 dark:border-t-gray-3'>
             <EditorContext.Provider value={{ editor }}>
                 {slotBefore}
                 <Flex align='end' gap='2' className='relative'>
@@ -504,7 +504,6 @@ const Tiptap = ({ slotBefore, fileProps, onMessageSend, replyMessage, clearReply
                         messageSending={messageSending}
                         setContent={setContent} />
                 </Flex>
-                {/* {editor?.isFocused && <TextFormattingMenu />} */}
                 {/* <ToolPanel>
                     <TextFormattingMenu />
                     <RightToolbarButtons fileProps={fileProps} setContent={setContent} sendMessage={onMessageSend} messageSending={messageSending} />

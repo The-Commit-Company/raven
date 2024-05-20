@@ -41,7 +41,7 @@
         padding: 8px;
         width: calc(100vw - 80px);
         max-height: 300px;
-        border: 1.5px solid var(--gray-6);
+        border: 1.5px solid var(--gray-4);
         border-radius: var(--radius-3);
     }
 
