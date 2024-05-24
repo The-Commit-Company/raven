@@ -1,8 +1,8 @@
 import { useTheme } from '@/ThemeProvider'
-import { CommandList } from '@/components/feature/CommandMenu/CommandMenu'
+import { commandMenuOpenAtom } from '@/components/feature/CommandMenu/CommandMenu'
 import { Flex, IconButton, Text } from '@radix-ui/themes'
 import { BiCommand, BiMoon, BiSun } from 'react-icons/bi'
-import { Drawer, DrawerContent, DrawerTrigger } from '../Drawer'
+import { useSetAtom } from 'jotai'
 
 export const SidebarHeader = () => {
     return (
@@ -25,27 +25,20 @@ export const SidebarHeader = () => {
 
 const SearchButton = () => {
 
-    return (
-        <Drawer>
-            <DrawerTrigger asChild>
-                <IconButton
-                    size={{ initial: '2', md: '1' }}
-                    aria-label='Open command menu'
-                    title='Open command menu'
-                    color='gray'
-                    className='text-gray-11 sm:hover:text-gray-12 sm:hidden'
-                    variant='ghost'
-                >
-                    <BiCommand className='text-lg' />
-                </IconButton>
-            </DrawerTrigger>
-            <DrawerContent>
-                <div className='min-h-[80vh]'>
-                    <CommandList />
-                </div>
+    const setOpen = useSetAtom(commandMenuOpenAtom)
 
-            </DrawerContent>
-        </Drawer>
+    return (
+        <IconButton
+            size={{ initial: '2', md: '1' }}
+            aria-label='Open command menu'
+            title='Open command menu'
+            color='gray'
+            className='text-gray-11 sm:hover:text-gray-12 sm:hidden'
+            variant='ghost'
+            onClick={() => setOpen(true)}
+        >
+            <BiCommand className='text-lg' />
+        </IconButton>
     )
 }
 

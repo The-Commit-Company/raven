@@ -114,6 +114,10 @@
         max-height: 80vh;
     }
 
+    .command-menu [cmdk-item]:hover {
+        background: transparent;
+    }
+
 }
 
 .command-menu [cmdk-list]::-webkit-scrollbar {

@@ -10,10 +10,9 @@ import { BiCog, BiFile, BiMoon, BiSearch, BiSmile } from 'react-icons/bi'
 import ArchivedChannelList from './ArchivedChannelList'
 import { atom, useAtom } from 'jotai'
 import { useIsDesktop } from '@/hooks/useMediaQuery'
+import { Drawer, DrawerContent } from '@/components/layout/Drawer'
 
 export const commandMenuOpenAtom = atom(false)
-
-const ICON_SIZE = '18'
 
 const CommandMenu = () => {
     const [open, setOpen] = useAtom(commandMenuOpenAtom)
@@ -32,14 +31,29 @@ const CommandMenu = () => {
         return () => document.removeEventListener('keydown', down)
     }, [])
 
+    const isDesktop = useIsDesktop()
 
-    return (
-        <Dialog.Root open={open} onOpenChange={setOpen}>
-            <Dialog.Content className={clsx(DIALOG_CONTENT_CLASS, 'p-4 rounded-md')}>
-                <CommandList />
-            </Dialog.Content>
-        </Dialog.Root>
-    )
+    if (isDesktop) {
+        return (
+            <Dialog.Root open={open} onOpenChange={setOpen}>
+                <Dialog.Content className={clsx(DIALOG_CONTENT_CLASS, 'p-4 rounded-md')}>
+                    <CommandList />
+                </Dialog.Content>
+            </Dialog.Root>
+        )
+    } else {
+        return <Drawer open={open} onOpenChange={setOpen}>
+            <DrawerContent>
+                <div className='min-h-[80vh]'>
+                    <CommandList />
+                </div>
+
+            </DrawerContent>
+        </Drawer>
+    }
+
+
+
 
 
 
