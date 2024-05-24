@@ -8,7 +8,6 @@ import "cal-sans";
 import { ThemeProvider } from './ThemeProvider'
 import { Toaster } from 'sonner'
 import { useStickyState } from './hooks/useStickyState'
-import { Sidebar } from './components/layout/Sidebar'
 import MobileTabsPage from './pages/MobileTabsPage'
 
 

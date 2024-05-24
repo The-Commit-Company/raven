@@ -6,6 +6,8 @@ import { UserAvatar } from "@/components/common/UserAvatar"
 import { useMemo } from "react"
 import useFetchChannelMembers from "@/hooks/fetchers/useFetchChannelMembers"
 import ChannelHeaderMenu from "./ChannelHeaderMenu"
+import { BiChevronLeft } from "react-icons/bi"
+import { Link } from "react-router-dom"
 
 interface DMChannelHeaderProps {
     channelData: DMChannelListItem,
@@ -38,6 +40,9 @@ export const DMChannelHeader = ({ channelData }: DMChannelHeaderProps) => {
     return (
         <PageHeader>
             <Flex gap='3' align='center'>
+                <Link to='/channel' className="block bg-transparent hover:bg-transparent active:bg-transparent sm:hidden">
+                    <BiChevronLeft size='24' className="block text-gray-12" />
+                </Link>
                 <UserAvatar
                     key={peer}
                     alt={fullName}
