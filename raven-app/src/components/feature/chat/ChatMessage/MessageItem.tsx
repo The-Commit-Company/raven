@@ -24,6 +24,7 @@ import { RiRobot2Fill } from 'react-icons/ri'
 import { useIsDesktop } from '@/hooks/useMediaQuery'
 import { useDoubleTap } from 'use-double-tap'
 import useOutsideClick from '@/hooks/useOutsideClick'
+import { getStatusText } from '../../userSettings/SetUserAvailabilityMenu'
 
 interface MessageBlockProps {
     message: Message,
@@ -211,16 +212,31 @@ interface UserProps {
 export const MessageSenderAvatar = memo(({ user, userID, isActive = false }: UserProps) => {
 
     const alt = user?.full_name ?? userID
-
     const isBot = user?.type === 'Bot'
     const color = useMemo(() => generateAvatarColor(user?.full_name ?? userID), [user?.full_name, userID])
+    const availabilityStatus = user?.availability_status
+
     return <Theme accentColor={color}><span className="relative inline-block">
         <Avatar src={user?.user_image} alt={user?.full_name ?? userID} loading='lazy' fallback={getInitials(alt)} size={'2'} radius={'medium'} />
-        {isActive &&
+
+        {availabilityStatus && availabilityStatus === 'Away' &&
+            <span className={clsx("absolute block translate-x-1/2 translate-y-1/2 transform rounded-full", 'bottom-0.5 right-0.5')}>
+                <span className="block h-2 w-2 rounded-full border border-slate-2 bg-[#FFAA33] shadow-md" />
+            </span>
+        }
+
+        {availabilityStatus && availabilityStatus === 'Do not disturb' &&
+            <span className={clsx("absolute block translate-x-1/2 translate-y-1/2 transform rounded-full", 'bottom-0.5 right-0.5')}>
+                <span className="block h-2 w-2 rounded-full border border-slate-2 bg-[#D22B2B] shadow-md" />
+            </span>
+        }
+
+        {availabilityStatus !== 'Away' && availabilityStatus !== 'Do not disturb' && isActive &&
             <span className={clsx("absolute block translate-x-1/2 translate-y-1/2 transform rounded-full", 'bottom-0.5 right-0.5')}>
                 <span className="block h-2 w-2 rounded-full border border-slate-2 bg-green-600 shadow-md" />
             </span>
         }
+
         {isBot && <span className="absolute block translate-x-1/2 translate-y-1/2 transform rounded-full bottom-0.5 right-0.5">
             <RiRobot2Fill className="text-accent-11 dark:text-accent-11" size="1rem" />
         </span>}
@@ -230,9 +246,11 @@ export const MessageSenderAvatar = memo(({ user, userID, isActive = false }: Use
 
 export const UserHoverCard = memo(({ user, userID, isActive }: UserProps) => {
 
-    const { isBot, fullName, userImage } = useMemo(() => {
+    const { isBot, fullName, userImage, availabilityStatus, customStatus } = useMemo(() => {
         return {
             fullName: user?.full_name ?? userID,
+            availabilityStatus: user?.availability_status,
+            customStatus: user?.custom_status,
             userImage: user?.user_image ?? '',
             isBot: user?.type === 'Bot'
         }
@@ -249,12 +267,17 @@ export const UserHoverCard = memo(({ user, userID, isActive }: UserProps) => {
                 <Flex direction='column'>
                     <Flex gap='3' align='center'>
                         <Text className='text-gray-12' weight='bold' size='3'>{fullName}</Text>
-                        {isActive && <Flex gap='1' align='center'>
-                            <BsFillCircleFill className='text-green-500' size='8' />
+                        {/* if availabilityStatus is set to 'Invisible', don't show the status */}
+                        {availabilityStatus && availabilityStatus !== 'Invisible' && <Flex className='text-gray-10 text-xs flex gap-1 items-center'>
+                            {getStatusText(availabilityStatus)}
+                        </Flex>}
+                        {/* only show user active status if the user has not explicitly set their availability status */}
+                        {!availabilityStatus && isActive && <Flex gap='1' align='center'>
+                            <BsFillCircleFill color={'green'} size='8' />
                             <Text className='text-gray-10' size='1'>Online</Text>
                         </Flex>}
                     </Flex>
-                    {user && !isBot && <Text className='text-gray-11' size='1'>{user?.name}</Text>}
+                    {customStatus ? <Text className='text-gray-11' size='1'>{customStatus}</Text> : user && !isBot && <Text className='text-gray-11' size='1'>{user?.name}</Text>}
                 </Flex>
             </Flex>
         </HoverCard.Content>

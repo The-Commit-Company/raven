@@ -10,6 +10,7 @@ import { BsEmojiSmile } from 'react-icons/bs'
 import { SetCustomStatusModal } from '@/components/feature/userSettings/SetCustomStatusModal'
 import { FiSettings } from 'react-icons/fi'
 import { SetUserAvailabilityMenu } from '@/components/feature/userSettings/SetUserAvailabilityMenu'
+import useCurrentRavenUser from '@/hooks/useCurrentRavenUser'
 
 export const SidebarFooter = ({ isSettingsPage = false }: { isSettingsPage?: boolean }) => {
 
@@ -20,6 +21,8 @@ export const SidebarFooter = ({ isSettingsPage = false }: { isSettingsPage?: boo
     const [isUserStatusModalOpen, setUserStatusModalOpen] = useState(false)
 
     const canAddUsers = isSystemManager()
+
+    const { myProfile } = useCurrentRavenUser()
 
     return (
         <Flex
@@ -35,7 +38,7 @@ export const SidebarFooter = ({ isSettingsPage = false }: { isSettingsPage?: boo
                 <Separator size='4' className={`bg-gray-4 dark:bg-gray-6`} />
                 <Flex justify="between" align='center' px='1'>
                     <Flex gap='2' align='center'>
-                        <UserAvatar src={userData.user_image} alt={userData.full_name} isActive />
+                        <UserAvatar src={userData.user_image} alt={userData.full_name} availabilityStatus={myProfile?.availability_status} isActive />
                         <Text size="2">{userData.full_name}</Text>
                     </Flex>
                     <DropdownMenu.Root>

@@ -6,7 +6,8 @@ export type Member = {
     user_image: string | null
     first_name: string
     is_admin: 1 | 0,
-    type?: 'User' | 'Bot'
+    type?: 'User' | 'Bot',
+    availability_status?: 'Available' | 'Away' | 'Do not disturb' | 'Invisible' | ''
 }
 
 export type ChannelMembers = {

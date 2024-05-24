@@ -1,4 +1,4 @@
-import { useContext, useDeferredValue, useMemo, useState } from "react"
+import { useContext, useMemo, useState } from "react"
 import { useDebounce } from "../../../hooks/useDebounce"
 import { UserContext } from "../../../utils/auth/UserProvider"
 import { ChannelListItem } from "@/utils/channel/ChannelListProvider"
@@ -96,7 +96,7 @@ const MemberList = ({ channelData, channelMembers, activeUsers, updateMembers, i
                         <Box key={member.name} className={'hover:bg-slate-3 rounded-md'}>
                             <Flex justify='between' className={'pr-3'}>
                                 <Flex className={'p-2'} gap='3'>
-                                    <UserAvatar src={member.user_image ?? ''} alt={member.full_name} size='2' isActive={activeUsers.includes(member.name)} />
+                                    <UserAvatar src={member.user_image ?? ''} alt={member.full_name} size='2' isActive={activeUsers.includes(member.name)} availabilityStatus={member.availability_status} />
                                     <Flex gap='2' align={'center'}>
                                         <Text weight='medium'>{member.first_name}</Text>
                                         {activeUsers.includes(member.name) ? (

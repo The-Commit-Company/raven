@@ -1,108 +1,95 @@
+import EmojiPicker from '@/components/common/EmojiPicker/EmojiPicker'
 import { ErrorText } from '@/components/common/Form'
 import { Loader } from '@/components/common/Loader'
 import { ErrorBanner } from '@/components/layout/AlertBanner'
+import useCurrentRavenUser from '@/hooks/useCurrentRavenUser'
 import { useUserData } from '@/hooks/useUserData'
-import { Button, Dialog, Flex, TextField, Text } from '@radix-ui/themes'
-import { useFrappeGetCall, useFrappeUpdateDoc } from 'frappe-react-sdk'
+import { Button, Dialog, Flex, TextField, Text, IconButton } from '@radix-ui/themes'
+import { useFrappePostCall } from 'frappe-react-sdk'
+import { useCallback, useState } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
+import { BiSmile } from 'react-icons/bi'
 import { toast } from 'sonner'
-interface SetCustomStatusForm {
-    custom_status: string
-}
 
 const SetCustomStatusContent = ({ onClose }: { onClose: VoidFunction }) => {
 
     const userData = useUserData()
+    const { myProfile, mutate } = useCurrentRavenUser()
 
-    const { data, error } = useFrappeGetCall<{
-        message: {
-            "custom_status": string | null,
+    const methods = useForm({
+        defaultValues: {
+            custom_status: myProfile?.custom_status ?? ''
         }
-    }>('frappe.client.get_value', {
-        doctype: 'Raven User',
-        filters: { name: userData.name },
-        fieldname: JSON.stringify(['custom_status'])
-    }, undefined, {
-        revalidateOnFocus: false
     })
+    const { register, handleSubmit, formState: { errors } } = methods
+
+    const { call, error, loading } = useFrappePostCall('frappe.client.set_value')
+    const onSubmit = useCallback((data: { custom_status: string }) => {
+        call({
+            doctype: 'Raven User',
+            name: userData.name,
+            fieldname: 'custom_status',
+            value: data.custom_status
+        }).then(() => {
+            toast.success("User status updated")
+            mutate()
+            onClose()
+        })
+    }, [userData.name])
+
+    const onEmojiSelect = (emoji: string) => {
+        methods.setValue('custom_status', `${methods.getValues('custom_status')} ${emoji}`)
+    }
+
+    const [isEmojiPickerOpen, setEmojiPickerOpen] = useState(false)
 
     return (
         <>
             <Dialog.Title>Set a custom status</Dialog.Title>
+            <FormProvider {...methods}>
+                <form onSubmit={handleSubmit(onSubmit)}>
 
-            <ErrorBanner error={error} />
+                    <ErrorBanner error={error} />
 
-            {data && data.message && <SetCustomStatusForm
-                user_id={userData.name}
-                custom_status={data.message.custom_status ?? ''}
-                onClose={onClose} />}
+                    <Flex direction={'column'} gap={'2'}>
+                        <Text size='2' color='gray'>Share what you're up to</Text>
+                        <Flex align={'center'} gap='3'>
+                            <TextField.Root className={'w-96'}>
+                                <TextField.Input
+                                    id="custom_status"
+                                    autoFocus
+                                    placeholder='e.g. Out of Office'
+                                    maxLength={140}
+                                    {...register('custom_status', {
+                                        maxLength: {
+                                            value: 140,
+                                            message: "Status cannot be more than 140 characters."
+                                        }
+                                    })}
+                                    aria-invalid={errors.custom_status ? 'true' : 'false'}
+                                />
+                                {errors.custom_status && <ErrorText>{errors.custom_status.message}</ErrorText>}
+                            </TextField.Root>
+                            <IconButton type='button' className={'rounded-full'} onClick={() => setEmojiPickerOpen(!isEmojiPickerOpen)} variant='ghost' color='gray'>
+                                <BiSmile size='18' />
+                            </IconButton>
+                        </Flex>
+                        {isEmojiPickerOpen && <EmojiPicker onSelect={onEmojiSelect} />}
+                    </Flex>
+
+                    <Flex gap="3" mt="6" justify="end" align='center'>
+                        <Dialog.Close disabled={loading}>
+                            <Button variant="soft" color="gray">Cancel</Button>
+                        </Dialog.Close>
+                        <Button type='submit' disabled={loading}>
+                            {loading && <Loader />}
+                            {loading ? "Saving" : "Save"}
+                        </Button>
+                    </Flex>
+                </form>
+            </FormProvider>
         </>
     )
 }
 
 export default SetCustomStatusContent
-
-interface SetCustomStatusFormProps {
-    user_id: string,
-    custom_status: string,
-    onClose: () => void
-}
-
-const SetCustomStatusForm = ({ user_id, custom_status, onClose }: SetCustomStatusFormProps) => {
-
-    const methods = useForm<SetCustomStatusForm>({
-        defaultValues: {
-            custom_status: custom_status ?? '',
-        }
-    })
-    const { register, handleSubmit, formState: { errors } } = methods
-    const { updateDoc, loading: updatingDoc, error: errorUpdatingDoc } = useFrappeUpdateDoc()
-
-    const onSubmit = (data: SetCustomStatusForm) => {
-        updateDoc("Raven User", user_id, {
-            custom_status: data.custom_status
-        }).then(() => {
-            toast.success("User status updated")
-            onClose()
-        })
-    }
-
-    return (
-        <FormProvider {...methods}>
-            <form onSubmit={handleSubmit(onSubmit)}>
-
-                <ErrorBanner error={errorUpdatingDoc} />
-
-                <Flex direction={'column'} gap={'2'}>
-                    <Text size='2' color='gray'>Share what you're up to</Text>
-                    <TextField.Root>
-                        <TextField.Input
-                            id="custom_status"
-                            autoFocus
-                            placeholder='e.g. Out of Office'
-                            maxLength={140}
-                            {...register('custom_status', {
-                                maxLength: {
-                                    value: 140,
-                                    message: "Status cannot be more than 140 characters."
-                                }
-                            })}
-                            aria-invalid={errors.custom_status ? 'true' : 'false'}
-                        />
-                        {errors?.custom_status && <ErrorText>{errors.custom_status?.message}</ErrorText>}
-                    </TextField.Root>
-                </Flex>
-
-                <Flex gap="3" mt="6" justify="end" align='center'>
-                    <Dialog.Close disabled={updatingDoc}>
-                        <Button variant="soft" color="gray">Cancel</Button>
-                    </Dialog.Close>
-                    <Button type='submit' disabled={updatingDoc}>
-                        {updatingDoc && <Loader />}
-                        {updatingDoc ? "Saving" : "Save"}
-                    </Button>
-                </Flex>
-            </form>
-        </FormProvider>
-    )
-}

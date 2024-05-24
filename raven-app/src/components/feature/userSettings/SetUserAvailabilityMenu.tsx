@@ -9,7 +9,7 @@ import { useUserData } from '@/hooks/useUserData'
 import { GrPowerReset } from 'react-icons/gr'
 import useCurrentRavenUser from '@/hooks/useCurrentRavenUser'
 
-type AvailabilityStatus = 'Available' | 'Away' | 'Do not disturb' | 'Invisible' | ''
+export type AvailabilityStatus = 'Available' | 'Away' | 'Do not disturb' | 'Invisible' | ''
 
 export const SetUserAvailabilityMenu = () => {
 
@@ -28,21 +28,6 @@ export const SetUserAvailabilityMenu = () => {
             mutate()
         })
     }, [userData.name])
-
-    const getStatusText = (status: AvailabilityStatus) => {
-        switch (status) {
-            case 'Available':
-                return <><BiSolidCircle color={'green'} fontSize={'0.7rem'} /> Available</>
-            case 'Away':
-                return <><MdWatchLater className={'text-amber-400'} fontSize={'0.75rem'} /> Away</>
-            case 'Do not disturb':
-                return <><FaCircleMinus className={'text-red-600'} fontSize={'0.6rem'} /> Do not disturb</>
-            case 'Invisible':
-                return <><FaCircleDot className={'text-gray-400'} fontSize={'0.6rem'} /> Invisible</>
-            default:
-                return <><BiSolidCircle color={'green'} fontSize={'0.7rem'} /> Available</>
-        }
-    }
 
     return (
         <DropdownMenu.Sub>
@@ -64,9 +49,24 @@ export const SetUserAvailabilityMenu = () => {
                     {getStatusText('Invisible')}
                 </DropdownMenu.Item>
                 <DropdownMenu.Item className={'flex justify-normal gap-2'} color='gray' onClick={() => setAvailabilityStatus('')}>
-                    <GrPowerReset className={'text-gray-800'} fontSize={'0.65rem'} /> Reset
+                    <GrPowerReset fontSize={'0.7rem'} /> Reset
                 </DropdownMenu.Item>
             </DropdownMenu.SubContent>
         </DropdownMenu.Sub>
     )
+}
+
+export const getStatusText = (status: AvailabilityStatus) => {
+    switch (status) {
+        case 'Available':
+            return <><BiSolidCircle color={'green'} fontSize={'0.7rem'} /> Available</>
+        case 'Away':
+            return <><MdWatchLater color={'#FFAA33'} fontSize={'0.8rem'} /> Away</>
+        case 'Do not disturb':
+            return <><FaCircleMinus color={'#D22B2B'} fontSize={'0.7rem'} /> Do not disturb</>
+        case 'Invisible':
+            return <><FaCircleDot className={'text-gray-400'} fontSize={'0.7rem'} /> Invisible</>
+        default:
+            return <><BiSolidCircle color={'green'} fontSize={'0.7rem'} /> Available</>
+    }
 }

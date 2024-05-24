@@ -6,6 +6,7 @@ import { UserAvatar } from "@/components/common/UserAvatar"
 import { useMemo } from "react"
 import useFetchChannelMembers from "@/hooks/fetchers/useFetchChannelMembers"
 import ChannelHeaderMenu from "./ChannelHeaderMenu"
+import { useGetUser } from "@/hooks/useGetUser"
 
 interface DMChannelHeaderProps {
     channelData: DMChannelListItem,
@@ -35,6 +36,8 @@ export const DMChannelHeader = ({ channelData }: DMChannelHeaderProps) => {
 
     }, [channelMembers, peer])
 
+    const user = useGetUser(peer)
+
     return (
         <PageHeader>
             <Flex gap='3' align='center'>
@@ -43,12 +46,15 @@ export const DMChannelHeader = ({ channelData }: DMChannelHeaderProps) => {
                     alt={fullName}
                     src={userImage}
                     isActive={isActive}
+                    availabilityStatus={user?.availability_status}
                     skeletonSize='6'
                     isBot={isBot}
                     size='2' />
                 <Heading size='5'>
                     <div className="flex items-center gap-2">
-                        {fullName} {isBot && <Badge color='gray' className='font-semibold px-1.5 py-0.5'>Bot</Badge>}
+                        {fullName}
+                        {user?.custom_status && <Badge color='gray' className='font-semibold px-1.5 py-0.5'>{user.custom_status}</Badge>}
+                        {isBot && <Badge color='gray' className='font-semibold px-1.5 py-0.5'>Bot</Badge>}
                     </div>
                 </Heading>
             </Flex>
