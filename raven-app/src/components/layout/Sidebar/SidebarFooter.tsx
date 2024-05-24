@@ -20,15 +20,14 @@ export const SidebarFooter = ({ isSettingsPage = false }: { isSettingsPage?: boo
         <Flex
             gap='1'
             direction='column'
-            px='4'
-            pb='4'
+            // px='4'
             bottom='0'
             position='fixed'
-            className={`sm:w-[var(--sidebar-width)] w-full bg-gray-2 border-r-gray-3 border-r dark:bg-gray-1`}
+            className={`sm:w-[var(--sidebar-width)] sm:px-4 pb-8 sm:pb-4 w-full bg-gray-2 border-r-gray-3 border-r dark:bg-gray-1`}
         >
             <Flex direction='column' gap='2'>
                 <Separator size='4' className={`bg-gray-4 dark:bg-gray-6`} />
-                <Flex justify="between" align='center' px='1'>
+                <Flex justify="between" align='center' className='sm:px-1 px-6 pt-2 sm:pt-0'>
                     <Flex gap='2' align='center'>
                         <UserAvatar src={userData.user_image} alt={userData.full_name} isActive />
                         <Text size="2">{userData.full_name}</Text>
