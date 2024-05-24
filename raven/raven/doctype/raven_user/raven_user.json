@@ -104,7 +104,7 @@
    "fieldname": "availability_status",
    "fieldtype": "Select",
    "label": "Availability Status",
-   "options": "Available\nAway\nDo not disturb\nInvisible"
+   "options": "\nAvailable\nAway\nDo not disturb\nInvisible"
   },
   {
    "fieldname": "custom_status",
@@ -114,7 +114,7 @@
  ],
  "image_field": "user_image",
  "links": [],
- "modified": "2024-05-17 19:44:11.386758",
+ "modified": "2024-05-24 15:23:40.547992",
  "modified_by": "Administrator",
  "module": "Raven",
  "name": "Raven User",
