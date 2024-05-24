@@ -20,7 +20,11 @@ export const ChannelRedirect = () => {
     const isRavenUser = hasRavenUserRole()
 
     useEffect(() => {
-        if (isRavenUser && (pathname === '/channel' || pathname === '/')) navigate(`/channel/${lastChannel}`, {
+        // If on desktop, redirect to last channel
+        // If on mobile, redirect to channel list
+        const isDesktop = window.matchMedia('(min-width: 768px)').matches
+        const path = isDesktop ? `/channel/${lastChannel}` : '/channel'
+        if (isRavenUser && (pathname === '/channel' || pathname === '/')) navigate(path, {
             replace: true
         })
     }, [pathname, isRavenUser])
