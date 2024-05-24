@@ -45,6 +45,10 @@
         border-radius: var(--radius-3);
     }
 
+    .tiptap-editor.editing-message.ProseMirror {
+        width: calc(100vw - 48px);
+    }
+
     .tiptap-editor.ProseMirror * {
         padding-right: 24px;
     }

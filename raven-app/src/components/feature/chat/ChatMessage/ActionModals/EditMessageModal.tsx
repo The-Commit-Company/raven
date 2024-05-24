@@ -6,6 +6,7 @@ import { BiX } from "react-icons/bi"
 import { Loader } from "@/components/common/Loader"
 import { TextMessage } from "../../../../../../../types/Messaging/Message"
 import { toast } from "sonner"
+import { useIsDesktop } from "@/hooks/useMediaQuery"
 
 const Tiptap = lazy(() => import("../../ChatInput/Tiptap"))
 
@@ -34,7 +35,7 @@ export const EditMessageModal = ({ onClose, message }: EditMessageModalProps) =>
         <>
             <Flex justify={'between'}>
                 <Dialog.Title>Edit Message</Dialog.Title>
-                <Dialog.Close disabled={updatingDoc}>
+                <Dialog.Close disabled={updatingDoc} className="invisible sm:visible">
                     <IconButton size='1' variant="soft" color="gray">
                         <BiX size='18' />
                     </IconButton>
@@ -44,9 +45,9 @@ export const EditMessageModal = ({ onClose, message }: EditMessageModalProps) =>
             <Flex gap='2' direction='column'>
                 <ErrorBanner error={error} />
                 <Suspense fallback={<Loader />}>
-                    <Tiptap onMessageSend={onSubmit} disableSessionStorage messageSending={updatingDoc} defaultText={message.text} />
+                    <Tiptap onMessageSend={onSubmit} isEdit disableSessionStorage messageSending={updatingDoc} defaultText={message.text} />
                 </Suspense>
-                <Flex justify='end'>
+                <Flex justify='end' className="hidden sm:block">
                     <Text size='1' color='gray'>Press <b>Enter</b> to save</Text>
                 </Flex>
             </Flex>
