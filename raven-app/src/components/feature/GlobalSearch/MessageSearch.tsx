@@ -111,11 +111,13 @@ export const MessageSearch = ({ onToggleMyChannels, isOpenMyChannels, onToggleSa
                 <Grid
                     gap='2'
                     justify="between"
-                    columns='5'
+                    columns={
+                        { initial: '2', md: '5' }
+                    }
                     align='center'>
                     <Select.Root value={userFilter} onValueChange={setUserFilter}>
                         <Select.Trigger placeholder='From' id='from-filter' />
-                        <Select.Content>
+                        <Select.Content className="z-50">
                             <Select.Item value='any'>From anyone</Select.Item>
                             <Select.Group>
                                 <Select.Label>Message from</Select.Label>
@@ -134,7 +136,7 @@ export const MessageSearch = ({ onToggleMyChannels, isOpenMyChannels, onToggleSa
 
                     <Select.Root value={channelFilter} onValueChange={setChannelFilter}>
                         <Select.Trigger placeholder='Channel / DM' />
-                        <Select.Content>
+                        <Select.Content className="z-50">
                             <Select.Item value='any'>Any channel</Select.Item>
                             <Select.Group>
                                 <Select.Label>Channels</Select.Label>
@@ -167,7 +169,7 @@ export const MessageSearch = ({ onToggleMyChannels, isOpenMyChannels, onToggleSa
 
                     <Select.Root value={dateFilter} onValueChange={setDateFilter}>
                         <Select.Trigger placeholder='Date' />
-                        <Select.Content>
+                        <Select.Content className="z-50">
                             <Select.Group>
                                 <Select.Label>Date</Select.Label>
                                 <Select.Item value='any'>Any time</Select.Item>
@@ -190,7 +192,7 @@ export const MessageSearch = ({ onToggleMyChannels, isOpenMyChannels, onToggleSa
                     </Text>
                 </Grid>
             </Flex>
-            <ScrollArea type="always" scrollbars="vertical" style={{ height: 420 }} mt='4'>
+            <ScrollArea type="always" scrollbars="vertical" className='sm:h-[420px] h-[58vh]' mt='4'>
                 <ErrorBanner error={error} />
                 {data?.message?.length === 0 && <EmptyStateForSearch />}
                 {data?.message?.length && data?.message.length > 0 ? <Flex direction='column' gap='2'>
