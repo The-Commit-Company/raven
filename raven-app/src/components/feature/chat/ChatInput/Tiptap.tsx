@@ -1,7 +1,7 @@
 import { BubbleMenu, EditorContent, EditorContext, Extension, ReactRenderer, useEditor } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import Underline from '@tiptap/extension-underline'
-import React, { useContext, useEffect } from 'react'
+import React, { Suspense, lazy, useContext, useEffect } from 'react'
 import { TextFormattingMenu } from './TextFormattingMenu'
 import Highlight from '@tiptap/extension-highlight'
 import Link from '@tiptap/extension-link'
@@ -32,6 +32,8 @@ import Image from '@tiptap/extension-image'
 import { EmojiSuggestion } from './EmojiSuggestion'
 import { useIsDesktop } from '@/hooks/useMediaQuery'
 import { BiPlus } from 'react-icons/bi'
+const MobileInputActions = lazy(() => import('./MobileActions/MobileInputActions'))
+
 const lowlight = createLowlight(common)
 
 lowlight.register('html', html)
@@ -480,11 +482,12 @@ const Tiptap = ({ slotBefore, fileProps, onMessageSend, replyMessage, clearReply
                 {slotBefore}
                 <Flex align='end' gap='2' className='relative'>
                     <div className='w-6'>
-                        <IconButton radius='full' color='gray' variant='soft' size='1' className='mb-2'>
+                        <Suspense fallback={<IconButton radius='full' color='gray' variant='soft' size='1' className='mb-2'>
                             <BiPlus size='18' />
-                        </IconButton>
+                        </IconButton>}>
+                            <MobileInputActions fileProps={fileProps} setContent={setContent} sendMessage={onMessageSend} messageSending={messageSending} />
+                        </Suspense>
                     </div>
-
                     <BubbleMenu tippyOptions={{
                         arrow: true,
                         // followCursor: true,
@@ -504,10 +507,6 @@ const Tiptap = ({ slotBefore, fileProps, onMessageSend, replyMessage, clearReply
                         messageSending={messageSending}
                         setContent={setContent} />
                 </Flex>
-                {/* <ToolPanel>
-                    <TextFormattingMenu />
-                    <RightToolbarButtons fileProps={fileProps} setContent={setContent} sendMessage={onMessageSend} messageSending={messageSending} />
-                </ToolPanel> */}
             </EditorContext.Provider>
         </Box>
     }

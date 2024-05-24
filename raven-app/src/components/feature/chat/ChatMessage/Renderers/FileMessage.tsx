@@ -10,6 +10,7 @@ import { clsx } from "clsx"
 import { FileExtensionIcon } from "@/utils/layout/FileExtIcon"
 import { memo } from "react"
 import { toast } from "sonner"
+import { useIsDesktop } from "@/hooks/useMediaQuery"
 
 interface FileMessageBlockProps extends BoxProps {
     message: FileMessage,
@@ -36,6 +37,8 @@ export const FileMessageBlock = memo(({ message, user, ...props }: FileMessageBl
 
         toast.success('Link copied')
     }
+
+    const isDesktop = useIsDesktop()
 
     return <Box {...props}>
 
@@ -64,7 +67,7 @@ export const FileMessageBlock = memo(({ message, user, ...props }: FileMessageBl
                 </Flex>
 
                 <Flex align='center' gap='2'>
-                    {isPDF && <PDFPreviewButton message={message} user={user} />}
+                    {isPDF && isDesktop && <PDFPreviewButton message={message} user={user} />}
                     <IconButton
                         size='1'
                         title="Copy link"
@@ -82,7 +85,7 @@ export const FileMessageBlock = memo(({ message, user, ...props }: FileMessageBl
                         variant="soft"
                     >
                         <Link className='no-underline' href={message.file} download>
-                            <BiDownload />
+                            {isDesktop ? <BiDownload /> : <BiShow />}
                         </Link>
                     </IconButton>
                 </Flex>
