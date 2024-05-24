@@ -456,12 +456,12 @@ const Tiptap = ({ isEdit, slotBefore, fileProps, onMessageSend, replyMessage, cl
 
 
     useEffect(() => {
-        if (isDesktop) {
+        if (isDesktop || isEdit) {
             setTimeout(() => {
                 editor?.chain().focus().run()
             }, 50)
         }
-    }, [replyMessage, editor, isDesktop])
+    }, [replyMessage, editor, isDesktop, isEdit])
 
 
     if (isDesktop) {

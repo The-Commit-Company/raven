@@ -109,6 +109,13 @@
     overscroll-behavior: contain;
 }
 
+@media screen and (max-width: 716px) {
+    .command-menu [cmdk-list] {
+        max-height: 80vh;
+    }
+
+}
+
 .command-menu [cmdk-list]::-webkit-scrollbar {
     width: 6px;
 }

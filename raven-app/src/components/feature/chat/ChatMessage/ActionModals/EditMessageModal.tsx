@@ -6,7 +6,6 @@ import { BiX } from "react-icons/bi"
 import { Loader } from "@/components/common/Loader"
 import { TextMessage } from "../../../../../../../types/Messaging/Message"
 import { toast } from "sonner"
-import { useIsDesktop } from "@/hooks/useMediaQuery"
 
 const Tiptap = lazy(() => import("../../ChatInput/Tiptap"))
 

@@ -9,6 +9,7 @@ import clsx from 'clsx'
 import { BiCog, BiFile, BiMoon, BiSearch, BiSmile } from 'react-icons/bi'
 import ArchivedChannelList from './ArchivedChannelList'
 import { atom, useAtom } from 'jotai'
+import { useIsDesktop } from '@/hooks/useMediaQuery'
 
 export const commandMenuOpenAtom = atom(false)
 
@@ -35,49 +36,57 @@ const CommandMenu = () => {
     return (
         <Dialog.Root open={open} onOpenChange={setOpen}>
             <Dialog.Content className={clsx(DIALOG_CONTENT_CLASS, 'p-4 rounded-md')}>
-                <Command label="Global Command Menu" className='command-menu'>
-                    <Command.Input
-                        autoFocus
-                        placeholder='Search or type a command' />
-                    <Command.List>
-                        <Command.Empty>No results found.</Command.Empty>
-                        <ChannelList />
-                        <UserList />
-
-                        {/* TODO: Make these commands work */}
-                        {/* <Command.Group heading="Commands">
-                            <Command.Item>
-                                <BiSearch size={ICON_SIZE} />
-                                Search
-                            </Command.Item>
-                            <Command.Item>
-                                <BiSearch size={ICON_SIZE} />
-                                Search in #general
-                            </Command.Item>
-                            <Command.Item>
-                                <BiFile size={ICON_SIZE} />
-                                View files in #general
-                            </Command.Item>
-                            <Command.Item>
-                                <BiSmile size={ICON_SIZE} />
-                                Set status
-                            </Command.Item>
-                            <Command.Item>
-                                <BiMoon size={ICON_SIZE} />
-                                Toggle Theme
-                            </Command.Item>
-                            <Command.Item>
-                                <BiCog size={ICON_SIZE} />
-                                Settings
-                            </Command.Item>
-                        </Command.Group> */}
-
-                        {/* <ArchivedChannelList /> */}
-                    </Command.List>
-                </Command>
+                <CommandList />
             </Dialog.Content>
         </Dialog.Root>
     )
+
+
+
+}
+
+export const CommandList = () => {
+    const isDesktop = useIsDesktop()
+    return <Command label="Global Command Menu" className='command-menu'>
+        <Command.Input
+            autoFocus={isDesktop}
+            placeholder='Search or type a command' />
+        <Command.List>
+            <Command.Empty>No results found.</Command.Empty>
+            <ChannelList />
+            <UserList />
+
+            {/* TODO: Make these commands work */}
+            {/* <Command.Group heading="Commands">
+            <Command.Item>
+                <BiSearch size={ICON_SIZE} />
+                Search
+            </Command.Item>
+            <Command.Item>
+                <BiSearch size={ICON_SIZE} />
+                Search in #general
+            </Command.Item>
+            <Command.Item>
+                <BiFile size={ICON_SIZE} />
+                View files in #general
+            </Command.Item>
+            <Command.Item>
+                <BiSmile size={ICON_SIZE} />
+                Set status
+            </Command.Item>
+            <Command.Item>
+                <BiMoon size={ICON_SIZE} />
+                Toggle Theme
+            </Command.Item>
+            <Command.Item>
+                <BiCog size={ICON_SIZE} />
+                Settings
+            </Command.Item>
+        </Command.Group> */}
+
+            {/* <ArchivedChannelList /> */}
+        </Command.List>
+    </Command>
 }
 
 export default CommandMenu
