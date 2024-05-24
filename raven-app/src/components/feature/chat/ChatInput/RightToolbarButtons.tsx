@@ -8,6 +8,7 @@ import { Suspense, lazy } from 'react'
 import { CreatePoll } from '../../polls/CreatePoll'
 import { HiOutlineGif } from "react-icons/hi2";
 import { GIFPicker } from '@/components/common/GIFPicker/GIFPicker'
+import { IconButtonProps } from '@radix-ui/themes/dist/cjs/components/icon-button'
 
 
 const EmojiPicker = lazy(() => import('@/components/common/EmojiPicker/EmojiPicker'))
@@ -172,12 +173,14 @@ const FilePickerButton = ({ fileProps }: { fileProps: ToolbarFileProps }) => {
     </IconButton>
 }
 
-
-const SendButton = ({ sendMessage, messageSending, setContent }: {
+interface SendButtonProps extends IconButtonProps {
     sendMessage: RightToolbarButtonsProps['sendMessage'],
     messageSending: boolean,
     setContent: RightToolbarButtonsProps['setContent']
-}) => {
+}
+
+
+export const SendButton = ({ sendMessage, messageSending, setContent, ...props }: SendButtonProps) => {
     const { editor } = useCurrentEditor()
     const onClick = () => {
         if (editor) {
@@ -212,6 +215,7 @@ const SendButton = ({ sendMessage, messageSending, setContent }: {
         variant='ghost'
         size='1'
         onClick={onClick}
+        {...props}
     >
         {messageSending ? <Loader /> :
             <BiSolidSend {...ICON_PROPS} />

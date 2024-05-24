@@ -21,6 +21,9 @@ import { generateAvatarColor } from '../../select-member/GenerateAvatarColor'
 import { DoctypeLinkRenderer } from './Renderers/DoctypeLinkRenderer'
 import { useDebounce } from '@/hooks/useDebounce'
 import { RiRobot2Fill } from 'react-icons/ri'
+import { useIsDesktop } from '@/hooks/useMediaQuery'
+import { useDoubleTap } from 'use-double-tap'
+import useOutsideClick from '@/hooks/useOutsideClick'
 
 interface MessageBlockProps {
     message: Message,
@@ -49,17 +52,33 @@ export const MessageItem = ({ message, setDeleteMessage, isHighlighted, onReplyM
         replyToMessage(message)
     }
 
+    const isDesktop = useIsDesktop()
+
     const [isHovered, setIsHovered] = useState(false)
-    const isHoveredDebounced = useDebounce(isHovered, 400)
+    const isHoveredDebounced = useDebounce(isHovered, isDesktop ? 400 : 200)
 
     const onMouseEnter = () => {
-        setIsHovered(true)
+        if (isDesktop) {
+            setIsHovered(true)
+        }
     }
 
     const onMouseLeave = () => {
-        setIsHovered(false)
-
+        if (isDesktop) {
+            setIsHovered(false)
+        }
     }
+
+    // For mobile, we want to show the quick actions on double tap
+    const bind = useDoubleTap((event) => {
+        if (!isDesktop)
+            setIsHovered(!isHovered)
+    });
+
+    const ref = useOutsideClick(() => {
+        if (!isDesktop)
+            setIsHovered(false)
+    });
 
     const replyMessageDetails = useMemo(() => {
         if (typeof replied_message_details === 'string') {
@@ -73,21 +92,30 @@ export const MessageItem = ({ message, setDeleteMessage, isHighlighted, onReplyM
         <Box className='relative'>
             <ContextMenu.Root>
                 <ContextMenu.Trigger
+                    {...bind}
+                    ref={ref}
                     onMouseEnter={onMouseEnter}
                     onMouseLeave={onMouseLeave}
-                    // disabled={!isHoveredDebounced}
                     className={clsx(`group
-                            hover:bg-gray-2
-                            hover:transition-all
-                            hover:delay-100
-                            dark:hover:bg-gray-3
+                            sm:hover:bg-gray-2
+                            active:bg-gray-2
+                            sm:hover:transition-all
+                            active:hover:transition-all
+                            sm:hover:delay-100
+                            active:hover:delay-100
+                            select-none
+                            sm:select-auto
+                            sm:dark:hover:bg-gray-3
+                            dark:active:bg-gray-4
                             data-[state=open]:bg-accent-2
                             dark:data-[state=open]:bg-gray-4
                             data-[state=open]:shadow-sm
                             transition-colors
-                            p-2
-                            rounded-md`, isHighlighted ? 'bg-yellow-50 hover:bg-yellow-50 dark:bg-yellow-300/20 dark:hover:bg-yellow-300/20' : '')}>
-                    <Flex gap='3'>
+                            px-1
+                            py-2
+                            sm:p-2
+                            rounded-md`, isHighlighted ? 'bg-yellow-50 hover:bg-yellow-50 dark:bg-yellow-300/20 dark:hover:bg-yellow-300/20' : !isDesktop && isHovered ? 'bg-gray-2 dark:bg-gray-3' : '')}>
+                    <Flex className='gap-2.5 sm:gap-3 '>
                         <MessageLeftElement message={message} user={user} isActive={isActive} />
                         <Flex direction='column' className='gap-0.5' justify='center' width='100%'>
                             {!is_continuation ? <Flex align='center' gap='2' mt='-1'>
@@ -102,7 +130,7 @@ export const MessageItem = ({ message, setDeleteMessage, isHighlighted, onReplyM
                             {/* Message content goes here */}
                             {/* If it's a reply, then show the linked message */}
                             {linked_message && replied_message_details && <ReplyMessageBox
-                                className='min-w-[32rem] cursor-pointer mb-1'
+                                className='sm:min-w-[32rem] cursor-pointer mb-1'
                                 role='button'
                                 onClick={() => onReplyMessageClick(linked_message)}
                                 message={replyMessageDetails} />
@@ -157,7 +185,7 @@ const MessageLeftElement = ({ message, className, user, isActive, ...props }: Me
     // If it's a continuation, then show the timestamp
 
     // Else, show the avatar
-    return <Box className={clsx(message.is_continuation ? 'invisible group-hover:visible flex items-center max-w-[32px] w-[32px]' : '', className)} {...props}>
+    return <Box className={clsx(message.is_continuation ? 'invisible group-hover:visible flex items-center w-[38px] sm:w-[34px]' : '', className)} {...props}>
         {message.is_continuation ?
             <DateTooltipShort timestamp={message.creation} />
             : <MessageSenderAvatar userID={message.owner} user={user} isActive={isActive} />

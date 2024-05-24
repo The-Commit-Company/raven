@@ -6,7 +6,6 @@ import { EmptyStateForSavedMessages } from "../../layout/EmptyState/EmptyState"
 import { PageHeader } from "../../layout/Heading/PageHeader"
 import { MessageBox } from "../GlobalSearch/MessageBox"
 import { Heading } from "@radix-ui/themes"
-import { SearchButton } from "../chat-header/SearchButton"
 import { Box, Flex } from '@radix-ui/themes'
 
 const SavedMessages = () => {
@@ -33,7 +32,6 @@ const SavedMessages = () => {
         <>
             <PageHeader>
                 <Heading size='5'>Saved Messages</Heading>
-                <SearchButton />
             </PageHeader>
             <Box className="min-h-screen pt-20 pb-8">
                 <ErrorBanner error={error} />

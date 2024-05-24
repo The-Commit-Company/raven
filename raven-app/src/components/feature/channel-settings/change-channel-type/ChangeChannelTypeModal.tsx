@@ -20,7 +20,7 @@ export const ChangeChannelTypeModal = ({ onClose, channelData, newChannelType }:
         updateDoc("Raven Channel", channelData?.name ?? null, {
             type: newChannelType
         }).then(() => {
-            mutate(`raven.api.chat.get_channel_members:${channelData.name}`)
+            mutate(["channel_members", channelData.name])
             toast.success("Channel changed to " + newChannelType.toLocaleLowerCase())
             onClose()
         })

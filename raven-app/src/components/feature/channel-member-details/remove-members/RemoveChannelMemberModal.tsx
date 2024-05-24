@@ -1,13 +1,12 @@
-import { useFrappeDeleteDoc, useFrappeGetCall } from 'frappe-react-sdk'
+import { useFrappeDeleteDoc, useFrappeGetCall, useSWRConfig } from 'frappe-react-sdk'
 import { ErrorBanner } from '../../../layout/AlertBanner'
-import { ChannelMembersContext, ChannelMembersContextType, Member } from '@/utils/channel/ChannelMembersProvider'
 import { ChannelIcon } from '@/utils/layout/channelIcon'
 import { AlertDialog, Button, Flex, Text } from '@radix-ui/themes'
 import { Loader } from '@/components/common/Loader'
 import { useParams } from 'react-router-dom'
 import { useCurrentChannelData } from '@/hooks/useCurrentChannelData'
-import { useContext } from 'react'
 import { toast } from 'sonner'
+import { Member } from '@/hooks/fetchers/useFetchChannelMembers'
 
 interface RemoveChannelMemberModalProps {
     onClose: () => void,
@@ -20,8 +19,9 @@ export const RemoveChannelMemberModal = ({ onClose, member }: RemoveChannelMembe
 
     const { channelID } = useParams<{ channelID: string }>()
     const { channel } = useCurrentChannelData(channelID ?? '')
+
+    const { mutate } = useSWRConfig()
     const channelData = channel?.channelData
-    const { mutate: updateMembers } = useContext(ChannelMembersContext) as ChannelMembersContextType
 
     const { data: memberInfo, error: errorFetchingChannelMember } = useFrappeGetCall<{ message: { name: string } }>('frappe.client.get_value', {
         doctype: "Raven Channel Member",
@@ -33,9 +33,9 @@ export const RemoveChannelMemberModal = ({ onClose, member }: RemoveChannelMembe
 
     const onSubmit = async () => {
         return deleteDoc('Raven Channel Member', memberInfo?.message.name).then(() => {
-             toast.success(`Removed`)
+            toast.success(`Removed`)
             onClose()
-            updateMembers()
+            mutate(["channel_members", channelID])
         })
     }
 

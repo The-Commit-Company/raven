@@ -1,7 +1,6 @@
 import { ChannelListItem, DMChannelListItem } from "@/utils/channel/ChannelListProvider"
 import { useCurrentChannelData } from "@/hooks/useCurrentChannelData"
 import { useContext, useMemo } from "react"
-import { ChannelMembers, ChannelMembersContext, ChannelMembersContextType } from "@/utils/channel/ChannelMembersProvider"
 import { EditDescriptionButton } from "@/components/feature/channel-details/edit-channel-description/EditDescriptionButton"
 import { AddMembersButton } from "@/components/feature/channel-member-details/add-members/AddMembersButton"
 import { UserContext } from "@/utils/auth/UserProvider"
@@ -12,6 +11,7 @@ import { ChannelIcon } from "@/utils/layout/channelIcon"
 import { BiBookmark } from "react-icons/bi"
 import { DateMonthYear } from "@/utils/dateConversions"
 import { useGetUser } from "@/hooks/useGetUser"
+import useFetchChannelMembers from "@/hooks/fetchers/useFetchChannelMembers"
 
 export const EmptyStateForSearch = () => {
     return (
@@ -30,11 +30,11 @@ export const EmptyStateForSearch = () => {
 
 interface EmptyStateForChannelProps {
     channelData: ChannelListItem,
-    channelMembers: ChannelMembers,
-    updateMembers: () => void
 }
 
-const EmptyStateForChannel = ({ channelData, channelMembers, updateMembers }: EmptyStateForChannelProps) => {
+const EmptyStateForChannel = ({ channelData }: EmptyStateForChannelProps) => {
+
+    const { channelMembers } = useFetchChannelMembers(channelData.name)
 
     const { currentUser } = useContext(UserContext)
     const users = useGetUserRecords()
@@ -51,7 +51,7 @@ const EmptyStateForChannel = ({ channelData, channelMembers, updateMembers }: Em
             </Flex>
             {channelData?.is_archived == 0 && channelMembers[currentUser] && <Flex gap='4' className={'z-1'}>
                 <EditDescriptionButton channelData={channelData} />
-                {channelData?.type !== 'Open' && <AddMembersButton channelData={channelData} updateMembers={updateMembers} channelMembers={channelMembers} />}
+                {channelData?.type !== 'Open' && <AddMembersButton channelData={channelData} />}
             </Flex>}
         </Flex>
     )
@@ -129,15 +129,14 @@ interface ChannelHistoryFirstMessageProps {
 export const ChannelHistoryFirstMessage = ({ channelID }: ChannelHistoryFirstMessageProps) => {
 
     const { channel } = useCurrentChannelData(channelID)
-    const { channelMembers, mutate: updateMembers } = useContext(ChannelMembersContext) as ChannelMembersContextType
 
     if (channel) {
         // depending on whether channel is a DM or a channel, render the appropriate component
         if (channel.type === "dm") {
             return <EmptyStateForDM channelData={channel.channelData} />
         }
-        if (updateMembers) {
-            return <EmptyStateForChannel channelData={channel.channelData} channelMembers={channelMembers} updateMembers={updateMembers} />
+        else {
+            return <EmptyStateForChannel channelData={channel.channelData} />
         }
     }
 

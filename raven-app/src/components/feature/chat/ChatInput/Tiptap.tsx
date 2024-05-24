@@ -1,4 +1,4 @@
-import { EditorContent, EditorContext, Extension, ReactRenderer, useEditor } from '@tiptap/react'
+import { BubbleMenu, EditorContent, EditorContext, Extension, ReactRenderer, useEditor } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import Underline from '@tiptap/extension-underline'
 import React, { useContext, useEffect } from 'react'
@@ -15,10 +15,9 @@ import { PluginKey } from '@tiptap/pm/state'
 import { ChannelListContext, ChannelListContextType } from '@/utils/channel/ChannelListProvider'
 import ChannelMentionList from './ChannelMentionList'
 import { ToolPanel } from './ToolPanel'
-import { RightToolbarButtons } from './RightToolbarButtons'
+import { RightToolbarButtons, SendButton } from './RightToolbarButtons'
 import { common, createLowlight } from 'lowlight'
 import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight'
-import Code from '@tiptap/extension-code'
 import css from 'highlight.js/lib/languages/css'
 import js from 'highlight.js/lib/languages/javascript'
 import ts from 'highlight.js/lib/languages/typescript'
@@ -26,11 +25,13 @@ import html from 'highlight.js/lib/languages/xml'
 import json from 'highlight.js/lib/languages/json'
 import python from 'highlight.js/lib/languages/python'
 import { Plugin } from 'prosemirror-state'
-import { Box } from '@radix-ui/themes'
+import { Box, Flex, IconButton } from '@radix-ui/themes'
 import { useSessionStickyState } from '@/hooks/useStickyState'
 import { Message } from '../../../../../../types/Messaging/Message'
 import Image from '@tiptap/extension-image'
 import { EmojiSuggestion } from './EmojiSuggestion'
+import { useIsDesktop } from '@/hooks/useMediaQuery'
+import { BiPlus } from 'react-icons/bi'
 const lowlight = createLowlight(common)
 
 lowlight.register('html', html)
@@ -432,6 +433,7 @@ const Tiptap = ({ slotBefore, fileProps, onMessageSend, replyMessage, clearReply
 
     const [content, setContent] = useSessionStickyState(defaultText, sessionStorageKey, disableSessionStorage)
 
+    const isDesktop = useIsDesktop()
 
     const editor = useEditor({
         extensions,
@@ -450,25 +452,68 @@ const Tiptap = ({ slotBefore, fileProps, onMessageSend, replyMessage, clearReply
 
 
     useEffect(() => {
-        setTimeout(() => {
-            editor?.chain().focus().run()
-        }, 50)
-    }, [replyMessage, editor])
+        if (isDesktop) {
+            setTimeout(() => {
+                editor?.chain().focus().run()
+            }, 50)
+        }
+    }, [replyMessage, editor, isDesktop])
 
 
-    return (
-        <Box className='border rounded-radius2 border-gray-300 dark:border-gray-500 dark:bg-gray-3 shadow-md'>
+    if (isDesktop) {
+        return (
+            <Box className='border rounded-radius2 border-gray-300 dark:border-gray-500 dark:bg-gray-3 shadow-md'>
+                <EditorContext.Provider value={{ editor }}>
+                    {slotBefore}
+                    <EditorContent editor={editor} />
+                    <ToolPanel>
+                        <TextFormattingMenu />
+                        <RightToolbarButtons fileProps={fileProps} setContent={setContent} sendMessage={onMessageSend} messageSending={messageSending} />
+                    </ToolPanel>
+                </EditorContext.Provider>
+            </Box>
+
+        )
+    } else {
+        return <Box className='pt-2 pb-8 w-full fixed bottom-0 left-0 px-4 bg-white dark:bg-gray-2 z-50 border-t border-t-gray-3 dark:border-t-gray-3'>
             <EditorContext.Provider value={{ editor }}>
                 {slotBefore}
-                <EditorContent editor={editor} />
-                <ToolPanel>
+                <Flex align='end' gap='2' className='relative'>
+                    <div className='w-6'>
+                        <IconButton radius='full' color='gray' variant='soft' size='1' className='mb-2'>
+                            <BiPlus size='18' />
+                        </IconButton>
+                    </div>
+
+                    <BubbleMenu tippyOptions={{
+                        arrow: true,
+                        // followCursor: true,
+                        offset: [90, 15],
+                        inlinePositioning: true,
+                    }}>
+                        <div className='bg-gray-1 dark:bg-gray-3 shadow-md p-2 rounded-md'>
+                            <TextFormattingMenu />
+                        </div>
+                    </BubbleMenu>
+                    <EditorContent editor={editor} />
+                    <SendButton
+                        size='1'
+                        variant='soft'
+                        className='bg-transparent mb-2 absolute right-1'
+                        sendMessage={onMessageSend}
+                        messageSending={messageSending}
+                        setContent={setContent} />
+                </Flex>
+                {/* <ToolPanel>
                     <TextFormattingMenu />
                     <RightToolbarButtons fileProps={fileProps} setContent={setContent} sendMessage={onMessageSend} messageSending={messageSending} />
-                </ToolPanel>
+                </ToolPanel> */}
             </EditorContext.Provider>
         </Box>
+    }
 
-    )
+
+
 }
 
 export default Tiptap

@@ -1,5 +1,6 @@
 import { Flex, Text } from "@radix-ui/themes"
 import { FlexProps } from "@radix-ui/themes/dist/cjs/components/flex"
+import clsx from "clsx"
 import { forwardRef, useImperativeHandle, useState } from "react"
 import { Accept, useDropzone } from "react-dropzone"
 import { toast } from "sonner"
@@ -87,10 +88,11 @@ export const FileDrop = forwardRef((props: FileDropProps, ref) => {
                 <Flex
                     align='center'
                     justify='center'
-                    className="fixed top-14 border-2 border-dashed rounded-md border-gray-6 dark:bg-[#171923AA] bg-[#F7FAFCAA]"
+                    className={clsx("fixed top-14 border-2 border-dashed rounded-md border-gray-6 dark:bg-[#171923AA] bg-[#F7FAFCAA]",
+                        "h-[calc(100vh-72px)]",
+                        "w-[calc(100vw-var(--sidebar-width)-var(--space-6))]",
+                    )}
                     style={{
-                        width: 'calc(100vw - var(--sidebar-width) - var(--space-8))',
-                        height: 'calc(100vh - 80px)',
                         zIndex: 9999
                     }}
                     display={onDragEnter ? "flex" : "none"}

@@ -1,21 +1,22 @@
 import { useContext, useMemo, useState } from 'react'
-import '../../feature/command-palette/styles.css'
 import { UserFields, UserListContext } from '@/utils/users/UserListProvider'
 import { Text, TextField } from '@radix-ui/themes'
-import { ChannelMembers } from '@/utils/channel/ChannelMembersProvider'
 import { UserAvatar } from '@/components/common/UserAvatar'
 import { useMultipleSelection, useCombobox } from 'downshift'
 import { clsx } from 'clsx'
 import { Label } from '@/components/common/Form'
+import useFetchChannelMembers from '@/hooks/fetchers/useFetchChannelMembers'
 
 interface AddMembersDropdownProps {
-    channelMembers?: ChannelMembers,
+    channelID: string,
     label?: string,
     selectedUsers: UserFields[],
     setSelectedUsers: (users: UserFields[]) => void
 }
 
-const AddMembersDropdown = ({ channelMembers, label = 'Select users', selectedUsers, setSelectedUsers }: AddMembersDropdownProps) => {
+const AddMembersDropdown = ({ channelID, label = 'Select users', selectedUsers, setSelectedUsers }: AddMembersDropdownProps) => {
+
+    const { channelMembers } = useFetchChannelMembers(channelID)
 
     // All users
     const users = useContext(UserListContext)

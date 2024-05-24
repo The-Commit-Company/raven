@@ -16,6 +16,7 @@
     border-top-right-radius: var(--radius-2);
 }
 
+
 .tiptap-editor.ProseMirror img {
     width: 200px;
     height: auto;
@@ -31,6 +32,31 @@
 .tiptap-editor.ProseMirror:focus {
     outline: 1.5px solid var(--color-focus-root);
     outline-offset: -1.5px;
+}
+
+
+@media screen and (max-width: 768px) {
+    .tiptap-editor.ProseMirror {
+        min-height: 20px;
+        padding: 8px;
+        width: calc(100vw - 80px);
+        max-height: 300px;
+        border: 1.5px solid var(--gray-4);
+        border-radius: var(--radius-3);
+    }
+
+    .tiptap-editor.ProseMirror * {
+        padding-right: 24px;
+    }
+
+    .tiptap-editor.replying.ProseMirror {
+        border-radius: var(--radius-3);
+    }
+
+    .tiptap-editor.ProseMirror:focus {
+        outline: 1.5px solid var(--color-focus-root);
+        outline-offset: -1.5px;
+    }
 }
 
 .tiptap-editor blockquote {
