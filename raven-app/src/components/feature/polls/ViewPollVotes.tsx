@@ -139,7 +139,6 @@ const UserVote = ({ user_id }: { user_id: string }) => {
         <UserAvatar alt={user?.full_name} src={user?.user_image} size='2' />
         <div className='flex flex-col text-ellipsis justify-center border-b border-gray-6 w-full pb-2 group-last:pb-0 group-last:border-b-0'>
             <Text as='span' className='block' weight='medium' size='2'>{user?.full_name}</Text>
-            <Text as='span' size='1' color='gray'>{user?.name}</Text>
         </div>
     </Flex>
 }
