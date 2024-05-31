@@ -7,6 +7,7 @@ import { BiDownload } from 'react-icons/bi'
 import { UserFields } from '@/utils/users/UserListProvider'
 import { DateMonthAtHourMinuteAmPm } from '@/utils/dateConversions'
 import { clsx } from 'clsx'
+import { useIsDesktop, useIsMobile } from '@/hooks/useMediaQuery'
 
 const ImageViewer = lazy(() => import('@/components/common/ImageViewer'))
 
@@ -22,8 +23,10 @@ export const ImageMessageBlock = memo(({ message, isScrolling = false, user }: I
     const [isOpen, setIsOpen] = useState(false)
     // Show skeleton loader when image is loading
 
-    const height = message.thumbnail_height ?? '200'
-    const width = message.thumbnail_width ?? '300'
+    const isMobile = useIsMobile()
+
+    const height = message.thumbnail_height ? isMobile ? message.thumbnail_height / 2 : message.thumbnail_height : '200'
+    const width = message.thumbnail_width ? isMobile ? message.thumbnail_width / 2 : message.thumbnail_width : '300'
 
     const fileName = getFileName(message.file)
 

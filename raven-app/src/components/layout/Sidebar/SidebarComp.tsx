@@ -39,7 +39,10 @@ type SidebarGroupLabelProps = TextProps & {
 
 export const SidebarGroupLabel = ({ children, ...props }: SidebarGroupLabelProps) => {
     return (
-        <Text size='2' weight='bold' {...props} className={clsx('cal-sans text-gray-12 dark:text-gray-300', props.className)}>
+        <Text size={{
+            initial: '3',
+            md: '2'
+        }} weight='bold' {...props} className={clsx('cal-sans text-gray-12 dark:text-gray-300', props.className)}>
             {children}
         </Text>
     )
@@ -81,7 +84,7 @@ export const SidebarItem = ({ to, children, end, active = false, activeStyles, c
                         gap='2'
                         align='center'
                         px='2'
-                        className={clsx('cursor-pointer text-gray-12 user-select-none rounded-md no-underline hover:bg-gray-3', isActive ? activeClass : '', className)}
+                        className={clsx('cursor-pointer text-gray-12 user-select-none rounded-md no-underline sm:hover:bg-gray-3 active:bg-gray-3', isActive ? activeClass : '', className)}
                         {...props}>
                         {children}
                     </Flex>
@@ -147,7 +150,7 @@ export const SidebarViewMoreButton = ({ expanded, onClick, ...props }: SidebarVi
             radius='large'
             onClick={onClick}
             {...props}
-            className={clsx('cursor-pointer transition-all text-gray-10 dark:text-gray-300 bg-transparent hover:bg-gray-3 invisible group-hover:visible ease-ease')}
+            className={clsx('cursor-pointer transition-all text-gray-10 dark:text-gray-300 bg-transparent sm:hover:bg-gray-3 sm:invisible sm:group-hover:visible ease-ease')}
         >
             {expanded ? <FiChevronDown size='16' /> : <FiChevronRight size='16' />}
         </IconButton>

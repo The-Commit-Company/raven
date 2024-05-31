@@ -28,15 +28,14 @@ export const SidebarFooter = ({ isSettingsPage = false }: { isSettingsPage?: boo
         <Flex
             gap='1'
             direction='column'
-            px='4'
-            pb='4'
+            // px='4'
             bottom='0'
             position='fixed'
-            className={`w-[var(--sidebar-width)] bg-gray-2 border-r-gray-3 border-r dark:bg-gray-1`}
+            className={`sm:w-[var(--sidebar-width)] sm:px-4 pb-8 sm:pb-4 w-full bg-gray-2 border-r-gray-3 border-r dark:bg-gray-1`}
         >
             <Flex direction='column' gap='2'>
                 <Separator size='4' className={`bg-gray-4 dark:bg-gray-6`} />
-                <Flex justify="between" align='center' px='1'>
+                <Flex justify="between" align='center' className='sm:px-1 px-6 pt-2 sm:pt-0'>
                     <Flex gap='2' align='center'>
                         <UserAvatar src={userData.user_image} alt={userData.full_name} availabilityStatus={myProfile?.availability_status} isActive />
                         <Text size="2">{userData.full_name}</Text>
@@ -52,24 +51,21 @@ export const SidebarFooter = ({ isSettingsPage = false }: { isSettingsPage?: boo
                             <DropdownMenu.Item color='gray' className={'flex justify-normal gap-2'} onClick={() => setUserStatusModalOpen(true)}>
                                 <BsEmojiSmile className={'text-gray-400'} /> Set custom status
                             </DropdownMenu.Item>
-                            {!isSettingsPage && <DropdownMenu.Item color='gray' className='focus-visible:ring-0 focus-visible:outline-none rounded-radius2' asChild>
+                             {canAddUsers &&
+                                <DropdownMenu.Separator className='hidden sm:block' />
+                            }
+                            {canAddUsers &&
+                                <DropdownMenu.Item color='gray' onClick={() => setIsAddUserModalOpen(true)} className="cursor-pointer hidden sm:block">
+                                    Add users to Raven
+                                </DropdownMenu.Item>
+                            }
+                            {!isSettingsPage && <DropdownMenu.Item color='gray' className='focus-visible:ring-0 focus-visible:outline-none rounded-radius2 cursor-pointer hidden sm:block' asChild>
                                 <Link href="../settings/integrations/webhooks" className='no-underline'>
                                     <Flex gap='2' align='center'>
                                         <FiSettings className={'text-gray-400'} /> Settings
                                     </Flex>
                                 </Link>
                             </DropdownMenu.Item>}
-                            <DropdownMenu.Separator />
-                            {canAddUsers &&
-                                <DropdownMenu.Item color='gray' onClick={() => setIsAddUserModalOpen(true)} className="cursor-pointer">
-                                    Add users to Raven
-                                </DropdownMenu.Item>
-                            }
-                            <DropdownMenu.Item color='gray' className='group'>
-                                <Link href="/raven_mobile" className='no-underline'>
-                                    Mobile App
-                                </Link>
-                            </DropdownMenu.Item>
                             <DropdownMenu.Item onClick={logout} color='red' className='cursor-pointer'>
                                 Log Out
                             </DropdownMenu.Item>

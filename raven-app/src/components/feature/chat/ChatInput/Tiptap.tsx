@@ -1,7 +1,7 @@
 import { BubbleMenu, EditorContent, EditorContext, Extension, ReactRenderer, useEditor } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import Underline from '@tiptap/extension-underline'
-import React, { useContext, useEffect } from 'react'
+import React, { Suspense, lazy, useContext, useEffect } from 'react'
 import { TextFormattingMenu } from './TextFormattingMenu'
 import Highlight from '@tiptap/extension-highlight'
 import Link from '@tiptap/extension-link'
@@ -32,6 +32,9 @@ import Image from '@tiptap/extension-image'
 import { EmojiSuggestion } from './EmojiSuggestion'
 import { useIsDesktop } from '@/hooks/useMediaQuery'
 import { BiPlus } from 'react-icons/bi'
+import clsx from 'clsx'
+const MobileInputActions = lazy(() => import('./MobileActions/MobileInputActions'))
+
 const lowlight = createLowlight(common)
 
 lowlight.register('html', html)
@@ -45,6 +48,7 @@ export interface ToolbarFileProps {
     addFile: (files: File) => void,
 }
 type TiptapEditorProps = {
+    isEdit?: boolean,
     slotBefore?: React.ReactNode,
     slotAfter?: React.ReactNode,
     placeholder?: string,
@@ -78,7 +82,7 @@ export const ChannelMention = Mention.extend({
         }
     })
 
-const Tiptap = ({ slotBefore, fileProps, onMessageSend, replyMessage, clearReplyMessage, placeholder = 'Type a message...', messageSending, sessionStorageKey = 'tiptap-editor', disableSessionStorage = false, defaultText = '' }: TiptapEditorProps) => {
+const Tiptap = ({ isEdit, slotBefore, fileProps, onMessageSend, replyMessage, clearReplyMessage, placeholder = 'Type a message...', messageSending, sessionStorageKey = 'tiptap-editor', disableSessionStorage = false, defaultText = '' }: TiptapEditorProps) => {
 
     const { enabledUsers } = useContext(UserListContext)
 
@@ -441,7 +445,7 @@ const Tiptap = ({ slotBefore, fileProps, onMessageSend, replyMessage, clearReply
         content,
         editorProps: {
             attributes: {
-                class: 'tiptap-editor' + (replyMessage ? ' replying' : '')
+                class: 'tiptap-editor' + (replyMessage ? ' replying' : '') + (isEdit ? ' editing-message' : '')
             }
         },
         onUpdate({ editor }) {
@@ -452,12 +456,12 @@ const Tiptap = ({ slotBefore, fileProps, onMessageSend, replyMessage, clearReply
 
 
     useEffect(() => {
-        if (isDesktop) {
+        if (isDesktop || isEdit) {
             setTimeout(() => {
                 editor?.chain().focus().run()
             }, 50)
         }
-    }, [replyMessage, editor, isDesktop])
+    }, [replyMessage, editor, isDesktop, isEdit])
 
 
     if (isDesktop) {
@@ -475,16 +479,21 @@ const Tiptap = ({ slotBefore, fileProps, onMessageSend, replyMessage, clearReply
 
         )
     } else {
-        return <Box className='pt-2 pb-8 w-full fixed bottom-0 left-0 px-4 bg-white dark:bg-gray-2 z-50 border-t border-t-gray-3 dark:border-t-gray-3'>
+        return <Box className={clsx('pt-2 pb-8 w-full bg-white dark:bg-gray-2 z-50 border-t border-t-gray-3 dark:border-t-gray-3',
+            isEdit ? '' : 'fixed bottom-0 left-0 px-4'
+        )}>
             <EditorContext.Provider value={{ editor }}>
                 {slotBefore}
                 <Flex align='end' gap='2' className='relative'>
-                    <div className='w-6'>
-                        <IconButton radius='full' color='gray' variant='soft' size='1' className='mb-2'>
-                            <BiPlus size='18' />
-                        </IconButton>
-                    </div>
-
+                    {!isEdit &&
+                        <div className='w-6'>
+                            <Suspense fallback={<IconButton radius='full' color='gray' variant='soft' size='1' className='mb-2'>
+                                <BiPlus size='18' />
+                            </IconButton>}>
+                                <MobileInputActions fileProps={fileProps} setContent={setContent} sendMessage={onMessageSend} messageSending={messageSending} />
+                            </Suspense>
+                        </div>
+                    }
                     <BubbleMenu tippyOptions={{
                         arrow: true,
                         // followCursor: true,
@@ -504,10 +513,6 @@ const Tiptap = ({ slotBefore, fileProps, onMessageSend, replyMessage, clearReply
                         messageSending={messageSending}
                         setContent={setContent} />
                 </Flex>
-                {/* <ToolPanel>
-                    <TextFormattingMenu />
-                    <RightToolbarButtons fileProps={fileProps} setContent={setContent} sendMessage={onMessageSend} messageSending={messageSending} />
-                </ToolPanel> */}
             </EditorContext.Provider>
         </Box>
     }

@@ -43,9 +43,7 @@ export const ChannelSearch = ({ onToggleMyChannels, isOpenMyChannels, input, onC
         <Box>
             <Flex direction='column' gap='2'>
                 <Flex align='center' gap='2'>
-                    <TextField.Root style={{
-                        width: '60%'
-                    }}>
+                    <TextField.Root className='min-w-[60%]'>
                         <TextField.Slot>
                             <BiSearch />
                         </TextField.Slot>
@@ -61,10 +59,8 @@ export const ChannelSearch = ({ onToggleMyChannels, isOpenMyChannels, input, onC
                     </TextField.Root>
 
                     <Select.Root value={channelType} onValueChange={setChannelType} >
-                        <Select.Trigger placeholder='Channel Type' style={{
-                            width: '20%'
-                        }} />
-                        <Select.Content>
+                        <Select.Trigger placeholder='Channel Type' className='min-w-[20%]' />
+                        <Select.Content className="z-50">
                             <Select.Group>
                                 <Select.Label>Channel Type</Select.Label>
                                 <Select.Item value='any'>
@@ -99,7 +95,8 @@ export const ChannelSearch = ({ onToggleMyChannels, isOpenMyChannels, input, onC
                         </Select.Content>
                     </Select.Root>
 
-                    <Text as="label" style={{
+
+                    <Text as="label" className='hidden sm:block' style={{
                         width: '20%'
                     }}>
                         <Flex gap="2" align='center'>
@@ -108,7 +105,7 @@ export const ChannelSearch = ({ onToggleMyChannels, isOpenMyChannels, input, onC
                     </Text>
                 </Flex>
             </Flex>
-            <ScrollArea type="always" scrollbars="vertical" style={{ height: 420 }} mt='4'>
+            <ScrollArea type="always" scrollbars="vertical" className='sm:h-[420px] h-[58vh]' mt='4'>
                 <ErrorBanner error={error} />
                 {data?.message?.length === 0 && <EmptyStateForSearch />}
                 {data?.message && data.message.length > 0 ?

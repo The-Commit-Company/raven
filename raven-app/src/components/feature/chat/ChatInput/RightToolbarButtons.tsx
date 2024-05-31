@@ -2,18 +2,21 @@ import { useCurrentEditor } from '@tiptap/react'
 import { BiAt, BiHash, BiSmile, BiPaperclip, BiSolidSend } from 'react-icons/bi'
 import { DEFAULT_BUTTON_STYLE, ICON_PROPS } from './ToolPanel'
 import { ToolbarFileProps } from './Tiptap'
-import { Flex, IconButton, Inset, Popover, Separator } from '@radix-ui/themes'
+import { Dialog, Flex, IconButton, Inset, Popover, Separator } from '@radix-ui/themes'
 import { Loader } from '@/components/common/Loader'
 import { Suspense, lazy } from 'react'
-import { CreatePoll } from '../../polls/CreatePoll'
 import { HiOutlineGif } from "react-icons/hi2";
-import { GIFPicker } from '@/components/common/GIFPicker/GIFPicker'
 import { IconButtonProps } from '@radix-ui/themes/dist/cjs/components/icon-button'
+import { useBoolean } from '@/hooks/useBoolean'
+import { MdOutlineBarChart } from 'react-icons/md'
+import { DIALOG_CONTENT_CLASS } from '@/utils/layout/dialog'
 
 
 const EmojiPicker = lazy(() => import('@/components/common/EmojiPicker/EmojiPicker'))
+const CreatePollContent = lazy(() => import('@/components/feature/polls/CreatePoll'))
+const GIFPicker = lazy(() => import('@/components/common/GIFPicker/GIFPicker'))
 
-type RightToolbarButtonsProps = {
+export type RightToolbarButtonsProps = {
     fileProps?: ToolbarFileProps,
     sendMessage: (html: string, json: any) => Promise<void>,
     messageSending: boolean,
@@ -225,9 +228,31 @@ export const SendButton = ({ sendMessage, messageSending, setContent, ...props }
 
 const CreatePollButton = () => {
 
+    const [isOpen, , setIsOpen] = useBoolean(false)
     const { editor } = useCurrentEditor()
 
-    return <CreatePoll
-        buttonStyle={DEFAULT_BUTTON_STYLE}
-        isDisabled={editor?.isEditable === false} />
+    return <Dialog.Root open={isOpen} onOpenChange={setIsOpen}>
+        <Dialog.Trigger>
+            <IconButton
+                size='1'
+                variant='ghost'
+                className={DEFAULT_BUTTON_STYLE}
+                disabled={editor?.isEditable === false}
+                title='Create Poll'
+                aria-label={"create poll"}>
+                <MdOutlineBarChart />
+            </IconButton>
+        </Dialog.Trigger>
+        <Dialog.Content className={DIALOG_CONTENT_CLASS}>
+            <Dialog.Title>
+                Create Poll
+            </Dialog.Title>
+            <Dialog.Description size='2'>
+                Create a quick poll to get everyone's thoughts on a topic.
+            </Dialog.Description>
+            <Suspense fallback={<Loader />}>
+                <CreatePollContent setIsOpen={setIsOpen} />
+            </Suspense>
+        </Dialog.Content>
+    </Dialog.Root>
 }
