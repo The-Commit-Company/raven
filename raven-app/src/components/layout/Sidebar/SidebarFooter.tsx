@@ -8,9 +8,11 @@ import { UserAvatar } from '@/components/common/UserAvatar'
 import { isSystemManager } from '@/utils/roles'
 import { BsEmojiSmile } from 'react-icons/bs'
 import { SetCustomStatusModal } from '@/components/feature/userSettings/SetCustomStatusModal'
-import { FiSettings } from 'react-icons/fi'
 import { SetUserAvailabilityMenu } from '@/components/feature/userSettings/SetUserAvailabilityMenu'
 import useCurrentRavenUser from '@/hooks/useCurrentRavenUser'
+import { useIsDesktop } from '@/hooks/useMediaQuery'
+import { SlSettings } from 'react-icons/sl'
+import { TbUsersPlus } from 'react-icons/tb'
 
 export const SidebarFooter = ({ isSettingsPage = false }: { isSettingsPage?: boolean }) => {
 
@@ -23,6 +25,8 @@ export const SidebarFooter = ({ isSettingsPage = false }: { isSettingsPage?: boo
     const canAddUsers = isSystemManager()
 
     const { myProfile } = useCurrentRavenUser()
+
+    const isDesktop = useIsDesktop()
 
     return (
         <Flex
@@ -49,20 +53,20 @@ export const SidebarFooter = ({ isSettingsPage = false }: { isSettingsPage?: boo
                         <DropdownMenu.Content variant='soft'>
                             <SetUserAvailabilityMenu />
                             <DropdownMenu.Item color='gray' className={'flex justify-normal gap-2'} onClick={() => setUserStatusModalOpen(true)}>
-                                <BsEmojiSmile className={'text-gray-400'} /> Set custom status
+                                <BsEmojiSmile size='14' className={'text-gray-10'} /> Set custom status
                             </DropdownMenu.Item>
-                             {canAddUsers &&
+                            {canAddUsers &&
                                 <DropdownMenu.Separator className='hidden sm:block' />
                             }
-                            {canAddUsers &&
-                                <DropdownMenu.Item color='gray' onClick={() => setIsAddUserModalOpen(true)} className="cursor-pointer hidden sm:block">
-                                    Add users to Raven
+                            {canAddUsers && isDesktop &&
+                                <DropdownMenu.Item color='gray' onClick={() => setIsAddUserModalOpen(true)} className={'flex justify-normal gap-2'}>
+                                    <TbUsersPlus size='14' className={'text-gray-10'} /> Add users to Raven
                                 </DropdownMenu.Item>
                             }
-                            {!isSettingsPage && <DropdownMenu.Item color='gray' className='focus-visible:ring-0 focus-visible:outline-none rounded-radius2 cursor-pointer hidden sm:block' asChild>
+                            {!isSettingsPage && isDesktop && <DropdownMenu.Item color='gray' className='focus-visible:ring-0 focus-visible:outline-none rounded-radius2 cursor-pointer' asChild>
                                 <Link href="../settings/integrations/webhooks" className='no-underline'>
                                     <Flex gap='2' align='center'>
-                                        <FiSettings className={'text-gray-400'} /> Settings
+                                        <SlSettings size='14' className={'text-gray-10'} /> Settings
                                     </Flex>
                                 </Link>
                             </DropdownMenu.Item>}
