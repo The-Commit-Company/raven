@@ -1,4 +1,4 @@
-import { useFrappePostCall, useSWRConfig } from "frappe-react-sdk"
+import { useFrappePostCall } from "frappe-react-sdk"
 import { useContext, useLayoutEffect, useMemo, useRef, useState } from "react"
 import { useNavigate, useParams } from "react-router-dom"
 import { SidebarGroup, SidebarGroupItem, SidebarGroupLabel, SidebarGroupList, SidebarIcon, SidebarButtonItem } from "../../layout/Sidebar"
@@ -99,7 +99,9 @@ export const DirectMessageItemElement = ({ channel, unreadCount }: { channel: DM
                 size={{
                     initial: '2',
                     md: '1'
-                }} />
+                }}
+                availabilityStatus={userData?.availability_status}
+                 />
         </SidebarIcon>
         <Flex justify='between' width='100%'>
             <Text size={{
@@ -167,7 +169,8 @@ const ExtraUsersItem = ({ user, createDMChannel }: { user: UserFields, createDMC
                 size={{
                     initial: '2',
                     md: '1'
-                }} />
+                }}
+              availabilityStatus={user.availability_status}/>
         </SidebarIcon>
         <Flex justify='between' width='100%'>
             <Text size={{

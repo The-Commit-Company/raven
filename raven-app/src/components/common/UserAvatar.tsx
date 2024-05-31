@@ -5,10 +5,12 @@ import { clsx } from 'clsx'
 import { generateAvatarColor } from '../feature/select-member/GenerateAvatarColor'
 import { RiRobot2Fill } from 'react-icons/ri'
 import { useMemo } from 'react'
+import { AvailabilityStatus } from '../feature/userSettings/SetUserAvailabilityMenu'
 
 interface UserAvatarProps extends Partial<AvatarProps> {
     alt?: string,
     isActive?: boolean,
+    availabilityStatus?: AvailabilityStatus,
     isBot?: boolean,
     skeletonSize?: BoxProps['width'] | BoxProps['height'],
 }
@@ -45,17 +47,32 @@ const getIconSize = (size: AvatarProps['size']) => {
     }
 }
 
-export const UserAvatar = ({ src, alt, size = '1', radius = 'medium', isActive, skeletonSize = '5', fallback, isBot, className, ...props }: UserAvatarProps) => {
+export const UserAvatar = ({ src, alt, size = '1', radius = 'medium', isActive, availabilityStatus, skeletonSize = '5', fallback, isBot, className, ...props }: UserAvatarProps) => {
     const color = useMemo(() => generateAvatarColor(alt), [alt])
+
     return <Theme accentColor={color}><span className="relative inline-block">
         <Avatar src={src} alt={alt}
             loading='lazy'
             fallback={fallback ?? getInitials(alt)} size={size} radius={radius} className={className} {...props} />
-        {isActive &&
+
+        {availabilityStatus && availabilityStatus === 'Away' &&
+            <span className={clsx("absolute block translate-x-1/2 translate-y-1/2 transform rounded-full", radius === 'full' ? 'bottom-1 right-1' : 'bottom-0.5 right-0.5')}>
+                <span className="block h-2 w-2 rounded-full border border-slate-2 bg-[#FFAA33] shadow-md" />
+            </span>
+        }
+
+        {availabilityStatus && availabilityStatus === 'Do not disturb' &&
+            <span className={clsx("absolute block translate-x-1/2 translate-y-1/2 transform rounded-full", radius === 'full' ? 'bottom-1 right-1' : 'bottom-0.5 right-0.5')}>
+                <span className="block h-2 w-2 rounded-full border border-slate-2 bg-[#D22B2B] shadow-md" />
+            </span>
+        }
+
+        {availabilityStatus !== 'Away' && availabilityStatus !== 'Do not disturb' && isActive &&
             <span className={clsx("absolute block translate-x-1/2 translate-y-1/2 transform rounded-full", radius === 'full' ? 'bottom-1 right-1' : 'bottom-0.5 right-0.5')}>
                 <span className="block h-2 w-2 rounded-full border border-slate-2 bg-green-600 shadow-md" />
             </span>
         }
+
         {isBot && <span className={clsx("absolute block translate-x-1/2 translate-y-1/2 transform rounded-full", radius === 'full' ? 'bottom-1 right-1' : 'bottom-0.5 right-0.5')}>
             <RiRobot2Fill className="text-accent-11 dark:text-accent-11" size={getIconSize(size)} />
         </span>}

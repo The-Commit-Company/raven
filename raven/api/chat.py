@@ -28,6 +28,7 @@ def get_channel_members(channel_id):
 						user.user_image,
 						user.first_name,
 						user.type,
+						user.availability_status,
 						channel_member.is_admin,
 						channel_member.allow_notifications,
 						channel_member.name.as_("channel_member_name"),
