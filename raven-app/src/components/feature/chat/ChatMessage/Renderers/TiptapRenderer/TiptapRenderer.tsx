@@ -56,12 +56,17 @@ export const TiptapRenderer = ({ message, user, isScrolling = false, isTruncated
         italic: false,
         orderedList: {
           HTMLAttributes: {
-            class: 'list-decimal'
+            class: 'list-decimal pl-6'
+          }
+        },
+        bulletList: {
+          HTMLAttributes: {
+            class: 'list-disc pl-4'
           }
         },
         listItem: {
           HTMLAttributes: {
-            class: 'ml-5 rt-Text text-sm'
+            class: 'rt-Text text-sm'
           }
         },
         paragraph: {
