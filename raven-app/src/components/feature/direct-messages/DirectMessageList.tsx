@@ -1,4 +1,4 @@
-import { useFrappePostCall, useSWRConfig } from "frappe-react-sdk"
+import { useFrappePostCall } from "frappe-react-sdk"
 import { useContext, useLayoutEffect, useMemo, useRef, useState } from "react"
 import { useNavigate, useParams } from "react-router-dom"
 import { SidebarGroup, SidebarGroupItem, SidebarGroupLabel, SidebarGroupList, SidebarIcon, SidebarButtonItem } from "../../layout/Sidebar"
@@ -95,10 +95,19 @@ export const DirectMessageItemElement = ({ channel, unreadCount }: { channel: DM
             <UserAvatar src={userData?.user_image}
                 alt={userData?.full_name}
                 isBot={userData?.type === 'Bot'}
-                isActive={isActive} size='1' />
+                isActive={isActive}
+                size={{
+                    initial: '2',
+                    md: '1'
+                }}
+                availabilityStatus={userData?.availability_status}
+                 />
         </SidebarIcon>
         <Flex justify='between' width='100%'>
-            <Text size='2' className="text-ellipsis line-clamp-1" weight={showUnread ? 'bold' : 'medium'}>
+            <Text size={{
+                initial: '3',
+                md: '2'
+            }} className="text-ellipsis line-clamp-1" weight={showUnread ? 'bold' : 'medium'}>
                 {channel.peer_user_id !== currentUser ? userData?.full_name ?? channel.peer_user_id : `${userData?.full_name} (You)`}
             </Text>
             {showUnread ? <SidebarBadge>{unreadCount}</SidebarBadge> : null}
@@ -156,10 +165,18 @@ const ExtraUsersItem = ({ user, createDMChannel }: { user: UserFields, createDMC
         isLoading={isLoading}
         onClick={onButtonClick}>
         <SidebarIcon>
-            <UserAvatar src={user.user_image} alt={user.full_name} isActive={isActive} isBot={user?.type === 'Bot'} />
+            <UserAvatar src={user.user_image} alt={user.full_name} isActive={isActive} isBot={user?.type === 'Bot'}
+                size={{
+                    initial: '2',
+                    md: '1'
+                }}
+              availabilityStatus={user.availability_status}/>
         </SidebarIcon>
         <Flex justify='between' width='100%'>
-            <Text size='2' className="text-ellipsis line-clamp-1" weight='medium'>
+            <Text size={{
+                initial: '3',
+                md: '2'
+            }} className="text-ellipsis line-clamp-1" weight='medium'>
                 {user.name !== currentUser ? user.full_name : `${user.full_name} (You)`}
             </Text>
         </Flex>

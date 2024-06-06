@@ -53,6 +53,7 @@ export const QuickActions = ({ message, onReply, onEdit }: MessageContextMenuPro
         right-4
         group-hover:visible
         group-hover:transition-all
+        ease-ease-out-quad
         group-hover:delay-100
         z-50
         p-1

@@ -13,8 +13,8 @@ const ChannelItem = ({ channel }: { channel: ChannelListItem }) => {
     const setOpen = useSetAtom(commandMenuOpenAtom)
 
     const onSelect = () => {
-        navigate(`/channel/${channel.name}`)
         setOpen(false)
+        navigate(`/channel/${channel.name}`)
     }
 
     return <Command.Item

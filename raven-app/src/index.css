@@ -41,6 +41,12 @@ ul {
     --sidebar-width: 16rem;
 }
 
+@media (max-width: 768px) {
+    :root {
+        --sidebar-width: 0rem;
+    }
+}
+
 html {
     scrollbar-gutter: stable;
 }

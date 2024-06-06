@@ -1,6 +1,6 @@
 import { RavenPinnedChannels } from './RavenPinnedChannels'
 
-export interface RavenUser{
+export interface RavenUser {
 	creation: string
 	name: string
 	modified: string
@@ -27,4 +27,8 @@ export interface RavenUser{
 	user_image?: string
 	/**	 : Table - Raven Pinned Channels	*/
 	pinned_channels?: RavenPinnedChannels[]
+	/**	Availability Status : Select	*/
+	availability_status?: "" | "Available" | "Away" | "Do not disturb" | "Invisible"
+	/**	Custom Status : Data	*/
+	custom_status?: string
 }

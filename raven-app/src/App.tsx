@@ -8,6 +8,7 @@ import "cal-sans";
 import { ThemeProvider } from './ThemeProvider'
 import { Toaster } from 'sonner'
 import { useStickyState } from './hooks/useStickyState'
+import MobileTabsPage from './pages/MobileTabsPage'
 
 
 const router = createBrowserRouter(
@@ -20,7 +21,7 @@ const router = createBrowserRouter(
       <Route path="/" element={<ProtectedRoute />}>
         <Route path="/" element={<ChannelRedirect />}>
           <Route path="channel" element={<MainPage />} >
-            <Route index element={<ChannelRedirect />} />
+            <Route index element={<MobileTabsPage />} />
             <Route path="saved-messages" lazy={() => import('./components/feature/saved-messages/SavedMessages')} />
             <Route path=":channelID" lazy={() => import('@/pages/ChatSpace')} />
           </Route>

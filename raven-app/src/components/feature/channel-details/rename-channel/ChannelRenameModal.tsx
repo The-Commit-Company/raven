@@ -8,6 +8,7 @@ import { Box, Dialog, Flex, Text, TextField, Button } from "@radix-ui/themes"
 import { ErrorText, Label } from "@/components/common/Form"
 import { Loader } from "@/components/common/Loader"
 import { toast } from "sonner"
+import { useIsDesktop } from "@/hooks/useMediaQuery"
 
 interface RenameChannelForm {
     channel_name: string
@@ -43,6 +44,8 @@ export const RenameChannelModalContent = ({ channelID, channelName, type, onClos
     const handleChange = useCallback((event: ChangeEvent<HTMLInputElement>) => {
         setValue('channel_name', event.target.value?.toLowerCase().replace(' ', '-'))
     }, [setValue])
+
+    const isDesktop = useIsDesktop()
 
     return (
         <FormProvider {...methods}>
@@ -81,7 +84,7 @@ export const RenameChannelModalContent = ({ channelID, channelName, type, onClos
                                     <TextField.Input
                                         maxLength={50}
                                         required
-                                        autoFocus
+                                        autoFocus={isDesktop}
                                         placeholder='e.g. wedding-gone-wrong, joffrey-tributes'
                                         color={error ? 'red' : undefined}
                                         {...field}

@@ -54,7 +54,6 @@ const ViewSchedulerEventPage = ({ data, onUpdate }: { data: any, onUpdate: () =>
     const { updateDoc, error, loading } = useFrappeUpdateDoc()
 
     const onSubmit = (data: any) => {
-        console.log('called')
         let cron_expression = ''
         if (data.event_frequency === 'Every Day') {
             cron_expression = `${data.minute} ${data.hour} * * *`

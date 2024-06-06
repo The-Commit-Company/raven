@@ -97,37 +97,37 @@ export const LinkPreview = memo(({ messageID }: { messageID: string }) => {
 
     const linkPreview = data?.message?.[0]
 
-    return <Flex direction='column' gap='2' py='2'>
-        {linkPreview ? linkPreview.site_name && linkPreview.description ? <Flex gap='4' width='100%'>
+    return <Box py='2'>
+        {linkPreview ? linkPreview.site_name && linkPreview.description ? <Flex className='gap-2 sm:gap-4 sm:flex-start items-center' width='100%'>
             {(linkPreview.absolute_image || linkPreview.image) &&
                 <a href={href} target='_blank'>
-                    <Box className='relative min-w-64 min-h-32 w-64 h-32'>
+                    <Box className='relative w-18 min-w-20 min-h-12 h-12 sm:min-w-64 sm:min-h-32 sm:w-64 sm:h-32'>
                         {/* Absolute positioned skeleton loader */}
-                        <Box className='absolute top-0 z-0 left-0 w-64 h-32' >
-                            <Box className='animate-pulse bg-gray-3 z-0 w-64 h-32 dark:bg-gray-5 rounded-md'>
+                        <Box className='absolute top-0 z-0 left-0 w-20 h-12 sm:w-64 sm:h-32' >
+                            <Box className='animate-pulse bg-gray-3 z-0 w-20 h-12 sm:w-64 sm:h-32 dark:bg-gray-5 rounded-md'>
 
                             </Box>
                         </Box>
                         <img
                             width='100%'
-                            className='absolute object-cover min-w-64 min-h-32 w-64 h-32 rounded-md z-50 top-0 left-0'
+                            className='absolute object-cover min-w-20 sm:min-w-64 min-h-12 sm:min-h-32 w-20 sm:w-64 h-12 sm:h-32 rounded-md z-50 top-0 left-0'
                             src={linkPreview.absolute_image || linkPreview.image}
                             alt={linkPreview.title} />
                     </Box>
                 </a>
             }
-            <Flex className='group pr-2' width='100%' gap='2'>
+            <Flex className='group sm:pr-2 sm:gap-2 gap-0' width='100%'>
                 <a href={href} target='_blank' className='block w-full'>
 
-                    <Flex direction='column' gap='1' py='1'>
-                        <Flex gap='1' direction='column'>
-                            <Text as='span' weight='bold' size='3'>{linkPreview.title}</Text>
-                            <Text as='span' color='gray' size='2' weight='medium'>{linkPreview.site_name}</Text>
+                    <Flex direction='column' gap='1' className='sm:py-1'>
+                        <Flex gap='1' className='sm:flex-col flex-col-reverse'>
+                            <Text as='span' weight='bold' className='sm:text-base text-xs'>{linkPreview.title}</Text>
+                            <Text as='span' color='gray' weight='medium' className='sm:text-md text-xs'>{linkPreview.site_name}</Text>
                         </Flex>
-                        <Text as='p' size='2' className='whitespace-break-spaces'>{linkPreview.description}</Text>
+                        <Text as='p' size='1' className='whitespace-break-spaces sm:block hidden'>{linkPreview.description}</Text>
                     </Flex>
                 </a>
-                <div className='group-hover:visible invisible'>
+                <div className='group-hover:visible invisible sm:block hidden'>
                     <Tooltip content='Hide link preview'>
                         <IconButton size='1'
                             color='gray'
@@ -145,6 +145,6 @@ export const LinkPreview = memo(({ messageID }: { messageID: string }) => {
 
             null
         }
-    </Flex >
+    </Box>
 
 })

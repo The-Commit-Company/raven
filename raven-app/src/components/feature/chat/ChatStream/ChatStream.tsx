@@ -110,9 +110,9 @@ const ChatStream = ({ replyToMessage }: Props) => {
     });
 
     return (
-        <div className='relative h-full flex flex-col overflow-y-auto' ref={scrollRef}>
+        <div className='relative h-full flex flex-col overflow-y-auto pb-16 sm:pb-0' ref={scrollRef}>
             <div ref={oldLoaderRef}>
-                {hasOlderMessages && !isLoading && <div className='flex w-full min-h-8 pb-4 justify-center items-center' >
+                {hasOlderMessages && !isLoading && <div className='flex w-full min-h-8 pb-4 justify-center items-center'>
                     <Loader />
                 </div>}
             </div>

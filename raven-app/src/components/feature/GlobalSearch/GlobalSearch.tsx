@@ -4,6 +4,8 @@ import { MessageSearch } from "./MessageSearch"
 import { Dialog, Flex, Tabs, Box } from "@radix-ui/themes"
 import { DIALOG_CONTENT_CLASS } from "@/utils/layout/dialog"
 import { useBoolean } from "@/hooks/useBoolean"
+import { useIsDesktop } from "@/hooks/useMediaQuery"
+import { Drawer, DrawerContent } from "@/components/layout/Drawer"
 
 interface GlobalSearchModalProps {
     isOpen: boolean,
@@ -13,55 +15,74 @@ interface GlobalSearchModalProps {
     fromFilter?: string,
     inFilter?: string,
     withFilter?: string,
-    onCommandPaletteClose?: () => void
 }
 
-export default function GlobalSearch({ isOpen, onClose, tabIndex, input, fromFilter, inFilter, withFilter, onCommandPaletteClose }: GlobalSearchModalProps) {
+export default function GlobalSearch(props: GlobalSearchModalProps) {
+
+
+    const { isOpen, onClose } = props
+
+    const onOpenChange = (open: boolean) => {
+        if (!open) {
+            onClose()
+        }
+    }
+
+    const isDesktop = useIsDesktop()
+
+    if (isDesktop) {
+        return (
+            <Dialog.Root open={isOpen} onOpenChange={onOpenChange}>
+                <Dialog.Content className={DIALOG_CONTENT_CLASS} style={{
+                    width: '80vw',
+                    maxWidth: '80vw'
+                }}>
+                    <GlobalSearchContent {...props} />
+                </Dialog.Content>
+            </Dialog.Root>
+        )
+    } else {
+        return <Drawer open={isOpen} onClose={onClose}>
+            <DrawerContent>
+                <div className="h-[75vh] pb-24 overflow-y-scroll">
+                    <GlobalSearchContent {...props} />
+                </div>
+            </DrawerContent>
+        </Drawer>
+    }
+
+
+}
+
+const GlobalSearchContent = (props: GlobalSearchModalProps) => {
 
     const [isOpenMyChannels, { toggle: onToggleMyChannels }] = useBoolean()
     const [isSaved, { toggle: onToggleSaved }] = useBoolean()
 
-    const onCloseAll = () => {
-        onClose()
-        onCommandPaletteClose && onCommandPaletteClose()
-    }
-    const onOpenChange = (open: boolean) => {
-        if (!open) {
-            onCloseAll()
-        }
-    }
+    const { tabIndex, input, fromFilter, withFilter, inFilter, onClose } = props
 
-
-    return (
-        <Dialog.Root open={isOpen} onOpenChange={onOpenChange}>
-            <Dialog.Content className={DIALOG_CONTENT_CLASS} style={{
-                width: '80vw',
-                maxWidth: '80vw'
-            }}>
-                <Dialog.Title>Search Results</Dialog.Title>
-                <Flex direction='column' gap='2'>
-                    <Tabs.Root defaultValue={tabIndex.toString()}>
-                        <Tabs.List>
-                            <Tabs.Trigger value="0">Messages</Tabs.Trigger>
-                            <Tabs.Trigger value="1">Files</Tabs.Trigger>
-                            <Tabs.Trigger value="2">Channels</Tabs.Trigger>
-                        </Tabs.List>
-                        <Box pt="3" pb="2">
-                            <Tabs.Content value="0">
-                                {onCommandPaletteClose && <MessageSearch onToggleMyChannels={onToggleMyChannels} isOpenMyChannels={isOpenMyChannels} onToggleSaved={onToggleSaved} isSaved={isSaved} input={input} fromFilter={fromFilter} inFilter={inFilter} withFilter={withFilter} onCommandPaletteClose={onCommandPaletteClose} onClose={onClose} />}
-                            </Tabs.Content>
-                            <Tabs.Content value="1">
-                                <FileSearch onToggleMyChannels={onToggleMyChannels} isOpenMyChannels={isOpenMyChannels} onToggleSaved={onToggleSaved} isSaved={isSaved} input={input} fromFilter={fromFilter} inFilter={inFilter} withFilter={withFilter} />
-                            </Tabs.Content>
-                            <Tabs.Content value="2">
-                                <ChannelSearch onToggleMyChannels={onToggleMyChannels} isOpenMyChannels={isOpenMyChannels} input={input} onClose={onCloseAll} />
-                            </Tabs.Content>
-                        </Box>
-                    </Tabs.Root>
-                </Flex>
-            </Dialog.Content>
-        </Dialog.Root>
-    )
+    return <><Dialog.Title>Search Results</Dialog.Title>
+        <Flex direction='column' gap='2'>
+            <Tabs.Root defaultValue={tabIndex.toString()}>
+                <Tabs.List>
+                    <Tabs.Trigger value="0">Messages</Tabs.Trigger>
+                    <Tabs.Trigger value="1">Files</Tabs.Trigger>
+                    <Tabs.Trigger value="2">Channels</Tabs.Trigger>
+                </Tabs.List>
+                <Box pt="3" pb="2">
+                    <Tabs.Content value="0">
+                        <MessageSearch onToggleMyChannels={onToggleMyChannels} isOpenMyChannels={isOpenMyChannels} onToggleSaved={onToggleSaved} isSaved={isSaved} input={input} fromFilter={fromFilter} inFilter={inFilter} withFilter={withFilter} onClose={onClose} />
+                    </Tabs.Content>
+                    <Tabs.Content value="1">
+                        <FileSearch onToggleMyChannels={onToggleMyChannels} isOpenMyChannels={isOpenMyChannels} onToggleSaved={onToggleSaved} isSaved={isSaved} input={input} fromFilter={fromFilter} inFilter={inFilter} withFilter={withFilter} />
+                    </Tabs.Content>
+                    <Tabs.Content value="2">
+                        <ChannelSearch onToggleMyChannels={onToggleMyChannels} isOpenMyChannels={isOpenMyChannels} input={input} onClose={onClose} />
+                    </Tabs.Content>
+                </Box>
+            </Tabs.Root>
+        </Flex>
+    </>
 }
 
 interface Option {
