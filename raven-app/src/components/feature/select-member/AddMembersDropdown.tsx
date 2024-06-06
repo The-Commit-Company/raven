@@ -172,7 +172,7 @@ const AddMembersDropdown = ({ channelID, label = 'Select users', selectedUsers, 
                     </TextField.Root>
                 </div>
                 <ul
-                    className={`w-[33rem] absolute bg-background rounded-b-md mt-1 shadow-md max-h-96 overflow-scroll p-0 z-50 ${!(isOpen && items.length) && 'hidden'
+                    className={`sm:w-[33rem] absolute bg-background rounded-b-md mt-1 shadow-md max-h-96 overflow-scroll p-0 z-50 ${!(isOpen && items.length) && 'hidden'
                         }`}
                     {...getMenuProps()}
                 >
