@@ -74,7 +74,9 @@ const ReactionButton = ({ reaction, onReactionClick, currentUser, allUsers }: Re
     }, [allUsers, count, currentUser, reaction, users])
 
     return (
-        <Tooltip content={label}>
+        <Tooltip content={<p className="my-0 max-w-96">
+            {label}
+        </p>}>
             <IconButton
                 size='1'
                 onClick={onClick}
