@@ -28,7 +28,7 @@ export const UserActionsMenu = ({ channelData, updateMembers, selectedMember }: 
                         <BiDotsHorizontalRounded fontSize={'1rem'} />
                     </Button>
                 </DropdownMenu.Trigger>
-                <DropdownMenu.Content>
+                <DropdownMenu.Content className='z-50'>
                     <DropdownMenu.Item>
                         <UpdateAdminStatusButton
                             user={selectedMember}
