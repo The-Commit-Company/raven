@@ -73,15 +73,30 @@ export const getUsers = (usersList: string[], count: number, currentUser: string
                 return `${user_1}, ${user_2} and ${user_3}`
             }
         } else if (count > 3) {
+
+
             if (currentUserInList) {
                 const otherUsers = usersList.filter((user, index) => index !== currentUserIndex)
-                return `You, ${userArray.find((user) => user.name == otherUsers[0])?.full_name},
-                ${userArray.find((user) => user.name == otherUsers[1])?.full_name} and ${count - 3} other${count - 3 > 1 ? 's' : ''}`
+
+                // Show all users upto 50
+                const userString = otherUsers.slice(0, 50).map((user) => userArray.find((u) => u.name == user)?.full_name).join(', ')
+
+                const remainingUsers = otherUsers.length - 50
+                if (remainingUsers > 0) {
+                    return `You, ${userString} and ${remainingUsers} others`
+                } else {
+                    return `You and ${userString}`
+                }
             }
             else {
-                return `${userArray.find((user) => user.name == usersList[0])?.full_name},
-                ${userArray.find((user) => user.name == usersList[1])?.full_name},
-                ${userArray.find((user) => user.name == usersList[2])?.full_name} and ${count - 3} other${count - 3 > 1 ? 's' : ''}`
+                const userString = usersList.slice(0, 50).map((user) => userArray.find((u) => u.name == user)?.full_name).join(', ')
+                const remainingUsers = usersList.length - 50
+
+                if (remainingUsers > 0) {
+                    return `${userString} and ${remainingUsers} others`
+                } else {
+                    return userString
+                }
             }
         }
     }
