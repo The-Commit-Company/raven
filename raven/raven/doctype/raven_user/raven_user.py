@@ -14,6 +14,7 @@ class RavenUser(Document):
 
 	if TYPE_CHECKING:
 		from frappe.types import DF
+
 		from raven.raven.doctype.raven_pinned_channels.raven_pinned_channels import RavenPinnedChannels
 
 		availability_status: DF.Literal["", "Available", "Away", "Do not disturb", "Invisible"]
