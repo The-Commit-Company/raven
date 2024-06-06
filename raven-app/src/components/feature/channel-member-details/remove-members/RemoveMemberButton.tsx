@@ -3,6 +3,8 @@ import { useCallback, useState } from 'react'
 import { AlertDialog } from '@radix-ui/themes'
 import { DIALOG_CONTENT_CLASS } from '@/utils/layout/dialog'
 import { Member } from '@/hooks/fetchers/useFetchChannelMembers'
+import { useIsDesktop } from '@/hooks/useMediaQuery'
+import { Drawer, DrawerContent } from '@/components/layout/Drawer'
 
 export const useRemoveMember = () => {
     const [member, setMember] = useState<null | Member>(null)
@@ -25,14 +27,33 @@ interface RemoveMemberDialogProps {
 }
 
 export const RemoveMemberDialog = ({ member, isOpen, onClose }: RemoveMemberDialogProps) => {
-    return <AlertDialog.Root open={isOpen} onOpenChange={onClose}>
-        <AlertDialog.Content className={DIALOG_CONTENT_CLASS}>
-            {member &&
-                <RemoveChannelMemberModal
-                    onClose={onClose}
-                    member={member}
-                />
-            }
-        </AlertDialog.Content>
-    </AlertDialog.Root>
+
+    const isDesktop = useIsDesktop()
+
+    if (isDesktop) {
+        return <AlertDialog.Root open={isOpen} onOpenChange={onClose}>
+            <AlertDialog.Content className={DIALOG_CONTENT_CLASS}>
+                {member &&
+                    <RemoveChannelMemberModal
+                        onClose={onClose}
+                        member={member}
+                    />
+                }
+            </AlertDialog.Content>
+        </AlertDialog.Root>
+    } else {
+        return <Drawer open={isOpen}>
+            <DrawerContent>
+                <div className='min-h-48'>
+                    {member &&
+                        <RemoveChannelMemberModal
+                            onClose={onClose}
+                            member={member}
+                        />
+                    }
+                </div>
+            </DrawerContent>
+        </Drawer>
+    }
+
 }

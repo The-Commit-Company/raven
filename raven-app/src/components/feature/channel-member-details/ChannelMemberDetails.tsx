@@ -84,7 +84,7 @@ const MemberList = ({ channelData, channelMembers, activeUsers, updateMembers, i
         return channelMembersArray.filter((member) =>
             member?.full_name?.toLowerCase().includes(i)
         )
-    }, [input])
+    }, [input, channelMembers])
 
     return <Box className={'overflow-hidden overflow-y-scroll'}>
 
@@ -107,7 +107,7 @@ const MemberList = ({ channelData, channelMembers, activeUsers, updateMembers, i
                                         <Flex gap='1'>
                                             <Text weight='light' size='1'>{member.full_name}</Text>
                                             {member.name === currentUser && <Text weight='light' size='1'>(You)</Text>}
-                                            {channelMembers[member.name].is_admin == 1 && <Flex align="center"><BiSolidCrown color='#FFC53D' /></Flex>}
+                                            {channelMembers[member.name]?.is_admin == 1 && <Flex align="center"><BiSolidCrown color='#FFC53D' /></Flex>}
                                         </Flex>
                                     </Flex>
                                 </Flex>
