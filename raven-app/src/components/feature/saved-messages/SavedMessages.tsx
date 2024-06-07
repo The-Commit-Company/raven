@@ -39,7 +39,7 @@ const SavedMessages = () => {
                     <Heading size='5'>Saved Messages</Heading>
                 </Flex>
             </PageHeader>
-            <Box className="min-h-screen pt-20 pb-8">
+            <Box className="min-h-screen pt-16 pb-8">
                 <ErrorBanner error={error} />
                 {data && data.message?.length === 0 && <EmptyStateForSavedMessages />}
                 <Flex direction='column' gap='3' justify='start' px='4'>
