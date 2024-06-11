@@ -13,6 +13,7 @@ import useCurrentRavenUser from '@/hooks/useCurrentRavenUser'
 import { useIsDesktop } from '@/hooks/useMediaQuery'
 import { SlSettings } from 'react-icons/sl'
 import { TbUsersPlus } from 'react-icons/tb'
+import PushNotificationToggle from '@/components/feature/userSettings/PushNotificationToggle'
 
 export const SidebarFooter = ({ isSettingsPage = false }: { isSettingsPage?: boolean }) => {
 
@@ -58,6 +59,8 @@ export const SidebarFooter = ({ isSettingsPage = false }: { isSettingsPage?: boo
                             {canAddUsers &&
                                 <DropdownMenu.Separator className='hidden sm:block' />
                             }
+
+                            <PushNotificationToggle />
                             {canAddUsers && isDesktop &&
                                 <DropdownMenu.Item color='gray' onClick={() => setIsAddUserModalOpen(true)} className={'flex justify-normal gap-2'}>
                                     <TbUsersPlus size='14' /> Add users to Raven
