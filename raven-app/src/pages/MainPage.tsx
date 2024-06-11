@@ -1,6 +1,6 @@
 import { Flex, Box } from '@radix-ui/themes'
 import { Outlet } from 'react-router-dom'
-import { lazy, Suspense } from 'react'
+import { lazy, Suspense, useEffect } from 'react'
 import { Sidebar } from '../components/layout/Sidebar/Sidebar'
 import { ChannelListProvider } from '../utils/channel/ChannelListProvider'
 import { UserListProvider } from '@/utils/users/UserListProvider'
@@ -9,6 +9,7 @@ import { FullPageLoader } from '@/components/layout/Loaders'
 import CommandMenu from '@/components/feature/CommandMenu/CommandMenu'
 import { useFetchActiveUsersRealtime } from '@/hooks/fetchers/useFetchActiveUsers'
 import { useIsMobile } from '@/hooks/useMediaQuery'
+import { showNotification } from '@/utils/pushNotifications'
 
 const AddRavenUsersPage = lazy(() => import('@/pages/AddRavenUsersPage'))
 
@@ -33,6 +34,13 @@ export const MainPage = () => {
 const MainPageContent = () => {
 
     useFetchActiveUsersRealtime()
+
+    useEffect(() => {
+        //@ts-expect-error
+        window?.frappePushNotification?.onMessage((payload) => {
+            showNotification(payload)
+        })
+    }, [])
 
     const isMobile = useIsMobile()
 
