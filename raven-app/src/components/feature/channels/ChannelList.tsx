@@ -84,7 +84,7 @@ export const ChannelList = ({ unread_count }: { unread_count?: UnreadCountData }
                         height: showData ? height : 0,
                     }}
                 >
-                    <div ref={ref} className="flex gap-1 flex-col">
+                    <div ref={ref} className="flex gap-0.5 flex-col">
                         {filteredChannels.map((channel) => <ChannelItem
                             channel={channel}
                             key={channel.name} />)}

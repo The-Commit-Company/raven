@@ -53,20 +53,20 @@ export const SidebarFooter = ({ isSettingsPage = false }: { isSettingsPage?: boo
                         <DropdownMenu.Content variant='soft'>
                             <SetUserAvailabilityMenu />
                             <DropdownMenu.Item color='gray' className={'flex justify-normal gap-2'} onClick={() => setUserStatusModalOpen(true)}>
-                                <BsEmojiSmile size='14' className={'text-gray-10'} /> Set custom status
+                                <BsEmojiSmile size='14' /> Set custom status
                             </DropdownMenu.Item>
                             {canAddUsers &&
                                 <DropdownMenu.Separator className='hidden sm:block' />
                             }
                             {canAddUsers && isDesktop &&
                                 <DropdownMenu.Item color='gray' onClick={() => setIsAddUserModalOpen(true)} className={'flex justify-normal gap-2'}>
-                                    <TbUsersPlus size='14' className={'text-gray-10'} /> Add users to Raven
+                                    <TbUsersPlus size='14' /> Add users to Raven
                                 </DropdownMenu.Item>
                             }
                             {!isSettingsPage && isDesktop && <DropdownMenu.Item color='gray' className='focus-visible:ring-0 focus-visible:outline-none rounded-radius2 cursor-pointer' asChild>
                                 <Link href="../settings/integrations/webhooks" className='no-underline'>
                                     <Flex gap='2' align='center'>
-                                        <SlSettings size='14' className={'text-gray-10'} /> Settings
+                                        <SlSettings size='14' /> Settings
                                     </Flex>
                                 </Link>
                             </DropdownMenu.Item>}
