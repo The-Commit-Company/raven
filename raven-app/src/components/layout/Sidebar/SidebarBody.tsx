@@ -15,7 +15,7 @@ export const SidebarBody = () => {
             <Flex direction='column' gap='2' className='overflow-x-hidden pb-12 sm:pb-0' px='2'>
                 <Flex direction='column' gap='2' className='pb-0.5'>
                     <Box>
-                        <SidebarItem to={'saved-messages'} className='py-1 px-0.5'>
+                        <SidebarItem to={'saved-messages'} className='py-1'>
                             <AccessibleIcon label='Saved Messages'>
                                 <BiSolidBookmark className='text-gray-12 dark:text-gray-300 mt-0.5 sm:text-sm text-base' />
                             </AccessibleIcon>

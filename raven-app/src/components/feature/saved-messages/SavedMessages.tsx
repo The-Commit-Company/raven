@@ -32,7 +32,7 @@ const SavedMessages = () => {
     return (
         <>
             <PageHeader>
-                <Flex align='center' gap='3'>
+                <Flex align='center' gap='3' className="h-8">
                     <Link to='/channel' className="block bg-transparent hover:bg-transparent active:bg-transparent sm:hidden">
                         <BiChevronLeft size='24' className="block text-gray-12" />
                     </Link>
