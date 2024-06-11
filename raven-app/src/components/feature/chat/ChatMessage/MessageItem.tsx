@@ -116,7 +116,7 @@ export const MessageItem = ({ message, setDeleteMessage, isHighlighted, onReplyM
                             py-2
                             sm:p-2
                             rounded-md`, isHighlighted ? 'bg-yellow-50 hover:bg-yellow-50 dark:bg-yellow-300/20 dark:hover:bg-yellow-300/20' : !isDesktop && isHovered ? 'bg-gray-2 dark:bg-gray-3' : '')}>
-                    <Flex className='gap-2.5 sm:gap-3 '>
+                    <Flex className='gap-2.5 sm:gap-3 items-start'>
                         <MessageLeftElement message={message} user={user} isActive={isActive} />
                         <Flex direction='column' className='gap-0.5' justify='center' width='100%'>
                             {!is_continuation ? <Flex align='center' gap='2' mt='-1'>
@@ -188,7 +188,10 @@ const MessageLeftElement = ({ message, className, user, isActive, ...props }: Me
     // Else, show the avatar
     return <Box className={clsx(message.is_continuation ? 'invisible group-hover:visible flex items-center w-[38px] sm:w-[34px]' : '', className)} {...props}>
         {message.is_continuation ?
-            <DateTooltipShort timestamp={message.creation} />
+            <Box className='-mt-0.5'>
+                <DateTooltipShort timestamp={message.creation} />
+            </Box>
+
             : <MessageSenderAvatar userID={message.owner} user={user} isActive={isActive} />
         }
     </Box>
