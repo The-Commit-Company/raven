@@ -74,14 +74,16 @@ const ReactionButton = ({ reaction, onReactionClick, currentUser, allUsers }: Re
     }, [allUsers, count, currentUser, reaction, users])
 
     return (
-        <Tooltip content={label}>
+        <Tooltip content={<p className="my-0 max-w-96">
+            {label}
+        </p>}>
             <IconButton
                 size='1'
                 onClick={onClick}
                 radius='large'
-                className={clsx("w-fit h-full text-xs py-0.5 cursor-pointer hover:bg-white dark:hover:bg-gray-10",
-                    currentUserReacted ? "bg-accent-4 dark:bg-gray-8" : "bg-gray-3 dark:bg-gray-7")}>
-                <Text as='span' className={clsx("w-fit px-2 text-gray-12")} weight='medium'>
+                className={clsx("w-fit sm:h-full text-xs py-0.5 cursor-pointer sm:hover:bg-white sm:dark:hover:bg-gray-10",
+                    currentUserReacted ? "bg-accent-4 dark:bg-gray-7 font-bold" : "bg-gray-3 dark:bg-gray-4")}>
+                <Text as='span' className={clsx("w-fit px-2 text-gray-12")}>
                     {emoji} {count}
                 </Text>
             </IconButton>

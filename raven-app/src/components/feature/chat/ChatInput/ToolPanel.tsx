@@ -5,7 +5,7 @@ export const ICON_PROPS = {
     size: '18'
 }
 
-export const DEFAULT_BUTTON_STYLE = 'bg-transparent dark:text-gray-10 text-gray-11 hover:bg-accent-a3 hover:text-accent-a11'
+export const DEFAULT_BUTTON_STYLE = 'bg-transparent dark:text-gray-11 sm:dark:text-gray-10 text-gray-11 hover:bg-accent-a3 hover:text-accent-a11 dark:hover:text-accent-a11'
 export const ToolPanel = (props: FlexProps) => {
 
     return (

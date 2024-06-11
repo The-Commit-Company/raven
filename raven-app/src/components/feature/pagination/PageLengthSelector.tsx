@@ -21,7 +21,7 @@ export const PageLengthSelector = ({ options = [20, 50, 100, 200, 500], updateVa
     return (
         <Select.Root size='1' onValueChange={handleChange} value={selectedValue.toString()}>
             <Select.Trigger variant="soft" color="gray" />
-            <Select.Content>
+            <Select.Content className="z-50">
                 {options?.map((option) => (
                     <Select.Item key={option} value={option.toString()}>{option} rows</Select.Item>
                 ))}

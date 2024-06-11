@@ -114,7 +114,8 @@ const MentionItem = ({ item, index, selectItem, selectedIndex, itemsLength }: { 
             variant='solid'
             radius='full'
             isActive={isActive}
+            availabilityStatus={item.availability_status}
         />
         <Text as='span' weight='medium' size='2'> {item.full_name}</Text>
-    </Flex >
+    </Flex>
 }

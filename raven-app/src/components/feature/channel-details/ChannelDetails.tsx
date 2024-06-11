@@ -2,13 +2,14 @@ import { useContext } from "react"
 import { UserContext } from "../../../utils/auth/UserProvider"
 import { ChannelListItem } from "@/utils/channel/ChannelListProvider"
 import { ChannelIcon } from "@/utils/layout/channelIcon"
-import { ChannelMembers } from "@/utils/channel/ChannelMembersProvider"
 import { EditChannelNameButton } from "./rename-channel/EditChannelNameButton"
 import { EditDescriptionButton } from "./edit-channel-description/EditDescriptionButton"
-import { useGetUserRecords } from "@/hooks/useGetUserRecords"
 import { LeaveChannelButton } from "./leave-channel/LeaveChannelButton"
-import { Box, Flex, Separator, Text } from "@radix-ui/themes"
+import { Box, Flex, Separator, Switch, Text } from "@radix-ui/themes"
 import { DateMonthYear } from "@/utils/dateConversions"
+import { ChannelMembers } from "@/hooks/fetchers/useFetchChannelMembers"
+import { useGetUser } from "@/hooks/useGetUser"
+import ChannelPushNotificationToggle from "./ChannelPushNotificationToggle"
 
 interface ChannelDetailsProps {
     channelData: ChannelListItem,
@@ -19,11 +20,11 @@ interface ChannelDetailsProps {
 export const ChannelDetails = ({ channelData, channelMembers, onClose }: ChannelDetailsProps) => {
 
     const { currentUser } = useContext(UserContext)
-    const admin = Object.values(channelMembers).find(user => user.is_admin === 1)
-    const users = useGetUserRecords()
+
+    const channelOwner = useGetUser(channelData.owner)
 
     return (
-        <Flex direction='column' gap='4' className={'h-96'}>
+        <Flex direction='column' gap='4' className={'h-[66vh] pb-2 sm:h-96'}>
 
             <Box className={'p-4 rounded-md border border-gray-6'}>
                 <Flex justify={'between'}>
@@ -34,9 +35,17 @@ export const ChannelDetails = ({ channelData, channelMembers, onClose }: Channel
                             <Text size='2'>{channelData?.channel_name}</Text>
                         </Flex>
                     </Flex>
-                    <EditChannelNameButton channelID={channelData.name} channel_name={channelData.channel_name} channelType={channelData.type} disabled={channelData.is_archived == 1} />
+                    <EditChannelNameButton
+                        channelID={channelData.name}
+                        channel_name={channelData.channel_name}
+                        className=""
+                        channelType={channelData.type}
+                        disabled={channelData.is_archived == 1} />
                 </Flex>
             </Box>
+            <ChannelPushNotificationToggle channelID={channelData.name}
+                channelMember={channelMembers[currentUser]}
+            />
 
             <Box className={'p-4 rounded-md border border-gray-6'}>
                 <Flex direction='column' gap='4'>
@@ -55,20 +64,10 @@ export const ChannelDetails = ({ channelData, channelMembers, onClose }: Channel
                     <Flex direction={'column'} gap='1'>
                         <Text weight='medium' size='2'>Created by</Text>
                         <Flex gap='1'>
-                            {channelData?.owner && <Text size='1'>{users[channelData.owner]?.full_name ?? channelData?.owner}</Text>}
+                            {channelData?.owner && <Text size='1'>{channelOwner?.full_name ?? channelData?.owner}</Text>}
                             {channelData.creation && <Text size='1' color='gray' as='span'>on <DateMonthYear date={channelData?.creation} /></Text>}
                         </Flex>
                     </Flex>
-
-                    {channelData?.type != 'Open' && <>
-                        <Separator className={'w-full'} />
-                        <Flex direction={'column'} gap='1'>
-                            <Text weight='medium' size='2'>Channel admin</Text>
-                            <Flex>
-                                {admin ? <Text size='1'>{admin.full_name}</Text> : <Text size='2' color='gray'>No administrator</Text>}
-                            </Flex>
-                        </Flex>
-                    </>}
 
                     {/* users can only leave channels they are members of */}
                     {/* users cannot leave open channels */}

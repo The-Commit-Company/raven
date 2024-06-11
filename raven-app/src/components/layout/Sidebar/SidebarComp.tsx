@@ -39,7 +39,10 @@ type SidebarGroupLabelProps = TextProps & {
 
 export const SidebarGroupLabel = ({ children, ...props }: SidebarGroupLabelProps) => {
     return (
-        <Text size='2' weight='bold' {...props} className={clsx('cal-sans text-gray-12 dark:text-gray-300', props.className)}>
+        <Text size={{
+            initial: '3',
+            md: '2'
+        }} weight='bold' {...props} className={clsx('cal-sans text-gray-12 dark:text-gray-300', props.className)}>
             {children}
         </Text>
     )
@@ -51,7 +54,7 @@ interface SidebarGroupListProps extends FlexProps {
 export const SidebarGroupList = ({ children, ...props }: SidebarGroupListProps) => {
 
     return (
-        <Flex gap='1' direction='column' {...props} className={clsx(`transition-all ease-ease-out-cubic duration-200 overflow-hidden`, props.className)}>
+        <Flex direction='column' {...props} className={clsx(`gap-0.5 transition-all ease-ease-out-cubic duration-200 overflow-hidden`, props.className)}>
             {children}
         </Flex>
     )
@@ -81,7 +84,7 @@ export const SidebarItem = ({ to, children, end, active = false, activeStyles, c
                         gap='2'
                         align='center'
                         px='2'
-                        className={clsx('cursor-pointer text-gray-12 user-select-none rounded-md no-underline transition-all duration-200 hover:bg-gray-3 dark:hover:bg-gray-3', isActive ? activeClass : '', className)}
+                        className={clsx('cursor-pointer text-gray-12 user-select-none rounded-md no-underline sm:hover:bg-gray-3 active:bg-gray-3', isActive ? activeClass : '', className)}
                         {...props}>
                         {children}
                     </Flex>
@@ -113,7 +116,7 @@ interface SidebarButtonItemProps extends FlexProps {
     active?: boolean
 }
 
-export const SidebarButtonItem = ({ children, subtle, onClick, isLoading, active, ...props }: SidebarButtonItemProps) => {
+export const SidebarButtonItem = ({ children, subtle, onClick, isLoading, active, className, ...props }: SidebarButtonItemProps) => {
 
     const cursor = isLoading ? "cursor-progress" : "cursor-pointer"
 
@@ -121,8 +124,8 @@ export const SidebarButtonItem = ({ children, subtle, onClick, isLoading, active
         <Flex
             gap='2'
             align='center'
-            px='3'
-            className={'user-select-none rounded-md py-1.5 transition-all duration-200 hover:bg-slate-3 hover:text-slate-11 ' + cursor}
+            px='2'
+            className={clsx('user-select-none rounded-md py-0.5 text-gray-12 hover:bg-gray-3 ', cursor, className)}
             onClick={onClick}
             {...props}
         >
@@ -147,20 +150,20 @@ export const SidebarViewMoreButton = ({ expanded, onClick, ...props }: SidebarVi
             radius='large'
             onClick={onClick}
             {...props}
-            className={clsx('cursor-pointer transition-all text-gray-10 dark:text-gray-300 bg-transparent hover:bg-gray-3 invisible group-hover:visible ease-ease')}
+            className={clsx('cursor-pointer transition-all text-gray-10 dark:text-gray-300 bg-transparent sm:hover:bg-gray-3 sm:invisible sm:group-hover:visible ease-ease')}
         >
             {expanded ? <FiChevronDown size='16' /> : <FiChevronRight size='16' />}
         </IconButton>
     )
 }
 
-export const SidebarBadge = ({ children, ...props }: BadgeProps) => {
+export const SidebarBadge = ({ children, className, ...props }: BadgeProps) => {
 
     return (
         <Theme accentColor='gray'>
-            <div className='flex items-center justify-center min-w-2 text-accent-a11 dark:text-accent-a11 dark:bg-accent-a3 bg-accent-a4 text-xs py-0.5 px-2 rounded-radius2
+            <div className={clsx(`flex items-center justify-center min-w-2 text-accent-a11 dark:text-accent-a11 dark:bg-accent-a3 bg-accent-a4 text-xs py-0.5 px-2 rounded-radius2
             whitespace-nowrap font-medium
-            '>
+            `, className)}>
                 {children}
             </div>
         </Theme>

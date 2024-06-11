@@ -17,7 +17,9 @@
   "user_image",
   "html_xuuw",
   "pinned_channels_section",
-  "pinned_channels"
+  "pinned_channels",
+  "availability_status",
+  "custom_status"
  ],
  "fields": [
   {
@@ -97,11 +99,22 @@
    "fieldname": "pinned_channels",
    "fieldtype": "Table",
    "options": "Raven Pinned Channels"
+  },
+  {
+   "fieldname": "availability_status",
+   "fieldtype": "Select",
+   "label": "Availability Status",
+   "options": "\nAvailable\nAway\nDo not disturb\nInvisible"
+  },
+  {
+   "fieldname": "custom_status",
+   "fieldtype": "Data",
+   "label": "Custom Status"
   }
  ],
  "image_field": "user_image",
  "links": [],
- "modified": "2024-04-26 08:17:30.726607",
+ "modified": "2024-05-24 15:23:40.547992",
  "modified_by": "Administrator",
  "module": "Raven",
  "name": "Raven User",

@@ -55,7 +55,7 @@ export const FileExtensionIcon = ({ ext, ...props }: FileExtensionIconProps) => 
         {fileType === 'video' && <FaRegFileVideo size='20' {...props} />}
         {fileType === 'audio' && <FaRegFileAudio size='20' {...props} />}
         {fileType === 'powerpoint' && <FaRegFilePowerpoint size='20' {...props} />}
-        {fileType === 'file' && <FaRegFileAlt width='20' {...props} />}
+        {fileType === 'file' && <FaRegFileAlt size='20' {...props} />}
     </span>
 
 }

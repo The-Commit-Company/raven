@@ -96,10 +96,8 @@ export const FileSearch = ({ onToggleMyChannels, isOpenMyChannels, onToggleSaved
                         </TextField.Slot>
                     </TextField.Root>
                     <Select.Root value={fileType} onValueChange={setFileType} >
-                        <Select.Trigger placeholder='File Type' style={{
-                            width: '20%'
-                        }} />
-                        <Select.Content>
+                        <Select.Trigger placeholder='File Type' className='min-w-[20%]' />
+                        <Select.Content className="z-50">
                             <Select.Group>
                                 <Select.Label>File Type</Select.Label>
                                 <Select.Item value='any'>
@@ -149,11 +147,11 @@ export const FileSearch = ({ onToggleMyChannels, isOpenMyChannels, onToggleSaved
                 <Grid
                     gap='2'
                     justify="between"
-                    columns='5'
+                    columns={{ initial: '2', md: '5' }}
                     align='center'>
                     <Select.Root value={userFilter} onValueChange={setUserFilter}>
                         <Select.Trigger placeholder='From' id='from-filter' />
-                        <Select.Content>
+                        <Select.Content className="z-50">
                             <Select.Item value='any'>From anyone</Select.Item>
                             <Select.Group>
                                 <Select.Label>Message from</Select.Label>
@@ -172,7 +170,7 @@ export const FileSearch = ({ onToggleMyChannels, isOpenMyChannels, onToggleSaved
 
                     <Select.Root value={channelFilter} onValueChange={setChannelFilter}>
                         <Select.Trigger placeholder='Channel / DM' />
-                        <Select.Content>
+                        <Select.Content className="z-50">
                             <Select.Item value='any'>Any channel</Select.Item>
                             <Select.Group>
                                 <Select.Label>Channels</Select.Label>
@@ -205,7 +203,7 @@ export const FileSearch = ({ onToggleMyChannels, isOpenMyChannels, onToggleSaved
 
                     <Select.Root value={dateFilter} onValueChange={setDateFilter}>
                         <Select.Trigger placeholder='Date' />
-                        <Select.Content>
+                        <Select.Content className="z-50">
                             <Select.Group>
                                 <Select.Label>Date</Select.Label>
                                 <Select.Item value='any'>Any time</Select.Item>
@@ -228,24 +226,24 @@ export const FileSearch = ({ onToggleMyChannels, isOpenMyChannels, onToggleSaved
                     </Text>
                 </Grid>
             </Flex>
-            <ScrollArea type="always" scrollbars="vertical" style={{ height: 420 }} mt='4'>
+            <ScrollArea type="always" scrollbars="vertical" className='sm:h-[420px] h-[58vh]' mt='4'>
                 <ErrorBanner error={error} />
                 {data?.message?.length === 0 && <EmptyStateForSearch />}
                 {data?.message && data.message.length > 0 ?
 
-                    <Flex direction='column' gap='2'>
+                    <Flex direction='column' gap='4'>
                         {data.message.map((f: FileSearchResult) => {
                             return (
                                 <Flex gap='3' key={f.name} align='center'>
-                                    <Flex style={{ width: '50px', height: '50px' }} align='center' justify='center'>
-                                        {f.message_type === 'File' && <FileExtensionIcon ext={getFileExtension(f.file)} size='24px' />}
+                                    <Flex align='center' justify='center' className='w-[10%] sm:w-[5%]'>
+                                        {f.message_type === 'File' && <FileExtensionIcon ext={getFileExtension(f.file)} size='24' />}
                                         {f.message_type === 'Image' && <img src={f.file} alt='File preview' className='rounded-md object-cover' style={{
                                             width: '36px',
                                             height: '36px',
                                         }}
                                         />}
                                     </Flex>
-                                    <Flex direction='column'>
+                                    <Flex direction='column' className='w-[94%]'>
                                         {f.file && <Link weight='medium' size='2' href={f.file} target='_blank'>{getFileName(f.file)} {f.file}</Link>}
                                         {users && <Text size='1' color='gray'>Shared by {Object.values(users).find((user: UserFields) => user.name === f.owner)?.full_name} on <DateMonthYear date={f.creation} /></Text>}
                                     </Flex>

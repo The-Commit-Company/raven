@@ -7,6 +7,8 @@ import { ErrorBanner } from '@/components/layout/AlertBanner'
 import { UserAvatar } from '@/components/common/UserAvatar'
 import { useGetUser } from '@/hooks/useGetUser'
 import clsx from 'clsx'
+import { useIsDesktop } from '@/hooks/useMediaQuery'
+import { Drawer, DrawerContent, DrawerTrigger } from '@/components/layout/Drawer'
 
 type VoteData = {
     users: string[]
@@ -27,22 +29,42 @@ export const ViewPollVotes = ({ poll }: ViewPollVotesProps) => {
         setOpen(false)
     }
 
-    return (
-        <Dialog.Root open={open} onOpenChange={setOpen}>
+    const isDesktop = useIsDesktop()
 
+    if (isDesktop) {
+        return (
+            <Dialog.Root open={open} onOpenChange={setOpen}>
+
+                <Separator className='w-full' />
+                <Dialog.Trigger>
+                    <Button variant='ghost' size={'1'} className='-mb-2.5 bg-transparent hover:text-accent-10 w-full'>View Votes</Button>
+                </Dialog.Trigger>
+
+                <Dialog.Content className={clsx(DIALOG_CONTENT_CLASS, 'max-h-[80vh]')}>
+                    <ViewPollVotesModalContent
+                        onClose={onClose}
+                        poll={poll} />
+                </Dialog.Content>
+
+            </Dialog.Root>
+        )
+    } else {
+        return <Drawer open={open} onOpenChange={setOpen}>
             <Separator className='w-full' />
-            <Dialog.Trigger>
-                <Button variant='ghost' size={'1'} className='-mb-2.5 bg-transparent hover:text-accent-10 w-full'>View Votes</Button>
-            </Dialog.Trigger>
+            <DrawerTrigger asChild>
+                <Button variant='ghost' size={'1'} className='bg-transparent hover:text-accent-10 w-full'>View Votes</Button>
+            </DrawerTrigger>
+            <DrawerContent>
+                <div className='h-[80vh]'>
+                    <ViewPollVotesModalContent
+                        onClose={onClose}
+                        poll={poll} />
+                </div>
+            </DrawerContent>
+        </Drawer>
+    }
 
-            <Dialog.Content className={clsx(DIALOG_CONTENT_CLASS, 'max-h-[80vh]')}>
-                <ViewPollVotesModalContent
-                    onClose={onClose}
-                    poll={poll} />
-            </Dialog.Content>
 
-        </Dialog.Root>
-    )
 }
 
 interface ViewPollVotesModalContentProps {
@@ -117,7 +139,6 @@ const UserVote = ({ user_id }: { user_id: string }) => {
         <UserAvatar alt={user?.full_name} src={user?.user_image} size='2' />
         <div className='flex flex-col text-ellipsis justify-center border-b border-gray-6 w-full pb-2 group-last:pb-0 group-last:border-b-0'>
             <Text as='span' className='block' weight='medium' size='2'>{user?.full_name}</Text>
-            <Text as='span' size='1' color='gray'>{user?.name}</Text>
         </div>
     </Flex>
 }

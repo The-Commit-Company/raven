@@ -1,12 +1,12 @@
 import { ErrorBanner } from "@/components/layout/AlertBanner"
 import { UserContext } from "@/utils/auth/UserProvider"
 import { ChannelListItem } from "@/utils/channel/ChannelListProvider"
-import { ChannelMembers } from "@/utils/channel/ChannelMembersProvider"
 import { useFrappeUpdateDoc } from "frappe-react-sdk"
 import { useContext } from "react"
 import { Box, Button, Flex, Text } from "@radix-ui/themes"
 import { Loader } from "@/components/common/Loader"
 import { toast } from "sonner"
+import { ChannelMembers } from "@/hooks/fetchers/useFetchChannelMembers"
 
 interface ArchivedChannelBoxProps {
     channelData: ChannelListItem,

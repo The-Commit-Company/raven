@@ -53,6 +53,7 @@ const PollMessageBox = ({ data, messageID }: { data: Poll, messageID: string }) 
         group-hover:transition-all
         group-hover:delay-100
         min-w-64
+        max-w-96
         w-full
         rounded-md">
             <Flex direction='column' gap='2' p='2' className="w-full">

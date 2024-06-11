@@ -1,4 +1,4 @@
-import { useContext } from "react"
+import { useCallback, useContext } from "react"
 import { ChannelDetails } from "../channel-details/ChannelDetails"
 import { ChannelMemberDetails } from "../channel-member-details/ChannelMemberDetails"
 import { FilesSharedInChannel } from '../channel-shared-files/FilesSharedInChannel'
@@ -6,26 +6,65 @@ import { ChannelSettings } from "../channel-settings/ChannelSettings"
 import { UserContext } from "../../../utils/auth/UserProvider"
 import { ChannelIcon } from "@/utils/layout/channelIcon"
 import { ChannelListItem } from "@/utils/channel/ChannelListProvider"
-import { ChannelMembers } from "@/utils/channel/ChannelMembersProvider"
 import { Box, Dialog, Flex, Tabs, Text } from "@radix-ui/themes"
 import { DIALOG_CONTENT_CLASS } from "@/utils/layout/dialog"
+import useFetchChannelMembers from "@/hooks/fetchers/useFetchChannelMembers"
+import useFetchActiveUsers from "@/hooks/fetchers/useFetchActiveUsers"
+import { useIsDesktop } from "@/hooks/useMediaQuery"
+import { Drawer, DrawerContent } from "@/components/layout/Drawer"
 
 interface ViewChannelDetailsModalContentProps {
-    onClose: () => void,
+    open: boolean,
+    setOpen: (open: boolean) => void
     channelData: ChannelListItem,
-    activeUsers: string[],
-    channelMembers: ChannelMembers,
-    updateMembers: () => void
+
 }
 
-export const ViewChannelDetailsModalContent = ({ onClose, channelData, channelMembers, activeUsers, updateMembers }: ViewChannelDetailsModalContentProps) => {
+const ViewChannelDetailsModal = ({ open, setOpen, channelData }: ViewChannelDetailsModalContentProps) => {
+
+    const isDesktop = useIsDesktop()
+
+    if (isDesktop) {
+        return (
+            <Dialog.Root open={open} onOpenChange={setOpen}>
+                <Dialog.Content className={DIALOG_CONTENT_CLASS}>
+                    <ViewChannelDetailsModalContent open={open} setOpen={setOpen} channelData={channelData} />
+                </Dialog.Content>
+            </Dialog.Root>
+        )
+    } else {
+        return <Drawer open={open}
+            onOpenChange={setOpen}
+        >
+            <DrawerContent>
+                <ViewChannelDetailsModalContent open={open} setOpen={setOpen} channelData={channelData} />
+            </DrawerContent>
+        </Drawer>
+    }
+
+
+}
+
+export default ViewChannelDetailsModal
+
+const ViewChannelDetailsModalContent = ({ setOpen, channelData }: ViewChannelDetailsModalContentProps) => {
+
+    const { data } = useFetchActiveUsers()
+
+    const activeUsers = data?.message ?? []
+
+    const { channelMembers, mutate: updateMembers } = useFetchChannelMembers(channelData.name)
 
     const memberCount = Object.keys(channelMembers).length
     const { currentUser } = useContext(UserContext)
     const type = channelData.type
 
+    const onClose = useCallback(() => {
+        setOpen(false)
+    }, [setOpen])
+
     return (
-        <Dialog.Content className={DIALOG_CONTENT_CLASS}>
+        <>
             <Dialog.Title>
                 <Flex align='center' gap='2'>
                     <ChannelIcon className={'mt-1'} type={type} />
@@ -33,7 +72,7 @@ export const ViewChannelDetailsModalContent = ({ onClose, channelData, channelMe
                 </Flex>
             </Dialog.Title>
 
-            <Tabs.Root defaultValue="Members">
+            <Tabs.Root defaultValue="About">
                 <Flex direction={'column'} gap='4'>
                     <Tabs.List>
                         <Tabs.Trigger value="About">About</Tabs.Trigger>
@@ -64,6 +103,6 @@ export const ViewChannelDetailsModalContent = ({ onClose, channelData, channelMe
                     </Box>
                 </Flex>
             </Tabs.Root>
-        </Dialog.Content>
+        </>
     )
 }

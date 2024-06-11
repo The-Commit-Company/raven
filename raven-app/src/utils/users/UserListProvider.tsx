@@ -11,7 +11,7 @@ export const UserListContext = createContext<{ users: UserFields[], enabledUsers
     enabledUsers: []
 })
 
-export type UserFields = Pick<RavenUser, 'name' | 'full_name' | 'user_image' | 'first_name' | 'enabled' | 'type'>
+export type UserFields = Pick<RavenUser, 'name' | 'full_name' | 'user_image' | 'first_name' | 'enabled' | 'type' | 'availability_status' | 'custom_status'>
 
 export const UserListProvider = ({ children }: PropsWithChildren) => {
 
@@ -22,6 +22,9 @@ export const UserListProvider = ({ children }: PropsWithChildren) => {
         revalidateOnReconnect: false,
     })
 
+    /** TODO: If a bulk import happens, this gets called multiple times potentially causing the server to go down.
+     * Instead, throttle this - wait for all events to subside
+     */
     useFrappeDocTypeEventListener('Raven User', () => {
         mutate()
 

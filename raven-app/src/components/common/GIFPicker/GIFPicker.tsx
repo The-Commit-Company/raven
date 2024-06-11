@@ -1,5 +1,5 @@
 import { useDebounce } from "@/hooks/useDebounce"
-import { Box, Flex, TextField } from "@radix-ui/themes"
+import { Box, Flex, ScrollArea, TextField } from "@radix-ui/themes"
 import { useState } from "react"
 import { BiSearch } from "react-icons/bi"
 import { GIFSearchResults } from "./GIFSearchResults"
@@ -20,7 +20,7 @@ export interface GIFPickerProps {
  * GIF Picker component (in-house) to search and select GIFs
  * @param onSelect - callback function to handle GIF selection
  */
-export const GIFPicker = ({ onSelect }: GIFPickerProps) => {
+const GIFPicker = ({ onSelect }: GIFPickerProps) => {
     // Get GIFs from Tenor API and display them
     // show a search bar to search for GIFs
     // on select, call onSelect with the gif URL
@@ -29,10 +29,10 @@ export const GIFPicker = ({ onSelect }: GIFPickerProps) => {
     const debouncedText = useDebounce(searchText, 200)
 
     return (
-        <Flex className="h-[550px] w-[450px] justify-center">
-            <Flex direction={'column'} gap='2' align='center' pt={'3'}>
-                <Box>
-                    <TextField.Root className="w-[425px] mb-1">
+        <Flex className="w-full justify-center">
+            <Flex direction={'column'} gap='2' align='center' pt={'3'} width={'100%'} className="px-0.5 sm:px-4">
+                <Box className="w-full">
+                    <TextField.Root className="w-full mb-1">
                         <TextField.Slot>
                             <BiSearch />
                         </TextField.Slot>
@@ -43,14 +43,17 @@ export const GIFPicker = ({ onSelect }: GIFPickerProps) => {
                             placeholder='Search GIFs' />
                     </TextField.Root>
                 </Box>
+                <ScrollArea className="h-[74vh] sm:h-auto pb-6 sm:pb-10 ">
+                    {debouncedText.length >= 2 ? (
+                        <GIFSearchResults query={debouncedText} onSelect={onSelect} />
+                    ) : (
+                        <GIFFeaturedResults onSelect={onSelect} />
+                    )}
 
-                {debouncedText.length >= 2 ? (
-                    <GIFSearchResults query={debouncedText} onSelect={onSelect} />
-                ) : (
-                    <GIFFeaturedResults onSelect={onSelect} />
-                )}
+                </ScrollArea>
 
-                <Box position={'fixed'} className="bottom-0 pb-2 bg-inherit">
+
+                <Box position={'fixed'} className="bottom-0 py-2 bg-background w-full text-center">
                     <img
                         src="https://www.gstatic.com/tenor/web/attribution/PB_tenor_logo_blue_horizontal.png"
                         alt="Powered by Tenor"
@@ -61,3 +64,5 @@ export const GIFPicker = ({ onSelect }: GIFPickerProps) => {
         </Flex>
     )
 }
+
+export default GIFPicker

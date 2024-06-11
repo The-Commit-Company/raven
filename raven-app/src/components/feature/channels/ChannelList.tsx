@@ -84,7 +84,7 @@ export const ChannelList = ({ unread_count }: { unread_count?: UnreadCountData }
                         height: showData ? height : 0,
                     }}
                 >
-                    <div ref={ref} className="flex gap-1 flex-col">
+                    <div ref={ref} className="flex gap-0.5 flex-col">
                         {filteredChannels.map((channel) => <ChannelItem
                             channel={channel}
                             key={channel.name} />)}
@@ -125,7 +125,10 @@ export const ChannelItemElement = ({ channel }: { channel: ChannelListItemWithUn
                 `}>
                     <ChannelIcon type={channel.type} size='18' />
                     <Flex justify='between' align={'center'} width='100%'>
-                        <Text size='2' className="text-ellipsis line-clamp-1" as='span' weight={showUnread ? 'bold' : 'medium'}>{channel.channel_name}</Text>
+                        <Text size={{
+                            initial: '3',
+                            md: '2'
+                        }} className="text-ellipsis line-clamp-1" as='span' weight={showUnread ? 'bold' : 'medium'}>{channel.channel_name}</Text>
                         {showUnread ? <SidebarBadge>{channel.unread_count}</SidebarBadge> : null}
                     </Flex>
                 </SidebarItem>

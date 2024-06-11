@@ -3,7 +3,6 @@ import { DirectMessageSpace } from "@/components/feature/chat/chat-space/DirectM
 import { ErrorBanner } from "@/components/layout/AlertBanner"
 import { FullPageLoader } from "@/components/layout/Loaders"
 import { useCurrentChannelData } from "@/hooks/useCurrentChannelData"
-import { ChannelMembersProvider } from "@/utils/channel/ChannelMembersProvider"
 import { useEffect } from "react"
 import { Box } from '@radix-ui/themes'
 import { useLocation, useParams } from "react-router-dom"
@@ -97,11 +96,10 @@ const ChatSpaceArea = ({ channelID }: { channelID: string }) => {
     return <Box>
         {isLoading && <FullPageLoader />}
         <ErrorBanner error={error} />
-        {channel && <ChannelMembersProvider channelID={channelID}>
-            {channel.type === "dm" ?
+        {channel ?
+            channel.type === "dm" ?
                 <DirectMessageSpace channelData={channel.channelData} />
                 : <ChannelSpace channelData={channel.channelData} />
-            }
-        </ChannelMembersProvider>}
+            : null}
     </Box>
 }

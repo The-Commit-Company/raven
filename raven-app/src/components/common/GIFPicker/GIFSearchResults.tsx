@@ -47,7 +47,7 @@ export const GIFSearchResults = ({ query, onSelect }: Props) => {
     }, [data]);
 
     return (
-        <div className="overflow-y-auto h-[455px] w-[420px]">
+        <div className="overflow-y-auto sm:h-[455px] w-full">
             {isLoading ? <GIFGallerySkeleton /> :
                 <div className="w-full columns-2 gap-2">
                     {GIFS && GIFS?.results?.map((gif: Result, index: number) => (

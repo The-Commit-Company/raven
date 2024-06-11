@@ -56,17 +56,22 @@ export const TiptapRenderer = ({ message, user, isScrolling = false, isTruncated
         italic: false,
         orderedList: {
           HTMLAttributes: {
-            class: 'list-decimal'
+            class: 'list-decimal pl-6'
+          }
+        },
+        bulletList: {
+          HTMLAttributes: {
+            class: 'list-disc pl-4'
           }
         },
         listItem: {
           HTMLAttributes: {
-            class: 'ml-5 rt-Text text-sm'
+            class: 'rt-Text leading-relaxed text-sm'
           }
         },
         paragraph: {
           HTMLAttributes: {
-            class: 'rt-Text text-sm'
+            class: 'rt-Text leading-relaxed text-sm'
           }
         },
         code: {
@@ -91,7 +96,7 @@ export const TiptapRenderer = ({ message, user, isScrolling = false, isTruncated
       Italic,
       Image.configure({
         HTMLAttributes: {
-          class: 'w-full h-auto'
+          class: 'w-full max-w-48 sm:max-w-96 mt-1 h-auto'
         },
         inline: true
       }),

@@ -2,6 +2,7 @@ import json
 
 import frappe
 from frappe import _
+from frappe.utils.caching import redis_cache
 
 
 @frappe.whitelist(methods=["GET"])
@@ -12,7 +13,7 @@ def get_current_raven_user():
 
 	# Check if the user is a Raven User and has he "Raven User" role
 	# If not, then throw an error
-	if "Raven User" not in frappe.get_roles():
+	if not frappe.has_permission("Raven User"):
 		frappe.throw(
 			_(
 				"You do not have a <b>Raven User</b> role. Please contact your administrator to add your user profile as a <b>Raven User</b>."
@@ -23,7 +24,8 @@ def get_current_raven_user():
 	return frappe.get_cached_doc("Raven User", {"user": frappe.session.user})
 
 
-@frappe.whitelist()
+@frappe.whitelist(methods=["GET"])
+@frappe.read_only()
 def get_list():
 	"""
 	Fetches list of all users who have the role: Raven User
@@ -31,7 +33,7 @@ def get_list():
 
 	# Check if the user is a Raven User and has he "Raven User" role
 	# If not, then throw an error
-	if "Raven User" not in frappe.get_roles():
+	if not frappe.has_permission("Raven User"):
 		frappe.throw(
 			_(
 				"You do not have a <b>Raven User</b> role. Please contact your administrator to add your user profile as a <b>Raven User</b>."
@@ -39,17 +41,24 @@ def get_list():
 			title=_("Insufficient permissions. Please contact your administrator."),
 		)
 
-	if not frappe.db.exists("Raven User", {"user": frappe.session.user}):
-		frappe.throw(
-			_(
-				"You do not have a <b>Raven User</b> profile. Please contact your administrator to add your user profile as a <b>Raven User</b>."
-			),
-			title=_("Insufficient permissions. Please contact your administrator."),
-		)
+	# Get users is cached since this won't change frequently
+	return get_users()
 
+
+@redis_cache()
+def get_users():
 	users = frappe.db.get_all(
 		"Raven User",
-		fields=["full_name", "user_image", "name", "first_name", "enabled", "type"],
+		fields=[
+			"full_name",
+			"user_image",
+			"name",
+			"first_name",
+			"enabled",
+			"type",
+			"availability_status",
+			"custom_status",
+		],
 		order_by="full_name",
 	)
 	return users
