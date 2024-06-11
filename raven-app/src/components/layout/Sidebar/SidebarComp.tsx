@@ -54,7 +54,7 @@ interface SidebarGroupListProps extends FlexProps {
 export const SidebarGroupList = ({ children, ...props }: SidebarGroupListProps) => {
 
     return (
-        <Flex gap='1' direction='column' {...props} className={clsx(`transition-all ease-ease-out-cubic duration-200 overflow-hidden`, props.className)}>
+        <Flex direction='column' {...props} className={clsx(`gap-0.5 transition-all ease-ease-out-cubic duration-200 overflow-hidden`, props.className)}>
             {children}
         </Flex>
     )
@@ -157,13 +157,13 @@ export const SidebarViewMoreButton = ({ expanded, onClick, ...props }: SidebarVi
     )
 }
 
-export const SidebarBadge = ({ children, ...props }: BadgeProps) => {
+export const SidebarBadge = ({ children, className, ...props }: BadgeProps) => {
 
     return (
         <Theme accentColor='gray'>
-            <div className='flex items-center justify-center min-w-2 text-accent-a11 dark:text-accent-a11 dark:bg-accent-a3 bg-accent-a4 text-xs py-0.5 px-2 rounded-radius2
+            <div className={clsx(`flex items-center justify-center min-w-2 text-accent-a11 dark:text-accent-a11 dark:bg-accent-a3 bg-accent-a4 text-xs py-0.5 px-2 rounded-radius2
             whitespace-nowrap font-medium
-            '>
+            `, className)}>
                 {children}
             </div>
         </Theme>

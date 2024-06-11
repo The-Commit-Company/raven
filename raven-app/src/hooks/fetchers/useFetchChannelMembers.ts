@@ -7,7 +7,9 @@ export type Member = {
     first_name: string
     is_admin: 1 | 0,
     type?: 'User' | 'Bot',
-    availability_status?: 'Available' | 'Away' | 'Do not disturb' | 'Invisible' | ''
+    availability_status?: 'Available' | 'Away' | 'Do not disturb' | 'Invisible' | '',
+    allow_notifications?: 1 | 0,
+    channel_member_name?: string
 }
 
 export type ChannelMembers = {

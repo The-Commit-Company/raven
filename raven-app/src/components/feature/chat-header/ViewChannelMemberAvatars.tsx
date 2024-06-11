@@ -16,7 +16,7 @@ export const ViewChannelMemberAvatars = ({ channelData }: ViewChannelDetailsButt
     const extraNumber = Math.min(totalMembers - 3, 9)
 
     return (
-        <div className={'flex -space-x-1 rtl:space-x-reverse animate-fadein'}>
+        <div className={'flex items-center -space-x-1 rtl:space-x-reverse animate-fadein'}>
             {Object.entries(channelMembers).map(([name, member], index) => {
                 if (index < 3)
                     return <UserAvatar
@@ -28,11 +28,13 @@ export const ViewChannelMemberAvatars = ({ channelData }: ViewChannelDetailsButt
                         className="border border-gray-2"
                     />
             })}
-            {totalMembers > 3 && <Avatar
-                fallback={`${extraNumber}+`} size={'1'}
-                variant='soft'
-                color='gray'
-                radius={'full'} className="border border-slate-2 text-[10px]" />}
+            {totalMembers > 3 && <span className="inline-block">
+                <Avatar
+                    fallback={`${extraNumber}+`} size={'1'}
+                    variant='soft'
+                    color='gray'
+                    radius={'full'} className="border border-slate-4 text-[10px]" />
+            </span>}
         </div>
     )
 }

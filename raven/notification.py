@@ -27,7 +27,7 @@ def send_notification_to_user(user_id, title, message, data=None, user_image_id=
 
 			link = None
 			if data.get("channel_id"):
-				link = frappe.utils.get_url() + "/raven_mobile/channel/" + data.get("channel_id", "")
+				link = frappe.utils.get_url() + "/raven/channel/" + data.get("channel_id", "")
 			push_notification.send_notification_to_user(
 				user_id=user_id, title=title, body=message, icon=icon_url, data=data, link=link
 			)
@@ -62,7 +62,7 @@ def send_notification_to_topic(channel_id, title, message, data=None, user_image
 				if icon:
 					icon_url = frappe.utils.get_url() + icon
 			if data.get("channel_id"):
-				link = frappe.utils.get_url() + "/raven_mobile/channel/" + data.get("channel_id", "")
+				link = frappe.utils.get_url() + "/raven/channel/" + data.get("channel_id", "")
 			push_notification.send_notification_to_topic(
 				topic_name=channel_id, title=title, body=message, icon=icon_url, data=data, link=link
 			)

@@ -49,7 +49,7 @@ export const CreateChannelButton = ({ updateChannelList }: { updateChannelList: 
                 </IconButton>
             </DrawerTrigger>
             <DrawerContent>
-                <div className='pb-16'>
+                <div className='pb-16 overflow-y-scroll min-h-96'>
                     <CreateChannelContent updateChannelList={updateChannelList}
                         isOpen={isOpen}
                         setIsOpen={setIsOpen} />
@@ -135,6 +135,8 @@ const CreateChannelContent = ({ updateChannelList, isOpen, setIsOpen }: { update
         }
     }, [channelType])
 
+    const isDesktop = useIsDesktop()
+
     return <div>
 
         <Dialog.Title>
@@ -177,7 +179,7 @@ const CreateChannelContent = ({ updateChannelList, isOpen, setIsOpen }: { update
                                     <TextField.Input
                                         maxLength={50}
                                         required
-                                        autoFocus
+                                        autoFocus={isDesktop}
                                         placeholder='e.g. red-wedding-planning, joffrey-memes'
                                         color={error ? 'red' : undefined}
                                         {...field}

@@ -5,10 +5,11 @@ import { ChannelIcon } from "@/utils/layout/channelIcon"
 import { EditChannelNameButton } from "./rename-channel/EditChannelNameButton"
 import { EditDescriptionButton } from "./edit-channel-description/EditDescriptionButton"
 import { LeaveChannelButton } from "./leave-channel/LeaveChannelButton"
-import { Box, Flex, Separator, Text } from "@radix-ui/themes"
+import { Box, Flex, Separator, Switch, Text } from "@radix-ui/themes"
 import { DateMonthYear } from "@/utils/dateConversions"
 import { ChannelMembers } from "@/hooks/fetchers/useFetchChannelMembers"
 import { useGetUser } from "@/hooks/useGetUser"
+import ChannelPushNotificationToggle from "./ChannelPushNotificationToggle"
 
 interface ChannelDetailsProps {
     channelData: ChannelListItem,
@@ -19,7 +20,6 @@ interface ChannelDetailsProps {
 export const ChannelDetails = ({ channelData, channelMembers, onClose }: ChannelDetailsProps) => {
 
     const { currentUser } = useContext(UserContext)
-    const admin = Object.values(channelMembers).find(user => user.is_admin === 1)
 
     const channelOwner = useGetUser(channelData.owner)
 
@@ -43,6 +43,9 @@ export const ChannelDetails = ({ channelData, channelMembers, onClose }: Channel
                         disabled={channelData.is_archived == 1} />
                 </Flex>
             </Box>
+            <ChannelPushNotificationToggle channelID={channelData.name}
+                channelMember={channelMembers[currentUser]}
+            />
 
             <Box className={'p-4 rounded-md border border-gray-6'}>
                 <Flex direction='column' gap='4'>
@@ -65,16 +68,6 @@ export const ChannelDetails = ({ channelData, channelMembers, onClose }: Channel
                             {channelData.creation && <Text size='1' color='gray' as='span'>on <DateMonthYear date={channelData?.creation} /></Text>}
                         </Flex>
                     </Flex>
-
-                    {channelData?.type != 'Open' && <>
-                        <Separator className={'w-full'} />
-                        <Flex direction={'column'} gap='1'>
-                            <Text weight='medium' size='2'>Channel admin</Text>
-                            <Flex>
-                                {admin ? <Text size='1'>{admin.full_name}</Text> : <Text size='2' color='gray'>No administrator</Text>}
-                            </Flex>
-                        </Flex>
-                    </>}
 
                     {/* users can only leave channels they are members of */}
                     {/* users cannot leave open channels */}
