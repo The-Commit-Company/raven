@@ -5,8 +5,15 @@ import { toast } from "sonner"
 
 const getRoute = (doctype: string, docname: string) => {
     const lowerCaseDoctype = doctype.toLowerCase().split(' ').join('-')
-    const path = `/app/${lowerCaseDoctype}/${docname}`
-    return path
+
+    // @ts-expect-error
+    if (window.frappe.boot.raven_document_link_override) {
+        // @ts-expect-error
+        let path = window.frappe.boot.raven_document_link_override.replace('{{doctype}}', lowerCaseDoctype).replace('{{docname}}', docname)
+
+        return path
+    }
+    return `/app/${lowerCaseDoctype}/${docname}`
 }
 export const DoctypeLinkRenderer = ({ doctype, docname }: { doctype: string, docname: string }) => {
 
