@@ -12,7 +12,7 @@ def boot_session(bootinfo):
 	document_link_override = frappe.get_hooks("raven_document_link_override")
 
 	if document_link_override and len(document_link_override) > 0:
-		bootinfo.raven_document_link_override = frappe.get_attr(document_link_override[0])()
+		bootinfo.raven_document_link_override = True
 
 	if tenor_api_key:
 		bootinfo.tenor_api_key = tenor_api_key
