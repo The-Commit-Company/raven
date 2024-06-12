@@ -1,29 +1,52 @@
 import { Flex, IconButton, Link } from "@radix-ui/themes"
+import { FrappeConfig, FrappeContext } from "frappe-react-sdk"
+import { useContext } from "react"
 import { BiLink, BiRightArrowAlt } from "react-icons/bi"
 import { FiExternalLink } from "react-icons/fi"
 import { toast } from "sonner"
 
-const getRoute = (doctype: string, docname: string) => {
-    const lowerCaseDoctype = doctype.toLowerCase().split(' ').join('-')
 
-    // @ts-expect-error
-    if (window.frappe.boot.raven_document_link_override) {
-        // @ts-expect-error
-        let path = window.frappe.boot.raven_document_link_override.replace('{{doctype}}', lowerCaseDoctype).replace('{{docname}}', docname)
-
-        return path
-    }
-    return `/app/${lowerCaseDoctype}/${docname}`
-}
 export const DoctypeLinkRenderer = ({ doctype, docname }: { doctype: string, docname: string }) => {
 
-    const copyLink = () => {
+    const { call } = useContext(FrappeContext) as FrappeConfig
 
-        navigator.clipboard.writeText(window.location.origin + getRoute(doctype, docname))
-        toast.success('Link copied')
+    const getRoute = async (doctype: string, docname: string): Promise<string> => {
+
+
+        // @ts-expect-error
+        if (window.frappe.boot.raven_document_link_override) {
+            return call.get('raven.api.document_link.get', {
+                doctype,
+                docname
+            }).then(res => res.message)
+
+        } else {
+            const lowerCaseDoctype = doctype.toLowerCase().split(' ').join('-')
+            return Promise.resolve(`${window.location.origin}/app/${lowerCaseDoctype}/${docname}`)
+        }
+
     }
 
-    const route = getRoute(doctype, docname)
+    const onCopyClick = () => {
+        toast.promise(copyLink, {
+            loading: 'Copying link...',
+            success: 'Link copied!',
+            error: 'Failed to copy link'
+        })
+    }
+
+    const copyLink = async () => {
+
+        const route = await getRoute(doctype, docname)
+
+        return navigator.clipboard.writeText(route)
+    }
+
+    const openLink = async () => {
+        const route = await getRoute(doctype, docname)
+
+        window.open(route, '_blank')
+    }
 
     return (
         <Flex
@@ -34,7 +57,7 @@ export const DoctypeLinkRenderer = ({ doctype, docname }: { doctype: string, doc
             className="border-2 bg-gray-2 dark:bg-gray-4 rounded-md border-gray-4  dark:border-gray-6 shadow-sm">
             <Flex align='center' gap='2'>
                 <BiRightArrowAlt />
-                <Link size='2' underline="always" target="_blank" href={route}>{doctype}: {docname}</Link>
+                <Link size='2' underline="always" onClick={openLink}>{doctype}: {docname}</Link>
             </Flex>
 
             <Flex align='center' gap='2'>
@@ -42,19 +65,17 @@ export const DoctypeLinkRenderer = ({ doctype, docname }: { doctype: string, doc
                     size={'1'}
                     title="Open in new tab"
                     color='gray'
-                    asChild
+                    onClick={openLink}
                     variant="soft"
                 >
-                    <a href={route} target="_blank" rel="noreferrer">
-                        <FiExternalLink />
-                    </a>
+                    <FiExternalLink />
                 </IconButton>
 
                 <IconButton
                     size='1'
                     title="Copy link"
                     color='gray'
-                    onClick={copyLink}
+                    onClick={onCopyClick}
                     variant="soft"
                 >
                     <BiLink />
