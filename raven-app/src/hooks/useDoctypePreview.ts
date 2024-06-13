@@ -11,7 +11,7 @@ export const useDoctypePreview = (doctype: string, docname: string) => {
     })
 
     return {
-        data: data.message,
+        data: data?.message,
         error,
         isLoading
     }
