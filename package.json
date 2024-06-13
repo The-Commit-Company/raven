@@ -1,6 +1,6 @@
 {
   "name": "raven",
-  "version": "1.6.0",
+  "version": "1.6.1",
   "description": "Messaging Application",
   "main": "index.js",
   "scripts": {
@@ -13,5 +13,5 @@
   },
   "keywords": [],
   "author": "",
-  "license": "AGPL-3.0"
+  "license": "AGPL-3.0-only"
 }

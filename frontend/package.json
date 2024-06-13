@@ -1,7 +1,8 @@
 {
   "name": "raven",
   "private": true,
-  "version": "1.6.0",
+  "license": "AGPL-3.0-only",
+  "version": "1.6.1",
   "type": "module",
   "scripts": {
     "dev": "vite",
