@@ -4,7 +4,8 @@ import { DateMonthYear } from "@/utils/dateConversions"
 import { DIALOG_CONTENT_CLASS } from "@/utils/layout/dialog"
 import { Flex, Badge, IconButton, AlertDialog, Text } from "@radix-ui/themes"
 import { useState } from "react"
-import { BiEdit, BiTrash } from "react-icons/bi"
+import { BiTrash } from "react-icons/bi"
+import { AiOutlineEdit } from "react-icons/ai"
 import { useNavigate } from "react-router-dom"
 
 export const List = ({ data }: { data: RavenSchedulerEvent[] }) => {
@@ -54,7 +55,7 @@ const ScheduledMessageItem = ({ item }: { item: RavenSchedulerEvent }) => {
                             height: 'var(--base-button-height)',
                             width: 'var(--base-button-height)',
                         }}>
-                        <BiEdit size='16' />
+                        <AiOutlineEdit size='16' />
                     </IconButton>
                     <AlertDialog.Root open={open} onOpenChange={setOpen}>
                         <AlertDialog.Trigger>

@@ -98,7 +98,7 @@ const MemberList = ({ channelData, channelMembers, activeUsers, updateMembers, i
                                 <Flex className={'p-2'} gap='3'>
                                     <UserAvatar src={member.user_image ?? ''} alt={member.full_name} size='2' isActive={activeUsers.includes(member.name)} availabilityStatus={member.availability_status} />
                                     <Flex gap='2' align={'center'}>
-                                        <Text weight='medium'>{member.first_name}</Text>
+                                        <Text size='2' weight='medium'>{member.first_name}</Text>
                                         {activeUsers.includes(member.name) ? (
                                             <BiCircle color='green' />
                                         ) : (

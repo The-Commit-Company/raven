@@ -37,7 +37,7 @@ export const JoinChannelBox = ({ channelData, user }: JoinChannelBoxProps) => {
                 <Text as='span'>You are not a member of this channel.</Text>
                 <Button
                     onClick={joinChannel}
-                    size='3'
+                    size='2'
                     disabled={loading}>
                     {loading && <Loader />}
                     {loading ? 'Joining' : <span className="inline-flex gap-1">Join

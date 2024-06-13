@@ -1,12 +1,13 @@
-import { Box, Flex, Tooltip } from '@radix-ui/themes'
+import { Box, Flex } from '@radix-ui/themes'
 import { MessageContextMenuProps } from '../MessageActions'
 import { QUICK_ACTION_BUTTON_CLASS, QuickActionButton } from './QuickActionButton'
-import { BiDotsHorizontal, BiEditAlt } from 'react-icons/bi'
+import { BiDotsHorizontalRounded } from 'react-icons/bi'
 import { HiReply } from 'react-icons/hi'
 import { MouseEventHandler, useContext, useRef } from 'react'
 import { FrappeConfig, FrappeContext } from 'frappe-react-sdk'
 import { EmojiPickerButton } from './EmojiPickerButton'
 import { UserContext } from '@/utils/auth/UserProvider'
+import { AiOutlineEdit } from 'react-icons/ai'
 
 const QUICK_EMOJIS = ['👍', '✅', '👀', '🎉']
 
@@ -82,7 +83,7 @@ export const QuickActions = ({ message, onReply, onEdit }: MessageContextMenuPro
                     onClick={onEdit}
                     tooltip='Edit message'
                     aria-label='Edit message'>
-                    <BiEditAlt size='18' />
+                    <AiOutlineEdit size='18' />
                 </QuickActionButton>
                     :
                     <QuickActionButton
@@ -99,7 +100,7 @@ export const QuickActions = ({ message, onReply, onEdit }: MessageContextMenuPro
                     tooltip='More actions'
                     onClick={onMoreClick}
                     className={QUICK_ACTION_BUTTON_CLASS}>
-                    <BiDotsHorizontal size='18' />
+                    <BiDotsHorizontalRounded size='18' />
                 </QuickActionButton>
             </Flex>
         </Box>

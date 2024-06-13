@@ -14,6 +14,7 @@ import { useIsDesktop } from '@/hooks/useMediaQuery'
 import { SlSettings } from 'react-icons/sl'
 import { TbUsersPlus } from 'react-icons/tb'
 import PushNotificationToggle from '@/components/feature/userSettings/PushNotificationToggle'
+import { useIsUserActive } from '@/hooks/useIsUserActive'
 
 export const SidebarFooter = ({ isSettingsPage = false }: { isSettingsPage?: boolean }) => {
 
@@ -26,6 +27,7 @@ export const SidebarFooter = ({ isSettingsPage = false }: { isSettingsPage?: boo
     const canAddUsers = isSystemManager()
 
     const { myProfile } = useCurrentRavenUser()
+    const isActive = useIsUserActive(userData.name)
 
     const isDesktop = useIsDesktop()
 
@@ -42,7 +44,7 @@ export const SidebarFooter = ({ isSettingsPage = false }: { isSettingsPage?: boo
                 <Separator size='4' className={`bg-gray-4 dark:bg-gray-6`} />
                 <Flex justify="between" align='center' className='sm:px-1 px-6 pt-2 sm:pt-0'>
                     <Flex gap='2' align='center'>
-                        <UserAvatar src={userData.user_image} alt={userData.full_name} availabilityStatus={myProfile?.availability_status} isActive />
+                        <UserAvatar src={userData.user_image} alt={userData.full_name} availabilityStatus={myProfile?.availability_status} isActive={isActive} />
                         <Text size="2">{userData.full_name}</Text>
                     </Flex>
                     <DropdownMenu.Root>

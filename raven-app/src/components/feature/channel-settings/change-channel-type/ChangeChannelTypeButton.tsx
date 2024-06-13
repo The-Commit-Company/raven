@@ -6,37 +6,38 @@ import { Button, Dialog, Separator } from '@radix-ui/themes'
 import { DIALOG_CONTENT_CLASS } from '@/utils/layout/dialog'
 
 interface ChangeChannelTypeButtonProps {
-    channelData: ChannelListItem
+    channelData: ChannelListItem,
+    allowSettingChange: boolean
 }
 
-export const ChangeChannelTypeButton = ({ channelData }: ChangeChannelTypeButtonProps) => {
+export const ChangeChannelTypeButton = ({ channelData, allowSettingChange }: ChangeChannelTypeButtonProps) => {
     return (
         <>
             {channelData.type === 'Public' && <>
-                <ChangeChannelTypePublicPrivate channelData={channelData} />
+                <ChangeChannelTypePublicPrivate channelData={channelData} allowSettingChange={allowSettingChange} />
                 <Separator className={'w-full'} />
             </>}
             {channelData.type === 'Public' &&
-                <ChangeChannelTypeOpenPublic channelData={channelData} />}
+                <ChangeChannelTypeOpenPublic channelData={channelData} allowSettingChange={allowSettingChange} />}
 
             {channelData.type === 'Private' && <>
-                <ChangeChannelTypePublicPrivate channelData={channelData} />
+                <ChangeChannelTypePublicPrivate channelData={channelData} allowSettingChange={allowSettingChange} />
                 <Separator className={'w-full'} />
             </>}
             {channelData.type === 'Private' &&
-                <ChangeChannelTypeOpenPrivate channelData={channelData} />}
+                <ChangeChannelTypeOpenPrivate channelData={channelData} allowSettingChange={allowSettingChange} />}
 
             {channelData.type === 'Open' && <>
-                <ChangeChannelTypeOpenPublic channelData={channelData} />
+                <ChangeChannelTypeOpenPublic channelData={channelData} allowSettingChange={allowSettingChange} />
                 <Separator className={'w-full'} />
             </>}
             {channelData.type === 'Open' &&
-                <ChangeChannelTypeOpenPrivate channelData={channelData} />}
+                <ChangeChannelTypeOpenPrivate channelData={channelData} allowSettingChange={allowSettingChange} />}
         </>
     )
 }
 
-const ChangeChannelTypePublicPrivate = ({ channelData }: ChangeChannelTypeButtonProps) => {
+const ChangeChannelTypePublicPrivate = ({ channelData, allowSettingChange }: ChangeChannelTypeButtonProps) => {
 
     const [open, setOpen] = useState(false)
     const onClose = () => {
@@ -46,7 +47,7 @@ const ChangeChannelTypePublicPrivate = ({ channelData }: ChangeChannelTypeButton
     return (
         <Dialog.Root open={open} onOpenChange={setOpen}>
             <Dialog.Trigger>
-                <Button className={'p-6 bg-transparent text-zinc-900 dark:text-white not-cal hover:bg-gray-3 justify-start'}>
+                <Button className={'py-6 px-4 bg-transparent text-zinc-900 dark:text-white not-cal hover:bg-gray-3 justify-start rounded-none'} disabled={!allowSettingChange}>
                     {channelData.type === 'Public' ? <BiLockAlt /> : <BiHash />}
                     Change to a {channelData.type === 'Public' ? 'private' : 'public'} channel
                 </Button>
@@ -61,7 +62,7 @@ const ChangeChannelTypePublicPrivate = ({ channelData }: ChangeChannelTypeButton
     )
 }
 
-const ChangeChannelTypeOpenPublic = ({ channelData }: ChangeChannelTypeButtonProps) => {
+const ChangeChannelTypeOpenPublic = ({ channelData, allowSettingChange }: ChangeChannelTypeButtonProps) => {
 
     const [open, setOpen] = useState(false)
     const onClose = () => {
@@ -71,7 +72,7 @@ const ChangeChannelTypeOpenPublic = ({ channelData }: ChangeChannelTypeButtonPro
     return (
         <Dialog.Root open={open} onOpenChange={setOpen}>
             <Dialog.Trigger>
-                <Button className={'p-6 bg-transparent text-zinc-900 dark:text-white not-cal hover:bg-gray-3 justify-start'}>
+                <Button className={'py-6 px-4 bg-transparent text-zinc-900 dark:text-white not-cal hover:bg-gray-3 justify-start rounded-none'} disabled={!allowSettingChange}>
                     {channelData.type === 'Open' ? <BiHash /> : <BiGlobe />}
                     Change to a {channelData.type === 'Open' ? 'public' : 'open'} channel
                 </Button>
@@ -86,7 +87,7 @@ const ChangeChannelTypeOpenPublic = ({ channelData }: ChangeChannelTypeButtonPro
     )
 }
 
-const ChangeChannelTypeOpenPrivate = ({ channelData }: ChangeChannelTypeButtonProps) => {
+const ChangeChannelTypeOpenPrivate = ({ channelData, allowSettingChange }: ChangeChannelTypeButtonProps) => {
 
     const [open, setOpen] = useState(false)
     const onClose = () => {
@@ -96,7 +97,7 @@ const ChangeChannelTypeOpenPrivate = ({ channelData }: ChangeChannelTypeButtonPr
     return (
         <Dialog.Root open={open} onOpenChange={setOpen}>
             <Dialog.Trigger>
-                <Button className={'p-6 bg-transparent text-zinc-900 dark:text-white not-cal hover:bg-gray-3 justify-start'}>
+                <Button className={'py-6 px-4 bg-transparent text-zinc-900 dark:text-white not-cal hover:bg-gray-3 justify-start rounded-none'} disabled={!allowSettingChange}>
                     {channelData.type === 'Open' ? <BiLockAlt /> : <BiGlobe />}
                     Change to a {channelData.type === 'Open' ? 'private' : 'open'} channel
                 </Button>

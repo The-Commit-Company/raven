@@ -12,6 +12,7 @@ import { BiBookmark } from "react-icons/bi"
 import { DateMonthYear } from "@/utils/dateConversions"
 import { useGetUser } from "@/hooks/useGetUser"
 import useFetchChannelMembers from "@/hooks/fetchers/useFetchChannelMembers"
+import { useIsUserActive } from "@/hooks/useIsUserActive"
 
 export const EmptyStateForSearch = () => {
     return (
@@ -76,12 +77,14 @@ const EmptyStateForDM = ({ channelData }: EmptyStateForDMProps) => {
         }
     }, [peerData, peer])
 
+    const isActive = useIsUserActive(peer)
+
     return (
         <Box className={'py-4 px-2'}>
             {channelData?.is_direct_message == 1 &&
                 <Flex direction='column' gap='3'>
                     <Flex gap='3' align='center'>
-                        <UserAvatar alt={fullName} src={userImage} size='3' skeletonSize='7' isBot={isBot} />
+                        <UserAvatar alt={fullName} src={userImage} size='3' skeletonSize='7' isBot={isBot} availabilityStatus={peerData?.availability_status} isActive={isActive} />
                         <Flex direction='column' gap='0'>
                             <Heading size='4'>{fullName}</Heading>
                             <div>
@@ -97,7 +100,6 @@ const EmptyStateForDM = ({ channelData }: EmptyStateForDMProps) => {
                         :
                         <Flex gap='2' align='center'>
                             <Text size='2'>This is a Direct Message channel between you and <strong>{fullName}</strong>.</Text>
-                            {/* <Button size='2' variant='ghost' className={'z-1'}>View profile</Button> */}
                         </Flex>
                     }
                 </Flex>
@@ -108,17 +110,19 @@ const EmptyStateForDM = ({ channelData }: EmptyStateForDMProps) => {
 
 export const EmptyStateForSavedMessages = () => {
     return (
-        <Flex direction='column' className={'pt-24 h-screen px-4'} gap='6'>
-            <Heading as='h2' size='7' className="cal-sans">Your saved messages will appear here</Heading>
-            <Flex direction='column' gap='1'>
-                <Text size='3'>Saved messages are a convenient way to keep track of important information or messages you want to refer back to later.</Text>
-                <Flex align='center' gap='1'>
-                    <Text size='3'>You can save messages by simply clicking on the bookmark icon</Text>
-                    <BiBookmark />
-                    <Text size='3'>in message actions.</Text>
+        <Box className={'py-1 px-4'}>
+            <Flex direction='column' gap='2'>
+                <Text size='3'><strong>Your saved messages will appear here</strong></Text>
+                <Flex direction='column' gap='1'>
+                    <Text size='2'>Saved messages are a convenient way to keep track of important information or messages you want to refer back to later.</Text>
+                    <Flex align='center' gap='1'>
+                        <Text size='2'>You can save messages by simply clicking on the bookmark icon</Text>
+                        <BiBookmark />
+                        <Text size='2'>in message actions.</Text>
+                    </Flex>
                 </Flex>
             </Flex>
-        </Flex>
+        </Box>
     )
 }
 

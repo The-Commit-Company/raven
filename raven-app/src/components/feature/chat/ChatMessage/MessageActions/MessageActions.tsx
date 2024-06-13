@@ -2,13 +2,14 @@ import { ContextMenu, Flex } from '@radix-ui/themes'
 import { FileMessage, Message } from '../../../../../../../types/Messaging/Message'
 import { useContext } from 'react'
 import { UserContext } from '@/utils/auth/UserProvider'
-import { BiBookmarkMinus, BiBookmarkPlus, BiCopy, BiDownload, BiEditAlt, BiLink, BiTrash } from 'react-icons/bi'
+import { BiBookmarkMinus, BiBookmarkPlus, BiCopy, BiDownload, BiLink, BiTrash } from 'react-icons/bi'
 import { HiReply } from 'react-icons/hi'
 import { FrappeConfig, FrappeContext } from 'frappe-react-sdk'
 import { useMessageCopy } from './useMessageCopy'
 import { RetractVote } from './RetractVote'
 import { toast } from 'sonner'
 import { getErrorMessage } from '@/components/layout/AlertBanner/ErrorBanner'
+import { AiOutlineEdit } from 'react-icons/ai'
 
 export interface MessageContextMenuProps {
     message?: Message | null,
@@ -98,7 +99,7 @@ export const MessageContextMenu = ({ message, onDelete, onEdit, onReply }: Messa
                     {message.message_type === 'Text' &&
                         <ContextMenu.Item onClick={onEdit}>
                             <Flex gap='2'>
-                                <BiEditAlt size='18' />
+                                <AiOutlineEdit size='18' />
                                 Edit
                             </Flex>
                         </ContextMenu.Item>
