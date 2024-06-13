@@ -7,10 +7,11 @@ import { DIALOG_CONTENT_CLASS } from "@/utils/layout/dialog";
 
 interface ArchiveChannelButtonProps {
     onClose: () => void,
-    channelData: ChannelListItem
+    channelData: ChannelListItem,
+    allowSettingChange: boolean
 }
 
-export const ArchiveChannelButton = ({ onClose: onCloseParent, channelData }: ArchiveChannelButtonProps) => {
+export const ArchiveChannelButton = ({ onClose: onCloseParent, channelData, allowSettingChange }: ArchiveChannelButtonProps) => {
 
     const [open, setOpen] = useState(false)
     const onClose = () => {
@@ -20,7 +21,7 @@ export const ArchiveChannelButton = ({ onClose: onCloseParent, channelData }: Ar
     return (
         <AlertDialog.Root open={open} onOpenChange={setOpen}>
             <AlertDialog.Trigger>
-                <Button className={'p-6 bg-transparent text-zinc-900 dark:text-white not-cal hover:bg-gray-3 text-left justify-start'}>
+                <Button className={'py-6 px-4 bg-transparent text-zinc-900 dark:text-white not-cal hover:bg-gray-3 text-left justify-start rounded-none'} disabled={!allowSettingChange}>
                     <BiBox />
                     Archive channel
                 </Button>

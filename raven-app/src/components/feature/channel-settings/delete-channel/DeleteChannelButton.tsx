@@ -7,10 +7,11 @@ import { DIALOG_CONTENT_CLASS } from '@/utils/layout/dialog'
 
 interface DeleteChannelButtonProps {
     onClose: () => void,
-    channelData: ChannelListItem
+    channelData: ChannelListItem,
+    allowSettingChange: boolean
 }
 
-export const DeleteChannelButton = ({ onClose: onCloseParent, channelData }: DeleteChannelButtonProps) => {
+export const DeleteChannelButton = ({ onClose: onCloseParent, channelData, allowSettingChange }: DeleteChannelButtonProps) => {
 
     const [open, setOpen] = useState(false)
     const onClose = () => {
@@ -20,7 +21,7 @@ export const DeleteChannelButton = ({ onClose: onCloseParent, channelData }: Del
     return (
         <AlertDialog.Root open={open} onOpenChange={setOpen}>
             <AlertDialog.Trigger>
-                <Button className={'p-6 bg-transparent text-red-700 hover:bg-red-3 not-cal text-left justify-start'}>
+                <Button className={'py-6 px-4 bg-transparent text-red-700 hover:bg-red-3 not-cal text-left justify-start rounded-none'} disabled={!allowSettingChange}>
                     <BiTrash />
                     Delete channel
                 </Button>
