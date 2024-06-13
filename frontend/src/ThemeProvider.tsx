@@ -1,7 +1,7 @@
 /* eslint-disable react/jsx-no-useless-fragment */
 import { Theme } from '@radix-ui/themes';
 import React from 'react';
-import { ThemeProps } from '@radix-ui/themes/dist/cjs/theme.js';
+import { ThemeProps } from '@radix-ui/themes/dist/cjs/theme';
 import { PropsWithChildren, useEffect } from 'react';
 
 interface ThemeProviderProps extends ThemeProps {
