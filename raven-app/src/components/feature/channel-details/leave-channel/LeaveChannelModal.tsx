@@ -33,7 +33,7 @@ export const LeaveChannelModal = ({ onClose, channelData, closeDetailsModal }: L
     const { mutate } = useContext(ChannelListContext) as ChannelListContextType
 
     const onSubmit = async () => {
-        return deleteDoc('Raven Chnnel Member', channelMember?.message.name).then(() => {
+        return deleteDoc('Raven Channel Member', channelMember?.message.name).then(() => {
             toast('You have left the channel')
             onClose()
             mutate()
