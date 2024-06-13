@@ -170,7 +170,7 @@ doc_events = {
 # Ignore links to specified DocTypes when deleting documents
 # -----------------------------------------------------------
 
-# ignore_links_on_delete = ["Communication", "ToDo"]
+ignore_links_on_delete = ["Raven Message"]
 
 
 # User Data Protection
@@ -208,7 +208,7 @@ additional_timeline_content = {"*": ["raven.api.raven_message.get_timeline_messa
 
 website_route_rules = [
 	{"from_route": "/raven/<path:app_path>", "to_route": "raven"},
-	{"from_route": "/raven_mobile/<path:app_path>", "to_route": "raven_mobile"},
+	{"from_route": "/raven_mobile/<path:app_path>", "to_route": "raven"},
 ]
 
 permission_query_conditions = {
@@ -223,6 +223,7 @@ has_permission = {
 	"Raven Message": "raven.permissions.message_has_permission",
 	"Raven Poll Vote": "raven.permissions.raven_poll_vote_has_permission",
 	"Raven Poll": "raven.permissions.raven_poll_has_permission",
+	"Raven User": "raven.permissions.raven_user_has_permission",
 }
 
 on_session_creation = "raven.api.user_availability.set_user_active"

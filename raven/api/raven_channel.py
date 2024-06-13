@@ -10,7 +10,6 @@ def get_all_channels(hide_archived=True):
 	"""
 	Fetches all channels where current user is a member - both channels and DMs
 	To be used on the web app.
-	On mobile app, these are separate lists
 	"""
 
 	if hide_archived == "false":

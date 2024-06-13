@@ -1,1 +1,0 @@
-export { ChatHeader } from './ChatHeader';

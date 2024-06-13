@@ -1,1 +1,0 @@
-export { Profile } from './Profile';

@@ -1,6 +1,24 @@
 import frappe
 
 
+def raven_user_has_permission(doc, user=None, ptype=None):
+	if not user:
+		user = frappe.session.user
+
+	if doc.type == "Bot":
+		# Anyone with Raven User role can change the bot details
+		if user != "Guest":
+			return True
+	else:
+		# Only the user can change their own details
+		if doc.user == user:
+			return True
+		if ptype == "read":
+			return True
+
+	return False
+
+
 def channel_has_permission(doc, user=None, ptype=None):
 
 	if doc.type == "Open" or doc.type == "Public":

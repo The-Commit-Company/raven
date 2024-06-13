@@ -1,16 +1,7 @@
 #  Add 'UI' label to all PRs that touch ts / tsx files in the 'src' directory.
 "UI":
-  - "raven-app/src/**/*.{ts,tsx,css}"
-  - "mobile/src/**/*.{ts,tsx,css}"
+  - "frontend/src/**/*.{ts,tsx,css}"
 
 # Add 'backend' label to all PRs that touch json / py files in the 'raven' directory.
 "backend":
   - "raven/**/*.{json,py}"
-
-# Add '💻 webapp' label to all PRs that files in the 'raven-app' directory.
-"💻 webapp":
-  - "raven-app/src/**/*.{ts,tsx,css}"
-
-# Add '📱 mobile' label to all PRs that files in the 'mobile' directory.
-"📱 mobile app":
-  - "mobile/src/**/*.{ts,tsx,css}"

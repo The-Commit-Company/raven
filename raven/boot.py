@@ -9,6 +9,11 @@ def boot_session(bootinfo):
 
 	tenor_api_key = frappe.db.get_single_value("Raven Settings", "tenor_api_key")
 
+	document_link_override = frappe.get_hooks("raven_document_link_override")
+
+	if document_link_override and len(document_link_override) > 0:
+		bootinfo.raven_document_link_override = True
+
 	if tenor_api_key:
 		bootinfo.tenor_api_key = tenor_api_key
 	else:

@@ -1,1 +1,0 @@
-export { PrivateMessages } from './DirectMessages'
