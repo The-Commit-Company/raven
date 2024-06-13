@@ -5,11 +5,11 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "cd raven-app && yarn dev",
-    "build": "cd raven-app && yarn build",
+    "dev": "cd frontend && yarn dev",
+    "build": "cd frontend && yarn build",
     "postinstall": "yarn install-web && yarn install-desk",
     "install-desk": "cd raven && yarn install",
-    "install-web": "cd raven-app && yarn install"
+    "install-web": "cd frontend && yarn install"
   },
   "keywords": [],
   "author": "",
