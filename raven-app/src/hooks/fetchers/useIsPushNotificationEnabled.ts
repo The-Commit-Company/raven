@@ -8,7 +8,7 @@ const useIsPushNotificationEnabled = () => {
         revalidateOnReconnect: false,
     })
 
-    return data?.message
+    return data?.message ? true : false
 }
 
 export default useIsPushNotificationEnabled
