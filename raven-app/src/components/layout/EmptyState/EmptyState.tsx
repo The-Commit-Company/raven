@@ -110,17 +110,19 @@ const EmptyStateForDM = ({ channelData }: EmptyStateForDMProps) => {
 
 export const EmptyStateForSavedMessages = () => {
     return (
-        <Flex direction='column' className={'pt-24 h-screen px-4'} gap='6'>
-            <Heading as='h2' size='7' className="cal-sans">Your saved messages will appear here</Heading>
-            <Flex direction='column' gap='1'>
-                <Text size='3'>Saved messages are a convenient way to keep track of important information or messages you want to refer back to later.</Text>
-                <Flex align='center' gap='1'>
-                    <Text size='3'>You can save messages by simply clicking on the bookmark icon</Text>
-                    <BiBookmark />
-                    <Text size='3'>in message actions.</Text>
+        <Box className={'py-1 px-4'}>
+            <Flex direction='column' gap='2'>
+                <Text size='3'><strong>Your saved messages will appear here</strong></Text>
+                <Flex direction='column' gap='1'>
+                    <Text size='2'>Saved messages are a convenient way to keep track of important information or messages you want to refer back to later.</Text>
+                    <Flex align='center' gap='1'>
+                        <Text size='2'>You can save messages by simply clicking on the bookmark icon</Text>
+                        <BiBookmark />
+                        <Text size='2'>in message actions.</Text>
+                    </Flex>
                 </Flex>
             </Flex>
-        </Flex>
+        </Box>
     )
 }
 
