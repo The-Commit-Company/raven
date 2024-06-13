@@ -58,20 +58,17 @@ export const Component = () => {
                             <Label htmlFor="email" isRequired>
                                 Email
                             </Label>
-                            <TextField.Root>
-                                <TextField.Input
-                                    {...register("email", {
-                                        validate: (email) =>
-                                            isEmailValid(email) ||
-                                            "Please enter a valid email address.",
-                                        required: "Email is required.",
-                                    })}
-                                    name="email"
-                                    type="email"
-                                    placeholder="jane@example.com"
-                                    tabIndex={0}
-                                />
-                            </TextField.Root>
+                            <TextField.Root
+                                {...register("email", {
+                                    validate: (email) =>
+                                        isEmailValid(email) ||
+                                        "Please enter a valid email address.",
+                                    required: "Email is required.",
+                                })}
+                                name="email"
+                                type="email"
+                                placeholder="jane@example.com"
+                                tabIndex={0} />
                             {errors?.email && (
                                 <ErrorText>{errors?.email?.message}</ErrorText>
                             )}

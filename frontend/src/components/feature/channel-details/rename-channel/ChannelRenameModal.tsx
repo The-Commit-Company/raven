@@ -77,21 +77,18 @@ export const RenameChannelModalContent = ({ channelID, channelName, type, onClos
                                 }
                             }}
                             render={({ field, fieldState: { error } }) => (
-                                <TextField.Root>
-                                    <TextField.Slot>
+                                <TextField.Root maxLength={50}
+                                    required
+                                    autoFocus={isDesktop}
+                                    placeholder='e.g. wedding-gone-wrong, joffrey-tributes'
+                                    color={error ? 'red' : undefined}
+                                    {...field}
+                                    aria-invalid={error ? 'true' : 'false'}
+                                    onChange={handleChange}>
+                                    <TextField.Slot side='left'>
                                         {<ChannelIcon type={type} />}
                                     </TextField.Slot>
-                                    <TextField.Input
-                                        maxLength={50}
-                                        required
-                                        autoFocus={isDesktop}
-                                        placeholder='e.g. wedding-gone-wrong, joffrey-tributes'
-                                        color={error ? 'red' : undefined}
-                                        {...field}
-                                        aria-invalid={error ? 'true' : 'false'}
-                                        onChange={handleChange}
-                                    />
-                                    <TextField.Slot>
+                                    <TextField.Slot side='right'>
                                         <Text size='2' weight='light' color='gray'>{50 - field.value.length}</Text>
                                     </TextField.Slot>
                                 </TextField.Root>

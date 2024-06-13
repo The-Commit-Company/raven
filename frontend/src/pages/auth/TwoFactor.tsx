@@ -58,19 +58,17 @@ export const TwoFactor = ({ loginWithTwoFAResponse, setError, setIsTwoFactorEnab
                         </Box>
                     </Flex>
                     <Flex direction='column' gap='4'>
-                        <TextField.Root>
-                            <TextField.Input
-                                {...register("otp",
-                                    {
-                                        required: `Verification Code is required.`
-                                    })}
-                                name="otp"
-                                type="text"
-                                required
-                                placeholder="Verification Code"
-                                autoFocus
-                                tabIndex={0} />
-                        </TextField.Root>
+                        <TextField.Root
+                            {...register("otp",
+                                {
+                                    required: `Verification Code is required.`
+                                })}
+                            name="otp"
+                            type="text"
+                            required
+                            placeholder="Verification Code"
+                            autoFocus
+                            tabIndex={0} />
                         {errors?.otp && <ErrorText>{errors?.otp.message}</ErrorText>}
                     </Flex>
                     <Flex direction='column' gap='4' >

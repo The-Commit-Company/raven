@@ -64,16 +64,14 @@ export const Component = () => {
                             <Label htmlFor="full_name" isRequired>
                                 Full Name
                             </Label>
-                            <TextField.Root>
-                                <TextField.Input
-                                    {...register("full_name")}
-                                    name="full_name"
-                                    type="text"
-                                    required
-                                    placeholder="Jane Doe"
-                                    tabIndex={0}
-                                />
-                            </TextField.Root>
+                            <TextField.Root
+                                {...register("full_name")}
+                                name="full_name"
+                                type="text"
+                                required
+                                placeholder="Jane Doe"
+                                tabIndex={0}
+                            />
                             {errors?.email && (
                                 <ErrorText>{errors?.email?.message}</ErrorText>
                             )}
@@ -83,21 +81,19 @@ export const Component = () => {
                             <Label htmlFor="email" isRequired>
                                 Email
                             </Label>
-                            <TextField.Root>
-                                <TextField.Input
-                                    {...register("email", {
-                                        validate: (email) =>
-                                            isEmailValid(email) ||
-                                            "Please enter a valid email address.",
-                                        required: "Email is required.",
-                                    })}
-                                    name="email"
-                                    type="email"
-                                    required
-                                    placeholder="jane@example.com"
-                                    tabIndex={0}
-                                />
-                            </TextField.Root>
+                            <TextField.Root
+                                {...register("email", {
+                                    validate: (email) =>
+                                        isEmailValid(email) ||
+                                        "Please enter a valid email address.",
+                                    required: "Email is required.",
+                                })}
+                                name="email"
+                                type="email"
+                                required
+                                placeholder="jane@example.com"
+                                tabIndex={0}
+                            />
                             {errors?.email && (
                                 <ErrorText>{errors?.email?.message}</ErrorText>
                             )}

@@ -15,7 +15,7 @@ export const SidebarHeader = (props: Props) => {
                 align='center'
                 gap={'3'}
                 pt='1'
-                height='8'
+                height='48px'
                 className="cursor-pointer"
                 onClick={() => navigate('/channel')}
             >

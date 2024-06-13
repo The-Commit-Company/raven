@@ -85,14 +85,12 @@ const AddRavenUsersContent = ({ onClose }: { onClose: VoidFunction }) => {
             <Flex direction='column' gap='4' pt='4'>
                 <Flex justify='between' gap='2'>
                     <Flex gap='2' align='center'>
-                        <TextField.Root>
-                            <TextField.Slot>
+                        <TextField.Root onChange={handleChange}
+                            type='text'
+                            placeholder='Search for user' >
+                            <TextField.Slot side='left'>
                                 <BiSearch />
                             </TextField.Slot>
-                            <TextField.Input
-                                onChange={handleChange}
-                                type='text'
-                                placeholder='Search for user' />
                         </TextField.Root>
                         {debouncedText.length > 0 && debouncedText.length < 2 && <Text size='1' color="gray">Continue typing...</Text>}
                     </Flex>

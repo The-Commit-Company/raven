@@ -32,20 +32,20 @@ export const Component = () => {
 
     async function resetPassword(values: ForgotPasswordInput) {
         return call({
-                user: values.user,
-            })
+            user: values.user,
+        })
             .then((res) => {
                 setCallout({
                     state: true,
                     message: "Password reset instructions have been sent to your email.",
                 });
-            }).catch((err)=>{
+            }).catch((err) => {
                 setCallout(null)
             })
     }
 
     // TO-DO: To be removed once ErrorBanner/ ErrorCallout is fixed.
-    const generateErrorMessage = (error: FrappeError) =>{
+    const generateErrorMessage = (error: FrappeError) => {
         if (error.exc_type === "ValidationError") return 'Too many requests. Please try after some time.'
         return 'User does not exist. Please Sign Up.'
     }
@@ -63,21 +63,17 @@ export const Component = () => {
                             <Label htmlFor="user" isRequired>
                                 Email
                             </Label>
-                            <TextField.Root>
-                                <TextField.Input
-                                    {...register("user", {
-                                        validate: (user) =>
-                                            isEmailValid(user) ||
-                                            "Please enter a valid email address.",
-                                        required: "Email is required.",
-                                    })}
-                                    name="user"
-                                    type="email"
-                                    placeholder="jane@example.com"
-                                    tabIndex={0}
-                                    autoFocus
-                                />
-                            </TextField.Root>
+                            <TextField.Root {...register("user", {
+                                validate: (user) =>
+                                    isEmailValid(user) ||
+                                    "Please enter a valid email address.",
+                                required: "Email is required.",
+                            })}
+                                name="user"
+                                type="email"
+                                placeholder="jane@example.com"
+                                tabIndex={0}
+                                autoFocus />
                             {errors?.user && (
                                 <ErrorText>{errors?.user?.message}</ErrorText>
                             )}

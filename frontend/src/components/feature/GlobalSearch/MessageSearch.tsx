@@ -94,17 +94,16 @@ export const MessageSearch = ({ onToggleMyChannels, isOpenMyChannels, onToggleSa
     return (
         <Box>
             <Flex direction='column' gap='2'>
-                <TextField.Root>
-                    <TextField.Slot>
+                <TextField.Root
+                    onChange={handleChange}
+                    type='text'
+                    placeholder='Search messages'
+                    value={searchText}
+                    autoFocus>
+                    <TextField.Slot side='left'>
                         <BiSearch />
                     </TextField.Slot>
-                    <TextField.Input
-                        onChange={handleChange}
-                        type='text'
-                        placeholder='Search messages'
-                        value={searchText}
-                        autoFocus />
-                    <TextField.Slot>
+                    <TextField.Slot side='right'>
                         {isLoading && <Loader />}
                     </TextField.Slot>
                 </TextField.Root>

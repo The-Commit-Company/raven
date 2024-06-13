@@ -26,7 +26,7 @@ export default {
           8: 'var(--gray-8)',
           9: {
             DEFAULT: 'var(--gray-9)',
-            contrast: 'var(--gray-9-contrast)',
+            contrast: 'var(--gray-contrast)',
           },
           10: 'var(--gray-10)',
           11: 'var(--gray-11)',
@@ -43,7 +43,7 @@ export default {
           8: 'var(--slate-8)',
           9: {
             DEFAULT: 'var(--slate-9)',
-            contrast: 'var(--slate-9-contrast)',
+            contrast: 'var(--slate-contrast)',
           },
           10: 'var(--slate-10)',
           11: 'var(--slate-11)',
@@ -60,7 +60,7 @@ export default {
           8: 'var(--accent-8)',
           9: {
             DEFAULT: 'var(--accent-9)',
-            contrast: 'var(--accent-9-contrast)',
+            contrast: 'var(--accent-contrast)',
           },
           10: 'var(--accent-10)',
           11: 'var(--accent-11)',
@@ -92,7 +92,7 @@ export default {
           8: 'var(--iris-8)',
           9: {
             DEFAULT: 'var(--iris-9)',
-            contrast: 'var(--iris-9-contrast)',
+            contrast: 'var(--iris-contrast)',
           },
           10: 'var(--iris-10)',
           11: 'var(--iris-11)',
@@ -109,7 +109,7 @@ export default {
           8: 'var(--red-8)',
           9: {
             DEFAULT: 'var(--red-9)',
-            contrast: 'var(--red-9-contrast)',
+            contrast: 'var(--red-contrast)',
           },
           10: 'var(--red-10)',
           11: 'var(--red-11)',
@@ -126,7 +126,7 @@ export default {
           8: 'var(--green-8)',
           9: {
             DEFAULT: 'var(--green-9)',
-            contrast: 'var(--green-9-contrast)',
+            contrast: 'var(--green-contrast)',
           },
           10: 'var(--green-10)',
           11: 'var(--green-11)',

@@ -1,6 +1,6 @@
-import React, { useContext, useMemo } from 'react';
+import { useContext, useMemo } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
-import { Box, Checkbox, Flex, TextFieldInput, Select, TextArea, Heading, Text, Code, } from '@radix-ui/themes';
+import { Box, Checkbox, Flex, TextField, Select, TextArea, Text, Code, } from '@radix-ui/themes';
 import { ErrorText, HelperText, Label } from '@/components/common/Form';
 import { WebhookData } from './WebhookReturnDataFieldTable';
 import { WebhookHeaders } from './WebhookHeaders';
@@ -39,7 +39,7 @@ export const WebhookForm = ({ isEdit = false }: { isEdit?: boolean }) => {
         <Flex direction='column' gap='4' >
             {isEdit === false ? <Box>
                 <Label htmlFor='name' isRequired>Name</Label>
-                <TextFieldInput {...register('name', {
+                <TextField.Root {...register('name', {
                     required: 'Name is required', maxLength: {
                         value: 140,
                         message: "Name should not exceed 140 characters"
@@ -50,7 +50,7 @@ export const WebhookForm = ({ isEdit = false }: { isEdit?: boolean }) => {
             </Box> : null}
             <Box>
                 <Label htmlFor='request_url' isRequired>Request URL</Label>
-                <TextFieldInput {...register('request_url', {
+                <TextField.Root {...register('request_url', {
                     required: 'Request URL is required',
                     maxLength: {
                         value: 140,
@@ -61,7 +61,7 @@ export const WebhookForm = ({ isEdit = false }: { isEdit?: boolean }) => {
             </Box>
             <Box>
                 <Label htmlFor='timeout'>Request Timeout</Label>
-                <TextFieldInput type='number' {...register('timeout', {
+                <TextField.Root type='number' {...register('timeout', {
                     valueAsNumber: true,
                 })} />
                 <HelperText>The number of seconds until the request expires</HelperText>
@@ -84,7 +84,7 @@ export const WebhookForm = ({ isEdit = false }: { isEdit?: boolean }) => {
             </Box>
             {security ? <Box>
                 <Label htmlFor='webhook_secret' >Webhook Secret</Label>
-                <TextFieldInput type='password' {...register('webhook_secret', {
+                <TextField.Root type='password' {...register('webhook_secret', {
                     maxLength: {
                         value: 140,
                         message: "Webhook secret should not exceed 140 characters"
@@ -206,7 +206,7 @@ export const WebhookForm = ({ isEdit = false }: { isEdit?: boolean }) => {
                     </Code>
                 </Flex>
             </Box> : conditionOn === 'Channel' ? <Box>
-                    <Flex direction={'column'}>
+                <Flex direction={'column'}>
                     <Label htmlFor='channel_id'>Channel</Label>
                     <Controller
                         control={control}
@@ -229,61 +229,61 @@ export const WebhookForm = ({ isEdit = false }: { isEdit?: boolean }) => {
                             </Select.Root>
                         )}
                     />
-                        <HelperText style={{
-                            paddingTop: '0.25rem'
-                        }}>Webhook will trigger only if the message is sent on this channel.</HelperText>
+                    <HelperText style={{
+                        paddingTop: '0.25rem'
+                    }}>Webhook will trigger only if the message is sent on this channel.</HelperText>
                 </Flex>
-                </Box> : conditionOn === 'User' ? <Flex direction={'column'}>
-                    <Label htmlFor='user_id'>User</Label>
-                    <Controller
-                        control={control}
-                        name='user'
-                        render={({ field }) => (
-                            <Select.Root value={field.value} onValueChange={field.onChange} required>
-                                <Select.Trigger placeholder='Select Field' />
-                                <Select.Content>
-                                    <Select.Group>
-                                        <Select.Label>User</Select.Label>
-                                        {
-                                            users.map((user, index) => (
-                                                <Select.Item key={index} value={user.name}>
-                                                    <DirectMessageItem user={user} />
-                                                </Select.Item>
-                                            ))
-                                        }
-                                    </Select.Group>
-                                </Select.Content>
-                            </Select.Root>
-                        )}
-                    />
-                        <HelperText style={{
-                            paddingTop: '0.25rem'
-                        }}>Condition for webhook - user</HelperText>
-                    </Flex> : conditionOn === 'Channel Type' ? <Flex direction={'column'}>
-                    <Label htmlFor='channel_type'>Channel Type</Label>
-                    <Controller
-                        control={control}
-                        name='channel_type'
-                        render={({ field }) => (
-                            <Select.Root value={field.value} onValueChange={field.onChange} required>
-                                <Select.Trigger placeholder='Select Field' />
-                                <Select.Content>
-                                    <Select.Group>
-                                        <Select.Label>Channel Type</Select.Label>
-                                        <Select.Item value='Public'>Public</Select.Item>
-                                        <Select.Item value='Private'>Private</Select.Item>
-                                        <Select.Item value='Open'>Open</Select.Item>
-                                        <Select.Item value='DM'>Direct Message</Select.Item>
-                                        <Select.Item value='Self Message'>Self Message</Select.Item>
-                                    </Select.Group>
-                                </Select.Content>
-                            </Select.Root>
-                        )}
-                    />
-                            <HelperText style={{
-                                paddingTop: '0.25rem'
-                            }}>The webhook will trigger if the channel type is equal to the value selected here.</HelperText>
-                        </Flex> : null
+            </Box> : conditionOn === 'User' ? <Flex direction={'column'}>
+                <Label htmlFor='user_id'>User</Label>
+                <Controller
+                    control={control}
+                    name='user'
+                    render={({ field }) => (
+                        <Select.Root value={field.value} onValueChange={field.onChange} required>
+                            <Select.Trigger placeholder='Select Field' />
+                            <Select.Content>
+                                <Select.Group>
+                                    <Select.Label>User</Select.Label>
+                                    {
+                                        users.map((user, index) => (
+                                            <Select.Item key={index} value={user.name}>
+                                                <DirectMessageItem user={user} />
+                                            </Select.Item>
+                                        ))
+                                    }
+                                </Select.Group>
+                            </Select.Content>
+                        </Select.Root>
+                    )}
+                />
+                <HelperText style={{
+                    paddingTop: '0.25rem'
+                }}>Condition for webhook - user</HelperText>
+            </Flex> : conditionOn === 'Channel Type' ? <Flex direction={'column'}>
+                <Label htmlFor='channel_type'>Channel Type</Label>
+                <Controller
+                    control={control}
+                    name='channel_type'
+                    render={({ field }) => (
+                        <Select.Root value={field.value} onValueChange={field.onChange} required>
+                            <Select.Trigger placeholder='Select Field' />
+                            <Select.Content>
+                                <Select.Group>
+                                    <Select.Label>Channel Type</Select.Label>
+                                    <Select.Item value='Public'>Public</Select.Item>
+                                    <Select.Item value='Private'>Private</Select.Item>
+                                    <Select.Item value='Open'>Open</Select.Item>
+                                    <Select.Item value='DM'>Direct Message</Select.Item>
+                                    <Select.Item value='Self Message'>Self Message</Select.Item>
+                                </Select.Group>
+                            </Select.Content>
+                        </Select.Root>
+                    )}
+                />
+                <HelperText style={{
+                    paddingTop: '0.25rem'
+                }}>The webhook will trigger if the channel type is equal to the value selected here.</HelperText>
+            </Flex> : null
             }
             <Flex direction={'column'} gap={'4'}  >
                 <WebhookData />

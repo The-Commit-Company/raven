@@ -43,17 +43,16 @@ export const ChannelSearch = ({ onToggleMyChannels, isOpenMyChannels, input, onC
         <Box>
             <Flex direction='column' gap='2'>
                 <Flex align='center' gap='2'>
-                    <TextField.Root className='min-w-[60%]'>
-                        <TextField.Slot>
+                    <TextField.Root className='min-w-[60%]'
+                        onChange={handleChange}
+                        type='text'
+                        placeholder='Search channels'
+                        value={searchText}
+                        autoFocus>
+                        <TextField.Slot side='left'>
                             <BiSearch />
                         </TextField.Slot>
-                        <TextField.Input
-                            onChange={handleChange}
-                            type='text'
-                            placeholder='Search channels'
-                            value={searchText}
-                            autoFocus />
-                        <TextField.Slot>
+                        <TextField.Slot side='right'>
                             {isLoading && <Loader />}
                         </TextField.Slot>
                     </TextField.Root>
@@ -65,7 +64,7 @@ export const ChannelSearch = ({ onToggleMyChannels, isOpenMyChannels, input, onC
                                 <Select.Label>Channel Type</Select.Label>
                                 <Select.Item value='any'>
                                     <Flex align='center' gap='1'>
-                                        <Box width='4'>
+                                        <Box width='16px'>
                                             🤷🏻‍♀️
                                         </Box>
                                         Any

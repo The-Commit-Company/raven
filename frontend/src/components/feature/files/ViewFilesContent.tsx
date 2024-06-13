@@ -77,15 +77,13 @@ const ViewFilesContent = () => {
             <Flex direction='column' gap='4' className='pt-0 sm:pt-4 h-[80vh] sm:max-h-[75vh] sm:min-h-[75vh]'>
                 <Flex justify='between' gap='2' className="flex-col sm:flex-row">
                     <Flex gap='2' className="flex-col sm:flex-row sm:items-center">
-                        <TextField.Root className="w-full sm:w-[400px]">
-                            <TextField.Slot>
+                        <TextField.Root className="w-full sm:w-[400px]" onChange={handleChange}
+                            type='text'
+                            placeholder='Search for file' autoFocus>
+                            <TextField.Slot side='left'>
                                 <BiSearch />
                             </TextField.Slot>
-                            <TextField.Input
-                                onChange={handleChange}
-                                type='text'
-                                placeholder='Search for file' autoFocus />
-                            <TextField.Slot>
+                            <TextField.Slot side='right'>
                                 {isLoading && <Loader />}
                             </TextField.Slot>
                         </TextField.Root>
@@ -96,7 +94,7 @@ const ViewFilesContent = () => {
                                     <Select.Label>File Type</Select.Label>
                                     <Select.Item value='any'>
                                         <Flex align='center' gap='1'>
-                                            <Box width='4'>
+                                            <Box width='16px'>
                                                 🤷🏻‍♀️
                                             </Box>
                                             Any

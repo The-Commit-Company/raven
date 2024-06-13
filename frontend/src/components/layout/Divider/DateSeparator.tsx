@@ -7,7 +7,7 @@ export const DateSeparator = (props: FlexProps) => {
 
     return (
         <Flex align="center" {...flexProps}>
-            <Flex grow='1' >
+            <Flex flexGrow='1' >
                 <Separator size='4' className={`bg-gray-5 dark:bg-gray-7`} />
             </Flex>
             <Flex className='border border-gray-7 shadow-sm rounded-md' px='2'>
@@ -18,7 +18,7 @@ export const DateSeparator = (props: FlexProps) => {
                     {children}
                 </Text>
             </Flex>
-            <Flex grow='1'>
+            <Flex flexGrow='1'>
                 <Separator size='4' className={`bg-gray-5 dark:bg-gray-7`} />
             </Flex>
         </Flex>

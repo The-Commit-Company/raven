@@ -12,7 +12,7 @@ export const SidebarHeader = () => {
                 px='3'
                 align='center'
                 pt='1'
-                height='8'>
+                height='48px'>
                 <Text as='span' size='6' className='cal-sans pl-1'>raven</Text>
                 <Flex align='center' gap='4' className='pr-1 sm:pr-0'>
                     <SearchButton />

@@ -6,7 +6,6 @@ import { clsx } from 'clsx'
 import { Filter, useFrappeGetDocList, useFrappePostCall } from 'frappe-react-sdk'
 import { ChangeEvent, useContext, useState } from 'react'
 import { FaInfo } from 'react-icons/fa'
-import { User } from '../../../types/Core/User'
 import { PageLengthSelector } from '@/components/feature/pagination/PageLengthSelector'
 import { PageSelector } from '@/components/feature/pagination/PageSelector'
 import { UsersTable } from '@/components/feature/raven-users/UsersTable'
@@ -17,6 +16,7 @@ import { BiLeftArrowAlt, BiSearch } from 'react-icons/bi'
 import { UserContext } from '@/utils/auth/UserProvider'
 import { Loader } from '@/components/common/Loader'
 import { toast } from 'sonner'
+import { User } from '@/types/Core/User'
 
 const AddRavenUsersPage = () => {
 
@@ -117,15 +117,15 @@ const AddRavenUsersCard = () => {
                     <Flex gap='2' align='center'>
                         <TextField.Root style={{
                             width: '320px'
-                        }}>
-                            <TextField.Slot>
+                        }}
+                            onChange={handleChange}
+                            value={searchText}
+                            type='text'
+                            placeholder='Search for user'
+                        >
+                            <TextField.Slot side='left'>
                                 <BiSearch />
                             </TextField.Slot>
-                            <TextField.Input
-                                onChange={handleChange}
-                                value={searchText}
-                                type='text'
-                                placeholder='Search for user' />
                         </TextField.Root>
                         {debouncedText.length > 0 && debouncedText.length < 2 && <Text size='1' color="gray">Continue typing...</Text>}
                     </Flex>

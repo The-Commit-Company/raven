@@ -114,14 +114,13 @@ const CreatePollContent = ({ setIsOpen }: { setIsOpen: (open: boolean) => void }
                         {fields && fields.map((field, index) => (
                             <Flex key={field.id} gap='2' align={'start'}>
                                 <div className={'w-full'}>
-                                    <TextField.Root>
-                                        <TextField.Input placeholder={optionPlaceholders[index]} {...register(`options.${index}.option`, {
-                                            required: 'Option is required',
-                                            minLength: {
-                                                value: 1,
-                                                message: 'Option cannot be empty'
-                                            }
-                                        })} />
+                                    <TextField.Root placeholder={optionPlaceholders[index]} {...register(`options.${index}.option`, {
+                                        required: 'Option is required',
+                                        minLength: {
+                                            value: 1,
+                                            message: 'Option cannot be empty'
+                                        }
+                                    })}>
                                     </TextField.Root>
                                     {errors?.options?.[index]?.option && <ErrorText>{errors.options?.[index]?.option?.message}</ErrorText>}
                                 </div>

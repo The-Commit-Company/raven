@@ -1,14 +1,13 @@
 import { FileMessage, Message, PollMessage, TextMessage } from "../../../../../../../types/Messaging/Message"
-import { Box, Flex, Separator, Text } from "@radix-ui/themes"
+import { Box, Flex, FlexProps, Separator, Text } from "@radix-ui/themes"
 import { useGetUser } from "@/hooks/useGetUser"
 import { DateMonthAtHourMinuteAmPm } from "@/utils/dateConversions"
 import { FileExtensionIcon } from "@/utils/layout/FileExtIcon"
 import { getFileExtension, getFileName } from "@/utils/operations"
-import { FlexProps } from "@radix-ui/themes/dist/cjs/components/flex"
 import { clsx } from "clsx"
 import parse from 'html-react-parser';
 import { MdOutlineBarChart } from "react-icons/md"
-interface ReplyMessageBoxProps extends FlexProps {
+type ReplyMessageBoxProps = FlexProps & {
     message: Partial<Message>
 }
 /**

@@ -35,17 +35,14 @@ export const SchedulerEventsForm = ({ edit = false }: Props) => {
         <Flex direction="column" gap={'4'}>
             {!edit && <Box>
                 <Label htmlFor="event_name" isRequired>Name</Label>
-                <TextField.Root>
-                    <TextField.Input
-                        {...register('event_name', { required: "Name is required.", maxLength: { value: 140, message: "Name cannot be more than 140 characters." } })}
-                        id="name"
-                        placeholder="e.g. Sales Invoice - Daily Reminder"
-                        autoFocus
-                        aria-describedby={errors.event_name ? 'name-error' : undefined}
-                        aria-invalid={errors.event_name ? 'true' : 'false'}
-                        color={errors.event_name ? 'red' : 'gray'}
-                    />
-                </TextField.Root>
+                <TextField.Root
+                    {...register('event_name', { required: "Name is required.", maxLength: { value: 140, message: "Name cannot be more than 140 characters." } })}
+                    id="name"
+                    placeholder="e.g. Sales Invoice - Daily Reminder"
+                    autoFocus
+                    aria-describedby={errors.event_name ? 'name-error' : undefined}
+                    aria-invalid={errors.event_name ? 'true' : 'false'}
+                    color={errors.event_name ? 'red' : 'gray'} />
                 {errors.event_name && <ErrorText className="pt-1">{errors.event_name.message}</ErrorText>}
             </Box>}
 
@@ -125,40 +122,36 @@ export const SchedulerEventsForm = ({ edit = false }: Props) => {
                 <Flex gap={'4'}>
                     <Box>
                         <Label>Hour</Label>
-                        <TextField.Root>
-                            <TextField.Input
-                                {...register('hour', {
-                                    required: "Hour is required.",
-                                    pattern: {
-                                        value: /^(0[0-9]|1[0-9]|2[0-3])$/,
-                                        message: "Hour should be in 24 hour format."
-                                    }
-                                })}
-                                placeholder="e.g. 10"
-                                aria-invalid={errors.hour ? 'true' : 'false'}
-                                color={errors.hour ? 'red' : 'gray'}
-                                aria-describedby={errors.hour ? 'hour-error' : undefined}
-                            />
-                        </TextField.Root>
+                        <TextField.Root
+                            {...register('hour', {
+                                required: "Hour is required.",
+                                pattern: {
+                                    value: /^(0[0-9]|1[0-9]|2[0-3])$/,
+                                    message: "Hour should be in 24 hour format."
+                                }
+                            })}
+                            placeholder="e.g. 10"
+                            aria-invalid={errors.hour ? 'true' : 'false'}
+                            color={errors.hour ? 'red' : 'gray'}
+                            aria-describedby={errors.hour ? 'hour-error' : undefined}
+                        />
                         {errors.hour && <ErrorText className="pt-1" id='hour-error'>{errors.hour.message}</ErrorText>}
                     </Box>
                     <Box>
                         <Label>Minute</Label>
-                        <TextField.Root>
-                            <TextField.Input
-                                {...register('minute', {
-                                    required: "Minute is required.",
-                                    pattern: {
-                                        value: /^[0-5][0-9]$/,
-                                        message: "Minute should be in 24 hour format."
-                                    }
-                                })}
-                                placeholder="e.g. 30"
-                                aria-invalid={errors.minute ? 'true' : 'false'}
-                                color={errors.minute ? 'red' : 'gray'}
-                                aria-describedby={errors.minute ? 'minute-error' : undefined}
-                            />
-                        </TextField.Root>
+                        <TextField.Root
+                            {...register('minute', {
+                                required: "Minute is required.",
+                                pattern: {
+                                    value: /^[0-5][0-9]$/,
+                                    message: "Minute should be in 24 hour format."
+                                }
+                            })}
+                            placeholder="e.g. 30"
+                            aria-invalid={errors.minute ? 'true' : 'false'}
+                            color={errors.minute ? 'red' : 'gray'}
+                            aria-describedby={errors.minute ? 'minute-error' : undefined}
+                        />
                         {errors.minute && <ErrorText className="pt-1" id="minute-error">{errors.minute.message}</ErrorText>}
                     </Box>
                 </Flex>
@@ -193,40 +186,36 @@ export const SchedulerEventsForm = ({ edit = false }: Props) => {
                     </Box>
                     <Box>
                         <Label>Hour</Label>
-                        <TextField.Root>
-                            <TextField.Input
-                                {...register('hour', {
-                                    required: "Time is required.",
-                                    pattern: {
-                                        value: /^(0[0-9]|1[0-9]|2[0-3])$/,
-                                        message: "Hour should be in 24 hour format."
-                                    }
-                                })}
-                                placeholder="e.g. 10"
-                                aria-invalid={errors.hour ? 'true' : 'false'}
-                                color={errors.hour ? 'red' : 'gray'}
-                                aria-describedby={errors.hour ? 'hour-error' : undefined}
-                            />
-                        </TextField.Root>
+                        <TextField.Root
+                            {...register('hour', {
+                                required: "Time is required.",
+                                pattern: {
+                                    value: /^(0[0-9]|1[0-9]|2[0-3])$/,
+                                    message: "Hour should be in 24 hour format."
+                                }
+                            })}
+                            placeholder="e.g. 10"
+                            aria-invalid={errors.hour ? 'true' : 'false'}
+                            color={errors.hour ? 'red' : 'gray'}
+                            aria-describedby={errors.hour ? 'hour-error' : undefined}
+                        />
                         {errors.hour && <ErrorText className="pt-1" id="hour-error">{errors.hour.message}</ErrorText>}
                     </Box>
                     <Box>
                         <Label>Minute</Label>
-                        <TextField.Root>
-                            <TextField.Input
-                                {...register('minute', {
-                                    required: "Minute is required.",
-                                    pattern: {
-                                        value: /^[0-5][0-9]$/,
-                                        message: "Minute should be in 24 hour format."
-                                    }
-                                })}
-                                placeholder="e.g. 30"
-                                aria-invalid={errors.minute ? 'true' : 'false'}
-                                color={errors.minute ? 'red' : 'gray'}
-                                aria-describedby={errors.minute ? 'minute-error' : undefined}
-                            />
-                        </TextField.Root>
+                        <TextField.Root
+                            {...register('minute', {
+                                required: "Minute is required.",
+                                pattern: {
+                                    value: /^[0-5][0-9]$/,
+                                    message: "Minute should be in 24 hour format."
+                                }
+                            })}
+                            placeholder="e.g. 30"
+                            aria-invalid={errors.minute ? 'true' : 'false'}
+                            color={errors.minute ? 'red' : 'gray'}
+                            aria-describedby={errors.minute ? 'minute-error' : undefined}
+                        />
                         {errors.minute && <ErrorText className="pt-1" id="minute-error">{errors.minute.message}</ErrorText>}
                     </Box>
                 </Flex>
@@ -237,59 +226,53 @@ export const SchedulerEventsForm = ({ edit = false }: Props) => {
                 <Flex gap={'4'}>
                     <Box>
                         <Label>Date</Label>
-                        <TextField.Root>
-                            <TextField.Input
-                                {...register('date', {
-                                    required: "Date is required.",
-                                    pattern: {
-                                        value: /^(0[1-9]|[12][0-9]|3[01])$/,
-                                        message: "Date should be in 24 hour format."
-                                    }
-                                })}
-                                placeholder="e.g. 10"
-                                aria-invalid={errors.date ? 'true' : 'false'}
-                                color={errors.date ? 'red' : 'gray'}
-                                aria-describedby={errors.date ? 'date-error' : undefined}
-                            />
-                        </TextField.Root>
+                        <TextField.Root
+                            {...register('date', {
+                                required: "Date is required.",
+                                pattern: {
+                                    value: /^(0[1-9]|[12][0-9]|3[01])$/,
+                                    message: "Date should be in 24 hour format."
+                                }
+                            })}
+                            placeholder="e.g. 10"
+                            aria-invalid={errors.date ? 'true' : 'false'}
+                            color={errors.date ? 'red' : 'gray'}
+                            aria-describedby={errors.date ? 'date-error' : undefined}
+                        />
                         {errors.date && <ErrorText className="pt-1" id="date-error">{errors.date.message}</ErrorText>}
                     </Box>
                     <Box>
                         <Label>Hour</Label>
-                        <TextField.Root>
-                            <TextField.Input
-                                {...register('hour', {
-                                    required: "Time is required.",
-                                    pattern: {
-                                        value: /^(0[0-9]|1[0-9]|2[0-3])$/,
-                                        message: "Hour should be in 24 hour format."
-                                    }
-                                })}
-                                placeholder="e.g. 10"
-                                aria-invalid={errors.hour ? 'true' : 'false'}
-                                color={errors.hour ? 'red' : 'gray'}
-                                aria-describedby={errors.hour ? 'hour-error' : undefined}
-                            />
-                        </TextField.Root>
+                        <TextField.Root
+                            {...register('hour', {
+                                required: "Time is required.",
+                                pattern: {
+                                    value: /^(0[0-9]|1[0-9]|2[0-3])$/,
+                                    message: "Hour should be in 24 hour format."
+                                }
+                            })}
+                            placeholder="e.g. 10"
+                            aria-invalid={errors.hour ? 'true' : 'false'}
+                            color={errors.hour ? 'red' : 'gray'}
+                            aria-describedby={errors.hour ? 'hour-error' : undefined}
+                        />
                         {errors.hour && <ErrorText className="pt-1" id="hour-error">{errors.hour.message}</ErrorText>}
                     </Box>
                     <Box>
                         <Label>Minute</Label>
-                        <TextField.Root>
-                            <TextField.Input
-                                {...register('minute', {
-                                    required: "Minute is required.",
-                                    pattern: {
-                                        value: /^[0-5][0-9]$/,
-                                        message: "Minute should be in 24 hour format."
-                                    }
-                                })}
-                                placeholder="e.g. 30"
-                                aria-invalid={errors.minute ? 'true' : 'false'}
-                                color={errors.minute ? 'red' : 'gray'}
-                                aria-describedby={errors.minute ? 'minute-error' : undefined}
-                            />
-                        </TextField.Root>
+                        <TextField.Root
+                            {...register('minute', {
+                                required: "Minute is required.",
+                                pattern: {
+                                    value: /^[0-5][0-9]$/,
+                                    message: "Minute should be in 24 hour format."
+                                }
+                            })}
+                            placeholder="e.g. 30"
+                            aria-invalid={errors.minute ? 'true' : 'false'}
+                            color={errors.minute ? 'red' : 'gray'}
+                            aria-describedby={errors.minute ? 'minute-error' : undefined}
+                        />
                         {errors.minute && <ErrorText className="pt-1" id="minute-error">{errors.minute.message}</ErrorText>}
                     </Box>
                 </Flex>
@@ -333,79 +316,71 @@ const AdvancedCronInput = ({ name, label, ...props }: { name: string; label: str
         <Flex gap={'4'} width={'100%'}>
             <Box>
                 <Label>Minute</Label>
-                <TextField.Root>
-                    <TextField.Input
-                        {...register('minute', {
-                            required: "Minute is required.",
-                            pattern: {
-                                value: /^[0-5][0-9]$/,
-                                message: "Minute should be in 24 hour format."
-                            }
-                        })}
-                        placeholder="e.g. 30"
-                        aria-invalid={errors.minute ? 'true' : 'false'}
-                        color={errors.minute ? 'red' : 'gray'}
-                        aria-describedby={errors.minute ? 'minute-error' : undefined}
-                    />
-                </TextField.Root>
+                <TextField.Root
+                    {...register('minute', {
+                        required: "Minute is required.",
+                        pattern: {
+                            value: /^[0-5][0-9]$/,
+                            message: "Minute should be in 24 hour format."
+                        }
+                    })}
+                    placeholder="e.g. 30"
+                    aria-invalid={errors.minute ? 'true' : 'false'}
+                    color={errors.minute ? 'red' : 'gray'}
+                    aria-describedby={errors.minute ? 'minute-error' : undefined}
+                />
                 {errors.minute && <ErrorText className="pt-1" id="minute-error">{errors.minute.message}</ErrorText>}
             </Box>
             <Box>
                 <Label>Hour</Label>
-                <TextField.Root>
-                    <TextField.Input
-                        {...register('hour', {
-                            required: "Time is required.",
-                            pattern: {
-                                value: /^(0[0-9]|1[0-9]|2[0-3])$/,
-                                message: "Hour should be in 24 hour format."
-                            }
-                        })}
-                        placeholder="e.g. 10"
-                        aria-invalid={errors.hour ? 'true' : 'false'}
-                        color={errors.hour ? 'red' : 'gray'}
-                        aria-describedby={errors.hour ? 'hour-error' : undefined}
-                    />
-                </TextField.Root>
+                <TextField.Root
+                    {...register('hour', {
+                        required: "Time is required.",
+                        pattern: {
+                            value: /^(0[0-9]|1[0-9]|2[0-3])$/,
+                            message: "Hour should be in 24 hour format."
+                        }
+                    })}
+                    placeholder="e.g. 10"
+                    aria-invalid={errors.hour ? 'true' : 'false'}
+                    color={errors.hour ? 'red' : 'gray'}
+                    aria-describedby={errors.hour ? 'hour-error' : undefined}
+                />
                 {errors.hour && <ErrorText className="pt-1" id="hour-error">{errors.hour.message}</ErrorText>}
             </Box>
             <Box>
                 <Label>Date</Label>
-                <TextField.Root>
-                    <TextField.Input
-                        {...register('date', {
-                            required: "Date is required.",
-                            pattern: {
-                                value: /^(0[1-9]|[12][0-9]|3[01])$/,
-                                message: "Date should be in 24 hour format."
-                            }
-                        })}
-                        placeholder="e.g. 10"
-                        aria-invalid={errors.date ? 'true' : 'false'}
-                        color={errors.date ? 'red' : 'gray'}
-                        aria-describedby={errors.date ? 'date-error' : undefined}
-                    />
-                </TextField.Root>
+                <TextField.Root
+                    {...register('date', {
+                        required: "Date is required.",
+                        pattern: {
+                            value: /^(0[1-9]|[12][0-9]|3[01])$/,
+                            message: "Date should be in 24 hour format."
+                        }
+                    })}
+                    placeholder="e.g. 10"
+                    aria-invalid={errors.date ? 'true' : 'false'}
+                    color={errors.date ? 'red' : 'gray'}
+                    aria-describedby={errors.date ? 'date-error' : undefined}
+                />
                 {errors.date && <ErrorText className="pt-1" id="date-error">{errors.date.message}</ErrorText>}
             </Box>
             <Box className="w-[20%]">
                 <Label>Month</Label>
-                <TextField.Root>
-                    <TextField.Input
-                        {...props}
-                        {...register('month', {
-                            required: "Month is required.",
-                            pattern: {
-                                value: /^(0[1-9]|1[0-2])$/,
-                                message: "Month should be in 24 hour format."
-                            }
-                        })}
-                        placeholder="e.g. 10"
-                        aria-invalid={errors.month ? 'true' : 'false'}
-                        color={errors.month ? 'red' : 'gray'}
-                        aria-describedby={errors.month ? 'month-error' : undefined}
-                    />
-                </TextField.Root>
+                <TextField.Root
+                    {...props}
+                    {...register('month', {
+                        required: "Month is required.",
+                        pattern: {
+                            value: /^(0[1-9]|1[0-2])$/,
+                            message: "Month should be in 24 hour format."
+                        }
+                    })}
+                    placeholder="e.g. 10"
+                    aria-invalid={errors.month ? 'true' : 'false'}
+                    color={errors.month ? 'red' : 'gray'}
+                    aria-describedby={errors.month ? 'month-error' : undefined}
+                />
                 {errors.month && <ErrorText className="pt-1" id="month-error">{errors.month.message}</ErrorText>}
             </Box>
             <Box className="w-[20%]">

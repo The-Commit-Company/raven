@@ -1,7 +1,6 @@
 import { HelperText } from "@/components/common/Form";
 import { RavenWebhook } from "@/types/RavenIntegrations/RavenWebhook";
-import { Flex, Box, Heading, Table, TextFieldInput, IconButton, Button } from "@radix-ui/themes";
-import { useState } from "react";
+import { Flex, Box, Heading, Table, TextField, IconButton, Button } from "@radix-ui/themes";
 import { useFieldArray, useFormContext } from "react-hook-form";
 import { BiMinusCircle } from "react-icons/bi";
 import { BsPlus } from "react-icons/bs";
@@ -39,12 +38,12 @@ export const WebhookHeaders = () => {
                         {fields.map((field, index) => (
                             <Table.Row key={field.id}>
                                 <Table.Cell>
-                                    <TextFieldInput {...register(`webhook_headers.${index}.key`, {
+                                    <TextField.Root {...register(`webhook_headers.${index}.key`, {
                                         required: 'Key is required'
                                     })} placeholder='Key' />
                                 </Table.Cell>
                                 <Table.Cell>
-                                    <TextFieldInput {...register(`webhook_headers.${index}.value`)} placeholder='Value' />
+                                    <TextField.Root {...register(`webhook_headers.${index}.value`)} placeholder='Value' />
                                 </Table.Cell>
                                 <Table.Cell width={'8%'}>
                                     <IconButton

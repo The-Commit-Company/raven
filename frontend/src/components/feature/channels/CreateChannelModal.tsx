@@ -172,21 +172,19 @@ const CreateChannelContent = ({ updateChannelList, isOpen, setIsOpen }: { update
                                 }
                             }}
                             render={({ field, fieldState: { error } }) => (
-                                <TextField.Root>
-                                    <TextField.Slot>
+                                <TextField.Root
+                                    maxLength={50}
+                                    required
+                                    autoFocus={isDesktop}
+                                    placeholder='e.g. red-wedding-planning, joffrey-memes'
+                                    color={error ? 'red' : undefined}
+                                    {...field}
+                                    aria-invalid={error ? 'true' : 'false'}
+                                    onChange={handleNameChange}>
+                                    <TextField.Slot side='left'>
                                         {channelIcon}
                                     </TextField.Slot>
-                                    <TextField.Input
-                                        maxLength={50}
-                                        required
-                                        autoFocus={isDesktop}
-                                        placeholder='e.g. red-wedding-planning, joffrey-memes'
-                                        color={error ? 'red' : undefined}
-                                        {...field}
-                                        aria-invalid={error ? 'true' : 'false'}
-                                        onChange={handleNameChange}
-                                    />
-                                    <TextField.Slot>
+                                    <TextField.Slot side='right'>
                                         <Text size='2' weight='light' color='gray'>{50 - field.value.length}</Text>
                                     </TextField.Slot>
                                 </TextField.Root>
