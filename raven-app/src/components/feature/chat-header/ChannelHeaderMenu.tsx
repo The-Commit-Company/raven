@@ -1,6 +1,6 @@
 import { useBoolean } from '@/hooks/useBoolean'
 import { DropdownMenu, Flex, IconButton } from '@radix-ui/themes'
-import { BiCog, BiDotsVerticalRounded, BiFile, BiSearch, BiUserPlus } from 'react-icons/bi'
+import { BiDotsVerticalRounded, BiFile, BiSearch, BiUserPlus } from 'react-icons/bi'
 import { ViewFilesButton } from '../files/ViewFilesButton'
 import AddChannelMembersModal from '../channel-member-details/add-members/AddChannelMembersModal'
 import { useParams } from 'react-router-dom'
@@ -10,11 +10,14 @@ import { useContext, useMemo } from 'react'
 import useFetchChannelMembers from '@/hooks/fetchers/useFetchChannelMembers'
 import { UserContext } from '@/utils/auth/UserProvider'
 import ViewChannelDetailsModal from '../channels/ViewChannelDetailsModal'
+import { SlSettings } from 'react-icons/sl'
+import { TbUsersPlus } from 'react-icons/tb'
+
 type Props = {
     channelData: ChannelListItem,
 }
 
-const ICON_SIZE = '18'
+const ICON_SIZE = '16'
 
 const ChannelHeaderMenu = ({ channelData }: Props) => {
 
@@ -68,7 +71,7 @@ const ChannelHeaderMenu = ({ channelData }: Props) => {
                     {canAddMembers &&
                         <DropdownMenu.Item onClick={onAddMembersOpen}>
                             <Flex gap='2' align='center'>
-                                <BiUserPlus size={ICON_SIZE} />
+                                <TbUsersPlus size={ICON_SIZE} />
                                 Add Members
                             </Flex>
                         </DropdownMenu.Item>
@@ -76,7 +79,7 @@ const ChannelHeaderMenu = ({ channelData }: Props) => {
 
                     <DropdownMenu.Item onClick={onChannelDetailsOpen}>
                         <Flex gap='2' align='center'>
-                            <BiCog size={ICON_SIZE} />
+                            <SlSettings size={ICON_SIZE} />
                             Channel Settings
                         </Flex>
                     </DropdownMenu.Item>

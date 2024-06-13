@@ -1,7 +1,6 @@
 import { useCallback, useContext } from "react"
 import { ChannelDetails } from "../channel-details/ChannelDetails"
 import { ChannelMemberDetails } from "../channel-member-details/ChannelMemberDetails"
-import { FilesSharedInChannel } from '../channel-shared-files/FilesSharedInChannel'
 import { ChannelSettings } from "../channel-settings/ChannelSettings"
 import { UserContext } from "../../../utils/auth/UserProvider"
 import { ChannelIcon } from "@/utils/layout/channelIcon"
@@ -82,7 +81,6 @@ const ViewChannelDetailsModalContent = ({ setOpen, channelData }: ViewChannelDet
                                 <Text>{memberCount}</Text>
                             </Flex>
                         </Tabs.Trigger>
-                        <Tabs.Trigger value="Files">Files</Tabs.Trigger>
                         {/* channel settings are only available for admins */}
                         {/* the general channel is the default channel and cannot be deleted or archived */}
                         {channelMembers[currentUser]?.is_admin == 1 && channelData.name != 'general' && channelData.is_archived == 0 && <Tabs.Trigger value="Settings">Settings</Tabs.Trigger>}
@@ -93,9 +91,6 @@ const ViewChannelDetailsModalContent = ({ setOpen, channelData }: ViewChannelDet
                         </Tabs.Content>
                         <Tabs.Content value="Members">
                             <ChannelMemberDetails channelData={channelData} channelMembers={channelMembers} activeUsers={activeUsers} updateMembers={updateMembers} />
-                        </Tabs.Content>
-                        <Tabs.Content value="Files">
-                            <FilesSharedInChannel channelMembers={channelMembers} />
                         </Tabs.Content>
                         <Tabs.Content value="Settings">
                             <ChannelSettings channelData={channelData} onClose={onClose} />
