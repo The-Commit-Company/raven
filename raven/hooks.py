@@ -206,10 +206,7 @@ ignore_links_on_delete = ["Raven Message"]
 
 additional_timeline_content = {"*": ["raven.api.raven_message.get_timeline_message_content"]}
 
-website_route_rules = [
-	{"from_route": "/raven/<path:app_path>", "to_route": "raven"},
-	{"from_route": "/raven_mobile/<path:app_path>", "to_route": "raven_mobile"},
-]
+website_route_rules = [{"from_route": "/raven/<path:app_path>", "to_route": "raven"}]
 
 permission_query_conditions = {
 	"Raven Channel": "raven.permissions.raven_channel_query",

@@ -5,7 +5,7 @@
  "description": "## Adding Users\n\nTo access Raven, users need to have the **Raven User** role.\n\nGo to the \"Users\" list and add the role to the users you want on Raven.",
  "docstatus": 0,
  "doctype": "Onboarding Step",
- "idx": 2,
+ "idx": 3,
  "is_complete": 0,
  "is_single": 0,
  "is_skipped": 0,
