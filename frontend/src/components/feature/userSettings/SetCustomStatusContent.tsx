@@ -1,5 +1,5 @@
 import EmojiPicker from '@/components/common/EmojiPicker/EmojiPicker'
-import { ErrorText } from '@/components/common/Form'
+import { ErrorText, Label } from '@/components/common/Form'
 import { Loader } from '@/components/common/Loader'
 import { ErrorBanner } from '@/components/layout/AlertBanner'
 import useCurrentRavenUser from '@/hooks/useCurrentRavenUser'
@@ -52,10 +52,10 @@ const SetCustomStatusContent = ({ onClose }: { onClose: VoidFunction }) => {
                     <ErrorBanner error={error} />
 
                     <Flex direction={'column'} gap={'2'}>
-                        <Text size='2' color='gray'>Share what you're up to</Text>
+                        <Label size='2' color='gray' weight='regular' htmlFor='custom_status'>Share what you're up to</Label>
                         <Flex align={'center'} gap='3'>
-                            <TextField.Root className={'w-96'}>
-                                <TextField.Input
+                            <Flex direction={'column'} gap='1'>
+                                <TextField.Root
                                     id="custom_status"
                                     autoFocus
                                     placeholder='e.g. Out of Office'
@@ -66,13 +66,18 @@ const SetCustomStatusContent = ({ onClose }: { onClose: VoidFunction }) => {
                                             message: "Status cannot be more than 140 characters."
                                         }
                                     })}
-                                    aria-invalid={errors.custom_status ? 'true' : 'false'}
-                                />
+                                    className='min-w-[21rem]'
+                                    aria-invalid={errors.custom_status ? 'true' : 'false'}>
+
+                                    <TextField.Slot side='right'>
+                                        <IconButton type='button' className={'rounded-full'} onClick={() => setEmojiPickerOpen(!isEmojiPickerOpen)} variant='ghost' color='gray'>
+                                            <BiSmile size='18' />
+                                        </IconButton>
+                                    </TextField.Slot>
+                                </TextField.Root>
                                 {errors.custom_status && <ErrorText>{errors.custom_status.message}</ErrorText>}
-                            </TextField.Root>
-                            <IconButton type='button' className={'rounded-full'} onClick={() => setEmojiPickerOpen(!isEmojiPickerOpen)} variant='ghost' color='gray'>
-                                <BiSmile size='18' />
-                            </IconButton>
+                            </Flex>
+
                         </Flex>
                         {isEmojiPickerOpen && <EmojiPicker onSelect={onEmojiSelect} />}
                     </Flex>

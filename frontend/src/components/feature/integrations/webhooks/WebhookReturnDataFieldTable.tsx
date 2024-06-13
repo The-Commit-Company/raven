@@ -1,6 +1,6 @@
 import { HelperText, Label } from "@/components/common/Form";
 import { Webhook } from "@/types/Integrations/Webhook";
-import { Flex, Box, Heading, Table, TextFieldInput, IconButton, Button, Select, Dialog, Badge } from "@radix-ui/themes";
+import { Flex, Box, Heading, Table, IconButton, Button, Select, Dialog, Badge, TextField } from "@radix-ui/themes";
 import { useMemo, useState } from "react";
 import { Controller, useFieldArray, useFormContext } from "react-hook-form";
 import { BiInfoCircle, BiMinusCircle } from "react-icons/bi";
@@ -105,7 +105,7 @@ export const WebhookData = () => {
                                         />
                                     </Table.Cell>
                                     <Table.Cell>
-                                        <TextFieldInput {...register(`webhook_data.${index}.key`)} placeholder='Key' readOnly />
+                                        <TextField.Root {...register(`webhook_data.${index}.key`)} placeholder='Key' readOnly />
                                     </Table.Cell>
                                     <Table.Cell width={'8%'}>
                                         <Dialog.Root open={open} onOpenChange={setOpen}>

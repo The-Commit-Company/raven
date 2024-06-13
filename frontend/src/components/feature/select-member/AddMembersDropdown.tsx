@@ -6,6 +6,7 @@ import { useMultipleSelection, useCombobox } from 'downshift'
 import { clsx } from 'clsx'
 import { Label } from '@/components/common/Form'
 import useFetchChannelMembers from '@/hooks/fetchers/useFetchChannelMembers'
+import { useIsDesktop } from '@/hooks/useMediaQuery'
 
 interface AddMembersDropdownProps {
     channelID: string,
@@ -115,64 +116,66 @@ const AddMembersDropdown = ({ channelID, label = 'Select users', selectedUsers, 
             },
         })
 
+        const isDesktop = useIsDesktop()
+
         return (
             <div className="w-full">
                 <div className="flex flex-col gap-1">
                     <Label className="w-fit" {...getLabelProps()}>
                         {label}
                     </Label>
-                    <TextField.Root className="w-full bg-transparent" variant='soft'>
-                        <div className="inline-flex gap-1 p-1 items-center flex-wrap">
-                            {selectedUsers.map(function renderSelectedItem(
-                                selectedItemForRender,
-                                index,
-                            ) {
-                                return (
-                                    <span
-                                        className="rt-Button rt-BaseButton rt-variant-surface rt-r-size-2 flex items-center"
-                                        key={`selected-item-${index}`}
-                                        {...getSelectedItemProps({
-                                            selectedItem: selectedItemForRender,
-                                            index,
-                                        })}
-                                    >
-                                        <UserAvatar
-                                            src={selectedItemForRender.user_image ?? ''}
-                                            alt={selectedItemForRender.full_name}
-                                            size='1'
-                                            variant='solid'
-                                            color='gray'
+                    <TextField.Root
+                        // variant='soft'
+                        placeholder="Type a name..."
+                        className='w-full'
+                        autoFocus={isDesktop}
+                        {...getInputProps(getDropdownProps())}
+                    >
 
-                                        />
-                                        <Text size='2'>
-                                            {selectedItemForRender.full_name}
-                                        </Text>
-
-                                        <span
-                                            className="cursor-pointer"
-                                            onClick={e => {
-                                                e.stopPropagation()
-                                                removeSelectedItem(selectedItemForRender)
-                                            }}
-                                        >
-                                            &#10005;
-                                        </span>
-                                    </span>
-                                )
-                            })}
-                            <div className="flex gap-0.5 grow">
-                                <TextField.Input
-                                    placeholder="Type a name..."
-                                    width='9'
-                                    autoFocus
-                                    {...getInputProps(getDropdownProps())}
-                                />
-                            </div>
-                        </div>
                     </TextField.Root>
+
+                    <div className="inline-flex gap-1 p-1 items-center flex-wrap">
+                        {selectedUsers.map(function renderSelectedItem(
+                            selectedItemForRender,
+                            index,
+                        ) {
+                            return (
+                                <span
+                                    className="rt-Button rt-BaseButton rt-variant-surface rt-r-size-2 flex items-center"
+                                    key={`selected-item-${index}`}
+                                    {...getSelectedItemProps({
+                                        selectedItem: selectedItemForRender,
+                                        index,
+                                    })}
+                                >
+                                    <UserAvatar
+                                        src={selectedItemForRender.user_image ?? ''}
+                                        alt={selectedItemForRender.full_name}
+                                        size='1'
+                                        variant='solid'
+                                        color='gray'
+
+                                    />
+                                    <Text size='2'>
+                                        {selectedItemForRender.full_name}
+                                    </Text>
+
+                                    <span
+                                        className="cursor-pointer"
+                                        onClick={e => {
+                                            e.stopPropagation()
+                                            removeSelectedItem(selectedItemForRender)
+                                        }}
+                                    >
+                                        &#10005;
+                                    </span>
+                                </span>
+                            )
+                        })}
+                    </div>
                 </div>
                 <ul
-                    className={`sm:w-[33rem] absolute bg-background rounded-b-md mt-1 shadow-md max-h-96 overflow-scroll p-0 z-50 ${!(isOpen && items.length) && 'hidden'
+                    className={`sm:w-[550px] w-[24rem] absolute bg-background rounded-b-md mt-1 shadow-md z-[9999] max-h-96 overflow-scroll p-0 ${!(isOpen && items.length) && 'hidden'
                         }`}
                     {...getMenuProps()}
                 >

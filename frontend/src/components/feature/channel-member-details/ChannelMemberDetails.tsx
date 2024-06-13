@@ -35,11 +35,10 @@ export const ChannelMemberDetails = ({ channelData, channelMembers, activeUsers,
         <Flex direction='column' gap='4' className={'h-[66vh] pb-2 sm:h-96'}>
             <Flex gap='2' justify='between'>
                 <div className={'w-full sm:w-full'}>
-                    <TextField.Root>
-                        <TextField.Slot>
+                    <TextField.Root autoFocus placeholder='Find members' onChange={handleChange} value={searchText} >
+                        <TextField.Slot side='left'>
                             <BiSearch />
                         </TextField.Slot>
-                        <TextField.Input autoFocus placeholder='Find members' onChange={handleChange} value={searchText} />
                     </TextField.Root>
                 </div>
                 {/* if current user is a channel member and the channel is not a open channel, user can add more members to the channel */}

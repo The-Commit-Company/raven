@@ -32,15 +32,14 @@ const GIFPicker = ({ onSelect }: GIFPickerProps) => {
         <Flex className="w-full justify-center">
             <Flex direction={'column'} gap='2' align='center' pt={'3'} width={'100%'} className="px-0.5 sm:px-4">
                 <Box className="w-full">
-                    <TextField.Root className="w-full mb-1">
-                        <TextField.Slot>
+                    <TextField.Root className="w-full mb-1"
+                        onChange={(e) => setSearchText(e.target.value)}
+                        value={searchText}
+                        type='text'
+                        placeholder='Search GIFs'>
+                        <TextField.Slot side='left'>
                             <BiSearch />
                         </TextField.Slot>
-                        <TextField.Input
-                            onChange={(e) => setSearchText(e.target.value)}
-                            value={searchText}
-                            type='text'
-                            placeholder='Search GIFs' />
                     </TextField.Root>
                 </Box>
                 <ScrollArea className="h-[74vh] sm:h-auto pb-6 sm:pb-10 ">

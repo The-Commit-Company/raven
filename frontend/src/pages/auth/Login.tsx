@@ -83,34 +83,30 @@ export const Component = () => {
 
                                     <Flex direction='column' gap='2'>
                                         <Label htmlFor='email' isRequired>{loginContext?.message?.login_label}</Label>
-                                        <TextField.Root>
-                                            <TextField.Input {...register("email",
-                                                {
-                                                    required: `${loginContext?.message?.login_label} is required.`
-                                                })}
-                                                name="email"
-                                                type="text"
-                                                required
-                                                placeholder="jane@example.com"
-                                                tabIndex={0} />
-                                        </TextField.Root>
+                                        <TextField.Root {...register("email",
+                                            {
+                                                required: `${loginContext?.message?.login_label} is required.`
+                                            })}
+                                            name="email"
+                                            type="text"
+                                            required
+                                            placeholder="jane@example.com"
+                                            tabIndex={0} />
                                         {errors?.email && <ErrorText>{errors?.email.message}</ErrorText>}
                                     </Flex>
 
                                     <Flex direction='column' gap='2'>
                                         <Label htmlFor='password' isRequired>Password</Label>
-                                        <TextField.Root>
-                                            <TextField.Input
-                                                {...register("password",
-                                                    {
-                                                        required: "Password is required.",
-                                                    })}
-                                                name="password"
-                                                type={isPasswordOpen ? "text" : "password"}
-                                                autoComplete="current-password"
-                                                required
-                                                placeholder="***********" />
-                                            <TextField.Slot>
+                                        <TextField.Root  {...register("password",
+                                            {
+                                                required: "Password is required.",
+                                            })}
+                                            name="password"
+                                            type={isPasswordOpen ? "text" : "password"}
+                                            autoComplete="current-password"
+                                            required
+                                            placeholder="***********" >
+                                            <TextField.Slot side='right'>
                                                 <IconButton
                                                     type='button'
                                                     size='1'

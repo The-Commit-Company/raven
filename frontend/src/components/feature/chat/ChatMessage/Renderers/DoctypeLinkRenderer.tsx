@@ -1,5 +1,5 @@
 import { useDoctypePreview } from "@/hooks/useDoctypePreview"
-import { Badge, Flex, Heading, IconButton, Skeleton, Tooltip } from "@radix-ui/themes"
+import { Badge, DataList, Flex, Heading, IconButton, Skeleton, Tooltip } from "@radix-ui/themes"
 import { FrappeConfig, FrappeContext } from "frappe-react-sdk"
 import { useContext } from "react"
 import { Grid, Text, Box, Card } from "@radix-ui/themes"
@@ -106,29 +106,29 @@ const DoctypeCard = ({ data, doctype, copyLink, openLink }: {
     return (
         <Card>
             <Grid gap='2'>
-                <Flex gap='4' align='center'>
-                    {
-                        data?.preview_image &&
-                        <Box>
-                            <img
-                                src={data.preview_image}
-                                alt={data?.preview_title}
-                                style={{
-                                    objectFit: 'cover',
-                                    width: '100%',
-                                    minWidth: '50px',
-                                    minHeight: '50px',
-                                    maxWidth: '100px',
-                                    maxHeight: '100px',
-                                    backgroundColor: 'var(--gray-5)',
-                                    borderRadius: 'var(--radius-4)'
-                                }}
-                            />
-                        </Box>
-                    }
-                    <Flex justify='between' className='flex-1'>
-                        <Grid gap='1'>
-                            <Heading as='h3' size='4'>{data?.preview_title}</Heading>
+                <Flex justify='between' align='start'>
+                    <Flex gap='4' align='center'>
+                        {
+                            data?.preview_image &&
+                            <Box>
+                                <img
+                                    src={data.preview_image}
+                                    alt={data?.preview_title}
+                                    style={{
+                                        objectFit: 'cover',
+                                        width: '100%',
+                                        minWidth: '50px',
+                                        minHeight: '50px',
+                                        maxWidth: '80px',
+                                        maxHeight: '80px',
+                                        backgroundColor: 'var(--gray-5)',
+                                        borderRadius: 'var(--radius-4)'
+                                    }}
+                                />
+                            </Box>
+                        }
+                        <Grid gap='2'>
+                            <Heading as='h3' size='3' className="leading-4">{data?.preview_title}</Heading>
                             <Flex gap="1">
                                 <Badge className="accent">{doctype}</Badge>
                                 <Text
@@ -141,60 +141,48 @@ const DoctypeCard = ({ data, doctype, copyLink, openLink }: {
                                 </Text>
                             </Flex>
                         </Grid>
-                        <Flex gap='2' align='center'>
-                            <Tooltip content='Open in new tab'>
-                                <IconButton
-                                    size='1'
-                                    title='Open in new tab'
-                                    color='gray'
-                                    onClick={openLink}
-                                    variant='soft'
-                                >
-                                    <BiLinkExternal />
-                                </IconButton>
-                            </Tooltip>
+                    </Flex>
+                    <Flex gap='3' align='center'>
+                        <Tooltip content='Open in new tab' delayDuration={800}>
+                            <IconButton
+                                size='1'
+                                title='Open in new tab'
+                                color='gray'
+                                onClick={openLink}
+                                variant='ghost'
+                            >
+                                <BiLinkExternal size='14' />
+                            </IconButton>
+                        </Tooltip>
 
-                            <Tooltip content='Copy link'>
-                                <IconButton
-                                    size='1'
-                                    title='Copy link'
-                                    color='gray'
-                                    onClick={onCopyLinkClick}
-                                    variant='soft'
-                                >
-                                    <BiCopy />
-                                </IconButton>
-                            </Tooltip>
-                        </Flex>
+                        <Tooltip content='Copy link' delayDuration={800}>
+                            <IconButton
+                                size='1'
+                                title='Copy link'
+                                color='gray'
+                                onClick={onCopyLinkClick}
+                                variant='ghost'
+                            >
+                                <BiCopy size='14' />
+                            </IconButton>
+                        </Tooltip>
                     </Flex>
                 </Flex>
 
-                <Grid gap='2' >
+                <DataList.Root size='2' className="gap-1">
                     {
                         data && Object.keys(removePreviewFields(data))?.map((item, index) => (
-                            <Flex key={item + index} gap='4' align='center'>
-                                <Flex>
-                                    <Text
-                                        size='2'
-                                        weight='bold'
-                                        color='gray'
-                                    >
-                                        {item}
-                                    </Text>
-                                </Flex>
-                                <Flex gap='2' align='center'>
-                                    <Text
-                                        size='2'
-                                        className='cursor-copy'
-                                        onClick={() => onCopyTextClick(item)}
-                                    >
-                                        {data[item]}
-                                    </Text>
-                                </Flex>
-                            </Flex>
+                            <DataList.Item align='center'>
+                                <DataList.Label minWidth="88px" className="font-semibold">
+                                    {item}
+                                </DataList.Label>
+                                <DataList.Value>
+                                    {data[item]}
+                                </DataList.Value>
+                            </DataList.Item>
                         ))
                     }
-                </Grid>
+                </DataList.Root>
             </Grid>
         </Card>
     )

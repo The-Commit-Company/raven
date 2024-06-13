@@ -81,17 +81,17 @@ export const FileSearch = ({ onToggleMyChannels, isOpenMyChannels, onToggleSaved
                 <Flex align='center' gap='2'>
                     <TextField.Root style={{
                         width: '80%'
-                    }}>
-                        <TextField.Slot>
+                    }}
+                        onChange={handleChange}
+                        type='text'
+                        placeholder='Search messages'
+                        value={searchText}
+                        autoFocus
+                    >
+                        <TextField.Slot side='left'>
                             <BiSearch />
                         </TextField.Slot>
-                        <TextField.Input
-                            onChange={handleChange}
-                            type='text'
-                            placeholder='Search messages'
-                            value={searchText}
-                            autoFocus />
-                        <TextField.Slot>
+                        <TextField.Slot side='right'>
                             {isLoading && <Loader />}
                         </TextField.Slot>
                     </TextField.Root>
@@ -102,7 +102,7 @@ export const FileSearch = ({ onToggleMyChannels, isOpenMyChannels, onToggleSaved
                                 <Select.Label>File Type</Select.Label>
                                 <Select.Item value='any'>
                                     <Flex align='center' gap='1'>
-                                        <Box width='4'>
+                                        <Box width='16px'>
                                             🤷🏻‍♀️
                                         </Box>
                                         Any
