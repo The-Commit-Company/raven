@@ -5,7 +5,7 @@
  "description": "## Raven Settings\n\n\n<em>**Automatically adding users to Raven**</em>\n\nTo make it easy for you, the Raven User role is assigned to any user who has access to Desk. If you wish to turn this off, please head to Raven Settings.",
  "docstatus": 0,
  "doctype": "Onboarding Step",
- "idx": 2,
+ "idx": 3,
  "is_complete": 0,
  "is_single": 1,
  "is_skipped": 0,

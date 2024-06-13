@@ -54,7 +54,6 @@ Raven was born out of a need to have a simple work communication tool that could
 6. Preview image/PDF files 📁
 7. Comprehensive search 🔍 functionality for all your messages, files, channels and users
 8. Don't strain your eyes 👀 - Raven supports dark mode 🌙
-9. Collaborate on the go with the Raven mobile app 📱 (in progress)
 
 <hr>
 
@@ -75,7 +74,6 @@ The frontend is built using React and the following tools:
 - [Tiptap](https://www.tiptap.dev)
 - [Tailwind CSS](https://tailwindcss.com/)
 
-The mobile app is built using [Ionic](https://ionicframework.com), [Tailwind CSS](tailwindcss.com) and [Capacitor](https://capacitorjs.com).
 
 <br>
 
@@ -127,11 +125,6 @@ The mobile app is built using [Ionic](https://ionicframework.com), [Tailwind CSS
       <figcaption align="center"><b>Light mode</b></figcaption>
   </figure>
   
-  <figure>
-      <img width="1402" src="screenshots/mobile-app.png" alt="Mobile app" />
-      <figcaption align="center"><b>Mobile app</b></figcaption>
-  </figure>
-  
 </details>
 
 
@@ -153,7 +146,7 @@ Post this, you can access Raven on your Frappe site at the `/raven` endpoint (e.
 
 To set up your local development environment, make sure that you have enabled [developer mode](https://frappeframework.com/how-to-enable-developer-mode-in-frappe) in your Frappe site config. 
 
-You also need to disable CSRF (add `ignore_csrf: 1` in your `site_config.json`) since the React web server will not have any CSRF token in live reload mode. If you are working on the mobile app, you would also need to allow CORS (add `allow_cors: "*"` in your `site_config.json`). Please note that this is only for the local dev setup - not meant for Production. 
+You also need to disable CSRF (add `ignore_csrf: 1` in your `site_config.json`) since the React web server will not have any CSRF token in live reload mode. Please note that this is only for the local dev setup - not meant for Production. 
 
 You can start the React live web server by:
 
@@ -163,14 +156,6 @@ yarn dev
 ```
 
 Your local dev server would be running at `http://localhost:8080`.
-
-You can also run the mobile app on your browser by:
-
-```bash
-cd frappe-bench/apps/raven/mobile
-yarn install
-yarn dev
-```
 
 <hr>
 
