@@ -26,7 +26,7 @@ export const AddMembersButton = ({ channelData, ...props }: AddMembersButtonProp
             <Dialog.Root open={open} onOpenChange={setOpen}>
                 <Dialog.Trigger>
                     <Button variant="ghost" size='1' {...props} className={clsx("text-nowrap", props.className)}>
-                        Add
+                        Add Members
                     </Button>
                 </Dialog.Trigger>
 
@@ -41,7 +41,7 @@ export const AddMembersButton = ({ channelData, ...props }: AddMembersButtonProp
         return <Drawer open={open} onOpenChange={setOpen}>
             <DrawerTrigger asChild>
                 <Button variant="ghost" size='1' {...props} className={clsx("text-nowrap", props.className)}>
-                    Add
+                    Add Members
                 </Button>
             </DrawerTrigger>
             <DrawerContent>

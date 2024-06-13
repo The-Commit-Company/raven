@@ -68,12 +68,10 @@ export const AddChannelMembersModalContent = ({ onClose }: AddChannelMemberModal
               <Text>Add members to&nbsp; <ChannelIcon type={channel?.channelData.type} size='18' className='inline-block -mb-0.5' /> {channel?.channelData.channel_name}</Text>
             </Dialog.Title>
 
-            <Dialog.Description>Anyone you add will be able to see all of the channel’s contents</Dialog.Description>
-
-            <Flex gap='2' py='4' direction='column' width='100%'>
+            <Flex gap='2' direction='column' width='100%'>
               <ErrorBanner error={error} />
               <Box width='100%'>
-                <Flex direction='column' gap='4'>
+                <Flex direction='column' gap='2'>
                   <Flex direction='column' gap='2'>
                     <Suspense fallback={<Loader />}>
                       <Controller

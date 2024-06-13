@@ -121,8 +121,8 @@ const AddMembersDropdown = ({ channelID, label = 'Select users', selectedUsers, 
                     <Label className="w-fit" {...getLabelProps()}>
                         {label}
                     </Label>
-                    <TextField.Root className="w-full bg-transparent" variant='soft' color='gray'>
-                        <div className="inline-flex gap-1 p-2 items-center flex-wrap">
+                    <TextField.Root className="w-full bg-transparent" variant='soft'>
+                        <div className="inline-flex gap-1 p-1 items-center flex-wrap">
                             {selectedUsers.map(function renderSelectedItem(
                                 selectedItemForRender,
                                 index,
