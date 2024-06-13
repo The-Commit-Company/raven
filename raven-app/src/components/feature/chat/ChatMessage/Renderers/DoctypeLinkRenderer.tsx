@@ -40,7 +40,7 @@ export const DoctypeLinkRenderer = ({ doctype, docname }: { doctype: string, doc
         }, {} as Record<string, any>)
     }
 
-    const onCopyClick = () => {
+    const onCopyLinkClick = () => {
         toast.promise(copyLink, {
             loading: 'Copying link...',
             success: 'Link copied!',
@@ -48,8 +48,17 @@ export const DoctypeLinkRenderer = ({ doctype, docname }: { doctype: string, doc
         })
     }
 
-    const copyToClipboard = (text: string) => navigator.clipboard.writeText(text)
+    const onCopyTextClick = (item: string) => {
+        toast.promise(() => copyToClipboard(data[item]), {
+            loading: `Copying ${item}...`,
+            success: `${item} copied!`,
+            error: `Failed to copy ${item}`,
+            duration: 1000
+        })
+    }
 
+    const copyToClipboard = (text: string) => navigator.clipboard.writeText(text) 
+    
     const copyLink = async () => {
 
         const route = await getRoute(doctype, docname)
@@ -69,10 +78,10 @@ export const DoctypeLinkRenderer = ({ doctype, docname }: { doctype: string, doc
                 <Grid gap="2">
                     <Flex gap="4" align="center">
                         {
-                            !data?.preview_image ?
+                            data?.preview_image ?
                                 <Box>
                                     <img
-                                        src="https://images.unsplash.com/photo-1617050318658-a9a3175e34cb?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80"
+                                        src={data.preview_image}
                                         alt="Bold typography"
                                         style={{
                                             objectFit: 'cover',
@@ -90,13 +99,14 @@ export const DoctypeLinkRenderer = ({ doctype, docname }: { doctype: string, doc
                         }
                         <Flex justify="between" className="flex-1">
                             <Grid gap="0">
-                                <Heading as="h3" size="4">{data.preview_title}</Heading>
+                                <Heading as="h3" size="4">{data?.preview_title}</Heading>
                                 <Text
                                     size="2"
                                     color="gray"
                                     className="cursor-copy"
-                                    onClick={() => copyToClipboard(data.id)}>
-                                    {data.id}
+                                    onClick={()=>onCopyTextClick("ID")}
+                                >
+                                    {data?.id}
                                 </Text>
                             </Grid>
                             <Flex gap="2" align="center">
@@ -117,7 +127,7 @@ export const DoctypeLinkRenderer = ({ doctype, docname }: { doctype: string, doc
                                         size='1'
                                         title="Copy link"
                                         color='gray'
-                                        onClick={onCopyClick}
+                                        onClick={onCopyLinkClick}
                                         variant="soft"
                                     >
                                         <BiCopy />
@@ -129,7 +139,7 @@ export const DoctypeLinkRenderer = ({ doctype, docname }: { doctype: string, doc
 
                     <Grid gap="2" >
                         {
-                            Object.keys(removePreviewFields(data))?.map((item, index) => (
+                            data && Object.keys(removePreviewFields(data))?.map((item, index) => (
                                 <Flex key={item + index} gap="4" align="center">
                                     <Flex>
                                         <Text
@@ -144,7 +154,7 @@ export const DoctypeLinkRenderer = ({ doctype, docname }: { doctype: string, doc
                                         <Text
                                             size="2"
                                             className="cursor-copy"
-                                            onClick={() => copyToClipboard(data[item])}
+                                            onClick={()=>onCopyTextClick(item)}
                                         >
                                             {data[item]}
                                         </Text>
