@@ -1,5 +1,5 @@
 import { useDoctypePreview } from "@/hooks/useDoctypePreview"
-import { Flex, Heading, IconButton, Skeleton, Tooltip } from "@radix-ui/themes"
+import { Badge, Flex, Heading, IconButton, Skeleton, Tooltip } from "@radix-ui/themes"
 import { FrappeConfig, FrappeContext } from "frappe-react-sdk"
 import { useContext } from "react"
 import { Grid, Text, Box, Card } from "@radix-ui/themes"
@@ -59,14 +59,19 @@ export const DoctypeLinkRenderer = ({ doctype, docname }: { doctype: string, doc
                                 </Text>
                             </Grid>
                         </Card> :
-                        <DoctypeCard data={data} copyLink={copyLink} openLink={openLink} />
+                        <DoctypeCard data={data} doctype={doctype} copyLink={copyLink} openLink={openLink} />
             }
         </Box>
     )
 }
 
 
-const DoctypeCard = ({ data, copyLink, openLink }: { data: Record<string, any>, copyLink: () => Promise<void>, openLink: () => Promise<void> }) => {
+const DoctypeCard = ({ data, doctype, copyLink, openLink }: {
+    data: Record<string, any>,
+    doctype: string,
+    copyLink: () => Promise<void>,
+    openLink: () => Promise<void>
+}) => {
 
     // utility func to remove known preview fields in order to map rest of them
     const removePreviewFields = (data: Record<string, any>) => {
@@ -122,16 +127,19 @@ const DoctypeCard = ({ data, copyLink, openLink }: { data: Record<string, any>, 
                         </Box>
                     }
                     <Flex justify='between' className='flex-1'>
-                        <Grid gap='0'>
+                        <Grid gap='1'>
                             <Heading as='h3' size='4'>{data?.preview_title}</Heading>
-                            <Text
-                                size='2'
-                                color='gray'
-                                className='cursor-copy'
-                                onClick={() => onCopyTextClick('ID')}
-                            >
-                                {data?.id}
-                            </Text>
+                            <Flex gap="1">
+                                <Badge className="accent">{doctype}</Badge>
+                                <Text
+                                    size='2'
+                                    color='gray'
+                                    className='cursor-copy'
+                                    onClick={() => onCopyTextClick('ID')}
+                                >
+                                    {data?.id}
+                                </Text>
+                            </Flex>
                         </Grid>
                         <Flex gap='2' align='center'>
                             <Tooltip content='Open in new tab'>
