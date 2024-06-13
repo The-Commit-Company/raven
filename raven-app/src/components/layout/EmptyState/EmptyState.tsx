@@ -12,6 +12,7 @@ import { BiBookmark } from "react-icons/bi"
 import { DateMonthYear } from "@/utils/dateConversions"
 import { useGetUser } from "@/hooks/useGetUser"
 import useFetchChannelMembers from "@/hooks/fetchers/useFetchChannelMembers"
+import { useIsUserActive } from "@/hooks/useIsUserActive"
 
 export const EmptyStateForSearch = () => {
     return (
@@ -76,12 +77,14 @@ const EmptyStateForDM = ({ channelData }: EmptyStateForDMProps) => {
         }
     }, [peerData, peer])
 
+    const isActive = useIsUserActive(peer)
+
     return (
         <Box className={'py-4 px-2'}>
             {channelData?.is_direct_message == 1 &&
                 <Flex direction='column' gap='3'>
                     <Flex gap='3' align='center'>
-                        <UserAvatar alt={fullName} src={userImage} size='3' skeletonSize='7' isBot={isBot} />
+                        <UserAvatar alt={fullName} src={userImage} size='3' skeletonSize='7' isBot={isBot} availabilityStatus={peerData?.availability_status} isActive={isActive} />
                         <Flex direction='column' gap='0'>
                             <Heading size='4'>{fullName}</Heading>
                             <div>
@@ -97,7 +100,6 @@ const EmptyStateForDM = ({ channelData }: EmptyStateForDMProps) => {
                         :
                         <Flex gap='2' align='center'>
                             <Text size='2'>This is a Direct Message channel between you and <strong>{fullName}</strong>.</Text>
-                            {/* <Button size='2' variant='ghost' className={'z-1'}>View profile</Button> */}
                         </Flex>
                     }
                 </Flex>
