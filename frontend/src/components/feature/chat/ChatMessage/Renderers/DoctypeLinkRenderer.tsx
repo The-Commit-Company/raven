@@ -1,5 +1,5 @@
 import { useDoctypePreview } from "@/hooks/useDoctypePreview"
-import { Badge, DataList, Flex, Heading, IconButton, Skeleton, Tooltip } from "@radix-ui/themes"
+import { AspectRatio, Badge, DataList, Flex, Heading, IconButton, Skeleton, Tooltip } from "@radix-ui/themes"
 import { FrappeConfig, FrappeContext } from "frappe-react-sdk"
 import { useContext } from "react"
 import { Grid, Text, Box, Card } from "@radix-ui/themes"
@@ -107,29 +107,34 @@ const DoctypeCard = ({ data, doctype, copyLink, openLink }: {
         <Card>
             <Grid gap='2'>
                 <Flex justify='between' align='start'>
-                    <Flex gap='4' align='center'>
+                    <Flex gap='2' align='center' width={'100%'}>
                         {
                             data?.preview_image &&
-                            <Box>
-                                <img
-                                    src={data.preview_image}
-                                    alt={data?.preview_title}
-                                    style={{
-                                        objectFit: 'cover',
-                                        width: '100%',
-                                        minWidth: '50px',
-                                        minHeight: '50px',
-                                        maxWidth: '80px',
-                                        maxHeight: '80px',
-                                        backgroundColor: 'var(--gray-5)',
-                                        borderRadius: 'var(--radius-4)'
-                                    }}
-                                />
+                            <Box width={'20%'} className="pl-0.5">
+                                <AspectRatio ratio={16 / 12}>
+                                    <img
+                                        src={data.preview_image}
+                                        alt={data?.preview_title}
+                                        style={{
+                                            objectFit: 'cover',
+                                            width: '100%',
+                                            height: '100%',
+                                            // width: '100%',
+                                            // minWidth: '50px',
+                                            // minHeight: '50px',
+                                            // maxWidth: '80px',
+                                            // maxHeight: '80px',
+                                            backgroundColor: 'var(--gray-5)',
+                                            borderRadius: 'var(--radius-4)'
+                                        }}
+                                    />
+                                </AspectRatio>
+
                             </Box>
                         }
-                        <Grid gap='2'>
+                        <Grid gap='1' width={'100%'}>
                             <Flex gap="1">
-                                <Badge className="accent">{doctype}</Badge>
+                                <Badge variant="surface">{doctype}</Badge>
                                 <Text
                                     size='2'
                                     color='gray'
@@ -139,7 +144,7 @@ const DoctypeCard = ({ data, doctype, copyLink, openLink }: {
                                     {data?.id}
                                 </Text>
                             </Flex>
-                            <Heading as='h3' size='3' className="leading-4 pl-0.5">{data?.preview_title}</Heading>
+                            <Heading as='h3' size='3' className="leading-4 pl-0.5 my-0">{data?.preview_title}</Heading>
                         </Grid>
                     </Flex>
                     <Flex gap='3' align='center'>
