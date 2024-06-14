@@ -24,7 +24,7 @@ import { RiRobot2Fill } from 'react-icons/ri'
 import { useIsDesktop } from '@/hooks/useMediaQuery'
 import { useDoubleTap } from 'use-double-tap'
 import useOutsideClick from '@/hooks/useOutsideClick'
-import { getStatusText } from '../../userSettings/SetUserAvailabilityMenu'
+import { getStatusText } from '../../userSettings/AvailabilityStatus/SetUserAvailabilityMenu'
 
 interface MessageBlockProps {
     message: Message,

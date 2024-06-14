@@ -1,7 +1,7 @@
 import { Loader } from "@/components/common/Loader"
 import { useUserData } from "@/hooks/useUserData"
 import { Button, Dialog, Flex } from "@radix-ui/themes"
-import { CustomFile } from "../file-upload/FileDrop"
+import { CustomFile } from "../../file-upload/FileDrop"
 import { ErrorBanner } from "@/components/layout/AlertBanner"
 import { useState } from "react"
 import { FrappeError, useFrappeFileUpload } from "frappe-react-sdk"

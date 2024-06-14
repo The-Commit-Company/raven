@@ -3,12 +3,12 @@ import { FlexProps } from "@radix-ui/themes/dist/cjs/components/flex";
 import { forwardRef, useImperativeHandle, useState } from "react";
 import { Accept, useDropzone } from "react-dropzone";
 import { toast } from "sonner";
-import { CustomFile } from "../file-upload/FileDrop";
-import { FileUploadProgress } from "../chat/ChatInput/FileInput/useFileUpload";
-import { getFileSize } from "../file-upload/FileListItem";
 import { useGetFilePreviewUrl } from "@/hooks/useGetFilePreviewUrl";
 import { Loader } from "@/components/common/Loader";
 import { BiTrash } from "react-icons/bi";
+import { CustomFile } from "../../file-upload/FileDrop";
+import { FileUploadProgress } from "../../chat/ChatInput/FileInput/useFileUpload";
+import { getFileSize } from "../../file-upload/FileListItem";
 
 export interface FileUploadBoxProps extends FlexProps {
     /** File to be uploaded */

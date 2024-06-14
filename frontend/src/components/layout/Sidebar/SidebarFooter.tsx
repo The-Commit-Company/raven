@@ -7,16 +7,16 @@ import { BiDotsHorizontalRounded } from 'react-icons/bi'
 import { UserAvatar } from '@/components/common/UserAvatar'
 import { isSystemManager } from '@/utils/roles'
 import { BsEmojiSmile } from 'react-icons/bs'
-import { SetCustomStatusModal } from '@/components/feature/userSettings/SetCustomStatusModal'
-import { SetUserAvailabilityMenu } from '@/components/feature/userSettings/SetUserAvailabilityMenu'
 import useCurrentRavenUser from '@/hooks/useCurrentRavenUser'
 import { useIsDesktop } from '@/hooks/useMediaQuery'
 import { SlSettings } from 'react-icons/sl'
 import { TbUsersPlus } from 'react-icons/tb'
-import PushNotificationToggle from '@/components/feature/userSettings/PushNotificationToggle'
+import PushNotificationToggle from '@/components/feature/userSettings/PushNotifications/PushNotificationToggle'
 import { useIsUserActive } from '@/hooks/useIsUserActive'
 import { MdOutlineExitToApp } from 'react-icons/md'
 import { useNavigate } from 'react-router-dom'
+import { SetUserAvailabilityMenu } from '@/components/feature/userSettings/AvailabilityStatus/SetUserAvailabilityMenu'
+import { SetCustomStatusModal } from '@/components/feature/userSettings/CustomStatus/SetCustomStatusModal'
 
 export const SidebarFooter = ({ isSettingsPage = false }: { isSettingsPage?: boolean }) => {
 
@@ -87,7 +87,6 @@ export const SidebarFooter = ({ isSettingsPage = false }: { isSettingsPage?: boo
                 </Flex>
             </Flex>
 
-            {/* <UserSettingsModal isOpen={isUserSettingsModalOpen} onOpenChange={setUserSettingsModalOpen} /> */}
             <SetCustomStatusModal isOpen={isUserStatusModalOpen} onOpenChange={setUserStatusModalOpen} />
             <AddRavenUsers isOpen={isAddUserModalOpen} onOpenChange={setIsAddUserModalOpen} />
 
