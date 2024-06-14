@@ -43,7 +43,7 @@ export const DoctypeLinkRenderer = ({ doctype, docname }: { doctype: string, doc
     }
 
     return (
-        <Box className='max-w-[550px] min-w-[75px]'>
+        <Box className='max-w-[550px] min-w-[75px] py-2'>
             {
                 isLoading ?
                     <Skeleton className='w-96 h-12 rounded-md' /> :
@@ -128,7 +128,6 @@ const DoctypeCard = ({ data, doctype, copyLink, openLink }: {
                             </Box>
                         }
                         <Grid gap='2'>
-                            <Heading as='h3' size='3' className="leading-4">{data?.preview_title}</Heading>
                             <Flex gap="1">
                                 <Badge className="accent">{doctype}</Badge>
                                 <Text
@@ -140,6 +139,7 @@ const DoctypeCard = ({ data, doctype, copyLink, openLink }: {
                                     {data?.id}
                                 </Text>
                             </Flex>
+                            <Heading as='h3' size='3' className="leading-4 pl-0.5">{data?.preview_title}</Heading>
                         </Grid>
                     </Flex>
                     <Flex gap='3' align='center'>
@@ -169,11 +169,11 @@ const DoctypeCard = ({ data, doctype, copyLink, openLink }: {
                     </Flex>
                 </Flex>
 
-                <DataList.Root size='2' className="gap-1">
+                <DataList.Root size='2' className="gap-1 pl-0.5">
                     {
                         data && Object.keys(removePreviewFields(data))?.map((item, index) => (
                             <DataList.Item align='center'>
-                                <DataList.Label minWidth="88px" className="font-semibold">
+                                <DataList.Label minWidth="88px" className="font-semibold pr-2">
                                     {item}
                                 </DataList.Label>
                                 <DataList.Value>
