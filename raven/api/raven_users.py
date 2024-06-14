@@ -24,7 +24,7 @@ def get_current_raven_user():
 	return frappe.get_cached_doc("Raven User", {"user": frappe.session.user})
 
 
-@frappe.whitelist(methods=["GET"])
+@frappe.whitelist()
 @frappe.read_only()
 def get_list():
 	"""
