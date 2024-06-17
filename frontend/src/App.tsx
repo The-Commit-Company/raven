@@ -9,6 +9,7 @@ import { ThemeProvider } from './ThemeProvider'
 import { Toaster } from 'sonner'
 import { useStickyState } from './hooks/useStickyState'
 import MobileTabsPage from './pages/MobileTabsPage'
+import { UserProfile } from './components/feature/userSettings/UserProfile/UserProfile'
 
 
 const router = createBrowserRouter(
@@ -23,7 +24,12 @@ const router = createBrowserRouter(
           <Route path="channel" element={<MainPage />} >
             <Route index element={<MobileTabsPage />} />
             <Route path="saved-messages" lazy={() => import('./components/feature/saved-messages/SavedMessages')} />
-            <Route path="settings" lazy={() => import('./components/feature/userSettings/UserSettings')} />
+            <Route path="settings" lazy={() => import('./components/feature/userSettings/Settings')}>
+              <Route index element={<UserProfile />} />
+              <Route path="profile" element={<UserProfile />} />
+              <Route path="users" lazy={() => import('./components/feature/userSettings/Users/AddUsers')} />
+              {/* <Route path="bots" lazy={() => import('./components/feature/userSettings/Bots')} /> */}
+            </Route>
             <Route path=":channelID" lazy={() => import('@/pages/ChatSpace')} />
           </Route>
           {/* <Route path='settings' lazy={() => import('./pages/settings/Settings')}>

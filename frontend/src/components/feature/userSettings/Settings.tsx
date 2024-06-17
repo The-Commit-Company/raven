@@ -1,8 +1,9 @@
 import { PageHeader } from '@/components/layout/Heading/PageHeader'
-import { Box, Flex, Heading, Text } from '@radix-ui/themes'
+import { Box, Flex, Heading } from '@radix-ui/themes'
 import { BiChevronLeft } from 'react-icons/bi'
 import { Link } from 'react-router-dom'
-import { ImageUploader } from './UploadImage/ImageUploader'
+import { SettingsSidebar } from './SettingsSidebar'
+import { Outlet } from "react-router-dom"
 
 const UserSettings = () => {
     return (
@@ -15,12 +16,12 @@ const UserSettings = () => {
                     <Heading size='5'>Settings</Heading>
                 </Flex>
             </PageHeader>
-            <Box className="min-h-screen pt-16 pb-8">
-                <Flex direction='column' gap='3' justify='start' px='4'>
-                    <Text size="2">Make changes to your account.</Text>
-                    <ImageUploader />
-                </Flex>
-            </Box>
+            <Flex className="min-h-screen pt-16 w-full">
+                <SettingsSidebar />
+                <Box className="w-full">
+                    <Outlet />
+                </Box>
+            </Flex>
         </>
     )
 }

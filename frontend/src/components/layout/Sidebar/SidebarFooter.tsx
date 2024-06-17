@@ -1,32 +1,26 @@
 import { useContext, useState } from 'react'
 import { UserContext } from '../../../utils/auth/UserProvider'
 import { useUserData } from '@/hooks/useUserData'
-import { AddRavenUsers } from '@/components/feature/raven-users/AddRavenUsers'
 import { DropdownMenu, Flex, IconButton, Separator, Text } from '@radix-ui/themes'
 import { BiDotsHorizontalRounded } from 'react-icons/bi'
 import { UserAvatar } from '@/components/common/UserAvatar'
-import { isSystemManager } from '@/utils/roles'
 import { BsEmojiSmile } from 'react-icons/bs'
 import useCurrentRavenUser from '@/hooks/useCurrentRavenUser'
 import { useIsDesktop } from '@/hooks/useMediaQuery'
 import { SlSettings } from 'react-icons/sl'
-import { TbUsersPlus } from 'react-icons/tb'
-import PushNotificationToggle from '@/components/feature/userSettings/PushNotifications/PushNotificationToggle'
 import { useIsUserActive } from '@/hooks/useIsUserActive'
 import { MdOutlineExitToApp } from 'react-icons/md'
 import { useNavigate } from 'react-router-dom'
 import { SetUserAvailabilityMenu } from '@/components/feature/userSettings/AvailabilityStatus/SetUserAvailabilityMenu'
 import { SetCustomStatusModal } from '@/components/feature/userSettings/CustomStatus/SetCustomStatusModal'
+import PushNotificationToggle from '@/components/feature/userSettings/PushNotifications/PushNotificationToggle'
 
 export const SidebarFooter = ({ isSettingsPage = false }: { isSettingsPage?: boolean }) => {
 
     const userData = useUserData()
     const { logout } = useContext(UserContext)
 
-    const [isAddUserModalOpen, setIsAddUserModalOpen] = useState(false)
     const [isUserStatusModalOpen, setUserStatusModalOpen] = useState(false)
-
-    const canAddUsers = isSystemManager()
 
     const { myProfile } = useCurrentRavenUser()
     const isActive = useIsUserActive(userData.name)
@@ -64,13 +58,7 @@ export const SidebarFooter = ({ isSettingsPage = false }: { isSettingsPage?: boo
                                 <DropdownMenu.Item color='gray' className={'flex justify-normal gap-2'} onClick={() => setUserStatusModalOpen(true)}>
                                     <BsEmojiSmile size='14' /> Set custom status
                                 </DropdownMenu.Item>
-                                {canAddUsers && <DropdownMenu.Separator className='hidden sm:block' />}
                                 <PushNotificationToggle />
-                                {canAddUsers && isDesktop &&
-                                    <DropdownMenu.Item color='gray' onClick={() => setIsAddUserModalOpen(true)} className={'flex justify-normal gap-2'}>
-                                        <TbUsersPlus size='14' /> Add users to Raven
-                                    </DropdownMenu.Item>
-                                }
                                 {/* {!isSettingsPage && isDesktop && <DropdownMenu.Item color='gray' className='focus-visible:ring-0 focus-visible:outline-none rounded-radius2 cursor-pointer' asChild>
                                 <Link href="../settings/integrations/webhooks" className='no-underline'>
                                     <Flex gap='2' align='center'>
@@ -78,6 +66,7 @@ export const SidebarFooter = ({ isSettingsPage = false }: { isSettingsPage?: boo
                                     </Flex>
                                 </Link>
                             </DropdownMenu.Item>} */}
+                                <DropdownMenu.Separator />
                                 <DropdownMenu.Item color='red' className={'flex justify-normal gap-2'} onClick={logout}>
                                     <MdOutlineExitToApp size='14' />Log Out
                                 </DropdownMenu.Item>
@@ -88,7 +77,6 @@ export const SidebarFooter = ({ isSettingsPage = false }: { isSettingsPage?: boo
             </Flex>
 
             <SetCustomStatusModal isOpen={isUserStatusModalOpen} onOpenChange={setUserStatusModalOpen} />
-            <AddRavenUsers isOpen={isAddUserModalOpen} onOpenChange={setIsAddUserModalOpen} />
 
         </Flex>
     )

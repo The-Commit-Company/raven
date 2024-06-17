@@ -8,7 +8,6 @@ import { useUserData } from "@/hooks/useUserData"
 import { toast } from "sonner"
 import { CustomFile } from "../../file-upload/FileDrop"
 import { UploadImageModal } from "./UploadImageModal"
-import { BiTrash } from "react-icons/bi"
 import { LuUpload } from "react-icons/lu"
 
 interface ImageUploaderProps {
@@ -72,7 +71,9 @@ export const UploadImage = ({ open, setOpen, uploadImage }: { open: boolean, set
     return (
         <Dialog.Root open={open} onOpenChange={setOpen}>
             <Dialog.Trigger>
-                <Button><LuUpload />Upload</Button>
+                <Button variant="outline" className="not-cal" size={'1'}>
+                    Upload
+                </Button>
             </Dialog.Trigger>
             <Dialog.Content className={DIALOG_CONTENT_CLASS}>
                 <UploadImageModal onClose={onClose} uploadImage={uploadImage} />
@@ -92,8 +93,8 @@ export const DeleteImage = ({ open, setOpen }: { open: boolean, setOpen: (open: 
     return (
         <AlertDialog.Root open={open} onOpenChange={setOpen}>
             <AlertDialog.Trigger>
-                <Button color="red" variant="outline">
-                    <BiTrash /> Remove
+                <Button color="red" variant="ghost" className="not-cal" size={'1'}>
+                    Remove
                 </Button>
             </AlertDialog.Trigger>
             <AlertDialog.Content className={DIALOG_CONTENT_CLASS}>
