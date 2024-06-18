@@ -1,14 +1,16 @@
 import { useFrappeUpdateDoc } from "frappe-react-sdk"
 import { Accept } from "react-dropzone"
 import { useState } from "react"
-import { AlertDialog, Box, Button, Dialog, Flex } from "@radix-ui/themes"
+import { AlertDialog, Box, Dialog, Flex, IconButton, Tooltip } from "@radix-ui/themes"
 import { DIALOG_CONTENT_CLASS } from "@/utils/layout/dialog"
 import { DeleteImageModal } from "./DeleteImageModal"
 import { useUserData } from "@/hooks/useUserData"
 import { toast } from "sonner"
 import { CustomFile } from "../../file-upload/FileDrop"
 import { UploadImageModal } from "./UploadImageModal"
-import { LuUpload } from "react-icons/lu"
+import { FiCamera } from "react-icons/fi"
+import { BiSolidTrash } from "react-icons/bi"
+import { UserAvatar, getInitials } from "@/components/common/UserAvatar"
 
 interface ImageUploaderProps {
     /** Takes input MIME type as 'key' & array of extensions as 'value'; empty array - all extensions supported */
@@ -39,28 +41,16 @@ export const ImageUploader = ({ icon, accept = { 'image/*': ['.jpeg', '.jpg', '.
     const [isDeleteImageModalOpen, setDeleteImageModalOpen] = useState(false)
 
     return (
-        <Flex gap='4'>
-            <Box>
-                {userData.user_image && <ImagePreview file={userData.user_image} />}
-            </Box>
-            <Flex direction='column' gap='2'>
+        <Flex direction={'column'} gap='3'>
+            <Box className={'relative'}>
+                {userData.user_image ? <img src={userData.user_image} alt={'User Image'} className="object-cover h-44 w-44 rounded-xl" />
+                    : <UserAvatar alt={userData.full_name} size={'9'} fallback={getInitials(userData.full_name)} className={'h-44 w-44'} />}
                 <UploadImage open={isUploadImageModalOpen} setOpen={setUploadImageModalOpen} uploadImage={uploadImage} />
-                <DeleteImage open={isDeleteImageModalOpen} setOpen={setDeleteImageModalOpen} />
-            </Flex>
+                {userData.user_image && <DeleteImage open={isDeleteImageModalOpen} setOpen={setDeleteImageModalOpen} />}
+            </Box>
         </Flex>
     )
 }
-
-
-
-export interface ImagePreviewProps {
-    file: string
-}
-
-export const ImagePreview = ({ file }: ImagePreviewProps) => {
-    return <img src={file} alt={'User Image'} className={'object-cover rounded-md h-36 w-36'} />
-}
-
 
 export const UploadImage = ({ open, setOpen, uploadImage }: { open: boolean, setOpen: (open: boolean) => void, uploadImage: (file: CustomFile) => void }) => {
 
@@ -70,19 +60,20 @@ export const UploadImage = ({ open, setOpen, uploadImage }: { open: boolean, set
 
     return (
         <Dialog.Root open={open} onOpenChange={setOpen}>
-            <Dialog.Trigger>
-                <Button variant="outline" className="not-cal" size={'1'}>
-                    Upload
-                </Button>
-            </Dialog.Trigger>
+            <Tooltip content="Upload Image" side="right">
+                <Dialog.Trigger>
+                    <IconButton type='button' aria-label="upload image" size={'1'}
+                        className={'absolute -right-2 -bottom-1 rounded-md shadow-md'}>
+                        <FiCamera size={'12'} />
+                    </IconButton>
+                </Dialog.Trigger>
+            </Tooltip>
             <Dialog.Content className={DIALOG_CONTENT_CLASS}>
                 <UploadImageModal onClose={onClose} uploadImage={uploadImage} />
             </Dialog.Content>
         </Dialog.Root>
     )
 }
-
-
 
 export const DeleteImage = ({ open, setOpen }: { open: boolean, setOpen: (open: boolean) => void }) => {
 
@@ -92,11 +83,14 @@ export const DeleteImage = ({ open, setOpen }: { open: boolean, setOpen: (open: 
 
     return (
         <AlertDialog.Root open={open} onOpenChange={setOpen}>
-            <AlertDialog.Trigger>
-                <Button color="red" variant="ghost" className="not-cal" size={'1'}>
-                    Remove
-                </Button>
-            </AlertDialog.Trigger>
+            <Tooltip content="Remove Image" side="right">
+                <AlertDialog.Trigger>
+                    <IconButton type='button' aria-label="remove image" size={'1'}
+                        className={'absolute -right-2 bottom-6 rounded-md bg-white shadow-md'}>
+                        <BiSolidTrash size={'12'} color="tomato" />
+                    </IconButton>
+                </AlertDialog.Trigger>
+            </Tooltip>
             <AlertDialog.Content className={DIALOG_CONTENT_CLASS}>
                 <DeleteImageModal onClose={onClose} />
             </AlertDialog.Content>

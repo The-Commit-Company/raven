@@ -44,7 +44,7 @@ export const SidebarFooter = ({ isSettingsPage = false }: { isSettingsPage?: boo
                         <Text size="2">{userData.full_name}</Text>
                     </Flex>
                     <Flex gap='3' align='center'>
-                        <IconButton aria-label='Settings' color='gray' variant='ghost' onClick={() => navigate('/channel/settings')}>
+                        <IconButton aria-label='Settings' color='gray' variant='ghost' onClick={() => navigate('/channel/settings/profile')}>
                             <SlSettings />
                         </IconButton>
                         <DropdownMenu.Root>

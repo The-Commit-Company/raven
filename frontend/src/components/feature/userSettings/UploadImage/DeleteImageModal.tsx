@@ -14,24 +14,24 @@ export const DeleteImageModal = ({ onClose }: DeleteImageModalProps) => {
     const { updateDoc, error, loading } = useFrappeUpdateDoc()
     const userData = useUserData()
 
-    const deleteImage = () => {
+    const removeImage = () => {
         updateDoc('Raven User', userData.name, {
             'user_image': null
         }).then(() => {
             onClose()
-            toast.success("Image deleted successfully")
+            toast.success("Image removed successfully")
         }).catch(() => {
-            toast("Could not delete image")
+            toast("Could not remove image")
         })
     }
 
     return (
         <>
-            <AlertDialog.Title>Delete Image</AlertDialog.Title>
+            <AlertDialog.Title>Remove Image</AlertDialog.Title>
 
             <Flex direction={'column'} gap='2'>
                 <ErrorBanner error={error} />
-                <Text>Are you sure you want to delete this image?</Text>
+                <Text>Are you sure you want to remove this image?</Text>
             </Flex>
 
             <Flex gap="3" mt="4" justify="end">
@@ -41,9 +41,9 @@ export const DeleteImageModal = ({ onClose }: DeleteImageModalProps) => {
                     </Button>
                 </AlertDialog.Cancel>
                 <AlertDialog.Action>
-                    <Button variant="solid" color="red" onClick={deleteImage} disabled={loading}>
+                    <Button variant="solid" color="red" onClick={removeImage} disabled={loading}>
                         {loading && <Loader />}
-                        {loading ? "Deleting" : "Delete"}
+                        {loading ? "Removing" : "Remove"}
                     </Button>
                 </AlertDialog.Action>
             </Flex>

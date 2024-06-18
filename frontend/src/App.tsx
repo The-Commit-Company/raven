@@ -24,7 +24,7 @@ const router = createBrowserRouter(
           <Route path="channel" element={<MainPage />} >
             <Route index element={<MobileTabsPage />} />
             <Route path="saved-messages" lazy={() => import('./components/feature/saved-messages/SavedMessages')} />
-            <Route path="settings" lazy={() => import('./components/feature/userSettings/Settings')}>
+            <Route path="settings" lazy={() => import('./pages/settings/Settings')}>
               <Route index element={<UserProfile />} />
               <Route path="profile" element={<UserProfile />} />
               <Route path="users" lazy={() => import('./components/feature/userSettings/Users/AddUsers')} />
