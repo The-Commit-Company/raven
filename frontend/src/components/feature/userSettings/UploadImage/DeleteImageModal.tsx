@@ -1,9 +1,9 @@
-import { useFrappeUpdateDoc } from 'frappe-react-sdk'
-import { AlertDialog, Button, Flex, Text } from '@radix-ui/themes'
-import { Loader } from '@/components/common/Loader'
+import { useFrappePostCall } from 'frappe-react-sdk'
 import { toast } from 'sonner'
+import { AlertDialog, Button, Flex, Text } from '@radix-ui/themes'
 import { ErrorBanner } from '@/components/layout/AlertBanner'
-import { useUserData } from '@/hooks/useUserData'
+import { Loader } from '@/components/common/Loader'
+import useCurrentRavenUser from '@/hooks/useCurrentRavenUser'
 
 interface DeleteImageModalProps {
     onClose: () => void
@@ -11,17 +11,19 @@ interface DeleteImageModalProps {
 
 export const DeleteImageModal = ({ onClose }: DeleteImageModalProps) => {
 
-    const { updateDoc, error, loading } = useFrappeUpdateDoc()
-    const userData = useUserData()
+    const { call, error, loading } = useFrappePostCall('frappe.client.set_value')
+    const { myProfile, mutate } = useCurrentRavenUser()
 
     const removeImage = () => {
-        updateDoc('Raven User', userData.name, {
-            'user_image': null
+        call({
+            doctype: 'Raven User',
+            name: myProfile?.name,
+            fieldname: 'user_image',
+            value: ''
         }).then(() => {
+            toast.success("User status updated")
+            mutate()
             onClose()
-            toast.success("Image removed successfully")
-        }).catch(() => {
-            toast("Could not remove image")
         })
     }
 

@@ -1,7 +1,7 @@
 import { ErrorText, Label } from "@/components/common/Form"
 import { Loader } from "@/components/common/Loader"
 import { ErrorBanner } from "@/components/layout/AlertBanner"
-import { Box, Button, Flex, TextField, Text, DropdownMenu, Card, IconButton, Separator } from "@radix-ui/themes"
+import { Box, Button, Flex, TextField, Text, DropdownMenu, Card, IconButton, Separator, Popover } from "@radix-ui/themes"
 import { useFrappeUpdateDoc } from "frappe-react-sdk"
 import { FormProvider, useForm } from "react-hook-form"
 import { toast } from 'sonner'
@@ -22,19 +22,29 @@ type UserProfile = {
 
 export const UserProfile = () => {
 
-    const methods = useForm<UserProfile>()
+    const { myProfile, mutate } = useCurrentRavenUser()
+    const methods = useForm<UserProfile>({
+        defaultValues: {
+            full_name: myProfile?.full_name ?? '',
+            user_image: myProfile?.user_image ?? '',
+            availability_status: myProfile?.availability_status ?? '',
+            custom_status: myProfile?.custom_status ?? ''
+        }
+    })
     const { register, handleSubmit, formState: { errors } } = methods
     const { updateDoc, loading: updatingDoc, error } = useFrappeUpdateDoc()
-    const { myProfile, mutate } = useCurrentRavenUser()
 
     const [availabilityStatus, setAvailabilityStatus] = useState(myProfile?.availability_status ?? '')
 
     const onSubmit = (data: UserProfile) => {
         updateDoc("Raven User", myProfile?.name ?? null, {
             full_name: data.full_name,
-            user_image: data.user_image
+            user_image: data.user_image,
+            availability_status: availabilityStatus,
+            custom_status: data.custom_status
         }).then(() => {
             toast.success("Profile updated")
+            mutate()
         }).catch(() => {
             toast.error("Profile update failed")
         })
@@ -66,13 +76,13 @@ export const UserProfile = () => {
                         <Card className="p-0 align-middle justify-center">
                             <Flex direction={'column'} gap='0'>
 
-                                <Box className="flex justify-center items-center bg-slate-2 py-6">
+                                <Box className="flex justify-center items-center bg-slate-2 dark:bg-slate-3 py-6">
                                     <ImageUploader />
                                 </Box>
 
                                 <ErrorBanner error={error} />
 
-                                <Flex gap='4' direction='column' className={'py-4 px-6'}>
+                                <Flex gap='4' direction='column' className={'py-4 px-6 dark:bg-slate-2'}>
 
                                     <Flex justify={'between'} align={'center'}>
                                         <Label htmlFor='full_name'>Full Name</Label>
@@ -99,7 +109,9 @@ export const UserProfile = () => {
                                         <Label htmlFor="availability_status">Availability Status</Label>
                                         <DropdownMenu.Root>
                                             <DropdownMenu.Trigger>
-                                                <Flex gap={'2'} align='center' className={'text-sm px-2 py-1 border border-gray-7 w-96 rounded'}>{getStatusText(availabilityStatus)}</Flex>
+                                                <Flex gap={'2'} align='center' className={'text-sm px-2 py-1 border border-gray-7 w-96 rounded'}>{availabilityStatus ? getStatusText(availabilityStatus) :
+                                                    <Text color="gray">Set Availability</Text>
+                                                }</Flex>
                                             </DropdownMenu.Trigger>
                                             <DropdownMenu.Content variant="soft">
                                                 <DropdownMenu.Item className={'flex justify-normal gap-2'} color='gray' onClick={() => setAvailabilityStatus('Available')}>
@@ -144,14 +156,20 @@ export const UserProfile = () => {
                                                     aria-invalid={errors.custom_status ? 'true' : 'false'}>
 
                                                     <TextField.Slot side='right'>
-                                                        <IconButton type='button' className={'rounded-full'} onClick={() => setEmojiPickerOpen(!isEmojiPickerOpen)} variant='ghost' color='gray'>
-                                                            <BiSmile size='18' />
-                                                        </IconButton>
+                                                        <Popover.Root>
+                                                            <Popover.Trigger>
+                                                                <IconButton type='button' className={'rounded-full'} onClick={() => setEmojiPickerOpen(!isEmojiPickerOpen)} variant='ghost' color='gray'>
+                                                                    <BiSmile size='18' />
+                                                                </IconButton>
+                                                            </Popover.Trigger>
+                                                            <Popover.Content className={'p-0'}>
+                                                                <EmojiPicker onSelect={onEmojiSelect} />
+                                                            </Popover.Content>
+                                                        </Popover.Root>
                                                     </TextField.Slot>
                                                 </TextField.Root>
                                                 {errors.custom_status && <ErrorText>{errors.custom_status.message}</ErrorText>}
                                             </Flex>
-                                            {isEmojiPickerOpen && <EmojiPicker onSelect={onEmojiSelect} />}
                                         </Flex>
                                     </Flex>
                                 </Flex>

@@ -40,8 +40,8 @@ export const SidebarFooter = ({ isSettingsPage = false }: { isSettingsPage?: boo
                 <Separator size='4' className={`bg-gray-4 dark:bg-gray-6`} />
                 <Flex justify="between" align='center' className='sm:px-1 px-6 pt-2 sm:pt-0'>
                     <Flex gap='2' align='center'>
-                        <UserAvatar src={userData.user_image} alt={userData.full_name} availabilityStatus={myProfile?.availability_status} isActive={isActive} />
-                        <Text size="2">{userData.full_name}</Text>
+                        <UserAvatar src={myProfile?.user_image} alt={myProfile?.full_name} availabilityStatus={myProfile?.availability_status} isActive={isActive} />
+                        <Text size="2">{myProfile?.full_name ?? userData.full_name}</Text>
                     </Flex>
                     <Flex gap='3' align='center'>
                         <IconButton aria-label='Settings' color='gray' variant='ghost' onClick={() => navigate('/channel/settings/profile')}>

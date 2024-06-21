@@ -1,16 +1,15 @@
-import { useFrappeUpdateDoc } from "frappe-react-sdk"
+import { useFrappePostCall } from "frappe-react-sdk"
 import { Accept } from "react-dropzone"
 import { useState } from "react"
 import { AlertDialog, Box, Dialog, Flex, IconButton, Tooltip } from "@radix-ui/themes"
 import { DIALOG_CONTENT_CLASS } from "@/utils/layout/dialog"
 import { DeleteImageModal } from "./DeleteImageModal"
-import { useUserData } from "@/hooks/useUserData"
 import { toast } from "sonner"
-import { CustomFile } from "../../file-upload/FileDrop"
 import { UploadImageModal } from "./UploadImageModal"
 import { FiCamera } from "react-icons/fi"
 import { BiSolidTrash } from "react-icons/bi"
 import { UserAvatar, getInitials } from "@/components/common/UserAvatar"
+import useCurrentRavenUser from "@/hooks/useCurrentRavenUser"
 
 interface ImageUploaderProps {
     /** Takes input MIME type as 'key' & array of extensions as 'value'; empty array - all extensions supported */
@@ -22,17 +21,21 @@ interface ImageUploaderProps {
 
 export const ImageUploader = ({ icon, accept = { 'image/*': ['.jpeg', '.jpg', '.png'] }, maxFileSize, ...props }: ImageUploaderProps) => {
 
-    const { updateDoc, error: updateDocError } = useFrappeUpdateDoc()
-    const userData = useUserData()
+    const { call, error } = useFrappePostCall('frappe.client.set_value')
+    const { myProfile, mutate } = useCurrentRavenUser()
 
-    const uploadImage = (file: CustomFile) => {
+    const uploadImage = (file: string) => {
         if (file) {
-            updateDoc('Raven User', userData.name, {
-                'user_image': file
+            call({
+                doctype: 'Raven User',
+                name: myProfile?.name,
+                fieldname: 'user_image',
+                value: file
             }).then(() => {
                 toast("Image uploaded successfully.")
+                mutate()
             }).catch(() => {
-                toast(`There was an error while uploading the image. ${updateDocError ? updateDocError.exception ?? updateDocError.httpStatusText : null}`)
+                toast(`There was an error while uploading the image. ${error ? error.exception ?? error.httpStatusText : null}`)
             })
         }
     }
@@ -43,16 +46,16 @@ export const ImageUploader = ({ icon, accept = { 'image/*': ['.jpeg', '.jpg', '.
     return (
         <Flex direction={'column'} gap='3'>
             <Box className={'relative'}>
-                {userData.user_image ? <img src={userData.user_image} alt={'User Image'} className="object-cover h-44 w-44 rounded-xl" />
-                    : <UserAvatar alt={userData.full_name} size={'9'} fallback={getInitials(userData.full_name)} className={'h-44 w-44'} />}
+                {myProfile?.user_image ? <img src={myProfile?.user_image} alt={'User Image'} className="object-cover h-44 w-44 rounded-xl" />
+                    : <UserAvatar alt={myProfile?.full_name} size={'9'} fallback={getInitials(myProfile?.full_name)} className={'h-44 w-44'} />}
                 <UploadImage open={isUploadImageModalOpen} setOpen={setUploadImageModalOpen} uploadImage={uploadImage} />
-                {userData.user_image && <DeleteImage open={isDeleteImageModalOpen} setOpen={setDeleteImageModalOpen} />}
+                {myProfile?.user_image && <DeleteImage open={isDeleteImageModalOpen} setOpen={setDeleteImageModalOpen} />}
             </Box>
         </Flex>
     )
 }
 
-export const UploadImage = ({ open, setOpen, uploadImage }: { open: boolean, setOpen: (open: boolean) => void, uploadImage: (file: CustomFile) => void }) => {
+export const UploadImage = ({ open, setOpen, uploadImage }: { open: boolean, setOpen: (open: boolean) => void, uploadImage: (file: string) => void }) => {
 
     const onClose = () => {
         setOpen(false)
@@ -86,7 +89,7 @@ export const DeleteImage = ({ open, setOpen }: { open: boolean, setOpen: (open: 
             <Tooltip content="Remove Image" side="right">
                 <AlertDialog.Trigger>
                     <IconButton type='button' aria-label="remove image" size={'1'}
-                        className={'absolute -right-2 bottom-6 rounded-md bg-white shadow-md'}>
+                        className={'absolute -right-2 bottom-6 rounded-md bg-white dark:bg-slate-4 shadow-md'}>
                         <BiSolidTrash size={'12'} color="tomato" />
                     </IconButton>
                 </AlertDialog.Trigger>

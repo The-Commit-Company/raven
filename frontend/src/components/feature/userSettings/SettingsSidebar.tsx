@@ -22,7 +22,7 @@ export const SettingsSidebar = () => {
                 <SettingsSeparator />
                 <SettingsGroup title="Workspace" icon={BiBuildings}>
                     <SettingsSidebarItem title="Users" to='users' />
-                    <SettingsSidebarItem title="Bots" to='bots' />
+                    {/* <SettingsSidebarItem title="Bots" to='bots' /> */}
                 </SettingsGroup>
                 {/* <SettingsSeparator />
                 <SettingsGroup title='Integrations' icon={BsBoxes}>

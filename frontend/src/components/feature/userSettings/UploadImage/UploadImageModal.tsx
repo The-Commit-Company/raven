@@ -9,7 +9,7 @@ import { FileUploadBox } from "./FileUploadBox"
 
 interface UploadImageModalProps {
     onClose: () => void,
-    uploadImage: (file: CustomFile) => void
+    uploadImage: (file: string) => void
 }
 
 export const UploadImageModal = ({ onClose, uploadImage }: UploadImageModalProps) => {
@@ -32,11 +32,10 @@ export const UploadImageModal = ({ onClose, uploadImage }: UploadImageModalProps
                 docname: userData.name,
                 fieldname: 'user_image',
                 isPrivate: true,
-            }).then(() => {
-                uploadImage(file)
+            }).then((res) => {
+                uploadImage(res.file_url)
                 onClose()
-            }
-            ).catch((e) => {
+            }).catch((e) => {
                 setFileError(e)
             })
         }
