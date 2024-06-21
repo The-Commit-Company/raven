@@ -1,7 +1,7 @@
 
 export interface RavenChannelMember{
-	creation: string
 	name: string
+	creation: string
 	modified: string
 	owner: string
 	modified_by: string
@@ -18,6 +18,12 @@ export interface RavenChannelMember{
 	is_admin?: 0 | 1
 	/**	Last Visit : Datetime	*/
 	last_visit: string
+	/**	Is Synced : Check	*/
+	is_synced?: 0 | 1
+	/**	Linked DocType : Link - DocType	*/
+	linked_doctype?: string
+	/**	Linked Document : Dynamic Link	*/
+	linked_document?: string
 	/**	Allow notifications : Check	*/
 	allow_notifications?: 0 | 1
 }
