@@ -89,6 +89,7 @@ def get_messages(channel_id):
 			"replied_message_details",
 			"content",
 			"is_edited",
+			"is_forwarded",
 		],
 		order_by="creation asc",
 	)
