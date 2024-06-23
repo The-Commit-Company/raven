@@ -22,7 +22,6 @@ class RavenMessage(Document):
 
 	if TYPE_CHECKING:
 		from frappe.types import DF
-
 		from raven.raven_messaging.doctype.raven_mention.raven_mention import RavenMention
 
 		bot: DF.Link | None
@@ -35,6 +34,7 @@ class RavenMessage(Document):
 		image_width: DF.Data | None
 		is_bot_message: DF.Check
 		is_edited: DF.Check
+		is_forwarded: DF.Check
 		is_reply: DF.Check
 		json: DF.JSON | None
 		link_doctype: DF.Link | None

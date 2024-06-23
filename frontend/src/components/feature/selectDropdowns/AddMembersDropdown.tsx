@@ -61,7 +61,6 @@ const AddMembersDropdown = ({ channelID, label = 'Select users', selectedUsers, 
         })
         const {
             isOpen,
-            getToggleButtonProps,
             getLabelProps,
             getMenuProps,
             getInputProps,

@@ -1,8 +1,11 @@
 import { DIALOG_CONTENT_CLASS } from "@/utils/layout/dialog"
 import { Dialog } from "@radix-ui/themes"
 import { useState, useCallback } from "react"
-import { Message, TextMessage } from "../../../../../../../types/Messaging/Message"
+import { Message } from "../../../../../../../types/Messaging/Message"
 import ForwardMessageModal from "../ActionModals/ForwardMessageModal"
+import { useIsDesktop } from "@/hooks/useMediaQuery"
+import { Drawer, DrawerContent } from "@/components/layout/Drawer"
+import clsx from "clsx"
 
 export const useForwardMessage = () => {
 
@@ -28,13 +31,30 @@ interface ForwardMessageDialogProps {
 }
 
 export const ForwardMessageDialog = ({ message, isOpen, onClose }: ForwardMessageDialogProps) => {
-    return <Dialog.Root open={isOpen} onOpenChange={onClose}>
-        <Dialog.Content className={DIALOG_CONTENT_CLASS}>
-            {message &&
-                <ForwardMessageModal
-                    message={message as TextMessage}
-                    onClose={onClose} />
-            }
-        </Dialog.Content>
-    </Dialog.Root>
+
+    const isDesktop = useIsDesktop()
+
+    if (isDesktop) {
+        return <Dialog.Root open={isOpen} onOpenChange={onClose}>
+            <Dialog.Content className={clsx(DIALOG_CONTENT_CLASS, 'static')}>
+                {message &&
+                    <ForwardMessageModal
+                        message={message}
+                        onClose={onClose} />
+                }
+            </Dialog.Content>
+        </Dialog.Root>
+    } else {
+        return <Drawer open={isOpen} onClose={onClose}>
+            <DrawerContent>
+                <div className="pb-24">
+                    {message &&
+                        <ForwardMessageModal
+                            message={message}
+                            onClose={onClose} />
+                    }
+                </div>
+            </DrawerContent>
+        </Drawer>
+    }
 }

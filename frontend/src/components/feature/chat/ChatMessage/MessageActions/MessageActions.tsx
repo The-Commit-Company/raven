@@ -10,6 +10,7 @@ import { RetractVote } from './RetractVote'
 import { toast } from 'sonner'
 import { getErrorMessage } from '@/components/layout/AlertBanner/ErrorBanner'
 import { AiOutlineEdit } from 'react-icons/ai'
+import { LuForward } from 'react-icons/lu'
 
 export interface MessageContextMenuProps {
     message?: Message | null,
@@ -19,7 +20,7 @@ export interface MessageContextMenuProps {
     onForward: VoidFunction
 }
 
-export const MessageContextMenu = ({ message, onDelete, onEdit, onReply }: MessageContextMenuProps) => {
+export const MessageContextMenu = ({ message, onDelete, onEdit, onReply, onForward }: MessageContextMenuProps) => {
 
     const copy = useMessageCopy(message)
     const { currentUser } = useContext(UserContext)
@@ -36,6 +37,12 @@ export const MessageContextMenu = ({ message, onDelete, onEdit, onReply }: Messa
                     <Flex gap='2'>
                         <HiReply size='18' />
                         Reply
+                    </Flex>
+                </ContextMenu.Item>
+                <ContextMenu.Item onClick={onForward}>
+                    <Flex gap='2'>
+                        <LuForward size='18' />
+                        Forward
                     </Flex>
                 </ContextMenu.Item>
                 {/* <ContextMenu.Separator /> */}

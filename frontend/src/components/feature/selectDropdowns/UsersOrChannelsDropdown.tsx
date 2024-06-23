@@ -4,7 +4,7 @@ import { useIsDesktop } from "@/hooks/useMediaQuery"
 import { ChannelListContext, ChannelListContextType, ChannelListItem } from "@/utils/channel/ChannelListProvider"
 import { ChannelIcon } from "@/utils/layout/channelIcon"
 import { UserFields, UserListContext } from "@/utils/users/UserListProvider"
-import { TextField, Text, Box } from "@radix-ui/themes"
+import { TextField, Text } from "@radix-ui/themes"
 import clsx from "clsx"
 import { useMultipleSelection, useCombobox } from "downshift"
 import { useContext, useMemo, useState } from "react"
@@ -124,19 +124,21 @@ const UsersOrChannelsDropdown = ({ selectedOptions, setSelectedOptions, label = 
         })
 
         return (
-            <Box className="w-full" {...props}>
+            <div className="w-full">
                 <div className="flex flex-col gap-1">
                     <Label className="w-fit" {...getLabelProps()}>
                         {label}
                     </Label>
                     <TextField.Root
-                        // variant='soft'
                         placeholder="Type a name..."
                         className='w-full'
                         autoFocus={isDesktop}
-                        {...getInputProps(getDropdownProps())} />
+                        {...getInputProps(getDropdownProps())}
+                    >
 
-                    <div className="inline-flex gap-1 p-2 items-center flex-wrap">
+                    </TextField.Root>
+
+                    <div className="inline-flex gap-1 p-1 items-center flex-wrap">
                         {selectedOptions.map(function renderSelectedItem(
                             selectedItemForRender,
                             index,
@@ -198,14 +200,16 @@ const UsersOrChannelsDropdown = ({ selectedOptions, setSelectedOptions, label = 
                     </div>
                 </div>
                 <ul
-                    className={`absolute w-11/12 bg-background rounded-b-md mt-1 shadow-md max-h-96 overflow-scroll p-0 z-50 ${!(isOpen && items.length) && 'hidden'}`}
-                    {...getMenuProps()}>
+                    className={`sm:w-[550px] w-[24rem] absolute bg-background rounded-b-md mt-1 shadow-md z-[9999] max-h-96 overflow-scroll p-0 ${!(isOpen && items.length) && 'hidden'
+                        }`}
+                    {...getMenuProps()}
+                >
                     {isOpen &&
                         items.map((item, index) => (
                             <li className={clsx(
                                 highlightedIndex === index && 'bg-accent-4',
                                 selectedItem === item && 'font-bold',
-                                'py-2 px-3 shadow-sm flex gap-2 items-center h-10',
+                                'py-2 px-3 shadow-sm flex gap-2 items-center',
                             )} key={`${item.name}`}
                                 {...getItemProps({ item, index })}>
                                 {'channel_name' in item ?
@@ -225,7 +229,7 @@ const UsersOrChannelsDropdown = ({ selectedOptions, setSelectedOptions, label = 
                             </li>
                         ))}
                 </ul>
-            </Box>
+            </div>
         )
     }
 

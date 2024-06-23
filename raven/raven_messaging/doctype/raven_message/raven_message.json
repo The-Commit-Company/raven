@@ -27,6 +27,7 @@
   "link_doctype",
   "link_document",
   "is_edited",
+  "is_forwarded",
   "mentions",
   "poll_id",
   "is_bot_message",
@@ -172,11 +173,17 @@
    "fieldname": "hide_link_preview",
    "fieldtype": "Check",
    "label": "Hide link preview"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_forwarded",
+   "fieldtype": "Check",
+   "label": "Is Forwarded"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-04-12 16:30:21.689774",
+ "modified": "2024-06-23 13:47:48.657331",
  "modified_by": "Administrator",
  "module": "Raven Messaging",
  "name": "Raven Message",
