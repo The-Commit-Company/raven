@@ -22,7 +22,6 @@ class RavenMessage(Document):
 
 	if TYPE_CHECKING:
 		from frappe.types import DF
-
 		from raven.raven_messaging.doctype.raven_mention.raven_mention import RavenMention
 
 		bot: DF.Link | None
@@ -35,6 +34,7 @@ class RavenMessage(Document):
 		image_width: DF.Data | None
 		is_bot_message: DF.Check
 		is_edited: DF.Check
+		is_forwarded: DF.Check
 		is_reply: DF.Check
 		json: DF.JSON | None
 		link_doctype: DF.Link | None
@@ -384,6 +384,7 @@ class RavenMessage(Document):
 						"poll_id": self.poll_id,
 						"message_type": self.message_type,
 						"is_edited": 1 if self.is_edited else 0,
+						"is_forwarded": self.is_forwarded,
 						"is_reply": self.is_reply,
 						"modified": self.modified,
 						"linked_message": self.linked_message,
@@ -424,6 +425,7 @@ class RavenMessage(Document):
 						"file": self.file,
 						"message_type": self.message_type,
 						"is_edited": 1 if self.is_edited else 0,
+						"is_forwarded": self.is_forwarded,
 						"is_reply": self.is_reply,
 						"poll_id": self.poll_id,
 						"creation": self.creation,
