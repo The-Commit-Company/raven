@@ -1,7 +1,7 @@
 import { Loader } from "@/components/common/Loader"
 import { useUserData } from "@/hooks/useUserData"
 import { Button, Dialog, Flex } from "@radix-ui/themes"
-import { CustomFile } from "../file-upload/FileDrop"
+import { CustomFile } from "../../file-upload/FileDrop"
 import { ErrorBanner } from "@/components/layout/AlertBanner"
 import { useState } from "react"
 import { FrappeError, useFrappeFileUpload } from "frappe-react-sdk"
@@ -9,7 +9,7 @@ import { FileUploadBox } from "./FileUploadBox"
 
 interface UploadImageModalProps {
     onClose: () => void,
-    uploadImage: (file: CustomFile) => void
+    uploadImage: (file: string) => void
 }
 
 export const UploadImageModal = ({ onClose, uploadImage }: UploadImageModalProps) => {
@@ -32,11 +32,10 @@ export const UploadImageModal = ({ onClose, uploadImage }: UploadImageModalProps
                 docname: userData.name,
                 fieldname: 'user_image',
                 isPrivate: true,
-            }).then(() => {
-                uploadImage(file)
+            }).then((res) => {
+                uploadImage(res.file_url)
                 onClose()
-            }
-            ).catch((e) => {
+            }).catch((e) => {
                 setFileError(e)
             })
         }

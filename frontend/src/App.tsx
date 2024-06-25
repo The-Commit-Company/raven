@@ -9,6 +9,7 @@ import { ThemeProvider } from './ThemeProvider'
 import { Toaster } from 'sonner'
 import { useStickyState } from './hooks/useStickyState'
 import MobileTabsPage from './pages/MobileTabsPage'
+import { UserProfile } from './components/feature/userSettings/UserProfile/UserProfile'
 
 
 const router = createBrowserRouter(
@@ -23,9 +24,15 @@ const router = createBrowserRouter(
           <Route path="channel" element={<MainPage />} >
             <Route index element={<MobileTabsPage />} />
             <Route path="saved-messages" lazy={() => import('./components/feature/saved-messages/SavedMessages')} />
+            <Route path="settings" lazy={() => import('./pages/settings/Settings')}>
+              <Route index element={<UserProfile />} />
+              <Route path="profile" element={<UserProfile />} />
+              <Route path="users" lazy={() => import('./components/feature/userSettings/Users/AddUsers')} />
+              {/* <Route path="bots" lazy={() => import('./components/feature/userSettings/Bots')} /> */}
+            </Route>
             <Route path=":channelID" lazy={() => import('@/pages/ChatSpace')} />
           </Route>
-          <Route path='settings' lazy={() => import('./pages/settings/Settings')}>
+          {/* <Route path='settings' lazy={() => import('./pages/settings/Settings')}>
             <Route path='integrations'>
               <Route path='webhooks' lazy={() => import('./pages/settings/Webhooks/WebhookList')} />
               <Route path='webhooks/create' lazy={() => import('./pages/settings/Webhooks/CreateWebhook')} />
@@ -34,7 +41,7 @@ const router = createBrowserRouter(
               <Route path='scheduled-messages/create' lazy={() => import('./pages/settings/ServerScripts/SchedulerEvents/CreateSchedulerEvent')} />
               <Route path='scheduled-messages/:ID' lazy={() => import('./pages/settings/ServerScripts/SchedulerEvents/ViewSchedulerEvent')} />
             </Route>
-          </Route>
+          </Route> */}
         </Route>
       </Route>
     </>

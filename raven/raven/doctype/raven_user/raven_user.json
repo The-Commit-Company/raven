@@ -18,6 +18,7 @@
   "html_xuuw",
   "pinned_channels_section",
   "pinned_channels",
+  "user_status_section",
   "availability_status",
   "custom_status"
  ],
@@ -110,11 +111,16 @@
    "fieldname": "custom_status",
    "fieldtype": "Data",
    "label": "Custom Status"
+  },
+  {
+   "fieldname": "user_status_section",
+   "fieldtype": "Section Break",
+   "label": "User Status"
   }
  ],
  "image_field": "user_image",
  "links": [],
- "modified": "2024-05-24 15:23:40.547992",
+ "modified": "2024-06-17 11:04:12.713868",
  "modified_by": "Administrator",
  "module": "Raven",
  "name": "Raven User",
