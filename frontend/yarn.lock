@@ -3907,10 +3907,10 @@ frappe-js-sdk@^1.5.0:
   dependencies:
     axios "^1.6.7"
 
-frappe-react-sdk@^1.7.0:
-  version "1.7.0"
-  resolved "https://registry.yarnpkg.com/frappe-react-sdk/-/frappe-react-sdk-1.7.0.tgz#6d7430f2e606dbe733ffbe1fda7566fc815b6a45"
-  integrity sha512-UBch8j7nWCkYWQjGG7tOds5tFif/hFdAbg8T+FlOiJAyFmtpbVdBOsWx2ime9aBkNa2U8zqjOkQLLIvL2/qOrg==
+frappe-react-sdk@^1.7.1:
+  version "1.7.1"
+  resolved "https://registry.yarnpkg.com/frappe-react-sdk/-/frappe-react-sdk-1.7.1.tgz#91ca070df811fd2a96b9b951022efe1425e90549"
+  integrity sha512-lo0EAELC0djHT179+qPiwXUiMMUZi8feN9uV2b8AghcIyAkSVu5EkwHEtrjTZ8LhRHNxKCafrK8J3sd2vH8c5g==
   dependencies:
     frappe-js-sdk "^1.5.0"
     socket.io-client "4.7.1"
