@@ -17,25 +17,26 @@ import { TiptapRenderer } from './Renderers/TiptapRenderer/TiptapRenderer'
 import { QuickActions } from './MessageActions/QuickActions/QuickActions'
 import { memo, useMemo, useState } from 'react'
 import { ReplyMessageBox } from './ReplyMessageBox/ReplyMessageBox'
-import { generateAvatarColor } from '../../select-member/GenerateAvatarColor'
+import { generateAvatarColor } from '../../selectDropdowns/GenerateAvatarColor'
 import { DoctypeLinkRenderer } from './Renderers/DoctypeLinkRenderer'
 import { useDebounce } from '@/hooks/useDebounce'
-import { RiRobot2Fill } from 'react-icons/ri'
+import { RiRobot2Fill, RiShareForwardFill } from 'react-icons/ri'
 import { useIsDesktop } from '@/hooks/useMediaQuery'
 import { useDoubleTap } from 'use-double-tap'
 import useOutsideClick from '@/hooks/useOutsideClick'
-import { getStatusText } from '../../userSettings/SetUserAvailabilityMenu'
+import { getStatusText } from '../../userSettings/AvailabilityStatus/SetUserAvailabilityMenu'
 
 interface MessageBlockProps {
     message: Message,
     setDeleteMessage: (message: Message) => void,
     setEditMessage: (message: Message) => void,
     replyToMessage: (message: Message) => void,
+    forwardMessage: (message: Message) => void,
     onReplyMessageClick: (messageID: string) => void,
     isHighlighted?: boolean
 }
 
-export const MessageItem = ({ message, setDeleteMessage, isHighlighted, onReplyMessageClick, setEditMessage, replyToMessage }: MessageBlockProps) => {
+export const MessageItem = ({ message, setDeleteMessage, isHighlighted, onReplyMessageClick, setEditMessage, replyToMessage, forwardMessage }: MessageBlockProps) => {
 
     const { name, owner: userID, is_bot_message, bot, creation: timestamp, message_reactions, is_continuation, linked_message, replied_message_details } = message
 
@@ -51,6 +52,10 @@ export const MessageItem = ({ message, setDeleteMessage, isHighlighted, onReplyM
 
     const onReply = () => {
         replyToMessage(message)
+    }
+
+    const onForward = () => {
+        forwardMessage(message)
     }
 
     const isDesktop = useIsDesktop()
@@ -129,6 +134,7 @@ export const MessageItem = ({ message, setDeleteMessage, isHighlighted, onReplyM
                             </Flex>
                                 : null}
                             {/* Message content goes here */}
+                            {message.is_forwarded === 1 && <Flex className='text-gray-10 text-xs' gap={'1'} align={'center'}><RiShareForwardFill size='12' /> forwarded</Flex>}
                             {/* If it's a reply, then show the linked message */}
                             {linked_message && replied_message_details && <ReplyMessageBox
                                 className='sm:min-w-[32rem] cursor-pointer mb-1'
@@ -159,6 +165,7 @@ export const MessageItem = ({ message, setDeleteMessage, isHighlighted, onReplyM
                                 onDelete={onDelete}
                                 onEdit={onEdit}
                                 onReply={onReply}
+                                onForward={onForward}
                             />
                         }
                     </Flex>
@@ -170,6 +177,7 @@ export const MessageItem = ({ message, setDeleteMessage, isHighlighted, onReplyM
                     onDelete={onDelete}
                     onEdit={onEdit}
                     onReply={onReply}
+                    onForward={onForward}
                 />
             </ContextMenu.Root>
         </Box >

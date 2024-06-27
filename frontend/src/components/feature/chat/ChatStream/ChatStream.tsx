@@ -14,6 +14,7 @@ import { useInView } from 'react-intersection-observer'
 import { Button } from '@radix-ui/themes'
 import { FiArrowDown } from 'react-icons/fi'
 import { ErrorBanner } from '@/components/layout/AlertBanner'
+import { ForwardMessageDialog, useForwardMessage } from '../ChatMessage/MessageActions/ForwardMessage'
 
 /**
  * Anatomy of a message
@@ -74,6 +75,7 @@ const ChatStream = ({ replyToMessage }: Props) => {
     const { setDeleteMessage, ...deleteProps } = useDeleteMessage()
 
     const { setEditMessage, ...editProps } = useEditMessage()
+    const { setForwardMessage, ...forwardProps } = useForwardMessage()
 
     const onReplyMessageClick = (messageID: string) => {
         scrollToMessage(messageID)
@@ -134,6 +136,7 @@ const ChatStream = ({ replyToMessage }: Props) => {
                                     onReplyMessageClick={onReplyMessageClick}
                                     setEditMessage={setEditMessage}
                                     replyToMessage={replyToMessage}
+                                    forwardMessage={setForwardMessage}
                                     setDeleteMessage={setDeleteMessage} />
                             </div>
                         </div>
@@ -157,6 +160,7 @@ const ChatStream = ({ replyToMessage }: Props) => {
             </div>}
             <DeleteMessageDialog {...deleteProps} />
             <EditMessageDialog {...editProps} />
+            <ForwardMessageDialog {...forwardProps} />
         </div>
 
     )

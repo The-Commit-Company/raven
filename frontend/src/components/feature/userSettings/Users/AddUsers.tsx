@@ -3,24 +3,26 @@ import { usePaginationWithDoctype } from "@/hooks/usePagination"
 import { User } from "@/types/Core/User"
 import { Filter, useFrappeGetDocList, useFrappePostCall, useSWRConfig } from "frappe-react-sdk"
 import { ChangeEvent, useContext, useState } from "react"
-import { Sort } from "../sorting"
-import { PageLengthSelector } from "../pagination/PageLengthSelector"
-import { PageSelector } from "../pagination/PageSelector"
 import { ErrorBanner } from "@/components/layout/AlertBanner"
 import { TableLoader } from "@/components/layout/Loaders/TableLoader"
-import { UsersTable } from "./UsersTable"
 import { UserListContext } from "@/utils/users/UserListProvider"
-import { Button, Dialog, Em, Flex, Strong, Text, TextField } from "@radix-ui/themes"
+import { Button, Flex, Strong, Text, TextField } from "@radix-ui/themes"
 import { Loader } from "@/components/common/Loader"
 import { BiSearch } from "react-icons/bi"
 import { ErrorCallout } from "@/components/common/Callouts/ErrorCallouts"
 import { toast } from "sonner"
+import { Sort } from "../../sorting"
+import { PageLengthSelector } from "../../pagination/PageLengthSelector"
+import { PageSelector } from "../../pagination/PageSelector"
+import { UsersTable } from "./UsersTable"
+import { isSystemManager } from "@/utils/roles"
 
 interface AddUsersResponse {
     failed_users: User[],
     success_users: User[]
 }
-const AddRavenUsersContent = ({ onClose }: { onClose: VoidFunction }) => {
+
+const AddUsers = () => {
 
     const { mutate } = useSWRConfig()
     const [searchText, setSearchText] = useState("")
@@ -68,7 +70,6 @@ const AddRavenUsersContent = ({ onClose }: { onClose: VoidFunction }) => {
                 mutate('raven.api.raven_users.get_list')
 
                 if (res.message.failed_users.length === 0) {
-                    onClose()
                     setSelected([])
                 } else {
                     setFailedUsers(res.message.failed_users)
@@ -78,16 +79,29 @@ const AddRavenUsersContent = ({ onClose }: { onClose: VoidFunction }) => {
         }
     }
 
-    return (
-        <div>
-            <Dialog.Title>Add users to Raven</Dialog.Title>
+    const canAddRavenUsers = isSystemManager()
 
-            <Flex direction='column' gap='4' pt='4'>
+    return (
+        <Flex direction='column' gap='4' px='6' py='4'>
+
+            <Flex justify='between' align='center'>
+                <Flex direction='column' gap='0'>
+                    <Text size='3' className={'font-semibold'}>Add users to Raven</Text>
+                    <Text size='1' color='gray'>Only System managers have the ability to add users; users you add will be given the <Strong>"Raven User"</Strong> role.</Text>
+                </Flex>
+                <Button type='button' disabled={loading || !canAddRavenUsers} onClick={handleAddUsers}>
+                    {loading && <Loader />}
+                    {loading ? "Adding" : "Add"}
+                </Button>
+            </Flex>
+
+            <Flex direction='column' gap='4'>
                 <Flex justify='between' gap='2'>
                     <Flex gap='2' align='center'>
                         <TextField.Root onChange={handleChange}
+                            className='w-[24rem]'
                             type='text'
-                            placeholder='Search for user' >
+                            placeholder='Search for user'>
                             <TextField.Slot side='left'>
                                 <BiSearch />
                             </TextField.Slot>
@@ -132,19 +146,8 @@ const AddRavenUsersContent = ({ onClose }: { onClose: VoidFunction }) => {
                 {data && data.length !== 0 && <UsersTable data={data} defaultSelected={ravenUsersArray} selected={selected} setSelected={setSelected} />}
 
             </Flex>
-            <Flex gap="3" mt="4" justify="end">
-                <Dialog.Close disabled={loading}>
-                    <Button variant="soft" color="gray">
-                        Cancel
-                    </Button>
-                </Dialog.Close>
-                <Button type='button' disabled={loading} onClick={handleAddUsers}>
-                    {loading && <Loader />}
-                    {loading ? "Adding" : "Add to Raven"}
-                </Button>
-            </Flex>
-        </div>
+        </Flex>
     )
 }
 
-export default AddRavenUsersContent
+export const Component = AddUsers

@@ -5,6 +5,7 @@ import frappe
 from frappe import _
 from frappe.query_builder import Case, JoinType, Order
 from frappe.query_builder.functions import Coalesce, Count
+from raven.api.raven_channel import create_direct_message_channel
 
 from raven.api.raven_channel import get_peer_user_id
 from raven.utils import get_channel_member, track_channel_visit
@@ -88,6 +89,7 @@ def get_messages(channel_id):
 			"replied_message_details",
 			"content",
 			"is_edited",
+			"is_forwarded",
 		],
 		order_by="creation asc",
 	)
@@ -483,3 +485,47 @@ def get_count_for_pagination_of_files(channel_id, file_name=None, file_type=None
 	count = query.run(as_dict=True)
 
 	return count[0]["count"]
+
+
+@frappe.whitelist(methods=["POST"])
+def forward_message(message_receivers, forwarded_message):
+	"""
+		Forward a message to multiple users/ or in multiple channels
+	"""
+	for receiver in message_receivers:
+		if (receiver["type"] == "User"):
+			# send forwarded message as a DM to the user
+			# get DM channel ID, create a copy of the message and send it to the channel, change the message owner to current sender
+			dm_channel_id = create_direct_message_channel(receiver["name"])
+			add_forwarded_message_to_channel(dm_channel_id, forwarded_message)
+		else:
+			# send forwarded message to the channel
+			add_forwarded_message_to_channel(receiver["channel_name"], forwarded_message)
+
+	return "messages forwarded"
+
+def add_forwarded_message_to_channel(channel_id, forwarded_message):
+	"""
+		Forward a message to a channel - copy over the message, 
+		change the owner to the current user and timestamp to now,
+		mark it as forwarded
+	"""
+	doc = frappe.get_doc(
+		{
+			"doctype": "Raven Message",
+			**forwarded_message,
+			"channel_id": channel_id,
+			"name": None,
+			"owner": frappe.session.user,
+			"creation": frappe.utils.now_datetime(),
+			"modified": frappe.utils.now_datetime(),
+			"is_continuation": 0,
+			"is_edited": 0,
+			"is_reply": 0,
+			"is_forwarded": 1,
+			"replied_message_details": None,
+			"message_reactions": None,
+		}
+	)
+	doc.insert()
+	return "message forwarded"

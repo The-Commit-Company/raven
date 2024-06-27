@@ -15,6 +15,7 @@ export interface BaseMessage {
     link_doctype?: string
     link_document?: string
     is_edited: 1 | 0
+    is_forwarded: 1 | 0
     /** JSON as string */
     replied_message_details?: string,
     poll_id?: string
