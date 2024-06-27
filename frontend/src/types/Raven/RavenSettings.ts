@@ -1,7 +1,7 @@
 
 export interface RavenSettings{
-	creation: string
 	name: string
+	creation: string
 	modified: string
 	owner: string
 	modified_by: string
@@ -16,4 +16,8 @@ export interface RavenSettings{
 	show_raven_on_desk?: 0 | 1
 	/**	Tenor API Key : Data	*/
 	tenor_api_key?: string
+	/**	Automatically Create a Channel for each Department : Check - If checked, a channel will be created in Raven for each department and employees will be synced with Raven Users.	*/
+	auto_create_department_channel?: 0 | 1
+	/**	Department Channel Type : Select	*/
+	department_channel_type?: "Public" | "Private"
 }

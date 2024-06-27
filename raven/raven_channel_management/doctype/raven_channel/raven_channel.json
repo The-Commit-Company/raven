@@ -10,6 +10,10 @@
   "channel_name",
   "channel_description",
   "type",
+  "column_break_imbh",
+  "is_synced",
+  "linked_doctype",
+  "linked_document",
   "section_break_evg4",
   "is_direct_message",
   "column_break_puci",
@@ -105,6 +109,31 @@
    "fieldtype": "JSON",
    "label": "Last Message Details",
    "read_only": 1
+  },
+  {
+   "fieldname": "column_break_imbh",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "linked_doctype",
+   "fieldtype": "Link",
+   "label": "Linked DocType",
+   "options": "DocType",
+   "read_only": 1
+  },
+  {
+   "fieldname": "linked_document",
+   "fieldtype": "Dynamic Link",
+   "label": "Linked Document",
+   "options": "linked_doctype",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "is_synced",
+   "fieldtype": "Check",
+   "label": "Is Synced",
+   "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,
@@ -118,7 +147,7 @@
    "link_fieldname": "channel_id"
   }
  ],
- "modified": "2024-04-10 10:02:14.404135",
+ "modified": "2024-06-20 18:26:25.559899",
  "modified_by": "Administrator",
  "module": "Raven Channel Management",
  "name": "Raven Channel",

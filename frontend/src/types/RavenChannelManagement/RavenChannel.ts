@@ -1,7 +1,7 @@
 
 export interface RavenChannel{
-	creation: string
 	name: string
+	creation: string
 	modified: string
 	owner: string
 	modified_by: string
@@ -16,6 +16,12 @@ export interface RavenChannel{
 	channel_description?: string
 	/**	Type : Select	*/
 	type: "Private" | "Public" | "Open"
+	/**	Is Synced : Check	*/
+	is_synced?: 0 | 1
+	/**	Linked DocType : Link - DocType	*/
+	linked_doctype?: string
+	/**	Linked Document : Dynamic Link	*/
+	linked_document?: string
 	/**	Is Direct Message : Check	*/
 	is_direct_message?: 0 | 1
 	/**	Is Self Message : Check	*/
