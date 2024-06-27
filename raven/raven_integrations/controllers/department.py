@@ -5,7 +5,7 @@ def after_insert(doc, method):
      Check if auto creation of Department channel is enabled. 
      If yes, then create a new Raven Channel
     """
-    if doc.is_group:
+    if doc.is_group or doc.disabled:
         return
     
     channel_type = get_auto_create_department_channel_type()
@@ -45,6 +45,7 @@ def on_trash(doc, method):
         "linked_doctype": "Department",
         "linked_document": doc.name
     })
+
 
 def get_auto_create_department_channel_type() -> str | None:
     raven_settings = frappe.get_single("Raven Settings")
