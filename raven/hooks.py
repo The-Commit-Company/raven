@@ -6,7 +6,7 @@ app_publisher = "The Commit Company (Algocode Technologies Pvt. Ltd.)"
 app_description = "Messaging Application"
 app_email = "support@thecommit.company"
 app_license = "AGPLv3"
-source_link="https://github.com/The-Commit-Company/Raven"
+source_link = "https://github.com/The-Commit-Company/Raven"
 app_logo = "/assets/raven/raven-logo.png"
 
 # Includes in <head>
@@ -123,15 +123,15 @@ doc_events = {
 		"on_update": "raven.raven.doctype.raven_user.raven_user.add_user_to_raven",
 		"on_trash": "raven.raven.doctype.raven_user.raven_user.remove_user_from_raven",
 	},
-    "Department": {
-        "after_insert": "raven.raven_integrations.controllers.department.after_insert",
-        "on_update": "raven.raven_integrations.controllers.department.on_update",
-        "on_trash": "raven.raven_integrations.controllers.department.on_trash"
+	"Department": {
+		"after_insert": "raven.raven_integrations.controllers.department.after_insert",
+		"on_update": "raven.raven_integrations.controllers.department.on_update",
+		"on_trash": "raven.raven_integrations.controllers.department.on_trash",
 	},
-    "Employee": {
-        "after_insert": "raven.raven_integrations.controllers.employee.after_insert",
-        "on_update": "raven.raven_integrations.controllers.employee.on_update",
-        "on_trash": "raven.raven_integrations.controllers.employee.on_trash"
+	"Employee": {
+		"after_insert": "raven.raven_integrations.controllers.employee.after_insert",
+		"on_update": "raven.raven_integrations.controllers.employee.on_update",
+		"on_trash": "raven.raven_integrations.controllers.employee.on_trash",
 	},
 }
 

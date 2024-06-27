@@ -10,3 +10,5 @@ def execute():
 
 	for user in users:
 		frappe.db.set_value("Raven User", user, "type", "User")
+
+	frappe.db.commit()

@@ -5,9 +5,8 @@ import frappe
 from frappe import _
 from frappe.query_builder import Case, JoinType, Order
 from frappe.query_builder.functions import Coalesce, Count
-from raven.api.raven_channel import create_direct_message_channel
 
-from raven.api.raven_channel import get_peer_user_id
+from raven.api.raven_channel import create_direct_message_channel, get_peer_user_id
 from raven.utils import get_channel_member, track_channel_visit
 
 
@@ -490,10 +489,10 @@ def get_count_for_pagination_of_files(channel_id, file_name=None, file_type=None
 @frappe.whitelist(methods=["POST"])
 def forward_message(message_receivers, forwarded_message):
 	"""
-		Forward a message to multiple users/ or in multiple channels
+	Forward a message to multiple users/ or in multiple channels
 	"""
 	for receiver in message_receivers:
-		if (receiver["type"] == "User"):
+		if receiver["type"] == "User":
 			# send forwarded message as a DM to the user
 			# get DM channel ID, create a copy of the message and send it to the channel, change the message owner to current sender
 			dm_channel_id = create_direct_message_channel(receiver["name"])
@@ -504,11 +503,12 @@ def forward_message(message_receivers, forwarded_message):
 
 	return "messages forwarded"
 
+
 def add_forwarded_message_to_channel(channel_id, forwarded_message):
 	"""
-		Forward a message to a channel - copy over the message, 
-		change the owner to the current user and timestamp to now,
-		mark it as forwarded
+	Forward a message to a channel - copy over the message,
+	change the owner to the current user and timestamp to now,
+	mark it as forwarded
 	"""
 	doc = frappe.get_doc(
 		{
