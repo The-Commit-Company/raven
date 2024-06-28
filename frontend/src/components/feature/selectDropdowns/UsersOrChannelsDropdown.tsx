@@ -33,14 +33,15 @@ const UsersOrChannelsDropdown = ({ selectedOptions, setSelectedOptions, label = 
         const lowerCasedInputValue = inputValue.toLowerCase()
 
         return options.filter((option: UserFields | ChannelListItem) => {
+            const isOptionSelected = selectedOptions.find(selectedOption => selectedOption.name === option.name)
             if ('full_name' in option)
                 return (
-                    !selectedOptions.includes(option) &&
+                    !isOptionSelected &&
                     (option.full_name.toLowerCase().includes(lowerCasedInputValue) ||
                         option.name.toLowerCase().includes(lowerCasedInputValue))
                 )
             return (
-                !selectedOptions.includes(option) &&
+                !isOptionSelected &&
                 (option.channel_name.toLowerCase().includes(lowerCasedInputValue) ||
                     option.name.toLowerCase().includes(lowerCasedInputValue))
             )
