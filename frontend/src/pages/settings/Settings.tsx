@@ -1,11 +1,13 @@
 import { SettingsSidebar } from '@/components/feature/userSettings/SettingsSidebar'
 import { PageHeader } from '@/components/layout/Heading/PageHeader'
+import { useIsDesktop } from '@/hooks/useMediaQuery'
 import { Box, Flex, Heading } from '@radix-ui/themes'
 import { BiChevronLeft } from 'react-icons/bi'
 import { Link } from 'react-router-dom'
 import { Outlet } from "react-router-dom"
 
 const Settings = () => {
+    const isDesktop = useIsDesktop()
     return (
         <>
             <PageHeader>
@@ -17,7 +19,7 @@ const Settings = () => {
                 </Flex>
             </PageHeader>
             <Flex className="min-h-screen pt-16 w-full">
-                <SettingsSidebar />
+                {isDesktop && <SettingsSidebar />}
                 <Box className="w-full">
                     <Outlet />
                 </Box>

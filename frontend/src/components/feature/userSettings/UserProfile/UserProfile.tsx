@@ -12,6 +12,7 @@ import { useState } from "react"
 import { GrPowerReset } from "react-icons/gr"
 import { BiSmile } from "react-icons/bi"
 import EmojiPicker from "@/components/common/EmojiPicker/EmojiPicker"
+import { useIsDesktop } from "@/hooks/useMediaQuery"
 
 type UserProfile = {
     full_name?: string,
@@ -55,6 +56,8 @@ export const UserProfile = () => {
         methods.setValue('custom_status', `${methods.getValues('custom_status')} ${emoji}`)
     }
 
+    const isDesktop = useIsDesktop()
+
     return (
         <Flex direction='column' gap='4' px='6' py='4'>
 
@@ -89,7 +92,7 @@ export const UserProfile = () => {
                                         <TextField.Root
                                             autoFocus
                                             maxLength={140}
-                                            className={'w-96'}
+                                            className={'w-48 sm:w-96'}
                                             id='full_name'
                                             placeholder='full name'
                                             {...register('full_name', {
@@ -109,7 +112,7 @@ export const UserProfile = () => {
                                         <Label htmlFor="availability_status">Availability Status</Label>
                                         <DropdownMenu.Root>
                                             <DropdownMenu.Trigger>
-                                                <Flex gap={'2'} align='center' className={'text-sm px-2 py-1 border border-gray-7 w-96 rounded'}>{availabilityStatus ? getStatusText(availabilityStatus) :
+                                                <Flex gap={'2'} align='center' className={'text-sm px-2 py-1 border border-gray-7 rounded w-48 sm:w-96'}>{availabilityStatus ? getStatusText(availabilityStatus) :
                                                     <Text color="gray">Set Availability</Text>
                                                 }</Flex>
                                             </DropdownMenu.Trigger>
@@ -138,7 +141,7 @@ export const UserProfile = () => {
                                     <Flex justify={'between'} align={'center'}>
                                         <Flex direction={'column'} gap='0'>
                                             <Label htmlFor='custom_status'>Custom Status</Label>
-                                            <Text size={'1'} color={'gray'} style={{ lineHeight: '0.8' }}>Share what you are up to</Text>
+                                            {isDesktop && <Text size={'1'} color={'gray'} style={{ lineHeight: '0.8' }}>Share what you are up to</Text>}
                                         </Flex>
                                         <Flex align={'center'} gap='3'>
                                             <Flex direction={'column'} gap='1'>
@@ -152,7 +155,7 @@ export const UserProfile = () => {
                                                             message: "Status cannot be more than 140 characters."
                                                         }
                                                     })}
-                                                    className='w-96'
+                                                    className={'w-48 sm:w-96'}
                                                     aria-invalid={errors.custom_status ? 'true' : 'false'}>
 
                                                     <TextField.Slot side='right'>
