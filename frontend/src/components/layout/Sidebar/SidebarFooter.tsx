@@ -6,7 +6,6 @@ import { BiDotsHorizontalRounded } from 'react-icons/bi'
 import { UserAvatar } from '@/components/common/UserAvatar'
 import { BsEmojiSmile } from 'react-icons/bs'
 import useCurrentRavenUser from '@/hooks/useCurrentRavenUser'
-import { useIsDesktop } from '@/hooks/useMediaQuery'
 import { SlSettings } from 'react-icons/sl'
 import { useIsUserActive } from '@/hooks/useIsUserActive'
 import { MdOutlineExitToApp } from 'react-icons/md'
@@ -15,7 +14,7 @@ import { SetUserAvailabilityMenu } from '@/components/feature/userSettings/Avail
 import { SetCustomStatusModal } from '@/components/feature/userSettings/CustomStatus/SetCustomStatusModal'
 import PushNotificationToggle from '@/components/feature/userSettings/PushNotifications/PushNotificationToggle'
 
-export const SidebarFooter = ({ isSettingsPage = false }: { isSettingsPage?: boolean }) => {
+export const SidebarFooter = () => {
 
     const userData = useUserData()
     const { logout } = useContext(UserContext)
@@ -25,7 +24,6 @@ export const SidebarFooter = ({ isSettingsPage = false }: { isSettingsPage?: boo
     const { myProfile } = useCurrentRavenUser()
     const isActive = useIsUserActive(userData.name)
 
-    const isDesktop = useIsDesktop()
     const navigate = useNavigate()
 
     return (
@@ -59,13 +57,6 @@ export const SidebarFooter = ({ isSettingsPage = false }: { isSettingsPage?: boo
                                     <BsEmojiSmile size='14' /> Set custom status
                                 </DropdownMenu.Item>
                                 <PushNotificationToggle />
-                                {/* {!isSettingsPage && isDesktop && <DropdownMenu.Item color='gray' className='focus-visible:ring-0 focus-visible:outline-none rounded-radius2 cursor-pointer' asChild>
-                                <Link href="../settings/integrations/webhooks" className='no-underline'>
-                                    <Flex gap='2' align='center'>
-                                        <SlSettings size='14' /> Settings
-                                    </Flex>
-                                </Link>
-                            </DropdownMenu.Item>} */}
                                 <DropdownMenu.Separator />
                                 <DropdownMenu.Item color='red' className={'flex justify-normal gap-2'} onClick={logout}>
                                     <MdOutlineExitToApp size='14' />Log Out
