@@ -20,4 +20,6 @@ export interface RavenSettings{
 	auto_create_department_channel?: 0 | 1
 	/**	Department Channel Type : Select	*/
 	department_channel_type?: "Public" | "Private"
+	/**	Show if a user is on leave : Check	*/
+	show_if_a_user_is_on_leave?: 0 | 1
 }
