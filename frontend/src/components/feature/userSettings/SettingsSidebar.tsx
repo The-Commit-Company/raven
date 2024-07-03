@@ -24,13 +24,13 @@ export const SettingsSidebar = () => {
                     <SettingsSidebarItem title="Users" to='users' />
                     {/* <SettingsSidebarItem title="Bots" to='bots' /> */}
                 </SettingsGroup>
-                {/* <SettingsSeparator />
+                <SettingsSeparator />
                 <SettingsGroup title='Integrations' icon={BsBoxes}>
-                    <SettingsSidebarItem title="ERPNext" to='erpnext' />
+                    {/* <SettingsSidebarItem title="ERPNext" to='erpnext' /> */}
                     <SettingsSidebarItem title="Frappe HR" to='frappe-hr' />
-                    <SettingsSidebarItem title="Frappe LMS" to='frappe-lms' />
-                    <SettingsSidebarItem title="Frappe CRM" to='frappe-crm' />
-                </SettingsGroup> */}
+                    {/* <SettingsSidebarItem title="Frappe LMS" to='frappe-lms' /> */}
+                    {/* <SettingsSidebarItem title="Frappe CRM" to='frappe-crm' /> */}
+                </SettingsGroup>
             </Flex>
         </Box>
     )

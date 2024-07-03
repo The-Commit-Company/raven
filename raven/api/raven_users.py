@@ -65,10 +65,14 @@ def get_users():
 
 
 @frappe.whitelist()
-def is_user_on_leave(user: str | None):
+def is_user_on_leave(user: str):
 	"""
 	If the user is on leave, return True
 	"""
+	# Check if FrappeHR is installed
+	if not "hrms" in frappe.get_installed_apps():
+		return False
+
 	employee = frappe.db.exists("Employee", {"user_id": user})
 
 	if employee:

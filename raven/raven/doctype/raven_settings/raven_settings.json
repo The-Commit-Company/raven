@@ -75,7 +75,7 @@
    "label": "Attendance and Leaves"
   },
   {
-   "default": "0",
+   "default": "1",
    "fieldname": "show_if_a_user_is_on_leave",
    "fieldtype": "Check",
    "label": "Show if a user is on leave"
@@ -84,7 +84,7 @@
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2024-07-03 15:36:32.320346",
+ "modified": "2024-07-03 16:53:42.621934",
  "modified_by": "Administrator",
  "module": "Raven",
  "name": "Raven Settings",
