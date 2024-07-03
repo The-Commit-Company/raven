@@ -5,6 +5,7 @@ import useRavenSettings from '@/hooks/fetchers/useRavenSettings'
 import { RavenSettings } from '@/types/Raven/RavenSettings'
 import { Button, Checkbox, Flex, Select, Separator, Text } from '@radix-ui/themes'
 import { useFrappeUpdateDoc } from 'frappe-react-sdk'
+import { useEffect } from 'react'
 import { Controller, FormProvider, useForm } from 'react-hook-form'
 import { FiAlertTriangle } from 'react-icons/fi'
 import { toast } from 'sonner'
@@ -15,7 +16,13 @@ const FrappeHR = () => {
 
     const methods = useForm<RavenSettings>()
 
-    const { handleSubmit, control, watch } = methods
+    const { handleSubmit, control, watch, reset } = methods
+
+    useEffect(() => {
+        if (ravenSettings) {
+            reset(ravenSettings)
+        }
+    }, [ravenSettings])
 
     const { updateDoc, loading: updatingDoc } = useFrappeUpdateDoc<RavenSettings>()
 
