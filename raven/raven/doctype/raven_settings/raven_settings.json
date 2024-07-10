@@ -14,7 +14,9 @@
   "tenor_api_key",
   "frappe_hr_tab",
   "auto_create_department_channel",
-  "department_channel_type"
+  "department_channel_type",
+  "attendance_and_leaves_section",
+  "show_if_a_user_is_on_leave"
  ],
  "fields": [
   {
@@ -66,12 +68,23 @@
    "fieldtype": "Select",
    "label": "Department Channel Type",
    "options": "Public\nPrivate"
+  },
+  {
+   "fieldname": "attendance_and_leaves_section",
+   "fieldtype": "Section Break",
+   "label": "Attendance and Leaves"
+  },
+  {
+   "default": "1",
+   "fieldname": "show_if_a_user_is_on_leave",
+   "fieldtype": "Check",
+   "label": "Show if a user is on leave"
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2024-06-20 18:20:42.741753",
+ "modified": "2024-07-03 16:53:42.621934",
  "modified_by": "Administrator",
  "module": "Raven",
  "name": "Raven Settings",

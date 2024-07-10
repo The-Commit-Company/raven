@@ -28,6 +28,7 @@ const router = createBrowserRouter(
               <Route index element={<UserProfile />} />
               <Route path="profile" element={<UserProfile />} />
               <Route path="users" lazy={() => import('./components/feature/userSettings/Users/AddUsers')} />
+              <Route path="frappe-hr" lazy={() => import('./pages/settings/Integrations/FrappeHR')} />
               {/* <Route path="bots" lazy={() => import('./components/feature/userSettings/Bots')} /> */}
             </Route>
             <Route path=":channelID" lazy={() => import('@/pages/ChatSpace')} />
