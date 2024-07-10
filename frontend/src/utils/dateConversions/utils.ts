@@ -21,5 +21,5 @@ export const FRAPPE_TIME_FORMAT = 'HH:mm:ss'
 
 export const getDateObject = (timestamp: string): dayjs.Dayjs => {
 
-    return dayjs.tz(timestamp, SYSTEM_TIMEZONE)
+    return dayjs.tz(timestamp, SYSTEM_TIMEZONE).local()
 }
