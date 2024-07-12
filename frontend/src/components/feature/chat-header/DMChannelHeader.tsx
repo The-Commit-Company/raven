@@ -9,6 +9,7 @@ import ChannelHeaderMenu from "./ChannelHeaderMenu"
 import { BiChevronLeft } from "react-icons/bi"
 import { Link } from "react-router-dom"
 import { useGetUser } from "@/hooks/useGetUser"
+import useIsUserOnLeave from "@/hooks/fetchers/useIsUserOnLeave"
 
 interface DMChannelHeaderProps {
     channelData: DMChannelListItem,
@@ -40,6 +41,8 @@ export const DMChannelHeader = ({ channelData }: DMChannelHeaderProps) => {
 
     const user = useGetUser(peer)
 
+    const isUserOnLeave = useIsUserOnLeave(peer)
+
     return (
         <PageHeader>
             <Flex gap='3' align='center'>
@@ -59,6 +62,7 @@ export const DMChannelHeader = ({ channelData }: DMChannelHeaderProps) => {
                     <div className="flex items-center gap-2">
                         {fullName}
                         {user?.custom_status && <Badge color='gray' className='font-semibold px-1.5 py-0.5'>{user.custom_status}</Badge>}
+                        {isUserOnLeave && <Badge color="yellow" variant="surface">On Leave</Badge>}
                         {isBot && <Badge color='gray' className='font-semibold px-1.5 py-0.5'>Bot</Badge>}
                     </div>
                 </Heading>

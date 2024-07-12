@@ -48,7 +48,7 @@ class RavenUser(Document):
 		if self.type == "User" and not self.user:
 			frappe.throw(_("User is mandatory"))
 
-	def before_save(self):
+	def before_insert(self):
 		if self.type != "Bot":
 			self.update_photo_from_user()
 

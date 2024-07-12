@@ -20,7 +20,10 @@ class RavenChannelMember(Document):
 		allow_notifications: DF.Check
 		channel_id: DF.Link
 		is_admin: DF.Check
+		is_synced: DF.Check
 		last_visit: DF.Datetime
+		linked_doctype: DF.Link | None
+		linked_document: DF.DynamicLink | None
 		user_id: DF.Link
 	# end: auto-generated types
 

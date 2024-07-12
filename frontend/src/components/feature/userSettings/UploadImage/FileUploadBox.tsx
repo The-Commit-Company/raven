@@ -3,12 +3,12 @@ import { FlexProps } from "@radix-ui/themes/dist/cjs/components/flex";
 import { forwardRef, useImperativeHandle, useState } from "react";
 import { Accept, useDropzone } from "react-dropzone";
 import { toast } from "sonner";
-import { CustomFile } from "../file-upload/FileDrop";
-import { FileUploadProgress } from "../chat/ChatInput/FileInput/useFileUpload";
-import { getFileSize } from "../file-upload/FileListItem";
 import { useGetFilePreviewUrl } from "@/hooks/useGetFilePreviewUrl";
 import { Loader } from "@/components/common/Loader";
 import { BiTrash } from "react-icons/bi";
+import { CustomFile } from "../../file-upload/FileDrop";
+import { FileUploadProgress } from "../../chat/ChatInput/FileInput/useFileUpload";
+import { getFileSize } from "../../file-upload/FileListItem";
 
 export interface FileUploadBoxProps extends FlexProps {
     /** File to be uploaded */
@@ -37,13 +37,12 @@ export const FileUploadBox = forwardRef((props: FileUploadBoxProps, ref) => {
     }
 
     const { getRootProps, getInputProps, open } = useDropzone({
-        onDrop: (receivedFiles) => {
+        onDrop: (receivedFiles: File[]) => {
             if (receivedFiles.length > 0) {
-                onFileChange({
-                    ...receivedFiles[0],
-                    fileID: receivedFiles[0].name + Date.now(),
-                    uploadProgress: 0,
-                })
+                const f: CustomFile = receivedFiles[0] as CustomFile
+                f.uploadProgress = 0
+                f.fileID = f.name + Date.now()
+                onFileChange(f)
             }
         },
         maxFiles: 1,
@@ -116,8 +115,6 @@ interface FileItemProps {
 
 const FileItem = ({ file, removeFile, uploadProgress }: FileItemProps) => {
 
-    console.log('file', file)
-
     const previewURL = useGetFilePreviewUrl(file)
     const fileSizeString = getFileSize(file)
     const isUploadComplete = uploadProgress?.[file.fileID]?.isComplete ?? false
@@ -126,13 +123,13 @@ const FileItem = ({ file, removeFile, uploadProgress }: FileItemProps) => {
     return (
         <Flex width='100%' gap='2' mt='2' px='4' className='border rounded-md border-slate-8' justify={'between'}>
 
-            <Flex align='center' justify='center'>
+            <Flex align='center' justify='center' gap='2'>
                 <Flex align='center' justify='center' className='w-12 h-12'>
                     {previewURL && <img src={previewURL} alt='File preview' className='w-10 h-10 aspect-square object-cover rounded-md' />}
                 </Flex>
-                <Flex direction='column' width='100%' className='overflow-hidden whitespace-nowrap'>
-                    <Text as="span" size="2" className='overflow-hidden text-ellipsis whitespace-nowrap'>{file.name}</Text>
-                    <Text size='1' className='italic' color='gray'>
+                <Flex direction='column' width='100%' className='overflow-hidden whitespace-nowrap gap-0.5'>
+                    <Text as="span" size="1" className='overflow-hidden text-ellipsis whitespace-nowrap'>{file.name}</Text>
+                    <Text size='1' color='gray'>
                         {fileSizeString}
                     </Text>
                 </Flex>

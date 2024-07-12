@@ -15,6 +15,9 @@ class RavenSettings(Document):
 		from frappe.types import DF
 
 		auto_add_system_users: DF.Check
+		auto_create_department_channel: DF.Check
+		department_channel_type: DF.Literal["Public", "Private"]
+		show_if_a_user_is_on_leave: DF.Check
 		show_raven_on_desk: DF.Check
 		tenor_api_key: DF.Data | None
 	# end: auto-generated types

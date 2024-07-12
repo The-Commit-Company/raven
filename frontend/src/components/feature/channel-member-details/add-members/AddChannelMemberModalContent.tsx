@@ -10,7 +10,8 @@ import { ErrorText } from '@/components/common/Form'
 import { toast } from 'sonner'
 import { useParams } from 'react-router-dom'
 import { useCurrentChannelData } from '@/hooks/useCurrentChannelData'
-const AddMembersDropdown = lazy(() => import('../../select-member/AddMembersDropdown'))
+const AddMembersDropdown = lazy(() => import('../../selectDropdowns/AddMembersDropdown'))
+
 interface AddChannelMemberForm {
   add_members: UserFields[] | null
 }
