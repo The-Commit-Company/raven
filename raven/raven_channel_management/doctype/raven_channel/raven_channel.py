@@ -20,8 +20,11 @@ class RavenChannel(Document):
 		is_archived: DF.Check
 		is_direct_message: DF.Check
 		is_self_message: DF.Check
+		is_synced: DF.Check
 		last_message_details: DF.JSON | None
 		last_message_timestamp: DF.Datetime | None
+		linked_doctype: DF.Link | None
+		linked_document: DF.DynamicLink | None
 		type: DF.Literal["Private", "Public", "Open"]
 	# end: auto-generated types
 

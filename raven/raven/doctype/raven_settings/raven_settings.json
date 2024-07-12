@@ -11,7 +11,12 @@
   "show_raven_on_desk",
   "integrations_tab",
   "integrations_section",
-  "tenor_api_key"
+  "tenor_api_key",
+  "frappe_hr_tab",
+  "auto_create_department_channel",
+  "department_channel_type",
+  "attendance_and_leaves_section",
+  "show_if_a_user_is_on_leave"
  ],
  "fields": [
   {
@@ -43,12 +48,43 @@
   {
    "fieldname": "integrations_section",
    "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "frappe_hr_tab",
+   "fieldtype": "Tab Break",
+   "label": "Frappe HR"
+  },
+  {
+   "default": "0",
+   "description": "If checked, a channel will be created in Raven for each department and employees will be synced with Raven Users.",
+   "fieldname": "auto_create_department_channel",
+   "fieldtype": "Check",
+   "label": "Automatically Create a Channel for each Department"
+  },
+  {
+   "default": "Private",
+   "depends_on": "eval:doc.auto_create_department_channel",
+   "fieldname": "department_channel_type",
+   "fieldtype": "Select",
+   "label": "Department Channel Type",
+   "options": "Public\nPrivate"
+  },
+  {
+   "fieldname": "attendance_and_leaves_section",
+   "fieldtype": "Section Break",
+   "label": "Attendance and Leaves"
+  },
+  {
+   "default": "1",
+   "fieldname": "show_if_a_user_is_on_leave",
+   "fieldtype": "Check",
+   "label": "Show if a user is on leave"
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2024-03-26 22:40:35.358702",
+ "modified": "2024-07-03 16:53:42.621934",
  "modified_by": "Administrator",
  "module": "Raven",
  "name": "Raven Settings",

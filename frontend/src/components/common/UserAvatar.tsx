@@ -2,10 +2,10 @@ import { Avatar, Theme } from '@radix-ui/themes'
 import { AvatarProps } from '@radix-ui/themes/dist/cjs/components/avatar'
 import { BoxProps } from '@radix-ui/themes/dist/cjs/components/box'
 import { clsx } from 'clsx'
-import { generateAvatarColor } from '../feature/select-member/GenerateAvatarColor'
+import { generateAvatarColor } from '../feature/selectDropdowns/GenerateAvatarColor'
 import { RiRobot2Fill } from 'react-icons/ri'
 import { useMemo } from 'react'
-import { AvailabilityStatus } from '../feature/userSettings/SetUserAvailabilityMenu'
+import { AvailabilityStatus } from '../feature/userSettings/AvailabilityStatus/SetUserAvailabilityMenu'
 
 interface UserAvatarProps extends Partial<AvatarProps> {
     alt?: string,

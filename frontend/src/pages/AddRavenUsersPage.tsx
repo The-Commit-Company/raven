@@ -8,7 +8,6 @@ import { ChangeEvent, useContext, useState } from 'react'
 import { FaInfo } from 'react-icons/fa'
 import { PageLengthSelector } from '@/components/feature/pagination/PageLengthSelector'
 import { PageSelector } from '@/components/feature/pagination/PageSelector'
-import { UsersTable } from '@/components/feature/raven-users/UsersTable'
 import { Sort } from '@/components/feature/sorting'
 import { ErrorBanner } from '@/components/layout/AlertBanner'
 import { TableLoader } from '@/components/layout/Loaders/TableLoader'
@@ -17,6 +16,7 @@ import { UserContext } from '@/utils/auth/UserProvider'
 import { Loader } from '@/components/common/Loader'
 import { toast } from 'sonner'
 import { User } from '@/types/Core/User'
+import { UsersTable } from '@/components/feature/userSettings/Users/UsersTable'
 
 const AddRavenUsersPage = () => {
 

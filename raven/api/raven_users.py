@@ -64,6 +64,35 @@ def get_users():
 	return users
 
 
+@frappe.whitelist()
+def is_user_on_leave(user: str):
+	"""
+	If the user is on leave, return True
+	"""
+	# Check if FrappeHR is installed
+	if not "hrms" in frappe.get_installed_apps():
+		return False
+
+	employee = frappe.db.exists("Employee", {"user_id": user})
+
+	if employee:
+		# Check if attendance today is marked as "On Leave"
+		attendance = frappe.db.exists(
+			"Attendance",
+			{
+				"employee": employee,
+				"status": "On Leave",
+				"attendance_date": frappe.utils.today(),
+				"docstatus": 1,
+			},
+		)
+
+		if attendance:
+			return True
+
+	return False
+
+
 @frappe.whitelist(methods=["POST"])
 def add_users_to_raven(users):
 

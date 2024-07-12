@@ -1,5 +1,5 @@
 import { UserAvatar } from '@/components/common/UserAvatar';
-import { getStatusText } from '@/components/feature/userSettings/SetUserAvailabilityMenu';
+import { getStatusText } from '@/components/feature/userSettings/AvailabilityStatus/SetUserAvailabilityMenu';
 import { useGetUser } from '@/hooks/useGetUser';
 import { useIsUserActive } from '@/hooks/useIsUserActive';
 import { Flex, HoverCard, Link, Text } from '@radix-ui/themes';

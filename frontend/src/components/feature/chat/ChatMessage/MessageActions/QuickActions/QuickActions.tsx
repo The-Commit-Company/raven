@@ -2,16 +2,16 @@ import { Box, Flex } from '@radix-ui/themes'
 import { MessageContextMenuProps } from '../MessageActions'
 import { QUICK_ACTION_BUTTON_CLASS, QuickActionButton } from './QuickActionButton'
 import { BiDotsHorizontalRounded } from 'react-icons/bi'
-import { HiReply } from 'react-icons/hi'
 import { MouseEventHandler, useContext, useRef } from 'react'
 import { FrappeConfig, FrappeContext } from 'frappe-react-sdk'
 import { EmojiPickerButton } from './EmojiPickerButton'
 import { UserContext } from '@/utils/auth/UserProvider'
 import { AiOutlineEdit } from 'react-icons/ai'
+import { LuForward, LuReply } from 'react-icons/lu'
 
 const QUICK_EMOJIS = ['👍', '✅', '👀', '🎉']
 
-export const QuickActions = ({ message, onReply, onEdit }: MessageContextMenuProps) => {
+export const QuickActions = ({ message, onReply, onEdit, onForward }: MessageContextMenuProps) => {
 
     const { currentUser } = useContext(UserContext)
 
@@ -90,9 +90,16 @@ export const QuickActions = ({ message, onReply, onEdit }: MessageContextMenuPro
                         tooltip='Reply'
                         aria-label='Reply to this message'
                         onClick={onReply}>
-                        <HiReply size='18' />
+                        <LuReply size='18' />
                     </QuickActionButton>
                 }
+
+                <QuickActionButton
+                    tooltip='Forward'
+                    aria-label='Forward this message'
+                    onClick={onForward}>
+                    <LuForward size='18' />
+                </QuickActionButton>
 
                 <QuickActionButton
                     aria-label='More actions'

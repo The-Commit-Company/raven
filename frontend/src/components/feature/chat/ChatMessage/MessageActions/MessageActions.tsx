@@ -3,22 +3,23 @@ import { FileMessage, Message } from '../../../../../../../types/Messaging/Messa
 import { useContext } from 'react'
 import { UserContext } from '@/utils/auth/UserProvider'
 import { BiBookmarkMinus, BiBookmarkPlus, BiCopy, BiDownload, BiLink, BiTrash } from 'react-icons/bi'
-import { HiReply } from 'react-icons/hi'
 import { FrappeConfig, FrappeContext } from 'frappe-react-sdk'
 import { useMessageCopy } from './useMessageCopy'
 import { RetractVote } from './RetractVote'
 import { toast } from 'sonner'
 import { getErrorMessage } from '@/components/layout/AlertBanner/ErrorBanner'
 import { AiOutlineEdit } from 'react-icons/ai'
+import { LuForward, LuReply } from 'react-icons/lu'
 
 export interface MessageContextMenuProps {
     message?: Message | null,
     onDelete: VoidFunction
     onEdit: VoidFunction,
     onReply: VoidFunction,
+    onForward: VoidFunction
 }
 
-export const MessageContextMenu = ({ message, onDelete, onEdit, onReply }: MessageContextMenuProps) => {
+export const MessageContextMenu = ({ message, onDelete, onEdit, onReply, onForward }: MessageContextMenuProps) => {
 
     const copy = useMessageCopy(message)
     const { currentUser } = useContext(UserContext)
@@ -33,8 +34,14 @@ export const MessageContextMenu = ({ message, onDelete, onEdit, onReply }: Messa
 
                 <ContextMenu.Item onClick={onReply}>
                     <Flex gap='2'>
-                        <HiReply size='18' />
+                        <LuReply size='18' />
                         Reply
+                    </Flex>
+                </ContextMenu.Item>
+                <ContextMenu.Item onClick={onForward}>
+                    <Flex gap='2'>
+                        <LuForward size='18' />
+                        Forward
                     </Flex>
                 </ContextMenu.Item>
                 {/* <ContextMenu.Separator /> */}
