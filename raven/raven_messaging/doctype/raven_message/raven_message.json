@@ -15,6 +15,8 @@
   "is_reply",
   "linked_message",
   "replied_message_details",
+  "is_thread",
+  "thread_id",
   "column_break_wvje",
   "message_type",
   "content",
@@ -179,11 +181,23 @@
    "fieldname": "is_forwarded",
    "fieldtype": "Check",
    "label": "Is Forwarded"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_thread",
+   "fieldtype": "Check",
+   "label": "Is Thread"
+  },
+  {
+   "fieldname": "thread_id",
+   "fieldtype": "Link",
+   "label": "Thread ID",
+   "options": "Raven Thread"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-06-23 13:47:48.657331",
+ "modified": "2024-07-12 19:11:56.998541",
  "modified_by": "Administrator",
  "module": "Raven Messaging",
  "name": "Raven Message",

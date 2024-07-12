@@ -1,0 +1,80 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2024-07-12 18:52:20.754872",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "thread_details_section",
+  "thread_message",
+  "title",
+  "channel_id",
+  "participants_section",
+  "participants"
+ ],
+ "fields": [
+  {
+   "fieldname": "participants_section",
+   "fieldtype": "Section Break",
+   "label": "Participants"
+  },
+  {
+   "fieldname": "participants",
+   "fieldtype": "Table",
+   "label": "Participants",
+   "options": "Raven Thread Participants"
+  },
+  {
+   "fieldname": "thread_details_section",
+   "fieldtype": "Section Break",
+   "label": "Thread Details"
+  },
+  {
+   "fetch_from": "thread_message.content",
+   "fieldname": "title",
+   "fieldtype": "Long Text",
+   "in_list_view": 1,
+   "label": "Title",
+   "reqd": 1
+  },
+  {
+   "fetch_from": "thread_message.channel_id",
+   "fieldname": "channel_id",
+   "fieldtype": "Link",
+   "label": "Channel ID",
+   "options": "Raven Channel",
+   "reqd": 1
+  },
+  {
+   "fieldname": "thread_message",
+   "fieldtype": "Link",
+   "label": "Thread Message",
+   "options": "Raven Message",
+   "reqd": 1
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2024-07-12 19:41:12.544871",
+ "modified_by": "Administrator",
+ "module": "Raven Messaging",
+ "name": "Raven Thread",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": []
+}
