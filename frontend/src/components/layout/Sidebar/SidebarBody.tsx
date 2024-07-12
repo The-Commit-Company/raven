@@ -2,10 +2,10 @@ import { ChannelList } from '../../feature/channels/ChannelList'
 import { DirectMessageList } from '../../feature/direct-messages/DirectMessageList'
 import { SidebarItem } from './SidebarComp'
 import { AccessibleIcon, Box, Flex, ScrollArea, Text } from '@radix-ui/themes'
-import { BiSolidBookmark, BiSolidChat } from 'react-icons/bi'
 import useUnreadMessageCount from '@/hooks/useUnreadMessageCount'
 import PinnedChannels from './PinnedChannels'
 import React from 'react'
+import { BiSolidBookmark, BiSolidMessageDetail } from 'react-icons/bi'
 
 export const SidebarBody = () => {
 
@@ -18,7 +18,7 @@ export const SidebarBody = () => {
                     <SidebarItemForPage
                         to={'threads'}
                         label='Threads'
-                        icon={<BiSolidChat className='text-gray-12 dark:text-gray-300 mt-0.5 sm:text-sm text-base' />}
+                        icon={<BiSolidMessageDetail className='text-gray-12 dark:text-gray-300 mt-1 sm:text-sm text-base' />}
                         iconLabel='Threads' />
                     <SidebarItemForPage
                         to={'saved-messages'}

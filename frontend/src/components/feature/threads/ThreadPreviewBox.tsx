@@ -2,14 +2,20 @@ import { Box, Button, Flex, Separator, Text } from '@radix-ui/themes'
 import { MessageContent, MessageSenderAvatar, UserHoverCard } from '../chat/ChatMessage/MessageItem'
 import { useGetUser } from '@/hooks/useGetUser'
 import { DateMonthYear } from '@/utils/dateConversions'
-import { Thread } from './Threads'
+import { RavenThread } from '@/types/RavenMessaging/RavenThread'
+import { Message } from '../../../../../types/Messaging/Message'
 
 interface ThreadPreviewBoxProps {
-    thread: Thread
+    thread: RavenThread
 }
 
 export const ThreadPreviewBox = ({ thread }: ThreadPreviewBoxProps) => {
-    const user = useGetUser(thread.message.owner)
+
+    const primaryThreadMessage = thread.messages[0]
+    const user = useGetUser(primaryThreadMessage.owner)
+
+    const totalReplies = thread.messages.length - 1
+
     return (
         <Flex direction='column' gap='2' className="group
             hover:bg-gray-100
@@ -25,16 +31,17 @@ export const ThreadPreviewBox = ({ thread }: ThreadPreviewBoxProps) => {
                     Open thread
                 </Button>
             </Flex>
-            <Flex direction='column'>
+            <Flex direction='column' gap='2'>
                 <Flex gap='3'>
-                    <MessageSenderAvatar userID={thread.message.owner} user={user} isActive={false} />
+                    <MessageSenderAvatar userID={primaryThreadMessage.owner} user={user} isActive={false} />
                     <Flex direction='column' gap='1' justify='center'>
                         <Box mt='-1'>
-                            <UserHoverCard user={user} userID={thread.message.owner} isActive={false} />
+                            <UserHoverCard user={user} userID={primaryThreadMessage.owner} isActive={false} />
                         </Box>
-                        <MessageContent message={thread.message} user={user} />
+                        <MessageContent message={primaryThreadMessage as unknown as Message} user={user} />
                     </Flex>
                 </Flex>
+                <Text size='1' color='gray' className='truncate'>{totalReplies} repl{totalReplies === 1 ? 'y' : 'ies'}</Text>
             </Flex>
         </Flex>
     )

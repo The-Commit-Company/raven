@@ -6,24 +6,11 @@ import { useFrappeGetCall } from "frappe-react-sdk"
 import { BiChevronLeft } from "react-icons/bi"
 import { Link } from "react-router-dom"
 import { ThreadPreviewBox } from "./ThreadPreviewBox"
-import { RavenThreadParticipant } from "@/types/RavenMessaging/RavenThreadParticipant"
-import { Message } from "../../../../../types/Messaging/Message"
-
-export type Thread = {
-    'channel_id': string,
-    'creation': string,
-    'message': Message,
-    'modified': string,
-    'modified_by': string,
-    'name': string,
-    'owner': string,
-    'participants': RavenThreadParticipant[],
-    'thread_message_id': string
-}
+import { RavenThread } from "@/types/RavenMessaging/RavenThread"
 
 const Threads = () => {
 
-    const { data, error } = useFrappeGetCall<{ message: Thread[] }>("raven.api.raven_thread.get_threads", undefined, undefined, {
+    const { data, error } = useFrappeGetCall<{ message: RavenThread[] }>("raven.api.raven_thread.get_threads", undefined, undefined, {
         revalidateOnFocus: false
     })
 
@@ -39,12 +26,13 @@ const Threads = () => {
             </PageHeader>
             <Box className="min-h-screen pt-16 pb-8">
                 <ErrorBanner error={error} />
-                {data && data.message?.length === 0 && <EmptyStateForThreads />}
-                <Flex direction='column' gap='3' justify='start' px='4'>
-                    {data?.message?.map((thread) => {
-                        return <ThreadPreviewBox key={thread.name} thread={thread} />
-                    })}
-                </Flex>
+                {data && data.message?.length === 0 ?
+                    <EmptyStateForThreads /> :
+                    <Flex direction='column' gap='3' justify='start' px='4'>
+                        {data && data.message.map((thread) => {
+                            return <ThreadPreviewBox key={thread.name} thread={thread} />
+                        })}
+                    </Flex>}
             </Box>
         </>
     )

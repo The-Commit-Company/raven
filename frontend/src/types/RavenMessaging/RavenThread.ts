@@ -1,3 +1,4 @@
+import { RavenThreadMessage } from "./RavenThreadMessage"
 import { RavenThreadParticipant } from "./RavenThreadParticipant"
 
 export interface RavenThread {
@@ -15,6 +16,8 @@ export interface RavenThread {
     thread_message_id: string
     /** Channel ID : Link - Raven Channel */
     channel_id: string
+    /** Messages : Table - Raven Message */
+    messages: RavenThreadMessage[]
     /**	Participants : Table - Raven Thread Participant  */
     participants: RavenThreadParticipant[]
 }

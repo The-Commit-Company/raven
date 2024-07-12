@@ -8,6 +8,8 @@
   "thread_details_section",
   "thread_message_id",
   "channel_id",
+  "messages_section",
+  "messages",
   "participants_section",
   "participants"
  ],
@@ -44,11 +46,22 @@
    "label": "Thread Message ID",
    "options": "Raven Message",
    "reqd": 1
+  },
+  {
+   "fieldname": "messages_section",
+   "fieldtype": "Section Break",
+   "label": "Messages"
+  },
+  {
+   "fieldname": "messages",
+   "fieldtype": "Table",
+   "label": "Messages",
+   "options": "Raven Thread Message"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-07-12 22:25:03.389051",
+ "modified": "2024-07-12 23:11:45.505139",
  "modified_by": "Administrator",
  "module": "Raven Messaging",
  "name": "Raven Thread",
