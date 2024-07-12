@@ -13,12 +13,11 @@ class RavenThread(Document):
 
 	if TYPE_CHECKING:
 		from frappe.types import DF
-		from raven.raven_messaging.doctype.raven_thread_participants.raven_thread_participants import RavenThreadParticipants
+		from raven.raven_messaging.doctype.raven_thread_participant.raven_thread_participant import RavenThreadParticipant
 
 		channel_id: DF.Link
-		participants: DF.Table[RavenThreadParticipants]
-		thread_message: DF.Link
-		title: DF.LongText | None
+		participants: DF.Table[RavenThreadParticipant]
+		thread_message_id: DF.Link
 	# end: auto-generated types
 
 	pass

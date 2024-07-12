@@ -6,8 +6,7 @@
  "engine": "InnoDB",
  "field_order": [
   "thread_details_section",
-  "thread_message",
-  "title",
+  "thread_message_id",
   "channel_id",
   "participants_section",
   "participants"
@@ -30,31 +29,26 @@
    "label": "Thread Details"
   },
   {
-   "fetch_from": "thread_message.content",
-   "fieldname": "title",
-   "fieldtype": "Long Text",
-   "in_list_view": 1,
-   "label": "Title"
-  },
-  {
    "fetch_from": "thread_message.channel_id",
    "fieldname": "channel_id",
    "fieldtype": "Link",
+   "in_list_view": 1,
    "label": "Channel ID",
    "options": "Raven Channel",
    "reqd": 1
   },
   {
-   "fieldname": "thread_message",
+   "fieldname": "thread_message_id",
    "fieldtype": "Link",
-   "label": "Thread Message",
+   "in_list_view": 1,
+   "label": "Thread Message ID",
    "options": "Raven Message",
    "reqd": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-07-12 20:55:44.566342",
+ "modified": "2024-07-12 22:25:03.389051",
  "modified_by": "Administrator",
  "module": "Raven Messaging",
  "name": "Raven Thread",

@@ -1,19 +1,31 @@
 import { ErrorBanner } from "@/components/layout/AlertBanner"
 import { EmptyStateForThreads } from "@/components/layout/EmptyState/EmptyState"
 import { PageHeader } from "@/components/layout/Heading/PageHeader"
-import { RavenThread } from "@/types/RavenMessaging/RavenThread"
 import { Box, Flex, Heading } from "@radix-ui/themes"
 import { useFrappeGetCall } from "frappe-react-sdk"
 import { BiChevronLeft } from "react-icons/bi"
 import { Link } from "react-router-dom"
+import { ThreadPreviewBox } from "./ThreadPreviewBox"
+import { RavenThreadParticipant } from "@/types/RavenMessaging/RavenThreadParticipant"
+import { Message } from "../../../../../types/Messaging/Message"
+
+export type Thread = {
+    'channel_id': string,
+    'creation': string,
+    'message': Message,
+    'modified': string,
+    'modified_by': string,
+    'name': string,
+    'owner': string,
+    'participants': RavenThreadParticipant[],
+    'thread_message_id': string
+}
 
 const Threads = () => {
 
-    const { data, error } = useFrappeGetCall<{ message: RavenThread[] }>("raven.api.raven_thread.get_threads", undefined, undefined, {
+    const { data, error } = useFrappeGetCall<{ message: Thread[] }>("raven.api.raven_thread.get_threads", undefined, undefined, {
         revalidateOnFocus: false
     })
-
-    console.log(data)
 
     return (
         <>
@@ -28,15 +40,12 @@ const Threads = () => {
             <Box className="min-h-screen pt-16 pb-8">
                 <ErrorBanner error={error} />
                 {data && data.message?.length === 0 && <EmptyStateForThreads />}
-                {/* <Flex direction='column' gap='3' justify='start' px='4'>
-                    {data?.message?.map((message) => {
-                        return (
-                            <></>
-                        )
+                <Flex direction='column' gap='3' justify='start' px='4'>
+                    {data?.message?.map((thread) => {
+                        return <ThreadPreviewBox key={thread.name} thread={thread} />
                     })}
-                </Flex> */}
+                </Flex>
             </Box>
-
         </>
     )
 }

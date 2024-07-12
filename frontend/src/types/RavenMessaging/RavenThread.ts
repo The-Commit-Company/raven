@@ -11,10 +11,8 @@ export interface RavenThread {
     parentfield?: string
     parenttype?: string
     idx?: number
-    /**	Thread Message : Link - Raven Message	*/
-    thread_message: string
-    /**	Title : Long Text  */
-    title: string
+    /**	Thread Message ID : Link - Raven Message	*/
+    thread_message_id: string
     /** Channel ID : Link - Raven Channel */
     channel_id: string
     /**	Participants : Table - Raven Thread Participant  */
