@@ -10,7 +10,7 @@ import { RavenThread } from "@/types/RavenMessaging/RavenThread"
 
 const Threads = () => {
 
-    const { data, error } = useFrappeGetCall<{ message: RavenThread[] }>("raven.api.raven_thread.get_threads", undefined, undefined, {
+    const { data, error } = useFrappeGetCall<{ message: RavenThread[] }>("raven.api.threads.get_threads", undefined, undefined, {
         revalidateOnFocus: false
     })
 

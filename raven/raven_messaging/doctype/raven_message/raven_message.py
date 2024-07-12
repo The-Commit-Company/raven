@@ -37,6 +37,7 @@ class RavenMessage(Document):
 		is_forwarded: DF.Check
 		is_reply: DF.Check
 		is_thread: DF.Check
+		is_thread_message: DF.Check
 		json: DF.JSON | None
 		link_doctype: DF.Link | None
 		link_document: DF.DynamicLink | None

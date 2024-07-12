@@ -16,7 +16,8 @@ export interface MessageContextMenuProps {
     onDelete: VoidFunction
     onEdit: VoidFunction,
     onReply: VoidFunction,
-    onForward: VoidFunction
+    onForward: VoidFunction,
+    onCreateThread: VoidFunction
 }
 
 export const MessageContextMenu = ({ message, onDelete, onEdit, onReply, onForward }: MessageContextMenuProps) => {

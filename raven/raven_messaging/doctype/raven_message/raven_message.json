@@ -16,6 +16,7 @@
   "linked_message",
   "replied_message_details",
   "is_thread",
+  "is_thread_message",
   "thread_id",
   "column_break_wvje",
   "message_type",
@@ -192,12 +193,20 @@
    "fieldname": "thread_id",
    "fieldtype": "Link",
    "label": "Thread ID",
-   "options": "Raven Thread"
+   "options": "Raven Thread",
+   "search_index": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "is_thread_message",
+   "fieldtype": "Check",
+   "label": "Is Thread Message",
+   "search_index": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-07-12 19:11:56.998541",
+ "modified": "2024-07-13 01:13:33.986594",
  "modified_by": "Administrator",
  "module": "Raven Messaging",
  "name": "Raven Message",

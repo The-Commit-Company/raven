@@ -14,6 +14,7 @@ import { BiX } from "react-icons/bi"
 import ChatStream from "./ChatStream"
 import Tiptap from "../ChatInput/Tiptap"
 import useFetchChannelMembers from "@/hooks/fetchers/useFetchChannelMembers"
+import { useFrappeCreateDoc, useFrappePostCall } from "frappe-react-sdk"
 
 const COOL_PLACEHOLDERS = [
     "Delivering messages atop dragons 🐉 is available on a chargeable basis.",
@@ -43,6 +44,16 @@ export const ChatBoxBody = ({ channelData }: ChatBoxBodyProps) => {
 
     const handleCancelReply = () => {
         setSelectedMessage(null)
+    }
+
+    const { createDoc: createThread } = useFrappeCreateDoc()
+
+    const handleThreadCreation = (message: Message) => {
+
+        createThread('Raven Thread', {
+            message_id: message.name,
+        })
+
     }
 
     const isUserInChannel = useMemo(() => {
@@ -90,6 +101,7 @@ export const ChatBoxBody = ({ channelData }: ChatBoxBodyProps) => {
                 maxFileSize={10000000}>
                 <ChatStream
                     replyToMessage={handleReplyAction}
+                    createThread={handleThreadCreation}
                 />
                 {channelData?.is_archived == 0 && (isUserInChannel || channelData?.type === 'Open')
                     &&

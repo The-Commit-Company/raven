@@ -33,10 +33,11 @@ interface MessageBlockProps {
     replyToMessage: (message: Message) => void,
     forwardMessage: (message: Message) => void,
     onReplyMessageClick: (messageID: string) => void,
-    isHighlighted?: boolean
+    isHighlighted?: boolean,
+    createThread: (message: Message) => void
 }
 
-export const MessageItem = ({ message, setDeleteMessage, isHighlighted, onReplyMessageClick, setEditMessage, replyToMessage, forwardMessage }: MessageBlockProps) => {
+export const MessageItem = ({ message, setDeleteMessage, isHighlighted, onReplyMessageClick, setEditMessage, replyToMessage, forwardMessage, createThread }: MessageBlockProps) => {
 
     const { name, owner: userID, is_bot_message, bot, creation: timestamp, message_reactions, is_continuation, linked_message, replied_message_details } = message
 
@@ -56,6 +57,10 @@ export const MessageItem = ({ message, setDeleteMessage, isHighlighted, onReplyM
 
     const onForward = () => {
         forwardMessage(message)
+    }
+
+    const onCreateThread = () => {
+        createThread(message)
     }
 
     const isDesktop = useIsDesktop()
@@ -166,6 +171,7 @@ export const MessageItem = ({ message, setDeleteMessage, isHighlighted, onReplyM
                                 onEdit={onEdit}
                                 onReply={onReply}
                                 onForward={onForward}
+                                onCreateThread={onCreateThread}
                             />
                         }
                     </Flex>
@@ -178,9 +184,10 @@ export const MessageItem = ({ message, setDeleteMessage, isHighlighted, onReplyM
                     onEdit={onEdit}
                     onReply={onReply}
                     onForward={onForward}
+                    onCreateThread={onCreateThread}
                 />
             </ContextMenu.Root>
-        </Box >
+        </Box>
     )
 }
 

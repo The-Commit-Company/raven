@@ -48,6 +48,9 @@ def get_messages(channel_id: str, limit: int = 20, base_message: str | None = No
 			message.replied_message_details,
 			message.content,
 			message.is_edited,
+			message.is_thread,
+			message.is_thread_message,
+			message.thread_id,
 			message.is_forwarded,
 			message.poll_id,
 			message.is_bot_message,
@@ -55,6 +58,7 @@ def get_messages(channel_id: str, limit: int = 20, base_message: str | None = No
 			message.hide_link_preview,
 		)
 		.where(message.channel_id == channel_id)
+		.where(message.is_thread_message == 0)
 		.orderby(message.creation, order=Order.desc)
 		.orderby(message.name, order=Order.desc)
 		.limit(limit)
@@ -154,6 +158,9 @@ def fetch_older_messages(
 			message.replied_message_details,
 			message.content,
 			message.is_edited,
+			message.is_thread,
+			message.is_thread_message,
+			message.thread_id,
 			message.is_forwarded,
 			message.poll_id,
 			message.is_bot_message,
@@ -165,6 +172,7 @@ def fetch_older_messages(
 			(message.creation < from_timestamp)
 			| ((message.creation == from_timestamp) & (message.name < from_message))
 		)
+		.where(message.is_thread_message == 0)
 		.orderby(message.creation, order=Order.desc)
 		.orderby(message.name, order=Order.desc)
 		.limit(limit)
@@ -264,6 +272,9 @@ def fetch_newer_messages(
 			message.replied_message_details,
 			message.content,
 			message.is_edited,
+			message.is_thread,
+			message.is_thread_message,
+			message.thread_id,
 			message.is_forwarded,
 			message.poll_id,
 			message.is_bot_message,
@@ -272,6 +283,7 @@ def fetch_newer_messages(
 		)
 		.where(message.channel_id == channel_id)
 		.where(condition)
+		.where(message.is_thread_message == 0)
 		.orderby(message.creation, order=Order.asc)
 		.orderby(message.name, order=Order.asc)
 		.limit(limit)
