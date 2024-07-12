@@ -126,13 +126,15 @@ export const EmptyStateForSavedMessages = () => {
 
 export const EmptyStateForThreads = () => {
     return (
-        <Flex justify="center" align="center" className={'w-full h-64'}>
-            <Flex direction='column' gap='1' className="text-center">
-                <Text weight="bold" size='5'>No threads to show</Text>
-                <Text as='span' size='2'>Threads are a way to keep conversations organized and focused. You can create a thread by replying to a message.</Text>
-                <Text as='span' size='2'>You can also start a thread by clicking on the <strong>Create Thread</strong> button on any message.</Text>
+        <Box className={'py-2 px-6'}>
+            <Flex direction='column' gap='2'>
+                <Text size='3'><strong>No threads to show</strong></Text>
+                <Flex direction='column' gap='1'>
+                    <Text as='span' size='2'>Threads are a way to keep conversations organized and focused. You can create a thread by replying to a message.</Text>
+                    <Text as='span' size='2'>You can also start a thread by clicking on the <strong>Create Thread</strong> button on any message.</Text>
+                </Flex>
             </Flex>
-        </Flex>
+        </Box>
     )
 }
 

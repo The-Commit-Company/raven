@@ -1,6 +1,7 @@
 import { ErrorBanner } from "@/components/layout/AlertBanner"
 import { EmptyStateForThreads } from "@/components/layout/EmptyState/EmptyState"
 import { PageHeader } from "@/components/layout/Heading/PageHeader"
+import { RavenThread } from "@/types/RavenMessaging/RavenThread"
 import { Box, Flex, Heading } from "@radix-ui/themes"
 import { useFrappeGetCall } from "frappe-react-sdk"
 import { BiChevronLeft } from "react-icons/bi"
@@ -8,9 +9,11 @@ import { Link } from "react-router-dom"
 
 const Threads = () => {
 
-    const { data, error } = useFrappeGetCall<{ message: any[] }>("raven.api.raven_thread.get_threads", undefined, undefined, {
+    const { data, error } = useFrappeGetCall<{ message: RavenThread[] }>("raven.api.raven_thread.get_threads", undefined, undefined, {
         revalidateOnFocus: false
     })
+
+    console.log(data)
 
     return (
         <>
@@ -22,16 +25,16 @@ const Threads = () => {
                     <Heading size='5'>Threads</Heading>
                 </Flex>
             </PageHeader>
-            <Box className="min-h-screen pt-16 pb-8 px-2">
+            <Box className="min-h-screen pt-16 pb-8">
                 <ErrorBanner error={error} />
                 {data && data.message?.length === 0 && <EmptyStateForThreads />}
-                <Flex direction='column' gap='3' justify='start' px='4'>
+                {/* <Flex direction='column' gap='3' justify='start' px='4'>
                     {data?.message?.map((message) => {
                         return (
                             <></>
                         )
                     })}
-                </Flex>
+                </Flex> */}
             </Box>
 
         </>

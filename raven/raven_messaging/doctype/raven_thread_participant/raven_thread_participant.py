@@ -5,7 +5,7 @@
 from frappe.model.document import Document
 
 
-class RavenThread(Document):
+class RavenThreadParticipant(Document):
 	# begin: auto-generated types
 	# This code is auto-generated. Do not modify anything in this block.
 
@@ -13,12 +13,11 @@ class RavenThread(Document):
 
 	if TYPE_CHECKING:
 		from frappe.types import DF
-		from raven.raven_messaging.doctype.raven_thread_participants.raven_thread_participants import RavenThreadParticipants
 
-		channel_id: DF.Link
-		participants: DF.Table[RavenThreadParticipants]
-		thread_message: DF.Link
-		title: DF.LongText | None
+		parent: DF.Data
+		parentfield: DF.Data
+		parenttype: DF.Data
+		user: DF.Link
 	# end: auto-generated types
 
 	pass
