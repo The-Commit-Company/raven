@@ -1,8 +1,8 @@
 import { RavenPinnedChannels } from './RavenPinnedChannels'
 
-export interface RavenUser {
-	creation: string
+export interface RavenUser{
 	name: string
+	creation: string
 	modified: string
 	owner: string
 	modified_by: string
