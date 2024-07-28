@@ -12,6 +12,7 @@ import { memo } from "react"
 import { toast } from "sonner"
 import { useIsDesktop } from "@/hooks/useMediaQuery"
 
+import test from '../../../../../../../../../../../../Downloads/test.png'
 interface FileMessageBlockProps extends BoxProps {
     message: FileMessage,
     user?: UserFields,
@@ -40,7 +41,7 @@ export const FileMessageBlock = memo(({ message, user, ...props }: FileMessageBl
 
     const isDesktop = useIsDesktop()
 
-    return <Box {...props}>
+    return <Box {...props}> 
 
         {isVideo ? <Flex gap='2' direction='column'>
             <Link
@@ -54,40 +55,46 @@ export const FileMessageBlock = memo(({ message, user, ...props }: FileMessageBl
 
             </video>
         </Flex> :
-
-
+            
             <Flex
-                align='center'
+                direction="column"
                 gap='4'
                 p='4'
+                height="220px"
+                maxWidth={isDesktop ? '320px' : '100%'}
                 className="border-2 bg-gray-2 dark:bg-gray-4 rounded-md border-gray-4  dark:border-gray-6 shadow-sm">
-                <Flex align='center' gap='2'>
-                    <FileExtensionIcon ext={fileExtension} />
-                    <Text as='span' size='2' className="text-ellipsis overflow-hidden line-clamp-1">{fileName}</Text>
-                </Flex>
+            
+                            
+                <img src={test} width="100%" height="80%"/>
 
-                <Flex align='center' gap='2'>
-                    {isPDF && isDesktop && <PDFPreviewButton message={message} user={user} />}
-                    <IconButton
-                        size='1'
-                        title="Copy link"
-                        color='gray'
-                        onClick={copyLink}
-                        variant="soft"
-                    >
-                        <BiLink />
-                    </IconButton>
-                    <IconButton
-                        size='1'
-                        asChild
-                        title="Download"
-                        color='gray'
-                        variant="soft"
-                    >
-                        <Link className='no-underline' href={message.file} download>
-                            {isDesktop ? <BiDownload /> : <BiShow />}
-                        </Link>
-                    </IconButton>
+                <Flex align='start' gap='4'>
+                    
+                    <FileExtensionIcon ext={fileExtension} />
+                    <Text as='span' size='2'  className=" text-ellipsis overflow-hidden line-clamp-1" >{fileName}</Text>
+                    
+                    <Flex align='end' gap='3'>
+                        {isPDF && isDesktop && <PDFPreviewButton message={message} user={user} />}
+                        <IconButton
+                            size='1'
+                            title="Copy link"
+                            color='gray'
+                            onClick={copyLink}
+                            variant="soft"
+                        >
+                            <BiLink />
+                        </IconButton>
+                        <IconButton
+                            size='1'
+                            asChild
+                            title="Download"
+                            color='gray'
+                            variant="soft"
+                        >
+                            <Link className='no-underline' href={message.file} download>
+                                {isDesktop ? <BiDownload /> : <BiShow />}
+                            </Link>
+                        </IconButton>
+                    </Flex>
                 </Flex>
             </Flex>
         }
