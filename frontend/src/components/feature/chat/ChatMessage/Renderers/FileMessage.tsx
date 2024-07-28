@@ -12,6 +12,10 @@ import { memo } from "react"
 import { toast } from "sonner"
 import { useIsDesktop } from "@/hooks/useMediaQuery"
 
+import path from 'path';
+import { fromPath } from 'pdf2pic';
+import fs from 'fs';
+
 import test from '../../../../../../../../../../../../Downloads/test.png'
 interface FileMessageBlockProps extends BoxProps {
     message: FileMessage,
@@ -111,6 +115,14 @@ const PDFPreviewButton = ({ message, user }: {
 
     const fileName = getFileName(message.file)
 
+    const image = convertPdfToImage(message, user)
+    .then(() => {
+        console.log('PDF conversion successful');
+    })
+    .catch((error) => {
+        console.error('PDF conversion failed', error);
+    });
+
     return <Box>
         <Dialog.Root>
             <Dialog.Trigger>
@@ -149,3 +161,40 @@ const PDFPreviewButton = ({ message, user }: {
         </Dialog.Root>
     </Box>
 }
+
+
+
+async function convertPdfToImage(message: FileMessage, user?: UserFields){
+    const options = {
+      density: 100,
+      saveFilename: user ? user.full_name || "default_filename" : "default_filename", // Optionally use user data for the filename
+      savePath: path.join(process.cwd(), 'public/images'), // Adjust the save path as needed
+      format: "png",
+      width: 600,
+      height: 600
+    };
+  
+    const filePath = message.file; // Get the PDF file path from message
+    const pageToConvertAsImage = 1;
+  
+    // Create the save directory if it doesn't exist
+    if (!fs.existsSync(options.savePath)) {
+      fs.mkdirSync(options.savePath, { recursive: true });
+    }
+  
+    // Initialize the converter
+    const convert = fromPath(filePath, options);
+  
+    try {
+      // Perform the conversion
+      const res = await convert(pageToConvertAsImage, { responseType: "image" })
+      .then((res) => {;
+        console.log("Page 1 is now converted as image");
+        return res;
+      });
+    }
+    catch (error) {
+      console.error("Error converting PDF to image:", error);
+      throw error;
+    }
+  }
