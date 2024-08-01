@@ -1,8 +1,7 @@
-import { Avatar, Badge, Box, ContextMenu, Flex, HoverCard, Link, Separator, Text, Theme } from '@radix-ui/themes'
+import { Avatar, Badge, Box, BoxProps, ContextMenu, Flex, HoverCard, Link, Separator, Text, Theme } from '@radix-ui/themes'
 import { Message, MessageBlock } from '../../../../../../types/Messaging/Message'
 import { MessageContextMenu } from './MessageActions/MessageActions'
 import { DateTooltip, DateTooltipShort } from './Renderers/DateTooltip'
-import { BoxProps } from '@radix-ui/themes/dist/cjs/components/box'
 import { clsx } from 'clsx'
 import { UserAvatar, getInitials } from '@/components/common/UserAvatar'
 import { useGetUser } from '@/hooks/useGetUser'
@@ -34,7 +33,7 @@ interface MessageBlockProps {
     forwardMessage: (message: Message) => void,
     onReplyMessageClick: (messageID: string) => void,
     isHighlighted?: boolean,
-    createThread: (message: Message) => void
+    createThread: (messageID: string) => void
 }
 
 export const MessageItem = ({ message, setDeleteMessage, isHighlighted, onReplyMessageClick, setEditMessage, replyToMessage, forwardMessage, createThread }: MessageBlockProps) => {
@@ -60,7 +59,7 @@ export const MessageItem = ({ message, setDeleteMessage, isHighlighted, onReplyM
     }
 
     const onCreateThread = () => {
-        createThread(message)
+        createThread(message.name)
     }
 
     const isDesktop = useIsDesktop()
@@ -184,14 +183,13 @@ export const MessageItem = ({ message, setDeleteMessage, isHighlighted, onReplyM
                     onEdit={onEdit}
                     onReply={onReply}
                     onForward={onForward}
-                    onCreateThread={onCreateThread}
                 />
             </ContextMenu.Root>
         </Box>
     )
 }
 
-interface MessageLeftElementProps extends BoxProps {
+type MessageLeftElementProps = BoxProps & {
     message: MessageBlock['data'],
     user?: UserFields,
     isActive?: boolean
@@ -301,7 +299,7 @@ export const UserHoverCard = memo(({ user, userID, isActive }: UserProps) => {
         </HoverCard.Content>
     </HoverCard.Root>
 })
-interface MessageContentProps extends BoxProps {
+type MessageContentProps = BoxProps & {
     user?: UserFields
     message: Message,
 }

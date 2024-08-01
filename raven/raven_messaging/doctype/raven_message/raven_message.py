@@ -23,6 +23,7 @@ class RavenMessage(Document):
 	if TYPE_CHECKING:
 		from frappe.types import DF
 		from raven.raven_messaging.doctype.raven_mention.raven_mention import RavenMention
+		from raven.raven_messaging.doctype.raven_thread_participant.raven_thread_participant import RavenThreadParticipant
 
 		bot: DF.Link | None
 		channel_id: DF.Link
@@ -49,6 +50,8 @@ class RavenMessage(Document):
 		replied_message_details: DF.JSON | None
 		text: DF.LongText | None
 		thread_id: DF.Link | None
+		thread_messages_count: DF.Int
+		thread_participants: DF.Table[RavenThreadParticipant]
 		thumbnail_height: DF.Data | None
 		thumbnail_width: DF.Data | None
 	# end: auto-generated types
@@ -464,6 +467,12 @@ class RavenMessage(Document):
 	def on_trash(self):
 		# delete all the reactions for the message
 		frappe.db.delete("Raven Message Reaction", {"message": self.name})
+
+		# If the message is linked to a thread, try deleting the thread if it has no replies
+		if self.is_thread:
+			frappe.delete_doc("Raven Thread", self.thread_id)
+
+		# If the message was inside a thread, update the thread reply count
 
 
 def on_doctype_update():

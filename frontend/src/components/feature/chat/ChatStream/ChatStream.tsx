@@ -63,7 +63,7 @@ import { ForwardMessageDialog, useForwardMessage } from '../ChatMessage/MessageA
 
 type Props = {
     replyToMessage: (message: Message) => void,
-    createThread: (message: Message) => void
+    createThread: (messageID: string) => void
 }
 
 const ChatStream = ({ replyToMessage, createThread }: Props) => {

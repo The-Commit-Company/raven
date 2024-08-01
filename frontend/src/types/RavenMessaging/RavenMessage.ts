@@ -1,4 +1,5 @@
 import { RavenMention } from './RavenMention'
+import { RavenThreadParticipant } from './RavenThreadParticipant'
 
 export interface RavenMessage{
 	name: string
@@ -25,12 +26,6 @@ export interface RavenMessage{
 	linked_message?: string
 	/**	Replied Message Details : JSON	*/
 	replied_message_details?: any
-	/**	Is Thread : Check	*/
-	is_thread?: 0 | 1
-	/**	Is Thread Message : Check	*/
-	is_thread_message?: 0 | 1
-	/**	Thread ID : Link - Raven Thread	*/
-	thread_id?: string
 	/**	Message Type : Select	*/
 	message_type?: "Text" | "Image" | "File" | "Poll"
 	/**	Content : Long Text	*/
@@ -65,4 +60,14 @@ export interface RavenMessage{
 	bot?: string
 	/**	Hide link preview : Check	*/
 	hide_link_preview?: 0 | 1
+	/**	Is Thread : Check - This message starts a thread	*/
+	is_thread?: 0 | 1
+	/**	Is Thread Message : Check - This message is part of a thread	*/
+	is_thread_message?: 0 | 1
+	/**	Thread ID : Link - Raven Message - ID of the primary message that started the thread	*/
+	thread_id?: string
+	/**	Thread Messages Count : Int	*/
+	thread_messages_count?: number
+	/**	Thread participants : Table - Raven Thread Participant	*/
+	thread_participants?: RavenThreadParticipant[]
 }
