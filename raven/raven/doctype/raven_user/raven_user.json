@@ -120,7 +120,7 @@
  ],
  "image_field": "user_image",
  "links": [],
- "modified": "2024-06-17 11:04:12.713868",
+ "modified": "2024-07-26 20:46:52.128509",
  "modified_by": "Administrator",
  "module": "Raven",
  "name": "Raven User",
@@ -141,23 +141,14 @@
   },
   {
    "create": 1,
+   "delete": 1,
    "email": 1,
    "export": 1,
    "print": 1,
    "read": 1,
    "report": 1,
    "role": "Raven User",
-   "share": 1
-  },
-  {
-   "create": 1,
-   "email": 1,
-   "export": 1,
-   "if_owner": 1,
-   "print": 1,
-   "read": 1,
-   "report": 1,
-   "role": "Raven User",
+   "select": 1,
    "share": 1,
    "write": 1
   }
