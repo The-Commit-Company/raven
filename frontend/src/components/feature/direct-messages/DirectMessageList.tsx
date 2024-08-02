@@ -91,6 +91,13 @@ export const DirectMessageItemElement = ({ channel, unreadCount }: { channel: DM
 
     const showUnread = unreadCount && channelID !== channel.name
 
+    if (userData && !userData.enabled) {
+        // If the user exists, but is not enabled, don't show the item
+
+        // If the user does not exist, we still show the item (probably a deleted user - maybe we shouldn't show it?)
+        return null
+    }
+
     return <SidebarItem to={channel.name} className={'py-0.5 px-2'}>
         <SidebarIcon>
             <UserAvatar src={userData?.user_image}
