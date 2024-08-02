@@ -1,4 +1,4 @@
-import { EditorContent, EditorContext, useEditor } from '@tiptap/react'
+import { EditorContent, EditorContext, ReactNodeViewRenderer, useEditor } from '@tiptap/react'
 import { TextMessage } from '../../../../../../../../types/Messaging/Message'
 import { UserFields } from '@/utils/users/UserListProvider'
 import { BoxProps } from '@radix-ui/themes/dist/cjs/components/box'
@@ -14,13 +14,15 @@ import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight'
 import { common, createLowlight } from 'lowlight'
 import python from 'highlight.js/lib/languages/python'
 import { CustomBold } from './Bold'
-import { CustomUserMention } from './Mention'
+import { ChannelMentionRenderer, UserMentionRenderer } from './Mention'
 import { CustomLink, LinkPreview } from './Link'
 import { CustomUnderline } from './Underline'
 import { Image } from '@tiptap/extension-image'
 import { clsx } from 'clsx'
 import Italic from '@tiptap/extension-italic';
 import './tiptap-renderer.styles.css'
+import Mention from '@tiptap/extension-mention'
+import { PluginKey } from '@tiptap/pm/state'
 const lowlight = createLowlight(common)
 
 lowlight.register('html', html)
@@ -29,7 +31,7 @@ lowlight.register('js', js)
 lowlight.register('ts', ts)
 lowlight.register('json', json)
 lowlight.register('python', python)
-interface TiptapRendererProps extends BoxProps {
+type TiptapRendererProps = BoxProps & {
   message: TextMessage,
   user?: UserFields,
   showLinkPreview?: boolean,
@@ -91,7 +93,6 @@ export const TiptapRenderer = ({ message, user, isScrolling = false, isTruncated
         lowlight
       }),
       CustomBold,
-      CustomUserMention,
       CustomLink,
       Italic,
       Image.configure({
@@ -100,8 +101,31 @@ export const TiptapRenderer = ({ message, user, isScrolling = false, isTruncated
         },
         inline: true
       }),
-      // TODO: Add channel mention
-      // CustomChannelMention
+      Mention.extend({
+        name: 'userMention',
+        addNodeView() {
+          return ReactNodeViewRenderer(UserMentionRenderer)
+        }
+      }).configure({
+        suggestion: {
+          char: '@',
+          pluginKey: new PluginKey('userMention'),
+        },
+      }),
+      Mention.extend({
+        name: 'channelMention',
+        HTMLAttributes: {
+          class: 'mention',
+        },
+        addNodeView() {
+          return ReactNodeViewRenderer(ChannelMentionRenderer)
+        }
+      }).configure({
+        suggestion: {
+          char: '#',
+          pluginKey: new PluginKey('channelMention'),
+        },
+      }),
     ]
   })
 

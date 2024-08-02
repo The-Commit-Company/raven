@@ -3,19 +3,23 @@ import { useIsUserActive } from "@/hooks/useIsUserActive"
 import { DMChannelListItem } from "@/utils/channel/ChannelListProvider"
 import { Badge, Flex, Heading } from "@radix-ui/themes"
 import { UserAvatar } from "@/components/common/UserAvatar"
-import { useMemo } from "react"
+import { useContext, useMemo } from "react"
 import useFetchChannelMembers from "@/hooks/fetchers/useFetchChannelMembers"
 import ChannelHeaderMenu from "./ChannelHeaderMenu"
 import { BiChevronLeft } from "react-icons/bi"
 import { Link } from "react-router-dom"
 import { useGetUser } from "@/hooks/useGetUser"
 import useIsUserOnLeave from "@/hooks/fetchers/useIsUserOnLeave"
+import { UserContext } from "@/utils/auth/UserProvider"
+import { replaceCurrentUserFromDMChannelName } from "@/utils/operations"
 
 interface DMChannelHeaderProps {
     channelData: DMChannelListItem,
 }
 
 export const DMChannelHeader = ({ channelData }: DMChannelHeaderProps) => {
+
+    const { currentUser } = useContext(UserContext)
 
     const { channelMembers } = useFetchChannelMembers(channelData.name)
 
@@ -43,6 +47,8 @@ export const DMChannelHeader = ({ channelData }: DMChannelHeaderProps) => {
 
     const isUserOnLeave = useIsUserOnLeave(peer)
 
+    const userName = fullName ?? peer ?? replaceCurrentUserFromDMChannelName(channelData.channel_name, currentUser)
+
     return (
         <PageHeader>
             <Flex gap='3' align='center'>
@@ -51,7 +57,7 @@ export const DMChannelHeader = ({ channelData }: DMChannelHeaderProps) => {
                 </Link>
                 <UserAvatar
                     key={peer}
-                    alt={fullName}
+                    alt={userName}
                     src={userImage}
                     isActive={isActive}
                     availabilityStatus={user?.availability_status}
@@ -60,7 +66,9 @@ export const DMChannelHeader = ({ channelData }: DMChannelHeaderProps) => {
                     size='2' />
                 <Heading size='5'>
                     <div className="flex items-center gap-2">
-                        {fullName}
+                        {userName}
+                        {!user && <Badge color='gray' variant='soft'>Deleted</Badge>}
+                        {user?.enabled === 0 && <Badge color='gray' variant='soft'>Disabled</Badge>}
                         {user?.custom_status && <Badge color='gray' className='font-semibold px-1.5 py-0.5'>{user.custom_status}</Badge>}
                         {isUserOnLeave && <Badge color="yellow" variant="surface">On Leave</Badge>}
                         {isBot && <Badge color='gray' className='font-semibold px-1.5 py-0.5'>Bot</Badge>}

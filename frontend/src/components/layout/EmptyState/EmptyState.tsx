@@ -13,6 +13,7 @@ import { DateMonthYear } from "@/utils/dateConversions"
 import { useGetUser } from "@/hooks/useGetUser"
 import useFetchChannelMembers from "@/hooks/fetchers/useFetchChannelMembers"
 import { useIsUserActive } from "@/hooks/useIsUserActive"
+import { replaceCurrentUserFromDMChannelName } from "@/utils/operations"
 
 export const EmptyStateForSearch = () => {
     return (
@@ -64,6 +65,8 @@ interface EmptyStateForDMProps {
 
 const EmptyStateForDM = ({ channelData }: EmptyStateForDMProps) => {
 
+    const { currentUser } = useContext(UserContext)
+
     const peer = channelData.peer_user_id
 
     const peerData = useGetUser(peer)
@@ -79,14 +82,16 @@ const EmptyStateForDM = ({ channelData }: EmptyStateForDMProps) => {
 
     const isActive = useIsUserActive(peer)
 
+    const userName = fullName ?? peer ?? replaceCurrentUserFromDMChannelName(channelData.channel_name, currentUser)
+
     return (
         <Box className={'p-2'}>
             {channelData?.is_direct_message == 1 &&
                 <Flex direction='column' gap='3'>
                     <Flex gap='3' align='center'>
-                        <UserAvatar alt={fullName} src={userImage} size='3' skeletonSize='7' isBot={isBot} availabilityStatus={peerData?.availability_status} isActive={isActive} />
+                        <UserAvatar alt={userName} src={userImage} size='3' skeletonSize='7' isBot={isBot} availabilityStatus={peerData?.availability_status} isActive={isActive} />
                         <Flex direction='column' gap='0'>
-                            <Heading size='4'>{fullName}</Heading>
+                            <Heading size='4'>{userName}</Heading>
                             <div>
                                 {isBot ? <Badge color='gray' className="py-0 px-1">Bot</Badge> : <Text size='1' color='gray'>{peer}</Text>}
                             </div>
@@ -99,7 +104,11 @@ const EmptyStateForDM = ({ channelData }: EmptyStateForDMProps) => {
                         </Flex>
                         :
                         <Flex gap='2' align='center'>
-                            <Text size='2'>This is a Direct Message channel between you and <strong>{fullName}</strong>.</Text>
+                            {peer || fullName ?
+                                <Text size='2'>This is a Direct Message channel between you and <strong>{fullName ?? peer}</strong>.</Text>
+                                :
+                                <Text size='2'>We could not find the user for this DM channel ({replaceCurrentUserFromDMChannelName(channelData.channel_name, currentUser)}).</Text>
+                            }
                         </Flex>
                     }
                 </Flex>

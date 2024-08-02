@@ -9,7 +9,7 @@ import { useNavigate } from 'react-router-dom'
 import { useSetAtom } from 'jotai'
 import { commandMenuOpenAtom } from './CommandMenu'
 import { useFrappePostCall } from 'frappe-react-sdk'
-import { Flex } from '@radix-ui/themes'
+import { Badge, Flex } from '@radix-ui/themes'
 import { Loader } from '@/components/common/Loader'
 import { toast } from 'sonner'
 import { getErrorMessage } from '@/components/layout/AlertBanner/ErrorBanner'
@@ -24,7 +24,7 @@ const UserList = () => {
 
     return (
         <Command.Group heading="Members">
-            {dm_channels.map((channel) => <DMChannelItem key={channel.name} channelID={channel.name} peer_user_id={channel.peer_user_id} />)}
+            {dm_channels.map((channel) => <DMChannelItem key={channel.name} channelID={channel.name} channelName={channel.channel_name} peer_user_id={channel.peer_user_id} />)}
             {usersWithoutChannels.map((user) => <UserWithoutDMItem key={user.name} userID={user.name} />)}
         </Command.Group>
     )
@@ -63,6 +63,7 @@ const UserWithoutDMItem = ({ userID }: { userID: string }) => {
                 {user?.full_name}
             </Flex>
             {loading ? <Loader /> : null}
+            {!user?.enabled ? <Badge color='gray' variant='soft'>Disabled</Badge> : null}
         </Flex>
     </Command.Item>
 }

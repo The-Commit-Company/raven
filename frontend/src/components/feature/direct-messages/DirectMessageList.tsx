@@ -14,6 +14,7 @@ import { getErrorMessage } from "@/components/layout/AlertBanner/ErrorBanner"
 import { useStickyState } from "@/hooks/useStickyState"
 import clsx from "clsx"
 import { UserFields, UserListContext } from "@/utils/users/UserListProvider"
+import { replaceCurrentUserFromDMChannelName } from "@/utils/operations"
 
 export const DirectMessageList = ({ unread_count }: { unread_count?: UnreadCountData }) => {
 
@@ -90,6 +91,11 @@ export const DirectMessageItemElement = ({ channel, unreadCount }: { channel: DM
 
     const showUnread = unreadCount && channelID !== channel.name
 
+    if (!userData?.enabled) {
+        // If the user does not exists or if the user exists, but is not enabled, don't show the item.
+        return null
+    }
+
     return <SidebarItem to={channel.name} className={'py-0.5 px-2'}>
         <SidebarIcon>
             <UserAvatar src={userData?.user_image}
@@ -101,14 +107,14 @@ export const DirectMessageItemElement = ({ channel, unreadCount }: { channel: DM
                     md: '1'
                 }}
                 availabilityStatus={userData?.availability_status}
-                 />
+            />
         </SidebarIcon>
         <Flex justify='between' width='100%'>
             <Text size={{
                 initial: '3',
                 md: '2'
             }} className="text-ellipsis line-clamp-1" weight={showUnread ? 'bold' : 'medium'}>
-                {channel.peer_user_id !== currentUser ? userData?.full_name ?? channel.peer_user_id : `${userData?.full_name} (You)`}
+                {channel.peer_user_id !== currentUser ? userData?.full_name ?? channel.peer_user_id ?? replaceCurrentUserFromDMChannelName(channel.channel_name, currentUser) : `${userData?.full_name} (You)`}
             </Text>
             {showUnread ? <SidebarBadge>{unreadCount}</SidebarBadge> : null}
         </Flex>
@@ -170,7 +176,7 @@ const ExtraUsersItem = ({ user, createDMChannel }: { user: UserFields, createDMC
                     initial: '2',
                     md: '1'
                 }}
-              availabilityStatus={user.availability_status}/>
+                availabilityStatus={user.availability_status} />
         </SidebarIcon>
         <Flex justify='between' width='100%'>
             <Text size={{
