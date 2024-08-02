@@ -101,14 +101,14 @@ export const DirectMessageItemElement = ({ channel, unreadCount }: { channel: DM
                     md: '1'
                 }}
                 availabilityStatus={userData?.availability_status}
-                 />
+            />
         </SidebarIcon>
         <Flex justify='between' width='100%'>
             <Text size={{
                 initial: '3',
                 md: '2'
             }} className="text-ellipsis line-clamp-1" weight={showUnread ? 'bold' : 'medium'}>
-                {channel.peer_user_id !== currentUser ? userData?.full_name ?? channel.peer_user_id : `${userData?.full_name} (You)`}
+                {channel.peer_user_id !== currentUser ? userData?.full_name ?? channel.peer_user_id ?? "Deleted User" : `${userData?.full_name} (You)`}
             </Text>
             {showUnread ? <SidebarBadge>{unreadCount}</SidebarBadge> : null}
         </Flex>
@@ -170,7 +170,7 @@ const ExtraUsersItem = ({ user, createDMChannel }: { user: UserFields, createDMC
                     initial: '2',
                     md: '1'
                 }}
-              availabilityStatus={user.availability_status}/>
+                availabilityStatus={user.availability_status} />
         </SidebarIcon>
         <Flex justify='between' width='100%'>
             <Text size={{

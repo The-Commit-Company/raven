@@ -17,12 +17,12 @@ const DMChannelItem = ({ channelID, peer_user_id }: { channelID: string, peer_us
     }
 
     return <Command.Item
-        keywords={[user?.full_name ?? peer_user_id]}
-        value={peer_user_id}
+        keywords={[user?.full_name ?? peer_user_id ?? "Deleted User"]}
+        value={peer_user_id ?? channelID}
         onSelect={onSelect}>
         <UserAvatar src={user?.user_image} alt={user?.full_name ?? peer_user_id}
             isBot={user?.type === 'Bot'} />
-        {user?.full_name}
+        {user?.full_name ?? peer_user_id ?? "Deleted User"}
     </Command.Item>
 }
 
