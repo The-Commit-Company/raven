@@ -177,7 +177,7 @@ const DoctypeCard = ({ data, doctype, copyLink, openLink }: {
                 <DataList.Root size='2' className="gap-1 pl-0.5">
                     {
                         data && Object.keys(removePreviewFields(data))?.map((item, index) => (
-                            <DataList.Item align='center'>
+                            <DataList.Item align='center' key={item}>
                                 <DataList.Label minWidth="88px" className="font-semibold pr-2">
                                     {item}
                                 </DataList.Label>
