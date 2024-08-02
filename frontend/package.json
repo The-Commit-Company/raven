@@ -5,9 +5,9 @@
   "version": "1.6.4",
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "vite build --base=/assets/raven/raven/ && yarn copy-html-entry",
-    "preview": "vite preview",
+    "dev": "yarn vite",
+    "build": "yarn vite build --base=/assets/raven/raven/ && yarn copy-html-entry",
+    "preview": "yarn vite preview",
     "copy-html-entry": "cp ../raven/public/raven/index.html ../raven/www/raven.html"
   },
   "dependencies": {
