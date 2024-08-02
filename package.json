@@ -1,7 +1,12 @@
 {
+  "private": true,
   "name": "raven",
   "version": "1.6.4",
   "description": "Messaging Application",
+  "workspaces": [
+    "frontend",
+    "raven"
+  ],
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
