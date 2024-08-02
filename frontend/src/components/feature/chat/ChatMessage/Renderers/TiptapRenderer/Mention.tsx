@@ -56,8 +56,6 @@ export const UserMentionRenderer = ({ node }: NodeViewRendererProps) => {
 
 export const ChannelMentionRenderer = ({ node }: NodeViewRendererProps) => {
 
-    console.log(node)
-
     return (
         <NodeViewWrapper as={'span'}>
             <Link asChild>
