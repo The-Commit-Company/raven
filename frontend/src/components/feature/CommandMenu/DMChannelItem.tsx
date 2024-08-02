@@ -4,9 +4,13 @@ import { Command } from "cmdk"
 import { commandMenuOpenAtom } from "./CommandMenu"
 import { useSetAtom } from "jotai"
 import { useNavigate } from "react-router-dom"
+import { useContext } from "react"
+import { UserContext } from "@/utils/auth/UserProvider"
+import { replaceCurrentUserFromDMChannelName } from "@/utils/operations"
 
-const DMChannelItem = ({ channelID, peer_user_id }: { channelID: string, peer_user_id: string }) => {
+const DMChannelItem = ({ channelID, peer_user_id, channelName }: { channelID: string, channelName: string, peer_user_id: string }) => {
 
+    const { currentUser } = useContext(UserContext)
     const user = useGetUser(peer_user_id)
     const navigate = useNavigate()
     const setOpen = useSetAtom(commandMenuOpenAtom)
@@ -17,12 +21,12 @@ const DMChannelItem = ({ channelID, peer_user_id }: { channelID: string, peer_us
     }
 
     return <Command.Item
-        keywords={[user?.full_name ?? peer_user_id]}
-        value={peer_user_id}
+        keywords={[user?.full_name ?? peer_user_id ?? `${replaceCurrentUserFromDMChannelName(channelName, currentUser)}`]}
+        value={peer_user_id ?? channelID}
         onSelect={onSelect}>
         <UserAvatar src={user?.user_image} alt={user?.full_name ?? peer_user_id}
             isBot={user?.type === 'Bot'} />
-        {user?.full_name}
+        {user?.full_name ?? peer_user_id ?? `${replaceCurrentUserFromDMChannelName(channelName, currentUser)} (Deleted)`}
     </Command.Item>
 }
 
