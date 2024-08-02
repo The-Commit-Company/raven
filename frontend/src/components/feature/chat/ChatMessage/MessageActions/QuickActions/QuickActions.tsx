@@ -8,10 +8,17 @@ import { EmojiPickerButton } from './EmojiPickerButton'
 import { UserContext } from '@/utils/auth/UserProvider'
 import { AiOutlineEdit } from 'react-icons/ai'
 import { LuForward, LuReply } from 'react-icons/lu'
+import { toast } from 'sonner'
+import { getErrorMessage } from '@/components/layout/AlertBanner/ErrorBanner'
 
 const QUICK_EMOJIS = ['👍', '✅', '👀', '🎉']
 
-export const QuickActions = ({ message, onReply, onEdit, onForward }: MessageContextMenuProps) => {
+
+interface QuickActionsProps extends MessageContextMenuProps {
+    isEmojiPickerOpen: boolean,
+    setIsEmojiPickerOpen: (open: boolean) => void
+}
+export const QuickActions = ({ message, onReply, onEdit, onForward, isEmojiPickerOpen, setIsEmojiPickerOpen }: QuickActionsProps) => {
 
     const { currentUser } = useContext(UserContext)
 
@@ -41,10 +48,13 @@ export const QuickActions = ({ message, onReply, onEdit, onForward }: MessageCon
     }
 
     const onEmojiReact = (emoji: string) => {
-        // TODO: Show error toast
         call.post('raven.api.reactions.react', {
             message_id: message?.name,
             reaction: emoji
+        }).catch((err) => {
+            toast.error("Could not react to message.", {
+                description: getErrorMessage(err)
+            })
         })
     }
 
@@ -77,7 +87,10 @@ export const QuickActions = ({ message, onReply, onEdit, onForward }: MessageCon
                     </QuickActionButton>
                 })}
 
-                <EmojiPickerButton saveReaction={onEmojiReact} />
+                <EmojiPickerButton
+                    isOpen={isEmojiPickerOpen}
+                    setIsOpen={setIsEmojiPickerOpen}
+                    saveReaction={onEmojiReact} />
 
                 {isOwner && message.message_type === 'Text' ? <QuickActionButton
                     onClick={onEdit}
