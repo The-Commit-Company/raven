@@ -92,9 +92,7 @@ export const DirectMessageItemElement = ({ channel, unreadCount }: { channel: DM
     const showUnread = unreadCount && channelID !== channel.name
 
     if (!userData?.enabled) {
-        // If the user exists, but is not enabled, don't show the item
-
-        // If the user does not exist, we still show the item (probably a deleted user - maybe we shouldn't show it?)
+        // If the user does not exists or if the user exists, but is not enabled, don't show the item.
         return null
     }
 
