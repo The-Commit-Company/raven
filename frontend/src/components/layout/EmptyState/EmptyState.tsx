@@ -82,14 +82,16 @@ const EmptyStateForDM = ({ channelData }: EmptyStateForDMProps) => {
 
     const isActive = useIsUserActive(peer)
 
+    const userName = fullName ?? peer ?? replaceCurrentUserFromDMChannelName(channelData.channel_name, currentUser)
+
     return (
         <Box className={'p-2'}>
             {channelData?.is_direct_message == 1 &&
                 <Flex direction='column' gap='3'>
                     <Flex gap='3' align='center'>
-                        <UserAvatar alt={fullName} src={userImage} size='3' skeletonSize='7' isBot={isBot} availabilityStatus={peerData?.availability_status} isActive={isActive} />
+                        <UserAvatar alt={userName} src={userImage} size='3' skeletonSize='7' isBot={isBot} availabilityStatus={peerData?.availability_status} isActive={isActive} />
                         <Flex direction='column' gap='0'>
-                            <Heading size='4'>{fullName ?? peer ?? replaceCurrentUserFromDMChannelName(channelData.channel_name, currentUser)}</Heading>
+                            <Heading size='4'>{userName}</Heading>
                             <div>
                                 {isBot ? <Badge color='gray' className="py-0 px-1">Bot</Badge> : <Text size='1' color='gray'>{peer}</Text>}
                             </div>

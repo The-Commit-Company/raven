@@ -21,17 +21,20 @@ const DMChannelItem = ({ channelID, peer_user_id, channelName }: { channelID: st
         setOpen(false)
     }
 
+    const userName = user?.full_name ?? peer_user_id ?? replaceCurrentUserFromDMChannelName(channelName, currentUser)
+
     return <Command.Item
-        keywords={[user?.full_name ?? peer_user_id ?? `${replaceCurrentUserFromDMChannelName(channelName, currentUser)}`]}
+        keywords={[userName]}
         value={peer_user_id ?? channelID}
         onSelect={onSelect}>
         <Flex gap='2' align='center' justify={'between'} width='100%'>
             <Flex gap='2' align='center'>
-                <UserAvatar src={user?.user_image} alt={user?.full_name ?? peer_user_id}
+                <UserAvatar src={user?.user_image} alt={userName}
                     isBot={user?.type === 'Bot'} />
-                {user?.full_name ?? peer_user_id ?? `${replaceCurrentUserFromDMChannelName(channelName, currentUser)} (Deleted)`}
+                {userName}
             </Flex>
-            {!user?.enabled && <Badge color='gray' variant="soft">Disabled</Badge>}
+            {user && !user?.enabled && <Badge color='gray' variant="soft">Disabled</Badge>}
+            {!user && <Badge color='gray' variant="soft">Deleted</Badge>}
         </Flex>
     </Command.Item>
 }
