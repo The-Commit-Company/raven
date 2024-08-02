@@ -24,7 +24,7 @@ const UserList = () => {
 
     return (
         <Command.Group heading="Members">
-            {dm_channels.map((channel) => <DMChannelItem key={channel.name} channelID={channel.name} peer_user_id={channel.peer_user_id} />)}
+            {dm_channels.map((channel) => <DMChannelItem key={channel.name} channelID={channel.name} channelName={channel.channel_name} peer_user_id={channel.peer_user_id} />)}
             {usersWithoutChannels.map((user) => <UserWithoutDMItem key={user.name} userID={user.name} />)}
         </Command.Group>
     )

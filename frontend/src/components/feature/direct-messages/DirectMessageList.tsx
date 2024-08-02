@@ -14,6 +14,7 @@ import { getErrorMessage } from "@/components/layout/AlertBanner/ErrorBanner"
 import { useStickyState } from "@/hooks/useStickyState"
 import clsx from "clsx"
 import { UserFields, UserListContext } from "@/utils/users/UserListProvider"
+import { replaceCurrentUserFromDMChannelName } from "@/utils/operations"
 
 export const DirectMessageList = ({ unread_count }: { unread_count?: UnreadCountData }) => {
 
@@ -108,7 +109,7 @@ export const DirectMessageItemElement = ({ channel, unreadCount }: { channel: DM
                 initial: '3',
                 md: '2'
             }} className="text-ellipsis line-clamp-1" weight={showUnread ? 'bold' : 'medium'}>
-                {channel.peer_user_id !== currentUser ? userData?.full_name ?? channel.peer_user_id ?? "Deleted User" : `${userData?.full_name} (You)`}
+                {channel.peer_user_id !== currentUser ? userData?.full_name ?? channel.peer_user_id ?? replaceCurrentUserFromDMChannelName(channel.channel_name, currentUser) : `${userData?.full_name} (You)`}
             </Text>
             {showUnread ? <SidebarBadge>{unreadCount}</SidebarBadge> : null}
         </Flex>
