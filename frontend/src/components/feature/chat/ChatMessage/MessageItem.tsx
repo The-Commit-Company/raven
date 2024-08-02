@@ -94,6 +94,8 @@ export const MessageItem = ({ message, setDeleteMessage, isHighlighted, onReplyM
         }
     }, [replied_message_details])
 
+    const [isEmojiPickerOpen, setEmojiPickerOpen] = useState(false)
+
     return (
         <Box className='relative'>
             <ContextMenu.Root>
@@ -120,7 +122,7 @@ export const MessageItem = ({ message, setDeleteMessage, isHighlighted, onReplyM
                             px-1
                             py-2
                             sm:p-2
-                            rounded-md`, isHighlighted ? 'bg-yellow-50 hover:bg-yellow-50 dark:bg-yellow-300/20 dark:hover:bg-yellow-300/20' : !isDesktop && isHovered ? 'bg-gray-2 dark:bg-gray-3' : '')}>
+                            rounded-md`, isHighlighted ? 'bg-yellow-50 hover:bg-yellow-50 dark:bg-yellow-300/20 dark:hover:bg-yellow-300/20' : !isDesktop && isHovered ? 'bg-gray-2 dark:bg-gray-3' : '', isEmojiPickerOpen ? 'bg-gray-2 dark:bg-gray-3' : '')}>
                     <Flex className='gap-2.5 sm:gap-3 items-start'>
                         <MessageLeftElement message={message} user={user} isActive={isActive} />
                         <Flex direction='column' className='gap-0.5' justify='center' width='100%'>
@@ -159,10 +161,12 @@ export const MessageItem = ({ message, setDeleteMessage, isHighlighted, onReplyM
                                 />
                             }
                         </Flex>
-                        {isHoveredDebounced &&
+                        {(isHoveredDebounced || isEmojiPickerOpen) &&
                             <QuickActions
                                 message={message}
                                 onDelete={onDelete}
+                                isEmojiPickerOpen={isEmojiPickerOpen}
+                                setIsEmojiPickerOpen={setEmojiPickerOpen}
                                 onEdit={onEdit}
                                 onReply={onReply}
                                 onForward={onForward}
