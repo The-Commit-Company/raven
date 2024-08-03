@@ -4,8 +4,7 @@
   "version": "1.6.5",
   "description": "Messaging Application",
   "workspaces": [
-    "frontend",
-    "raven"
+    "frontend"
   ],
   "main": "index.js",
   "scripts": {
