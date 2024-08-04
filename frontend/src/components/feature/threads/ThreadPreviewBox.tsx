@@ -20,10 +20,10 @@ export const ThreadPreviewBox = ({ thread }: { thread: Message }) => {
             py-2
             border border-gray-4
             rounded-md">
-            <Flex gap='2'>
+            <Flex gap='2' align={'center'}>
                 <Flex gap='1' align={'center'} justify={'center'}>
-                    <ChannelIcon type={channel?.channelData.type as "Private" | "Public" | "Open"} size='12' />
-                    <Text as='span' size='1' className={'font-semibold'}>{thread.channel_id}</Text>
+                    <ChannelIcon type={channel?.channelData.type as "Private" | "Public" | "Open"} size='14' />
+                    <Text as='span' size='2' className={'font-semibold'}>{thread.channel_id}</Text>
                 </Flex>
                 <Separator orientation='vertical' />
                 <Text as='span' size='1' color='gray'><DateMonthYear date={thread.creation} /></Text>
@@ -37,15 +37,18 @@ export const ThreadPreviewBox = ({ thread }: { thread: Message }) => {
                     <MessageContent message={thread} user={user} />
                 </Flex>
             </Flex>
-            <Flex gap='2'>
-                <Flex>
-                    <Text size='1' className={'text-gray-11'}>Replies: 0</Text>
-                    <ViewThreadParticipants participants={thread.thread_participants ?? []} />
+            <Flex justify={'between'}>
+                <Flex align={'center'} gap='2'>
+                    <Flex gap='1' align={'center'}>
+                        <Text size='1' className={'text-gray-11'}>Replies:</Text>
+                        <Text size='1' className={'font-medium'}>{thread.thread_messages_count}</Text>
+                    </Flex>
+                    <Separator orientation='vertical' />
+                    <Button size={'1'} variant={'ghost'} className={'w-fit hover:bg-transparent hover:underline cursor-pointer'}>
+                        View Thread
+                    </Button>
                 </Flex>
-                <Separator orientation='vertical' />
-                <Button size={'1'} variant={'ghost'} className={'not-cal w-fit hover:bg-transparent cursor-pointer'}>
-                    View Thread
-                </Button>
+                <ViewThreadParticipants participants={thread.thread_participants ?? []} />
             </Flex>
         </Flex>
     )

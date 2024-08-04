@@ -20,7 +20,13 @@ def get_all_threads():
     # Fetch all messages in which is_thread = 1 and the user is a participant (i.e. the user is in the Raven Thread Participant table)
     threads = frappe.get_all("Raven Message", filters=[["is_thread", "=",  1], ["Raven Thread Participant", "user", "=", frappe.session.user]], 
                              fields=["name", "channel_id", "message_type", "text", "content", "file", "image_width", "image_height", "message_reactions",
-                                     "is_edited", "poll_id", "is_bot_message", "bot", "hide_link_preview", "owner", "creation"])
+                                     "is_edited", "poll_id", "is_bot_message", "bot", "hide_link_preview", "owner", "creation", "is_thread", "thread_id", 
+                                     "is_thread_message", "thread_messages_count"])
+    for thread in threads: 
+       # Get all the participants for each thread
+        participants = frappe.get_all("Raven Thread Participant", filters={"parent": thread.name}, fields=["user", "user_image", "full_name"])
+        thread.thread_participants = participants
+
     return threads
 
 
