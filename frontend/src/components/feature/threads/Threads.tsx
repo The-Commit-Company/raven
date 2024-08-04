@@ -6,11 +6,11 @@ import { useFrappeGetCall } from "frappe-react-sdk"
 import { BiChevronLeft } from "react-icons/bi"
 import { Link } from "react-router-dom"
 import { ThreadPreviewBox } from "./ThreadPreviewBox"
-import { RavenThread } from "@/types/RavenMessaging/RavenThread"
+import { Message } from "../../../../../types/Messaging/Message"
 
 const Threads = () => {
 
-    const { data, error } = useFrappeGetCall<{ message: RavenThread[] }>("raven.api.threads.get_threads", undefined, undefined, {
+    const { data, error } = useFrappeGetCall<{ message: Message[] }>("raven.api.threads.get_all_threads", undefined, undefined, {
         revalidateOnFocus: false
     })
 
@@ -25,10 +25,10 @@ const Threads = () => {
                 </Flex>
             </PageHeader>
             <Box className="min-h-screen pt-16 pb-8">
-                <ErrorBanner error={error} />
+                <div className={'px-2'}><ErrorBanner error={error} /></div>
                 {data && data.message?.length === 0 ?
                     <EmptyStateForThreads /> :
-                    <Flex direction='column' gap='3' justify='start' px='4'>
+                    <Flex direction='column' gap='3' justify='start' px='4' pt='2'>
                         {data && data.message.map((thread) => {
                             return <ThreadPreviewBox key={thread.name} thread={thread} />
                         })}

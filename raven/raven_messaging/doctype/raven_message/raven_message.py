@@ -468,12 +468,6 @@ class RavenMessage(Document):
 		# delete all the reactions for the message
 		frappe.db.delete("Raven Message Reaction", {"message": self.name})
 
-		# If the message is linked to a thread, try deleting the thread if it has no replies
-		if self.is_thread:
-			frappe.delete_doc("Raven Thread", self.thread_id)
-
-		# If the message was inside a thread, update the thread reply count
-
 
 def on_doctype_update():
 	"""
