@@ -14,10 +14,12 @@ class RavenThreadParticipant(Document):
 	if TYPE_CHECKING:
 		from frappe.types import DF
 
+		full_name: DF.Data | None
 		parent: DF.Data
 		parentfield: DF.Data
 		parenttype: DF.Data
 		user: DF.Link
+		user_image: DF.Attach | None
 	# end: auto-generated types
 
 	pass
