@@ -6,11 +6,17 @@ import { Message } from '../../../../../types/Messaging/Message'
 import { useCurrentChannelData } from '@/hooks/useCurrentChannelData'
 import { ChannelIcon } from '@/utils/layout/channelIcon'
 import { ViewThreadParticipants } from './ThreadParticipants'
+import { useNavigate } from 'react-router-dom'
 
 export const ThreadPreviewBox = ({ thread }: { thread: Message }) => {
 
     const user = useGetUser(thread.owner)
     const { channel } = useCurrentChannelData(thread.channel_id)
+
+    const navigate = useNavigate()
+    const handleViewThread = () => {
+        navigate(`../threads/${thread.name}`)
+    }
 
     return (
         <Flex direction='column' gap='2' className="group
@@ -44,7 +50,10 @@ export const ThreadPreviewBox = ({ thread }: { thread: Message }) => {
                         <Text size='1' className={'font-medium'}>{thread.thread_messages_count}</Text>
                     </Flex>
                     <Separator orientation='vertical' />
-                    <Button size={'1'} variant={'ghost'} className={'w-fit hover:bg-transparent hover:underline cursor-pointer'}>
+                    <Button size={'1'}
+                        onClick={handleViewThread}
+                        variant={'ghost'}
+                        className={'not-cal w-fit hover:bg-transparent hover:underline cursor-pointer font-semibold'}>
                         View Thread
                     </Button>
                 </Flex>
