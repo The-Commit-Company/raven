@@ -1,7 +1,7 @@
 import { Box, Flex } from '@radix-ui/themes'
 import { MessageContextMenuProps } from '../MessageActions'
 import { QUICK_ACTION_BUTTON_CLASS, QuickActionButton } from './QuickActionButton'
-import { BiDotsHorizontalRounded } from 'react-icons/bi'
+import { BiDotsHorizontalRounded, BiMessageDetail } from 'react-icons/bi'
 import { MouseEventHandler, useContext, useRef } from 'react'
 import { FrappeConfig, FrappeContext } from 'frappe-react-sdk'
 import { EmojiPickerButton } from './EmojiPickerButton'
@@ -13,12 +13,12 @@ import { getErrorMessage } from '@/components/layout/AlertBanner/ErrorBanner'
 
 const QUICK_EMOJIS = ['👍', '✅', '👀', '🎉']
 
-
 interface QuickActionsProps extends MessageContextMenuProps {
     isEmojiPickerOpen: boolean,
     setIsEmojiPickerOpen: (open: boolean) => void
 }
-export const QuickActions = ({ message, onReply, onEdit, onForward, isEmojiPickerOpen, setIsEmojiPickerOpen }: QuickActionsProps) => {
+
+export const QuickActions = ({ message, onReply, onEdit, onForward, isEmojiPickerOpen, setIsEmojiPickerOpen, onCreateThread }: QuickActionsProps) => {
 
     const { currentUser } = useContext(UserContext)
 
@@ -108,10 +108,10 @@ export const QuickActions = ({ message, onReply, onEdit, onForward, isEmojiPicke
                 }
 
                 <QuickActionButton
-                    tooltip='Forward'
-                    aria-label='Forward this message'
-                    onClick={onForward}>
-                    <LuForward size='18' />
+                    tooltip='Create a thread'
+                    aria-label='Create a thread'
+                    onClick={onCreateThread}>
+                    <BiMessageDetail size='16' />
                 </QuickActionButton>
 
                 <QuickActionButton

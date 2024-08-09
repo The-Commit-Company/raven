@@ -1,8 +1,7 @@
-import { Avatar, Badge, Box, ContextMenu, Flex, HoverCard, Link, Separator, Text, Theme } from '@radix-ui/themes'
+import { Avatar, Badge, Box, BoxProps, ContextMenu, Flex, HoverCard, Link, Separator, Text, Theme } from '@radix-ui/themes'
 import { Message, MessageBlock } from '../../../../../../types/Messaging/Message'
 import { MessageContextMenu } from './MessageActions/MessageActions'
 import { DateTooltip, DateTooltipShort } from './Renderers/DateTooltip'
-import { BoxProps } from '@radix-ui/themes/dist/cjs/components/box'
 import { clsx } from 'clsx'
 import { UserAvatar, getInitials } from '@/components/common/UserAvatar'
 import { useGetUser } from '@/hooks/useGetUser'
@@ -33,10 +32,11 @@ interface MessageBlockProps {
     replyToMessage: (message: Message) => void,
     forwardMessage: (message: Message) => void,
     onReplyMessageClick: (messageID: string) => void,
-    isHighlighted?: boolean
+    isHighlighted?: boolean,
+    createThread?: (messageID: string) => void
 }
 
-export const MessageItem = ({ message, setDeleteMessage, isHighlighted, onReplyMessageClick, setEditMessage, replyToMessage, forwardMessage }: MessageBlockProps) => {
+export const MessageItem = ({ message, setDeleteMessage, isHighlighted, onReplyMessageClick, setEditMessage, replyToMessage, forwardMessage, createThread }: MessageBlockProps) => {
 
     const { name, owner: userID, is_bot_message, bot, creation: timestamp, message_reactions, is_continuation, linked_message, replied_message_details } = message
 
@@ -56,6 +56,10 @@ export const MessageItem = ({ message, setDeleteMessage, isHighlighted, onReplyM
 
     const onForward = () => {
         forwardMessage(message)
+    }
+
+    const onCreateThread = () => {
+        createThread?.(message.name)
     }
 
     const isDesktop = useIsDesktop()
@@ -170,6 +174,7 @@ export const MessageItem = ({ message, setDeleteMessage, isHighlighted, onReplyM
                                 onEdit={onEdit}
                                 onReply={onReply}
                                 onForward={onForward}
+                                onCreateThread={onCreateThread}
                             />
                         }
                     </Flex>
@@ -184,11 +189,11 @@ export const MessageItem = ({ message, setDeleteMessage, isHighlighted, onReplyM
                     onForward={onForward}
                 />
             </ContextMenu.Root>
-        </Box >
+        </Box>
     )
 }
 
-interface MessageLeftElementProps extends BoxProps {
+type MessageLeftElementProps = BoxProps & {
     message: MessageBlock['data'],
     user?: UserFields,
     isActive?: boolean
@@ -298,7 +303,7 @@ export const UserHoverCard = memo(({ user, userID, isActive }: UserProps) => {
         </HoverCard.Content>
     </HoverCard.Root>
 })
-interface MessageContentProps extends BoxProps {
+type MessageContentProps = BoxProps & {
     user?: UserFields
     message: Message,
 }

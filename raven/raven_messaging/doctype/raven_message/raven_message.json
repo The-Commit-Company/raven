@@ -32,7 +32,16 @@
   "poll_id",
   "is_bot_message",
   "bot",
-  "hide_link_preview"
+  "hide_link_preview",
+  "thread_tab",
+  "thread_section",
+  "is_thread",
+  "is_thread_message",
+  "column_break_qsgs",
+  "thread_id",
+  "thread_messages_count",
+  "thread_participants_section",
+  "thread_participants"
  ],
  "fields": [
   {
@@ -179,11 +188,67 @@
    "fieldname": "is_forwarded",
    "fieldtype": "Check",
    "label": "Is Forwarded"
+  },
+  {
+   "default": "0",
+   "description": "This message starts a thread",
+   "fieldname": "is_thread",
+   "fieldtype": "Check",
+   "label": "Is Thread"
+  },
+  {
+   "default": "0",
+   "description": "This message is part of a thread",
+   "fieldname": "is_thread_message",
+   "fieldtype": "Check",
+   "label": "Is Thread Message",
+   "search_index": 1
+  },
+  {
+   "fieldname": "thread_section",
+   "fieldtype": "Section Break",
+   "label": "Thread"
+  },
+  {
+   "fieldname": "column_break_qsgs",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "thread_messages_count",
+   "fieldtype": "Int",
+   "label": "Thread Messages Count",
+   "non_negative": 1,
+   "read_only": 1
+  },
+  {
+   "fieldname": "thread_tab",
+   "fieldtype": "Tab Break",
+   "label": "Thread"
+  },
+  {
+   "fieldname": "thread_participants_section",
+   "fieldtype": "Section Break",
+   "label": "Thread Participants"
+  },
+  {
+   "fieldname": "thread_participants",
+   "fieldtype": "Table",
+   "label": "Thread participants",
+   "options": "Raven Thread Participant"
+  },
+  {
+   "description": "ID of the primary message that started the thread",
+   "fieldname": "thread_id",
+   "fieldtype": "Link",
+   "label": "Thread ID",
+   "options": "Raven Message",
+   "search_index": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-06-23 13:47:48.657331",
+ "modified": "2024-07-26 22:13:09.513050",
  "modified_by": "Administrator",
  "module": "Raven Messaging",
  "name": "Raven Message",

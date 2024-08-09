@@ -22,8 +22,8 @@ class RavenMessage(Document):
 
 	if TYPE_CHECKING:
 		from frappe.types import DF
-
 		from raven.raven_messaging.doctype.raven_mention.raven_mention import RavenMention
+		from raven.raven_messaging.doctype.raven_thread_participant.raven_thread_participant import RavenThreadParticipant
 
 		bot: DF.Link | None
 		channel_id: DF.Link
@@ -37,6 +37,8 @@ class RavenMessage(Document):
 		is_edited: DF.Check
 		is_forwarded: DF.Check
 		is_reply: DF.Check
+		is_thread: DF.Check
+		is_thread_message: DF.Check
 		json: DF.JSON | None
 		link_doctype: DF.Link | None
 		link_document: DF.DynamicLink | None
@@ -47,6 +49,9 @@ class RavenMessage(Document):
 		poll_id: DF.Link | None
 		replied_message_details: DF.JSON | None
 		text: DF.LongText | None
+		thread_id: DF.Link | None
+		thread_messages_count: DF.Int
+		thread_participants: DF.Table[RavenThreadParticipant]
 		thumbnail_height: DF.Data | None
 		thumbnail_width: DF.Data | None
 	# end: auto-generated types
