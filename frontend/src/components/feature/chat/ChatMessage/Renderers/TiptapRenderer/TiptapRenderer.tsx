@@ -23,6 +23,11 @@ import Italic from '@tiptap/extension-italic';
 import './tiptap-renderer.styles.css'
 import Mention from '@tiptap/extension-mention'
 import { PluginKey } from '@tiptap/pm/state'
+import Table from '@tiptap/extension-table'
+import TableCell from '@tiptap/extension-table-cell'
+import TableHeader from '@tiptap/extension-table-header'
+import TableRow from '@tiptap/extension-table-row'
+
 const lowlight = createLowlight(common)
 
 lowlight.register('html', html)
@@ -95,6 +100,26 @@ export const TiptapRenderer = ({ message, user, isScrolling = false, isTruncated
       CustomBold,
       CustomLink,
       Italic,
+      Table.configure({
+        HTMLAttributes: {
+          class: 'rt-TableRootTable border-l border-r border-t border-gray-4 dark:border-gray-7 my-2'
+        }
+      }),
+      TableRow.configure({
+        HTMLAttributes: {
+          class: 'rt-TableRow'
+        }
+      }),
+      TableHeader.configure({
+        HTMLAttributes: {
+          class: 'rt-TableHeader px-2 py-1 bg-accent-2 dark:bg-gray-3 border-r border-b border-gray-4 dark:border-gray-7'
+        }
+      }),
+      TableCell.configure({
+        HTMLAttributes: {
+          class: 'rt-TableCell py-1 px-2 border-r border-gray-4 dark:border-gray-7'
+        }
+      }),
       Image.configure({
         HTMLAttributes: {
           class: 'w-full max-w-48 sm:max-w-96 mt-1 h-auto'
