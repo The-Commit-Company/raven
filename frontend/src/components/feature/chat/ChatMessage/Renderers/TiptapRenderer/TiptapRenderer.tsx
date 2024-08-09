@@ -1,4 +1,4 @@
-import { EditorContent, EditorContext, useEditor } from '@tiptap/react'
+import { EditorContent, EditorContext, ReactNodeViewRenderer, useEditor } from '@tiptap/react'
 import { TextMessage } from '../../../../../../../../types/Messaging/Message'
 import { UserFields } from '@/utils/users/UserListProvider'
 import { BoxProps } from '@radix-ui/themes/dist/cjs/components/box'
@@ -14,13 +14,20 @@ import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight'
 import { common, createLowlight } from 'lowlight'
 import python from 'highlight.js/lib/languages/python'
 import { CustomBold } from './Bold'
-import { CustomUserMention } from './Mention'
+import { ChannelMentionRenderer, UserMentionRenderer } from './Mention'
 import { CustomLink, LinkPreview } from './Link'
 import { CustomUnderline } from './Underline'
 import { Image } from '@tiptap/extension-image'
 import { clsx } from 'clsx'
 import Italic from '@tiptap/extension-italic';
 import './tiptap-renderer.styles.css'
+import Mention from '@tiptap/extension-mention'
+import { PluginKey } from '@tiptap/pm/state'
+import Table from '@tiptap/extension-table'
+import TableCell from '@tiptap/extension-table-cell'
+import TableHeader from '@tiptap/extension-table-header'
+import TableRow from '@tiptap/extension-table-row'
+
 const lowlight = createLowlight(common)
 
 lowlight.register('html', html)
@@ -29,7 +36,7 @@ lowlight.register('js', js)
 lowlight.register('ts', ts)
 lowlight.register('json', json)
 lowlight.register('python', python)
-interface TiptapRendererProps extends BoxProps {
+type TiptapRendererProps = BoxProps & {
   message: TextMessage,
   user?: UserFields,
   showLinkPreview?: boolean,
@@ -91,17 +98,59 @@ export const TiptapRenderer = ({ message, user, isScrolling = false, isTruncated
         lowlight
       }),
       CustomBold,
-      CustomUserMention,
       CustomLink,
       Italic,
+      Table.configure({
+        HTMLAttributes: {
+          class: 'rt-TableRootTable border-l border-r border-t border-gray-4 dark:border-gray-7 my-2'
+        }
+      }),
+      TableRow.configure({
+        HTMLAttributes: {
+          class: 'rt-TableRow'
+        }
+      }),
+      TableHeader.configure({
+        HTMLAttributes: {
+          class: 'rt-TableHeader px-2 py-1 bg-accent-2 dark:bg-gray-3 border-r border-b border-gray-4 dark:border-gray-7'
+        }
+      }),
+      TableCell.configure({
+        HTMLAttributes: {
+          class: 'rt-TableCell py-1 px-2 border-r border-gray-4 dark:border-gray-7'
+        }
+      }),
       Image.configure({
         HTMLAttributes: {
           class: 'w-full max-w-48 sm:max-w-96 mt-1 h-auto'
         },
         inline: true
       }),
-      // TODO: Add channel mention
-      // CustomChannelMention
+      Mention.extend({
+        name: 'userMention',
+        addNodeView() {
+          return ReactNodeViewRenderer(UserMentionRenderer)
+        }
+      }).configure({
+        suggestion: {
+          char: '@',
+          pluginKey: new PluginKey('userMention'),
+        },
+      }),
+      Mention.extend({
+        name: 'channelMention',
+        HTMLAttributes: {
+          class: 'mention',
+        },
+        addNodeView() {
+          return ReactNodeViewRenderer(ChannelMentionRenderer)
+        }
+      }).configure({
+        suggestion: {
+          char: '#',
+          pluginKey: new PluginKey('channelMention'),
+        },
+      }),
     ]
   })
 

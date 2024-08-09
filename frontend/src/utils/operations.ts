@@ -119,3 +119,13 @@ export const formatBytes = (bytes: number, decimals = 2) => {
 
     return parseFloat((bytes / Math.pow(k, i)).toFixed(decimals)) + ' ' + sizes[i]
 }
+
+/**
+ * Function to remove the current user from the DM Channel Name - used when the peer user is not found
+ * @param channelName 
+ * @param currentUser 
+ * @returns 
+ */
+export const replaceCurrentUserFromDMChannelName = (channelName: string, currentUser: string) => {
+    return channelName.replace(currentUser, '').replace(' _ ', '')
+}

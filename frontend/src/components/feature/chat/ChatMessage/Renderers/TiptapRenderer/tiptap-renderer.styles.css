@@ -3,3 +3,8 @@
     padding-left: 0.8rem;
     margin: 1rem;
 }
+
+.tiptap-renderer a,
+.tiptap-renderer .mention {
+    color: var(--accent-11);
+}

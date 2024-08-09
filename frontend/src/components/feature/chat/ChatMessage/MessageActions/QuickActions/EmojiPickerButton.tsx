@@ -1,4 +1,4 @@
-import { lazy, useState, Suspense } from 'react'
+import { lazy, Suspense } from 'react'
 import { Box, Flex, IconButton, Popover, Portal, Tooltip } from '@radix-ui/themes'
 import { DIALOG_CONTENT_CLASS } from '@/utils/layout/dialog'
 import { BiSmile } from 'react-icons/bi'
@@ -8,15 +8,15 @@ import { QUICK_ACTION_BUTTON_CLASS } from './QuickActionButton'
 const EmojiPicker = lazy(() => import('@/components/common/EmojiPicker/EmojiPicker'))
 
 interface EmojiPickerButtonProps {
-    saveReaction: (emoji: string) => void
+    saveReaction: (emoji: string) => void,
+    isOpen: boolean
+    setIsOpen: (open: boolean) => void
 }
 
-export const EmojiPickerButton = ({ saveReaction }: EmojiPickerButtonProps) => {
-
-    const [open, setOpen] = useState(false)
+export const EmojiPickerButton = ({ saveReaction, isOpen, setIsOpen }: EmojiPickerButtonProps) => {
 
     const onClose = () => {
-        setOpen(false)
+        setIsOpen(false)
     }
 
     const onEmojiClick = (emoji: string) => {
@@ -25,7 +25,7 @@ export const EmojiPickerButton = ({ saveReaction }: EmojiPickerButtonProps) => {
     }
 
     return (
-        <Popover.Root open={open} onOpenChange={setOpen}>
+        <Popover.Root open={isOpen} onOpenChange={setIsOpen}>
             <Flex>
                 <Tooltip content='find another reaction'>
                     <Popover.Trigger>

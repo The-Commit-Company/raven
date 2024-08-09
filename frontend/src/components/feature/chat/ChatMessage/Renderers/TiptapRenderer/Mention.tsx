@@ -3,26 +3,12 @@ import { getStatusText } from '@/components/feature/userSettings/AvailabilitySta
 import { useGetUser } from '@/hooks/useGetUser';
 import { useIsUserActive } from '@/hooks/useIsUserActive';
 import { Flex, HoverCard, Link, Text } from '@radix-ui/themes';
-import Mention from '@tiptap/extension-mention'
-import { NodeViewRendererProps, NodeViewWrapper, ReactNodeViewRenderer } from "@tiptap/react";
+import { NodeViewRendererProps, NodeViewWrapper } from "@tiptap/react";
 import { BsFillCircleFill } from 'react-icons/bs';
 import { Link as RouterLink } from 'react-router-dom';
 
-export const CustomUserMention = Mention.extend({
-    name: 'userMention',
-    addNodeView() {
-        return ReactNodeViewRenderer(UserMentionRenderer)
-    }
-})
 
-export const CustomChannelMention = Mention.extend({
-    name: 'channelMention',
-    addNodeView() {
-        return ReactNodeViewRenderer(ChannelMentionRenderer)
-    }
-})
-
-const UserMentionRenderer = ({ node }: NodeViewRendererProps) => {
+export const UserMentionRenderer = ({ node }: NodeViewRendererProps) => {
 
     const user = useGetUser(node.attrs.id)
     const isActive = useIsUserActive(node.attrs.id)
@@ -68,14 +54,13 @@ const UserMentionRenderer = ({ node }: NodeViewRendererProps) => {
 
 
 
-const ChannelMentionRenderer = ({ node }: NodeViewRendererProps) => {
-
+export const ChannelMentionRenderer = ({ node }: NodeViewRendererProps) => {
 
     return (
         <NodeViewWrapper as={'span'}>
             <Link asChild>
-                <RouterLink to={`/channels/${node.attrs.id}`}>
-                    @{node.attrs.label}
+                <RouterLink to={`/channel/${node.attrs.id}`}>
+                    #{node.attrs.label}
                 </RouterLink>
             </Link>
         </NodeViewWrapper>
