@@ -33,7 +33,7 @@ interface MessageBlockProps {
     forwardMessage: (message: Message) => void,
     onReplyMessageClick: (messageID: string) => void,
     isHighlighted?: boolean,
-    createThread: (messageID: string) => void
+    createThread?: (messageID: string) => void
 }
 
 export const MessageItem = ({ message, setDeleteMessage, isHighlighted, onReplyMessageClick, setEditMessage, replyToMessage, forwardMessage, createThread }: MessageBlockProps) => {
@@ -59,7 +59,7 @@ export const MessageItem = ({ message, setDeleteMessage, isHighlighted, onReplyM
     }
 
     const onCreateThread = () => {
-        createThread(message.name)
+        createThread?.(message.name)
     }
 
     const isDesktop = useIsDesktop()

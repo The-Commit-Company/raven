@@ -25,7 +25,7 @@ type MessageDateBlock = Message | {
  */
 const useChatStream = (scrollRef: MutableRefObject<HTMLDivElement | null>) => {
 
-    const { channelID } = useParams()
+    const { channelID, threadID } = useParams()
 
     const location = useLocation()
     const navigate = useNavigate()
@@ -69,9 +69,10 @@ const useChatStream = (scrollRef: MutableRefObject<HTMLDivElement | null>) => {
     const latestMessagesLoaded = useRef(false)
 
     const { data, isLoading, error, mutate } = useFrappeGetCall<GetMessagesResponse>('raven.api.chat_stream.get_messages', {
-        'channel_id': channelID,
-        'base_message': state?.baseMessage ? state.baseMessage : undefined
-    }, { path: `get_messages_for_channel_${channelID}`, baseMessage: state?.baseMessage }, {
+        'channel_id': channelID ?? threadID,
+        'base_message': state?.baseMessage ? state.baseMessage : undefined,
+        'is_thread': threadID ? true : false
+    }, { path: `get_messages_for_channel_${channelID ?? threadID}`, baseMessage: state?.baseMessage }, {
         revalidateOnFocus: false,
         onSuccess: (data) => {
             if (!highlightedMessage) {

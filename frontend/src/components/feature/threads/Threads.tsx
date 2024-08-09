@@ -15,8 +15,8 @@ const Threads = () => {
     })
 
     return (
-        <Flex width='100%'>
-            <Flex direction='column' gap='0'>
+        <Flex>
+            <Flex width='100%' direction='column' gap='0'>
                 <PageHeader>
                     <Flex align='center' gap='3' className="h-8">
                         <Link to='/channel' className="block bg-transparent hover:bg-transparent active:bg-transparent sm:hidden">
@@ -25,7 +25,7 @@ const Threads = () => {
                         <Heading size='5'>Threads</Heading>
                     </Flex>
                 </PageHeader>
-                <Box className="min-h-screen pt-16 pb-8">
+                <Box className="min-h-screen w-full pt-16 pb-8">
                     <div className={'px-2'}><ErrorBanner error={error} /></div>
                     {data && data.message?.length === 0 ?
                         <EmptyStateForThreads /> :

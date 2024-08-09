@@ -14,13 +14,14 @@ def get_messages(channel_id: str, limit: int = 20, base_message: str | None = No
 
 	"""
 
-	# Check permission for channel access
-	if not frappe.has_permission(doctype="Raven Channel", doc=channel_id, ptype="read"):
-		frappe.throw(_("You do not have permission to access this channel"), frappe.PermissionError)
+	# Check permission for channel access (if not a thread)
+	if not is_thread:
+		if not frappe.has_permission(doctype="Raven Channel", doc=channel_id, ptype="read"):
+			frappe.throw(_("You do not have permission to access this channel"), frappe.PermissionError)
 
 	# Fetch messages for the channel
 	if base_message:
-		return get_messages_around_base(channel_id, base_message)
+		return get_messages_around_base(channel_id, base_message, is_thread)
 
 	# Cannot use `get_all` as it does not apply the `order_by` clause to multiple fields
 	message = frappe.qb.DocType("Raven Message")
@@ -89,7 +90,7 @@ def get_messages(channel_id: str, limit: int = 20, base_message: str | None = No
 	}
 
 
-def get_messages_around_base(channel_id: str, base_message: str):
+def get_messages_around_base(channel_id: str, base_message: str, is_thread: bool = False):
 	"""
 	Get 10 messages before base message and 10 messages after
 	"""
@@ -97,10 +98,8 @@ def get_messages_around_base(channel_id: str, base_message: str):
 	from_timestamp = frappe.get_cached_value("Raven Message", base_message, "creation")
 
 	# TODO: Optimize this to use a complex SQL query to fetch around the main message
-	older_messages = fetch_older_messages(channel_id, base_message, from_timestamp, 10)
-	newer_messages = fetch_newer_messages(
-		channel_id, base_message, from_timestamp, 10, include_from_message=True
-	)
+	older_messages = fetch_older_messages(channel_id, base_message, from_timestamp, 10, is_thread)
+	newer_messages = fetch_newer_messages(channel_id, base_message, from_timestamp, 10, is_thread, include_from_message=True)
 
 	combined_messages = newer_messages.get("messages", []) + older_messages.get("messages", [])
 
@@ -113,25 +112,25 @@ def get_messages_around_base(channel_id: str, base_message: str):
 
 
 @frappe.whitelist()
-def get_older_messages(channel_id: str, from_message: str, limit: int = 20):
+def get_older_messages(channel_id: str, from_message: str, limit: int = 20, is_thread: bool = False):
 	"""
 	API to get older messages for a channel, ordered by creation date (newest first)
 
 	Function is split into two to avoid duplicate perm check and timestamp check
 	"""
 
-	# Check permission for channel access
-	if not frappe.has_permission(doctype="Raven Channel", doc=channel_id, ptype="read"):
-		frappe.throw(_("You do not have permission to access this channel"), frappe.PermissionError)
+	# Check permission for channel access (if not a thread)
+	if not is_thread:
+		if not frappe.has_permission(doctype="Raven Channel", doc=channel_id, ptype="read"):
+			frappe.throw(_("You do not have permission to access this channel"), frappe.PermissionError)
 	# Fetch older messages for the channel
 	from_timestamp = frappe.get_cached_value("Raven Message", from_message, "creation")
 
-	return fetch_older_messages(channel_id, from_message, from_timestamp, limit)
+	return fetch_older_messages(channel_id, from_message, from_timestamp, limit, is_thread)
 
 
-def fetch_older_messages(
-	channel_id: str, from_message: str, from_timestamp: datetime.datetime, limit: int = 20
-):
+def fetch_older_messages(channel_id: str, from_message: str, from_timestamp: datetime.datetime, limit: int = 20, is_thread: bool = False):
+
 	# Cannot use `get_all` as it does not apply the `order_by` clause to multiple fields
 	message = frappe.qb.DocType("Raven Message")
 
@@ -166,18 +165,15 @@ def fetch_older_messages(
 			message.is_bot_message,
 			message.bot,
 			message.hide_link_preview,
-		)
-		.where(message.channel_id == channel_id)
-		.where(
-			(message.creation < from_timestamp)
-			| ((message.creation == from_timestamp) & (message.name < from_message))
-		)
-		.where(message.is_thread_message == 0)
-		.orderby(message.creation, order=Order.desc)
-		.orderby(message.name, order=Order.desc)
-		.limit(limit)
-		.run(as_dict=True)
-	)
+		))
+
+	if is_thread:
+		messages = messages.where(message.thread_id == channel_id).where((message.creation < from_timestamp) | ((message.creation == from_timestamp) & (message.name < from_message))).where(message.is_thread_message == 1)
+	else:
+		messages = messages.where(message.channel_id == channel_id).where((message.creation < from_timestamp) | ((message.creation == from_timestamp) & (message.name < from_message))).where(message.is_thread_message == 0)
+
+	messages = messages.orderby(message.creation, order=Order.desc).orderby(message.name, order=Order.desc).limit(limit).run(as_dict=True)
+
 
 	has_old_messages = False
 
@@ -203,21 +199,20 @@ def fetch_older_messages(
 
 
 @frappe.whitelist()
-def get_newer_messages(channel_id: str, from_message: str, limit: int = 20):
+def get_newer_messages(channel_id: str, from_message: str, limit: int = 20, is_thread: bool = False):
 	"""
 	API to get older messages for a channel, ordered by creation date (newest first)
 	"""
 
-	# Check permission for channel access
-	if not frappe.has_permission(doctype="Raven Channel", doc=channel_id, ptype="read"):
-		frappe.throw(_("You do not have permission to access this channel"), frappe.PermissionError)
+	# Check permission for channel access (if not a thread)
+	if not is_thread:
+		if not frappe.has_permission(doctype="Raven Channel", doc=channel_id, ptype="read"):
+			frappe.throw(_("You do not have permission to access this channel"), frappe.PermissionError)
 
 	# Fetch older messages for the channel
 	from_timestamp = frappe.get_cached_value("Raven Message", from_message, "creation")
 
-	response = fetch_newer_messages(
-		channel_id, from_message, from_timestamp, limit, include_from_message=False
-	)
+	response = fetch_newer_messages(channel_id, from_message, from_timestamp, limit, is_thread, include_from_message=False)
 
 	if response.get("has_new_messages") == False:
 		# If no newer messages are available, we can track it as a visit to the channel
@@ -234,6 +229,7 @@ def fetch_newer_messages(
 	from_message: str,
 	from_timestamp: datetime.datetime,
 	limit: int = 20,
+	is_thread: bool = False,
 	include_from_message: bool = False,
 ):
 
@@ -280,15 +276,15 @@ def fetch_newer_messages(
 			message.is_bot_message,
 			message.bot,
 			message.hide_link_preview,
-		)
-		.where(message.channel_id == channel_id)
-		.where(condition)
-		.where(message.is_thread_message == 0)
-		.orderby(message.creation, order=Order.asc)
-		.orderby(message.name, order=Order.asc)
-		.limit(limit)
-		.run(as_dict=True)
-	)
+		))
+
+	if is_thread:
+		messages = messages.where(message.thread_id == channel_id).where(condition).where(message.is_thread_message == 1)
+	else:
+		messages = messages.where(message.channel_id == channel_id).where(condition).where(message.is_thread_message == 0)
+
+	messages = messages.orderby(message.creation, order=Order.asc).orderby(message.name, order=Order.asc).limit(limit).run(as_dict=True)
+
 
 	has_new_messages = False
 
