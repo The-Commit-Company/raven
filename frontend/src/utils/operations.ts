@@ -129,3 +129,13 @@ export const formatBytes = (bytes: number, decimals = 2) => {
 export const replaceCurrentUserFromDMChannelName = (channelName: string, currentUser: string) => {
     return channelName.replace(currentUser, '').replace(' _ ', '')
 }
+
+/**
+ * Function to get user_image from user
+ * @param user 
+ * @param allUsers 
+ * @returns user image
+ */
+export const getUserImage = (user: string, allUsers: Record<string, UserFields>) => {
+    return allUsers[user] && allUsers[user]?.user_image || ''
+}
