@@ -1,9 +1,9 @@
 import { getFileName } from '@/utils/operations'
 import { ImageMessage } from '../../../../../../../types/Messaging/Message'
-import { Box, Button, Dialog, Flex, Link } from '@radix-ui/themes'
-import { Suspense, lazy, memo, useState } from 'react'
+import { Box, Button, Dialog, Flex, IconButton, Link, Text } from '@radix-ui/themes'
+import { Suspense, lazy, memo, useState, useRef, useEffect } from 'react'
 import { DIALOG_CONTENT_CLASS } from '@/utils/layout/dialog'
-import { BiDownload } from 'react-icons/bi'
+import { BiDownload, BiChevronDown, BiChevronRight } from 'react-icons/bi'
 import { UserFields } from '@/utils/users/UserListProvider'
 import { DateMonthAtHourMinuteAmPm } from '@/utils/dateConversions'
 import { clsx } from 'clsx'
@@ -30,15 +30,46 @@ export const ImageMessageBlock = memo(({ message, isScrolling = false, user }: I
 
     const fileName = getFileName(message.file)
 
+    const [isVisible, setIsVisible] = useState<boolean>(true)
+    const contentRef = useRef<HTMLElement | null>(null);
+
+    useEffect(() => {
+        if (isVisible && contentRef.current) {
+          setTimeout(() => {
+            if(contentRef.current){
+                contentRef.current.scrollIntoView({ behavior: 'smooth', block: 'end' });
+            }
+          }, 300); 
+        }
+      }, [isVisible]);
+
     return (
         <Flex direction='column' gap='1'>
-            <Link
-                href={message.file}
-                size='1'
-                color='gray'
-                target='_blank'>{fileName}</Link>
+            <Flex className='p-1'>
+                <IconButton
+                    size='1'
+                    variant="ghost"
+                    color="gray"
+                    radius='large'
+                    className='mr-1 cursor-pointer font-bold bg-gray-4'
+                    aria-label={`Click to ${isVisible ? "hide" : "show"} image`}
+                    title={`${isVisible ? "Hide" : "Show"} image`}
+                    onClick={() => setIsVisible(prev => !prev)}
+                >
+                    {isVisible ? <BiChevronDown size='16' /> : <BiChevronRight size='16' />}
+                </IconButton>
+                <Link
+                    href={message.file}
+                    size='1'
+                    color='gray'
+                    target='_blank'>{fileName}
+                </Link>
+            </Flex>
             <Box
-                className='relative rounded-md cursor-pointer'
+                ref={contentRef}
+                className={`relative rounded-md cursor-pointer transition-all duration-300 ease-in-out overflow-hidden ${
+                    isVisible ? 'max-h-96' : 'max-h-0'
+                }`}
                 role='button'
                 onClick={() => setIsOpen(!isScrolling && true)}
                 style={{
