@@ -31,7 +31,7 @@ export const ImageMessageBlock = memo(({ message, isScrolling = false, user }: I
     const fileName = getFileName(message.file)
 
     const [isVisible, setIsVisible] = useState<boolean>(true)
-    const contentRef = useRef<HTMLElement | null>(null);
+    const contentRef = useRef<HTMLDivElement | null>(null);
 
     useEffect(() => {
         if (isVisible && contentRef.current) {
