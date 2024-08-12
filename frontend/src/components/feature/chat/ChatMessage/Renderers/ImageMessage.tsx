@@ -37,7 +37,7 @@ export const ImageMessageBlock = memo(({ message, isScrolling = false, user }: I
         if (isVisible && contentRef.current) {
           setTimeout(() => {
             if(contentRef.current){
-                contentRef.current.scrollIntoView({ behavior: 'smooth', block: 'end' });
+                contentRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
             }
           }, 300); 
         }
