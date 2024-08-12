@@ -112,12 +112,11 @@ const AnalyticsButton = ({ reactions, allUsers }: AnalyticsButtonProps) => {
                     <MdOutlineAnalytics />
                 </IconButton>
             </Popover.Trigger>
-            <Popover.Content size="1" width="500px">
+            <Popover.Content size="1" maxWidth="400px">
                 <Table.Root size="1" variant="ghost" layout="auto">
                     <Table.Header>
                         <Table.Row>
                             <Table.ColumnHeaderCell justify="center">Reaction</Table.ColumnHeaderCell>
-                            <Table.ColumnHeaderCell justify="center">Count</Table.ColumnHeaderCell>
                             <Table.ColumnHeaderCell>Users</Table.ColumnHeaderCell>
                         </Table.Row>
                     </Table.Header>
@@ -125,11 +124,16 @@ const AnalyticsButton = ({ reactions, allUsers }: AnalyticsButtonProps) => {
                         {reactions.map((reaction: any) => {
                             return (
                                 <Table.Row align="center">
-                                    <Table.Cell justify="center">{reaction["reaction"]}</Table.Cell>
-                                    <Table.Cell justify="center">{reaction["count"]}</Table.Cell>
+                                    <Table.Cell justify="center">
+                                        {reaction["reaction"]}
+                                        {" "}
+                                        <Badge color="indigo">
+                                            {reaction["count"]}
+                                        </Badge>
+                                    </Table.Cell>
                                     <Table.Cell>
                                         <Flex gap="1" wrap="wrap">
-                                            {reaction["users"].map((user: string) => {
+                                            {[...reaction["users"], "Nikhil", "Saket", "Sam", "Prathamesh"].map((user: string) => {
                                                 return (
                                                     <Badge size="1" radius="full" color="indigo">
                                                         <Avatar
