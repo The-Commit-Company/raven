@@ -8,7 +8,7 @@ from raven.utils import track_channel_visit
 
 
 @frappe.whitelist()
-def get_messages(channel_id: str, limit: int = 20, base_message: str | None = None, is_thread: bool = False):
+def get_messages(channel_id: str, limit: int = 20, base_message: str | None = None, is_thread: bool = 0):
 	"""
 	API to get list of messages for a channel, ordered by creation date (newest first)
 

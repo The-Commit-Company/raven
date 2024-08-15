@@ -11,13 +11,29 @@ from raven.utils import get_channel_member, track_channel_visit
 
 
 @frappe.whitelist(methods=["POST"])
-def send_message(channel_id, text, is_reply, linked_message=None, json_content=None):
+def send_message(channel_id, text, is_reply, linked_message=None, json_content=None, is_thread_message=0, thread_id=None):
 
 	# remove empty list items
 	clean_text = text.replace("<li><br></li>", "").strip()
 
+	# If the message is a thread message, add the thread_id to the message and set is_thread_message to 1
+
 	if clean_text:
-		if is_reply:
+		if is_thread_message:
+			doc = frappe.get_doc(
+				{
+					"doctype": "Raven Message",
+					"channel_id": channel_id,
+					"text": clean_text,
+					"message_type": "Text",
+					"is_reply": is_reply,
+					"linked_message": linked_message,
+					"json": json_content,
+					"is_thread_message": is_thread_message,
+					"thread_id": thread_id,
+				}
+			)
+		elif is_reply:
 			doc = frappe.get_doc(
 				{
 					"doctype": "Raven Message",

@@ -91,7 +91,7 @@ export const ChatBoxBody = ({ channelData }: ChatBoxBodyProps) => {
     const isDM = channelData?.is_direct_message === 1 || channelData?.is_self_message === 1
 
     return (
-        <Flex height='100%' direction='column' justify={'end'} pt='9' className="overflow-hidden sm:px-4 px-2">
+        <Flex height='100%' direction='column' justify={'end'} pt='9' className="w-full overflow-hidden sm:px-4 px-2">
 
             <FileDrop
                 files={files}

@@ -4,8 +4,8 @@ import { ErrorBanner } from "@/components/layout/AlertBanner"
 import { FullPageLoader } from "@/components/layout/Loaders"
 import { useCurrentChannelData } from "@/hooks/useCurrentChannelData"
 import { useEffect } from "react"
-import { Box } from '@radix-ui/themes'
-import { useLocation, useParams } from "react-router-dom"
+import { Box, Flex } from '@radix-ui/themes'
+import { Outlet, useLocation, useParams } from "react-router-dom"
 import { useSWRConfig } from "frappe-react-sdk"
 import { UnreadChannelCountItem, UnreadCountData } from "@/utils/channel/ChannelListProvider"
 
@@ -93,13 +93,16 @@ const ChatSpaceArea = ({ channelID }: { channelID: string }) => {
 
     }, [channelID, state?.baseMessage])
 
-    return <Box>
-        {isLoading && <FullPageLoader />}
-        <ErrorBanner error={error} />
-        {channel ?
-            channel.type === "dm" ?
-                <DirectMessageSpace channelData={channel.channelData} />
-                : <ChannelSpace channelData={channel.channelData} />
-            : null}
-    </Box>
+    return <Flex className={"w-full"}>
+        <Box>
+            {isLoading && <FullPageLoader />}
+            <ErrorBanner error={error} />
+            {channel ?
+                channel.type === "dm" ?
+                    <DirectMessageSpace channelData={channel.channelData} />
+                    : <ChannelSpace channelData={channel.channelData} />
+                : null}
+        </Box>
+        <Outlet />
+    </Flex>
 }

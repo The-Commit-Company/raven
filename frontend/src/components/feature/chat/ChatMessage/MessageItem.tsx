@@ -24,6 +24,7 @@ import { useIsDesktop } from '@/hooks/useMediaQuery'
 import { useDoubleTap } from 'use-double-tap'
 import useOutsideClick from '@/hooks/useOutsideClick'
 import { getStatusText } from '../../userSettings/AvailabilityStatus/SetUserAvailabilityMenu'
+import { ThreadMessage } from '../../threads/ThreadPreviewBox'
 
 interface MessageBlockProps {
     message: Message,
@@ -148,11 +149,13 @@ export const MessageItem = ({ message, setDeleteMessage, isHighlighted, onReplyM
                                 onClick={() => onReplyMessageClick(linked_message)}
                                 message={replyMessageDetails} />
                             }
+
                             { /* Show message according to type */}
-                            <MessageContent
-                                message={message}
-                                user={user}
-                            />
+                            {message.is_thread === 1 ? <ThreadMessage thread={message} /> :
+                                <MessageContent
+                                    message={message}
+                                    user={user}
+                                />}
 
                             {message.link_doctype && message.link_document && <Box className={clsx(message.is_continuation ? 'ml-0.5' : '-ml-0.5')}>
                                 <DoctypeLinkRenderer doctype={message.link_doctype} docname={message.link_document} />

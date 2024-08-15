@@ -10,12 +10,12 @@ import { Message } from "../../../../../types/Messaging/Message"
 
 const Threads = () => {
 
-    const { data, error } = useFrappeGetCall<{ message: Message[] }>("raven.api.threads.get_all_threads", undefined, undefined, {
+    const { data, error } = useFrappeGetCall<{ message: Message[] }>("raven.api.threads.get_all_threads", {
         revalidateOnFocus: false
     })
 
     return (
-        <Flex>
+        <Flex className="w-full">
             <Flex width='100%' direction='column' gap='0'>
                 <PageHeader>
                     <Flex align='center' gap='3' className="h-8">

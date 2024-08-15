@@ -1,38 +1,21 @@
-import { useFrappeDocumentEventListener, useFrappeEventListener, useFrappeGetCall, useFrappePostCall } from 'frappe-react-sdk'
-import { MutableRefObject, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
+import { useFrappeEventListener, useFrappeGetCall, useFrappePostCall } from 'frappe-react-sdk'
+import { MutableRefObject, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { useBeforeUnload, useLocation, useNavigate, useParams } from 'react-router-dom'
 import { Message } from '../../../../../../types/Messaging/Message'
 import { getDateObject } from '@/utils/dateConversions/utils'
 import { useDebounce } from '@/hooks/useDebounce'
-import { UserContext } from '@/utils/auth/UserProvider'
+import { GetMessagesResponse, MessageDateBlock } from '../../chat/ChatStream/useChatStream'
 
-export interface GetMessagesResponse {
-    message: {
-        messages: Message[],
-        has_old_messages: boolean
-        has_new_messages: boolean
-    }
-}
-
-export type MessageDateBlock = Message | {
-    /**  */
-    creation: string
-    message_type: 'date',
-    name: string
-}
 /**
- * Hook to fetch messages to be rendered on the chat interface
+ * Hook to fetch messages to be rendered on the thread 
  */
-const useChatStream = (scrollRef: MutableRefObject<HTMLDivElement | null>) => {
+const useThreadStream = (scrollRef: MutableRefObject<HTMLDivElement | null>) => {
 
-    const { channelID } = useParams()
+    const { threadID } = useParams()
 
     const location = useLocation()
     const navigate = useNavigate()
     const { state } = location
-
-    const { currentUser } = useContext(UserContext)
-
 
     const [highlightedMessage, setHighlightedMessage] = useState<string | null>(state?.baseMessage ? state.baseMessage : null)
 
@@ -69,10 +52,10 @@ const useChatStream = (scrollRef: MutableRefObject<HTMLDivElement | null>) => {
     const latestMessagesLoaded = useRef(false)
 
     const { data, isLoading, error, mutate } = useFrappeGetCall<GetMessagesResponse>('raven.api.chat_stream.get_messages', {
-        'channel_id': channelID,
+        'channel_id': threadID,
         'base_message': state?.baseMessage ? state.baseMessage : undefined,
-        'is_thread': 0
-    }, { path: `get_messages_for_channel_${channelID}`, baseMessage: state?.baseMessage }, {
+        'is_thread': 1
+    }, { path: `get_messages_for_channel_${threadID}`, baseMessage: state?.baseMessage }, {
         revalidateOnFocus: false,
         onSuccess: (data) => {
             if (!highlightedMessage) {
@@ -112,104 +95,7 @@ const useChatStream = (scrollRef: MutableRefObject<HTMLDivElement | null>) => {
 
         scrollRef.current?.scrollTo(0, scrollRef.current?.scrollHeight)
         // }
-    }, [done, channelID])
-
-
-    /** If the user has already loaded all the latest messages and exits the channel, we update the timestamp of last visit  */
-
-    const { call: trackVisit } = useFrappePostCall('raven.api.raven_channel_member.track_visit')
-    /**
-     * Track visit when unmounting if new messages were loaded.
-     * We are using a ref since the hook is not re-executed when the data is updated
-     */
-    useEffect(() => {
-        /** Call */
-        return () => {
-            if (latestMessagesLoaded.current) {
-                trackVisit({ channel_id: channelID })
-            }
-        }
-    }, [channelID])
-
-    /**
-     * Instead of maintaining two arrays for messages and previous messages, we can maintain a single array
-     * This is maintained by the useSWR hook (useFrappeGetCall) here.
-     *
-     * We use the mutate method to update the messages array when messages are received, updated, deleted, etc.
-     * Even if the user scrolls up and loads older messages, the hook is mutated by concatenating the older messages to the existing messages array
-     *
-     * Since we are using Web Socket events, this saves multiple round-trips to the server to fetch messages (pre Raven v1.5)
-     *
-     * When the page changes and the user comes back to the chat, the messages are fetched again and hence the messages array is updated with only new messages
-     *
-     * This also helps when the user goes directly to a specific message from somewhere(notification, search etc.).
-     * We just shift the base message and fire the `get_messages` API to get the messages around the base message.
-     * Post that, the behaviour is the same - if the user scrolls up or down, we just mutate the messages array directly.
-     * If a new messages comes in while the user is viewing the base message (i.e. the latest messages are not visible), we do not update the messages array.
-     * This is tracked using the `has_new_messages` flag in the response from the `get_messages` API
-     *
-     * Below are the Web Socket events and they are all handled by mutating the messages array directly
-     *
-     * Refer: https://swr.vercel.app/docs/mutation
-     */
-
-    useFrappeDocumentEventListener('Raven Channel', channelID ?? '', () => { })
-
-    // If there are new messages in the channel, update the messages
-    useFrappeEventListener('message_created', (event) => {
-        if (event.channel_id === channelID) {
-
-            mutate((d) => {
-                if (d && d.message.has_new_messages === false) {
-                    // Update the array of messages - append the new message in it and then sort it by date
-                    const existingMessages = d.message.messages ?? []
-
-                    const newMessages = [...existingMessages]
-                    if (event.message_details) {
-                        // Check if the message is already present in the messages array
-                        const messageIndex = existingMessages.findIndex(message => message.name === event.message_details.name)
-
-                        if (messageIndex !== -1) {
-                            // If the message is already present, update the message
-                            newMessages[messageIndex] = event.message_details
-                        } else {
-                            // If the message is not present, add the message to the array
-                            newMessages.push(event.message_details)
-                        }
-                    }
-
-                    newMessages.sort((a, b) => {
-                        return new Date(b.creation).getTime() - new Date(a.creation).getTime()
-                    })
-                    return ({
-                        message: {
-                            messages: newMessages,
-                            has_old_messages: d.message.has_old_messages ?? false,
-                            has_new_messages: d.message.has_new_messages ?? false
-                        }
-                    })
-                } else {
-                    return d
-                }
-
-            }, {
-                revalidate: false,
-            }).then(() => {
-                if (data?.message.has_new_messages === false) {
-                    // If the user is focused on the page, then we also need to
-                    if (scrollRef.current) {
-                        // We only scroll to the bottom if the user is close to the bottom
-                        if (scrollRef.current.scrollTop + scrollRef.current.clientHeight >= scrollRef.current.scrollHeight - 100) {
-                            scrollRef.current?.scrollTo(0, scrollRef.current?.scrollHeight)
-                        } else if (event.message_details.owner === currentUser) {
-                            // If the user is the sender of the message, scroll to the bottom
-                            scrollRef.current?.scrollTo(0, scrollRef.current?.scrollHeight)
-                        }
-                    }
-                }
-            })
-        }
-    })
+    }, [done, threadID])
 
     // If a message is edited, update the specific message
     useFrappeEventListener('message_edited', (event) => {
@@ -292,7 +178,6 @@ const useChatStream = (scrollRef: MutableRefObject<HTMLDivElement | null>) => {
         })
     })
 
-
     // If a message is saved/unsaved, update the message
     useFrappeEventListener('message_saved', (event) => {
 
@@ -343,7 +228,7 @@ const useChatStream = (scrollRef: MutableRefObject<HTMLDivElement | null>) => {
                     if (oldestMessage) {
 
                         return fetchOlderMessages({
-                            channel_id: channelID,
+                            channel_id: threadID,
                             from_message: oldestMessage.name,
                         }).then((res) => {
 
@@ -390,7 +275,7 @@ const useChatStream = (scrollRef: MutableRefObject<HTMLDivElement | null>) => {
                     if (newestMessage) {
 
                         return fetchNewerMessages({
-                            channel_id: channelID,
+                            channel_id: threadID,
                             from_message: newestMessage.name,
                             limit: 10
                         }).then((res: any) => {
@@ -532,4 +417,4 @@ const useChatStream = (scrollRef: MutableRefObject<HTMLDivElement | null>) => {
     }
 }
 
-export default useChatStream
+export default useThreadStream

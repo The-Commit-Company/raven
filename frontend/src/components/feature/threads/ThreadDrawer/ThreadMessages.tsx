@@ -1,16 +1,19 @@
+import { IconButton, Flex, Box } from "@radix-ui/themes"
 import { useState } from "react"
-import { Message } from "../../../../../types/Messaging/Message"
-import ChatStream from "../chat/ChatStream/ChatStream"
-import { Box, Flex, IconButton } from "@radix-ui/themes"
-import Tiptap from "../chat/ChatInput/Tiptap"
-import { ReplyMessageBox } from "../chat/ChatMessage/ReplyMessageBox/ReplyMessageBox"
+import { Message } from "react-hook-form"
 import { BiX } from "react-icons/bi"
-import { FileListItem } from "../file-upload/FileListItem"
-import { CustomFile } from "../file-upload/FileDrop"
-import { useSendMessage } from "../chat/ChatInput/useSendMessage"
-import useFileUpload from "../chat/ChatInput/FileInput/useFileUpload"
+import useFileUpload from "../../chat/ChatInput/FileInput/useFileUpload"
+import Tiptap from "../../chat/ChatInput/Tiptap"
+import { useSendMessage } from "../../chat/ChatInput/useSendMessage"
+import { ReplyMessageBox } from "../../chat/ChatMessage/ReplyMessageBox/ReplyMessageBox"
+import { CustomFile } from "../../file-upload/FileDrop"
+import { FileListItem } from "../../file-upload/FileListItem"
+import { useParams } from "react-router-dom"
+import ThreadStream from "./ThreadStream"
 
-export const ThreadMessages = ({ threadID }: { threadID: string }) => {
+export const ThreadMessages = () => {
+
+    const { threadID, channelID } = useParams()
 
     const [selectedMessage, setSelectedMessage] = useState<Message | null>(null)
 
@@ -22,7 +25,12 @@ export const ThreadMessages = ({ threadID }: { threadID: string }) => {
         setSelectedMessage(null)
     }
 
+    const { fileInputRef, files, setFiles, removeFile, uploadFiles, addFile, fileUploadProgress } = useFileUpload(channelID ?? '')
+
+    const { sendMessage, loading } = useSendMessage(channelID ?? '', files.length, uploadFiles, handleCancelReply, true, selectedMessage)
+
     const PreviousMessagePreview = ({ selectedMessage }: { selectedMessage: any }) => {
+
         if (selectedMessage) {
             return <ReplyMessageBox
                 justify='between'
@@ -41,12 +49,9 @@ export const ThreadMessages = ({ threadID }: { threadID: string }) => {
         return null
     }
 
-    const { fileInputRef, files, setFiles, removeFile, uploadFiles, addFile, fileUploadProgress } = useFileUpload(threadID)
-    const { sendMessage, loading } = useSendMessage(threadID, files.length, uploadFiles, handleCancelReply, selectedMessage)
-
     return (
         <Flex direction='column' justify={'between'} gap='0' className="h-full p-4">
-            <ChatStream replyToMessage={handleReplyAction} />
+            <ThreadStream replyToMessage={handleReplyAction} />
             <Tiptap
                 key={threadID}
                 fileProps={{
