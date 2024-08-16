@@ -17,7 +17,7 @@ import { Message } from '../../../../../types/Messaging/Message'
 
 interface Props {
     onToggleMyChannels: () => void,
-    isOpenMyChannels: boolean,
+    isOnlyInMyChannels: boolean,
     input: string,
     fromFilter?: string,
     inFilter?: string,
@@ -27,7 +27,7 @@ interface Props {
     isSaved: boolean
 }
 
-export const MessageSearch = ({ onToggleMyChannels, isOpenMyChannels, onToggleSaved, isSaved, input, fromFilter, inFilter, withFilter, onClose }: Props) => {
+export const MessageSearch = ({ onToggleMyChannels, isOnlyInMyChannels, onToggleSaved, isSaved, input, fromFilter, inFilter, withFilter, onClose }: Props) => {
 
     const [searchText, setSearchText] = useState(input)
     const debouncedText = useDebounce(searchText)
@@ -66,8 +66,8 @@ export const MessageSearch = ({ onToggleMyChannels, isOpenMyChannels, onToggleSa
         const isChannelFilterApplied = channelFilter !== 'any' && channelFilter !== undefined
         const isUserFilterApplied = userFilter !== 'any' && userFilter !== undefined
         const isDateFilterApplied = dateFilter !== 'any' && dateFilter !== undefined
-        return (debouncedText.length > 2 || isChannelFilterApplied || isUserFilterApplied || isDateFilterApplied || isOpenMyChannels === true)
-    }, [debouncedText, channelFilter, userFilter, isOpenMyChannels, dateFilter])
+        return (debouncedText.length > 2 || isChannelFilterApplied || isUserFilterApplied || isDateFilterApplied || isOnlyInMyChannels === true)
+    }, [debouncedText, channelFilter, userFilter, isOnlyInMyChannels, dateFilter])
 
     const { data, error, isLoading } = useFrappeGetCall<{ message: Message[] }>("raven.api.search.get_search_result", {
         filter_type: 'Message',
@@ -76,7 +76,7 @@ export const MessageSearch = ({ onToggleMyChannels, isOpenMyChannels, onToggleSa
         in_channel: channelFilter === 'any' ? undefined : channelFilter,
         saved: isSaved,
         date: dateFilter === 'any' ? undefined : dateFilter,
-        my_channel_only: isOpenMyChannels,
+        my_channel_only: isOnlyInMyChannels,
     }, showResults ? undefined : null, {
         revalidateOnFocus: false,
     })
@@ -170,7 +170,7 @@ export const MessageSearch = ({ onToggleMyChannels, isOpenMyChannels, onToggleSa
 
                     <Text as="label" size="2">
                         <Flex gap="2">
-                            <Checkbox checked={isOpenMyChannels} onCheckedChange={onToggleMyChannels} /> Only in my channels
+                            <Checkbox checked={isOnlyInMyChannels} onCheckedChange={onToggleMyChannels} /> Only in my channels
                         </Flex>
                     </Text>
 

@@ -55,7 +55,7 @@ export default function GlobalSearch(props: GlobalSearchModalProps) {
 
 const GlobalSearchContent = (props: GlobalSearchModalProps) => {
 
-    const [isOpenMyChannels, { toggle: onToggleMyChannels }] = useBoolean()
+    const [isOnlyInMyChannels, { toggle: onToggleMyChannels }] = useBoolean()
     const [isSaved, { toggle: onToggleSaved }] = useBoolean()
 
     const { tabIndex, input, fromFilter, withFilter, inFilter, onClose } = props
@@ -70,13 +70,13 @@ const GlobalSearchContent = (props: GlobalSearchModalProps) => {
                 </Tabs.List>
                 <Box pt="3" pb="2">
                     <Tabs.Content value="0">
-                        <MessageSearch onToggleMyChannels={onToggleMyChannels} isOpenMyChannels={isOpenMyChannels} onToggleSaved={onToggleSaved} isSaved={isSaved} input={input} fromFilter={fromFilter} inFilter={inFilter} withFilter={withFilter} onClose={onClose} />
+                        <MessageSearch onToggleMyChannels={onToggleMyChannels} isOnlyInMyChannels={isOnlyInMyChannels} onToggleSaved={onToggleSaved} isSaved={isSaved} input={input} fromFilter={fromFilter} inFilter={inFilter} withFilter={withFilter} onClose={onClose} />
                     </Tabs.Content>
                     <Tabs.Content value="1">
-                        <FileSearch onToggleMyChannels={onToggleMyChannels} isOpenMyChannels={isOpenMyChannels} onToggleSaved={onToggleSaved} isSaved={isSaved} input={input} fromFilter={fromFilter} inFilter={inFilter} withFilter={withFilter} />
+                        <FileSearch onToggleMyChannels={onToggleMyChannels} isOnlyInMyChannels={isOnlyInMyChannels} onToggleSaved={onToggleSaved} isSaved={isSaved} input={input} fromFilter={fromFilter} inFilter={inFilter} withFilter={withFilter} />
                     </Tabs.Content>
                     <Tabs.Content value="2">
-                        <ChannelSearch onToggleMyChannels={onToggleMyChannels} isOpenMyChannels={isOpenMyChannels} input={input} onClose={onClose} />
+                        <ChannelSearch onToggleMyChannels={onToggleMyChannels} isOnlyInMyChannels={isOnlyInMyChannels} input={input} onClose={onClose} />
                     </Tabs.Content>
                 </Box>
             </Tabs.Root>

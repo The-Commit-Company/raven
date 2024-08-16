@@ -19,7 +19,7 @@ import { dateOption } from './GlobalSearch'
 
 interface Props {
     onToggleMyChannels: () => void,
-    isOpenMyChannels: boolean,
+    isOnlyInMyChannels: boolean,
     input: string,
     fromFilter?: string,
     withFilter?: string,
@@ -36,7 +36,7 @@ export interface FileSearchResult {
     message_type: string
 }
 
-export const FileSearch = ({ onToggleMyChannels, isOpenMyChannels, onToggleSaved, isSaved, input, fromFilter, withFilter, inFilter }: Props) => {
+export const FileSearch = ({ onToggleMyChannels, isOnlyInMyChannels, onToggleSaved, isSaved, input, fromFilter, withFilter, inFilter }: Props) => {
 
     const [searchText, setSearchText] = useState(input)
     const debouncedText = useDebounce(searchText)
@@ -67,7 +67,7 @@ export const FileSearch = ({ onToggleMyChannels, isOpenMyChannels, onToggleSaved
         date: dateFilter,
         file_type: fileType === 'any' ? undefined : fileType,
         message_type: fileType === 'any' || fileType === undefined ? undefined : fileType === 'image' ? 'Image' : 'File',
-        my_channel_only: isOpenMyChannels,
+        my_channel_only: isOnlyInMyChannels,
     }, undefined, {
         revalidateOnFocus: false
     })
@@ -212,7 +212,7 @@ export const FileSearch = ({ onToggleMyChannels, isOpenMyChannels, onToggleSaved
 
                     <Text as="label" size="2">
                         <Flex gap="2">
-                            <Checkbox checked={isOpenMyChannels} onCheckedChange={onToggleMyChannels} /> Only in my channels
+                            <Checkbox checked={isOnlyInMyChannels} onCheckedChange={onToggleMyChannels} /> Only in my channels
                         </Flex>
                     </Text>
 

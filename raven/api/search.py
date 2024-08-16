@@ -114,7 +114,7 @@ def get_search_result(
 	if channel_type:
 		query = query.where(channel.type == channel_type)
 
-	if my_channel_only:
+	if my_channel_only == "true":
 		query = query.where((channel.type == "Open") | (channel_member.user_id == frappe.session.user))
 
 	if saved == "true":

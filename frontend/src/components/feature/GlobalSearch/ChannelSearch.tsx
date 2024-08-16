@@ -11,12 +11,12 @@ import { Flex, Select, TextField, Box, Checkbox, ScrollArea, Text, Badge } from 
 import { Loader } from '@/components/common/Loader'
 interface Props {
     onToggleMyChannels: () => void,
-    isOpenMyChannels: boolean,
+    isOnlyInMyChannels: boolean,
     input: string,
     onClose: () => void
 }
 
-export const ChannelSearch = ({ onToggleMyChannels, isOpenMyChannels, input, onClose }: Props) => {
+export const ChannelSearch = ({ onToggleMyChannels, isOnlyInMyChannels, input, onClose }: Props) => {
 
     const [searchText, setSearchText] = useState(input)
     const debouncedText = useDebounce(searchText)
@@ -33,7 +33,7 @@ export const ChannelSearch = ({ onToggleMyChannels, isOpenMyChannels, input, onC
         filter_type: 'Channel',
         search_text: debouncedText,
         channel_type: channelType === 'any' ? undefined : channelType,
-        my_channel_only: isOpenMyChannels,
+        my_channel_only: isOnlyInMyChannels,
     }, undefined, {
         revalidateOnFocus: false
     })
@@ -95,7 +95,7 @@ export const ChannelSearch = ({ onToggleMyChannels, isOpenMyChannels, input, onC
 
                     <Text as="label" className='hidden sm:block' style={{ width: '20%' }} size="2">
                         <Flex gap="2" align='center'>
-                            <Checkbox checked={isOpenMyChannels} onCheckedChange={onToggleMyChannels} /> Only in my channels
+                            <Checkbox checked={isOnlyInMyChannels} onCheckedChange={onToggleMyChannels} /> Only in my channels
                         </Flex>
                     </Text>
 
