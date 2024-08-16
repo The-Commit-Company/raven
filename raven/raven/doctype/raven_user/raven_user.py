@@ -95,7 +95,7 @@ class RavenUser(Document):
 					"doctype": "File",
 					"file_url": user_image,
 					"attached_to_doctype": "Raven User",
-					"attached_to_name": self.name,
+					"attached_to_name": self.user,
 					"attached_to_field": "user_image",
 					"is_private": 1,
 				}
