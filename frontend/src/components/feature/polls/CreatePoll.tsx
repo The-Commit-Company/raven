@@ -41,8 +41,6 @@ const CreatePollContent = ({ setIsOpen }: { setIsOpen: (open: boolean) => void }
         name: 'options'
     })
 
-    const optionPlaceholders = ['Cersei Lannister', 'Jon Snow', 'Daenerys Targaryen', 'Tyrion Lannister', 'Night King', 'Arya Stark', 'Sansa Stark', 'Jaime Lannister', 'Bran Stark', 'The Hound']
-
     const handleAddOption = () => {
         // limit the number of options to 10
         if (fields.length >= 10) {
@@ -104,7 +102,7 @@ const CreatePollContent = ({ setIsOpen }: { setIsOpen: (open: boolean) => void }
                     <Label htmlFor='question' isRequired>Question</Label>
                     <TextArea {...register("question", {
                         required: 'Question is required'
-                    })} placeholder="Who do you think deserves to sit on the Iron Throne?" required />
+                    })} placeholder="Ask a question to gather responses" required />
                     {errors?.question && <ErrorText>{errors.question?.message}</ErrorText>}
                 </Box>
 
@@ -114,7 +112,7 @@ const CreatePollContent = ({ setIsOpen }: { setIsOpen: (open: boolean) => void }
                         {fields && fields.map((field, index) => (
                             <Flex key={field.id} gap='2' align={'start'}>
                                 <div className={'w-full'}>
-                                    <TextField.Root placeholder={optionPlaceholders[index]} {...register(`options.${index}.option`, {
+                                    <TextField.Root placeholder={`Option ${index + 1}`} {...register(`options.${index}.option`, {
                                         required: 'Option is required',
                                         minLength: {
                                             value: 1,
