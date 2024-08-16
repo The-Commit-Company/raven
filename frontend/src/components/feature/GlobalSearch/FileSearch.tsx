@@ -61,8 +61,8 @@ export const FileSearch = ({ onToggleMyChannels, isOnlyInMyChannels, onToggleSav
     const { data, error, isLoading } = useFrappeGetCall<{ message: GetFileSearchResult[] }>("raven.api.search.get_search_result", {
         filter_type: 'File',
         search_text: debouncedText,
-        from_user: userFilter,
-        in_channel: channelFilter,
+        from_user: userFilter === 'any' ? undefined : userFilter,
+        in_channel: channelFilter === 'any' ? undefined : channelFilter,
         saved: isSaved,
         date: dateFilter,
         file_type: fileType === 'any' ? undefined : fileType,

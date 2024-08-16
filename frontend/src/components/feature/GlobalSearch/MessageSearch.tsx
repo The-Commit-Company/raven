@@ -63,7 +63,7 @@ export const MessageSearch = ({ onToggleMyChannels, isOnlyInMyChannels, onToggle
     }
 
     const showResults = useMemo(() => {
-        const isChannelFilterApplied = channelFilter !== 'any' && channelFilter !== undefined
+        const isChannelFilterApplied = channelFilter !== undefined
         const isUserFilterApplied = userFilter !== 'any' && userFilter !== undefined
         const isDateFilterApplied = dateFilter !== 'any' && dateFilter !== undefined
         return (debouncedText.length > 2 || isChannelFilterApplied || isUserFilterApplied || isDateFilterApplied || isOnlyInMyChannels === true)
