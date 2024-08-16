@@ -1,5 +1,3 @@
-import { RavenThreadParticipant } from "@/types/RavenMessaging/RavenThreadParticipant"
-
 export type Message = FileMessage | TextMessage | ImageMessage | PollMessage
 
 export interface BaseMessage {
@@ -25,9 +23,6 @@ export interface BaseMessage {
     bot?: string,
     hide_link_preview?: 1 | 0,
     is_thread: 1 | 0,
-    is_thread_message: 1 | 0,
-    thread_messages_count?: number,
-    thread_participants?: RavenThreadParticipant[]
 }
 
 export interface FileMessage extends BaseMessage {
