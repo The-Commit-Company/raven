@@ -19,7 +19,6 @@ interface GlobalSearchModalProps {
 
 export default function GlobalSearch(props: GlobalSearchModalProps) {
 
-
     const { isOpen, onClose } = props
 
     const onOpenChange = (open: boolean) => {

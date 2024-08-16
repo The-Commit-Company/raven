@@ -54,22 +54,19 @@ export const FileSearch = ({ onToggleMyChannels, isOpenMyChannels, onToggleSaved
 
     const users = useGetUserRecords()
 
-
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setSearchText(e.target.value)
     }
 
-
     const { data, error, isLoading } = useFrappeGetCall<{ message: GetFileSearchResult[] }>("raven.api.search.get_search_result", {
         filter_type: 'File',
-        doctype: 'Raven Message',
         search_text: debouncedText,
-        message_type: fileType === 'any' || fileType === undefined ? undefined : fileType === 'image' ? 'Image' : 'File',
-        file_type: fileType === 'any' ? undefined : fileType,
-        in_channel: channelFilter,
         from_user: userFilter,
+        in_channel: channelFilter,
         saved: isSaved,
         date: dateFilter,
+        file_type: fileType === 'any' ? undefined : fileType,
+        message_type: fileType === 'any' || fileType === undefined ? undefined : fileType === 'image' ? 'Image' : 'File',
         my_channel_only: isOpenMyChannels,
     }, undefined, {
         revalidateOnFocus: false
@@ -244,7 +241,7 @@ export const FileSearch = ({ onToggleMyChannels, isOpenMyChannels, onToggleSaved
                                         />}
                                     </Flex>
                                     <Flex direction='column' className='w-[94%]'>
-                                        {f.file && <Link weight='medium' size='2' href={f.file} target='_blank'>{getFileName(f.file)} {f.file}</Link>}
+                                        {f.file && <Link weight='medium' size='1' href={f.file} target='_blank'>{getFileName(f.file)}</Link>}
                                         {users && <Text size='1' color='gray'>Shared by {Object.values(users).find((user: UserFields) => user.name === f.owner)?.full_name} on <DateMonthYear date={f.creation} /></Text>}
                                     </Flex>
                                 </Flex>
