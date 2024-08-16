@@ -118,6 +118,6 @@ def get_search_result(
 		query = query.where((channel.type == "Open") | (channel_member.user_id == frappe.session.user))
 
 	if saved == "true":
-		query = query.where(message._liked_by == frappe.session.user)
+		query = query.where(message._liked_by.like(f"%{frappe.session.user}%"))
 
-	return query.run(as_dict=True)
+	return query.limit(20).offset(0).run(as_dict=True)
