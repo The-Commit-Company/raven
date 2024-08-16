@@ -13,7 +13,7 @@ def get_search_result(
 	file_type=None,
 	message_type=None,
 	channel_type=None,
-	my_channel_only=False
+	my_channel_only=False,
 ):
 	# Define the necessary document types
 	channel_member = frappe.qb.DocType("Raven Channel Member")
@@ -25,11 +25,40 @@ def get_search_result(
 	file_extensions = {
 		"pdf": "pdf",
 		"doc": ["doc", "docx", "odt", "ott", "rtf", "txt", "dot", "dotx", "docm", "dotm", "pages"],
-		"ppt": ["ppt", "pptx", "odp", "otp", "pps", "ppsx", "pot", "potx", "pptm", "ppsm", "potm", "ppam", "ppa", "key"],
-		"xls": ["xls", "xlsx", "csv", "ods", "ots", "xlsb", "xlsm", "xlt", "xltx", "xltm", "xlam", "xla", "numbers"],
+		"ppt": [
+			"ppt",
+			"pptx",
+			"odp",
+			"otp",
+			"pps",
+			"ppsx",
+			"pot",
+			"potx",
+			"pptm",
+			"ppsm",
+			"potm",
+			"ppam",
+			"ppa",
+			"key",
+		],
+		"xls": [
+			"xls",
+			"xlsx",
+			"csv",
+			"ods",
+			"ots",
+			"xlsb",
+			"xlsm",
+			"xlt",
+			"xltx",
+			"xltm",
+			"xlam",
+			"xla",
+			"numbers",
+		],
 	}
 
-    # Base query
+	# Base query
 	query = (
 		frappe.qb.from_(message)
 		.select(
