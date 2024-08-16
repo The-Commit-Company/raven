@@ -47,7 +47,7 @@ export const ThreadPreviewBox = ({ thread }: { thread: Message }) => {
                 <Flex align={'center'} gap='2'>
                     <Flex gap='1' align={'center'}>
                         <Text size='1' className={'text-gray-11'}>Replies:</Text>
-                        <Text size='1' className={'font-medium'}>{thread.thread_messages_count}</Text>
+                        {/* <Text size='1' className={'font-medium'}>{thread.thread_messages_count}</Text> */}
                     </Flex>
                     <Separator orientation='vertical' />
                     <Button size={'1'}
@@ -57,7 +57,7 @@ export const ThreadPreviewBox = ({ thread }: { thread: Message }) => {
                         View Thread
                     </Button>
                 </Flex>
-                <ViewThreadParticipants participants={thread.thread_participants ?? []} />
+                {/* <ViewThreadParticipants participants={thread.thread_participants ?? []} /> */}
             </Flex>
         </Flex>
     )

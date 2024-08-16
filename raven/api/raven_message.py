@@ -11,29 +11,13 @@ from raven.utils import get_channel_member, track_channel_visit
 
 
 @frappe.whitelist(methods=["POST"])
-def send_message(channel_id, text, is_reply, linked_message=None, json_content=None, is_thread_message=0, thread_id=None):
+def send_message(channel_id, text, is_reply, linked_message=None, json_content=None):
 
 	# remove empty list items
 	clean_text = text.replace("<li><br></li>", "").strip()
 
-	# If the message is a thread message, add the thread_id to the message and set is_thread_message to 1
-
 	if clean_text:
-		if is_thread_message:
-			doc = frappe.get_doc(
-				{
-					"doctype": "Raven Message",
-					"channel_id": channel_id,
-					"text": clean_text,
-					"message_type": "Text",
-					"is_reply": is_reply,
-					"linked_message": linked_message,
-					"json": json_content,
-					"is_thread_message": is_thread_message,
-					"thread_id": thread_id,
-				}
-			)
-		elif is_reply:
+		if is_reply:
 			doc = frappe.get_doc(
 				{
 					"doctype": "Raven Message",
@@ -105,8 +89,6 @@ def get_messages(channel_id):
 			"content",
 			"is_edited",
 			"is_thread",
-			"is_thread_message",
-			"thread_id",
 			"is_forwarded",
 		],
 		order_by="creation asc",
@@ -540,9 +522,6 @@ def add_forwarded_message_to_channel(channel_id, forwarded_message):
 			"modified": frappe.utils.now_datetime(),
 			"is_continuation": 0,
 			"is_edited": 0,
-			"is_thread": 0,
-			"is_thread_message": 0,
-			"thread_id": None,
 			"is_reply": 0,
 			"is_forwarded": 1,
 			"replied_message_details": None,
