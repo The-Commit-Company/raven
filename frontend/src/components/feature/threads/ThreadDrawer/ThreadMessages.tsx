@@ -1,6 +1,5 @@
 import { IconButton, Flex, Box } from "@radix-ui/themes"
 import { useState } from "react"
-import { Message } from "react-hook-form"
 import { BiX } from "react-icons/bi"
 import useFileUpload from "../../chat/ChatInput/FileInput/useFileUpload"
 import Tiptap from "../../chat/ChatInput/Tiptap"
@@ -10,6 +9,7 @@ import { CustomFile } from "../../file-upload/FileDrop"
 import { FileListItem } from "../../file-upload/FileListItem"
 import { useParams } from "react-router-dom"
 import ThreadStream from "./ThreadStream"
+import { Message } from "../../../../../../types/Messaging/Message"
 
 export const ThreadMessages = () => {
 
@@ -27,7 +27,7 @@ export const ThreadMessages = () => {
 
     const { fileInputRef, files, setFiles, removeFile, uploadFiles, addFile, fileUploadProgress } = useFileUpload(channelID ?? '')
 
-    const { sendMessage, loading } = useSendMessage(channelID ?? '', files.length, uploadFiles, handleCancelReply, true, selectedMessage)
+    const { sendMessage, loading } = useSendMessage(threadID ?? '', files.length, uploadFiles, handleCancelReply, selectedMessage)
 
     const PreviousMessagePreview = ({ selectedMessage }: { selectedMessage: any }) => {
 
