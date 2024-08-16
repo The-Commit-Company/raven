@@ -53,6 +53,7 @@ def get_messages(channel_id: str, limit: int = 20, base_message: str | None = No
 			message.is_bot_message,
 			message.bot,
 			message.hide_link_preview,
+			message.is_thread,
 		)
 		.where(message.channel_id == channel_id)
 		.orderby(message.creation, order=Order.desc)
@@ -159,6 +160,7 @@ def fetch_older_messages(
 			message.is_bot_message,
 			message.bot,
 			message.hide_link_preview,
+			message.is_thread,
 		)
 		.where(message.channel_id == channel_id)
 		.where(
@@ -269,6 +271,7 @@ def fetch_newer_messages(
 			message.is_bot_message,
 			message.bot,
 			message.hide_link_preview,
+			message.is_thread,
 		)
 		.where(message.channel_id == channel_id)
 		.where(condition)

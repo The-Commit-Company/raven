@@ -71,5 +71,8 @@ def create_thread(message_id):
 		frappe.get_doc(
 			{"doctype": "Raven Channel Member", "channel_id": thread_channel.name, "user_id": creator}
 		).insert()
+	thread_message = frappe.get_cached_doc("Raven Message", message_id)
+	thread_message.is_thread = 1
+	thread_message.save(ignore_permissions=True)
 
 	return "Thread created"

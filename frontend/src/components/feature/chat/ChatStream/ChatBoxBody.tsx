@@ -91,6 +91,7 @@ export const ChatBoxBody = ({ channelData }: ChatBoxBodyProps) => {
                 maxFiles={10}
                 maxFileSize={10000000}>
                 <ChatStream
+                    channelID={channelData.name}
                     replyToMessage={handleReplyAction}
                 />
                 {channelData?.is_archived == 0 && (isUserInChannel || channelData?.type === 'Open')

@@ -62,36 +62,3 @@ export const ThreadPreviewBox = ({ thread }: { thread: Message }) => {
         </Flex>
     )
 }
-
-export const ThreadMessage = ({ thread }: { thread: Message }) => {
-
-    const navigate = useNavigate()
-    const handleViewThread = () => {
-        navigate(`thread/${thread.name}`)
-    }
-    const user = useGetUser(thread.owner)
-
-    return (
-        <Flex direction='column' gap='2' className="px-3 py-2 border border-gray-4 rounded-md">
-            <Flex direction='column' gap='2'>
-                <MessageContent message={thread} user={user} />
-                <Flex justify={'between'}>
-                    <Flex align={'center'} gap='2'>
-                        <Flex gap='1' align={'center'}>
-                            <Text size='1' className={'text-gray-11'}>Replies:</Text>
-                            <Text size='1' className={'font-medium'}>{thread.thread_messages_count ?? 0}</Text>
-                        </Flex>
-                        <Separator orientation='vertical' />
-                        <Button size={'1'}
-                            onClick={handleViewThread}
-                            variant={'ghost'}
-                            className={'not-cal w-fit hover:bg-transparent hover:underline cursor-pointer font-semibold'}>
-                            View Thread
-                        </Button>
-                    </Flex>
-                    <ViewThreadParticipants participants={thread.thread_participants ?? []} />
-                </Flex>
-            </Flex>
-        </Flex>
-    )
-}

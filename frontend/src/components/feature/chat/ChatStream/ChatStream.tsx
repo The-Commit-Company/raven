@@ -62,16 +62,16 @@ import { ForwardMessageDialog, useForwardMessage } from '../ChatMessage/MessageA
  */
 
 type Props = {
+    channelID: string,
     replyToMessage: (message: Message) => void,
 }
 
-const ChatStream = ({ replyToMessage }: Props) => {
+const ChatStream = ({ channelID, replyToMessage }: Props) => {
 
-    const { channelID } = useParams()
 
     const scrollRef = useRef<HTMLDivElement | null>(null)
 
-    const { messages, hasOlderMessages, loadOlderMessages, goToLatestMessages, hasNewMessages, error, loadNewerMessages, isLoading, highlightedMessage, scrollToMessage } = useChatStream(scrollRef)
+    const { messages, hasOlderMessages, loadOlderMessages, goToLatestMessages, hasNewMessages, error, loadNewerMessages, isLoading, highlightedMessage, scrollToMessage } = useChatStream(channelID, scrollRef)
     const { setDeleteMessage, ...deleteProps } = useDeleteMessage()
 
     const { setEditMessage, ...editProps } = useEditMessage()

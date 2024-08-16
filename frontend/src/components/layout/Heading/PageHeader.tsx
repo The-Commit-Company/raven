@@ -13,8 +13,8 @@ export const PageHeader = ({ children }: PropsWithChildren) => {
             <Box
                 py='3'
                 className={clsx('border-gray-4 sm:dark:border-gray-6 border-b pl-4 pr-2 sm:px-0 sm:mx-4',
-                    threadID ? 'sm:w-[calc(100vw-var(--sidebar-width)-var(--space-6)-38vw)] w-[calc(100vw-38vw)]' :
-                        'sm:w-[calc(100vw-var(--sidebar-width)-var(--space-6))] w-[100vw]')}>
+                    threadID ? 'sm:w-[calc((100vw-var(--sidebar-width)-var(--space-6))/2)] w-screen' :
+                        'sm:w-[calc(100vw-var(--sidebar-width)-var(--space-6))] w-screen')}>
                 <Flex justify='between'>
                     {children}
                 </Flex>

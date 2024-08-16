@@ -8,12 +8,12 @@ import { ReplyMessageBox } from "../../chat/ChatMessage/ReplyMessageBox/ReplyMes
 import { CustomFile } from "../../file-upload/FileDrop"
 import { FileListItem } from "../../file-upload/FileListItem"
 import { useParams } from "react-router-dom"
-import ThreadStream from "./ThreadStream"
 import { Message } from "../../../../../../types/Messaging/Message"
+import ChatStream from "../../chat/ChatStream/ChatStream"
 
 export const ThreadMessages = () => {
 
-    const { threadID, channelID } = useParams()
+    const { threadID } = useParams()
 
     const [selectedMessage, setSelectedMessage] = useState<Message | null>(null)
 
@@ -25,7 +25,7 @@ export const ThreadMessages = () => {
         setSelectedMessage(null)
     }
 
-    const { fileInputRef, files, setFiles, removeFile, uploadFiles, addFile, fileUploadProgress } = useFileUpload(channelID ?? '')
+    const { fileInputRef, files, setFiles, removeFile, uploadFiles, addFile, fileUploadProgress } = useFileUpload(threadID ?? '')
 
     const { sendMessage, loading } = useSendMessage(threadID ?? '', files.length, uploadFiles, handleCancelReply, selectedMessage)
 
@@ -51,7 +51,10 @@ export const ThreadMessages = () => {
 
     return (
         <Flex direction='column' justify={'between'} gap='0' className="h-full p-4">
-            <ThreadStream replyToMessage={handleReplyAction} />
+            <ChatStream
+                channelID={threadID ?? ''}
+                replyToMessage={handleReplyAction}
+            />
             <Tiptap
                 key={threadID}
                 fileProps={{

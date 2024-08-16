@@ -24,7 +24,7 @@ import { useIsDesktop } from '@/hooks/useMediaQuery'
 import { useDoubleTap } from 'use-double-tap'
 import useOutsideClick from '@/hooks/useOutsideClick'
 import { getStatusText } from '../../userSettings/AvailabilityStatus/SetUserAvailabilityMenu'
-import { ThreadMessage } from '../../threads/ThreadPreviewBox'
+import { ThreadMessage } from './Renderers/ThreadMessage'
 
 interface MessageBlockProps {
     message: Message,
