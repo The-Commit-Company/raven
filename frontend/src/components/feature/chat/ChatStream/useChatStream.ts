@@ -6,7 +6,7 @@ import { getDateObject } from '@/utils/dateConversions/utils'
 import { useDebounce } from '@/hooks/useDebounce'
 import { UserContext } from '@/utils/auth/UserProvider'
 
-export interface GetMessagesResponse {
+interface GetMessagesResponse {
     message: {
         messages: Message[],
         has_old_messages: boolean
@@ -14,7 +14,7 @@ export interface GetMessagesResponse {
     }
 }
 
-export type MessageDateBlock = Message | {
+type MessageDateBlock = Message | {
     /**  */
     creation: string
     message_type: 'date',

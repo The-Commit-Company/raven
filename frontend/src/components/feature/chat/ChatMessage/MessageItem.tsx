@@ -59,10 +59,6 @@ export const MessageItem = ({ message, setDeleteMessage, isHighlighted, onReplyM
         forwardMessage(message)
     }
 
-    const onCreateThread = () => {
-        createThread?.(message.name)
-    }
-
     const isDesktop = useIsDesktop()
 
     const [isHovered, setIsHovered] = useState(false)
@@ -177,7 +173,6 @@ export const MessageItem = ({ message, setDeleteMessage, isHighlighted, onReplyM
                                 onEdit={onEdit}
                                 onReply={onReply}
                                 onForward={onForward}
-                                onCreateThread={onCreateThread}
                             />
                         }
                     </Flex>

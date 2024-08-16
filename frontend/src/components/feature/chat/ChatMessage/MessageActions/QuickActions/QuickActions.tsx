@@ -7,9 +7,10 @@ import { FrappeConfig, FrappeContext } from 'frappe-react-sdk'
 import { EmojiPickerButton } from './EmojiPickerButton'
 import { UserContext } from '@/utils/auth/UserProvider'
 import { AiOutlineEdit } from 'react-icons/ai'
-import { LuForward, LuReply } from 'react-icons/lu'
+import { LuReply } from 'react-icons/lu'
 import { toast } from 'sonner'
 import { getErrorMessage } from '@/components/layout/AlertBanner/ErrorBanner'
+import CreateThreadButton from './CreateThreadButton'
 
 const QUICK_EMOJIS = ['👍', '✅', '👀', '🎉']
 
@@ -18,7 +19,7 @@ interface QuickActionsProps extends MessageContextMenuProps {
     setIsEmojiPickerOpen: (open: boolean) => void
 }
 
-export const QuickActions = ({ message, onReply, onEdit, onForward, isEmojiPickerOpen, setIsEmojiPickerOpen, onCreateThread }: QuickActionsProps) => {
+export const QuickActions = ({ message, onReply, onEdit, onForward, isEmojiPickerOpen, setIsEmojiPickerOpen }: QuickActionsProps) => {
 
     const { currentUser } = useContext(UserContext)
 
@@ -107,12 +108,7 @@ export const QuickActions = ({ message, onReply, onEdit, onForward, isEmojiPicke
                     </QuickActionButton>
                 }
 
-                <QuickActionButton
-                    tooltip='Create a thread'
-                    aria-label='Create a thread'
-                    onClick={onCreateThread}>
-                    <BiMessageDetail size='16' />
-                </QuickActionButton>
+                {message && !message.is_thread && <CreateThreadButton messageID={message.name} />}
 
                 <QuickActionButton
                     aria-label='More actions'

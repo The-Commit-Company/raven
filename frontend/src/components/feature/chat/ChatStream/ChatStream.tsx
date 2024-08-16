@@ -63,10 +63,9 @@ import { ForwardMessageDialog, useForwardMessage } from '../ChatMessage/MessageA
 
 type Props = {
     replyToMessage: (message: Message) => void,
-    createThread?: (messageID: string) => void
 }
 
-const ChatStream = ({ replyToMessage, createThread }: Props) => {
+const ChatStream = ({ replyToMessage }: Props) => {
 
     const { channelID } = useParams()
 
@@ -138,7 +137,6 @@ const ChatStream = ({ replyToMessage, createThread }: Props) => {
                                     setEditMessage={setEditMessage}
                                     replyToMessage={replyToMessage}
                                     forwardMessage={setForwardMessage}
-                                    createThread={createThread}
                                     setDeleteMessage={setDeleteMessage} />
                             </div>
                         </div>

@@ -47,15 +47,6 @@ export const ChatBoxBody = ({ channelData }: ChatBoxBodyProps) => {
         setSelectedMessage(null)
     }
 
-    const { call } = useFrappePostCall('raven.api.threads.create_thread')
-    const handleCreateThread = (messageID: string) => {
-        call({ 'message_id': messageID }).then(() => {
-            toast.success('Thread created successfully!')
-        }).catch(() => {
-            toast.error('Failed to create thread')
-        })
-    }
-
     const isUserInChannel = useMemo(() => {
         if (user && channelMembers) {
             return user in channelMembers
@@ -101,7 +92,6 @@ export const ChatBoxBody = ({ channelData }: ChatBoxBodyProps) => {
                 maxFileSize={10000000}>
                 <ChatStream
                     replyToMessage={handleReplyAction}
-                    createThread={handleCreateThread}
                 />
                 {channelData?.is_archived == 0 && (isUserInChannel || channelData?.type === 'Open')
                     &&

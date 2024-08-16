@@ -64,6 +64,7 @@ def get_channel_list(hide_archived=False):
 		.left_join(channel_member)
 		.on(channel.name == channel_member.channel_id)
 		.where((channel.type != "Private") | (channel_member.user_id == frappe.session.user))
+		.where(channel.is_thread == 0)
 	)
 
 	if hide_archived:
