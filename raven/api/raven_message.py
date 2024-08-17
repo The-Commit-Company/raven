@@ -11,7 +11,7 @@ from raven.utils import get_channel_member, track_channel_visit
 
 
 @frappe.whitelist(methods=["POST"])
-def send_message(channel_id, text, is_reply, linked_message=None, json_content=None):
+def send_message(channel_id, text, is_reply=False, linked_message=None, json_content=None):
 
 	# remove empty list items
 	clean_text = text.replace("<li><br></li>", "").strip()
