@@ -15,6 +15,7 @@ import { Button } from '@radix-ui/themes'
 import { FiArrowDown } from 'react-icons/fi'
 import { ErrorBanner } from '@/components/layout/AlertBanner'
 import { ForwardMessageDialog, useForwardMessage } from '../ChatMessage/MessageActions/ForwardMessage'
+import AttachFileToDocumentDialog, { useAttachFileToDocument } from '../ChatMessage/MessageActions/AttachFileToDocument'
 
 /**
  * Anatomy of a message
@@ -76,6 +77,7 @@ const ChatStream = ({ replyToMessage }: Props) => {
 
     const { setEditMessage, ...editProps } = useEditMessage()
     const { setForwardMessage, ...forwardProps } = useForwardMessage()
+    const { setAttachDocument, ...attachDocProps } = useAttachFileToDocument()
 
     const onReplyMessageClick = (messageID: string) => {
         scrollToMessage(messageID)
@@ -137,6 +139,7 @@ const ChatStream = ({ replyToMessage }: Props) => {
                                     setEditMessage={setEditMessage}
                                     replyToMessage={replyToMessage}
                                     forwardMessage={setForwardMessage}
+                                    onAttachDocument={setAttachDocument}
                                     setDeleteMessage={setDeleteMessage} />
                             </div>
                         </div>
@@ -161,6 +164,7 @@ const ChatStream = ({ replyToMessage }: Props) => {
             <DeleteMessageDialog {...deleteProps} />
             <EditMessageDialog {...editProps} />
             <ForwardMessageDialog {...forwardProps} />
+            <AttachFileToDocumentDialog {...attachDocProps} />
         </div>
 
     )
