@@ -16,6 +16,7 @@ import { FiArrowDown } from 'react-icons/fi'
 import { ErrorBanner } from '@/components/layout/AlertBanner'
 import { ForwardMessageDialog, useForwardMessage } from '../ChatMessage/MessageActions/ForwardMessage'
 import AttachFileToDocumentDialog, { useAttachFileToDocument } from '../ChatMessage/MessageActions/AttachFileToDocument'
+import { ReactionAnalyticsDialog, useMessageReactionAnalytics } from '../ChatMessage/MessageActions/MessageReactionAnalytics'
 
 /**
  * Anatomy of a message
@@ -79,6 +80,8 @@ const ChatStream = ({ replyToMessage }: Props) => {
     const { setForwardMessage, ...forwardProps } = useForwardMessage()
     const { setAttachDocument, ...attachDocProps } = useAttachFileToDocument()
 
+    const { setReactionMessage, ...reactionProps } = useMessageReactionAnalytics()
+
     const onReplyMessageClick = (messageID: string) => {
         scrollToMessage(messageID)
     }
@@ -140,7 +143,9 @@ const ChatStream = ({ replyToMessage }: Props) => {
                                     replyToMessage={replyToMessage}
                                     forwardMessage={setForwardMessage}
                                     onAttachDocument={setAttachDocument}
-                                    setDeleteMessage={setDeleteMessage} />
+                                    setDeleteMessage={setDeleteMessage}
+                                    setReactionMessage={setReactionMessage} 
+                                />
                             </div>
                         </div>
                     }
@@ -165,6 +170,7 @@ const ChatStream = ({ replyToMessage }: Props) => {
             <EditMessageDialog {...editProps} />
             <ForwardMessageDialog {...forwardProps} />
             <AttachFileToDocumentDialog {...attachDocProps} />
+            <ReactionAnalyticsDialog {...reactionProps} />
         </div>
 
     )

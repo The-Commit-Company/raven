@@ -22,7 +22,6 @@ export interface MessageContextMenuProps {
     onViewReaction?: VoidFunction
     onAttachDocument: VoidFunction
 }
-
 export const MessageContextMenu = ({ message, onDelete, onEdit, onReply, onForward, onAttachDocument, onViewReaction }: MessageContextMenuProps) => {
 
     const copy = useMessageCopy(message)

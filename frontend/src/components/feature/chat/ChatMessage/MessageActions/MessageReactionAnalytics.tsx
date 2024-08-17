@@ -7,8 +7,8 @@ import { Drawer, DrawerContent } from "@/components/layout/Drawer"
 import { ReactionObject } from "../MessageReactions"
 import { ReactionAnalyticsModal } from "../ActionModals/ReactionAnalyticsModal"
 
-export const useMessageReactionAnalytics = (message: Message) => {
-    const [isReactionDialogOpen, setIsReactionDialogOpen] = useState<boolean>(false)
+export const useMessageReactionAnalytics = () => {
+    const [message, setMessage] = useState<null | Message>(null)
 
     const message_reactions = message?.message_reactions;
 
@@ -19,16 +19,16 @@ export const useMessageReactionAnalytics = (message: Message) => {
     }, [message_reactions])
 
     const onClose = useCallback(() => {
-        setIsReactionDialogOpen(false)
+        setMessage(null)
     }, [])
 
     return {
         reactions,
+        message,
         onClose,
-        isOpen: isReactionDialogOpen,
-        open: () => setIsReactionDialogOpen(true)
+        isOpen: message !== null,
+        setReactionMessage: setMessage
     }
-
 }
 
 export interface ReactionAnalyticsDialogProps {
