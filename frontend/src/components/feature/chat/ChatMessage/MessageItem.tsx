@@ -25,6 +25,7 @@ import { useIsDesktop } from '@/hooks/useMediaQuery'
 import { useDoubleTap } from 'use-double-tap'
 import useOutsideClick from '@/hooks/useOutsideClick'
 import { getStatusText } from '../../userSettings/AvailabilityStatus/SetUserAvailabilityMenu'
+import { ReactionAnalyticsDialog, useMessageReactionAnalytics } from './MessageActions/MessageReactionAnalytics'
 
 interface MessageBlockProps {
     message: Message,
@@ -95,6 +96,8 @@ export const MessageItem = ({ message, setDeleteMessage, isHighlighted, onReplyM
     }, [replied_message_details])
 
     const [isEmojiPickerOpen, setEmojiPickerOpen] = useState(false)
+
+    const { ...reactionProps } = useMessageReactionAnalytics(message as Message)
 
     return (
         <Box className='relative'>
@@ -182,8 +185,10 @@ export const MessageItem = ({ message, setDeleteMessage, isHighlighted, onReplyM
                     onEdit={onEdit}
                     onReply={onReply}
                     onForward={onForward}
+                    {...reactionProps}
                 />
             </ContextMenu.Root>
+            <ReactionAnalyticsDialog {...reactionProps} />
         </Box >
     )
 }

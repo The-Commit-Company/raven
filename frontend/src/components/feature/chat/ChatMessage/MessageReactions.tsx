@@ -6,7 +6,7 @@ import { useGetUserRecords } from "@/hooks/useGetUserRecords"
 import { Flex, IconButton, Text, Tooltip } from "@radix-ui/themes"
 import { clsx } from "clsx"
 
-interface ReactionObject {
+export interface ReactionObject {
     // The emoji
     reaction: string,
     // The users who reacted with this emoji

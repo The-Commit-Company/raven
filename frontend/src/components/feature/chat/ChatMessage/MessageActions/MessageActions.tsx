@@ -10,22 +10,33 @@ import { toast } from 'sonner'
 import { getErrorMessage } from '@/components/layout/AlertBanner/ErrorBanner'
 import { AiOutlineEdit } from 'react-icons/ai'
 import { LuForward, LuReply } from 'react-icons/lu'
+import { MdOutlineEmojiEmotions } from "react-icons/md";
+import { ReactionObject } from '../MessageReactions'
 
 export interface MessageContextMenuProps {
     message?: Message | null,
     onDelete: VoidFunction
     onEdit: VoidFunction,
     onReply: VoidFunction,
-    onForward: VoidFunction
+    onForward: VoidFunction,
 }
 
-export const MessageContextMenu = ({ message, onDelete, onEdit, onReply, onForward }: MessageContextMenuProps) => {
+interface MessageReactionAnalyticsProps extends MessageContextMenuProps {
+    reactions: ReactionObject[],
+    onClose: VoidFunction,
+    isOpen: boolean,
+    open: VoidFunction
+}
+
+export const MessageContextMenu = ({ message, onDelete, onEdit, onReply, onForward, ...reactionProps }: MessageReactionAnalyticsProps) => {
 
     const copy = useMessageCopy(message)
     const { currentUser } = useContext(UserContext)
 
-    const isOwner = currentUser === message?.owner
+    const isOwner = currentUser === message?.owner;
 
+    const { reactions, open: openReactionAnalytics } = reactionProps
+    
     return (
         <ContextMenu.Content>
             {message ? <>
@@ -97,9 +108,16 @@ export const MessageContextMenu = ({ message, onDelete, onEdit, onReply, onForwa
                 </ContextMenu.Item> */}
 
                 </ContextMenu.Group>
-
-
-
+                
+                {Object.keys(reactions).length !== 0 && <ContextMenu.Group>
+                    <ContextMenu.Separator />
+                    <ContextMenu.Item onClick={openReactionAnalytics}>
+                        <Flex gap='2'>
+                            <MdOutlineEmojiEmotions size='18' />
+                            Reaction Analytics
+                        </Flex>
+                    </ContextMenu.Item>
+                </ContextMenu.Group>}
 
                 {isOwner && <ContextMenu.Group>
                     <ContextMenu.Separator />
@@ -119,7 +137,6 @@ export const MessageContextMenu = ({ message, onDelete, onEdit, onReply, onForwa
                     </ContextMenu.Item>
                 </ContextMenu.Group>}
             </> : null}
-
         </ContextMenu.Content>
     )
 }
