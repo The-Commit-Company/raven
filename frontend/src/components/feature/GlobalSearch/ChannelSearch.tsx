@@ -11,12 +11,12 @@ import { Flex, Select, TextField, Box, Checkbox, ScrollArea, Text, Badge } from 
 import { Loader } from '@/components/common/Loader'
 interface Props {
     onToggleMyChannels: () => void,
-    isOpenMyChannels: boolean,
+    isOnlyInMyChannels: boolean,
     input: string,
     onClose: () => void
 }
 
-export const ChannelSearch = ({ onToggleMyChannels, isOpenMyChannels, input, onClose }: Props) => {
+export const ChannelSearch = ({ onToggleMyChannels, isOnlyInMyChannels, input, onClose }: Props) => {
 
     const [searchText, setSearchText] = useState(input)
     const debouncedText = useDebounce(searchText)
@@ -31,10 +31,9 @@ export const ChannelSearch = ({ onToggleMyChannels, isOpenMyChannels, input, onC
 
     const { data, error, isLoading } = useFrappeGetCall<{ message: GetChannelSearchResult[] }>("raven.api.search.get_search_result", {
         filter_type: 'Channel',
-        doctype: 'Raven Channel',
         search_text: debouncedText,
         channel_type: channelType === 'any' ? undefined : channelType,
-        my_channel_only: isOpenMyChannels,
+        my_channel_only: isOnlyInMyChannels,
     }, undefined, {
         revalidateOnFocus: false
     })
@@ -94,22 +93,19 @@ export const ChannelSearch = ({ onToggleMyChannels, isOpenMyChannels, input, onC
                         </Select.Content>
                     </Select.Root>
 
-
-                    <Text as="label" className='hidden sm:block' style={{
-                        width: '20%'
-                    }}>
+                    <Text as="label" className='hidden sm:block' style={{ width: '20%' }} size="2">
                         <Flex gap="2" align='center'>
-                            <Checkbox checked={isOpenMyChannels} onCheckedChange={onToggleMyChannels} /> Only in my channels
+                            <Checkbox checked={isOnlyInMyChannels} onCheckedChange={onToggleMyChannels} /> Only in my channels
                         </Flex>
                     </Text>
+
                 </Flex>
             </Flex>
             <ScrollArea type="always" scrollbars="vertical" className='sm:h-[420px] h-[58vh]' mt='4'>
                 <ErrorBanner error={error} />
                 {data?.message?.length === 0 && <EmptyStateForSearch />}
                 {data?.message && data.message.length > 0 ?
-                    <Flex direction='column' gap='2' pr='4'>
-
+                    <Flex direction='column' gap='0.5' pr='4'>
                         {data.message.map((channel: GetChannelSearchResult) => {
                             return (
                                 <Box p='2'
@@ -121,16 +117,15 @@ export const ChannelSearch = ({ onToggleMyChannels, isOpenMyChannels, input, onC
                                     }}
                                     key={channel.name}>
                                     <Flex gap='2' align='center'>
-                                        <ChannelIcon type={channel.type} size='20' />
+                                        <ChannelIcon type={channel.type} size='15' />
                                         <Flex gap='3'>
-                                            <Text as='span' weight='medium'>{channel.channel_name}</Text>
+                                            <Text size={'2'} as='span' weight='medium'>{channel.channel_name}</Text>
                                             {channel.is_archived ? <Badge variant='soft' color='gray' size='1'>Archived</Badge> : null}
                                         </Flex>
                                     </Flex>
                                 </Box>
                             )
-                        }
-                        )}
+                        })}
                     </Flex> : null}
             </ScrollArea>
         </Box>
