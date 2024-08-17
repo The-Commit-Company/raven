@@ -51,7 +51,7 @@ export const ImageMessageBlock = memo(({ message, isScrolling = false, user }: I
                     variant="ghost"
                     color="gray"
                     radius='large'
-                    className='pl-0 mr-[1px] cursor-pointer font-bold hover:bg-transparent hover:text-gray-12'
+                    className='pl-0 mr-[1px] cursor-pointer font-bold hover:bg-transparent text-accent-a11 hover:text-gray-12'
                     aria-label={`Click to ${isVisible ? "hide" : "show"} image`}
                     title={`${isVisible ? "Hide" : "Show"} image`}
                     onClick={() => setIsVisible(prev => !prev)}
