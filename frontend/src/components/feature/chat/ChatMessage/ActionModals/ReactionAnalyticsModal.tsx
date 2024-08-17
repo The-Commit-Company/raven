@@ -8,12 +8,12 @@ import { useGetUserRecords } from "@/hooks/useGetUserRecords"
 import { UserAvatar } from "@/components/common/UserAvatar"
 import { getUserImage } from "@/utils/operations"
 
-export const ReactionAnalyticsModal: React.FC<ReactionAnalyticsDialogProps> = ({ reactions }) => {
+export const ReactionAnalyticsModal = ({ reactions }: ReactionAnalyticsDialogProps) => {
 
     const { reaction_emojis, all_reacted_members } = useMemo(() => {
         const reaction_emojis = reactions.map((reaction: ReactionObject) => reaction.reaction);
-        const all_reacted_members = reactions.flatMap((reaction: ReactionObject) =>
-            reaction.users.map((user: string) => ({ user, reaction: reaction.reaction }))
+        const all_reacted_members = reactions.flatMap(({ reaction, users }: ReactionObject) =>
+            users.map((user: string) => ({ user, reaction }))
         );
         return { reaction_emojis, all_reacted_members };
     }, [reactions]);
