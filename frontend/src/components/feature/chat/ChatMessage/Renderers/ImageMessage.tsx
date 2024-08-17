@@ -7,7 +7,7 @@ import { BiDownload, BiChevronDown, BiChevronRight } from 'react-icons/bi'
 import { UserFields } from '@/utils/users/UserListProvider'
 import { DateMonthAtHourMinuteAmPm } from '@/utils/dateConversions'
 import { clsx } from 'clsx'
-import { useIsDesktop, useIsMobile } from '@/hooks/useMediaQuery'
+import { useIsMobile } from '@/hooks/useMediaQuery'
 
 const ImageViewer = lazy(() => import('@/components/common/ImageViewer'))
 
@@ -25,38 +25,38 @@ export const ImageMessageBlock = memo(({ message, isScrolling = false, user }: I
 
     const isMobile = useIsMobile()
 
-    const height = message.thumbnail_height ? isMobile ? message.thumbnail_height / 2 : message.thumbnail_height : '200'
-    const width = message.thumbnail_width ? isMobile ? message.thumbnail_width / 2 : message.thumbnail_width : '300'
-
     const fileName = getFileName(message.file)
 
     const [isVisible, setIsVisible] = useState<boolean>(true)
+
+    const height = isVisible ? (message.thumbnail_height ? isMobile ? message.thumbnail_height / 2 : message.thumbnail_height : '200') : '0'
+    const width = message.thumbnail_width ? isMobile ? message.thumbnail_width / 2 : message.thumbnail_width : '300'
     const contentRef = useRef<HTMLDivElement | null>(null);
 
     useEffect(() => {
         if (isVisible && contentRef.current) {
-          setTimeout(() => {
-            if(contentRef.current){
-                contentRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            }
-          }, 300); 
+            setTimeout(() => {
+                if (contentRef.current) {
+                    contentRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            }, 200);
         }
-      }, [isVisible]);
+    }, [isVisible]);
 
     return (
         <Flex direction='column' gap='1'>
-            <Flex className='p-1'>
+            <Flex className='p-1 items-center'>
                 <IconButton
                     size='1'
                     variant="ghost"
                     color="gray"
                     radius='large'
-                    className='mr-1 cursor-pointer font-bold bg-gray-4'
+                    className='pl-0 mr-[1px] cursor-pointer font-bold hover:bg-transparent hover:text-gray-12'
                     aria-label={`Click to ${isVisible ? "hide" : "show"} image`}
                     title={`${isVisible ? "Hide" : "Show"} image`}
                     onClick={() => setIsVisible(prev => !prev)}
                 >
-                    {isVisible ? <BiChevronDown size='16' /> : <BiChevronRight size='16' />}
+                    {isVisible ? <BiChevronDown size='18' /> : <BiChevronRight size='18' />}
                 </IconButton>
                 <Link
                     href={message.file}
@@ -67,9 +67,7 @@ export const ImageMessageBlock = memo(({ message, isScrolling = false, user }: I
             </Flex>
             <Box
                 ref={contentRef}
-                className={`relative rounded-md cursor-pointer transition-all duration-300 ease-in-out overflow-hidden ${
-                    isVisible ? 'max-h-96' : 'max-h-0'
-                }`}
+                className={`relative rounded-md cursor-pointer transition-all duration-300 ease-ease-out-circ overflow-hidden`}
                 role='button'
                 onClick={() => setIsOpen(!isScrolling && true)}
                 style={{
