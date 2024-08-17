@@ -20,7 +20,6 @@ export const ReactionAnalyticsModal = ({ reactions }: ReactionAnalyticsDialogPro
 
     return (
         <>
-            {/* <DialogHeader /> */}
             <Tabs.Root defaultValue="All">
                 <Flex direction="column" gap="4">
                     <Tabs.List>
@@ -45,22 +44,6 @@ export const ReactionAnalyticsModal = ({ reactions }: ReactionAnalyticsDialogPro
         </>
     );
 };
-
-// const DialogHeader = () => (
-//     <Flex justify="between">
-//         <Dialog.Title>
-//             <Flex align="center" gap="2">
-//                 <MdOutlineEmojiEmotions />
-//                 <Text>Reactions</Text>
-//             </Flex>
-//         </Dialog.Title>
-//         <Dialog.Close className="invisible sm:visible">
-//             <IconButton size="1" variant="soft" color="gray">
-//                 <BiX size="18" />
-//             </IconButton>
-//         </Dialog.Close>
-//     </Flex>
-// );
 
 const TabTrigger = ({ emojiStr, count }: { emojiStr: string; count?: number }) => (
     <Tabs.Trigger value={emojiStr}>
