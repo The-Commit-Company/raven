@@ -1,4 +1,4 @@
-import { Flex, Dialog, IconButton, Box, Button } from "@radix-ui/themes"
+import { Flex, Dialog, IconButton, Box, Button, Callout, Link } from "@radix-ui/themes"
 import { BiX } from "react-icons/bi"
 import { FileMessage, Message } from "../../../../../../../types/Messaging/Message"
 import { FormProvider, useForm } from "react-hook-form"
@@ -9,6 +9,8 @@ import { FrappeConfig, FrappeContext, FrappeError } from "frappe-react-sdk"
 import { ErrorBanner } from "@/components/layout/AlertBanner"
 import LinkFormField from "@/components/common/LinkField/LinkFormField"
 import { useContext, useState } from "react"
+import { FileExtensionIcon } from "@/utils/layout/FileExtIcon"
+import { getFileExtension, getFileName } from "@/utils/operations"
 
 interface AttachFileToDocumentModalProps {
     onClose: () => void,
@@ -93,6 +95,16 @@ const AttachFileToDocumentModal = ({ onClose, message }: AttachFileToDocumentMod
 
                 <Flex gap='2' direction='column' width='100%'>
                     <ErrorBanner error={error} />
+                    <Callout.Root>
+                        <Callout.Icon>
+                            {<FileExtensionIcon ext={getFileExtension((message as FileMessage).file)} />}
+                        </Callout.Icon>
+                        <Callout.Text>
+                            <Link href={(message as FileMessage).file}>
+                                {getFileName((message as FileMessage).file)}
+                            </Link>
+                        </Callout.Text>
+                    </Callout.Root>
                     <Box width='100%'>
                         <Flex direction='column' gap='2'>
                             <LinkFormField
