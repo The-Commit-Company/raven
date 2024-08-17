@@ -10,6 +10,7 @@ import { toast } from 'sonner'
 import { getErrorMessage } from '@/components/layout/AlertBanner/ErrorBanner'
 import { AiOutlineEdit } from 'react-icons/ai'
 import { LuForward, LuReply } from 'react-icons/lu'
+import { MdOutlineEmojiEmotions } from "react-icons/md";
 import AttachFileToDocument from './AttachFileToDocument'
 
 export interface MessageContextMenuProps {
@@ -18,16 +19,18 @@ export interface MessageContextMenuProps {
     onEdit: VoidFunction,
     onReply: VoidFunction,
     onForward: VoidFunction,
+    onViewReaction?: VoidFunction
     onAttachDocument: VoidFunction
 }
-
-export const MessageContextMenu = ({ message, onDelete, onEdit, onReply, onForward, onAttachDocument }: MessageContextMenuProps) => {
+export const MessageContextMenu = ({ message, onDelete, onEdit, onReply, onForward, onAttachDocument, onViewReaction }: MessageContextMenuProps) => {
 
     const copy = useMessageCopy(message)
     const { currentUser } = useContext(UserContext)
 
-    const isOwner = currentUser === message?.owner
+    const isOwner = currentUser === message?.owner;
 
+    const isReactionsAvailable = Object.keys(JSON.parse(message?.message_reactions ?? '{}')).length !== 0
+    
     return (
         <ContextMenu.Content>
             {message ? <>
@@ -106,9 +109,16 @@ export const MessageContextMenu = ({ message, onDelete, onEdit, onReply, onForwa
                 </ContextMenu.Item> */}
 
                 </ContextMenu.Group>
-
-
-
+                
+                {isReactionsAvailable && <ContextMenu.Group>
+                    <ContextMenu.Separator />
+                    <ContextMenu.Item onClick={onViewReaction}>
+                        <Flex gap='2'>
+                            <MdOutlineEmojiEmotions size='18' />
+                            View Reactions
+                        </Flex>
+                    </ContextMenu.Item>
+                </ContextMenu.Group>}
 
                 {isOwner && <ContextMenu.Group>
                     <ContextMenu.Separator />
@@ -128,7 +138,6 @@ export const MessageContextMenu = ({ message, onDelete, onEdit, onReply, onForwa
                     </ContextMenu.Item>
                 </ContextMenu.Group>}
             </> : null}
-
         </ContextMenu.Content>
     )
 }
