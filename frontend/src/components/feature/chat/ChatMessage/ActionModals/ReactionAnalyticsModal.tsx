@@ -43,7 +43,7 @@ export const ReactionAnalyticsModal = ({ reactions }: ReactionAnalyticsDialogPro
 };
 
 const TabTrigger = ({ emojiStr, count }: { emojiStr: string; count?: number }) => (
-    <Tabs.Trigger value={emojiStr}>
+    <Tabs.Trigger value={emojiStr} className="text-gray-11">
         <Flex gap="2" align="center" justify="center">
             <Text size="3">{emojiStr}</Text>
             {count && <Text>{count}</Text>}
