@@ -2,7 +2,7 @@ import { ContextMenu, Flex } from '@radix-ui/themes'
 import { FileMessage, Message } from '../../../../../../../types/Messaging/Message'
 import { useContext } from 'react'
 import { UserContext } from '@/utils/auth/UserProvider'
-import { BiBookmarkMinus, BiBookmarkPlus, BiCopy, BiDownload, BiLink, BiTrash } from 'react-icons/bi'
+import { BiBookmarkMinus, BiBookmarkPlus, BiCopy, BiDownload, BiLink, BiPaperclip, BiTrash } from 'react-icons/bi'
 import { FrappeConfig, FrappeContext } from 'frappe-react-sdk'
 import { useMessageCopy } from './useMessageCopy'
 import { RetractVote } from './RetractVote'
@@ -10,16 +10,18 @@ import { toast } from 'sonner'
 import { getErrorMessage } from '@/components/layout/AlertBanner/ErrorBanner'
 import { AiOutlineEdit } from 'react-icons/ai'
 import { LuForward, LuReply } from 'react-icons/lu'
+import AttachFileToDocument from './AttachFileToDocument'
 
 export interface MessageContextMenuProps {
     message?: Message | null,
     onDelete: VoidFunction
     onEdit: VoidFunction,
     onReply: VoidFunction,
-    onForward: VoidFunction
+    onForward: VoidFunction,
+    onAttachDocument: VoidFunction
 }
 
-export const MessageContextMenu = ({ message, onDelete, onEdit, onReply, onForward }: MessageContextMenuProps) => {
+export const MessageContextMenu = ({ message, onDelete, onEdit, onReply, onForward, onAttachDocument }: MessageContextMenuProps) => {
 
     const copy = useMessageCopy(message)
     const { currentUser } = useContext(UserContext)
@@ -71,6 +73,13 @@ export const MessageContextMenu = ({ message, onDelete, onEdit, onReply, onForwa
                                         Download
                                     </Flex>
                                 </a>
+                            </ContextMenu.Item>
+
+                            <ContextMenu.Item onClick={onAttachDocument}>
+                                <Flex gap='2'>
+                                    <BiPaperclip size='18' />
+                                    Attach File to Document
+                                </Flex>
                             </ContextMenu.Item>
                         </ContextMenu.Group>
                     }

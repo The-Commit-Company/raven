@@ -2,7 +2,6 @@ import { BiSearch } from 'react-icons/bi'
 import { useFrappeGetCall } from 'frappe-react-sdk'
 import { useContext, useState, useMemo } from 'react'
 import { useDebounce } from '../../../hooks/useDebounce'
-import { GetMessageSearchResult } from '../../../../../types/Search/Search'
 import { ErrorBanner } from '../../layout/AlertBanner'
 import { EmptyStateForSearch } from '../../layout/EmptyState/EmptyState'
 import { useNavigate } from 'react-router-dom'
@@ -14,10 +13,11 @@ import { Box, Checkbox, Flex, Select, TextField, Text, Grid, ScrollArea } from '
 import { UserAvatar } from '@/components/common/UserAvatar'
 import { dateOption } from './GlobalSearch'
 import { Loader } from '@/components/common/Loader'
+import { Message } from '../../../../../types/Messaging/Message'
 
 interface Props {
     onToggleMyChannels: () => void,
-    isOpenMyChannels: boolean,
+    isOnlyInMyChannels: boolean,
     input: string,
     fromFilter?: string,
     inFilter?: string,
@@ -27,15 +27,7 @@ interface Props {
     isSaved: boolean
 }
 
-interface MessageSearchResult {
-    channel_id: string
-    name: string,
-    owner: string,
-    creation: string,
-    text: string,
-}
-
-export const MessageSearch = ({ onToggleMyChannels, isOpenMyChannels, onToggleSaved, isSaved, input, fromFilter, inFilter, withFilter, onClose }: Props) => {
+export const MessageSearch = ({ onToggleMyChannels, isOnlyInMyChannels, onToggleSaved, isSaved, input, fromFilter, inFilter, withFilter, onClose }: Props) => {
 
     const [searchText, setSearchText] = useState(input)
     const debouncedText = useDebounce(searchText)
@@ -70,23 +62,21 @@ export const MessageSearch = ({ onToggleMyChannels, isOpenMyChannels, onToggleSa
         setSearchText(e.target.value)
     }
 
-
     const showResults = useMemo(() => {
-        const isChannelFilterApplied = channelFilter !== 'any' && channelFilter !== undefined
+        const isChannelFilterApplied = channelFilter !== undefined
         const isUserFilterApplied = userFilter !== 'any' && userFilter !== undefined
         const isDateFilterApplied = dateFilter !== 'any' && dateFilter !== undefined
-        return (debouncedText.length > 2 || isChannelFilterApplied || isUserFilterApplied || isDateFilterApplied || isOpenMyChannels === true)
-    }, [debouncedText, channelFilter, userFilter, isOpenMyChannels, dateFilter])
+        return (debouncedText.length > 2 || isChannelFilterApplied || isUserFilterApplied || isDateFilterApplied || isOnlyInMyChannels === true)
+    }, [debouncedText, channelFilter, userFilter, isOnlyInMyChannels, dateFilter])
 
-    const { data, error, isLoading } = useFrappeGetCall<{ message: GetMessageSearchResult[] }>("raven.api.search.get_search_result", {
+    const { data, error, isLoading } = useFrappeGetCall<{ message: Message[] }>("raven.api.search.get_search_result", {
         filter_type: 'Message',
-        doctype: 'Raven Message',
         search_text: debouncedText,
-        in_channel: channelFilter === 'any' ? undefined : channelFilter,
         from_user: userFilter === 'any' ? undefined : userFilter,
-        date: dateFilter === 'any' ? undefined : dateFilter,
-        my_channel_only: isOpenMyChannels,
+        in_channel: channelFilter === 'any' ? undefined : channelFilter,
         saved: isSaved,
+        date: dateFilter === 'any' ? undefined : dateFilter,
+        my_channel_only: isOnlyInMyChannels,
     }, showResults ? undefined : null, {
         revalidateOnFocus: false,
     })
@@ -180,7 +170,7 @@ export const MessageSearch = ({ onToggleMyChannels, isOpenMyChannels, onToggleSa
 
                     <Text as="label" size="2">
                         <Flex gap="2">
-                            <Checkbox checked={isOpenMyChannels} onCheckedChange={onToggleMyChannels} /> Only in my channels
+                            <Checkbox checked={isOnlyInMyChannels} onCheckedChange={onToggleMyChannels} /> Only in my channels
                         </Flex>
                     </Text>
 
@@ -195,7 +185,7 @@ export const MessageSearch = ({ onToggleMyChannels, isOpenMyChannels, onToggleSa
                 <ErrorBanner error={error} />
                 {data?.message?.length === 0 && <EmptyStateForSearch />}
                 {data?.message?.length && data?.message.length > 0 ? <Flex direction='column' gap='2'>
-                    {data.message.map((message: MessageSearchResult) => {
+                    {data.message.map((message: Message) => {
                         return (
                             <MessageBox
                                 key={message.name}
