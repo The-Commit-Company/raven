@@ -34,10 +34,11 @@ interface MessageBlockProps {
     forwardMessage: (message: Message) => void,
     onReplyMessageClick: (messageID: string) => void,
     onAttachDocument: (message: Message) => void,
-    isHighlighted?: boolean
+    isHighlighted?: boolean,
+    setReactionMessage: (message: Message) => void,
 }
 
-export const MessageItem = ({ message, setDeleteMessage, isHighlighted, onReplyMessageClick, setEditMessage, replyToMessage, forwardMessage, onAttachDocument }: MessageBlockProps) => {
+export const MessageItem = ({ message, setDeleteMessage, isHighlighted, onReplyMessageClick, setEditMessage, replyToMessage, forwardMessage, onAttachDocument, setReactionMessage }: MessageBlockProps) => {
 
     const { name, owner: userID, is_bot_message, bot, creation: timestamp, message_reactions, is_continuation, linked_message, replied_message_details } = message
 
@@ -61,6 +62,10 @@ export const MessageItem = ({ message, setDeleteMessage, isHighlighted, onReplyM
 
     const onAttachToDocument = () => {
         onAttachDocument(message)
+    }
+
+    const onViewReaction = () => {
+        setReactionMessage(message)
     }
 
     const isDesktop = useIsDesktop()
@@ -188,6 +193,7 @@ export const MessageItem = ({ message, setDeleteMessage, isHighlighted, onReplyM
                     onEdit={onEdit}
                     onReply={onReply}
                     onForward={onForward}
+                    onViewReaction={onViewReaction}
                     onAttachDocument={onAttachToDocument}
                 />
             </ContextMenu.Root>
