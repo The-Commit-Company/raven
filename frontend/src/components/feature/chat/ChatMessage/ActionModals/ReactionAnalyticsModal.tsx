@@ -1,12 +1,9 @@
 import { useMemo } from "react"
-import { IconButton, Dialog, Flex, Text, Tabs, Box } from "@radix-ui/themes"
-import { BiX } from "react-icons/bi"
+import { Flex, Text, Tabs, Box } from "@radix-ui/themes"
 import { ReactionObject } from "../MessageReactions"
 import { ReactionAnalyticsDialogProps } from "../MessageActions/MessageReactionAnalytics"
-import { MdOutlineEmojiEmotions } from "react-icons/md";
-import { useGetUserRecords } from "@/hooks/useGetUserRecords"
 import { UserAvatar } from "@/components/common/UserAvatar"
-import { getUserImage } from "@/utils/operations"
+import { useGetUser } from "@/hooks/useGetUser"
 
 export const ReactionAnalyticsModal = ({ reactions }: ReactionAnalyticsDialogProps) => {
 
@@ -71,16 +68,16 @@ const UserList = ({ users }: { users: UserItemProps[] }) => (
 );
 
 const UserItem = ({ user, reaction }: UserItemProps) => {
-    const allUsers = useGetUserRecords();
-    const userImage = getUserImage(user, allUsers)
+    const userDetails = useGetUser(user)
+    const userName = userDetails?.full_name ?? user;
 
     return (
         <Box className="hover:bg-slate-3 rounded-md">
             <Flex align="center" justify="between">
                 <Flex className="p-2" gap="3" align="center">
-                    <UserAvatar src={userImage} size="2" />
+                    <UserAvatar src={userDetails?.user_image} size="2" />
                     <Text size="2" weight="medium">
-                        {user}
+                        {userName}
                     </Text>
                 </Flex>
                 {reaction && (
