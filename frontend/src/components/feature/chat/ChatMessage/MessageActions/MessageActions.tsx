@@ -107,7 +107,7 @@ export const MessageContextMenu = ({ message, onDelete, onEdit, onReply, onForwa
                     <ContextMenu.Item onClick={onViewReaction}>
                         <Flex gap='2'>
                             <MdOutlineEmojiEmotions size='18' />
-                            Reaction Analytics
+                            View Reactions
                         </Flex>
                     </ContextMenu.Item>
                 </ContextMenu.Group>}
