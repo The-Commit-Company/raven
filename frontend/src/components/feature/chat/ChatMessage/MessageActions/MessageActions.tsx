@@ -2,7 +2,7 @@ import { ContextMenu, Flex } from '@radix-ui/themes'
 import { FileMessage, Message } from '../../../../../../../types/Messaging/Message'
 import { useContext } from 'react'
 import { UserContext } from '@/utils/auth/UserProvider'
-import { BiBookmarkMinus, BiBookmarkPlus, BiCopy, BiDownload, BiLink, BiTrash } from 'react-icons/bi'
+import { BiBookmarkMinus, BiBookmarkPlus, BiCopy, BiDownload, BiLink, BiPaperclip, BiTrash } from 'react-icons/bi'
 import { FrappeConfig, FrappeContext } from 'frappe-react-sdk'
 import { useMessageCopy } from './useMessageCopy'
 import { RetractVote } from './RetractVote'
@@ -77,7 +77,7 @@ export const MessageContextMenu = ({ message, onDelete, onEdit, onReply, onForwa
 
                             <ContextMenu.Item onClick={onAttachDocument}>
                                 <Flex gap='2'>
-                                    {/* <BiLink size='18' /> */}
+                                    <BiPaperclip size='18' />
                                     Attach File to Document
                                 </Flex>
                             </ContextMenu.Item>

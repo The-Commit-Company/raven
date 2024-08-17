@@ -109,19 +109,21 @@ const AttachFileToDocumentModal = ({ onClose, message }: AttachFileToDocumentMod
                             <ErrorText>{methods.formState.errors.doctype?.message}</ErrorText>
                         </Flex>
                     </Box>
-                    <Box width='100%'>
-                        <Flex direction='column' gap='2'>
-                            <LinkFormField
-                                name='docname'
-                                label='Document Name'
-                                placeholder="Select a document"
-                                disabled={!doctype}
-                                rules={{ required: 'Document Name is required' }}
-                                doctype={doctype}
-                            />
-                            <ErrorText>{methods.formState.errors.docname?.message}</ErrorText>
-                        </Flex>
-                    </Box>
+                    {doctype &&
+                        <Box width='100%'>
+                            <Flex direction='column' gap='2'>
+                                <LinkFormField
+                                    name='docname'
+                                    label='Document Name'
+                                    placeholder="Select a document"
+                                    disabled={!doctype}
+                                    rules={{ required: 'Document Name is required' }}
+                                    doctype={doctype}
+                                />
+                                <ErrorText>{methods.formState.errors.docname?.message}</ErrorText>
+                            </Flex>
+                        </Box>
+                    }
                 </Flex>
 
                 <Flex gap="3" mt="6" justify="end" align='center'>
