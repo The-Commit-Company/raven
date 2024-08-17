@@ -97,7 +97,7 @@ export const MessageItem = ({ message, setDeleteMessage, isHighlighted, onReplyM
 
     const [isEmojiPickerOpen, setEmojiPickerOpen] = useState(false)
 
-    const { ...reactionProps } = useMessageReactionAnalytics(message as Message)
+    const { open: onViewReaction, ...reactionProps } = useMessageReactionAnalytics(message as Message)
 
     return (
         <Box className='relative'>
@@ -185,7 +185,7 @@ export const MessageItem = ({ message, setDeleteMessage, isHighlighted, onReplyM
                     onEdit={onEdit}
                     onReply={onReply}
                     onForward={onForward}
-                    {...reactionProps}
+                    onViewReaction={onViewReaction}
                 />
             </ContextMenu.Root>
             <ReactionAnalyticsDialog {...reactionProps} />

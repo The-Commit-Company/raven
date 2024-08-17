@@ -11,7 +11,6 @@ import { getErrorMessage } from '@/components/layout/AlertBanner/ErrorBanner'
 import { AiOutlineEdit } from 'react-icons/ai'
 import { LuForward, LuReply } from 'react-icons/lu'
 import { MdOutlineEmojiEmotions } from "react-icons/md";
-import { ReactionObject } from '../MessageReactions'
 
 export interface MessageContextMenuProps {
     message?: Message | null,
@@ -19,23 +18,17 @@ export interface MessageContextMenuProps {
     onEdit: VoidFunction,
     onReply: VoidFunction,
     onForward: VoidFunction,
+    onViewReaction?: VoidFunction
 }
 
-interface MessageReactionAnalyticsProps extends MessageContextMenuProps {
-    reactions: ReactionObject[],
-    onClose: VoidFunction,
-    isOpen: boolean,
-    open: VoidFunction
-}
-
-export const MessageContextMenu = ({ message, onDelete, onEdit, onReply, onForward, ...reactionProps }: MessageReactionAnalyticsProps) => {
+export const MessageContextMenu = ({ message, onDelete, onEdit, onReply, onForward, onViewReaction }: MessageContextMenuProps) => {
 
     const copy = useMessageCopy(message)
     const { currentUser } = useContext(UserContext)
 
     const isOwner = currentUser === message?.owner;
 
-    const { reactions, open: openReactionAnalytics } = reactionProps
+    const isReactionsAvailable = Object.keys(JSON.parse(message?.message_reactions ?? '{}')).length !== 0
     
     return (
         <ContextMenu.Content>
@@ -109,9 +102,9 @@ export const MessageContextMenu = ({ message, onDelete, onEdit, onReply, onForwa
 
                 </ContextMenu.Group>
                 
-                {Object.keys(reactions).length !== 0 && <ContextMenu.Group>
+                {isReactionsAvailable && <ContextMenu.Group>
                     <ContextMenu.Separator />
-                    <ContextMenu.Item onClick={openReactionAnalytics}>
+                    <ContextMenu.Item onClick={onViewReaction}>
                         <Flex gap='2'>
                             <MdOutlineEmojiEmotions size='18' />
                             Reaction Analytics
