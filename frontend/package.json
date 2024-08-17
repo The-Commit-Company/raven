@@ -38,7 +38,7 @@
     "downshift": "^8.3.1",
     "emoji-picker-element": "^1.22.2",
     "firebase": "^10.9.0",
-    "frappe-react-sdk": "^1.7.1",
+    "frappe-react-sdk": "^1.7.2",
     "highlight.js": "^11.9.0",
     "html-react-parser": "^5.1.8",
     "jotai": "^2.9.2",
