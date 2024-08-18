@@ -3,10 +3,8 @@ import { Link } from "react-router-dom"
 import { Message } from "../../../../../../../types/Messaging/Message"
 import { Button, Flex, Separator, Text } from "@radix-ui/themes"
 import { MessageContent } from "../MessageItem"
-import { ViewThreadParticipants } from "@/components/feature/threads/ThreadParticipants"
 import { useFrappeGetDocCount } from "frappe-react-sdk"
 import { RavenMessage } from "@/types/RavenMessaging/RavenMessage"
-import { useIsMobile } from "@/hooks/useMediaQuery"
 
 export const ThreadMessage = ({ thread }: { thread: Message }) => {
 
@@ -23,18 +21,17 @@ export const ThreadMessage = ({ thread }: { thread: Message }) => {
                         <Button size={'1'}
                             asChild
                             variant={'ghost'}
-                            className={'not-cal w-fit hover:bg-transparent hover:underline cursor-pointer font-semibold'}>
+                            className={'w-fit hover:bg-transparent hover:underline cursor-pointer font-semibold'}>
                             <Link to={`/channel/${thread.channel_id}/thread/${thread.name}`}>View Thread</Link>
                         </Button>
                     </Flex>
-                    <ViewThreadParticipants participants={thread.thread_participants ?? []} />
                 </Flex>
             </Flex>
         </Flex>
     )
 }
 
-const ThreadReplyCount = ({ thread }: { thread: Message }) => {
+export const ThreadReplyCount = ({ thread }: { thread: Message }) => {
 
     const { data } = useFrappeGetDocCount<RavenMessage>("Raven Message", [["channel_id", "=", thread.name]], undefined, undefined, undefined, {
         revalidateOnFocus: false,

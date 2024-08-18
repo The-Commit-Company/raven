@@ -1,27 +1,27 @@
 import { Avatar, Flex, Text } from "@radix-ui/themes"
 import { UserAvatar } from "@/components/common/UserAvatar"
-import { RavenThreadParticipant } from "@/types/RavenMessaging/RavenThreadParticipant"
+import { useGetUser } from "@/hooks/useGetUser"
 
 interface ViewThreadParticipantsProps {
-    participants: RavenThreadParticipant[]
+    participants: { user_id: string }[],
 }
 
 export const ViewThreadParticipants = ({ participants }: ViewThreadParticipantsProps) => {
 
     const totalParticipants = Object.keys(participants).length
-
     const extraNumber = Math.min(totalParticipants - 3, 9)
 
     return (
         <Flex align={'center'} gap='2'>
             <Text size='1' className={'text-gray-11'}>Participants: {totalParticipants}</Text>
             <div className={'flex items-center -space-x-1 rtl:space-x-reverse animate-fadein'}>
-                {Object.entries(participants).map(([name, member], index) => {
+                {participants.map((member, index) => {
+                    const user = useGetUser(member.user_id)
                     if (index < 3)
                         return <UserAvatar
-                            key={name}
-                            src={member.user_image ?? undefined}
-                            alt={member.full_name ?? member.name}
+                            key={member.user_id}
+                            src={user?.user_image ?? undefined}
+                            alt={user?.full_name ?? member.user_id}
                             radius='full'
                             variant='solid'
                             className="border border-gray-2"

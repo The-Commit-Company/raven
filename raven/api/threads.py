@@ -1,47 +1,63 @@
 import frappe
 from frappe import _
+from frappe.query_builder import Order
 
 
 @frappe.whitelist()
 def get_all_threads():
-	# Get all the threads in which the user is a participant
-	# (We are not fetching the messages inside a thread here, just the main thread message,
-	# We will fetch the messages inside a thread when the user clicks on 'View Thread')
-	# Fetch all messages in which is_thread = 1 and the user is a participant (i.e. the user is in the Raven Thread Participant table)
-	threads = frappe.get_all(
-		"Raven Message",
-		filters=[["is_thread", "=", 1], ["Raven Thread Participant", "user", "=", frappe.session.user]],
-		fields=[
-			"name",
-			"channel_id",
-			"message_type",
-			"text",
-			"content",
-			"file",
-			"image_width",
-			"image_height",
-			"message_reactions",
-			"is_edited",
-			"poll_id",
-			"is_bot_message",
-			"bot",
-			"hide_link_preview",
-			"owner",
-			"creation",
-			"is_thread",
-			"thread_id",
-			"is_thread_message",
-			"thread_messages_count",
-		],
-	)
+	"""
+    Get all the threads in which the user is a participant
+    (We are not fetching the messages inside a thread here, just the main thread message,
+    We will fetch the messages inside a thread when the user clicks on 'View Thread')
+    """
+
+    # Fetch all channels in which is_thread = 1 and the current user is a member 
+
+	channel = frappe.qb.DocType("Raven Channel")
+	channel_member = frappe.qb.DocType("Raven Channel Member")
+	message = frappe.qb.DocType("Raven Message")
+
+	query = (
+            frappe.qb.from_(channel)
+            .select(
+                channel.name,
+                channel.last_message_timestamp,
+                channel.last_message_details,
+                message.name.as_("thread_message_id"),
+                message.channel_id,
+                message.message_type,
+                message.text,
+                message.content,
+                message.file,
+                message.poll_id,
+                message.is_bot_message,
+                message.bot,
+                message.hide_link_preview,
+                message.link_doctype,
+                message.link_document,
+                message.image_height,
+                message.image_width,
+            	message.owner,
+            	message.creation,
+            )
+            .left_join(message)
+            .on(channel.name == message.name)
+            .left_join(channel_member)
+            .on(channel.name == channel_member.channel_id)
+            .where(channel_member.user_id == frappe.session.user)
+            .where(channel.is_thread == 1)
+        )
+
+	query = query.orderby(channel.last_message_timestamp, order=Order.desc)
+	threads = query.run(as_dict=True)
+
 	for thread in threads:
-		# Get all the participants for each thread
-		participants = frappe.get_all(
-			"Raven Thread Participant",
-			filters={"parent": thread.name},
-			fields=["user", "user_image", "full_name"],
+		# Fetch the participants of the thread
+		thread["participants"] = frappe.get_all(
+			"Raven Channel Member",
+			filters={"channel_id": thread["name"]},
+			fields=["user_id"],
 		)
-		thread.thread_participants = participants
 
 	return threads
 
