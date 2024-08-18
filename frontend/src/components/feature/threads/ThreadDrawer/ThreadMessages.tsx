@@ -67,6 +67,7 @@ export const ThreadMessages = () => {
             <ChatStream
                 channelID={threadID ?? ''}
                 replyToMessage={handleReplyAction}
+                showThreadButton={false}
             />
             {!isUserInChannel && <JoinChannelBox
                 channelMembers={channelMembers}

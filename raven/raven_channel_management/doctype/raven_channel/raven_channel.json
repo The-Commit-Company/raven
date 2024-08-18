@@ -140,7 +140,8 @@
    "default": "0",
    "fieldname": "is_thread",
    "fieldtype": "Check",
-   "label": "Is Thread"
+   "label": "Is Thread",
+   "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,
@@ -154,7 +155,7 @@
    "link_fieldname": "channel_id"
   }
  ],
- "modified": "2024-08-16 16:57:16.796612",
+ "modified": "2024-08-18 20:45:00.510115",
  "modified_by": "Administrator",
  "module": "Raven Channel Management",
  "name": "Raven Channel",

@@ -9,7 +9,7 @@ import { ThreadHeader } from './ThreadHeader'
 const ThreadDrawer = () => {
 
     const { threadID } = useParams()
-    const { data, error, isLoading } = useFrappeGetDoc('Raven Message', threadID, {
+    const { data, error, isLoading } = useFrappeGetDoc('Raven Message', threadID, threadID, {
         revalidateOnFocus: false,
         shouldRetryOnError: false,
         keepPreviousData: false

@@ -3,7 +3,6 @@ import { DeleteMessageDialog, useDeleteMessage } from '../ChatMessage/MessageAct
 import { EditMessageDialog, useEditMessage } from '../ChatMessage/MessageActions/EditMessage'
 import { MessageItem } from '../ChatMessage/MessageItem'
 import { ChannelHistoryFirstMessage } from '@/components/layout/EmptyState'
-import { useParams } from 'react-router-dom'
 import useChatStream from './useChatStream'
 import { useRef } from 'react'
 import { Loader } from '@/components/common/Loader'
@@ -64,9 +63,10 @@ import { ForwardMessageDialog, useForwardMessage } from '../ChatMessage/MessageA
 type Props = {
     channelID: string,
     replyToMessage: (message: Message) => void,
+    showThreadButton?: boolean
 }
 
-const ChatStream = ({ channelID, replyToMessage }: Props) => {
+const ChatStream = ({ channelID, replyToMessage, showThreadButton = true }: Props) => {
 
 
     const scrollRef = useRef<HTMLDivElement | null>(null)
@@ -137,7 +137,8 @@ const ChatStream = ({ channelID, replyToMessage }: Props) => {
                                     setEditMessage={setEditMessage}
                                     replyToMessage={replyToMessage}
                                     forwardMessage={setForwardMessage}
-                                    setDeleteMessage={setDeleteMessage} />
+                                    setDeleteMessage={setDeleteMessage}
+                                    showThreadButton={showThreadButton} />
                             </div>
                         </div>
                     }
