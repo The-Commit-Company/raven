@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "raven",
-  "version": "1.6.7",
+  "version": "1.6.10",
   "description": "Messaging Application",
   "workspaces": [
     "frontend"

@@ -7,14 +7,6 @@ export interface GetFileSearchResult {
     owner: string
 }
 
-export interface GetMessageSearchResult {
-    channel_id: string
-    creation: string
-    text: string
-    name: string
-    owner: string
-}
-
 export interface GetChannelSearchResult {
     type: "Private" | "Public" | "Open"
     name: string

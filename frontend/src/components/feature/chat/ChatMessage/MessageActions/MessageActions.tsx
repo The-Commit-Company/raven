@@ -2,7 +2,7 @@ import { ContextMenu, Flex } from '@radix-ui/themes'
 import { FileMessage, Message } from '../../../../../../../types/Messaging/Message'
 import { useContext } from 'react'
 import { UserContext } from '@/utils/auth/UserProvider'
-import { BiBookmarkMinus, BiBookmarkPlus, BiCopy, BiDownload, BiLink, BiTrash } from 'react-icons/bi'
+import { BiBookmarkMinus, BiBookmarkPlus, BiCopy, BiDownload, BiLink, BiPaperclip, BiTrash } from 'react-icons/bi'
 import { FrappeConfig, FrappeContext } from 'frappe-react-sdk'
 import { useMessageCopy } from './useMessageCopy'
 import { RetractVote } from './RetractVote'
@@ -10,23 +10,28 @@ import { toast } from 'sonner'
 import { getErrorMessage } from '@/components/layout/AlertBanner/ErrorBanner'
 import { AiOutlineEdit } from 'react-icons/ai'
 import { LuForward, LuReply } from 'react-icons/lu'
+import { MdOutlineEmojiEmotions } from "react-icons/md";
+import AttachFileToDocument from './AttachFileToDocument'
 
 export interface MessageContextMenuProps {
     message?: Message | null,
-    onDelete: VoidFunction
+    onDelete: VoidFunction,
     onEdit: VoidFunction,
     onReply: VoidFunction,
     onForward: VoidFunction,
-    onCreateThread?: VoidFunction
+    onCreateThread?: VoidFunction,
+    onViewReaction?: VoidFunction,
+    onAttachDocument: VoidFunction,
 }
-
-export const MessageContextMenu = ({ message, onDelete, onEdit, onReply, onForward }: MessageContextMenuProps) => {
+export const MessageContextMenu = ({ message, onDelete, onEdit, onReply, onForward, onAttachDocument, onViewReaction }: MessageContextMenuProps) => {
 
     const copy = useMessageCopy(message)
     const { currentUser } = useContext(UserContext)
 
-    const isOwner = currentUser === message?.owner
+    const isOwner = currentUser === message?.owner;
 
+    const isReactionsAvailable = Object.keys(JSON.parse(message?.message_reactions ?? '{}')).length !== 0
+    
     return (
         <ContextMenu.Content>
             {message ? <>
@@ -73,6 +78,13 @@ export const MessageContextMenu = ({ message, onDelete, onEdit, onReply, onForwa
                                     </Flex>
                                 </a>
                             </ContextMenu.Item>
+
+                            <ContextMenu.Item onClick={onAttachDocument}>
+                                <Flex gap='2'>
+                                    <BiPaperclip size='18' />
+                                    Attach File to Document
+                                </Flex>
+                            </ContextMenu.Item>
                         </ContextMenu.Group>
                     }
 
@@ -98,9 +110,16 @@ export const MessageContextMenu = ({ message, onDelete, onEdit, onReply, onForwa
                 </ContextMenu.Item> */}
 
                 </ContextMenu.Group>
-
-
-
+                
+                {isReactionsAvailable && <ContextMenu.Group>
+                    <ContextMenu.Separator />
+                    <ContextMenu.Item onClick={onViewReaction}>
+                        <Flex gap='2'>
+                            <MdOutlineEmojiEmotions size='18' />
+                            View Reactions
+                        </Flex>
+                    </ContextMenu.Item>
+                </ContextMenu.Group>}
 
                 {isOwner && <ContextMenu.Group>
                     <ContextMenu.Separator />
@@ -120,7 +139,6 @@ export const MessageContextMenu = ({ message, onDelete, onEdit, onReply, onForwa
                     </ContextMenu.Item>
                 </ContextMenu.Group>}
             </> : null}
-
         </ContextMenu.Content>
     )
 }

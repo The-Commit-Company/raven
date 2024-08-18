@@ -14,6 +14,8 @@ import { Button } from '@radix-ui/themes'
 import { FiArrowDown } from 'react-icons/fi'
 import { ErrorBanner } from '@/components/layout/AlertBanner'
 import { ForwardMessageDialog, useForwardMessage } from '../ChatMessage/MessageActions/ForwardMessage'
+import AttachFileToDocumentDialog, { useAttachFileToDocument } from '../ChatMessage/MessageActions/AttachFileToDocument'
+import { ReactionAnalyticsDialog, useMessageReactionAnalytics } from '../ChatMessage/MessageActions/MessageReactionAnalytics'
 
 /**
  * Anatomy of a message
@@ -76,6 +78,9 @@ const ChatStream = ({ channelID, replyToMessage, showThreadButton = true }: Prop
 
     const { setEditMessage, ...editProps } = useEditMessage()
     const { setForwardMessage, ...forwardProps } = useForwardMessage()
+    const { setAttachDocument, ...attachDocProps } = useAttachFileToDocument()
+
+    const { setReactionMessage, ...reactionProps } = useMessageReactionAnalytics()
 
     const onReplyMessageClick = (messageID: string) => {
         scrollToMessage(messageID)
@@ -137,8 +142,11 @@ const ChatStream = ({ channelID, replyToMessage, showThreadButton = true }: Prop
                                     setEditMessage={setEditMessage}
                                     replyToMessage={replyToMessage}
                                     forwardMessage={setForwardMessage}
-                                    setDeleteMessage={setDeleteMessage}
                                     showThreadButton={showThreadButton} />
+                                    onAttachDocument={setAttachDocument}
+                                    setDeleteMessage={setDeleteMessage}
+                                    setReactionMessage={setReactionMessage} 
+                                />
                             </div>
                         </div>
                     }
@@ -162,6 +170,8 @@ const ChatStream = ({ channelID, replyToMessage, showThreadButton = true }: Prop
             <DeleteMessageDialog {...deleteProps} />
             <EditMessageDialog {...editProps} />
             <ForwardMessageDialog {...forwardProps} />
+            <AttachFileToDocumentDialog {...attachDocProps} />
+            <ReactionAnalyticsDialog {...reactionProps} />
         </div>
 
     )

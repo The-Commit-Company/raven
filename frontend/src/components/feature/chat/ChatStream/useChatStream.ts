@@ -70,7 +70,7 @@ const useChatStream = (channelID: string, scrollRef: MutableRefObject<HTMLDivEle
         'channel_id': channelID,
         'base_message': state?.baseMessage ? state.baseMessage : undefined
     }, { path: `get_messages_for_channel_${channelID}`, baseMessage: state?.baseMessage }, {
-        revalidateOnFocus: false,
+        revalidateOnFocus: true,
         onSuccess: (data) => {
             if (!highlightedMessage) {
                 if (!data.message.has_new_messages) {
