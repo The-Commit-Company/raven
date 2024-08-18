@@ -1,5 +1,5 @@
 import { IconButton, Flex, Box } from "@radix-ui/themes"
-import { useState } from "react"
+import { useMemo, useState } from "react"
 import { BiX } from "react-icons/bi"
 import useFileUpload from "../../chat/ChatInput/FileInput/useFileUpload"
 import Tiptap from "../../chat/ChatInput/Tiptap"
@@ -10,6 +10,9 @@ import { FileListItem } from "../../file-upload/FileListItem"
 import { useParams } from "react-router-dom"
 import { Message } from "../../../../../../types/Messaging/Message"
 import ChatStream from "../../chat/ChatStream/ChatStream"
+import { JoinChannelBox } from "../../chat/chat-footer/JoinChannelBox"
+import { useUserData } from "@/hooks/useUserData"
+import useFetchChannelMembers from "@/hooks/fetchers/useFetchChannelMembers"
 
 export const ThreadMessages = () => {
 
@@ -49,13 +52,26 @@ export const ThreadMessages = () => {
         return null
     }
 
+    const { name: user } = useUserData()
+    const { channelMembers } = useFetchChannelMembers(threadID ?? '')
+
+    const isUserInChannel = useMemo(() => {
+        if (user && channelMembers) {
+            return user in channelMembers
+        }
+        return false
+    }, [user, channelMembers])
+
     return (
         <Flex direction='column' justify={'between'} gap='0' className="h-full p-4">
             <ChatStream
                 channelID={threadID ?? ''}
                 replyToMessage={handleReplyAction}
             />
-            <Tiptap
+            {!isUserInChannel && <JoinChannelBox
+                channelMembers={channelMembers}
+                user={user} />}
+            {isUserInChannel && <Tiptap
                 key={threadID}
                 fileProps={{
                     fileInputRef,
@@ -72,7 +88,7 @@ export const ThreadMessages = () => {
                         {files.map((f: CustomFile) => <Box className="grow-0" key={f.fileID}><FileListItem file={f} uploadProgress={fileUploadProgress} removeFile={() => removeFile(f.fileID)} /></Box>)}
                     </Flex>}
                 </Flex>}
-            />
+            />}
         </Flex>
     )
 }
