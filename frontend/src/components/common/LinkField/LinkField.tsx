@@ -16,11 +16,13 @@ export interface LinkFieldProps {
     value: string,
     setValue: (value: string) => void,
     disabled?: boolean,
-    autofocus?: boolean
+    autofocus?: boolean,
+    dropdownClass?: string,
+    required?: boolean,
 }
 
 
-const LinkField = ({ doctype, filters, label, placeholder, value, setValue, disabled, autofocus }: LinkFieldProps) => {
+const LinkField = ({ doctype, filters, label, placeholder, value, required, setValue, disabled, autofocus, dropdownClass }: LinkFieldProps) => {
 
     const [searchText, setSearchText] = useState('')
 
@@ -53,9 +55,11 @@ const LinkField = ({ doctype, filters, label, placeholder, value, setValue, disa
         },
     })
 
+    console.log(isOpen)
+
     return <div className="w-full">
-        <div className="flex flex-col gap-1">
-            <Label className="w-fit" {...getLabelProps()}>
+        <div className="flex flex-col">
+            <Label className="w-fit" isRequired={required} {...getLabelProps()}>
                 {label}
             </Label>
             <TextField.Root
@@ -68,9 +72,15 @@ const LinkField = ({ doctype, filters, label, placeholder, value, setValue, disa
 
             </TextField.Root>
         </div>
+        {isOpen && !items.length && (
+            <div
+                className={clsx(`p-2 sm:w-[550px] w-[24rem] absolute bg-background rounded-b-md mt-1 shadow-md z-[9999] max-h-96 overflow-scroll`, dropdownClass)}>
+                <Text as='span' size='2' color='gray'>No results found</Text>
+            </div>
+        )}
         <ul
-            className={`sm:w-[550px] w-[24rem] absolute bg-background rounded-b-md mt-1 shadow-md z-[9999] max-h-96 overflow-scroll p-0 ${!(isOpen && items.length) && 'hidden'
-                }`}
+            className={clsx(`sm:w-[550px] w-[24rem] absolute bg-background rounded-b-md mt-1 shadow-md z-[9999] max-h-96 overflow-scroll p-0 ${!(isOpen && items.length) && 'hidden'
+                }`, dropdownClass)}
             {...getMenuProps()}
         >
             {isOpen &&
