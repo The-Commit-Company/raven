@@ -1,4 +1,4 @@
-import { Box, Button, Flex, Separator, Text } from '@radix-ui/themes'
+import { Box, Button, Flex, Text } from '@radix-ui/themes'
 import { DateMonthYear } from '@/utils/dateConversions'
 import { MessageContent, MessageSenderAvatar, UserHoverCard } from '../chat/ChatMessage/MessageItem'
 import { useGetUser } from '@/hooks/useGetUser'
@@ -49,30 +49,27 @@ export const ThreadPreviewBox = ({ thread }: { thread: ThreadMessage }) => {
                     {channelDetails?.channelIcon && <ChannelIcon type={channelDetails?.channelIcon as "Private" | "Public" | "Open"} size='14' />}
                     <Text as='span' size='1' className={'font-semibold'}>{channelDetails?.channelName}</Text>
                 </Flex>
-                <Separator orientation='vertical' />
                 <Text as='span' size='1' color='gray'><DateMonthYear date={thread.creation} /></Text>
             </Flex>
             <Flex gap='3'>
                 <MessageSenderAvatar userID={thread.owner} user={user} isActive={false} />
                 <Flex direction='column' gap='0.5' justify='center'>
-                    <Box mt='-1'>
+                    <Box>
                         <UserHoverCard user={user} userID={thread.owner} isActive={false} />
                     </Box>
                     <MessageContent message={thread as unknown as Message} user={user} />
                 </Flex>
             </Flex>
-            <Flex justify={'between'}>
-                <Flex align={'center'} gap='2'>
-                    <ThreadReplyCount thread={thread as unknown as Message} />
-                    <Separator orientation='vertical' />
-                    <Button size={'1'}
-                        asChild
-                        variant={'ghost'}
-                        className={'w-fit hover:bg-transparent hover:underline cursor-pointer font-semibold'}>
-                        <Link to={`/channel/${thread.channel_id}/thread/${thread.name}`}>View Thread</Link>
-                    </Button>
-                </Flex>
+            <Flex align={'center'} gap='2' className='pl-11'>
                 <ViewThreadParticipants participants={thread.participants ?? []} />
+                <ThreadReplyCount thread={thread as unknown as Message} />
+                <Button size={'1'}
+                    asChild
+                    color="gray"
+                    variant={'ghost'}
+                    className={'not-cal w-fit hover:bg-transparent hover:underline cursor-pointer'}>
+                    <Link to={`/channel/${thread.channel_id}/thread/${thread.name}`}>View Thread</Link>
+                </Button>
             </Flex>
         </Flex>
     )

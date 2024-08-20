@@ -1,4 +1,4 @@
-import { Avatar, Badge, Box, BoxProps, ContextMenu, Flex, HoverCard, Link, Separator, Text, Theme } from '@radix-ui/themes'
+import { Avatar, Badge, Box, BoxProps, ContextMenu, Flex, HoverCard, Link, Text, Theme } from '@radix-ui/themes'
 import { Message, MessageBlock } from '../../../../../../types/Messaging/Message'
 import { MessageContextMenu } from './MessageActions/MessageActions'
 import { DateTooltip, DateTooltipShort } from './Renderers/DateTooltip'
@@ -142,7 +142,6 @@ export const MessageItem = ({ message, setDeleteMessage, isHighlighted, onReplyM
                                     user={user}
                                     userID={userID}
                                     isActive={isActive} />
-                                <Separator orientation='vertical' />
                                 <DateTooltip timestamp={timestamp} />
                             </Flex>
                                 : null}
