@@ -142,10 +142,10 @@ const ChatStream = ({ channelID, replyToMessage, showThreadButton = true }: Prop
                                     setEditMessage={setEditMessage}
                                     replyToMessage={replyToMessage}
                                     forwardMessage={setForwardMessage}
-                                    showThreadButton={showThreadButton} />
+                                    showThreadButton={showThreadButton}
                                     onAttachDocument={setAttachDocument}
                                     setDeleteMessage={setDeleteMessage}
-                                    setReactionMessage={setReactionMessage} 
+                                    setReactionMessage={setReactionMessage}
                                 />
                             </div>
                         </div>
