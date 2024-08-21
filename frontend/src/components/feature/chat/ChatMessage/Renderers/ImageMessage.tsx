@@ -33,15 +33,14 @@ export const ImageMessageBlock = memo(({ message, isScrolling = false, user }: I
     const width = message.thumbnail_width ? isMobile ? message.thumbnail_width / 2 : message.thumbnail_width : '300'
     const contentRef = useRef<HTMLDivElement | null>(null);
 
-    useEffect(() => {
-        if (isVisible && contentRef.current) {
-            setTimeout(() => {
-                if (contentRef.current) {
-                    contentRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                }
-            }, 200);
-        }
-    }, [isVisible]);
+    const showImage = () => {
+        setIsVisible(true)
+        setTimeout(() => {
+            if (contentRef.current) {
+                contentRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        }, 200);
+    }
 
     return (
         <Flex direction='column' gap='1'>
@@ -54,7 +53,7 @@ export const ImageMessageBlock = memo(({ message, isScrolling = false, user }: I
                     className='pl-0 mr-[1px] cursor-pointer font-bold hover:bg-transparent text-accent-a11 hover:text-gray-12'
                     aria-label={`Click to ${isVisible ? "hide" : "show"} image`}
                     title={`${isVisible ? "Hide" : "Show"} image`}
-                    onClick={() => setIsVisible(prev => !prev)}
+                    onClick={() => isVisible ? setIsVisible(false) : showImage()}
                 >
                     {isVisible ? <BiChevronDown size='18' /> : <BiChevronRight size='18' />}
                 </IconButton>
