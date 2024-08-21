@@ -69,15 +69,14 @@ const UserList = ({ users }: { users: UserItemProps[] }) => (
 
 const UserItem = ({ user, reaction }: UserItemProps) => {
     const userDetails = useGetUser(user)
-    const userName = userDetails?.full_name ?? user;
 
     return (
         <Box className="hover:bg-slate-3 rounded-md">
             <Flex align="center" justify="between">
                 <Flex className="p-2" gap="3" align="center">
-                    <UserAvatar src={userDetails?.user_image} size="2" />
+                    <UserAvatar src={userDetails?.user_image ?? ''} alt={userDetails?.full_name} size="2" />
                     <Text size="2" weight="medium">
-                        {userName}
+                        {userDetails?.full_name}
                     </Text>
                 </Flex>
                 {reaction && (
