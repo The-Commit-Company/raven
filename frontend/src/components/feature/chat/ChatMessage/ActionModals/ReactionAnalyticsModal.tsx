@@ -75,7 +75,7 @@ const UserItem = ({ user, reaction }: UserItemProps) => {
         <Box className="hover:bg-slate-3 rounded-md">
             <Flex align="center" justify="between">
                 <Flex className="p-2" gap="3" align="center">
-                    <UserAvatar src={userDetails?.user_image} size="2" />
+                    <UserAvatar src={userDetails?.user_image ?? ''} alt={userName} size="2" />
                     <Text size="2" weight="medium">
                         {userName}
                     </Text>

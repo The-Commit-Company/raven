@@ -14,6 +14,7 @@ export const DateSeparator = (props: FlexProps) => {
                 <Text
                     as="span"
                     size='1'
+                    className='text-center'
                     color='gray'>
                     {children}
                 </Text>
