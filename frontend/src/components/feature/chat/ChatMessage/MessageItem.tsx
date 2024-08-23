@@ -109,6 +109,18 @@ export const MessageItem = ({ message, setDeleteMessage, isHighlighted, onReplyM
 
     return (
         <Box className='relative'>
+            {!message.is_continuation && message.is_thread ?
+                <div
+                    className={`absolute 
+                        border-l
+                        border-b
+                        border-gray-5 
+                        h-[calc(100%-66px)] 
+                        rounded-bl-lg
+                        w-6
+                        top-[42px] 
+                        left-6 z-0`}>
+                </div> : null}
             <ContextMenu.Root>
                 <ContextMenu.Trigger
                     {...bind}
@@ -156,11 +168,11 @@ export const MessageItem = ({ message, setDeleteMessage, isHighlighted, onReplyM
                             }
 
                             { /* Show message according to type */}
-                            {message.is_thread === 1 ? <ThreadMessage thread={message} /> :
-                                <MessageContent
-                                    message={message}
-                                    user={user}
-                                />}
+
+                            <MessageContent
+                                message={message}
+                                user={user}
+                            />
 
                             {message.link_doctype && message.link_document && <Box className={clsx(message.is_continuation ? 'ml-0.5' : '-ml-0.5')}>
                                 <DoctypeLinkRenderer doctype={message.link_doctype} docname={message.link_document} />
@@ -172,6 +184,10 @@ export const MessageItem = ({ message, setDeleteMessage, isHighlighted, onReplyM
                                     message_reactions={message_reactions}
                                 />
                             }
+
+                            {message.is_thread === 1 ? <ThreadMessage thread={message} /> : null}
+
+
                         </Flex>
                         {(isHoveredDebounced || isEmojiPickerOpen) &&
                             <QuickActions

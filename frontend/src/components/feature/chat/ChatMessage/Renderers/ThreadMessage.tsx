@@ -1,18 +1,13 @@
-import { useGetUser } from "@/hooks/useGetUser"
 import { Link } from "react-router-dom"
 import { Message } from "../../../../../../../types/Messaging/Message"
 import { Button, Flex, Text } from "@radix-ui/themes"
-import { MessageContent } from "../MessageItem"
 import { useFrappeGetDocCount } from "frappe-react-sdk"
 import { RavenMessage } from "@/types/RavenMessaging/RavenMessage"
 
 export const ThreadMessage = ({ thread }: { thread: Message }) => {
 
-    const user = useGetUser(thread.owner)
-
     return (
-        <Flex direction='column' gap='2'>
-            <MessageContent message={thread} user={user} />
+        <div className="mt-2">
             <Flex justify={'between'} align={'center'} gap='2' className="w-fit px-3 py-2 border border-gray-4 rounded-md shadow-[0_20px_30px_-10px_rgba(0,0,0,0.1)]">
                 <ThreadReplyCount thread={thread} />
                 <Button size={'1'}
@@ -23,7 +18,7 @@ export const ThreadMessage = ({ thread }: { thread: Message }) => {
                     <Link to={`/channel/${thread.channel_id}/thread/${thread.name}`}>View Thread</Link>
                 </Button>
             </Flex>
-        </Flex>
+        </div>
     )
 }
 
