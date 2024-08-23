@@ -26,7 +26,7 @@ export const Appearance = () => {
                         <Text size='3' className={'font-semibold'}>Appearance</Text>
                         <Text size='1' color='gray'>Manage your Raven appearance</Text>
                     </Flex>
-                    <Button onClick={saveTheme} type='submit'>
+                    <Button onClick={saveTheme} type='submit' disabled={localAppearance === theme}>
                         Save
                     </Button>
                 </Flex>
