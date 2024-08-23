@@ -1,21 +1,20 @@
 import { useState } from "react"
 import { Box, Button, Flex, Text, Card, RadioCards } from "@radix-ui/themes"
 import { clsx } from 'clsx'
-import { useTheme as useNextTheme } from "next-themes"
-import type { Theme } from "@/ThemeProvider";
+import { ThemeType, useTheme } from "@/ThemeProvider";
 import { toast } from 'sonner'
 
 export const Appearance = () => {
-    const { theme, setTheme, systemTheme } = useNextTheme();
-    const [localAppearance, setLocalAppearance] = useState<Theme | 'system'>(theme as Theme | 'system');
+    const { appearance, changeTheme, systemTheme } = useTheme();
+    const [localAppearance, setLocalAppearance] = useState<ThemeType>(appearance as ThemeType);
 
-    const handleLocalApperanceChange = (value: Theme | 'system') => {
+    const handleLocalApperanceChange = (value: ThemeType) => {
         setLocalAppearance(value);
     }
 
     const saveTheme = () => {
-        setTheme(localAppearance)
-        toast.success(`Theme switched to ${localAppearance === 'system' ? `${localAppearance}(${systemTheme})` : localAppearance}`)
+        changeTheme(localAppearance)
+        toast.success(`Theme switched to ${localAppearance === 'system' ? `${localAppearance}(${systemTheme()})` : localAppearance}`)
     }
 
     return (
@@ -26,14 +25,14 @@ export const Appearance = () => {
                         <Text size='3' className={'font-semibold'}>Appearance</Text>
                         <Text size='1' color='gray'>Manage your Raven appearance</Text>
                     </Flex>
-                    <Button onClick={saveTheme} type='submit' disabled={localAppearance === theme}>
+                    <Button onClick={saveTheme} type='submit' disabled={localAppearance === appearance}>
                         Save
                     </Button>
                 </Flex>
 
                 <Card className="p-0">
                     <Box className="flex justify-center items-center bg-slate-2 dark:bg-slate-3 py-10 px-6">
-                        <RadioCards.Root onValueChange={handleLocalApperanceChange} defaultValue={localAppearance || theme} columns={{ initial: '1', sm: '1', md: '2', lg: '3' }} gap="6" size="3">
+                        <RadioCards.Root onValueChange={handleLocalApperanceChange} defaultValue={localAppearance || appearance} columns={{ initial: '1', sm: '1', md: '2', lg: '3' }} gap="6" size="3">
                             <RadioItem value="system" localAppearance={localAppearance} label="System default" imgURL="https://app.cal.com/theme-system.svg" />
                             <RadioItem value="light" localAppearance={localAppearance} label="Light" imgURL="https://app.cal.com/theme-light.svg" />
                             <RadioItem value="dark" localAppearance={localAppearance} label="Dark" imgURL="https://app.cal.com/theme-dark.svg" />

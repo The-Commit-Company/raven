@@ -10,7 +10,6 @@ import { Toaster } from 'sonner'
 import MobileTabsPage from './pages/MobileTabsPage'
 import { UserProfile } from './components/feature/userSettings/UserProfile/UserProfile'
 import { Appearance } from './components/feature/userSettings/Appearance/Appearance'
-import { ThemeProvider as NextThemeProvider } from "next-themes"
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -53,25 +52,7 @@ const router = createBrowserRouter(
 )
 function App() {
 
-  // const [appearance, setAppearance] = useStickyState<'light' | 'dark'>('dark', 'appearance');
-
-  // const toggleTheme = () => {
-  //   setAppearance(appearance === 'dark' ? 'light' : 'dark');
-  // };
-
-  // const { theme, setTheme, resolvedTheme } = useTheme()
-
-  // const toggleTheme = () => {
-  //   setTheme(theme === 'light' ? 'dark' : 'light');
-  // };
-  // console.log(resolvedTheme);
-  
-  // useEffect(() => {
-  //   setTheme(resolvedTheme)
-  // }, [])
-
   // We need to pass sitename only if the Frappe version is v15 or above.
-
   const getSiteName = () => {
     // @ts-ignore
     if (window.frappe?.boot?.versions?.frappe && (window.frappe.boot.versions.frappe.startsWith('15') || window.frappe.boot.versions.frappe.startsWith('16'))) {
@@ -94,14 +75,12 @@ function App() {
     >
       <UserProvider>
         <Toaster richColors />
-        <NextThemeProvider attribute="class" defaultTheme='system' enableSystem={true} storageKey="app-theme">
           <ThemeProvider
             // grayColor='slate'
             accentColor='iris'
             panelBackground='translucent'>
             <RouterProvider router={router} />
           </ThemeProvider>
-        </NextThemeProvider>
       </UserProvider>
     </FrappeProvider>
   )

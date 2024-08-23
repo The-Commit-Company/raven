@@ -2,16 +2,20 @@
 import { Theme, ThemeProps } from '@radix-ui/themes';
 import React from 'react';
 import { PropsWithChildren, useEffect } from 'react';
-import { useTheme as useNextTheme } from "next-themes"
+import { useStickyState } from '@/hooks/useStickyState';
 
-export type Theme = 'light' | 'dark'
+export type ThemeType = 'light' | 'dark' | 'system';
+interface ThemeProviderProps extends ThemeProps {
+    defaultTheme?: ThemeType
+}
 
-export const ThemeProvider: React.FC<PropsWithChildren<ThemeProps>> = ({ children }) => {
-    const { theme } = useNextTheme()
+export const ThemeProvider: React.FC<PropsWithChildren<ThemeProviderProps>> = ({ children, defaultTheme = 'system' }) => {
+    const [appearance, setAppearance] = useStickyState<ThemeType>(defaultTheme, 'app-theme');
 
     useEffect(() => {
         const metaThemeColor = document.querySelector("meta[name=theme-color]");
-        switch (theme) {
+
+        switch (appearance) {
             case 'light': {
                 if (document?.body) metaThemeColor?.setAttribute('content', '#FFFFFF');
                 break;
@@ -20,12 +24,24 @@ export const ThemeProvider: React.FC<PropsWithChildren<ThemeProps>> = ({ childre
                 if (document?.body) metaThemeColor?.setAttribute('content', '#191919');
                 break;
             }
+            case 'system': {
+                if (document?.body) metaThemeColor?.setAttribute('content', systemTheme() === 'light' ? '#FFFFFF' : '#191919');
+                break;
+            }
         }
-    }, [theme]);
+
+        setThemeDataAttribute(appearance)
+
+    }, [appearance]);
+
+    const handleThemeChange = (newTheme: ThemeType) => {
+        if(newTheme === "system") setThemeDataAttribute(newTheme);
+        setAppearance(newTheme);
+    };
 
     return (
-        <Theme>
-            <ThemeContext.Provider value={{ appearance: theme as Theme | 'system' }}>
+        <Theme appearance={appearance === 'system' ? systemTheme() : appearance}>
+            <ThemeContext.Provider value={{ appearance: appearance as ThemeType, changeTheme: handleThemeChange, systemTheme }}>
                 {children}
             </ThemeContext.Provider>
         </Theme>
@@ -33,10 +49,27 @@ export const ThemeProvider: React.FC<PropsWithChildren<ThemeProps>> = ({ childre
 };
 
 interface ThemeContextType {
-    appearance: Theme | 'system';
+    appearance: ThemeType;
+    changeTheme: (newTheme: ThemeType) => void;
+    systemTheme: () => Omit<ThemeType, 'system'>;
 }
+
 export const ThemeContext = React.createContext<ThemeContextType>({
     appearance: 'system',
+    changeTheme: () => {},
+    systemTheme: () => 'light'
 });
 
 export const useTheme = () => React.useContext(ThemeContext);
+
+const systemTheme = () => {
+    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+}
+
+const setThemeDataAttribute = (appearance: ThemeType) => {
+    if (appearance === 'system') {
+        document.documentElement.setAttribute('data-theme', systemTheme());
+        return;
+    }
+    document.documentElement.setAttribute('data-theme', appearance);
+}
