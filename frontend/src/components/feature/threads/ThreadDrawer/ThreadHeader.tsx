@@ -31,7 +31,7 @@ export const ThreadHeader = ({ threadMessage }: { threadMessage: Message }) => {
                         <Box mt='-1'>
                             <UserHoverCard user={user} userID={threadMessage.owner} isActive={false} />
                         </Box>
-                        <MessageContent message={threadMessage} user={user} />
+                        <MessageContent message={threadMessage} user={user} isThreadTitle />
                     </Flex>
                 </Flex>
             </Flex>

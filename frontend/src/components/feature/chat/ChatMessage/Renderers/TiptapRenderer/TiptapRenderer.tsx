@@ -2,7 +2,7 @@ import { EditorContent, EditorContext, ReactNodeViewRenderer, useEditor } from '
 import { TextMessage } from '../../../../../../../../types/Messaging/Message'
 import { UserFields } from '@/utils/users/UserListProvider'
 import { BoxProps } from '@radix-ui/themes/dist/cjs/components/box'
-import { Box } from '@radix-ui/themes'
+import { Box, Button } from '@radix-ui/themes'
 import Highlight from '@tiptap/extension-highlight'
 import StarterKit from '@tiptap/starter-kit'
 import css from 'highlight.js/lib/languages/css'
@@ -27,6 +27,7 @@ import Table from '@tiptap/extension-table'
 import TableCell from '@tiptap/extension-table-cell'
 import TableHeader from '@tiptap/extension-table-header'
 import TableRow from '@tiptap/extension-table-row'
+import { useState } from 'react'
 
 const lowlight = createLowlight(common)
 
@@ -40,18 +41,23 @@ type TiptapRendererProps = BoxProps & {
   message: TextMessage,
   user?: UserFields,
   showLinkPreview?: boolean,
+  isThreadTitle?: boolean,
   isScrolling?: boolean,
   isTruncated?: boolean
 }
 
-export const TiptapRenderer = ({ message, user, isScrolling = false, isTruncated = false, showLinkPreview = true, ...props }: TiptapRendererProps) => {
+export const TiptapRenderer = ({ message, user, isScrolling = false, isTruncated = false, showLinkPreview = true, isThreadTitle = false, ...props }: TiptapRendererProps) => {
+
+  const [showMore, setShowMore] = useState(false)
 
   const editor = useEditor({
     content: message.text,
     editable: false,
     editorProps: {
       attributes: {
-        class: isTruncated ? 'tiptap-renderer line-clamp-3' : 'tiptap-renderer'
+        class: clsx(isTruncated ? 'tiptap-renderer line-clamp-3' : 'tiptap-renderer',
+          isThreadTitle && !showMore ? 'tiptap-renderer line-clamp-1' : 'tiptap-renderer',
+        ),
       }
     },
     enableCoreExtensions: true,
@@ -161,6 +167,11 @@ export const TiptapRenderer = ({ message, user, isScrolling = false, isTruncated
           contentEditable={false}
           editor={editor}
           readOnly />
+        {isThreadTitle && message.text && message.content?.length && message.content.length > 100 && <Button size='1' variant='ghost'
+          className='hover:bg-transparent hover:underline cursor-pointer mt-0.5'
+          onClick={() => setShowMore(!showMore)}>
+          Show {showMore ? 'Less' : 'More'}
+        </Button>}
         {showLinkPreview && <LinkPreview messageID={message.name} />}
       </EditorContext.Provider>
     </Box>

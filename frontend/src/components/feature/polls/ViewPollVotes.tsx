@@ -35,7 +35,6 @@ export const ViewPollVotes = ({ poll }: ViewPollVotesProps) => {
         return (
             <Dialog.Root open={open} onOpenChange={setOpen}>
 
-                <Separator className='w-full' />
                 <Dialog.Trigger>
                     <Button variant='ghost' size={'1'} className='-mb-2.5 bg-transparent hover:text-accent-10 w-full'>View Votes</Button>
                 </Dialog.Trigger>
