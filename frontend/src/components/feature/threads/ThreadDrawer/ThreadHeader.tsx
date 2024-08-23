@@ -12,7 +12,7 @@ export const ThreadHeader = ({ threadMessage }: { threadMessage: Message }) => {
 
     return (
         <header>
-            <Flex direction={'column'} gap='2' className='pt-4 pl-4 pr-2 pb-2 border-gray-4 border-b'>
+            <Flex direction={'column'} gap='2' className='pt-4 pl-4 pr-2 pb-2 border-gray-4 sm:dark:border-gray-6 border-b'>
                 <Flex justify={'between'} align={'center'}>
                     <Heading size='4'>Thread</Heading>
                     <IconButton

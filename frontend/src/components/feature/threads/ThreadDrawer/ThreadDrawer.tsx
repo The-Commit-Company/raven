@@ -17,7 +17,7 @@ const ThreadDrawer = () => {
 
     return (
         <div>
-            {data && <Flex direction='column' gap='0' className='w-full h-[100vh] border-l dark:bg-gray-2 bg-white'>
+            {data && <Flex direction='column' gap='0' className='w-full h-[100vh] border-l border-gray-4 sm:dark:border-gray-6'>
                 <ThreadHeader threadMessage={data} />
                 {isLoading && <FullPageLoader />}
                 {error && <Box p='4'><ErrorBanner error={error} /></Box>}
