@@ -2,10 +2,9 @@ import { useState } from "react"
 import { Box, Button, Flex, Text, Card, RadioCards } from "@radix-ui/themes"
 import { clsx } from 'clsx'
 import { ThemeType, useTheme } from "@/ThemeProvider";
-import { toast } from 'sonner'
 
 export const Appearance = () => {
-    const { appearance, changeTheme, systemTheme } = useTheme();
+    const { appearance, changeTheme } = useTheme();
     const [localAppearance, setLocalAppearance] = useState<ThemeType>(appearance as ThemeType);
 
     const handleLocalApperanceChange = (value: ThemeType) => {
@@ -14,7 +13,6 @@ export const Appearance = () => {
 
     const saveTheme = () => {
         changeTheme(localAppearance)
-        toast.success(`Theme switched to ${localAppearance === 'system' ? `${localAppearance}(${systemTheme()})` : localAppearance}`)
     }
 
     return (
