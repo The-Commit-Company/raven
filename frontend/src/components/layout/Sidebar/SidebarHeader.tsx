@@ -1,7 +1,7 @@
 import { useTheme } from '@/ThemeProvider'
 import { commandMenuOpenAtom } from '@/components/feature/CommandMenu/CommandMenu'
 import { Flex, IconButton, Text, Tooltip } from '@radix-ui/themes'
-import { BiMoon, BiSearch, BiSun } from 'react-icons/bi'
+import { BiMoon, BiSun } from 'react-icons/bi'
 import { useSetAtom } from 'jotai'
 import { TbSearch } from 'react-icons/tb'
 
