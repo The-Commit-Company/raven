@@ -14,7 +14,15 @@
   "column_break_lhoo",
   "description",
   "is_standard",
-  "module"
+  "module",
+  "ai_tab",
+  "ai_section",
+  "is_ai_bot",
+  "openai_assistant_id",
+  "column_break_khmi",
+  "allow_bot_to_write_documents",
+  "section_break_lwkx",
+  "instruction"
  ],
  "fields": [
   {
@@ -63,12 +71,54 @@
   {
    "fieldname": "column_break_lhoo",
    "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "ai_section",
+   "fieldtype": "Section Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_ai_bot",
+   "fieldtype": "Check",
+   "label": "Is AI Bot?"
+  },
+  {
+   "depends_on": "eval: doc.is_ai_bot;",
+   "fieldname": "openai_assistant_id",
+   "fieldtype": "Data",
+   "label": "OpenAI Assistant ID",
+   "mandatory_depends_on": "eval: doc.is_ai_bot;"
+  },
+  {
+   "fieldname": "column_break_khmi",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "allow_bot_to_write_documents",
+   "fieldtype": "Check",
+   "label": "Allow Bot to Write Documents"
+  },
+  {
+   "fieldname": "ai_tab",
+   "fieldtype": "Tab Break",
+   "label": "AI"
+  },
+  {
+   "fieldname": "section_break_lwkx",
+   "fieldtype": "Section Break"
+  },
+  {
+   "description": "You can use Jinja variables here to customize the instruction to the bot at run time.",
+   "fieldname": "instruction",
+   "fieldtype": "Long Text",
+   "label": "Instruction"
   }
  ],
  "image_field": "image",
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-03-29 23:16:44.406120",
+ "modified": "2024-08-23 19:59:02.021835",
  "modified_by": "Administrator",
  "module": "Raven Bot",
  "name": "Raven Bot",

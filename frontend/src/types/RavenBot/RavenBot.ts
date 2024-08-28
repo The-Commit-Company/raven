@@ -1,7 +1,7 @@
 
 export interface RavenBot{
-	creation: string
 	name: string
+	creation: string
 	modified: string
 	owner: string
 	modified_by: string
@@ -22,4 +22,10 @@ export interface RavenBot{
 	is_standard?: 0 | 1
 	/**	Module : Link - Module Def	*/
 	module?: string
+	/**	Is AI Bot? : Check	*/
+	is_ai_bot?: 0 | 1
+	/**	OpenAI Assistant ID : Data	*/
+	openai_assistant_id?: string
+	/**	Allow Bot to Write Documents : Check	*/
+	allow_bot_to_write_documents?: 0 | 1
 }

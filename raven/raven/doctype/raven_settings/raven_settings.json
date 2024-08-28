@@ -12,6 +12,12 @@
   "integrations_tab",
   "integrations_section",
   "tenor_api_key",
+  "ai_section",
+  "enable_ai_integration",
+  "openai_organisation_id",
+  "openai_api_key",
+  "openai_project_id",
+  "column_break_occp",
   "frappe_hr_tab",
   "auto_create_department_channel",
   "department_channel_type",
@@ -79,12 +85,48 @@
    "fieldname": "show_if_a_user_is_on_leave",
    "fieldtype": "Check",
    "label": "Show if a user is on leave"
+  },
+  {
+   "fieldname": "ai_section",
+   "fieldtype": "Section Break",
+   "label": "AI"
+  },
+  {
+   "default": "0",
+   "fieldname": "enable_ai_integration",
+   "fieldtype": "Check",
+   "label": "Enable AI Integration"
+  },
+  {
+   "depends_on": "eval:doc.enable_ai_integration;",
+   "fieldname": "openai_organisation_id",
+   "fieldtype": "Data",
+   "label": "OpenAI Organisation ID",
+   "mandatory_depends_on": "eval:doc.enable_ai_integration;"
+  },
+  {
+   "depends_on": "eval:doc.enable_ai_integration;",
+   "fieldname": "openai_api_key",
+   "fieldtype": "Password",
+   "label": "OpenAI API Key",
+   "mandatory_depends_on": "eval:doc.enable_ai_integration;"
+  },
+  {
+   "depends_on": "eval:doc.enable_ai_integration;",
+   "description": "If not set, the integration will use the default project",
+   "fieldname": "openai_project_id",
+   "fieldtype": "Data",
+   "label": "OpenAI Project ID"
+  },
+  {
+   "fieldname": "column_break_occp",
+   "fieldtype": "Column Break"
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2024-07-03 16:53:42.621934",
+ "modified": "2024-08-23 05:28:21.854302",
  "modified_by": "Administrator",
  "module": "Raven",
  "name": "Raven Settings",

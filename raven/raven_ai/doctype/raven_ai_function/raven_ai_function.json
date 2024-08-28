@@ -1,0 +1,53 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "prompt",
+ "creation": "2024-08-23 08:43:26.356348",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "function_path",
+  "pass_parameters_as_json"
+ ],
+ "fields": [
+  {
+   "fieldname": "function_path",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Function Path",
+   "reqd": 1
+  },
+  {
+   "default": "0",
+   "description": "If checked, the params will be passed as a JSON object instead of named parameters",
+   "fieldname": "pass_parameters_as_json",
+   "fieldtype": "Check",
+   "label": "Pass parameters as JSON"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2024-08-23 17:47:52.841530",
+ "modified_by": "Administrator",
+ "module": "Raven AI",
+ "name": "Raven AI Function",
+ "naming_rule": "Set by user",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": []
+}

@@ -16,11 +16,15 @@ class RavenBot(Document):
 	if TYPE_CHECKING:
 		from frappe.types import DF
 
+		allow_bot_to_write_documents: DF.Check
 		bot_name: DF.Data
 		description: DF.SmallText | None
 		image: DF.AttachImage | None
+		instruction: DF.LongText | None
+		is_ai_bot: DF.Check
 		is_standard: DF.Check
 		module: DF.Link | None
+		openai_assistant_id: DF.Data | None
 		raven_user: DF.Link | None
 	# end: auto-generated types
 
