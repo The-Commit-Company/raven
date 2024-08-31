@@ -1,9 +1,9 @@
 import { ErrorBanner } from '../../../layout/AlertBanner'
-import { useState } from 'react'
+import { Fragment, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useFrappeDeleteDoc } from 'frappe-react-sdk'
 import { ChannelListItem } from '@/utils/channel/ChannelListProvider'
-import { AlertDialog, Button, Callout, Checkbox, Flex, Text } from '@radix-ui/themes'
+import { AlertDialog, Button, Callout, Checkbox, Dialog, Flex, Text } from '@radix-ui/themes'
 import { Loader } from '@/components/common/Loader'
 import { FiAlertTriangle } from 'react-icons/fi'
 import { toast } from 'sonner'
@@ -11,10 +11,11 @@ import { toast } from 'sonner'
 type DeleteChannelModalProps = {
     onClose: () => void,
     onCloseParent: () => void,
-    channelData: ChannelListItem
+    channelData: ChannelListItem,
+    isDrawer?: boolean
 }
 
-export const DeleteChannelModal = ({ onClose, onCloseParent, channelData }: DeleteChannelModalProps) => {
+export const DeleteChannelModal = ({ onClose, onCloseParent, isDrawer, channelData }: DeleteChannelModalProps) => {
 
     const { deleteDoc, error, loading: deletingDoc, reset } = useFrappeDeleteDoc()
 
@@ -40,11 +41,13 @@ export const DeleteChannelModal = ({ onClose, onCloseParent, channelData }: Dele
 
     const [allowDelete, setAllowDelete] = useState(false)
 
+    const Title = isDrawer ? Dialog.Title : AlertDialog.Title
+    const DialogCancel = isDrawer ? Fragment : AlertDialog.Cancel
+    const DialogAction = isDrawer ? Fragment : AlertDialog.Action
+
     return (
         <>
-            <AlertDialog.Title>
-                Delete this channel?
-            </AlertDialog.Title>
+            <Title>Delete this channel?</Title>
 
             <Flex direction='column' gap='4'>
                 <ErrorBanner error={error} />
@@ -72,15 +75,19 @@ export const DeleteChannelModal = ({ onClose, onCloseParent, channelData }: Dele
             </Flex>
 
             <Flex gap="3" mt="4" justify="end">
-                <AlertDialog.Cancel>
+
+                <DialogCancel>
                     <Button variant="soft" color="gray" onClick={handleClose}>
                         Cancel
                     </Button>
-                </AlertDialog.Cancel>
-                <Button variant="solid" color="red" onClick={onSubmit} disabled={!allowDelete || deletingDoc}>
-                    {deletingDoc && <Loader />}
-                    {deletingDoc ? "Deleting" : "Delete"}
-                </Button>
+                </DialogCancel>
+                <DialogAction>
+                    <Button variant="solid" color="red" onClick={onSubmit} disabled={!allowDelete || deletingDoc}>
+                        {deletingDoc && <Loader />}
+                        {deletingDoc ? "Deleting" : "Delete"}
+                    </Button>
+                </DialogAction>
+
             </Flex>
         </>
     )

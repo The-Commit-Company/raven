@@ -10,12 +10,12 @@
     <a href="https://frappecloud.com/marketplace/apps/raven"><strong>Install on Frappe Cloud»</strong></a>
     <br />
     <br />
-    <a href="https://ravenapp.info"><strong>Learn More »</strong></a>
+    <a href="https://thecommit.company/products/raven"><strong>Learn More »</strong></a>
     <br />
     <br />
     <a href="https://github.com/The-Commit-Company/Raven/issues">Issues</a>
     ·
-    <a href="https://github.com/The-Commit-Company/Raven/discussions">Discussions</a>
+    <a href="https://community.ravenapp.cloud">Community</a>
      ·
     <a href="https://github.com/sponsors/The-Commit-Company?frequency=one-time">Sponsor Us!</a>
   </p>
