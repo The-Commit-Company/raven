@@ -4,6 +4,8 @@ import { ChangeChannelTypeModal } from './ChangeChannelTypeModal'
 import { useState } from 'react'
 import { Button, Dialog, Separator } from '@radix-ui/themes'
 import { DIALOG_CONTENT_CLASS } from '@/utils/layout/dialog'
+import { useIsDesktop } from '@/hooks/useMediaQuery'
+import { Drawer, DrawerContent, DrawerTrigger } from '@/components/layout/Drawer'
 
 interface ChangeChannelTypeButtonProps {
     channelData: ChannelListItem,
@@ -44,22 +46,47 @@ const ChangeChannelTypePublicPrivate = ({ channelData, allowSettingChange }: Cha
         setOpen(false)
     }
 
-    return (
-        <Dialog.Root open={open} onOpenChange={setOpen}>
-            <Dialog.Trigger>
-                <Button className={'py-6 px-4 bg-transparent text-zinc-900 dark:text-white not-cal hover:bg-gray-3 justify-start rounded-none'} disabled={!allowSettingChange}>
-                    {channelData.type === 'Public' ? <BiLockAlt /> : <BiHash />}
-                    Change to a {channelData.type === 'Public' ? 'private' : 'public'} channel
-                </Button>
-            </Dialog.Trigger>
-            <Dialog.Content className={DIALOG_CONTENT_CLASS}>
-                <ChangeChannelTypeModal
-                    newChannelType={channelData.type === 'Public' ? 'Private' : 'Public'}
-                    onClose={onClose}
-                    channelData={channelData} />
-            </Dialog.Content>
-        </Dialog.Root>
-    )
+    const isDesktop = useIsDesktop()
+
+    if (isDesktop) {
+
+        return (
+            <Dialog.Root open={open} onOpenChange={setOpen}>
+                <Dialog.Trigger>
+                    <Button className={'py-6 px-4 bg-transparent text-zinc-900 dark:text-white not-cal hover:bg-gray-3 justify-start rounded-none'} disabled={!allowSettingChange}>
+                        {channelData.type === 'Public' ? <BiLockAlt /> : <BiHash />}
+                        Change to a {channelData.type === 'Public' ? 'private' : 'public'} channel
+                    </Button>
+                </Dialog.Trigger>
+                <Dialog.Content className={DIALOG_CONTENT_CLASS}>
+                    <ChangeChannelTypeModal
+                        newChannelType={channelData.type === 'Public' ? 'Private' : 'Public'}
+                        onClose={onClose}
+                        channelData={channelData} />
+                </Dialog.Content>
+            </Dialog.Root>
+        )
+    }
+    else {
+        return (
+            <Drawer open={open} onOpenChange={setOpen}>
+                <DrawerTrigger asChild>
+                    <Button className={'py-6 px-4 bg-transparent text-zinc-900 dark:text-white not-cal hover:bg-gray-3 justify-start rounded-none'} disabled={!allowSettingChange}>
+                        {channelData.type === 'Public' ? <BiLockAlt /> : <BiHash />}
+                        Change to a {channelData.type === 'Public' ? 'private' : 'public'} channel
+                    </Button>
+                </DrawerTrigger>
+                <DrawerContent>
+                    <div className='pb-16 min-h-48 px-1 overflow-auto'>
+                        <ChangeChannelTypeModal
+                            newChannelType={channelData.type === 'Public' ? 'Private' : 'Public'}
+                            onClose={onClose}
+                            channelData={channelData} />
+                    </div>
+                </DrawerContent>
+            </Drawer>
+        )
+    }
 }
 
 const ChangeChannelTypeOpenPublic = ({ channelData, allowSettingChange }: ChangeChannelTypeButtonProps) => {
@@ -69,22 +96,46 @@ const ChangeChannelTypeOpenPublic = ({ channelData, allowSettingChange }: Change
         setOpen(false)
     }
 
-    return (
-        <Dialog.Root open={open} onOpenChange={setOpen}>
-            <Dialog.Trigger>
-                <Button className={'py-6 px-4 bg-transparent text-zinc-900 dark:text-white not-cal hover:bg-gray-3 justify-start rounded-none'} disabled={!allowSettingChange}>
-                    {channelData.type === 'Open' ? <BiHash /> : <BiGlobe />}
-                    Change to a {channelData.type === 'Open' ? 'public' : 'open'} channel
-                </Button>
-            </Dialog.Trigger>
-            <Dialog.Content className={DIALOG_CONTENT_CLASS}>
-                <ChangeChannelTypeModal
-                    newChannelType={channelData.type === 'Open' ? 'Public' : 'Open'}
-                    onClose={onClose}
-                    channelData={channelData} />
-            </Dialog.Content>
-        </Dialog.Root>
-    )
+    const isDesktop = useIsDesktop()
+
+    if (isDesktop) {
+
+        return (
+            <Dialog.Root open={open} onOpenChange={setOpen}>
+                <Dialog.Trigger>
+                    <Button className={'py-6 px-4 bg-transparent text-zinc-900 dark:text-white not-cal hover:bg-gray-3 justify-start rounded-none'} disabled={!allowSettingChange}>
+                        {channelData.type === 'Open' ? <BiHash /> : <BiGlobe />}
+                        Change to a {channelData.type === 'Open' ? 'public' : 'open'} channel
+                    </Button>
+                </Dialog.Trigger>
+                <Dialog.Content className={DIALOG_CONTENT_CLASS}>
+                    <ChangeChannelTypeModal
+                        newChannelType={channelData.type === 'Open' ? 'Public' : 'Open'}
+                        onClose={onClose}
+                        channelData={channelData} />
+                </Dialog.Content>
+            </Dialog.Root>
+        )
+    } else {
+        return (
+            <Drawer open={open} onOpenChange={setOpen}>
+                <DrawerTrigger asChild>
+                    <Button className={'py-6 px-4 bg-transparent text-zinc-900 dark:text-white not-cal hover:bg-gray-3 justify-start rounded-none'} disabled={!allowSettingChange}>
+                        {channelData.type === 'Open' ? <BiHash /> : <BiGlobe />}
+                        Change to a {channelData.type === 'Open' ? 'public' : 'open'} channel
+                    </Button>
+                </DrawerTrigger>
+                <DrawerContent>
+                    <div className='pb-16 min-h-48 px-1 overflow-auto'>
+                        <ChangeChannelTypeModal
+                            newChannelType={channelData.type === 'Open' ? 'Public' : 'Open'}
+                            onClose={onClose}
+                            channelData={channelData} />
+                    </div>
+                </DrawerContent>
+            </Drawer>
+        )
+    }
 }
 
 const ChangeChannelTypeOpenPrivate = ({ channelData, allowSettingChange }: ChangeChannelTypeButtonProps) => {
@@ -94,20 +145,44 @@ const ChangeChannelTypeOpenPrivate = ({ channelData, allowSettingChange }: Chang
         setOpen(false)
     }
 
-    return (
-        <Dialog.Root open={open} onOpenChange={setOpen}>
-            <Dialog.Trigger>
-                <Button className={'py-6 px-4 bg-transparent text-zinc-900 dark:text-white not-cal hover:bg-gray-3 justify-start rounded-none'} disabled={!allowSettingChange}>
-                    {channelData.type === 'Open' ? <BiLockAlt /> : <BiGlobe />}
-                    Change to a {channelData.type === 'Open' ? 'private' : 'open'} channel
-                </Button>
-            </Dialog.Trigger>
-            <Dialog.Content className={DIALOG_CONTENT_CLASS}>
-                <ChangeChannelTypeModal
-                    newChannelType={channelData.type === 'Open' ? 'Private' : 'Open'}
-                    onClose={onClose}
-                    channelData={channelData} />
-            </Dialog.Content>
-        </Dialog.Root>
-    )
+    const isDesktop = useIsDesktop()
+
+    if (isDesktop) {
+
+        return (
+            <Dialog.Root open={open} onOpenChange={setOpen}>
+                <Dialog.Trigger>
+                    <Button className={'py-6 px-4 bg-transparent text-zinc-900 dark:text-white not-cal hover:bg-gray-3 justify-start rounded-none'} disabled={!allowSettingChange}>
+                        {channelData.type === 'Open' ? <BiLockAlt /> : <BiGlobe />}
+                        Change to a {channelData.type === 'Open' ? 'private' : 'open'} channel
+                    </Button>
+                </Dialog.Trigger>
+                <Dialog.Content className={DIALOG_CONTENT_CLASS}>
+                    <ChangeChannelTypeModal
+                        newChannelType={channelData.type === 'Open' ? 'Private' : 'Open'}
+                        onClose={onClose}
+                        channelData={channelData} />
+                </Dialog.Content>
+            </Dialog.Root>
+        )
+    } else {
+        return (
+            <Drawer open={open} onOpenChange={setOpen}>
+                <DrawerTrigger asChild>
+                    <Button className={'py-6 px-4 bg-transparent text-zinc-900 dark:text-white not-cal hover:bg-gray-3 justify-start rounded-none'} disabled={!allowSettingChange}>
+                        {channelData.type === 'Open' ? <BiLockAlt /> : <BiGlobe />}
+                        Change to a {channelData.type === 'Open' ? 'private' : 'open'} channel
+                    </Button>
+                </DrawerTrigger>
+                <DrawerContent>
+                    <div className='pb-16 min-h-48 px-1 overflow-auto'>
+                        <ChangeChannelTypeModal
+                            newChannelType={channelData.type === 'Open' ? 'Private' : 'Open'}
+                            onClose={onClose}
+                            channelData={channelData} />
+                    </div>
+                </DrawerContent>
+            </Drawer>
+        )
+    }
 }
