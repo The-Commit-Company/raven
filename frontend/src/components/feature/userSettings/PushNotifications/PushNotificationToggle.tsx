@@ -35,23 +35,28 @@ const PushNotificationToggle = (props: Props) => {
     }
 
     const enablePushNotifications = async () => {
-        // @ts-expect-error
-        window.frappePushNotification
-            .enableNotification()
-            .then((data: any) => {
-                if (data.permission_granted) {
-                    setPushNotificationsEnabled(true)
-                    toast.success("Push notifications enabled")
-                } else {
-                    toast.error("Permission denied for push notifications")
-                    setPushNotificationsEnabled(false)
-                }
-            })
-            .catch((error: any) => {
-                toast.error("Error enabling push notifications", {
-                    description: getErrorMessage(error)
+
+
+        toast.promise(
+            // @ts-expect-error
+            window.frappePushNotification
+                .enableNotification()
+                .then((data: any) => {
+                    if (data.permission_granted) {
+                        setPushNotificationsEnabled(true)
+                    } else {
+                        setPushNotificationsEnabled(false)
+                        throw new Error("Permission denied for push notifications")
+                    }
                 })
-                setPushNotificationsEnabled(false)
+                .catch((error: any) => {
+                    setPushNotificationsEnabled(false)
+                    throw error
+                })
+            , {
+                success: "Push notifications enabled",
+                loading: "Enabling...",
+                error: (e: Error) => e.message
             })
     }
 

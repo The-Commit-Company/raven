@@ -2,17 +2,19 @@ import { useFrappeUpdateDoc } from 'frappe-react-sdk'
 import { ErrorBanner } from '../../../layout/AlertBanner'
 import { useNavigate } from 'react-router-dom'
 import { ChannelListItem } from '@/utils/channel/ChannelListProvider'
-import { AlertDialog, Flex, Text, Button } from '@radix-ui/themes'
+import { AlertDialog, Flex, Text, Button, Dialog } from '@radix-ui/themes'
 import { Loader } from '@/components/common/Loader'
 import { toast } from 'sonner'
+import { Fragment } from 'react'
 
 interface ArchiveChannelModalProps {
     onClose: () => void,
     onCloseViewDetails: () => void,
-    channelData: ChannelListItem
+    channelData: ChannelListItem,
+    isDrawer?: boolean
 }
 
-export const ArchiveChannelModal = ({ onClose, onCloseViewDetails, channelData }: ArchiveChannelModalProps) => {
+export const ArchiveChannelModal = ({ onClose, onCloseViewDetails, channelData, isDrawer }: ArchiveChannelModalProps) => {
 
     const { updateDoc, loading: archivingDoc, error } = useFrappeUpdateDoc()
     const navigate = useNavigate()
@@ -23,14 +25,21 @@ export const ArchiveChannelModal = ({ onClose, onCloseViewDetails, channelData }
         }).then(() => {
             onClose()
             onCloseViewDetails()
-            navigate('/channel/general')
+            navigate('/channel')
             toast('Channel archived')
         })
     }
+    const Title = isDrawer ? Dialog.Title : AlertDialog.Title
+    const DialogCancel = isDrawer ? Fragment : AlertDialog.Cancel
+    const DialogAction = isDrawer ? Fragment : AlertDialog.Action
 
     return (
         <>
-            <AlertDialog.Title>Archive this channel? </AlertDialog.Title>
+            {isDrawer ?
+                <Title>Archive this channel? </Title>
+                :
+                <AlertDialog.Title>Archive this channel? </AlertDialog.Title>
+            }
 
             <Flex direction='column' gap='4'>
                 <ErrorBanner error={error} />
@@ -45,17 +54,17 @@ export const ArchiveChannelModal = ({ onClose, onCloseViewDetails, channelData }
             </Flex>
 
             <Flex gap="3" mt="4" justify="end">
-                <AlertDialog.Cancel>
+                <DialogCancel>
                     <Button variant="soft" color="gray">
                         Cancel
                     </Button>
-                </AlertDialog.Cancel>
-                <AlertDialog.Action>
+                </DialogCancel>
+                <DialogAction>
                     <Button variant="solid" color="red" onClick={archiveChannel} disabled={archivingDoc}>
                         {archivingDoc && <Loader />}
                         {archivingDoc ? "Archiving" : "Archive"}
                     </Button>
-                </AlertDialog.Action>
+                </DialogAction>
             </Flex>
         </>
     )
