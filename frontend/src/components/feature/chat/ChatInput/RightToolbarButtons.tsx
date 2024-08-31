@@ -188,16 +188,32 @@ export const SendButton = ({ sendMessage, messageSending, setContent, ...props }
     const onClick = () => {
         if (editor) {
 
-
             const hasContent = editor.getText().trim().length > 0
 
             const hasInlineImage = editor.getHTML().includes('img')
 
             let html = ''
-            let json = {}
+            let json: any = {}
             if (hasContent || hasInlineImage) {
-                html = editor.getHTML()
                 json = editor.getJSON()
+
+                // remove empty paragraphs at the end of the content
+                const content = json.content
+
+                for (let i = content.length - 1; i >= 0; i--) {
+                    if (content[i].type === 'paragraph' && (!content[i].content || content[i].content.length === 0)) {
+                        content.pop()
+                    } else {
+                        break
+                    }
+                }
+
+                json.content = content
+
+                // Get the HTMl content
+                editor.commands.setContent(json)
+
+                html = editor.getHTML()
             }
             editor.setEditable(false)
             sendMessage(html, json)

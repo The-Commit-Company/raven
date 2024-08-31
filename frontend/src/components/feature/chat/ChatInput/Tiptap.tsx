@@ -499,7 +499,8 @@ const Tiptap = ({ isEdit, slotBefore, fileProps, onMessageSend, replyMessage, cl
                         // followCursor: true,
                         offset: [90, 15],
                         inlinePositioning: true,
-                    }}>
+                    }}
+                        editor={editor}>
                         <div className='bg-gray-1 dark:bg-gray-3 shadow-md p-2 rounded-md'>
                             <TextFormattingMenu />
                         </div>
