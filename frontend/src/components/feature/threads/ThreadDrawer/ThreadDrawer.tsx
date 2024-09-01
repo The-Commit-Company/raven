@@ -5,11 +5,12 @@ import { useFrappeGetDoc } from 'frappe-react-sdk'
 import { ErrorBanner } from '@/components/layout/AlertBanner'
 import { FullPageLoader } from '@/components/layout/Loaders'
 import { ThreadHeader } from './ThreadHeader'
+import { Message } from '../../../../../../types/Messaging/Message'
 
 const ThreadDrawer = () => {
 
     const { threadID } = useParams()
-    const { data, error, isLoading } = useFrappeGetDoc('Raven Message', threadID, threadID, {
+    const { data, error, isLoading } = useFrappeGetDoc<Message>('Raven Message', threadID, threadID, {
         revalidateOnFocus: false,
         shouldRetryOnError: false,
         keepPreviousData: false
@@ -18,10 +19,10 @@ const ThreadDrawer = () => {
     return (
         <div>
             {data && <Flex direction='column' gap='0' className='w-full h-[100vh] border-l border-gray-4 sm:dark:border-gray-6'>
-                <ThreadHeader threadMessage={data} />
+                <ThreadHeader />
                 {isLoading && <FullPageLoader />}
                 {error && <Box p='4'><ErrorBanner error={error} /></Box>}
-                <ThreadMessages />
+                <ThreadMessages threadMessage={data} />
             </Flex>}
         </div>
     )

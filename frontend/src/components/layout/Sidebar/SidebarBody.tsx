@@ -5,7 +5,8 @@ import { AccessibleIcon, Box, Flex, ScrollArea, Text } from '@radix-ui/themes'
 import useUnreadMessageCount from '@/hooks/useUnreadMessageCount'
 import PinnedChannels from './PinnedChannels'
 import React from 'react'
-import { BiSolidBookmark, BiSolidMessageDetail } from 'react-icons/bi'
+import { BiMessageAltDetail } from 'react-icons/bi'
+import { LuBookmark } from 'react-icons/lu'
 
 export const SidebarBody = () => {
 
@@ -14,16 +15,16 @@ export const SidebarBody = () => {
     return (
         <ScrollArea type="hover" scrollbars="vertical" className='h-[calc(100vh-7rem)]'>
             <Flex direction='column' gap='2' className='overflow-x-hidden pb-12 sm:pb-0' px='2'>
-                <Flex direction='column' gap='2' className='pb-0.5'>
+                <Flex direction='column' gap='1' className='pb-0.5'>
                     <SidebarItemForPage
                         to={'threads'}
                         label='Threads'
-                        icon={<BiSolidMessageDetail className='text-gray-12 dark:text-gray-300 mt-1 sm:text-sm text-base' />}
+                        icon={<BiMessageAltDetail className='text-gray-12 dark:text-gray-300 mt-1 sm:text-sm text-base' />}
                         iconLabel='Threads' />
                     <SidebarItemForPage
                         to={'saved-messages'}
                         label='Saved'
-                        icon={<BiSolidBookmark className='text-gray-12 dark:text-gray-300 mt-0.5 sm:text-sm text-base' />}
+                        icon={<LuBookmark className='text-gray-12 dark:text-gray-300 mt-0.5 sm:text-sm text-base' />}
                         iconLabel='Saved Message' />
                     <PinnedChannels unread_count={unread_count?.message} />
                 </Flex>
