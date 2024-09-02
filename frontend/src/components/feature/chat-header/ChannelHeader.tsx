@@ -22,10 +22,15 @@ export const ChannelHeader = ({ channelData }: ChannelHeaderProps) => {
                 <Link to='/channel' className="block bg-transparent hover:bg-transparent active:bg-transparent sm:hidden">
                     <BiChevronLeft size='24' className="block text-gray-12" />
                 </Link>
-                <Flex gap='4' align={'center'} className="group animate-fadein">
+                <Flex gap='4' align={'center'} className="group animate-fadein pr-4">
                     <Flex gap='1' align={'center'}>
                         <ChannelIcon type={channelData.type} size='18' />
-                        <Heading className="text-lg sm:text-xl mb-0.5 text-ellipsis">{channelData.channel_name}</Heading>
+                        <Heading
+                            size={{
+                                initial: '4',
+                                sm: '5'
+                            }}
+                            className="mb-0.5 text-ellipsis line-clamp-1">{channelData.channel_name}</Heading>
                     </Flex>
                     <EditChannelNameButton channelID={channelData.name} channel_name={channelData.channel_name} channelType={channelData.type} disabled={channelData.is_archived == 1} />
                 </Flex>

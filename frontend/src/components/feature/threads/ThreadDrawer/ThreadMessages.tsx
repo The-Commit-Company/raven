@@ -13,8 +13,7 @@ import ChatStream from "../../chat/ChatStream/ChatStream"
 import { JoinChannelBox } from "../../chat/chat-footer/JoinChannelBox"
 import { useUserData } from "@/hooks/useUserData"
 import useFetchChannelMembers from "@/hooks/fetchers/useFetchChannelMembers"
-import { MessageContent, MessageSenderAvatar, UserHoverCard } from "../../chat/ChatMessage/MessageItem"
-import { useGetUser } from "@/hooks/useGetUser"
+import ThreadFirstMessage from "./ThreadFirstMessage"
 
 export const ThreadMessages = ({ threadMessage }: { threadMessage: Message }) => {
 
@@ -64,19 +63,11 @@ export const ThreadMessages = ({ threadMessage }: { threadMessage: Message }) =>
         return false
     }, [user, channelMembers])
 
-    const threadOwner = useGetUser(threadMessage.owner)
+
 
     return (
         <Flex direction='column' justify={'between'} gap='0' className="h-full p-4">
-            <Flex gap='3' position={'sticky'}>
-                <MessageSenderAvatar userID={threadMessage.owner} user={threadOwner} isActive={false} />
-                <Flex direction='column' gap='0.5' justify='center'>
-                    <Box mt='-1'>
-                        <UserHoverCard user={threadOwner} userID={threadMessage.owner} isActive={false} />
-                    </Box>
-                    <MessageContent message={threadMessage} user={threadOwner} isThreadTitle />
-                </Flex>
-            </Flex>
+            <ThreadFirstMessage message={threadMessage} />
             <ChatStream
                 channelID={threadID ?? ''}
                 replyToMessage={handleReplyAction}

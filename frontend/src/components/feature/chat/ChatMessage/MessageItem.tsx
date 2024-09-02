@@ -333,15 +333,14 @@ export const UserHoverCard = memo(({ user, userID, isActive }: UserProps) => {
 type MessageContentProps = BoxProps & {
     user?: UserFields
     message: Message,
-    isThreadTitle?: boolean
 }
-export const MessageContent = ({ message, user, isThreadTitle = false, ...props }: MessageContentProps) => {
+export const MessageContent = ({ message, user, ...props }: MessageContentProps) => {
 
     return <Box {...props}>
         {message.text ? <TiptapRenderer message={{
             ...message,
             message_type: 'Text'
-        }} user={user} isThreadTitle={isThreadTitle} showLinkPreview={message.hide_link_preview ? false : true} /> : null}
+        }} user={user} showLinkPreview={message.hide_link_preview ? false : true} /> : null}
         {message.message_type === 'Image' && <ImageMessageBlock message={message} user={user} />}
         {message.message_type === 'File' && <FileMessageBlock message={message} user={user} />}
         {message.message_type === 'Poll' && <PollMessageBlock message={message} user={user} />}

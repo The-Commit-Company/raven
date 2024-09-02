@@ -23,7 +23,7 @@ export const JoinChannelBox = ({ channelData, user }: JoinChannelBoxProps) => {
             channel_id: channelData ? channelData?.name : threadID,
             user_id: user
         }).then(() => {
-            mutate(["channel_members", channelData?.name])
+            mutate(["channel_members", channelData ? channelData.name : threadID])
         })
     }
 
