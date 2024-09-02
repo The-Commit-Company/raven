@@ -76,7 +76,7 @@ export const DMChannelHeader = ({ channelData }: DMChannelHeaderProps) => {
                         {!user && <Badge color='gray' variant='soft'>Deleted</Badge>}
                         {user?.enabled === 0 && <Badge color='gray' variant='soft'>Disabled</Badge>}
                         {user?.custom_status && <Badge color='gray' className='font-semibold px-1.5 py-0.5'>{user.custom_status}</Badge>}
-                        {!isUserOnLeave && <Badge color="yellow" variant="surface">On Leave</Badge>}
+                        {isUserOnLeave && <Badge color="yellow" variant="surface">On Leave</Badge>}
                         {isBot && <Badge color='gray' className='font-semibold px-1.5 py-0.5'>Bot</Badge>}
                     </div>
                 </Heading>
