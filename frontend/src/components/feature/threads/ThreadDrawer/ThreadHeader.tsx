@@ -52,7 +52,7 @@ export const ThreadHeader = () => {
                             color="gray"
                             aria-label="Close thread"
                             title="Close thread"
-                            onClick={() => navigate('../')}>
+                            onClick={() => navigate('../', { replace: true })}>
                             <AiOutlineClose size='16' />
                         </IconButton>
                     </Flex>
