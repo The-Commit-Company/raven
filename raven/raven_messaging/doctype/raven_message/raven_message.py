@@ -37,6 +37,7 @@ class RavenMessage(Document):
 		is_edited: DF.Check
 		is_forwarded: DF.Check
 		is_reply: DF.Check
+		is_thread: DF.Check
 		json: DF.JSON | None
 		link_doctype: DF.Link | None
 		link_document: DF.DynamicLink | None
@@ -371,7 +372,7 @@ class RavenMessage(Document):
 		# TEMP: this is a temp fix for the Desk interface
 		self.publish_deprecated_event_for_desk()
 
-		if self.is_edited:
+		if self.is_edited or self.is_thread:
 			frappe.publish_realtime(
 				"message_edited",
 				{
@@ -385,6 +386,7 @@ class RavenMessage(Document):
 						"poll_id": self.poll_id,
 						"message_type": self.message_type,
 						"is_edited": 1 if self.is_edited else 0,
+						"is_thread": self.is_thread,
 						"is_forwarded": self.is_forwarded,
 						"is_reply": self.is_reply,
 						"modified": self.modified,
@@ -426,6 +428,7 @@ class RavenMessage(Document):
 						"file": self.file,
 						"message_type": self.message_type,
 						"is_edited": 1 if self.is_edited else 0,
+						"is_thread": self.is_thread,
 						"is_forwarded": self.is_forwarded,
 						"is_reply": self.is_reply,
 						"poll_id": self.poll_id,
@@ -462,6 +465,11 @@ class RavenMessage(Document):
 	def on_trash(self):
 		# delete all the reactions for the message
 		frappe.db.delete("Raven Message Reaction", {"message": self.name})
+		# if the message is a thread, delete all messages in the thread and the thread channel
+		if self.is_thread:
+			frappe.db.delete("Raven Message", {"channel_id": self.name})
+			# delete the channel for the thread
+			frappe.db.delete("Raven Channel", self.name)
 
 
 def on_doctype_update():

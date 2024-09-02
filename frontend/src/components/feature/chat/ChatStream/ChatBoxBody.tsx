@@ -14,6 +14,8 @@ import { BiX } from "react-icons/bi"
 import ChatStream from "./ChatStream"
 import Tiptap from "../ChatInput/Tiptap"
 import useFetchChannelMembers from "@/hooks/fetchers/useFetchChannelMembers"
+import { useParams } from "react-router-dom"
+import clsx from "clsx"
 
 const COOL_PLACEHOLDERS = [
     "Delivering messages atop dragons 🐉 is available on a chargeable basis.",
@@ -79,8 +81,10 @@ export const ChatBoxBody = ({ channelData }: ChatBoxBodyProps) => {
 
     const isDM = channelData?.is_direct_message === 1 || channelData?.is_self_message === 1
 
+    const { threadID } = useParams()
+
     return (
-        <Flex height='100%' direction='column' justify={'end'} pt='9' className="overflow-hidden sm:px-4 px-2">
+        <Flex height='100%' direction='column' justify={'end'} pt='9' className={clsx("w-full overflow-hidden px-2", threadID ? "sm:pl-4" : "sm:px-4")}>
 
             <FileDrop
                 files={files}
@@ -89,6 +93,7 @@ export const ChatBoxBody = ({ channelData }: ChatBoxBodyProps) => {
                 maxFiles={10}
                 maxFileSize={10000000}>
                 <ChatStream
+                    channelID={channelData.name}
                     replyToMessage={handleReplyAction}
                 />
                 {channelData?.is_archived == 0 && (isUserInChannel || channelData?.type === 'Open')

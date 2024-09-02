@@ -16,6 +16,7 @@
   "linked_message",
   "replied_message_details",
   "column_break_wvje",
+  "is_thread",
   "message_type",
   "content",
   "file",
@@ -179,11 +180,18 @@
    "fieldname": "is_forwarded",
    "fieldtype": "Check",
    "label": "Is Forwarded"
+  },
+  {
+   "default": "0",
+   "description": "This message starts a thread",
+   "fieldname": "is_thread",
+   "fieldtype": "Check",
+   "label": "Is Thread"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-06-23 13:47:48.657331",
+ "modified": "2024-08-16 16:09:36.292391",
  "modified_by": "Administrator",
  "module": "Raven Messaging",
  "name": "Raven Message",

@@ -7,22 +7,23 @@ import { FrappeConfig, FrappeContext } from 'frappe-react-sdk'
 import { EmojiPickerButton } from './EmojiPickerButton'
 import { UserContext } from '@/utils/auth/UserProvider'
 import { AiOutlineEdit } from 'react-icons/ai'
-import { LuForward, LuReply } from 'react-icons/lu'
+import { LuReply } from 'react-icons/lu'
 import { toast } from 'sonner'
 import { getErrorMessage } from '@/components/layout/AlertBanner/ErrorBanner'
+import { CreateThreadActionButton } from './CreateThreadButton'
 
 const QUICK_EMOJIS = ['👍', '✅', '👀', '🎉']
 
-
 interface QuickActionsProps extends MessageContextMenuProps {
     isEmojiPickerOpen: boolean,
-    setIsEmojiPickerOpen: (open: boolean) => void
+    setIsEmojiPickerOpen: (open: boolean) => void,
 }
-export const QuickActions = ({ message, onReply, onEdit, onForward, isEmojiPickerOpen, setIsEmojiPickerOpen }: QuickActionsProps) => {
+
+export const QuickActions = ({ message, onReply, onEdit, isEmojiPickerOpen, setIsEmojiPickerOpen, showThreadButton = true }: QuickActionsProps) => {
 
     const { currentUser } = useContext(UserContext)
 
-    const isOwner = currentUser === message?.owner
+    const isOwner = currentUser === message?.owner && !message?.is_bot_message
     const toolbarRef = useRef<HTMLDivElement>(null)
 
     const { call } = useContext(FrappeContext) as FrappeConfig
@@ -107,12 +108,7 @@ export const QuickActions = ({ message, onReply, onEdit, onForward, isEmojiPicke
                     </QuickActionButton>
                 }
 
-                <QuickActionButton
-                    tooltip='Forward'
-                    aria-label='Forward this message'
-                    onClick={onForward}>
-                    <LuForward size='18' />
-                </QuickActionButton>
+                {message && !message.is_thread && showThreadButton && <CreateThreadActionButton messageID={message.name} />}
 
                 <QuickActionButton
                     aria-label='More actions'

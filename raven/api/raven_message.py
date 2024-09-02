@@ -88,6 +88,7 @@ def get_messages(channel_id):
 			"replied_message_details",
 			"content",
 			"is_edited",
+			"is_thread",
 			"is_forwarded",
 		],
 		order_by="creation asc",
@@ -219,6 +220,7 @@ def get_unread_count_for_channels():
 		)
 		.where((channel.type == "Open") | (channel_member.user_id == frappe.session.user))
 		.where(channel.is_archived == 0)
+		.where(channel.is_thread == 0)
 		.left_join(message)
 		.on(channel.name == message.channel_id)
 	)

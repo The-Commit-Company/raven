@@ -5,13 +5,12 @@ import { DIALOG_CONTENT_CLASS } from "@/utils/layout/dialog"
 import { DeleteMessageModal } from "@/components/feature/chat/ChatMessage/ActionModals/DeleteMessageModal"
 
 export const useDeleteMessage = () => {
+
     const [message, setMessage] = useState<null | Message>(null)
 
     const onClose = useCallback(() => {
         setMessage(null)
     }, [])
-
-
 
     return {
         message,
@@ -27,8 +26,6 @@ interface DeleteMessageDialogProps {
     onClose: () => void
 }
 export const DeleteMessageDialog = ({ message, isOpen, onClose }: DeleteMessageDialogProps) => {
-
-
     return <AlertDialog.Root open={isOpen} onOpenChange={onClose}>
         <AlertDialog.Content className={DIALOG_CONTENT_CLASS}>
             {message &&

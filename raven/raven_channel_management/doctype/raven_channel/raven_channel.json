@@ -16,6 +16,7 @@
   "linked_document",
   "section_break_evg4",
   "is_direct_message",
+  "is_thread",
   "column_break_puci",
   "is_self_message",
   "column_break_ubts",
@@ -67,7 +68,7 @@
   },
   {
    "fieldname": "channel_description",
-   "fieldtype": "Data",
+   "fieldtype": "Small Text",
    "label": "Channel Description"
   },
   {
@@ -134,6 +135,13 @@
    "fieldtype": "Check",
    "label": "Is Synced",
    "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "is_thread",
+   "fieldtype": "Check",
+   "label": "Is Thread",
+   "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,
@@ -147,7 +155,7 @@
    "link_fieldname": "channel_id"
   }
  ],
- "modified": "2024-06-20 18:26:25.559899",
+ "modified": "2024-08-18 20:45:00.510115",
  "modified_by": "Administrator",
  "module": "Raven Channel Management",
  "name": "Raven Channel",

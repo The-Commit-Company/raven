@@ -12,7 +12,7 @@ export interface RavenChannel{
 	idx?: number
 	/**	Channel Name : Data	*/
 	channel_name: string
-	/**	Channel Description : Data	*/
+	/**	Channel Description : Small Text	*/
 	channel_description?: string
 	/**	Type : Select	*/
 	type: "Private" | "Public" | "Open"
@@ -24,6 +24,8 @@ export interface RavenChannel{
 	linked_document?: string
 	/**	Is Direct Message : Check	*/
 	is_direct_message?: 0 | 1
+	/**	Is Thread : Check	*/
+	is_thread?: 0 | 1
 	/**	Is Self Message : Check	*/
 	is_self_message?: 0 | 1
 	/**	Is Archived : Check	*/

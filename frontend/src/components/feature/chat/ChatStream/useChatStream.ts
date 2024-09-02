@@ -1,6 +1,6 @@
 import { useFrappeDocumentEventListener, useFrappeEventListener, useFrappeGetCall, useFrappePostCall } from 'frappe-react-sdk'
 import { MutableRefObject, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
-import { useBeforeUnload, useLocation, useNavigate, useParams } from 'react-router-dom'
+import { useBeforeUnload, useLocation, useNavigate } from 'react-router-dom'
 import { Message } from '../../../../../../types/Messaging/Message'
 import { getDateObject } from '@/utils/dateConversions/utils'
 import { useDebounce } from '@/hooks/useDebounce'
@@ -23,9 +23,7 @@ type MessageDateBlock = Message | {
 /**
  * Hook to fetch messages to be rendered on the chat interface
  */
-const useChatStream = (scrollRef: MutableRefObject<HTMLDivElement | null>) => {
-
-    const { channelID } = useParams()
+const useChatStream = (channelID: string, scrollRef: MutableRefObject<HTMLDivElement | null>) => {
 
     const location = useLocation()
     const navigate = useNavigate()

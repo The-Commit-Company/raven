@@ -41,17 +41,17 @@ type TiptapRendererProps = BoxProps & {
   user?: UserFields,
   showLinkPreview?: boolean,
   isScrolling?: boolean,
-  isTruncated?: boolean
+  showMiniImage?: boolean,
 }
 
-export const TiptapRenderer = ({ message, user, isScrolling = false, isTruncated = false, showLinkPreview = true, ...props }: TiptapRendererProps) => {
+export const TiptapRenderer = ({ message, user, isScrolling = false, showMiniImage = false, showLinkPreview = true, ...props }: TiptapRendererProps) => {
 
   const editor = useEditor({
     content: message.text,
     editable: false,
     editorProps: {
       attributes: {
-        class: isTruncated ? 'tiptap-renderer line-clamp-3' : 'tiptap-renderer'
+        class: clsx('tiptap-renderer'),
       }
     },
     enableCoreExtensions: true,
@@ -122,7 +122,7 @@ export const TiptapRenderer = ({ message, user, isScrolling = false, isTruncated
       }),
       Image.configure({
         HTMLAttributes: {
-          class: 'w-full max-w-48 sm:max-w-96 mt-1 h-auto'
+          class: showMiniImage ? 'w-auto h-16 max-h-16' : 'w-full max-w-48 sm:max-w-96 mt-1 h-auto'
         },
         inline: true
       }),

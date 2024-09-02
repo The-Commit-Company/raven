@@ -1,7 +1,6 @@
-import { useFrappeDeleteDoc, useFrappeGetCall } from 'frappe-react-sdk'
+import { useFrappePostCall } from 'frappe-react-sdk'
 import { Fragment, useContext } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { UserContext } from '../../../../utils/auth/UserProvider'
 import { ErrorBanner } from '../../../layout/AlertBanner'
 import { ChannelListContext, ChannelListContextType, ChannelListItem } from '@/utils/channel/ChannelListProvider'
 import { ChannelIcon } from '@/utils/layout/channelIcon'
@@ -19,22 +18,13 @@ interface LeaveChannelModalProps {
 
 export const LeaveChannelModal = ({ onClose, channelData, isDrawer, closeDetailsModal }: LeaveChannelModalProps) => {
 
-    const { currentUser } = useContext(UserContext)
-    const { deleteDoc, loading: deletingDoc, error } = useFrappeDeleteDoc()
+    const { call, loading: deletingDoc, error } = useFrappePostCall('raven.api.raven_channel.leave_channel')
     const navigate = useNavigate()
-
-    const { data: channelMember } = useFrappeGetCall<{ message: { name: string } }>('frappe.client.get_value', {
-        doctype: "Raven Channel Member",
-        filters: JSON.stringify({ channel_id: channelData?.name, user_id: currentUser }),
-        fieldname: JSON.stringify(["name"])
-    }, undefined, {
-        revalidateOnFocus: false
-    })
 
     const { mutate } = useContext(ChannelListContext) as ChannelListContextType
 
     const onSubmit = async () => {
-        return deleteDoc('Raven Channel Member', channelMember?.message.name).then(() => {
+        return call({ channel_id: channelData?.name }).then(() => {
             toast('You have left the channel')
             onClose()
             mutate()
