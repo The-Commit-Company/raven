@@ -113,7 +113,4 @@ def create_thread(message_id):
 	thread_message.is_thread = 1
 	thread_message.save(ignore_permissions=True)
 
-	return {
-		'channel_id': thread_message.channel_id,
-		'thread_id': thread_channel.name
-	}
+	return {"channel_id": thread_message.channel_id, "thread_id": thread_channel.name}
