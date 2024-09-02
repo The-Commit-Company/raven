@@ -1,4 +1,5 @@
 import frappe
+from frappe import _
 
 
 @frappe.whitelist()
@@ -20,4 +21,4 @@ def toggle_push_notification_for_channel(member: str, allow_notifications: 0 | 1
 
 			return member_doc
 	else:
-		frappe.throw("Push notifications are not supported in the current framework version")
+		frappe.throw(_("Push notifications are not supported in the current framework version"))

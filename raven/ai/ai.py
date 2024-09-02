@@ -45,8 +45,8 @@ def handle_bot_dm(message, bot):
 	# Update the message to mark it as a thread
 	message.is_thread = 1
 	message.save()
-
-	frappe.db.commit()  # We need to commit here since the response will be streamed, and hence might take a while
+	# nosemgrep We need to commit here since the response will be streamed, and hence might take a while
+	frappe.db.commit()
 
 	stream_response(ai_thread_id=ai_thread.id, bot=bot, channel_id=thread_channel.name)
 

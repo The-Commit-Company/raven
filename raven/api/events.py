@@ -1,4 +1,5 @@
 import frappe
+from frappe import _
 
 
 @frappe.whitelist()
@@ -19,7 +20,7 @@ def create_event(
 		)
 
 	if not google_calendar:
-		frappe.throw("Google Calendar not found for the current user")
+		frappe.throw(_("Google Calendar not found for the current user"))
 
 	event = frappe.get_doc(
 		{
