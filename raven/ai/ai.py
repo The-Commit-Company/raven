@@ -14,6 +14,15 @@ def handle_bot_dm(message, bot):
 	client = get_open_ai_client()
 
 	# TODO: Handle various message types
+
+	# If the message is a poll, send a message to the user that we don't support polls for AI yet
+
+	if message.message_type == "Poll":
+		bot.send_message(
+			channel_id=message.channel_id,
+			text="Sorry, I don't support polls yet. Please send a text message or file.",
+		)
+		return
 	ai_thread = client.beta.threads.create(
 		messages=[
 			{
