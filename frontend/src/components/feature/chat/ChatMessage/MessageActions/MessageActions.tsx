@@ -11,7 +11,7 @@ import { getErrorMessage } from '@/components/layout/AlertBanner/ErrorBanner'
 import { AiOutlineEdit } from 'react-icons/ai'
 import { LuForward, LuReply } from 'react-icons/lu'
 import { MdOutlineEmojiEmotions } from "react-icons/md";
-import AttachFileToDocument from './AttachFileToDocument'
+import { CreateThreadContextItem } from './QuickActions/CreateThreadButton'
 
 export interface MessageContextMenuProps {
     message?: Message | null,
@@ -19,19 +19,19 @@ export interface MessageContextMenuProps {
     onEdit: VoidFunction,
     onReply: VoidFunction,
     onForward: VoidFunction,
-    onCreateThread?: VoidFunction,
     onViewReaction?: VoidFunction,
     onAttachDocument: VoidFunction,
+    showThreadButton?: boolean
 }
-export const MessageContextMenu = ({ message, onDelete, onEdit, onReply, onForward, onAttachDocument, onViewReaction }: MessageContextMenuProps) => {
+export const MessageContextMenu = ({ message, onDelete, onEdit, onReply, onForward, showThreadButton, onAttachDocument, onViewReaction }: MessageContextMenuProps) => {
 
     const copy = useMessageCopy(message)
     const { currentUser } = useContext(UserContext)
 
-    const isOwner = currentUser === message?.owner;
+    const isOwner = currentUser === message?.owner && !message?.is_bot_message
 
     const isReactionsAvailable = Object.keys(JSON.parse(message?.message_reactions ?? '{}')).length !== 0
-    
+
     return (
         <ContextMenu.Content>
             {message ? <>
@@ -50,7 +50,8 @@ export const MessageContextMenu = ({ message, onDelete, onEdit, onReply, onForwa
                         Forward
                     </Flex>
                 </ContextMenu.Item>
-                {/* <ContextMenu.Separator /> */}
+                {message && !message.is_thread && showThreadButton && <CreateThreadContextItem messageID={message.name} />}
+                <ContextMenu.Separator />
                 <ContextMenu.Group>
                     {message.message_type === 'Text' &&
                         <ContextMenu.Item onClick={copy}>
@@ -88,29 +89,10 @@ export const MessageContextMenu = ({ message, onDelete, onEdit, onReply, onForwa
                         </ContextMenu.Group>
                     }
 
-                </ContextMenu.Group>
-
-                <ContextMenu.Separator />
-                <ContextMenu.Group>
-
                     <SaveMessageAction message={message} />
 
-                    {/* <ContextMenu.Item>
-                    <Flex gap='2'>
-                        <HiOutlineDocumentAdd size='18' />
-                        Link with document
-                    </Flex>
-                </ContextMenu.Item>
-
-                <ContextMenu.Item>
-                    <Flex gap='2'>
-                        <BiMailSend size='18' />
-                        Send in an email
-                    </Flex>
-                </ContextMenu.Item> */}
-
                 </ContextMenu.Group>
-                
+
                 {isReactionsAvailable && <ContextMenu.Group>
                     <ContextMenu.Separator />
                     <ContextMenu.Item onClick={onViewReaction}>
@@ -174,7 +156,7 @@ const SaveMessageAction = ({ message }: { message: Message }) => {
         <Flex gap='2'>
             {!isSaved && <BiBookmarkPlus size='18' />}
             {isSaved && <BiBookmarkMinus size='18' />}
-            {!isSaved ? "Save" : "Unsave"} message
+            {!isSaved ? "Save" : "Unsave"} Message
 
         </Flex>
     </ContextMenu.Item>

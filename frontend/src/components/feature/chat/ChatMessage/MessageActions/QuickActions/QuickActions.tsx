@@ -10,21 +10,20 @@ import { AiOutlineEdit } from 'react-icons/ai'
 import { LuReply } from 'react-icons/lu'
 import { toast } from 'sonner'
 import { getErrorMessage } from '@/components/layout/AlertBanner/ErrorBanner'
-import CreateThreadButton from './CreateThreadButton'
+import { CreateThreadActionButton } from './CreateThreadButton'
 
 const QUICK_EMOJIS = ['👍', '✅', '👀', '🎉']
 
 interface QuickActionsProps extends MessageContextMenuProps {
     isEmojiPickerOpen: boolean,
     setIsEmojiPickerOpen: (open: boolean) => void,
-    showThreadButton?: boolean
 }
 
 export const QuickActions = ({ message, onReply, onEdit, isEmojiPickerOpen, setIsEmojiPickerOpen, showThreadButton = true }: QuickActionsProps) => {
 
     const { currentUser } = useContext(UserContext)
 
-    const isOwner = currentUser === message?.owner
+    const isOwner = currentUser === message?.owner && !message?.is_bot_message
     const toolbarRef = useRef<HTMLDivElement>(null)
 
     const { call } = useContext(FrappeContext) as FrappeConfig
@@ -109,7 +108,7 @@ export const QuickActions = ({ message, onReply, onEdit, isEmojiPickerOpen, setI
                     </QuickActionButton>
                 }
 
-                {message && !message.is_thread && showThreadButton && <CreateThreadButton messageID={message.name} />}
+                {message && !message.is_thread && showThreadButton && <CreateThreadActionButton messageID={message.name} />}
 
                 <QuickActionButton
                     aria-label='More actions'

@@ -544,6 +544,11 @@ class RavenMessage(Document):
 	def on_trash(self):
 		# delete all the reactions for the message
 		frappe.db.delete("Raven Message Reaction", {"message": self.name})
+		# if the message is a thread, delete all messages in the thread and the thread channel
+		if self.is_thread:
+			frappe.db.delete("Raven Message", {"channel_id": self.name})
+			# delete the channel for the thread
+			frappe.db.delete("Raven Channel", self.name)
 
 
 def on_doctype_update():

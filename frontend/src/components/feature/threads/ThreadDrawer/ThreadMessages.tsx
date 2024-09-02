@@ -13,8 +13,9 @@ import ChatStream from "../../chat/ChatStream/ChatStream"
 import { JoinChannelBox } from "../../chat/chat-footer/JoinChannelBox"
 import { useUserData } from "@/hooks/useUserData"
 import useFetchChannelMembers from "@/hooks/fetchers/useFetchChannelMembers"
+import ThreadFirstMessage from "./ThreadFirstMessage"
 
-export const ThreadMessages = () => {
+export const ThreadMessages = ({ threadMessage }: { threadMessage: Message }) => {
 
     const { threadID } = useParams()
 
@@ -62,8 +63,11 @@ export const ThreadMessages = () => {
         return false
     }, [user, channelMembers])
 
+
+
     return (
         <Flex direction='column' justify={'between'} gap='0' className="h-full p-4">
+            <ThreadFirstMessage message={threadMessage} />
             <ChatStream
                 channelID={threadID ?? ''}
                 replyToMessage={handleReplyAction}
