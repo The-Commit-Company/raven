@@ -209,6 +209,7 @@ export const MessageItem = ({ message, setDeleteMessage, isHighlighted, onReplyM
                 <MessageContextMenu
                     message={message}
                     onDelete={onDelete}
+                    showThreadButton={showThreadButton}
                     onEdit={onEdit}
                     onReply={onReply}
                     onForward={onForward}
