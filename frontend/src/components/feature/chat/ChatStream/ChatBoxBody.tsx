@@ -105,6 +105,7 @@ export const ChatBoxBody = ({ channelData }: ChatBoxBodyProps) => {
                             addFile
                         }}
                         clearReplyMessage={handleCancelReply}
+                        channelMembers={channelMembers}
                         // placeholder={randomPlaceholder}
                         replyMessage={selectedMessage}
                         sessionStorageKey={`tiptap-${channelData.name}`}

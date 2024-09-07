@@ -17,7 +17,10 @@ import ThreadFirstMessage from "./ThreadFirstMessage"
 
 export const ThreadMessages = ({ threadMessage }: { threadMessage: Message }) => {
 
-    const { threadID } = useParams()
+    const { threadID, channelID } = useParams()
+
+    const { channelMembers } = useFetchChannelMembers(channelID ?? '')
+
 
     const [selectedMessage, setSelectedMessage] = useState<Message | null>(null)
 
@@ -29,7 +32,7 @@ export const ThreadMessages = ({ threadMessage }: { threadMessage: Message }) =>
         setSelectedMessage(null)
     }
 
-    const { fileInputRef, files, setFiles, removeFile, uploadFiles, addFile, fileUploadProgress } = useFileUpload(threadID ?? '')
+    const { fileInputRef, files, removeFile, uploadFiles, addFile, fileUploadProgress } = useFileUpload(threadID ?? '')
 
     const { sendMessage, loading } = useSendMessage(threadID ?? '', files.length, uploadFiles, handleCancelReply, selectedMessage)
 
@@ -54,14 +57,14 @@ export const ThreadMessages = ({ threadMessage }: { threadMessage: Message }) =>
     }
 
     const { name: user } = useUserData()
-    const { channelMembers } = useFetchChannelMembers(threadID ?? '')
+    const { channelMembers: threadMembers } = useFetchChannelMembers(threadID ?? '')
 
     const isUserInChannel = useMemo(() => {
-        if (user && channelMembers) {
-            return user in channelMembers
+        if (user && threadMembers) {
+            return user in threadMembers
         }
         return false
-    }, [user, channelMembers])
+    }, [user, threadMembers])
 
 
 
@@ -74,7 +77,7 @@ export const ThreadMessages = ({ threadMessage }: { threadMessage: Message }) =>
                 showThreadButton={false}
             />
             {!isUserInChannel && <JoinChannelBox
-                channelMembers={channelMembers}
+                channelMembers={threadMembers}
                 user={user} />}
             {isUserInChannel && <Tiptap
                 key={threadID}
@@ -82,6 +85,7 @@ export const ThreadMessages = ({ threadMessage }: { threadMessage: Message }) =>
                     fileInputRef,
                     addFile
                 }}
+                channelMembers={channelMembers}
                 clearReplyMessage={handleCancelReply}
                 replyMessage={selectedMessage}
                 sessionStorageKey={`tiptap-${threadID}`}
