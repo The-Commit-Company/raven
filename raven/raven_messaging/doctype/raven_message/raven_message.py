@@ -37,6 +37,7 @@ class RavenMessage(Document):
 		is_edited: DF.Check
 		is_forwarded: DF.Check
 		is_reply: DF.Check
+		is_thread: DF.Check
 		json: DF.JSON | None
 		link_doctype: DF.Link | None
 		link_document: DF.DynamicLink | None
@@ -121,22 +122,22 @@ class RavenMessage(Document):
 
 	def publish_unread_count_event(self):
 		frappe.db.set_value(
-			"Raven Channel", self.channel_id, "last_message_timestamp", self.creation, update_modified=False
-		)
-		frappe.db.set_value(
 			"Raven Channel",
 			self.channel_id,
-			"last_message_details",
-			json.dumps(
-				{
-					"message_id": self.name,
-					"content": self.content if self.message_type == "Text" else self.file,
-					"message_type": self.message_type,
-					"owner": self.owner,
-					"is_bot_message": self.is_bot_message,
-					"bot": self.bot,
-				}
-			),
+			{
+				"last_message_timestamp": self.creation,
+				"last_message_details": json.dumps(
+					{
+						"message_id": self.name,
+						"content": self.content if self.message_type == "Text" else self.file,
+						"message_type": self.message_type,
+						"owner": self.owner,
+						"is_bot_message": self.is_bot_message,
+						"bot": self.bot,
+					}
+				),
+			},
+			update_modified=False,
 		)
 
 		channel_doc = frappe.get_cached_doc("Raven Channel", self.channel_id)
@@ -174,6 +175,17 @@ class RavenMessage(Document):
 				user=self.owner,
 				after_commit=True,
 			)
+		elif channel_doc.is_thread:
+			frappe.publish_realtime(
+				"thread_reply_created",
+				{
+					"channel_id": self.channel_id,
+					"sent_by": self.owner,
+				},
+				after_commit=True,
+				doctype="Raven Message",
+				docname=self.channel_id,
+			)
 		else:
 			# This event needs to be published to all users on Raven (desk + website)
 			frappe.publish_realtime(
@@ -182,6 +194,7 @@ class RavenMessage(Document):
 					"channel_id": self.channel_id,
 					"play_sound": False,
 					"sent_by": self.owner,
+					"is_thread": channel_doc.is_thread,
 				},
 				after_commit=True,
 				room="website",
@@ -289,10 +302,15 @@ class RavenMessage(Document):
 		"""
 		message = self.get_notification_message_content()
 
-		channel_name = frappe.get_cached_value("Raven Channel", self.channel_id, "channel_name")
+		is_thread = frappe.get_cached_value("Raven Channel", self.channel_id, "is_thread")
 
 		owner_name = self.get_message_owner_name()
-		title = f"{owner_name} in #{channel_name}"
+
+		if is_thread:
+			title = f"{owner_name} in thread"
+		else:
+			channel_name = frappe.get_cached_value("Raven Channel", self.channel_id, "channel_name")
+			title = f"{owner_name} in #{channel_name}"
 
 		send_notification_to_topic(
 			channel_id=self.channel_id,
@@ -371,7 +389,7 @@ class RavenMessage(Document):
 		# TEMP: this is a temp fix for the Desk interface
 		self.publish_deprecated_event_for_desk()
 
-		if self.is_edited:
+		if self.is_edited or self.is_thread:
 			frappe.publish_realtime(
 				"message_edited",
 				{
@@ -385,6 +403,7 @@ class RavenMessage(Document):
 						"poll_id": self.poll_id,
 						"message_type": self.message_type,
 						"is_edited": 1 if self.is_edited else 0,
+						"is_thread": self.is_thread,
 						"is_forwarded": self.is_forwarded,
 						"is_reply": self.is_reply,
 						"modified": self.modified,
@@ -426,6 +445,7 @@ class RavenMessage(Document):
 						"file": self.file,
 						"message_type": self.message_type,
 						"is_edited": 1 if self.is_edited else 0,
+						"is_thread": self.is_thread,
 						"is_forwarded": self.is_forwarded,
 						"is_reply": self.is_reply,
 						"poll_id": self.poll_id,
@@ -462,6 +482,11 @@ class RavenMessage(Document):
 	def on_trash(self):
 		# delete all the reactions for the message
 		frappe.db.delete("Raven Message Reaction", {"message": self.name})
+		# if the message is a thread, delete all messages in the thread and the thread channel
+		if self.is_thread:
+			frappe.db.delete("Raven Message", {"channel_id": self.name})
+			# delete the channel for the thread
+			frappe.db.delete("Raven Channel", self.name)
 
 
 def on_doctype_update():

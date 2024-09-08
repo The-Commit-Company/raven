@@ -16,7 +16,9 @@
   "auto_create_department_channel",
   "department_channel_type",
   "attendance_and_leaves_section",
-  "show_if_a_user_is_on_leave"
+  "show_if_a_user_is_on_leave",
+  "raven_mobile_tab",
+  "oauth_client"
  ],
  "fields": [
   {
@@ -79,12 +81,23 @@
    "fieldname": "show_if_a_user_is_on_leave",
    "fieldtype": "Check",
    "label": "Show if a user is on leave"
+  },
+  {
+   "fieldname": "raven_mobile_tab",
+   "fieldtype": "Tab Break",
+   "label": "Raven Mobile"
+  },
+  {
+   "fieldname": "oauth_client",
+   "fieldtype": "Link",
+   "label": "OAuth Client",
+   "options": "OAuth Client"
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2024-07-03 16:53:42.621934",
+ "modified": "2024-08-26 17:35:23.570104",
  "modified_by": "Administrator",
  "module": "Raven",
  "name": "Raven Settings",

@@ -3,7 +3,6 @@ import { DeleteMessageDialog, useDeleteMessage } from '../ChatMessage/MessageAct
 import { EditMessageDialog, useEditMessage } from '../ChatMessage/MessageActions/EditMessage'
 import { MessageItem } from '../ChatMessage/MessageItem'
 import { ChannelHistoryFirstMessage } from '@/components/layout/EmptyState'
-import { useParams } from 'react-router-dom'
 import useChatStream from './useChatStream'
 import { useRef } from 'react'
 import { Loader } from '@/components/common/Loader'
@@ -64,16 +63,17 @@ import { ReactionAnalyticsDialog, useMessageReactionAnalytics } from '../ChatMes
  */
 
 type Props = {
+    channelID: string,
     replyToMessage: (message: Message) => void,
+    showThreadButton?: boolean
 }
 
-const ChatStream = ({ replyToMessage }: Props) => {
+const ChatStream = ({ channelID, replyToMessage, showThreadButton = true }: Props) => {
 
-    const { channelID } = useParams()
 
     const scrollRef = useRef<HTMLDivElement | null>(null)
 
-    const { messages, hasOlderMessages, loadOlderMessages, goToLatestMessages, hasNewMessages, error, loadNewerMessages, isLoading, highlightedMessage, scrollToMessage } = useChatStream(scrollRef)
+    const { messages, hasOlderMessages, loadOlderMessages, goToLatestMessages, hasNewMessages, error, loadNewerMessages, isLoading, highlightedMessage, scrollToMessage } = useChatStream(channelID, scrollRef)
     const { setDeleteMessage, ...deleteProps } = useDeleteMessage()
 
     const { setEditMessage, ...editProps } = useEditMessage()
@@ -142,9 +142,10 @@ const ChatStream = ({ replyToMessage }: Props) => {
                                     setEditMessage={setEditMessage}
                                     replyToMessage={replyToMessage}
                                     forwardMessage={setForwardMessage}
+                                    showThreadButton={showThreadButton}
                                     onAttachDocument={setAttachDocument}
                                     setDeleteMessage={setDeleteMessage}
-                                    setReactionMessage={setReactionMessage} 
+                                    setReactionMessage={setReactionMessage}
                                 />
                             </div>
                         </div>

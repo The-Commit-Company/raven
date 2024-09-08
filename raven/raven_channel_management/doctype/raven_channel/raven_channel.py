@@ -15,12 +15,13 @@ class RavenChannel(Document):
 	if TYPE_CHECKING:
 		from frappe.types import DF
 
-		channel_description: DF.Data | None
+		channel_description: DF.SmallText | None
 		channel_name: DF.Data
 		is_archived: DF.Check
 		is_direct_message: DF.Check
 		is_self_message: DF.Check
 		is_synced: DF.Check
+		is_thread: DF.Check
 		last_message_details: DF.JSON | None
 		last_message_timestamp: DF.Datetime | None
 		linked_doctype: DF.Link | None

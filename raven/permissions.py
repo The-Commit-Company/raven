@@ -35,6 +35,11 @@ def channel_has_permission(doc, user=None, ptype=None):
 	if doc.type == "Open" or doc.type == "Public":
 		return True
 	elif doc.type == "Private":
+		if doc.is_thread:
+			if ptype == "read" or ptype == "create":
+				# Only users who are part of the original channel can read the thread
+				return frappe.has_permission(doctype="Raven Message", doc=doc.name, ptype="read")
+
 		if frappe.db.exists("Raven Channel Member", {"channel_id": doc.name, "user_id": user}):
 			return True
 		elif (

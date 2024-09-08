@@ -84,6 +84,8 @@ class RavenChannelMember(Document):
 				frappe.PermissionError,
 			)
 
+		unsubscribe_user_to_topic(self.channel_id, self.user_id)
+
 	def check_if_user_is_member(self):
 		is_member = True
 		channel = frappe.db.get_value("Raven Channel", self.channel_id, ["type", "owner"], as_dict=True)

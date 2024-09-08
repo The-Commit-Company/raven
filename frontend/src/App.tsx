@@ -23,6 +23,9 @@ const router = createBrowserRouter(
         <Route path="/" element={<ChannelRedirect />}>
           <Route path="channel" element={<MainPage />} >
             <Route index element={<MobileTabsPage />} />
+            <Route path="threads" lazy={() => import('./components/feature/threads/Threads')}>
+              <Route path="thread/:threadID" lazy={() => import('./components/feature/threads/ThreadDrawer/ThreadDrawer')} />
+            </Route>
             <Route path="saved-messages" lazy={() => import('./components/feature/saved-messages/SavedMessages')} />
             <Route path="settings" lazy={() => import('./pages/settings/Settings')}>
               <Route index element={<UserProfile />} />
@@ -31,7 +34,9 @@ const router = createBrowserRouter(
               <Route path="frappe-hr" lazy={() => import('./pages/settings/Integrations/FrappeHR')} />
               {/* <Route path="bots" lazy={() => import('./components/feature/userSettings/Bots')} /> */}
             </Route>
-            <Route path=":channelID" lazy={() => import('@/pages/ChatSpace')} />
+            <Route path=":channelID" lazy={() => import('@/pages/ChatSpace')}>
+              <Route path="thread/:threadID" lazy={() => import('./components/feature/threads/ThreadDrawer/ThreadDrawer')} />
+            </Route>
           </Route>
           {/* <Route path='settings' lazy={() => import('./pages/settings/Settings')}>
             <Route path='integrations'>

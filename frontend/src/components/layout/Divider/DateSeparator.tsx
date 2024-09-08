@@ -10,7 +10,7 @@ export const DateSeparator = (props: FlexProps) => {
             <Flex flexGrow='1' >
                 <Separator size='4' className={`bg-gray-5 dark:bg-gray-7`} />
             </Flex>
-            <Flex className='rounded-md' px='2'>
+            <Flex px='4'>
                 <Text
                     as="span"
                     size='1'

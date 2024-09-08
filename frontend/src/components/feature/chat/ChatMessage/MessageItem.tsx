@@ -1,8 +1,7 @@
-import { Avatar, Badge, Box, ContextMenu, Flex, HoverCard, Link, Separator, Text, Theme } from '@radix-ui/themes'
+import { Avatar, Badge, Box, BoxProps, ContextMenu, Flex, HoverCard, Link, Text, Theme } from '@radix-ui/themes'
 import { Message, MessageBlock } from '../../../../../../types/Messaging/Message'
 import { MessageContextMenu } from './MessageActions/MessageActions'
 import { DateTooltip, DateTooltipShort } from './Renderers/DateTooltip'
-import { BoxProps } from '@radix-ui/themes/dist/cjs/components/box'
 import { clsx } from 'clsx'
 import { UserAvatar, getInitials } from '@/components/common/UserAvatar'
 import { useGetUser } from '@/hooks/useGetUser'
@@ -25,6 +24,7 @@ import { useIsDesktop } from '@/hooks/useMediaQuery'
 import { useDoubleTap } from 'use-double-tap'
 import useOutsideClick from '@/hooks/useOutsideClick'
 import { getStatusText } from '../../userSettings/AvailabilityStatus/SetUserAvailabilityMenu'
+import { ThreadMessage } from './Renderers/ThreadMessage'
 
 interface MessageBlockProps {
     message: Message,
@@ -36,9 +36,10 @@ interface MessageBlockProps {
     onAttachDocument: (message: Message) => void,
     isHighlighted?: boolean,
     setReactionMessage: (message: Message) => void,
+    showThreadButton?: boolean
 }
 
-export const MessageItem = ({ message, setDeleteMessage, isHighlighted, onReplyMessageClick, setEditMessage, replyToMessage, forwardMessage, onAttachDocument, setReactionMessage }: MessageBlockProps) => {
+export const MessageItem = ({ message, setDeleteMessage, isHighlighted, onReplyMessageClick, setEditMessage, replyToMessage, forwardMessage, onAttachDocument, setReactionMessage, showThreadButton = true }: MessageBlockProps) => {
 
     const { name, owner: userID, is_bot_message, bot, creation: timestamp, message_reactions, is_continuation, linked_message, replied_message_details } = message
 
@@ -108,6 +109,18 @@ export const MessageItem = ({ message, setDeleteMessage, isHighlighted, onReplyM
 
     return (
         <Box className='relative'>
+            {!message.is_continuation && message.is_thread ?
+                <div
+                    className={`absolute 
+                        border-l
+                        border-b
+                        border-gray-5 
+                        h-[calc(100%-66px)] 
+                        rounded-bl-lg
+                        w-6
+                        top-[42px] 
+                        left-6 z-0`}>
+                </div> : null}
             <ContextMenu.Root>
                 <ContextMenu.Trigger
                     {...bind}
@@ -141,7 +154,6 @@ export const MessageItem = ({ message, setDeleteMessage, isHighlighted, onReplyM
                                     user={user}
                                     userID={userID}
                                     isActive={isActive} />
-                                <Separator orientation='vertical' />
                                 <DateTooltip timestamp={timestamp} />
                             </Flex>
                                 : null}
@@ -154,7 +166,9 @@ export const MessageItem = ({ message, setDeleteMessage, isHighlighted, onReplyM
                                 onClick={() => onReplyMessageClick(linked_message)}
                                 message={replyMessageDetails} />
                             }
+
                             { /* Show message according to type */}
+
                             <MessageContent
                                 message={message}
                                 user={user}
@@ -170,6 +184,10 @@ export const MessageItem = ({ message, setDeleteMessage, isHighlighted, onReplyM
                                     message_reactions={message_reactions}
                                 />
                             }
+
+                            {message.is_thread === 1 ? <ThreadMessage thread={message} /> : null}
+
+
                         </Flex>
                         {(isHoveredDebounced || isEmojiPickerOpen) &&
                             <QuickActions
@@ -180,6 +198,7 @@ export const MessageItem = ({ message, setDeleteMessage, isHighlighted, onReplyM
                                 onEdit={onEdit}
                                 onReply={onReply}
                                 onForward={onForward}
+                                showThreadButton={showThreadButton}
                                 onAttachDocument={onAttachToDocument}
                             />
                         }
@@ -190,6 +209,7 @@ export const MessageItem = ({ message, setDeleteMessage, isHighlighted, onReplyM
                 <MessageContextMenu
                     message={message}
                     onDelete={onDelete}
+                    showThreadButton={showThreadButton}
                     onEdit={onEdit}
                     onReply={onReply}
                     onForward={onForward}
@@ -197,11 +217,11 @@ export const MessageItem = ({ message, setDeleteMessage, isHighlighted, onReplyM
                     onAttachDocument={onAttachToDocument}
                 />
             </ContextMenu.Root>
-        </Box >
+        </Box>
     )
 }
 
-interface MessageLeftElementProps extends BoxProps {
+type MessageLeftElementProps = BoxProps & {
     message: MessageBlock['data'],
     user?: UserFields,
     isActive?: boolean
@@ -311,7 +331,7 @@ export const UserHoverCard = memo(({ user, userID, isActive }: UserProps) => {
         </HoverCard.Content>
     </HoverCard.Root>
 })
-interface MessageContentProps extends BoxProps {
+type MessageContentProps = BoxProps & {
     user?: UserFields
     message: Message,
 }

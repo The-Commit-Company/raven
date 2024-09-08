@@ -1,7 +1,7 @@
 import { BubbleMenu, EditorContent, EditorContext, Extension, ReactRenderer, useEditor } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import Underline from '@tiptap/extension-underline'
-import React, { Suspense, lazy, useContext, useEffect } from 'react'
+import React, { Suspense, lazy, useContext, useEffect, useMemo } from 'react'
 import { TextFormattingMenu } from './TextFormattingMenu'
 import Highlight from '@tiptap/extension-highlight'
 import Link from '@tiptap/extension-link'
@@ -33,6 +33,7 @@ import { EmojiSuggestion } from './EmojiSuggestion'
 import { useIsDesktop } from '@/hooks/useMediaQuery'
 import { BiPlus } from 'react-icons/bi'
 import clsx from 'clsx'
+import { ChannelMembers } from '@/hooks/fetchers/useFetchChannelMembers'
 const MobileInputActions = lazy(() => import('./MobileActions/MobileInputActions'))
 
 const lowlight = createLowlight(common)
@@ -59,7 +60,8 @@ type TiptapEditorProps = {
     onMessageSend: (message: string, json: any) => Promise<void>,
     messageSending: boolean,
     defaultText?: string,
-    replyMessage?: Message | null
+    replyMessage?: Message | null,
+    channelMembers?: ChannelMembers
 }
 
 export const UserMention = Mention.extend({
@@ -82,9 +84,18 @@ export const ChannelMention = Mention.extend({
         }
     })
 
-const Tiptap = ({ isEdit, slotBefore, fileProps, onMessageSend, replyMessage, clearReplyMessage, placeholder = 'Type a message...', messageSending, sessionStorageKey = 'tiptap-editor', disableSessionStorage = false, defaultText = '' }: TiptapEditorProps) => {
+const Tiptap = ({ isEdit, slotBefore, fileProps, onMessageSend, channelMembers, replyMessage, clearReplyMessage, placeholder = 'Type a message...', messageSending, sessionStorageKey = 'tiptap-editor', disableSessionStorage = false, defaultText = '' }: TiptapEditorProps) => {
 
     const { enabledUsers } = useContext(UserListContext)
+
+    const channelMemberUsers = useMemo(() => {
+        if (channelMembers) {
+            // Filter enabled users to only include users that are in the channel
+            return enabledUsers.filter((user) => user.name in channelMembers)
+        } else {
+            return enabledUsers
+        }
+    }, [channelMembers, enabledUsers])
 
     const { channels } = useContext(ChannelListContext) as ChannelListContextType
 
@@ -301,7 +312,7 @@ const Tiptap = ({ isEdit, slotBefore, fileProps, onMessageSend, replyMessage, cl
             },
             suggestion: {
                 items: (query) => {
-                    return enabledUsers.filter((user) => user.full_name.toLowerCase().startsWith(query.query.toLowerCase()))
+                    return channelMemberUsers.filter((user) => user.full_name.toLowerCase().startsWith(query.query.toLowerCase()))
                         .slice(0, 10);
                 },
                 // char: '@',
@@ -466,7 +477,7 @@ const Tiptap = ({ isEdit, slotBefore, fileProps, onMessageSend, replyMessage, cl
 
     if (isDesktop) {
         return (
-            <Box className='border rounded-radius2 border-gray-300 dark:border-gray-500 dark:bg-gray-3 shadow-md'>
+            <Box className='border rounded-radius2 border-gray-300 dark:border-gray-500 dark:bg-gray-3'>
                 <EditorContext.Provider value={{ editor }}>
                     {slotBefore}
                     <EditorContent editor={editor} />
