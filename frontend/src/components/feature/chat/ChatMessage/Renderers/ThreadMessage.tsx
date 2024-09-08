@@ -3,6 +3,8 @@ import { Message } from "../../../../../../../types/Messaging/Message"
 import { Button, Flex, Text } from "@radix-ui/themes"
 import { useFrappeGetDocCount } from "frappe-react-sdk"
 import { RavenMessage } from "@/types/RavenMessaging/RavenMessage"
+import { useFrappeDocumentEventListener } from "frappe-react-sdk"
+import { useFrappeEventListener } from "frappe-react-sdk"
 
 export const ThreadMessage = ({ thread }: { thread: Message }) => {
 
@@ -24,13 +26,18 @@ export const ThreadMessage = ({ thread }: { thread: Message }) => {
 
 export const ThreadReplyCount = ({ thread }: { thread: Message }) => {
 
-    const { data } = useFrappeGetDocCount<RavenMessage>("Raven Message", [["channel_id", "=", thread.name]], undefined, undefined, undefined, {
+    const { data, mutate } = useFrappeGetDocCount<RavenMessage>("Raven Message", [["channel_id", "=", thread.name]], undefined, undefined, undefined, {
         revalidateOnFocus: false,
         shouldRetryOnError: false,
         keepPreviousData: false
     })
 
-    // TODO: Listen to realtime event for new message count
+    // Listen to realtime event for new message count
+    useFrappeDocumentEventListener('Raven Message', thread.name, () => { })
+
+    useFrappeEventListener('thread_reply_created', () => {
+        mutate()
+    })
 
     return <Flex gap='1' align={'center'}>
         <Text size='1' className={'font-semibold text-accent-a11'}>{data ?? 0}</Text>
