@@ -302,10 +302,15 @@ class RavenMessage(Document):
 		"""
 		message = self.get_notification_message_content()
 
-		channel_name = frappe.get_cached_value("Raven Channel", self.channel_id, "channel_name")
+		is_thread = frappe.get_cached_value("Raven Channel", self.channel_id, "is_thread")
 
 		owner_name = self.get_message_owner_name()
-		title = f"{owner_name} in #{channel_name}"
+
+		if is_thread:
+			title = f"{owner_name} in thread"
+		else:
+			channel_name = frappe.get_cached_value("Raven Channel", self.channel_id, "channel_name")
+			title = f"{owner_name} in #{channel_name}"
 
 		send_notification_to_topic(
 			channel_id=self.channel_id,
