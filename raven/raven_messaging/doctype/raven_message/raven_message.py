@@ -190,22 +190,22 @@ class RavenMessage(Document):
 
 	def publish_unread_count_event(self):
 		frappe.db.set_value(
-			"Raven Channel", self.channel_id, "last_message_timestamp", self.creation, update_modified=False
-		)
-		frappe.db.set_value(
 			"Raven Channel",
 			self.channel_id,
-			"last_message_details",
-			json.dumps(
-				{
-					"message_id": self.name,
-					"content": self.content if self.message_type == "Text" else self.file,
-					"message_type": self.message_type,
-					"owner": self.owner,
-					"is_bot_message": self.is_bot_message,
-					"bot": self.bot,
-				}
-			),
+			{
+				"last_message_timestamp": self.creation,
+				"last_message_details": json.dumps(
+					{
+						"message_id": self.name,
+						"content": self.content if self.message_type == "Text" else self.file,
+						"message_type": self.message_type,
+						"owner": self.owner,
+						"is_bot_message": self.is_bot_message,
+						"bot": self.bot,
+					}
+				),
+			},
+			update_modified=False,
 		)
 
 		channel_doc = frappe.get_cached_doc("Raven Channel", self.channel_id)
@@ -246,6 +246,17 @@ class RavenMessage(Document):
 				user=self.owner,
 				after_commit=True,
 			)
+		elif channel_doc.is_thread:
+			frappe.publish_realtime(
+				"thread_reply_created",
+				{
+					"channel_id": self.channel_id,
+					"sent_by": self.owner,
+				},
+				after_commit=True,
+				doctype="Raven Message",
+				docname=self.channel_id,
+			)
 		else:
 			# This event needs to be published to all users on Raven (desk + website)
 			frappe.publish_realtime(
@@ -254,6 +265,7 @@ class RavenMessage(Document):
 					"channel_id": self.channel_id,
 					"play_sound": False,
 					"sent_by": self.owner,
+					"is_thread": channel_doc.is_thread,
 				},
 				after_commit=True,
 				room="website",
@@ -367,10 +379,15 @@ class RavenMessage(Document):
 		"""
 		message = self.get_notification_message_content()
 
-		channel_name = frappe.get_cached_value("Raven Channel", self.channel_id, "channel_name")
+		is_thread = frappe.get_cached_value("Raven Channel", self.channel_id, "is_thread")
 
 		owner_name = self.get_message_owner_name()
-		title = f"{owner_name} in #{channel_name}"
+
+		if is_thread:
+			title = f"{owner_name} in thread"
+		else:
+			channel_name = frappe.get_cached_value("Raven Channel", self.channel_id, "channel_name")
+			title = f"{owner_name} in #{channel_name}"
 
 		send_notification_to_topic(
 			channel_id=self.channel_id,
