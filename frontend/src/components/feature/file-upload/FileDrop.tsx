@@ -22,7 +22,9 @@ export interface FileDropProps extends FlexProps {
     accept?: Accept,
     /** Maximum file size in mb that can be selected */
     maxFileSize?: number,
-    children?: React.ReactNode
+    children?: React.ReactNode,
+    height?: string,
+    width?: string
 }
 
 /**
@@ -31,7 +33,7 @@ export interface FileDropProps extends FlexProps {
  */
 export const FileDrop = forwardRef((props: FileDropProps, ref) => {
 
-    const { files, onFileChange, maxFiles, accept, maxFileSize, children, ...compProps } = props
+    const { files, onFileChange, maxFiles, accept, maxFileSize, children, height, width, ...compProps } = props
 
     const [onDragEnter, setOnDragEnter] = useState(false)
 
@@ -77,7 +79,7 @@ export const FileDrop = forwardRef((props: FileDropProps, ref) => {
         <Flex
             direction='column'
             style={{
-                height: 'calc(100vh - 80px)',
+                height: height ?? 'calc(100vh - 80px)',
             }}
             width='100%'
             {...getRootProps()}
@@ -89,8 +91,8 @@ export const FileDrop = forwardRef((props: FileDropProps, ref) => {
                     align='center'
                     justify='center'
                     className={clsx("fixed top-14 border-2 border-dashed rounded-md border-gray-6 dark:bg-[#171923AA] bg-[#F7FAFCAA]",
-                        "h-[calc(100vh-72px)]",
-                        "w-[calc(100vw-var(--sidebar-width)-var(--space-6))]",
+                        height ?? "h-[calc(100vh-72px)]",
+                        width ?? "w-[calc(100vw-var(--sidebar-width)-var(--space-6))]",
                     )}
                     style={{
                         zIndex: 9999

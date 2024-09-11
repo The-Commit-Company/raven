@@ -118,10 +118,10 @@ class RavenMessage(Document):
 			}
 
 	def after_insert(self):
-		# TODO: Enqueue this
 		self.publish_unread_count_event()
 
-		self.handle_ai_message()
+		if self.message_type == "Text":
+			self.handle_ai_message()
 
 	def handle_ai_message(self):
 
@@ -142,11 +142,14 @@ class RavenMessage(Document):
 
 		if is_ai_thread and channel_doc.openai_thread_id:
 
-			handle_ai_thread_message(self, channel_doc)
-			# frappe.enqueue(method=handle_ai_thread_message,
-			# 	  message=self,
-			# 	  channel=channel_doc,
-			# 	  job_name="handle_ai_thread_message")
+			# handle_ai_thread_message(self, channel_doc)
+			frappe.enqueue(
+				method=handle_ai_thread_message,
+				message=self,
+				channel=channel_doc,
+				at_front=True,
+				job_name="handle_ai_thread_message",
+			)
 
 			return
 
@@ -554,9 +557,14 @@ class RavenMessage(Document):
 				after_commit=after_commit,
 			)
 			# track the visit of the user to the channel if a new message is created
-			frappe.enqueue(method=track_channel_visit, channel_id=self.channel_id, user=self.owner)
+			track_channel_visit(channel_id=self.channel_id, user=self.owner)
+			# frappe.enqueue(method=track_channel_visit, channel_id=self.channel_id, user=self.owner)
 
 			self.send_push_notification()
+
+			if self.message_type == "File" or self.message_type == "Image":
+				if self.file:
+					self.handle_ai_message()
 
 	def on_trash(self):
 		# delete all the reactions for the message

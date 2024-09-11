@@ -1,4 +1,5 @@
 import frappe
+from frappe.utils import get_files_path
 
 from raven.ai.handler import stream_response
 from raven.ai.openai_client import get_open_ai_client
@@ -23,21 +24,52 @@ def handle_bot_dm(message, bot):
 			text="Sorry, I don't support polls yet. Please send a text message or file.",
 		)
 		return
-	ai_thread = client.beta.threads.create(
-		messages=[
-			{
-				"role": "user",
-				"content": message.content,
-				"metadata": {"user": message.owner, "message": message.name},
-			}
-		],
-		metadata={
-			"bot": bot.name,
-			"channel": message.channel_id,
-			"user": message.owner,
-			"message": message.name,
-		},
-	)
+
+	if message.message_type == "File" or message.message_type == "Image":
+		# Upload the file to OpenAI
+		file_doc = frappe.get_doc("File", {"file_url": message.file})
+		file_path = file_doc.get_full_path()
+
+		file = client.files.create(file=open(file_path, "rb"), purpose="assistants")
+
+		ai_thread = client.beta.threads.create(
+			messages=[
+				{
+					"role": "user",
+					"content": "Uploaded a file",
+					"metadata": {"user": message.owner, "message": message.name},
+					"attachments": [
+						{
+							"file_id": file.id,
+							"tools": [{"type": "file_search"}],
+						}
+					],
+				}
+			],
+			metadata={
+				"bot": bot.name,
+				"channel": message.channel_id,
+				"user": message.owner,
+				"message": message.name,
+			},
+		)
+
+	else:
+		ai_thread = client.beta.threads.create(
+			messages=[
+				{
+					"role": "user",
+					"content": message.content,
+					"metadata": {"user": message.owner, "message": message.name},
+				}
+			],
+			metadata={
+				"bot": bot.name,
+				"channel": message.channel_id,
+				"user": message.owner,
+				"message": message.name,
+			},
+		)
 
 	thread_channel = frappe.get_doc(
 		{
@@ -69,12 +101,29 @@ def handle_ai_thread_message(message, channel):
 
 	client = get_open_ai_client()
 
-	client.beta.threads.messages.create(
-		thread_id=channel.openai_thread_id,
-		role="user",
-		content=message.content,
-		metadata={"user": message.owner, "message": message.name},
-	)
+	if message.message_type == "File" or message.message_type == "Image":
+		# Upload the file to OpenAI
+		file_doc = frappe.get_doc("File", {"file_url": message.file})
+		file_path = file_doc.get_full_path()
+
+		file = client.files.create(file=open(file_path, "rb"), purpose="assistants")
+
+		client.beta.threads.messages.create(
+			thread_id=channel.openai_thread_id,
+			role="user",
+			content="Uploaded a file",
+			metadata={"user": message.owner, "message": message.name},
+			attachments=[{"file_id": file.id, "tools": [{"type": "file_search"}]}],
+		)
+
+	else:
+
+		client.beta.threads.messages.create(
+			thread_id=channel.openai_thread_id,
+			role="user",
+			content=message.content,
+			metadata={"user": message.owner, "message": message.name},
+		)
 
 	bot = frappe.get_doc("Raven Bot", channel.thread_bot)
 
