@@ -101,7 +101,8 @@ def stream_response(ai_thread_id: str, bot, channel_id: str):
 
 def get_instructions(bot):
 
-	if not bot.instruction:
+	# If no instruction is set, or dynamic instruction is disabled, we return None
+	if not bot.instruction or not bot.dynamic_instructions:
 		return None
 
 	vars = get_variables_for_instructions(bot)

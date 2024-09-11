@@ -16,13 +16,15 @@
   "is_standard",
   "module",
   "ai_tab",
-  "ai_section",
   "is_ai_bot",
+  "ai_section",
   "openai_assistant_id",
   "column_break_khmi",
   "allow_bot_to_write_documents",
+  "enable_file_search",
   "section_break_lwkx",
-  "instruction"
+  "instruction",
+  "dynamic_instructions"
  ],
  "fields": [
   {
@@ -73,6 +75,7 @@
    "fieldtype": "Column Break"
   },
   {
+   "depends_on": "eval: doc.is_ai_bot",
    "fieldname": "ai_section",
    "fieldtype": "Section Break"
   },
@@ -83,11 +86,10 @@
    "label": "Is AI Bot?"
   },
   {
-   "depends_on": "eval: doc.is_ai_bot;",
+   "depends_on": "eval: doc.is_ai_bot",
    "fieldname": "openai_assistant_id",
    "fieldtype": "Data",
-   "label": "OpenAI Assistant ID",
-   "mandatory_depends_on": "eval: doc.is_ai_bot;"
+   "label": "OpenAI Assistant ID"
   },
   {
    "fieldname": "column_break_khmi",
@@ -109,16 +111,31 @@
    "fieldtype": "Section Break"
   },
   {
-   "description": "You can use Jinja variables here to customize the instruction to the bot at run time.",
+   "description": "You can use Jinja variables here to customize the instruction to the bot at run time if dynamic instructions are enabled.",
    "fieldname": "instruction",
    "fieldtype": "Long Text",
    "label": "Instruction"
+  },
+  {
+   "default": "0",
+   "description": "Enable this if you want the bot to be able to read files and scan them.\n\nFile search enables the assistant with knowledge from files that you upload. Once a file is uploaded, the assistant automatically decides when to retrieve content based on user requests.",
+   "documentation_url": "https://platform.openai.com/docs/assistants",
+   "fieldname": "enable_file_search",
+   "fieldtype": "Check",
+   "label": "Enable File Search"
+  },
+  {
+   "default": "0",
+   "description": "Dynamic Instructions allow you to embed Jinja tags in your instruction to the bot. Hence the instruction would be different based on the user who is calling the bot or the data in your system. These instructions are computed every time the bot is called. Check this if you want to embed things like Employee ID, Company Name etc in your instructions dynamically",
+   "fieldname": "dynamic_instructions",
+   "fieldtype": "Check",
+   "label": "Dynamic Instructions"
   }
  ],
  "image_field": "image",
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-08-23 19:59:02.021835",
+ "modified": "2024-09-11 21:27:45.772169",
  "modified_by": "Administrator",
  "module": "Raven Bot",
  "name": "Raven Bot",
