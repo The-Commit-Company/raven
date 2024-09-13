@@ -1,6 +1,9 @@
 import { CustomCallout } from '@/components/common/Callouts/CustomCallout'
 import { HelperText, Label } from '@/components/common/Form'
 import { Loader } from '@/components/common/Loader'
+import PageContainer from '@/components/layout/Settings/PageContainer'
+import SettingsContentContainer from '@/components/layout/Settings/SettingsContentContainer'
+import SettingsPageHeader from '@/components/layout/Settings/SettingsPageHeader'
 import useRavenSettings from '@/hooks/fetchers/useRavenSettings'
 import { RavenSettings } from '@/types/Raven/RavenSettings'
 import { Button, Checkbox, Flex, Select, Separator, Text } from '@radix-ui/themes'
@@ -50,20 +53,18 @@ const FrappeHR = () => {
     const autoCreateDepartment = watch('auto_create_department_channel')
 
     return (
-        <Flex direction='column' gap='4' px='6' py='4'>
+        <PageContainer>
             <FormProvider {...methods}>
                 <form onSubmit={handleSubmit(onSubmit)}>
-                    <Flex direction={'column'} gap='4'>
-                        <Flex justify={'between'} align={'center'}>
-                            <Flex direction='column' gap='0'>
-                                <Text size='3' className={'font-semibold'}>Frappe HR</Text>
-                                {/* <Text size='1' color='gray'>Manage your Raven profile</Text> */}
-                            </Flex>
-                            <Button type='submit' disabled={updatingDoc}>
+                    <SettingsContentContainer>
+                        <SettingsPageHeader
+                            title='HR'
+                            description='Connect your HR system to Raven to sync employee data and send notifications.'
+                            actions={<Button type='submit' disabled={updatingDoc}>
                                 {updatingDoc && <Loader />}
                                 {updatingDoc ? "Saving" : "Save"}
-                            </Button>
-                        </Flex>
+                            </Button>}
+                        />
                         {!isHRInstalled && <CustomCallout
                             iconChildren={<FiAlertTriangle />}
                             rootProps={{ color: 'yellow', variant: 'surface' }}
@@ -138,10 +139,10 @@ const FrappeHR = () => {
                                 If checked, users on Raven are notified if another user is on leave.
                             </HelperText>
                         </Flex>
-                    </Flex>
+                    </SettingsContentContainer>
                 </form>
             </FormProvider>
-        </Flex>
+        </PageContainer>
     )
 }
 

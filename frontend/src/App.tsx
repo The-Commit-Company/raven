@@ -9,7 +9,6 @@ import { ThemeProvider } from './ThemeProvider'
 import { Toaster } from 'sonner'
 import { useStickyState } from './hooks/useStickyState'
 import MobileTabsPage from './pages/MobileTabsPage'
-import { UserProfile } from './components/feature/userSettings/UserProfile/UserProfile'
 
 
 const router = createBrowserRouter(
@@ -28,11 +27,15 @@ const router = createBrowserRouter(
             </Route>
             <Route path="saved-messages" lazy={() => import('./components/feature/saved-messages/SavedMessages')} />
             <Route path="settings" lazy={() => import('./pages/settings/Settings')}>
-              <Route index element={<UserProfile />} />
-              <Route path="profile" element={<UserProfile />} />
+              <Route index lazy={() => import('./components/feature/userSettings/UserProfile/UserProfile')} />
+              <Route path="profile" lazy={() => import('./components/feature/userSettings/UserProfile/UserProfile')} />
               <Route path="users" lazy={() => import('./components/feature/userSettings/Users/AddUsers')} />
-              <Route path="frappe-hr" lazy={() => import('./pages/settings/Integrations/FrappeHR')} />
-              {/* <Route path="bots" lazy={() => import('./components/feature/userSettings/Bots')} /> */}
+              <Route path="hr" lazy={() => import('./pages/settings/Integrations/FrappeHR')} />
+              <Route path="bots" lazy={() => import('./pages/settings/AI/BotList')} />
+              <Route path="functions" lazy={() => import('./pages/settings/AI/FunctionList')} />
+              <Route path="instructions" lazy={() => import('./pages/settings/AI/InstructionTemplateList')} />
+              <Route path="commands" lazy={() => import('./pages/settings/AI/SavedPromptsList')} />
+              <Route path="openai-settings" lazy={() => import('./pages/settings/AI/OpenAISettings')} />
             </Route>
             <Route path=":channelID" lazy={() => import('@/pages/ChatSpace')}>
               <Route path="thread/:threadID" lazy={() => import('./components/feature/threads/ThreadDrawer/ThreadDrawer')} />
