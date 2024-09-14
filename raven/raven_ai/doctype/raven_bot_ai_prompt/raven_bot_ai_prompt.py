@@ -15,6 +15,7 @@ class RavenBotAIPrompt(Document):
 		from frappe.types import DF
 
 		is_global: DF.Check
+		naming_series: DF.Literal["PR-.#####."]
 		prompt: DF.SmallText
 		raven_bot: DF.Link | None
 	# end: auto-generated types

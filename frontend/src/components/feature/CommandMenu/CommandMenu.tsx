@@ -11,6 +11,7 @@ import ArchivedChannelList from './ArchivedChannelList'
 import { atom, useAtom } from 'jotai'
 import { useIsDesktop } from '@/hooks/useMediaQuery'
 import { Drawer, DrawerContent } from '@/components/layout/Drawer'
+import SettingsList from './SettingsList'
 
 export const commandMenuOpenAtom = atom(false)
 
@@ -69,6 +70,7 @@ export const CommandList = () => {
             <Command.Empty>No results found.</Command.Empty>
             <ChannelList />
             <UserList />
+            <SettingsList />
 
             {/* TODO: Make these commands work */}
             {/* <Command.Group heading="Commands">

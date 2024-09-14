@@ -1,11 +1,13 @@
 {
  "actions": [],
  "allow_rename": 1,
+ "autoname": "naming_series:",
  "creation": "2024-09-12 18:23:10.771302",
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
   "prompt",
+  "naming_series",
   "raven_bot",
   "is_global"
  ],
@@ -34,14 +36,21 @@
    "in_list_view": 1,
    "in_standard_filter": 1,
    "label": "Is Global"
+  },
+  {
+   "fieldname": "naming_series",
+   "fieldtype": "Select",
+   "label": "Naming Series",
+   "options": "PR-.#####."
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-09-12 18:25:11.921825",
+ "modified": "2024-09-14 15:16:53.995793",
  "modified_by": "Administrator",
  "module": "Raven AI",
  "name": "Raven Bot AI Prompt",
+ "naming_rule": "By \"Naming Series\" field",
  "owner": "Administrator",
  "permissions": [
   {

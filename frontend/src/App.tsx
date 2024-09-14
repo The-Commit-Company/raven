@@ -31,10 +31,30 @@ const router = createBrowserRouter(
               <Route path="profile" lazy={() => import('./components/feature/userSettings/UserProfile/UserProfile')} />
               <Route path="users" lazy={() => import('./components/feature/userSettings/Users/AddUsers')} />
               <Route path="hr" lazy={() => import('./pages/settings/Integrations/FrappeHR')} />
-              <Route path="bots" lazy={() => import('./pages/settings/AI/BotList')} />
-              <Route path="functions" lazy={() => import('./pages/settings/AI/FunctionList')} />
-              <Route path="instructions" lazy={() => import('./pages/settings/AI/InstructionTemplateList')} />
-              <Route path="commands" lazy={() => import('./pages/settings/AI/SavedPromptsList')} />
+              <Route path="bots" >
+                <Route index lazy={() => import('./pages/settings/AI/BotList')} />
+                <Route path="create" lazy={() => import('./pages/settings/AI/CreateBot')} />
+                <Route path=":ID" lazy={() => import('./pages/settings/AI/ViewBot')} />
+              </Route>
+
+              <Route path="functions">
+                <Route index lazy={() => import('./pages/settings/AI/FunctionList')} />
+                <Route path="create" lazy={() => import('./pages/settings/AI/CreateFunction')} />
+              </Route>
+
+
+              <Route path="instructions">
+                <Route index lazy={() => import('./pages/settings/AI/InstructionTemplateList')} />
+                <Route path="create" lazy={() => import('./pages/settings/AI/CreateInstructionTemplate')} />
+                <Route path=":ID" lazy={() => import('./pages/settings/AI/ViewInstructionTemplate')} />
+              </Route>
+
+              <Route path="commands">
+                <Route index lazy={() => import('./pages/settings/AI/SavedPromptsList')} />
+                <Route path="create" lazy={() => import('./pages/settings/AI/CreateSavedPrompt')} />
+                <Route path=":ID" lazy={() => import('./pages/settings/AI/ViewSavedPrompt')} />
+              </Route>
+
               <Route path="openai-settings" lazy={() => import('./pages/settings/AI/OpenAISettings')} />
             </Route>
             <Route path=":channelID" lazy={() => import('@/pages/ChatSpace')}>

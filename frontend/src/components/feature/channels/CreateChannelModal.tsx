@@ -243,9 +243,9 @@ const CreateChannelContent = ({ updateChannelList, isOpen, setIsOpen }: { update
                             )}
                         />
                         {/* Added min height to avoid layout shift when two lines of text are shown */}
-                        <Text size='1' weight='light' className='min-h-[2rem]'>
+                        <HelperText className='min-h-[3rem]'>
                             {helperText}
-                        </Text>
+                        </HelperText>
                     </Flex>
                 </Flex>
                 <Flex gap="3" mt="4" justify="end">

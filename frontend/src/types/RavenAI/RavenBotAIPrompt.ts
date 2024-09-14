@@ -12,6 +12,8 @@ export interface RavenBotAIPrompt{
 	idx?: number
 	/**	Prompt : Small Text	*/
 	prompt: string
+	/**	Naming Series : Select	*/
+	naming_series?: "PR-.#####."
 	/**	Raven Bot : Link - Raven Bot - If added, this prompt will only be shown when interacting with the bot	*/
 	raven_bot?: string
 	/**	Is Global : Check - If checked, this prompt will be available to all users on Raven	*/

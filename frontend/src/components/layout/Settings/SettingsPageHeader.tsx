@@ -1,20 +1,44 @@
 import { Flex, Text } from '@radix-ui/themes'
 import React from 'react'
+import { HStack } from '../Stack'
+import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from '../Breadcrumb'
 
+type BreadcrumbItem = {
+    label: React.ReactNode,
+    href: string,
+    copyToClipboard?: boolean
+}
 type Props = {
     title: React.ReactNode
     description?: React.ReactNode
-    actions?: React.ReactNode
+    actions?: React.ReactNode,
+    breadcrumbs?: BreadcrumbItem[]
 }
 
-const SettingsPageHeader = (props: Props) => {
+const SettingsPageHeader = ({ title, description, actions, breadcrumbs }: Props) => {
     return (
         <Flex justify={'between'} align={'center'}>
             <Flex direction='column' className='gap-0.5'>
-                <Text size='3' className={'font-semibold'}>{props.title}</Text>
-                {props.description && <Text size='2' color='gray'>{props.description}</Text>}
+                {breadcrumbs ? <Breadcrumb>
+                    <BreadcrumbList>
+                        {breadcrumbs.map((b, index) => <React.Fragment key={b.href}>
+                            {index < breadcrumbs.length - 1 ? <>
+                                <BreadcrumbItem>
+                                    <BreadcrumbLink href={b.href}>{b.label}</BreadcrumbLink>
+                                </BreadcrumbItem>
+                                <BreadcrumbSeparator />
+                            </> :
+                                <BreadcrumbPage copyToClipboard={b.copyToClipboard} value={b.label}>{b.label}</BreadcrumbPage>
+                            }
+                        </React.Fragment>)}
+                    </BreadcrumbList>
+                </Breadcrumb> : null}
+                <HStack gap='1' align='center'>
+                    <Text size='4' className={'font-semibold'}>{title}</Text>
+                </HStack>
+                {description && <Text size='2' color='gray'>{description}</Text>}
             </Flex>
-            {props.actions}
+            {actions}
         </Flex>
     )
 }

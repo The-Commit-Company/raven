@@ -68,7 +68,7 @@ const FrappeHR = () => {
                         {!isHRInstalled && <CustomCallout
                             iconChildren={<FiAlertTriangle />}
                             rootProps={{ color: 'yellow', variant: 'surface' }}
-                            textChildren="Frappe HR is not installed on this site.">
+                            textChildren="HR is not installed on this site.">
                         </CustomCallout>}
 
                         <Flex direction={'column'} gap='2' maxWidth={'480px'}>

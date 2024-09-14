@@ -31,6 +31,10 @@ class RavenBot(Document):
 		raven_user: DF.Link | None
 	# end: auto-generated types
 
+	def validate(self):
+		if self.is_ai_bot and not self.instruction:
+			frappe.throw("Please provide an instruction for this AI Bot.")
+
 	def on_update(self):
 		"""
 		When a bot is updated, create/update the Raven User for it
