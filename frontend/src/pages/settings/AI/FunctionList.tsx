@@ -5,7 +5,7 @@ import SettingsContentContainer from '@/components/layout/Settings/SettingsConte
 import SettingsPageHeader from '@/components/layout/Settings/SettingsPageHeader'
 import { HStack, Stack } from '@/components/layout/Stack'
 import { RavenAIFunction } from '@/types/RavenAI/RavenAIFunction'
-import { Badge, Button, HoverCard, Table, Text } from '@radix-ui/themes'
+import { Badge, Button, Checkbox, HoverCard, Table, Text } from '@radix-ui/themes'
 import { useFrappeGetDocList } from 'frappe-react-sdk'
 import { Link } from 'react-router-dom'
 
@@ -14,7 +14,7 @@ type Props = {}
 const FunctionList = (props: Props) => {
 
     const { data, isLoading, error } = useFrappeGetDocList<RavenAIFunction>("Raven AI Function", {
-        fields: ["name"]
+        fields: ["name", "description", "function_name", "type", "requires_write_permissions"]
     })
     return (
         <PageContainer>
@@ -40,16 +40,18 @@ const FunctionTable = ({ functions }: { functions: RavenAIFunction[] }) => {
             <Table.Header>
                 <Table.Row>
                     <Table.ColumnHeaderCell>Name</Table.ColumnHeaderCell>
-                    {/* <Table.ColumnHeaderCell>Description</Table.ColumnHeaderCell> */}
+                    <Table.ColumnHeaderCell>Description</Table.ColumnHeaderCell>
+                    <Table.ColumnHeaderCell>Type</Table.ColumnHeaderCell>
+                    <Table.ColumnHeaderCell>Writes</Table.ColumnHeaderCell>
                 </Table.Row>
             </Table.Header>
             <Table.Body>
                 {functions?.map((f) => (
                     <Table.Row key={f.name}>
-                        <Table.Cell maxWidth={"150px"}>
+                        <Table.Cell maxWidth={"250px"}>
                             <HStack align='center'>
                                 <Link to={`${f.name}`} className='hover:underline underline-offset-4'>
-                                    <Text weight='medium'>{f.function_path}</Text>
+                                    <Text weight='medium'>{f.function_name}</Text>
                                 </Link>
                                 {/* {bot.is_ai_bot ?
                                     <HoverCard.Root>
@@ -76,6 +78,17 @@ const FunctionTable = ({ functions }: { functions: RavenAIFunction[] }) => {
                                     : null} */}
                             </HStack>
                         </Table.Cell>
+                        <Table.Cell maxWidth={"300px"}>
+                            <Text className='line-clamp-1 text-ellipsis'>{f.description}</Text>
+                        </Table.Cell>
+                        <Table.Cell maxWidth={"150px"}>
+                            <Badge variant='outline'>{f.type}</Badge>
+                        </Table.Cell>
+
+                        <Table.Cell maxWidth={"50px"}>
+                            <Checkbox checked={f.requires_write_permissions === 1} />
+                        </Table.Cell>
+
                         {/* <Table.Cell maxWidth={"250px"}>
                             <Text className='line-clamp-1 text-ellipsis'>{bot.description ? bot.description : bot.instruction}</Text>
                         </Table.Cell> */}

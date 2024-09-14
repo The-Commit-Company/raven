@@ -1,21 +1,28 @@
 {
  "actions": [],
  "allow_rename": 1,
- "autoname": "prompt",
+ "autoname": "field:function_name",
  "creation": "2024-08-23 08:43:26.356348",
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
+  "function_name",
   "function_path",
-  "pass_parameters_as_json"
+  "description",
+  "column_break_tlyz",
+  "type",
+  "pass_parameters_as_json",
+  "requires_write_permissions",
+  "parameters_section",
+  "params",
+  "function_definition"
  ],
  "fields": [
   {
    "fieldname": "function_path",
-   "fieldtype": "Data",
+   "fieldtype": "Small Text",
    "in_list_view": 1,
-   "label": "Function Path",
-   "reqd": 1
+   "label": "Function Path"
   },
   {
    "default": "0",
@@ -23,15 +30,61 @@
    "fieldname": "pass_parameters_as_json",
    "fieldtype": "Check",
    "label": "Pass parameters as JSON"
+  },
+  {
+   "fieldname": "function_name",
+   "fieldtype": "Data",
+   "label": "Function Name",
+   "reqd": 1,
+   "unique": 1
+  },
+  {
+   "fieldname": "type",
+   "fieldtype": "Select",
+   "label": "Type",
+   "options": "Get Document\nGet Multiple Documents\nGet List\nCreate Document\nCreate Multiple Documents\nUpdate Document\nUpdate Multiple Documents\nDelete Document\nDelete Multiple Documents\nCustom Function\nSend Message\nAttach File to Document\nGet Report Result",
+   "reqd": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "requires_write_permissions",
+   "fieldtype": "Check",
+   "label": "Requires Write Permissions"
+  },
+  {
+   "fieldname": "params",
+   "fieldtype": "JSON",
+   "label": "Params"
+  },
+  {
+   "fieldname": "function_definition",
+   "fieldtype": "JSON",
+   "label": "Function Definition",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_tlyz",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "parameters_section",
+   "fieldtype": "Section Break",
+   "label": "Parameters"
+  },
+  {
+   "fieldname": "description",
+   "fieldtype": "Small Text",
+   "label": "Description",
+   "reqd": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-08-23 17:47:52.841530",
+ "modified": "2024-09-14 22:06:20.153395",
  "modified_by": "Administrator",
  "module": "Raven AI",
  "name": "Raven AI Function",
- "naming_rule": "Set by user",
+ "naming_rule": "By fieldname",
  "owner": "Administrator",
  "permissions": [
   {

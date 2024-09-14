@@ -1,11 +1,11 @@
 import { Loader } from "@/components/common/Loader"
-import SavedPromptForm from "@/components/feature/settings/ai/SavedPromptForm"
+import FunctionForm from "@/components/feature/settings/ai/functions/FunctionForm"
 import { ErrorBanner } from "@/components/layout/AlertBanner"
 import { FullPageLoader } from "@/components/layout/Loaders"
 import PageContainer from "@/components/layout/Settings/PageContainer"
 import SettingsContentContainer from "@/components/layout/Settings/SettingsContentContainer"
 import SettingsPageHeader from "@/components/layout/Settings/SettingsPageHeader"
-import { RavenBotAIPrompt } from "@/types/RavenAI/RavenBotAIPrompt"
+import { RavenAIFunction } from "@/types/RavenAI/RavenAIFunction"
 import { Button } from "@radix-ui/themes"
 import { useFrappeGetDoc, useFrappeUpdateDoc } from "frappe-react-sdk"
 import { FormProvider, useForm } from "react-hook-form"
@@ -14,33 +14,33 @@ import { toast } from "sonner"
 
 type Props = {}
 
-const ViewSavedPrompt = (props: Props) => {
+const ViewFunction = (props: Props) => {
 
     const { ID } = useParams<{ ID: string }>()
 
-    const { data, isLoading, error } = useFrappeGetDoc<RavenBotAIPrompt>("Raven Bot AI Prompt", ID)
+    const { data, isLoading, error } = useFrappeGetDoc<RavenAIFunction>("Raven AI Function", ID)
 
     return (
         <PageContainer>
             <ErrorBanner error={error} />
             {isLoading && <FullPageLoader className="h-64" />}
-            {data && <ViewSavedPromptContent data={data} />}
+            {data && <ViewFunctionContent data={data} />}
         </PageContainer>
     )
 }
 
-const ViewSavedPromptContent = ({ data }: { data: RavenBotAIPrompt }) => {
+const ViewFunctionContent = ({ data }: { data: RavenAIFunction }) => {
 
-    const { updateDoc, loading, error } = useFrappeUpdateDoc<RavenBotAIPrompt>()
+    const { updateDoc, loading, error } = useFrappeUpdateDoc<RavenAIFunction>()
 
-    const methods = useForm<RavenBotAIPrompt>({
+    const methods = useForm<RavenAIFunction>({
         disabled: loading,
         defaultValues: data
     })
 
 
-    const onSubmit = (data: RavenBotAIPrompt) => {
-        updateDoc("Raven Bot AI Prompt", data.name, data)
+    const onSubmit = (data: RavenAIFunction) => {
+        updateDoc("Raven AI Function", data.name, data)
             .then((doc) => {
                 toast.success("Saved")
                 methods.reset(doc)
@@ -56,14 +56,14 @@ const ViewSavedPromptContent = ({ data }: { data: RavenBotAIPrompt }) => {
                         {loading && <Loader />}
                         {loading ? "Saving" : "Save"}
                     </Button>}
-                    breadcrumbs={[{ label: 'Commands', href: '../' }, { label: data.name, href: '', copyToClipboard: true }]}
+                    breadcrumbs={[{ label: 'Functions', href: '../' }, { label: data.name, href: '', copyToClipboard: true }]}
                 />
                 <ErrorBanner error={error} />
-                <SavedPromptForm />
+                <FunctionForm />
             </SettingsContentContainer>
         </FormProvider>
     </form>
 
 }
 
-export const Component = ViewSavedPrompt
+export const Component = ViewFunction

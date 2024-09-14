@@ -1,4 +1,5 @@
 import { Loader } from '@/components/common/Loader'
+import FunctionForm from '@/components/feature/settings/ai/functions/FunctionForm'
 import { ErrorBanner } from '@/components/layout/AlertBanner'
 import PageContainer from '@/components/layout/Settings/PageContainer'
 import SettingsContentContainer from '@/components/layout/Settings/SettingsContentContainer'
@@ -14,7 +15,13 @@ const CreateFunction = () => {
     const { createDoc, loading, error } = useFrappeCreateDoc<RavenAIFunction>()
 
     const methods = useForm<RavenAIFunction>({
-        disabled: loading
+        disabled: loading,
+        defaultValues: {
+            params: {
+                type: 'object',
+                properties: {},
+            }
+        }
     })
 
     const navigate = useNavigate()
@@ -34,7 +41,6 @@ const CreateFunction = () => {
                     <SettingsContentContainer>
                         <SettingsPageHeader
                             title='Create a Function'
-                            // description='Bots can be used to send reminders, run AI assistants, and more.'
                             actions={<Button type='submit' disabled={loading}>
                                 {loading && <Loader />}
                                 {loading ? "Creating" : "Create"}
@@ -42,6 +48,7 @@ const CreateFunction = () => {
                             breadcrumbs={[{ label: 'Functions', href: '../' }, { label: 'New Function', href: '' }]}
                         />
                         <ErrorBanner error={error} />
+                        <FunctionForm />
                     </SettingsContentContainer>
                 </FormProvider>
             </form>

@@ -34,7 +34,7 @@ const SettingsPageHeader = ({ title, description, actions, breadcrumbs }: Props)
                     </BreadcrumbList>
                 </Breadcrumb> : null}
                 <HStack gap='1' align='center'>
-                    <Text size='4' className={'font-semibold'}>{title}</Text>
+                    <Text size='5' className={'font-semibold'}>{title}</Text>
                 </HStack>
                 {description && <Text size='2' color='gray'>{description}</Text>}
             </Flex>

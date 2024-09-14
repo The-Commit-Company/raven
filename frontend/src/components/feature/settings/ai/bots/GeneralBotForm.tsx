@@ -15,7 +15,7 @@ const GeneralBotForm = () => {
                     <TextField.Root
                         id='bot_name'
                         {...register('bot_name', {
-                            required: 'Prompt is required',
+                            required: 'Name is required',
                         })}
                         placeholder="accounts-bot"
                         aria-invalid={errors.bot_name ? 'true' : 'false'}

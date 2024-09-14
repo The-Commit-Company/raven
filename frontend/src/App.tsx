@@ -40,6 +40,7 @@ const router = createBrowserRouter(
               <Route path="functions">
                 <Route index lazy={() => import('./pages/settings/AI/FunctionList')} />
                 <Route path="create" lazy={() => import('./pages/settings/AI/CreateFunction')} />
+                <Route path=":ID" lazy={() => import('./pages/settings/AI/ViewFunction')} />
               </Route>
 
 
