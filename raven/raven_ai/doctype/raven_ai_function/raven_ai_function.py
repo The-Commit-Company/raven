@@ -65,13 +65,13 @@ class RavenAIFunction(Document):
 			if not self.function_path:
 				frappe.throw("Function path is required for Custom Functions")
 
-		# Check if JSON is valid and format it
-		try:
-			json.loads(self.params)
-		except json.JSONDecodeError:
-			frappe.throw("Invalid JSON in params")
+			# Check if JSON is valid and format it
+			try:
+				json.loads(self.params)
+			except json.JSONDecodeError:
+				frappe.throw("Invalid JSON in params")
 
-		self.params = json.dumps(json.loads(self.params), indent=4)
+			self.params = json.dumps(json.loads(self.params), indent=4)
 
 	def before_save(self):
 		# Generate the function definition from the variables + function name + description

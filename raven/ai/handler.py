@@ -34,10 +34,6 @@ def stream_response(ai_thread_id: str, bot, channel_id: str):
 
 			for tool in data.required_action.submit_tool_outputs.tool_calls:
 
-				args = json.loads(tool.function.arguments)
-
-				function_output = {}
-
 				function = None
 
 				try:
@@ -54,24 +50,42 @@ def stream_response(ai_thread_id: str, bot, channel_id: str):
 				# When calling the function, we need to pass the arguments as named params/json
 				# Args is a dictionary of the form {"param_name": "param_value"}
 
-				if bot.allow_bot_to_write_documents:
-					# We can commit to the database if writes are allowed
-					if function.pass_parameters_as_json:
-						function_output = function_name(args)
-					else:
-						function_output = function_name(**args)
-				else:
-					# We need to savepoint and then rollback
-					frappe.db.savepoint(run_id + "_" + tool.id)
-					if function.pass_parameters_as_json:
-						function_output = function_name(args)
-					else:
-						function_output = function_name(**args)
-					frappe.db.rollback(save_point=run_id + "_" + tool.id)
+				try:
+					args = json.loads(tool.function.arguments)
 
-				tool_outputs.append(
-					{"tool_call_id": tool.id, "output": json.dumps(function_output, default=str)}
-				)
+					function_output = {}
+
+					if bot.allow_bot_to_write_documents:
+						# We can commit to the database if writes are allowed
+						if function.pass_parameters_as_json:
+							function_output = function_name(args)
+						else:
+							function_output = function_name(**args)
+					else:
+						# We need to savepoint and then rollback
+						frappe.db.savepoint(run_id + "_" + tool.id)
+						if function.pass_parameters_as_json:
+							function_output = function_name(args)
+						else:
+							function_output = function_name(**args)
+						frappe.db.rollback(save_point=run_id + "_" + tool.id)
+
+					tool_outputs.append(
+						{"tool_call_id": tool.id, "output": json.dumps(function_output, default=str)}
+					)
+				except Exception as e:
+					tool_outputs.append(
+						{
+							"tool_call_id": tool.id,
+							"output": json.dumps(
+								{
+									"message": "There was an error in the function call",
+									"error": str(e),
+								},
+								default=str,
+							),
+						}
+					)
 
 			# Submit all tool_outputs at the same time
 			self.submit_tool_outputs(tool_outputs, run_id)

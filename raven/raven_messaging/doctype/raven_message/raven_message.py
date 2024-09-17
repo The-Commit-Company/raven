@@ -141,8 +141,6 @@ class RavenMessage(Document):
 		is_ai_thread = channel_doc.is_ai_thread
 
 		if is_ai_thread and channel_doc.openai_thread_id:
-
-			# handle_ai_thread_message(self, channel_doc)
 			frappe.enqueue(
 				method=handle_ai_thread_message,
 				message=self,
