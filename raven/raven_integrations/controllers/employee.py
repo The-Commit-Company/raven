@@ -49,7 +49,7 @@ def on_update(doc, method):
 
 		old_doc = doc.get_doc_before_save()
 
-		if old_doc.department:
+		if old_doc and old_doc.department:
 			# Remove the employee as a member from the channel
 			old_channel = get_channel_for_department(old_doc.department)
 
