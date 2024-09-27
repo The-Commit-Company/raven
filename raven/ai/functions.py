@@ -1,4 +1,5 @@
 import frappe
+from frappe import _
 
 
 def get_document(doctype: str, document_id: str):
@@ -87,7 +88,7 @@ def attach_file_to_document(doctype: str, document_id: str, file_path: str):
 	file = frappe.get_doc("File", {"file_url": file_path})
 
 	if not file:
-		frappe.throw("File not found")
+		frappe.throw(_("File not found"))
 
 	newFile = frappe.get_doc(
 		{

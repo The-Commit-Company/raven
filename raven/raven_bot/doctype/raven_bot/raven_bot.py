@@ -4,6 +4,7 @@
 import json
 
 import frappe
+from frappe import _
 from frappe.model.document import Document
 
 from raven.ai.openai_client import get_open_ai_client
@@ -38,7 +39,7 @@ class RavenBot(Document):
 
 	def validate(self):
 		if self.is_ai_bot and not self.instruction:
-			frappe.throw("Please provide an instruction for this AI Bot.")
+			frappe.throw(_("Please provide an instruction for this AI Bot."))
 
 		self.validate_functions()
 

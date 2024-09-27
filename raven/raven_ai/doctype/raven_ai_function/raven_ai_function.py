@@ -163,13 +163,13 @@ class RavenAIFunction(Document):
 	def validate_json(self):
 		if self.type == "Custom Function":
 			if not self.function_path:
-				frappe.throw("Function path is required for Custom Functions")
+				frappe.throw(_("Function path is required for Custom Functions"))
 
 			# Check if JSON is valid and format it
 			try:
 				json.loads(self.params)
 			except json.JSONDecodeError:
-				frappe.throw("Invalid JSON in params")
+				frappe.throw(_("Invalid JSON in params"))
 
 			self.params = json.dumps(json.loads(self.params), indent=4)
 
@@ -205,7 +205,7 @@ class RavenAIFunction(Document):
 		]
 		if self.type in DOCUMENT_REF_FUNCTIONS:
 			if not self.reference_doctype:
-				frappe.throw("Please select a DocType for this function.")
+				frappe.throw(_("Please select a DocType for this function."))
 
 		# Validate if the function is whitelisted
 		if self.type == "Custom Function":
