@@ -6,7 +6,13 @@ from openai.types.beta.threads import Text
 from openai.types.beta.threads.runs import RunStep
 from typing_extensions import override
 
-from raven.ai.functions import delete_document, delete_documents, get_document, get_documents
+from raven.ai.functions import (
+	create_document,
+	delete_document,
+	delete_documents,
+	get_document,
+	get_documents,
+)
 from raven.ai.openai_client import get_open_ai_client
 
 
@@ -15,6 +21,8 @@ def stream_response(ai_thread_id: str, bot, channel_id: str):
 	client = get_open_ai_client()
 
 	assistant_id = bot.openai_assistant_id
+
+	docs_updated = []
 
 	class EventHandler(AssistantEventHandler):
 		@override
@@ -31,7 +39,20 @@ def stream_response(ai_thread_id: str, bot, channel_id: str):
 
 		@override
 		def on_text_done(self, text: Text):
-			bot.send_message(channel_id=channel_id, text=text.value)
+
+			link_doctype = None
+			link_document = None
+			if len(docs_updated) == 1:
+				link_doctype = docs_updated[0]["doctype"]
+				link_document = docs_updated[0]["document_id"]
+
+			bot.send_message(
+				channel_id=channel_id,
+				text=text.value,
+				link_doctype=link_doctype,
+				link_document=link_document,
+				markdown=True,
+			)
 
 			frappe.publish_realtime(
 				"ai_event_clear",
@@ -124,17 +145,30 @@ def stream_response(ai_thread_id: str, bot, channel_id: str):
 						self.publish_event(f"Deleting multiple {function.reference_doctype}s...")
 						function_output = delete_documents(function.reference_doctype, **args)
 
+					if function.type == "Create Document":
+						self.publish_event(f"Creating {function.reference_doctype}...")
+						function_output = create_document(function.reference_doctype, data=args)
+
+						docs_updated.append(
+							{"doctype": function.reference_doctype, "document_id": function_output.get("document_id")}
+						)
+
 					tool_outputs.append(
 						{"tool_call_id": tool.id, "output": json.dumps(function_output, default=str)}
 					)
 				except Exception as e:
+					frappe.log_error("Raven AI Error", frappe.get_traceback())
+					bot.send_message(
+						channel_id=channel_id,
+						text=f"There was an error in the function call. <br/>Error: {frappe.get_traceback()}",
+					)
 					tool_outputs.append(
 						{
 							"tool_call_id": tool.id,
 							"output": json.dumps(
 								{
 									"message": "There was an error in the function call",
-									"error": str(e),
+									"error": frappe.get_traceback(),
 								},
 								default=str,
 							),
@@ -165,7 +199,13 @@ def stream_response(ai_thread_id: str, bot, channel_id: str):
 		event_handler=EventHandler(),
 		instructions=instructions,
 	) as stream:
-		stream.until_done()
+		try:
+			stream.until_done()
+		except Exception as e:
+			bot.send_message(
+				channel_id=channel_id,
+				text=f"There was an error in the AI thread. Please try again.<br/>Error: {str(e)}",
+			)
 
 
 def get_instructions(bot):

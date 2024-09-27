@@ -5,7 +5,8 @@ def get_document(doctype: str, document_id: str):
 	"""
 	Get a document from the database
 	"""
-	return frappe.get_doc(doctype, document_id).as_dict()
+	# Use the frappe.client.get method to get the document with permissions (both read and field level read)
+	return frappe.client.get(doctype, name=document_id)
 
 
 def get_documents(doctype: str, document_ids: list):
@@ -14,7 +15,8 @@ def get_documents(doctype: str, document_ids: list):
 	"""
 	docs = []
 	for document_id in document_ids:
-		docs.append(frappe.get_doc(doctype, document_id).as_dict())
+		# Use the frappe.client.get method to get the document with permissions applied
+		docs.append(frappe.client.get(doctype, name=document_id))
 	return docs
 
 

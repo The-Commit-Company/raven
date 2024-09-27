@@ -4,6 +4,7 @@
 import json
 
 import frappe
+from frappe import _, is_whitelisted
 from frappe.model.document import Document
 
 
@@ -16,10 +17,15 @@ class RavenAIFunction(Document):
 	if TYPE_CHECKING:
 		from frappe.types import DF
 
+		from raven.raven_ai.doctype.raven_ai_function_params.raven_ai_function_params import (
+			RavenAIFunctionParams,
+		)
+
 		description: DF.SmallText
 		function_definition: DF.JSON | None
 		function_name: DF.Data
 		function_path: DF.SmallText | None
+		parameters: DF.Table[RavenAIFunctionParams]
 		params: DF.JSON | None
 		pass_parameters_as_json: DF.Check
 		reference_doctype: DF.Link | None
@@ -81,7 +87,7 @@ class RavenAIFunction(Document):
 				"additionalProperties": False,
 			}
 
-		if self.type == "Get Multiple Documents":
+		elif self.type == "Get Multiple Documents":
 			params = {
 				"type": "object",
 				"properties": {
@@ -95,7 +101,7 @@ class RavenAIFunction(Document):
 				"additionalProperties": False,
 			}
 
-		if self.type == "Delete Document":
+		elif self.type == "Delete Document":
 			params = {
 				"type": "object",
 				"properties": {
@@ -108,7 +114,7 @@ class RavenAIFunction(Document):
 				"additionalProperties": False,
 			}
 
-		if self.type == "Delete Multiple Documents":
+		elif self.type == "Delete Multiple Documents":
 			params = {
 				"type": "object",
 				"properties": {
@@ -121,8 +127,38 @@ class RavenAIFunction(Document):
 				"required": ["document_ids"],
 				"additionalProperties": False,
 			}
+		else:
+			params = self.build_params_json_from_table()
 
 		self.params = json.dumps(params, indent=4)
+
+	def build_params_json_from_table(self):
+		params = {
+			"type": "object",
+			"additionalProperties": False,
+		}
+
+		required = []
+		properties = {}
+
+		for param in self.parameters:
+			obj = {
+				"type": param.type,
+				"description": param.description,
+			}
+
+			if param.type == "string" and param.options:
+				obj["enum"] = param.options.split("\n")
+
+			properties[param.fieldname] = obj
+
+			if param.required:
+				required.append(param.fieldname)
+
+		params["properties"] = properties
+		params["required"] = required
+
+		return params
 
 	def validate_json(self):
 		if self.type == "Custom Function":
@@ -171,6 +207,14 @@ class RavenAIFunction(Document):
 			if not self.reference_doctype:
 				frappe.throw("Please select a DocType for this function.")
 
+		# Validate if the function is whitelisted
+		if self.type == "Custom Function":
+			f = frappe.get_attr(self.function_path)
+			if not f:
+				frappe.throw(_("Function not found"))
+
+			is_whitelisted(f)
+
 	def before_save(self):
 		# Generate the function definition from the variables + function name + description
 		if isinstance(self.params, str):
@@ -186,3 +230,12 @@ class RavenAIFunction(Document):
 		}
 
 		self.function_definition = json.dumps(function_definition, indent=4)
+
+	def on_update(self):
+		# Update all the bots that use this function
+
+		bots = frappe.get_all("Raven Bot Functions", filters={"function": self.name}, pluck="parent")
+
+		for bot in bots:
+			bot = frappe.get_doc("Raven Bot", bot)
+			bot.update_openai_assistant()

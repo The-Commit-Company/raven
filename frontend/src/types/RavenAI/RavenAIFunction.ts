@@ -1,3 +1,4 @@
+import { RavenAIFunctionParams } from './RavenAIFunctionParams'
 
 export interface RavenAIFunction{
 	creation: string
@@ -24,6 +25,8 @@ export interface RavenAIFunction{
 	pass_parameters_as_json?: 0 | 1
 	/**	Requires Write Permissions : Check	*/
 	requires_write_permissions?: 0 | 1
+	/**	Parameters : Table - Raven AI Function Params	*/
+	parameters?: RavenAIFunctionParams[]
 	/**	Params : JSON	*/
 	params?: any
 	/**	Function Definition : JSON	*/

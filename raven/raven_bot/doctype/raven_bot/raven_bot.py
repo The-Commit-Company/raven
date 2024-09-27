@@ -222,7 +222,12 @@ class RavenBot(Document):
 		return None
 
 	def send_message(
-		self, channel_id: str, text: str = None, link_doctype: str = None, link_document: str = None
+		self,
+		channel_id: str,
+		text: str = None,
+		link_doctype: str = None,
+		link_document: str = None,
+		markdown: bool = False,
 	) -> str:
 		"""
 		Send a text message to a channel
@@ -238,6 +243,9 @@ class RavenBot(Document):
 
 		Returns the message ID of the message sent
 		"""
+
+		if markdown:
+			text = frappe.utils.md_to_html(text)
 		doc = frappe.get_doc(
 			{
 				"doctype": "Raven Message",

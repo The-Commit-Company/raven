@@ -37,7 +37,7 @@ export const ArchivedChannelBox = ({ channelData, channelMembers }: ArchivedChan
                 <ErrorBanner error={error} />
                 <Flex justify='center' align='center' gap='4'>
                     <Text as='span'>This channel has been archived.</Text>
-                    {channelMembers[currentUser].is_admin === 1 && <Button
+                    {channelMembers[currentUser]?.is_admin === 1 && <Button
                         size='1'
                         disabled={loading}
                         onClick={unArchiveChannel}>

@@ -15,6 +15,7 @@
   "pass_parameters_as_json",
   "requires_write_permissions",
   "parameters_section",
+  "parameters",
   "params",
   "function_definition"
  ],
@@ -85,11 +86,17 @@
    "fieldtype": "Link",
    "label": "Reference DocType",
    "options": "DocType"
+  },
+  {
+   "fieldname": "parameters",
+   "fieldtype": "Table",
+   "label": "Parameters",
+   "options": "Raven AI Function Params"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-09-27 16:33:32.931494",
+ "modified": "2024-09-27 19:40:41.989943",
  "modified_by": "Administrator",
  "module": "Raven AI",
  "name": "Raven AI Function",

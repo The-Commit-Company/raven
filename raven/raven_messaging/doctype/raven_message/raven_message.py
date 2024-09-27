@@ -508,7 +508,7 @@ class RavenMessage(Document):
 				if not self.file:
 					return
 
-			if self.message_type == "Poll":
+			if self.message_type == "Poll" or (self.link_doctype and self.link_document):
 				# If the message is a poll, then we need to wait for the poll to be created
 				after_commit = True
 

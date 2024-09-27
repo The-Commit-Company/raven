@@ -3,6 +3,18 @@ from frappe.desk.utils import slug
 from frappe.model.meta import no_value_fields, table_fields
 
 
+def get_new_app_document_links(doctype, docname):
+	"""
+	New apps like Frappe CRM etc have a different link.
+	"""
+	# TODO: Add the other app routes here
+	routes = {
+		"CRM Lead": "/crm/leads/",
+	}
+
+	return routes.get(doctype) + docname if doctype in routes else None
+
+
 @frappe.whitelist(methods=["GET"])
 def get(doctype, docname):
 
