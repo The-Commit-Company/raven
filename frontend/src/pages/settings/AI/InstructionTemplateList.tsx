@@ -15,7 +15,11 @@ type Props = {}
 const InstructionTemplateList = (props: Props) => {
 
     const { data, isLoading, error } = useFrappeGetDocList<RavenBotInstructionTemplate>("Raven Bot Instruction Template", {
-        fields: ["name", "template_name", "dynamic_instructions", "instruction"]
+        fields: ["name", "template_name", "dynamic_instructions", "instruction"],
+        orderBy: {
+            field: "modified",
+            order: "desc"
+        }
     })
     return (
         <PageContainer>

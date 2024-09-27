@@ -14,7 +14,11 @@ type Props = {}
 const SavedPromptList = (props: Props) => {
 
     const { data, isLoading, error } = useFrappeGetDocList<RavenBotAIPrompt>("Raven Bot AI Prompt", {
-        fields: ["name", "prompt", "raven_bot", "is_global"]
+        fields: ["name", "prompt", "raven_bot", "is_global"],
+        orderBy: {
+            field: "modified",
+            order: "desc"
+        }
     })
     return (
         <PageContainer>

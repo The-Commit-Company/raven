@@ -17,7 +17,11 @@ type Props = {}
 const BotList = (props: Props) => {
 
     const { data, isLoading, error } = useFrappeGetDocList<RavenBot>("Raven Bot", {
-        fields: ["name", "bot_name", "is_ai_bot", "description", "image", "enable_file_search", "dynamic_instructions", "instruction", "allow_bot_to_write_documents"]
+        fields: ["name", "bot_name", "is_ai_bot", "description", "image", "enable_file_search", "dynamic_instructions", "instruction", "allow_bot_to_write_documents"],
+        orderBy: {
+            field: "modified",
+            order: "desc"
+        }
     })
     return (
         <PageContainer>

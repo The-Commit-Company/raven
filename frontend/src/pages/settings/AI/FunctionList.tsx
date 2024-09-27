@@ -14,7 +14,11 @@ type Props = {}
 const FunctionList = (props: Props) => {
 
     const { data, isLoading, error } = useFrappeGetDocList<RavenAIFunction>("Raven AI Function", {
-        fields: ["name", "description", "function_name", "type", "requires_write_permissions"]
+        fields: ["name", "description", "function_name", "type", "requires_write_permissions"],
+        orderBy: {
+            field: "modified",
+            order: "desc"
+        }
     })
     return (
         <PageContainer>
