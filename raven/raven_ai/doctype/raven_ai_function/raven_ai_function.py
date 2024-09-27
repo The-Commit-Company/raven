@@ -189,7 +189,7 @@ class RavenAIFunction(Document):
 		]
 		if self.function_name in INVALID_FUNCTION_NAMES:
 			frappe.throw(
-				"Function name cannot be one of the core functions. Please choose a different name."
+				_("Function name cannot be one of the core functions. Please choose a different name.")
 			)
 
 		DOCUMENT_REF_FUNCTIONS = [
