@@ -1,5 +1,4 @@
 import frappe
-from frappe.utils import get_files_path
 
 from raven.ai.handler import stream_response
 from raven.ai.openai_client import get_open_ai_client
@@ -30,18 +29,15 @@ def handle_bot_dm(message, bot):
 		# Upload the file to OpenAI
 		file = create_file_in_openai(message.file, message.message_type, client)
 
+		content, attachments = get_content_attachment_for_file(message.message_type, file.id)
+
 		ai_thread = client.beta.threads.create(
 			messages=[
 				{
 					"role": "user",
-					"content": "Uploaded a file" if message.message_type == "File" else "Uploaded an image",
+					"content": content,
 					"metadata": {"user": message.owner, "message": message.name},
-					"attachments": [
-						{
-							"file_id": file.id,
-							"tools": [{"type": "file_search"}],
-						}
-					],
+					"attachments": attachments,
 				}
 			],
 			metadata={
@@ -96,6 +92,7 @@ def handle_bot_dm(message, bot):
 		},
 		doctype="Raven Channel",
 		docname=thread_channel.name,
+		after_commit=True,
 	)
 
 	stream_response(ai_thread_id=ai_thread.id, bot=bot, channel_id=thread_channel.name)
@@ -119,12 +116,14 @@ def handle_ai_thread_message(message, channel):
 		# Upload the file to OpenAI
 		file = create_file_in_openai(message.file, message.message_type, client)
 
+		content, attachments = get_content_attachment_for_file(message.message_type, file.id)
+
 		client.beta.threads.messages.create(
 			thread_id=channel.openai_thread_id,
 			role="user",
-			content="Uploaded a file" if message.message_type == "File" else "Uploaded an image",
+			content=content,
 			metadata={"user": message.owner, "message": message.name},
-			attachments=[{"file_id": file.id, "tools": [{"type": "file_search"}]}],
+			attachments=attachments,
 		)
 
 	else:
@@ -180,3 +179,22 @@ def create_file_in_openai(file_url: str, message_type: str, client):
 	)
 
 	return file
+
+
+def get_content_attachment_for_file(message_type: str, file_id: str):
+
+	attachments = None
+
+	if message_type == "File":
+		content = "Uploaded a file"
+
+		attachments = [
+			{
+				"file_id": file_id,
+				"tools": [{"type": "file_search"}],
+			}
+		]
+	else:
+		content = [{"type": "image_file", "image_file": {"file_id": file_id}}]
+
+	return content, attachments

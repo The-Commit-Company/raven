@@ -6,6 +6,7 @@ import { Controller, useFormContext } from 'react-hook-form'
 import { FUNCTION_TYPES } from './FunctionConstants'
 import { ChangeEvent } from 'react'
 import VariableBuilder from './VariableBuilder'
+import LinkFormField from '@/components/common/LinkField/LinkFormField'
 
 const FunctionForm = ({ isEdit }: { isEdit?: boolean }) => {
     const { register, control, formState: { errors }, setValue } = useFormContext<RavenAIFunction>()
@@ -75,6 +76,8 @@ const FunctionForm = ({ isEdit }: { isEdit?: boolean }) => {
                 </Stack>
             </HStack>
 
+            <ReferenceDoctypeField />
+
             <Stack>
                 <Box>
                     <Label htmlFor='description' isRequired>Description</Label>
@@ -83,6 +86,8 @@ const FunctionForm = ({ isEdit }: { isEdit?: boolean }) => {
                 {errors.description && <ErrorText>{errors.description?.message}</ErrorText>}
                 <HelperText>This is used to describe what this function does to the AI Bot.</HelperText>
             </Stack>
+
+
 
             <CustomFunction />
             <RequiresWritePermissions />
@@ -197,6 +202,69 @@ const CustomFunction = () => {
             Dotted path to the custom function/API. Cannot contain spaces.
         </HelperText>
         {errors.function_path && <ErrorText>{errors.function_path?.message}</ErrorText>}
+    </Stack>
+}
+
+const ReferenceDoctypeField = () => {
+
+    const { watch, formState: { errors }, setValue } = useFormContext<RavenAIFunction>()
+
+    const type = watch('type')
+
+    const DOCUMENT_REF_FUNCTIONS = ["Get Document", "Get Multiple Documents", "Get List", "Create Document", "Create Multiple Documents", "Update Document", "Update Multiple Documents", "Delete Document", "Delete Multiple Documents"]
+
+    const onReferenceDoctypeChange = (e: ChangeEvent<HTMLInputElement>) => {
+
+        if (e.target.value) {
+            // Set the description if none is set
+            if (type === 'Get Document') {
+                setValue('description', `This function fetches a ${e.target.value} document using its name from the system.`)
+            }
+            if (type === 'Get Multiple Documents') {
+                setValue('description', `This function fetches multiple ${e.target.value} documents using their names from the system.`)
+            }
+            if (type === 'Get List') {
+                setValue('description', `This function fetches a list of ${e.target.value} from the system.`)
+            }
+            if (type === 'Create Document') {
+                setValue('description', `This function creates a ${e.target.value} in the system.`)
+            }
+            if (type === 'Create Multiple Documents') {
+                setValue('description', `This function creates multiple ${e.target.value} in the system.`)
+            }
+            if (type === 'Update Document') {
+                setValue('description', `This function updates a ${e.target.value} in the system.`)
+            }
+            if (type === 'Update Multiple Documents') {
+                setValue('description', `This function updates multiple ${e.target.value} in the system.`)
+            }
+            if (type === 'Delete Document') {
+                setValue('description', `This function deletes a ${e.target.value} from the system.`)
+            }
+            if (type === 'Delete Multiple Documents') {
+                setValue('description', `This function deletes multiple ${e.target.value} from the system.`)
+            }
+        }
+    }
+
+    if (!DOCUMENT_REF_FUNCTIONS.includes(type)) {
+        return null
+    }
+    return <Stack width='50%'>
+        <LinkFormField
+            name='reference_doctype'
+            label='Reference Doctype'
+            required
+            doctype='DocType'
+            rules={{
+                required: DOCUMENT_REF_FUNCTIONS.includes(type) ? 'Reference Doctype is required' : false,
+                onChange: onReferenceDoctypeChange
+            }}
+        />
+        <HelperText>
+            The document you want this function to operate on.
+        </HelperText>
+        {errors.reference_doctype && <ErrorText>{errors.reference_doctype?.message}</ErrorText>}
     </Stack>
 }
 

@@ -12,12 +12,14 @@ export interface RavenAIFunction{
 	idx?: number
 	/**	Function Name : Data	*/
 	function_name: string
-	/**	Function Path : Small Text	*/
-	function_path?: string
 	/**	Description : Small Text	*/
 	description: string
+	/**	Function Path : Small Text	*/
+	function_path?: string
 	/**	Type : Select	*/
 	type: "Get Document" | "Get Multiple Documents" | "Get List" | "Create Document" | "Create Multiple Documents" | "Update Document" | "Update Multiple Documents" | "Delete Document" | "Delete Multiple Documents" | "Custom Function" | "Send Message" | "Attach File to Document" | "Get Report Result"
+	/**	Reference DocType : Link - DocType	*/
+	reference_doctype?: string
 	/**	Pass parameters as JSON : Check - If checked, the params will be passed as a JSON object instead of named parameters	*/
 	pass_parameters_as_json?: 0 | 1
 	/**	Requires Write Permissions : Check	*/

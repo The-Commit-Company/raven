@@ -1,6 +1,8 @@
 # Copyright (c) 2024, The Commit Company and contributors
 # For license information, please see license.txt
 
+import json
+
 import frappe
 from frappe.model.document import Document
 
@@ -17,7 +19,10 @@ class RavenBot(Document):
 	if TYPE_CHECKING:
 		from frappe.types import DF
 
+		from raven.raven_ai.doctype.raven_bot_functions.raven_bot_functions import RavenBotFunctions
+
 		allow_bot_to_write_documents: DF.Check
+		bot_functions: DF.Table[RavenBotFunctions]
 		bot_name: DF.Data
 		description: DF.SmallText | None
 		dynamic_instructions: DF.Check
@@ -34,6 +39,19 @@ class RavenBot(Document):
 	def validate(self):
 		if self.is_ai_bot and not self.instruction:
 			frappe.throw("Please provide an instruction for this AI Bot.")
+
+		self.validate_functions()
+
+	def validate_functions(self):
+		if not self.allow_bot_to_write_documents:
+			for f in self.bot_functions:
+				needs_write = frappe.db.get_value(
+					"Raven AI Function", f.function, "requires_write_permissions"
+				)
+				if needs_write:
+					frappe.throw(
+						f"This bot is not allowed to write documents. Please remove the function {f.function} or allow the bot to write documents."
+					)
 
 	def on_update(self):
 		"""
@@ -110,6 +128,7 @@ class RavenBot(Document):
 		)
 
 	def get_tools_for_assistant(self):
+		# Add the function to the assistant
 		tools = []
 
 		if self.enable_file_search:
@@ -118,6 +137,11 @@ class RavenBot(Document):
 					"type": "file_search",
 				}
 			)
+
+		for f in self.bot_functions:
+			function_def = frappe.db.get_value("Raven AI Function", f.function, "function_definition")
+			if function_def:
+				tools.append({"type": "function", "function": json.loads(function_def)})
 
 		return tools
 

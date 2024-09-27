@@ -7,10 +7,11 @@
  "engine": "InnoDB",
  "field_order": [
   "function_name",
-  "function_path",
   "description",
+  "function_path",
   "column_break_tlyz",
   "type",
+  "reference_doctype",
   "pass_parameters_as_json",
   "requires_write_permissions",
   "parameters_section",
@@ -19,6 +20,7 @@
  ],
  "fields": [
   {
+   "depends_on": "eval: doc.type == \"Custom Function\";",
    "fieldname": "function_path",
    "fieldtype": "Small Text",
    "in_list_view": 1,
@@ -76,11 +78,18 @@
    "fieldtype": "Small Text",
    "label": "Description",
    "reqd": 1
+  },
+  {
+   "depends_on": "eval: doc.type != \"Custom Function\"",
+   "fieldname": "reference_doctype",
+   "fieldtype": "Link",
+   "label": "Reference DocType",
+   "options": "DocType"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-09-14 22:06:20.153395",
+ "modified": "2024-09-27 16:33:32.931494",
  "modified_by": "Administrator",
  "module": "Raven AI",
  "name": "Raven AI Function",

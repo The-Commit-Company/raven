@@ -22,6 +22,7 @@ class RavenAIFunction(Document):
 		function_path: DF.SmallText | None
 		params: DF.JSON | None
 		pass_parameters_as_json: DF.Check
+		reference_doctype: DF.Link | None
 		requires_write_permissions: DF.Check
 		type: DF.Literal[
 			"Get Document",
@@ -58,7 +59,70 @@ class RavenAIFunction(Document):
 		if self.type in READ_PERMISSIONS:
 			self.requires_write_permissions = 0
 
+		self.prepare_function_params()
+
 		self.validate_json()
+
+	def prepare_function_params(self):
+		"""
+		Set the function params based on the type of function and other inputs
+		"""
+		params = {}
+		if self.type == "Get Document":
+			params = {
+				"type": "object",
+				"properties": {
+					"document_id": {
+						"type": "string",
+						"description": f"The ID of the {self.reference_doctype} to get",
+					}
+				},
+				"required": ["document_id"],
+				"additionalProperties": False,
+			}
+
+		if self.type == "Get Multiple Documents":
+			params = {
+				"type": "object",
+				"properties": {
+					"document_ids": {
+						"type": "array",
+						"items": {"type": "string"},
+						"description": f"The IDs of the {self.reference_doctype}s to get",
+					}
+				},
+				"required": ["document_ids"],
+				"additionalProperties": False,
+			}
+
+		if self.type == "Delete Document":
+			params = {
+				"type": "object",
+				"properties": {
+					"document_id": {
+						"type": "string",
+						"description": f"The ID of the {self.reference_doctype} to delete",
+					}
+				},
+				"required": ["document_id"],
+				"additionalProperties": False,
+			}
+
+		if self.type == "Delete Multiple Documents":
+			params = {
+				"type": "object",
+				"properties": {
+					"document_ids": {
+						"type": "array",
+						"items": {"type": "string"},
+						"description": f"The IDs of the {self.reference_doctype}s to delete",
+					}
+				},
+				"required": ["document_ids"],
+				"additionalProperties": False,
+			}
+
+		self.params = json.dumps(params, indent=4)
 
 	def validate_json(self):
 		if self.type == "Custom Function":
@@ -72,6 +136,40 @@ class RavenAIFunction(Document):
 				frappe.throw("Invalid JSON in params")
 
 			self.params = json.dumps(json.loads(self.params), indent=4)
+
+	def validate(self):
+		# Functions cannot be named after core functions
+		INVALID_FUNCTION_NAMES = [
+			"attach_file_to_document",
+			"get_document",
+			"get_documents",
+			"get_list",
+			"create_document",
+			"create_documents",
+			"update_document",
+			"update_documents",
+			"delete_document",
+			"delete_documents",
+		]
+		if self.function_name in INVALID_FUNCTION_NAMES:
+			frappe.throw(
+				"Function name cannot be one of the core functions. Please choose a different name."
+			)
+
+		DOCUMENT_REF_FUNCTIONS = [
+			"Get Document",
+			"Get Multiple Documents",
+			"Get List",
+			"Create Document",
+			"Create Multiple Documents",
+			"Update Document",
+			"Update Multiple Documents",
+			"Delete Document",
+			"Delete Multiple Documents",
+		]
+		if self.type in DOCUMENT_REF_FUNCTIONS:
+			if not self.reference_doctype:
+				frappe.throw("Please select a DocType for this function.")
 
 	def before_save(self):
 		# Generate the function definition from the variables + function name + description

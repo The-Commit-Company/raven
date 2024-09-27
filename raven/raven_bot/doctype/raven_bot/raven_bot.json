@@ -24,7 +24,8 @@
   "enable_file_search",
   "section_break_lwkx",
   "instruction",
-  "dynamic_instructions"
+  "dynamic_instructions",
+  "bot_functions"
  ],
  "fields": [
   {
@@ -130,12 +131,18 @@
    "fieldname": "dynamic_instructions",
    "fieldtype": "Check",
    "label": "Dynamic Instructions"
+  },
+  {
+   "fieldname": "bot_functions",
+   "fieldtype": "Table",
+   "label": "Bot Functions",
+   "options": "Raven Bot Functions"
   }
  ],
  "image_field": "image",
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-09-11 21:27:45.772169",
+ "modified": "2024-09-27 16:41:47.754427",
  "modified_by": "Administrator",
  "module": "Raven Bot",
  "name": "Raven Bot",

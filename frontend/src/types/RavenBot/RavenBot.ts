@@ -1,3 +1,4 @@
+import { RavenBotFunctions } from '../RavenAI/RavenBotFunctions'
 
 export interface RavenBot{
 	creation: string
@@ -36,4 +37,6 @@ File search enables the assistant with knowledge from files that you upload. Onc
 	instruction?: string
 	/**	Dynamic Instructions : Check - Dynamic Instructions allow you to embed Jinja tags in your instruction to the bot. Hence the instruction would be different based on the user who is calling the bot or the data in your system. These instructions are computed every time the bot is called. Check this if you want to embed things like Employee ID, Company Name etc in your instructions dynamically	*/
 	dynamic_instructions?: 0 | 1
+	/**	Bot Functions : Table - Raven Bot Functions	*/
+	bot_functions?: RavenBotFunctions[]
 }

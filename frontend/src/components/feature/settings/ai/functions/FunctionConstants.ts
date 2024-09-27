@@ -58,11 +58,11 @@ export const FUNCTION_TYPES = [
         description: "Attach a file to any document.",
         requires_write_permissions: true
     },
-    {
-        value: "Get Report Result",
-        description: "Allows the bot to get the result of any report in the system.",
-        requires_write_permissions: true
-    },
+    // {
+    //     value: "Get Report Result",
+    //     description: "Allows the bot to get the result of any report in the system.",
+    //     requires_write_permissions: true
+    // },
 ]
 
 export type VariableType = StringVariableType | NumberVariableType | BooleanVariableType | ObjectVariableType | ArrayVariableType

@@ -19,7 +19,10 @@ type Props = {}
  */
 const VariableBuilder = (props: Props) => {
 
-    const { control, getValues, setValue } = useFormContext<RavenAIFunction>()
+    const { control, getValues, setValue, watch } = useFormContext<RavenAIFunction>()
+
+    const type = watch('type')
+
 
     const [viewMode, setViewMode] = useState<'json' | 'builder'>('builder')
 
@@ -37,6 +40,11 @@ const VariableBuilder = (props: Props) => {
         }
 
     }
+
+    if (type !== 'Custom Function') {
+        return null
+    }
+
 
     return (
         <Box className='py-2'>

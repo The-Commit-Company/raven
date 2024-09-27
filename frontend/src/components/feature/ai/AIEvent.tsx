@@ -2,7 +2,7 @@ import { Loader } from '@/components/common/Loader'
 import { Text } from '@radix-ui/themes'
 import clsx from 'clsx'
 import { useFrappeEventListener } from 'frappe-react-sdk'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 
 type Props = {
     channelID: string
@@ -23,14 +23,6 @@ const AIEvent = ({ channelID }: Props) => {
             setAIEvent("")
         }
     })
-
-    useEffect(() => {
-        if (aiEvent) {
-            setTimeout(() => {
-                setAIEvent("")
-            }, 5000)
-        }
-    }, [aiEvent])
 
     return (
         <div className={clsx('flex items-center gap-2 py-2 px-1 animate-fade-in transition-all duration-300 ease-ease-out-circ', aiEvent ? 'opacity-100' : 'opacity-0 p-0')}>
