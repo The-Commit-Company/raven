@@ -87,6 +87,17 @@ def handle_bot_dm(message, bot):
 	# nosemgrep We need to commit here since the response will be streamed, and hence might take a while
 	frappe.db.commit()
 
+	frappe.publish_realtime(
+		"ai_event",
+		{
+			"text": "Raven AI is thinking...",
+			"channel_id": thread_channel.name,
+			"bot": bot.name,
+		},
+		doctype="Raven Channel",
+		docname=thread_channel.name,
+	)
+
 	stream_response(ai_thread_id=ai_thread.id, bot=bot, channel_id=thread_channel.name)
 
 
@@ -124,6 +135,17 @@ def handle_ai_thread_message(message, channel):
 			content=message.content,
 			metadata={"user": message.owner, "message": message.name},
 		)
+
+	frappe.publish_realtime(
+		"ai_event",
+		{
+			"text": "Raven AI is thinking...",
+			"channel_id": channel.name,
+			"bot": bot.name,
+		},
+		doctype="Raven Channel",
+		docname=channel.name,
+	)
 
 	stream_response(ai_thread_id=channel.openai_thread_id, bot=bot, channel_id=channel.name)
 

@@ -14,6 +14,7 @@ import { JoinChannelBox } from "../../chat/chat-footer/JoinChannelBox"
 import { useUserData } from "@/hooks/useUserData"
 import useFetchChannelMembers from "@/hooks/fetchers/useFetchChannelMembers"
 import ThreadFirstMessage from "./ThreadFirstMessage"
+import AIEvent from "../../ai/AIEvent"
 
 export const ThreadMessages = ({ threadMessage }: { threadMessage: Message }) => {
 
@@ -83,6 +84,7 @@ export const ThreadMessages = ({ threadMessage }: { threadMessage: Message }) =>
                     replyToMessage={handleReplyAction}
                     showThreadButton={false}
                 />
+                <AIEvent channelID={threadID ?? ''} />
                 {!isUserInChannel && <JoinChannelBox
                     channelMembers={threadMembers}
                     user={user} />}

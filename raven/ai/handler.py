@@ -19,7 +19,14 @@ def stream_response(ai_thread_id: str, bot, channel_id: str):
 		def on_text_done(self, text: Text):
 			bot.send_message(channel_id=channel_id, text=text.value)
 
-			print(client.beta.threads.runs.retrieve(thread_id=ai_thread_id, run_id=self.current_run.id))
+			frappe.publish_realtime(
+				"ai_event_clear",
+				{
+					"channel_id": channel_id,
+				},
+				doctype="Raven Channel",
+				docname=channel_id,
+			)
 
 		@override
 		def on_event(self, event):
