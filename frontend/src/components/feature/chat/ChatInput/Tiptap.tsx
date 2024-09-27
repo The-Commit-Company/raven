@@ -127,6 +127,7 @@ const Tiptap = ({ isEdit, slotBefore, fileProps, onMessageSend, channelMembers, 
                         .then(() => {
                             this.editor.commands.clearContent(true);
                             this.editor.setEditable(true)
+                            this.editor.commands.focus('start')
                         })
                         .catch(() => {
                             this.editor.setEditable(true)

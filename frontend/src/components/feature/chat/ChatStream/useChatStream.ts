@@ -5,6 +5,7 @@ import { Message } from '../../../../../../types/Messaging/Message'
 import { getDateObject } from '@/utils/dateConversions/utils'
 import { useDebounce } from '@/hooks/useDebounce'
 import { UserContext } from '@/utils/auth/UserProvider'
+import { useIsMobile } from '@/hooks/useMediaQuery'
 
 interface GetMessagesResponse {
     message: {
@@ -28,6 +29,8 @@ const useChatStream = (channelID: string, scrollRef: MutableRefObject<HTMLDivEle
     const location = useLocation()
     const navigate = useNavigate()
     const { state } = location
+
+    const isMobile = useIsMobile()
 
     const { currentUser } = useContext(UserContext)
 
@@ -70,7 +73,7 @@ const useChatStream = (channelID: string, scrollRef: MutableRefObject<HTMLDivEle
         'channel_id': channelID,
         'base_message': state?.baseMessage ? state.baseMessage : undefined
     }, { path: `get_messages_for_channel_${channelID}`, baseMessage: state?.baseMessage }, {
-        revalidateOnFocus: true,
+        revalidateOnFocus: isMobile ? true : false,
         onSuccess: (data) => {
             if (!highlightedMessage) {
                 if (!data.message.has_new_messages) {
