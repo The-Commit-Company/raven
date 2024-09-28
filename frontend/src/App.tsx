@@ -126,12 +126,22 @@ function App() {
 
 function localStorageProvider() {
   // When initializing, we restore the data from `localStorage` into a map.
-  const map = new Map<string, any>(JSON.parse(localStorage.getItem('app-cache') || '[]'))
+  // Check if local storage is recent (less than a week). Else start with a fresh cache.
+  const timestamp = localStorage.getItem('app-cache-timestamp')
+  let cache = '[]'
+  if (timestamp && Date.now() - parseInt(timestamp) < 7 * 24 * 60 * 60 * 1000) {
+    const localCache = localStorage.getItem('app-cache')
+    if (localCache) {
+      cache = localCache
+    }
+  }
+  const map = new Map<string, any>(JSON.parse(cache))
 
   // Before unloading the app, we write back all the data into `localStorage`.
   window.addEventListener('beforeunload', () => {
     const appCache = JSON.stringify(Array.from(map.entries()))
     localStorage.setItem('app-cache', appCache)
+    localStorage.setItem('app-cache-timestamp', Date.now().toString())
   })
 
   // We still use the map for write & read for performance.
