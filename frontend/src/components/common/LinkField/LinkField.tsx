@@ -58,8 +58,6 @@ const LinkField = ({ doctype, filters, label, placeholder, value, required, setV
         defaultSelectedItem: items.find(item => item.value === value),
     })
 
-    console.log(searchText, selectedItem)
-
     return <div className="w-full">
         <div className="flex flex-col">
             <Label className="w-fit" isRequired={required} {...getLabelProps()}>

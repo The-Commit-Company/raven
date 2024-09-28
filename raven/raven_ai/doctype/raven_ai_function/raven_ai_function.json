@@ -96,7 +96,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-09-28 09:52:43.058523",
+ "modified": "2024-09-28 12:01:48.561820",
  "modified_by": "Administrator",
  "module": "Raven AI",
  "name": "Raven AI Function",
@@ -116,7 +116,7 @@
    "write": 1
   }
  ],
- "search_fields": "reference_doctype, function_path",
+ "search_fields": "description",
  "sort_field": "creation",
  "sort_order": "DESC",
  "states": []
