@@ -172,6 +172,7 @@ const DynamicInstructionField = ({ allowUsingTemplate, instructionRequired }: Pr
         <Separator className='w-full' />
         <Text size='2'>
             Here are some variables you can use in your instruction. Simple copy by clicking on the variable.
+            <br />You can also use standard Jinja variables available in the system.
         </Text>
         <Table.Root variant='surface'>
             <Table.Header>
