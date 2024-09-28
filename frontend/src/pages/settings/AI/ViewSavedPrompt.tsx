@@ -38,6 +38,8 @@ const ViewSavedPromptContent = ({ data }: { data: RavenBotAIPrompt }) => {
         defaultValues: data
     })
 
+    const { formState: { isDirty } } = methods
+
 
     const onSubmit = (data: RavenBotAIPrompt) => {
         updateDoc("Raven Bot AI Prompt", data.name, data)
@@ -52,6 +54,7 @@ const ViewSavedPromptContent = ({ data }: { data: RavenBotAIPrompt }) => {
             <SettingsContentContainer>
                 <SettingsPageHeader
                     title={data.name}
+                    headerBadges={isDirty ? [{ label: "Not Saved", color: "red" }] : undefined}
                     actions={<Button type='submit' disabled={loading}>
                         {loading && <Loader />}
                         {loading ? "Saving" : "Save"}

@@ -19,6 +19,7 @@ const InstructionTemplateForm = ({ isEdit }: Props) => {
                     <Label htmlFor='template_name' isRequired>Template Name</Label>
                     <TextField.Root
                         readOnly={isEdit}
+                        autoFocus={!isEdit}
                         id='template_name'
                         {...register('template_name', {
                             required: 'Name is required',
@@ -30,7 +31,7 @@ const InstructionTemplateForm = ({ isEdit }: Props) => {
                 {errors.template_name && <ErrorText>{errors.template_name?.message}</ErrorText>}
             </Stack>
 
-            <InstructionField />
+            <InstructionField autoFocus={isEdit} />
         </Stack>
     )
 }

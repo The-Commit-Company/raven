@@ -38,6 +38,8 @@ const ViewBotContent = ({ data }: { data: RavenBot }) => {
         defaultValues: data
     })
 
+    const { formState: { isDirty } } = methods
+
 
     const onSubmit = (data: RavenBot) => {
         updateDoc("Raven Bot", data.name, data)
@@ -52,6 +54,7 @@ const ViewBotContent = ({ data }: { data: RavenBot }) => {
             <SettingsContentContainer>
                 <SettingsPageHeader
                     title={data.bot_name}
+                    headerBadges={isDirty ? [{ label: "Not Saved", color: "red" }] : undefined}
                     actions={<Button type='submit' disabled={loading}>
                         {loading && <Loader />}
                         {loading ? "Saving" : "Save"}

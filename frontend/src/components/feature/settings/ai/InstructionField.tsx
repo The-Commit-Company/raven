@@ -11,14 +11,15 @@ import { toast } from 'sonner'
 
 type Props = {
     allowUsingTemplate?: boolean,
-    instructionRequired?: boolean
+    instructionRequired?: boolean,
+    autoFocus?: boolean
 }
 
 interface InstructionFieldForm {
     instruction: string
     dynamic_instructions: 0 | 1
 }
-const InstructionField = ({ allowUsingTemplate, instructionRequired }: Props) => {
+const InstructionField = ({ allowUsingTemplate, instructionRequired, autoFocus }: Props) => {
 
     const { watch, control } = useFormContext<InstructionFieldForm>()
 
@@ -49,7 +50,7 @@ const InstructionField = ({ allowUsingTemplate, instructionRequired }: Props) =>
                 </HelperText>
             </Flex>
 
-            {isDynamic ? <DynamicInstructionField allowUsingTemplate={allowUsingTemplate} /> : <StaticInstructionField allowUsingTemplate={allowUsingTemplate} />}
+            {isDynamic ? <DynamicInstructionField autoFocus={autoFocus} instructionRequired={instructionRequired} allowUsingTemplate={allowUsingTemplate} /> : <StaticInstructionField autoFocus={autoFocus} instructionRequired={instructionRequired} allowUsingTemplate={allowUsingTemplate} />}
         </Stack>
     )
 }
@@ -65,7 +66,7 @@ const variables = [
     { variable: 'department', description: 'The department of the employee' },
 ]
 
-const DynamicInstructionField = ({ allowUsingTemplate, instructionRequired }: Props) => {
+const DynamicInstructionField = ({ allowUsingTemplate, instructionRequired, autoFocus }: Props) => {
 
     const [view, setView] = useState('editor')
 
@@ -165,6 +166,7 @@ const DynamicInstructionField = ({ allowUsingTemplate, instructionRequired }: Pr
         </SegmentedControl.Root>
         {view === 'editor' ? <StaticInstructionField className='w-full'
             allowUsingTemplate={allowUsingTemplate}
+            autoFocus={autoFocus}
             instructionRequired={instructionRequired}
         // onPaste={onPaste} 
         /> : <InstructionPreview />}

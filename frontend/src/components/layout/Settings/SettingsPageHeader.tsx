@@ -1,4 +1,4 @@
-import { Flex, Text } from '@radix-ui/themes'
+import { Badge, BadgeProps, Flex, Text } from '@radix-ui/themes'
 import React from 'react'
 import { HStack } from '../Stack'
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from '../Breadcrumb'
@@ -9,13 +9,14 @@ type BreadcrumbItem = {
     copyToClipboard?: boolean
 }
 type Props = {
-    title: React.ReactNode
+    title: React.ReactNode,
+    headerBadges?: { label: string, color: BadgeProps['color'] }[],
     description?: React.ReactNode
     actions?: React.ReactNode,
     breadcrumbs?: BreadcrumbItem[]
 }
 
-const SettingsPageHeader = ({ title, description, actions, breadcrumbs }: Props) => {
+const SettingsPageHeader = ({ title, description, actions, headerBadges, breadcrumbs }: Props) => {
     return (
         <Flex justify={'between'} align={'center'}>
             <Flex direction='column' className='gap-0.5'>
@@ -33,8 +34,9 @@ const SettingsPageHeader = ({ title, description, actions, breadcrumbs }: Props)
                         </React.Fragment>)}
                     </BreadcrumbList>
                 </Breadcrumb> : null}
-                <HStack gap='1' align='center'>
+                <HStack gap='2' align='center'>
                     <Text size='5' className={'font-semibold'}>{title}</Text>
+                    {headerBadges?.map(badge => <Badge size='1' color={badge.color}>{badge.label}</Badge>)}
                 </HStack>
                 {description && <Text size='2' color='gray'>{description}</Text>}
             </Flex>

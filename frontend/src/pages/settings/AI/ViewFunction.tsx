@@ -38,6 +38,8 @@ const ViewFunctionContent = ({ data }: { data: RavenAIFunction }) => {
         defaultValues: data
     })
 
+    const { formState: { isDirty } } = methods
+
 
     const onSubmit = (data: RavenAIFunction) => {
         updateDoc("Raven AI Function", data.name, data)
@@ -52,6 +54,7 @@ const ViewFunctionContent = ({ data }: { data: RavenAIFunction }) => {
             <SettingsContentContainer>
                 <SettingsPageHeader
                     title={data.name}
+                    headerBadges={isDirty ? [{ label: "Not Saved", color: "red" }] : undefined}
                     actions={<Button type='submit' disabled={loading}>
                         {loading && <Loader />}
                         {loading ? "Saving" : "Save"}

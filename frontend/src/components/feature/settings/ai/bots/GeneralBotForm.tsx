@@ -17,6 +17,7 @@ const GeneralBotForm = () => {
                         {...register('bot_name', {
                             required: 'Name is required',
                         })}
+                        autoFocus
                         placeholder="accounts-bot"
                         aria-invalid={errors.bot_name ? 'true' : 'false'}
                     />

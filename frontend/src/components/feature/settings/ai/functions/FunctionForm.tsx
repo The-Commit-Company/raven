@@ -41,7 +41,7 @@ const FunctionForm = ({ isEdit }: { isEdit?: boolean }) => {
                             }}
                             render={({ field }) => (
                                 <Select.Root value={field.value} name={field.name} onValueChange={(value) => field.onChange(value)}>
-                                    <Select.Trigger placeholder='Pick a function type' className='w-full' />
+                                    <Select.Trigger placeholder='Pick a function type' className='w-full' autoFocus />
                                     <Select.Content>
                                         {FUNCTION_TYPES.map(f => <Select.Item value={f.value}>{f.value}</Select.Item>)}
                                     </Select.Content>
@@ -255,6 +255,7 @@ const ReferenceDoctypeField = () => {
             name='reference_doctype'
             label='Reference Doctype'
             required
+            filters={[["istable", "=", 0], ["issingle", "=", 0]]}
             doctype='DocType'
             rules={{
                 required: DOCUMENT_REF_FUNCTIONS.includes(type) ? 'Reference Doctype is required' : false,

@@ -19,6 +19,7 @@ const SavedPromptForm = () => {
                         {...register('prompt', {
                             required: 'Prompt is required',
                         })}
+                        autoFocus
                         rows={5}
                         resize='vertical'
                         placeholder="Can you create purchase invoices from these files?"
