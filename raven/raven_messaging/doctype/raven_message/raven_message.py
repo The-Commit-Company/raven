@@ -467,7 +467,7 @@ class RavenMessage(Document):
 		# TEMP: this is a temp fix for the Desk interface
 		self.publish_deprecated_event_for_desk()
 
-		if self.is_edited or self.is_thread:
+		if self.is_edited or self.is_thread or self.flags.editing_metadata:
 			frappe.publish_realtime(
 				"message_edited",
 				{
@@ -560,6 +560,7 @@ class RavenMessage(Document):
 
 			self.send_push_notification()
 
+			# If this is a new messagge (only applicable for files in on_update), then handle the AI message
 			if self.message_type == "File" or self.message_type == "Image":
 				if self.file:
 					self.handle_ai_message()
