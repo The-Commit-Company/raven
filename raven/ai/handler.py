@@ -214,16 +214,39 @@ def get_instructions(bot):
 	if not bot.instruction or not bot.dynamic_instructions:
 		return None
 
-	vars = get_variables_for_instructions(bot)
+	vars = get_variables_for_instructions()
 
 	instructions = frappe.render_template(bot.instruction, vars)
 	return instructions
 
 
-def get_variables_for_instructions(bot):
+def get_variables_for_instructions():
+	user = frappe.get_cached_doc("User", frappe.session.user)
+
+	employee_company = None
+	company = None
+	employee_id = None
+	department = None
+
+	if "erpnext" in frappe.get_installed_apps():
+		employee_id = frappe.db.exists("Employee", {"user_id": frappe.session.user})
+
+		if employee_id:
+			employee = frappe.get_cached_doc("Employee", employee_id)
+			employee_company = employee.company
+			department = employee.department
+
+		company = frappe.defaults.get_user_default("company") or frappe.db.get_single_value(
+			"Global Defaults", "default_company"
+		)
+
 	return {
-		"user_first_name": "Nikhil",
-		"company": "The Commit Company (Demo)",
-		"employee_id": "HR-EMP-00001",
-		"department": "Product - TCCD",
+		"first_name": user.first_name,
+		"full_name": user.full_name,
+		"email": user.email,
+		"user_id": frappe.session.user,
+		"company": company,
+		"employee_id": employee_id,
+		"department": department,
+		"employee_company": employee_company,
 	}

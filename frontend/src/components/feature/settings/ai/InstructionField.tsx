@@ -2,8 +2,8 @@ import { ErrorText, HelperText, Label } from '@/components/common/Form'
 import { ErrorBanner } from '@/components/layout/AlertBanner'
 import { HStack, Stack } from '@/components/layout/Stack'
 import { RavenBotInstructionTemplate } from '@/types/RavenAI/RavenBotInstructionTemplate'
-import { Badge, Box, Button, Checkbox, Code, Flex, Popover, RadioCards, Separator, Table, Text, TextArea, TextAreaProps, Tooltip } from '@radix-ui/themes'
-import { useFrappeGetDocList } from 'frappe-react-sdk'
+import { Badge, Box, Button, Checkbox, Code, Flex, Popover, RadioCards, SegmentedControl, Separator, Table, Text, TextArea, TextAreaProps, Tooltip } from '@radix-ui/themes'
+import { useFrappeGetCall, useFrappeGetDocList } from 'frappe-react-sdk'
 import { useState } from 'react'
 import { Controller, useFormContext } from 'react-hook-form'
 import { RiSparkling2Fill } from 'react-icons/ri'
@@ -59,12 +59,15 @@ const variables = [
     { variable: 'full_name', description: 'The full name of the user' },
     { variable: 'email', description: 'The email of the user' },
     { variable: 'user_id', description: 'The ID of the user' },
-    { variable: 'company', description: 'The default company in the system / company of the employee' },
+    { variable: 'company', description: "The default company in the system" },
     { variable: 'employee_id', description: 'The ID of the employee' },
+    { variable: "employee_company", description: "The company of the employee (value in Employee DocType)" },
     { variable: 'department', description: 'The department of the employee' },
 ]
 
 const DynamicInstructionField = ({ allowUsingTemplate, instructionRequired }: Props) => {
+
+    const [view, setView] = useState('editor')
 
     // const ref = useRef<HTMLTextAreaElement>(null)
 
@@ -156,11 +159,16 @@ const DynamicInstructionField = ({ allowUsingTemplate, instructionRequired }: Pr
     // }
 
     return <Stack gap='4'>
-        <StaticInstructionField className='w-full'
+        <SegmentedControl.Root defaultValue="editor" value={view} onValueChange={setView}>
+            <SegmentedControl.Item value="editor">Editor</SegmentedControl.Item>
+            <SegmentedControl.Item value="preview">Preview</SegmentedControl.Item>
+        </SegmentedControl.Root>
+        {view === 'editor' ? <StaticInstructionField className='w-full'
             allowUsingTemplate={allowUsingTemplate}
             instructionRequired={instructionRequired}
-        // onPaste={onPaste}
-        />
+        // onPaste={onPaste} 
+        /> : <InstructionPreview />}
+
         <Separator className='w-full' />
         <Text size='2'>
             Here are some variables you can use in your instruction. Simple copy by clicking on the variable.
@@ -176,7 +184,7 @@ const DynamicInstructionField = ({ allowUsingTemplate, instructionRequired }: Pr
                 {variables.map((v) => <VariableRow key={v.variable} variable={v.variable} description={v.description} />)}
             </Table.Body>
         </Table.Root>
-    </Stack>
+    </Stack >
 }
 
 const VariableRow = ({ variable, description }: { variable: string, description: string }) => {
@@ -224,6 +232,21 @@ const VariableTooltip = ({ text }: { text: string }) => {
         >
             {text}</Code>
     </Tooltip>
+}
+
+const InstructionPreview = () => {
+
+    const { watch } = useFormContext<InstructionFieldForm>()
+
+    const instruction = watch('instruction')
+
+    const { data } = useFrappeGetCall('raven.api.ai_features.get_instruction_preview', {
+        instruction
+    })
+
+    return <Box className='border-2 px-2 py-1 rounded-md bg-gray-3'>
+        {data ? <Text size='2' className='whitespace-pre-wrap'>{data.message}</Text> : null}
+    </Box>
 }
 
 const StaticInstructionField = ({ allowUsingTemplate, instructionRequired, ...props }: TextAreaProps & { allowUsingTemplate?: boolean, instructionRequired?: boolean }) => {
@@ -295,7 +318,7 @@ const ImportTemplate = () => {
                 <ErrorBanner error={error} />
                 <Box>
                     <Label htmlFor='template'>Select a template</Label>
-                    {data && data.length === 0 && <Text>No templates found</Text>}
+                    {data && data.length === 0 && <Text size='2' color='gray'>No templates found</Text>}
 
 
                     {/* <Select.Root>
