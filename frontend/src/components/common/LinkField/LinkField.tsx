@@ -49,13 +49,10 @@ const LinkField = ({ doctype, filters, label, placeholder, value, required, setV
         itemToString(item) {
             return item ? item.value : ''
         },
-        selectedItem: items.find(item => item.value === value),
         onSelectedItemChange({ selectedItem }) {
             setValue(selectedItem?.value ?? '')
         },
     })
-
-    console.log(isOpen)
 
     return <div className="w-full">
         <div className="flex flex-col">
