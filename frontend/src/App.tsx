@@ -9,6 +9,14 @@ import { ThemeProvider } from './ThemeProvider'
 import { Toaster } from 'sonner'
 import { useStickyState } from './hooks/useStickyState'
 import MobileTabsPage from './pages/MobileTabsPage'
+import Cookies from 'js-cookie'
+
+/** Following keys will not be cached in app cache */
+const NO_CACHE_KEYS = [
+  "frappe.desk.form.load.getdoctype",
+  "frappe.desk.search.search_link",
+  "frappe.model.workflow.get_transitions"
+]
 
 
 const router = createBrowserRouter(
@@ -139,9 +147,40 @@ function localStorageProvider() {
 
   // Before unloading the app, we write back all the data into `localStorage`.
   window.addEventListener('beforeunload', () => {
-    const appCache = JSON.stringify(Array.from(map.entries()))
-    localStorage.setItem('app-cache', appCache)
-    localStorage.setItem('app-cache-timestamp', Date.now().toString())
+
+
+    // Check if the user is logged in
+    const user_id = Cookies.get('user_id')
+    console.log("Cookie", user_id)
+    if (!user_id || user_id === 'Guest') {
+      localStorage.removeItem('app-cache')
+      localStorage.removeItem('app-cache-timestamp')
+    } else {
+      const entries = map.entries()
+
+      const cacheEntries = []
+
+      for (const [key, value] of entries) {
+
+        let hasCacheKey = false
+        for (const cacheKey of NO_CACHE_KEYS) {
+          if (key.includes(cacheKey)) {
+            hasCacheKey = true
+            break
+          }
+        }
+
+        //Do not cache doctype meta and search link
+        if (hasCacheKey) {
+          continue
+        }
+        cacheEntries.push([key, value])
+      }
+      const appCache = JSON.stringify(cacheEntries)
+      localStorage.setItem('app-cache', appCache)
+      localStorage.setItem('app-cache-timestamp', Date.now().toString())
+    }
+
   })
 
   // We still use the map for write & read for performance.
