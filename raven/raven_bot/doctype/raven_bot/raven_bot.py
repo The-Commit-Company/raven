@@ -117,6 +117,10 @@ class RavenBot(Document):
 	def update_openai_assistant(self):
 		# Update the OpenAI Assistant for the bot
 
+		# Additional check because it is being used in Raven AI Function
+		if not self.is_ai_bot:
+			return
+
 		client = get_open_ai_client()
 
 		assistant = client.beta.assistants.update(
