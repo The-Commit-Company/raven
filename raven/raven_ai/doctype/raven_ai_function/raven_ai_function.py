@@ -141,10 +141,17 @@ class RavenAIFunction(Document):
 		required = []
 		properties = {}
 
+		if self.type == "Update Document" or type == "Update Multiple Documents":
+			properties["document_id"] = {
+				"type": "string",
+				"description": f"The ID of the {self.reference_doctype} to update",
+			}
+			required.append("document_id")
+
 		for param in self.parameters:
 			if param.do_not_ask_ai and not param.default_value and param.required:
 				frappe.throw(
-					_("You need to provide a default value for required parameters that are not asked by the AI")
+					_("You need to provide a default value for required parameters that are not asked by the AI.")
 				)
 
 			if param.do_not_ask_ai:
@@ -162,8 +169,21 @@ class RavenAIFunction(Document):
 			if param.required:
 				required.append(param.fieldname)
 
-		params["properties"] = properties
-		params["required"] = required
+		if self.type == "Create Multiple Documents" or self.type == "Update Multiple Documents":
+			params["properties"] = {
+				"data": {
+					"type": "array",
+					"items": {
+						"type": "object",
+						"properties": properties,
+						"required": required,
+					},
+					"minItems": 1,
+				}
+			}
+		else:
+			params["properties"] = properties
+			params["required"] = required
 
 		return params
 

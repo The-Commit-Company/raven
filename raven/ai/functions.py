@@ -63,15 +63,17 @@ def update_document(doctype: str, document_id: str, data: dict):
 	return {"document_id": doc.name, "message": "Document updated", "doctype": doctype}
 
 
-def update_documents(doctype: str, document_ids: list, data: dict):
+def update_documents(doctype: str, data: dict):
 	"""
 	Update documents in the database
 	"""
-	for document_id in document_ids:
-		doc = frappe.get_doc(doctype, document_id)
+	updated_docs = []
+	for document in data:
+		doc = frappe.get_doc(doctype, document.get("document_id"))
 		doc.update(data)
 		doc.save()
-	return {"document_ids": document_ids, "message": "Documents updated", "doctype": doctype}
+		updated_docs.append(doc.name)
+	return {"document_ids": updated_docs, "message": "Documents updated", "doctype": doctype}
 
 
 def delete_document(doctype: str, document_id: str):
