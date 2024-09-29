@@ -43,7 +43,21 @@ const FunctionForm = ({ isEdit }: { isEdit?: boolean }) => {
                                 <Select.Root value={field.value} name={field.name} onValueChange={(value) => field.onChange(value)}>
                                     <Select.Trigger placeholder='Pick a function type' className='w-full' autoFocus />
                                     <Select.Content>
-                                        {FUNCTION_TYPES.map(f => <Select.Item value={f.value}>{f.value}</Select.Item>)}
+                                        <Select.Group>
+                                            <Select.Label className='pl-3'>Standard</Select.Label>
+                                            {FUNCTION_TYPES.filter(f => f.type === "Standard").map(f => <Select.Item value={f.value}>{f.value}</Select.Item>)}
+                                        </Select.Group>
+
+                                        <Select.Group>
+                                            <Select.Label className='pl-3'>Miscellaneous</Select.Label>
+                                            {FUNCTION_TYPES.filter(f => f.type === "Other").map(f => <Select.Item value={f.value}>{f.value}</Select.Item>)}
+                                        </Select.Group>
+
+                                        <Select.Group>
+                                            <Select.Label className='pl-3'>Bulk Operations</Select.Label>
+                                            {FUNCTION_TYPES.filter(f => f.type === "Bulk Operations").map(f => <Select.Item value={f.value}>{f.value}</Select.Item>)}
+                                        </Select.Group>
+
                                     </Select.Content>
                                 </Select.Root>
                             )}
