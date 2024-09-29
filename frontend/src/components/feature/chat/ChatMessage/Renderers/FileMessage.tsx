@@ -1,8 +1,7 @@
 import { FileMessage } from "../../../../../../../types/Messaging/Message"
 import { getFileExtension, getFileName, isVideoFile } from "../../../../../utils/operations"
 import { UserFields } from "@/utils/users/UserListProvider"
-import { Box, Button, Dialog, Flex, IconButton, Link, Text } from "@radix-ui/themes"
-import { BoxProps } from "@radix-ui/themes/dist/cjs/components/box"
+import { Box, BoxProps, Button, Dialog, Flex, IconButton, Link, Text } from "@radix-ui/themes"
 import { BiDownload, BiLink, BiShow } from "react-icons/bi"
 import { DIALOG_CONTENT_CLASS } from "@/utils/layout/dialog"
 import { DateMonthAtHourMinuteAmPm } from "@/utils/dateConversions"
@@ -12,7 +11,7 @@ import { memo } from "react"
 import { toast } from "sonner"
 import { useIsDesktop } from "@/hooks/useMediaQuery"
 
-interface FileMessageBlockProps extends BoxProps {
+type FileMessageBlockProps = BoxProps & {
     message: FileMessage,
     user?: UserFields,
 }
