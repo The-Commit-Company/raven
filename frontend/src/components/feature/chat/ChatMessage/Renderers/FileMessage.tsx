@@ -60,7 +60,7 @@ export const FileMessageBlock = memo(({ message, user, ...props }: FileMessageBl
                 align='center'
                 gap='4'
                 p='4'
-                className="border-2 bg-gray-2 dark:bg-gray-4 rounded-md border-gray-4  dark:border-gray-6 shadow-sm">
+                className="border bg-gray-1 dark:bg-gray-3 rounded-md border-gray-4 dark:border-gray-6 w-fit">
                 <Flex align='center' gap='2'>
                     <FileExtensionIcon ext={fileExtension} />
                     <Text as='span' size='2' className="text-ellipsis overflow-hidden line-clamp-1">{fileName}</Text>
