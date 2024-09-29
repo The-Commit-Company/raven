@@ -142,6 +142,13 @@ class RavenAIFunction(Document):
 		properties = {}
 
 		for param in self.parameters:
+			if param.do_not_ask_ai and not param.default_value and param.required:
+				frappe.throw(
+					_("You need to provide a default value for required parameters that are not asked by the AI")
+				)
+
+			if param.do_not_ask_ai:
+				continue
 			obj = {
 				"type": param.type,
 				"description": param.description,

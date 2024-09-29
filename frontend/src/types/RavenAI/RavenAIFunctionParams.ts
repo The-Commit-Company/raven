@@ -14,12 +14,14 @@ export interface RavenAIFunctionParams{
 	fieldname: string
 	/**	Required : Check	*/
 	required?: 0 | 1
+	/**	Do not ask AI to fill this variable : Check	*/
+	do_not_ask_ai?: 0 | 1
 	/**	Default Value : Data	*/
 	default_value?: string
 	/**	Options : Small Text	*/
 	options?: string
 	/**	Type : Select	*/
-	type?: "string" | "integer" | "number" | "float" | "boolean"
+	type: "string" | "integer" | "number" | "float" | "boolean"
 	/**	Description : Small Text	*/
 	description: string
 }

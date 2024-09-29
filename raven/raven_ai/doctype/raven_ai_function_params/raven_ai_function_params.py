@@ -16,6 +16,7 @@ class RavenAIFunctionParams(Document):
 
 		default_value: DF.Data | None
 		description: DF.SmallText
+		do_not_ask_ai: DF.Check
 		fieldname: DF.Data
 		options: DF.SmallText | None
 		parent: DF.Data

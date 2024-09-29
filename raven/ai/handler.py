@@ -8,6 +8,7 @@ from typing_extensions import override
 
 from raven.ai.functions import (
 	create_document,
+	create_documents,
 	delete_document,
 	delete_documents,
 	get_document,
@@ -147,11 +148,18 @@ def stream_response(ai_thread_id: str, bot, channel_id: str):
 
 					if function.type == "Create Document":
 						self.publish_event(f"Creating {function.reference_doctype}...")
-						function_output = create_document(function.reference_doctype, data=args)
+						function_output = create_document(function.reference_doctype, data=args, function=function)
 
 						docs_updated.append(
 							{"doctype": function.reference_doctype, "document_id": function_output.get("document_id")}
 						)
+
+					if function.type == "Create Multiple Documents":
+						self.publish_event(f"Creating multiple {function.reference_doctype}s...")
+						function_output = create_documents(function.reference_doctype, data=args, function=function)
+
+						for doc_id in function_output.get("documents"):
+							docs_updated.append({"doctype": function.reference_doctype, "document_id": doc_id})
 
 					tool_outputs.append(
 						{"tool_call_id": tool.id, "output": json.dumps(function_output, default=str)}

@@ -21,24 +21,34 @@ def get_documents(doctype: str, document_ids: list):
 	return docs
 
 
-def create_document(doctype: str, data: dict):
+def create_document(doctype: str, data: dict, function=None):
 	"""
 	Create a document in the database
 	"""
+	if function:
+		# Get any default values
+		for param in function.parameters:
+			if param.default_value:
+				# Check if this value was not to be asked by the AI
+				if param.do_not_ask_ai:
+					data[param.fieldname] = param.default_value
+
+				# Check if the value was not provided
+				if not data.get(param.fieldname):
+					data[param.fieldname] = param.default_value
+
 	doc = frappe.get_doc({"doctype": doctype, **data})
 	doc.insert()
 	return {"document_id": doc.name, "message": "Document created", "doctype": doctype}
 
 
-def create_documents(doctype: str, data: list):
+def create_documents(doctype: str, data: list, function=None):
 	"""
 	Create documents in the database
 	"""
 	docs = []
 	for item in data:
-		doc = frappe.get_doc({"doctype": doctype, **item})
-		doc.insert()
-		docs.append(doc.name)
+		docs.append(create_document(doctype, item, function).get("document_id"))
 
 	return {"documents": docs, "message": "Documents created", "doctype": doctype}
 

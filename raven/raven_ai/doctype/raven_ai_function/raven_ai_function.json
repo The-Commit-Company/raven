@@ -29,6 +29,7 @@
   },
   {
    "default": "0",
+   "depends_on": "eval: doc.type == \"Custom Function\";",
    "description": "If checked, the params will be passed as a JSON object instead of named parameters",
    "fieldname": "pass_parameters_as_json",
    "fieldtype": "Check",
@@ -96,7 +97,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-09-28 12:01:48.561820",
+ "modified": "2024-09-29 07:35:17.718839",
  "modified_by": "Administrator",
  "module": "Raven AI",
  "name": "Raven AI Function",
