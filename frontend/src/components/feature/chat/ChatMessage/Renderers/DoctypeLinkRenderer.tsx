@@ -307,7 +307,7 @@ const WorkflowTransitionOptions = ({ doctype, docname, mutate }: { doctype: stri
             'name': docname
         }
     }, `workflow.get_transitions.${doctype}.${docname}`, {
-        // revalidateIfStale: false,
+        revalidateIfStale: false,
         revalidateOnFocus: false,
         shouldRetryOnError: false,
     })
