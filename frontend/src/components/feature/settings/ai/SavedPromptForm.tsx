@@ -4,6 +4,7 @@ import { HStack, Stack } from '@/components/layout/Stack'
 import { RavenBotAIPrompt } from '@/types/RavenAI/RavenBotAIPrompt'
 import { Box, Checkbox, Text, TextArea } from '@radix-ui/themes'
 import { Controller, useFormContext } from 'react-hook-form'
+import AINotEnabledCallout from './AINotEnabledCallout'
 
 const SavedPromptForm = () => {
 
@@ -11,6 +12,7 @@ const SavedPromptForm = () => {
 
     return (
         <Stack gap='4'>
+            <AINotEnabledCallout />
             <Stack>
                 <Box>
                     <Label htmlFor='prompt' isRequired>Prompt</Label>

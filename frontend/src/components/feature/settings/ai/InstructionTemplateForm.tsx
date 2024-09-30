@@ -4,6 +4,7 @@ import { useFormContext } from 'react-hook-form'
 import { RavenBotInstructionTemplate } from '@/types/RavenAI/RavenBotInstructionTemplate'
 import { Box, TextField } from '@radix-ui/themes'
 import { ErrorText, Label } from '@/components/common/Form'
+import AINotEnabledCallout from './AINotEnabledCallout'
 
 type Props = {
     isEdit?: boolean
@@ -14,6 +15,7 @@ const InstructionTemplateForm = ({ isEdit }: Props) => {
     const { register, formState: { errors } } = useFormContext<RavenBotInstructionTemplate>()
     return (
         <Stack gap='4'>
+            <AINotEnabledCallout />
             <Stack maxWidth={'480px'}>
                 <Box>
                     <Label htmlFor='template_name' isRequired>Template Name</Label>

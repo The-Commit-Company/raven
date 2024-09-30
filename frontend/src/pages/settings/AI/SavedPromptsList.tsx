@@ -1,3 +1,4 @@
+import AINotEnabledCallout from '@/components/feature/settings/ai/AINotEnabledCallout'
 import { ErrorBanner } from '@/components/layout/AlertBanner'
 import { TableLoader } from '@/components/layout/Loaders/TableLoader'
 import PageContainer from '@/components/layout/Settings/PageContainer'
@@ -32,6 +33,7 @@ const SavedPromptList = (props: Props) => {
                 />
                 {isLoading && <TableLoader columns={2} />}
                 <ErrorBanner error={error} />
+                <AINotEnabledCallout />
                 {data && <SavedPromptTable data={data} />}
             </SettingsContentContainer>
         </PageContainer>

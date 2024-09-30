@@ -6,6 +6,7 @@ import PageContainer from "@/components/layout/Settings/PageContainer"
 import SettingsContentContainer from "@/components/layout/Settings/SettingsContentContainer"
 import SettingsPageHeader from "@/components/layout/Settings/SettingsPageHeader"
 import { RavenAIFunction } from "@/types/RavenAI/RavenAIFunction"
+import { isEmpty } from "@/utils/validations"
 import { Button } from "@radix-ui/themes"
 import { useFrappeGetDoc, useFrappeUpdateDoc } from "frappe-react-sdk"
 import { FormProvider, useForm } from "react-hook-form"
@@ -38,7 +39,9 @@ const ViewFunctionContent = ({ data }: { data: RavenAIFunction }) => {
         defaultValues: data
     })
 
-    const { formState: { isDirty } } = methods
+    const { formState: { dirtyFields } } = methods
+
+    const isDirty = !isEmpty(dirtyFields)
 
 
     const onSubmit = (data: RavenAIFunction) => {

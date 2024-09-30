@@ -1,3 +1,4 @@
+import AINotEnabledCallout from '@/components/feature/settings/ai/AINotEnabledCallout'
 import { ErrorBanner } from '@/components/layout/AlertBanner'
 import { TableLoader } from '@/components/layout/Loaders/TableLoader'
 import PageContainer from '@/components/layout/Settings/PageContainer'
@@ -33,6 +34,7 @@ const InstructionTemplateList = (props: Props) => {
                 />
                 {isLoading && <TableLoader columns={2} />}
                 <ErrorBanner error={error} />
+                <AINotEnabledCallout />
                 {data && <InstructionTable data={data} />}
             </SettingsContentContainer>
         </PageContainer>

@@ -7,6 +7,7 @@ import { FUNCTION_TYPES } from './FunctionConstants'
 import { ChangeEvent } from 'react'
 import VariableBuilder from './VariableBuilder'
 import LinkFormField from '@/components/common/LinkField/LinkFormField'
+import AINotEnabledCallout from '../AINotEnabledCallout'
 
 const FunctionForm = ({ isEdit }: { isEdit?: boolean }) => {
     const { register, control, formState: { errors }, setValue } = useFormContext<RavenAIFunction>()
@@ -28,6 +29,7 @@ const FunctionForm = ({ isEdit }: { isEdit?: boolean }) => {
 
     return (
         <Stack gap='4'>
+            <AINotEnabledCallout />
             <HStack gap='4'>
                 <Stack width='50%'>
                     <Box>

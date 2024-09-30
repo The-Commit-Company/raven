@@ -1,11 +1,15 @@
 import { Label, ErrorText, HelperText } from '@/components/common/Form'
 import { Stack, HStack } from '@/components/layout/Stack'
+import useRavenSettings from '@/hooks/fetchers/useRavenSettings'
 import { RavenBot } from '@/types/RavenBot/RavenBot'
 import { Box, TextArea, Checkbox, Text, TextField } from '@radix-ui/themes'
 import { Controller, useFormContext } from 'react-hook-form'
+import AINotEnabledCallout from '../AINotEnabledCallout'
 
 const GeneralBotForm = () => {
     const { register, control, formState: { errors } } = useFormContext<RavenBot>()
+
+    const { ravenSettings } = useRavenSettings()
 
     return (
         <Stack gap='4'>
@@ -24,26 +28,7 @@ const GeneralBotForm = () => {
                 </Box>
                 {errors.bot_name && <ErrorText>{errors.bot_name?.message}</ErrorText>}
             </Stack>
-            <Stack maxWidth={'480px'}>
-                <Text as="label" size="2">
-                    <HStack>
-                        <Controller
-                            control={control}
-                            name='is_ai_bot'
-                            render={({ field }) => (
-                                <Checkbox
-                                    checked={field.value ? true : false}
-                                    onCheckedChange={(v) => field.onChange(v ? 1 : 0)}
-                                />
-                            )} />
 
-                        Is AI Bot
-                    </HStack>
-                </Text>
-                <HelperText>
-                    Check to enable AI features for this bot
-                </HelperText>
-            </Stack>
 
             <Stack>
                 <Box>
@@ -58,6 +43,31 @@ const GeneralBotForm = () => {
                     />
                 </Box>
                 {errors.description && <ErrorText>{errors.description?.message}</ErrorText>}
+            </Stack>
+
+            <AINotEnabledCallout />
+            <Stack maxWidth={'480px'}>
+
+                <Text as="label" size="2">
+                    <HStack>
+                        <Controller
+                            control={control}
+                            disabled={!ravenSettings?.enable_ai_integration}
+                            name='is_ai_bot'
+                            render={({ field }) => (
+                                <Checkbox
+                                    checked={field.value ? true : false}
+                                    disabled={field.disabled}
+                                    onCheckedChange={(v) => field.onChange(v ? 1 : 0)}
+                                />
+                            )} />
+
+                        Is AI Bot
+                    </HStack>
+                </Text>
+                <HelperText>
+                    Check to enable AI features for this bot
+                </HelperText>
             </Stack>
 
         </Stack>
