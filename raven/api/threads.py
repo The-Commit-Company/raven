@@ -4,7 +4,7 @@ from frappe.query_builder import Order
 
 
 @frappe.whitelist()
-def get_all_threads():
+def get_all_threads(is_ai_thread=0):
 	"""
 	Get all the threads in which the user is a participant
 	(We are not fetching the messages inside a thread here, just the main thread message,
@@ -46,6 +46,7 @@ def get_all_threads():
 		.on(channel.name == channel_member.channel_id)
 		.where(channel_member.user_id == frappe.session.user)
 		.where(channel.is_thread == 1)
+		.where(channel.is_ai_thread == is_ai_thread)
 	)
 
 	query = query.orderby(channel.last_message_timestamp, order=Order.desc)

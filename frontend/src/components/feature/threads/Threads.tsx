@@ -1,11 +1,8 @@
-import { ErrorBanner } from "@/components/layout/AlertBanner"
-import { EmptyStateForThreads } from "@/components/layout/EmptyState/EmptyState"
 import { PageHeader } from "@/components/layout/Heading/PageHeader"
 import { Box, Flex, Heading } from "@radix-ui/themes"
-import { useFrappeGetCall } from "frappe-react-sdk"
 import { BiChevronLeft } from "react-icons/bi"
 import { Link } from "react-router-dom"
-import { ThreadPreviewBox } from "./ThreadPreviewBox"
+import ThreadsList from "./ThreadsList"
 
 export type ThreadMessage = {
     bot: string,
@@ -32,10 +29,6 @@ export type ThreadMessage = {
 
 const Threads = () => {
 
-    const { data, error } = useFrappeGetCall<{ message: ThreadMessage[] }>("raven.api.threads.get_all_threads", {
-        revalidateOnFocus: false
-    })
-
     return (
         <Flex direction='column' gap='0'>
             <PageHeader>
@@ -46,17 +39,21 @@ const Threads = () => {
                     <Heading size='5'>Threads</Heading>
                 </Flex>
             </PageHeader>
-            <Box className="min-h-screen w-full pt-16 pb-8">
-                <div className={'px-2'}><ErrorBanner error={error} /></div>
-                {data && <>
-                    {data.message?.length === 0 ?
-                        <EmptyStateForThreads /> :
-                        <Flex direction='column' gap='3' justify='start' px='4' pt='2'>
-                            {data.message.map((thread) => {
-                                return <ThreadPreviewBox key={thread.name} thread={thread} />
-                            })}
-                        </Flex>}
-                </>}
+            <Box className="min-h-screen w-full pt-16 pb-8 px-4">
+                <ThreadsList />
+                {/* Show only regular threads now since this needs pagination */}
+                {/* <Tabs.Root defaultValue="Threads">
+                    <Tabs.List>
+                        <Tabs.Trigger value="Threads">My Threads</Tabs.Trigger>
+                        <Tabs.Trigger value="AI Threads">AI Threads</Tabs.Trigger>
+                    </Tabs.List>
+                    <Tabs.Content value="Threads">
+                        <ThreadsList />
+                    </Tabs.Content>
+                    <Tabs.Content value="AI Threads">
+                        <ThreadsList aiThreads={1} />
+                    </Tabs.Content>
+                </Tabs.Root> */}
             </Box>
         </Flex>
     )
