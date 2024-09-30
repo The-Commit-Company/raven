@@ -5,7 +5,7 @@ import { AccessibleIcon, Box, Flex, ScrollArea, Text } from '@radix-ui/themes'
 import useUnreadMessageCount from '@/hooks/useUnreadMessageCount'
 import PinnedChannels from './PinnedChannels'
 import React from 'react'
-import { BiMessageAltDetail } from 'react-icons/bi'
+import { BiBookmark, BiMessageAltDetail } from 'react-icons/bi'
 import { LuBookmark } from 'react-icons/lu'
 
 export const SidebarBody = () => {
@@ -24,7 +24,7 @@ export const SidebarBody = () => {
                     <SidebarItemForPage
                         to={'saved-messages'}
                         label='Saved'
-                        icon={<LuBookmark className='text-gray-12 dark:text-gray-300 mt-0.5 sm:text-sm text-base' />}
+                        icon={<BiBookmark className='text-gray-12 dark:text-gray-300 mt-0.5 sm:text-sm text-base' />}
                         iconLabel='Saved Message' />
                     <PinnedChannels unread_count={unread_count?.message} />
                 </Flex>
@@ -45,7 +45,7 @@ interface SidebarItemForPageProps {
 const SidebarItemForPage = ({ to, label, icon, iconLabel }: SidebarItemForPageProps) => {
     return (
         <Box>
-            <SidebarItem to={to} className='py-1'>
+            <SidebarItem to={to} className='py-1 px-[10px]'>
                 <AccessibleIcon label={iconLabel}>
                     {icon}
                 </AccessibleIcon>
@@ -53,7 +53,7 @@ const SidebarItemForPage = ({ to, label, icon, iconLabel }: SidebarItemForPagePr
                     <Text size={{
                         initial: '3',
                         md: '2'
-                    }} weight='bold' className='text-gray-12 dark:text-gray-300'>{label}</Text>
+                    }} className='text-gray-12 dark:text-gray-300 font-semibold'>{label}</Text>
                 </Box>
             </SidebarItem>
         </Box>
