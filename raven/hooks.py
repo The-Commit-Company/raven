@@ -8,7 +8,7 @@ app_email = "support@thecommit.company"
 app_license = "AGPLv3"
 source_link = "https://github.com/The-Commit-Company/Raven"
 app_logo = "/assets/raven/raven-logo.png"
-# app_logo_url = "/assets/raven/raven-logo.png"
+app_logo_url = "/assets/raven/raven-logo.png"
 
 # Includes in <head>
 # ------------------
