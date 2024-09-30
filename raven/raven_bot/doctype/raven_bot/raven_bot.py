@@ -27,6 +27,7 @@ class RavenBot(Document):
 		bot_name: DF.Data
 		description: DF.SmallText | None
 		dynamic_instructions: DF.Check
+		enable_code_interpreter: DF.Check
 		enable_file_search: DF.Check
 		image: DF.AttachImage | None
 		instruction: DF.LongText | None
@@ -140,6 +141,13 @@ class RavenBot(Document):
 			tools.append(
 				{
 					"type": "file_search",
+				}
+			)
+
+		if self.enable_code_interpreter:
+			tools.append(
+				{
+					"type": "code_interpreter",
 				}
 			)
 

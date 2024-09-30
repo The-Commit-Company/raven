@@ -49,7 +49,8 @@ const AIFeaturesBotForm = (props: Props) => {
                     Checking this will allow the bot to create/update/delete documents in the system.
                 </HelperText>
             </Stack>
-            <Stack maxWidth={'480px'}>
+            <Separator className='w-full' />
+            <Stack maxWidth={'560px'}>
                 <Text as="label" size="2">
                     <HStack align='center'>
                         <Controller
@@ -73,11 +74,41 @@ const AIFeaturesBotForm = (props: Props) => {
                     </HStack>
                 </Text>
                 <HelperText>
-                    Enable this if you want the bot to be able to read files and scan them.
+                    Enable this if you want the bot to be able to read PDF files and scan them.
                     <br /><br />
                     File search enables the assistant with knowledge from files that you upload.
                     <br /><br />
                     Once a file is uploaded, the assistant automatically decides when to retrieve content based on user requests.
+                </HelperText>
+            </Stack>
+            <Separator className='w-full' />
+            <Stack maxWidth={'560px'}>
+                <Text as="label" size="2">
+                    <HStack align='center'>
+                        <Controller
+                            control={control}
+                            name='enable_code_interpreter'
+                            render={({ field }) => (
+                                <Checkbox
+                                    checked={field.value ? true : false}
+                                    onCheckedChange={(v) => field.onChange(v ? 1 : 0)}
+                                />
+                            )} />
+                        <span>Enable Code Interpreter</span>
+                        <Tooltip content='View OpenAI documentation about Code Interpreter'>
+                            <a href='https://platform.openai.com/docs/assistants/tools/code-interpreter'
+                                title='View OpenAI documentation about Code Interpreter'
+                                aria-label='View OpenAI documentation about Code Interpreter'
+                                target='_blank' className='text-gray-11 -mb-1'>
+                                <BiInfoCircle size={16} /></a>
+                        </Tooltip>
+
+                    </HStack>
+                </Text>
+                <HelperText>
+                    Enable this if you want the bot to be able to process files like Excel sheets or data from Insights.
+                    <br />
+                    OpenAI Assistants run code in a sandboxed environment (on OpenAI servers) to do this.
                 </HelperText>
             </Stack>
             <Separator className='w-full' />
