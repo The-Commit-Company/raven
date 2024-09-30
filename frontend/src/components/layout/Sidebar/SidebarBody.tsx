@@ -6,7 +6,6 @@ import useUnreadMessageCount from '@/hooks/useUnreadMessageCount'
 import PinnedChannels from './PinnedChannels'
 import React from 'react'
 import { BiBookmark, BiMessageAltDetail } from 'react-icons/bi'
-import { LuBookmark } from 'react-icons/lu'
 
 export const SidebarBody = () => {
 

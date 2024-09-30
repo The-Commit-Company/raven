@@ -14,6 +14,7 @@ class RavenAIFunctionParams(Document):
 	if TYPE_CHECKING:
 		from frappe.types import DF
 
+		child_table_name: DF.Data | None
 		default_value: DF.Data | None
 		description: DF.SmallText
 		do_not_ask_ai: DF.Check

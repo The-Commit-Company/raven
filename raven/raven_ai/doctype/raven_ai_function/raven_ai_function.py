@@ -65,9 +65,50 @@ class RavenAIFunction(Document):
 		if self.type in READ_PERMISSIONS:
 			self.requires_write_permissions = 0
 
+		self.validate_fields_for_doctype()
 		self.prepare_function_params()
 
 		self.validate_json()
+
+	def validate_fields_for_doctype(self):
+		# TODO: Validate fields for the doctype - clean up this code
+		doctype = frappe.get_meta(self.reference_doctype)
+
+		# Loop over the variables and check if the field names are valid
+		for param in self.parameters:
+			# Check if the fieldname belongs to a child table
+			if param.child_table_name:
+				child_table = doctype.get_field(param.child_table_name)
+				if not child_table:
+					frappe.throw(
+						_("Child table {0} not found in {1}").format(param.child_table_name, self.reference_doctype)
+					)
+
+				# Check if the child table is a valid doctype
+				child_meta = frappe.get_meta(child_table.options)
+				if not child_meta:
+					frappe.throw(_("Child table {0} is not a valid doctype").format(param.child_table_name))
+
+				# Check if the child table variable has a valid name
+				if param.fieldname not in child_meta.fields:
+					frappe.throw(_("Field {0} not found in {1}").format(param.fieldname, child_table.options))
+			else:
+				if param.fieldname not in doctype.fields:
+					frappe.throw(_("Field {0} not found in {1}").format(param.fieldname, self.reference_doctype))
+
+				field = doctype.get_field(param.fieldname)
+				if field.type == "Select":
+					if not param.options:
+						frappe.throw(_("Options are required for select fields"))
+
+					select_options = field.options.split("\n")
+					for option in param.options.split("\n"):
+						if option not in select_options:
+							frappe.throw(
+								_("Option {0} is not valid for field {1} in {2}").format(
+									option, param.fieldname, self.reference_doctype
+								)
+							)
 
 	def prepare_function_params(self):
 		"""
@@ -141,6 +182,8 @@ class RavenAIFunction(Document):
 		required = []
 		properties = {}
 
+		child_tables = {}
+
 		if self.type == "Update Document" or type == "Update Multiple Documents":
 			properties["document_id"] = {
 				"type": "string",
@@ -164,10 +207,35 @@ class RavenAIFunction(Document):
 			if param.type == "string" and param.options:
 				obj["enum"] = param.options.split("\n")
 
-			properties[param.fieldname] = obj
+			if not param.child_table_name:
+				properties[param.fieldname] = obj
 
-			if param.required:
-				required.append(param.fieldname)
+				if param.required:
+					required.append(param.fieldname)
+			else:
+				if param.child_table_name not in child_tables:
+					child_tables[param.child_table_name] = {
+						"type": "array",
+						"items": {
+							"type": "object",
+							"properties": {param.fieldname: obj},
+							"required": [],
+						},
+					}
+				else:
+					child_tables[param.child_table_name]["items"]["properties"][param.fieldname] = obj
+
+				if param.required:
+					child_tables[param.child_table_name]["items"]["required"].append(param.fieldname)
+
+		for child_table_name, child_table in child_tables.items():
+			# TODO: Check if child table is required and set minItems to 1
+			doctype_meta = frappe.get_meta(self.reference_doctype)
+			table_field = doctype_meta.get_field(child_table_name)
+			if table_field.required:
+				child_table["minItems"] = 1
+
+			properties[child_table_name] = child_table
 
 		if self.type == "Create Multiple Documents" or self.type == "Update Multiple Documents":
 			params["properties"] = {

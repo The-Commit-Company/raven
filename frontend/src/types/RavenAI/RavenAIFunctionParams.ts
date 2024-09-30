@@ -12,6 +12,8 @@ export interface RavenAIFunctionParams{
 	idx?: number
 	/**	Fieldname : Data	*/
 	fieldname: string
+	/**	Child Table Name : Data	*/
+	child_table_name?: string
 	/**	Required : Check	*/
 	required?: 0 | 1
 	/**	Do not ask AI to fill this variable : Check	*/
