@@ -76,7 +76,6 @@ const DeleteThreadButton = () => {
 
         const promise = deleteDoc('Raven Channel', threadID)
             .then(() => {
-                localStorage.removeItem('ravenLastChannel')
                 navigate('../')
                 return Promise.resolve()
             })
