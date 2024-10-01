@@ -1,7 +1,7 @@
 import { Label, ErrorText, HelperText } from '@/components/common/Form'
 import { Stack, HStack } from '@/components/layout/Stack'
 import { RavenAIFunction } from '@/types/RavenAI/RavenAIFunction'
-import { Box, Checkbox, Text, TextField, Select, TextArea, Tabs } from '@radix-ui/themes'
+import { Box, Checkbox, Text, TextField, Select, TextArea, Tabs, Grid } from '@radix-ui/themes'
 import { Controller, useFormContext } from 'react-hook-form'
 import { FUNCTION_TYPES } from './FunctionConstants'
 import { ChangeEvent } from 'react'
@@ -62,8 +62,8 @@ const GeneralFunctionDetails = ({ isEdit }: { isEdit?: boolean }) => {
     }
     return <Stack gap='4'>
 
-        <HStack gap='4'>
-            <Stack width='50%'>
+        <Grid columns={'2'} gap='4'>
+            <Stack>
                 <Box>
                     <Label htmlFor='type' isRequired>Type</Label>
                     <Controller
@@ -100,7 +100,8 @@ const GeneralFunctionDetails = ({ isEdit }: { isEdit?: boolean }) => {
                 <FunctionHelperText />
                 {errors.type && <ErrorText>{errors.type?.message}</ErrorText>}
             </Stack>
-            <Stack width='50%'>
+            <ReferenceDoctypeField />
+            <Stack>
                 <Box>
                     <Label htmlFor='function_name' isRequired>Name</Label>
                     <TextField.Root
@@ -123,9 +124,9 @@ const GeneralFunctionDetails = ({ isEdit }: { isEdit?: boolean }) => {
                 {errors.function_name && <ErrorText>{errors.function_name?.message}</ErrorText>}
                 <HelperText>This needs to be unique and cannot contain spaces.</HelperText>
             </Stack>
-        </HStack>
+        </Grid>
 
-        <ReferenceDoctypeField />
+
 
         <Stack>
             <Box>
@@ -330,7 +331,7 @@ const ReferenceDoctypeField = () => {
     if (!DOCUMENT_REF_FUNCTIONS.includes(type)) {
         return null
     }
-    return <Stack width='50%'>
+    return <Stack>
         <LinkFormField
             name='reference_doctype'
             label='Reference Doctype'

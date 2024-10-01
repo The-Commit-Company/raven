@@ -15,10 +15,10 @@ const ICON_PROPS = {
     className: 'mr-1.5'
 }
 
-const BotForm = (props: Props) => {
+const BotForm = ({ isEdit }: { isEdit: boolean }) => {
 
     const { watch } = useFormContext<RavenBot>()
-    const isAiBot = watch('is_ai_bot')
+    const isAiBot = watch('is_ai_bot') ? true : false
     return (
         <Tabs.Root defaultValue='general'>
             <Tabs.List>

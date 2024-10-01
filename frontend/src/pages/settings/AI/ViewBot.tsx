@@ -5,12 +5,15 @@ import { FullPageLoader } from "@/components/layout/Loaders"
 import PageContainer from "@/components/layout/Settings/PageContainer"
 import SettingsContentContainer from "@/components/layout/Settings/SettingsContentContainer"
 import SettingsPageHeader from "@/components/layout/Settings/SettingsPageHeader"
+import { HStack } from "@/components/layout/Stack"
 import { RavenBot } from "@/types/RavenBot/RavenBot"
 import { isEmpty } from "@/utils/validations"
 import { Button } from "@radix-ui/themes"
-import { useFrappeGetDoc, useFrappeUpdateDoc, SWRResponse } from "frappe-react-sdk"
+import { useFrappeGetDoc, useFrappeUpdateDoc, SWRResponse, FrappeContext, FrappeConfig } from "frappe-react-sdk"
+import { useContext } from "react"
 import { FormProvider, useForm } from "react-hook-form"
-import { useParams } from "react-router-dom"
+import { FiExternalLink } from "react-icons/fi"
+import { useNavigate, useParams } from "react-router-dom"
 import { toast } from "sonner"
 
 type Props = {}
@@ -53,24 +56,51 @@ const ViewBotContent = ({ data, mutate }: { data: RavenBot, mutate: SWRResponse[
             })
     }
 
+
+
     return <form onSubmit={methods.handleSubmit(onSubmit)}>
         <FormProvider {...methods}>
             <SettingsContentContainer>
                 <SettingsPageHeader
                     title={data.bot_name}
                     headerBadges={isDirty ? [{ label: "Not Saved", color: "red" }] : undefined}
-                    actions={<Button type='submit' disabled={loading}>
-                        {loading && <Loader />}
-                        {loading ? "Saving" : "Save"}
-                    </Button>}
+                    actions={<HStack>
+                        <OpenChatButton bot={data} />
+                        <Button type='submit' disabled={loading}>
+                            {loading && <Loader />}
+                            {loading ? "Saving" : "Save"}
+                        </Button>
+                    </HStack>}
                     breadcrumbs={[{ label: 'Bots', href: '../' }, { label: data.name, href: '', copyToClipboard: true }]}
                 />
                 <ErrorBanner error={error} />
-                <BotForm />
+                <BotForm isEdit={true} />
             </SettingsContentContainer>
         </FormProvider>
     </form>
 
+}
+
+const OpenChatButton = ({ bot }: { bot: RavenBot }) => {
+
+    const { call } = useContext(FrappeContext) as FrappeConfig
+
+    const navigate = useNavigate()
+
+    const openChat = () => {
+        call.post("raven.api.raven_channel.create_direct_message_channel", {
+            user_id: bot.raven_user
+        }).then((res) => {
+            navigate(`/channel/${res.message}`)
+        })
+    }
+
+    return <Button variant='surface' color='gray'
+        type='button'
+        className="not-cal" onClick={openChat}>
+        Open Chat
+        <FiExternalLink />
+    </Button>
 }
 
 export const Component = ViewBot

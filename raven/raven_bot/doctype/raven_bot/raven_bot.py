@@ -92,14 +92,14 @@ class RavenBot(Document):
 		if self.is_ai_bot and not self.openai_assistant_id:
 			self.create_openai_assistant()
 
-	def before_delete(self):
-		if self.raven_user:
-			frappe.db.set_value("Raven User", self.raven_user, "bot", None)
-			frappe.delete_doc("Raven User", self.raven_user)
-
 	def on_trash(self):
 		if self.openai_assistant_id:
 			self.delete_openai_assistant()
+
+		if self.raven_user:
+			frappe.db.set_value("Raven User", self.raven_user, "bot", None)
+			self.db_set("raven_user", None)
+			frappe.delete_doc("Raven User", self.raven_user)
 
 	def create_openai_assistant(self):
 		# Create an OpenAI Assistant for the bot

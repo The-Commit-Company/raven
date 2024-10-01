@@ -223,6 +223,10 @@ const VariableTooltip = ({ text }: { text: string }) => {
         onOpenChange={(o) => {
             if (o) {
                 setTooltip('Copy to clipboard')
+
+                setTimeout(() => {
+                    setTooltip('')
+                }, 1000)
             }
         }}
     >
