@@ -10,6 +10,7 @@ import { IconButtonProps } from '@radix-ui/themes/dist/cjs/components/icon-butto
 import { useBoolean } from '@/hooks/useBoolean'
 import { MdOutlineBarChart } from 'react-icons/md'
 import { DIALOG_CONTENT_CLASS } from '@/utils/layout/dialog'
+import AISavedPromptsButton from './AISavedPromptsButton'
 
 
 const EmojiPicker = lazy(() => import('@/components/common/EmojiPicker/EmojiPicker'))
@@ -36,8 +37,10 @@ export type RightToolbarButtonsProps = {
 export const RightToolbarButtons = ({ fileProps, ...sendProps }: RightToolbarButtonsProps) => {
     return (
         <Flex gap='2' align='center' px='1' py='1'>
+
             <MentionButtons />
             <Separator orientation='vertical' />
+            <AISavedPromptsButton />
             <CreatePollButton />
             <Separator orientation='vertical' />
             <Flex gap='3' align='center'>
