@@ -93,11 +93,13 @@ class RavenAIFunction(Document):
 				if param.fieldname not in child_meta.fields:
 					frappe.throw(_("Field {0} not found in {1}").format(param.fieldname, child_table.options))
 			else:
-				if param.fieldname not in doctype.fields:
-					frappe.throw(_("Field {0} not found in {1}").format(param.fieldname, self.reference_doctype))
 
 				field = doctype.get_field(param.fieldname)
-				if field.type == "Select":
+
+				if not field:
+					frappe.throw(_("Field {0} not found in {1}").format(param.fieldname, self.reference_doctype))
+
+				if field.fieldtype == "Select":
 					if not param.options:
 						frappe.throw(_("Options are required for select fields"))
 

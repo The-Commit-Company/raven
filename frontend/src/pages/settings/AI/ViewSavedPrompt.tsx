@@ -8,7 +8,7 @@ import SettingsPageHeader from "@/components/layout/Settings/SettingsPageHeader"
 import { RavenBotAIPrompt } from "@/types/RavenAI/RavenBotAIPrompt"
 import { isEmpty } from "@/utils/validations"
 import { Button } from "@radix-ui/themes"
-import { useFrappeGetDoc, useFrappeUpdateDoc } from "frappe-react-sdk"
+import { SWRResponse, useFrappeGetDoc, useFrappeUpdateDoc } from "frappe-react-sdk"
 import { FormProvider, useForm } from "react-hook-form"
 import { useParams } from "react-router-dom"
 import { toast } from "sonner"
@@ -19,18 +19,18 @@ const ViewSavedPrompt = (props: Props) => {
 
     const { ID } = useParams<{ ID: string }>()
 
-    const { data, isLoading, error } = useFrappeGetDoc<RavenBotAIPrompt>("Raven Bot AI Prompt", ID)
+    const { data, isLoading, error, mutate } = useFrappeGetDoc<RavenBotAIPrompt>("Raven Bot AI Prompt", ID)
 
     return (
         <PageContainer>
             <ErrorBanner error={error} />
             {isLoading && <FullPageLoader className="h-64" />}
-            {data && <ViewSavedPromptContent data={data} />}
+            {data && <ViewSavedPromptContent data={data} mutate={mutate} />}
         </PageContainer>
     )
 }
 
-const ViewSavedPromptContent = ({ data }: { data: RavenBotAIPrompt }) => {
+const ViewSavedPromptContent = ({ data, mutate }: { data: RavenBotAIPrompt, mutate: SWRResponse['mutate'] }) => {
 
     const { updateDoc, loading, error } = useFrappeUpdateDoc<RavenBotAIPrompt>()
 
@@ -49,6 +49,7 @@ const ViewSavedPromptContent = ({ data }: { data: RavenBotAIPrompt }) => {
             .then((doc) => {
                 toast.success("Saved")
                 methods.reset(doc)
+                mutate(doc, { revalidate: false })
             })
     }
 

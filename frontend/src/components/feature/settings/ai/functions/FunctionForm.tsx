@@ -61,17 +61,17 @@ const FunctionForm = ({ isEdit }: { isEdit?: boolean }) => {
                                                 <Select.Content>
                                                     <Select.Group>
                                                         <Select.Label className='pl-3'>Standard</Select.Label>
-                                                        {FUNCTION_TYPES.filter(f => f.type === "Standard").map(f => <Select.Item value={f.value}>{f.value}</Select.Item>)}
+                                                        {FUNCTION_TYPES.filter(f => f.type === "Standard").map(f => <Select.Item value={f.value} key={f.value}>{f.value}</Select.Item>)}
                                                     </Select.Group>
 
                                                     <Select.Group>
                                                         <Select.Label className='pl-3'>Miscellaneous</Select.Label>
-                                                        {FUNCTION_TYPES.filter(f => f.type === "Other").map(f => <Select.Item value={f.value}>{f.value}</Select.Item>)}
+                                                        {FUNCTION_TYPES.filter(f => f.type === "Other").map(f => <Select.Item value={f.value} key={f.value}>{f.value}</Select.Item>)}
                                                     </Select.Group>
 
                                                     <Select.Group>
                                                         <Select.Label className='pl-3'>Bulk Operations</Select.Label>
-                                                        {FUNCTION_TYPES.filter(f => f.type === "Bulk Operations").map(f => <Select.Item value={f.value}>{f.value}</Select.Item>)}
+                                                        {FUNCTION_TYPES.filter(f => f.type === "Bulk Operations").map(f => <Select.Item value={f.value} key={f.value}>{f.value}</Select.Item>)}
                                                     </Select.Group>
 
                                                 </Select.Content>
@@ -112,13 +112,13 @@ const FunctionForm = ({ isEdit }: { isEdit?: boolean }) => {
                         <Stack>
                             <Box>
                                 <Label htmlFor='description' isRequired>Description</Label>
-                                <TextArea id='description' {...register('description')} placeholder='Describe what this function does.' />
+                                <TextArea {...register('description', {
+                                    required: 'Description is required'
+                                })} placeholder='Describe what this function does.' />
                             </Box>
                             {errors.description && <ErrorText>{errors.description?.message}</ErrorText>}
                             <HelperText>This is used to describe what this function does to the AI Bot.</HelperText>
                         </Stack>
-
-
 
                         <CustomFunction />
                         <RequiresWritePermissions />

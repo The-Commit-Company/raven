@@ -36,7 +36,7 @@ const SettingsPageHeader = ({ title, description, actions, headerBadges, breadcr
                 </Breadcrumb> : null}
                 <HStack gap='2' align='center'>
                     <Text size='5' className={'font-semibold'}>{title}</Text>
-                    {headerBadges?.map(badge => <Badge size='1' color={badge.color}>{badge.label}</Badge>)}
+                    {headerBadges?.map(badge => <Badge size='1' color={badge.color} key={badge.label}>{badge.label}</Badge>)}
                 </HStack>
                 {description && <Text size='2' color='gray'>{description}</Text>}
             </Flex>

@@ -8,7 +8,7 @@ import SettingsPageHeader from "@/components/layout/Settings/SettingsPageHeader"
 import { RavenBotInstructionTemplate } from "@/types/RavenAI/RavenBotInstructionTemplate"
 import { isEmpty } from "@/utils/validations"
 import { Button } from "@radix-ui/themes"
-import { useFrappeGetDoc, useFrappeUpdateDoc } from "frappe-react-sdk"
+import { SWRResponse, useFrappeGetDoc, useFrappeUpdateDoc } from "frappe-react-sdk"
 import { FormProvider, useForm } from "react-hook-form"
 import { useParams } from "react-router-dom"
 import { toast } from "sonner"
@@ -17,18 +17,18 @@ const ViewInstructionTemplate = () => {
 
     const { ID } = useParams<{ ID: string }>()
 
-    const { data, isLoading, error } = useFrappeGetDoc<RavenBotInstructionTemplate>("Raven Bot Instruction Template", ID)
+    const { data, isLoading, error, mutate } = useFrappeGetDoc<RavenBotInstructionTemplate>("Raven Bot Instruction Template", ID)
 
     return (
         <PageContainer>
             <ErrorBanner error={error} />
             {isLoading && <FullPageLoader className="h-64" />}
-            {data && <ViewBotContent data={data} />}
+            {data && <ViewBotContent data={data} mutate={mutate} />}
         </PageContainer>
     )
 }
 
-const ViewBotContent = ({ data }: { data: RavenBotInstructionTemplate }) => {
+const ViewBotContent = ({ data, mutate }: { data: RavenBotInstructionTemplate, mutate: SWRResponse['mutate'] }) => {
 
     const { updateDoc, loading, error } = useFrappeUpdateDoc<RavenBotInstructionTemplate>()
 
@@ -47,6 +47,7 @@ const ViewBotContent = ({ data }: { data: RavenBotInstructionTemplate }) => {
             .then((doc) => {
                 toast.success("Saved")
                 methods.reset(doc)
+                mutate(doc, { revalidate: false })
             })
     }
 

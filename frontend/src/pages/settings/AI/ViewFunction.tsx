@@ -6,9 +6,8 @@ import PageContainer from "@/components/layout/Settings/PageContainer"
 import SettingsContentContainer from "@/components/layout/Settings/SettingsContentContainer"
 import SettingsPageHeader from "@/components/layout/Settings/SettingsPageHeader"
 import { RavenAIFunction } from "@/types/RavenAI/RavenAIFunction"
-import { isEmpty } from "@/utils/validations"
 import { Button } from "@radix-ui/themes"
-import { useFrappeGetDoc, useFrappeUpdateDoc } from "frappe-react-sdk"
+import { SWRResponse, useFrappeGetDoc, useFrappeUpdateDoc } from "frappe-react-sdk"
 import { FormProvider, useForm } from "react-hook-form"
 import { useParams } from "react-router-dom"
 import { toast } from "sonner"
@@ -19,18 +18,18 @@ const ViewFunction = (props: Props) => {
 
     const { ID } = useParams<{ ID: string }>()
 
-    const { data, isLoading, error } = useFrappeGetDoc<RavenAIFunction>("Raven AI Function", ID)
+    const { data, isLoading, error, mutate } = useFrappeGetDoc<RavenAIFunction>("Raven AI Function", ID)
 
     return (
         <PageContainer>
             <ErrorBanner error={error} />
             {isLoading && <FullPageLoader className="h-64" />}
-            {data && <ViewFunctionContent data={data} />}
+            {data && <ViewFunctionContent data={data} mutate={mutate} />}
         </PageContainer>
     )
 }
 
-const ViewFunctionContent = ({ data }: { data: RavenAIFunction }) => {
+const ViewFunctionContent = ({ data, mutate }: { data: RavenAIFunction, mutate: SWRResponse['mutate'] }) => {
 
     const { updateDoc, loading, error } = useFrappeUpdateDoc<RavenAIFunction>()
 
@@ -39,9 +38,7 @@ const ViewFunctionContent = ({ data }: { data: RavenAIFunction }) => {
         defaultValues: data
     })
 
-    const { formState: { dirtyFields } } = methods
-
-    const isDirty = !isEmpty(dirtyFields)
+    const { formState: { isDirty } } = methods
 
 
     const onSubmit = (data: RavenAIFunction) => {
@@ -49,6 +46,7 @@ const ViewFunctionContent = ({ data }: { data: RavenAIFunction }) => {
             .then((doc) => {
                 toast.success("Saved")
                 methods.reset(doc)
+                mutate(doc, { revalidate: false })
             })
     }
 
