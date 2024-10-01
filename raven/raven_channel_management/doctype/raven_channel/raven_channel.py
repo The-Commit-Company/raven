@@ -69,7 +69,7 @@ class RavenChannel(Document):
 					},
 				},
 				doctype="Raven Channel",
-				docname=message_channel_id
+				docname=message_channel_id,
 			)
 
 	def after_insert(self):
