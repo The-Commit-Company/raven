@@ -10,6 +10,7 @@ import LinkFormField from '@/components/common/LinkField/LinkFormField'
 import AINotEnabledCallout from '../AINotEnabledCallout'
 import DoctypeVariableBuilder from './DoctypeVariableBuilder'
 import { LuFunctionSquare, LuVariable } from 'react-icons/lu'
+import { in_list } from '@/utils/validations'
 
 const ICON_PROPS = {
     size: 18,
@@ -17,6 +18,32 @@ const ICON_PROPS = {
 }
 
 const FunctionForm = ({ isEdit }: { isEdit?: boolean }) => {
+
+    const { watch } = useFormContext<RavenAIFunction>()
+    const type = watch('type')
+
+    return (
+        <Tabs.Root defaultValue='function_details'>
+            <Tabs.List>
+                <Tabs.Trigger value='function_details'><LuFunctionSquare {...ICON_PROPS} /> Details</Tabs.Trigger>
+                <Tabs.Trigger value='variables' disabled={in_list(["Get Document", "Get Multiple Documents", "Delete Document", "Delete Multiple Documents"], type)}><LuVariable {...ICON_PROPS} /> Variables</Tabs.Trigger>
+            </Tabs.List>
+            <Box pt='4'>
+                <AINotEnabledCallout />
+                <Tabs.Content value='function_details'>
+                    <GeneralFunctionDetails isEdit={isEdit} />
+                </Tabs.Content>
+                <Tabs.Content value='variables'>
+                    <VariableSection />
+                </Tabs.Content>
+            </Box>
+        </Tabs.Root>
+
+    )
+}
+
+const GeneralFunctionDetails = ({ isEdit }: { isEdit?: boolean }) => {
+
     const { register, control, formState: { errors }, setValue } = useFormContext<RavenAIFunction>()
 
     const onFunctionChange = (event: ChangeEvent<HTMLSelectElement>) => {
@@ -33,108 +60,105 @@ const FunctionForm = ({ isEdit }: { isEdit?: boolean }) => {
             }
         }
     }
+    return <Stack gap='4'>
 
-    return (
-        <Tabs.Root defaultValue='function_details'>
-            <Tabs.List>
-                <Tabs.Trigger value='function_details'><LuFunctionSquare {...ICON_PROPS} /> Details</Tabs.Trigger>
-                <Tabs.Trigger value='variables'><LuVariable {...ICON_PROPS} /> Variables</Tabs.Trigger>
-            </Tabs.List>
-            <Box pt='4'>
-                <Tabs.Content value='function_details'>
-                    <Stack gap='4'>
-                        <AINotEnabledCallout />
-                        <HStack gap='4'>
-                            <Stack width='50%'>
-                                <Box>
-                                    <Label htmlFor='type' isRequired>Type</Label>
-                                    <Controller
-                                        control={control}
-                                        name='type'
-                                        rules={{
-                                            required: 'Type is required',
-                                            onChange: onFunctionChange
-                                        }}
-                                        render={({ field }) => (
-                                            <Select.Root value={field.value} name={field.name} onValueChange={(value) => field.onChange(value)}>
-                                                <Select.Trigger placeholder='Pick a function type' className='w-full' autoFocus />
-                                                <Select.Content>
-                                                    <Select.Group>
-                                                        <Select.Label className='pl-3'>Standard</Select.Label>
-                                                        {FUNCTION_TYPES.filter(f => f.type === "Standard").map(f => <Select.Item value={f.value} key={f.value}>{f.value}</Select.Item>)}
-                                                    </Select.Group>
+        <HStack gap='4'>
+            <Stack width='50%'>
+                <Box>
+                    <Label htmlFor='type' isRequired>Type</Label>
+                    <Controller
+                        control={control}
+                        name='type'
+                        rules={{
+                            required: 'Type is required',
+                            onChange: onFunctionChange
+                        }}
+                        render={({ field }) => (
+                            <Select.Root value={field.value} name={field.name} onValueChange={(value) => field.onChange(value)}>
+                                <Select.Trigger placeholder='Pick a function type' className='w-full' autoFocus />
+                                <Select.Content>
+                                    <Select.Group>
+                                        <Select.Label className='pl-3'>Standard</Select.Label>
+                                        {FUNCTION_TYPES.filter(f => f.type === "Standard").map(f => <Select.Item value={f.value} key={f.value}>{f.value}</Select.Item>)}
+                                    </Select.Group>
 
-                                                    <Select.Group>
-                                                        <Select.Label className='pl-3'>Miscellaneous</Select.Label>
-                                                        {FUNCTION_TYPES.filter(f => f.type === "Other").map(f => <Select.Item value={f.value} key={f.value}>{f.value}</Select.Item>)}
-                                                    </Select.Group>
+                                    <Select.Group>
+                                        <Select.Label className='pl-3'>Miscellaneous</Select.Label>
+                                        {FUNCTION_TYPES.filter(f => f.type === "Other").map(f => <Select.Item value={f.value} key={f.value}>{f.value}</Select.Item>)}
+                                    </Select.Group>
 
-                                                    <Select.Group>
-                                                        <Select.Label className='pl-3'>Bulk Operations</Select.Label>
-                                                        {FUNCTION_TYPES.filter(f => f.type === "Bulk Operations").map(f => <Select.Item value={f.value} key={f.value}>{f.value}</Select.Item>)}
-                                                    </Select.Group>
+                                    <Select.Group>
+                                        <Select.Label className='pl-3'>Bulk Operations</Select.Label>
+                                        {FUNCTION_TYPES.filter(f => f.type === "Bulk Operations").map(f => <Select.Item value={f.value} key={f.value}>{f.value}</Select.Item>)}
+                                    </Select.Group>
 
-                                                </Select.Content>
-                                            </Select.Root>
-                                        )}
-                                    />
-                                </Box>
-                                <FunctionHelperText />
-                                {errors.type && <ErrorText>{errors.type?.message}</ErrorText>}
-                            </Stack>
-                            <Stack width='50%'>
-                                <Box>
-                                    <Label htmlFor='function_name' isRequired>Name</Label>
-                                    <TextField.Root
-                                        id='function_name'
-                                        {...register('function_name', {
-                                            required: 'Name is required',
-                                            disabled: isEdit,
-                                            validate: (value) => {
-                                                if (value.includes(' ')) {
-                                                    return 'Name cannot contain spaces'
-                                                }
-                                                return true
-                                            }
-                                        })}
-                                        readOnly={isEdit}
-                                        placeholder="get_purchase_invoice"
-                                        aria-invalid={errors.function_name ? 'true' : 'false'}
-                                    />
-                                </Box>
-                                {errors.function_name && <ErrorText>{errors.function_name?.message}</ErrorText>}
-                                <HelperText>This needs to be unique and cannot contain spaces.</HelperText>
-                            </Stack>
-                        </HStack>
+                                </Select.Content>
+                            </Select.Root>
+                        )}
+                    />
+                </Box>
+                <FunctionHelperText />
+                {errors.type && <ErrorText>{errors.type?.message}</ErrorText>}
+            </Stack>
+            <Stack width='50%'>
+                <Box>
+                    <Label htmlFor='function_name' isRequired>Name</Label>
+                    <TextField.Root
+                        id='function_name'
+                        {...register('function_name', {
+                            required: 'Name is required',
+                            disabled: isEdit,
+                            validate: (value) => {
+                                if (value.includes(' ')) {
+                                    return 'Name cannot contain spaces'
+                                }
+                                return true
+                            }
+                        })}
+                        readOnly={isEdit}
+                        placeholder="get_purchase_invoice"
+                        aria-invalid={errors.function_name ? 'true' : 'false'}
+                    />
+                </Box>
+                {errors.function_name && <ErrorText>{errors.function_name?.message}</ErrorText>}
+                <HelperText>This needs to be unique and cannot contain spaces.</HelperText>
+            </Stack>
+        </HStack>
 
-                        <ReferenceDoctypeField />
+        <ReferenceDoctypeField />
 
-                        <Stack>
-                            <Box>
-                                <Label htmlFor='description' isRequired>Description</Label>
-                                <TextArea {...register('description', {
-                                    required: 'Description is required'
-                                })} placeholder='Describe what this function does.' />
-                            </Box>
-                            {errors.description && <ErrorText>{errors.description?.message}</ErrorText>}
-                            <HelperText>This is used to describe what this function does to the AI Bot.</HelperText>
-                        </Stack>
-
-                        <CustomFunction />
-                        <RequiresWritePermissions />
-                    </Stack>
-                </Tabs.Content>
-                <Tabs.Content value='variables'>
-                    <DoctypeVariableBuilder />
-                    <VariableBuilder />
-                    <PassParamsAsJSON />
-                </Tabs.Content>
+        <Stack>
+            <Box>
+                <Label htmlFor='description' isRequired>Description</Label>
+                <Controller
+                    control={control}
+                    name='description'
+                    render={({ field }) => (
+                        <TextArea id='description' {...field} placeholder='Describe what this function does.' />
+                    )}
+                />
+                {/* <TextArea id='description' {...register('description', {
+                required: 'Description is required'
+            })} placeholder='Describe what this function does.' /> */}
             </Box>
-        </Tabs.Root>
+            {errors.description && <ErrorText>{errors.description?.message}</ErrorText>}
+            <HelperText>This is used to describe what this function does to the AI Bot.</HelperText>
+        </Stack>
 
-    )
+        <CustomFunction />
+        <RequiresWritePermissions />
+    </Stack>
 }
 
+const VariableSection = () => {
+
+    return <>
+        <DoctypeVariableBuilder />
+        <VariableBuilder />
+        <PassParamsAsJSON />
+    </>
+
+}
 const FunctionHelperText = () => {
 
     const { watch } = useFormContext<RavenAIFunction>()
