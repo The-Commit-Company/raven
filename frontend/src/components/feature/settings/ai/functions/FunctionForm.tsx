@@ -155,8 +155,11 @@ const VariableSection = () => {
 
     return <>
         <DoctypeVariableBuilder />
-        <VariableBuilder />
-        <PassParamsAsJSON />
+        <Stack>
+            <PassParamsAsJSON />
+            <VariableBuilder />
+        </Stack>
+
     </>
 
 }

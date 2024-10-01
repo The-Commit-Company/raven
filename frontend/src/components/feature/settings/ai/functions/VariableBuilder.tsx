@@ -4,12 +4,14 @@ import { DIALOG_CONTENT_CLASS } from '@/utils/layout/dialog'
 import { Badge, Box, Button, ButtonProps, Dialog, IconButton, Separator, Switch, Text, TextArea, VisuallyHidden } from '@radix-ui/themes'
 import { useState } from 'react'
 import { Controller, useFormContext } from 'react-hook-form'
-import { VariableType } from './FunctionConstants'
+import { ObjectVariableType, VariableType } from './FunctionConstants'
 import { BiTrashAlt } from 'react-icons/bi'
 import VariableDialog from './VariableDialog'
 import { ErrorBoundary } from "react-error-boundary";
 import { toast } from 'sonner'
 import { FiEdit } from 'react-icons/fi'
+import { in_list } from '@/utils/validations'
+import { getTextAndColorForFieldType } from './utils'
 
 type Props = {}
 
@@ -49,15 +51,13 @@ const VariableBuilder = (props: Props) => {
     return (
         <Box className='py-2'>
             <Stack>
-                <HStack justify='between' align='center'>
-                    <HStack align='center' gap='4'>
-                        {viewMode === 'json' && <Button color='gray' className='not-cal font-medium' variant='ghost' type='button' onClick={formatJSON}>Format JSON</Button>}
-                        <HStack align='center'>
-                            <Text weight='medium' size='2'>Builder</Text>
-                            <Switch size='2' checked={viewMode === 'json'} onCheckedChange={(checked) => setViewMode(checked ? 'json' : 'builder')} />
-                            <Text weight='medium' size='2'>JSON</Text>
-                        </HStack>
+                <HStack justify='between' align='start'>
+                    <HStack align='center'>
+                        <Text weight='medium' size='2'>Builder</Text>
+                        <Switch size='2' checked={viewMode === 'json'} onCheckedChange={(checked) => setViewMode(checked ? 'json' : 'builder')} />
+                        <Text weight='medium' size='2'>JSON</Text>
                     </HStack>
+                    {viewMode === 'json' && <Button color='gray' className='not-cal font-medium' variant='soft' type='button' onClick={formatJSON}>Format JSON</Button>}
                 </HStack>
                 {error && <Text size='2' color='red'>{error}</Text>}
                 <Controller
@@ -77,6 +77,8 @@ const VariableBuilder = (props: Props) => {
                         } else {
                             return <TextArea
                                 rows={30}
+                                spellCheck={false}
+                                className='font-mono bg-gray-2 dark:bg-gray-1 text-amber-900 dark:text-amber-100'
                                 resize='vertical'
                                 value={field.value}
                                 onChange={(e) => field.onChange(e.target.value)}
@@ -92,19 +94,32 @@ const VariableBuilder = (props: Props) => {
     )
 }
 
-const VariableBuilderField = ({ json, onChange, isNested }: { json: Record<string, any>, onChange: (json: Record<string, any>) => void, isNested?: boolean }) => {
+const VariableBuilderField = ({ json, onChange, isNested }: { json: ObjectVariableType, onChange: (json: ObjectVariableType) => void, isNested?: boolean }) => {
 
     const [editingVariable, setEditingVariable] = useState<{ name: string, properties: VariableType } | undefined>(undefined)
 
     const properties: Record<string, VariableType> = json.properties || {}
 
-    const addVariable = (name: string, newProperty: any) => {
+    const addVariable = (name: string, newProperty: Partial<VariableType>, required?: boolean) => {
+
+        let newRequired = json.required ?? []
+        // Add to required if it doesn't exist
+        if (required && !in_list(json.required ?? [], name)) {
+            newRequired.push(name)
+        }
+
+        // Remove from required if it exists
+        if (!required && in_list(json.required ?? [], name)) {
+            newRequired = newRequired.filter((n) => n !== name)
+        }
+
         onChange({
             type: 'object',
             properties: {
                 ...properties,
-                [name]: newProperty
-            }
+                [name]: newProperty as VariableType
+            },
+            required: newRequired
         })
 
     }
@@ -112,20 +127,16 @@ const VariableBuilderField = ({ json, onChange, isNested }: { json: Record<strin
     const removeVariable = (name: string) => {
 
         const newProperties = { ...properties }
-        delete newProperties[name]
-        onChange({
-            type: 'object',
-            properties: newProperties
-        })
-    }
 
-    const onObjectChange = (name: string, objProps: Record<string, VariableType>) => {
+        delete newProperties[name]
+
+        // Remove from required if it exists
+        const newRequired = json.required?.filter((n) => n !== name)
+
         onChange({
             type: 'object',
-            properties: {
-                ...properties,
-                [name]: objProps
-            }
+            properties: newProperties,
+            required: newRequired
         })
     }
 
@@ -142,14 +153,12 @@ const VariableBuilderField = ({ json, onChange, isNested }: { json: Record<strin
                             <HStack align='center'>
                                 <Text className='font-semibold' size='2'>{key}</Text>
                                 <HStack>
-                                    <Badge color={value.type === 'object' ? 'blue' : 'purple'}>{value.type ? value.type.charAt(0).toUpperCase() + value.type.slice(1) : 'Object'}</Badge>
-                                    {value.required && <Badge color='red'>Required</Badge>}
+                                    <Badge {...getTextAndColorForFieldType(value.type)} className='rounded-md' />
+                                    {in_list(json.required ?? [], key) && <Badge color='red' className='rounded-md'>Required</Badge>}
                                 </HStack>
                             </HStack>
                             <Text size='2' color='gray'>{value.description}</Text>
-
-                            {(value.type === 'string' || value.type === 'number' || value.type === 'boolean') && value.default && <Text as='span' weight={'medium'} size='2' color='gray'>Default: {value.default}</Text>}
-                            {(value.type === 'string' || value.type === 'number') && value.enum && <Text as='span' size='2' color='gray' weight={'medium'}>Options: {value.enum?.split('\n').join(', ')}</Text>}
+                            {(value.type === 'string' || value.type === 'number') && value.enum && value.enum.length > 0 && <Text as='span' size='2' color='gray' weight={'medium'}>Options: {value.enum?.join(', ')}</Text>}
                         </Stack>
 
                         <HStack align='center' pr='2' gap='4'>
@@ -171,7 +180,7 @@ const VariableBuilderField = ({ json, onChange, isNested }: { json: Record<strin
                                 <VariableBuilderField
                                     isNested
                                     json={value}
-                                    onChange={(v) => onObjectChange(key, v)} />
+                                    onChange={(v) => addVariable(key, v)} />
                             </Box>
                         </Stack>
 
@@ -184,17 +193,23 @@ const VariableBuilderField = ({ json, onChange, isNested }: { json: Record<strin
         </Stack>
         <EditVariableDialog
             variable={editingVariable}
-            onSubmit={addVariable} isOpen={editingVariable !== undefined}
+            onSubmit={addVariable}
+            isOpen={editingVariable !== undefined}
             onOpenChange={(v) => !v && setEditingVariable(undefined)} />
     </Stack>
 }
 
-const AddVariablePopover = ({ onAdd, buttonProps }: { onAdd: (name: string, property: Partial<VariableType>) => void, buttonProps?: ButtonProps }) => {
+
+interface AddVariablePopoverProps {
+    onAdd: (name: string, property: Partial<VariableType>, required?: boolean) => void,
+    buttonProps?: ButtonProps
+}
+const AddVariablePopover = ({ onAdd, buttonProps }: AddVariablePopoverProps) => {
 
     const [isOpen, setIsOpen] = useState(false)
 
-    const onSubmit = (name: string, props: Partial<VariableType>) => {
-        onAdd(name, props)
+    const onSubmit = (name: string, props: Partial<VariableType>, required?: boolean) => {
+        onAdd(name, props, required)
         setIsOpen(false)
     }
 
@@ -210,16 +225,33 @@ const AddVariablePopover = ({ onAdd, buttonProps }: { onAdd: (name: string, prop
     </Dialog.Root>
 }
 
-const EditVariableDialog = ({ variable, onSubmit, isOpen, onOpenChange }: { variable?: { name: string, properties: VariableType }, onSubmit: (name: string, properties: Partial<VariableType>) => void, isOpen: boolean, onOpenChange: (isOpen: boolean) => void }) => {
+interface EditVariableDialogProps {
+    variable?: { name: string, properties: VariableType, required?: boolean },
+    onSubmit: (name: string, properties: Partial<VariableType>, required?: boolean) => void,
+    onOpenChange: (isOpen: boolean) => void
+    isOpen: boolean
+}
+
+const EditVariableDialog = ({ variable, onSubmit, isOpen, onOpenChange }: EditVariableDialogProps) => {
+
+    const onAdd = (name: string, props: Partial<VariableType>, required?: boolean) => {
+        onSubmit(name, props, required)
+        onOpenChange(false)
+    }
 
     return <Dialog.Root open={isOpen} onOpenChange={onOpenChange}>
-        <Dialog.Content className={''}>
+        <Dialog.Content className={DIALOG_CONTENT_CLASS}>
             <Dialog.Title>Edit Variable</Dialog.Title>
             <VisuallyHidden>
                 <Dialog.Description>Edit the variable to your function schema.</Dialog.Description>
             </VisuallyHidden>
 
-            <VariableDialog onAdd={onSubmit} allowNameChange={false} defaultValues={variable?.properties} name={variable?.name} />
+            <VariableDialog
+                onAdd={onAdd}
+                allowNameChange={false}
+                defaultValues={variable?.properties}
+                defaultRequired={variable?.required}
+                name={variable?.name} />
         </Dialog.Content>
     </Dialog.Root>
 }

@@ -65,13 +65,22 @@ class RavenAIFunction(Document):
 		if self.type in READ_PERMISSIONS:
 			self.requires_write_permissions = 0
 
+		self.validate_reference_doctype()
 		self.validate_fields_for_doctype()
 		self.prepare_function_params()
 
 		self.validate_json()
 
+	def validate_reference_doctype(self):
+		if not self.reference_doctype:
+			if not self.type in ["Custom Function", "Send Message", "Get Report Result"]:
+				frappe.throw(_("Please select a DocType for this function."))
+
 	def validate_fields_for_doctype(self):
 		# TODO: Validate fields for the doctype - clean up this code
+		if not self.reference_doctype:
+			return
+
 		doctype = frappe.get_meta(self.reference_doctype)
 
 		# Loop over the variables and check if the field names are valid
@@ -90,7 +99,8 @@ class RavenAIFunction(Document):
 					frappe.throw(_("Child table {0} is not a valid doctype").format(param.child_table_name))
 
 				# Check if the child table variable has a valid name
-				if param.fieldname not in child_meta.fields:
+				docfield = child_meta.get_field(param.fieldname)
+				if not docfield:
 					frappe.throw(_("Field {0} not found in {1}").format(param.fieldname, child_table.options))
 			else:
 
@@ -170,6 +180,8 @@ class RavenAIFunction(Document):
 				"required": ["document_ids"],
 				"additionalProperties": False,
 			}
+		elif self.type == "Custom Function":
+			params = json.loads(self.params)
 		else:
 			params = self.build_params_json_from_table()
 
@@ -231,10 +243,9 @@ class RavenAIFunction(Document):
 					child_tables[param.child_table_name]["items"]["required"].append(param.fieldname)
 
 		for child_table_name, child_table in child_tables.items():
-			# TODO: Check if child table is required and set minItems to 1
 			doctype_meta = frappe.get_meta(self.reference_doctype)
 			table_field = doctype_meta.get_field(child_table_name)
-			if table_field.required:
+			if table_field.reqd:
 				child_table["minItems"] = 1
 
 			properties[child_table_name] = child_table

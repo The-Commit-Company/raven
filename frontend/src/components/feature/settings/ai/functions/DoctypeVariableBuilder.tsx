@@ -3,12 +3,13 @@ import useDoctypeMeta from '@/hooks/useDoctypeMeta'
 import { RavenAIFunction } from '@/types/RavenAI/RavenAIFunction'
 import { RavenAIFunctionParams } from '@/types/RavenAI/RavenAIFunctionParams'
 import { in_list } from '@/utils/validations'
-import { Badge, BadgeProps, Button, Card, Dialog, IconButton, Separator, Text, Tooltip, VisuallyHidden } from '@radix-ui/themes'
+import { Badge, Button, Card, Dialog, IconButton, Separator, Text, Tooltip, VisuallyHidden } from '@radix-ui/themes'
 import { useFieldArray, UseFieldArrayUpdate, useFormContext } from 'react-hook-form'
 import { BiTrashAlt } from 'react-icons/bi'
 import { FiEdit } from 'react-icons/fi'
 import DocTypeVariableForm from './DoctypeVariableDialogForm'
-import { ReactNode, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
+import { getTextAndColorForFieldType } from './utils'
 
 type Props = {}
 
@@ -69,23 +70,9 @@ const FieldRow = ({ field, index, remove, doctype, update }: { field: RavenAIFun
         update(index, data as RavenAIFunctionParams)
     }
 
-    const getTextAndColorForFieldType = (type: RavenAIFunctionParams['type']): { children: ReactNode, color: BadgeProps['color'] } => {
-        switch (type) {
-            case 'integer':
-                return { children: 'Integer', color: 'blue' }
-            case 'number':
-                return { children: 'Number', color: 'purple' }
-            case 'float':
-                return { children: 'Float', color: 'violet' }
-            case 'string':
-                return { children: 'String', color: 'green' }
-            case 'boolean':
-                return { children: 'Boolean', color: 'pink' }
-        }
-    }
+
 
     const { options, type } = useMemo(() => {
-
 
         if (field.child_table_name) {
             const docfield = doctypeMeta?.fields?.find(f => f.fieldname === field.child_table_name)

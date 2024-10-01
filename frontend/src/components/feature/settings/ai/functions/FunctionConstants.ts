@@ -78,41 +78,35 @@ export const FUNCTION_TYPES = [
 
 export type VariableType = StringVariableType | NumberVariableType | BooleanVariableType | ObjectVariableType | ArrayVariableType
 
-interface BaseVariableType {
+export interface BaseVariableType {
     type: 'string' | 'number' | 'boolean' | 'object' | 'array' | 'null'
-    description: string
-    required?: boolean
-    enum?: string
-    restrictOptions?: boolean
-    default?: string
+    description?: string
+
 }
 
-interface StringVariableType extends BaseVariableType {
-    type: 'string' | 'number'
-    enum?: string
-    restrictOptions?: boolean
-    default?: string
+export interface StringVariableType extends BaseVariableType {
+    type: 'string',
+    enum?: string[],
 }
 
-interface NumberVariableType extends BaseVariableType {
-    type: 'number'
-    restrictOptions?: boolean
-    enum?: string
-    default?: string
+export interface NumberVariableType extends BaseVariableType {
+    type: 'number',
+    enum?: string[]
 }
 
 interface BooleanVariableType extends BaseVariableType {
     type: 'boolean'
-    default?: string
 }
 
 
 export interface ObjectVariableType extends BaseVariableType {
     type: 'object'
-    properties: Record<string, VariableType>
+    properties: Record<string, VariableType>,
+    required?: string[]
 }
 
-interface ArrayVariableType extends BaseVariableType {
+export interface ArrayVariableType extends BaseVariableType {
     type: 'array'
-    items: VariableType
+    items: StringVariableType | NumberVariableType,
+    minItems?: number
 }
