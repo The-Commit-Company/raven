@@ -11,8 +11,11 @@ const useDoctypeMeta = (doctype: string) => {
         revalidateOnReconnect: false,
     })
 
+    const childDocs = data?.docs?.slice(1)
+
     return {
         doc: data?.docs?.[0],
+        childDocs,
         isLoading
     }
 }

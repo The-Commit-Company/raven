@@ -10,6 +10,8 @@ import { FiEdit } from 'react-icons/fi'
 import DocTypeVariableForm from './DoctypeVariableDialogForm'
 import { useMemo, useState } from 'react'
 import { getTextAndColorForFieldType } from './utils'
+import { DocField } from '@/types/Core/DocField'
+import clsx from 'clsx'
 
 type Props = {}
 
@@ -96,7 +98,9 @@ const FieldRow = ({ field, index, remove, doctype, update }: { field: RavenAIFun
 
     }, [field.child_table_name, field.fieldname, doctypeMeta])
 
-    return <Card>
+    return <Card className={clsx({
+        'bg-gray-6': field.do_not_ask_ai,
+    })}>
         <HStack justify={'between'}>
             <Stack>
                 <HStack align='center' gap='2'>
@@ -200,7 +204,73 @@ const ImportDoctypeVariables = ({ doctype, append }: { doctype: string, append: 
 
     const { getValues, setValue } = useFormContext<RavenAIFunction>()
 
-    const { doc: doctypeMeta } = useDoctypeMeta(doctype)
+    const { doc: doctypeMeta, childDocs } = useDoctypeMeta(doctype)
+
+    const getFieldInfoFromDocField = (field: DocField, childDoctypeName?: string) => {
+        let description = field.label ?? field.fieldname ?? ''
+
+        let options = ''
+        let type: RavenAIFunctionParams['type'] = 'string'
+
+        if (field.fieldtype === 'Select') {
+            // Need to set the options
+            options = field.options ?? ''
+        }
+
+        if (in_list(['Int', 'Rating'], field.fieldtype)) {
+            type = 'integer'
+        }
+
+        if (in_list(['Float', 'Currency', 'Percent'], field.fieldtype)) {
+            type = 'number'
+        }
+
+        if (field.fieldtype === 'Percent') {
+            description = `${field.label} in percentage (between 0 and 100)`
+        }
+
+        if (field.fieldtype === 'Check') {
+            type = 'boolean'
+        }
+
+        if (field.fieldtype === 'Date') {
+            description = `${field.label} in YYYY-MM-DD format`
+        }
+
+        if (field.fieldtype === 'Datetime') {
+            description = `${field.label} in YYYY-MM-DD HH:mm:ss format`
+        }
+
+        if (field.fieldtype === 'Time') {
+            description = `${field.label} in HH:mm:ss format`
+        }
+
+        if (childDoctypeName) {
+            description += ` in ${childDoctypeName}`
+        }
+
+        return {
+            fieldname: field.fieldname,
+            description,
+            options,
+            type,
+            required: field.reqd,
+        }
+    }
+
+    const getRequiredFieldsForChildTable = (childTable: string, fieldname: string) => {
+        // Fetch the child table meta
+        const childTableMeta = childDocs?.find(d => d.name === childTable)
+
+        if (childTableMeta) {
+            return childTableMeta.fields?.filter(f => f.reqd).map(f => ({
+                ...getFieldInfoFromDocField(f, childTableMeta.name),
+                child_table_name: fieldname
+            })) || []
+        }
+
+        return []
+    }
 
     const importFields = () => {
 
@@ -215,61 +285,25 @@ const ImportDoctypeVariables = ({ doctype, append }: { doctype: string, append: 
         // We need to check if the field already exists
         const existingFields = fields.map(f => f.fieldname)
 
-        const fieldsToBeAdded = nonTableFields?.filter(f => !existingFields.includes(f.fieldname ?? '')).map((field) => {
-            // Generate the description etc from the field
+        const regularFieldsToBeAdded = nonTableFields?.filter(f => !existingFields.includes(f.fieldname ?? '')).map((f) => getFieldInfoFromDocField(f)) || []
 
-            let description = field.label ?? field.fieldname ?? ''
-            let options = ''
-            let type: RavenAIFunctionParams['type'] = 'string'
+        const requiredTableFields = requiredFields?.filter(f => f.fieldtype === 'Table' || f.fieldtype === 'Table MultiSelect')
 
-            if (field.fieldtype === 'Select') {
-                // Need to set the options
-                options = field.options ?? ''
-            }
+        const requiredTableFieldsFlattened = (requiredTableFields?.map(f => getRequiredFieldsForChildTable(f.options ?? '', f.fieldname ?? '')) ?? []).flat()
 
-            if (in_list(['Int', 'Rating'], field.fieldtype)) {
-                type = 'integer'
-            }
-
-            if (in_list(['Float', 'Currency', 'Percent'], field.fieldtype)) {
-                type = 'number'
-            }
-
-            if (field.fieldtype === 'Percent') {
-                description = `${field.label} in percentage (between 0 and 100)`
-            }
-
-            if (field.fieldtype === 'Check') {
-                type = 'boolean'
-            }
-
-            if (field.fieldtype === 'Date') {
-                description = `${field.label} in YYYY-MM-DD format`
-            }
-
-            if (field.fieldtype === 'Datetime') {
-                description = `${field.label} in YYYY-MM-DD HH:mm:ss format`
-            }
-
-            if (field.fieldtype === 'Time') {
-                description = `${field.label} in HH:mm:ss format`
-            }
-
-            return {
-                fieldname: field.fieldname,
-                description,
-                options,
-                type,
-                required: field.reqd,
-            }
+        // Filter out the child table fields that are already added
+        const tableFieldsToBeAdded = requiredTableFieldsFlattened?.filter(f => {
+            // Check if the field already exists - use both the fieldname and the child_table_name
+            const exists = fields.some(field => field.fieldname === f.fieldname && field.child_table_name === f.child_table_name)
+            return !exists
         })
+
+        const allFieldsToBeAdded = [...regularFieldsToBeAdded, ...tableFieldsToBeAdded]
 
         // We need to add the fields to the form
-        fieldsToBeAdded?.forEach((field) => {
+        allFieldsToBeAdded?.forEach((field) => {
             append(field)
         })
-
-
     }
 
 
