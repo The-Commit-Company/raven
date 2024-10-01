@@ -108,7 +108,6 @@ const OpenAISettings = () => {
                             <Box>
                                 <Label htmlFor='openai_api_key' isRequired>OpenAI API Key</Label>
                                 <TextField.Root
-                                    maxLength={140}
                                     className={'w-48 sm:w-96'}
                                     id='openai_api_key'
                                     required
