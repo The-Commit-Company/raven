@@ -36,7 +36,7 @@ export interface FileDropProps extends FlexProps {
  */
 export const FileDrop = forwardRef((props: FileDropProps, ref) => {
 
-    const { files, onFileChange, maxFiles, accept, maxFileSize, children, height, width, ...compProps } = props
+    const { files, onFileChange, maxFiles, accept, maxFileSize, children, height, width, areaHeight, ...compProps } = props
 
     const [onDragEnter, setOnDragEnter] = useState(false)
 
@@ -94,7 +94,7 @@ export const FileDrop = forwardRef((props: FileDropProps, ref) => {
                     align='center'
                     justify='center'
                     className={clsx("fixed top-14 border-2 border-dashed rounded-md border-gray-6 dark:bg-[#171923AA] bg-[#F7FAFCAA]",
-                        height ?? "h-[calc(100vh-72px)]",
+                        areaHeight ?? "h-[calc(100vh-72px)]",
                         width ?? "w-[calc(100vw-var(--sidebar-width)-var(--space-6))]",
                     )}
                     style={{

@@ -74,8 +74,8 @@ export const ThreadMessages = ({ threadMessage }: { threadMessage: Message }) =>
             <FileDrop
                 files={files}
                 areaHeight="h-[calc(100vh-72px)]"
-                height="calc(100vh)"
-                width={'w-[calc((100vw-var(--sidebar-width)-var(--space-8)-var(--space-4))/2)]'}
+                height="100%"
+                width={'w-[calc((100vw-var(--sidebar-width)-var(--space-8)-var(--space-5))/2)]'}
                 ref={fileInputRef}
                 onFileChange={setFiles}
                 maxFiles={10}
