@@ -15,7 +15,8 @@ import Cookies from 'js-cookie'
 const NO_CACHE_KEYS = [
   "frappe.desk.form.load.getdoctype",
   "frappe.desk.search.search_link",
-  "frappe.model.workflow.get_transitions"
+  "frappe.model.workflow.get_transitions",
+  "frappe.desk.reportview.get_count"
 ]
 
 
@@ -151,7 +152,6 @@ function localStorageProvider() {
 
     // Check if the user is logged in
     const user_id = Cookies.get('user_id')
-    console.log("Cookie", user_id)
     if (!user_id || user_id === 'Guest') {
       localStorage.removeItem('app-cache')
       localStorage.removeItem('app-cache-timestamp')

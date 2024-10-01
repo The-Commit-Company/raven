@@ -50,7 +50,6 @@ const VariableBuilder = (props: Props) => {
         <Box className='py-2'>
             <Stack>
                 <HStack justify='between' align='center'>
-                    <Text size='3' weight='bold'>Variables</Text>
                     <HStack align='center' gap='4'>
                         {viewMode === 'json' && <Button color='gray' className='not-cal font-medium' variant='ghost' type='button' onClick={formatJSON}>Format JSON</Button>}
                         <HStack align='center'>

@@ -65,7 +65,7 @@ const ViewFunctionContent = ({ data }: { data: RavenAIFunction }) => {
                     breadcrumbs={[{ label: 'Functions', href: '../' }, { label: data.name, href: '', copyToClipboard: true }]}
                 />
                 <ErrorBanner error={error} />
-                <FunctionForm />
+                <FunctionForm isEdit />
             </SettingsContentContainer>
         </FormProvider>
     </form>

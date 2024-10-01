@@ -24,7 +24,7 @@ export interface LinkFieldProps {
 
 const LinkField = ({ doctype, filters, label, placeholder, value, required, setValue, disabled, autofocus, dropdownClass }: LinkFieldProps) => {
 
-    const [searchText, setSearchText] = useState(value)
+    const [searchText, setSearchText] = useState(value ?? '')
 
     const isDesktop = useIsDesktop()
 

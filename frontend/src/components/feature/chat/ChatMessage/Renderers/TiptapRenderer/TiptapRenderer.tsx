@@ -106,7 +106,6 @@ export const TiptapRenderer = ({ message, user, isScrolling = false, showMiniIma
         }
       }).extend({
         renderHTML({ node, HTMLAttributes }) {
-          console.log(node)
           // Wrap the table in a div with a class that will be styled in CSS
           return ['div', { class: 'table-wrapper rt-TableRoot rt-r-size-1 rt-variant-ghost' }, ['table', mergeAttributes(HTMLAttributes, node.attrs, {
             class: 'rt-TableRootTable border-l border-r border-t border-gray-4 dark:border-gray-7 my-2'

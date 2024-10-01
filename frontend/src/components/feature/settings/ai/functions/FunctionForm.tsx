@@ -1,13 +1,20 @@
 import { Label, ErrorText, HelperText } from '@/components/common/Form'
 import { Stack, HStack } from '@/components/layout/Stack'
 import { RavenAIFunction } from '@/types/RavenAI/RavenAIFunction'
-import { Box, Checkbox, Text, TextField, Select, Separator, TextArea } from '@radix-ui/themes'
+import { Box, Checkbox, Text, TextField, Select, TextArea, Tabs } from '@radix-ui/themes'
 import { Controller, useFormContext } from 'react-hook-form'
 import { FUNCTION_TYPES } from './FunctionConstants'
 import { ChangeEvent } from 'react'
 import VariableBuilder from './VariableBuilder'
 import LinkFormField from '@/components/common/LinkField/LinkFormField'
 import AINotEnabledCallout from '../AINotEnabledCallout'
+import DoctypeVariableBuilder from './DoctypeVariableBuilder'
+import { LuFunctionSquare, LuVariable } from 'react-icons/lu'
+
+const ICON_PROPS = {
+    size: 18,
+    className: 'mr-1.5'
+}
 
 const FunctionForm = ({ isEdit }: { isEdit?: boolean }) => {
     const { register, control, formState: { errors }, setValue } = useFormContext<RavenAIFunction>()
@@ -28,90 +35,103 @@ const FunctionForm = ({ isEdit }: { isEdit?: boolean }) => {
     }
 
     return (
-        <Stack gap='4'>
-            <AINotEnabledCallout />
-            <HStack gap='4'>
-                <Stack width='50%'>
-                    <Box>
-                        <Label htmlFor='type' isRequired>Type</Label>
-                        <Controller
-                            control={control}
-                            name='type'
-                            rules={{
-                                required: 'Type is required',
-                                onChange: onFunctionChange
-                            }}
-                            render={({ field }) => (
-                                <Select.Root value={field.value} name={field.name} onValueChange={(value) => field.onChange(value)}>
-                                    <Select.Trigger placeholder='Pick a function type' className='w-full' autoFocus />
-                                    <Select.Content>
-                                        <Select.Group>
-                                            <Select.Label className='pl-3'>Standard</Select.Label>
-                                            {FUNCTION_TYPES.filter(f => f.type === "Standard").map(f => <Select.Item value={f.value}>{f.value}</Select.Item>)}
-                                        </Select.Group>
+        <Tabs.Root defaultValue='function_details'>
+            <Tabs.List>
+                <Tabs.Trigger value='function_details'><LuFunctionSquare {...ICON_PROPS} /> Details</Tabs.Trigger>
+                <Tabs.Trigger value='variables'><LuVariable {...ICON_PROPS} /> Variables</Tabs.Trigger>
+            </Tabs.List>
+            <Box pt='4'>
+                <Tabs.Content value='function_details'>
+                    <Stack gap='4'>
+                        <AINotEnabledCallout />
+                        <HStack gap='4'>
+                            <Stack width='50%'>
+                                <Box>
+                                    <Label htmlFor='type' isRequired>Type</Label>
+                                    <Controller
+                                        control={control}
+                                        name='type'
+                                        rules={{
+                                            required: 'Type is required',
+                                            onChange: onFunctionChange
+                                        }}
+                                        render={({ field }) => (
+                                            <Select.Root value={field.value} name={field.name} onValueChange={(value) => field.onChange(value)}>
+                                                <Select.Trigger placeholder='Pick a function type' className='w-full' autoFocus />
+                                                <Select.Content>
+                                                    <Select.Group>
+                                                        <Select.Label className='pl-3'>Standard</Select.Label>
+                                                        {FUNCTION_TYPES.filter(f => f.type === "Standard").map(f => <Select.Item value={f.value}>{f.value}</Select.Item>)}
+                                                    </Select.Group>
 
-                                        <Select.Group>
-                                            <Select.Label className='pl-3'>Miscellaneous</Select.Label>
-                                            {FUNCTION_TYPES.filter(f => f.type === "Other").map(f => <Select.Item value={f.value}>{f.value}</Select.Item>)}
-                                        </Select.Group>
+                                                    <Select.Group>
+                                                        <Select.Label className='pl-3'>Miscellaneous</Select.Label>
+                                                        {FUNCTION_TYPES.filter(f => f.type === "Other").map(f => <Select.Item value={f.value}>{f.value}</Select.Item>)}
+                                                    </Select.Group>
 
-                                        <Select.Group>
-                                            <Select.Label className='pl-3'>Bulk Operations</Select.Label>
-                                            {FUNCTION_TYPES.filter(f => f.type === "Bulk Operations").map(f => <Select.Item value={f.value}>{f.value}</Select.Item>)}
-                                        </Select.Group>
+                                                    <Select.Group>
+                                                        <Select.Label className='pl-3'>Bulk Operations</Select.Label>
+                                                        {FUNCTION_TYPES.filter(f => f.type === "Bulk Operations").map(f => <Select.Item value={f.value}>{f.value}</Select.Item>)}
+                                                    </Select.Group>
 
-                                    </Select.Content>
-                                </Select.Root>
-                            )}
-                        />
-                    </Box>
-                    <FunctionHelperText />
-                    {errors.type && <ErrorText>{errors.type?.message}</ErrorText>}
-                </Stack>
-                <Stack width='50%'>
-                    <Box>
-                        <Label htmlFor='function_name' isRequired>Name</Label>
-                        <TextField.Root
-                            id='function_name'
-                            {...register('function_name', {
-                                required: 'Name is required',
-                                validate: (value) => {
-                                    if (value.includes(' ')) {
-                                        return 'Name cannot contain spaces'
-                                    }
-                                    return true
-                                }
-                            })}
-                            readOnly={isEdit}
-                            placeholder="get_purchase_invoice"
-                            aria-invalid={errors.function_name ? 'true' : 'false'}
-                        />
-                    </Box>
-                    {errors.function_name && <ErrorText>{errors.function_name?.message}</ErrorText>}
-                    <HelperText>This needs to be unique and cannot contain spaces.</HelperText>
-                </Stack>
-            </HStack>
+                                                </Select.Content>
+                                            </Select.Root>
+                                        )}
+                                    />
+                                </Box>
+                                <FunctionHelperText />
+                                {errors.type && <ErrorText>{errors.type?.message}</ErrorText>}
+                            </Stack>
+                            <Stack width='50%'>
+                                <Box>
+                                    <Label htmlFor='function_name' isRequired>Name</Label>
+                                    <TextField.Root
+                                        id='function_name'
+                                        {...register('function_name', {
+                                            required: 'Name is required',
+                                            disabled: isEdit,
+                                            validate: (value) => {
+                                                if (value.includes(' ')) {
+                                                    return 'Name cannot contain spaces'
+                                                }
+                                                return true
+                                            }
+                                        })}
+                                        readOnly={isEdit}
+                                        placeholder="get_purchase_invoice"
+                                        aria-invalid={errors.function_name ? 'true' : 'false'}
+                                    />
+                                </Box>
+                                {errors.function_name && <ErrorText>{errors.function_name?.message}</ErrorText>}
+                                <HelperText>This needs to be unique and cannot contain spaces.</HelperText>
+                            </Stack>
+                        </HStack>
 
-            <ReferenceDoctypeField />
+                        <ReferenceDoctypeField />
 
-            <Stack>
-                <Box>
-                    <Label htmlFor='description' isRequired>Description</Label>
-                    <TextArea id='description' {...register('description')} placeholder='Describe what this function does.' />
-                </Box>
-                {errors.description && <ErrorText>{errors.description?.message}</ErrorText>}
-                <HelperText>This is used to describe what this function does to the AI Bot.</HelperText>
-            </Stack>
+                        <Stack>
+                            <Box>
+                                <Label htmlFor='description' isRequired>Description</Label>
+                                <TextArea id='description' {...register('description')} placeholder='Describe what this function does.' />
+                            </Box>
+                            {errors.description && <ErrorText>{errors.description?.message}</ErrorText>}
+                            <HelperText>This is used to describe what this function does to the AI Bot.</HelperText>
+                        </Stack>
 
 
 
-            <CustomFunction />
-            <RequiresWritePermissions />
-            <Separator className='w-full' />
-            <VariableBuilder />
-            <PassParamsAsJSON />
+                        <CustomFunction />
+                        <RequiresWritePermissions />
+                    </Stack>
+                </Tabs.Content>
+                <Tabs.Content value='variables'>
+                    <DoctypeVariableBuilder />
+                    <VariableBuilder />
+                    <PassParamsAsJSON />
+                </Tabs.Content>
+            </Box>
+        </Tabs.Root>
 
-        </Stack>
     )
 }
 
@@ -223,7 +243,7 @@ const CustomFunction = () => {
 
 const ReferenceDoctypeField = () => {
 
-    const { watch, formState: { errors }, setValue } = useFormContext<RavenAIFunction>()
+    const { watch, formState: { errors }, setValue, getValues } = useFormContext<RavenAIFunction>()
 
     const type = watch('type')
 
@@ -232,33 +252,53 @@ const ReferenceDoctypeField = () => {
     const onReferenceDoctypeChange = (e: ChangeEvent<HTMLInputElement>) => {
 
         if (e.target.value) {
+
+            let description = ''
+            const function_name_exists = getValues('function_name') ? true : false
+            let function_name = ''
             // Set the description if none is set
             if (type === 'Get Document') {
-                setValue('description', `This function fetches a ${e.target.value} document using its name from the system.`)
+                description = `This function fetches a ${e.target.value} document using its name from the system.`
+                function_name = `get_${e.target.value.toLowerCase().replace(/\s/g, '_')}`
             }
             if (type === 'Get Multiple Documents') {
-                setValue('description', `This function fetches multiple ${e.target.value} documents using their names from the system.`)
+                description = `This function fetches multiple ${e.target.value} documents using their names from the system.`
+                function_name = `get_${e.target.value.toLowerCase().replace(/\s/g, '_')}s`
             }
             if (type === 'Get List') {
-                setValue('description', `This function fetches a list of ${e.target.value} from the system.`)
+                description = `This function fetches a list of ${e.target.value} from the system.`
+                function_name = `get_${e.target.value.toLowerCase().replace(/\s/g, '_')}_list`
             }
             if (type === 'Create Document') {
-                setValue('description', `This function creates a ${e.target.value} in the system.`)
+                description = `This function creates a ${e.target.value} in the system.`
+                function_name = `create_${e.target.value.toLowerCase().replace(/\s/g, '_')}`
             }
             if (type === 'Create Multiple Documents') {
-                setValue('description', `This function creates multiple ${e.target.value} in the system.`)
+                description = `This function creates multiple ${e.target.value} in the system.`
+                function_name = `create_${e.target.value.toLowerCase().replace(/\s/g, '_')}s`
             }
             if (type === 'Update Document') {
-                setValue('description', `This function updates a ${e.target.value} in the system.`)
+                description = `This function updates a ${e.target.value} in the system.`
+                function_name = `update_${e.target.value.toLowerCase().replace(/\s/g, '_')}`
             }
             if (type === 'Update Multiple Documents') {
-                setValue('description', `This function updates multiple ${e.target.value} in the system.`)
+                description = `This function updates multiple ${e.target.value} in the system.`
+                function_name = `update_${e.target.value.toLowerCase().replace(/\s/g, '_')}s`
             }
             if (type === 'Delete Document') {
-                setValue('description', `This function deletes a ${e.target.value} from the system.`)
+                description = `This function deletes a ${e.target.value} from the system.`
+                function_name = `delete_${e.target.value.toLowerCase().replace(/\s/g, '_')}`
             }
             if (type === 'Delete Multiple Documents') {
-                setValue('description', `This function deletes multiple ${e.target.value} from the system.`)
+                description = `This function deletes multiple ${e.target.value} from the system.`
+                function_name = `delete_${e.target.value.toLowerCase().replace(/\s/g, '_')}s`
+            }
+
+            if (function_name && !function_name_exists) {
+                setValue('function_name', function_name)
+            }
+            if (description) {
+                setValue('description', description)
             }
         }
     }

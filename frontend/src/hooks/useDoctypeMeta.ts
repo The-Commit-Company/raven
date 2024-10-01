@@ -1,7 +1,8 @@
+import { DocType } from '@/types/Core/DocType'
 import { useFrappeGetCall } from 'frappe-react-sdk'
 
 const useDoctypeMeta = (doctype: string) => {
-    const { data, isLoading } = useFrappeGetCall('frappe.desk.form.load.getdoctype', {
+    const { data, isLoading } = useFrappeGetCall<{ docs: DocType[] }>('frappe.desk.form.load.getdoctype', {
         doctype: doctype
     }, undefined, {
         // 24 hours
