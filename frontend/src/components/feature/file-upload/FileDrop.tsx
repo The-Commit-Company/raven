@@ -23,8 +23,11 @@ export interface FileDropProps extends FlexProps {
     /** Maximum file size in mb that can be selected */
     maxFileSize?: number,
     children?: React.ReactNode,
+    /** This is used inside a style prop for the outer div */
     height?: string,
-    width?: string
+    width?: string,
+    /** This is a Tailwind class that is applied to the area inside the dropzone */
+    areaHeight?: string,
 }
 
 /**
