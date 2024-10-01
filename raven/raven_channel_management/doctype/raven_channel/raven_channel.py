@@ -50,6 +50,25 @@ class RavenChannel(Document):
 		# Delete the pinned channels
 		frappe.db.delete("Raven Pinned Channels", {"channel_id": self.name})
 
+		# If the channel was a thread, (i.e. a message exists with the same name), remove the 'is_thread' flag from the message
+		if self.is_thread and frappe.db.exists("Raven Message", {"name": self.name}):
+			message_channel_id = frappe.get_cached_value("Raven Message", self.name, "channel_id")
+			frappe.db.set_value("Raven Message", self.name, "is_thread", 0)
+			# Update the message which used to be a thread
+			frappe.publish_realtime(
+				"message_edited",
+				{
+					"channel_id": message_channel_id,
+					"sender": frappe.session.user,
+					"message_id": self.name,
+					"message_details": {
+						"is_thread": 0,
+					},
+				},
+				doctype="Raven Channel",
+				docname=message_channel_id
+			)
+
 	def after_insert(self):
 		"""
 		After inserting a channel, we need to check if it is a direct message channel or not.
