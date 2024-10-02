@@ -1,2 +1,2 @@
 .devcontainer/docker-compose.yml
-frontend
+frontend/
