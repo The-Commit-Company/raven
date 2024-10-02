@@ -38,7 +38,7 @@ const AIEvent = ({ channelID }: Props) => {
             'w-full transition-all duration-300 ease-ease-out-quart',
             showAIEvent ? 'translate-y-0 opacity-100 z-50' : 'translate-y-full opacity-0 h-0'
         )}>
-            <div className="flex items-center gap-2 py-2 px-2 bg-white">
+            <div className="flex items-center gap-2 py-2 px-2 bg-white dark:bg-gray-2">
                 <Loader />
                 <Text size='2'>{aiEvent}</Text>
             </div>
