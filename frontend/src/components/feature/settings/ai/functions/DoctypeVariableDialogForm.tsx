@@ -4,7 +4,7 @@ import useDoctypeMeta from "@/hooks/useDoctypeMeta"
 import { DocField } from "@/types/Core/DocField"
 import { RavenAIFunctionParams } from "@/types/RavenAI/RavenAIFunctionParams"
 import { in_list } from "@/utils/validations"
-import { Box, Button, Callout, Checkbox, Dialog, Popover, ScrollArea, Select, Text, TextArea, TextField } from "@radix-ui/themes"
+import { Badge, Box, Button, Callout, Checkbox, Dialog, Popover, ScrollArea, Select, Text, TextArea, TextField } from "@radix-ui/themes"
 import { FrappeConfig, FrappeContext, useFrappeGetCall, useSearch } from "frappe-react-sdk"
 import { useContext, useMemo, useState } from "react"
 import { Controller, FormProvider, useController, useForm, useFormContext } from "react-hook-form"
@@ -251,7 +251,7 @@ const DoctypeFieldSelect = ({ doctype, value, onFieldSelect }: { doctype: string
             <Select.Trigger placeholder="Select Field" className='w-full' name='fieldname' />
             <Select.Content>
                 {fields?.map((field) => (
-                    <Select.Item key={field.fieldname} value={field.fieldname ?? ''}>{field.label} ({field.fieldname})</Select.Item>
+                    <Select.Item key={field.fieldname} value={field.fieldname ?? ''}>{field.label} ({field.fieldname}) <Badge size='1' color='gray'>{field.fieldtype}</Badge></Select.Item>
                 ))}
             </Select.Content>
         </Select.Root>
@@ -500,7 +500,7 @@ const QuickImportPopover = ({ doctype }: { doctype: string }) => {
 
     const [searchText, setSearchText] = useState('')
 
-    const { data } = useSearch(doctype, searchText)
+    const { data } = useSearch(doctype, searchText, undefined, 15)
 
     const { setValue, getValues } = useFormContext<RavenAIFunctionParams>()
 
@@ -541,12 +541,12 @@ const QuickImportPopover = ({ doctype }: { doctype: string }) => {
                     </TextField.Slot>
                 </TextField.Root>
                 <ScrollArea style={{ height: 360 }}>
-                    {data?.message?.map((item) => <Stack gap='1'
+                    {data?.message?.slice(0, 15).map((item) => <Stack gap='0'
                         role='button'
                         className="hover:bg-gray-2 px-2 py-1.5 rounded-md cursor-pointer"
                         onClick={() => addToList(item.value)} key={item.value}>
-                        <Text size='2'>{item.value}</Text>
-                        {item.description && <Text size='1' weight='medium'>{item.description}</Text>}
+                        <Text size='2' weight='medium'>{item.value}</Text>
+                        {item.description && <Text size='1' weight='light'>{item.description}</Text>}
                     </Stack>)}
                 </ScrollArea>
             </Stack>

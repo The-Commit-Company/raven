@@ -13,6 +13,8 @@ from raven.ai.functions import (
 	delete_documents,
 	get_document,
 	get_documents,
+	update_document,
+	update_documents,
 )
 from raven.ai.openai_client import get_open_ai_client
 
@@ -102,7 +104,10 @@ def stream_response(ai_thread_id: str, bot, channel_id: str):
 				# Args is a dictionary of the form {"param_name": "param_value"}
 
 				try:
-					args = json.loads(tool.function.arguments)
+					if isinstance(tool.function.arguments, str):
+						args = json.loads(tool.function.arguments)
+					else:
+						args = tool.function.arguments
 
 					# Check the type of function and then call it accordingly
 
@@ -160,6 +165,19 @@ def stream_response(ai_thread_id: str, bot, channel_id: str):
 
 						for doc_id in function_output.get("documents"):
 							docs_updated.append({"doctype": function.reference_doctype, "document_id": doc_id})
+
+					if function.type == "Update Document":
+						self.publish_event(f"Updating {function.reference_doctype}...")
+						function_output = update_document(
+							function.reference_doctype,
+							document_id=args.get("document_id"),
+							data=args,
+							function=function,
+						)
+
+					if function.type == "Update Multiple Documents":
+						self.publish_event(f"Updating multiple {function.reference_doctype}s...")
+						function_output = update_documents(function.reference_doctype, data=args, function=function)
 
 					tool_outputs.append(
 						{"tool_call_id": tool.id, "output": json.dumps(function_output, default=str)}

@@ -29,7 +29,9 @@ def handle_bot_dm(message, bot):
 		# Upload the file to OpenAI
 		file = create_file_in_openai(message.file, message.message_type, client)
 
-		content, attachments = get_content_attachment_for_file(message.message_type, file.id)
+		content, attachments = get_content_attachment_for_file(
+			message.message_type, file.id, message.file
+		)
 
 		ai_thread = client.beta.threads.create(
 			messages=[
@@ -114,17 +116,37 @@ def handle_ai_thread_message(message, channel):
 		if message.message_type == "File" and not check_if_bot_has_file_search(bot, channel.name):
 			return
 		# Upload the file to OpenAI
-		file = create_file_in_openai(message.file, message.message_type, client)
+		try:
+			file = create_file_in_openai(message.file, message.message_type, client)
+		except Exception as e:
+			frappe.log_error("Raven AI Error", frappe.get_traceback())
+			bot.send_message(
+				channel_id=channel.name,
+				text="Sorry, there was an error in processing your file. Please try again.<br/><br/>Error: "
+				+ str(e),
+			)
+			return
 
-		content, attachments = get_content_attachment_for_file(message.message_type, file.id)
-
-		client.beta.threads.messages.create(
-			thread_id=channel.openai_thread_id,
-			role="user",
-			content=content,
-			metadata={"user": message.owner, "message": message.name},
-			attachments=attachments,
+		content, attachments = get_content_attachment_for_file(
+			message.message_type, file.id, message.file
 		)
+
+		try:
+			client.beta.threads.messages.create(
+				thread_id=channel.openai_thread_id,
+				role="user",
+				content=content,
+				metadata={"user": message.owner, "message": message.name},
+				attachments=attachments,
+			)
+		except Exception as e:
+			frappe.log_error("Raven AI Error", frappe.get_traceback())
+			bot.send_message(
+				channel_id=channel.name,
+				text="Sorry, there was an error in processing your file. Please try again.<br/><br/>Error: "
+				+ str(e),
+			)
+			return
 
 	else:
 
@@ -181,17 +203,26 @@ def create_file_in_openai(file_url: str, message_type: str, client):
 	return file
 
 
-def get_content_attachment_for_file(message_type: str, file_id: str):
+def get_content_attachment_for_file(message_type: str, file_id: str, file_url: str):
 
 	attachments = None
 
 	if message_type == "File":
 		content = "Uploaded a file"
 
+		FILE_SEARCH_EXCLUSIONS = [".xlsx", ".csv", ".json", ".xls"]
+
+		tool_type = "file_search"
+
+		for exclusion in FILE_SEARCH_EXCLUSIONS:
+			if file_url.endswith(exclusion):
+				tool_type = "code_interpreter"
+				break
+
 		attachments = [
 			{
 				"file_id": file_id,
-				"tools": [{"type": "file_search"}],
+				"tools": [{"type": tool_type}],
 			}
 		]
 	else:

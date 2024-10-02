@@ -53,26 +53,40 @@ def create_documents(doctype: str, data: list, function=None):
 	return {"documents": docs, "message": "Documents created", "doctype": doctype}
 
 
-def update_document(doctype: str, document_id: str, data: dict):
+def update_document(doctype: str, document_id: str, data: dict, function=None):
 	"""
 	Update a document in the database
 	"""
+	if function:
+		# Get any default values
+		for param in function.parameters:
+			if param.default_value:
+				# Check if this value was not to be asked by the AI
+				if param.do_not_ask_ai:
+					data[param.fieldname] = param.default_value
+
+				# Check if the value was not provided
+				if not data.get(param.fieldname):
+					data[param.fieldname] = param.default_value
+
 	doc = frappe.get_doc(doctype, document_id)
 	doc.update(data)
 	doc.save()
 	return {"document_id": doc.name, "message": "Document updated", "doctype": doctype}
 
 
-def update_documents(doctype: str, data: dict):
+def update_documents(doctype: str, data: dict, function=None):
 	"""
 	Update documents in the database
 	"""
 	updated_docs = []
 	for document in data:
-		doc = frappe.get_doc(doctype, document.get("document_id"))
-		doc.update(data)
-		doc.save()
-		updated_docs.append(doc.name)
+		updated_docs.append(
+			update_document(doctype, document.get("document_id"), document.get("data"), function).get(
+				"document_id"
+			)
+		)
+
 	return {"document_ids": updated_docs, "message": "Documents updated", "doctype": doctype}
 
 
