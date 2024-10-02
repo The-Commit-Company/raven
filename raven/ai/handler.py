@@ -174,11 +174,18 @@ def stream_response(ai_thread_id: str, bot, channel_id: str):
 							function=function,
 						)
 
+						docs_updated.append(
+							{"doctype": function.reference_doctype, "document_id": args.get("document_id")}
+						)
+
 					if function.type == "Update Multiple Documents":
 						self.publish_event(f"Updating multiple {function.reference_doctype}s...")
 						function_output = update_documents(
 							function.reference_doctype, data=args.get("data"), function=function
 						)
+
+						for doc_id in function_output.get("documents"):
+							docs_updated.append({"doctype": function.reference_doctype, "document_id": doc_id})
 
 					tool_outputs.append(
 						{"tool_call_id": tool.id, "output": json.dumps(function_output, default=str)}
