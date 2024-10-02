@@ -104,10 +104,7 @@ def stream_response(ai_thread_id: str, bot, channel_id: str):
 				# Args is a dictionary of the form {"param_name": "param_value"}
 
 				try:
-					if isinstance(tool.function.arguments, str):
-						args = json.loads(tool.function.arguments)
-					else:
-						args = tool.function.arguments
+					args = json.loads(tool.function.arguments)
 
 					# Check the type of function and then call it accordingly
 
@@ -161,7 +158,9 @@ def stream_response(ai_thread_id: str, bot, channel_id: str):
 
 					if function.type == "Create Multiple Documents":
 						self.publish_event(f"Creating multiple {function.reference_doctype}s...")
-						function_output = create_documents(function.reference_doctype, data=args, function=function)
+						function_output = create_documents(
+							function.reference_doctype, data=args.get("data"), function=function
+						)
 
 						for doc_id in function_output.get("documents"):
 							docs_updated.append({"doctype": function.reference_doctype, "document_id": doc_id})
@@ -177,7 +176,9 @@ def stream_response(ai_thread_id: str, bot, channel_id: str):
 
 					if function.type == "Update Multiple Documents":
 						self.publish_event(f"Updating multiple {function.reference_doctype}s...")
-						function_output = update_documents(function.reference_doctype, data=args, function=function)
+						function_output = update_documents(
+							function.reference_doctype, data=args.get("data"), function=function
+						)
 
 					tool_outputs.append(
 						{"tool_call_id": tool.id, "output": json.dumps(function_output, default=str)}

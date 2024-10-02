@@ -15,6 +15,7 @@
   "reference_doctype",
   "pass_parameters_as_json",
   "requires_write_permissions",
+  "strict",
   "parameters_section",
   "parameters",
   "params",
@@ -94,11 +95,17 @@
    "fieldtype": "Table",
    "label": "Parameters",
    "options": "Raven AI Function Params"
+  },
+  {
+   "default": "0",
+   "fieldname": "strict",
+   "fieldtype": "Check",
+   "label": "Strict"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-09-30 00:07:03.071045",
+ "modified": "2024-10-02 07:19:47.003701",
  "modified_by": "Administrator",
  "module": "Raven AI",
  "name": "Raven AI Function",

@@ -81,10 +81,10 @@ def update_documents(doctype: str, data: dict, function=None):
 	"""
 	updated_docs = []
 	for document in data:
+		document_without_id = document.copy()
+		document_id = document_without_id.pop("document_id")
 		updated_docs.append(
-			update_document(doctype, document.get("document_id"), document.get("data"), function).get(
-				"document_id"
-			)
+			update_document(doctype, document_id, document_without_id, function).get("document_id")
 		)
 
 	return {"document_ids": updated_docs, "message": "Documents updated", "doctype": doctype}

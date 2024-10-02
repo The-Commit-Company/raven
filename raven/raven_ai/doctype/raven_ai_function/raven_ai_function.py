@@ -30,6 +30,7 @@ class RavenAIFunction(Document):
 		pass_parameters_as_json: DF.Check
 		reference_doctype: DF.Link | None
 		requires_write_permissions: DF.Check
+		strict: DF.Check
 		type: DF.Literal[
 			"Get Document",
 			"Get Multiple Documents",
@@ -198,7 +199,7 @@ class RavenAIFunction(Document):
 
 		child_tables = {}
 
-		if self.type == "Update Document" or type == "Update Multiple Documents":
+		if self.type == "Update Document" or self.type == "Update Multiple Documents":
 			properties["document_id"] = {
 				"type": "string",
 				"description": f"The ID of the {self.reference_doctype} to update",
@@ -334,6 +335,7 @@ class RavenAIFunction(Document):
 		function_definition = {
 			"name": self.function_name,
 			"description": self.description,
+			"strict": True if self.strict else False,
 			"parameters": params,
 		}
 
