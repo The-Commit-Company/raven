@@ -13,6 +13,9 @@ import { GrPowerReset } from "react-icons/gr"
 import { BiSmile } from "react-icons/bi"
 import EmojiPicker from "@/components/common/EmojiPicker/EmojiPicker"
 import { useIsDesktop } from "@/hooks/useMediaQuery"
+import PageContainer from "@/components/layout/Settings/PageContainer"
+import SettingsPageHeader from "@/components/layout/Settings/SettingsPageHeader"
+import SettingsContentContainer from "@/components/layout/Settings/SettingsContentContainer"
 
 type UserProfile = {
     full_name?: string,
@@ -21,7 +24,7 @@ type UserProfile = {
     custom_status?: string
 }
 
-export const UserProfile = () => {
+const UserProfile = () => {
 
     const { myProfile, mutate } = useCurrentRavenUser()
     const methods = useForm<UserProfile>({
@@ -59,22 +62,18 @@ export const UserProfile = () => {
     const isDesktop = useIsDesktop()
 
     return (
-        <Flex direction='column' gap='4' px='6' py='4'>
-
+        <PageContainer>
             <FormProvider {...methods}>
                 <form onSubmit={handleSubmit(onSubmit)}>
-
-                    <Flex direction={'column'} gap='4'>
-                        <Flex justify={'between'} align={'center'}>
-                            <Flex direction='column' gap='0'>
-                                <Text size='3' className={'font-semibold'}>Profile</Text>
-                                <Text size='1' color='gray'>Manage your Raven profile</Text>
-                            </Flex>
-                            <Button type='submit' disabled={updatingDoc}>
+                    <SettingsContentContainer>
+                        <SettingsPageHeader
+                            title='Profile'
+                            description='Manage your Raven profile'
+                            actions={<Button type='submit' disabled={updatingDoc}>
                                 {updatingDoc && <Loader />}
                                 {updatingDoc ? "Saving" : "Save"}
-                            </Button>
-                        </Flex>
+                            </Button>}
+                        />
 
                         <Card className="p-0 align-middle justify-center">
                             <Flex direction={'column'} gap='0'>
@@ -178,10 +177,12 @@ export const UserProfile = () => {
                                 </Flex>
                             </Flex>
                         </Card>
-                    </Flex>
+                    </SettingsContentContainer>
 
                 </form>
             </FormProvider>
-        </Flex>
+        </PageContainer>
     )
 }
+
+export const Component = UserProfile

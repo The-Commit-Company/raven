@@ -8,3 +8,8 @@
 .tiptap-renderer .mention {
     color: var(--accent-11);
 }
+
+.tiptap-renderer .table-wrapper {
+    overflow-x: auto;
+    padding-right: 4rem;
+}

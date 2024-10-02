@@ -12,3 +12,24 @@ export const isEmailValid = (email: string): boolean => {
 export const isPasswordValid = (password: string): boolean => {
     return (/^(?=.*[0-9])(?=.*[!@#$%^&*_-])(?=.*[a-zA-Z])[a-zA-Z0-9!@#$%^&*_-]{8,60}$/.test(password))
 }
+
+/**
+ * Function to check if a string exists in a list
+ * @param list 
+ * @param item 
+ * @returns 
+ */
+export const in_list = (list: string[], item?: string): boolean => {
+    if (item === undefined) return false
+
+    return list.includes(item)
+}
+
+/**
+ * Function to check if an object is empty
+ * @param obj 
+ * @returns 
+ */
+export const isEmpty = (obj: object) => {
+    return Object.keys(obj).length === 0;
+}

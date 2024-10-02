@@ -68,11 +68,12 @@ class RavenUser(Document):
 		"""
 		Remove the Raven User role from the user.
 		"""
-		user = frappe.get_doc("User", self.user)
-		user.flags.ignore_permissions = True
-		user.flags.deleting_raven_user = True
-		user.remove_roles("Raven User")
-		user.save()
+		if self.user:
+			user = frappe.get_doc("User", self.user)
+			user.flags.ignore_permissions = True
+			user.flags.deleting_raven_user = True
+			user.remove_roles("Raven User")
+			user.save()
 
 		self.invalidate_user_list_cache()
 

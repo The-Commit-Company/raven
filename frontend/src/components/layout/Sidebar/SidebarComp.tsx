@@ -1,14 +1,12 @@
 import React, { ReactNode } from 'react'
 import { NavLink } from 'react-router-dom'
-import { Flex, IconButton, Text, Theme } from '@radix-ui/themes';
-import { FlexProps } from '@radix-ui/themes/dist/cjs/components/flex';
-import { TextProps } from '@radix-ui/themes/dist/cjs/components/text';
+import { Flex, FlexProps, IconButton, Text, TextProps, Theme } from '@radix-ui/themes';
 import { IconButtonProps } from '@radix-ui/themes/dist/cjs/components/icon-button';
 import { BadgeProps } from '@radix-ui/themes/dist/cjs/components/badge';
 import { clsx } from 'clsx';
 import { FiChevronDown, FiChevronRight } from 'react-icons/fi';
 
-interface SidebarGroupProps extends FlexProps {
+type SidebarGroupProps = FlexProps & {
     children: ReactNode;
 }
 
@@ -21,7 +19,7 @@ export const SidebarGroup = ({ children, ...props }: SidebarGroupProps) => {
     )
 }
 
-interface SidebarGroupItemProps extends FlexProps {
+type SidebarGroupItemProps = FlexProps & {
     children: ReactNode
 }
 export const SidebarGroupItem = ({ children, ...props }: SidebarGroupItemProps) => {
@@ -48,7 +46,7 @@ export const SidebarGroupLabel = ({ children, ...props }: SidebarGroupLabelProps
     )
 }
 
-interface SidebarGroupListProps extends FlexProps {
+type SidebarGroupListProps = FlexProps & {
     children: ReactNode
 }
 export const SidebarGroupList = ({ children, ...props }: SidebarGroupListProps) => {
@@ -60,7 +58,7 @@ export const SidebarGroupList = ({ children, ...props }: SidebarGroupListProps) 
     )
 }
 
-interface SidebarItemProps extends FlexProps {
+type SidebarItemProps = FlexProps & {
     to: string;
     children: React.ReactNode,
     end?: boolean,
@@ -94,7 +92,7 @@ export const SidebarItem = ({ to, children, end, active = false, activeStyles, c
     )
 }
 
-interface SidebarIconProps extends FlexProps {
+type SidebarIconProps = FlexProps & {
     subtle?: boolean,
     children: React.ReactNode
 }
@@ -108,7 +106,7 @@ export const SidebarIcon = ({ subtle, children, ...props }: SidebarIconProps) =>
 
 
 
-interface SidebarButtonItemProps extends FlexProps {
+type SidebarButtonItemProps = FlexProps & {
     children: React.ReactNode,
     subtle?: boolean,
     onClick?: () => void,

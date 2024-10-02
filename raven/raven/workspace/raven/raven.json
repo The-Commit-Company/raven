@@ -1,6 +1,6 @@
 {
  "charts": [],
- "content": "[{\"id\":\"MKitHAnT4f\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\"><a href=\\\"/raven\\\">Raven</a></span>\",\"col\":12}},{\"id\":\"gBy2HFBNf4\",\"type\":\"onboarding\",\"data\":{\"onboarding_name\":\"Raven\",\"col\":12}},{\"id\":\"ZcawYU5brv\",\"type\":\"card\",\"data\":{\"card_name\":\"DocTypes\",\"col\":4}}]",
+ "content": "[{\"id\":\"MKitHAnT4f\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\"><a href=\\\"/raven\\\">Raven</a></span>\",\"col\":12}},{\"id\":\"gBy2HFBNf4\",\"type\":\"onboarding\",\"data\":{\"onboarding_name\":\"Raven\",\"col\":12}},{\"id\":\"ZcawYU5brv\",\"type\":\"card\",\"data\":{\"card_name\":\"DocTypes\",\"col\":4}},{\"id\":\"Uox8EFjnuM\",\"type\":\"card\",\"data\":{\"card_name\":\"AI\",\"col\":4}}]",
  "creation": "2023-06-22 20:12:29.687295",
  "custom_blocks": [],
  "docstatus": 0,
@@ -79,9 +79,58 @@
    "link_type": "DocType",
    "onboard": 0,
    "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "AI",
+   "link_count": 4,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Bots",
+   "link_count": 0,
+   "link_to": "Raven Bot",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Functions",
+   "link_count": 0,
+   "link_to": "Raven AI Function",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Instruction Templates",
+   "link_count": 0,
+   "link_to": "Raven Bot Instruction Template",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Saved Prompts",
+   "link_count": 0,
+   "link_to": "Raven Bot AI Prompt",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
   }
  ],
- "modified": "2024-06-13 20:18:44.203529",
+ "modified": "2024-09-29 07:34:36.957102",
  "modified_by": "Administrator",
  "module": "Raven",
  "name": "Raven",

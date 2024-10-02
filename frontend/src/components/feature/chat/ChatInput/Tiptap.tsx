@@ -492,15 +492,15 @@ const Tiptap = ({ isEdit, slotBefore, fileProps, onMessageSend, channelMembers, 
         )
     } else {
         return <Box className={clsx('pt-2 pb-8 w-full bg-white dark:bg-gray-2 z-50 border-t border-t-gray-3 dark:border-t-gray-3',
-            isEdit ? '' : 'fixed bottom-0 left-0 px-4'
+            isEdit ? 'bg-transparent dark:bg-transparent' : 'fixed bottom-0 left-0 px-4'
         )}>
             <EditorContext.Provider value={{ editor }}>
                 {slotBefore}
                 <Flex align='end' gap='2' className='relative'>
                     {!isEdit &&
-                        <div className='w-6'>
-                            <Suspense fallback={<IconButton radius='full' color='gray' variant='soft' size='1' className='mb-2'>
-                                <BiPlus size='18' />
+                        <div className='w-8'>
+                            <Suspense fallback={<IconButton radius='full' color='gray' variant='soft' size='2' className='mb-1'>
+                                <BiPlus size='20' />
                             </IconButton>}>
                                 <MobileInputActions fileProps={fileProps} setContent={setContent} sendMessage={onMessageSend} messageSending={messageSending} />
                             </Suspense>
@@ -519,9 +519,9 @@ const Tiptap = ({ isEdit, slotBefore, fileProps, onMessageSend, channelMembers, 
                     </BubbleMenu>
                     <EditorContent editor={editor} />
                     <SendButton
-                        size='1'
+                        size='2'
                         variant='soft'
-                        className='bg-transparent mb-2 absolute right-1'
+                        className='bg-transparent mb-1 absolute right-2'
                         sendMessage={onMessageSend}
                         messageSending={messageSending}
                         setContent={setContent} />

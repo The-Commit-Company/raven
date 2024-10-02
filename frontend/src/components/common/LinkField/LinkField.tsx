@@ -24,7 +24,7 @@ export interface LinkFieldProps {
 
 const LinkField = ({ doctype, filters, label, placeholder, value, required, setValue, disabled, autofocus, dropdownClass }: LinkFieldProps) => {
 
-    const [searchText, setSearchText] = useState('')
+    const [searchText, setSearchText] = useState(value ?? '')
 
     const isDesktop = useIsDesktop()
 
@@ -49,13 +49,14 @@ const LinkField = ({ doctype, filters, label, placeholder, value, required, setV
         itemToString(item) {
             return item ? item.value : ''
         },
-        selectedItem: items.find(item => item.value === value),
         onSelectedItemChange({ selectedItem }) {
+
             setValue(selectedItem?.value ?? '')
         },
+        defaultInputValue: value,
+        defaultIsOpen: isDesktop && autofocus,
+        defaultSelectedItem: items.find(item => item.value === value),
     })
-
-    console.log(isOpen)
 
     return <div className="w-full">
         <div className="flex flex-col">

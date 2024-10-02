@@ -3,7 +3,7 @@ import LinkField, { LinkFieldProps } from './LinkField'
 
 interface LinkFormFieldProps extends Omit<LinkFieldProps, 'value' | 'setValue'> {
     name: string,
-    rules: ControllerProps['rules'],
+    rules?: ControllerProps['rules'],
     disabled?: boolean
 }
 

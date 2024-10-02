@@ -3,7 +3,7 @@ import { Box, Flex, Separator, Text } from '@radix-ui/themes'
 import clsx from 'clsx'
 import { PropsWithChildren, createElement } from 'react'
 import { IconType } from 'react-icons'
-import { BiBuildings } from 'react-icons/bi'
+import { BiBot, BiBuildings } from 'react-icons/bi'
 import { BsBoxes } from 'react-icons/bs'
 import { LuUserCircle2 } from 'react-icons/lu'
 import { NavLink } from 'react-router-dom'
@@ -25,9 +25,17 @@ export const SettingsSidebar = () => {
                     {/* <SettingsSidebarItem title="Bots" to='bots' /> */}
                 </SettingsGroup>
                 <SettingsSeparator />
+                <SettingsGroup title="AI" icon={BiBot}>
+                    <SettingsSidebarItem title="Bots" to='bots' />
+                    <SettingsSidebarItem title="Functions" to='functions' />
+                    <SettingsSidebarItem title="Commands" to='commands' />
+                    <SettingsSidebarItem title="Instructions" to="instructions" />
+                    <SettingsSidebarItem title="OpenAI Settings" to='openai-settings' />
+                </SettingsGroup>
+                <SettingsSeparator />
                 <SettingsGroup title='Integrations' icon={BsBoxes}>
                     {/* <SettingsSidebarItem title="ERPNext" to='erpnext' /> */}
-                    <SettingsSidebarItem title="Frappe HR" to='frappe-hr' />
+                    <SettingsSidebarItem title="HR" to='hr' />
                     {/* <SettingsSidebarItem title="Frappe LMS" to='frappe-lms' /> */}
                     {/* <SettingsSidebarItem title="Frappe CRM" to='frappe-crm' /> */}
                 </SettingsGroup>
@@ -68,7 +76,7 @@ const SettingsSidebarItem = ({ title, to, end }: { title: string, to: string, en
             {({ isActive }) => {
                 return (
                     <Box className='ml-4'>
-                        <Flex className={clsx(`px-2 py-1 text-gray-12 rounded-md cursor-default w-full`, isActive ? activeClass : "bg-transparent hover:bg-slate-2 hover:dark:bg-slate-3")}>
+                        <Flex className={clsx(`px-2 py-1 text-gray-12 rounded-md w-full`, isActive ? activeClass : "bg-transparent hover:bg-slate-2 hover:dark:bg-slate-3")}>
                             <Text className='text-[13px]' weight='medium'>{title}</Text>
                         </Flex>
                     </Box>

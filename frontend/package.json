@@ -2,7 +2,7 @@
   "name": "raven-ui",
   "private": true,
   "license": "AGPL-3.0-only",
-  "version": "1.7.1",
+  "version": "2.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -47,6 +47,7 @@
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-dropzone": "^14.2.3",
+    "react-error-boundary": "^4.0.13",
     "react-hook-form": "^7.52.2",
     "react-icons": "^5.3.0",
     "react-idle-timer": "^5.7.2",

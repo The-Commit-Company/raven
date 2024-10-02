@@ -17,6 +17,7 @@ class RavenChannel(Document):
 
 		channel_description: DF.SmallText | None
 		channel_name: DF.Data
+		is_ai_thread: DF.Check
 		is_archived: DF.Check
 		is_direct_message: DF.Check
 		is_self_message: DF.Check
@@ -26,6 +27,8 @@ class RavenChannel(Document):
 		last_message_timestamp: DF.Datetime | None
 		linked_doctype: DF.Link | None
 		linked_document: DF.DynamicLink | None
+		openai_thread_id: DF.Data | None
+		thread_bot: DF.Link | None
 		type: DF.Literal["Private", "Public", "Open"]
 	# end: auto-generated types
 
@@ -66,7 +69,7 @@ class RavenChannel(Document):
 					},
 				},
 				doctype="Raven Channel",
-				docname=message_channel_id
+				docname=message_channel_id,
 			)
 
 	def after_insert(self):

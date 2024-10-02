@@ -1,5 +1,5 @@
 import { DIALOG_CONTENT_CLASS } from '@/utils/layout/dialog'
-import { Dialog } from '@radix-ui/themes'
+import { Dialog, VisuallyHidden } from '@radix-ui/themes'
 import { Command } from 'cmdk'
 import { useEffect } from 'react'
 import './commandMenu.styles.css'
@@ -11,6 +11,7 @@ import ArchivedChannelList from './ArchivedChannelList'
 import { atom, useAtom } from 'jotai'
 import { useIsDesktop } from '@/hooks/useMediaQuery'
 import { Drawer, DrawerContent } from '@/components/layout/Drawer'
+import SettingsList from './SettingsList'
 
 export const commandMenuOpenAtom = atom(false)
 
@@ -21,7 +22,7 @@ const CommandMenu = () => {
     useEffect(() => {
 
         const down = (e: KeyboardEvent) => {
-            if (e.key === 'k' && (e.metaKey || e.ctrlKey)) {
+            if (e.key === 'k' && (e.metaKey || e.ctrlKey) && !e.shiftKey) {
                 e.preventDefault()
                 setOpen((open) => !open)
             }
@@ -37,6 +38,12 @@ const CommandMenu = () => {
         return (
             <Dialog.Root open={open} onOpenChange={setOpen}>
                 <Dialog.Content className={clsx(DIALOG_CONTENT_CLASS, 'p-4 rounded-md')}>
+                    <VisuallyHidden>
+                        <Dialog.Title>Command Menu</Dialog.Title>
+                        <Dialog.Description>
+                            Search or type a command
+                        </Dialog.Description>
+                    </VisuallyHidden>
                     <CommandList />
                 </Dialog.Content>
             </Dialog.Root>
@@ -69,6 +76,7 @@ export const CommandList = () => {
             <Command.Empty>No results found.</Command.Empty>
             <ChannelList />
             <UserList />
+            <SettingsList />
 
             {/* TODO: Make these commands work */}
             {/* <Command.Group heading="Commands">

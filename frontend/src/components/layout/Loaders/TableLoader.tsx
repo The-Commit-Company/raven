@@ -1,5 +1,6 @@
 import { Skeleton } from "@/components/common/Skeleton"
 import { Table } from "@radix-ui/themes"
+import TableHeader from "@tiptap/extension-table-header"
 
 
 interface Props {
@@ -11,7 +12,12 @@ interface Props {
 export const TableLoader = ({ rows = 10, columns = 5, color = "gray", ...props }: Props) => {
 
     return (
-        <Table.Root {...props}>
+        <Table.Root variant="surface" {...props} className='rounded-sm'>
+            <Table.Header>
+                <Table.Row>
+                    {[...Array(columns)].map((e, i) => <Table.ColumnHeaderCell key={i}><Skeleton width='100%' height='16px' /></Table.ColumnHeaderCell>)}
+                </Table.Row>
+            </Table.Header>
             <Table.Body>
                 {
                     [...Array(rows)].map((e, index) =>

@@ -39,14 +39,14 @@
     .tiptap-editor.ProseMirror {
         min-height: 20px;
         padding: 8px;
-        width: calc(100vw - 80px);
+        width: calc(100vw - 96px);
         max-height: 300px;
         border: 1.5px solid var(--gray-4);
         border-radius: var(--radius-3);
     }
 
     .tiptap-editor.editing-message.ProseMirror {
-        width: calc(100vw - 48px);
+        width: calc(100vw - 96px);
     }
 
     .tiptap-editor.ProseMirror * {
