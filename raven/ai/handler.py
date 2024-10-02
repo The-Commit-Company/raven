@@ -174,21 +174,30 @@ def stream_response(ai_thread_id: str, bot, channel_id: str):
 							function=function,
 						)
 
+						docs_updated.append(
+							{"doctype": function.reference_doctype, "document_id": args.get("document_id")}
+						)
+
 					if function.type == "Update Multiple Documents":
 						self.publish_event(f"Updating multiple {function.reference_doctype}s...")
 						function_output = update_documents(
 							function.reference_doctype, data=args.get("data"), function=function
 						)
 
+						for doc_id in function_output.get("documents"):
+							docs_updated.append({"doctype": function.reference_doctype, "document_id": doc_id})
+
 					tool_outputs.append(
 						{"tool_call_id": tool.id, "output": json.dumps(function_output, default=str)}
 					)
 				except Exception as e:
 					frappe.log_error("Raven AI Error", frappe.get_traceback())
-					bot.send_message(
-						channel_id=channel_id,
-						text=f"There was an error in the function call. <br/>Error: {frappe.get_traceback()}",
-					)
+
+					if bot.debug_mode:
+						bot.send_message(
+							channel_id=channel_id,
+							text=f"<details><summary>Error in function call</summary><p>{frappe.get_traceback()}</p></details>",
+						)
 					tool_outputs.append(
 						{
 							"tool_call_id": tool.id,

@@ -25,6 +25,7 @@ class RavenBot(Document):
 		allow_bot_to_write_documents: DF.Check
 		bot_functions: DF.Table[RavenBotFunctions]
 		bot_name: DF.Data
+		debug_mode: DF.Check
 		description: DF.SmallText | None
 		dynamic_instructions: DF.Check
 		enable_code_interpreter: DF.Check
