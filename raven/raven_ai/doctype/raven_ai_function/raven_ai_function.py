@@ -233,6 +233,7 @@ class RavenAIFunction(Document):
 						"type": "array",
 						"items": {
 							"type": "object",
+							"additionalProperties": False,
 							"properties": {param.fieldname: obj},
 							"required": [],
 						},
@@ -246,7 +247,7 @@ class RavenAIFunction(Document):
 		for child_table_name, child_table in child_tables.items():
 			doctype_meta = frappe.get_meta(self.reference_doctype)
 			table_field = doctype_meta.get_field(child_table_name)
-			if table_field.reqd:
+			if table_field.reqd and not self.strict:
 				child_table["minItems"] = 1
 
 			properties[child_table_name] = child_table
@@ -259,10 +260,12 @@ class RavenAIFunction(Document):
 						"type": "object",
 						"properties": properties,
 						"required": required,
+						"additionalProperties": False,
 					},
-					"minItems": 1,
 				}
 			}
+			if not self.strict:
+				params["properties"]["data"]["minItems"] = 1
 		else:
 			params["properties"] = properties
 			params["required"] = required
