@@ -185,10 +185,12 @@ def stream_response(ai_thread_id: str, bot, channel_id: str):
 					)
 				except Exception as e:
 					frappe.log_error("Raven AI Error", frappe.get_traceback())
-					bot.send_message(
-						channel_id=channel_id,
-						text=f"There was an error in the function call. <br/>Error: {frappe.get_traceback()}",
-					)
+
+					if bot.debug_mode:
+						bot.send_message(
+							channel_id=channel_id,
+							text=f"<details><summary>Error in function call</summary><p>{frappe.get_traceback()}</p></details>",
+						)
 					tool_outputs.append(
 						{
 							"tool_call_id": tool.id,

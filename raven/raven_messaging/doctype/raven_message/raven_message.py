@@ -144,6 +144,7 @@ class RavenMessage(Document):
 			frappe.enqueue(
 				method=handle_ai_thread_message,
 				message=self,
+				timeout=600,
 				channel=channel_doc,
 				at_front=True,
 				job_name="handle_ai_thread_message",
@@ -185,6 +186,7 @@ class RavenMessage(Document):
 			method=handle_bot_dm,
 			message=self,
 			bot=bot,
+			timeout=600,
 			job_name="handle_bot_dm",
 			at_front=True,
 		)

@@ -18,6 +18,7 @@
   "module",
   "ai_tab",
   "is_ai_bot",
+  "debug_mode",
   "ai_section",
   "openai_assistant_id",
   "enable_code_interpreter",
@@ -151,12 +152,19 @@
    "fieldname": "enable_code_interpreter",
    "fieldtype": "Check",
    "label": "Enable Code Interpreter"
+  },
+  {
+   "default": "0",
+   "description": "If enabled, stack traces of errors will be sent as messages by the bot ",
+   "fieldname": "debug_mode",
+   "fieldtype": "Check",
+   "label": "Debug Mode"
   }
  ],
  "image_field": "image",
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-10-01 02:42:23.047091",
+ "modified": "2024-10-02 23:01:52.263158",
  "modified_by": "Administrator",
  "module": "Raven Bot",
  "name": "Raven Bot",
