@@ -1,4 +1,4 @@
-import { useIsDesktop } from '@/hooks/useMediaQuery'
+import { __ } from '@/utils/translations'
 import { Box, Flex, Separator, Text } from '@radix-ui/themes'
 import clsx from 'clsx'
 import { PropsWithChildren, createElement } from 'react'
@@ -9,8 +9,6 @@ import { LuUserCircle2 } from 'react-icons/lu'
 import { NavLink } from 'react-router-dom'
 
 export const SettingsSidebar = () => {
-
-    const isDesktop = useIsDesktop()
 
     return (
         <Box className="h-[full] w-64 border-r border-gray-4  dark:border-gray-6">
@@ -58,7 +56,7 @@ const SettingsSidebarGroupHeader = ({ title, icon }: { title: string, icon: Icon
     return (
         <Flex className="py-1.5 flex items-center gap-1.5 text-gray-11">
             {createElement(icon, { size: 15 })}
-            <Text size='1'>{title}</Text>
+            <Text size='1'>{__(title)}</Text>
         </Flex>
     )
 }
@@ -77,7 +75,7 @@ const SettingsSidebarItem = ({ title, to, end }: { title: string, to: string, en
                 return (
                     <Box className='ml-4'>
                         <Flex className={clsx(`px-2 py-1 text-gray-12 rounded-md w-full`, isActive ? activeClass : "bg-transparent hover:bg-slate-2 hover:dark:bg-slate-3")}>
-                            <Text className='text-[13px]' weight='medium'>{title}</Text>
+                            <Text className='text-[13px]' weight='medium'>{__(title)}</Text>
                         </Flex>
                     </Box>
                 )

@@ -1,5 +1,6 @@
 import { getErrorMessage } from '@/components/layout/AlertBanner/ErrorBanner'
 import useIsPushNotificationEnabled from '@/hooks/fetchers/useIsPushNotificationEnabled'
+import { __ } from '@/utils/translations'
 import { DropdownMenu } from '@radix-ui/themes'
 import { useState } from 'react'
 import { BsBell, BsBellSlash } from 'react-icons/bs'
@@ -23,10 +24,10 @@ const PushNotificationToggle = (props: Props) => {
                 .disableNotification()
                 .then((data: any) => {
                     setPushNotificationsEnabled(false) // Disable the switch
-                    toast.info("Push notifications disabled")
+                    toast.info(__("Push notifications disabled"))
                 })
                 .catch((error: any) => {
-                    toast.error("There was an error", {
+                    toast.error(__("There was an error"), {
                         description: getErrorMessage(error)
                     }
                     )
@@ -54,8 +55,8 @@ const PushNotificationToggle = (props: Props) => {
                     throw error
                 })
             , {
-                success: "Push notifications enabled",
-                loading: "Enabling...",
+                success: __("Push notifications enabled"),
+                loading: __("Enabling..."),
                 error: (e: Error) => e.message
             })
     }
@@ -68,7 +69,7 @@ const PushNotificationToggle = (props: Props) => {
         <DropdownMenu.Item color='gray'
             onClick={togglePushNotifications}
             className={'flex justify-normal gap-2'}>
-            {pushNotificationsEnabled ? <><BsBellSlash size='14' /> Disable Notifications</> : <><BsBell size='14' /> Enable Notifications</>}
+            {pushNotificationsEnabled ? <><BsBellSlash size='14' /> {__("Disable Notifications")}</> : <><BsBell size='14' /> {__("Enable Notifications")}</>}
         </DropdownMenu.Item>
     )
 }

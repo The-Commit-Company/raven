@@ -1,5 +1,4 @@
-import { Button, Flex, IconButton, Text } from "@radix-ui/themes";
-import { FlexProps } from "@radix-ui/themes/dist/cjs/components/flex";
+import { Button, Flex, FlexProps, IconButton, Text } from "@radix-ui/themes";
 import { forwardRef, useImperativeHandle, useState } from "react";
 import { Accept, useDropzone } from "react-dropzone";
 import { toast } from "sonner";
@@ -9,8 +8,9 @@ import { BiTrash } from "react-icons/bi";
 import { CustomFile } from "../../file-upload/FileDrop";
 import { FileUploadProgress } from "../../chat/ChatInput/FileInput/useFileUpload";
 import { getFileSize } from "../../file-upload/FileListItem";
+import { __ } from "@/utils/translations";
 
-export interface FileUploadBoxProps extends FlexProps {
+export type FileUploadBoxProps = FlexProps & {
     /** File to be uploaded */
     file: CustomFile | undefined
     /** Function to set file in parent */
@@ -28,10 +28,10 @@ export const FileUploadBox = forwardRef((props: FileUploadBoxProps, ref) => {
 
     const fileSizeValidator = (file: any) => {
         if (maxFileSize && file.size > maxFileSize * 1000000) {
-            toast.error(`Uh Oh! ${file.name} exceeded the maximum file size required.`)
+            toast.error(__("Uh Oh! {0} exceeded the maximum file size required.", [file.name]))
             return {
                 code: "size-too-large",
-                message: `File size is larger than the required size.`,
+                message: __("File size is larger than the required size."),
             }
         } else return null
     }
@@ -86,20 +86,20 @@ export const FileUploadBox = forwardRef((props: FileUploadBoxProps, ref) => {
                 display={"flex"}>
                 <Flex gap={'1'}>
                     <Text as="span" size="2" color="gray">
-                        Drag and drop your file here or
+                        {__("Drag and drop your file here or")}
                     </Text>
                     <Button variant={'ghost'} onClick={open} className={"underline not-cal hover:bg-transparent cursor-pointer"}>
-                        choose file
+                        {__("choose file")}
                     </Button>
                 </Flex>
                 <input type="file" style={{ display: "none" }} {...getInputProps()} />
             </Flex>
             <Flex justify={'between'}>
                 <Text as="span" size="1" color="gray">
-                    Supported formats: .jpeg, .jpg, .png
+                    {__("Supported formats: {0}, {1}, {2}", [".jpeg", ".jpg", ".png"])}
                 </Text>
                 <Text as="span" size="1" color="gray">
-                    Maximum file size: 10MB
+                    {__("Maximum file size: {0}MB", [10])}
                 </Text>
             </Flex>
             {file && <FileItem file={file} uploadProgress={fileUploadProgress} removeFile={() => removeFile(file.fileID)} />}

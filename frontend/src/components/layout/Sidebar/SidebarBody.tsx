@@ -6,6 +6,7 @@ import useUnreadMessageCount from '@/hooks/useUnreadMessageCount'
 import PinnedChannels from './PinnedChannels'
 import React from 'react'
 import { BiBookmark, BiMessageAltDetail } from 'react-icons/bi'
+import { __ } from '@/utils/translations'
 
 export const SidebarBody = () => {
 
@@ -45,14 +46,14 @@ const SidebarItemForPage = ({ to, label, icon, iconLabel }: SidebarItemForPagePr
     return (
         <Box>
             <SidebarItem to={to} className='py-1 px-[10px]'>
-                <AccessibleIcon label={iconLabel}>
+                <AccessibleIcon label={__(iconLabel)}>
                     {icon}
                 </AccessibleIcon>
                 <Box>
                     <Text size={{
                         initial: '3',
                         md: '2'
-                    }} className='text-gray-12 dark:text-gray-300 font-semibold'>{label}</Text>
+                    }} className='text-gray-12 dark:text-gray-300 font-semibold'>{__(label)}</Text>
                 </Box>
             </SidebarItem>
         </Box>

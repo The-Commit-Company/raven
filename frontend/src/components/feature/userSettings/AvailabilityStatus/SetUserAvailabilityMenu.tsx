@@ -8,6 +8,7 @@ import { DropdownMenu, Flex } from '@radix-ui/themes'
 import { useUserData } from '@/hooks/useUserData'
 import { GrPowerReset } from 'react-icons/gr'
 import useCurrentRavenUser from '@/hooks/useCurrentRavenUser'
+import { __ } from '@/utils/translations'
 
 export type AvailabilityStatus = 'Available' | 'Away' | 'Do not disturb' | 'Invisible' | ''
 
@@ -24,7 +25,7 @@ export const SetUserAvailabilityMenu = () => {
             fieldname: 'availability_status',
             value: status
         }).then(() => {
-            toast.success("User availability updated")
+            toast.success(__("User availability updated"))
             mutate()
         })
     }, [userData.name])
@@ -49,7 +50,7 @@ export const SetUserAvailabilityMenu = () => {
                     {getStatusText('Invisible')}
                 </DropdownMenu.Item>
                 <DropdownMenu.Item className={'flex justify-normal gap-2'} color='gray' onClick={() => setAvailabilityStatus('')}>
-                    <GrPowerReset fontSize={'0.7rem'} /> Reset
+                    <GrPowerReset fontSize={'0.7rem'} /> {__("Reset")}
                 </DropdownMenu.Item>
             </DropdownMenu.SubContent>
         </DropdownMenu.Sub>
@@ -59,14 +60,14 @@ export const SetUserAvailabilityMenu = () => {
 export const getStatusText = (status: AvailabilityStatus) => {
     switch (status) {
         case 'Available':
-            return <><BiSolidCircle color={'green'} fontSize={'0.7rem'} /> Available</>
+            return <><BiSolidCircle color={'green'} fontSize={'0.7rem'} /> {__("Available")}</>
         case 'Away':
-            return <><MdWatchLater color={'#FFAA33'} fontSize={'0.8rem'} /> Away</>
+            return <><MdWatchLater color={'#FFAA33'} fontSize={'0.8rem'} /> {__("Away")}</>
         case 'Do not disturb':
-            return <><FaCircleMinus color={'#D22B2B'} fontSize={'0.7rem'} /> Do not disturb</>
+            return <><FaCircleMinus color={'#D22B2B'} fontSize={'0.7rem'} /> {__("Do not disturb")}</>
         case 'Invisible':
-            return <><FaCircleDot className={'text-gray-400'} fontSize={'0.7rem'} /> Invisible</>
+            return <><FaCircleDot className={'text-gray-400'} fontSize={'0.7rem'} /> {__("Invisible")}</>
         default:
-            return <><BiSolidCircle color={'green'} fontSize={'0.7rem'} /> Available</>
+            return <><BiSolidCircle color={'green'} fontSize={'0.7rem'} /> {__("Available")}</>
     }
 }

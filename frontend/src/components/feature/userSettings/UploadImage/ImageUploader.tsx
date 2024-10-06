@@ -10,6 +10,7 @@ import { FiCamera } from "react-icons/fi"
 import { BiSolidTrash } from "react-icons/bi"
 import { UserAvatar, getInitials } from "@/components/common/UserAvatar"
 import useCurrentRavenUser from "@/hooks/useCurrentRavenUser"
+import { __ } from "@/utils/translations"
 
 interface ImageUploaderProps {
     /** Takes input MIME type as 'key' & array of extensions as 'value'; empty array - all extensions supported */
@@ -32,7 +33,7 @@ export const ImageUploader = ({ icon, accept = { 'image/*': ['.jpeg', '.jpg', '.
                 fieldname: 'user_image',
                 value: file
             }).then(() => {
-                toast("Image uploaded successfully.")
+                toast(__("Image uploaded successfully."))
                 mutate()
             }).catch(() => {
                 toast(`There was an error while uploading the image. ${error ? error.exception ?? error.httpStatusText : null}`)

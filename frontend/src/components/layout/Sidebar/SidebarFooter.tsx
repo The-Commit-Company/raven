@@ -13,6 +13,7 @@ import { useNavigate } from 'react-router-dom'
 import { SetUserAvailabilityMenu } from '@/components/feature/userSettings/AvailabilityStatus/SetUserAvailabilityMenu'
 import { SetCustomStatusModal } from '@/components/feature/userSettings/CustomStatus/SetCustomStatusModal'
 import PushNotificationToggle from '@/components/feature/userSettings/PushNotifications/PushNotificationToggle'
+import { __ } from '@/utils/translations'
 
 export const SidebarFooter = () => {
 
@@ -54,12 +55,12 @@ export const SidebarFooter = () => {
                             <DropdownMenu.Content variant='soft'>
                                 <SetUserAvailabilityMenu />
                                 <DropdownMenu.Item color='gray' className={'flex justify-normal gap-2'} onClick={() => setUserStatusModalOpen(true)}>
-                                    <BsEmojiSmile size='14' /> Set custom status
+                                    <BsEmojiSmile size='14' /> {__("Set custom status")}
                                 </DropdownMenu.Item>
                                 <PushNotificationToggle />
                                 <DropdownMenu.Separator />
                                 <DropdownMenu.Item color='red' className={'flex justify-normal gap-2'} onClick={logout}>
-                                    <MdOutlineExitToApp size='14' />Log Out
+                                    <MdOutlineExitToApp size='14' /> {__("Log Out")}
                                 </DropdownMenu.Item>
                             </DropdownMenu.Content>
                         </DropdownMenu.Root>
