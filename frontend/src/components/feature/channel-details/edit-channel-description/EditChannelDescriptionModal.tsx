@@ -6,6 +6,7 @@ import { Box, Dialog, Flex, Button, TextArea, Text } from "@radix-ui/themes"
 import { Loader } from "@/components/common/Loader"
 import { ErrorText, Label } from "@/components/common/Form"
 import { toast } from 'sonner'
+import { __ } from "@/utils/translations"
 
 interface RenameChannelForm {
     channel_description: string
@@ -30,7 +31,7 @@ export const EditChannelDescriptionModalContent = ({ channelData, onClose }: Ren
         updateDoc("Raven Channel", channelData?.name ?? null, {
             channel_description: data.channel_description
         }).then(() => {
-            toast.success("Channel description updated")
+            toast.success(__("Channel description updated"))
             onClose()
         })
     }
@@ -39,36 +40,36 @@ export const EditChannelDescriptionModalContent = ({ channelData, onClose }: Ren
         <FormProvider {...methods}>
             <form onSubmit={handleSubmit(onSubmit)}>
 
-                <Dialog.Title>{channelData && channelData?.channel_description && channelData?.channel_description.length > 0 ? 'Edit description' : 'Add description'}</Dialog.Title>
+                <Dialog.Title>{channelData && channelData?.channel_description && channelData?.channel_description.length > 0 ? __('Edit description') : __('Add description')}</Dialog.Title>
 
                 <Flex gap='2' direction='column' width='100%'>
                     <ErrorBanner error={error} />
                     <Box width='100%'>
-                        <Label htmlFor='channel_description'>Channel description</Label>
+                        <Label htmlFor='channel_description'>{__("Channel description")}</Label>
                         <TextArea
                             maxLength={140}
                             id='channel_description'
-                            placeholder='Add description'
+                            placeholder={__('Add description')}
                             {...register('channel_description', {
                                 maxLength: {
                                     value: 140,
-                                    message: "Channel description cannot be more than 200 characters."
+                                    message: __("Channel description cannot be more than 200 characters.")
                                 }
                             })}
                             aria-invalid={errors.channel_description ? 'true' : 'false'}
                         />
-                        <Text size='1' weight='light'>This is how people will know what this channel is about.</Text>
+                        <Text size='1' weight='light'>{__("This is how people will know what this channel is about.")}</Text>
                         {errors?.channel_description && <ErrorText>{errors.channel_description?.message}</ErrorText>}
                     </Box>
                 </Flex>
 
                 <Flex gap="3" mt="6" justify="end" align='center'>
                     <Dialog.Close disabled={updatingDoc}>
-                        <Button variant="soft" color="gray">Cancel</Button>
+                        <Button variant="soft" color="gray">{__("Cancel")}</Button>
                     </Dialog.Close>
                     <Button type='submit' disabled={updatingDoc}>
                         {updatingDoc && <Loader />}
-                        {updatingDoc ? "Saving" : "Save"}
+                        {updatingDoc ? __("Saving") : __("Save")}
                     </Button>
                 </Flex>
 

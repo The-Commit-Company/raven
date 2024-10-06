@@ -5,6 +5,7 @@ import { IconButtonProps } from '@radix-ui/themes/dist/cjs/components/icon-butto
 import { BadgeProps } from '@radix-ui/themes/dist/cjs/components/badge';
 import { clsx } from 'clsx';
 import { FiChevronDown, FiChevronRight } from 'react-icons/fi';
+import { __ } from '@/utils/translations';
 
 type SidebarGroupProps = FlexProps & {
     children: ReactNode;
@@ -141,8 +142,8 @@ export const SidebarViewMoreButton = ({ expanded, onClick, ...props }: SidebarVi
 
     return (
         <IconButton
-            aria-label={expanded ? 'Collapse' : "Expand"}
-            title={expanded ? 'Collapse' : "Expand"}
+            aria-label={expanded ? __("Collapse") : __("Expand")}
+            title={expanded ? __("Collapse") : __("Expand")}
             variant='soft'
             size='1'
             radius='large'
