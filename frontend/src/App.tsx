@@ -38,7 +38,7 @@ const router = createBrowserRouter(
             <Route path="settings" lazy={() => import('./pages/settings/Settings')}>
               <Route index lazy={() => import('./components/feature/userSettings/UserProfile/UserProfile')} />
               <Route path="profile" lazy={() => import('./components/feature/userSettings/UserProfile/UserProfile')} />
-              <Route path="users" lazy={() => import('./components/feature/userSettings/Users/AddUsers')} />
+              <Route path="users" lazy={() => import('./pages/settings/Users/UserList')} />
               <Route path="hr" lazy={() => import('./pages/settings/Integrations/FrappeHR')} />
               <Route path="bots" >
                 <Route index lazy={() => import('./pages/settings/AI/BotList')} />
