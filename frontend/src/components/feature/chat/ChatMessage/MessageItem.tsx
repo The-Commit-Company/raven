@@ -25,6 +25,7 @@ import { useDoubleTap } from 'use-double-tap'
 import useOutsideClick from '@/hooks/useOutsideClick'
 import { getStatusText } from '../../userSettings/AvailabilityStatus/SetUserAvailabilityMenu'
 import { ThreadMessage } from './Renderers/ThreadMessage'
+import OnLeaveBadge from '@/components/common/UserLeaveBadge'
 
 interface MessageBlockProps {
     message: Message,
@@ -325,6 +326,7 @@ export const UserHoverCard = memo(({ user, userID, isActive }: UserProps) => {
                             <Text className='text-gray-10' size='1'>Online</Text>
                         </Flex>}
                     </Flex>
+                    {user && !isBot && <OnLeaveBadge userID={user.name} />}
                     {customStatus ? <Text className='text-gray-11' size='1'>{customStatus}</Text> : user && !isBot && <Text className='text-gray-11' size='1'>{user?.name}</Text>}
                 </Flex>
             </Flex>

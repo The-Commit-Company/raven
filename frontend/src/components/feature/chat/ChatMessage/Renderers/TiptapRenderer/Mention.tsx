@@ -2,10 +2,16 @@ import { UserAvatar } from '@/components/common/UserAvatar';
 import { getStatusText } from '@/components/feature/userSettings/AvailabilityStatus/SetUserAvailabilityMenu';
 import { useGetUser } from '@/hooks/useGetUser';
 import { useIsUserActive } from '@/hooks/useIsUserActive';
-import { Flex, HoverCard, Link, Text } from '@radix-ui/themes';
+import { Badge, Flex, HoverCard, Link, Text } from '@radix-ui/themes';
 import { NodeViewRendererProps, NodeViewWrapper } from "@tiptap/react";
+import { FrappeConfig, FrappeContext } from 'frappe-react-sdk';
 import { BsFillCircleFill } from 'react-icons/bs';
-import { Link as RouterLink } from 'react-router-dom';
+import { toast } from 'sonner';
+import { Link as RouterLink, useNavigate } from 'react-router-dom';
+import { useContext } from 'react';
+import { getErrorMessage } from '@/components/layout/AlertBanner/ErrorBanner';
+import useIsUserOnLeave from '@/hooks/fetchers/useIsUserOnLeave';
+import OnLeaveBadge from '@/components/common/UserLeaveBadge';
 
 
 export const UserMentionRenderer = ({ node }: NodeViewRendererProps) => {
@@ -16,11 +22,31 @@ export const UserMentionRenderer = ({ node }: NodeViewRendererProps) => {
     const availabilityStatus = user?.availability_status
     const customStatus = user?.custom_status
 
+    const { call } = useContext(FrappeContext) as FrappeConfig
+
+    const navigate = useNavigate()
+
+    const onClick = () => {
+        if (user) {
+            call.post('raven.api.raven_channel.create_direct_message_channel', {
+                user_id: user?.name
+            }).then((res) => {
+                navigate(`/channel/${res?.message}`)
+            }).catch(err => {
+                toast.error('Could not create a DM channel', {
+                    description: getErrorMessage(err)
+                })
+            })
+        }
+
+    }
+
+
     return (
         <NodeViewWrapper as={'span'}>
             <HoverCard.Root>
                 <HoverCard.Trigger>
-                    <Link size='2'>
+                    <Link size='2' onClick={onClick} className='cursor-pointer'>
                         @{user?.full_name ?? node.attrs.label}
                     </Link>
                 </HoverCard.Trigger>
@@ -40,7 +66,8 @@ export const UserMentionRenderer = ({ node }: NodeViewRendererProps) => {
                                     <Text className='text-gray-10' size='1'>Online</Text>
                                 </Flex>}
                             </Flex>
-                            {customStatus ? <Text className='text-gray-11' size='1'>{customStatus}</Text> : user && <Text className='text-gray-11' size='1'>{user?.name}</Text>}
+                            {user && <OnLeaveBadge userID={user.name} />}
+                            {customStatus ? <Text className='text-gray-11' size='2'>{customStatus}</Text> : user && <Text className='text-gray-11' size='1'>{user?.name}</Text>}
                         </Flex>
                     </Flex>
                 </HoverCard.Content>
