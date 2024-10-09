@@ -1,7 +1,6 @@
-import LinkFormField from '@/components/common/LinkField/LinkFormField'
 import { HStack, Stack } from '@/components/layout/Stack'
 import { RavenBot } from '@/types/RavenBot/RavenBot'
-import { Badge, Box, Button, Card, IconButton, Link, Popover, Table, Text } from '@radix-ui/themes'
+import { Badge, Box, Button, Card, IconButton, Link, Popover, Text } from '@radix-ui/themes'
 import React, { useContext } from 'react'
 import { Link as RouterLink } from 'react-router-dom'
 import { useFieldArray, useFormContext } from 'react-hook-form'
@@ -69,7 +68,6 @@ const BotFunctionsForm = (props: Props) => {
                                     <Popover.Close>
                                         <Button type='button' onClick={onSelect}>Add</Button>
                                     </Popover.Close>
-
                                 </HStack>
                             </Stack>
                         </Popover.Content>
@@ -84,7 +82,9 @@ const BotFunctionsForm = (props: Props) => {
                         <HStack justify='between' align='center'>
                             <Stack gap='1'>
                                 <HStack gap='2' align='center'>
-                                    <Text as='div' size='2' weight='bold'>{field.function}</Text>
+                                    <Link asChild size='2' weight='bold' className='text-gray-12'>
+                                        <RouterLink to={`/channel/settings/functions/${field.function}`}>{field.function}</RouterLink>
+                                    </Link>
                                     <Badge color='purple'>{field.type}</Badge>
                                 </HStack>
                                 <Text as='div' size='2' color='gray'>{field.description}</Text>
