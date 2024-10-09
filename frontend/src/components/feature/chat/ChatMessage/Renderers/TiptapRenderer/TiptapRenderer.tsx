@@ -27,6 +27,7 @@ import Table from '@tiptap/extension-table'
 import TableCell from '@tiptap/extension-table-cell'
 import TableHeader from '@tiptap/extension-table-header'
 import TableRow from '@tiptap/extension-table-row'
+import Details from './Details'
 
 const lowlight = createLowlight(common)
 
@@ -158,6 +159,7 @@ export const TiptapRenderer = ({ message, user, isScrolling = false, showMiniIma
           pluginKey: new PluginKey('channelMention'),
         },
       }),
+      Details
     ]
   })
 

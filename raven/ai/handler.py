@@ -196,7 +196,7 @@ def stream_response(ai_thread_id: str, bot, channel_id: str):
 					if bot.debug_mode:
 						bot.send_message(
 							channel_id=channel_id,
-							text=f"<details><summary>Error in function call</summary><p>{frappe.get_traceback()}</p></details>",
+							text=f"<details data-summary='Error in function call'><p>{frappe.get_traceback()}</p></details>",
 						)
 					tool_outputs.append(
 						{
