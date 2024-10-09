@@ -4,7 +4,8 @@ import { Loader } from '@/components/common/Loader'
 import { ErrorBanner } from '@/components/layout/AlertBanner'
 import useCurrentRavenUser from '@/hooks/useCurrentRavenUser'
 import { useUserData } from '@/hooks/useUserData'
-import { Button, Dialog, Flex, TextField, Text, IconButton } from '@radix-ui/themes'
+import { __ } from '@/utils/translations'
+import { Button, Dialog, Flex, TextField, IconButton } from '@radix-ui/themes'
 import { useFrappePostCall } from 'frappe-react-sdk'
 import { useCallback, useState } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
@@ -31,7 +32,7 @@ const SetCustomStatusContent = ({ onClose }: { onClose: VoidFunction }) => {
             fieldname: 'custom_status',
             value: data.custom_status
         }).then(() => {
-            toast.success("User status updated")
+            toast.success(__("User status updated"))
             mutate()
             onClose()
         })
@@ -45,14 +46,14 @@ const SetCustomStatusContent = ({ onClose }: { onClose: VoidFunction }) => {
 
     return (
         <>
-            <Dialog.Title>Set a custom status</Dialog.Title>
+            <Dialog.Title>{__("Set a custom status")}</Dialog.Title>
             <FormProvider {...methods}>
                 <form onSubmit={handleSubmit(onSubmit)}>
 
                     <ErrorBanner error={error} />
 
                     <Flex direction={'column'} gap={'2'}>
-                        <Label size='2' color='gray' weight='regular' htmlFor='custom_status'>Share what you're up to</Label>
+                        <Label size='2' color='gray' weight='regular' htmlFor='custom_status'>{__("Share what you're up to")}</Label>
                         <Flex align={'center'} gap='3'>
                             <Flex direction={'column'} gap='1'>
                                 <TextField.Root
@@ -63,7 +64,7 @@ const SetCustomStatusContent = ({ onClose }: { onClose: VoidFunction }) => {
                                     {...register('custom_status', {
                                         maxLength: {
                                             value: 140,
-                                            message: "Status cannot be more than 140 characters."
+                                            message: __("Status cannot be more than {0} characters.", 140)
                                         }
                                     })}
                                     className='min-w-[21rem]'
@@ -84,11 +85,11 @@ const SetCustomStatusContent = ({ onClose }: { onClose: VoidFunction }) => {
 
                     <Flex gap="3" mt="6" justify="end" align='center'>
                         <Dialog.Close disabled={loading}>
-                            <Button variant="soft" color="gray">Cancel</Button>
+                            <Button variant="soft" color="gray">{__("Cancel")}</Button>
                         </Dialog.Close>
                         <Button type='submit' disabled={loading}>
                             {loading && <Loader />}
-                            {loading ? "Saving" : "Save"}
+                            {loading ? __("Saving") : __("Save")}
                         </Button>
                     </Flex>
                 </form>

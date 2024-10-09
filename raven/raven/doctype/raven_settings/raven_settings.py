@@ -17,6 +17,10 @@ class RavenSettings(Document):
 		auto_add_system_users: DF.Check
 		auto_create_department_channel: DF.Check
 		department_channel_type: DF.Literal["Public", "Private"]
+		enable_ai_integration: DF.Check
+		openai_api_key: DF.Password | None
+		openai_organisation_id: DF.Data | None
+		openai_project_id: DF.Data | None
 		oauth_client: DF.Link | None
 		show_if_a_user_is_on_leave: DF.Check
 		show_raven_on_desk: DF.Check

@@ -4,6 +4,7 @@ import { SidebarGroup, SidebarGroupItem, SidebarGroupLabel, SidebarGroupList } f
 import { Box, Flex } from '@radix-ui/themes'
 import { ChannelItemElement } from '@/components/feature/channels/ChannelList'
 import useCurrentRavenUser from '@/hooks/useCurrentRavenUser'
+import { __ } from '@/utils/translations'
 
 const PinnedChannels = ({ unread_count }: { unread_count?: UnreadCountData }) => {
 
@@ -38,7 +39,7 @@ const PinnedChannels = ({ unread_count }: { unread_count?: UnreadCountData }) =>
         <Box>
             <SidebarGroup>
                 <SidebarGroupItem className={'gap-1 pl-1'}>
-                    <SidebarGroupLabel className='cal-sans'>Pinned</SidebarGroupLabel>
+                    <SidebarGroupLabel className='cal-sans'>{__("Pinned")}</SidebarGroupLabel>
                 </SidebarGroupItem>
                 <SidebarGroup>
                     <SidebarGroupList>

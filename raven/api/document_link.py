@@ -1,10 +1,23 @@
 import frappe
 from frappe.desk.utils import slug
 from frappe.model.meta import no_value_fields, table_fields
+from frappe.utils import get_url
+
+
+def get_new_app_document_links(doctype, docname):
+	"""
+	New apps like Frappe CRM etc have a different link.
+	"""
+	# TODO: Add the other app routes here
+	routes = {
+		"CRM Lead": "/crm/leads/",
+	}
+
+	return routes.get(doctype) + docname if doctype in routes else None
 
 
 @frappe.whitelist(methods=["GET"])
-def get(doctype, docname):
+def get(doctype, docname, with_site_url=True):
 
 	document_link_override = frappe.get_hooks("raven_document_link_override")
 	if document_link_override and len(document_link_override) > 0:
@@ -13,7 +26,12 @@ def get(doctype, docname):
 		for hook in document_link_override:
 			link = frappe.get_attr(hook)(doctype, docname)
 			if link:
+				if with_site_url:
+					return get_url() + link
 				return link
+
+	if with_site_url:
+		return frappe.utils.get_url() + f"/app/{slug(doctype)}/{docname}"
 
 	return f"/app/{slug(doctype)}/{docname}"
 

@@ -1,0 +1,132 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "field:function_name",
+ "beta": 1,
+ "creation": "2024-08-23 08:43:26.356348",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "function_name",
+  "description",
+  "function_path",
+  "column_break_tlyz",
+  "type",
+  "reference_doctype",
+  "pass_parameters_as_json",
+  "requires_write_permissions",
+  "strict",
+  "parameters_section",
+  "parameters",
+  "params",
+  "function_definition"
+ ],
+ "fields": [
+  {
+   "depends_on": "eval: doc.type == \"Custom Function\";",
+   "fieldname": "function_path",
+   "fieldtype": "Small Text",
+   "in_list_view": 1,
+   "label": "Function Path"
+  },
+  {
+   "default": "0",
+   "depends_on": "eval: doc.type == \"Custom Function\";",
+   "description": "If checked, the params will be passed as a JSON object instead of named parameters",
+   "fieldname": "pass_parameters_as_json",
+   "fieldtype": "Check",
+   "label": "Pass parameters as JSON"
+  },
+  {
+   "fieldname": "function_name",
+   "fieldtype": "Data",
+   "label": "Function Name",
+   "reqd": 1,
+   "unique": 1
+  },
+  {
+   "fieldname": "type",
+   "fieldtype": "Select",
+   "label": "Type",
+   "options": "Get Document\nGet Multiple Documents\nGet List\nCreate Document\nCreate Multiple Documents\nUpdate Document\nUpdate Multiple Documents\nDelete Document\nDelete Multiple Documents\nCustom Function\nSend Message\nAttach File to Document\nGet Report Result",
+   "reqd": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "requires_write_permissions",
+   "fieldtype": "Check",
+   "label": "Requires Write Permissions"
+  },
+  {
+   "fieldname": "params",
+   "fieldtype": "JSON",
+   "label": "Params"
+  },
+  {
+   "fieldname": "function_definition",
+   "fieldtype": "JSON",
+   "label": "Function Definition",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_tlyz",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "parameters_section",
+   "fieldtype": "Section Break",
+   "label": "Parameters"
+  },
+  {
+   "fieldname": "description",
+   "fieldtype": "Small Text",
+   "label": "Description",
+   "reqd": 1
+  },
+  {
+   "depends_on": "eval: doc.type != \"Custom Function\"",
+   "fieldname": "reference_doctype",
+   "fieldtype": "Link",
+   "label": "Reference DocType",
+   "options": "DocType"
+  },
+  {
+   "fieldname": "parameters",
+   "fieldtype": "Table",
+   "label": "Parameters",
+   "options": "Raven AI Function Params"
+  },
+  {
+   "default": "0",
+   "fieldname": "strict",
+   "fieldtype": "Check",
+   "label": "Strict"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2024-10-02 07:19:47.003701",
+ "modified_by": "Administrator",
+ "module": "Raven AI",
+ "name": "Raven AI Function",
+ "naming_rule": "By fieldname",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "search_fields": "description",
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": []
+}

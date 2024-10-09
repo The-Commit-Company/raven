@@ -11,7 +11,7 @@ const AttachFile = ({ fileProps }: { fileProps: ToolbarFileProps }) => {
         }
     }
     return (
-        <DropdownMenu.Item onClick={fileButtonClicked} disabled={editor?.isEditable === false}>
+        <DropdownMenu.Item onClick={fileButtonClicked} disabled={editor?.isEditable === false} className='text-base !h-10'>
             <Flex gap='2' className='items-center'>
                 <BiPaperclip />
                 File

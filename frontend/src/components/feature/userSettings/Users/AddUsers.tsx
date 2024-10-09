@@ -16,6 +16,9 @@ import { PageLengthSelector } from "../../pagination/PageLengthSelector"
 import { PageSelector } from "../../pagination/PageSelector"
 import { UsersTable } from "./UsersTable"
 import { isSystemManager } from "@/utils/roles"
+import PageContainer from "@/components/layout/Settings/PageContainer"
+import SettingsPageHeader from "@/components/layout/Settings/SettingsPageHeader"
+import SettingsContentContainer from "@/components/layout/Settings/SettingsContentContainer"
 
 interface AddUsersResponse {
     failed_users: User[],
@@ -82,20 +85,18 @@ const AddUsers = () => {
     const canAddRavenUsers = isSystemManager()
 
     return (
-        <Flex direction='column' gap='4' px='6' py='4'>
+        <PageContainer>
 
-            <Flex justify='between' align='center'>
-                <Flex direction='column' gap='0'>
-                    <Text size='3' className={'font-semibold'}>Add users to Raven</Text>
-                    <Text size='1' color='gray'>Only System managers have the ability to add users; users you add will be given the <Strong>"Raven User"</Strong> role.</Text>
-                </Flex>
-                <Button type='button' disabled={loading || !canAddRavenUsers} onClick={handleAddUsers}>
-                    {loading && <Loader />}
-                    {loading ? "Adding" : "Add"}
-                </Button>
-            </Flex>
 
-            <Flex direction='column' gap='4'>
+            <SettingsContentContainer>
+                <SettingsPageHeader
+                    title="Add users to Raven"
+                    description={<>Only System managers have the ability to add users; users you add will be given the <Strong>"Raven User"</Strong> role.</>}
+                    actions={<Button type='button' disabled={loading || !canAddRavenUsers} onClick={handleAddUsers}>
+                        {loading && <Loader />}
+                        {loading ? "Adding" : "Add"}
+                    </Button>}
+                />
                 <Flex justify='between' gap='2'>
                     <Flex gap='2' align='center'>
                         <TextField.Root onChange={handleChange}
@@ -145,8 +146,8 @@ const AddUsers = () => {
 
                 {data && data.length !== 0 && <UsersTable data={data} defaultSelected={ravenUsersArray} selected={selected} setSelected={setSelected} />}
 
-            </Flex>
-        </Flex>
+            </SettingsContentContainer>
+        </PageContainer>
     )
 }
 

@@ -2,6 +2,7 @@
  "actions": [],
  "allow_rename": 1,
  "autoname": "field:bot_name",
+ "beta": 1,
  "creation": "2024-03-29 20:25:13.529714",
  "default_view": "List",
  "doctype": "DocType",
@@ -14,7 +15,20 @@
   "column_break_lhoo",
   "description",
   "is_standard",
-  "module"
+  "module",
+  "ai_tab",
+  "is_ai_bot",
+  "debug_mode",
+  "ai_section",
+  "openai_assistant_id",
+  "enable_code_interpreter",
+  "column_break_khmi",
+  "allow_bot_to_write_documents",
+  "enable_file_search",
+  "section_break_lwkx",
+  "instruction",
+  "dynamic_instructions",
+  "bot_functions"
  ],
  "fields": [
   {
@@ -63,12 +77,94 @@
   {
    "fieldname": "column_break_lhoo",
    "fieldtype": "Column Break"
+  },
+  {
+   "depends_on": "eval: doc.is_ai_bot",
+   "fieldname": "ai_section",
+   "fieldtype": "Section Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_ai_bot",
+   "fieldtype": "Check",
+   "label": "Is AI Bot?"
+  },
+  {
+   "depends_on": "eval: doc.is_ai_bot",
+   "documentation_url": "https://platform.openai.com/docs/assistants/overview",
+   "fieldname": "openai_assistant_id",
+   "fieldtype": "Data",
+   "label": "OpenAI Assistant ID"
+  },
+  {
+   "fieldname": "column_break_khmi",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "allow_bot_to_write_documents",
+   "fieldtype": "Check",
+   "label": "Allow Bot to Write Documents"
+  },
+  {
+   "fieldname": "ai_tab",
+   "fieldtype": "Tab Break",
+   "label": "AI"
+  },
+  {
+   "fieldname": "section_break_lwkx",
+   "fieldtype": "Section Break"
+  },
+  {
+   "depends_on": "eval: doc.is_ai_bot;",
+   "description": "You can use Jinja variables here to customize the instruction to the bot at run time if dynamic instructions are enabled.",
+   "fieldname": "instruction",
+   "fieldtype": "Long Text",
+   "label": "Instruction"
+  },
+  {
+   "default": "0",
+   "description": "Enable this if you want the bot to be able to read PDF files and scan them.\n\nFile search enables the assistant with knowledge from files that you upload. Once a file is uploaded, the assistant automatically decides when to retrieve content based on user requests.",
+   "documentation_url": "https://platform.openai.com/docs/assistants/tools/file-search",
+   "fieldname": "enable_file_search",
+   "fieldtype": "Check",
+   "label": "Enable File Search"
+  },
+  {
+   "default": "0",
+   "depends_on": "eval: doc.is_ai_bot;",
+   "description": "Dynamic Instructions allow you to embed Jinja tags in your instruction to the bot. Hence the instruction would be different based on the user who is calling the bot or the data in your system. These instructions are computed every time the bot is called. Check this if you want to embed things like Employee ID, Company Name etc in your instructions dynamically",
+   "fieldname": "dynamic_instructions",
+   "fieldtype": "Check",
+   "label": "Dynamic Instructions"
+  },
+  {
+   "depends_on": "eval: doc.is_ai_bot;",
+   "fieldname": "bot_functions",
+   "fieldtype": "Table",
+   "label": "Bot Functions",
+   "options": "Raven Bot Functions"
+  },
+  {
+   "default": "0",
+   "description": " Enable this if you want the bot to be able to process files like Excel sheets or data from Insights.\n                    <br>\n                    OpenAI Assistants run code in a sandboxed environment (on OpenAI servers) to do this.",
+   "documentation_url": "https://platform.openai.com/docs/assistants/tools/code-interpreter",
+   "fieldname": "enable_code_interpreter",
+   "fieldtype": "Check",
+   "label": "Enable Code Interpreter"
+  },
+  {
+   "default": "0",
+   "description": "If enabled, stack traces of errors will be sent as messages by the bot ",
+   "fieldname": "debug_mode",
+   "fieldtype": "Check",
+   "label": "Debug Mode"
   }
  ],
  "image_field": "image",
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-03-29 23:16:44.406120",
+ "modified": "2024-10-02 23:01:52.263158",
  "modified_by": "Administrator",
  "module": "Raven Bot",
  "name": "Raven Bot",

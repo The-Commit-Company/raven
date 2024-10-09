@@ -1,8 +1,12 @@
 import { CustomCallout } from '@/components/common/Callouts/CustomCallout'
 import { HelperText, Label } from '@/components/common/Form'
 import { Loader } from '@/components/common/Loader'
+import PageContainer from '@/components/layout/Settings/PageContainer'
+import SettingsContentContainer from '@/components/layout/Settings/SettingsContentContainer'
+import SettingsPageHeader from '@/components/layout/Settings/SettingsPageHeader'
 import useRavenSettings from '@/hooks/fetchers/useRavenSettings'
 import { RavenSettings } from '@/types/Raven/RavenSettings'
+import { __ } from '@/utils/translations'
 import { Button, Checkbox, Flex, Select, Separator, Text } from '@radix-ui/themes'
 import { useFrappeUpdateDoc } from 'frappe-react-sdk'
 import { useEffect } from 'react'
@@ -37,9 +41,9 @@ const FrappeHR = () => {
         }), {
             loading: 'Updating...',
             success: () => {
-                return `Settings updated`;
+                return __("Settings updated");
             },
-            error: 'There was an error.',
+            error: __("There was an error."),
         })
 
     }
@@ -50,24 +54,22 @@ const FrappeHR = () => {
     const autoCreateDepartment = watch('auto_create_department_channel')
 
     return (
-        <Flex direction='column' gap='4' px='6' py='4'>
+        <PageContainer>
             <FormProvider {...methods}>
                 <form onSubmit={handleSubmit(onSubmit)}>
-                    <Flex direction={'column'} gap='4'>
-                        <Flex justify={'between'} align={'center'}>
-                            <Flex direction='column' gap='0'>
-                                <Text size='3' className={'font-semibold'}>Frappe HR</Text>
-                                {/* <Text size='1' color='gray'>Manage your Raven profile</Text> */}
-                            </Flex>
-                            <Button type='submit' disabled={updatingDoc}>
+                    <SettingsContentContainer>
+                        <SettingsPageHeader
+                            title={__('HR')}
+                            description={__("Connect your HR system to Raven to sync employee data and send notifications.")}
+                            actions={<Button type='submit' disabled={updatingDoc}>
                                 {updatingDoc && <Loader />}
-                                {updatingDoc ? "Saving" : "Save"}
-                            </Button>
-                        </Flex>
+                                {updatingDoc ? __("Saving") : __("Save")}
+                            </Button>}
+                        />
                         {!isHRInstalled && <CustomCallout
                             iconChildren={<FiAlertTriangle />}
                             rootProps={{ color: 'yellow', variant: 'surface' }}
-                            textChildren="Frappe HR is not installed on this site.">
+                            textChildren={__("HR is not installed on this site.")} >
                         </CustomCallout>}
 
                         <Flex direction={'column'} gap='2' maxWidth={'480px'}>
@@ -84,16 +86,16 @@ const FrappeHR = () => {
                                             />
                                         )} />
 
-                                    Automatically create channels for departments
+                                    {__("Automatically create channels for departments")}
                                 </Flex>
                             </Text>
                             <HelperText>
-                                If checked, a channel will be created for each department. Employees in the department will be synced with channel members.
+                                {__("If checked, a channel will be created for each department. Employees in the department will be synced with channel members.")}
                             </HelperText>
                         </Flex>
                         {autoCreateDepartment ?
                             <Flex direction={'column'} maxWidth={'320px'}>
-                                <Label isRequired>Department Channel Type</Label>
+                                <Label isRequired>{__("Department Channel Type")}</Label>
                                 <Controller
                                     control={control}
                                     defaultValue={ravenSettings?.department_channel_type}
@@ -105,10 +107,10 @@ const FrappeHR = () => {
                                             <Select.Trigger />
                                             <Select.Content>
                                                 <Select.Item value='Private'>
-                                                    Private
+                                                    {__("Private")}
                                                 </Select.Item>
                                                 <Select.Item value='Public'>
-                                                    Public
+                                                    {__("Public")}
                                                 </Select.Item>
                                             </Select.Content>
                                         </Select.Root>
@@ -131,17 +133,17 @@ const FrappeHR = () => {
                                             />
                                         )} />
 
-                                    Show if a user is on leave
+                                    {__("Show if a user is on leave")}
                                 </Flex>
                             </Text>
                             <HelperText>
-                                If checked, users on Raven are notified if another user is on leave.
+                                {__("If checked, users on Raven are notified if another user is on leave.")}
                             </HelperText>
                         </Flex>
-                    </Flex>
+                    </SettingsContentContainer>
                 </form>
             </FormProvider>
-        </Flex>
+        </PageContainer>
     )
 }
 

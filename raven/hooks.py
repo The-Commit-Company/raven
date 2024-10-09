@@ -8,7 +8,7 @@ app_email = "support@thecommit.company"
 app_license = "AGPLv3"
 source_link = "https://github.com/The-Commit-Company/Raven"
 app_logo = "/assets/raven/raven-logo.png"
-# app_logo_url = "/assets/raven/raven-logo.png"
+app_logo_url = "/assets/raven/raven-logo.png"
 
 # Includes in <head>
 # ------------------
@@ -253,3 +253,5 @@ on_session_creation = "raven.api.user_availability.set_user_active"
 on_logout = "raven.api.user_availability.set_user_inactive"
 
 export_python_type_annotations = True
+
+raven_document_link_override = "raven.api.document_link.get_new_app_document_links"

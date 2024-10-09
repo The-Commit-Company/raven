@@ -1,4 +1,4 @@
-import { EditorContent, EditorContext, ReactNodeViewRenderer, useEditor } from '@tiptap/react'
+import { EditorContent, EditorContext, mergeAttributes, ReactNodeViewRenderer, useEditor } from '@tiptap/react'
 import { TextMessage } from '../../../../../../../../types/Messaging/Message'
 import { UserFields } from '@/utils/users/UserListProvider'
 import { BoxProps } from '@radix-ui/themes/dist/cjs/components/box'
@@ -27,6 +27,7 @@ import Table from '@tiptap/extension-table'
 import TableCell from '@tiptap/extension-table-cell'
 import TableHeader from '@tiptap/extension-table-header'
 import TableRow from '@tiptap/extension-table-row'
+import Details from './Details'
 
 const lowlight = createLowlight(common)
 
@@ -104,6 +105,13 @@ export const TiptapRenderer = ({ message, user, isScrolling = false, showMiniIma
         HTMLAttributes: {
           class: 'rt-TableRootTable border-l border-r border-t border-gray-4 dark:border-gray-7 my-2'
         }
+      }).extend({
+        renderHTML({ node, HTMLAttributes }) {
+          // Wrap the table in a div with a class that will be styled in CSS
+          return ['div', { class: 'table-wrapper rt-TableRoot rt-r-size-1 rt-variant-ghost' }, ['table', mergeAttributes(HTMLAttributes, node.attrs, {
+            class: 'rt-TableRootTable border-l border-r border-t border-gray-4 dark:border-gray-7 my-2'
+          }), 0]]
+        }
       }),
       TableRow.configure({
         HTMLAttributes: {
@@ -151,6 +159,7 @@ export const TiptapRenderer = ({ message, user, isScrolling = false, showMiniIma
           pluginKey: new PluginKey('channelMention'),
         },
       }),
+      Details
     ]
   })
 

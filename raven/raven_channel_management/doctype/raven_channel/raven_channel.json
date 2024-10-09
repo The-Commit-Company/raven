@@ -24,7 +24,11 @@
   "section_break_wlnt",
   "last_message_timestamp",
   "column_break_eckt",
-  "last_message_details"
+  "last_message_details",
+  "ai_tab",
+  "is_ai_thread",
+  "openai_thread_id",
+  "thread_bot"
  ],
  "fields": [
   {
@@ -142,6 +146,32 @@
    "fieldtype": "Check",
    "label": "Is Thread",
    "read_only": 1
+  },
+  {
+   "fieldname": "ai_tab",
+   "fieldtype": "Tab Break",
+   "label": "AI"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_ai_thread",
+   "fieldtype": "Check",
+   "in_standard_filter": 1,
+   "label": "Is AI Thread",
+   "read_only": 1
+  },
+  {
+   "fieldname": "openai_thread_id",
+   "fieldtype": "Data",
+   "label": "OpenAI Thread ID",
+   "read_only": 1
+  },
+  {
+   "fieldname": "thread_bot",
+   "fieldtype": "Link",
+   "label": "Thread Bot",
+   "options": "Raven Bot",
+   "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,
@@ -155,7 +185,7 @@
    "link_fieldname": "channel_id"
   }
  ],
- "modified": "2024-08-18 20:45:00.510115",
+ "modified": "2024-08-23 07:35:09.979962",
  "modified_by": "Administrator",
  "module": "Raven Channel Management",
  "name": "Raven Channel",

@@ -6,6 +6,7 @@ import { ErrorBanner } from "@/components/layout/AlertBanner"
 import { useState } from "react"
 import { FrappeError, useFrappeFileUpload } from "frappe-react-sdk"
 import { FileUploadBox } from "./FileUploadBox"
+import { __ } from "@/utils/translations"
 
 interface UploadImageModalProps {
     onClose: () => void,
@@ -43,7 +44,7 @@ export const UploadImageModal = ({ onClose, uploadImage }: UploadImageModalProps
 
     return (
         <>
-            <Dialog.Title>Upload file</Dialog.Title>
+            <Dialog.Title>{__("Upload file")}</Dialog.Title>
 
             <ErrorBanner error={fileError} />
 
@@ -56,11 +57,11 @@ export const UploadImageModal = ({ onClose, uploadImage }: UploadImageModalProps
 
             <Flex gap="3" mt="6" justify="end" align='center'>
                 <Dialog.Close disabled={loading}>
-                    <Button variant="soft" color="gray">Cancel</Button>
+                    <Button variant="soft" color="gray">{__("Cancel")}</Button>
                 </Dialog.Close>
                 <Button type='button' onClick={uploadFiles} disabled={loading}>
                     {loading && <Loader />}
-                    {loading ? "Saving" : "Save"}
+                    {loading ? __("Saving") : __("Save")}
                 </Button>
             </Flex>
         </>

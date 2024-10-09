@@ -1,16 +1,19 @@
 import { useDoctypePreview } from "@/hooks/useDoctypePreview"
-import { AspectRatio, Badge, DataList, Flex, Heading, IconButton, Skeleton, Tooltip } from "@radix-ui/themes"
-import { FrappeConfig, FrappeContext } from "frappe-react-sdk"
-import { useContext } from "react"
+import { AspectRatio, Badge, DataList, DropdownMenu, Flex, Heading, IconButton, Skeleton, Tooltip } from "@radix-ui/themes"
+import { FrappeConfig, FrappeContext, useFrappeGetCall } from "frappe-react-sdk"
+import { useContext, useState } from "react"
 import { Grid, Text, Box, Card } from "@radix-ui/themes"
 import { toast } from "sonner"
-import { BiCopy, BiLinkExternal } from "react-icons/bi"
+import { BiCopy, BiDotsHorizontalRounded, BiGitPullRequest, BiLinkExternal, BiPrinter, BiRightArrowAlt } from "react-icons/bi"
+import useDoctypeMeta from "@/hooks/useDoctypeMeta"
+import { HStack } from "@/components/layout/Stack"
+import { getErrorMessage } from "@/components/layout/AlertBanner/ErrorBanner"
 
 
 export const DoctypeLinkRenderer = ({ doctype, docname }: { doctype: string, docname: string }) => {
 
     const { call } = useContext(FrappeContext) as FrappeConfig
-    const { data, error, isLoading } = useDoctypePreview(doctype, docname)
+    const { data, error, isLoading, mutate } = useDoctypePreview(doctype, docname)
 
     const getRoute = async (doctype: string, docname: string): Promise<string> => {
 
@@ -50,7 +53,7 @@ export const DoctypeLinkRenderer = ({ doctype, docname }: { doctype: string, doc
                     error ?
                         <Card>
                             <Grid gap='2' align='center'>
-                                <Heading as='h3' size='4'>Error occurred while loading Doctype</Heading>
+                                <Heading as='h3' size='4'>Error occurred while loading {doctype} - {docname}</Heading>
                                 <Text
                                     size='2'
                                     color='gray'
@@ -59,18 +62,20 @@ export const DoctypeLinkRenderer = ({ doctype, docname }: { doctype: string, doc
                                 </Text>
                             </Grid>
                         </Card> :
-                        <DoctypeCard data={data} doctype={doctype} copyLink={copyLink} openLink={openLink} />
+                        <DoctypeCard data={data} doctype={doctype} docname={docname} copyLink={copyLink} openLink={openLink} mutate={mutate} />
             }
         </Box>
     )
 }
 
 
-const DoctypeCard = ({ data, doctype, copyLink, openLink }: {
+const DoctypeCard = ({ data, doctype, copyLink, openLink, docname, mutate }: {
     data: Record<string, any>,
     doctype: string,
+    docname: string,
     copyLink: () => Promise<void>,
-    openLink: () => Promise<void>
+    openLink: () => Promise<void>,
+    mutate: () => void
 }) => {
 
     // utility func to remove known preview fields in order to map rest of them
@@ -110,8 +115,8 @@ const DoctypeCard = ({ data, doctype, copyLink, openLink }: {
                     <Flex gap='2' align='center' width={'100%'}>
                         {
                             data?.preview_image &&
-                            <Box width={'20%'} className="pl-0.5">
-                                <AspectRatio ratio={16 / 12}>
+                            <Box width={'12%'} className="pl-0.5">
+                                <AspectRatio ratio={1 / 1}>
                                     <img
                                         src={data.preview_image}
                                         alt={data?.preview_title}
@@ -144,7 +149,7 @@ const DoctypeCard = ({ data, doctype, copyLink, openLink }: {
                                     {data?.id}
                                 </Text>
                             </Flex>
-                            <Heading as='h3' size='3' className="leading-4 pl-0.5 my-0">{data?.preview_title}</Heading>
+                            <Heading as='h3' size='3' className="leading-4 pl-0.5 my-0">{data?.preview_title ?? docname}</Heading>
                         </Grid>
                     </Flex>
                     <Flex gap='3' align='center'>
@@ -152,25 +157,65 @@ const DoctypeCard = ({ data, doctype, copyLink, openLink }: {
                             <IconButton
                                 size='1'
                                 title='Open in new tab'
+                                aria-label="Open in new tab"
                                 color='gray'
                                 onClick={openLink}
                                 variant='ghost'
                             >
-                                <BiLinkExternal size='14' />
+                                <BiLinkExternal size='18' />
                             </IconButton>
                         </Tooltip>
 
-                        <Tooltip content='Copy link' delayDuration={800}>
+                        {/* <IconButton
+                            size='1'
+                            title='Open in new tab'
+                            aria-label="Open in new tab"
+                            color='gray'
+                            onClick={openLink}
+                            variant='ghost'
+                        >
+                            <BiDotsVerticalRounded size='18' />
+                        </IconButton> */}
+
+                        {/* <Tooltip content='Copy link' delayDuration={800}>
                             <IconButton
                                 size='1'
                                 title='Copy link'
+                                aria-label="Copy link"
                                 color='gray'
                                 onClick={onCopyLinkClick}
                                 variant='ghost'
                             >
-                                <BiCopy size='14' />
+                                <BiCopy size='16' />
+                            </IconButton>
+                        </Tooltip> */}
+
+                        <DoctypeActionMenu doctype={doctype} docname={docname} onCopyLinkClick={onCopyLinkClick} mutate={mutate} />
+
+                        {/* <Tooltip content='Print' delayDuration={800}>
+                            <IconButton
+                                size='1'
+                                title='Print'
+                                aria-label="Print"
+                                color='gray'
+                                onClick={onCopyLinkClick}
+                                variant='ghost'
+                            >
+                                <BiPrinter size='16' />
                             </IconButton>
                         </Tooltip>
+                        <Tooltip content='Workflow' delayDuration={800}>
+                            <IconButton
+                                size='1'
+                                title='Print'
+                                aria-label="Print"
+                                color='gray'
+                                onClick={onCopyLinkClick}
+                                variant='ghost'
+                            >
+                                <BiGitMerge size='16' />
+                            </IconButton>
+                        </Tooltip> */}
                     </Flex>
                 </Flex>
 
@@ -178,7 +223,7 @@ const DoctypeCard = ({ data, doctype, copyLink, openLink }: {
                     {
                         data && Object.keys(removePreviewFields(data))?.map((item, index) => (
                             <DataList.Item align='center' key={item}>
-                                <DataList.Label minWidth="88px" className="font-semibold pr-2">
+                                <DataList.Label minWidth="88px" className="font-medium pr-2">
                                     {item}
                                 </DataList.Label>
                                 <DataList.Value>
@@ -191,4 +236,154 @@ const DoctypeCard = ({ data, doctype, copyLink, openLink }: {
             </Grid>
         </Card>
     )
+}
+
+const DoctypeActionMenu = ({ doctype, docname, onCopyLinkClick, mutate }: { doctype: string, docname: string, onCopyLinkClick: VoidFunction, mutate: VoidFunction }) => {
+
+
+    return <DropdownMenu.Root>
+        <DropdownMenu.Trigger>
+            <IconButton
+                size='1'
+                title='More actions'
+                aria-label="More actions"
+                color='gray'
+                variant='ghost'
+            >
+                <BiDotsHorizontalRounded size='20' />
+            </IconButton>
+        </DropdownMenu.Trigger>
+        <DropdownMenu.Content>
+            <DropdownMenu.Item onSelect={onCopyLinkClick}>
+                <Flex gap='2' align='center' pr={'4'}>
+                    <BiCopy size={'16'} />
+                    Copy Link
+                </Flex>
+            </DropdownMenu.Item>
+            <PrintSubMenu doctype={doctype} docname={docname} />
+
+            <WorkflowSubMenu doctype={doctype} docname={docname} mutate={mutate} />
+
+        </DropdownMenu.Content>
+    </DropdownMenu.Root>
+}
+
+const WorkflowSubMenu = ({ doctype, docname, mutate }: { doctype: string, docname: string, mutate: VoidFunction }) => {
+    const { doc } = useDoctypeMeta(doctype)
+    const [open, setOpen] = useState(false)
+
+    if (!doc) return null
+
+    if (!doc?.__workflow_docs || doc?.__workflow_docs.length === 0) return null
+
+    return <DropdownMenu.Sub open={open} onOpenChange={setOpen}>
+        <DropdownMenu.SubTrigger>
+            <Flex gap='2' align='center'>
+                <BiGitPullRequest size={'16'} />
+                Workflow
+            </Flex>
+        </DropdownMenu.SubTrigger>
+        <DropdownMenu.SubContent>
+            <WorkflowTransitionOptions doctype={doctype} docname={docname} workflow={doc?.__workflow_docs?.[0]} mutate={mutate} />
+        </DropdownMenu.SubContent>
+    </DropdownMenu.Sub>
+
+}
+
+export interface WorkFlowButtonData {
+    action: string;
+    doctype: string;
+    state: string;
+    next_state: string;
+    name: string;
+    condition: string;
+}
+
+const WorkflowTransitionOptions = ({ doctype, docname, mutate }: { doctype: string, docname: string, workflow: any, mutate: VoidFunction }) => {
+
+    const { data: transitions, mutate: refreshTransitions } = useFrappeGetCall<{ message: WorkFlowButtonData[] }>('frappe.model.workflow.get_transitions', {
+        'doc': {
+            'doctype': doctype,
+            'name': docname
+        }
+    }, `workflow.get_transitions.${doctype}.${docname}`, {
+        revalidateIfStale: false,
+        revalidateOnFocus: false,
+        shouldRetryOnError: false,
+    })
+
+    const { call } = useContext(FrappeContext) as FrappeConfig
+
+    const applyTransition = (action: string) => {
+        call.post('frappe.model.workflow.apply_workflow', {
+            'doc': {
+                'doctype': doctype,
+                'name': docname
+            },
+            'action': action
+        }).then(() => {
+            mutate()
+            refreshTransitions()
+
+            toast.success('Workflow transition applied successfully')
+        }).catch(error => {
+            toast.error('Failed to apply workflow transition', {
+                description: getErrorMessage(error)
+            })
+        })
+    }
+
+    if (transitions?.message.length === 0) return <DropdownMenu.Item disabled>No transitions available</DropdownMenu.Item>
+
+    return <>
+        {transitions?.message.map((transition) => {
+            return <DropdownMenu.Item key={transition.name} onClick={() => applyTransition(transition.action)}>
+                <Text size='2' weight='medium'>
+                    {transition.action}
+                </Text>
+                <HStack gap='1'>
+                    <Text size='1' className="font-light">{transition.state}</Text>
+                    <BiRightArrowAlt size='16' opacity={0.7} />
+                    <Text size='1' className="font-light">{transition.next_state}</Text>
+                </HStack></DropdownMenu.Item>
+        })}
+    </>
+
+}
+
+const PrintSubMenu = ({ doctype, docname }: { doctype: string, docname: string }) => {
+
+    const { doc } = useDoctypeMeta(doctype)
+
+    const printit = (format?: string) => {
+
+        let params = `doctype=${encodeURIComponent(doctype)}&name=${encodeURIComponent(docname)}`
+
+        if (format) {
+            params += `&format=${format}`
+        }
+
+        params += `&trigger_print=0`
+
+        window.open(`http://localhost:8000/printview?${params}`, '_blank')
+
+    }
+
+    return <DropdownMenu.Sub>
+        <DropdownMenu.SubTrigger>
+            <Flex gap='2' align='center'>
+                <BiPrinter size={'16'} />
+                Print
+            </Flex>
+        </DropdownMenu.SubTrigger>
+        <DropdownMenu.SubContent>
+            {doc?.__print_formats?.map((format: any) => (
+                <DropdownMenu.Item onClick={() => printit(format.name)} key={format.name}>
+                    {format.name}
+                </DropdownMenu.Item>
+            ))
+            }
+            <DropdownMenu.Item onClick={() => printit()}>Standard</DropdownMenu.Item>
+        </DropdownMenu.SubContent>
+    </DropdownMenu.Sub>
 }

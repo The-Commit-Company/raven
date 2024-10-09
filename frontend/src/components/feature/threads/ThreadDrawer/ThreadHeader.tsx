@@ -1,14 +1,15 @@
 import { useNavigate, useParams } from "react-router-dom"
 import { DropdownMenu, Flex, Heading, IconButton } from "@radix-ui/themes"
-import { BiBell, BiBellOff, BiDotsVerticalRounded, BiExit } from "react-icons/bi"
-import { useFrappePostCall, useSWRConfig } from "frappe-react-sdk"
+import { BiBell, BiBellOff, BiDotsVerticalRounded, BiExit, BiTrash } from "react-icons/bi"
+import { useFrappeDeleteDoc, useFrappePostCall, useSWRConfig } from "frappe-react-sdk"
 import { toast } from "sonner"
 import { getErrorMessage } from "@/components/layout/AlertBanner/ErrorBanner"
 import { AiOutlineClose } from "react-icons/ai"
 import { useUserData } from "@/hooks/useUserData"
 import useFetchChannelMembers, { Member } from "@/hooks/fetchers/useFetchChannelMembers"
-import { useMemo } from "react"
+import { useContext, useMemo } from "react"
 import useIsPushNotificationEnabled from "@/hooks/fetchers/useIsPushNotificationEnabled"
+import { UserContext } from "@/utils/auth/UserProvider"
 
 export const ThreadHeader = () => {
 
@@ -18,6 +19,7 @@ export const ThreadHeader = () => {
 
     const { name: user } = useUserData()
     const { channelMembers } = useFetchChannelMembers(threadID ?? '')
+    const { currentUser } = useContext(UserContext)
 
     const channelMember = useMemo(() => {
         if (user && channelMembers) {
@@ -25,7 +27,6 @@ export const ThreadHeader = () => {
         }
         return null
     }, [user, channelMembers])
-
 
     return (
         <header className='dark:bg-gray-2 bg-white fixed top-0 px-3 sm:w-[calc((100vw-var(--sidebar-width)-var(--space-8))/2)] w-screen' style={{ zIndex: 999 }}>
@@ -43,6 +44,7 @@ export const ThreadHeader = () => {
                                 <DropdownMenu.Content className='min-w-48'>
                                     <ToggleNotificationButton channelMember={channelMember} />
                                     <LeaveThreadButton />
+                                    {channelMembers[currentUser].is_admin === 1 && <DeleteThreadButton />}
                                 </DropdownMenu.Content>
                             </DropdownMenu.Root>
                         }
@@ -59,6 +61,38 @@ export const ThreadHeader = () => {
                 </Flex>
             </Flex>
         </header>
+    )
+}
+
+
+const DeleteThreadButton = () => {
+
+    const { threadID } = useParams()
+    const navigate = useNavigate()
+
+    const { deleteDoc } = useFrappeDeleteDoc()
+
+    const onDeleteThread = () => {
+
+        const promise = deleteDoc('Raven Channel', threadID)
+            .then(() => {
+                navigate('../')
+                return Promise.resolve()
+            })
+
+        toast.promise(promise, {
+            success: 'You have deleted the thread',
+            error: (e) => `Could not delete thread - ${getErrorMessage(e)}`
+        })
+    }
+
+    return (
+        <DropdownMenu.Item color="red" onClick={onDeleteThread}>
+            <Flex gap='2' align='center'>
+                <BiTrash size={'16'} />
+                Delete Thread
+            </Flex>
+        </DropdownMenu.Item>
     )
 }
 

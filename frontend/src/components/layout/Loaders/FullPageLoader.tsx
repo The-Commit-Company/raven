@@ -1,9 +1,8 @@
 import { Loader } from '@/components/common/Loader'
-import { Flex, Text } from '@radix-ui/themes'
-import { FlexProps } from '@radix-ui/themes/dist/cjs/components/flex'
+import { Flex, FlexProps, Text } from '@radix-ui/themes'
 import { clsx } from 'clsx'
 
-interface Props extends FlexProps {
+type Props = FlexProps & {
     text?: string
 }
 

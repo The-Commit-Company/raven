@@ -17,6 +17,7 @@ class RavenChannel(Document):
 
 		channel_description: DF.SmallText | None
 		channel_name: DF.Data
+		is_ai_thread: DF.Check
 		is_archived: DF.Check
 		is_direct_message: DF.Check
 		is_self_message: DF.Check
@@ -26,6 +27,8 @@ class RavenChannel(Document):
 		last_message_timestamp: DF.Datetime | None
 		linked_doctype: DF.Link | None
 		linked_document: DF.DynamicLink | None
+		openai_thread_id: DF.Data | None
+		thread_bot: DF.Link | None
 		type: DF.Literal["Private", "Public", "Open"]
 	# end: auto-generated types
 
@@ -49,6 +52,25 @@ class RavenChannel(Document):
 
 		# Delete the pinned channels
 		frappe.db.delete("Raven Pinned Channels", {"channel_id": self.name})
+
+		# If the channel was a thread, (i.e. a message exists with the same name), remove the 'is_thread' flag from the message
+		if self.is_thread and frappe.db.exists("Raven Message", {"name": self.name}):
+			message_channel_id = frappe.get_cached_value("Raven Message", self.name, "channel_id")
+			frappe.db.set_value("Raven Message", self.name, "is_thread", 0)
+			# Update the message which used to be a thread
+			frappe.publish_realtime(
+				"message_edited",
+				{
+					"channel_id": message_channel_id,
+					"sender": frappe.session.user,
+					"message_id": self.name,
+					"message_details": {
+						"is_thread": 0,
+					},
+				},
+				doctype="Raven Channel",
+				docname=message_channel_id,
+			)
 
 	def after_insert(self):
 		"""

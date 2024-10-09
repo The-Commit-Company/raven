@@ -44,18 +44,18 @@ export const ImageMessageBlock = memo(({ message, isScrolling = false, user }: I
 
     return (
         <Flex direction='column' gap='1'>
-            <Flex className='p-1 items-center'>
+            <Flex className='py-1 items-center'>
                 <IconButton
                     size='1'
                     variant="ghost"
                     color="gray"
                     radius='large'
-                    className='pl-0 mr-[1px] cursor-pointer font-bold hover:bg-transparent text-accent-a11 hover:text-gray-12'
+                    className='pl-0 pr-[6px] font-bold hover:bg-transparent text-accent-a11 hover:text-gray-12'
                     aria-label={`Click to ${isVisible ? "hide" : "show"} image`}
                     title={`${isVisible ? "Hide" : "Show"} image`}
                     onClick={() => isVisible ? setIsVisible(false) : showImage()}
                 >
-                    {isVisible ? <BiChevronDown size='18' /> : <BiChevronRight size='18' />}
+                    {isVisible ? <BiChevronDown size='20' className='pt-[1px]' /> : <BiChevronRight size='20' className='pt-[1px]' />}
                 </IconButton>
                 <Link
                     href={message.file}

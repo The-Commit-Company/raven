@@ -34,4 +34,10 @@ export interface RavenChannel{
 	last_message_timestamp?: string
 	/**	Last Message Details : JSON	*/
 	last_message_details?: any
+	/**	Is AI Thread : Check	*/
+	is_ai_thread?: 0 | 1
+	/**	OpenAI Thread ID : Data	*/
+	openai_thread_id?: string
+	/**	Thread Bot : Link - Raven Bot	*/
+	thread_bot?: string
 }

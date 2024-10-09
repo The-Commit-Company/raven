@@ -19,7 +19,9 @@ export const DeleteMessageModal = ({ onClose, message }: DeleteMessageModalProps
 
     const onSubmit = async () => {
         return deleteDoc('Raven Message', message.name).then(() => {
-            toast('Message deleted')
+            toast('Message deleted', {
+                duration: 800
+            })
             message.is_thread && navigate(`/channel/${message.channel_id}`)
             onClose()
         })

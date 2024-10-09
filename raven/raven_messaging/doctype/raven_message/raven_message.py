@@ -10,6 +10,7 @@ from frappe.model.document import Document
 from frappe.utils import get_datetime, get_system_timezone
 from pytz import timezone, utc
 
+from raven.ai.ai import handle_ai_thread_message, handle_bot_dm
 from raven.notification import send_notification_to_topic, send_notification_to_user
 from raven.utils import track_channel_visit
 
@@ -61,7 +62,7 @@ class RavenMessage(Document):
 		except Exception:
 			pass
 
-		if not self.is_new():
+		if not self.is_new() and not self.flags.is_ai_streaming:
 			# this is not a new message, so it's a previous message being edited
 			old_doc = self.get_doc_before_save()
 			if old_doc.text != self.text:
@@ -117,8 +118,78 @@ class RavenMessage(Document):
 			}
 
 	def after_insert(self):
-		# TODO: Enqueue this
 		self.publish_unread_count_event()
+
+		if self.message_type == "Text":
+			self.handle_ai_message()
+
+	def handle_ai_message(self):
+
+		# If the message was sent by a bot, do not call the function
+		if self.is_bot_message:
+			return
+
+		# If AI Integration is not enabled, do not call the function
+		raven_settings = frappe.get_cached_doc("Raven Settings")
+		if not raven_settings.enable_ai_integration:
+			return
+
+		# Check if this channel is an AI Thread channel
+
+		channel_doc = frappe.get_cached_doc("Raven Channel", self.channel_id)
+
+		is_ai_thread = channel_doc.is_ai_thread
+
+		if is_ai_thread and channel_doc.openai_thread_id:
+			frappe.enqueue(
+				method=handle_ai_thread_message,
+				message=self,
+				timeout=600,
+				channel=channel_doc,
+				at_front=True,
+				job_name="handle_ai_thread_message",
+			)
+
+			return
+
+		# If not a part of a AI Thread, then check if this is a DM to a bot - if yes, then we should create a new thread
+
+		is_dm = channel_doc.is_direct_message
+
+		# Only DMs to bots need to be handled (for now)
+
+		if not is_dm:
+			return
+
+		# Get the bot user
+		peer_user = frappe.db.get_value(
+			"Raven Channel Member",
+			{"channel_id": self.channel_id, "user_id": ("!=", self.owner)},
+			"user_id",
+		)
+
+		if not peer_user:
+			return
+
+		# Get the bot user doc
+		peer_user_doc = frappe.get_cached_doc("Raven User", peer_user)
+
+		if peer_user_doc.type != "Bot" or not peer_user_doc.bot:
+			return
+
+		bot = frappe.get_cached_doc("Raven Bot", peer_user_doc.bot)
+
+		if not bot.is_ai_bot:
+			return
+
+		frappe.enqueue(
+			method=handle_bot_dm,
+			message=self,
+			bot=bot,
+			timeout=600,
+			job_name="handle_bot_dm",
+			at_front=True,
+		)
 
 	def publish_unread_count_event(self):
 		frappe.db.set_value(
@@ -151,18 +222,21 @@ class RavenMessage(Document):
 					{"channel_id": self.channel_id, "user_id": ("!=", frappe.session.user)},
 					"user_id",
 				)
-				peer_user_id = frappe.get_cached_value("Raven User", peer_raven_user, "user")
 
-				frappe.publish_realtime(
-					"raven:unread_channel_count_updated",
-					{
-						"channel_id": self.channel_id,
-						"play_sound": True,
-						"sent_by": self.owner,
-					},
-					user=peer_user_id,
-					after_commit=True,
-				)
+				peer_user_doc = frappe.get_cached_doc("Raven User", peer_raven_user)
+
+				if peer_user_doc.type == "User":
+
+					frappe.publish_realtime(
+						"raven:unread_channel_count_updated",
+						{
+							"channel_id": self.channel_id,
+							"play_sound": True,
+							"sent_by": self.owner,
+						},
+						user=peer_user_doc.user,
+						after_commit=True,
+					)
 
 			# Need to send this to sender as well since they need to update the last message timestamp
 			frappe.publish_realtime(
@@ -275,12 +349,18 @@ class RavenMessage(Document):
 		if not peer_raven_user:
 			return
 
+		peer_raven_user_doc = frappe.get_cached_doc("Raven User", peer_raven_user)
+
+		# Do not send notification to a bot
+		if peer_raven_user_doc.type == "Bot":
+			return
+
 		message = self.get_notification_message_content()
 
 		owner_name = self.get_message_owner_name()
 
 		send_notification_to_user(
-			user_id=peer_raven_user,
+			user_id=peer_raven_user_doc.user,
 			user_image_id=self.owner,
 			title=owner_name,
 			message=message,
@@ -389,7 +469,7 @@ class RavenMessage(Document):
 		# TEMP: this is a temp fix for the Desk interface
 		self.publish_deprecated_event_for_desk()
 
-		if self.is_edited or self.is_thread:
+		if self.is_edited or self.is_thread or self.flags.editing_metadata:
 			frappe.publish_realtime(
 				"message_edited",
 				{
@@ -399,6 +479,7 @@ class RavenMessage(Document):
 					"message_details": {
 						"text": self.text,
 						"content": self.content,
+						"channel_id": self.channel_id,
 						"file": self.file,
 						"poll_id": self.poll_id,
 						"message_type": self.message_type,
@@ -429,7 +510,7 @@ class RavenMessage(Document):
 				if not self.file:
 					return
 
-			if self.message_type == "Poll":
+			if self.message_type == "Poll" or (self.link_doctype and self.link_document):
 				# If the message is a poll, then we need to wait for the poll to be created
 				after_commit = True
 
@@ -441,6 +522,7 @@ class RavenMessage(Document):
 					"message_id": self.name,
 					"message_details": {
 						"text": self.text,
+						"channel_id": self.channel_id,
 						"content": self.content,
 						"file": self.file,
 						"message_type": self.message_type,
@@ -475,9 +557,15 @@ class RavenMessage(Document):
 				after_commit=after_commit,
 			)
 			# track the visit of the user to the channel if a new message is created
-			frappe.enqueue(method=track_channel_visit, channel_id=self.channel_id, user=self.owner)
+			track_channel_visit(channel_id=self.channel_id, user=self.owner)
+			# frappe.enqueue(method=track_channel_visit, channel_id=self.channel_id, user=self.owner)
 
 			self.send_push_notification()
+
+			# If this is a new messagge (only applicable for files in on_update), then handle the AI message
+			if self.message_type == "File" or self.message_type == "Image":
+				if self.file:
+					self.handle_ai_message()
 
 	def on_trash(self):
 		# delete all the reactions for the message

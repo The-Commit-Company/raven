@@ -16,19 +16,19 @@ const MobileInputActions = ({ fileProps }: RightToolbarButtonsProps) => {
         <>
             <DropdownMenu.Root>
                 <DropdownMenu.Trigger>
-                    <IconButton radius='full' color='gray' variant='soft' size='1' className='mb-2'>
-                        <BiPlus size='18' />
+                    <IconButton radius='full' color='gray' variant='soft' size='2' className='mb-1'>
+                        <BiPlus size='20' />
                     </IconButton>
                 </DropdownMenu.Trigger>
-                <DropdownMenu.Content className='min-w-32' size='2'>
-                    <DropdownMenu.Item onClick={onPollOpen}>
+                <DropdownMenu.Content className='min-w-48' size='2'>
+                    <DropdownMenu.Item onClick={onPollOpen} className='text-base !h-10'>
                         <Flex gap='2' className='items-center'>
                             <MdOutlineBarChart />
                             Poll
                         </Flex>
                     </DropdownMenu.Item>
                     {fileProps && <AttachFile fileProps={fileProps} />}
-                    <DropdownMenu.Item onClick={onGIFPickerOpen}>
+                    <DropdownMenu.Item onClick={onGIFPickerOpen} className='text-base !h-10'>
                         <Flex gap='2' className='items-center'>
                             <HiOutlineGif />
                             GIF

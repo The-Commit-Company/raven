@@ -1,9 +1,13 @@
 # Copyright (c) 2024, The Commit Company and contributors
 # For license information, please see license.txt
 
+import json
+
 import frappe
+from frappe import _
 from frappe.model.document import Document
 
+from raven.ai.openai_client import get_open_ai_client
 from raven.utils import get_raven_user
 
 
@@ -16,13 +20,41 @@ class RavenBot(Document):
 	if TYPE_CHECKING:
 		from frappe.types import DF
 
+		from raven.raven_ai.doctype.raven_bot_functions.raven_bot_functions import RavenBotFunctions
+
+		allow_bot_to_write_documents: DF.Check
+		bot_functions: DF.Table[RavenBotFunctions]
 		bot_name: DF.Data
+		debug_mode: DF.Check
 		description: DF.SmallText | None
+		dynamic_instructions: DF.Check
+		enable_code_interpreter: DF.Check
+		enable_file_search: DF.Check
 		image: DF.AttachImage | None
+		instruction: DF.LongText | None
+		is_ai_bot: DF.Check
 		is_standard: DF.Check
 		module: DF.Link | None
+		openai_assistant_id: DF.Data | None
 		raven_user: DF.Link | None
 	# end: auto-generated types
+
+	def validate(self):
+		if self.is_ai_bot and not self.instruction:
+			frappe.throw(_("Please provide an instruction for this AI Bot."))
+
+		self.validate_functions()
+
+	def validate_functions(self):
+		if not self.allow_bot_to_write_documents:
+			for f in self.bot_functions:
+				needs_write = frappe.db.get_value(
+					"Raven AI Function", f.function, "requires_write_permissions"
+				)
+				if needs_write:
+					frappe.throw(
+						f"This bot is not allowed to write documents. Please remove the function {f.function} or allow the bot to write documents."
+					)
 
 	def on_update(self):
 		"""
@@ -50,6 +82,94 @@ class RavenBot(Document):
 			raven_user.save()
 
 			self.db_set("raven_user", raven_user.name)
+
+		if self.is_ai_bot:
+			if not self.openai_assistant_id:
+				self.create_openai_assistant()
+			else:
+				self.update_openai_assistant()
+
+	def before_insert(self):
+		if self.is_ai_bot and not self.openai_assistant_id:
+			self.create_openai_assistant()
+
+	def on_trash(self):
+		if self.openai_assistant_id:
+			self.delete_openai_assistant()
+
+		if self.raven_user:
+			frappe.db.set_value("Raven User", self.raven_user, "bot", None)
+			self.db_set("raven_user", None)
+			frappe.delete_doc("Raven User", self.raven_user)
+
+	def create_openai_assistant(self):
+		# Create an OpenAI Assistant for the bot
+		client = get_open_ai_client()
+
+		assistant = client.beta.assistants.create(
+			instructions=self.instruction,
+			model="gpt-4o",
+			name=self.bot_name,
+			description=self.description or "",
+			tools=self.get_tools_for_assistant(),
+		)
+
+		self.db_set("openai_assistant_id", assistant.id)
+
+	def update_openai_assistant(self):
+		# Update the OpenAI Assistant for the bot
+
+		# Additional check because it is being used in Raven AI Function
+		if not self.is_ai_bot:
+			return
+
+		client = get_open_ai_client()
+
+		assistant = client.beta.assistants.update(
+			self.openai_assistant_id,
+			instructions=self.instruction,
+			name=self.bot_name,
+			description=self.description or "",
+			tools=self.get_tools_for_assistant(),
+			model="gpt-4o",
+		)
+
+	def get_tools_for_assistant(self):
+		# Add the function to the assistant
+		tools = []
+
+		if self.enable_file_search:
+			tools.append(
+				{
+					"type": "file_search",
+				}
+			)
+
+		if self.enable_code_interpreter:
+			tools.append(
+				{
+					"type": "code_interpreter",
+				}
+			)
+
+		for f in self.bot_functions:
+			function_def = frappe.db.get_value("Raven AI Function", f.function, "function_definition")
+			if function_def:
+				tools.append({"type": "function", "function": json.loads(function_def)})
+
+		return tools
+
+	def delete_openai_assistant(self):
+		# Delete the OpenAI Assistant for the bot
+		try:
+			client = get_open_ai_client()
+			client.beta.assistants.delete(self.openai_assistant_id)
+		except Exception:
+			frappe.log_error(
+				f"Error deleting OpenAI Assistant {self.openai_assistant_id} for bot {self.name}"
+			)
+
+	# Raven Bot Methods
 
 	def is_member(self, channel_id: str) -> None | str:
 		"""
@@ -116,7 +236,12 @@ class RavenBot(Document):
 		return None
 
 	def send_message(
-		self, channel_id: str, text: str = None, link_doctype: str = None, link_document: str = None
+		self,
+		channel_id: str,
+		text: str = None,
+		link_doctype: str = None,
+		link_document: str = None,
+		markdown: bool = False,
 	) -> str:
 		"""
 		Send a text message to a channel
@@ -132,6 +257,9 @@ class RavenBot(Document):
 
 		Returns the message ID of the message sent
 		"""
+
+		if markdown:
+			text = frappe.utils.md_to_html(text)
 		doc = frappe.get_doc(
 			{
 				"doctype": "Raven Message",

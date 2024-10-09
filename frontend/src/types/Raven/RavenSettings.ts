@@ -16,6 +16,14 @@ export interface RavenSettings{
 	show_raven_on_desk?: 0 | 1
 	/**	Tenor API Key : Data	*/
 	tenor_api_key?: string
+	/**	Enable AI Integration : Check	*/
+	enable_ai_integration?: 0 | 1
+	/**	OpenAI Organisation ID : Data	*/
+	openai_organisation_id?: string
+	/**	OpenAI API Key : Password	*/
+	openai_api_key?: string
+	/**	OpenAI Project ID : Data - If not set, the integration will use the default project	*/
+	openai_project_id?: string
 	/**	Automatically Create a Channel for each Department : Check - If checked, a channel will be created in Raven for each department and employees will be synced with Raven Users.	*/
 	auto_create_department_channel?: 0 | 1
 	/**	Department Channel Type : Select	*/

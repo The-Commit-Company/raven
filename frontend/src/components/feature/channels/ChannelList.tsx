@@ -12,6 +12,7 @@ import { RiPushpinLine, RiUnpinLine } from "react-icons/ri"
 import { FrappeConfig, FrappeContext } from "frappe-react-sdk"
 import { RavenUser } from "@/types/Raven/RavenUser"
 import clsx from "clsx"
+import { __ } from "@/utils/translations"
 
 export const ChannelList = ({ unread_count }: { unread_count?: UnreadCountData }) => {
 
@@ -64,7 +65,7 @@ export const ChannelList = ({ unread_count }: { unread_count?: UnreadCountData }
             <SidebarGroupItem className={'gap-1 pl-1'}>
                 <Flex width='100%' justify='between' align='center' gap='2' pr='2' className="group">
                     <Flex align='center' gap='2' width='100%' onClick={toggle} className="cursor-default select-none">
-                        <SidebarGroupLabel>Channels</SidebarGroupLabel>
+                        <SidebarGroupLabel>{__("Channels")}</SidebarGroupLabel>
                         <Box className={clsx('transition-opacity ease-in-out duration-200',
                             !showData && unread_count && totalUnreadCount > 0 ? 'opacity-100' : 'opacity-0')}>
                             <SidebarBadge>
@@ -177,7 +178,7 @@ const PinButton = ({ channelID }: { channelID: string }) => {
             className='flex justify-start gap-2 min-w-24'
         >
             <RiUnpinLine size='18' />
-            Remove Pin
+            {__("Remove Pin")}
         </ContextMenu.Item>
     }
     return <ContextMenu.Item
@@ -185,7 +186,7 @@ const PinButton = ({ channelID }: { channelID: string }) => {
         className='flex justify-start gap-2 min-w-24'
     >
         <RiPushpinLine size='18' />
-        Pin
+        {__("Pin")}
     </ContextMenu.Item>
 
 }

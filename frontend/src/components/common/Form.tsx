@@ -18,12 +18,12 @@ export const Label = ({ children, isRequired, ...props }: LabelProps) => {
 
 export const HelperText = (props: TextProps) => {
     return (
-        <Text as='span' size='1' color='gray' {...props} />
+        <Text as='span' size='2' color='gray' {...props} />
     )
 }
 
 export const ErrorText = (props: TextProps) => {
     return (
-        <Text as='p' size='1' color='red' {...props} />
+        <Text as='p' size='2' color='red' {...props} />
     )
 }

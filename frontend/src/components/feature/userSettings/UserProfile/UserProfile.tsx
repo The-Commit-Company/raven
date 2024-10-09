@@ -13,6 +13,10 @@ import { GrPowerReset } from "react-icons/gr"
 import { BiSmile } from "react-icons/bi"
 import EmojiPicker from "@/components/common/EmojiPicker/EmojiPicker"
 import { useIsDesktop } from "@/hooks/useMediaQuery"
+import PageContainer from "@/components/layout/Settings/PageContainer"
+import SettingsPageHeader from "@/components/layout/Settings/SettingsPageHeader"
+import SettingsContentContainer from "@/components/layout/Settings/SettingsContentContainer"
+import { __ } from "@/utils/translations"
 
 type UserProfile = {
     full_name?: string,
@@ -21,7 +25,7 @@ type UserProfile = {
     custom_status?: string
 }
 
-export const UserProfile = () => {
+const UserProfile = () => {
 
     const { myProfile, mutate } = useCurrentRavenUser()
     const methods = useForm<UserProfile>({
@@ -44,10 +48,10 @@ export const UserProfile = () => {
             availability_status: availabilityStatus,
             custom_status: data.custom_status
         }).then(() => {
-            toast.success("Profile updated")
+            toast.success(__("Profile updated"))
             mutate()
         }).catch(() => {
-            toast.error("Profile update failed")
+            toast.error(__("Profile update failed"))
         })
     }
 
@@ -59,22 +63,18 @@ export const UserProfile = () => {
     const isDesktop = useIsDesktop()
 
     return (
-        <Flex direction='column' gap='4' px='6' py='4'>
-
+        <PageContainer>
             <FormProvider {...methods}>
                 <form onSubmit={handleSubmit(onSubmit)}>
-
-                    <Flex direction={'column'} gap='4'>
-                        <Flex justify={'between'} align={'center'}>
-                            <Flex direction='column' gap='0'>
-                                <Text size='3' className={'font-semibold'}>Profile</Text>
-                                <Text size='1' color='gray'>Manage your Raven profile</Text>
-                            </Flex>
-                            <Button type='submit' disabled={updatingDoc}>
+                    <SettingsContentContainer>
+                        <SettingsPageHeader
+                            title={__('Profile')}
+                            description={__('Manage your Raven profile')}
+                            actions={<Button type='submit' disabled={updatingDoc}>
                                 {updatingDoc && <Loader />}
-                                {updatingDoc ? "Saving" : "Save"}
-                            </Button>
-                        </Flex>
+                                {updatingDoc ? __("Saving") : __("Save")}
+                            </Button>}
+                        />
 
                         <Card className="p-0 align-middle justify-center">
                             <Flex direction={'column'} gap='0'>
@@ -88,7 +88,7 @@ export const UserProfile = () => {
                                 <Flex gap='4' direction='column' className={'py-4 px-6 dark:bg-slate-2'}>
 
                                     <Flex justify={'between'} align={'center'}>
-                                        <Label htmlFor='full_name'>Full Name</Label>
+                                        <Label htmlFor='full_name'>{__("Full Name")}</Label>
                                         <TextField.Root
                                             autoFocus
                                             maxLength={140}
@@ -98,7 +98,7 @@ export const UserProfile = () => {
                                             {...register('full_name', {
                                                 maxLength: {
                                                     value: 140,
-                                                    message: "Name cannot be more than 140 characters."
+                                                    message: __("Name cannot be more than {0} characters.", [140])
                                                 }
                                             })}
                                             aria-invalid={errors.full_name ? 'true' : 'false'}
@@ -109,11 +109,11 @@ export const UserProfile = () => {
                                     <Separator className={'w-full bg-slate-4'} />
 
                                     <Flex justify={'between'} align={'center'}>
-                                        <Label htmlFor="availability_status">Availability Status</Label>
+                                        <Label htmlFor="availability_status">{__("Availability Status")}</Label>
                                         <DropdownMenu.Root>
                                             <DropdownMenu.Trigger>
                                                 <Flex gap={'2'} align='center' className={'text-sm px-2 py-1 border border-gray-7 rounded w-48 sm:w-96'}>{availabilityStatus ? getStatusText(availabilityStatus) :
-                                                    <Text color="gray">Set Availability</Text>
+                                                    <Text color="gray">{__("Set Availability")}</Text>
                                                 }</Flex>
                                             </DropdownMenu.Trigger>
                                             <DropdownMenu.Content variant="soft">
@@ -130,7 +130,7 @@ export const UserProfile = () => {
                                                     {getStatusText('Invisible')}
                                                 </DropdownMenu.Item>
                                                 <DropdownMenu.Item className={'flex justify-normal gap-2'} color='gray' onClick={() => setAvailabilityStatus('')}>
-                                                    <GrPowerReset fontSize={'0.7rem'} /> Reset
+                                                    <GrPowerReset fontSize={'0.7rem'} /> {__("Reset")}
                                                 </DropdownMenu.Item>
                                             </DropdownMenu.Content>
                                         </DropdownMenu.Root>
@@ -140,8 +140,8 @@ export const UserProfile = () => {
 
                                     <Flex justify={'between'} align={'center'}>
                                         <Flex direction={'column'} gap='0'>
-                                            <Label htmlFor='custom_status'>Custom Status</Label>
-                                            {isDesktop && <Text size={'1'} color={'gray'} style={{ lineHeight: '0.8' }}>Share what you are up to</Text>}
+                                            <Label htmlFor='custom_status'>{__("Custom Status")}</Label>
+                                            {isDesktop && <Text size={'1'} color={'gray'} style={{ lineHeight: '0.8' }}>{__("Share what you are up to")}</Text>}
                                         </Flex>
                                         <Flex align={'center'} gap='3'>
                                             <Flex direction={'column'} gap='1'>
@@ -152,7 +152,7 @@ export const UserProfile = () => {
                                                     {...register('custom_status', {
                                                         maxLength: {
                                                             value: 140,
-                                                            message: "Status cannot be more than 140 characters."
+                                                            message: __("Status cannot be more than {} characters.", ["140"])
                                                         }
                                                     })}
                                                     className={'w-48 sm:w-96'}
@@ -178,10 +178,12 @@ export const UserProfile = () => {
                                 </Flex>
                             </Flex>
                         </Card>
-                    </Flex>
+                    </SettingsContentContainer>
 
                 </form>
             </FormProvider>
-        </Flex>
+        </PageContainer>
     )
 }
+
+export const Component = UserProfile
