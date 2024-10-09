@@ -11,6 +11,7 @@ import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import { useContext } from 'react';
 import { getErrorMessage } from '@/components/layout/AlertBanner/ErrorBanner';
 import useIsUserOnLeave from '@/hooks/fetchers/useIsUserOnLeave';
+import OnLeaveBadge from '@/components/common/UserLeaveBadge';
 
 
 export const UserMentionRenderer = ({ node }: NodeViewRendererProps) => {
@@ -38,14 +39,6 @@ export const UserMentionRenderer = ({ node }: NodeViewRendererProps) => {
             })
         }
 
-    }
-
-    const OnLeaveBadge = ({ userID }: { userID: string }) => {
-        const isOnLeave = useIsUserOnLeave(userID)
-        if (isOnLeave) {
-            return <Badge color="yellow" variant="surface">On Leave</Badge>
-        }
-        return null
     }
 
 
