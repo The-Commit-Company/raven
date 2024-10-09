@@ -1,7 +1,7 @@
 import { Label, ErrorText, HelperText } from '@/components/common/Form'
 import { Stack, HStack } from '@/components/layout/Stack'
 import { RavenBot } from '@/types/RavenBot/RavenBot'
-import { Box, TextField, Checkbox, Text, Separator, Tooltip } from '@radix-ui/themes'
+import { Box, TextField, Checkbox, Text, Separator, Tooltip, Heading } from '@radix-ui/themes'
 import { useFormContext, Controller } from 'react-hook-form'
 import { BiInfoCircle } from 'react-icons/bi'
 
@@ -112,6 +112,28 @@ const AIFeaturesBotForm = (props: Props) => {
                 </HelperText>
             </Stack>
             <Separator className='w-full' />
+            <Heading as='h5' size='2' className='not-cal' weight='medium'>Advanced</Heading>
+            <Stack maxWidth={'560px'}>
+                <Text as="label" size="2">
+                    <HStack align='center'>
+                        <Controller
+                            control={control}
+                            name='debug_mode'
+                            render={({ field }) => (
+                                <Checkbox
+                                    checked={field.value ? true : false}
+                                    onCheckedChange={(v) => field.onChange(v ? 1 : 0)}
+                                />
+                            )} />
+                        <span>Enable Debug Mode</span>
+                    </HStack>
+                </Text>
+                <HelperText>
+                    If enabled, stack traces of errors will be sent as messages by the bot during runs.
+                    <br />
+                    This is helpful when you're testing your bots and want to know where things are going wrong.
+                </HelperText>
+            </Stack>
 
         </Stack>
     )
