@@ -74,7 +74,12 @@ class RavenAIFunction(Document):
 
 	def validate_reference_doctype(self):
 		if not self.reference_doctype:
-			if not self.type in ["Custom Function", "Send Message", "Get Report Result"]:
+			if not self.type in [
+				"Custom Function",
+				"Send Message",
+				"Get Report Result",
+				"Attach File to Document",
+			]:
 				frappe.throw(_("Please select a DocType for this function."))
 
 	def validate_fields_for_doctype(self):
@@ -179,6 +184,26 @@ class RavenAIFunction(Document):
 					}
 				},
 				"required": ["document_ids"],
+				"additionalProperties": False,
+			}
+		elif self.type == "Attach File to Document":
+			params = {
+				"type": "object",
+				"properties": {
+					"doctype": {
+						"type": "string",
+						"description": "The DocType of the document to attach the file to",
+					},
+					"document_id": {
+						"type": "string",
+						"description": "Use the document_id obtained to attach the file to the document.",
+					},
+					"file_path": {
+						"type": "string",
+						"description": "The path of the file to attach to the document",
+					},
+				},
+				"required": ["doctype", "document_id", "file_path"],
 				"additionalProperties": False,
 			}
 		elif self.type == "Custom Function":
@@ -288,7 +313,6 @@ class RavenAIFunction(Document):
 	def validate(self):
 		# Functions cannot be named after core functions
 		INVALID_FUNCTION_NAMES = [
-			"attach_file_to_document",
 			"get_document",
 			"get_documents",
 			"get_list",

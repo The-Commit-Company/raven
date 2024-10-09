@@ -111,6 +111,13 @@ def attach_file_to_document(doctype: str, document_id: str, file_path: str):
 	"""
 	Attach a file to a document in the database
 	"""
+	if not frappe.db.exists(doctype, document_id):
+		return {
+			"document_id": document_id,
+			"message": f"{doctype} with ID {document_id} not found",
+			"doctype": doctype,
+		}
+
 	file = frappe.get_doc("File", {"file_url": file_path})
 
 	if not file:
