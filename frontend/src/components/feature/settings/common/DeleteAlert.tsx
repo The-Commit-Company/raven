@@ -79,7 +79,7 @@ export const AlertContent = ({ onClose, onUpdate, doctype, docname, path }: Dele
                 <Text size='2' as='label'>
                     <Flex gap="2" align={'center'}>
                         <Checkbox onClick={() => setAllowDelete(!allowDelete)} color='red' />
-                        Yes, I understand, permanently delete this channel
+                        Yes, I understand, permanently delete this {doctype}.
                     </Flex>
                 </Text>
             </Flex>
