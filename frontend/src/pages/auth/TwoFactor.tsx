@@ -4,6 +4,7 @@ import { AuthResponse, FrappeError, OTPCredentials, useFrappeAuth } from "frappe
 import { LoginInputs, VerificationType } from "@/types/Auth/Login";
 import { ErrorText } from "@/components/common/Form";
 import { Loader } from "@/components/common/Loader";
+import { useTheme } from "@/ThemeProvider";
 
 const VerificationMethods: { [key: string]: string; } = {
     "Email": "Email",
@@ -21,6 +22,7 @@ export const TwoFactor = ({ loginWithTwoFAResponse, setError, setIsTwoFactorEnab
 
     const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<LoginInputs>()
     const { login } = useFrappeAuth()
+    const { appearance } = useTheme()
 
     async function onSubmit(values: LoginInputs) {
         setError(null)
@@ -46,11 +48,11 @@ export const TwoFactor = ({ loginWithTwoFAResponse, setError, setIsTwoFactorEnab
     return (
         <Box>
             <form onSubmit={handleSubmit(onSubmit)}>
-                <Flex direction='column' gap='4'>
+                <Flex direction='column' gap='4' width='100%'>
                     <Flex direction='column' gap='2'>
                         <Box>
                             {
-                                <Text size="2" weight="medium" color="gray">
+                                <Text size="3" color="gray">
                                     {loginWithTwoFAResponse?.verification?.setup ? getVerificationPrompt(loginWithTwoFAResponse?.verification)
                                         : `Verification ${VerificationMethods[loginWithTwoFAResponse?.verification?.method]} not sent. Please contact Administrator.`}
                                 </Text>
@@ -65,24 +67,31 @@ export const TwoFactor = ({ loginWithTwoFAResponse, setError, setIsTwoFactorEnab
                                 })}
                             name="otp"
                             type="text"
+                            size='3'
+                            variant={appearance === 'dark' ? "soft" : undefined}
+                            color="gray"
                             required
                             placeholder="Verification Code"
                             autoFocus
                             tabIndex={0} />
                         {errors?.otp && <ErrorText>{errors?.otp.message}</ErrorText>}
                     </Flex>
-                    <Flex direction='column' gap='4' >
-                        <Button type='submit' >
+                    <Flex direction='column' gap='4' my='2' >
+                        <Button type='submit' className="not-cal font-medium" size='3'>
                             {isSubmitting ? <Loader /> : 'Verify'}
                         </Button>
                     </Flex>
-                    <Flex direction="column" gap="1" align="center">
-                        <LinkButton
-                            size="2"
+                    <Flex direction="column" gap="4">
+                        <Button
+                            className="not-cal font-medium border-0 hover:bg-transparent hover:text-gray-12"
+                            variant="ghost"
+                            type='button'
+                            size="3"
+                            color='gray'
                             onClick={() => setIsTwoFactorEnabled(false)}
                         >
                             Cancel
-                        </LinkButton>
+                        </Button>
                     </Flex>
                 </Flex>
             </form>

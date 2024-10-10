@@ -17,9 +17,12 @@ import { SuccessCallout } from "@/components/common/Callouts/SuccessCallout";
 import { isEmailValid } from "@/utils/validations";
 import { ForgotPasswordInput } from "@/types/Auth/Login";
 import AuthContainer from "@/components/layout/AuthContainer";
+import { useTheme } from "@/ThemeProvider";
 
 
 export const Component = () => {
+
+    const { appearance } = useTheme()
     const {
         register,
         handleSubmit,
@@ -60,7 +63,7 @@ export const Component = () => {
                 <form onSubmit={handleSubmit(resetPassword)}>
                     <Flex direction="column" gap="4">
                         <Flex direction="column" gap="2">
-                            <Label htmlFor="user" isRequired>
+                            <Label htmlFor="user" isRequired size='3'>
                                 Email
                             </Label>
                             <TextField.Root {...register("user", {
@@ -71,21 +74,27 @@ export const Component = () => {
                             })}
                                 name="user"
                                 type="email"
+                                size='3'
                                 placeholder="jane@example.com"
+                                color="gray"
+                                variant={appearance === 'dark' ? "soft" : undefined}
                                 tabIndex={0}
                                 autoFocus />
                             {errors?.user && (
                                 <ErrorText>{errors?.user?.message}</ErrorText>
                             )}
                         </Flex>
-                        <Flex direction="column" gap="2">
-                            <Button type="submit" disabled={isSubmitting}>
+                        <Flex direction="column" gap="2" mt='2'>
+                            <Button type="submit" disabled={isSubmitting}
+                                size='3'
+                                className="not-cal font-medium">
                                 {isSubmitting ? <Loader /> : "Reset Password"}
                             </Button>
                         </Flex>
                         <Flex direction="column" gap="1" align="center">
                             <LinkButton
                                 size="2"
+                                color='gray'
                                 asChild
                             >
                                 <Link to='/login'>

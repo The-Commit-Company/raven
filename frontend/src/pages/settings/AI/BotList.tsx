@@ -17,7 +17,7 @@ type Props = {}
 const BotList = (props: Props) => {
 
     const { data, isLoading, error } = useFrappeGetDocList<RavenBot>("Raven Bot", {
-        fields: ["name", "bot_name", "is_ai_bot", "description", "image", "enable_file_search", "dynamic_instructions", "instruction", "allow_bot_to_write_documents"],
+        fields: ["name", "bot_name", "is_ai_bot", "description", "image", "enable_file_search", "dynamic_instructions", "instruction", "allow_bot_to_write_documents", "enable_code_interpreter"],
         orderBy: {
             field: "modified",
             order: "desc"
@@ -69,17 +69,22 @@ const BotTable = ({ bots }: { bots: RavenBot[] }) => {
                                         <HoverCard.Content>
                                             <Stack>
                                                 <BotFeatureRow
-                                                    enabled={bot.dynamic_instructions}
-                                                    label="Dynamic Instructions"
+                                                    enabled={bot.allow_bot_to_write_documents}
+                                                    label="Can Write Documents"
                                                 />
                                                 <BotFeatureRow
                                                     enabled={bot.enable_file_search}
                                                     label="File Search"
                                                 />
                                                 <BotFeatureRow
-                                                    enabled={bot.allow_bot_to_write_documents}
-                                                    label="Can Write Documents"
+                                                    enabled={bot.enable_code_interpreter}
+                                                    label="Code Interpreter"
                                                 />
+                                                <BotFeatureRow
+                                                    enabled={bot.dynamic_instructions}
+                                                    label="Dynamic Instructions"
+                                                />
+
                                             </Stack>
                                         </HoverCard.Content>
                                     </HoverCard.Root>
