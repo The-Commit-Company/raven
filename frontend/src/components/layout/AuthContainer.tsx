@@ -1,5 +1,5 @@
 import { PropsWithChildren, useContext } from 'react'
-import { Box, Flex, Text } from '@radix-ui/themes';
+import { Box, Flex, Heading, Text } from '@radix-ui/themes';
 import { FullPageLoader } from "./Loaders";
 import { Link } from 'react-router-dom';
 import { UserContext } from '@/utils/auth/UserProvider';
@@ -10,20 +10,18 @@ const AuthContainer = ({ children, ...props }: PropsWithChildren) => {
 
     return (
         <Box className={'min-h-screen'}>
-            <Flex justify='center' align='center' className={'h-screen w-full'}>
+            <Flex justify='center' align='center' className={'h-screen w-full dark:bg-[#191919]'}>
                 {
                     isLoading ? <FullPageLoader /> :
-                        <Box className={'w-full max-w-lg'}>
-                            <Flex direction='column' gap='6' className={'w-full bg-white rounded-lg shadow dark:border dark:bg-gray-900 dark:border-gray-700 p-8'}>
+                        <Box className={'w-full max-w-md p-8'}>
+                            <Flex direction='column' gap='6' className={'w-full'}>
 
                                 <Link to="/" tabIndex={-1}>
-                                    <Flex justify="center">
-                                        <Text as='span' size='9' className='cal-sans'>raven</Text>
+                                    <Flex>
+                                        <Heading size='9' className='cal-sans leading-normal tracking-normal w-fit'>raven</Heading>
                                     </Flex>
                                 </Link>
-
                                 {children}
-
                             </Flex>
                         </Box>
                 }
