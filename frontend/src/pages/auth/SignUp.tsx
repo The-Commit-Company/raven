@@ -8,7 +8,7 @@ import {
     Flex,
     TextField,
     Text,
-    Link as LinkButton
+    Link as LinkButton,
 } from "@radix-ui/themes";
 import { ErrorText, Label } from "@/components/common/Form";
 import { Loader } from "@/components/common/Loader";
@@ -17,6 +17,8 @@ import AuthContainer from '@/components/layout/AuthContainer';
 import { CalloutObject } from "@/components/common/Callouts/CustomCallout";
 import { SuccessCallout } from "@/components/common/Callouts/SuccessCallout";
 import { ErrorBanner } from "@/components/layout/AlertBanner";
+import { useTheme } from "@/ThemeProvider";
+import { OtherLoginMethods } from "./Login";
 
 export type SignUpInputs = {
     email: string,
@@ -25,6 +27,9 @@ export type SignUpInputs = {
 }
 
 export const Component = () => {
+
+    const { appearance } = useTheme()
+
     const {
         register,
         handleSubmit,
@@ -61,15 +66,20 @@ export const Component = () => {
                 <form onSubmit={handleSubmit(signup)}>
                     <Flex direction="column" gap="4">
                         <Flex direction="column" gap="2">
-                            <Label htmlFor="full_name" isRequired>
+                            <Label htmlFor="full_name" isRequired size='3'>
                                 Full Name
                             </Label>
                             <TextField.Root
-                                {...register("full_name")}
+                                {...register("full_name", {
+                                    required: "Full Name is required.",
+                                })}
                                 name="full_name"
                                 type="text"
                                 required
+                                size='3'
+                                color="gray"
                                 placeholder="Jane Doe"
+                                variant={appearance === 'dark' ? "soft" : undefined}
                                 tabIndex={0}
                             />
                             {errors?.email && (
@@ -78,7 +88,7 @@ export const Component = () => {
                         </Flex>
 
                         <Flex direction="column" gap="2">
-                            <Label htmlFor="email" isRequired>
+                            <Label htmlFor="email" isRequired size='3'>
                                 Email
                             </Label>
                             <TextField.Root
@@ -90,6 +100,9 @@ export const Component = () => {
                                 })}
                                 name="email"
                                 type="email"
+                                size='3'
+                                color="gray"
+                                variant={appearance === 'dark' ? "soft" : undefined}
                                 required
                                 placeholder="jane@example.com"
                                 tabIndex={0}
@@ -99,13 +112,18 @@ export const Component = () => {
                             )}
                         </Flex>
 
-                        <Flex direction="column" gap="2">
-                            <Button type="submit" disabled={isSubmitting}>
+                        <Flex direction="column" gap="2" my='2'>
+                            <Button type="submit" disabled={isSubmitting}
+                                size='3'
+                                className="not-cal font-medium">
                                 {isSubmitting ? <Loader /> : "Sign Up"}
                             </Button>
                         </Flex>
+
+                        <OtherLoginMethods isSubmitting={isSubmitting} />
+
                         <Flex gap="1" justify="center">
-                            <Text size="2">Have an Account?</Text>
+                            <Text size="2" color="gray">Already have an account?</Text>
                             <LinkButton
                                 size="2"
                                 asChild

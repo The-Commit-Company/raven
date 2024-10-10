@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { BiShow, BiHide, BiLogoGithub, BiLogoGoogle, BiLogoFacebookCircle, BiMailSend } from "react-icons/bi";
+import { BiShow, BiHide, BiLogoGithub, BiLogoFacebookCircle, BiMailSend } from "react-icons/bi";
 import { Link } from "react-router-dom";
-import { Box, Button, Flex, IconButton, Text, TextField, Separator, Link as LinkButton } from "@radix-ui/themes";
+import { Box, Button, Flex, IconButton, Text, TextField, Link as LinkButton } from "@radix-ui/themes";
 import { FrappeError, useFrappeGetCall, useFrappeAuth, AuthResponse } from "frappe-react-sdk";
 import { Loader } from "@/components/common/Loader";
 import { ErrorText, Label } from "@/components/common/Form";
@@ -10,14 +10,18 @@ import { LoginInputs, LoginContext } from "@/types/Auth/Login";
 import AuthContainer from "@/components/layout/AuthContainer";
 import { TwoFactor } from "@/pages/auth/TwoFactor";
 import { ErrorBanner } from "@/components/layout/AlertBanner";
+import { DateSeparator } from "@/components/layout/Divider/DateSeparator";
+import { FcGoogle } from "react-icons/fc";
+import { useTheme } from "@/ThemeProvider";
+import { Stack } from "@/components/layout/Stack";
 
-const SocialProviderIcons = {
-    "github": <BiLogoGithub size="18" />,
-    "google": <BiLogoGoogle size="18" />,
-    "facebook": <BiLogoFacebookCircle size="18" />
+export const SocialProviderIcons = {
+    "github": <BiLogoGithub size="24" />,
+    "google": <FcGoogle size="24" />,
+    "facebook": <BiLogoFacebookCircle size="24" color="#316FF6" />
 }
 
-interface SocialProvider {
+export interface SocialProvider {
     name: 'github' | 'google' | 'facebook'
     provider_name: string,
     auth_url: string,
@@ -30,14 +34,10 @@ interface SocialProvider {
 
 export const Component = () => {
 
-    // GET call for Login Context (settings for social logins, email link etc)
-    const { data: loginContext, mutate } = useFrappeGetCall<LoginContext>('raven.api.login.get_context', {
-        "redirect-to": "/raven"
-    }, 'raven.api.login.get_context', {
-        revalidateOnMount: true,
-        revalidateOnReconnect: false,
-        revalidateOnFocus: false
-    })
+
+    const { appearance } = useTheme()
+
+    const { data: loginContext, mutate } = useLoginContext()
     const [error, setError] = useState<FrappeError | null>(null)
 
     const { login } = useFrappeAuth()
@@ -82,7 +82,7 @@ export const Component = () => {
                                 <Flex direction='column' gap='4'>
 
                                     <Flex direction='column' gap='2'>
-                                        <Label htmlFor='email' isRequired>{loginContext?.message?.login_label}</Label>
+                                        <Label htmlFor='email' isRequired size='3'>{loginContext?.message?.login_label}</Label>
                                         <TextField.Root {...register("email",
                                             {
                                                 required: `${loginContext?.message?.login_label} is required.`
@@ -90,13 +90,16 @@ export const Component = () => {
                                             name="email"
                                             type="text"
                                             required
+                                            size='3'
+                                            color="gray"
+                                            variant={appearance === 'dark' ? "soft" : undefined}
                                             placeholder="jane@example.com"
                                             tabIndex={0} />
                                         {errors?.email && <ErrorText>{errors?.email.message}</ErrorText>}
                                     </Flex>
 
                                     <Flex direction='column' gap='2'>
-                                        <Label htmlFor='password' isRequired>Password</Label>
+                                        <Label htmlFor='password' isRequired size='3'>Password</Label>
                                         <TextField.Root  {...register("password",
                                             {
                                                 required: "Password is required.",
@@ -105,7 +108,10 @@ export const Component = () => {
                                             type={isPasswordOpen ? "text" : "password"}
                                             autoComplete="current-password"
                                             required
-                                            placeholder="***********" >
+                                            size='3'
+                                            variant={appearance === 'dark' ? "soft" : undefined}
+                                            placeholder="***********"
+                                            color="gray" >
                                             <TextField.Slot side='right'>
                                                 <IconButton
                                                     type='button'
@@ -119,72 +125,39 @@ export const Component = () => {
                                             </TextField.Slot>
                                         </TextField.Root>
                                         {errors?.password && <ErrorText>{errors.password?.message}</ErrorText>}
+
+                                        <Flex direction='column' gap='2' align="end">
+                                            <LinkButton
+                                                asChild
+                                                color='gray'
+                                                size="2"
+                                            >
+                                                <Link to="/forgot-password">
+                                                    Forgot Password?
+                                                </Link>
+                                            </LinkButton>
+                                        </Flex>
                                     </Flex>
 
-                                    <Flex direction='column' gap='2' >
-                                        <Button type='submit' disabled={isSubmitting} >
+                                    <Flex direction='column' gap='2'>
+                                        <Button type='submit' disabled={isSubmitting}
+                                            size='3'
+                                            className="not-cal font-medium">
                                             {isSubmitting ? <Loader /> : 'Login'}
                                         </Button>
                                     </Flex>
-                                    <Flex direction='column' gap='2' align="end">
-                                        <LinkButton
-                                            asChild
-                                            size="2"
-                                        >
-                                            <Link to="/forgot-password">
-                                                Forgot Password?
-                                            </Link>
-                                        </LinkButton>
-                                    </Flex>
+
                                 </Flex>
                             </Flex>
                         </form>
-                        {/* Show Separator only when either Email Link or Social Logins are enabled */}
-                        {
-                            loginContext?.message?.login_with_email_link || loginContext?.message?.social_login ?
-                                <Flex justify='center' className="mt-8 mb-8">
-                                    <Separator className="w-full" />
-                                </Flex> : null
-                        }
-                        {/* Map all social oauth providers */}
-                        {
-                            loginContext?.message?.social_login ? loginContext?.message?.provider_logins.map((soc: SocialProvider, i: number) => {
-                                return (
-                                    <Flex direction='column' key={i} className="mb-4" >
-                                        <Button variant="soft" highContrast className="cursor-default" disabled={isSubmitting} asChild>
-                                            <Link to={soc.auth_url} className="flex items-center">
-                                                {SocialProviderIcons[soc.name] ? SocialProviderIcons[soc.name] : <img src={soc.icon.src} alt={soc.icon.alt} ></img>}
-                                                Login with {soc.provider_name}
-                                            </Link>
-                                        </Button>
-                                    </Flex>
-                                )
-                            }) : null
-                        }
 
-                        {
-                            loginContext?.message?.login_with_email_link ?
-                                <Flex direction='column' >
-                                    <Button type="button"
-                                        asChild
-                                        variant="soft"
-                                        highContrast
-                                        disabled={isSubmitting}
-                                        className="cursor-default"
-                                    >
-                                        <Link to="/login-with-email">
-                                            <BiMailSend size="18" />
-                                            <Text>Login with Email Link</Text>
-                                        </Link>
-                                    </Button>
-                                </Flex> : null
-                        }
                     </Box>
             }
+            <OtherLoginMethods isSubmitting={isSubmitting} />
             {
                 loginContext?.message?.disable_signup === 0 ?
-                    <Flex gap="1" justify="center" className="mt-4">
-                        <Text size="2" color="gray">Don't have account?</Text>
+                    <Flex gap="1" justify="center">
+                        <Text size="2" color="gray">Don't have an account yet?</Text>
                         <LinkButton
                             size="2"
                             asChild
@@ -198,6 +171,75 @@ export const Component = () => {
 
         </AuthContainer>
     )
+}
+
+const useLoginContext = () => {
+    // GET call for Login Context (settings for social logins, email link etc)
+    return useFrappeGetCall<LoginContext>('raven.api.login.get_context', {
+        "redirect-to": "/raven"
+    }, 'raven.api.login.get_context', {
+        revalidateOnMount: true,
+        revalidateOnReconnect: false,
+        revalidateOnFocus: false
+    })
+}
+
+export const OtherLoginMethods = ({ isSubmitting }: { isSubmitting: boolean }) => {
+
+    const { data: loginContext } = useLoginContext()
+
+    return <Stack gap='3'>
+        {/* Show Separator only when either Email Link or Social Logins are enabled */}
+        {
+            loginContext?.message?.login_with_email_link || loginContext?.message?.social_login ?
+                <Flex justify='center' className="mt-1 mb-5 w-full">
+                    <DateSeparator className="w-full">
+                        <Text size='2' color='gray' className="uppercase">or</Text>
+                    </DateSeparator>
+                </Flex> : null
+        }
+        {/* Map all social oauth providers */}
+        {
+            loginContext?.message?.social_login ? loginContext?.message?.provider_logins.map((soc: SocialProvider, i: number) => {
+                return (
+                    <Flex direction='column' key={i} >
+                        <Button
+                            size='3'
+                            color='gray'
+                            variant="outline"
+                            className="not-cal font-medium text-gray-12 dark:text-white"
+                            disabled={isSubmitting}
+                            asChild>
+                            <Link to={soc.auth_url} className="flex items-center">
+                                {SocialProviderIcons[soc.name] ? SocialProviderIcons[soc.name] : <img src={soc.icon.src} alt={soc.icon.alt} style={{ width: '20px', height: '20px' }} ></img>}
+                                Continue with {soc.provider_name}
+                            </Link>
+                        </Button>
+                    </Flex>
+                )
+            }) : null
+        }
+
+        {
+            loginContext?.message?.login_with_email_link ?
+                <Flex direction='column' >
+                    <Button type="button"
+                        asChild
+                        size='3'
+                        color='gray'
+                        variant="outline"
+                        className="not-cal font-medium text-gray-12 dark:text-white"
+                        disabled={isSubmitting}
+                    >
+                        <Link to="/login-with-email">
+                            <BiMailSend size="24" />
+                            <Text>Login with Email Link</Text>
+                        </Link>
+                    </Button>
+                </Flex> : null
+        }
+    </Stack>
+
 }
 
 Component.displayName = "LoginPage";
