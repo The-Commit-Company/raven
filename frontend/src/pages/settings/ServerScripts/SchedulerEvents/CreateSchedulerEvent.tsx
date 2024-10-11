@@ -57,13 +57,13 @@ const CreateSchedulerEvent = () => {
                 <FormProvider {...methods}>
                     <SettingsContentContainer>
                         <SettingsPageHeader
-                            title='Create a Scheduled Event'
+                            title='Create a Scheduled Message'
                             // description='Bots can be used to send reminders, run AI assistants, and more.'
                             actions={<Button type='submit' disabled={loading}>
                                 {loading && <Loader />}
                                 {loading ? "Creating" : "Create"}
                             </Button>}
-                            breadcrumbs={[{ label: 'Scheduled Event', href: '../' }, { label: 'New Bot', href: '' }]}
+                            breadcrumbs={[{ label: 'Scheduled Message', href: '../' }, { label: 'New Scheduled Message', href: '' }]}
                         />
                         <ErrorBanner error={error} />
                         <SchedulerEventsForm />
