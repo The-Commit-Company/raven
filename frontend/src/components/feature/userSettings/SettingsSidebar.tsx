@@ -23,19 +23,22 @@ export const SettingsSidebar = () => {
                     {/* <SettingsSidebarItem title="Bots" to='bots' /> */}
                 </SettingsGroup>
                 <SettingsSeparator />
+                <SettingsGroup title='Integrations' icon={BsBoxes}>
+                    {/* <SettingsSidebarItem title="ERPNext" to='erpnext' /> */}
+                    <SettingsSidebarItem title="HR" to='hr' />
+                    {/* <SettingsSidebarItem title='Notifications' to='notifications' /> */}
+                    <SettingsSidebarItem title="Scheduled Messages" to='scheduled-messages' />
+                    <SettingsSidebarItem title="Webhooks" to='webhooks' />
+                    {/* <SettingsSidebarItem title="Frappe LMS" to='frappe-lms' /> */}
+                    {/* <SettingsSidebarItem title="Frappe CRM" to='frappe-crm' /> */}
+                </SettingsGroup>
+                <SettingsSeparator />
                 <SettingsGroup title="AI" icon={BiBot}>
                     <SettingsSidebarItem title="Bots" to='bots' />
                     <SettingsSidebarItem title="Functions" to='functions' />
                     <SettingsSidebarItem title="Commands" to='commands' />
                     <SettingsSidebarItem title="Instructions" to="instructions" />
                     <SettingsSidebarItem title="OpenAI Settings" to='openai-settings' />
-                </SettingsGroup>
-                <SettingsSeparator />
-                <SettingsGroup title='Integrations' icon={BsBoxes}>
-                    {/* <SettingsSidebarItem title="ERPNext" to='erpnext' /> */}
-                    <SettingsSidebarItem title="HR" to='hr' />
-                    {/* <SettingsSidebarItem title="Frappe LMS" to='frappe-lms' /> */}
-                    {/* <SettingsSidebarItem title="Frappe CRM" to='frappe-crm' /> */}
                 </SettingsGroup>
             </Flex>
         </Box>
