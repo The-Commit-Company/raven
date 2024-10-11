@@ -92,16 +92,14 @@ class RavenChannel(Document):
 				unique_raven_users = list(set(raven_users))
 				self.add_members(unique_raven_users)
 			else:
-				# If this was not created by a bot, add the current user as a member
-				if self.type == "Private" or self.type == "Public":
-					frappe.get_doc(
-						{
-							"doctype": "Raven Channel Member",
-							"channel_id": self.name,
-							"user_id": frappe.session.user,
-							"is_admin": 1,
-						}
-					).insert()
+				frappe.get_doc(
+					{
+						"doctype": "Raven Channel Member",
+						"channel_id": self.name,
+						"user_id": frappe.session.user,
+						"is_admin": 1,
+					}
+				).insert()
 
 	def validate(self):
 		# If the user trying to modify the channel is not the owner or channel member, then don't allow

@@ -144,8 +144,8 @@ export const MessageItem = ({ message, setDeleteMessage, isHighlighted, onReplyM
                             data-[state=open]:shadow-sm
                             transition-colors
                             px-1
-                            py-2
-                            sm:p-2
+                            py-1.5
+                            sm:p-1.5
                             rounded-md`, isHighlighted ? 'bg-yellow-50 hover:bg-yellow-50 dark:bg-yellow-300/20 dark:hover:bg-yellow-300/20' : !isDesktop && isHovered ? 'bg-gray-2 dark:bg-gray-3' : '', isEmojiPickerOpen ? 'bg-gray-2 dark:bg-gray-3' : '')}>
                     <Flex className='gap-2.5 sm:gap-3 items-start'>
                         <MessageLeftElement message={message} user={user} isActive={isActive} />

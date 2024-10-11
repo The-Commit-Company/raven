@@ -249,11 +249,12 @@ class RavenBot(Document):
 		channel_id: The channel_id of the channel to send the message to
 
 		You need to provide either text or link_doctype and link_document
-		text: The text of the message in HTML format (markdown is not supported)
+		text: The text of the message in HTML format. If markdown is True, the text will be converted to HTML.
 
 		Optional:
 		link_doctype: The doctype of the document to link the message to
 		link_document: The name of the document to link the message to
+		markdown: If True, the text will be converted to HTML.
 
 		Returns the message ID of the message sent
 		"""
@@ -306,7 +307,12 @@ class RavenBot(Document):
 			return channel.name
 
 	def send_direct_message(
-		self, user_id: str, text: str = None, link_doctype: str = None, link_document: str = None
+		self,
+		user_id: str,
+		text: str = None,
+		link_doctype: str = None,
+		link_document: str = None,
+		markdown: bool = False,
 	) -> str:
 		"""
 		Send a text message to a user in a Direct Message channel
@@ -314,11 +320,12 @@ class RavenBot(Document):
 		user_id: The User's 'name' field to send the message to
 
 		You need to provide either text or link_doctype and link_document
-		text: The text of the message in HTML format (markdown is not supported)
+		text: The text of the message in HTML format. If markdown is True, the text will be converted to HTML.
 
 		Optional:
 		link_doctype: The doctype of the document to link the message to
 		link_document: The name of the document to link the message to
+		markdown: If True, the text will be converted to HTML.
 
 		Returns the message ID of the message sent
 		"""
@@ -326,7 +333,7 @@ class RavenBot(Document):
 		channel_id = self.create_direct_message_channel(user_id)
 
 		if channel_id:
-			return self.send_message(channel_id, text, link_doctype, link_document)
+			return self.send_message(channel_id, text, link_doctype, link_document, markdown)
 
 	def get_last_message(self, channel_id: str = None, message_type: str = None) -> Document | None:
 		"""

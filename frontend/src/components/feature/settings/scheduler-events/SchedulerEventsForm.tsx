@@ -6,6 +6,8 @@ import { useContext } from "react"
 import { Controller, useFormContext } from "react-hook-form"
 import { ChannelItem } from "../../integrations/webhooks/WebhookForm"
 import { useFrappeGetDocList } from "frappe-react-sdk"
+import { Stack } from "@/components/layout/Stack"
+import ServerScriptNotEnabledCallout from "./ServerScriptNotEnabledForm"
 
 export interface SchedulerEventForm extends RavenSchedulerEvent {
     hour: string
@@ -33,95 +35,128 @@ export const SchedulerEventsForm = ({ edit = false }: Props) => {
 
     return (
         <Flex direction="column" gap={'4'}>
-            {!edit && <Box>
-                <Label htmlFor="event_name" isRequired>Name</Label>
-                <TextField.Root
-                    {...register('event_name', { required: "Name is required.", maxLength: { value: 140, message: "Name cannot be more than 140 characters." } })}
-                    id="name"
-                    placeholder="e.g. Sales Invoice - Daily Reminder"
-                    autoFocus
-                    aria-describedby={errors.event_name ? 'name-error' : undefined}
-                    aria-invalid={errors.event_name ? 'true' : 'false'}
-                    color={errors.event_name ? 'red' : 'gray'} />
-                {errors.event_name && <ErrorText className="pt-1">{errors.event_name.message}</ErrorText>}
-            </Box>}
+            <ServerScriptNotEnabledCallout />
+            {!edit && <Stack>
+                <Box>
+                    <Label htmlFor="event_name" isRequired>Name</Label>
+                    <TextField.Root
+                        {...register('event_name', { required: "Name is required.", maxLength: { value: 140, message: "Name cannot be more than 140 characters." } })}
+                        placeholder="e.g. Sales Invoice - Daily Reminder"
+                        autoFocus
+                        id="event_name"
+                        aria-describedby={errors.event_name ? 'name-error' : undefined}
+                        aria-invalid={errors.event_name ? 'true' : 'false'}
+                        color={errors.event_name ? 'red' : 'gray'} />
+                </Box>
+                {errors.event_name && <ErrorText id='name-error'>{errors.event_name.message}</ErrorText>}
+            </Stack>}
 
             <Grid columns={'2'} gap={'4'}>
-                <Box>
-                    <Label>Where do you want to send this?</Label>
-                    <Controller
-                        control={control}
-                        name="channel"
-                        render={({ field: { onChange, value } }) => (
-                            <Select.Root onValueChange={(value) => onChange(value)} value={value}>
-                                <Select.Trigger style={{ width: "100%" }} placeholder="Select Channel" autoFocus={edit} />
-                                <Select.Content>
-                                    <Select.Group>
-                                        <Select.Label>Channel name</Select.Label>
-                                        {
-                                            channels.map((channel, index) => (
-                                                <Select.Item key={index} value={channel.name}>
-                                                    <ChannelItem channel={channel} />
-                                                </Select.Item>
-                                            ))
-                                        }
-                                    </Select.Group>
-                                </Select.Content>
-                            </Select.Root>
-                        )}
-                    />
-                </Box>
-
-                <Box>
-                    <Label>Which bot should trigger this event?</Label>
-                    <Controller
-                        control={control}
-                        name="bot"
-                        render={({ field: { onChange, value } }) => (
-                            <Select.Root onValueChange={(value) => onChange(value)} value={value}>
-                                <Select.Trigger style={{ width: "100%" }} placeholder="Select Bot" />
-                                <Select.Content>
-                                    <Select.Group>
-                                        <Select.Label>Bot</Select.Label>
-                                        {
-                                            bots?.map((bot: any, index: number) => (
-                                                <Select.Item key={index} value={bot.name}>{bot.name}</Select.Item>
-                                            ))
-                                        }
-                                    </Select.Group>
-                                </Select.Content>
-                            </Select.Root>
-                        )}
-                    />
-                </Box>
+                <Stack>
+                    <Box>
+                        <Label isRequired htmlFor="channel">Where do you want to send this?</Label>
+                        <Controller
+                            control={control}
+                            name="channel"
+                            rules={{
+                                required: "Channel is required."
+                            }}
+                            render={({ field: { onChange, value, name } }) => (
+                                <Select.Root onValueChange={(value) => onChange(value)} value={value} name={name}>
+                                    <Select.Trigger
+                                        style={{ width: "100%" }}
+                                        placeholder="Select Channel"
+                                        aria-describedby={errors.channel ? 'channel-error' : undefined}
+                                        aria-invalid={errors.channel ? 'true' : 'false'}
+                                        autoFocus={edit}
+                                        id={name} />
+                                    <Select.Content>
+                                        <Select.Group>
+                                            <Select.Label>Channels</Select.Label>
+                                            {
+                                                channels.map((channel, index) => (
+                                                    <Select.Item key={index} value={channel.name}>
+                                                        <ChannelItem channel={channel} />
+                                                    </Select.Item>
+                                                ))
+                                            }
+                                        </Select.Group>
+                                    </Select.Content>
+                                </Select.Root>
+                            )}
+                        />
+                    </Box>
+                    {errors.channel && <ErrorText id='channel-error'>{errors.channel?.message}</ErrorText>}
+                </Stack>
+                <Stack>
+                    <Box>
+                        <Label isRequired htmlFor="bot">Which bot should trigger this event?</Label>
+                        <Controller
+                            control={control}
+                            name="bot"
+                            rules={{
+                                required: "Bot is required."
+                            }}
+                            render={({ field: { onChange, value, name } }) => (
+                                <Select.Root onValueChange={(value) => onChange(value)} value={value} name={name}>
+                                    <Select.Trigger style={{ width: "100%" }} placeholder="Select Bot" id={name}
+                                        aria-describedby={errors.bot ? 'bot-error' : undefined}
+                                        aria-invalid={errors.bot ? 'true' : 'false'}
+                                    />
+                                    <Select.Content>
+                                        <Select.Group>
+                                            <Select.Label>Bots</Select.Label>
+                                            {
+                                                bots?.map((bot: any, index: number) => (
+                                                    <Select.Item key={index} value={bot.name}>{bot.name}</Select.Item>
+                                                ))
+                                            }
+                                        </Select.Group>
+                                    </Select.Content>
+                                </Select.Root>
+                            )}
+                        />
+                    </Box>
+                    {errors.bot && <ErrorText id='bot-error'>{errors.bot?.message}</ErrorText>}
+                </Stack>
             </Grid>
-
-            <Box>
-                <Label htmlFor="event_frequency">How often should this event be triggered?</Label>
-                <Controller
-                    control={control}
-                    name="event_frequency"
-                    render={({ field: { onChange, value } }) => (
-                        <Select.Root onValueChange={(value) => onChange(value)} value={value}>
-                            <Select.Trigger style={{ width: "100%" }} placeholder="Select Frequency" />
-                            <Select.Content>
-                                <Select.Group>
-                                    <Select.Label>Temporal Events</Select.Label>
-                                    <Select.Item value='Every Day'>Every Day</Select.Item>
-                                    <Select.Item value='Every Day of the week'>Every Day of the week</Select.Item>
-                                    <Select.Item value='Date of the month'>Date of the month</Select.Item>
-                                    <Select.Item value='Cron'>Custom</Select.Item>
-                                </Select.Group>
-                            </Select.Content>
-                        </Select.Root>
-                    )}
-                />
-            </Box>
+            <Grid columns={'2'} gap={'4'}>
+                <Stack>
+                    <Box>
+                        <Label htmlFor="event_frequency" isRequired>How often should this event be triggered?</Label>
+                        <Controller
+                            control={control}
+                            name="event_frequency"
+                            rules={{
+                                required: "Frequency is required."
+                            }}
+                            render={({ field: { onChange, value, name } }) => (
+                                <Select.Root onValueChange={(value) => onChange(value)} value={value} name={name}>
+                                    <Select.Trigger style={{ width: "100%" }} placeholder="Select Frequency" id={name}
+                                        aria-describedby={errors.event_frequency ? 'frequency-error' : undefined}
+                                        aria-invalid={errors.event_frequency ? 'true' : 'false'}
+                                    />
+                                    <Select.Content>
+                                        <Select.Group>
+                                            <Select.Label>Frequency</Select.Label>
+                                            <Select.Item value='Every Day'>Every Day</Select.Item>
+                                            <Select.Item value='Every Day of the week'>Every Day of the week</Select.Item>
+                                            <Select.Item value='Date of the month'>Date of the month</Select.Item>
+                                            <Select.Item value='Cron'>Custom</Select.Item>
+                                        </Select.Group>
+                                    </Select.Content>
+                                </Select.Root>
+                            )}
+                        />
+                    </Box>
+                    {errors.event_frequency && <ErrorText id='frequency-error'>{errors.event_frequency?.message}</ErrorText>}
+                </Stack>
+            </Grid>
 
             {frequency === 'Every Day' && <Box className="w-[350px]">
                 <Flex gap={'4'}>
                     <Box>
-                        <Label>Hour</Label>
+                        <Label isRequired htmlFor="hour">Hour</Label>
                         <TextField.Root
                             {...register('hour', {
                                 required: "Hour is required.",
@@ -130,6 +165,7 @@ export const SchedulerEventsForm = ({ edit = false }: Props) => {
                                     message: "Hour should be in 24 hour format."
                                 }
                             })}
+                            id="hour"
                             placeholder="e.g. 10"
                             aria-invalid={errors.hour ? 'true' : 'false'}
                             color={errors.hour ? 'red' : 'gray'}
@@ -138,7 +174,7 @@ export const SchedulerEventsForm = ({ edit = false }: Props) => {
                         {errors.hour && <ErrorText className="pt-1" id='hour-error'>{errors.hour.message}</ErrorText>}
                     </Box>
                     <Box>
-                        <Label>Minute</Label>
+                        <Label isRequired htmlFor="minute">Minute</Label>
                         <TextField.Root
                             {...register('minute', {
                                 required: "Minute is required.",
@@ -147,6 +183,7 @@ export const SchedulerEventsForm = ({ edit = false }: Props) => {
                                     message: "Minute should be in 24 hour format."
                                 }
                             })}
+                            id="minute"
                             placeholder="e.g. 30"
                             aria-invalid={errors.minute ? 'true' : 'false'}
                             color={errors.minute ? 'red' : 'gray'}
@@ -161,7 +198,7 @@ export const SchedulerEventsForm = ({ edit = false }: Props) => {
             {frequency === 'Every Day of the week' && <Box>
                 <Flex gap={'4'}>
                     <Box width={'max-content'} className="w-[12rem]">
-                        <Label>Day</Label>
+                        <Label isRequired htmlFor="day">Day</Label>
                         <Controller
                             control={control}
                             name="day"
@@ -185,7 +222,7 @@ export const SchedulerEventsForm = ({ edit = false }: Props) => {
                         />
                     </Box>
                     <Box>
-                        <Label>Hour</Label>
+                        <Label isRequired htmlFor="hour">Hour</Label>
                         <TextField.Root
                             {...register('hour', {
                                 required: "Time is required.",
@@ -194,6 +231,7 @@ export const SchedulerEventsForm = ({ edit = false }: Props) => {
                                     message: "Hour should be in 24 hour format."
                                 }
                             })}
+                            id="hour"
                             placeholder="e.g. 10"
                             aria-invalid={errors.hour ? 'true' : 'false'}
                             color={errors.hour ? 'red' : 'gray'}
@@ -202,7 +240,7 @@ export const SchedulerEventsForm = ({ edit = false }: Props) => {
                         {errors.hour && <ErrorText className="pt-1" id="hour-error">{errors.hour.message}</ErrorText>}
                     </Box>
                     <Box>
-                        <Label>Minute</Label>
+                        <Label isRequired htmlFor="minute">Minute</Label>
                         <TextField.Root
                             {...register('minute', {
                                 required: "Minute is required.",
@@ -211,6 +249,7 @@ export const SchedulerEventsForm = ({ edit = false }: Props) => {
                                     message: "Minute should be in 24 hour format."
                                 }
                             })}
+                            id="minute"
                             placeholder="e.g. 30"
                             aria-invalid={errors.minute ? 'true' : 'false'}
                             color={errors.minute ? 'red' : 'gray'}
@@ -225,7 +264,7 @@ export const SchedulerEventsForm = ({ edit = false }: Props) => {
             {frequency === 'Date of the month' && <Box>
                 <Flex gap={'4'}>
                     <Box>
-                        <Label>Date</Label>
+                        <Label isRequired htmlFor="date">Date</Label>
                         <TextField.Root
                             {...register('date', {
                                 required: "Date is required.",
@@ -234,6 +273,7 @@ export const SchedulerEventsForm = ({ edit = false }: Props) => {
                                     message: "Date should be in 24 hour format."
                                 }
                             })}
+                            id="date"
                             placeholder="e.g. 10"
                             aria-invalid={errors.date ? 'true' : 'false'}
                             color={errors.date ? 'red' : 'gray'}
@@ -242,7 +282,7 @@ export const SchedulerEventsForm = ({ edit = false }: Props) => {
                         {errors.date && <ErrorText className="pt-1" id="date-error">{errors.date.message}</ErrorText>}
                     </Box>
                     <Box>
-                        <Label>Hour</Label>
+                        <Label isRequired htmlFor="hour">Hour</Label>
                         <TextField.Root
                             {...register('hour', {
                                 required: "Time is required.",
@@ -259,7 +299,7 @@ export const SchedulerEventsForm = ({ edit = false }: Props) => {
                         {errors.hour && <ErrorText className="pt-1" id="hour-error">{errors.hour.message}</ErrorText>}
                     </Box>
                     <Box>
-                        <Label>Minute</Label>
+                        <Label isRequired htmlFor="minute">Minute</Label>
                         <TextField.Root
                             {...register('minute', {
                                 required: "Minute is required.",
@@ -268,6 +308,7 @@ export const SchedulerEventsForm = ({ edit = false }: Props) => {
                                     message: "Minute should be in 24 hour format."
                                 }
                             })}
+                            id="minute"
                             placeholder="e.g. 30"
                             aria-invalid={errors.minute ? 'true' : 'false'}
                             color={errors.minute ? 'red' : 'gray'}
@@ -291,7 +332,7 @@ export const SchedulerEventsForm = ({ edit = false }: Props) => {
                 <TextArea
                     {...register('content', { required: "Message is required." })}
                     placeholder="e.g. Hello, this is a reminder to pay your dues."
-                    rows={5}
+                    rows={10}
                     aria-describedby={errors.content ? 'content-error' : undefined}
                     aria-invalid={errors.content ? 'true' : 'false'}
                     color={errors.content ? 'red' : 'gray'}
@@ -315,7 +356,7 @@ const AdvancedCronInput = ({ name, label, ...props }: { name: string; label: str
     return (
         <Flex gap={'4'} width={'100%'}>
             <Box>
-                <Label>Minute</Label>
+                <Label isRequired htmlFor="minute">Minute</Label>
                 <TextField.Root
                     {...register('minute', {
                         required: "Minute is required.",
@@ -324,6 +365,7 @@ const AdvancedCronInput = ({ name, label, ...props }: { name: string; label: str
                             message: "Minute should be in 24 hour format."
                         }
                     })}
+                    id="minute"
                     placeholder="e.g. 30"
                     aria-invalid={errors.minute ? 'true' : 'false'}
                     color={errors.minute ? 'red' : 'gray'}
@@ -332,7 +374,7 @@ const AdvancedCronInput = ({ name, label, ...props }: { name: string; label: str
                 {errors.minute && <ErrorText className="pt-1" id="minute-error">{errors.minute.message}</ErrorText>}
             </Box>
             <Box>
-                <Label>Hour</Label>
+                <Label isRequired htmlFor="hour">Hour</Label>
                 <TextField.Root
                     {...register('hour', {
                         required: "Time is required.",
@@ -341,6 +383,7 @@ const AdvancedCronInput = ({ name, label, ...props }: { name: string; label: str
                             message: "Hour should be in 24 hour format."
                         }
                     })}
+                    id="hour"
                     placeholder="e.g. 10"
                     aria-invalid={errors.hour ? 'true' : 'false'}
                     color={errors.hour ? 'red' : 'gray'}
@@ -349,7 +392,7 @@ const AdvancedCronInput = ({ name, label, ...props }: { name: string; label: str
                 {errors.hour && <ErrorText className="pt-1" id="hour-error">{errors.hour.message}</ErrorText>}
             </Box>
             <Box>
-                <Label>Date</Label>
+                <Label isRequired htmlFor="date">Date</Label>
                 <TextField.Root
                     {...register('date', {
                         required: "Date is required.",
@@ -358,6 +401,7 @@ const AdvancedCronInput = ({ name, label, ...props }: { name: string; label: str
                             message: "Date should be in 24 hour format."
                         }
                     })}
+                    id="date"
                     placeholder="e.g. 10"
                     aria-invalid={errors.date ? 'true' : 'false'}
                     color={errors.date ? 'red' : 'gray'}
@@ -366,7 +410,7 @@ const AdvancedCronInput = ({ name, label, ...props }: { name: string; label: str
                 {errors.date && <ErrorText className="pt-1" id="date-error">{errors.date.message}</ErrorText>}
             </Box>
             <Box className="w-[20%]">
-                <Label>Month</Label>
+                <Label isRequired htmlFor="month">Month</Label>
                 <TextField.Root
                     {...props}
                     {...register('month', {
@@ -376,6 +420,7 @@ const AdvancedCronInput = ({ name, label, ...props }: { name: string; label: str
                             message: "Month should be in 24 hour format."
                         }
                     })}
+                    id="month"
                     placeholder="e.g. 10"
                     aria-invalid={errors.month ? 'true' : 'false'}
                     color={errors.month ? 'red' : 'gray'}

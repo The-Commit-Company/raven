@@ -208,6 +208,28 @@ class RavenAIFunction(Document):
 			}
 		elif self.type == "Custom Function":
 			params = json.loads(self.params)
+		elif self.type == "Get List":
+			params = {
+				"type": "object",
+				"properties": {
+					"filters": {
+						"type": "object",
+						"description": "Filters to apply when retrieving the list",
+					},
+					"fields": {
+						"type": "array",
+						"items": {"type": "string"},
+						"description": "Fields to retrieve for each document",
+					},
+					"limit": {
+						"type": "integer",
+						"description": "Maximum number of documents to retrieve",
+						"default": 20,
+					},
+				},
+				"required": ["filters", "fields"],
+				"additionalProperties": False,
+			}
 		else:
 			params = self.build_params_json_from_table()
 

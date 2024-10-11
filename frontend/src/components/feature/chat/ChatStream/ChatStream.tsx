@@ -16,6 +16,7 @@ import { ErrorBanner } from '@/components/layout/AlertBanner'
 import { ForwardMessageDialog, useForwardMessage } from '../ChatMessage/MessageActions/ForwardMessage'
 import AttachFileToDocumentDialog, { useAttachFileToDocument } from '../ChatMessage/MessageActions/AttachFileToDocument'
 import { ReactionAnalyticsDialog, useMessageReactionAnalytics } from '../ChatMessage/MessageActions/MessageReactionAnalytics'
+import SystemMessageBlock from '../ChatMessage/SystemMessageBlock'
 
 /**
  * Anatomy of a message
@@ -132,6 +133,8 @@ const ChatStream = ({ channelID, replyToMessage, showThreadButton = true }: Prop
                         return <DateSeparator key={`date-${message.creation}`} id={`date-${message.creation}`} className='p-2 z-10 relative'>
                             {message.creation}
                         </DateSeparator>
+                    } else if (message.message_type === 'System') {
+                        return <SystemMessageBlock key={`${message.name}_${message.modified}`} message={message} />
                     } else {
                         return <div key={`${message.name}_${message.modified}`} id={`message-${message.name}`}>
                             <div className="w-full overflow-x-clip overflow-y-visible text-ellipsis animate-fadein">

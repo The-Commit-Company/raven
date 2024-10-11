@@ -1,14 +1,15 @@
 import { HelperText, Label } from "@/components/common/Form";
 import { Webhook } from "@/types/Integrations/Webhook";
-import { Flex, Box, Heading, Table, IconButton, Button, Select, Dialog, Badge, TextField } from "@radix-ui/themes";
+import { Flex, Box, Heading, Table, IconButton, Button, Select, Dialog, Badge, TextField, Text } from "@radix-ui/themes";
 import { useMemo, useState } from "react";
 import { Controller, useFieldArray, useFormContext } from "react-hook-form";
 import { BiInfoCircle, BiMinusCircle } from "react-icons/bi";
-import { BsEye, BsPlus } from "react-icons/bs";
 import { FieldsData, SampleData, } from "./utils";
 import { DoctypeFieldList } from './utils'
 import { DIALOG_CONTENT_CLASS } from "@/utils/layout/dialog";
 import { RavenWebhook } from "@/types/RavenIntegrations/RavenWebhook";
+import { FiEye, FiPlus } from "react-icons/fi";
+import { HStack, Stack } from "@/components/layout/Stack";
 
 export const WebhookData = () => {
     const { register, control, watch, setValue } = useFormContext<RavenWebhook>()
@@ -41,30 +42,26 @@ export const WebhookData = () => {
     return (
         <Box>
             <Flex direction='column' gap='2' width='100%'>
-                <Flex direction='row' align='end' justify={'between'}>
+                <HStack align='center' justify={'between'}>
                     <Flex direction={'column'} gap='1'>
-                        <Heading size='4'>Webhook Data</Heading>
-                        <HelperText>Select the fields you want in webhook response.</HelperText>
+                        <Heading size='4' className="not-cal">Webhook Data</Heading>
+                        <Text size='2' color='gray'>Select the fields you want in the webhook payload.</Text>
                     </Flex>
-                    <Flex direction={'row'} gap={'4'} align={'center'}>
+                    <HStack align={'center'}>
                         <Dialog.Root open={previewOpen} onOpenChange={setPreviewOpen}>
                             <Dialog.Trigger>
-                                <Button size={'1'} type="button" onClick={() => { }} variant="ghost" color="gray" style={{
-                                    width: 'fit-content',
-                                }} disabled={fields.length === 0}>
-                                    <BsEye size={'14'} />
+                                <Button type="button" variant="surface" color="gray" disabled={fields.length === 0} className="not-cal">
+                                    <FiEye />
                                     Preview</Button>
                             </Dialog.Trigger>
                             <Dialog.Content className={DIALOG_CONTENT_CLASS} size={'3'}>
                                 <PreviewModal onClose={onPreviewClose} />
                             </Dialog.Content>
                         </Dialog.Root>
-                        <Button size={'1'} type="button" onClick={() => append({ fieldname: '', key: '' })} variant="outline" style={{
-                            width: 'fit-content',
-                        }}><BsPlus size={'14'} />
+                        <Button size={'2'} type="button" onClick={() => append({ fieldname: '', key: '' })} variant="soft" className="not-cal"><FiPlus />
                             Add</Button>
-                    </Flex>
-                </Flex>
+                    </HStack>
+                </HStack>
                 <Table.Root variant='surface'>
                     <Table.Header>
                         <Table.Row>
@@ -169,19 +166,15 @@ export const FieldInfoModal = ({ fieldIndex, triggerEvent, onClose }: { fieldInd
 
     return (
         <Flex direction={'column'} gap={'4'} width={'100%'}>
-            <Dialog.Title>
-                <Flex direction='column' gap='1' width='100%'>
-                    <Flex direction='row' align='center' gap={'2'} >
-                        <Heading size='6'>
-                            {fieldData?.label}
-                        </Heading>
-                        <Badge variant='outline' radius="large" color='gray' style={{
-                            marginTop: '1rem',
-                        }}>{fieldData?.fieldtype}</Badge>
-                    </Flex>
-                    <HelperText>{fieldData?.description}</HelperText>
-                </Flex>
-            </Dialog.Title>
+            <Box>
+                <Dialog.Title>
+                    {fieldData?.label}
+                </Dialog.Title>
+                <Dialog.Description>
+                    {fieldData?.description} <Badge color='gray'>{fieldData?.fieldtype}</Badge>
+                </Dialog.Description>
+            </Box>
+
             {
                 fieldData?.example && <Box>
                     <Label>
@@ -238,50 +231,58 @@ export const PreviewModal = ({ onClose }: { onClose: () => void }) => {
     }, [examples, webhookData, webhookTrigger])
 
     return (
-        <Flex direction={'column'} gap={'4'} width={'100%'}>
-            <Dialog.Title>
-                <Heading size={'4'}>Preview</Heading>
-            </Dialog.Title>
-            <Flex direction={'column'} gap={'2'} width={'100%'}>
-                <Box>
-                    <Flex direction={'column'}>
-                        <Label>
-                            Example
-                        </Label>
-                        <Select.Root value={examples} onValueChange={(e) => setExamples(e)}>
-                            <Select.Trigger placeholder='Select example' />
-                            <Select.Content>
-                                <Select.Group>
-                                    <Select.Label>Examples</Select.Label>
-                                    {exampleList.map((example, index) => (
-                                        <Select.Item key={index} value={example}>{example}</Select.Item>
-                                    ))}
-                                </Select.Group>
-                            </Select.Content>
-                        </Select.Root>
-                    </Flex>
-                </Box>
-                <Box>
-                    <Label>
-                        Response Data
-                    </Label>
+        <Stack>
+            <Box>
+                <Dialog.Title>
+                    Preview
+                </Dialog.Title>
+                <Dialog.Description>
+                    Preview the webhook payload for the selected example.
+                </Dialog.Description>
+            </Box>
+            <Flex direction={'column'} gap={'4'} width={'100%'}>
+
+                <Flex direction={'column'} gap={'2'} width={'100%'}>
                     <Box>
-                        <pre className={'rounded-md bg-slate-3 p-2 m-0'} style={{
-                            minHeight: '200px',
-                            whiteSpace: 'pre-wrap'
-                        }}>
-                            <code>
-                                {jsonData}
-                            </code>
-                        </pre>
+                        <Flex direction={'column'}>
+                            <Label>
+                                Example
+                            </Label>
+                            <Select.Root value={examples} onValueChange={(e) => setExamples(e)}>
+                                <Select.Trigger placeholder='Select example' />
+                                <Select.Content>
+                                    <Select.Group>
+                                        <Select.Label>Examples</Select.Label>
+                                        {exampleList.map((example, index) => (
+                                            <Select.Item key={index} value={example}>{example}</Select.Item>
+                                        ))}
+                                    </Select.Group>
+                                </Select.Content>
+                            </Select.Root>
+                        </Flex>
                     </Box>
-                </Box>
+                    <Box>
+                        <Label>
+                            Response Data
+                        </Label>
+                        <Box>
+                            <pre className={'rounded-md bg-slate-3 p-2 m-0'} style={{
+                                minHeight: '200px',
+                                whiteSpace: 'pre-wrap'
+                            }}>
+                                <code>
+                                    {jsonData}
+                                </code>
+                            </pre>
+                        </Box>
+                    </Box>
+                </Flex>
+                <Flex gap="3" mt="4" justify="end" align='center'>
+                    <Dialog.Close>
+                        <Button variant="soft" color="gray">Close</Button>
+                    </Dialog.Close>
+                </Flex>
             </Flex>
-            <Flex gap="3" mt="4" justify="end" align='center'>
-                <Dialog.Close>
-                    <Button variant="soft" color="gray">Close</Button>
-                </Dialog.Close>
-            </Flex>
-        </Flex>
+        </Stack>
     )
 }

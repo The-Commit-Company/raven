@@ -1,38 +1,41 @@
-import { BackToList } from "@/components/feature/integrations/webhooks/BackToList"
+import { Loader } from "@/components/common/Loader"
 import { DeleteAlert } from "@/components/feature/settings/common/DeleteAlert"
 import { SchedulerEventsForm } from "@/components/feature/settings/scheduler-events/SchedulerEventsForm"
 import { ErrorBanner } from "@/components/layout/AlertBanner"
-import { Badge, Box, Button, DropdownMenu, Flex, Heading, IconButton, Section } from "@radix-ui/themes"
+import { FullPageLoader } from "@/components/layout/Loaders"
+import PageContainer from "@/components/layout/Settings/PageContainer"
+import SettingsContentContainer from "@/components/layout/Settings/SettingsContentContainer"
+import SettingsPageHeader, { HeaderBadge } from "@/components/layout/Settings/SettingsPageHeader"
+import { HStack } from "@/components/layout/Stack"
+import { RavenSchedulerEvent } from "@/types/RavenIntegrations/RavenSchedulerEvent"
+import { isEmpty } from "@/utils/validations"
+import { Button, DropdownMenu, IconButton } from "@radix-ui/themes"
 import { useFrappeGetDoc, useFrappeUpdateDoc } from "frappe-react-sdk"
 import { useState } from "react"
 import { FormProvider, useForm } from "react-hook-form"
 import { BiDotsVerticalRounded } from "react-icons/bi"
-import { FiArrowLeft, FiChevronDown } from "react-icons/fi"
-import { useNavigate, useParams } from "react-router-dom"
+import { useParams } from "react-router-dom"
 import { toast } from "sonner"
 
-export interface Props { }
-
-const ViewSchedulerEvent = (props: Props) => {
+const ViewSchedulerEvent = () => {
 
     const { ID } = useParams<{ ID: string }>()
 
-    const { data: eventData, error, mutate } = useFrappeGetDoc('Raven Scheduler Event', ID)
+    const { data: eventData, error, mutate, isLoading } = useFrappeGetDoc<RavenSchedulerEvent>('Raven Scheduler Event', ID)
 
     return (
-        <>
+        <PageContainer>
             {error && <ErrorBanner error={error} />}
+            {isLoading && <FullPageLoader className="h-64" />}
             {eventData && <ViewSchedulerEventPage data={eventData} onUpdate={mutate} />}
-        </>
+        </PageContainer>
     )
 }
 
 
-const ViewSchedulerEventPage = ({ data, onUpdate }: { data: any, onUpdate: () => void }) => {
+const ViewSchedulerEventPage = ({ data, onUpdate }: { data: RavenSchedulerEvent, onUpdate: () => void }) => {
 
     const [isOpen, setIsOpen] = useState(false)
-
-    const navigate = useNavigate()
 
     const methods = useForm({
         defaultValues: {
@@ -50,6 +53,10 @@ const ViewSchedulerEventPage = ({ data, onUpdate }: { data: any, onUpdate: () =>
             day: data.cron_expression ? data.cron_expression.split(' ')[4] : '',
         }
     })
+
+    const { formState: { dirtyFields } } = methods
+
+    const isDirty = !isEmpty(dirtyFields)
 
     const { updateDoc, error, loading } = useFrappeUpdateDoc()
 
@@ -94,30 +101,23 @@ const ViewSchedulerEventPage = ({ data, onUpdate }: { data: any, onUpdate: () =>
         setIsOpen(false)
     }
 
+    const badges: HeaderBadge[] = data.disabled ? [{ label: "Disabled", color: "gray" }] : [{ label: "Enabled", color: "green" }]
+
     return (
         <FormProvider {...methods}>
             <form onSubmit={methods.handleSubmit(onSubmit)}>
-                <Box className="lg:mx-[10rem] md:mx-[5rem] mt-9 h-screen">
-                    <BackToList label="Scheduled Messages" path="/settings/integrations/scheduled-messages" />
-                    <Flex justify={'between'} mt={'6'}>
-                        <Flex align={'center'} gap={'3'}>
-                            <Heading>{data.name}</Heading>
-                            <Badge color={data.disabled ? 'gray' : 'green'}>{data.disabled ? "Disabled" : "Enabled"}</Badge>
-                        </Flex>
-                        <Flex gap={'3'}>
-                            <Button onClick={() => methods.handleSubmit(onSubmit)} disabled={loading || !methods.formState.isDirty}>Save</Button>
+                <SettingsContentContainer>
+                    <SettingsPageHeader
+                        title={data.event_name}
+                        headerBadges={isDirty ? [{ label: "Not Saved", color: "red" }] : badges}
+                        actions={<HStack>
                             <DropdownMenu.Root>
                                 <DropdownMenu.Trigger>
-                                    <IconButton aria-label='Options' variant="soft" color="gray" style={{
-                                        // @ts-ignore
-                                        '--icon-button-ghost-padding': '0',
-                                        height: 'var(--base-button-height)',
-                                        width: 'var(--base-button-height)',
-                                    }}>
+                                    <IconButton aria-label='Options' variant="surface" color="gray">
                                         <BiDotsVerticalRounded />
                                     </IconButton>
                                 </DropdownMenu.Trigger>
-                                <DropdownMenu.Content>
+                                <DropdownMenu.Content className="min-w-32">
                                     <DropdownMenu.Item onClick={onStatusToggle}>{data.disabled ? "Enable" : "Disable"}</DropdownMenu.Item>
                                     <DropdownMenu.Separator />
                                     <DropdownMenu.Item color="red" onClick={() => setIsOpen(true)}>
@@ -125,14 +125,20 @@ const ViewSchedulerEventPage = ({ data, onUpdate }: { data: any, onUpdate: () =>
                                     </DropdownMenu.Item>
                                 </DropdownMenu.Content>
                             </DropdownMenu.Root>
-                            <DeleteAlert doctype="Raven Scheduler Event" docname={data.name} isOpen={isOpen} onClose={onClose} path={'../../scheduled-messages'} />
-                        </Flex>
-                    </Flex>
-                    <Section size={'2'}>
-                        <ErrorBanner error={error} />
-                        <SchedulerEventsForm edit />
-                    </Section>
-                </Box>
+                            <Button type='submit' disabled={loading}>
+                                {loading && <Loader />}
+                                {loading ? "Saving" : "Save"}
+                            </Button>
+                        </HStack>
+
+                        }
+                        breadcrumbs={[{ label: 'Scheduled Messages', href: '../' }, { label: data.name, href: '', copyToClipboard: true }]}
+                    />
+                    <ErrorBanner error={error} />
+                    <SchedulerEventsForm edit />
+
+                    <DeleteAlert doctype="Raven Scheduler Event" docname={data.name} isOpen={isOpen} onClose={onClose} path={'../../scheduled-messages'} />
+                </SettingsContentContainer>
             </form>
         </FormProvider>
     )

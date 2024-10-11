@@ -1,16 +1,16 @@
 import { ErrorBanner } from "@/components/layout/AlertBanner"
-import { FullPageLoader } from "@/components/layout/Loaders"
 import { RavenSchedulerEvent } from "@/types/RavenIntegrations/RavenSchedulerEvent"
-import { Box, Flex, Heading, Button, Section, Blockquote, Text } from "@radix-ui/themes"
+import { Button } from "@radix-ui/themes"
 import { useFrappeDocTypeEventListener, useFrappeGetDocList } from "frappe-react-sdk"
-import { Link, useNavigate } from "react-router-dom"
+import { Link } from "react-router-dom"
 import { List } from "./ScheduledMessageList"
+import PageContainer from "@/components/layout/Settings/PageContainer"
+import SettingsContentContainer from "@/components/layout/Settings/SettingsContentContainer"
+import SettingsPageHeader from "@/components/layout/Settings/SettingsPageHeader"
+import { TableLoader } from "@/components/layout/Loaders/TableLoader"
+import ServerScriptNotEnabledCallout from "@/components/feature/settings/scheduler-events/ServerScriptNotEnabledForm"
 
-export interface Props { }
-
-const SchedulerEvents = (props: Props) => {
-
-    const navigate = useNavigate()
+const SchedulerEvents = () => {
 
     const { data, error, isLoading, mutate } = useFrappeGetDocList<RavenSchedulerEvent>('Raven Scheduler Event', {
         fields: ['name', 'disabled', 'event_frequency', 'creation', 'owner'],
@@ -25,22 +25,21 @@ const SchedulerEvents = (props: Props) => {
     })
 
     return (
-        <Box className="lg:mx-[10rem] md:mx-[5rem] mt-9 h-screen">
-            <Flex justify={'between'}>
-                <Heading>Scheduled Messages</Heading>
-                <Button onClick={() => navigate('create')}>Add</Button>
-            </Flex>
-            <Section size={'2'}>
-                <Blockquote size={'2'}>
-                    Lets say you want to be reminded to file your GST returns every month on the 10th. You can create a scheduled message & a bot will remind you to do so.
-                </Blockquote>
-            </Section>
-            <Flex direction={'column'}>
-                {error && <ErrorBanner error={error} />}
-                {isLoading && <FullPageLoader className="h-auto" text='Loading...' />}
-                {data?.length === 0 ? null : <List data={data ?? []} />}
-            </Flex>
-        </Box>
+        <PageContainer>
+            <SettingsContentContainer>
+                <SettingsPageHeader
+                    title='Scheduled Messages'
+                    description='You can create a scheduled message & a bot will send it to you at the specified time.'
+                    actions={<Button asChild>
+                        <Link to='create'>Create</Link>
+                    </Button>}
+                />
+                {isLoading && <TableLoader columns={2} />}
+                <ErrorBanner error={error} />
+                <ServerScriptNotEnabledCallout />
+                {data ? data.length === 0 ? null : <List data={data} /> : null}
+            </SettingsContentContainer>
+        </PageContainer>
     )
 }
 

@@ -10,13 +10,15 @@ import { Toaster } from 'sonner'
 import { useStickyState } from './hooks/useStickyState'
 import MobileTabsPage from './pages/MobileTabsPage'
 import Cookies from 'js-cookie'
+import ErrorPage from './pages/ErrorPage'
 
 /** Following keys will not be cached in app cache */
 const NO_CACHE_KEYS = [
   "frappe.desk.form.load.getdoctype",
   "frappe.desk.search.search_link",
   "frappe.model.workflow.get_transitions",
-  "frappe.desk.reportview.get_count"
+  "frappe.desk.reportview.get_count",
+  "frappe.core.doctype.server_script.server_script.enabled"
 ]
 
 
@@ -27,7 +29,7 @@ const router = createBrowserRouter(
       <Route path='/login-with-email' lazy={() => import('@/pages/auth/LoginWithEmail')} />
       <Route path='/signup' lazy={() => import('@/pages/auth/SignUp')} />
       <Route path='/forgot-password' lazy={() => import('@/pages/auth/ForgotPassword')} />
-      <Route path="/" element={<ProtectedRoute />}>
+      <Route path="/" element={<ProtectedRoute />} errorElement={<ErrorPage />}>
         <Route path="/" element={<ChannelRedirect />}>
           <Route path="channel" element={<MainPage />} >
             <Route index element={<MobileTabsPage />} />
@@ -66,6 +68,18 @@ const router = createBrowserRouter(
               </Route>
 
               <Route path="openai-settings" lazy={() => import('./pages/settings/AI/OpenAISettings')} />
+
+              <Route path="webhooks">
+                <Route index lazy={() => import('./pages/settings/Webhooks/WebhookList')} />
+                <Route path="create" lazy={() => import('./pages/settings/Webhooks/CreateWebhook')} />
+                <Route path=":ID" lazy={() => import('./pages/settings/Webhooks/ViewWebhook')} />
+              </Route>
+
+              <Route path="scheduled-messages">
+                <Route index lazy={() => import('./pages/settings/ServerScripts/SchedulerEvents/SchedulerEvents')} />
+                <Route path="create" lazy={() => import('./pages/settings/ServerScripts/SchedulerEvents/CreateSchedulerEvent')} />
+                <Route path=":ID" lazy={() => import('./pages/settings/ServerScripts/SchedulerEvents/ViewSchedulerEvent')} />
+              </Route>
             </Route>
             <Route path=":channelID" lazy={() => import('@/pages/ChatSpace')}>
               <Route path="thread/:threadID" lazy={() => import('./components/feature/threads/ThreadDrawer/ThreadDrawer')} />
@@ -83,6 +97,7 @@ const router = createBrowserRouter(
           </Route> */}
         </Route>
       </Route>
+      <Route path='*' lazy={() => import('./pages/NotFound')} />
     </>
   ), {
   basename: `/${import.meta.env.VITE_BASE_NAME}` ?? '',
