@@ -45,7 +45,7 @@ class RavenMessage(Document):
 		linked_message: DF.Link | None
 		mentions: DF.Table[RavenMention]
 		message_reactions: DF.JSON | None
-		message_type: DF.Literal["Text", "Image", "File", "Poll"]
+		message_type: DF.Literal["Text", "Image", "File", "Poll", "System"]
 		poll_id: DF.Link | None
 		replied_message_details: DF.JSON | None
 		text: DF.LongText | None
@@ -55,7 +55,7 @@ class RavenMessage(Document):
 
 	def before_validate(self):
 		try:
-			if self.text:
+			if self.text and not self.message_type == "System":
 				content = html2text(self.text)
 				# Remove trailing new line characters and white spaces
 				self.content = content.rstrip()

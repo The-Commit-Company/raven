@@ -56,7 +56,7 @@ export const RemoveChannelMemberModal = ({ onClose, member }: RemoveChannelMembe
                 <Flex direction={'column'} gap='2'>
                     <ErrorBanner error={errorFetchingChannelMember} />
                     <ErrorBanner error={error} />
-                    <Text size='1'>This person will no longer have access to the channel and can only rejoin by invitation.</Text>
+                    <Text size='2'>This person will no longer have access to the channel.</Text>
                 </Flex>
 
                 <Flex gap="3" mt="4" justify="end">
