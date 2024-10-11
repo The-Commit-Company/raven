@@ -48,7 +48,7 @@ const CreateBot = () => {
                             breadcrumbs={[{ label: 'Bots', href: '../' }, { label: 'New Bot', href: '' }]}
                         />
                         <ErrorBanner error={error} />
-                        <BotForm />
+                        <BotForm isEdit={false} />
                     </SettingsContentContainer>
                 </FormProvider>
             </form>

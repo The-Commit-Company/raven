@@ -1,9 +1,9 @@
-import { HelperText } from "@/components/common/Form";
+import { HStack } from "@/components/layout/Stack";
 import { RavenWebhook } from "@/types/RavenIntegrations/RavenWebhook";
-import { Flex, Box, Heading, Table, TextField, IconButton, Button } from "@radix-ui/themes";
+import { Flex, Box, Heading, Table, TextField, IconButton, Button, Text } from "@radix-ui/themes";
 import { useFieldArray, useFormContext } from "react-hook-form";
 import { BiMinusCircle } from "react-icons/bi";
-import { BsPlus } from "react-icons/bs";
+import { FiPlus } from "react-icons/fi";
 
 export const WebhookHeaders = () => {
     const { register } = useFormContext<RavenWebhook>()
@@ -15,22 +15,21 @@ export const WebhookHeaders = () => {
     return (
         <Box>
             <Flex direction='column' gap='2' width='100%'>
-                <Flex direction='row' align='end' justify={'between'}>
+                <HStack align='center' justify={'between'}>
                     <Flex direction={'column'} gap='1'>
-                        <Heading size='4'>Headers</Heading>
-                        <HelperText>Add the headers that you want to send with the request.</HelperText>
+                        <Heading size='4' className="not-cal">Headers</Heading>
+                        <Text size='2' color='gray'>Add the headers that you want to send with the request.</Text>
                     </Flex>
-                    <Button size={'1'} type="button" onClick={() => append({ fieldname: '', key: '' })} variant="outline" style={{
-                        width: 'fit-content',
-                    }}><BsPlus size={'14'} />
+                    <Button size={'2'} type="button"
+                        onClick={() => append({ fieldname: '', key: '' })} variant="soft" className="not-cal"><FiPlus />
                         Add</Button>
-                </Flex>
+                </HStack>
 
                 <Table.Root variant='surface'>
                     <Table.Header>
                         <Table.Row>
                             <Table.ColumnHeaderCell>Key <span className={'text-red-500'}>*</span> </Table.ColumnHeaderCell>
-                            <Table.ColumnHeaderCell>value</Table.ColumnHeaderCell>
+                            <Table.ColumnHeaderCell>Value</Table.ColumnHeaderCell>
                             <Table.ColumnHeaderCell width={'8%'}></Table.ColumnHeaderCell>
                         </Table.Row>
                     </Table.Header>

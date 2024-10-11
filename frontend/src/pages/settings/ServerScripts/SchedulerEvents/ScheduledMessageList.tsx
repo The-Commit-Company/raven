@@ -6,7 +6,7 @@ import { Flex, Badge, IconButton, AlertDialog, Text } from "@radix-ui/themes"
 import { useState } from "react"
 import { BiTrash } from "react-icons/bi"
 import { AiOutlineEdit } from "react-icons/ai"
-import { useNavigate } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 
 export const List = ({ data }: { data: RavenSchedulerEvent[] }) => {
 
@@ -21,8 +21,6 @@ export const List = ({ data }: { data: RavenSchedulerEvent[] }) => {
 
 
 const ScheduledMessageItem = ({ item }: { item: RavenSchedulerEvent }) => {
-
-    const navigate = useNavigate()
 
     const [open, setOpen] = useState(false)
     const onClose = () => {
@@ -48,14 +46,16 @@ const ScheduledMessageItem = ({ item }: { item: RavenSchedulerEvent }) => {
                         color="gray"
                         aria-label="Click to edit webhook"
                         title='Edit webhook'
-                        onClick={() => navigate(`./${item.name}`)}
+                        asChild
                         style={{
                             // @ts-ignore
                             '--icon-button-ghost-padding': '0',
                             height: 'var(--base-button-height)',
                             width: 'var(--base-button-height)',
                         }}>
-                        <AiOutlineEdit size='16' />
+                        <Link to={`./${item.name}`}>
+                            <AiOutlineEdit size='16' />
+                        </Link>
                     </IconButton>
                     <AlertDialog.Root open={open} onOpenChange={setOpen}>
                         <AlertDialog.Trigger>
