@@ -19,10 +19,11 @@ export interface LinkFieldProps {
     autofocus?: boolean,
     dropdownClass?: string,
     required?: boolean,
+    suggestedItems?: SearchResult[],
 }
 
 
-const LinkField = ({ doctype, filters, label, placeholder, value, required, setValue, disabled, autofocus, dropdownClass }: LinkFieldProps) => {
+const LinkField = ({ doctype, filters, label, placeholder, value, required, setValue, disabled, autofocus, dropdownClass, suggestedItems }: LinkFieldProps) => {
 
     const [searchText, setSearchText] = useState(value ?? '')
 
@@ -30,7 +31,7 @@ const LinkField = ({ doctype, filters, label, placeholder, value, required, setV
 
     const { data } = useSearch(doctype, searchText, filters)
 
-    const items: SearchResult[] = data?.message ?? []
+    const items: SearchResult[] = [...(suggestedItems ?? []), ...(data?.message ?? [])]
 
     const {
         isOpen,
@@ -44,6 +45,9 @@ const LinkField = ({ doctype, filters, label, placeholder, value, required, setV
     } = useCombobox({
         onInputValueChange({ inputValue }) {
             setSearchText(inputValue ?? '')
+            if (!inputValue) {
+                setValue('')
+            }
         },
         items: items,
         itemToString(item) {
@@ -54,7 +58,6 @@ const LinkField = ({ doctype, filters, label, placeholder, value, required, setV
             setValue(selectedItem?.value ?? '')
         },
         defaultInputValue: value,
-        defaultIsOpen: isDesktop && autofocus,
         defaultSelectedItem: items.find(item => item.value === value),
     })
 

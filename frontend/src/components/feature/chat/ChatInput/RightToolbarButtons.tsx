@@ -11,6 +11,7 @@ import { useBoolean } from '@/hooks/useBoolean'
 import { MdOutlineBarChart } from 'react-icons/md'
 import { DIALOG_CONTENT_CLASS } from '@/utils/layout/dialog'
 import AISavedPromptsButton from './AISavedPromptsButton'
+import DocumentLinkButton from './DocumentLinkButton'
 
 
 const EmojiPicker = lazy(() => import('@/components/common/EmojiPicker/EmojiPicker'))
@@ -21,7 +22,9 @@ export type RightToolbarButtonsProps = {
     fileProps?: ToolbarFileProps,
     sendMessage: (html: string, json: any) => Promise<void>,
     messageSending: boolean,
-    setContent: (content: string) => void
+    setContent: (content: string) => void,
+    channelID?: string,
+    isEdit?: boolean
 }
 /**
  * Component to render the right toolbar buttons:
@@ -34,14 +37,18 @@ export type RightToolbarButtonsProps = {
  * @param props
  * @returns
  */
-export const RightToolbarButtons = ({ fileProps, ...sendProps }: RightToolbarButtonsProps) => {
+export const RightToolbarButtons = ({ fileProps, channelID, isEdit, ...sendProps }: RightToolbarButtonsProps) => {
     return (
         <Flex gap='2' align='center' px='1' py='1'>
-
-            <MentionButtons />
+            <Flex gap='3' align='center'>
+                {!isEdit && channelID && <DocumentLinkButton channelID={channelID} />}
+                <MentionButtons />
+            </Flex>
             <Separator orientation='vertical' />
-            <AISavedPromptsButton />
-            <CreatePollButton />
+            <Flex gap='3' align='center'>
+                <AISavedPromptsButton />
+                <CreatePollButton />
+            </Flex>
             <Separator orientation='vertical' />
             <Flex gap='3' align='center'>
                 <EmojiPickerButton />
@@ -49,7 +56,7 @@ export const RightToolbarButtons = ({ fileProps, ...sendProps }: RightToolbarBut
                 {fileProps && <FilePickerButton fileProps={fileProps} />}
                 <SendButton {...sendProps} />
             </Flex>
-        </Flex>
+        </Flex >
     )
 }
 

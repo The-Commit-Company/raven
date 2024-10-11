@@ -61,7 +61,8 @@ type TiptapEditorProps = {
     messageSending: boolean,
     defaultText?: string,
     replyMessage?: Message | null,
-    channelMembers?: ChannelMembers
+    channelMembers?: ChannelMembers,
+    channelID?: string
 }
 
 export const UserMention = Mention.extend({
@@ -84,7 +85,7 @@ export const ChannelMention = Mention.extend({
         }
     })
 
-const Tiptap = ({ isEdit, slotBefore, fileProps, onMessageSend, channelMembers, replyMessage, clearReplyMessage, placeholder = 'Type a message...', messageSending, sessionStorageKey = 'tiptap-editor', disableSessionStorage = false, defaultText = '' }: TiptapEditorProps) => {
+const Tiptap = ({ isEdit, slotBefore, fileProps, onMessageSend, channelMembers, channelID, replyMessage, clearReplyMessage, placeholder = 'Type a message...', messageSending, sessionStorageKey = 'tiptap-editor', disableSessionStorage = false, defaultText = '' }: TiptapEditorProps) => {
 
     const { enabledUsers } = useContext(UserListContext)
 
@@ -484,7 +485,9 @@ const Tiptap = ({ isEdit, slotBefore, fileProps, onMessageSend, channelMembers, 
                     <EditorContent editor={editor} />
                     <ToolPanel>
                         <TextFormattingMenu />
-                        <RightToolbarButtons fileProps={fileProps} setContent={setContent} sendMessage={onMessageSend} messageSending={messageSending} />
+                        <RightToolbarButtons fileProps={fileProps} setContent={setContent} sendMessage={onMessageSend} messageSending={messageSending}
+                            isEdit={isEdit}
+                            channelID={channelID} />
                     </ToolPanel>
                 </EditorContext.Provider>
             </Box>
