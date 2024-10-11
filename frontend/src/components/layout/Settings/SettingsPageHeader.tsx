@@ -8,9 +8,13 @@ type BreadcrumbItem = {
     href: string,
     copyToClipboard?: boolean
 }
+
+export type HeaderBadge = { label: string, color: BadgeProps['color'] }
+
+
 type Props = {
     title: React.ReactNode,
-    headerBadges?: { label: string, color: BadgeProps['color'] }[],
+    headerBadges?: HeaderBadge[],
     description?: React.ReactNode
     actions?: React.ReactNode,
     breadcrumbs?: BreadcrumbItem[]
@@ -19,7 +23,7 @@ type Props = {
 const SettingsPageHeader = ({ title, description, actions, headerBadges, breadcrumbs }: Props) => {
     return (
         <Flex justify={'between'} align={'center'}>
-            <Flex direction='column' className='gap-0.5'>
+            <Flex direction='column' className='gap-1'>
                 {breadcrumbs ? <Breadcrumb>
                     <BreadcrumbList>
                         {breadcrumbs.map((b, index) => <React.Fragment key={b.href}>
