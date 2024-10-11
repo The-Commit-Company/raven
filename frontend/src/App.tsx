@@ -10,6 +10,7 @@ import { Toaster } from 'sonner'
 import { useStickyState } from './hooks/useStickyState'
 import MobileTabsPage from './pages/MobileTabsPage'
 import Cookies from 'js-cookie'
+import { lazy } from 'react'
 
 /** Following keys will not be cached in app cache */
 const NO_CACHE_KEYS = [
@@ -83,6 +84,7 @@ const router = createBrowserRouter(
           </Route> */}
         </Route>
       </Route>
+      <Route path='*' lazy={() => import('./pages/NotFound')} />
     </>
   ), {
   basename: `/${import.meta.env.VITE_BASE_NAME}` ?? '',
