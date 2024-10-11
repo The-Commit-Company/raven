@@ -462,7 +462,9 @@ const useChatStream = (channelID: string, scrollRef: MutableRefObject<HTMLDivEle
                     }
 
                     const currentMessageSender = message.is_bot_message ? message.bot : message.owner
-                    const nextMessageSender = messages[i + 1].is_bot_message ? messages[i + 1].bot : messages[i + 1].owner
+
+                    const nextMessage = messages[i + 1]
+                    const nextMessageSender = nextMessage.message_type === "System" ? null : nextMessage.is_bot_message ? nextMessage.bot : nextMessage.owner
 
                     if (currentMessageSender !== nextMessageSender) {
                         messagesWithDateSeparators.push({

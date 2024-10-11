@@ -43,11 +43,19 @@ class RavenChannelMember(Document):
 		self.allow_notifications = 1
 
 	def after_delete(self):
+
+		member_name = frappe.get_cached_value("Raven User", self.user_id, "full_name")
+
+		current_user_name = frappe.get_cached_value("Raven User", frappe.session.user, "full_name")
+
+		# If this was the last member of a private channel, archive the channel
 		if (
 			frappe.db.count("Raven Channel Member", {"channel_id": self.channel_id}) == 0
 			and frappe.db.get_value("Raven Channel", self.channel_id, "type") == "Private"
 		):
 			frappe.db.set_value("Raven Channel", self.channel_id, "is_archived", 1)
+
+		# If this member was the only admin, then make the next oldest member an admin
 		if (
 			self.get_admin_count() == 0
 			and frappe.db.count("Raven Channel Member", {"channel_id": self.channel_id}) > 0
@@ -60,6 +68,40 @@ class RavenChannelMember(Document):
 				order_by="creation",
 			)
 			frappe.db.set_value("Raven Channel Member", first_member.name, "is_admin", 1)
+
+			first_member_name = frappe.get_cached_value("Raven User", first_member.user_id, "full_name")
+
+			# Add a system message to the channel mentioning the new admin
+			frappe.get_doc(
+				{
+					"doctype": "Raven Message",
+					"channel_id": self.channel_id,
+					"message_type": "System",
+					"text": f"{member_name} was removed by {current_user_name} and {first_member_name} is the new admin of this channel.",
+				}
+			).insert()
+		else:
+			# If the member who left is the current user, then add a system message to the channel mentioning that the user left
+			if member_name == current_user_name:
+				# Add a system message to the channel mentioning the member who left
+				frappe.get_doc(
+					{
+						"doctype": "Raven Message",
+						"channel_id": self.channel_id,
+						"message_type": "System",
+						"text": f"{member_name} left.",
+					}
+				).insert(ignore_permissions=True)
+			else:
+				# Add a system message to the channel mentioning the member who left
+				frappe.get_doc(
+					{
+						"doctype": "Raven Message",
+						"channel_id": self.channel_id,
+						"message_type": "System",
+						"text": f"{current_user_name} removed {member_name}.",
+					}
+				).insert()
 
 	def on_trash(self):
 		# if the leaving member is admin, then the first member becomes new admin
@@ -119,6 +161,33 @@ class RavenChannelMember(Document):
 		if not is_direct_message and self.allow_notifications:
 			subscribe_user_to_topic(self.channel_id, self.user_id)
 
+		if not is_direct_message:
+
+			is_thread = self.is_thread()
+
+			# Send a system message to the channel mentioning the member who joined
+			if not is_thread:
+				member_name = frappe.get_cached_value("Raven User", self.user_id, "full_name")
+				if self.user_id == frappe.session.user:
+					frappe.get_doc(
+						{
+							"doctype": "Raven Message",
+							"channel_id": self.channel_id,
+							"message_type": "System",
+							"text": f"{member_name} joined.",
+						}
+					).insert()
+				else:
+					current_user_name = frappe.get_cached_value("Raven User", frappe.session.user, "full_name")
+					frappe.get_doc(
+						{
+							"doctype": "Raven Message",
+							"channel_id": self.channel_id,
+							"message_type": "System",
+							"text": f"{current_user_name} added {member_name}.",
+						}
+					).insert()
+
 	def on_update(self):
 		"""
 		Check if the notification preference is changed and update the subscription
@@ -134,8 +203,26 @@ class RavenChannelMember(Document):
 					else:
 						unsubscribe_user_to_topic(self.channel_id, self.user_id)
 
+		if self.has_value_changed("is_admin") and not self.flags.in_insert and not self.is_thread():
+			# Send a system message to the channel mentioning the member who became admin
+			member_name = frappe.get_cached_value("Raven User", self.user_id, "full_name")
+			text = (
+				f"{member_name} is now an admin." if self.is_admin else f"{member_name} is no longer an admin."
+			)
+			frappe.get_doc(
+				{
+					"doctype": "Raven Message",
+					"channel_id": self.channel_id,
+					"message_type": "System",
+					"text": text,
+				}
+			).insert()
+
 	def get_admin_count(self):
 		return frappe.db.count("Raven Channel Member", {"channel_id": self.channel_id, "is_admin": 1})
+
+	def is_thread(self):
+		return frappe.get_cached_value("Raven Channel", self.channel_id, "is_thread")
 
 
 def on_doctype_update():
