@@ -92,6 +92,7 @@ export const ThreadMessages = ({ threadMessage }: { threadMessage: Message }) =>
                     user={user} />}
                 {isUserInChannel && <Tiptap
                     key={threadID}
+                    channelID={threadID}
                     fileProps={{
                         fileInputRef,
                         addFile
