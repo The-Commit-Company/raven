@@ -16,6 +16,7 @@ from raven.ai.functions import (
 	get_documents,
 	update_document,
 	update_documents,
+	get_list
 )
 from raven.ai.openai_client import get_open_ai_client
 
@@ -195,6 +196,15 @@ def stream_response(ai_thread_id: str, bot, channel_id: str):
 						self.publish_event(f"Attaching file to {doctype} {document_id}...")
 						function_output = attach_file_to_document(doctype, document_id, file_path)
 
+					if function.type == "Get List":
+						self.publish_event(f"Fetching list of {function.reference_doctype}...")
+						function_output = get_list(
+							function.reference_doctype,
+							filters=args.get("filters"),
+							fields=args.get("fields"),
+							limit=args.get("limit", 20)
+						)
+					
 					tool_outputs.append(
 						{"tool_call_id": tool.id, "output": json.dumps(function_output, default=str)}
 					)
