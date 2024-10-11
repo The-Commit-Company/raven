@@ -10,7 +10,7 @@ import { Toaster } from 'sonner'
 import { useStickyState } from './hooks/useStickyState'
 import MobileTabsPage from './pages/MobileTabsPage'
 import Cookies from 'js-cookie'
-import { lazy } from 'react'
+import ErrorPage from './pages/ErrorPage'
 
 /** Following keys will not be cached in app cache */
 const NO_CACHE_KEYS = [
@@ -28,7 +28,7 @@ const router = createBrowserRouter(
       <Route path='/login-with-email' lazy={() => import('@/pages/auth/LoginWithEmail')} />
       <Route path='/signup' lazy={() => import('@/pages/auth/SignUp')} />
       <Route path='/forgot-password' lazy={() => import('@/pages/auth/ForgotPassword')} />
-      <Route path="/" element={<ProtectedRoute />}>
+      <Route path="/" element={<ProtectedRoute />} errorElement={<ErrorPage />}>
         <Route path="/" element={<ChannelRedirect />}>
           <Route path="channel" element={<MainPage />} >
             <Route index element={<MobileTabsPage />} />
