@@ -2,56 +2,37 @@ import { SidebarGroup, SidebarGroupItem, SidebarGroupLabel, SidebarGroupList, Si
 import { SidebarBadge, SidebarViewMoreButton } from "../../layout/Sidebar/SidebarComp"
 import { CreateChannelButton } from "./CreateChannelModal"
 import { useContext, useLayoutEffect, useMemo, useRef, useState } from "react"
-import { ChannelListContext, ChannelListContextType, ChannelListItem, UnreadCountData } from "../../../utils/channel/ChannelListProvider"
+import { ChannelListContext, ChannelListContextType } from "../../../utils/channel/ChannelListProvider"
 import { ChannelIcon } from "@/utils/layout/channelIcon"
-import { Box, ContextMenu, Flex, Text } from "@radix-ui/themes"
+import { ContextMenu, Flex, Text } from "@radix-ui/themes"
 import { useLocation, useParams } from "react-router-dom"
 import { useStickyState } from "@/hooks/useStickyState"
 import useCurrentRavenUser from "@/hooks/useCurrentRavenUser"
 import { RiPushpinLine, RiUnpinLine } from "react-icons/ri"
 import { FrappeConfig, FrappeContext } from "frappe-react-sdk"
 import { RavenUser } from "@/types/Raven/RavenUser"
-import clsx from "clsx"
 import { __ } from "@/utils/translations"
+import { ChannelWithUnreadCount } from "@/components/layout/Sidebar/useGetChannelUnreadCounts"
 
-export const ChannelList = ({ unread_count }: { unread_count?: UnreadCountData }) => {
+interface ChannelListProps {
+    channels: ChannelWithUnreadCount[]
+}
 
-    const { channels, mutate } = useContext(ChannelListContext) as ChannelListContextType
+export const ChannelList = ({ channels }: ChannelListProps) => {
 
+    const { mutate } = useContext(ChannelListContext) as ChannelListContextType
     const [showData, setShowData] = useStickyState(true, 'expandChannelList')
 
     const toggle = () => setShowData(d => !d)
 
     const { myProfile } = useCurrentRavenUser()
 
-    const { filteredChannels, totalUnreadCount } = useMemo(() => {
+    const pinnedChannelIDs = myProfile?.pinned_channels?.map(pin => pin.channel_id)
 
-        const pinnedChannelIDs = myProfile?.pinned_channels?.map(pin => pin.channel_id)
-
-        const channelList = []
-        let totalUnreadCount = 0
-
-        for (const channel of channels) {
-            if (pinnedChannelIDs?.includes(channel.name)) {
-                continue
-            }
-            if (channel.is_archived == 0) {
-                const count = unread_count?.channels.find((unread) => unread.name === channel.name)?.unread_count
-                channelList.push({
-                    ...channel,
-                    unread_count: count || 0
-                })
-
-                totalUnreadCount += count || 0
-            }
-        }
-
-
-        return {
-            filteredChannels: channelList,
-            totalUnreadCount
-        }
-    }, [channels, myProfile, unread_count])
+    // Filter channels based on pinned status
+    const filteredChannels = useMemo(() => {
+        return channels.filter(channel => !pinnedChannelIDs?.includes(channel.name))
+    }, [channels, pinnedChannelIDs])
 
     const ref = useRef<HTMLDivElement>(null)
     const [height, setHeight] = useState(ref?.current?.clientHeight ?? showData ? filteredChannels.length * (36) - 4 : 0)
@@ -66,12 +47,6 @@ export const ChannelList = ({ unread_count }: { unread_count?: UnreadCountData }
                 <Flex width='100%' justify='between' align='center' gap='2' pr='2' className="group">
                     <Flex align='center' gap='2' width='100%' onClick={toggle} className="cursor-default select-none">
                         <SidebarGroupLabel>{__("Channels")}</SidebarGroupLabel>
-                        <Box className={clsx('transition-opacity ease-in-out duration-200',
-                            !showData && unread_count && totalUnreadCount > 0 ? 'opacity-100' : 'opacity-0')}>
-                            <SidebarBadge>
-                                {totalUnreadCount}
-                            </SidebarBadge>
-                        </Box>
                     </Flex>
                     <Flex align='center' gap='1'>
                         <CreateChannelButton updateChannelList={mutate} />
@@ -86,7 +61,7 @@ export const ChannelList = ({ unread_count }: { unread_count?: UnreadCountData }
                     }}
                 >
                     <div ref={ref} className="flex gap-0.5 flex-col">
-                        {filteredChannels.map((channel) => <ChannelItem
+                        {filteredChannels.map((channel: ChannelWithUnreadCount) => <ChannelItem
                             channel={channel}
                             key={channel.name} />)}
                     </div>
@@ -96,17 +71,11 @@ export const ChannelList = ({ unread_count }: { unread_count?: UnreadCountData }
     )
 }
 
-interface ChannelListItemWithUnreadCount extends ChannelListItem {
-    unread_count: number
-}
-
-const ChannelItem = ({ channel }: { channel: ChannelListItemWithUnreadCount, }) => {
-
+const ChannelItem = ({ channel }: { channel: ChannelWithUnreadCount }) => {
     return <ChannelItemElement channel={channel} />
-
 }
 
-export const ChannelItemElement = ({ channel }: { channel: ChannelListItemWithUnreadCount }) => {
+export const ChannelItemElement = ({ channel }: { channel: ChannelWithUnreadCount }) => {
 
     const { channelID } = useParams()
 
