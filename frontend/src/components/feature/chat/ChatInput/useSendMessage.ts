@@ -19,6 +19,13 @@ export const useSendMessage = (channelID: string, noOfFiles: number, uploadFiles
 
         parsedDates.forEach(date => {
 
+            // Ignore if neither hour, minute, or date is certain
+            if (!date.start.isCertain('hour') && !date.start.isCertain('minute') && !date.start.isCertain('day')) {
+                return
+            }
+
+            // TODO: Also ignore if it's singular - like "Let's have a quick 30 minute call"
+
             const hasStartTime = date.start.isCertain('hour') && date.start.isCertain('minute')
 
             const startTime: number = date.start.date().getTime()
