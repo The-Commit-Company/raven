@@ -62,7 +62,8 @@ type TiptapEditorProps = {
     defaultText?: string,
     replyMessage?: Message | null,
     channelMembers?: ChannelMembers,
-    channelID?: string
+    channelID?: string,
+    onUserType?: () => void,
 }
 
 export const UserMention = Mention.extend({
@@ -85,7 +86,7 @@ export const ChannelMention = Mention.extend({
         }
     })
 
-const Tiptap = ({ isEdit, slotBefore, fileProps, onMessageSend, channelMembers, channelID, replyMessage, clearReplyMessage, placeholder = 'Type a message...', messageSending, sessionStorageKey = 'tiptap-editor', disableSessionStorage = false, defaultText = '' }: TiptapEditorProps) => {
+const Tiptap = ({ isEdit, slotBefore, fileProps, onMessageSend, channelMembers, onUserType, channelID, replyMessage, clearReplyMessage, placeholder = 'Type a message...', messageSending, sessionStorageKey = 'tiptap-editor', disableSessionStorage = false, defaultText = '' }: TiptapEditorProps) => {
 
     const { enabledUsers } = useContext(UserListContext)
 
@@ -457,6 +458,9 @@ const Tiptap = ({ isEdit, slotBefore, fileProps, onMessageSend, channelMembers, 
         autofocus: 'end',
         content,
         editorProps: {
+            handleTextInput() {
+                onUserType?.()
+            },
             attributes: {
                 class: 'tiptap-editor' + (replyMessage ? ' replying' : '') + (isEdit ? ' editing-message' : '')
             }
@@ -464,7 +468,7 @@ const Tiptap = ({ isEdit, slotBefore, fileProps, onMessageSend, channelMembers, 
         onUpdate({ editor }) {
             setContent(editor.getHTML())
         }
-    }, [replyMessage])
+    }, [replyMessage, onUserType])
 
 
 
