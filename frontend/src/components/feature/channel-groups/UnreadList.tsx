@@ -3,11 +3,15 @@ import { ChannelItemElement } from '@/components/feature/channels/ChannelList';
 import { DirectMessageItemElement } from '../../feature/direct-messages/DirectMessageList';
 import { __ } from '@/utils/translations';
 import { useStickyState } from "@/hooks/useStickyState";
-import { useLayoutEffect, useMemo, useRef, useState } from "react";
+import { useContext, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { SidebarBadge, SidebarViewMoreButton } from "@/components/layout/Sidebar/SidebarComp";
-import { Box, Flex } from "@radix-ui/themes";
+import { Box, DropdownMenu, Flex, IconButton } from "@radix-ui/themes";
 import { ChannelWithUnreadCount, DMChannelWithUnreadCount } from "@/components/layout/Sidebar/useGetChannelUnreadCounts";
 import clsx from "clsx";
+import { ChannelListContext, ChannelListContextType } from "@/utils/channel/ChannelListProvider";
+import { BiDotsVerticalRounded } from "react-icons/bi";
+import { useFrappePostCall } from "frappe-react-sdk";
+import { toast } from "sonner";
 
 interface UnreadListProps {
     unreadChannels: ChannelWithUnreadCount[]
@@ -16,6 +20,7 @@ interface UnreadListProps {
 
 export const UnreadList = ({ unreadChannels, unreadDMs }: UnreadListProps) => {
 
+    const { mutate } = useContext(ChannelListContext) as ChannelListContextType
     const [showData, setShowData] = useStickyState(true, 'expandDirectMessageList')
 
     const toggle = () => setShowData(d => !d)
@@ -28,22 +33,25 @@ export const UnreadList = ({ unreadChannels, unreadDMs }: UnreadListProps) => {
         setHeight(ref.current?.clientHeight ?? 0)
     }, [unreadDMs, unreadChannels])
 
-    const totalUnreadCount = useMemo(() => {
+    const { totalUnreadCount, channelIDs } = useMemo(() => {
         let totalUnreadCount = 0
+        let channelIDs = []
 
         // Count unread messages from channels
         for (const channel of unreadChannels) {
             if (channel.is_archived == 0) {
                 totalUnreadCount += channel.unread_count || 0
+                channelIDs.push(channel.name)
             }
         }
 
         // Count unread messages from DMs
         for (const dm of unreadDMs) {
             totalUnreadCount += dm.unread_count || 0
+            channelIDs.push(dm.name)
         }
 
-        return totalUnreadCount
+        return { totalUnreadCount, channelIDs }
     }, [unreadChannels, unreadDMs])
 
     return (
@@ -60,6 +68,7 @@ export const UnreadList = ({ unreadChannels, unreadDMs }: UnreadListProps) => {
                         </Box>
                     </Flex>
                     <Flex align='center' gap='1'>
+                        <UnreadSectionActions updateChannelList={mutate} channelIDs={channelIDs} />
                         <SidebarViewMoreButton onClick={toggle} expanded={showData} />
                     </Flex>
                 </Flex>
@@ -86,5 +95,50 @@ export const UnreadList = ({ unreadChannels, unreadDMs }: UnreadListProps) => {
                 </div>
             </SidebarGroupList>
         </SidebarGroup>
+    )
+}
+
+const UnreadSectionActions = ({ updateChannelList, channelIDs }: { updateChannelList: () => void, channelIDs: string[] }) => {
+
+    const [isOpen, setIsOpen] = useState(false)
+    const { call } = useFrappePostCall('raven.api.raven_channel.mark_all_messages_as_read')
+    const handleMarkAllAsRead = () => {
+        call({
+            channel_ids: channelIDs
+        }).then(() => {
+            toast.success('All messages marked as read')
+            updateChannelList()
+        }).catch(() => {
+            toast.error('Failed to mark all messages as read')
+        })
+        setIsOpen(false)
+    }
+
+    return (
+        <DropdownMenu.Root onOpenChange={(open) => setIsOpen(open)}>
+            <DropdownMenu.Trigger>
+                <IconButton
+                    aria-label={__("Options")}
+                    title={__("Options")}
+                    variant="soft"
+                    size="1"
+                    radius="large"
+                    className={clsx(
+                        'cursor-pointer transition-all text-gray-10 dark:text-gray-300 bg-transparent',
+                        'sm:hover:bg-gray-3',
+                        {
+                            'sm:invisible sm:group-hover:visible': !isOpen,
+                            'sm:visible': isOpen, // Ensure it's visible when the dropdown is open
+                        },
+                        'ease-ease',
+                        'outline-none'
+                    )}>
+                    <BiDotsVerticalRounded />
+                </IconButton>
+            </DropdownMenu.Trigger>
+            <DropdownMenu.Content>
+                <DropdownMenu.Item onClick={handleMarkAllAsRead}>Mark all as read</DropdownMenu.Item>
+            </DropdownMenu.Content>
+        </DropdownMenu.Root>
     )
 }
