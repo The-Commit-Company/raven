@@ -25,6 +25,8 @@
   "last_message_timestamp",
   "column_break_eckt",
   "last_message_details",
+  "section_break_acpc",
+  "pinned_messages",
   "ai_tab",
   "is_ai_thread",
   "openai_thread_id",
@@ -172,6 +174,16 @@
    "label": "Thread Bot",
    "options": "Raven Bot",
    "read_only": 1
+  },
+  {
+   "fieldname": "section_break_acpc",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "pinned_messages",
+   "fieldtype": "Table",
+   "label": "Pinned Messages",
+   "options": "Raven Pinned Messages"
   }
  ],
  "index_web_pages_for_search": 1,
@@ -185,7 +197,7 @@
    "link_fieldname": "channel_id"
   }
  ],
- "modified": "2024-08-23 07:35:09.979962",
+ "modified": "2024-10-13 16:42:54.906291",
  "modified_by": "Administrator",
  "module": "Raven Channel Management",
  "name": "Raven Channel",

@@ -14,6 +14,7 @@ class RavenChannel(Document):
 
 	if TYPE_CHECKING:
 		from frappe.types import DF
+		from raven.raven.doctype.raven_pinned_messages.raven_pinned_messages import RavenPinnedMessages
 
 		channel_description: DF.SmallText | None
 		channel_name: DF.Data
@@ -28,6 +29,7 @@ class RavenChannel(Document):
 		linked_doctype: DF.Link | None
 		linked_document: DF.DynamicLink | None
 		openai_thread_id: DF.Data | None
+		pinned_messages: DF.Table[RavenPinnedMessages]
 		thread_bot: DF.Link | None
 		type: DF.Literal["Private", "Public", "Open"]
 	# end: auto-generated types

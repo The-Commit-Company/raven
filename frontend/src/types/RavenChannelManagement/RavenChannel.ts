@@ -1,3 +1,4 @@
+import { RavenPinnedMessages } from '../Raven/RavenPinnedMessages'
 
 export interface RavenChannel{
 	name: string
@@ -34,6 +35,8 @@ export interface RavenChannel{
 	last_message_timestamp?: string
 	/**	Last Message Details : JSON	*/
 	last_message_details?: any
+	/**	Pinned Messages : Table - Raven Pinned Messages	*/
+	pinned_messages?: RavenPinnedMessages[]
 	/**	Is AI Thread : Check	*/
 	is_ai_thread?: 0 | 1
 	/**	OpenAI Thread ID : Data	*/
