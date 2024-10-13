@@ -25,10 +25,12 @@ export interface RavenMessage{
 	linked_message?: string
 	/**	Replied Message Details : JSON	*/
 	replied_message_details?: any
+	/**	Is Pinned : Check	*/
+	is_pinned?: 0 | 1
 	/**	Is Thread : Check - This message starts a thread	*/
 	is_thread?: 0 | 1
 	/**	Message Type : Select	*/
-	message_type?: "Text" | "Image" | "File" | "Poll"
+	message_type?: "Text" | "Image" | "File" | "Poll" | "System"
 	/**	Content : Long Text	*/
 	content?: string
 	/**	File : Attach	*/

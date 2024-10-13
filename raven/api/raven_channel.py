@@ -195,3 +195,35 @@ def leave_channel(channel_id):
 		frappe.delete_doc("Raven Channel Member", member.name)
 
 	return "Ok"
+
+
+@frappe.whitelist()
+def toggle_pin_message(channel_id, message_id):
+	"""
+    Toggle pin/unpin a message in a channel.
+    """
+	channel = frappe.get_doc("Raven Channel", channel_id)
+	message = frappe.get_doc("Raven Message", message_id)
+
+	pinned_message = None
+
+    # Check if the message is already pinned
+	for pm in channel.pinned_messages:
+		if pm.message_id == message_id:
+			pinned_message = pm
+			break
+
+	if pinned_message:
+		# Unpin the message
+		channel.pinned_messages.remove(pinned_message)
+		message.is_pinned = 0
+	else:
+		# Pin the message if it's not pinned
+		channel.append("pinned_messages", {"message_id": message_id})
+		message.is_pinned = 1
+
+    # Save both the channel and the message
+	channel.save()
+	message.save()
+
+	return "Ok"
