@@ -75,7 +75,8 @@ jobs:
         run: |
           bash ${GITHUB_WORKSPACE}/.github/helper/install_dependencies.sh
           pip install frappe-bench
-          bench init --skip-redis-config-generation --skip-assets --python "$(which python)" ~/frappe-bench
+          git clone "https://github.com/blaggacao/frappe" --branch "fix/frappe-test-case-compat" --depth 1 frappe
+          bench init --skip-redis-config-generation --skip-assets --python "$(which python)" --frappe-path `pwd`/frappe  ~/frappe-bench
           mysql --host 127.0.0.1 --port 3306 -u root -proot -e "SET GLOBAL character_set_server = 'utf8mb4'"
           mysql --host 127.0.0.1 --port 3306 -u root -proot -e "SET GLOBAL collation_server = 'utf8mb4_unicode_ci'"
 
