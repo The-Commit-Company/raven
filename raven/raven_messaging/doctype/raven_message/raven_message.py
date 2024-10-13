@@ -298,6 +298,9 @@ class RavenMessage(Document):
 		# 3. If the message is a reply, send a push notification to the user who is being replied to
 		# 4. If the message is in a channel, send a push notification to all the users in the channel (topic)
 
+		if self.message_type == "System":
+			return
+
 		channel_doc = frappe.get_cached_doc("Raven Channel", self.channel_id)
 
 		if channel_doc.is_direct_message:
