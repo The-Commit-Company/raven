@@ -205,6 +205,6 @@ def mark_all_messages_as_read(channel_ids: list):
 	"""    
 	user = frappe.session.user
 	for channel_id in channel_ids:
-		track_channel_visit(channel_id, user=user, publish_event_for_user=True)
+		track_channel_visit(channel_id, user=user)
 
 	return "Ok"
