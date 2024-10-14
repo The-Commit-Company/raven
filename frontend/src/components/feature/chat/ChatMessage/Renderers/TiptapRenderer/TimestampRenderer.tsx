@@ -21,6 +21,9 @@ export default Node.create({
 
     addAttributes() {
         return {
+            class: {
+                default: 'timestamp',
+            },
             'data-timestamp-start': {
                 default: '',
             },
@@ -45,7 +48,7 @@ export default Node.create({
     },
 
     renderHTML({ HTMLAttributes, node }) {
-        return ['span', mergeAttributes(HTMLAttributes)]
+        return ['span', mergeAttributes(HTMLAttributes), 0]
     },
 
     addNodeView() {
