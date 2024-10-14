@@ -72,7 +72,17 @@ def get_channel_list(hide_archived=False):
 
 	query = query.orderby(channel.last_message_timestamp, order=Order.desc)
 
-	return query.run(as_dict=True)
+	channels = query.run(as_dict=True)
+
+	# Get pinned messages for each channel
+	for channel in channels:
+		channel["pinned_messages"] = frappe.get_all(
+			"Raven Pinned Messages",
+			filters={"parent": channel.get("name"), "parenttype": "Raven Channel"},
+			fields=["message_id"],
+		)
+
+	return channels
 
 
 @frappe.whitelist()
