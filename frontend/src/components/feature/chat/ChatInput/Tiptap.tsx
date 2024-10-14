@@ -34,6 +34,7 @@ import { useIsDesktop } from '@/hooks/useMediaQuery'
 import { BiPlus } from 'react-icons/bi'
 import clsx from 'clsx'
 import { ChannelMembers } from '@/hooks/fetchers/useFetchChannelMembers'
+import TimestampRenderer from '../ChatMessage/Renderers/TiptapRenderer/TimestampRenderer'
 const MobileInputActions = lazy(() => import('./MobileActions/MobileInputActions'))
 
 const lowlight = createLowlight(common)
@@ -446,7 +447,8 @@ const Tiptap = ({ isEdit, slotBefore, fileProps, onMessageSend, channelMembers, 
 
             }
         }),
-        EmojiSuggestion
+        EmojiSuggestion,
+        TimestampRenderer
     ]
 
     const [content, setContent] = useSessionStickyState(defaultText, sessionStorageKey, disableSessionStorage)
