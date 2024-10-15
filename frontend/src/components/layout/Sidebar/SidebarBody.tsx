@@ -4,13 +4,23 @@ import { SidebarItem } from './SidebarComp'
 import { AccessibleIcon, Box, Flex, ScrollArea, Text } from '@radix-ui/themes'
 import useUnreadMessageCount from '@/hooks/useUnreadMessageCount'
 import PinnedChannels from './PinnedChannels'
-import React from 'react'
+import React, { useContext } from 'react'
 import { BiBookmark, BiMessageAltDetail } from 'react-icons/bi'
 import { __ } from '@/utils/translations'
+import { UnreadList } from '@/components/feature/channel-groups/UnreadList'
+import { ChannelListContext, ChannelListContextType } from '@/utils/channel/ChannelListProvider'
+import { useGetChannelUnreadCounts } from './useGetChannelUnreadCounts'
 
 export const SidebarBody = () => {
 
     const unread_count = useUnreadMessageCount()
+    const { channels, dm_channels } = useContext(ChannelListContext) as ChannelListContextType
+
+    const { unreadChannels, readChannels, unreadDMs, readDMs } = useGetChannelUnreadCounts({
+        channels,
+        dm_channels,
+        unread_count: unread_count?.message
+    })
 
     return (
         <ScrollArea type="hover" scrollbars="vertical" className='h-[calc(100vh-7rem)]'>
@@ -28,8 +38,9 @@ export const SidebarBody = () => {
                         iconLabel='Saved Message' />
                     <PinnedChannels unread_count={unread_count?.message} />
                 </Flex>
-                <ChannelList unread_count={unread_count?.message} />
-                <DirectMessageList unread_count={unread_count?.message} />
+                {(unreadChannels.length > 0 || unreadDMs.length > 0) && <UnreadList unreadChannels={unreadChannels} unreadDMs={unreadDMs} />}
+                <ChannelList channels={readChannels} />
+                <DirectMessageList dm_channels={readDMs} />
             </Flex>
         </ScrollArea>
     )
