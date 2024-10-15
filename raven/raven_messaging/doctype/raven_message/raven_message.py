@@ -118,7 +118,8 @@ class RavenMessage(Document):
 			}
 
 	def after_insert(self):
-		self.publish_unread_count_event()
+		if self.message_type != "System":
+			self.publish_unread_count_event()
 
 		if self.message_type == "Text":
 			self.handle_ai_message()
@@ -444,7 +445,8 @@ class RavenMessage(Document):
 			docname=self.channel_id,
 		)
 
-		self.publish_unread_count_event()
+		if self.message_type != "System":
+			self.publish_unread_count_event()
 
 		# delete poll if the message is of type poll after deleting the message
 		if self.message_type == "Poll":
