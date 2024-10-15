@@ -8,6 +8,7 @@ export const useSendMessage = (channelID: string, noOfFiles: number, uploadFiles
     const sendMessage = async (content: string, json?: any): Promise<void> => {
 
         if (content) {
+
             return call({
                 channel_id: channelID,
                 text: content,

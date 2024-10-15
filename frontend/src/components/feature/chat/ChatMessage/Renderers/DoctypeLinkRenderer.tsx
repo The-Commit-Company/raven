@@ -7,7 +7,7 @@ import { toast } from "sonner"
 import { BiCopy, BiDotsHorizontalRounded, BiGitPullRequest, BiLinkExternal, BiPrinter, BiRightArrowAlt } from "react-icons/bi"
 import useDoctypeMeta from "@/hooks/useDoctypeMeta"
 import { HStack } from "@/components/layout/Stack"
-import { getErrorMessage } from "@/components/layout/AlertBanner/ErrorBanner"
+import { ErrorBanner, getErrorMessage } from "@/components/layout/AlertBanner/ErrorBanner"
 
 
 export const DoctypeLinkRenderer = ({ doctype, docname }: { doctype: string, docname: string }) => {
@@ -52,15 +52,7 @@ export const DoctypeLinkRenderer = ({ doctype, docname }: { doctype: string, doc
                     <Skeleton className='w-96 h-12 rounded-md' /> :
                     error ?
                         <Card>
-                            <Grid gap='2' align='center'>
-                                <Heading as='h3' size='4'>Error occurred while loading {doctype} - {docname}</Heading>
-                                <Text
-                                    size='2'
-                                    color='gray'
-                                >
-                                    {error.message}
-                                </Text>
-                            </Grid>
+                            <ErrorBanner error={error} />
                         </Card> :
                         <DoctypeCard data={data} doctype={doctype} docname={docname} copyLink={copyLink} openLink={openLink} mutate={mutate} />
             }

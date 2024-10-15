@@ -143,12 +143,22 @@ export default {
       },
       animation: {
         fadein: 'fadeIn .25s ease-out',
+        'pulse-bounce': 'pulse-bounce 1.5s infinite',
       },
-
       keyframes: {
         fadeIn: {
           from: { opacity: 0 },
           to: { opacity: 1 },
+        },
+        'pulse-bounce': {
+          '0%, 100%': {
+            transform: 'translateY(0)',
+            opacity: 0.2,
+          },
+          '50%': {
+            transform: 'translateY(-1px)',
+            opacity: 0.8,
+          },
         },
       },
       transitionTimingFunction: {
@@ -187,4 +197,3 @@ export default {
     preflight: false,
   }
 }
-

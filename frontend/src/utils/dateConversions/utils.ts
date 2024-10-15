@@ -23,3 +23,8 @@ export const getDateObject = (timestamp: string): dayjs.Dayjs => {
 
     return dayjs.tz(timestamp, SYSTEM_TIMEZONE).local()
 }
+
+export const convertMillisecondsToReadableDate = (timestampInMilliseconds: number, format: string = 'hh:mm A (Do MMM)') => {
+
+    return dayjs.unix(timestampInMilliseconds / 1000)
+}

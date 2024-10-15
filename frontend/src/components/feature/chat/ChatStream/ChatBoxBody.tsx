@@ -16,6 +16,9 @@ import Tiptap from "../ChatInput/Tiptap"
 import useFetchChannelMembers from "@/hooks/fetchers/useFetchChannelMembers"
 import { useParams } from "react-router-dom"
 import clsx from "clsx"
+import { Stack } from "@/components/layout/Stack"
+import TypingIndicator from "../ChatInput/TypingIndicator/TypingIndicator"
+import { useTyping } from "../ChatInput/TypingIndicator/useTypingIndicator"
 
 const COOL_PLACEHOLDERS = [
     "Delivering messages atop dragons 🐉 is available on a chargeable basis.",
@@ -37,14 +40,23 @@ export const ChatBoxBody = ({ channelData }: ChatBoxBodyProps) => {
     const { name: user } = useUserData()
     const { channelMembers, isLoading } = useFetchChannelMembers(channelData.name)
 
+    const { onUserType, stopTyping } = useTyping(channelData.name)
+
     const [selectedMessage, setSelectedMessage] = useState<Message | null>(null)
 
     const handleReplyAction = (message: Message) => {
         setSelectedMessage(message)
     }
 
-    const handleCancelReply = () => {
+    const clearSelectedMessage = () => {
         setSelectedMessage(null)
+    }
+
+    const onMessageSendCompleted = () => {
+        // Stop the typing indicator
+        stopTyping()
+        // Clear the selected message
+        clearSelectedMessage()
     }
 
     const isUserInChannel = useMemo(() => {
@@ -56,7 +68,7 @@ export const ChatBoxBody = ({ channelData }: ChatBoxBodyProps) => {
 
     const { fileInputRef, files, setFiles, removeFile, uploadFiles, addFile, fileUploadProgress } = useFileUpload(channelData.name)
 
-    const { sendMessage, loading } = useSendMessage(channelData.name, files.length, uploadFiles, handleCancelReply, selectedMessage)
+    const { sendMessage, loading } = useSendMessage(channelData.name, files.length, uploadFiles, onMessageSendCompleted, selectedMessage)
 
     const PreviousMessagePreview = ({ selectedMessage }: { selectedMessage: any }) => {
 
@@ -70,7 +82,7 @@ export const ChatBoxBody = ({ channelData }: ChatBoxBodyProps) => {
                     color='gray'
                     size='1'
                     variant="soft"
-                    onClick={handleCancelReply}>
+                    onClick={clearSelectedMessage}>
                     <BiX size='20' />
                 </IconButton>
             </ReplyMessageBox>
@@ -99,27 +111,31 @@ export const ChatBoxBody = ({ channelData }: ChatBoxBodyProps) => {
                 />
                 {channelData?.is_archived == 0 && (isUserInChannel || channelData?.type === 'Open')
                     &&
-                    <Tiptap
-                        key={channelData.name}
-                        channelID={channelData.name}
-                        fileProps={{
-                            fileInputRef,
-                            addFile
-                        }}
-                        clearReplyMessage={handleCancelReply}
-                        channelMembers={channelMembers}
-                        // placeholder={randomPlaceholder}
-                        replyMessage={selectedMessage}
-                        sessionStorageKey={`tiptap-${channelData.name}`}
-                        onMessageSend={sendMessage}
-                        messageSending={loading}
-                        slotBefore={<Flex direction='column' justify='center' hidden={!selectedMessage && !files.length}>
-                            {selectedMessage && <PreviousMessagePreview selectedMessage={selectedMessage} />}
-                            {files && files.length > 0 && <Flex gap='2' width='100%' align='end' px='2' p='2' wrap='wrap'>
-                                {files.map((f: CustomFile) => <Box className="grow-0" key={f.fileID}><FileListItem file={f} uploadProgress={fileUploadProgress} removeFile={() => removeFile(f.fileID)} /></Box>)}
+                    <Stack>
+                        <TypingIndicator channel={channelData.name} />
+                        <Tiptap
+                            key={channelData.name}
+                            channelID={channelData.name}
+                            fileProps={{
+                                fileInputRef,
+                                addFile
+                            }}
+                            clearReplyMessage={clearSelectedMessage}
+                            channelMembers={channelMembers}
+                            onUserType={onUserType}
+                            // placeholder={randomPlaceholder}
+                            replyMessage={selectedMessage}
+                            sessionStorageKey={`tiptap-${channelData.name}`}
+                            onMessageSend={sendMessage}
+                            messageSending={loading}
+                            slotBefore={<Flex direction='column' justify='center' hidden={!selectedMessage && !files.length}>
+                                {selectedMessage && <PreviousMessagePreview selectedMessage={selectedMessage} />}
+                                {files && files.length > 0 && <Flex gap='2' width='100%' align='end' px='2' p='2' wrap='wrap'>
+                                    {files.map((f: CustomFile) => <Box className="grow-0" key={f.fileID}><FileListItem file={f} uploadProgress={fileUploadProgress} removeFile={() => removeFile(f.fileID)} /></Box>)}
+                                </Flex>}
                             </Flex>}
-                        </Flex>}
-                    />
+                        />
+                    </Stack>
                 }
                 {channelData && !isLoading && <>
                     {channelData.is_archived == 0 && !isUserInChannel && channelData.type !== 'Open' && !isDM &&
