@@ -3,14 +3,14 @@ import { ChannelItemElement } from '@/components/feature/channels/ChannelList';
 import { DirectMessageItemElement } from '../../feature/direct-messages/DirectMessageList';
 import { __ } from '@/utils/translations';
 import { useStickyState } from "@/hooks/useStickyState";
-import { useContext, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { useLayoutEffect, useMemo, useRef, useState } from "react";
 import { SidebarBadge, SidebarViewMoreButton } from "@/components/layout/Sidebar/SidebarComp";
 import { Box, DropdownMenu, Flex, IconButton } from "@radix-ui/themes";
 import { ChannelWithUnreadCount, DMChannelWithUnreadCount } from "@/components/layout/Sidebar/useGetChannelUnreadCounts";
 import clsx from "clsx";
-import { ChannelListContext, ChannelListContextType } from "@/utils/channel/ChannelListProvider";
+import { UnreadCountData } from "@/utils/channel/ChannelListProvider";
 import { BiDotsVerticalRounded } from "react-icons/bi";
-import { useFrappePostCall } from "frappe-react-sdk";
+import { useFrappePostCall, useSWRConfig } from "frappe-react-sdk";
 import { toast } from "sonner";
 
 interface UnreadListProps {
@@ -20,7 +20,6 @@ interface UnreadListProps {
 
 export const UnreadList = ({ unreadChannels, unreadDMs }: UnreadListProps) => {
 
-    const { mutate } = useContext(ChannelListContext) as ChannelListContextType
     const [showData, setShowData] = useStickyState(true, 'expandDirectMessageList')
 
     const toggle = () => setShowData(d => !d)
@@ -68,7 +67,7 @@ export const UnreadList = ({ unreadChannels, unreadDMs }: UnreadListProps) => {
                         </Box>
                     </Flex>
                     <Flex align='center' gap='1'>
-                        <UnreadSectionActions updateChannelList={mutate} channelIDs={channelIDs} />
+                        <UnreadSectionActions channelIDs={channelIDs} />
                         <SidebarViewMoreButton onClick={toggle} expanded={showData} />
                     </Flex>
                 </Flex>
@@ -98,7 +97,9 @@ export const UnreadList = ({ unreadChannels, unreadDMs }: UnreadListProps) => {
     )
 }
 
-const UnreadSectionActions = ({ updateChannelList, channelIDs }: { updateChannelList: () => void, channelIDs: string[] }) => {
+const UnreadSectionActions = ({ channelIDs }: { channelIDs: string[] }) => {
+
+    const { mutate } = useSWRConfig()
 
     const [isOpen, setIsOpen] = useState(false)
     const { call } = useFrappePostCall('raven.api.raven_channel.mark_all_messages_as_read')
@@ -107,7 +108,46 @@ const UnreadSectionActions = ({ updateChannelList, channelIDs }: { updateChannel
             channel_ids: channelIDs
         }).then(() => {
             toast.success('All messages marked as read')
-            updateChannelList()
+            mutate('unread_channel_count', (d: { message: UnreadCountData } | undefined) => {
+                if (d?.message) {
+                    // Update all channels with unread count as 0
+                    const newChannels = d.message.channels.map(c => {
+                        if (c.name && channelIDs.includes(c.name)) {
+                            return {
+                                ...c,
+                                unread_count: 0
+                            }
+                        }
+                        return c
+                    })
+
+                    const total_unread_count_in_channels = newChannels.reduce((acc: number, c) => {
+                        if (!c.is_direct_message) {
+                            return acc + c.unread_count
+                        } else {
+                            return acc
+                        }
+                    }, 0)
+
+                    const total_unread_count_in_dms = newChannels.reduce((acc: number, c) => {
+                        if (c.is_direct_message) {
+                            return acc + c.unread_count
+                        } else {
+                            return acc
+                        }
+                    }, 0)
+
+                    return {
+                        message: {
+                            total_unread_count_in_channels,
+                            total_unread_count_in_dms,
+                            channels: newChannels
+                        }
+                    }
+                }
+            }, {
+                revalidate: false
+            })
         }).catch(() => {
             toast.error('Failed to mark all messages as read')
         })
