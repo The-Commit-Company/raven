@@ -221,6 +221,7 @@ def get_unread_count_for_channels():
 		.where((channel.type == "Open") | (channel_member.user_id == frappe.session.user))
 		.where(channel.is_archived == 0)
 		.where(channel.is_thread == 0)
+		.where(message.message_type != "System")
 		.left_join(message)
 		.on(channel.name == message.channel_id)
 	)

@@ -3,6 +3,7 @@ from frappe import _
 from frappe.query_builder import Order
 
 from raven.api.raven_users import get_current_raven_user
+from raven.utils import track_channel_visit
 
 
 @frappe.whitelist()
@@ -193,5 +194,17 @@ def leave_channel(channel_id):
 
 	for member in members:
 		frappe.delete_doc("Raven Channel Member", member.name)
+
+	return "Ok"
+
+
+@frappe.whitelist()
+def mark_all_messages_as_read(channel_ids: list):
+	"""
+	Mark all messages in these channels as read
+	"""    
+	user = frappe.session.user
+	for channel_id in channel_ids:
+		track_channel_visit(channel_id, user=user)
 
 	return "Ok"
