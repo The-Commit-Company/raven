@@ -12,6 +12,7 @@ import { AiOutlineEdit } from 'react-icons/ai'
 import { LuForward, LuReply } from 'react-icons/lu'
 import { MdOutlineEmojiEmotions } from "react-icons/md";
 import { CreateThreadContextItem } from './QuickActions/CreateThreadButton'
+import MessageActionSubMenu from './MessageActionSubMenu'
 
 export interface MessageContextMenuProps {
     message?: Message | null,
@@ -102,6 +103,8 @@ export const MessageContextMenu = ({ message, onDelete, onEdit, onReply, onForwa
                         </Flex>
                     </ContextMenu.Item>
                 </ContextMenu.Group>}
+
+                <MessageActionSubMenu messageID={message.name} />
 
                 {isOwner && <ContextMenu.Group>
                     <ContextMenu.Separator />
