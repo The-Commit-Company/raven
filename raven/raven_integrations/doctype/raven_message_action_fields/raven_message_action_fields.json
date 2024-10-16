@@ -1,0 +1,93 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2024-10-16 11:17:20.935886",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "fieldname",
+  "label",
+  "helper_text",
+  "is_required",
+  "column_break_gsrk",
+  "type",
+  "options",
+  "default_values_section",
+  "default_value_type",
+  "default_value"
+ ],
+ "fields": [
+  {
+   "fieldname": "fieldname",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Fieldname",
+   "reqd": 1
+  },
+  {
+   "fieldname": "label",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Label",
+   "reqd": 1
+  },
+  {
+   "fieldname": "helper_text",
+   "fieldtype": "Data",
+   "label": "Helper Text",
+   "length": 300
+  },
+  {
+   "fieldname": "default_value",
+   "fieldtype": "Small Text",
+   "label": "Default Value"
+  },
+  {
+   "fieldname": "column_break_gsrk",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "type",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Type",
+   "options": "Data\nNumber\nSelect\nLink\nDate\nTime\nDatetime\nSmall Text\nCheckbox",
+   "reqd": 1
+  },
+  {
+   "fieldname": "options",
+   "fieldtype": "Small Text",
+   "label": "Options"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_required",
+   "fieldtype": "Check",
+   "label": "Is Required?"
+  },
+  {
+   "fieldname": "default_values_section",
+   "fieldtype": "Section Break",
+   "label": "Default Values"
+  },
+  {
+   "fieldname": "default_value_type",
+   "fieldtype": "Select",
+   "label": "Default Value Type",
+   "options": "Static\nMessage Field\nJinja"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2024-10-16 11:22:03.745105",
+ "modified_by": "Administrator",
+ "module": "Raven Integrations",
+ "name": "Raven Message Action Fields",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": []
+}

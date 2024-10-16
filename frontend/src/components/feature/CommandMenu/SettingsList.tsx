@@ -1,6 +1,6 @@
 import { Command } from 'cmdk'
 import { useSetAtom } from 'jotai'
-import { BiBot, BiFile, BiGroup, BiMessageSquareDots, BiUserCircle } from 'react-icons/bi'
+import { BiBoltCircle, BiBot, BiFile, BiGroup, BiMessageSquareDots, BiTime, BiUserCircle } from 'react-icons/bi'
 import { useNavigate } from 'react-router-dom'
 import { commandMenuOpenAtom } from './CommandMenu'
 import { PiOpenAiLogo } from 'react-icons/pi'
@@ -47,12 +47,17 @@ const SettingsList = (props: Props) => {
                 HR
             </Command.Item>
 
+            <Command.Item value='message-actions' onSelect={onSelect}>
+                <BiBoltCircle size={ICON_SIZE} />
+                Message Actions
+            </Command.Item>
+
             <Command.Item value='scheduled-messages' keywords={['scheduled messages']} onSelect={onSelect}>
-                <BiMessageSquareDots size={ICON_SIZE} />
+                <BiTime size={ICON_SIZE} />
                 Scheduled Messages
             </Command.Item>
 
-            <Command.Item value='webhooks' keywords={['webhooks']} onSelect={onSelect}>
+            <Command.Item value='webhooks' onSelect={onSelect}>
                 <AiOutlineApi size={ICON_SIZE} />
                 Webhooks
             </Command.Item>
