@@ -30,7 +30,7 @@ const MessageActionModal = ({ messageID, actionID, onClose }: MessageActionModal
             <Dialog.Content className={clsx(DIALOG_CONTENT_CLASS)}>
 
                 <Dialog.Title>{action.title}</Dialog.Title>
-                <Dialog.Description size='2'>{action.description ?? action.action}</Dialog.Description>
+                <Dialog.Description size='2'>{action.description ? action.description : action.action}</Dialog.Description>
 
                 <MessageActionDialogContent action={action} messageID={messageID} />
 
