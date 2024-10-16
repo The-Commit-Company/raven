@@ -9,8 +9,6 @@ import { useFormContext } from 'react-hook-form'
 import { RavenBot } from '@/types/RavenBot/RavenBot'
 import BotDocs from './BotDocs'
 
-type Props = {}
-
 const ICON_PROPS = {
     size: 18,
     className: 'mr-1.5'

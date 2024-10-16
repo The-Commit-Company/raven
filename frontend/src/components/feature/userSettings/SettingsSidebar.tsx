@@ -27,6 +27,7 @@ export const SettingsSidebar = () => {
                     {/* <SettingsSidebarItem title="ERPNext" to='erpnext' /> */}
                     <SettingsSidebarItem title="HR" to='hr' />
                     {/* <SettingsSidebarItem title='Notifications' to='notifications' /> */}
+                    <SettingsSidebarItem title="Message Actions" to='message-actions' />
                     <SettingsSidebarItem title="Scheduled Messages" to='scheduled-messages' />
                     <SettingsSidebarItem title="Webhooks" to='webhooks' />
                     {/* <SettingsSidebarItem title="Frappe LMS" to='frappe-lms' /> */}

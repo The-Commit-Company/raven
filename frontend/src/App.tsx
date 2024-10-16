@@ -18,7 +18,8 @@ const NO_CACHE_KEYS = [
   "frappe.desk.search.search_link",
   "frappe.model.workflow.get_transitions",
   "frappe.desk.reportview.get_count",
-  "frappe.core.doctype.server_script.server_script.enabled"
+  "frappe.core.doctype.server_script.server_script.enabled",
+  "raven.api.message_actions.get_action_defaults"
 ]
 
 
@@ -80,21 +81,17 @@ const router = createBrowserRouter(
                 <Route path="create" lazy={() => import('./pages/settings/ServerScripts/SchedulerEvents/CreateSchedulerEvent')} />
                 <Route path=":ID" lazy={() => import('./pages/settings/ServerScripts/SchedulerEvents/ViewSchedulerEvent')} />
               </Route>
+
+              <Route path="message-actions">
+                <Route index lazy={() => import('./pages/settings/MessageActions/MessageActionList')} />
+                <Route path="create" lazy={() => import('./pages/settings/MessageActions/CreateMessageAction')} />
+                <Route path=":ID" lazy={() => import('./pages/settings/MessageActions/ViewMessageAction')} />
+              </Route>
             </Route>
             <Route path=":channelID" lazy={() => import('@/pages/ChatSpace')}>
               <Route path="thread/:threadID" lazy={() => import('./components/feature/threads/ThreadDrawer/ThreadDrawer')} />
             </Route>
           </Route>
-          {/* <Route path='settings' lazy={() => import('./pages/settings/Settings')}>
-            <Route path='integrations'>
-              <Route path='webhooks' lazy={() => import('./pages/settings/Webhooks/WebhookList')} />
-              <Route path='webhooks/create' lazy={() => import('./pages/settings/Webhooks/CreateWebhook')} />
-              <Route path='webhooks/:ID' lazy={() => import('./pages/settings/Webhooks/ViewWebhook')} />
-              <Route path='scheduled-messages' lazy={() => import('./pages/settings/ServerScripts/SchedulerEvents/SchedulerEvents')} />
-              <Route path='scheduled-messages/create' lazy={() => import('./pages/settings/ServerScripts/SchedulerEvents/CreateSchedulerEvent')} />
-              <Route path='scheduled-messages/:ID' lazy={() => import('./pages/settings/ServerScripts/SchedulerEvents/ViewSchedulerEvent')} />
-            </Route>
-          </Route> */}
         </Route>
       </Route>
       <Route path='*' lazy={() => import('./pages/NotFound')} />
