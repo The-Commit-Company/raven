@@ -55,7 +55,8 @@ def execute_action(action_id: str, message_id: str, values: dict):
 			message.flags.editing_metadata = True
 			message.link_doctype = doc.doctype
 			message.link_document = doc.name
-			message.save()
+			# Ignore permissions to allow editing of the document
+			message.save(ignore_permissions=True)
 
 		return {"message": "Document created successfully", "document": doc.name, "doctype": doc.doctype}
 
