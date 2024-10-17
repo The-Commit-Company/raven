@@ -236,7 +236,7 @@ export const DoctypeFieldSelect = ({ doctype, value, onFieldSelect }: { doctype:
 
         if (!doctypeMeta) return []
 
-        return doctypeMeta.fields?.filter((field) => in_list(VALID_FIELD_TYPES, field.fieldtype) && !field.read_only)
+        return doctypeMeta.fields?.filter((field) => in_list(VALID_FIELD_TYPES, field.fieldtype))
 
     }, [doctypeMeta])
 
