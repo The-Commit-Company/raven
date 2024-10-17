@@ -357,7 +357,7 @@ const PrintSubMenu = ({ doctype, docname }: { doctype: string, docname: string }
 
         params += `&trigger_print=0`
 
-        window.open(`http://localhost:8000/printview?${params}`, '_blank')
+        window.open(`/printview?${params}`, '_blank')
 
     }
 
