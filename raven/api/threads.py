@@ -71,6 +71,8 @@ def create_thread(message_id):
 	(If the user is not the sender of the message, the sender will be added as the second participant)
 	"""
 
+	thread_message = frappe.get_doc("Raven Message", message_id)
+
 	# Convert the message to a thread
 	thread_channel = frappe.get_doc(
 		{
@@ -78,11 +80,12 @@ def create_thread(message_id):
 			"channel_name": message_id,
 			"type": "Private",
 			"is_thread": 1,
+			"description": thread_message.content,
 		}
 	).insert()
 
 	# Add the creator of the original message as a participant
-	creator = frappe.get_cached_value("Raven Message", message_id, "owner")
+	creator = thread_message.owner
 
 	if creator != frappe.session.user:
 		frappe.get_doc(
@@ -90,7 +93,7 @@ def create_thread(message_id):
 		).insert()
 
 	# If the thread is created in a DM channel, add both DM channel members as participants
-	channel_id = frappe.get_cached_value("Raven Message", message_id, "channel_id")
+	channel_id = thread_message.channel_id
 	if channel_id:
 		is_dm_channel = frappe.get_cached_value("Raven Channel", channel_id, "is_direct_message") == 1
 		if is_dm_channel:
@@ -110,7 +113,6 @@ def create_thread(message_id):
 					).insert()
 
 	# Update the message to mark it as a thread
-	thread_message = frappe.get_cached_doc("Raven Message", message_id)
 	thread_message.is_thread = 1
 	thread_message.save(ignore_permissions=True)
 
