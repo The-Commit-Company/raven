@@ -274,6 +274,7 @@ def get_unread_count_for_channel(channel_id):
 				"Raven Message",
 				filters={
 					"channel_id": channel_id,
+					"message_type": ["!=", "System"],
 				},
 			)
 		else:
