@@ -37,6 +37,8 @@ export interface RavenChannel{
 	last_message_details?: any
 	/**	Pinned Messages : Table - Raven Pinned Messages	*/
 	pinned_messages?: RavenPinnedMessages[]
+	/**	Pinned Messages String : Small Text	*/
+	pinned_messages_string?: string
 	/**	Is AI Thread : Check	*/
 	is_ai_thread?: 0 | 1
 	/**	OpenAI Thread ID : Data	*/

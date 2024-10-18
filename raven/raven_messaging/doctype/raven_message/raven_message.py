@@ -36,7 +36,6 @@ class RavenMessage(Document):
 		is_bot_message: DF.Check
 		is_edited: DF.Check
 		is_forwarded: DF.Check
-		is_pinned: DF.Check
 		is_reply: DF.Check
 		is_thread: DF.Check
 		json: DF.JSON | None

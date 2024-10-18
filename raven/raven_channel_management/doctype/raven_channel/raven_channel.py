@@ -30,6 +30,7 @@ class RavenChannel(Document):
 		linked_document: DF.DynamicLink | None
 		openai_thread_id: DF.Data | None
 		pinned_messages: DF.Table[RavenPinnedMessages]
+		pinned_messages_string: DF.SmallText | None
 		thread_bot: DF.Link | None
 		type: DF.Literal["Private", "Public", "Open"]
 	# end: auto-generated types
@@ -152,6 +153,13 @@ class RavenChannel(Document):
 			self.type = "Private"
 		if self.is_direct_message == 0:
 			self.channel_name = self.channel_name.strip().lower().replace(" ", "-")
+		if self.pinned_messages:
+			self.pinned_messages_string = "\n".join(
+				[
+					message.message_id
+					for message in self.pinned_messages
+				]
+			)
 
 	def add_members(self, members, is_admin=0):
 		# members is a list of Raven User IDs

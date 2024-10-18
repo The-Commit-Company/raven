@@ -15,7 +15,6 @@
   "is_reply",
   "linked_message",
   "replied_message_details",
-  "is_pinned",
   "column_break_wvje",
   "is_thread",
   "message_type",
@@ -188,17 +187,11 @@
    "fieldname": "is_thread",
    "fieldtype": "Check",
    "label": "Is Thread"
-  },
-  {
-   "default": "0",
-   "fieldname": "is_pinned",
-   "fieldtype": "Check",
-   "label": "Is Pinned"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-10-13 21:09:39.481284",
+ "modified": "2024-10-18 22:47:48.424857",
  "modified_by": "Administrator",
  "module": "Raven Messaging",
  "name": "Raven Message",

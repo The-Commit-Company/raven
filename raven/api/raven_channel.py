@@ -59,6 +59,7 @@ def get_channel_list(hide_archived=False):
 			channel.owner,
 			channel.last_message_timestamp,
 			channel.last_message_details,
+			channel.pinned_messages_string
 		)
 		.distinct()
 		.left_join(channel_member)
@@ -72,17 +73,7 @@ def get_channel_list(hide_archived=False):
 
 	query = query.orderby(channel.last_message_timestamp, order=Order.desc)
 
-	channels = query.run(as_dict=True)
-
-	# Get pinned messages for each channel
-	for channel in channels:
-		channel["pinned_messages"] = frappe.get_all(
-			"Raven Pinned Messages",
-			filters={"parent": channel.get("name"), "parenttype": "Raven Channel"},
-			fields=["message_id"],
-		)
-
-	return channels
+	return query.run(as_dict=True)
 
 
 @frappe.whitelist()
@@ -213,9 +204,14 @@ def toggle_pin_message(channel_id, message_id):
     Toggle pin/unpin a message in a channel.
     """
 	channel = frappe.get_doc("Raven Channel", channel_id)
-	message = frappe.get_doc("Raven Message", message_id)
 
 	pinned_message = None
+
+	# Check whether the message exists in the channel
+	message_exists = frappe.db.get_value("Raven Message", message_id, "channel_id") == channel_id
+
+	if not message_exists:
+		frappe.throw(_("Message does not exist in this channel"))
 
     # Check if the message is already pinned
 	for pm in channel.pinned_messages:
@@ -226,14 +222,11 @@ def toggle_pin_message(channel_id, message_id):
 	if pinned_message:
 		# Unpin the message
 		channel.pinned_messages.remove(pinned_message)
-		message.is_pinned = 0
 	else:
 		# Pin the message if it's not pinned
 		channel.append("pinned_messages", {"message_id": message_id})
-		message.is_pinned = 1
 
     # Save both the channel and the message
 	channel.save()
-	message.save()
 
 	return "Ok"

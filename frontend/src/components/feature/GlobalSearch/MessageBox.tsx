@@ -10,7 +10,7 @@ import { DateMonthYear } from "@/utils/dateConversions"
 
 type MessageBoxProps = {
     message: Message
-    handleScrollToMessage: (messageName: string, channelID: string) => void
+    handleScrollToMessage?: (messageName: string, channelID: string) => void
 }
 
 export const MessageBox = ({ message, handleScrollToMessage }: MessageBoxProps) => {
@@ -44,15 +44,15 @@ export const MessageBox = ({ message, handleScrollToMessage }: MessageBoxProps) 
                 <Separator orientation='vertical' />
                 <Text as='span' size='1' color='gray'><DateMonthYear date={creation} /></Text>
 
-                <Link size='1' className="invisible group-hover:visible" onClick={() => handleScrollToMessage(message.name, channel_id)}>
+                {handleScrollToMessage && <Link size='1' className="invisible group-hover:visible" onClick={() => handleScrollToMessage(message.name, channel_id)}>
                     View in channel
-                </Link>
+                </Link>}
             </Flex>
 
             <Flex gap='3'>
                 <MessageSenderAvatar userID={owner} user={user} isActive={false} />
-                <Flex direction='column' gap='1' justify='center'>
-                    <Box mt='-1'>
+                <Flex direction='column' gap='0' justify='center'>
+                    <Box>
                         <UserHoverCard user={user} userID={owner} isActive={false} />
                     </Box>
                     <MessageContent message={message} user={user} />
