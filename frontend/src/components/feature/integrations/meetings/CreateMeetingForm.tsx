@@ -1,7 +1,7 @@
 import { ErrorText, Label } from '@/components/common/Form'
 import LinkFormField from '@/components/common/LinkField/LinkFormField'
 import { Loader } from '@/components/common/Loader'
-import { ErrorBanner } from '@/components/layout/AlertBanner'
+import { ErrorBanner } from '@/components/layout/AlertBanner/ErrorBanner'
 import { useGetUser } from '@/hooks/useGetUser'
 import { useIsDesktop } from '@/hooks/useMediaQuery'
 import { useUserData } from '@/hooks/useUserData'

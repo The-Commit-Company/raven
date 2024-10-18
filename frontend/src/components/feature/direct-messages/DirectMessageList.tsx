@@ -1,7 +1,7 @@
 import { useFrappePostCall } from "frappe-react-sdk"
 import { useContext, useLayoutEffect, useMemo, useRef, useState } from "react"
 import { useNavigate, useParams } from "react-router-dom"
-import { SidebarGroup, SidebarGroupItem, SidebarGroupLabel, SidebarGroupList, SidebarIcon, SidebarButtonItem } from "../../layout/Sidebar"
+import { SidebarGroup, SidebarGroupItem, SidebarGroupLabel, SidebarGroupList, SidebarIcon, SidebarButtonItem } from "../../layout/Sidebar/SidebarComp"
 import { SidebarBadge, SidebarItem, SidebarViewMoreButton } from "../../layout/Sidebar/SidebarComp"
 import { UserContext } from "../../../utils/auth/UserProvider"
 import { useGetUser } from "@/hooks/useGetUser"

@@ -1,4 +1,4 @@
-import { ErrorBanner } from "@/components/layout/AlertBanner"
+import { ErrorBanner } from "@/components/layout/AlertBanner/ErrorBanner"
 import { AlertDialog, Button, DropdownMenu, Flex, IconButton, Text } from "@radix-ui/themes"
 import { FrappeDoc, useFrappeUpdateDoc } from "frappe-react-sdk"
 import { FieldValues, FormProvider, useForm } from "react-hook-form"

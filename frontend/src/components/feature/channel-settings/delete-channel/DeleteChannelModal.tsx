@@ -1,4 +1,4 @@
-import { ErrorBanner } from '../../../layout/AlertBanner'
+import { ErrorBanner } from '@/components/layout/AlertBanner/ErrorBanner'
 import { Fragment, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useFrappeDeleteDoc } from 'frappe-react-sdk'

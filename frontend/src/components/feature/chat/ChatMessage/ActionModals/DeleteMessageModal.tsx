@@ -1,5 +1,5 @@
 import { useFrappeDeleteDoc } from "frappe-react-sdk"
-import { ErrorBanner } from "../../../../layout/AlertBanner"
+import { ErrorBanner } from "../../../../layout/AlertBanner/ErrorBanner"
 import { AlertDialog, Button, Callout, Flex, Text } from "@radix-ui/themes"
 import { Loader } from "@/components/common/Loader"
 import { FiAlertTriangle } from "react-icons/fi"

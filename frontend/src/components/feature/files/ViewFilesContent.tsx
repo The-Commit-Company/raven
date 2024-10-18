@@ -6,7 +6,7 @@ import { Box, Dialog, Flex, Heading, IconButton, Select, Text, TextField } from 
 import { BiSearch } from "react-icons/bi"
 import { IoMdClose } from "react-icons/io"
 import { PageLengthSelector } from "../pagination/PageLengthSelector"
-import { ErrorBanner } from "@/components/layout/AlertBanner"
+import { ErrorBanner } from "@/components/layout/AlertBanner/ErrorBanner"
 import { TableLoader } from "@/components/layout/Loaders/TableLoader"
 import { PageSelector } from "../pagination/PageSelector"
 import { FilesTable } from "./FilesTable"

@@ -1,4 +1,4 @@
-import { SidebarGroup, SidebarGroupItem, SidebarGroupLabel, SidebarGroupList } from "../../layout/Sidebar";
+import { SidebarGroup, SidebarGroupItem, SidebarGroupLabel, SidebarGroupList } from "../../layout/Sidebar/SidebarComp";
 import { ChannelItemElement } from '@/components/feature/channels/ChannelList';
 import { DirectMessageItemElement } from '../../feature/direct-messages/DirectMessageList';
 import { __ } from '@/utils/translations';

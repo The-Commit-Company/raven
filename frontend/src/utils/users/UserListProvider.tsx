@@ -1,7 +1,7 @@
 import { useFrappeDocTypeEventListener, useFrappeGetCall, useSWRConfig } from "frappe-react-sdk";
 import { PropsWithChildren, createContext, useMemo } from "react";
-import { ErrorBanner } from "@/components/layout/AlertBanner";
-import { FullPageLoader } from "@/components/layout/Loaders";
+import { ErrorBanner } from "@/components/layout/AlertBanner/ErrorBanner";
+import { FullPageLoader } from "@/components/layout/Loaders/FullPageLoader";
 import { Box, Flex, Link } from "@radix-ui/themes";
 import { RavenUser } from "@/types/Raven/RavenUser";
 

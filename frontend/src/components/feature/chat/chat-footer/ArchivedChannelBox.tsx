@@ -1,4 +1,4 @@
-import { ErrorBanner } from "@/components/layout/AlertBanner"
+import { ErrorBanner } from "@/components/layout/AlertBanner/ErrorBanner"
 import { UserContext } from "@/utils/auth/UserProvider"
 import { ChannelListItem } from "@/utils/channel/ChannelListProvider"
 import { useFrappeUpdateDoc } from "frappe-react-sdk"

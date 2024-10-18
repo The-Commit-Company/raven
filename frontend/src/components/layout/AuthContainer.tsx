@@ -1,6 +1,6 @@
 import { PropsWithChildren, useContext } from 'react'
 import { Box, Flex, Heading, Text } from '@radix-ui/themes';
-import { FullPageLoader } from "./Loaders";
+import { FullPageLoader } from "./Loaders/FullPageLoader";
 import { Link } from 'react-router-dom';
 import { UserContext } from '@/utils/auth/UserProvider';
 

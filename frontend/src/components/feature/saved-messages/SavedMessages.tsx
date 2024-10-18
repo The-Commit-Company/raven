@@ -1,9 +1,9 @@
 import { useFrappeGetCall } from "frappe-react-sdk"
 import { Link, useNavigate } from "react-router-dom"
 import { Message } from "../../../../../types/Messaging/Message"
-import { ErrorBanner } from "../../layout/AlertBanner"
-import { EmptyStateForSavedMessages } from "../../layout/EmptyState/EmptyState"
-import { PageHeader } from "../../layout/Heading/PageHeader"
+import { ErrorBanner } from "@/components/layout/AlertBanner/ErrorBanner"
+import { EmptyStateForSavedMessages } from "@/components/layout/EmptyState/EmptyState"
+import { PageHeader } from "@/components/layout/Heading/PageHeader"
 import { MessageBox } from "../GlobalSearch/MessageBox"
 import { Heading } from "@radix-ui/themes"
 import { Box, Flex } from '@radix-ui/themes'
