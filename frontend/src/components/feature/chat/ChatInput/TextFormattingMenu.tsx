@@ -299,19 +299,17 @@ const TimestampButton = () => {
 
 
     return <Flex gap='3' align='center'>
-        <Tooltip content={getKeyboardMetaKeyString() + ' + Alt + H'} aria-label={getKeyboardMetaKeyString() + ' + Alt + H'}>
-            <IconButton
-                aria-label='Parse timestamps from message'
-                onClick={onClick}
-                title='Parse timestamps from message'
-                variant='ghost'
-                size='1'
-                className={DEFAULT_BUTTON_STYLE}
-                disabled={!editor.can().chain().focus().run()}
-            >
-                <BiTime {...ICON_PROPS} />
-            </IconButton>
-        </Tooltip>
+        <IconButton
+            aria-label='Parse timestamps from message'
+            onClick={onClick}
+            title='Parse timestamps from message'
+            variant='ghost'
+            size='1'
+            className={DEFAULT_BUTTON_STYLE}
+            disabled={!editor.can().chain().focus().run()}
+        >
+            <BiTime {...ICON_PROPS} />
+        </IconButton>
     </Flex>
 
 

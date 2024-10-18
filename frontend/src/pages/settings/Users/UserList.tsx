@@ -18,6 +18,8 @@ const UserList = () => {
 
     const [open, { on, off }] = useBoolean()
 
+    const humanUsers = users.filter(user => user.type === 'User')
+
     return (
         <PageContainer>
             <SettingsContentContainer>
@@ -28,7 +30,7 @@ const UserList = () => {
                         Add
                     </Button> : null}
                 />
-                <UserTable users={users} />
+                <UserTable users={humanUsers} />
             </SettingsContentContainer>
             <AddUserDialog open={open} onClose={off} />
         </PageContainer>
