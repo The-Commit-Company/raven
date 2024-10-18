@@ -71,7 +71,7 @@ export const ChannelDetails = ({ channelData, channelMembers, onClose }: Channel
 
                     {/* users can only leave channels they are members of */}
                     {/* users cannot leave open channels */}
-                    {channelMembers[currentUser] && channelData?.type != 'Open' && channelData.is_archived == 0 &&
+                    {channelMembers[currentUser] && Object.keys(channelMembers).length > 1 && channelData?.type != 'Open' && channelData.is_archived == 0 &&
                         <>
                             <Separator className={'w-full'} />
                             <LeaveChannelButton channelData={channelData} onClose={onClose} />

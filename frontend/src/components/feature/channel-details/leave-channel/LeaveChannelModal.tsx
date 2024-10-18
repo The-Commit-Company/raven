@@ -28,7 +28,7 @@ export const LeaveChannelModal = ({ onClose, channelData, isDrawer, closeDetails
             toast('You have left the channel')
             onClose()
             mutate()
-            navigate('../general')
+            navigate('../')
             closeDetailsModal()
         }).catch((e) => {
             toast.error('Could not leave channel', {

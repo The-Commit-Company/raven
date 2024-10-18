@@ -12,7 +12,7 @@ import { ChannelListProvider } from './ChannelListProvider'
  */
 export const ChannelRedirect = () => {
 
-    const lastChannel = localStorage.getItem('ravenLastChannel') ?? 'general'
+    const lastChannel = localStorage.getItem('ravenLastChannel') ?? ''
 
     const navigate = useNavigate()
     const { pathname } = useLocation()

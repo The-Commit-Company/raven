@@ -63,8 +63,7 @@ const ViewChannelDetailsModalContent = ({ setOpen, channelData }: ViewChannelDet
     }, [setOpen])
 
     // channel settings are only available for admins 
-    // the general channel is the default channel and cannot be deleted or archived 
-    const allowSettingChange = (channelMembers[currentUser]?.is_admin == 1 && channelData.name != 'general' && channelData.is_archived == 0) || false
+    const allowSettingChange = (channelMembers[currentUser]?.is_admin == 1) || false
 
     return (
         <>
