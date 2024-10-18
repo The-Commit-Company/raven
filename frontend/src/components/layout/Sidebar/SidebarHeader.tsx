@@ -48,7 +48,15 @@ const SearchButton = () => {
 
 const ColorModeToggleButton = () => {
 
-    const { appearance, toggleTheme } = useTheme()
+    const { appearance, setAppearance } = useTheme()
+
+    const toggleTheme = () => {
+        if (appearance === 'light') {
+            setAppearance('dark')
+        } else {
+            setAppearance('light')
+        }
+    }
 
     return <Flex align='center' justify='center' pr='1'>
         <IconButton

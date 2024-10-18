@@ -42,6 +42,7 @@ const router = createBrowserRouter(
               <Route index lazy={() => import('./components/feature/userSettings/UserProfile/UserProfile')} />
               <Route path="profile" lazy={() => import('./components/feature/userSettings/UserProfile/UserProfile')} />
               <Route path="users" lazy={() => import('./pages/settings/Users/UserList')} />
+              <Route path="appearance" lazy={() => import('./pages/settings/Appearance')} />
               <Route path="hr" lazy={() => import('./pages/settings/Integrations/FrappeHR')} />
               <Route path="bots" >
                 <Route index lazy={() => import('./pages/settings/AI/BotList')} />
@@ -97,16 +98,12 @@ const router = createBrowserRouter(
       <Route path='*' lazy={() => import('./pages/NotFound')} />
     </>
   ), {
-  basename: `/${import.meta.env.VITE_BASE_NAME}` ?? '',
+  basename: import.meta.env.VITE_BASE_NAME ? `/${import.meta.env.VITE_BASE_NAME}` : '',
 }
 )
 function App() {
 
-  const [appearance, setAppearance] = useStickyState<'light' | 'dark'>('dark', 'appearance');
-
-  const toggleTheme = () => {
-    setAppearance(appearance === 'dark' ? 'light' : 'dark');
-  };
+  const [appearance, setAppearance] = useStickyState<'light' | 'dark' | 'inherit'>('dark', 'appearance');
 
   // We need to pass sitename only if the Frappe version is v15 or above.
 
@@ -137,7 +134,7 @@ function App() {
           // grayColor='slate'
           accentColor='iris'
           panelBackground='translucent'
-          toggleTheme={toggleTheme}>
+          setAppearance={setAppearance}>
           <RouterProvider router={router} />
         </ThemeProvider>
       </UserProvider>

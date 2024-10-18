@@ -1,13 +1,12 @@
 /* eslint-disable react/jsx-no-useless-fragment */
-import { Theme } from '@radix-ui/themes';
+import { Theme, ThemeProps } from '@radix-ui/themes';
 import React from 'react';
-import { ThemeProps } from '@radix-ui/themes/dist/cjs/theme';
 import { PropsWithChildren, useEffect } from 'react';
 
 interface ThemeProviderProps extends ThemeProps {
-    toggleTheme: () => void;
+    setAppearance: (appearance: 'light' | 'dark' | 'inherit') => void;
 }
-export const ThemeProvider: React.FC<PropsWithChildren<ThemeProviderProps>> = ({ children, toggleTheme, ...props }) => {
+export const ThemeProvider: React.FC<PropsWithChildren<ThemeProviderProps>> = ({ children, setAppearance, ...props }) => {
     useEffect(() => {
         const metaThemeColor = document.querySelector("meta[name=theme-color]");
         switch (props.appearance) {
@@ -30,12 +29,22 @@ export const ThemeProvider: React.FC<PropsWithChildren<ThemeProviderProps>> = ({
 
                 break;
             }
+            case 'inherit': {
+                if (document?.body) {
+                    // Get the system theme from the OS
+                    const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+                    document.body.classList.remove('light', 'dark');
+                    document.body.classList.add(systemTheme);
+                    metaThemeColor?.setAttribute('content', systemTheme === 'dark' ? '#191919' : '#FFFFFF');
+                }
+                break;
+            }
         }
     }, [props.appearance]);
 
     return (
         <Theme {...props}>
-            <ThemeContext.Provider value={{ appearance: props.appearance as 'light' | 'dark', toggleTheme }}>
+            <ThemeContext.Provider value={{ appearance: props.appearance as 'light' | 'dark' | 'inherit', setAppearance }}>
                 {children}
             </ThemeContext.Provider>
         </Theme>
@@ -43,12 +52,12 @@ export const ThemeProvider: React.FC<PropsWithChildren<ThemeProviderProps>> = ({
 };
 
 interface ThemeContextType {
-    appearance: 'light' | 'dark';
-    toggleTheme: () => void;
+    appearance: 'light' | 'dark' | 'inherit';
+    setAppearance: (appearance: 'light' | 'dark' | 'inherit') => void;
 }
 export const ThemeContext = React.createContext<ThemeContextType>({
     appearance: 'dark',
-    toggleTheme: () => { },
+    setAppearance: (appearance: 'light' | 'dark' | 'inherit') => { },
 });
 
 export const useTheme = () => React.useContext(ThemeContext);
