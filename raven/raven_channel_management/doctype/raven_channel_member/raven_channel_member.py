@@ -63,9 +63,9 @@ class RavenChannelMember(Document):
 			first_member = frappe.db.get_value(
 				"Raven Channel Member",
 				{"channel_id": self.channel_id},
-				["name"],
+				["name", "user_id"],
 				as_dict=1,
-				order_by="creation",
+				order_by="creation asc",
 			)
 			frappe.db.set_value("Raven Channel Member", first_member.name, "is_admin", 1)
 
@@ -104,19 +104,6 @@ class RavenChannelMember(Document):
 				).insert()
 
 	def on_trash(self):
-		# if the leaving member is admin, then the first member becomes new admin
-		if (
-			self.is_admin == 1
-			and frappe.db.count("Raven Channel Member", {"channel_id": self.channel_id}) > 0
-		):
-			first_member = frappe.db.get_value(
-				"Raven Channel Member",
-				{"channel_id": self.channel_id},
-				["name"],
-				as_dict=1,
-				order_by="creation",
-			)
-			frappe.db.set_value("Raven Channel Member", first_member.name, "is_admin", 1)
 
 		if self.flags.ignore_permissions:
 			return
