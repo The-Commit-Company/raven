@@ -40,7 +40,7 @@ const ErrorPage = () => {
                         color='gray'
                         className='not-cal'
                         onClick={reloadPage}>
-                        Upgrade to a better experience
+                        {errorDueToUpdate ? "Upgrade to a better experience" : "Reload the Page"}
                     </Button>
                     {!errorDueToUpdate && <Button
                         // variant='ghost' 

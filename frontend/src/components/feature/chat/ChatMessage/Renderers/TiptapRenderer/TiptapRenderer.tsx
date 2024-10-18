@@ -15,7 +15,7 @@ import { common, createLowlight } from 'lowlight'
 import python from 'highlight.js/lib/languages/python'
 import { CustomBold } from './Bold'
 import { ChannelMentionRenderer, UserMentionRenderer } from './Mention'
-import { CustomLink, LinkPreview } from './Link'
+import { CustomLink } from './Link'
 import { CustomUnderline } from './Underline'
 import { Image } from '@tiptap/extension-image'
 import { clsx } from 'clsx'
@@ -29,6 +29,7 @@ import TableHeader from '@tiptap/extension-table-header'
 import TableRow from '@tiptap/extension-table-row'
 import Details from './Details'
 import TimestampRenderer from './TimestampRenderer'
+import LinkPreview from './LinkPreview'
 
 const lowlight = createLowlight(common)
 
