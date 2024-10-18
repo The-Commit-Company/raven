@@ -265,6 +265,7 @@ def get_unread_count_for_channel(channel_id):
 			filters={
 				"channel_id": channel_id,
 				"creation": (">", last_timestamp),
+				"message_type": ["!=", "System"],
 			},
 		)
 	else:
