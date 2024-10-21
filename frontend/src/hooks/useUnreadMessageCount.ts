@@ -101,8 +101,49 @@ const useUnreadMessageCount = () => {
     useFrappeEventListener('raven:unread_channel_count_updated', (event) => {
         // If the event is published by the current user, then don't update the unread count
         if (event.sent_by !== currentUser) {
-            // If the user is already on the channel and is at the bottom of the chat (no base message), then don't update the unread count
+            // If the user is already on the channel and is at the bottom of the chat (no base message), then update the unread count to 0
             if (channelID === event.channel_id && !state?.baseMessage) {
+                // Update the unread count on the channel to 0
+                updateCount(d => {
+                    if (d) {
+                        const newChannels = d.message.channels.map(c => {
+                            if (c.name === channelID)
+                                return {
+                                    ...c,
+                                    unread_count: 0
+                                }
+                            return c
+                        })
+
+                        const total_unread_count_in_channels = newChannels.reduce((acc: number, c) => {
+                            if (!c.is_direct_message) {
+                                return acc + c.unread_count
+                            } else {
+                                return acc
+                            }
+                        }, 0)
+
+                        const total_unread_count_in_dms = newChannels.reduce((acc: number, c) => {
+                            if (c.is_direct_message) {
+                                return acc + c.unread_count
+                            } else {
+                                return acc
+                            }
+                        }, 0)
+
+                        return {
+                            message: {
+                                total_unread_count_in_channels,
+                                total_unread_count_in_dms,
+                                channels: newChannels
+                            }
+                        }
+
+                    } else {
+                        return d
+                    }
+
+                }, { revalidate: false })
             } else {
                 //TODO: perf: Can try to just increment the count by one instead of fetching the count again
                 // https://github.com/The-Commit-Company/Raven/pull/745#issuecomment-2014313429
