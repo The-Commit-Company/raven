@@ -14,6 +14,7 @@
   "is_synced",
   "linked_doctype",
   "linked_document",
+  "workspace",
   "section_break_evg4",
   "is_direct_message",
   "is_thread",
@@ -172,6 +173,13 @@
    "label": "Thread Bot",
    "options": "Raven Bot",
    "read_only": 1
+  },
+  {
+   "fieldname": "workspace",
+   "fieldtype": "Link",
+   "label": "Workspace",
+   "options": "Raven Workspace",
+   "search_index": 1
   }
  ],
  "index_web_pages_for_search": 1,
@@ -185,7 +193,7 @@
    "link_fieldname": "channel_id"
   }
  ],
- "modified": "2024-08-23 07:35:09.979962",
+ "modified": "2024-10-22 20:06:18.103248",
  "modified_by": "Administrator",
  "module": "Raven Channel Management",
  "name": "Raven Channel",

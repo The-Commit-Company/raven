@@ -1,4 +1,5 @@
 {
+ "app": "raven",
  "charts": [],
  "content": "[{\"id\":\"MKitHAnT4f\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\"><a href=\\\"/raven\\\">Raven</a></span>\",\"col\":12}},{\"id\":\"gBy2HFBNf4\",\"type\":\"onboarding\",\"data\":{\"onboarding_name\":\"Raven\",\"col\":12}},{\"id\":\"ZcawYU5brv\",\"type\":\"card\",\"data\":{\"card_name\":\"DocTypes\",\"col\":4}},{\"id\":\"Uox8EFjnuM\",\"type\":\"card\",\"data\":{\"card_name\":\"AI\",\"col\":4}}]",
  "creation": "2023-06-22 20:12:29.687295",
@@ -12,74 +13,6 @@
  "is_hidden": 0,
  "label": "Raven",
  "links": [
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "DocTypes",
-   "link_count": 6,
-   "onboard": 0,
-   "type": "Card Break"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Raven Settings",
-   "link_count": 0,
-   "link_to": "Raven Settings",
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Raven Users",
-   "link_count": 0,
-   "link_to": "Raven User",
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Channels",
-   "link_count": 0,
-   "link_to": "Raven Channel",
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Members",
-   "link_count": 0,
-   "link_to": "Raven Channel Member",
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Messages",
-   "link_count": 0,
-   "link_to": "Raven Message",
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Message Reactions",
-   "link_count": 0,
-   "link_to": "Raven Message Reaction",
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Link"
-  },
   {
    "hidden": 0,
    "is_query_report": 0,
@@ -128,9 +61,98 @@
    "link_type": "DocType",
    "onboard": 0,
    "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "DocTypes",
+   "link_count": 8,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Raven Users",
+   "link_count": 0,
+   "link_to": "Raven User",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Workspaces",
+   "link_count": 0,
+   "link_to": "Raven Workspace",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Workspace Members",
+   "link_count": 0,
+   "link_to": "Raven Workspace Member",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Channels",
+   "link_count": 0,
+   "link_to": "Raven Channel",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Members",
+   "link_count": 0,
+   "link_to": "Raven Channel Member",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Messages",
+   "link_count": 0,
+   "link_to": "Raven Message",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Message Reactions",
+   "link_count": 0,
+   "link_to": "Raven Message Reaction",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Raven Settings",
+   "link_count": 0,
+   "link_to": "Raven Settings",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
   }
  ],
- "modified": "2024-09-29 07:34:36.957102",
+ "modified": "2024-10-22 20:06:54.714414",
  "modified_by": "Administrator",
  "module": "Raven",
  "name": "Raven",
@@ -142,5 +164,6 @@
  "roles": [],
  "sequence_id": 30.0,
  "shortcuts": [],
- "title": "Raven"
+ "title": "Raven",
+ "type": "Workspace"
 }

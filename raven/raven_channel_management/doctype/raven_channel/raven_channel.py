@@ -30,6 +30,7 @@ class RavenChannel(Document):
 		openai_thread_id: DF.Data | None
 		thread_bot: DF.Link | None
 		type: DF.Literal["Private", "Public", "Open"]
+		workspace: DF.Link | None
 	# end: auto-generated types
 
 	def on_trash(self):
