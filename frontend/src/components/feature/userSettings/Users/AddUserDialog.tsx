@@ -1,6 +1,6 @@
 import { ErrorText, Label } from "@/components/common/Form"
 import { Loader } from "@/components/common/Loader"
-import { ErrorBanner } from "@/components/layout/AlertBanner"
+import { ErrorBanner } from "@/components/layout/AlertBanner/ErrorBanner"
 import { HStack, Stack } from "@/components/layout/Stack"
 import { DIALOG_CONTENT_CLASS } from "@/utils/layout/dialog"
 import { UserListContext } from "@/utils/users/UserListProvider"

@@ -1,6 +1,6 @@
 import { Controller, FormProvider, useForm } from 'react-hook-form'
 import { useFrappeCreateDoc, useSWRConfig } from 'frappe-react-sdk'
-import { ErrorBanner } from '../../../layout/AlertBanner'
+import { ErrorBanner } from '@/components/layout/AlertBanner/ErrorBanner'
 import { Loader } from '@/components/common/Loader'
 import { Box, Button, Dialog, Flex, Text } from '@radix-ui/themes'
 import { ChannelIcon } from '@/utils/layout/channelIcon'

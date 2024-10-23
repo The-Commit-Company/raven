@@ -1,7 +1,7 @@
 import { ChannelSpace } from "@/components/feature/chat/chat-space/ChannelSpace"
 import { DirectMessageSpace } from "@/components/feature/chat/chat-space/DirectMessageSpace"
-import { ErrorBanner } from "@/components/layout/AlertBanner"
-import { FullPageLoader } from "@/components/layout/Loaders"
+import { ErrorBanner } from "@/components/layout/AlertBanner/ErrorBanner"
+import { FullPageLoader } from "@/components/layout/Loaders/FullPageLoader"
 import { useCurrentChannelData } from "@/hooks/useCurrentChannelData"
 import { useEffect } from "react"
 import { Box, Grid } from '@radix-ui/themes'

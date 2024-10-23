@@ -16,7 +16,7 @@ import { isEmailValid } from "@/utils/validations";
 import AuthContainer from '@/components/layout/AuthContainer';
 import { CalloutObject } from "@/components/common/Callouts/CustomCallout";
 import { SuccessCallout } from "@/components/common/Callouts/SuccessCallout";
-import { ErrorBanner } from "@/components/layout/AlertBanner";
+import { ErrorBanner } from "@/components/layout/AlertBanner/ErrorBanner";
 import { useTheme } from "@/ThemeProvider";
 import { OtherLoginMethods } from "./Login";
 

@@ -9,7 +9,7 @@ import { RavenWebhook } from '@/types/RavenIntegrations/RavenWebhook';
 import { UserFields, UserListContext } from '@/utils/users/UserListProvider';
 import { ChannelListContext, ChannelListContextType, ChannelListItem, } from '@/utils/channel/ChannelListProvider';
 import { UserAvatar } from '@/components/common/UserAvatar';
-import { SidebarIcon } from '@/components/layout/Sidebar';
+import { SidebarIcon } from '@/components/layout/Sidebar/SidebarComp';
 import { useGetUser } from '@/hooks/useGetUser';
 import { ChannelIcon } from '@/utils/layout/channelIcon';
 import { Stack } from '@/components/layout/Stack';

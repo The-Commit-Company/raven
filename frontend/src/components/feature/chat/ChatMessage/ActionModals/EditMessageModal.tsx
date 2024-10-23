@@ -1,6 +1,6 @@
 import { useFrappeUpdateDoc } from "frappe-react-sdk"
 import { Suspense, lazy, useEffect } from "react"
-import { ErrorBanner } from "../../../../layout/AlertBanner"
+import { ErrorBanner } from "../../../../layout/AlertBanner/ErrorBanner"
 import { IconButton, Dialog, Flex, Text } from "@radix-ui/themes"
 import { BiX } from "react-icons/bi"
 import { Loader } from "@/components/common/Loader"

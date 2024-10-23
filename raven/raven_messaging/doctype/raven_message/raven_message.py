@@ -62,6 +62,10 @@ class RavenMessage(Document):
 		except Exception:
 			pass
 
+		if self.message_type in ["File", "Image"] and self.file:
+			# Store the file name in the content field
+			self.content = self.file.split("/")[-1]
+
 		if not self.is_new() and not self.flags.is_ai_streaming:
 			# this is not a new message, so it's a previous message being edited
 			old_doc = self.get_doc_before_save()

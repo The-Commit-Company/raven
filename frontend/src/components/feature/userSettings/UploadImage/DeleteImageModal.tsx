@@ -1,7 +1,7 @@
 import { useFrappePostCall } from 'frappe-react-sdk'
 import { toast } from 'sonner'
 import { AlertDialog, Button, Flex, Text } from '@radix-ui/themes'
-import { ErrorBanner } from '@/components/layout/AlertBanner'
+import { ErrorBanner } from '@/components/layout/AlertBanner/ErrorBanner'
 import { Loader } from '@/components/common/Loader'
 import useCurrentRavenUser from '@/hooks/useCurrentRavenUser'
 import { __ } from '@/utils/translations'

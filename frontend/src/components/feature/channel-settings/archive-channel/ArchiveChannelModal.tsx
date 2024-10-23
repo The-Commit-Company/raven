@@ -1,5 +1,5 @@
 import { useFrappeUpdateDoc } from 'frappe-react-sdk'
-import { ErrorBanner } from '../../../layout/AlertBanner'
+import { ErrorBanner } from '@/components/layout/AlertBanner/ErrorBanner'
 import { useNavigate } from 'react-router-dom'
 import { ChannelListItem } from '@/utils/channel/ChannelListProvider'
 import { AlertDialog, Flex, Text, Button, Dialog } from '@radix-ui/themes'

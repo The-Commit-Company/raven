@@ -1,7 +1,7 @@
 import { useFrappeUpdateDoc } from "frappe-react-sdk"
 import { ChangeEvent, useCallback } from "react"
 import { Controller, FormProvider, useForm } from "react-hook-form"
-import { ErrorBanner } from "../../../layout/AlertBanner"
+import { ErrorBanner } from "@/components/layout/AlertBanner/ErrorBanner"
 import { ChannelIcon } from "@/utils/layout/channelIcon"
 import { ChannelListItem } from "@/utils/channel/ChannelListProvider"
 import { Box, Dialog, Flex, Text, TextField, Button } from "@radix-ui/themes"

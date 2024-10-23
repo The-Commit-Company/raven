@@ -1,4 +1,4 @@
-import { ErrorBanner } from "@/components/layout/AlertBanner"
+import { ErrorBanner } from "@/components/layout/AlertBanner/ErrorBanner"
 import { RavenSchedulerEvent } from "@/types/RavenIntegrations/RavenSchedulerEvent"
 import { Button } from "@radix-ui/themes"
 import { useFrappeDocTypeEventListener, useFrappeGetDocList } from "frappe-react-sdk"

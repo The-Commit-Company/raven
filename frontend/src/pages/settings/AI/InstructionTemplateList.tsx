@@ -1,5 +1,5 @@
 import AINotEnabledCallout from '@/components/feature/settings/ai/AINotEnabledCallout'
-import { ErrorBanner } from '@/components/layout/AlertBanner'
+import { ErrorBanner } from '@/components/layout/AlertBanner/ErrorBanner'
 import { TableLoader } from '@/components/layout/Loaders/TableLoader'
 import PageContainer from '@/components/layout/Settings/PageContainer'
 import SettingsContentContainer from '@/components/layout/Settings/SettingsContentContainer'

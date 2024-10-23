@@ -1,6 +1,6 @@
 import { Loader } from '@/components/common/Loader'
 import InstructionTemplateForm from '@/components/feature/settings/ai/InstructionTemplateForm'
-import { ErrorBanner } from '@/components/layout/AlertBanner'
+import { ErrorBanner } from '@/components/layout/AlertBanner/ErrorBanner'
 import PageContainer from '@/components/layout/Settings/PageContainer'
 import SettingsContentContainer from '@/components/layout/Settings/SettingsContentContainer'
 import SettingsPageHeader from '@/components/layout/Settings/SettingsPageHeader'

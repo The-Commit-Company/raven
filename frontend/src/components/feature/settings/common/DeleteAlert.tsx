@@ -1,5 +1,5 @@
 import { Loader } from "@/components/common/Loader"
-import { ErrorBanner } from "@/components/layout/AlertBanner"
+import { ErrorBanner } from "@/components/layout/AlertBanner/ErrorBanner"
 import { AlertDialog, Button, Callout, Checkbox, Flex, Text } from "@radix-ui/themes"
 import { useFrappeDeleteDoc } from "frappe-react-sdk"
 import { useState } from "react"

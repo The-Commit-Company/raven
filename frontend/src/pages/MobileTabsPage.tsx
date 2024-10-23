@@ -1,4 +1,4 @@
-import { Sidebar } from '@/components/layout/Sidebar'
+import { Sidebar } from '@/components/layout/Sidebar/Sidebar'
 import { HStack, Stack } from '@/components/layout/Stack'
 import { useIsDesktop } from '@/hooks/useMediaQuery'
 import { ChannelIcon } from '@/utils/layout/channelIcon'

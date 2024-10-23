@@ -1,6 +1,5 @@
-import { ErrorBanner } from "@/components/layout/AlertBanner"
-import { FullPageLoader } from "@/components/layout/Loaders"
-import { Box } from "@radix-ui/themes"
+import { ErrorBanner } from "@/components/layout/AlertBanner/ErrorBanner"
+import { FullPageLoader } from "@/components/layout/Loaders/FullPageLoader"
 import { useFrappeGetDoc } from "frappe-react-sdk"
 import { useParams } from "react-router-dom"
 import { RavenWebhook } from "@/types/RavenIntegrations/RavenWebhook"
