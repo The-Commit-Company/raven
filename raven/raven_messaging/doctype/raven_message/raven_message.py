@@ -194,23 +194,23 @@ class RavenMessage(Document):
 		)
 
 	def publish_unread_count_event(self):
-		frappe.db.set_value(
-			"Raven Channel",
-			self.channel_id,
-			{
-				"last_message_timestamp": self.creation,
-				"last_message_details": json.dumps(
-					{
-						"message_id": self.name,
-						"content": self.content if self.message_type == "Text" else self.file,
-						"message_type": self.message_type,
-						"owner": self.owner,
-						"is_bot_message": self.is_bot_message,
-						"bot": self.bot,
-					}
-				),
-			},
-			update_modified=False,
+		# Update directly via SQL since we do not want to invalidate the document cache
+		message_details = {
+			"message_id": self.name,
+			"content": self.content if self.message_type == "Text" else self.file,
+			"message_type": self.message_type,
+			"owner": self.owner,
+			"is_bot_message": self.is_bot_message,
+			"bot": self.bot,
+		}
+
+		frappe.db.sql(
+			"""
+			UPDATE `tabRaven Channel`
+			SET last_message_timestamp = %s, last_message_details = %s
+			WHERE name = %s
+			""",
+			(self.creation, json.dumps(message_details), self.channel_id),
 		)
 
 		channel_doc = frappe.get_cached_doc("Raven Channel", self.channel_id)
