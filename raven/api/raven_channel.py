@@ -3,7 +3,7 @@ from frappe import _
 from frappe.query_builder import Order
 
 from raven.api.raven_users import get_current_raven_user
-from raven.utils import track_channel_visit
+from raven.utils import get_channel_members, track_channel_visit
 
 
 @frappe.whitelist()
@@ -115,11 +115,14 @@ def get_peer_user_id(channel_id, is_direct_message, is_self_message=False):
 		return None
 	if is_self_message:
 		return frappe.session.user
-	return frappe.db.get_value(
-		"Raven Channel Member",
-		{"channel_id": channel_id, "user_id": ["!=", frappe.session.user]},
-		"user_id",
-	)
+
+	members = get_channel_members(channel_id)
+
+	for member in members:
+		if member != frappe.session.user:
+			return member
+
+	return None
 
 
 @frappe.whitelist(methods=["POST"])
@@ -202,7 +205,7 @@ def leave_channel(channel_id):
 def mark_all_messages_as_read(channel_ids: list):
 	"""
 	Mark all messages in these channels as read
-	"""    
+	"""
 	user = frappe.session.user
 	for channel_id in channel_ids:
 		track_channel_visit(channel_id, user=user)
