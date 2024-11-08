@@ -7,7 +7,7 @@ from frappe.query_builder import Case, JoinType, Order
 from frappe.query_builder.functions import Coalesce, Count
 
 from raven.api.raven_channel import create_direct_message_channel, get_peer_user_id
-from raven.utils import get_channel_member, track_channel_visit
+from raven.utils import get_channel_member, is_channel_member, track_channel_visit
 
 
 @frappe.whitelist(methods=["POST"])
@@ -188,9 +188,7 @@ def parse_messages(messages):
 
 def check_permission(channel_id):
 	if frappe.get_cached_value("Raven Channel", channel_id, "type") == "Private":
-		if frappe.db.exists(
-			"Raven Channel Member", {"channel_id": channel_id, "user_id": frappe.session.user}
-		):
+		if is_channel_member(channel_id):
 			pass
 		elif frappe.session.user == "Administrator":
 			pass
@@ -258,7 +256,9 @@ def get_unread_count_for_channels():
 def get_unread_count_for_channel(channel_id):
 	channel_member = get_channel_member(channel_id=channel_id)
 	if channel_member:
-		last_timestamp = frappe.get_cached_value("Raven Channel Member", channel_member, "last_visit")
+		last_timestamp = frappe.get_cached_value(
+			"Raven Channel Member", channel_member["name"], "last_visit"
+		)
 
 		return frappe.db.count(
 			"Raven Message",
@@ -279,8 +279,6 @@ def get_unread_count_for_channel(channel_id):
 			)
 		else:
 			return 0
-
-	return 0
 
 
 @frappe.whitelist()

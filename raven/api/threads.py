@@ -2,6 +2,8 @@ import frappe
 from frappe import _
 from frappe.query_builder import Order
 
+from raven.utils import get_channel_members
+
 
 @frappe.whitelist()
 def get_all_threads(is_ai_thread=0):
@@ -54,11 +56,8 @@ def get_all_threads(is_ai_thread=0):
 
 	for thread in threads:
 		# Fetch the participants of the thread
-		thread["participants"] = frappe.get_all(
-			"Raven Channel Member",
-			filters={"channel_id": thread["name"]},
-			fields=["user_id"],
-		)
+		thread_members = get_channel_members(thread["name"])
+		thread["participants"] = [{"user_id": member} for member in thread_members]
 
 	return threads
 

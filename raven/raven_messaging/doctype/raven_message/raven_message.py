@@ -11,6 +11,7 @@ from frappe.utils import get_datetime, get_system_timezone
 from pytz import timezone, utc
 
 from raven.ai.ai import handle_ai_thread_message, handle_bot_dm
+from raven.api.raven_channel import get_peer_user
 from raven.notification import send_notification_to_topic, send_notification_to_user
 from raven.utils import track_channel_visit
 
@@ -167,13 +168,9 @@ class RavenMessage(Document):
 			return
 
 		# Get the bot user
-		peer_user = frappe.db.get_value(
-			"Raven Channel Member",
-			{"channel_id": self.channel_id, "user_id": ("!=", self.owner)},
-			"user_id",
-		)
+		peer_user = get_peer_user(self.channel_id, is_dm)
 
-		if not peer_user:
+		if not peer_user or peer_user.get("type") != "Bot":
 			return
 
 		# Get the bot user doc
@@ -222,15 +219,9 @@ class RavenMessage(Document):
 
 			if not channel_doc.is_self_message:
 
-				peer_raven_user = frappe.db.get_value(
-					"Raven Channel Member",
-					{"channel_id": self.channel_id, "user_id": ("!=", frappe.session.user)},
-					"user_id",
-				)
+				peer_user_doc = get_peer_user(self.channel_id, 1)
 
-				peer_user_doc = frappe.get_cached_doc("Raven User", peer_raven_user)
-
-				if peer_user_doc.type == "User":
+				if peer_user_doc.get("type") == "User":
 
 					frappe.publish_realtime(
 						"raven:unread_channel_count_updated",

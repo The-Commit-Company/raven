@@ -107,21 +107,35 @@ def get_channels(hide_archived=False):
 	return channels
 
 
-def get_peer_user_id(channel_id, is_direct_message, is_self_message=False):
+def get_peer_user(channel_id: str, is_direct_message: int, is_self_message: bool = False) -> dict:
 	"""
-	For a given channel, fetches the user id of the peer
+	For a given channel, fetches the peer's member object
 	"""
 	if is_direct_message == 0:
 		return None
 	if is_self_message:
-		return frappe.session.user
+		return {
+			"user_id": frappe.session.user,
+		}
 
 	members = get_channel_members(channel_id)
 
 	for member in members:
 		if member != frappe.session.user:
-			return member
+			return members[member]
 
+	return None
+
+
+def get_peer_user_id(
+	channel_id: str, is_direct_message: int, is_self_message: bool = False
+) -> str:
+	"""
+	For a given channel, fetches the user id of the peer
+	"""
+	peer_user = get_peer_user(channel_id, is_direct_message, is_self_message)
+	if peer_user:
+		return peer_user.get("user_id")
 	return None
 
 
