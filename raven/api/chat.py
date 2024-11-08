@@ -1,8 +1,8 @@
 import frappe
 from frappe import _
-from pypika import JoinType, Order
 
 from raven.api.raven_users import get_list
+from raven.utils import get_channel_members as get_channel_members_util
 
 
 @frappe.whitelist(methods=["GET"])
@@ -11,58 +11,51 @@ def get_channel_members(channel_id):
 	# fetch all channel members
 	# get member details from user table, such as name, full_name, user_image, first_name
 
-	if frappe.has_permission("Raven Channel", doc=channel_id):
-		member_array = []
-		if frappe.db.exists("Raven Channel", channel_id):
-			channel_member = frappe.qb.DocType("Raven Channel Member")
-			user = frappe.qb.DocType("Raven User")
-			if frappe.get_cached_value("Raven Channel", channel_id, "type") == "Open":
-				# select all users, if channel member exists, get is_admin
-				member_query = (
-					frappe.qb.from_(user)
-					.join(channel_member, JoinType.left)
-					.on((user.name == channel_member.user_id) & (channel_member.channel_id == channel_id))
-					.select(
-						user.name,
-						user.full_name,
-						user.user_image,
-						user.first_name,
-						user.type,
-						user.availability_status,
-						channel_member.is_admin,
-						channel_member.allow_notifications,
-						channel_member.name.as_("channel_member_name"),
-					)
-					.orderby(channel_member.creation, order=Order.desc)
-				)
-			else:
-				member_query = (
-					frappe.qb.from_(channel_member)
-					.join(user, JoinType.left)
-					.on(channel_member.user_id == user.name)
-					.select(
-						user.name,
-						user.full_name,
-						user.user_image,
-						user.first_name,
-						user.type,
-						channel_member.is_admin,
-						channel_member.allow_notifications,
-						channel_member.name.as_("channel_member_name"),
-					)
-					.where(channel_member.channel_id == channel_id)
-					.orderby(channel_member.creation, order=Order.desc)
-				)
+	frappe.has_permission("Raven Channel", doc=channel_id, throw=True)
 
-			member_array = member_query.run(as_dict=True)
+	member_object = {}
 
-			member_object = {}
-			for member in member_array:
-				member_object[member.name] = member
-			return member_object
+	# This is an array
+	all_users = get_list()
 
-		else:
-			frappe.throw(_("Channel {} does not exist").format(channel_id), frappe.DoesNotExistError)
+	# This is a dictionary
+	channel_members = get_channel_members_util(channel_id)
+
+	channel_type = frappe.get_cached_value("Raven Channel", channel_id, "type")
+
+	if channel_type == "Open":
+		# Merge the users and channel members
+		for member in all_users:
+			channel_member = channel_members.get(member.name, {})
+
+			member_object[member.name] = {
+				"name": member.name,
+				"full_name": member.full_name,
+				"user_image": member.user_image,
+				"first_name": member.first_name,
+				"type": member.type,
+				"availability_status": member.availability_status,
+				"is_admin": channel_member.get("is_admin", 0),
+				"allow_notifications": channel_member.get("allow_notifications", 1),
+				"channel_member_name": channel_member.get("name", None),
+			}
 
 	else:
-		frappe.throw(_("You do not have permission to view this channel"), frappe.PermissionError)
+		for member in channel_members:
+			channel_member = channel_members[member]
+			user_obj = next((u for u in all_users if u.name == member), None)
+
+			if user_obj:
+				member_object[user_obj.name] = {
+					"name": user_obj.name,
+					"full_name": user_obj.full_name,
+					"user_image": user_obj.user_image,
+					"first_name": user_obj.first_name,
+					"type": user_obj.type,
+					"availability_status": user_obj.availability_status,
+					"is_admin": channel_member.is_admin,
+					"allow_notifications": channel_member.allow_notifications,
+					"channel_member_name": channel_member.name,
+				}
+
+	return member_object

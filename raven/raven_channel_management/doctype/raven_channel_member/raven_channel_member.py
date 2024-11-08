@@ -6,6 +6,7 @@ from frappe import _
 from frappe.model.document import Document
 
 from raven.notification import subscribe_user_to_topic, unsubscribe_user_to_topic
+from raven.utils import delete_channel_members_cache
 
 
 class RavenChannelMember(Document):
@@ -114,6 +115,7 @@ class RavenChannelMember(Document):
 			)
 
 		unsubscribe_user_to_topic(self.channel_id, self.user_id)
+		self.invalidate_channel_members_cache()
 
 	def check_if_user_is_member(self):
 		is_member = True
@@ -143,7 +145,9 @@ class RavenChannelMember(Document):
 		"""
 		Subscribe the user to the topic if the channel is not a DM
 		"""
-		is_direct_message = frappe.db.get_value("Raven Channel", self.channel_id, "is_direct_message")
+		is_direct_message = frappe.get_cached_value(
+			"Raven Channel", self.channel_id, "is_direct_message"
+		)
 
 		if not is_direct_message and self.allow_notifications:
 			subscribe_user_to_topic(self.channel_id, self.user_id)
@@ -175,6 +179,8 @@ class RavenChannelMember(Document):
 						}
 					).insert()
 
+		self.invalidate_channel_members_cache()
+
 	def on_update(self):
 		"""
 		Check if the notification preference is changed and update the subscription
@@ -182,7 +188,9 @@ class RavenChannelMember(Document):
 		old_doc = self.get_doc_before_save()
 		if old_doc:
 			if old_doc.allow_notifications != self.allow_notifications:
-				is_direct_message = frappe.db.get_value("Raven Channel", self.channel_id, "is_direct_message")
+				is_direct_message = frappe.get_cached_value(
+					"Raven Channel", self.channel_id, "is_direct_message"
+				)
 
 				if not is_direct_message:
 					if self.allow_notifications:
@@ -205,11 +213,16 @@ class RavenChannelMember(Document):
 				}
 			).insert()
 
+		self.invalidate_channel_members_cache()
+
 	def get_admin_count(self):
 		return frappe.db.count("Raven Channel Member", {"channel_id": self.channel_id, "is_admin": 1})
 
 	def is_thread(self):
 		return frappe.get_cached_value("Raven Channel", self.channel_id, "is_thread")
+
+	def invalidate_channel_members_cache(self):
+		delete_channel_members_cache(self.channel_id)
 
 
 def on_doctype_update():
