@@ -23,7 +23,7 @@ interface MessageActionModalProps {
 
 const MessageActionModal = ({ messageID, actionID, onClose }: MessageActionModalProps) => {
 
-    const { data: action } = useFrappeGetDoc<RavenMessageAction>("Raven Message Action", actionID)
+    const { data: action } = useFrappeGetDoc<RavenMessageAction>("Raven Message Action", actionID, actionID ? undefined : null)
 
     return <Dialog.Root open={actionID !== ''} onOpenChange={onClose}>
         {action &&
