@@ -45,7 +45,6 @@ interface MessageBlockProps {
 }
 
 export const MessageItem = ({ message, setDeleteMessage, isHighlighted, onReplyMessageClick, setEditMessage, replyToMessage, forwardMessage, onAttachDocument, setReactionMessage, showThreadButton = true }: MessageBlockProps) => {
-    console.log(CHAT_STYLE);
 
     const { name, owner: userID, is_bot_message, bot, creation: timestamp, message_reactions, is_continuation, linked_message, replied_message_details } = message
 
@@ -119,6 +118,15 @@ export const MessageItem = ({ message, setDeleteMessage, isHighlighted, onReplyM
                 message={message}
                 user={user}
                 isActive={isActive}
+                isHighlighted={isHighlighted}
+                onReplyMessageClick={onReplyMessageClick}
+                onDelete={onDelete}
+                showThreadButton={showThreadButton}
+                onEdit={onEdit}
+                onReply={onReply}
+                onForward={onForward}
+                onViewReaction={onViewReaction}
+                onAttachToDocument={onAttachToDocument}
             /> :
                 <Box className='relative'>
                     {!message.is_continuation && message.is_thread ?
@@ -198,8 +206,6 @@ export const MessageItem = ({ message, setDeleteMessage, isHighlighted, onReplyM
                                     }
 
                                     {message.is_thread === 1 ? <ThreadMessage thread={message} /> : null}
-
-
                                 </Flex>
                                 {(isHoveredDebounced || isEmojiPickerOpen) &&
                                     <QuickActions
