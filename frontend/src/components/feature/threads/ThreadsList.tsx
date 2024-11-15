@@ -2,7 +2,7 @@ import { ThreadPreviewBox } from './ThreadPreviewBox'
 import { ThreadMessage } from './Threads'
 import { useFrappeGetCall } from 'frappe-react-sdk'
 import { Flex } from '@radix-ui/themes'
-import { ErrorBanner } from '@/components/layout/AlertBanner'
+import { ErrorBanner } from '@/components/layout/AlertBanner/ErrorBanner'
 import { EmptyStateForThreads } from '@/components/layout/EmptyState/EmptyState'
 
 type Props = {

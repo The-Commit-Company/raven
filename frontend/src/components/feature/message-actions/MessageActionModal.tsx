@@ -9,7 +9,7 @@ import { RavenMessageActionFields } from "@/types/RavenIntegrations/RavenMessage
 import { ErrorText, HelperText, Label } from "@/components/common/Form"
 import LinkFormField from "@/components/common/LinkField/LinkFormField"
 import { useEffect } from "react"
-import { ErrorBanner } from "@/components/layout/AlertBanner"
+import { ErrorBanner } from "@/components/layout/AlertBanner/ErrorBanner"
 import { useSetAtom } from "jotai"
 import { messageActionAtom } from "./MessageActionController"
 import { toast } from "sonner"
@@ -23,7 +23,7 @@ interface MessageActionModalProps {
 
 const MessageActionModal = ({ messageID, actionID, onClose }: MessageActionModalProps) => {
 
-    const { data: action } = useFrappeGetDoc<RavenMessageAction>("Raven Message Action", actionID)
+    const { data: action } = useFrappeGetDoc<RavenMessageAction>("Raven Message Action", actionID, actionID ? undefined : null)
 
     return <Dialog.Root open={actionID !== ''} onOpenChange={onClose}>
         {action &&

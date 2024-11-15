@@ -35,9 +35,7 @@ def track_channel_visit(channel_id, user=None, commit=False, publish_event_for_u
 	if publish_event_for_user:
 		frappe.publish_realtime(
 			"raven:unread_channel_count_updated",
-			{
-				"channel_id": channel_id,
-			},
+			{"channel_id": channel_id, "sent_by": frappe.session.user},
 			user=user,
 		)
 

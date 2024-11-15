@@ -191,7 +191,7 @@ export default {
   },
   darkMode: 'class',
   plugins: [
-    require("tailwindcss-animate"),
+    import("tailwindcss-animate"),
   ],
   corePlugins: {
     preflight: false,

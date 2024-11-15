@@ -1,13 +1,12 @@
 import { useFrappePostCall } from 'frappe-react-sdk'
 import { Fragment, useContext } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { ErrorBanner } from '../../../layout/AlertBanner'
 import { ChannelListContext, ChannelListContextType, ChannelListItem } from '@/utils/channel/ChannelListProvider'
 import { ChannelIcon } from '@/utils/layout/channelIcon'
 import { AlertDialog, Button, Dialog, Flex, Text } from '@radix-ui/themes'
 import { Loader } from '@/components/common/Loader'
 import { toast } from 'sonner'
-import { getErrorMessage } from '@/components/layout/AlertBanner/ErrorBanner'
+import { getErrorMessage, ErrorBanner } from '@/components/layout/AlertBanner/ErrorBanner'
 
 interface LeaveChannelModalProps {
     onClose: () => void,

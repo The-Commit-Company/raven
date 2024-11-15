@@ -5,7 +5,7 @@ import { UserFields } from "../../../../../utils/users/UserListProvider"
 import { PollMessage } from "../../../../../../../types/Messaging/Message"
 import { useFrappeDocumentEventListener, useFrappeGetCall, useFrappePostCall } from "frappe-react-sdk"
 import { RavenPoll } from "@/types/RavenMessaging/RavenPoll"
-import { ErrorBanner } from "@/components/layout/AlertBanner"
+import { ErrorBanner } from "@/components/layout/AlertBanner/ErrorBanner"
 import { RavenPollOption } from "@/types/RavenMessaging/RavenPollOption"
 
 import { ViewPollVotes } from "@/components/feature/polls/ViewPollVotes"

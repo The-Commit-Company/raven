@@ -1,7 +1,7 @@
 import EmojiPicker from '@/components/common/EmojiPicker/EmojiPicker'
 import { ErrorText, Label } from '@/components/common/Form'
 import { Loader } from '@/components/common/Loader'
-import { ErrorBanner } from '@/components/layout/AlertBanner'
+import { ErrorBanner } from '@/components/layout/AlertBanner/ErrorBanner'
 import useCurrentRavenUser from '@/hooks/useCurrentRavenUser'
 import { useUserData } from '@/hooks/useUserData'
 import { __ } from '@/utils/translations'

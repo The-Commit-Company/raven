@@ -1,6 +1,6 @@
 import { useContext } from 'react'
 import { Navigate, Outlet } from 'react-router-dom'
-import { FullPageLoader } from '../../components/layout/Loaders'
+import { FullPageLoader } from '@/components/layout/Loaders/FullPageLoader'
 import { UserContext } from './UserProvider'
 
 export const ProtectedRoute = () => {

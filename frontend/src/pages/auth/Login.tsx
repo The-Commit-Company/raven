@@ -9,7 +9,7 @@ import { ErrorText, Label } from "@/components/common/Form";
 import { LoginInputs, LoginContext } from "@/types/Auth/Login";
 import AuthContainer from "@/components/layout/AuthContainer";
 import { TwoFactor } from "@/pages/auth/TwoFactor";
-import { ErrorBanner } from "@/components/layout/AlertBanner";
+import { ErrorBanner } from "@/components/layout/AlertBanner/ErrorBanner";
 import { DateSeparator } from "@/components/layout/Divider/DateSeparator";
 import { FcGoogle } from "react-icons/fc";
 import { useTheme } from "@/ThemeProvider";

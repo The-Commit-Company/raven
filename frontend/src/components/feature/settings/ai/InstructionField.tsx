@@ -1,5 +1,5 @@
 import { ErrorText, HelperText, Label } from '@/components/common/Form'
-import { ErrorBanner } from '@/components/layout/AlertBanner'
+import { ErrorBanner } from '@/components/layout/AlertBanner/ErrorBanner'
 import { HStack, Stack } from '@/components/layout/Stack'
 import { RavenBotInstructionTemplate } from '@/types/RavenAI/RavenBotInstructionTemplate'
 import { Badge, Box, Button, Checkbox, Code, Flex, Popover, RadioCards, SegmentedControl, Separator, Table, Text, TextArea, TextAreaProps, Tooltip } from '@radix-ui/themes'

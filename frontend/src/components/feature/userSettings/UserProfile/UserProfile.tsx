@@ -1,6 +1,6 @@
 import { ErrorText, Label } from "@/components/common/Form"
 import { Loader } from "@/components/common/Loader"
-import { ErrorBanner } from "@/components/layout/AlertBanner"
+import { ErrorBanner } from "@/components/layout/AlertBanner/ErrorBanner"
 import { Box, Button, Flex, TextField, Text, DropdownMenu, Card, IconButton, Separator, Popover } from "@radix-ui/themes"
 import { useFrappeUpdateDoc } from "frappe-react-sdk"
 import { FormProvider, useForm } from "react-hook-form"
