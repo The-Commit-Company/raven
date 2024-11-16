@@ -80,7 +80,7 @@ class RavenChannelMember(Document):
 					"message_type": "System",
 					"text": f"{member_name} was removed by {current_user_name} and {first_member_name} is the new admin of this channel.",
 				}
-			).insert()
+			).insert(ignore_permissions=True)
 		else:
 			# If the member who left is the current user, then add a system message to the channel mentioning that the user left
 			if member_name == current_user_name:
@@ -102,7 +102,7 @@ class RavenChannelMember(Document):
 						"message_type": "System",
 						"text": f"{current_user_name} removed {member_name}.",
 					}
-				).insert()
+				).insert(ignore_permissions=True)
 
 	def on_trash(self):
 
@@ -167,7 +167,7 @@ class RavenChannelMember(Document):
 							"message_type": "System",
 							"text": f"{member_name} joined.",
 						}
-					).insert()
+					).insert(ignore_permissions=True)
 				else:
 					current_user_name = frappe.get_cached_value("Raven User", frappe.session.user, "full_name")
 					frappe.get_doc(
@@ -177,7 +177,7 @@ class RavenChannelMember(Document):
 							"message_type": "System",
 							"text": f"{current_user_name} added {member_name}.",
 						}
-					).insert()
+					).insert(ignore_permissions=True)
 
 		self.invalidate_channel_members_cache()
 
@@ -211,7 +211,7 @@ class RavenChannelMember(Document):
 					"message_type": "System",
 					"text": text,
 				}
-			).insert()
+			).insert(ignore_permissions=True)
 
 		self.invalidate_channel_members_cache()
 
