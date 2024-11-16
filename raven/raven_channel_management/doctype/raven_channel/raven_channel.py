@@ -5,6 +5,8 @@ import frappe
 from frappe import _
 from frappe.model.document import Document
 
+from raven.utils import delete_channel_members_cache, is_channel_member
+
 
 class RavenChannel(Document):
 	# begin: auto-generated types
@@ -34,25 +36,19 @@ class RavenChannel(Document):
 	# end: auto-generated types
 
 	def on_trash(self):
-		# Channel can only be deleted by the current channel admin
-		if frappe.db.exists(
-			"Raven Channel Member",
-			{"channel_id": self.name, "user_id": frappe.session.user, "is_admin": 1},
-		):
-			pass
-		elif frappe.session.user == "Administrator":
-			pass
-		else:
-			frappe.throw(_("You don't have permission to delete this channel."), frappe.PermissionError)
-
 		# delete all members when channel is deleted
 		frappe.db.delete("Raven Channel Member", {"channel_id": self.name})
 
 		# delete all messages when channel is deleted
 		frappe.db.delete("Raven Message", {"channel_id": self.name})
 
+		# delete all reactions when channel is deleted
+		frappe.db.delete("Raven Message Reaction", {"channel_id": self.name})
+
 		# Delete the pinned channels
 		frappe.db.delete("Raven Pinned Channels", {"channel_id": self.name})
+
+		delete_channel_members_cache(self.name)
 
 		# If the channel was a thread, (i.e. a message exists with the same name), remove the 'is_thread' flag from the message
 		if self.is_thread and frappe.db.exists("Raven Message", {"name": self.name}):
@@ -85,7 +81,7 @@ class RavenChannel(Document):
 		If it is created by a bot, we will add the bot as a member.
 		"""
 		# add current user as channel member
-		if not frappe.flags.in_test and not frappe.flags.in_install:
+		if not frappe.flags.in_install:
 
 			if self.is_direct_message == 1:
 				# Add both users as members
@@ -113,6 +109,11 @@ class RavenChannel(Document):
 						_("You cannot change the name of a direct message channel"),
 						frappe.ValidationError,
 					)
+		else:
+			# If it's not a direct message channel, it needs a workspace
+			if not self.workspace:
+				pass
+				# frappe.throw(_("You need to specify a workspace for this channel"), frappe.ValidationError)
 
 		if old_doc and old_doc.get("is_archived") != self.is_archived:
 			if frappe.db.exists(
@@ -152,6 +153,11 @@ class RavenChannel(Document):
 		if self.is_direct_message == 0:
 			self.channel_name = self.channel_name.strip().lower().replace(" ", "-")
 
+		# if not self.is_direct_message and not self.workspace:
+		# 	workspaces = frappe.get_all("Raven Workspace")
+		# 	if len(workspaces) == 1:
+		# 		self.workspace = workspaces[0].name
+
 	def add_members(self, members, is_admin=0):
 		# members is a list of Raven User IDs
 		for member in members:
@@ -174,5 +180,9 @@ class RavenChannel(Document):
 				channel_member.insert(ignore_permissions=True)
 
 	def autoname(self):
-		if self.is_direct_message == 0:
+		if self.is_direct_message == 0 and self.is_thread == 0:
+			# Add workspace name to the channel name
+			# self.name = self.workspace + "-" + self.channel_name.strip().lower().replace(" ", "-")
 			self.name = self.channel_name.strip().lower().replace(" ", "-")
+		else:
+			self.name = self.channel_name

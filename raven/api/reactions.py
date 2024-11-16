@@ -15,6 +15,9 @@ def react(message_id: str, reaction: str):
 	If yes, then unreacts (deletes), else reacts (creates).
 	"""
 
+	# PERF: No need for permission checks here.
+	# The permission checks are done in the controller method for the doctype
+
 	channel_id = frappe.get_cached_value("Raven Message", message_id, "channel_id")
 	channel_type = frappe.get_cached_value("Raven Channel", channel_id, "type")
 
@@ -42,6 +45,7 @@ def react(message_id: str, reaction: str):
 				"doctype": "Raven Message Reaction",
 				"reaction": reaction,
 				"message": message_id,
+				"channel_id": channel_id,
 				"owner": user,
 			}
 		).insert(ignore_permissions=True)

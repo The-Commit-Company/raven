@@ -556,9 +556,11 @@ class RavenMessage(Document):
 				docname=self.channel_id,
 				after_commit=after_commit,
 			)
-			# track the visit of the user to the channel if a new message is created
-			track_channel_visit(channel_id=self.channel_id, user=self.owner)
-			# frappe.enqueue(method=track_channel_visit, channel_id=self.channel_id, user=self.owner)
+
+			if self.message_type != "System":
+				# track the visit of the user to the channel if a new message is created
+				track_channel_visit(channel_id=self.channel_id, user=self.owner)
+				# frappe.enqueue(method=track_channel_visit, channel_id=self.channel_id, user=self.owner)
 
 			self.send_push_notification()
 
@@ -572,9 +574,9 @@ class RavenMessage(Document):
 		frappe.db.delete("Raven Message Reaction", {"message": self.name})
 		# if the message is a thread, delete all messages in the thread and the thread channel
 		if self.is_thread:
-			frappe.db.delete("Raven Message", {"channel_id": self.name})
-			# delete the channel for the thread
-			frappe.db.delete("Raven Channel", self.name)
+			# Delete the thread channel - this will automatically delete all the messages and their reactions in the thread
+			thread_channel_doc = frappe.get_doc("Raven Channel", self.channel_id)
+			thread_channel_doc.delete(ignore_permissions=True)
 
 
 def on_doctype_update():
