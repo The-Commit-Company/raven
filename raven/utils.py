@@ -59,7 +59,7 @@ def get_workspace_members(workspace_id: str):
 		fields=["name", "user", "is_admin"],
 	)
 
-	data = {member.user_id: member for member in members}
+	data = {member.user: member for member in members}
 	frappe.cache.set_value(cache_key, data)
 	return data
 
@@ -67,6 +67,28 @@ def get_workspace_members(workspace_id: str):
 def delete_workspace_members_cache(workspace_id: str):
 	cache_key = f"raven:workspace_members:{workspace_id}"
 	frappe.cache.delete_value(cache_key)
+
+
+def get_workspace_member(workspace_id: str, user: str = None) -> dict:
+	"""
+	Get the workspace member ID
+	"""
+	if not user:
+		user = frappe.session.user
+
+	return get_workspace_members(workspace_id).get(user, None)
+
+
+def is_workspace_member(workspace_id: str, user: str = None) -> bool:
+	"""
+	Check if a user is a member of a workspace
+	"""
+	if not user:
+		user = frappe.session.user
+
+	all_members = get_workspace_members(workspace_id)
+
+	return user in all_members
 
 
 def get_channel_members(channel_id: str):
@@ -119,18 +141,6 @@ def get_channel_member(channel_id: str, user: str = None) -> dict:
 	all_members = get_channel_members(channel_id)
 
 	return all_members.get(user, None)
-
-
-def is_workspace_member(workspace_id: str, user: str = None) -> bool:
-	"""
-	Check if a user is a member of a workspace
-	"""
-	if not user:
-		user = frappe.session.user
-
-	all_members = get_workspace_members(workspace_id)
-
-	return user in all_members
 
 
 def is_channel_member(channel_id: str, user: str = None) -> bool:
