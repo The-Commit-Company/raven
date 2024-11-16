@@ -14,11 +14,11 @@ class RavenUser(Document):
 
 	if TYPE_CHECKING:
 		from frappe.types import DF
-
 		from raven.raven.doctype.raven_pinned_channels.raven_pinned_channels import RavenPinnedChannels
 
 		availability_status: DF.Literal["", "Available", "Away", "Do not disturb", "Invisible"]
 		bot: DF.Link | None
+		chat_style: DF.Literal["Simple", "Left-Right"]
 		custom_status: DF.Data | None
 		enabled: DF.Check
 		first_name: DF.Data | None
