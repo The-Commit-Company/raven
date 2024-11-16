@@ -1,12 +1,12 @@
-import { Flex, Box, Text, RadioCards, Heading } from "@radix-ui/themes"
+import { Flex, Box, Text, RadioCards, Heading, Separator } from "@radix-ui/themes"
 import { useTheme } from "@/ThemeProvider"
 import lightModeImg from "@/images/theme_light_mode.png"
 import darkModeImg from "@/images/theme_dark_mode.png"
 import systemModeImg from "@/images/theme_system_mode.png"
 import lightModeLeftRightImg from "@/images/light_mode_left_right.png"
 import darkModeLeftRightImg from "@/images/dark_mode_left_right.png"
-import { useFrappeGetCall } from "frappe-react-sdk"
-// import { toast } from "sonner"
+import { useFrappeGetCall, useFrappePostCall } from "frappe-react-sdk"
+import { toast } from "sonner"
 import { useUserData } from "@/hooks/useUserData"
 import PageContainer from "@/components/layout/Settings/PageContainer"
 import SettingsContentContainer from "@/components/layout/Settings/SettingsContentContainer"
@@ -28,21 +28,21 @@ const Appearance = () => {
         }
     }, undefined, { revalidateOnFocus: false })
 
-    // const { call } = useFrappePostCall('frappe.client.set_value')
+    const { call } = useFrappePostCall('frappe.client.set_value')
 
-    // const setChatStyle = (style: string) => {
-    //     call({
-    //         doctype: 'Raven User',
-    //         name: userData.name,
-    //         fieldname: 'chat_style',
-    //         value: style
-    //     }).then(() => {
-    //         mutate()
-    //         toast.success('Chat style updated')
-    //     }).catch((e) => {
-    //         toast.error(e.message)
-    //     })
-    // }
+    const setChatStyle = (style: string) => {
+        call({
+            doctype: 'Raven User',
+            name: userData.name,
+            fieldname: 'chat_style',
+            value: style
+        }).then(() => {
+            mutate()
+            toast.success('Chat style updated')
+        }).catch((e) => {
+            toast.error(e.message)
+        })
+    }
 
     return (
 
@@ -57,9 +57,9 @@ const Appearance = () => {
                     <Flex gap='4' direction='column' className={'dark:bg-slate-2'}>
                         <Themes appearance={appearance} setAppearance={setAppearance} />
 
-                        {/* <Separator className={'w-full bg-slate-4'} /> */}
+                        <Separator className={'w-full bg-slate-4'} />
 
-                        {/* {chatStyle && <ChatLayouts chatStyle={chatStyle?.message?.chat_style} setChatStyle={setChatStyle} appearance={appearance} />} */}
+                        {chatStyle && <ChatLayouts chatStyle={chatStyle?.message?.chat_style} setChatStyle={setChatStyle} appearance={appearance} />}
                     </Flex>
                 </Stack>
             </SettingsContentContainer>
@@ -135,8 +135,8 @@ const ChatLayouts = ({ chatStyle, setChatStyle, appearance }: { chatStyle: 'Simp
     }
 
     return (
-        <>
-            <Text>Chat Layout</Text>
+        <Stack gap='3'>
+            <Heading as='h3' className="not-cal" size='3' weight='medium'>Chat Layout</Heading>
             <Box maxWidth="600px">
                 {chatStyle && <RadioCards.Root value={chatStyle} onValueChange={(value) => setChatStyle(value)} columns={{ initial: '1', sm: '2' }}>
                     <Flex direction="column" align="center" gap='3'>
@@ -153,6 +153,6 @@ const ChatLayouts = ({ chatStyle, setChatStyle, appearance }: { chatStyle: 'Simp
                     </Flex>
                 </RadioCards.Root>}
             </Box>
-        </>
+        </Stack>
     )
 }
