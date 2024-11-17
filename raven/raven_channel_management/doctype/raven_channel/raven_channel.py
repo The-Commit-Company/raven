@@ -82,7 +82,7 @@ class RavenChannel(Document):
 		If it is created by a bot, we will add the bot as a member.
 		"""
 		# add current user as channel member
-		if not frappe.flags.in_install:
+		if not frappe.flags.in_install and not self.flags.do_not_add_member:
 
 			if self.is_direct_message == 1:
 				# Add both users as members

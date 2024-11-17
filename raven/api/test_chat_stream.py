@@ -47,6 +47,7 @@ def create_channel():
 			"workspace": "Public Workspace",
 		}
 	)
+	channel_doc.flags.do_not_add_member = True
 	channel_doc.insert()
 
 
