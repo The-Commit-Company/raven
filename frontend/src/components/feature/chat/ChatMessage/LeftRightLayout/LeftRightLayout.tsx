@@ -19,9 +19,6 @@ import useOutsideClick from "@/hooks/useOutsideClick"
 import { MessageContextMenu } from "../MessageActions/MessageActions"
 import { QuickActions } from "../MessageActions/QuickActions/QuickActions"
 
-// @ts-ignore
-const CHAT_STYLE = frappe.boot.chat_style
-
 export interface Props {
     message: Message
     user: UserFields | undefined
@@ -77,6 +74,9 @@ export const LeftRightLayout = ({ message, user, isActive, isHighlighted, onRepl
             setIsHovered(false)
         }
     }
+
+    // @ts-ignore
+    const CHAT_STYLE = window.frappe?.boot?.chat_style ?? 'Simple'
 
     const alignToRight = CHAT_STYLE === "Left-Right" && currentUser === userID && !is_bot_message
 

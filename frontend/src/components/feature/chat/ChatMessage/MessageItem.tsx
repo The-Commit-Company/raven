@@ -28,9 +28,6 @@ import { ThreadMessage } from './Renderers/ThreadMessage'
 import OnLeaveBadge from '@/components/common/UserLeaveBadge'
 import { LeftRightLayout } from './LeftRightLayout/LeftRightLayout'
 
-// @ts-ignore
-const CHAT_STYLE = frappe.boot.chat_style
-
 interface MessageBlockProps {
     message: Message,
     setDeleteMessage: (message: Message) => void,
@@ -111,6 +108,9 @@ export const MessageItem = ({ message, setDeleteMessage, isHighlighted, onReplyM
     }, [replied_message_details])
 
     const [isEmojiPickerOpen, setEmojiPickerOpen] = useState(false)
+
+    // @ts-ignore
+    const CHAT_STYLE = window.frappe?.boot?.chat_style ?? 'Simple'
 
     return (
         <>

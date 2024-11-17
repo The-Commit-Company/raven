@@ -13,9 +13,6 @@ import { getErrorMessage } from '@/components/layout/AlertBanner/ErrorBanner'
 import { CreateThreadActionButton } from './CreateThreadButton'
 import clsx from 'clsx'
 
-// @ts-ignore
-const CHAT_STYLE = frappe.boot.chat_style
-
 const QUICK_EMOJIS = ['👍', '✅', '👀', '🎉']
 
 interface QuickActionsProps extends MessageContextMenuProps {
@@ -63,6 +60,9 @@ export const QuickActions = ({ message, onReply, onEdit, isEmojiPickerOpen, setI
             })
         })
     }
+
+    // @ts-ignore
+    const CHAT_STYLE = window.frappe?.boot?.chat_style ?? 'Simple'
 
     return (
         <Box
