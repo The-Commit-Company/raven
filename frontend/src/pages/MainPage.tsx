@@ -49,7 +49,7 @@ const MainPageContent = () => {
         <ChannelListProvider>
             <Flex>
                 {!isMobile &&
-                    <Box className={`w-64 bg-gray-2 border-r-gray-3 border-r dark:bg-gray-1`} left="0" top='0' position="fixed">
+                    <Box className={`w-72 bg-gray-2 border-r-gray-3 border-r dark:bg-gray-1`} left="0" top='0' position="fixed">
                         <Sidebar />
                     </Box>
                 }
