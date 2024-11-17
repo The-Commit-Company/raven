@@ -28,6 +28,8 @@ export interface RavenChannel{
 	is_direct_message?: 0 | 1
 	/**	Is Thread : Check	*/
 	is_thread?: 0 | 1
+	/**	Is DM Thread : Check	*/
+	is_dm_thread?: 0 | 1
 	/**	Is Self Message : Check	*/
 	is_self_message?: 0 | 1
 	/**	Is Archived : Check	*/

@@ -22,6 +22,7 @@ class RavenChannel(Document):
 		is_ai_thread: DF.Check
 		is_archived: DF.Check
 		is_direct_message: DF.Check
+		is_dm_thread: DF.Check
 		is_self_message: DF.Check
 		is_synced: DF.Check
 		is_thread: DF.Check
@@ -109,11 +110,11 @@ class RavenChannel(Document):
 						_("You cannot change the name of a direct message channel"),
 						frappe.ValidationError,
 					)
-		else:
+
+		if not self.is_dm_thread and not self.is_direct_message:
 			# If it's not a direct message channel, it needs a workspace
 			if not self.workspace:
-				pass
-				# frappe.throw(_("You need to specify a workspace for this channel"), frappe.ValidationError)
+				frappe.throw(_("You need to specify a workspace for this channel"), frappe.ValidationError)
 
 		if old_doc and old_doc.get("is_archived") != self.is_archived:
 			if frappe.db.exists(
@@ -153,10 +154,10 @@ class RavenChannel(Document):
 		if self.is_direct_message == 0:
 			self.channel_name = self.channel_name.strip().lower().replace(" ", "-")
 
-		# if not self.is_direct_message and not self.workspace:
-		# 	workspaces = frappe.get_all("Raven Workspace")
-		# 	if len(workspaces) == 1:
-		# 		self.workspace = workspaces[0].name
+		if not self.is_direct_message and not self.workspace:
+			workspaces = frappe.get_all("Raven Workspace")
+			if len(workspaces) == 1:
+				self.workspace = workspaces[0].name
 
 	def add_members(self, members, is_admin=0):
 		# members is a list of Raven User IDs
@@ -182,7 +183,6 @@ class RavenChannel(Document):
 	def autoname(self):
 		if self.is_direct_message == 0 and self.is_thread == 0:
 			# Add workspace name to the channel name
-			# self.name = self.workspace + "-" + self.channel_name.strip().lower().replace(" ", "-")
-			self.name = self.channel_name.strip().lower().replace(" ", "-")
+			self.name = self.workspace + "-" + self.channel_name.strip().lower().replace(" ", "-")
 		else:
 			self.name = self.channel_name

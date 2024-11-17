@@ -18,6 +18,7 @@
   "section_break_evg4",
   "is_direct_message",
   "is_thread",
+  "is_dm_thread",
   "column_break_puci",
   "is_self_message",
   "column_break_ubts",
@@ -180,6 +181,13 @@
    "label": "Workspace",
    "options": "Raven Workspace",
    "search_index": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "is_dm_thread",
+   "fieldtype": "Check",
+   "label": "Is DM Thread",
+   "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,
@@ -193,7 +201,7 @@
    "link_fieldname": "channel_id"
   }
  ],
- "modified": "2024-10-22 20:06:18.103248",
+ "modified": "2024-11-17 14:01:02.260345",
  "modified_by": "Administrator",
  "module": "Raven Channel Management",
  "name": "Raven Channel",
@@ -214,18 +222,6 @@
   },
   {
    "create": 1,
-   "delete": 1,
-   "email": 1,
-   "export": 1,
-   "if_owner": 1,
-   "print": 1,
-   "read": 1,
-   "report": 1,
-   "role": "Raven User",
-   "share": 1,
-   "write": 1
-  },
-  {
    "delete": 1,
    "email": 1,
    "export": 1,
