@@ -193,7 +193,8 @@ class RavenMessage(Document):
 			at_front=True,
 		)
 
-	def publish_unread_count_event(self):
+	def set_last_message_timestamp(self):
+
 		# Update directly via SQL since we do not want to invalidate the document cache
 		message_details = {
 			"message_id": self.name,
@@ -204,14 +205,18 @@ class RavenMessage(Document):
 			"bot": self.bot,
 		}
 
-		frappe.db.sql(
-			"""
-			UPDATE `tabRaven Channel`
-			SET last_message_timestamp = %s, last_message_details = %s
-			WHERE name = %s
-			""",
-			(self.creation, json.dumps(message_details), self.channel_id),
+		raven_channel = frappe.qb.DocType("Raven Channel")
+		query = (
+			frappe.qb.update(raven_channel)
+			.where(raven_channel.name == self.channel_id)
+			.set(raven_channel.last_message_timestamp, self.creation)
+			.set(raven_channel.last_message_details, json.dumps(message_details))
 		)
+		query.run()
+
+	def publish_unread_count_event(self):
+
+		self.set_last_message_timestamp()
 
 		channel_doc = frappe.get_cached_doc("Raven Channel", self.channel_id)
 		# If the message is a direct message, then we can only send it to one user
