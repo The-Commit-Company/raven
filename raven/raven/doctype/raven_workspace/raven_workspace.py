@@ -21,7 +21,8 @@ class RavenWorkspace(Document):
 	# end: auto-generated types
 
 	def after_insert(self):
-		self.create_member_for_owner()
+		if not frappe.flags.in_patch:
+			self.create_member_for_owner()
 		self.invalidate_workspace_list_cache()
 
 	def on_update(self):
