@@ -154,7 +154,7 @@ class RavenChannel(Document):
 		if self.is_direct_message == 0:
 			self.channel_name = self.channel_name.strip().lower().replace(" ", "-")
 
-		if not self.is_direct_message and not self.workspace:
+		if not self.is_direct_message and not self.workspace and not self.is_dm_thread:
 			workspaces = frappe.get_all("Raven Workspace")
 			if len(workspaces) == 1:
 				self.workspace = workspaces[0].name
