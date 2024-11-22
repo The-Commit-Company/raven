@@ -1,6 +1,8 @@
 import { DateMonthAtHourMinuteAmPm, HourMinuteAmPm } from '@/utils/dateConversions'
-import { Tooltip, Text, Link } from '@radix-ui/themes'
+import { useMemo } from 'react'
+import { Tooltip, Link } from '@radix-ui/themes'
 export const DateTooltip = ({ timestamp }: { timestamp: string }) => {
+    const memoizedTime = useMemo(() => <HourMinuteAmPm date={timestamp} />, [timestamp])
     return (
         <Tooltip content={<DateMonthAtHourMinuteAmPm date={timestamp} />}>
             <Link
@@ -9,7 +11,7 @@ export const DateTooltip = ({ timestamp }: { timestamp: string }) => {
                 color="gray"
             >
                 <span>
-                    <HourMinuteAmPm date={timestamp} />
+                    {memoizedTime}
                 </span>
             </Link>
         </Tooltip>
@@ -17,14 +19,23 @@ export const DateTooltip = ({ timestamp }: { timestamp: string }) => {
 }
 
 export const DateTooltipShort = ({ timestamp }: { timestamp: string }) => {
+    const memoizedContent = useMemo(
+        () => <DateMonthAtHourMinuteAmPm date={timestamp} />,
+        [timestamp]
+    )
+    const memoizedTime = useMemo(
+        () => <HourMinuteAmPm date={timestamp} amPm={false} />,
+        [timestamp]
+    )
+
     return (
-        <Tooltip content={<DateMonthAtHourMinuteAmPm date={timestamp} />}>
+        <Tooltip content={memoizedContent}>
             <Link
                 asChild
                 style={{ fontSize: '0.68rem' }}
                 color="gray"
             >
-                <span><HourMinuteAmPm date={timestamp} amPm={false} /></span>
+                <span>{memoizedTime}</span>
             </Link>
         </Tooltip>
     )
