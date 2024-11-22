@@ -53,7 +53,7 @@ const MainPageContent = () => {
                         <Sidebar />
                     </Box>
                 }
-                <Box className='md:ml-[var(--sidebar-width)] w-[calc(100vw-var(--sidebar-width))] dark:bg-gray-2'>
+                <Box className='md:ml-[var(--sidebar-width)] w-[calc(100vw-var(--sidebar-width)-2rem)] dark:bg-gray-2'>
                     <Outlet />
                 </Box>
             </Flex>

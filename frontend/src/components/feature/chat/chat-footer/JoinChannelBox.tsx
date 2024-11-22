@@ -7,7 +7,6 @@ import { ChannelMembers } from "@/hooks/fetchers/useFetchChannelMembers"
 import { useParams } from "react-router-dom"
 interface JoinChannelBoxProps {
     channelData?: ChannelListItem,
-    channelMembers: ChannelMembers,
     user: string,
 }
 
