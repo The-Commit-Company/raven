@@ -1,5 +1,4 @@
-import { Flex, Text } from "@radix-ui/themes"
-import { FlexProps } from "@radix-ui/themes/dist/cjs/components/flex"
+import { Flex, Text, FlexProps } from "@radix-ui/themes"
 import clsx from "clsx"
 import { forwardRef, useImperativeHandle, useState } from "react"
 import { Accept, useDropzone } from "react-dropzone"
@@ -11,7 +10,7 @@ export interface CustomFile extends File {
     uploadProgress?: number
 }
 
-export interface FileDropProps extends FlexProps {
+export type FileDropProps = FlexProps & {
     /** Array of files */
     files: CustomFile[],
     /** Function to set files in parent */
