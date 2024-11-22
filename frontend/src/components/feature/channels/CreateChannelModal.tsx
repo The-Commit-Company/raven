@@ -1,4 +1,4 @@
-import { useFrappeCreateDoc } from 'frappe-react-sdk'
+import { useFrappeCreateDoc, useSWRConfig } from 'frappe-react-sdk'
 import { ChangeEvent, useCallback, useMemo, useState } from 'react'
 import { Controller, FormProvider, useForm } from 'react-hook-form'
 import { BiGlobe, BiHash, BiLockAlt } from 'react-icons/bi'
@@ -66,6 +66,7 @@ export const CreateChannelButton = ({ updateChannelList }: { updateChannelList: 
 
 const CreateChannelContent = ({ updateChannelList, isOpen, setIsOpen }: { updateChannelList: VoidFunction, setIsOpen: (v: boolean) => void, isOpen: boolean }) => {
 
+    const { mutate } = useSWRConfig()
     let navigate = useNavigate()
     const methods = useForm<ChannelCreationForm>({
         defaultValues: {
@@ -85,6 +86,7 @@ const CreateChannelContent = ({ updateChannelList, isOpen, setIsOpen }: { update
             // Also navigate to new channel
             updateChannelList()
             navigate(`/channel/${channel_name}`)
+            mutate(["channel_members", channel_name])
         }
         setIsOpen(false)
 
