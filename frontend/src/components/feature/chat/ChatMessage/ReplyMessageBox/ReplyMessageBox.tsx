@@ -7,6 +7,7 @@ import { getFileExtension, getFileName } from "@/utils/operations"
 import { clsx } from "clsx"
 import parse from 'html-react-parser';
 import { MdOutlineBarChart } from "react-icons/md"
+
 type ReplyMessageBoxProps = FlexProps & {
     message: Partial<Message>
 }
@@ -18,17 +19,18 @@ type ReplyMessageBoxProps = FlexProps & {
 export const ReplyMessageBox = ({ message, children, className, ...props }: ReplyMessageBoxProps) => {
 
     const user = useGetUser(message.owner)
+
     return (
         <Flex className={clsx('p-2 items-start bg-white border border-gray-5 shadow-sm dark:bg-gray-3 dark:border-gray-6 rounded-md', className)} {...props}>
             <Flex gap='1' direction='column' className="border-l-2 pl-2 border-gray-8">
                 <Flex gap='2' align='center'>
-                    <Text as='span' size='1' weight='medium'>{user?.full_name ?? message.owner}</Text>
+                    <Text as='span' size='1' weight='medium' truncate>{user?.full_name ?? message.owner}</Text>
                     <Separator orientation='vertical' />
                     <Text as='span' size='1' color='gray'>
                         {message.creation && <DateMonthAtHourMinuteAmPm date={message.creation} />}
                     </Text>
                 </Flex>
-                <Box className="max-w-3xl">
+                <Box className="max-w-[75vw]">
                     {message.message_type === 'Poll' ? <Text as='span' size='2' className="line-clamp-2 flex items-center">
                         <MdOutlineBarChart size='14' className="inline mr-1" />
                         Poll: {(message as PollMessage).content?.split("\n")?.[0]}</Text>
