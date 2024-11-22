@@ -1,5 +1,5 @@
 import { Stack } from '@/components/layout/Stack';
-import { Box, Card, Flex, IconButton, Inset, Link, Text, Tooltip } from '@radix-ui/themes';
+import { Box, Card, IconButton, Text, Tooltip } from '@radix-ui/themes';
 import { useCurrentEditor } from "@tiptap/react";
 import { useFrappeGetCall, useFrappePostCall } from 'frappe-react-sdk';
 import { memo, useMemo } from 'react';
