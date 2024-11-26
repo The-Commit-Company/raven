@@ -4,14 +4,13 @@ import react from "@vitejs/plugin-react"
 import proxyOptions from "./proxyOptions";
 import svgr from "vite-plugin-svgr";
 import { VitePWA } from "vite-plugin-pwa"
-import MillionLint from "@million/lint";
 
 /// <reference types="vite-plugin-svgr/client" />
 // https://vitejs.dev/config/
 export default defineConfig(({ command, mode }) => {
 	const env = loadEnv(mode, process.cwd(), "")
 	return {
-		plugins: [react(), MillionLint.vite(), svgr(), VitePWA({
+		plugins: [react(), svgr(), VitePWA({
 			registerType: "autoUpdate",
 			strategies: "injectManifest",
 			injectRegister: null,
