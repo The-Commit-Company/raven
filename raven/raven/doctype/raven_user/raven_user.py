@@ -14,6 +14,7 @@ class RavenUser(Document):
 
 	if TYPE_CHECKING:
 		from frappe.types import DF
+
 		from raven.raven.doctype.raven_pinned_channels.raven_pinned_channels import RavenPinnedChannels
 
 		availability_status: DF.Literal["", "Available", "Away", "Do not disturb", "Invisible"]
@@ -136,18 +137,19 @@ def add_user_to_raven(doc, method):
 			# Only create raven user if it exists in the system.
 			if frappe.db.exists("User", doc.name):
 				# Check if the user is a system user.
+				auto_add = False
 				if doc.user_type == "System User":
 					auto_add = frappe.db.get_single_value("Raven Settings", "auto_add_system_users")
 
-					if auto_add or "Raven User" in [d.role for d in doc.get("roles")]:
-						doc.append("roles", {"role": "Raven User"})
-						# Create a Raven User record for the user.
-						raven_user = frappe.new_doc("Raven User")
-						raven_user.user = doc.name
-						if not doc.full_name:
-							raven_user.full_name = doc.first_name
-						raven_user.enabled = doc.enabled
-						raven_user.insert(ignore_permissions=True)
+				if auto_add or "Raven User" in [d.role for d in doc.get("roles")]:
+					doc.append("roles", {"role": "Raven User"})
+					# Create a Raven User record for the user.
+					raven_user = frappe.new_doc("Raven User")
+					raven_user.user = doc.name
+					if not doc.full_name:
+						raven_user.full_name = doc.first_name
+					raven_user.enabled = doc.enabled
+					raven_user.insert(ignore_permissions=True)
 
 
 def remove_user_from_raven(doc, method):
