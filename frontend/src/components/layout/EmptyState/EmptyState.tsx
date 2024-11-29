@@ -41,10 +41,9 @@ const EmptyStateForChannel = ({ channelData }: EmptyStateForChannelProps) => {
     const { currentUser } = useContext(UserContext)
     const users = useGetUserRecords()
 
-    const { channelMember, isAdmin } = useMemo(() => {
+    const { isAdmin } = useMemo(() => {
         const channelMember = channelMembers[currentUser]
         return {
-            channelMember,
             isAdmin: channelMember?.is_admin == 1
         }
     }, [channelMembers, currentUser])
