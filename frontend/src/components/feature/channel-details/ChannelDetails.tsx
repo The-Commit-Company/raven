@@ -1,4 +1,4 @@
-import { useContext } from "react"
+import { useContext, useMemo } from "react"
 import { UserContext } from "../../../utils/auth/UserProvider"
 import { ChannelListItem } from "@/utils/channel/ChannelListProvider"
 import { ChannelIcon } from "@/utils/layout/channelIcon"
@@ -23,6 +23,14 @@ export const ChannelDetails = ({ channelData, channelMembers, onClose }: Channel
 
     const channelOwner = useGetUser(channelData.owner)
 
+    const { channelMember, isAdmin } = useMemo(() => {
+        const channelMember = channelMembers[currentUser]
+        return {
+            channelMember,
+            isAdmin: channelMember?.is_admin == 1
+        }
+    }, [channelMembers, currentUser])
+
     return (
         <Flex direction='column' gap='4' className={'h-[66vh] pb-2 sm:h-96'}>
 
@@ -40,11 +48,11 @@ export const ChannelDetails = ({ channelData, channelMembers, onClose }: Channel
                         channel_name={channelData.channel_name}
                         className=""
                         channelType={channelData.type}
-                        disabled={channelData.is_archived == 1} />
+                        disabled={channelData.is_archived == 1 && !isAdmin} />
                 </Flex>
             </Box>
             <ChannelPushNotificationToggle channelID={channelData.name}
-                channelMember={channelMembers[currentUser]}
+                channelMember={channelMember}
             />
 
             <Box className={'p-4 rounded-md border border-gray-6'}>
@@ -56,7 +64,7 @@ export const ChannelDetails = ({ channelData, channelMembers, onClose }: Channel
                                 {channelData && channelData.channel_description && channelData.channel_description.length > 0 ? channelData.channel_description : 'No description'}
                             </Text>
                         </Flex>
-                        <EditDescriptionButton channelData={channelData} is_in_box={true} disabled={channelData.is_archived == 1} />
+                        <EditDescriptionButton channelData={channelData} is_in_box={true} disabled={channelData.is_archived == 1 && !isAdmin} />
                     </Flex>
 
                     <Separator className={'w-full'} />
@@ -71,7 +79,7 @@ export const ChannelDetails = ({ channelData, channelMembers, onClose }: Channel
 
                     {/* users can only leave channels they are members of */}
                     {/* users cannot leave open channels */}
-                    {channelMembers[currentUser] && Object.keys(channelMembers).length > 1 && channelData?.type != 'Open' && channelData.is_archived == 0 &&
+                    {channelMember && Object.keys(channelMembers).length > 1 && channelData?.type != 'Open' && channelData.is_archived == 0 &&
                         <>
                             <Separator className={'w-full'} />
                             <LeaveChannelButton channelData={channelData} onClose={onClose} />
