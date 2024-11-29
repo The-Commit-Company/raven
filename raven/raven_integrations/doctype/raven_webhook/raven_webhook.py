@@ -117,9 +117,9 @@ class RavenWebhook(Document):
 		webhook_doc.save()
 
 	def set_webhook_data_and_headers(self, webhook_doc):
-		'''
+		"""
 		Set the webhook data and headers
-		'''
+		"""
 		# get the existing webhook data and headers keys
 		webhook_data_keys = [data.key for data in webhook_doc.webhook_data]
 		webhook_header_keys = [data.key for data in webhook_doc.webhook_headers]
