@@ -23,17 +23,15 @@ class RavenWorkspace(Document):
 	def after_insert(self):
 		if not frappe.flags.in_patch:
 			self.create_member_for_owner()
-		self.invalidate_workspace_list_cache()
-
-	def on_update(self):
-		self.invalidate_workspace_list_cache()
 
 	def on_trash(self):
 		# Delete all members when the workspace is deleted
 		frappe.db.delete("Raven Workspace Member", {"workspace": self.name})
 		# Delete all channels when the workspace is deleted
-		frappe.db.delete("Raven Channel", {"workspace": self.name})
-		self.invalidate_workspace_list_cache()
+		channels = frappe.db.get_all("Raven Channel", {"workspace": self.name})
+		for channel in channels:
+			# use delete doc to delete the channel ,it's members and messages
+			frappe.delete_doc("Raven Channel", channel.name)
 
 	def create_member_for_owner(self):
 		member = frappe.new_doc("Raven Workspace Member")
@@ -41,9 +39,3 @@ class RavenWorkspace(Document):
 		member.user = self.owner
 		member.is_admin = True
 		member.insert(ignore_permissions=True)
-
-	def invalidate_workspace_list_cache(self):
-
-		from raven.api.workspaces import get_workspaces
-
-		get_workspaces.clear_cache()

@@ -1,30 +1,34 @@
 import frappe
 from frappe import _
-from frappe.utils.caching import redis_cache
+from frappe.query_builder import Case, JoinType, Order
 
 
 @frappe.whitelist()
 def get_list():
 	"""
-	TODO: This is a temporary function to fetch all workspaces.
 	Fetches list of all workspaces that the current user is a member of/has access to
 	"""
-	frappe.has_permission("Raven Workspace", throw=True)
+	if not frappe.db.exists("Raven User", {"user": frappe.session.user}):
+		frappe.throw(_("You do not have access to Raven."), frappe.PermissionError)
 
-	all_workspaces = get_workspaces()
+	workspace = frappe.qb.DocType("Raven Workspace")
+	workspace_member = frappe.qb.DocType("Raven Workspace Member")
 
-	# Only return workspaces that the current user is a member of
-
-	return all_workspaces
-
-
-@redis_cache()
-def get_workspaces():
-	"""
-	Fetches list of all workspaces
-	"""
-	return frappe.db.get_all(
-		"Raven Workspace",
-		fields=["workspace_name", "name", "logo", "type", "can_only_join_via_invite"],
-		order_by="creation asc",
+	all_workspaces = (
+		frappe.qb.from_(workspace)
+		.join(workspace_member, JoinType.left)
+		.on(
+			(workspace.name == workspace_member.workspace) & (workspace_member.user == frappe.session.user)
+		)
+		.where((workspace_member.user == frappe.session.user) | (workspace.type == "Public"))
+		.select(
+			workspace.workspace_name,
+			workspace.name,
+			workspace.logo,
+			workspace.type,
+			workspace.can_only_join_via_invite,
+		)
+		.orderby(workspace.creation, order=Order.asc)
 	)
+
+	return all_workspaces.run(as_dict=True)
