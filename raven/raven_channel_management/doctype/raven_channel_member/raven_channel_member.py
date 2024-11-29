@@ -31,6 +31,22 @@ class RavenChannelMember(Document):
 	def before_validate(self):
 		self.last_visit = frappe.utils.now()
 
+	def validate(self):
+		if (
+			self.has_value_changed("is_admin")
+			and not self.flags.in_insert
+			and not self.flags.ignore_permissions
+		):
+			# Check if the user is an existing admin of the channel
+			if not frappe.db.exists(
+				"Raven Channel Member",
+				{"channel_id": self.channel_id, "user_id": frappe.session.user, "is_admin": 1},
+			):
+				frappe.throw(
+					_("You cannot make yourself an admin of a channel. Please ask another admin to do this."),
+					frappe.PermissionError,
+				)
+
 	def before_insert(self):
 		# 1. A user cannot be a member of a channel more than once
 		if frappe.db.exists(
@@ -105,15 +121,6 @@ class RavenChannelMember(Document):
 				).insert(ignore_permissions=True)
 
 	def on_trash(self):
-
-		if self.flags.ignore_permissions:
-			return
-		if not self.check_if_user_is_member():
-			frappe.throw(
-				_("You don't have permission to remove members from this channel"),
-				frappe.PermissionError,
-			)
-
 		unsubscribe_user_to_topic(self.channel_id, self.user_id)
 		self.invalidate_channel_members_cache()
 

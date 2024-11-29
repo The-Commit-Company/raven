@@ -90,6 +90,7 @@ class RavenChannel(Document):
 				unique_raven_users = list(set(raven_users))
 				self.add_members(unique_raven_users)
 			else:
+				# Can ignore permissions here because the user who creates the channel should be an admin of the channel
 				frappe.get_doc(
 					{
 						"doctype": "Raven Channel Member",
@@ -97,7 +98,7 @@ class RavenChannel(Document):
 						"user_id": frappe.session.user,
 						"is_admin": 1,
 					}
-				).insert()
+				).insert(ignore_permissions=True)
 
 	def validate(self):
 		# If the user trying to modify the channel is not the owner or channel member, then don't allow
@@ -162,10 +163,9 @@ class RavenChannel(Document):
 	def add_members(self, members, is_admin=0):
 		# members is a list of Raven User IDs
 		for member in members:
-			doc = frappe.db.get_value(
+			doc = frappe.db.exists(
 				"Raven Channel Member",
-				filters={"channel_id": self.name, "user_id": member},
-				fieldname="name",
+				{"channel_id": self.name, "user_id": member},
 			)
 			if doc:
 				continue
