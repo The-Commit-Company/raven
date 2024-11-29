@@ -580,7 +580,7 @@ class RavenMessage(Document):
 		# if the message is a thread, delete all messages in the thread and the thread channel
 		if self.is_thread:
 			# Delete the thread channel - this will automatically delete all the messages and their reactions in the thread
-			thread_channel_doc = frappe.get_doc("Raven Channel", self.channel_id)
+			thread_channel_doc = frappe.get_doc("Raven Channel", self.name)
 			thread_channel_doc.delete(ignore_permissions=True)
 
 
