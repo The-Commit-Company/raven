@@ -184,5 +184,5 @@ class RavenChannel(Document):
 		if self.is_direct_message == 0 and self.is_thread == 0:
 			# Add workspace name to the channel name
 			self.name = self.workspace + "-" + self.channel_name.strip().lower().replace(" ", "-")
-		else:
+		elif self.is_thread:
 			self.name = self.channel_name
