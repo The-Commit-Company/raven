@@ -2,6 +2,7 @@
 # For license information, please see license.txt
 
 import frappe
+from frappe import _
 from frappe.model.document import Document
 
 
@@ -35,7 +36,7 @@ class RavenSettings(Document):
 	def validate(self):
 		if self.auto_create_department_channel:
 			if not self.company_workspace_mapping:
-				frappe.throw("Please map the companies to the workspace before enabling this feature.")
+				frappe.throw(_("Please map the companies to the workspace before enabling this feature."))
 
 			for row in self.company_workspace_mapping:
 				# Check if the company exists since it's a Data field
