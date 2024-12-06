@@ -280,7 +280,7 @@ def raven_poll_vote_has_permission(doc, user=None, ptype=None):
 	Allowed users can add a vote to a poll and read votes (if the poll is not anonymous)
 	"""
 	# Check if the user has permission to the poll itself
-	if not frappe.has_permission("Raven Poll", doc=doc.poll_id, ptype=ptype, user=user):
+	if not frappe.has_permission("Raven Poll", doc=doc.poll_id, ptype="read", user=user):
 		return False
 
 	if ptype in ["read", "create", "delete"]:
