@@ -100,8 +100,14 @@ const getLogo = (workspace: WorkspaceFields) => {
 
 const MyWorkspaceItem = ({ workspace }: { workspace: WorkspaceFields }) => {
     const logo = getLogo(workspace)
+
+    const openWorkspace = () => {
+        localStorage.setItem('ravenLastWorkspace', workspace.name)
+        localStorage.removeItem('ravenLastChannel')
+    }
+
     return <Card asChild className='shadow-sm hover:scale-105 transition-all duration-200'>
-        <Link aria-label={`Switch to ${workspace.workspace_name} workspace`} to={`/${workspace.name}`}>
+        <Link aria-label={`Switch to ${workspace.workspace_name} workspace`} to={`/${workspace.name}`} onClick={openWorkspace}>
             <HStack>
                 <Avatar
                     size={{ sm: '4', md: '4' }}

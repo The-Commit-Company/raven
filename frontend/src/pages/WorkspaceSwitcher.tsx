@@ -41,10 +41,6 @@ const WorkspaceSwitcher = () => {
         </Flex>
     }
 
-    if (data && data?.message.length === 1) {
-        return <Navigate to={`/${data.message[0].name}`} replace />
-    }
-
     if (data) {
         return <Outlet />
     }

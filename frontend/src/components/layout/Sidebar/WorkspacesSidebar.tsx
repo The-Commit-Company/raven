@@ -43,6 +43,12 @@ const WorkspaceItem = ({ workspace }: { workspace: WorkspaceFields }) => {
     if (!logo && workspace.workspace_name === 'Raven') {
         logo = '/assets/raven/raven-logo.png'
     }
+
+    const openWorkspace = () => {
+        localStorage.setItem('ravenLastWorkspace', workspace.name)
+        localStorage.removeItem('ravenLastChannel')
+    }
+
     return <HStack position='relative' align='center' className='group'>
         <Box className={clsx('w-1 h-1.5 bg-gray-12 rounded-r-full dark:bg-gray-12 absolute -left-3 group-hover:h-4 transition-all duration-200 ease-ease-out-cubic',
             isSelected && 'h-[90%] group-hover:h-[90%]'
@@ -52,6 +58,7 @@ const WorkspaceItem = ({ workspace }: { workspace: WorkspaceFields }) => {
                 <Link aria-label={`Switch to ${workspace.workspace_name} workspace`}
                     className={'cursor-pointer'}
                     to={`/${workspace.name}`}
+                    onClick={openWorkspace}
                 >
                     <Box>
                         <Avatar
