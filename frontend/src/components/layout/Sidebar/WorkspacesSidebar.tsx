@@ -1,19 +1,43 @@
-import { Avatar, Box, Flex, ScrollArea, Tooltip } from '@radix-ui/themes'
+import { Avatar, Box, Flex, ScrollArea, Text, Tooltip } from '@radix-ui/themes'
 import { HStack, Stack } from '../Stack'
 import useFetchWorkspaces, { WorkspaceFields } from '@/hooks/fetchers/useFetchWorkspaces'
 import { SidebarFooter } from './SidebarFooter'
 import AddWorkspaceSidebarButton from '@/components/feature/workspaces/AddWorkspaceSidebarButton'
 import { Link, useParams } from 'react-router-dom'
 import clsx from 'clsx'
-import { useMemo } from 'react'
+import { useContext, useMemo } from 'react'
+import useUnreadMessageCount from '@/hooks/useUnreadMessageCount'
+import { ChannelListContext, ChannelListContextType } from '@/utils/channel/ChannelListProvider'
 
 const WorkspacesSidebar = () => {
 
     const { data } = useFetchWorkspaces()
 
-    const myWorkspaces = useMemo(() => {
-        return data?.message.filter((workspace) => !!workspace.workspace_member_name) || []
-    }, [data])
+    const unreadCounts = useUnreadMessageCount()
+    const { channels } = useContext(ChannelListContext) as ChannelListContextType
+
+    const myWorkspaces: (WorkspaceFields & { unread_count: number })[] = useMemo(() => {
+        const myWorkspaces: WorkspaceFields[] = data?.message.filter((workspace) => !!workspace.workspace_member_name) || []
+        // Add unread counts to each workspace
+        const workspace_unread_counts: Record<string, number> = {}
+
+        // Loop over all channels in the channels context and find it's unread count and add it to the workspace_unread_counts object
+        channels.forEach((channel) => {
+            if (channel.workspace) {
+                let unread_count = unreadCounts?.message.channels?.find((c) => c.name === channel.name)?.unread_count || 0
+                workspace_unread_counts[channel.workspace] = (workspace_unread_counts?.[channel.workspace] || 0) + unread_count
+            }
+        })
+
+        const myWorkspacesWithUnreadCounts = myWorkspaces.map((workspace) => {
+            return {
+                ...workspace,
+                unread_count: workspace_unread_counts[workspace.name] || 0
+            }
+        })
+
+        return myWorkspacesWithUnreadCounts
+    }, [data, channels, unreadCounts])
 
     return (
         <Stack className='sm:w-18 w-20 sm:p-0 px-2 pb-4 border-r-1 border-gray-4 dark:border-gray-3 h-screen bg-gray-3 dark:bg-gray-1' justify='between'>
@@ -32,7 +56,7 @@ const WorkspacesSidebar = () => {
     )
 }
 
-const WorkspaceItem = ({ workspace }: { workspace: WorkspaceFields }) => {
+const WorkspaceItem = ({ workspace }: { workspace: WorkspaceFields & { unread_count: number } }) => {
 
     const { workspaceID } = useParams()
 
@@ -50,8 +74,9 @@ const WorkspaceItem = ({ workspace }: { workspace: WorkspaceFields }) => {
     }
 
     return <HStack position='relative' align='center' className='group'>
-        <Box className={clsx('w-1 h-1.5 bg-gray-12 rounded-r-full dark:bg-gray-12 absolute -left-3 group-hover:h-4 transition-all duration-200 ease-ease-out-cubic',
-            isSelected && 'h-[90%] group-hover:h-[90%]'
+        <Box className={clsx('w-1 h-0 bg-gray-12 rounded-r-full dark:bg-gray-12 absolute -left-3 group-hover:h-4 transition-all duration-200 ease-ease-out-cubic',
+            isSelected && 'h-[90%] group-hover:h-[90%]',
+            workspace.unread_count > 0 && 'h-1.5'
         )} />
         <Flex align='center' gap='2' width='100%' justify='between' asChild>
             <Tooltip content={workspace.workspace_name} side='right'>
@@ -71,7 +96,13 @@ const WorkspaceItem = ({ workspace }: { workspace: WorkspaceFields }) => {
                     </Box>
                 </Link>
             </Tooltip>
-        </Flex></HStack>
+        </Flex>
+        {workspace.unread_count > 0 &&
+            <Box className='rounded-full absolute -right-2 -bottom-1 bg-red-11 text-white w-4 h-4 flex items-center justify-center'>
+                <Text as='span' size='1' weight='medium'>{workspace.unread_count}</Text>
+            </Box>
+        }
+    </HStack>
 }
 
 export default WorkspacesSidebar
