@@ -1,13 +1,13 @@
 import { useContext, useState } from 'react'
 import { UserContext } from '../../../utils/auth/UserProvider'
 import { useUserData } from '@/hooks/useUserData'
-import { Box, DropdownMenu, Flex, IconButton, Separator, Tooltip } from '@radix-ui/themes'
+import { Box, DropdownMenu, IconButton, Separator, Tooltip } from '@radix-ui/themes'
 import { UserAvatar } from '@/components/common/UserAvatar'
 import { BsEmojiSmile } from 'react-icons/bs'
 import useCurrentRavenUser from '@/hooks/useCurrentRavenUser'
 import { SlSettings } from 'react-icons/sl'
 import { useIsUserActive } from '@/hooks/useIsUserActive'
-import { MdExplore, MdOutlineExitToApp, MdOutlineExplore } from 'react-icons/md'
+import { MdOutlineExitToApp } from 'react-icons/md'
 import { useNavigate } from 'react-router-dom'
 import { SetUserAvailabilityMenu } from '@/components/feature/userSettings/AvailabilityStatus/SetUserAvailabilityMenu'
 import { SetCustomStatusModal } from '@/components/feature/userSettings/CustomStatus/SetCustomStatusModal'
@@ -31,15 +31,14 @@ export const SidebarFooter = () => {
     return <Stack className='mx-auto py-2' align='center' gap='3'>
         <Box>
             <Tooltip content="Workspace Explorer" side='right'>
-                <IconButton aria-label='Workspace Explorer' size='2' color='gray' variant='ghost' onClick={() => navigate('/workspace-explorer')}>
+                <IconButton aria-label='Workspace Explorer' size='4' color='gray' variant='ghost' onClick={() => navigate('/workspace-explorer')}>
                     <ImCompass />
-                    {/* <MdOutlineExplore size='20' /> */}
                 </IconButton>
             </Tooltip>
         </Box>
         <Box>
             <Tooltip content="Settings" side='right'>
-                <IconButton aria-label='Settings' size='2' color='gray' variant='ghost' onClick={() => navigate('/channel/settings/profile')}>
+                <IconButton aria-label='Settings' size='4' color='gray' variant='ghost' onClick={() => navigate('/channel/settings/profile')}>
                     <SlSettings size='18' />
                 </IconButton>
             </Tooltip>
@@ -53,7 +52,7 @@ export const SidebarFooter = () => {
                             <UserAvatar
                                 src={myProfile?.user_image}
                                 alt={myProfile?.full_name}
-                                size='2'
+                                size='3'
                                 className='hover:shadow-sm transition-all duration-200'
                                 availabilityStatus={myProfile?.availability_status}
                                 isActive={isActive} />

@@ -37,6 +37,7 @@ const Appearance = () => {
             fieldname: 'chat_style',
             value: style
         }).then(() => {
+            // @ts-expect-error
             window.frappe.boot.chat_style = style
             mutate()
             toast.success('Chat style updated')

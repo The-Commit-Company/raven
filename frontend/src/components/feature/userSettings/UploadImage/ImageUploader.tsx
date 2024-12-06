@@ -11,6 +11,7 @@ import { BiSolidTrash } from "react-icons/bi"
 import { UserAvatar, getInitials } from "@/components/common/UserAvatar"
 import useCurrentRavenUser from "@/hooks/useCurrentRavenUser"
 import { __ } from "@/utils/translations"
+import { getErrorMessage } from "@/components/layout/AlertBanner/ErrorBanner"
 
 interface ImageUploaderProps {
     /** Takes input MIME type as 'key' & array of extensions as 'value'; empty array - all extensions supported */
@@ -22,21 +23,20 @@ interface ImageUploaderProps {
 
 export const ImageUploader = ({ icon, accept = { 'image/*': ['.jpeg', '.jpg', '.png'] }, maxFileSize, ...props }: ImageUploaderProps) => {
 
-    const { call, error } = useFrappePostCall('frappe.client.set_value')
+    const { call } = useFrappePostCall('raven.api.raven_users.update_raven_user')
     const { myProfile, mutate } = useCurrentRavenUser()
 
     const uploadImage = (file: string) => {
         if (file) {
             call({
-                doctype: 'Raven User',
-                name: myProfile?.name,
-                fieldname: 'user_image',
-                value: file
+                user_image: file
             }).then(() => {
                 toast(__("Image uploaded successfully."))
                 mutate()
-            }).catch(() => {
-                toast(`There was an error while uploading the image. ${error ? error.exception ?? error.httpStatusText : null}`)
+            }).catch((error) => {
+                toast(`There was an error while uploading the image.`, {
+                    description: getErrorMessage(error)
+                })
             })
         }
     }
