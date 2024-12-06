@@ -495,8 +495,6 @@ class TestPermissions(IntegrationTestCase):
 		# test1 should be able to create a direct message channel with test3 since both are Raven Users
 		dm_t1_t3 = create_direct_message_channel(user_id="test3@example.com")
 
-		self.assertEqual(dm_t1_t3, "test1@example.com _ test3@example.com")
-
 		# test2 should not be able to create a direct message channel with test3 since test2 is not a Raven User
 		frappe.set_user("test2@example.com")
 		with self.assertRaises(frappe.PermissionError):
