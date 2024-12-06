@@ -35,7 +35,7 @@ const router = createBrowserRouter(
       <Route path='/forgot-password' lazy={() => import('@/pages/auth/ForgotPassword')} />
       <Route path="/" element={<ProtectedRoute />} errorElement={<ErrorPage />}>
         <Route path="/" element={<WorkspaceSwitcher />}>
-          <Route index element={<Navigate to="workspace-explorer" replace />} />
+          <Route index element={<WorkspaceSwitcherGrid />} />
           <Route path="workspace-explorer" element={<WorkspaceSwitcherGrid />} />
           <Route path=":workspaceID" element={<MainPage />}>
             <Route index element={<MobileTabsPage />} />
@@ -127,9 +127,9 @@ function App() {
       url={import.meta.env.VITE_FRAPPE_PATH ?? ''}
       socketPort={import.meta.env.VITE_SOCKET_PORT ? import.meta.env.VITE_SOCKET_PORT : undefined}
       //@ts-ignore
-      swrConfig={{
-        provider: localStorageProvider
-      }}
+      // swrConfig={{
+      //   provider: localStorageProvider
+      // }}
       siteName={getSiteName()}
     >
       <UserProvider>
