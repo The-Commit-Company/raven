@@ -4,6 +4,7 @@ import { useFrappeGetCall } from 'frappe-react-sdk'
 import { Flex } from '@radix-ui/themes'
 import { ErrorBanner } from '@/components/layout/AlertBanner/ErrorBanner'
 import { EmptyStateForThreads } from '@/components/layout/EmptyState/EmptyState'
+import { useParams } from 'react-router-dom'
 
 type Props = {
     aiThreads?: 0 | 1
@@ -11,8 +12,11 @@ type Props = {
 
 const ThreadsList = ({ aiThreads }: Props) => {
 
+    const { workspaceID } = useParams()
+
     const { data, error } = useFrappeGetCall<{ message: ThreadMessage[] }>("raven.api.threads.get_all_threads", {
-        is_ai_thread: aiThreads
+        is_ai_thread: aiThreads,
+        workspace: workspaceID
     }, undefined, {
         revalidateOnFocus: false
     })

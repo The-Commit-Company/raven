@@ -147,6 +147,7 @@ def get_saved_messages():
 			raven_message.message_type,
 			raven_message.message_reactions,
 			raven_message._liked_by,
+			raven_channel.workspace,
 		)
 		.where(raven_message._liked_by.like("%" + frappe.session.user + "%"))
 		.where(
@@ -526,6 +527,7 @@ def add_forwarded_message_to_channel(channel_id, forwarded_message):
 			"is_edited": 0,
 			"is_reply": 0,
 			"is_forwarded": 1,
+			"is_thread": 0,
 			"replied_message_details": None,
 			"message_reactions": None,
 		}

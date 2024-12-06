@@ -5,15 +5,21 @@ import { SidebarFooter } from './SidebarFooter'
 import AddWorkspaceSidebarButton from '@/components/feature/workspaces/AddWorkspaceSidebarButton'
 import { Link, useParams } from 'react-router-dom'
 import clsx from 'clsx'
+import { useMemo } from 'react'
 
 const WorkspacesSidebar = () => {
 
     const { data } = useFetchWorkspaces()
+
+    const myWorkspaces = useMemo(() => {
+        return data?.message.filter((workspace) => !!workspace.workspace_member_name) || []
+    }, [data])
+
     return (
         <Stack className='sm:w-18 w-20 sm:p-0 px-2 pb-4 border-r-1 border-gray-4 dark:border-gray-3 h-screen bg-gray-3 dark:bg-gray-1' justify='between'>
             <ScrollArea className='h-[calc(100vh-7rem)]' type="hover" scrollbars="vertical">
                 <Stack align='center' className='px-1 py-2' gap='3'>
-                    {data?.message.map((workspace) => (
+                    {myWorkspaces.map((workspace) => (
                         <WorkspaceItem workspace={workspace} key={workspace.name} />
                     ))}
                     <AddWorkspaceSidebarButton />

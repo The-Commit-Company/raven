@@ -7,7 +7,7 @@ from raven.utils import get_channel_members
 
 
 @frappe.whitelist()
-def get_all_threads(is_ai_thread=0):
+def get_all_threads(workspace: str = None, is_ai_thread=0):
 	"""
 	Get all the threads in which the user is a participant
 	(We are not fetching the messages inside a thread here, just the main thread message,
@@ -24,6 +24,7 @@ def get_all_threads(is_ai_thread=0):
 		frappe.qb.from_(channel)
 		.select(
 			channel.name,
+			channel.workspace,
 			channel.last_message_timestamp,
 			channel.last_message_details,
 			message.name.as_("thread_message_id"),
@@ -51,6 +52,9 @@ def get_all_threads(is_ai_thread=0):
 		.where(channel.is_thread == 1)
 		.where(channel.is_ai_thread == is_ai_thread)
 	)
+
+	if workspace:
+		query = query.where((channel.workspace == workspace) | (channel.is_dm_thread == 1))
 
 	query = query.orderby(channel.last_message_timestamp, order=Order.desc)
 	threads = query.run(as_dict=True)

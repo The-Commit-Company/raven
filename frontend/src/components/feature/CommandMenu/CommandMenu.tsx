@@ -53,16 +53,9 @@ const CommandMenu = () => {
                 <div className='min-h-[80vh]'>
                     <CommandList />
                 </div>
-
             </DrawerContent>
         </Drawer>
     }
-
-
-
-
-
-
 }
 
 export const CommandList = () => {
