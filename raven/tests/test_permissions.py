@@ -1082,6 +1082,34 @@ class TestPermissions(IntegrationTestCase):
 		test3_open_channel_member.delete()
 		test3_private_channel_member.delete()
 
+		# Threads
+		frappe.set_user("test@example.com")
+		test_message = self.create_test_message(channel_id=private_channel.name)
+		test_message.insert()
+
+		# Add test1 as a member of the private channel
+		test1_private_channel_member = frappe.get_doc(
+			{
+				"doctype": "Raven Channel Member",
+				"channel_id": private_channel.name,
+				"user_id": "test1@example.com",
+			}
+		).insert()
+
+		thread = create_thread(message_id=test_message.name)
+
+		frappe.set_user("test1@example.com")
+		self.assertTrue(frappe.has_permission("Raven Channel", doc=thread["thread_id"], ptype="read"))
+
+		# Test1 can join the thread channel
+		test1_thread_channel_member = frappe.get_doc(
+			{
+				"doctype": "Raven Channel Member",
+				"channel_id": thread["thread_id"],
+				"user_id": "test1@example.com",
+			}
+		).insert()
+
 	def test_message_permissions(self):
 		"""
 		A user can send messages to a channel if they are a member of the channel.

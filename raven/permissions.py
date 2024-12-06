@@ -203,6 +203,11 @@ def channel_member_has_permission(doc, user=None, ptype=None):
 			if channel_type == "Open" or channel_type == "Public":
 				return is_workspace_member(workspace, user)
 
+			if channel_doc.is_thread:
+				# Check if the user is a member of the main channel
+				main_channel = frappe.db.get_value("Raven Message", doc.channel_id, "channel_id")
+				return is_channel_member(main_channel, user)
+
 		else:
 			# Someone else is adding a new member to the channel
 			# Only existing channel members can add a new channel member
