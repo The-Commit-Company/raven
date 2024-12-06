@@ -46,6 +46,8 @@ def get_channel_list(hide_archived=False):
 	channel = frappe.qb.DocType("Raven Channel")
 	channel_member = frappe.qb.DocType("Raven Channel Member")
 
+	workspace_member = frappe.qb.DocType("Raven Workspace Member")
+
 	query = (
 		frappe.qb.from_(channel)
 		.select(
@@ -60,10 +62,14 @@ def get_channel_list(hide_archived=False):
 			channel.owner,
 			channel.last_message_timestamp,
 			channel.last_message_details,
+			channel.workspace,
 		)
 		.distinct()
 		.left_join(channel_member)
 		.on(channel.name == channel_member.channel_id)
+		.left_join(workspace_member)
+		.on(channel.workspace == workspace_member.workspace)
+		.where(workspace_member.user == frappe.session.user)
 		.where((channel.type != "Private") | (channel_member.user_id == frappe.session.user))
 		.where(channel.is_thread == 0)
 	)
