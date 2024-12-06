@@ -94,7 +94,7 @@ def create_thread(message_id):
 	if creator != frappe.session.user:
 		frappe.get_doc(
 			{"doctype": "Raven Channel Member", "channel_id": thread_channel.name, "user_id": creator}
-		).insert()
+		).insert(ignore_permissions=True)
 
 	else:
 		# By now, the creator of the thread and the creator of the original message should be added as participants
@@ -113,7 +113,7 @@ def create_thread(message_id):
 						"channel_id": thread_channel.name,
 						"user_id": peer_user_id,
 					}
-				).insert()
+				).insert(ignore_permissions=True)
 
 	# Update the message to mark it as a thread
 	thread_message.is_thread = 1
