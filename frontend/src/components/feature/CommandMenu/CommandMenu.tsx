@@ -10,6 +10,7 @@ import { atom, useAtom } from 'jotai'
 import { useIsDesktop } from '@/hooks/useMediaQuery'
 import { Drawer, DrawerContent } from '@/components/layout/Drawer'
 import SettingsList from './SettingsList'
+import ToggleThemeCommand from './ToggleThemeCommand'
 
 export const commandMenuOpenAtom = atom(false)
 
@@ -75,6 +76,9 @@ export const CommandList = () => {
             <ChannelList />
             <UserList />
             <SettingsList />
+            <Command.Group heading="Commands">
+                <ToggleThemeCommand />
+            </Command.Group>
 
             {/* TODO: Make these commands work */}
             {/* <Command.Group heading="Commands">
