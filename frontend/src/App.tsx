@@ -19,7 +19,8 @@ const NO_CACHE_KEYS = [
   "frappe.model.workflow.get_transitions",
   "frappe.desk.reportview.get_count",
   "frappe.core.doctype.server_script.server_script.enabled",
-  "raven.api.message_actions.get_action_defaults"
+  "raven.api.message_actions.get_action_defaults",
+  "raven.api.document_link.get_preview_data"
 ]
 
 

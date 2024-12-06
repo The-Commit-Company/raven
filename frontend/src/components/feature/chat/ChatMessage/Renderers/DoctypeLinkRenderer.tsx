@@ -49,7 +49,7 @@ export const DoctypeLinkRenderer = ({ doctype, docname }: { doctype: string, doc
         <Box className='max-w-[550px] min-w-[75px] py-2'>
             {
                 isLoading ?
-                    <Skeleton className='w-96 h-12 rounded-md' /> :
+                    <Skeleton className='w-96 h-32 rounded-md' /> :
                     error ?
                         <Card>
                             <ErrorBanner error={error} />
