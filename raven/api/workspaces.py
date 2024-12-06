@@ -35,3 +35,13 @@ def get_list():
 	)
 
 	return all_workspaces.run(as_dict=True)
+
+
+@frappe.whitelist()
+def join_workspace(workspace: str):
+	"""
+	Joins a workspace
+	"""
+	frappe.get_doc(
+		{"doctype": "Raven Workspace Member", "workspace": workspace, "user": frappe.session.user}
+	).insert()

@@ -3,8 +3,10 @@ import { Avatar, Card, Grid, Heading, Text } from '@radix-ui/themes'
 import { Link } from 'react-router-dom'
 import { HStack, Stack } from './Stack'
 import { useMemo } from 'react'
-import { useFrappeGetDocCount } from 'frappe-react-sdk'
+import { useFrappeGetDocCount, useFrappePostCall, useSWRConfig } from 'frappe-react-sdk'
 import { MdArrowOutward } from 'react-icons/md'
+import { toast } from 'sonner'
+import { getErrorMessage } from './AlertBanner/ErrorBanner'
 
 const WorkspaceSwitcherGrid = () => {
 
@@ -45,22 +47,24 @@ const WorkspaceSwitcherGrid = () => {
                     ))}
                 </Grid>
             </div>
-            <div className='container flex mx-auto flex-col gap-5 max-w-screen-lg'>
-                <Stack gap='1'>
-                    <Heading className='not-cal' size='4'>Other Workspaces</Heading>
-                    <Text size='2' color='gray' weight='medium'>Explore other workspaces that you can join.</Text>
-                </Stack>
-                <Grid columns={{
-                    sm: '1',
-                    md: '3',
-                    lg: '3',
-                    xl: '3'
-                }} gap='4'>
-                    {otherWorkspaces.map((workspace) => (
-                        <OtherWorkspaceItem key={workspace.name} workspace={workspace} />
-                    ))}
-                </Grid>
-            </div>
+            {otherWorkspaces.length > 0 && (
+                <div className='container flex mx-auto flex-col gap-5 max-w-screen-lg'>
+                    <Stack gap='1'>
+                        <Heading className='not-cal' size='4'>Other Workspaces</Heading>
+                        <Text size='2' color='gray' weight='medium'>Explore other workspaces that you can join.</Text>
+                    </Stack>
+                    <Grid columns={{
+                        sm: '1',
+                        md: '3',
+                        lg: '3',
+                        xl: '3'
+                    }} gap='4'>
+                        {otherWorkspaces.map((workspace) => (
+                            <OtherWorkspaceItem key={workspace.name} workspace={workspace} />
+                        ))}
+                    </Grid>
+                </div>
+            )}
         </Stack>
 
     )
@@ -122,8 +126,23 @@ const OtherWorkspaceItem = ({ workspace }: { workspace: WorkspaceFields }) => {
 
     const logo = getLogo(workspace)
 
-    return <Card className='relative shadow-sm hover:scale-105 transition-all duration-200'>
-        <HStack>
+    const { call } = useFrappePostCall('raven.api.workspaces.join_workspace')
+
+    const { mutate } = useSWRConfig()
+
+    const joinWorkspace = () => {
+        toast.promise(call({ workspace: workspace.name }).then(() => {
+            mutate('workspaces_list')
+            mutate('channel_list')
+        }), {
+            loading: 'Joining workspace...',
+            success: 'You have joined the workspace.',
+            error: (error) => `There was an error while joining the workspace.\n${getErrorMessage(error)}`,
+        })
+    }
+
+    return <Card className='relative shadow-sm hover:scale-105 transition-all duration-200' >
+        <HStack role='button' onClick={joinWorkspace} title={`Join ${workspace.workspace_name} workspace`} aria-label={`Join ${workspace.workspace_name} workspace`}>
             <Avatar
                 size={{ sm: '4', md: '4' }}
                 className='hover:shadow-sm transition-all duration-200'
