@@ -30,7 +30,7 @@ export const CreateChannelButton = ({ updateChannelList }: { updateChannelList: 
         return <Dialog.Root open={isOpen} onOpenChange={setIsOpen}>
             <Dialog.Trigger>
                 <IconButton variant='soft' size='1' radius='large' color='gray' aria-label='Create Channel' title='Create Channel'
-                    className='sm:group-hover:visible sm:invisible transition-all ease-ease text-gray-10 dark:text-gray-300 bg-transparent hover:bg-gray-3'>
+                    className='transition-all ease-ease text-gray-10 bg-transparent hover:bg-gray-3 hover:text-gray-12'>
                     <FiPlus size='16' />
                 </IconButton>
             </Dialog.Trigger>
@@ -45,7 +45,7 @@ export const CreateChannelButton = ({ updateChannelList }: { updateChannelList: 
 
             <DrawerTrigger asChild>
                 <IconButton variant='soft' size='1' radius='large' color='gray' aria-label='Create Channel' title='Create Channel'
-                    className='sm:group-hover:visible sm:invisible transition-all ease-ease text-gray-10 dark:text-gray-300 bg-transparent hover:bg-gray-3'>
+                    className='transition-all ease-ease text-gray-10 bg-transparent hover:bg-gray-3 hover:text-gray-12'>
                     <FiPlus size='16' />
                 </IconButton>
             </DrawerTrigger>
