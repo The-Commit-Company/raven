@@ -16,7 +16,7 @@ const ChannelItem = ({ channel }: { channel: ChannelListItem }) => {
 
     const onSelect = () => {
         setOpen(false)
-        navigate(`/channel/${channel.name}`)
+        navigate(`/${channel.workspace}/${channel.name}`)
     }
 
     return <Command.Item

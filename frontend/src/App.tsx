@@ -1,5 +1,5 @@
 import { FrappeProvider } from 'frappe-react-sdk'
-import { Route, RouterProvider, createBrowserRouter, createRoutesFromElements } from 'react-router-dom'
+import { Navigate, Route, RouterProvider, createBrowserRouter, createRoutesFromElements } from 'react-router-dom'
 import { MainPage } from './pages/MainPage'
 import { ProtectedRoute } from './utils/auth/ProtectedRoute'
 import { UserProvider } from './utils/auth/UserProvider'
@@ -11,6 +11,8 @@ import { useStickyState } from './hooks/useStickyState'
 import MobileTabsPage from './pages/MobileTabsPage'
 import Cookies from 'js-cookie'
 import ErrorPage from './pages/ErrorPage'
+import WorkspaceSwitcher from './pages/WorkspaceSwitcher'
+import WorkspaceSwitcherGrid from './components/layout/WorkspaceSwitcherGrid'
 
 /** Following keys will not be cached in app cache */
 const NO_CACHE_KEYS = [
@@ -32,8 +34,10 @@ const router = createBrowserRouter(
       <Route path='/signup' lazy={() => import('@/pages/auth/SignUp')} />
       <Route path='/forgot-password' lazy={() => import('@/pages/auth/ForgotPassword')} />
       <Route path="/" element={<ProtectedRoute />} errorElement={<ErrorPage />}>
-        <Route path="/" element={<ChannelRedirect />}>
-          <Route path="channel" element={<MainPage />} >
+        <Route path="/" element={<WorkspaceSwitcher />}>
+          <Route index element={<Navigate to="workspace-explorer" replace />} />
+          <Route path="workspace-explorer" element={<WorkspaceSwitcherGrid />} />
+          <Route path=":workspaceID" element={<MainPage />}>
             <Route index element={<MobileTabsPage />} />
             <Route path="threads" lazy={() => import('./components/feature/threads/Threads')}>
               <Route path="thread/:threadID" lazy={() => import('./components/feature/threads/ThreadDrawer/ThreadDrawer')} />

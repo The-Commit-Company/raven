@@ -15,6 +15,7 @@ class RavenWorkspace(Document):
 		from frappe.types import DF
 
 		can_only_join_via_invite: DF.Check
+		description: DF.SmallText | None
 		logo: DF.AttachImage | None
 		type: DF.Literal["Public", "Private"]
 		workspace_name: DF.Data

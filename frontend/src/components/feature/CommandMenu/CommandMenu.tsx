@@ -70,7 +70,6 @@ export const CommandList = () => {
 
     /** Use a custom filter instead of the default one - ignore very low scores in results */
     const customFilter = (value: string, search: string, keywords?: string[]) => {
-
         const score = defaultFilter ? defaultFilter(value, search, keywords) : 1
 
         if (score <= 0.1) {

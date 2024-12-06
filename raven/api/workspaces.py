@@ -26,7 +26,10 @@ def get_list():
 			workspace.name,
 			workspace.logo,
 			workspace.type,
+			workspace.description,
 			workspace.can_only_join_via_invite,
+			workspace_member.name.as_("workspace_member_name"),
+			workspace_member.is_admin.as_("is_admin"),
 		)
 		.orderby(workspace.creation, order=Order.asc)
 	)

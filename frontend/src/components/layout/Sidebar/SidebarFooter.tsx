@@ -1,19 +1,20 @@
 import { useContext, useState } from 'react'
 import { UserContext } from '../../../utils/auth/UserProvider'
 import { useUserData } from '@/hooks/useUserData'
-import { Box, DropdownMenu, Flex, IconButton, Tooltip } from '@radix-ui/themes'
+import { Box, DropdownMenu, Flex, IconButton, Separator, Tooltip } from '@radix-ui/themes'
 import { UserAvatar } from '@/components/common/UserAvatar'
 import { BsEmojiSmile } from 'react-icons/bs'
 import useCurrentRavenUser from '@/hooks/useCurrentRavenUser'
 import { SlSettings } from 'react-icons/sl'
 import { useIsUserActive } from '@/hooks/useIsUserActive'
-import { MdOutlineExitToApp } from 'react-icons/md'
+import { MdExplore, MdOutlineExitToApp, MdOutlineExplore } from 'react-icons/md'
 import { useNavigate } from 'react-router-dom'
 import { SetUserAvailabilityMenu } from '@/components/feature/userSettings/AvailabilityStatus/SetUserAvailabilityMenu'
 import { SetCustomStatusModal } from '@/components/feature/userSettings/CustomStatus/SetCustomStatusModal'
 import PushNotificationToggle from '@/components/feature/userSettings/PushNotifications/PushNotificationToggle'
 import { __ } from '@/utils/translations'
 import { Stack } from '../Stack'
+import { ImCompass } from 'react-icons/im'
 
 export const SidebarFooter = () => {
 
@@ -27,15 +28,24 @@ export const SidebarFooter = () => {
 
     const navigate = useNavigate()
 
-    return <Stack className='w-12 mx-auto py-2 border-t border-gray-4 dark:border-gray-3' align='center'>
-        <Box className='h-8 py-0.5 mt-1'>
-            <Tooltip content="Settings" side='right'>
-                <IconButton aria-label='Settings' size='2' color='gray' variant='ghost' onClick={() => navigate('/channel/settings/profile')}>
-                    <SlSettings size='16' />
+    return <Stack className='mx-auto py-2' align='center' gap='3'>
+        <Box>
+            <Tooltip content="Workspace Explorer" side='right'>
+                <IconButton aria-label='Workspace Explorer' size='2' color='gray' variant='ghost' onClick={() => navigate('/workspace-explorer')}>
+                    <ImCompass />
+                    {/* <MdOutlineExplore size='20' /> */}
                 </IconButton>
             </Tooltip>
         </Box>
-        <Box className='h-8 py-0.5'>
+        <Box>
+            <Tooltip content="Settings" side='right'>
+                <IconButton aria-label='Settings' size='2' color='gray' variant='ghost' onClick={() => navigate('/channel/settings/profile')}>
+                    <SlSettings size='18' />
+                </IconButton>
+            </Tooltip>
+        </Box>
+        <Separator size='4' className={`bg-gray-4 dark:bg-gray-6`} />
+        <Box className='pb-4'>
             <DropdownMenu.Root>
                 <Tooltip content="Options" side='right'>
                     <DropdownMenu.Trigger>
@@ -49,7 +59,6 @@ export const SidebarFooter = () => {
                                 isActive={isActive} />
 
                         </IconButton>
-
                     </DropdownMenu.Trigger>
                 </Tooltip>
                 <DropdownMenu.Content variant='soft'>

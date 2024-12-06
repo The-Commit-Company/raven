@@ -2,7 +2,7 @@ import { useFrappeCreateDoc, useSWRConfig } from 'frappe-react-sdk'
 import { ChangeEvent, useCallback, useMemo, useState } from 'react'
 import { Controller, FormProvider, useForm } from 'react-hook-form'
 import { BiGlobe, BiHash, BiLockAlt } from 'react-icons/bi'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { ErrorBanner } from '@/components/layout/AlertBanner/ErrorBanner'
 import { Box, Button, Dialog, Flex, IconButton, RadioGroup, Text, TextArea, TextField } from '@radix-ui/themes'
 import { ErrorText, HelperText, Label } from '@/components/common/Form'
@@ -101,9 +101,13 @@ const CreateChannelContent = ({ updateChannelList, isOpen, setIsOpen }: { update
 
 
     const channelType = watch('type')
+    const { workspaceID } = useParams()
 
     const onSubmit = (data: ChannelCreationForm) => {
-        createDoc('Raven Channel', data).then(result => {
+        createDoc('Raven Channel', {
+            ...data,
+            workspace: workspaceID
+        }).then(result => {
             if (result) {
                 toast.success(__("Channel created"))
                 onClose(result.name)

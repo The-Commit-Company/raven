@@ -16,6 +16,8 @@ export interface RavenWorkspace{
 	type: "Public" | "Private"
 	/**	Can only join via invite? : Check	*/
 	can_only_join_via_invite?: 0 | 1
+	/**	Description : Small Text	*/
+	description?: string
 	/**	Logo : Attach Image	*/
 	logo?: string
 }
