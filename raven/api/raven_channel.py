@@ -69,7 +69,7 @@ def get_channel_list(hide_archived=False):
 		.on(channel.name == channel_member.channel_id)
 		.left_join(workspace_member)
 		.on(channel.workspace == workspace_member.workspace)
-		.where(workspace_member.user == frappe.session.user)
+		.where((channel.is_direct_message == 1) | (workspace_member.user == frappe.session.user))
 		.where((channel.type != "Private") | (channel_member.user_id == frappe.session.user))
 		.where(channel.is_thread == 0)
 	)
