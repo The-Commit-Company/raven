@@ -5,21 +5,22 @@ import { PropsWithChildren, createElement } from 'react'
 import { IconType } from 'react-icons'
 import { BiBot, BiBuildings } from 'react-icons/bi'
 import { BsBoxes } from 'react-icons/bs'
-import { LuUserCircle2 } from 'react-icons/lu'
+import { LuCircleUserRound } from 'react-icons/lu'
 import { NavLink } from 'react-router-dom'
 
 export const SettingsSidebar = () => {
 
     return (
-        <Box className="h-[full] w-64 border-r border-gray-4  dark:border-gray-6">
+        <Box className="h-[full] w-64 border-r border-gray-4 dark:border-gray-6">
             <Flex direction="column" gap='2' className='px-4'>
-                <SettingsGroup title="My Account" icon={LuUserCircle2}>
+                <SettingsGroup title="My Account" icon={LuCircleUserRound}>
                     <SettingsSidebarItem title="Profile" to='profile' />
                     <SettingsSidebarItem title="Appearance" to='appearance' />
                 </SettingsGroup>
                 <SettingsSeparator />
                 <SettingsGroup title="Workspace" icon={BiBuildings}>
                     <SettingsSidebarItem title="Users" to='users' />
+                    <SettingsSidebarItem title="Workspaces" to='workspaces' />
                     {/* <SettingsSidebarItem title="Bots" to='bots' /> */}
                 </SettingsGroup>
                 <SettingsSeparator />
