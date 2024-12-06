@@ -3,7 +3,7 @@ import { Stack } from '@/components/layout/Stack'
 import useFetchWorkspaces from '@/hooks/fetchers/useFetchWorkspaces'
 import { Flex, Text } from '@radix-ui/themes'
 import { useEffect } from 'react'
-import { Outlet, useNavigate } from 'react-router-dom'
+import { Outlet, useLocation, useNavigate } from 'react-router-dom'
 
 const WorkspaceSwitcher = () => {
 
@@ -16,11 +16,13 @@ const WorkspaceSwitcher = () => {
 
     const navigate = useNavigate()
 
+    const { pathname } = useLocation()
+
     useEffect(() => {
-        if (lastWorkspace && isWorkspaceInData && lastChannel) {
+        if (lastWorkspace && isWorkspaceInData && lastChannel && pathname === '/') {
             navigate(`/${lastWorkspace}/${lastChannel}`, { replace: true })
         }
-    }, [isWorkspaceInData])
+    }, [isWorkspaceInData, pathname])
 
     if (isLoading) {
         return <Flex justify='center' align='center' height='100vh' width='100vw' className='animate-fadein'>

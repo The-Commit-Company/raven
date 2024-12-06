@@ -1,9 +1,12 @@
 import { CustomCallout } from '@/components/common/Callouts/CustomCallout'
 import { HelperText, Label } from '@/components/common/Form'
 import { Loader } from '@/components/common/Loader'
+import CompanyWorkspaceMapping from '@/components/feature/hr/CompanyWorkspaceMapping'
+import { ErrorBanner } from '@/components/layout/AlertBanner/ErrorBanner'
 import PageContainer from '@/components/layout/Settings/PageContainer'
 import SettingsContentContainer from '@/components/layout/Settings/SettingsContentContainer'
 import SettingsPageHeader from '@/components/layout/Settings/SettingsPageHeader'
+import { Stack } from '@/components/layout/Stack'
 import useRavenSettings from '@/hooks/fetchers/useRavenSettings'
 import { RavenSettings } from '@/types/Raven/RavenSettings'
 import { __ } from '@/utils/translations'
@@ -28,7 +31,7 @@ const FrappeHR = () => {
         }
     }, [ravenSettings])
 
-    const { updateDoc, loading: updatingDoc } = useFrappeUpdateDoc<RavenSettings>()
+    const { updateDoc, loading: updatingDoc, error } = useFrappeUpdateDoc<RavenSettings>()
 
     const onSubmit = (data: RavenSettings) => {
         toast.promise(updateDoc('Raven Settings', null, {
@@ -72,6 +75,8 @@ const FrappeHR = () => {
                             textChildren={__("HR is not installed on this site.")} >
                         </CustomCallout>}
 
+                        <ErrorBanner error={error} />
+
                         <Flex direction={'column'} gap='2' maxWidth={'480px'}>
                             <Text as="label" size="2">
                                 <Flex gap="2">
@@ -94,29 +99,34 @@ const FrappeHR = () => {
                             </HelperText>
                         </Flex>
                         {autoCreateDepartment ?
-                            <Flex direction={'column'} maxWidth={'320px'}>
-                                <Label isRequired>{__("Department Channel Type")}</Label>
-                                <Controller
-                                    control={control}
-                                    defaultValue={ravenSettings?.department_channel_type}
-                                    name='department_channel_type'
-                                    render={({ field }) => (
-                                        <Select.Root
-                                            value={field.value}
-                                            onValueChange={field.onChange}>
-                                            <Select.Trigger />
-                                            <Select.Content>
-                                                <Select.Item value='Private'>
-                                                    {__("Private")}
-                                                </Select.Item>
-                                                <Select.Item value='Public'>
-                                                    {__("Public")}
-                                                </Select.Item>
-                                            </Select.Content>
-                                        </Select.Root>
-                                    )}
-                                />
-                            </Flex> : null
+                            <Stack>
+                                <Flex direction={'column'} maxWidth={'320px'}>
+                                    <Label isRequired>{__("Department Channel Type")}</Label>
+                                    <Controller
+                                        control={control}
+                                        defaultValue={ravenSettings?.department_channel_type}
+                                        name='department_channel_type'
+                                        render={({ field }) => (
+                                            <Select.Root
+                                                value={field.value}
+                                                onValueChange={field.onChange}>
+                                                <Select.Trigger />
+                                                <Select.Content>
+                                                    <Select.Item value='Private'>
+                                                        {__("Private")}
+                                                    </Select.Item>
+                                                    <Select.Item value='Public'>
+                                                        {__("Public")}
+                                                    </Select.Item>
+                                                </Select.Content>
+                                            </Select.Root>
+                                        )}
+                                    />
+                                </Flex>
+
+                                <CompanyWorkspaceMapping />
+                            </Stack>
+                            : null
                         }
                         <Separator size='4' />
                         <Flex direction={'column'} gap='2' maxWidth={'480px'}>

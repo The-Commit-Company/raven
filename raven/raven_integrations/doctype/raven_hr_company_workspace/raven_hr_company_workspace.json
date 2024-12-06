@@ -1,0 +1,42 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2024-12-06 23:59:09.259014",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "company",
+  "raven_workspace"
+ ],
+ "fields": [
+  {
+   "description": "Link to the company",
+   "fieldname": "company",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Company",
+   "reqd": 1
+  },
+  {
+   "fieldname": "raven_workspace",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Raven Workspace",
+   "options": "Raven Workspace",
+   "reqd": 1
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2024-12-07 00:00:43.077659",
+ "modified_by": "Administrator",
+ "module": "Raven Integrations",
+ "name": "Raven HR Company Workspace",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": []
+}
