@@ -12,18 +12,15 @@ const WorkspaceSwitcher = () => {
     const lastWorkspace = localStorage.getItem('ravenLastWorkspace') ?? ''
     const lastChannel = localStorage.getItem('ravenLastChannel') ?? ''
 
+    const isWorkspaceInData = data?.message.some(w => w.name === lastWorkspace) ?? false
+
     const navigate = useNavigate()
 
     useEffect(() => {
-        const isWorkspaceInData = data?.message.some(w => w.name === lastWorkspace) ?? false
         if (lastWorkspace && isWorkspaceInData && lastChannel) {
             navigate(`/${lastWorkspace}/${lastChannel}`, { replace: true })
-        } else {
-            if (data?.message.length === 0) {
-                navigate(`/${data.message[0].name}`, { replace: true })
-            }
         }
-    }, [data])
+    }, [isWorkspaceInData])
 
     if (isLoading) {
         return <Flex justify='center' align='center' height='100vh' width='100vw' className='animate-fadein'>
