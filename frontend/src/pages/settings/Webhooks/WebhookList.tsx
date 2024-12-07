@@ -5,24 +5,24 @@ import PageContainer from "@/components/layout/Settings/PageContainer"
 import SettingsContentContainer from "@/components/layout/Settings/SettingsContentContainer"
 import SettingsPageHeader from "@/components/layout/Settings/SettingsPageHeader"
 import { RavenWebhook } from "@/types/RavenIntegrations/RavenWebhook"
-import { hasRavenAdminRole } from "@/utils/roles"
+import { isSystemManager } from "@/utils/roles"
 import { Flex, Button } from "@radix-ui/themes"
 import { useFrappeDocTypeEventListener, useFrappeGetDocList } from "frappe-react-sdk"
 import { Link } from "react-router-dom"
 
 const WebhookList = () => {
 
+    const isRavenAdmin = isSystemManager()
+
     const { data, error, isLoading, mutate } = useFrappeGetDocList<RavenWebhook>('Raven Webhook', {
         fields: ['name', 'request_url', 'enabled', 'owner', 'creation']
-    }, undefined, {
+    }, isRavenAdmin ? undefined : null, {
         errorRetryCount: 2
     })
 
     useFrappeDocTypeEventListener('Raven Webhook', () => {
         mutate()
     })
-
-    const isRavenAdmin = hasRavenAdminRole()
 
     return (
         <PageContainer>
@@ -36,7 +36,7 @@ const WebhookList = () => {
                 />
                 {isLoading && !error && <TableLoader columns={2} />}
                 <ErrorBanner error={error} />
-                {data?.length === 0 ? null : <Flex direction='column' gap='4' width='100%'>
+                {data?.length === 0 ? null : <Flex direction='column' gap='4' width='100%' className="animate-fadein">
                     {data?.map((webhook, index) => (
                         <WebhookItem key={index} webhook={webhook} mutate={mutate} />
                     ))}

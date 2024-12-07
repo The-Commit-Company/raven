@@ -6,7 +6,7 @@ import SettingsContentContainer from '@/components/layout/Settings/SettingsConte
 import SettingsPageHeader from '@/components/layout/Settings/SettingsPageHeader'
 import { HStack, Stack } from '@/components/layout/Stack'
 import { RavenBot } from '@/types/RavenBot/RavenBot'
-import { hasRavenAdminRole } from '@/utils/roles'
+import { hasRavenAdminRole, isSystemManager } from '@/utils/roles'
 import { Badge, Button, HoverCard, Table, Text } from '@radix-ui/themes'
 import { useFrappeGetDocList } from 'frappe-react-sdk'
 import { BiSolidCheckCircle, BiSolidXCircle } from 'react-icons/bi'
@@ -17,17 +17,18 @@ type Props = {}
 
 const BotList = (props: Props) => {
 
+    const isRavenAdmin = hasRavenAdminRole() || isSystemManager()
+
     const { data, isLoading, error } = useFrappeGetDocList<RavenBot>("Raven Bot", {
         fields: ["name", "bot_name", "is_ai_bot", "description", "image", "enable_file_search", "dynamic_instructions", "instruction", "allow_bot_to_write_documents", "enable_code_interpreter"],
         orderBy: {
             field: "modified",
             order: "desc"
         }
-    }, undefined, {
+    }, isRavenAdmin ? undefined : null, {
         errorRetryCount: 2
     })
 
-    const isRavenAdmin = hasRavenAdminRole()
     return (
         <PageContainer>
             <SettingsContentContainer>
@@ -48,7 +49,7 @@ const BotList = (props: Props) => {
 
 const BotTable = ({ bots }: { bots: RavenBot[] }) => {
     return (
-        <Table.Root variant="surface" className='rounded-sm'>
+        <Table.Root variant="surface" className='rounded-sm animate-fadein'>
             <Table.Header>
                 <Table.Row>
                     <Table.ColumnHeaderCell>Name</Table.ColumnHeaderCell>

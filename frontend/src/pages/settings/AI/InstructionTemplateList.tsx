@@ -4,9 +4,9 @@ import { TableLoader } from '@/components/layout/Loaders/TableLoader'
 import PageContainer from '@/components/layout/Settings/PageContainer'
 import SettingsContentContainer from '@/components/layout/Settings/SettingsContentContainer'
 import SettingsPageHeader from '@/components/layout/Settings/SettingsPageHeader'
-import { HStack, Stack } from '@/components/layout/Stack'
+import { HStack } from '@/components/layout/Stack'
 import { RavenBotInstructionTemplate } from '@/types/RavenAI/RavenBotInstructionTemplate'
-import { hasRavenAdminRole } from '@/utils/roles'
+import { hasRavenAdminRole, isSystemManager } from '@/utils/roles'
 import { Badge, Button, Table, Text } from '@radix-ui/themes'
 import { useFrappeGetDocList } from 'frappe-react-sdk'
 import { RiSparkling2Fill } from 'react-icons/ri'
@@ -16,17 +16,18 @@ type Props = {}
 
 const InstructionTemplateList = (props: Props) => {
 
+    const isRavenAdmin = hasRavenAdminRole() || isSystemManager()
+
     const { data, isLoading, error } = useFrappeGetDocList<RavenBotInstructionTemplate>("Raven Bot Instruction Template", {
         fields: ["name", "template_name", "dynamic_instructions", "instruction"],
         orderBy: {
             field: "modified",
             order: "desc"
         }
-    }, undefined, {
+    }, isRavenAdmin ? undefined : null, {
         errorRetryCount: 2
     })
 
-    const isRavenAdmin = hasRavenAdminRole()
     return (
         <PageContainer>
             <SettingsContentContainer>
@@ -48,7 +49,7 @@ const InstructionTemplateList = (props: Props) => {
 
 const InstructionTable = ({ data }: { data: RavenBotInstructionTemplate[] }) => {
     return (
-        <Table.Root variant="surface" className='rounded-sm'>
+        <Table.Root variant="surface" className='rounded-sm animate-fadein'>
             <Table.Header>
                 <Table.Row>
                     <Table.ColumnHeaderCell>Name</Table.ColumnHeaderCell>

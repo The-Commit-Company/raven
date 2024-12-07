@@ -5,6 +5,7 @@ import SettingsContentContainer from '@/components/layout/Settings/SettingsConte
 import SettingsPageHeader from '@/components/layout/Settings/SettingsPageHeader'
 import useRavenSettings from '@/hooks/fetchers/useRavenSettings'
 import { RavenSettings } from '@/types/Raven/RavenSettings'
+import { hasRavenAdminRole, isSystemManager } from '@/utils/roles'
 import { Box, Button, Checkbox, Flex, Separator, Text, TextField } from '@radix-ui/themes'
 import { useFrappeUpdateDoc } from 'frappe-react-sdk'
 import { useEffect } from 'react'
@@ -13,9 +14,13 @@ import { toast } from 'sonner'
 
 const OpenAISettings = () => {
 
+    const isRavenAdmin = hasRavenAdminRole() || isSystemManager()
+
     const { ravenSettings, mutate } = useRavenSettings()
 
-    const methods = useForm<RavenSettings>()
+    const methods = useForm<RavenSettings>({
+        disabled: !isRavenAdmin
+    })
 
     const { handleSubmit, control, watch, reset, register, formState: { errors } } = methods
 
@@ -55,7 +60,7 @@ const OpenAISettings = () => {
                         <SettingsPageHeader
                             title='OpenAI Settings'
                             description='Set your OpenAI API Key to use AI features in Raven.'
-                            actions={<Button type='submit' disabled={updatingDoc}>
+                            actions={<Button type='submit' disabled={updatingDoc || !isRavenAdmin}>
                                 {updatingDoc && <Loader />}
                                 {updatingDoc ? "Saving" : "Save"}
                             </Button>}

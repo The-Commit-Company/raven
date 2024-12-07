@@ -95,7 +95,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-11-14 12:08:10.691791",
+ "modified": "2024-12-07 23:11:20.120854",
  "modified_by": "Administrator",
  "module": "Raven Integrations",
  "name": "Raven Message Action",
@@ -122,6 +122,18 @@
    "report": 1,
    "role": "Raven User",
    "share": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Raven Admin",
+   "share": 1,
+   "write": 1
   }
  ],
  "search_fields": "action_name",

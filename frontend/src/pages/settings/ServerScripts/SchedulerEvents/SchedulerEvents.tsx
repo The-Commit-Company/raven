@@ -9,9 +9,11 @@ import SettingsContentContainer from "@/components/layout/Settings/SettingsConte
 import SettingsPageHeader from "@/components/layout/Settings/SettingsPageHeader"
 import { TableLoader } from "@/components/layout/Loaders/TableLoader"
 import ServerScriptNotEnabledCallout from "@/components/feature/settings/scheduler-events/ServerScriptNotEnabledForm"
-import { hasRavenAdminRole } from "@/utils/roles"
+import { isSystemManager } from "@/utils/roles"
 
 const SchedulerEvents = () => {
+
+    const isRavenAdmin = isSystemManager()
 
     const { data, error, isLoading, mutate } = useFrappeGetDocList<RavenSchedulerEvent>('Raven Scheduler Event', {
         fields: ['name', 'disabled', 'event_frequency', 'creation', 'owner'],
@@ -19,15 +21,13 @@ const SchedulerEvents = () => {
             field: 'modified',
             order: 'desc'
         }
-    }, undefined, {
+    }, isRavenAdmin ? undefined : null, {
         errorRetryCount: 2
     })
 
     useFrappeDocTypeEventListener('Raven Scheduler Event', () => {
         mutate()
     })
-
-    const isRavenAdmin = hasRavenAdminRole()
 
     return (
         <PageContainer>

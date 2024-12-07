@@ -6,7 +6,7 @@ import SettingsContentContainer from '@/components/layout/Settings/SettingsConte
 import SettingsPageHeader from '@/components/layout/Settings/SettingsPageHeader'
 import { HStack, Stack } from '@/components/layout/Stack'
 import { RavenBotAIPrompt } from '@/types/RavenAI/RavenBotAIPrompt'
-import { hasRavenAdminRole } from '@/utils/roles'
+import { hasRavenAdminRole, isSystemManager } from '@/utils/roles'
 import { Badge, Button, Checkbox, Table, Text } from '@radix-ui/themes'
 import { useFrappeGetDocList } from 'frappe-react-sdk'
 import { Link } from 'react-router-dom'
@@ -15,17 +15,18 @@ type Props = {}
 
 const SavedPromptList = (props: Props) => {
 
+    const isRavenAdmin = hasRavenAdminRole() || isSystemManager()
+
     const { data, isLoading, error } = useFrappeGetDocList<RavenBotAIPrompt>("Raven Bot AI Prompt", {
         fields: ["name", "prompt", "raven_bot", "is_global"],
         orderBy: {
             field: "modified",
             order: "desc"
         }
-    }, undefined, {
+    }, isRavenAdmin ? undefined : null, {
         errorRetryCount: 2
     })
 
-    const isRavenAdmin = hasRavenAdminRole()
     return (
         <PageContainer>
             <SettingsContentContainer>
@@ -47,7 +48,7 @@ const SavedPromptList = (props: Props) => {
 
 const SavedPromptTable = ({ data }: { data: RavenBotAIPrompt[] }) => {
     return (
-        <Table.Root variant="surface" className='rounded-sm'>
+        <Table.Root variant="surface" className='rounded-sm animate-fadein'>
             <Table.Header>
                 <Table.Row>
                     <Table.ColumnHeaderCell>Name</Table.ColumnHeaderCell>

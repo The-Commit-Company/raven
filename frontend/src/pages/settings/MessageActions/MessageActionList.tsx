@@ -5,12 +5,14 @@ import SettingsContentContainer from '@/components/layout/Settings/SettingsConte
 import SettingsPageHeader from '@/components/layout/Settings/SettingsPageHeader'
 import { HStack } from '@/components/layout/Stack'
 import { RavenMessageAction } from '@/types/RavenIntegrations/RavenMessageAction'
-import { hasRavenAdminRole } from '@/utils/roles'
+import { hasRavenAdminRole, isSystemManager } from '@/utils/roles'
 import { Badge, Button, Table } from '@radix-ui/themes'
 import { useFrappeGetDocList } from 'frappe-react-sdk'
 import { Link } from 'react-router-dom'
 
 const MessageActionList = () => {
+
+    const isRavenAdmin = hasRavenAdminRole() || isSystemManager()
 
     const { data, isLoading, error } = useFrappeGetDocList<RavenMessageAction>("Raven Message Action", {
         fields: ["name", "enabled", "action_name", "action"],
@@ -22,7 +24,6 @@ const MessageActionList = () => {
         errorRetryCount: 2
     })
 
-    const isRavenAdmin = hasRavenAdminRole()
     return (
         <PageContainer>
             <SettingsContentContainer>
@@ -43,7 +44,7 @@ const MessageActionList = () => {
 
 const MessageActionsTable = ({ actions }: { actions: RavenMessageAction[] }) => {
     return (
-        <Table.Root variant="surface" className='rounded-sm'>
+        <Table.Root variant="surface" className='rounded-sm animate-fadein'>
             <Table.Header>
                 <Table.Row>
                     <Table.ColumnHeaderCell>Name</Table.ColumnHeaderCell>

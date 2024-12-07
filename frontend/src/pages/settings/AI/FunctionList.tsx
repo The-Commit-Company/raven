@@ -4,10 +4,10 @@ import { TableLoader } from '@/components/layout/Loaders/TableLoader'
 import PageContainer from '@/components/layout/Settings/PageContainer'
 import SettingsContentContainer from '@/components/layout/Settings/SettingsContentContainer'
 import SettingsPageHeader from '@/components/layout/Settings/SettingsPageHeader'
-import { HStack, Stack } from '@/components/layout/Stack'
+import { HStack } from '@/components/layout/Stack'
 import { RavenAIFunction } from '@/types/RavenAI/RavenAIFunction'
-import { hasRavenAdminRole } from '@/utils/roles'
-import { Badge, Button, Checkbox, HoverCard, Table, Text } from '@radix-ui/themes'
+import { hasRavenAdminRole, isSystemManager } from '@/utils/roles'
+import { Badge, Button, Checkbox, Table, Text } from '@radix-ui/themes'
 import { useFrappeGetDocList } from 'frappe-react-sdk'
 import { Link } from 'react-router-dom'
 
@@ -15,17 +15,18 @@ type Props = {}
 
 const FunctionList = (props: Props) => {
 
+    const isRavenAdmin = hasRavenAdminRole() || isSystemManager()
+
     const { data, isLoading, error } = useFrappeGetDocList<RavenAIFunction>("Raven AI Function", {
         fields: ["name", "description", "function_name", "type", "requires_write_permissions"],
         orderBy: {
             field: "modified",
             order: "desc"
         }
-    }, undefined, {
+    }, isRavenAdmin ? undefined : null, {
         errorRetryCount: 2
     })
 
-    const isRavenAdmin = hasRavenAdminRole()
     return (
         <PageContainer>
             <SettingsContentContainer>
@@ -47,7 +48,7 @@ const FunctionList = (props: Props) => {
 
 const FunctionTable = ({ functions }: { functions: RavenAIFunction[] }) => {
     return (
-        <Table.Root variant="surface" className='rounded-sm'>
+        <Table.Root variant="surface" className='rounded-sm animate-fadein'>
             <Table.Header>
                 <Table.Row>
                     <Table.ColumnHeaderCell>Name</Table.ColumnHeaderCell>
