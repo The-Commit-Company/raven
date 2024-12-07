@@ -146,6 +146,15 @@ class RavenChannel(Document):
 				else:
 					frappe.throw(_("You don't have permission to modify this channel"), frappe.PermissionError)
 
+		# Check if this channel exists in the current workspace
+		if self.workspace:
+			if frappe.db.exists(
+				"Raven Channel", {"channel_name": self.channel_name, "workspace": self.workspace}
+			):
+				frappe.throw(
+					_("A channel with this name already exists in this workspace."), frappe.ValidationError
+				)
+
 	def before_validate(self):
 		if self.is_self_message == 1:
 			self.is_direct_message = 1

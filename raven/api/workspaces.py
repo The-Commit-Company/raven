@@ -45,3 +45,18 @@ def join_workspace(workspace: str):
 	frappe.get_doc(
 		{"doctype": "Raven Workspace Member", "workspace": workspace, "user": frappe.session.user}
 	).insert()
+
+
+@frappe.whitelist()
+def is_workspace_admin(workspace: str):
+	"""
+	Checks if the current user is an admin of a workspace
+	"""
+	workspace_member = frappe.get_doc(
+		"Raven Workspace Member", {"workspace": workspace, "user": frappe.session.user}
+	)
+
+	if workspace_member and workspace_member.is_admin:
+		return True
+
+	return False
