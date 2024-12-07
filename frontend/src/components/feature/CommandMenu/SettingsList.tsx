@@ -18,7 +18,7 @@ const SettingsList = (props: Props) => {
     const setOpen = useSetAtom(commandMenuOpenAtom)
 
     const onSelect = (value: string) => {
-        navigate(`/channel/settings/${value}`)
+        navigate(`/settings/${value}`)
         setOpen(false)
     }
     return (
