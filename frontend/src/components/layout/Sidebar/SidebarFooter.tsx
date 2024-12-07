@@ -38,7 +38,7 @@ export const SidebarFooter = () => {
         </Box>
         <Box>
             <Tooltip content="Settings" side='right'>
-                <IconButton aria-label='Settings' size='4' color='gray' variant='ghost' onClick={() => navigate('/channel/settings/profile')}>
+                <IconButton aria-label='Settings' size='4' color='gray' variant='ghost' onClick={() => navigate('/settings/profile')}>
                     <SlSettings size='18' />
                 </IconButton>
             </Tooltip>
@@ -52,7 +52,7 @@ export const SidebarFooter = () => {
                             <UserAvatar
                                 src={myProfile?.user_image}
                                 alt={myProfile?.full_name}
-                                size='3'
+                                size='2'
                                 className='hover:shadow-sm transition-all duration-200'
                                 availabilityStatus={myProfile?.availability_status}
                                 isActive={isActive} />

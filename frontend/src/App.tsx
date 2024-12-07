@@ -37,63 +37,64 @@ const router = createBrowserRouter(
         <Route path="/" element={<WorkspaceSwitcher />}>
           <Route index element={<WorkspaceSwitcherGrid />} />
           <Route path="workspace-explorer" element={<WorkspaceSwitcherGrid />} />
+          <Route path="settings" lazy={() => import('./pages/settings/Settings')}>
+            <Route index lazy={() => import('./components/feature/userSettings/UserProfile/UserProfile')} />
+            <Route path="profile" lazy={() => import('./components/feature/userSettings/UserProfile/UserProfile')} />
+            <Route path="users" lazy={() => import('./pages/settings/Users/UserList')} />
+            <Route path="appearance" lazy={() => import('./pages/settings/Appearance')} />
+            <Route path="hr" lazy={() => import('./pages/settings/Integrations/FrappeHR')} />
+            <Route path="bots" >
+              <Route index lazy={() => import('./pages/settings/AI/BotList')} />
+              <Route path="create" lazy={() => import('./pages/settings/AI/CreateBot')} />
+              <Route path=":ID" lazy={() => import('./pages/settings/AI/ViewBot')} />
+            </Route>
+
+            <Route path="functions">
+              <Route index lazy={() => import('./pages/settings/AI/FunctionList')} />
+              <Route path="create" lazy={() => import('./pages/settings/AI/CreateFunction')} />
+              <Route path=":ID" lazy={() => import('./pages/settings/AI/ViewFunction')} />
+            </Route>
+
+
+            <Route path="instructions">
+              <Route index lazy={() => import('./pages/settings/AI/InstructionTemplateList')} />
+              <Route path="create" lazy={() => import('./pages/settings/AI/CreateInstructionTemplate')} />
+              <Route path=":ID" lazy={() => import('./pages/settings/AI/ViewInstructionTemplate')} />
+            </Route>
+
+            <Route path="commands">
+              <Route index lazy={() => import('./pages/settings/AI/SavedPromptsList')} />
+              <Route path="create" lazy={() => import('./pages/settings/AI/CreateSavedPrompt')} />
+              <Route path=":ID" lazy={() => import('./pages/settings/AI/ViewSavedPrompt')} />
+            </Route>
+
+            <Route path="openai-settings" lazy={() => import('./pages/settings/AI/OpenAISettings')} />
+
+            <Route path="webhooks">
+              <Route index lazy={() => import('./pages/settings/Webhooks/WebhookList')} />
+              <Route path="create" lazy={() => import('./pages/settings/Webhooks/CreateWebhook')} />
+              <Route path=":ID" lazy={() => import('./pages/settings/Webhooks/ViewWebhook')} />
+            </Route>
+
+            <Route path="scheduled-messages">
+              <Route index lazy={() => import('./pages/settings/ServerScripts/SchedulerEvents/SchedulerEvents')} />
+              <Route path="create" lazy={() => import('./pages/settings/ServerScripts/SchedulerEvents/CreateSchedulerEvent')} />
+              <Route path=":ID" lazy={() => import('./pages/settings/ServerScripts/SchedulerEvents/ViewSchedulerEvent')} />
+            </Route>
+
+            <Route path="message-actions">
+              <Route index lazy={() => import('./pages/settings/MessageActions/MessageActionList')} />
+              <Route path="create" lazy={() => import('./pages/settings/MessageActions/CreateMessageAction')} />
+              <Route path=":ID" lazy={() => import('./pages/settings/MessageActions/ViewMessageAction')} />
+            </Route>
+          </Route>
           <Route path=":workspaceID" element={<MainPage />}>
             <Route index element={<MobileTabsPage />} />
             <Route path="threads" lazy={() => import('./components/feature/threads/Threads')}>
               <Route path="thread/:threadID" lazy={() => import('./components/feature/threads/ThreadDrawer/ThreadDrawer')} />
             </Route>
             <Route path="saved-messages" lazy={() => import('./components/feature/saved-messages/SavedMessages')} />
-            <Route path="settings" lazy={() => import('./pages/settings/Settings')}>
-              <Route index lazy={() => import('./components/feature/userSettings/UserProfile/UserProfile')} />
-              <Route path="profile" lazy={() => import('./components/feature/userSettings/UserProfile/UserProfile')} />
-              <Route path="users" lazy={() => import('./pages/settings/Users/UserList')} />
-              <Route path="appearance" lazy={() => import('./pages/settings/Appearance')} />
-              <Route path="hr" lazy={() => import('./pages/settings/Integrations/FrappeHR')} />
-              <Route path="bots" >
-                <Route index lazy={() => import('./pages/settings/AI/BotList')} />
-                <Route path="create" lazy={() => import('./pages/settings/AI/CreateBot')} />
-                <Route path=":ID" lazy={() => import('./pages/settings/AI/ViewBot')} />
-              </Route>
 
-              <Route path="functions">
-                <Route index lazy={() => import('./pages/settings/AI/FunctionList')} />
-                <Route path="create" lazy={() => import('./pages/settings/AI/CreateFunction')} />
-                <Route path=":ID" lazy={() => import('./pages/settings/AI/ViewFunction')} />
-              </Route>
-
-
-              <Route path="instructions">
-                <Route index lazy={() => import('./pages/settings/AI/InstructionTemplateList')} />
-                <Route path="create" lazy={() => import('./pages/settings/AI/CreateInstructionTemplate')} />
-                <Route path=":ID" lazy={() => import('./pages/settings/AI/ViewInstructionTemplate')} />
-              </Route>
-
-              <Route path="commands">
-                <Route index lazy={() => import('./pages/settings/AI/SavedPromptsList')} />
-                <Route path="create" lazy={() => import('./pages/settings/AI/CreateSavedPrompt')} />
-                <Route path=":ID" lazy={() => import('./pages/settings/AI/ViewSavedPrompt')} />
-              </Route>
-
-              <Route path="openai-settings" lazy={() => import('./pages/settings/AI/OpenAISettings')} />
-
-              <Route path="webhooks">
-                <Route index lazy={() => import('./pages/settings/Webhooks/WebhookList')} />
-                <Route path="create" lazy={() => import('./pages/settings/Webhooks/CreateWebhook')} />
-                <Route path=":ID" lazy={() => import('./pages/settings/Webhooks/ViewWebhook')} />
-              </Route>
-
-              <Route path="scheduled-messages">
-                <Route index lazy={() => import('./pages/settings/ServerScripts/SchedulerEvents/SchedulerEvents')} />
-                <Route path="create" lazy={() => import('./pages/settings/ServerScripts/SchedulerEvents/CreateSchedulerEvent')} />
-                <Route path=":ID" lazy={() => import('./pages/settings/ServerScripts/SchedulerEvents/ViewSchedulerEvent')} />
-              </Route>
-
-              <Route path="message-actions">
-                <Route index lazy={() => import('./pages/settings/MessageActions/MessageActionList')} />
-                <Route path="create" lazy={() => import('./pages/settings/MessageActions/CreateMessageAction')} />
-                <Route path=":ID" lazy={() => import('./pages/settings/MessageActions/ViewMessageAction')} />
-              </Route>
-            </Route>
             <Route path=":channelID" lazy={() => import('@/pages/ChatSpace')}>
               <Route path="thread/:threadID" lazy={() => import('./components/feature/threads/ThreadDrawer/ThreadDrawer')} />
             </Route>
