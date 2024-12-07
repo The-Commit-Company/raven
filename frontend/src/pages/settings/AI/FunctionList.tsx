@@ -6,6 +6,7 @@ import SettingsContentContainer from '@/components/layout/Settings/SettingsConte
 import SettingsPageHeader from '@/components/layout/Settings/SettingsPageHeader'
 import { HStack, Stack } from '@/components/layout/Stack'
 import { RavenAIFunction } from '@/types/RavenAI/RavenAIFunction'
+import { hasRavenAdminRole } from '@/utils/roles'
 import { Badge, Button, Checkbox, HoverCard, Table, Text } from '@radix-ui/themes'
 import { useFrappeGetDocList } from 'frappe-react-sdk'
 import { Link } from 'react-router-dom'
@@ -20,18 +21,22 @@ const FunctionList = (props: Props) => {
             field: "modified",
             order: "desc"
         }
+    }, undefined, {
+        errorRetryCount: 2
     })
+
+    const isRavenAdmin = hasRavenAdminRole()
     return (
         <PageContainer>
             <SettingsContentContainer>
                 <SettingsPageHeader
                     title='Functions'
                     description='Declare functions to be used by your AI bots.'
-                    actions={<Button asChild>
+                    actions={<Button asChild disabled={!isRavenAdmin}>
                         <Link to='create'>Create</Link>
                     </Button>}
                 />
-                {isLoading && <TableLoader columns={2} />}
+                {isLoading && !error && <TableLoader columns={2} />}
                 <ErrorBanner error={error} />
                 <AINotEnabledCallout />
                 {data && <FunctionTable functions={data} />}

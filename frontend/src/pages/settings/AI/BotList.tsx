@@ -6,6 +6,7 @@ import SettingsContentContainer from '@/components/layout/Settings/SettingsConte
 import SettingsPageHeader from '@/components/layout/Settings/SettingsPageHeader'
 import { HStack, Stack } from '@/components/layout/Stack'
 import { RavenBot } from '@/types/RavenBot/RavenBot'
+import { hasRavenAdminRole } from '@/utils/roles'
 import { Badge, Button, HoverCard, Table, Text } from '@radix-ui/themes'
 import { useFrappeGetDocList } from 'frappe-react-sdk'
 import { BiSolidCheckCircle, BiSolidXCircle } from 'react-icons/bi'
@@ -22,18 +23,22 @@ const BotList = (props: Props) => {
             field: "modified",
             order: "desc"
         }
+    }, undefined, {
+        errorRetryCount: 2
     })
+
+    const isRavenAdmin = hasRavenAdminRole()
     return (
         <PageContainer>
             <SettingsContentContainer>
                 <SettingsPageHeader
                     title='Bots'
                     description='Use Bots to send reminders, run AI assistants, and more.'
-                    actions={<Button asChild>
+                    actions={<Button asChild disabled={!isRavenAdmin}>
                         <Link to='create'>Create</Link>
                     </Button>}
                 />
-                {isLoading && <TableLoader columns={2} />}
+                {isLoading && !error && <TableLoader columns={2} />}
                 <ErrorBanner error={error} />
                 {data && <BotTable bots={data} />}
             </SettingsContentContainer>

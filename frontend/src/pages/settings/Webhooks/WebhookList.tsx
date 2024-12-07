@@ -5,6 +5,7 @@ import PageContainer from "@/components/layout/Settings/PageContainer"
 import SettingsContentContainer from "@/components/layout/Settings/SettingsContentContainer"
 import SettingsPageHeader from "@/components/layout/Settings/SettingsPageHeader"
 import { RavenWebhook } from "@/types/RavenIntegrations/RavenWebhook"
+import { hasRavenAdminRole } from "@/utils/roles"
 import { Flex, Button } from "@radix-ui/themes"
 import { useFrappeDocTypeEventListener, useFrappeGetDocList } from "frappe-react-sdk"
 import { Link } from "react-router-dom"
@@ -13,11 +14,15 @@ const WebhookList = () => {
 
     const { data, error, isLoading, mutate } = useFrappeGetDocList<RavenWebhook>('Raven Webhook', {
         fields: ['name', 'request_url', 'enabled', 'owner', 'creation']
+    }, undefined, {
+        errorRetryCount: 2
     })
 
     useFrappeDocTypeEventListener('Raven Webhook', () => {
         mutate()
     })
+
+    const isRavenAdmin = hasRavenAdminRole()
 
     return (
         <PageContainer>
@@ -25,11 +30,11 @@ const WebhookList = () => {
                 <SettingsPageHeader
                     title='Webhooks'
                     description='Fire webhooks on specific events like when a message is sent or channel is created.'
-                    actions={<Button asChild>
+                    actions={<Button asChild disabled={!isRavenAdmin}>
                         <Link to='create'>Create</Link>
                     </Button>}
                 />
-                {isLoading && <TableLoader columns={2} />}
+                {isLoading && !error && <TableLoader columns={2} />}
                 <ErrorBanner error={error} />
                 {data?.length === 0 ? null : <Flex direction='column' gap='4' width='100%'>
                     {data?.map((webhook, index) => (

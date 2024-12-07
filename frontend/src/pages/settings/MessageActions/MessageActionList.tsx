@@ -5,6 +5,7 @@ import SettingsContentContainer from '@/components/layout/Settings/SettingsConte
 import SettingsPageHeader from '@/components/layout/Settings/SettingsPageHeader'
 import { HStack } from '@/components/layout/Stack'
 import { RavenMessageAction } from '@/types/RavenIntegrations/RavenMessageAction'
+import { hasRavenAdminRole } from '@/utils/roles'
 import { Badge, Button, Table } from '@radix-ui/themes'
 import { useFrappeGetDocList } from 'frappe-react-sdk'
 import { Link } from 'react-router-dom'
@@ -17,18 +18,22 @@ const MessageActionList = () => {
             field: "modified",
             order: "desc"
         }
+    }, undefined, {
+        errorRetryCount: 2
     })
+
+    const isRavenAdmin = hasRavenAdminRole()
     return (
         <PageContainer>
             <SettingsContentContainer>
                 <SettingsPageHeader
                     title='Message Actions'
                     description='Use these to add custom actions - like creating an issue/task from a message.'
-                    actions={<Button asChild>
+                    actions={<Button asChild disabled={!isRavenAdmin}>
                         <Link to='create'>Create</Link>
                     </Button>}
                 />
-                {isLoading && <TableLoader columns={2} />}
+                {isLoading && !error && <TableLoader columns={2} />}
                 <ErrorBanner error={error} />
                 {data && <MessageActionsTable actions={data} />}
             </SettingsContentContainer>

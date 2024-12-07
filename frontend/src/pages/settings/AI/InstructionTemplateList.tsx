@@ -6,6 +6,7 @@ import SettingsContentContainer from '@/components/layout/Settings/SettingsConte
 import SettingsPageHeader from '@/components/layout/Settings/SettingsPageHeader'
 import { HStack, Stack } from '@/components/layout/Stack'
 import { RavenBotInstructionTemplate } from '@/types/RavenAI/RavenBotInstructionTemplate'
+import { hasRavenAdminRole } from '@/utils/roles'
 import { Badge, Button, Table, Text } from '@radix-ui/themes'
 import { useFrappeGetDocList } from 'frappe-react-sdk'
 import { RiSparkling2Fill } from 'react-icons/ri'
@@ -21,18 +22,22 @@ const InstructionTemplateList = (props: Props) => {
             field: "modified",
             order: "desc"
         }
+    }, undefined, {
+        errorRetryCount: 2
     })
+
+    const isRavenAdmin = hasRavenAdminRole()
     return (
         <PageContainer>
             <SettingsContentContainer>
                 <SettingsPageHeader
                     title='Instruction Templates'
                     description='Save commonly used instructions as templates for your bots.'
-                    actions={<Button asChild>
+                    actions={<Button asChild disabled={!isRavenAdmin}>
                         <Link to='create'>Create</Link>
                     </Button>}
                 />
-                {isLoading && <TableLoader columns={2} />}
+                {isLoading && !error && <TableLoader columns={2} />}
                 <ErrorBanner error={error} />
                 <AINotEnabledCallout />
                 {data && <InstructionTable data={data} />}

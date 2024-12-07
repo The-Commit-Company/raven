@@ -9,6 +9,7 @@ import SettingsContentContainer from "@/components/layout/Settings/SettingsConte
 import SettingsPageHeader from "@/components/layout/Settings/SettingsPageHeader"
 import { TableLoader } from "@/components/layout/Loaders/TableLoader"
 import ServerScriptNotEnabledCallout from "@/components/feature/settings/scheduler-events/ServerScriptNotEnabledForm"
+import { hasRavenAdminRole } from "@/utils/roles"
 
 const SchedulerEvents = () => {
 
@@ -18,11 +19,15 @@ const SchedulerEvents = () => {
             field: 'modified',
             order: 'desc'
         }
+    }, undefined, {
+        errorRetryCount: 2
     })
 
     useFrappeDocTypeEventListener('Raven Scheduler Event', () => {
         mutate()
     })
+
+    const isRavenAdmin = hasRavenAdminRole()
 
     return (
         <PageContainer>
@@ -30,11 +35,11 @@ const SchedulerEvents = () => {
                 <SettingsPageHeader
                     title='Scheduled Messages'
                     description='You can create a scheduled message & a bot will send it to you at the specified time.'
-                    actions={<Button asChild>
+                    actions={<Button asChild disabled={!isRavenAdmin}>
                         <Link to='create'>Create</Link>
                     </Button>}
                 />
-                {isLoading && <TableLoader columns={2} />}
+                {isLoading && !error && <TableLoader columns={2} />}
                 <ErrorBanner error={error} />
                 <ServerScriptNotEnabledCallout />
                 {data ? data.length === 0 ? null : <List data={data} /> : null}

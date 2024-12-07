@@ -3,7 +3,7 @@ import { Stack } from '@/components/layout/Stack'
 import { useIsDesktop } from '@/hooks/useMediaQuery'
 import { DIALOG_CONTENT_CLASS } from '@/utils/layout/dialog'
 import { hasRavenAdminRole } from '@/utils/roles'
-import { Dialog, IconButton } from '@radix-ui/themes'
+import { Dialog, IconButton, Tooltip } from '@radix-ui/themes'
 import { FiPlus } from 'react-icons/fi'
 import AddWorkspaceForm from './AddWorkspaceForm'
 import { useBoolean } from '@/hooks/useBoolean'
@@ -30,14 +30,16 @@ const AddWorkspaceModal = () => {
     if (isDesktop) {
 
         return <Dialog.Root open={isOpen} onOpenChange={setValue}>
-            <Dialog.Trigger>
-                <IconButton
-                    color='gray'
-                    size='3'
-                    variant='soft'>
-                    <FiPlus size='20' />
-                </IconButton>
-            </Dialog.Trigger>
+            <Tooltip content="Create Workspace" side='right'>
+                <Dialog.Trigger>
+                    <IconButton
+                        color='gray'
+                        size='3'
+                        variant='soft'>
+                        <FiPlus size='20' />
+                    </IconButton>
+                </Dialog.Trigger>
+            </Tooltip>
             <Dialog.Content className={DIALOG_CONTENT_CLASS}>
                 <Dialog.Title>Create Workspace</Dialog.Title>
                 <Dialog.Description size='2'>Workspaces allow you to organize your channels and teams.</Dialog.Description>
@@ -45,7 +47,7 @@ const AddWorkspaceModal = () => {
                     <AddWorkspaceForm onClose={off} />
                 </Stack>
             </Dialog.Content>
-        </Dialog.Root>
+        </Dialog.Root >
     }
 
     return <Drawer>

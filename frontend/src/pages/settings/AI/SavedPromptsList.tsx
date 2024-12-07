@@ -6,6 +6,7 @@ import SettingsContentContainer from '@/components/layout/Settings/SettingsConte
 import SettingsPageHeader from '@/components/layout/Settings/SettingsPageHeader'
 import { HStack, Stack } from '@/components/layout/Stack'
 import { RavenBotAIPrompt } from '@/types/RavenAI/RavenBotAIPrompt'
+import { hasRavenAdminRole } from '@/utils/roles'
 import { Badge, Button, Checkbox, Table, Text } from '@radix-ui/themes'
 import { useFrappeGetDocList } from 'frappe-react-sdk'
 import { Link } from 'react-router-dom'
@@ -20,18 +21,22 @@ const SavedPromptList = (props: Props) => {
             field: "modified",
             order: "desc"
         }
+    }, undefined, {
+        errorRetryCount: 2
     })
+
+    const isRavenAdmin = hasRavenAdminRole()
     return (
         <PageContainer>
             <SettingsContentContainer>
                 <SettingsPageHeader
                     title='Saved Commands'
                     description='Save commonly used commands and prompts for your AI bots and access them via "/" in chat.'
-                    actions={<Button asChild>
+                    actions={<Button asChild disabled={!isRavenAdmin}>
                         <Link to='create'>Create</Link>
                     </Button>}
                 />
-                {isLoading && <TableLoader columns={2} />}
+                {isLoading && !error && <TableLoader columns={2} />}
                 <ErrorBanner error={error} />
                 <AINotEnabledCallout />
                 {data && <SavedPromptTable data={data} />}
