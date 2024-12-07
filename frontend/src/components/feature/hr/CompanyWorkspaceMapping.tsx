@@ -12,18 +12,24 @@ type Props = {}
 
 const CompanyWorkspaceMapping = (props: Props) => {
 
-    const { control, formState: { errors } } = useFormContext<RavenSettings>()
+    const { control, formState: { errors, disabled } } = useFormContext<RavenSettings>()
 
     const { fields, append, remove } = useFieldArray({
         control,
         name: 'company_workspace_mapping'
     })
+
+    // @ts-ignore
+    const addRow = () => append({ company: '', raven_workspace: '' })
+
     return (
         <Stack>
             <HStack justify='between' align='center'>
                 <Text size='2' weight='medium'>{__("Choose workspaces based on companies")}</Text>
-                {/* @ts-ignore */}
-                <Button className='not-cal' type='button' variant='soft' size='2' onClick={() => append({ company: '', raven_workspace: '' })}>{__("Add")}</Button>
+                <Button className='not-cal'
+                    disabled={disabled}
+                    type='button' variant='soft' size='2'
+                    onClick={addRow}>{__("Add")}</Button>
             </HStack>
             <Box className='rounded-md overflow-hidden border border-gray-4'>
                 <HStack className='bg-gray-3 py-2 rounded-t-md'>
@@ -70,6 +76,7 @@ const CompanyWorkspaceMapping = (props: Props) => {
                                 aria-label="Remove"
                                 size='2' color='red' variant='ghost'
                                 title="Remove"
+                                disabled={disabled}
                                 type='button'
                                 onClick={() => remove(index)}>
                                 <BiTrashAlt size='16' />
@@ -96,6 +103,8 @@ const WorkspaceDropdown = ({ name }: { name: `company_workspace_mapping.${number
         render={({ field }) => (
             <Select.Root
                 value={field.value ?? ''}
+                disabled={field.disabled}
+                name={field.name}
                 onValueChange={field.onChange}>
                 <Select.Trigger className='min-w-72' />
                 <Select.Content>

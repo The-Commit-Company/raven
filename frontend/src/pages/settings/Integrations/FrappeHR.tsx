@@ -9,6 +9,7 @@ import SettingsPageHeader from '@/components/layout/Settings/SettingsPageHeader'
 import { Stack } from '@/components/layout/Stack'
 import useRavenSettings from '@/hooks/fetchers/useRavenSettings'
 import { RavenSettings } from '@/types/Raven/RavenSettings'
+import { hasRavenAdminRole, isSystemManager } from '@/utils/roles'
 import { __ } from '@/utils/translations'
 import { Button, Checkbox, Flex, Select, Separator, Text } from '@radix-ui/themes'
 import { useFrappeUpdateDoc } from 'frappe-react-sdk'
@@ -19,9 +20,13 @@ import { toast } from 'sonner'
 
 const FrappeHR = () => {
 
+    const isRavenAdmin = hasRavenAdminRole() || isSystemManager()
+
     const { ravenSettings, mutate } = useRavenSettings()
 
-    const methods = useForm<RavenSettings>()
+    const methods = useForm<RavenSettings>({
+        disabled: !isRavenAdmin
+    })
 
     const { handleSubmit, control, watch, reset } = methods
 
@@ -64,7 +69,7 @@ const FrappeHR = () => {
                         <SettingsPageHeader
                             title={__('HR')}
                             description={__("Connect your HR system to Raven to sync employee data and send notifications.")}
-                            actions={<Button type='submit' disabled={updatingDoc}>
+                            actions={<Button type='submit' disabled={updatingDoc || !isRavenAdmin}>
                                 {updatingDoc && <Loader />}
                                 {updatingDoc ? __("Saving") : __("Save")}
                             </Button>}
@@ -86,6 +91,8 @@ const FrappeHR = () => {
                                         name='auto_create_department_channel'
                                         render={({ field }) => (
                                             <Checkbox
+                                                disabled={field.disabled}
+                                                name={field.name}
                                                 checked={field.value ? true : false}
                                                 onCheckedChange={(v) => field.onChange(v ? 1 : 0)}
                                             />
@@ -101,7 +108,7 @@ const FrappeHR = () => {
                         {autoCreateDepartment ?
                             <Stack>
                                 <Flex direction={'column'} maxWidth={'320px'}>
-                                    <Label isRequired>{__("Department Channel Type")}</Label>
+                                    <Label isRequired htmlFor='department_channel_type'>{__("Department Channel Type")}</Label>
                                     <Controller
                                         control={control}
                                         defaultValue={ravenSettings?.department_channel_type}
@@ -109,6 +116,8 @@ const FrappeHR = () => {
                                         render={({ field }) => (
                                             <Select.Root
                                                 value={field.value}
+                                                disabled={field.disabled}
+                                                name={field.name}
                                                 onValueChange={field.onChange}>
                                                 <Select.Trigger />
                                                 <Select.Content>
@@ -138,6 +147,8 @@ const FrappeHR = () => {
                                         name='show_if_a_user_is_on_leave'
                                         render={({ field }) => (
                                             <Checkbox
+                                                name={field.name}
+                                                disabled={field.disabled}
                                                 checked={field.value ? true : false}
                                                 onCheckedChange={(v) => field.onChange(v ? 1 : 0)}
                                             />

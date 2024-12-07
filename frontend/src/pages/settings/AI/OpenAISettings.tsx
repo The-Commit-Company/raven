@@ -76,6 +76,8 @@ const OpenAISettings = () => {
                                         render={({ field }) => (
                                             <Checkbox
                                                 checked={field.value ? true : false}
+                                                name={field.name}
+                                                disabled={field.disabled}
                                                 onCheckedChange={(v) => field.onChange(v ? 1 : 0)}
                                             />
                                         )} />
