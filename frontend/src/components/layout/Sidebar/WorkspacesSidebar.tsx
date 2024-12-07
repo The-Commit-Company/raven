@@ -40,7 +40,7 @@ const WorkspacesSidebar = () => {
     }, [data, channels, unreadCounts])
 
     return (
-        <Stack className='sm:w-18 w-20 sm:p-0 px-2 pb-4 border-r-1 border-gray-4 dark:border-gray-3 h-screen' justify='between'>
+        <Stack className='sm:w-20 w-20 sm:p-0 px-2 pb-4 border-r border-gray-4 dark:border-gray-6 h-screen' justify='between'>
             <ScrollArea className='h-[calc(100vh-7rem)]' type="hover" scrollbars="vertical">
                 <Stack align='center' className='px-1 py-2' gap='3'>
                     {myWorkspaces.map((workspace) => (

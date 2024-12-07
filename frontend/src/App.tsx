@@ -3,7 +3,6 @@ import { Navigate, Route, RouterProvider, createBrowserRouter, createRoutesFromE
 import { MainPage } from './pages/MainPage'
 import { ProtectedRoute } from './utils/auth/ProtectedRoute'
 import { UserProvider } from './utils/auth/UserProvider'
-import { ChannelRedirect } from './utils/channel/ChannelRedirect'
 import "cal-sans";
 import { ThemeProvider } from './ThemeProvider'
 import { Toaster } from 'sonner'
@@ -25,6 +24,9 @@ const NO_CACHE_KEYS = [
   "raven.api.document_link.get_preview_data"
 ]
 
+const lastWorkspace = localStorage.getItem('ravenLastWorkspace') ?? ''
+const lastChannel = localStorage.getItem('ravenLastChannel') ?? ''
+
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -35,7 +37,7 @@ const router = createBrowserRouter(
       <Route path='/forgot-password' lazy={() => import('@/pages/auth/ForgotPassword')} />
       <Route path="/" element={<ProtectedRoute />} errorElement={<ErrorPage />}>
         <Route path="/" element={<WorkspaceSwitcher />}>
-          <Route index element={<WorkspaceSwitcherGrid />} />
+          <Route index element={lastWorkspace && lastChannel ? <Navigate to={`/${lastWorkspace}/${lastChannel}`} replace /> : lastWorkspace ? <Navigate to={`/${lastWorkspace}`} replace /> : <WorkspaceSwitcherGrid />} />
           <Route path="workspace-explorer" element={<WorkspaceSwitcherGrid />} />
           <Route path="settings" lazy={() => import('./pages/settings/Settings')}>
             <Route index lazy={() => import('./components/feature/userSettings/UserProfile/UserProfile')} />

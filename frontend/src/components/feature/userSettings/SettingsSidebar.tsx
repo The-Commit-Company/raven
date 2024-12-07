@@ -21,7 +21,6 @@ export const SettingsSidebar = () => {
                 <SettingsGroup title="Workspace" icon={BiBuildings}>
                     <SettingsSidebarItem title="Users" to='users' />
                     <SettingsSidebarItem title="Workspaces" to='workspaces' />
-                    {/* <SettingsSidebarItem title="Bots" to='bots' /> */}
                 </SettingsGroup>
                 <SettingsSeparator />
                 <SettingsGroup title='Integrations' icon={BsBoxes}>

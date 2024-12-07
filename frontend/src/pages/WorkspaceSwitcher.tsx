@@ -2,27 +2,11 @@ import { ErrorBanner } from '@/components/layout/AlertBanner/ErrorBanner'
 import { Stack } from '@/components/layout/Stack'
 import useFetchWorkspaces from '@/hooks/fetchers/useFetchWorkspaces'
 import { Flex, Text } from '@radix-ui/themes'
-import { useEffect } from 'react'
-import { Outlet, useLocation, useNavigate } from 'react-router-dom'
+import { Outlet } from 'react-router-dom'
 
 const WorkspaceSwitcher = () => {
 
     const { data, isLoading, error } = useFetchWorkspaces()
-
-    const lastWorkspace = localStorage.getItem('ravenLastWorkspace') ?? ''
-    const lastChannel = localStorage.getItem('ravenLastChannel') ?? ''
-
-    const isWorkspaceInData = data?.message.some(w => w.name === lastWorkspace) ?? false
-
-    const navigate = useNavigate()
-
-    const { pathname } = useLocation()
-
-    useEffect(() => {
-        if (lastWorkspace && isWorkspaceInData && lastChannel && pathname === '/') {
-            navigate(`/${lastWorkspace}/${lastChannel}`, { replace: true })
-        }
-    }, [isWorkspaceInData, pathname])
 
     if (isLoading) {
         return <Flex justify='center' align='center' height='100vh' width='100vw' className='animate-fadein'>
