@@ -4,7 +4,7 @@ import { BiBoltCircle, BiBot, BiFile, BiGroup, BiMessageSquareDots, BiTime, BiUs
 import { useNavigate } from 'react-router-dom'
 import { commandMenuOpenAtom } from './CommandMenu'
 import { PiOpenAiLogo } from 'react-icons/pi'
-import { LuFunctionSquare } from 'react-icons/lu'
+import { LuSquareFunction } from 'react-icons/lu'
 import { AiOutlineApi } from 'react-icons/ai'
 
 type Props = {}
@@ -18,7 +18,7 @@ const SettingsList = (props: Props) => {
     const setOpen = useSetAtom(commandMenuOpenAtom)
 
     const onSelect = (value: string) => {
-        navigate(`/channel/settings/${value}`)
+        navigate(`/settings/${value}`)
         setOpen(false)
     }
     return (
@@ -68,7 +68,7 @@ const SettingsList = (props: Props) => {
             </Command.Item>
 
             <Command.Item value='functions' onSelect={onSelect}>
-                <LuFunctionSquare size={ICON_SIZE} />
+                <LuSquareFunction size={ICON_SIZE} />
                 Functions
             </Command.Item>
 

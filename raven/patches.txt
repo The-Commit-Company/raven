@@ -7,3 +7,6 @@ raven.patches.v1_3.update_all_messages_to_include_message_content #2
 raven.patches.v1_3.update_all_messages_to_include_replied_message_content #2
 raven.patches.v1_6.create_raven_channel_member_index
 raven.patches.v1_6.migrate_older_raven_users #2
+raven.patches.v2_0.migrate_existing_dm_threads
+raven.patches.v2_0.create_default_workspace
+raven.patches.v2_0.create_default_company_workspace_mapping

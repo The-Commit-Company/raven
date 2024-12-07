@@ -3,6 +3,8 @@ import json
 import frappe
 from frappe import _
 
+from raven.utils import is_channel_member
+
 
 @frappe.whitelist(methods=["POST"])
 def react(message_id: str, reaction: str):
@@ -13,14 +15,17 @@ def react(message_id: str, reaction: str):
 	If yes, then unreacts (deletes), else reacts (creates).
 	"""
 
+	# PERF: No need for permission checks here.
+	# The permission checks are done in the controller method for the doctype
+
 	channel_id = frappe.get_cached_value("Raven Message", message_id, "channel_id")
 	channel_type = frappe.get_cached_value("Raven Channel", channel_id, "type")
 
 	if channel_type == "Private":
-		if not frappe.db.exists(
-			"Raven Channel Member", {"channel_id": channel_id, "user_id": frappe.session.user}
-		):
+
+		if not is_channel_member(channel_id):
 			frappe.throw(_("You do not have permission to react to this message"), frappe.PermissionError)
+
 	reaction_escaped = reaction.encode("unicode-escape").decode("utf-8").replace("\\u", "")
 	user = frappe.session.user
 	existing_reaction = frappe.db.exists(
@@ -40,6 +45,7 @@ def react(message_id: str, reaction: str):
 				"doctype": "Raven Message Reaction",
 				"reaction": reaction,
 				"message": message_id,
+				"channel_id": channel_id,
 				"owner": user,
 			}
 		).insert(ignore_permissions=True)

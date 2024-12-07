@@ -74,6 +74,7 @@ def handle_bot_dm(message, bot):
 			"type": "Private",
 			"is_thread": 1,
 			"is_ai_thread": 1,
+			"is_dm_thread": 1,
 			"openai_thread_id": ai_thread.id,
 			"thread_bot": bot.name,
 		}

@@ -18,6 +18,7 @@ class RavenMessageReaction(Document):
 	if TYPE_CHECKING:
 		from frappe.types import DF
 
+		channel_id: DF.Link | None
 		message: DF.Link
 		reaction: DF.Data
 		reaction_escaped: DF.Data | None

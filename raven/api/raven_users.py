@@ -24,6 +24,15 @@ def get_current_raven_user():
 	return frappe.get_cached_doc("Raven User", {"user": frappe.session.user})
 
 
+@frappe.whitelist(methods=["POST"])
+def update_raven_user(**args):
+	"""
+	Updates the current user's Raven User profile
+	"""
+
+	frappe.get_doc("Raven User", {"user": frappe.session.user}).update(args).save()
+
+
 @frappe.whitelist()
 @frappe.read_only()
 def get_list():

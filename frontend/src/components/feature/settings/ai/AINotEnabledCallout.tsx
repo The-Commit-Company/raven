@@ -16,7 +16,7 @@ const AINotEnabledCallout = () => {
         <CustomCallout
             iconChildren={<BiInfoCircle size='18' />}
             rootProps={{ color: 'blue', variant: 'surface' }}
-            textChildren={<Text>Raven AI is not enabled. Please enable it in <RadixLink asChild color='blue' underline='always'><Link to='/channel/settings/openai-settings'>OpenAI Settings</Link></RadixLink></Text>}
+            textChildren={<Text>Raven AI is not enabled. Please enable it in <RadixLink asChild color='blue' underline='always'><Link to='/settings/openai-settings'>OpenAI Settings</Link></RadixLink></Text>}
         />
     )
 }

@@ -7,7 +7,7 @@ from frappe.query_builder import Case, JoinType, Order
 from frappe.query_builder.functions import Coalesce, Count
 
 from raven.api.raven_channel import create_direct_message_channel, get_peer_user_id
-from raven.utils import get_channel_member, track_channel_visit
+from raven.utils import get_channel_member, is_channel_member, track_channel_visit
 
 
 @frappe.whitelist(methods=["POST"])
@@ -147,6 +147,7 @@ def get_saved_messages():
 			raven_message.message_type,
 			raven_message.message_reactions,
 			raven_message._liked_by,
+			raven_channel.workspace,
 		)
 		.where(raven_message._liked_by.like("%" + frappe.session.user + "%"))
 		.where(
@@ -188,9 +189,7 @@ def parse_messages(messages):
 
 def check_permission(channel_id):
 	if frappe.get_cached_value("Raven Channel", channel_id, "type") == "Private":
-		if frappe.db.exists(
-			"Raven Channel Member", {"channel_id": channel_id, "user_id": frappe.session.user}
-		):
+		if is_channel_member(channel_id):
 			pass
 		elif frappe.session.user == "Administrator":
 			pass
@@ -218,7 +217,7 @@ def get_unread_count_for_channels():
 		.on(
 			(channel.name == channel_member.channel_id) & (channel_member.user_id == frappe.session.user)
 		)
-		.where((channel.type == "Open") | (channel_member.user_id == frappe.session.user))
+		.where(channel_member.user_id == frappe.session.user)
 		.where(channel.is_archived == 0)
 		.where(channel.is_thread == 0)
 		.where(message.message_type != "System")
@@ -258,7 +257,9 @@ def get_unread_count_for_channels():
 def get_unread_count_for_channel(channel_id):
 	channel_member = get_channel_member(channel_id=channel_id)
 	if channel_member:
-		last_timestamp = frappe.get_cached_value("Raven Channel Member", channel_member, "last_visit")
+		last_timestamp = frappe.get_cached_value(
+			"Raven Channel Member", channel_member["name"], "last_visit"
+		)
 
 		return frappe.db.count(
 			"Raven Message",
@@ -279,8 +280,6 @@ def get_unread_count_for_channel(channel_id):
 			)
 		else:
 			return 0
-
-	return 0
 
 
 @frappe.whitelist()
@@ -528,6 +527,7 @@ def add_forwarded_message_to_channel(channel_id, forwarded_message):
 			"is_edited": 0,
 			"is_reply": 0,
 			"is_forwarded": 1,
+			"is_thread": 0,
 			"replied_message_details": None,
 			"message_reactions": None,
 		}

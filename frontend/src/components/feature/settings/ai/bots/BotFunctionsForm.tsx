@@ -47,7 +47,7 @@ const BotFunctionsForm = (props: Props) => {
                 <Text color='gray' size='2'>
                     Add functions that the bot can use to create or update documents in the system.
                     <br />
-                    Create functions in the <Link asChild><RouterLink to='/channel/settings/functions'>function builder</RouterLink></Link> and then add them here.
+                    Create functions in the <Link asChild><RouterLink to='/settings/functions'>function builder</RouterLink></Link> and then add them here.
                 </Text>
                 <Box>
                     <Popover.Root>
@@ -83,7 +83,7 @@ const BotFunctionsForm = (props: Props) => {
                             <Stack gap='1'>
                                 <HStack gap='2' align='center'>
                                     <Link asChild size='2' weight='bold' className='text-gray-12'>
-                                        <RouterLink to={`/channel/settings/functions/${field.function}`}>{field.function}</RouterLink>
+                                        <RouterLink to={`/settings/functions/${field.function}`}>{field.function}</RouterLink>
                                     </Link>
                                     <Badge color='purple'>{field.type}</Badge>
                                 </HStack>

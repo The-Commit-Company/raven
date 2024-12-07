@@ -101,7 +101,6 @@ export const ThreadMessages = ({ threadMessage }: { threadMessage: Message }) =>
                 <AIEvent channelID={threadID ?? ''} />
 
                 {!isUserInChannel && <JoinChannelBox
-                    channelMembers={threadMembers}
                     user={user} />}
 
                 {isUserInChannel && <Stack>

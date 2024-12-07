@@ -2,6 +2,7 @@ import { FrappeError } from 'frappe-react-sdk'
 import { useMemo } from 'react'
 import React from 'react'
 import { ErrorCallout } from "@/components/common/Callouts/ErrorCallouts"
+import { Text } from '@radix-ui/themes'
 
 interface ErrorBannerProps {
     error?: FrappeError | null,
@@ -105,6 +106,7 @@ export const ErrorBanner = ({ error, overrideHeading, children }: ErrorBannerPro
 
     if (messages.length === 0 || !error) return null
     return (<ErrorCallout>
+        {overrideHeading && <Text weight='bold' size='2'>{overrideHeading}</Text>}
         {/* Can do this since the error will be coming from the server */}
         {messages.map((m, i) => <div key={i} dangerouslySetInnerHTML={{
             __html: m.message

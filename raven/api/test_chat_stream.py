@@ -1,11 +1,13 @@
 import datetime
 
 import frappe
-from frappe.tests.utils import FrappeTestCase
+from frappe.tests import IntegrationTestCase
 
 from raven.api.chat_stream import get_messages, get_newer_messages, get_older_messages
 
-CHANNEL_ID = "test-channel"
+CHANNEL_ID = "Public Workspace-test-channel"
+
+EXTRA_TEST_RECORD_DEPENDENCIES = ["Raven Workspace"]
 
 
 def create_messages():
@@ -40,15 +42,16 @@ def create_channel():
 	channel_doc = frappe.get_doc(
 		{
 			"doctype": "Raven Channel",
-			"name": CHANNEL_ID,
 			"channel_name": "Test Channel",
 			"type": "Public",
+			"workspace": "Public Workspace",
 		}
 	)
+	channel_doc.flags.do_not_add_member = True
 	channel_doc.insert()
 
 
-class TestChatStream(FrappeTestCase):
+class TestChatStream(IntegrationTestCase):
 	def setUp(self):
 		try:
 			frappe.delete_doc("Raven Channel", CHANNEL_ID)

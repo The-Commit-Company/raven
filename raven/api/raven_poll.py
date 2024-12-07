@@ -6,7 +6,7 @@ from frappe import _
 def create_poll(
 	channel_id: str,
 	question: str,
-	options: any,
+	options: list,
 	is_multi_choice: bool = None,
 	is_anonymous: bool = None,
 ) -> str:

@@ -1,8 +1,8 @@
-import { useFrappeCreateDoc } from 'frappe-react-sdk'
+import { useFrappeCreateDoc, useSWRConfig } from 'frappe-react-sdk'
 import { ChangeEvent, useCallback, useMemo, useState } from 'react'
 import { Controller, FormProvider, useForm } from 'react-hook-form'
 import { BiGlobe, BiHash, BiLockAlt } from 'react-icons/bi'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { ErrorBanner } from '@/components/layout/AlertBanner/ErrorBanner'
 import { Box, Button, Dialog, Flex, IconButton, RadioGroup, Text, TextArea, TextField } from '@radix-ui/themes'
 import { ErrorText, HelperText, Label } from '@/components/common/Form'
@@ -30,7 +30,7 @@ export const CreateChannelButton = ({ updateChannelList }: { updateChannelList: 
         return <Dialog.Root open={isOpen} onOpenChange={setIsOpen}>
             <Dialog.Trigger>
                 <IconButton variant='soft' size='1' radius='large' color='gray' aria-label='Create Channel' title='Create Channel'
-                    className='sm:group-hover:visible sm:invisible transition-all ease-ease text-gray-10 dark:text-gray-300 bg-transparent hover:bg-gray-3'>
+                    className='transition-all ease-ease text-gray-10 bg-transparent hover:bg-gray-3 hover:text-gray-12'>
                     <FiPlus size='16' />
                 </IconButton>
             </Dialog.Trigger>
@@ -45,7 +45,7 @@ export const CreateChannelButton = ({ updateChannelList }: { updateChannelList: 
 
             <DrawerTrigger asChild>
                 <IconButton variant='soft' size='1' radius='large' color='gray' aria-label='Create Channel' title='Create Channel'
-                    className='sm:group-hover:visible sm:invisible transition-all ease-ease text-gray-10 dark:text-gray-300 bg-transparent hover:bg-gray-3'>
+                    className='transition-all ease-ease text-gray-10 bg-transparent hover:bg-gray-3 hover:text-gray-12'>
                     <FiPlus size='16' />
                 </IconButton>
             </DrawerTrigger>
@@ -66,6 +66,7 @@ export const CreateChannelButton = ({ updateChannelList }: { updateChannelList: 
 
 const CreateChannelContent = ({ updateChannelList, isOpen, setIsOpen }: { updateChannelList: VoidFunction, setIsOpen: (v: boolean) => void, isOpen: boolean }) => {
 
+    const { mutate } = useSWRConfig()
     let navigate = useNavigate()
     const methods = useForm<ChannelCreationForm>({
         defaultValues: {
@@ -85,6 +86,7 @@ const CreateChannelContent = ({ updateChannelList, isOpen, setIsOpen }: { update
             // Also navigate to new channel
             updateChannelList()
             navigate(`/channel/${channel_name}`)
+            mutate(["channel_members", channel_name])
         }
         setIsOpen(false)
 
@@ -99,9 +101,13 @@ const CreateChannelContent = ({ updateChannelList, isOpen, setIsOpen }: { update
 
 
     const channelType = watch('type')
+    const { workspaceID } = useParams()
 
     const onSubmit = (data: ChannelCreationForm) => {
-        createDoc('Raven Channel', data).then(result => {
+        createDoc('Raven Channel', {
+            ...data,
+            workspace: workspaceID
+        }).then(result => {
             if (result) {
                 toast.success(__("Channel created"))
                 onClose(result.name)

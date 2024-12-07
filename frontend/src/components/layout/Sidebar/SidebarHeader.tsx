@@ -1,12 +1,33 @@
 import { useTheme } from '@/ThemeProvider'
 import { commandMenuOpenAtom } from '@/components/feature/CommandMenu/CommandMenu'
-import { Flex, IconButton, Text, Tooltip } from '@radix-ui/themes'
+import { Button, Flex, IconButton, Kbd, Text, Tooltip } from '@radix-ui/themes'
 import { BiMoon, BiSun } from 'react-icons/bi'
 import { useSetAtom } from 'jotai'
 import { TbSearch } from 'react-icons/tb'
 import { __ } from '@/utils/translations'
+import { HStack } from '../Stack'
+import { getKeyboardMetaKeyString } from '@/utils/layout/keyboardKey'
+import { useIsDesktop } from '@/hooks/useMediaQuery'
 
 export const SidebarHeader = () => {
+
+    const isDesktop = useIsDesktop()
+
+    if (isDesktop) {
+        return (
+            <header>
+                <Flex
+                    justify='between'
+                    px='2'
+                    align='center'
+                    pt='2'
+                >
+                    <CommandMenuButton />
+                </Flex>
+            </header>
+        )
+    }
+
     return (
         <header>
             <Flex
@@ -23,14 +44,36 @@ export const SidebarHeader = () => {
             </Flex>
         </header>
     )
+
+
 }
 
+
+const CommandMenuButton = () => {
+
+    const setOpen = useSetAtom(commandMenuOpenAtom)
+
+    return <Button
+        onClick={() => setOpen(true)}
+        aria-label='Open command menu'
+        title={__("Open command menu")}
+        className='bg-gray-3 hover:bg-gray-4 p-2 rounded-md flex justify-between items-center w-full text-gray-11 sm:hover:text-gray-12'
+        color='gray'
+    >
+        <HStack>
+            <TbSearch className='text-lg sm:text-base' />
+            <Text as='span' className='not-cal -mt-0.5' weight='regular'>Search</Text>
+        </HStack>
+        <Kbd className='dark:font-bold'>{getKeyboardMetaKeyString()}+K</Kbd>
+    </Button>
+}
+/** Only used on mobile */
 const SearchButton = () => {
 
     const setOpen = useSetAtom(commandMenuOpenAtom)
 
     return (
-        <Tooltip content="⌘+K">
+        <Tooltip content="Search">
             <IconButton
                 size={{ initial: '2', md: '1' }}
                 aria-label='Open command menu'
@@ -46,6 +89,7 @@ const SearchButton = () => {
     )
 }
 
+/** Only used on mobile */
 const ColorModeToggleButton = () => {
 
     const { appearance, setAppearance } = useTheme()
