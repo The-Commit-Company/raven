@@ -11,7 +11,7 @@
     "copy-html-entry": "cp ../raven/public/raven/index.html ../raven/www/raven.html"
   },
   "dependencies": {
-    "@radix-ui/themes": "3.1.4",
+    "@radix-ui/themes": "^3.1.6",
     "@tiptap/extension-code-block-lowlight": "2.5.9",
     "@tiptap/extension-highlight": "2.5.9",
     "@tiptap/extension-image": "2.5.9",
