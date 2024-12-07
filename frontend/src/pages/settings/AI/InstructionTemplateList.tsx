@@ -1,5 +1,6 @@
 import AINotEnabledCallout from '@/components/feature/settings/ai/AINotEnabledCallout'
 import { ErrorBanner } from '@/components/layout/AlertBanner/ErrorBanner'
+import { EmptyState, EmptyStateDescription, EmptyStateIcon, EmptyStateLinkAction, EmptyStateTitle } from '@/components/layout/EmptyState/EmptyListViewState'
 import { TableLoader } from '@/components/layout/Loaders/TableLoader'
 import PageContainer from '@/components/layout/Settings/PageContainer'
 import SettingsContentContainer from '@/components/layout/Settings/SettingsContentContainer'
@@ -7,8 +8,9 @@ import SettingsPageHeader from '@/components/layout/Settings/SettingsPageHeader'
 import { HStack } from '@/components/layout/Stack'
 import { RavenBotInstructionTemplate } from '@/types/RavenAI/RavenBotInstructionTemplate'
 import { hasRavenAdminRole, isSystemManager } from '@/utils/roles'
-import { Badge, Button, Table, Text } from '@radix-ui/themes'
+import { Badge, Button, Code, Table, Text } from '@radix-ui/themes'
 import { useFrappeGetDocList } from 'frappe-react-sdk'
+import { BiFile } from 'react-icons/bi'
 import { RiSparkling2Fill } from 'react-icons/ri'
 import { Link } from 'react-router-dom'
 
@@ -41,7 +43,19 @@ const InstructionTemplateList = (props: Props) => {
                 {isLoading && !error && <TableLoader columns={2} />}
                 <ErrorBanner error={error} />
                 <AINotEnabledCallout />
-                {data && <InstructionTable data={data} />}
+                {data && data.length > 0 && <InstructionTable data={data} />}
+                {(data?.length === 0 || !isRavenAdmin) && <EmptyState>
+                    <EmptyStateIcon>
+                        <BiFile />
+                    </EmptyStateIcon>
+                    <EmptyStateTitle>AI Instruction Templates</EmptyStateTitle>
+                    <EmptyStateDescription>
+                        Most bots require the same kind of instructions to perform their tasks, like "format dates as DD-MM-YYYY" or "the current user is <Code color='gray'>{"{{user}}"}</Code>".<br />Save commonly used instructions as templates for your AI bots.
+                    </EmptyStateDescription>
+                    {isRavenAdmin && <EmptyStateLinkAction to='create'>
+                        Create your first template
+                    </EmptyStateLinkAction>}
+                </EmptyState>}
             </SettingsContentContainer>
         </PageContainer>
     )

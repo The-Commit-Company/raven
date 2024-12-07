@@ -1,14 +1,17 @@
 import AINotEnabledCallout from '@/components/feature/settings/ai/AINotEnabledCallout'
 import { ErrorBanner } from '@/components/layout/AlertBanner/ErrorBanner'
+import { EmptyState, EmptyStateDescription, EmptyStateIcon, EmptyStateLinkAction, EmptyStateTitle } from '@/components/layout/EmptyState/EmptyListViewState'
 import { TableLoader } from '@/components/layout/Loaders/TableLoader'
 import PageContainer from '@/components/layout/Settings/PageContainer'
 import SettingsContentContainer from '@/components/layout/Settings/SettingsContentContainer'
 import SettingsPageHeader from '@/components/layout/Settings/SettingsPageHeader'
 import { HStack, Stack } from '@/components/layout/Stack'
 import { RavenBotAIPrompt } from '@/types/RavenAI/RavenBotAIPrompt'
+import { getKeyboardMetaKeyString } from '@/utils/layout/keyboardKey'
 import { hasRavenAdminRole, isSystemManager } from '@/utils/roles'
-import { Badge, Button, Checkbox, Table, Text } from '@radix-ui/themes'
+import { Badge, Button, Checkbox, Kbd, Table, Text } from '@radix-ui/themes'
 import { useFrappeGetDocList } from 'frappe-react-sdk'
+import { BiSolidMagicWand } from 'react-icons/bi'
 import { Link } from 'react-router-dom'
 
 type Props = {}
@@ -40,7 +43,19 @@ const SavedPromptList = (props: Props) => {
                 {isLoading && !error && <TableLoader columns={2} />}
                 <ErrorBanner error={error} />
                 <AINotEnabledCallout />
-                {data && <SavedPromptTable data={data} />}
+                {data && data.length > 0 && <SavedPromptTable data={data} />}
+                {(data?.length === 0 || !isRavenAdmin) && <EmptyState>
+                    <EmptyStateIcon>
+                        <BiSolidMagicWand />
+                    </EmptyStateIcon>
+                    <EmptyStateTitle>Who's going to type all that?</EmptyStateTitle>
+                    <EmptyStateDescription>
+                        Often we ask our AI assistants for the same thing.<br />Save commonly used commands here and insert them in your message by either clicking the <BiSolidMagicWand /> button or using <Kbd>{getKeyboardMetaKeyString()} + ⇧ + K</Kbd>.
+                    </EmptyStateDescription>
+                    {isRavenAdmin && <EmptyStateLinkAction to='create'>
+                        Create your first command
+                    </EmptyStateLinkAction>}
+                </EmptyState>}
             </SettingsContentContainer>
         </PageContainer>
     )

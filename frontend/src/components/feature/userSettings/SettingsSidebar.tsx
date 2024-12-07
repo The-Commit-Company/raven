@@ -11,7 +11,7 @@ import { NavLink } from 'react-router-dom'
 export const SettingsSidebar = () => {
 
     return (
-        <Box className="h-[full] w-64 border-r border-gray-4 dark:border-gray-6">
+        <Box className="h-[full] w-64 border-r pt-2 border-gray-4 dark:border-gray-4">
             <Flex direction="column" gap='2' className='px-4'>
                 <SettingsGroup title="My Account" icon={LuCircleUserRound}>
                     <SettingsSidebarItem title="Profile" to='profile' />
@@ -37,8 +37,8 @@ export const SettingsSidebar = () => {
                 <SettingsGroup title="AI" icon={BiBot}>
                     <SettingsSidebarItem title="Bots" to='bots' />
                     <SettingsSidebarItem title="Functions" to='functions' />
-                    <SettingsSidebarItem title="Commands" to='commands' />
                     <SettingsSidebarItem title="Instructions" to="instructions" />
+                    <SettingsSidebarItem title="Commands" to='commands' />
                     <SettingsSidebarItem title="OpenAI Settings" to='openai-settings' />
                 </SettingsGroup>
             </Flex>

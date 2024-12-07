@@ -1,5 +1,6 @@
 import { UserAvatar } from '@/components/common/UserAvatar'
 import { ErrorBanner } from '@/components/layout/AlertBanner/ErrorBanner'
+import { EmptyState, EmptyStateDescription, EmptyStateIcon, EmptyStateLinkAction, EmptyStateTitle } from '@/components/layout/EmptyState/EmptyListViewState'
 import { TableLoader } from '@/components/layout/Loaders/TableLoader'
 import PageContainer from '@/components/layout/Settings/PageContainer'
 import SettingsContentContainer from '@/components/layout/Settings/SettingsContentContainer'
@@ -9,7 +10,7 @@ import { RavenBot } from '@/types/RavenBot/RavenBot'
 import { hasRavenAdminRole, isSystemManager } from '@/utils/roles'
 import { Badge, Button, HoverCard, Table, Text } from '@radix-ui/themes'
 import { useFrappeGetDocList } from 'frappe-react-sdk'
-import { BiSolidCheckCircle, BiSolidXCircle } from 'react-icons/bi'
+import { BiBot, BiSolidCheckCircle, BiSolidXCircle } from 'react-icons/bi'
 import { RiSparkling2Fill } from 'react-icons/ri'
 import { Link } from 'react-router-dom'
 
@@ -35,13 +36,24 @@ const BotList = (props: Props) => {
                 <SettingsPageHeader
                     title='Bots'
                     description='Use Bots to send reminders, run AI assistants, and more.'
-                    actions={<Button asChild disabled={!isRavenAdmin}>
+                    actions={<Button asChild disabled={!isRavenAdmin} title={!isRavenAdmin ? "You don't have permissions to create bots." : "Create a new bot."}>
                         <Link to='create'>Create</Link>
                     </Button>}
                 />
                 {isLoading && !error && <TableLoader columns={2} />}
                 <ErrorBanner error={error} />
-                {data && <BotTable bots={data} />}
+                {data && data.length > 0 && <BotTable bots={data} />}
+
+                {(data?.length === 0 || !isRavenAdmin) && <EmptyState>
+                    <EmptyStateIcon>
+                        <BiBot />
+                    </EmptyStateIcon>
+                    <EmptyStateTitle>Get started with bots</EmptyStateTitle>
+                    <EmptyStateDescription>Create bots to run automations on Raven.<br />Send reminders, document notifications and run AI assistants.</EmptyStateDescription>
+                    {isRavenAdmin && <EmptyStateLinkAction to='create'>
+                        Create your first bot
+                    </EmptyStateLinkAction>}
+                </EmptyState>}
             </SettingsContentContainer>
         </PageContainer>
     )

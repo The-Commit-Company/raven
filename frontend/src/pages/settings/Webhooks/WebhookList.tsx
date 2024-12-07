@@ -1,5 +1,6 @@
 import { WebhookItem } from "@/components/feature/integrations/webhooks/WebhookItem"
 import { ErrorBanner } from "@/components/layout/AlertBanner/ErrorBanner"
+import { EmptyState, EmptyStateDescription, EmptyStateIcon, EmptyStateLinkAction, EmptyStateTitle } from "@/components/layout/EmptyState/EmptyListViewState"
 import { TableLoader } from "@/components/layout/Loaders/TableLoader"
 import PageContainer from "@/components/layout/Settings/PageContainer"
 import SettingsContentContainer from "@/components/layout/Settings/SettingsContentContainer"
@@ -8,6 +9,7 @@ import { RavenWebhook } from "@/types/RavenIntegrations/RavenWebhook"
 import { isSystemManager } from "@/utils/roles"
 import { Flex, Button } from "@radix-ui/themes"
 import { useFrappeDocTypeEventListener, useFrappeGetDocList } from "frappe-react-sdk"
+import { LuWebhook } from "react-icons/lu"
 import { Link } from "react-router-dom"
 
 const WebhookList = () => {
@@ -41,6 +43,18 @@ const WebhookList = () => {
                         <WebhookItem key={index} webhook={webhook} mutate={mutate} />
                     ))}
                 </Flex>}
+                {(data?.length === 0 || !isRavenAdmin) && <EmptyState>
+                    <EmptyStateIcon>
+                        <LuWebhook />
+                    </EmptyStateIcon>
+                    <EmptyStateTitle>Webhooks</EmptyStateTitle>
+                    <EmptyStateDescription>
+                        Webhooks allow you to receive HTTP requests whenever a specific event occurs - like when a message is sent or a channel is created.
+                    </EmptyStateDescription>
+                    {isRavenAdmin && <EmptyStateLinkAction to='create'>
+                        Create your first webhook
+                    </EmptyStateLinkAction>}
+                </EmptyState>}
             </SettingsContentContainer>
         </PageContainer>
     )

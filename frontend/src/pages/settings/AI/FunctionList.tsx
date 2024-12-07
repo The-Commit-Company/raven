@@ -1,5 +1,6 @@
 import AINotEnabledCallout from '@/components/feature/settings/ai/AINotEnabledCallout'
 import { ErrorBanner } from '@/components/layout/AlertBanner/ErrorBanner'
+import { EmptyState, EmptyStateDescription, EmptyStateIcon, EmptyStateLinkAction, EmptyStateTitle } from '@/components/layout/EmptyState/EmptyListViewState'
 import { TableLoader } from '@/components/layout/Loaders/TableLoader'
 import PageContainer from '@/components/layout/Settings/PageContainer'
 import SettingsContentContainer from '@/components/layout/Settings/SettingsContentContainer'
@@ -9,6 +10,7 @@ import { RavenAIFunction } from '@/types/RavenAI/RavenAIFunction'
 import { hasRavenAdminRole, isSystemManager } from '@/utils/roles'
 import { Badge, Button, Checkbox, Table, Text } from '@radix-ui/themes'
 import { useFrappeGetDocList } from 'frappe-react-sdk'
+import { LuSquareFunction } from 'react-icons/lu'
 import { Link } from 'react-router-dom'
 
 type Props = {}
@@ -40,7 +42,19 @@ const FunctionList = (props: Props) => {
                 {isLoading && !error && <TableLoader columns={2} />}
                 <ErrorBanner error={error} />
                 <AINotEnabledCallout />
-                {data && <FunctionTable functions={data} />}
+                {data && data.length > 0 && <FunctionTable functions={data} />}
+                {(data?.length === 0 || !isRavenAdmin) && <EmptyState>
+                    <EmptyStateIcon>
+                        <LuSquareFunction />
+                    </EmptyStateIcon>
+                    <EmptyStateTitle>Bots + Functions = AI Magic</EmptyStateTitle>
+                    <EmptyStateDescription>
+                        Use the no-code builder to create functions that allow AI bots to perform actions within the system when requested, like creating documents, or fetching reports to analyze.
+                    </EmptyStateDescription>
+                    {isRavenAdmin && <EmptyStateLinkAction to='create'>
+                        Create your first function
+                    </EmptyStateLinkAction>}
+                </EmptyState>}
             </SettingsContentContainer>
         </PageContainer>
     )
