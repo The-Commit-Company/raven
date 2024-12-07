@@ -44,7 +44,7 @@ const Settings = () => {
                 </header>
                 <Flex className="w-full">
                     {isDesktop && <SettingsSidebar />}
-                    <Box className="w-full">
+                    <Box className="w-full ml-64">
                         <Outlet />
                     </Box>
                 </Flex>
