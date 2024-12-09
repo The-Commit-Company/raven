@@ -1,15 +1,20 @@
 import { ErrorBanner } from '@/components/layout/AlertBanner/ErrorBanner'
+import { EmptyState, EmptyStateDescription, EmptyStateIcon, EmptyStateLinkAction, EmptyStateTitle } from '@/components/layout/EmptyState/EmptyListViewState'
 import { TableLoader } from '@/components/layout/Loaders/TableLoader'
 import PageContainer from '@/components/layout/Settings/PageContainer'
 import SettingsContentContainer from '@/components/layout/Settings/SettingsContentContainer'
 import SettingsPageHeader from '@/components/layout/Settings/SettingsPageHeader'
 import { HStack } from '@/components/layout/Stack'
 import { RavenMessageAction } from '@/types/RavenIntegrations/RavenMessageAction'
-import { Badge, Button, Table } from '@radix-ui/themes'
+import { hasRavenAdminRole, isSystemManager } from '@/utils/roles'
+import { Badge, Button, Strong, Table } from '@radix-ui/themes'
 import { useFrappeGetDocList } from 'frappe-react-sdk'
+import { BiBoltCircle } from 'react-icons/bi'
 import { Link } from 'react-router-dom'
 
 const MessageActionList = () => {
+
+    const isRavenAdmin = hasRavenAdminRole() || isSystemManager()
 
     const { data, isLoading, error } = useFrappeGetDocList<RavenMessageAction>("Raven Message Action", {
         fields: ["name", "enabled", "action_name", "action"],
@@ -17,20 +22,37 @@ const MessageActionList = () => {
             field: "modified",
             order: "desc"
         }
+    }, undefined, {
+        errorRetryCount: 2
     })
+
     return (
         <PageContainer>
             <SettingsContentContainer>
                 <SettingsPageHeader
                     title='Message Actions'
                     description='Use these to add custom actions - like creating an issue/task from a message.'
-                    actions={<Button asChild>
+                    actions={<Button asChild disabled={!isRavenAdmin}>
                         <Link to='create'>Create</Link>
                     </Button>}
                 />
-                {isLoading && <TableLoader columns={2} />}
+                {isLoading && !error && <TableLoader columns={2} />}
                 <ErrorBanner error={error} />
-                {data && <MessageActionsTable actions={data} />}
+                {data && data.length > 0 && <MessageActionsTable actions={data} />}
+                {data?.length === 0 && <EmptyState>
+                    <EmptyStateIcon>
+                        <BiBoltCircle />
+                    </EmptyStateIcon>
+                    <EmptyStateTitle>Actions</EmptyStateTitle>
+                    <EmptyStateDescription>
+                        Add actions that allow you to create documents or make API calls from the contents of a message - like creating a support ticket or project issue from a message sent in a channel.
+                        <br /><br />
+                        Access them by right clicking any message and selecting <Strong>Actions</Strong>.
+                    </EmptyStateDescription>
+                    {isRavenAdmin && <EmptyStateLinkAction to='create'>
+                        Create your first action
+                    </EmptyStateLinkAction>}
+                </EmptyState>}
             </SettingsContentContainer>
         </PageContainer>
     )
@@ -38,7 +60,7 @@ const MessageActionList = () => {
 
 const MessageActionsTable = ({ actions }: { actions: RavenMessageAction[] }) => {
     return (
-        <Table.Root variant="surface" className='rounded-sm'>
+        <Table.Root variant="surface" className='rounded-sm animate-fadein'>
             <Table.Header>
                 <Table.Row>
                     <Table.ColumnHeaderCell>Name</Table.ColumnHeaderCell>

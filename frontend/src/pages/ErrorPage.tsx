@@ -1,4 +1,5 @@
 import { HStack, Stack } from '@/components/layout/Stack'
+import { useIsMobile } from '@/hooks/useMediaQuery';
 import { Button, Code, Flex, Heading, Link, Text } from '@radix-ui/themes'
 import { useNavigate, useRouteError } from 'react-router-dom'
 
@@ -14,8 +15,24 @@ const ErrorPage = () => {
         navigate(0)
     }
 
+    const isMobile = useIsMobile()
+
     const goToChannels = () => {
-        navigate('/channel')
+
+        if (isMobile) {
+            navigate('/')
+        } else {
+            const lastWorkspace = localStorage.getItem('ravenLastWorkspace')
+            const ravenLastChannel = localStorage.getItem('ravenLastChannel')
+
+            if (lastWorkspace && ravenLastChannel) {
+                navigate(`/${lastWorkspace}/${ravenLastChannel}`)
+            } else if (lastWorkspace) {
+                navigate(`/${lastWorkspace}`)
+            } else {
+                navigate('/')
+            }
+        }
     }
 
     return (

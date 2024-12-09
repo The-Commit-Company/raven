@@ -12,17 +12,14 @@ interface DeleteImageModalProps {
 
 export const DeleteImageModal = ({ onClose }: DeleteImageModalProps) => {
 
-    const { call, error, loading } = useFrappePostCall('frappe.client.set_value')
-    const { myProfile, mutate } = useCurrentRavenUser()
+    const { call, loading, error } = useFrappePostCall('raven.api.raven_users.update_raven_user')
+    const { mutate } = useCurrentRavenUser()
 
     const removeImage = () => {
         call({
-            doctype: 'Raven User',
-            name: myProfile?.name,
-            fieldname: 'user_image',
-            value: ''
+            user_image: ''
         }).then(() => {
-            toast.success("User status updated")
+            toast.success("Profile picture removed.")
             mutate()
             onClose()
         })

@@ -1,6 +1,6 @@
 import { DIALOG_CONTENT_CLASS } from '@/utils/layout/dialog'
 import { Dialog, VisuallyHidden } from '@radix-ui/themes'
-import { Command } from 'cmdk'
+import { Command, defaultFilter } from 'cmdk'
 import { useEffect } from 'react'
 import './commandMenu.styles.css'
 import ChannelList from './ChannelList'
@@ -10,6 +10,7 @@ import { atom, useAtom } from 'jotai'
 import { useIsDesktop } from '@/hooks/useMediaQuery'
 import { Drawer, DrawerContent } from '@/components/layout/Drawer'
 import SettingsList from './SettingsList'
+import ToggleThemeCommand from './ToggleThemeCommand'
 
 export const commandMenuOpenAtom = atom(false)
 
@@ -52,21 +53,25 @@ const CommandMenu = () => {
                 <div className='min-h-[80vh]'>
                     <CommandList />
                 </div>
-
             </DrawerContent>
         </Drawer>
     }
-
-
-
-
-
-
 }
 
 export const CommandList = () => {
     const isDesktop = useIsDesktop()
-    return <Command label="Global Command Menu" className='command-menu'>
+
+    /** Use a custom filter instead of the default one - ignore very low scores in results */
+    const customFilter = (value: string, search: string, keywords?: string[]) => {
+        const score = defaultFilter ? defaultFilter(value, search, keywords) : 1
+
+        if (score <= 0.1) {
+            return 0
+        }
+        return score
+    }
+
+    return <Command label="Global Command Menu" className='command-menu' filter={customFilter}>
         <Command.Input
             autoFocus={isDesktop}
             placeholder='Search or type a command' />
@@ -75,6 +80,9 @@ export const CommandList = () => {
             <ChannelList />
             <UserList />
             <SettingsList />
+            <Command.Group heading="Commands">
+                <ToggleThemeCommand />
+            </Command.Group>
 
             {/* TODO: Make these commands work */}
             {/* <Command.Group heading="Commands">

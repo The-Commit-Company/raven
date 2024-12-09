@@ -5,22 +5,22 @@ import { PropsWithChildren, createElement } from 'react'
 import { IconType } from 'react-icons'
 import { BiBot, BiBuildings } from 'react-icons/bi'
 import { BsBoxes } from 'react-icons/bs'
-import { LuUserCircle2 } from 'react-icons/lu'
+import { LuCircleUserRound } from 'react-icons/lu'
 import { NavLink } from 'react-router-dom'
 
 export const SettingsSidebar = () => {
 
     return (
-        <Box className="h-[full] w-64 border-r border-gray-4  dark:border-gray-6">
+        <Box className="h-[calc(100vh-57px)] fixed w-64 border-r pt-2 border-gray-4 dark:border-gray-4">
             <Flex direction="column" gap='2' className='px-4'>
-                <SettingsGroup title="My Account" icon={LuUserCircle2}>
+                <SettingsGroup title="My Account" icon={LuCircleUserRound}>
                     <SettingsSidebarItem title="Profile" to='profile' />
                     <SettingsSidebarItem title="Appearance" to='appearance' />
                 </SettingsGroup>
                 <SettingsSeparator />
                 <SettingsGroup title="Workspace" icon={BiBuildings}>
+                    <SettingsSidebarItem title="Workspaces" to='workspaces' />
                     <SettingsSidebarItem title="Users" to='users' />
-                    {/* <SettingsSidebarItem title="Bots" to='bots' /> */}
                 </SettingsGroup>
                 <SettingsSeparator />
                 <SettingsGroup title='Integrations' icon={BsBoxes}>
@@ -37,8 +37,8 @@ export const SettingsSidebar = () => {
                 <SettingsGroup title="AI" icon={BiBot}>
                     <SettingsSidebarItem title="Bots" to='bots' />
                     <SettingsSidebarItem title="Functions" to='functions' />
-                    <SettingsSidebarItem title="Commands" to='commands' />
                     <SettingsSidebarItem title="Instructions" to="instructions" />
+                    <SettingsSidebarItem title="Commands" to='commands' />
                     <SettingsSidebarItem title="OpenAI Settings" to='openai-settings' />
                 </SettingsGroup>
             </Flex>

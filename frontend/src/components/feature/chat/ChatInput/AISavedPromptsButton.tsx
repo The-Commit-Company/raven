@@ -85,7 +85,7 @@ const SavedPrompts = ({ onClose }: { onClose: () => void }) => {
                     <Box>
                         <Button className='not-cal'
                             variant='soft'
-                            onClick={() => navigate('/channel/settings/commands')}>Create</Button>
+                            onClick={() => navigate('/settings/commands')}>Create</Button>
                     </Box>
                 </Stack>
             </Command.Empty>

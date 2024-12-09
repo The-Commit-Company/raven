@@ -16,4 +16,6 @@ export interface RavenMessageReaction{
 	reaction_escaped?: string
 	/**	Message : Link - Raven Message	*/
 	message: string
+	/**	Channel ID : Link - Raven Channel	*/
+	channel_id?: string
 }

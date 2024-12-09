@@ -1,18 +1,16 @@
 import frappe
 from frappe import _
 
-from raven.utils import track_channel_visit
+from raven.utils import get_channel_member, track_channel_visit
 
 
 @frappe.whitelist()
 def remove_channel_member(user_id, channel_id):
 	# Get raven channel member name where user_id and channel_id match
-	member = frappe.db.get_value(
-		"Raven Channel Member", {"user_id": user_id, "channel_id": channel_id}, ["name"]
-	)
+	member = get_channel_member(channel_id, user_id)
 	# Delete raven channel member
 	if member:
-		frappe.delete_doc("Raven Channel Member", member)
+		frappe.delete_doc("Raven Channel Member", member["name"])
 	else:
 		frappe.throw(_("User is not a member of this channel"))
 

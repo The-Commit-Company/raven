@@ -9,7 +9,7 @@ import VariableBuilder from './VariableBuilder'
 import LinkFormField from '@/components/common/LinkField/LinkFormField'
 import AINotEnabledCallout from '../AINotEnabledCallout'
 import DoctypeVariableBuilder from './DoctypeVariableBuilder'
-import { LuFunctionSquare, LuVariable } from 'react-icons/lu'
+import { LuSquareFunction, LuVariable } from 'react-icons/lu'
 import { in_list } from '@/utils/validations'
 
 const ICON_PROPS = {
@@ -25,10 +25,10 @@ const FunctionForm = ({ isEdit }: { isEdit?: boolean }) => {
     return (
         <Tabs.Root defaultValue='function_details'>
             <Tabs.List>
-                <Tabs.Trigger value='function_details'><LuFunctionSquare {...ICON_PROPS} /> Details</Tabs.Trigger>
+                <Tabs.Trigger value='function_details'><LuSquareFunction {...ICON_PROPS} /> Details</Tabs.Trigger>
                 <Tabs.Trigger value='variables' disabled={in_list(["Get Document", "Get Multiple Documents", "Delete Document", "Delete Multiple Documents", "Attach File to Document"], type)}><LuVariable {...ICON_PROPS} /> Variables</Tabs.Trigger>
             </Tabs.List>
-            <Box pt='4'>
+            <Stack pt='4'>
                 <AINotEnabledCallout />
                 <Tabs.Content value='function_details'>
                     <GeneralFunctionDetails isEdit={isEdit} />
@@ -36,7 +36,7 @@ const FunctionForm = ({ isEdit }: { isEdit?: boolean }) => {
                 <Tabs.Content value='variables'>
                     <VariableSection />
                 </Tabs.Content>
-            </Box>
+            </Stack>
         </Tabs.Root>
 
     )

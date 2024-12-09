@@ -7,6 +7,11 @@ export const hasRavenUserRole = () => {
     return (window?.frappe?.boot?.user?.roles ?? []).includes('Raven User');
 }
 
+export const hasRavenAdminRole = () => {
+    //@ts-expect-error
+    return (window?.frappe?.boot?.user?.roles ?? []).includes('Raven Admin');
+}
+
 export const isSystemManager = () => {
     //@ts-expect-error
     return (window?.frappe?.boot?.user?.roles ?? []).includes('System Manager');

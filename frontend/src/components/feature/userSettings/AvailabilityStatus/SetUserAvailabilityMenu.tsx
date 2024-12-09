@@ -3,32 +3,33 @@ import { toast } from 'sonner'
 import { MdWatchLater } from 'react-icons/md'
 import { FaCircleDot, FaCircleMinus } from 'react-icons/fa6'
 import { BiSolidCircle } from 'react-icons/bi'
-import { useCallback } from 'react'
 import { DropdownMenu, Flex } from '@radix-ui/themes'
-import { useUserData } from '@/hooks/useUserData'
 import { GrPowerReset } from 'react-icons/gr'
 import useCurrentRavenUser from '@/hooks/useCurrentRavenUser'
 import { __ } from '@/utils/translations'
+import { getErrorMessage } from '@/components/layout/AlertBanner/ErrorBanner'
 
 export type AvailabilityStatus = 'Available' | 'Away' | 'Do not disturb' | 'Invisible' | ''
 
 export const SetUserAvailabilityMenu = () => {
-
-    const userData = useUserData()
     const { myProfile, mutate } = useCurrentRavenUser()
 
-    const { call } = useFrappePostCall('frappe.client.set_value')
-    const setAvailabilityStatus = useCallback((status: AvailabilityStatus) => {
+    const { call } = useFrappePostCall('raven.api.raven_users.update_raven_user')
+    const setAvailabilityStatus = (status: AvailabilityStatus) => {
         call({
-            doctype: 'Raven User',
-            name: userData.name,
-            fieldname: 'availability_status',
-            value: status
+            'availability_status': status
         }).then(() => {
-            toast.success(__("User availability updated"))
+            toast.success(__("Updated!"), {
+                duration: 600
+            })
             mutate()
+        }).catch((error) => {
+            toast.error(error.message, {
+                description: getErrorMessage(error)
+            })
+            console.error(error)
         })
-    }, [userData.name])
+    }
 
     return (
         <DropdownMenu.Sub>

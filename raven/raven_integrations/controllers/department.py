@@ -25,7 +25,15 @@ def after_insert(doc, method):
 	department_channel.linked_doctype = "Department"
 	department_channel.linked_document = doc.name
 
-	department_channel.insert(ignore_permissions=True)
+	# Get the workspace based on the company of the department else use the default workspace
+	workspace = frappe.get_list(
+		"Raven HR Company Workspace", {"company": doc.company}, pluck="raven_workspace", limit=1
+	)
+
+	if workspace:
+		department_channel.workspace = workspace[0]
+
+		department_channel.insert(ignore_permissions=True)
 
 
 def on_update(doc, method):

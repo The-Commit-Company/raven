@@ -1,4 +1,4 @@
-import { SidebarGroup, SidebarGroupItem, SidebarGroupLabel, SidebarGroupList, SidebarItem } from "@/components/layout/Sidebar"
+import { SidebarGroup, SidebarGroupItem, SidebarGroupLabel, SidebarGroupList, SidebarItem } from "@/components/layout/Sidebar/SidebarComp"
 import { hasServerScriptEnabled, isSystemManager } from "@/utils/roles"
 import { Flex, Text } from "@radix-ui/themes"
 import { BiPlug } from "react-icons/bi"

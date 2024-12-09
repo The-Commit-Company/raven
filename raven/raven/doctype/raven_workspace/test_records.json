@@ -1,0 +1,14 @@
+[
+    {
+        "doctype": "Raven Workspace",
+        "workspace_name": "Public Workspace",
+        "owner": "test@example.com",
+        "type": "Public"
+    },
+    {
+        "doctype": "Raven Workspace",
+        "workspace_name": "Private Workspace",
+        "owner": "test@example.com",
+        "type": "Private"
+    }
+]

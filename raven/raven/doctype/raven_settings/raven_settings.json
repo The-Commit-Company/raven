@@ -21,6 +21,7 @@
   "frappe_hr_tab",
   "auto_create_department_channel",
   "department_channel_type",
+  "company_workspace_mapping",
   "attendance_and_leaves_section",
   "show_if_a_user_is_on_leave",
   "raven_mobile_tab",
@@ -134,12 +135,20 @@
    "fieldtype": "Link",
    "label": "OAuth Client",
    "options": "OAuth Client"
+  },
+  {
+   "depends_on": "eval:doc.auto_create_department_channel",
+   "fieldname": "company_workspace_mapping",
+   "fieldtype": "Table",
+   "label": "Company Workspace Mapping",
+   "mandatory_depends_on": "eval:doc.auto_create_department_channel",
+   "options": "Raven HR Company Workspace"
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2024-08-26 17:35:23.570104",
+ "modified": "2024-12-07 23:29:30.189530",
  "modified_by": "Administrator",
  "module": "Raven",
  "name": "Raven Settings",
@@ -166,6 +175,15 @@
    "print": 1,
    "read": 1,
    "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "delete": 1,
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "role": "Raven Admin",
    "share": 1,
    "write": 1
   }
