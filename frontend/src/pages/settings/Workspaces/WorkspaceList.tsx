@@ -28,7 +28,7 @@ const WorkspaceList = () => {
                     description='Workspaces allow you to organize your channels and teams.'
                     actions={<AddWorkspaceButton />}
                 />
-                {isLoading && !error && <TableLoader columns={2} />}
+                {isLoading && !error && <TableLoader columns={4} />}
                 <ErrorBanner error={error} />
                 {myWorkspaces && <MyWorkspacesTable workspaces={myWorkspaces.message} />}
             </SettingsContentContainer>

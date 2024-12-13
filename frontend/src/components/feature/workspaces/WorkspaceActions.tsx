@@ -18,7 +18,7 @@ const WorkspaceActions = ({ workspace }: Props) => {
                         <BiDotsVerticalRounded fontSize={16} />
                     </IconButton>
                 </DropdownMenu.Trigger>
-                <DropdownMenu.Content className='min-w-32'>
+                <DropdownMenu.Content className='min-w-36'>
                     {workspace.is_admin ? <WorkspaceSettingsButton workspace={workspace} /> : null}
                     {workspace.workspace_member_name ? <LeaveWorkspaceButton workspace={workspace} /> : <JoinWorkspaceButton workspace={workspace} />}
                 </DropdownMenu.Content>

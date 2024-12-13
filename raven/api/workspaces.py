@@ -1,6 +1,6 @@
 import frappe
 from frappe import _
-from frappe.query_builder import Case, JoinType, Order
+from frappe.query_builder import JoinType, Order
 
 
 @frappe.whitelist()
@@ -78,3 +78,16 @@ def is_workspace_admin(workspace: str):
 		return True
 
 	return False
+
+
+@frappe.whitelist()
+def fetch_workspace_members(workspace: str):
+	"""
+	Gets all members of a workspace
+	"""
+	frappe.has_permission("Raven Workspace", doc=workspace, throw=True)
+	return frappe.get_all(
+		"Raven Workspace Member",
+		filters={"workspace": workspace},
+		fields=["user", "is_admin", "creation", "name"],
+	)

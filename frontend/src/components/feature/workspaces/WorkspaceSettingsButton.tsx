@@ -12,7 +12,7 @@ const WorkspaceSettingsButton = (props: Props) => {
         <DropdownMenu.Item asChild>
             <Link to={`${props.workspace.name}`}>
                 <BiCog fontSize={16} />
-                Settings
+                Manage
             </Link>
         </DropdownMenu.Item>
     )

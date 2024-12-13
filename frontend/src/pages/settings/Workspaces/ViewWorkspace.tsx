@@ -1,4 +1,6 @@
 import { Loader } from "@/components/common/Loader"
+import WorkspaceEditForm from "@/components/feature/workspaces/WorkspaceEditForm"
+import WorkspaceMemberManagement from "@/components/feature/workspaces/WorkspaceMemberManagement"
 import { ErrorBanner } from "@/components/layout/AlertBanner/ErrorBanner"
 import { FullPageLoader } from "@/components/layout/Loaders/FullPageLoader"
 import PageContainer from "@/components/layout/Settings/PageContainer"
@@ -6,11 +8,17 @@ import SettingsContentContainer from "@/components/layout/Settings/SettingsConte
 import SettingsPageHeader from "@/components/layout/Settings/SettingsPageHeader"
 import { RavenWorkspace } from "@/types/Raven/RavenWorkspace"
 import { isEmpty } from "@/utils/validations"
-import { Button } from "@radix-ui/themes"
-import { useFrappeGetDoc, useFrappeUpdateDoc, SWRResponse } from "frappe-react-sdk"
+import { Box, Button, Tabs } from "@radix-ui/themes"
+import { useFrappeGetDoc, useFrappeUpdateDoc, SWRResponse, useSWRConfig } from "frappe-react-sdk"
 import { FormProvider, useForm } from "react-hook-form"
+import { LuDock, LuUsers } from "react-icons/lu"
 import { useParams } from "react-router-dom"
 import { toast } from "sonner"
+
+const ICON_PROPS = {
+    size: 18,
+    className: 'mr-1.5'
+}
 
 const ViewWorkspace = () => {
 
@@ -40,12 +48,16 @@ const ViewWorkspaceContent = ({ data, mutate }: { data: RavenWorkspace, mutate: 
 
     const isDirty = !isEmpty(dirtyFields)
 
+    const { mutate: globalMutate } = useSWRConfig()
+
 
     const onSubmit = (data: RavenWorkspace) => {
         updateDoc("Raven Workspace", data.name, data)
             .then((doc) => {
                 toast.success("Saved")
                 methods.reset(doc)
+                globalMutate("workspaces_list")
+                globalMutate("channel_list")
                 mutate(doc, { revalidate: false })
             })
     }
@@ -65,7 +77,20 @@ const ViewWorkspaceContent = ({ data, mutate }: { data: RavenWorkspace, mutate: 
                     breadcrumbs={[{ label: 'Workspaces', href: '../' }, { label: data.workspace_name, href: '', copyToClipboard: true }]}
                 />
                 <ErrorBanner error={error} />
-                {/* <BotForm isEdit={true} /> */}
+                {data && <Tabs.Root defaultValue='details'>
+                    <Tabs.List>
+                        <Tabs.Trigger value='details'><LuDock {...ICON_PROPS} /> Details</Tabs.Trigger>
+                        <Tabs.Trigger value='members'><LuUsers {...ICON_PROPS} /> Members</Tabs.Trigger>
+                    </Tabs.List>
+                    <Box pt='4'>
+                        <Tabs.Content value='details'>
+                            <WorkspaceEditForm />
+                        </Tabs.Content>
+                        <Tabs.Content value='members'>
+                            <WorkspaceMemberManagement workspaceID={data.name} />
+                        </Tabs.Content>
+                    </Box>
+                </Tabs.Root>}
             </SettingsContentContainer>
         </FormProvider>
     </form>

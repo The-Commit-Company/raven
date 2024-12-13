@@ -31,6 +31,24 @@ class RavenWorkspaceMember(Document):
 		if frappe.db.exists("Raven Workspace Member", conditions):
 			frappe.throw(_("User is already a member of the workspace"))
 
+		self.validate_other_admins_exist()
+
+	def validate_other_admins_exist(self):
+		"""
+		Check if there are other admins in the workspace
+		"""
+		if self.has_value_changed("is_admin") and not self.is_admin:
+			other_admins = frappe.db.count(
+				"Raven Workspace Member",
+				{"workspace": self.workspace, "is_admin": True, "name": ["!=", self.name]},
+			)
+			if other_admins == 0:
+				frappe.throw(
+					_(
+						"You cannot delete the last admin of the workspace. Please assign another user as the admin, or delete the workspace instead."
+					)
+				)
+
 	def after_insert(self):
 		self.invalidate_workspace_members_cache()
 
