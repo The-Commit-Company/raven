@@ -121,7 +121,7 @@ const MyWorkspaceItem = ({ workspace }: { workspace: WorkspaceFields }) => {
                         <Heading as='h3' size='3' className='not-cal font-semibold'>{workspace.workspace_name}</Heading>
                         {workspace.type === 'Public' ? <Text size='2' color='gray' weight='medium' as='span'>Public</Text> : <Text size='2' color='gray' weight='medium'>Private</Text>}
                     </Stack>
-                    {workspace.description && <Text as='p' size='2' color='gray'>{workspace.description}</Text>}
+                    {workspace.description && <Text as='p' size='2' color='gray' className='line-clamp-2 text-ellipsis'>{workspace.description}</Text>}
                 </Stack>
             </HStack>
         </Link>
@@ -161,7 +161,7 @@ const OtherWorkspaceItem = ({ workspace }: { workspace: WorkspaceFields }) => {
                     <Heading as='h3' size='3' className='not-cal font-semibold'>{workspace.workspace_name}</Heading>
                     <WorkspaceMemberCount workspace={workspace.name} />
                 </Stack>
-                {workspace.description && <Text as='p' size='2' color='gray'>{workspace.description}</Text>}
+                {workspace.description && <Text as='p' size='2' color='gray' className='line-clamp-2 text-ellipsis'>{workspace.description}</Text>}
 
             </Stack>
         </HStack>
