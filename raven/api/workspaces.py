@@ -42,9 +42,27 @@ def join_workspace(workspace: str):
 	"""
 	Joins a workspace
 	"""
-	frappe.get_doc(
+	member = frappe.get_doc(
 		{"doctype": "Raven Workspace Member", "workspace": workspace, "user": frappe.session.user}
 	).insert()
+
+	return member
+
+
+@frappe.whitelist()
+def leave_workspace(workspace: str):
+	"""
+	Leaves a workspace
+	"""
+	member = frappe.db.exists(
+		"Raven Workspace Member", {"workspace": workspace, "user": frappe.session.user}
+	)
+	if member:
+		member_doc = frappe.get_doc("Raven Workspace Member", member)
+		member_doc.delete()
+
+	else:
+		frappe.throw(_("You are not a member of this workspace."), frappe.PermissionError)
 
 
 @frappe.whitelist()

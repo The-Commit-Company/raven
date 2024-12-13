@@ -45,6 +45,13 @@ const router = createBrowserRouter(
             <Route path="users" lazy={() => import('./pages/settings/Users/UserList')} />
             <Route path="appearance" lazy={() => import('./pages/settings/Appearance')} />
             <Route path="hr" lazy={() => import('./pages/settings/Integrations/FrappeHR')} />
+
+            <Route path="workspaces" >
+              <Route index lazy={() => import('./pages/settings/Workspaces/WorkspaceList')} />
+              <Route path="create" lazy={() => import('./pages/settings/AI/CreateBot')} />
+              <Route path=":ID" lazy={() => import('./pages/settings/AI/ViewBot')} />
+            </Route>
+
             <Route path="bots" >
               <Route index lazy={() => import('./pages/settings/AI/BotList')} />
               <Route path="create" lazy={() => import('./pages/settings/AI/CreateBot')} />
@@ -130,9 +137,9 @@ function App() {
       url={import.meta.env.VITE_FRAPPE_PATH ?? ''}
       socketPort={import.meta.env.VITE_SOCKET_PORT ? import.meta.env.VITE_SOCKET_PORT : undefined}
       //@ts-ignore
-      // swrConfig={{
-      //   provider: localStorageProvider
-      // }}
+      swrConfig={{
+        errorRetryCount: 2,
+      }}
       siteName={getSiteName()}
     >
       <UserProvider>
