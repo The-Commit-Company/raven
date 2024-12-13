@@ -7,6 +7,7 @@ import { Dialog, IconButton, Tooltip } from '@radix-ui/themes'
 import { FiPlus } from 'react-icons/fi'
 import AddWorkspaceForm from './AddWorkspaceForm'
 import { useBoolean } from '@/hooks/useBoolean'
+import { useNavigate } from 'react-router-dom'
 
 type Props = {}
 
@@ -25,7 +26,16 @@ const AddWorkspaceModal = () => {
 
     const isDesktop = useIsDesktop()
 
+    const navigate = useNavigate()
+
     const [isOpen, { off }, setValue] = useBoolean()
+
+    const onClose = (workspaceID?: string) => {
+        if (workspaceID) {
+            navigate(`/${workspaceID}`)
+        }
+        off()
+    }
 
     if (isDesktop) {
 
@@ -44,7 +54,7 @@ const AddWorkspaceModal = () => {
                 <Dialog.Title>Create Workspace</Dialog.Title>
                 <Dialog.Description size='2'>Workspaces allow you to organize your channels and teams.</Dialog.Description>
                 <Stack>
-                    <AddWorkspaceForm onClose={off} />
+                    <AddWorkspaceForm onClose={onClose} />
                 </Stack>
             </Dialog.Content>
         </Dialog.Root >
@@ -63,7 +73,7 @@ const AddWorkspaceModal = () => {
             <div className='pb-16 overflow-y-scroll min-h-96'>
                 <DrawerTitle>Create Workspace</DrawerTitle>
                 <DrawerDescription>Workspaces allow you to organize your channels and teams.</DrawerDescription>
-                <AddWorkspaceForm onClose={off} />
+                <AddWorkspaceForm onClose={onClose} />
             </div>
         </DrawerContent>
     </Drawer>

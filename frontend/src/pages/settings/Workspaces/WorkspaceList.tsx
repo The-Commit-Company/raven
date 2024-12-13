@@ -5,21 +5,20 @@ import { TableLoader } from '@/components/layout/Loaders/TableLoader'
 import PageContainer from '@/components/layout/Settings/PageContainer'
 import SettingsContentContainer from '@/components/layout/Settings/SettingsContentContainer'
 import SettingsPageHeader from '@/components/layout/Settings/SettingsPageHeader'
-import { HStack } from '@/components/layout/Stack'
+import { HStack, Stack } from '@/components/layout/Stack'
 import useFetchWorkspaces, { WorkspaceFields } from '@/hooks/fetchers/useFetchWorkspaces'
 import { hasRavenAdminRole } from '@/utils/roles'
-import { Badge, Button, Table, Text, Tooltip } from '@radix-ui/themes'
-import { Link } from 'react-router-dom'
+import { Badge, Button, Dialog, Table, Text, Tooltip } from '@radix-ui/themes'
 import { VscVerifiedFilled } from 'react-icons/vsc'
 import { BiSolidCrown } from 'react-icons/bi'
+import { useBoolean } from '@/hooks/useBoolean'
+import { DIALOG_CONTENT_CLASS } from '@/utils/layout/dialog'
+import AddWorkspaceForm from '@/components/feature/workspaces/AddWorkspaceForm'
+import { useNavigate } from 'react-router-dom'
 
-type Props = {}
-
-const WorkspaceList = (props: Props) => {
+const WorkspaceList = () => {
 
     const { data: myWorkspaces, isLoading, error } = useFetchWorkspaces()
-
-    const isRavenAdmin = hasRavenAdminRole()
 
     return (
         <PageContainer>
@@ -27,9 +26,7 @@ const WorkspaceList = (props: Props) => {
                 <SettingsPageHeader
                     title='Workspaces'
                     description='Workspaces allow you to organize your channels and teams.'
-                    actions={<Button asChild disabled={!isRavenAdmin}>
-                        <Link to='create'>Create</Link>
-                    </Button>}
+                    actions={<AddWorkspaceButton />}
                 />
                 {isLoading && !error && <TableLoader columns={2} />}
                 <ErrorBanner error={error} />
@@ -87,5 +84,36 @@ const MyWorkspacesTable = ({ workspaces }: { workspaces: WorkspaceFields[] }) =>
             </Table.Body>
         </Table.Root>
     )
+}
+
+
+const AddWorkspaceButton = () => {
+
+    const isRavenAdmin = hasRavenAdminRole()
+
+    const [isOpen, { off }, setValue] = useBoolean()
+
+    const navigate = useNavigate()
+
+    const onClose = (workspaceID?: string) => {
+        if (workspaceID) {
+            navigate(`${workspaceID}`)
+        }
+        off()
+    }
+
+    return <Dialog.Root open={isOpen} onOpenChange={setValue}>
+        <Dialog.Trigger>
+            <Button disabled={!isRavenAdmin}>Create</Button>
+        </Dialog.Trigger>
+        <Dialog.Content className={DIALOG_CONTENT_CLASS}>
+            <Dialog.Title>Create Workspace</Dialog.Title>
+            <Dialog.Description size='2'>Workspaces allow you to organize your channels and teams.</Dialog.Description>
+            <Stack>
+                <AddWorkspaceForm onClose={onClose} />
+            </Stack>
+        </Dialog.Content>
+    </Dialog.Root>
+
 }
 export const Component = WorkspaceList

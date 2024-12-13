@@ -95,6 +95,7 @@ const OpenAISettings = () => {
                                     maxLength={140}
                                     className={'w-48 sm:w-96'}
                                     id='openai_organisation_id'
+                                    autoComplete='off'
                                     required
                                     placeholder='org-************************'
                                     {...register('openai_organisation_id', {
@@ -119,6 +120,7 @@ const OpenAISettings = () => {
                                     id='openai_api_key'
                                     required
                                     type='password'
+                                    autoComplete='off'
                                     placeholder='••••••••••••••••••••••••••••••••'
                                     {...register('openai_api_key', {
                                         required: isAIEnabled ? "Please add your OpenAI API Key" : false,
@@ -137,6 +139,7 @@ const OpenAISettings = () => {
                                     maxLength={140}
                                     className={'w-48 sm:w-96'}
                                     id='openai_project_id'
+                                    autoComplete='off'
                                     placeholder='proj_************************'
                                     {...register('openai_project_id', {
                                         maxLength: {

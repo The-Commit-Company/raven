@@ -9,12 +9,11 @@ import { Box, Button, Dialog, Flex, RadioGroup, Text, TextArea, TextField } from
 import { useFrappeCreateDoc, useFrappeFileUpload, useFrappeUpdateDoc, useSWRConfig } from 'frappe-react-sdk'
 import { useState } from 'react'
 import { Controller, FormProvider, useForm } from 'react-hook-form'
-import { useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
 import { FileUploadBox } from '../userSettings/UploadImage/FileUploadBox'
 import { CustomFile } from '../file-upload/FileDrop'
 
-const AddWorkspaceForm = ({ onClose }: { onClose: () => void }) => {
+const AddWorkspaceForm = ({ onClose }: { onClose: (workspaceID?: string) => void }) => {
 
     const { mutate } = useSWRConfig()
 
@@ -32,8 +31,6 @@ const AddWorkspaceForm = ({ onClose }: { onClose: () => void }) => {
     const { updateDoc, loading: updatingDoc } = useFrappeUpdateDoc()
 
     const { upload, loading: uploadingFile, error: fileError } = useFrappeFileUpload()
-
-    const navigate = useNavigate()
 
     const onSubmit = (data: RavenWorkspace) => {
 
@@ -61,8 +58,7 @@ const AddWorkspaceForm = ({ onClose }: { onClose: () => void }) => {
                     description: `You can now invite members to ${res.workspace_name}`,
                     duration: 2000
                 })
-                onClose()
-                navigate(`/${res.name}`)
+                onClose(res.name)
             })
     }
 
