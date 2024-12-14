@@ -96,6 +96,25 @@ def fetch_workspace_members(workspace: str):
 
 
 @frappe.whitelist()
+def add_workspace_members(workspace: str, members: list):
+	"""
+	Adds members to a workspace
+	"""
+	frappe.has_permission("Raven Workspace", doc=workspace, ptype="write", throw=True)
+
+	# Since this is a bulk operation, we need to disable cache invalidation (will be handled manually) and ignore permissions (since we already have permission to add members)
+
+	for member in members:
+		member_doc = frappe.get_doc(
+			{"doctype": "Raven Workspace Member", "workspace": workspace, "user": member}
+		)
+		member_doc.flags.ignore_cache_invalidation = True
+		member_doc.insert(ignore_permissions=True)
+
+	delete_workspace_members_cache(workspace)
+
+
+@frappe.whitelist()
 def update_workspace_members(workspace: str, members: list):
 	"""
 	Updates the members of a workspace

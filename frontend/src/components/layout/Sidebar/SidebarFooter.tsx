@@ -5,7 +5,6 @@ import { Box, DropdownMenu, IconButton, Separator, Tooltip } from '@radix-ui/the
 import { UserAvatar } from '@/components/common/UserAvatar'
 import { BsEmojiSmile } from 'react-icons/bs'
 import useCurrentRavenUser from '@/hooks/useCurrentRavenUser'
-import { SlSettings } from 'react-icons/sl'
 import { useIsUserActive } from '@/hooks/useIsUserActive'
 import { MdOutlineExitToApp } from 'react-icons/md'
 import { useNavigate } from 'react-router-dom'
@@ -14,7 +13,7 @@ import { SetCustomStatusModal } from '@/components/feature/userSettings/CustomSt
 import PushNotificationToggle from '@/components/feature/userSettings/PushNotifications/PushNotificationToggle'
 import { __ } from '@/utils/translations'
 import { Stack } from '../Stack'
-import { ImCompass } from 'react-icons/im'
+import { LuNavigation, LuSettings } from 'react-icons/lu'
 
 export const SidebarFooter = () => {
 
@@ -31,15 +30,15 @@ export const SidebarFooter = () => {
     return <Stack className='mx-auto py-2' align='center' gap='3'>
         <Box>
             <Tooltip content="Workspace Explorer" side='right'>
-                <IconButton aria-label='Workspace Explorer' size='4' color='gray' variant='ghost' onClick={() => navigate('/workspace-explorer')}>
-                    <ImCompass />
+                <IconButton aria-label='Workspace Explorer' size='3' color='gray' variant='ghost' onClick={() => navigate('/workspace-explorer')}>
+                    <LuNavigation size='18' />
                 </IconButton>
             </Tooltip>
         </Box>
         <Box>
             <Tooltip content="Settings" side='right'>
-                <IconButton aria-label='Settings' size='4' color='gray' variant='ghost' onClick={() => navigate('/settings/profile')}>
-                    <SlSettings size='18' />
+                <IconButton aria-label='Settings' size='3' color='gray' variant='ghost' onClick={() => navigate('/settings/profile')}>
+                    <LuSettings size='18' />
                 </IconButton>
             </Tooltip>
         </Box>

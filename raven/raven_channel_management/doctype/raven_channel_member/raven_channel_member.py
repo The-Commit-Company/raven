@@ -229,7 +229,8 @@ class RavenChannelMember(Document):
 		return frappe.get_cached_value("Raven Channel", self.channel_id, "is_thread")
 
 	def invalidate_channel_members_cache(self):
-		delete_channel_members_cache(self.channel_id)
+		if not self.flags.ignore_cache_invalidation:
+			delete_channel_members_cache(self.channel_id)
 
 
 def on_doctype_update():

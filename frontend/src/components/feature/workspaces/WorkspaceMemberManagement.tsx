@@ -16,10 +16,12 @@ import { UserFields } from "@/utils/users/UserListProvider"
 import { Button, Dialog, DropdownMenu, HoverCard, IconButton, ScrollArea, Separator, Table, Text, Tooltip } from "@radix-ui/themes"
 import clsx from "clsx"
 import { useFrappeDeleteDoc, useFrappeGetCall, useFrappePostCall, useFrappeUpdateDoc, useSWRConfig } from "frappe-react-sdk"
-import { useContext, useMemo, useState } from "react"
-import { BiCrown, BiDotsVerticalRounded, BiSolidCrown } from "react-icons/bi"
+import { lazy, Suspense, useContext, useMemo, useState } from "react"
+import { BiCog, BiCrown, BiDotsVerticalRounded, BiPlus, BiSolidCrown } from "react-icons/bi"
 import { FiUserMinus } from "react-icons/fi"
 import { toast } from "sonner"
+
+const AddWorkspaceMembersModalContent = lazy(() => import('./AddWorkspaceMemberModalContent'))
 
 type Props = {
     workspaceID: string
@@ -27,8 +29,8 @@ type Props = {
 
 type WorkspaceMemberFields = Pick<RavenWorkspaceMember, 'user' | 'is_admin' | 'creation' | 'name'>
 
-const useFetchWorkspaceMembers = (workspaceID: string) => {
-    return useFrappeGetCall<{ message: WorkspaceMemberFields[] }>('raven.api.workspaces.fetch_workspace_members', { workspace: workspaceID }, `fetch_workspace_members_${workspaceID}`, {
+export const useFetchWorkspaceMembers = (workspaceID: string) => {
+    return useFrappeGetCall<{ message: WorkspaceMemberFields[] }>('raven.api.workspaces.fetch_workspace_members', { workspace: workspaceID }, ["workspace_members", workspaceID], {
         revalidateOnFocus: false,
         errorRetryCount: 2
     })
@@ -48,6 +50,7 @@ const WorkspaceMemberManagement = ({ workspaceID }: Props) => {
         <Stack>
             <HStack justify='end'>
                 <ManageMembersDialog workspaceID={workspaceID} />
+                <AddMembersDialog workspaceID={workspaceID} />
             </HStack>
             {isLoading && !error && <TableLoader columns={2} />}
             <ErrorBanner error={error} />
@@ -80,7 +83,7 @@ const MemberRow = ({ users, member, isAdmin, workspaceID }: { users: Record<stri
     return <Table.Row>
         <Table.Cell>
             <HStack align='center'>
-                <UserAvatar src={user?.user_image} alt={user?.full_name ?? member.user} />
+                <UserAvatar src={user?.user_image} alt={user?.full_name ?? member.user} size='2' />
                 <Text as='span'>
                     {user?.full_name ?? member.user}
                 </Text>
@@ -92,7 +95,9 @@ const MemberRow = ({ users, member, isAdmin, workspaceID }: { users: Record<stri
             </HStack>
         </Table.Cell>
         <Table.Cell>
-            {getDateObject(member.creation).format("Do MMMM YYYY")}
+            <Text as='span' className="flex items-center h-full">
+                {getDateObject(member.creation).format("Do MMMM YYYY")}
+            </Text>
         </Table.Cell>
         {isAdmin ? <Table.Cell><MemberActions member={member} workspaceID={workspaceID} /></Table.Cell> : null}
     </Table.Row>
@@ -102,7 +107,7 @@ const MemberActions = ({ member, workspaceID }: { member: WorkspaceMemberFields,
 
     const { mutate } = useSWRConfig()
     const onUpdate = () => {
-        mutate(`fetch_workspace_members_${workspaceID}`)
+        mutate(["workspace_members", workspaceID])
     }
 
     return <div className='flex items-center gap-2 justify-center h-full'>
@@ -200,7 +205,7 @@ const ManageMembersDialog = ({ workspaceID }: { workspaceID: string }) => {
 
     return <Dialog.Root open={isOpen} onOpenChange={setOpen}>
         <Dialog.Trigger>
-            <Button className="not-cal" size='2' variant="soft" type='button'>Manage Members</Button>
+            <Button className="not-cal" color='gray' size='2' variant="soft" type='button'><BiCog fontSize={16} /> Manage Members</Button>
         </Dialog.Trigger>
         <Dialog.Content className={clsx(DIALOG_CONTENT_CLASS, 'w-full max-w-2xl')}>
             <Dialog.Title>Manage Members</Dialog.Title>
@@ -239,7 +244,7 @@ const ManageMembersDialogContent = ({ workspaceID, onClose, members }: { workspa
             members: newMembers
         }).then((response) => {
             toast.success('Members updated')
-            mutate(`fetch_workspace_members_${workspaceID}`)
+            mutate(["workspace_members", workspaceID])
             if (response.errors) {
                 setErrors(response.errors)
             } else {
@@ -248,7 +253,7 @@ const ManageMembersDialogContent = ({ workspaceID, onClose, members }: { workspa
         })
     }
 
-    return <Stack className="min-h-48 py-4">
+    return <Stack className="pt-4">
         <ErrorBanner error={error} />
         {errors.length > 0 && <ErrorCallout>
             {errors.map((error) => <Text key={error}>{error}</Text>)}
@@ -320,6 +325,26 @@ const MemberStats = ({ members }: { members: MemberObject[] }) => {
             </HoverCard.Content>
         </HoverCard.Root>
     </HStack>
+}
+
+const AddMembersDialog = ({ workspaceID }: { workspaceID: string }) => {
+
+    const [isOpen, { off }, setOpen] = useBoolean()
+
+    return <Dialog.Root open={isOpen} onOpenChange={setOpen}>
+        <Dialog.Trigger>
+            <Button size='2' variant='soft' type='button' className="not-cal">
+                <BiPlus fontSize={16} />
+                Add Members</Button>
+        </Dialog.Trigger>
+        <Dialog.Content className={clsx('w-full static')}>
+            <Dialog.Title>Add Members</Dialog.Title>
+            <Dialog.Description>Add members to your workspace.</Dialog.Description>
+            <Suspense fallback={<Loader />}>
+                <AddWorkspaceMembersModalContent workspaceID={workspaceID} onClose={off} />
+            </Suspense>
+        </Dialog.Content>
+    </Dialog.Root>
 }
 
 export default WorkspaceMemberManagement
