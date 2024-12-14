@@ -11,7 +11,7 @@ import { Link, useNavigate } from "react-router-dom"
 export const List = ({ data }: { data: RavenSchedulerEvent[] }) => {
 
     return (
-        <Flex direction='column' gap='4' width='100%'>
+        <Flex direction='column' gap='4' width='100%' className="animate-fadein">
             {data?.map((item, index) => (
                 <ScheduledMessageItem item={item} key={index} />
             ))}

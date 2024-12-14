@@ -61,7 +61,7 @@ export const ArchiveChannelModal = ({ onClose, onCloseViewDetails, channelData, 
                 </DialogCancel>
                 <DialogAction>
                     <Button variant="solid" color="red" onClick={archiveChannel} disabled={archivingDoc}>
-                        {archivingDoc && <Loader />}
+                        {archivingDoc && <Loader className="text-white" />}
                         {archivingDoc ? "Archiving" : "Archive"}
                     </Button>
                 </DialogAction>

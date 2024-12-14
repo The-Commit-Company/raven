@@ -1,5 +1,5 @@
 import { Stack } from '@/components/layout/Stack';
-import { Box, Card, Flex, IconButton, Inset, Link, Text, Tooltip } from '@radix-ui/themes';
+import { Box, Card, IconButton, Text, Tooltip } from '@radix-ui/themes';
 import { useCurrentEditor } from "@tiptap/react";
 import { useFrappeGetCall, useFrappePostCall } from 'frappe-react-sdk';
 import { memo, useMemo } from 'react';
@@ -86,25 +86,28 @@ const LinkPreview = memo(({ messageID }: { messageID: string }) => {
     if (linkPreview && linkPreview.site_name && linkPreview.description) {
 
         const image = linkPreview.absolute_image || linkPreview.image
-        return <Box pt='2' maxWidth="260px" position='relative' className='group/linkpreview'>
+        return <Box pt='2' width="580px" position='relative' className='group/linkpreview'>
             <Card asChild>
-                <a href={href} target='_blank'>
-                    {image && <Inset clip='padding-box' side='top' pb="current">
-                        <img src={image} alt={linkPreview.title}
-                            style={{
-                                display: "block",
-                                objectFit: "cover",
-                                width: "100%",
-                                height: "auto",
-                                backgroundColor: "var(--gray-5)",
-                            }} />
-                    </Inset>}
+                <a href={href} target='_blank' className='flex items-center gap-4 pr-4'>
+                    {image && <img src={image} alt={linkPreview.title}
+                        style={{
+                            display: "block",
+                            objectFit: "cover",
+                            objectPosition: 'center',
+                            marginLeft: '-12px',
+                            marginTop: '-12px',
+                            marginBottom: '-12px',
+                            width: "220px",
+                            height: "auto",
+                            backgroundColor: "var(--gray-5)",
+                        }} />
+                    }
                     <Stack className='gap-1.5'>
-                        <Stack className='gap-0.5'>
+                        <Stack className='gap-1'>
                             <Text weight='bold' className='block' size='2'>{linkPreview.title}</Text>
                             <Text size='1'>{linkPreview.site_name}</Text>
                         </Stack>
-                        <Text as='p' size='1'>{linkPreview.description}</Text>
+                        <Text as='p' size='1' className='line-clamp-2'>{linkPreview.description}</Text>
                     </Stack>
                 </a>
 

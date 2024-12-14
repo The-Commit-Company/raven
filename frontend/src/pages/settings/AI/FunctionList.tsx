@@ -1,18 +1,23 @@
 import AINotEnabledCallout from '@/components/feature/settings/ai/AINotEnabledCallout'
 import { ErrorBanner } from '@/components/layout/AlertBanner/ErrorBanner'
+import { EmptyState, EmptyStateDescription, EmptyStateIcon, EmptyStateLinkAction, EmptyStateTitle } from '@/components/layout/EmptyState/EmptyListViewState'
 import { TableLoader } from '@/components/layout/Loaders/TableLoader'
 import PageContainer from '@/components/layout/Settings/PageContainer'
 import SettingsContentContainer from '@/components/layout/Settings/SettingsContentContainer'
 import SettingsPageHeader from '@/components/layout/Settings/SettingsPageHeader'
-import { HStack, Stack } from '@/components/layout/Stack'
+import { HStack } from '@/components/layout/Stack'
 import { RavenAIFunction } from '@/types/RavenAI/RavenAIFunction'
-import { Badge, Button, Checkbox, HoverCard, Table, Text } from '@radix-ui/themes'
+import { hasRavenAdminRole, isSystemManager } from '@/utils/roles'
+import { Badge, Button, Checkbox, Table, Text } from '@radix-ui/themes'
 import { useFrappeGetDocList } from 'frappe-react-sdk'
+import { LuSquareFunction } from 'react-icons/lu'
 import { Link } from 'react-router-dom'
 
 type Props = {}
 
 const FunctionList = (props: Props) => {
+
+    const isRavenAdmin = hasRavenAdminRole() || isSystemManager()
 
     const { data, isLoading, error } = useFrappeGetDocList<RavenAIFunction>("Raven AI Function", {
         fields: ["name", "description", "function_name", "type", "requires_write_permissions"],
@@ -20,21 +25,36 @@ const FunctionList = (props: Props) => {
             field: "modified",
             order: "desc"
         }
+    }, isRavenAdmin ? undefined : null, {
+        errorRetryCount: 2
     })
+
     return (
         <PageContainer>
             <SettingsContentContainer>
                 <SettingsPageHeader
                     title='Functions'
                     description='Declare functions to be used by your AI bots.'
-                    actions={<Button asChild>
+                    actions={<Button asChild disabled={!isRavenAdmin}>
                         <Link to='create'>Create</Link>
                     </Button>}
                 />
-                {isLoading && <TableLoader columns={2} />}
+                {isLoading && !error && <TableLoader columns={2} />}
                 <ErrorBanner error={error} />
                 <AINotEnabledCallout />
-                {data && <FunctionTable functions={data} />}
+                {data && data.length > 0 && <FunctionTable functions={data} />}
+                {(data?.length === 0 || !isRavenAdmin) && <EmptyState>
+                    <EmptyStateIcon>
+                        <LuSquareFunction />
+                    </EmptyStateIcon>
+                    <EmptyStateTitle>Bots + Functions = AI Magic</EmptyStateTitle>
+                    <EmptyStateDescription>
+                        Use the no-code builder to create functions that allow AI bots to perform actions within the system when requested, like creating documents, or fetching reports to analyze.
+                    </EmptyStateDescription>
+                    {isRavenAdmin && <EmptyStateLinkAction to='create'>
+                        Create your first function
+                    </EmptyStateLinkAction>}
+                </EmptyState>}
             </SettingsContentContainer>
         </PageContainer>
     )
@@ -42,7 +62,7 @@ const FunctionList = (props: Props) => {
 
 const FunctionTable = ({ functions }: { functions: RavenAIFunction[] }) => {
     return (
-        <Table.Root variant="surface" className='rounded-sm'>
+        <Table.Root variant="surface" className='rounded-sm animate-fadein'>
             <Table.Header>
                 <Table.Row>
                     <Table.ColumnHeaderCell>Name</Table.ColumnHeaderCell>

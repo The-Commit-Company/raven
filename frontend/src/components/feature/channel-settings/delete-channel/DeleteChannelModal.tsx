@@ -1,7 +1,7 @@
 import { ErrorBanner } from '@/components/layout/AlertBanner/ErrorBanner'
 import { Fragment, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useFrappeDeleteDoc } from 'frappe-react-sdk'
+import { useFrappeDeleteDoc, useSWRConfig } from 'frappe-react-sdk'
 import { ChannelListItem } from '@/utils/channel/ChannelListProvider'
 import { AlertDialog, Button, Callout, Checkbox, Dialog, Flex, Text } from '@radix-ui/themes'
 import { Loader } from '@/components/common/Loader'
@@ -17,6 +17,8 @@ type DeleteChannelModalProps = {
 
 export const DeleteChannelModal = ({ onClose, onCloseParent, isDrawer, channelData }: DeleteChannelModalProps) => {
 
+    const { mutate } = useSWRConfig()
+
     const { deleteDoc, error, loading: deletingDoc, reset } = useFrappeDeleteDoc()
 
     const handleClose = () => {
@@ -30,6 +32,8 @@ export const DeleteChannelModal = ({ onClose, onCloseParent, isDrawer, channelDa
         if (channelData?.name) {
             deleteDoc('Raven Channel', channelData.name)
                 .then(() => {
+                    // Mutate the channel members cache
+                    mutate(["channel_members", channelData.name], undefined, { revalidate: false })
                     onClose()
                     onCloseParent()
                     localStorage.removeItem('ravenLastChannel')
@@ -83,7 +87,7 @@ export const DeleteChannelModal = ({ onClose, onCloseParent, isDrawer, channelDa
                 </DialogCancel>
                 <DialogAction>
                     <Button variant="solid" color="red" onClick={onSubmit} disabled={!allowDelete || deletingDoc}>
-                        {deletingDoc && <Loader />}
+                        {deletingDoc && <Loader className="text-white" />}
                         {deletingDoc ? "Deleting" : "Delete"}
                     </Button>
                 </DialogAction>

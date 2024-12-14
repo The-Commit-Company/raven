@@ -67,7 +67,7 @@ const ViewBotContent = ({ data, mutate }: { data: RavenBot, mutate: SWRResponse[
                     actions={<HStack>
                         <OpenChatButton bot={data} />
                         <Button type='submit' disabled={loading}>
-                            {loading && <Loader />}
+                            {loading && <Loader className="text-white" />}
                             {loading ? "Saving" : "Save"}
                         </Button>
                     </HStack>}
@@ -87,11 +87,17 @@ const OpenChatButton = ({ bot }: { bot: RavenBot }) => {
 
     const navigate = useNavigate()
 
+    const currentWorkspace = localStorage.getItem('ravenLastWorkspace')
+
     const openChat = () => {
         call.post("raven.api.raven_channel.create_direct_message_channel", {
             user_id: bot.raven_user
         }).then((res) => {
-            navigate(`/channel/${res.message}`)
+            if (currentWorkspace) {
+                navigate(`/${currentWorkspace}/${res.message}`)
+            } else {
+                navigate(`/channel/${res.message}`)
+            }
         })
     }
 

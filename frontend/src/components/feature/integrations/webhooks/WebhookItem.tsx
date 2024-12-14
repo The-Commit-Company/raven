@@ -104,7 +104,7 @@ const DeleteWebhookAlertContent = ({ webhhookID, onClose, mutate }: { webhhookID
                 </AlertDialog.Cancel>
                 <AlertDialog.Action>
                     <Button variant="solid" color="red" onClick={onDelete} disabled={loading}>
-                        {loading && <Loader />}
+                        {loading && <Loader className="text-white" />}
                         {loading ? "Deleting" : `Delete`}
                     </Button>
                 </AlertDialog.Action>

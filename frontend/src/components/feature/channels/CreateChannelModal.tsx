@@ -1,8 +1,8 @@
-import { useFrappeCreateDoc } from 'frappe-react-sdk'
+import { useFrappeCreateDoc, useFrappeGetCall, useSWRConfig } from 'frappe-react-sdk'
 import { ChangeEvent, useCallback, useMemo, useState } from 'react'
 import { Controller, FormProvider, useForm } from 'react-hook-form'
-import { BiGlobe, BiHash, BiLockAlt } from 'react-icons/bi'
-import { useNavigate } from 'react-router-dom'
+import { BiGlobe, BiHash, BiInfoCircle, BiLockAlt } from 'react-icons/bi'
+import { useNavigate, useParams } from 'react-router-dom'
 import { ErrorBanner } from '@/components/layout/AlertBanner/ErrorBanner'
 import { Box, Button, Dialog, Flex, IconButton, RadioGroup, Text, TextArea, TextField } from '@radix-ui/themes'
 import { ErrorText, HelperText, Label } from '@/components/common/Form'
@@ -13,6 +13,7 @@ import { FiPlus } from 'react-icons/fi'
 import { useIsDesktop } from '@/hooks/useMediaQuery'
 import { Drawer, DrawerContent, DrawerTrigger } from '@/components/layout/Drawer'
 import { __ } from '@/utils/translations'
+import { CustomCallout } from '@/components/common/Callouts/CustomCallout'
 
 interface ChannelCreationForm {
     channel_name: string,
@@ -30,7 +31,7 @@ export const CreateChannelButton = ({ updateChannelList }: { updateChannelList: 
         return <Dialog.Root open={isOpen} onOpenChange={setIsOpen}>
             <Dialog.Trigger>
                 <IconButton variant='soft' size='1' radius='large' color='gray' aria-label='Create Channel' title='Create Channel'
-                    className='sm:group-hover:visible sm:invisible transition-all ease-ease text-gray-10 dark:text-gray-300 bg-transparent hover:bg-gray-3'>
+                    className='transition-all ease-ease text-gray-10 bg-transparent hover:bg-gray-3 hover:text-gray-12'>
                     <FiPlus size='16' />
                 </IconButton>
             </Dialog.Trigger>
@@ -45,7 +46,7 @@ export const CreateChannelButton = ({ updateChannelList }: { updateChannelList: 
 
             <DrawerTrigger asChild>
                 <IconButton variant='soft' size='1' radius='large' color='gray' aria-label='Create Channel' title='Create Channel'
-                    className='sm:group-hover:visible sm:invisible transition-all ease-ease text-gray-10 dark:text-gray-300 bg-transparent hover:bg-gray-3'>
+                    className='transition-all ease-ease text-gray-10 bg-transparent hover:bg-gray-3 hover:text-gray-12'>
                     <FiPlus size='16' />
                 </IconButton>
             </DrawerTrigger>
@@ -66,6 +67,12 @@ export const CreateChannelButton = ({ updateChannelList }: { updateChannelList: 
 
 const CreateChannelContent = ({ updateChannelList, isOpen, setIsOpen }: { updateChannelList: VoidFunction, setIsOpen: (v: boolean) => void, isOpen: boolean }) => {
 
+
+    const { workspaceID } = useParams()
+
+    const { data: isAdmin } = useFrappeGetCall<{ message: boolean }>('raven.api.workspaces.is_workspace_admin', { workspace: workspaceID }, workspaceID ? undefined : null)
+
+    const { mutate } = useSWRConfig()
     let navigate = useNavigate()
     const methods = useForm<ChannelCreationForm>({
         defaultValues: {
@@ -79,12 +86,13 @@ const CreateChannelContent = ({ updateChannelList, isOpen, setIsOpen }: { update
     const { createDoc, error: channelCreationError, loading: creatingChannel, reset: resetCreateHook } = useFrappeCreateDoc()
 
 
-    const onClose = (channel_name?: string) => {
+    const onClose = (channel_name?: string, workspace?: string) => {
         if (channel_name) {
             // Update channel list when name is provided.
             // Also navigate to new channel
             updateChannelList()
-            navigate(`/channel/${channel_name}`)
+            navigate(`/${workspace}/${channel_name}`)
+            mutate(["channel_members", channel_name])
         }
         setIsOpen(false)
 
@@ -95,16 +103,17 @@ const CreateChannelContent = ({ updateChannelList, isOpen, setIsOpen }: { update
         resetCreateHook()
         resetForm()
     }
-
-
-
     const channelType = watch('type')
 
+
     const onSubmit = (data: ChannelCreationForm) => {
-        createDoc('Raven Channel', data).then(result => {
+        createDoc('Raven Channel', {
+            ...data,
+            workspace: workspaceID
+        }).then(result => {
             if (result) {
                 toast.success(__("Channel created"))
-                onClose(result.name)
+                onClose(result.name, workspaceID)
             }
         })
     }
@@ -149,6 +158,11 @@ const CreateChannelContent = ({ updateChannelList, isOpen, setIsOpen }: { update
         <FormProvider {...methods}>
             <form onSubmit={handleSubmit(onSubmit)}>
                 <Flex direction='column' gap='4' py='4'>
+                    {!isAdmin?.message && <CustomCallout
+                        iconChildren={<BiInfoCircle size='18' />}
+                        rootProps={{ color: 'yellow', variant: 'surface' }}
+                        textChildren={<Text>You cannot create a new channel since you are not an admin of this workspace. Ask an admin to create a channel or make you an admin.</Text>}
+                    />}
                     <ErrorBanner error={channelCreationError} />
                     <Box>
                         <Label htmlFor='channel_name' isRequired>{__("Name")}</Label>
@@ -255,8 +269,8 @@ const CreateChannelContent = ({ updateChannelList, isOpen, setIsOpen }: { update
                             {__("Cancel")}
                         </Button>
                     </Dialog.Close>
-                    <Button type='submit' disabled={creatingChannel}>
-                        {creatingChannel && <Loader />}
+                    <Button type='submit' disabled={creatingChannel || !isAdmin?.message}>
+                        {creatingChannel && <Loader className="text-white" />}
                         {creatingChannel ? __("Saving") : __("Save")}
                     </Button>
                 </Flex>

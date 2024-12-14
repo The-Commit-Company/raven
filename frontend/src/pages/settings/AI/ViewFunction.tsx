@@ -58,7 +58,7 @@ const ViewFunctionContent = ({ data, mutate }: { data: RavenAIFunction, mutate: 
                     title={data.name}
                     headerBadges={isDirty ? [{ label: "Not Saved", color: "red" }] : undefined}
                     actions={<Button type='submit' disabled={loading}>
-                        {loading && <Loader />}
+                        {loading && <Loader className="text-white" />}
                         {loading ? "Saving" : "Save"}
                     </Button>}
                     breadcrumbs={[{ label: 'Functions', href: '../' }, { label: data.name, href: '', copyToClipboard: true }]}

@@ -11,6 +11,7 @@ from frappe.utils import get_datetime, get_system_timezone
 from pytz import timezone, utc
 
 from raven.ai.ai import handle_ai_thread_message, handle_bot_dm
+from raven.api.raven_channel import get_peer_user
 from raven.notification import send_notification_to_topic, send_notification_to_user
 from raven.utils import track_channel_visit
 
@@ -167,13 +168,9 @@ class RavenMessage(Document):
 			return
 
 		# Get the bot user
-		peer_user = frappe.db.get_value(
-			"Raven Channel Member",
-			{"channel_id": self.channel_id, "user_id": ("!=", self.owner)},
-			"user_id",
-		)
+		peer_user = get_peer_user(self.channel_id, is_dm)
 
-		if not peer_user:
+		if not peer_user or peer_user.get("type") != "Bot":
 			return
 
 		# Get the bot user doc
@@ -196,25 +193,30 @@ class RavenMessage(Document):
 			at_front=True,
 		)
 
-	def publish_unread_count_event(self):
-		frappe.db.set_value(
-			"Raven Channel",
-			self.channel_id,
-			{
-				"last_message_timestamp": self.creation,
-				"last_message_details": json.dumps(
-					{
-						"message_id": self.name,
-						"content": self.content if self.message_type == "Text" else self.file,
-						"message_type": self.message_type,
-						"owner": self.owner,
-						"is_bot_message": self.is_bot_message,
-						"bot": self.bot,
-					}
-				),
-			},
-			update_modified=False,
+	def set_last_message_timestamp(self):
+
+		# Update directly via SQL since we do not want to invalidate the document cache
+		message_details = {
+			"message_id": self.name,
+			"content": self.content if self.message_type == "Text" else self.file,
+			"message_type": self.message_type,
+			"owner": self.owner,
+			"is_bot_message": self.is_bot_message,
+			"bot": self.bot,
+		}
+
+		raven_channel = frappe.qb.DocType("Raven Channel")
+		query = (
+			frappe.qb.update(raven_channel)
+			.where(raven_channel.name == self.channel_id)
+			.set(raven_channel.last_message_timestamp, self.creation)
+			.set(raven_channel.last_message_details, json.dumps(message_details))
 		)
+		query.run()
+
+	def publish_unread_count_event(self):
+
+		self.set_last_message_timestamp()
 
 		channel_doc = frappe.get_cached_doc("Raven Channel", self.channel_id)
 		# If the message is a direct message, then we can only send it to one user
@@ -222,15 +224,9 @@ class RavenMessage(Document):
 
 			if not channel_doc.is_self_message:
 
-				peer_raven_user = frappe.db.get_value(
-					"Raven Channel Member",
-					{"channel_id": self.channel_id, "user_id": ("!=", frappe.session.user)},
-					"user_id",
-				)
+				peer_user_doc = get_peer_user(self.channel_id, 1)
 
-				peer_user_doc = frappe.get_cached_doc("Raven User", peer_raven_user)
-
-				if peer_user_doc.type == "User":
+				if peer_user_doc.get("type") == "User":
 
 					frappe.publish_realtime(
 						"raven:unread_channel_count_updated",
@@ -565,9 +561,11 @@ class RavenMessage(Document):
 				docname=self.channel_id,
 				after_commit=after_commit,
 			)
-			# track the visit of the user to the channel if a new message is created
-			track_channel_visit(channel_id=self.channel_id, user=self.owner)
-			# frappe.enqueue(method=track_channel_visit, channel_id=self.channel_id, user=self.owner)
+
+			if self.message_type != "System":
+				# track the visit of the user to the channel if a new message is created
+				track_channel_visit(channel_id=self.channel_id, user=self.owner)
+				# frappe.enqueue(method=track_channel_visit, channel_id=self.channel_id, user=self.owner)
 
 			self.send_push_notification()
 
@@ -581,9 +579,9 @@ class RavenMessage(Document):
 		frappe.db.delete("Raven Message Reaction", {"message": self.name})
 		# if the message is a thread, delete all messages in the thread and the thread channel
 		if self.is_thread:
-			frappe.db.delete("Raven Message", {"channel_id": self.name})
-			# delete the channel for the thread
-			frappe.db.delete("Raven Channel", self.name)
+			# Delete the thread channel - this will automatically delete all the messages and their reactions in the thread
+			thread_channel_doc = frappe.get_doc("Raven Channel", self.name)
+			thread_channel_doc.delete(ignore_permissions=True)
 
 
 def on_doctype_update():

@@ -58,7 +58,7 @@ const ViewBotContent = ({ data, mutate }: { data: RavenBotInstructionTemplate, m
                     title={data.name}
                     headerBadges={isDirty ? [{ label: "Not Saved", color: "red" }] : undefined}
                     actions={<Button type='submit' disabled={loading}>
-                        {loading && <Loader />}
+                        {loading && <Loader className="text-white" />}
                         {loading ? "Saving" : "Save"}
                     </Button>}
                     breadcrumbs={[{ label: 'Instruction Templates', href: '../' }, { label: data.name, href: '', copyToClipboard: true }]}

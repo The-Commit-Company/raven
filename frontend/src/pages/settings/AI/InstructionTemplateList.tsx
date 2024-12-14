@@ -1,13 +1,16 @@
 import AINotEnabledCallout from '@/components/feature/settings/ai/AINotEnabledCallout'
 import { ErrorBanner } from '@/components/layout/AlertBanner/ErrorBanner'
+import { EmptyState, EmptyStateDescription, EmptyStateIcon, EmptyStateLinkAction, EmptyStateTitle } from '@/components/layout/EmptyState/EmptyListViewState'
 import { TableLoader } from '@/components/layout/Loaders/TableLoader'
 import PageContainer from '@/components/layout/Settings/PageContainer'
 import SettingsContentContainer from '@/components/layout/Settings/SettingsContentContainer'
 import SettingsPageHeader from '@/components/layout/Settings/SettingsPageHeader'
-import { HStack, Stack } from '@/components/layout/Stack'
+import { HStack } from '@/components/layout/Stack'
 import { RavenBotInstructionTemplate } from '@/types/RavenAI/RavenBotInstructionTemplate'
-import { Badge, Button, Table, Text } from '@radix-ui/themes'
+import { hasRavenAdminRole, isSystemManager } from '@/utils/roles'
+import { Badge, Button, Code, Table, Text } from '@radix-ui/themes'
 import { useFrappeGetDocList } from 'frappe-react-sdk'
+import { BiFile } from 'react-icons/bi'
 import { RiSparkling2Fill } from 'react-icons/ri'
 import { Link } from 'react-router-dom'
 
@@ -15,27 +18,44 @@ type Props = {}
 
 const InstructionTemplateList = (props: Props) => {
 
+    const isRavenAdmin = hasRavenAdminRole() || isSystemManager()
+
     const { data, isLoading, error } = useFrappeGetDocList<RavenBotInstructionTemplate>("Raven Bot Instruction Template", {
         fields: ["name", "template_name", "dynamic_instructions", "instruction"],
         orderBy: {
             field: "modified",
             order: "desc"
         }
+    }, isRavenAdmin ? undefined : null, {
+        errorRetryCount: 2
     })
+
     return (
         <PageContainer>
             <SettingsContentContainer>
                 <SettingsPageHeader
                     title='Instruction Templates'
                     description='Save commonly used instructions as templates for your bots.'
-                    actions={<Button asChild>
+                    actions={<Button asChild disabled={!isRavenAdmin}>
                         <Link to='create'>Create</Link>
                     </Button>}
                 />
-                {isLoading && <TableLoader columns={2} />}
+                {isLoading && !error && <TableLoader columns={2} />}
                 <ErrorBanner error={error} />
                 <AINotEnabledCallout />
-                {data && <InstructionTable data={data} />}
+                {data && data.length > 0 && <InstructionTable data={data} />}
+                {(data?.length === 0 || !isRavenAdmin) && <EmptyState>
+                    <EmptyStateIcon>
+                        <BiFile />
+                    </EmptyStateIcon>
+                    <EmptyStateTitle>AI Instruction Templates</EmptyStateTitle>
+                    <EmptyStateDescription>
+                        Most bots require the same kind of instructions to perform their tasks, like "format dates as DD-MM-YYYY" or "the current user is <Code color='gray'>{"{{user}}"}</Code>".<br />Save commonly used instructions as templates for your AI bots.
+                    </EmptyStateDescription>
+                    {isRavenAdmin && <EmptyStateLinkAction to='create'>
+                        Create your first template
+                    </EmptyStateLinkAction>}
+                </EmptyState>}
             </SettingsContentContainer>
         </PageContainer>
     )
@@ -43,7 +63,7 @@ const InstructionTemplateList = (props: Props) => {
 
 const InstructionTable = ({ data }: { data: RavenBotInstructionTemplate[] }) => {
     return (
-        <Table.Root variant="surface" className='rounded-sm'>
+        <Table.Root variant="surface" className='rounded-sm animate-fadein'>
             <Table.Header>
                 <Table.Row>
                     <Table.ColumnHeaderCell>Name</Table.ColumnHeaderCell>

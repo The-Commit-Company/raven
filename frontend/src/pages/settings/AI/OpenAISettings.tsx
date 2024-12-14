@@ -5,6 +5,7 @@ import SettingsContentContainer from '@/components/layout/Settings/SettingsConte
 import SettingsPageHeader from '@/components/layout/Settings/SettingsPageHeader'
 import useRavenSettings from '@/hooks/fetchers/useRavenSettings'
 import { RavenSettings } from '@/types/Raven/RavenSettings'
+import { hasRavenAdminRole, isSystemManager } from '@/utils/roles'
 import { Box, Button, Checkbox, Flex, Separator, Text, TextField } from '@radix-ui/themes'
 import { useFrappeUpdateDoc } from 'frappe-react-sdk'
 import { useEffect } from 'react'
@@ -13,9 +14,13 @@ import { toast } from 'sonner'
 
 const OpenAISettings = () => {
 
+    const isRavenAdmin = hasRavenAdminRole() || isSystemManager()
+
     const { ravenSettings, mutate } = useRavenSettings()
 
-    const methods = useForm<RavenSettings>()
+    const methods = useForm<RavenSettings>({
+        disabled: !isRavenAdmin
+    })
 
     const { handleSubmit, control, watch, reset, register, formState: { errors } } = methods
 
@@ -55,8 +60,8 @@ const OpenAISettings = () => {
                         <SettingsPageHeader
                             title='OpenAI Settings'
                             description='Set your OpenAI API Key to use AI features in Raven.'
-                            actions={<Button type='submit' disabled={updatingDoc}>
-                                {updatingDoc && <Loader />}
+                            actions={<Button type='submit' disabled={updatingDoc || !isRavenAdmin}>
+                                {updatingDoc && <Loader className="text-white" />}
                                 {updatingDoc ? "Saving" : "Save"}
                             </Button>}
                         />
@@ -71,6 +76,8 @@ const OpenAISettings = () => {
                                         render={({ field }) => (
                                             <Checkbox
                                                 checked={field.value ? true : false}
+                                                name={field.name}
+                                                disabled={field.disabled}
                                                 onCheckedChange={(v) => field.onChange(v ? 1 : 0)}
                                             />
                                         )} />
@@ -88,6 +95,7 @@ const OpenAISettings = () => {
                                     maxLength={140}
                                     className={'w-48 sm:w-96'}
                                     id='openai_organisation_id'
+                                    autoComplete='off'
                                     required
                                     placeholder='org-************************'
                                     {...register('openai_organisation_id', {
@@ -112,6 +120,7 @@ const OpenAISettings = () => {
                                     id='openai_api_key'
                                     required
                                     type='password'
+                                    autoComplete='off'
                                     placeholder='••••••••••••••••••••••••••••••••'
                                     {...register('openai_api_key', {
                                         required: isAIEnabled ? "Please add your OpenAI API Key" : false,
@@ -130,6 +139,7 @@ const OpenAISettings = () => {
                                     maxLength={140}
                                     className={'w-48 sm:w-96'}
                                     id='openai_project_id'
+                                    autoComplete='off'
                                     placeholder='proj_************************'
                                     {...register('openai_project_id', {
                                         maxLength: {

@@ -14,6 +14,7 @@ import { DateSeparator } from "@/components/layout/Divider/DateSeparator";
 import { FcGoogle } from "react-icons/fc";
 import { useTheme } from "@/ThemeProvider";
 import { Stack } from "@/components/layout/Stack";
+import { ErrorCallout } from "@/components/common/Callouts/ErrorCallouts";
 
 export const SocialProviderIcons = {
     "github": <BiLogoGithub size="24" />,
@@ -73,7 +74,9 @@ export const Component = () => {
 
     return (
         <AuthContainer>
-            {error && <ErrorBanner error={error} />}
+            {error && <ErrorCallout>
+                {error.message}
+            </ErrorCallout>}
             {
                 isTwoFactorEnabled ? <TwoFactor loginWithTwoFAResponse={loginWithTwoFAResponse} setError={setError} setIsTwoFactorEnabled={setIsTwoFactorEnabled} /> :
                     <Box>
@@ -143,7 +146,7 @@ export const Component = () => {
                                         <Button type='submit' disabled={isSubmitting}
                                             size='3'
                                             className="not-cal font-medium">
-                                            {isSubmitting ? <Loader /> : 'Login'}
+                                            {isSubmitting ? <Loader className="text-white" /> : 'Login'}
                                         </Button>
                                     </Flex>
 

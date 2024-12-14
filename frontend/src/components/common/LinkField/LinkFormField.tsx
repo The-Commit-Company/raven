@@ -19,6 +19,7 @@ const LinkFormField = ({ name, rules, ...linkFieldProps }: LinkFormFieldProps) =
             render={({ field }) => (
                 <LinkField
                     value={field.value}
+                    disabled={field.disabled}
                     setValue={field.onChange}
                     {...linkFieldProps}
                 />

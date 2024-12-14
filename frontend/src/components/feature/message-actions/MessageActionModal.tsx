@@ -99,7 +99,7 @@ const MessageActionForm = ({ action, messageID, defaultValues }: { action: Raven
                         <Button color='gray' variant="soft" disabled={loading}>Cancel</Button>
                     </Dialog.Close>
                     <Button type="submit" disabled={loading}>
-                        {loading && <Loader />}
+                        {loading && <Loader className="text-white" />}
                         Save
                     </Button>
                 </HStack>

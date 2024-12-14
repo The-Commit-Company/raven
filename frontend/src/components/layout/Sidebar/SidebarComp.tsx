@@ -149,7 +149,7 @@ export const SidebarViewMoreButton = ({ expanded, onClick, ...props }: SidebarVi
             radius='large'
             onClick={onClick}
             {...props}
-            className={clsx('cursor-pointer transition-all text-gray-10 dark:text-gray-300 bg-transparent sm:hover:bg-gray-3 sm:invisible sm:group-hover:visible ease-ease')}
+            className={clsx('cursor-pointer transition-all text-gray-10 bg-transparent sm:hover:bg-gray-3 ease-ease group-hover:text-gray-12', props.className)}
         >
             {expanded ? <FiChevronDown size='16' /> : <FiChevronRight size='16' />}
         </IconButton>

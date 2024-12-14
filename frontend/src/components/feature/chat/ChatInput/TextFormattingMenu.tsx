@@ -3,8 +3,9 @@ import { BiBold, BiCodeAlt, BiCodeBlock, BiHighlight, BiItalic, BiListOl, BiList
 import { DEFAULT_BUTTON_STYLE, ICON_PROPS } from './ToolPanel'
 import { Box, Flex, IconButton, Separator, Tooltip } from '@radix-ui/themes'
 import { getKeyboardMetaKeyString } from '@/utils/layout/keyboardKey'
+import { memo } from 'react'
 
-export const TextFormattingMenu = () => {
+export const TextFormattingMenu = memo(() => {
 
     const { editor } = useCurrentEditor()
 
@@ -217,7 +218,7 @@ export const TextFormattingMenu = () => {
             <TimestampButton />
         </Flex>
     )
-}
+})
 
 const TimestampButton = () => {
     const { editor } = useCurrentEditor()

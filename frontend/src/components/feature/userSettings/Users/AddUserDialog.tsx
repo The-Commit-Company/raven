@@ -158,7 +158,7 @@ const UserForm = ({ onClose }: { onClose: VoidFunction }) => {
                     <Button color='gray' variant={'soft'} disabled={loading}>Cancel</Button>
                 </Dialog.Close>
                 <Button disabled={ravenUserExists || loading} onClick={handleSubmit(onSubmit)}>
-                    {loading ? <Loader /> : null}
+                    {loading ? <Loader className="text-white" /> : null}
                     {userExists ? 'Add' : 'Send Invite'}
                 </Button>
             </HStack>

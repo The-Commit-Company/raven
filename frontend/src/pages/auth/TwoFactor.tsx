@@ -78,7 +78,7 @@ export const TwoFactor = ({ loginWithTwoFAResponse, setError, setIsTwoFactorEnab
                     </Flex>
                     <Flex direction='column' gap='4' my='2' >
                         <Button type='submit' className="not-cal font-medium" size='3'>
-                            {isSubmitting ? <Loader /> : 'Verify'}
+                            {isSubmitting ? <Loader className="text-white" /> : 'Verify'}
                         </Button>
                     </Flex>
                     <Flex direction="column" gap="4">

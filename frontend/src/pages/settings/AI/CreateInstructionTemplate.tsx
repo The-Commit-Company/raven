@@ -35,7 +35,7 @@ const CreateInstructionTemplate = () => {
                         <SettingsPageHeader
                             title='Create an Instruction Template'
                             actions={<Button type='submit' disabled={loading}>
-                                {loading && <Loader />}
+                                {loading && <Loader className="text-white" />}
                                 {loading ? "Creating" : "Create"}
                             </Button>}
                             breadcrumbs={[{ label: 'Instruction Templates', href: '../' }, { label: 'New Instruction Template', href: '' }]}

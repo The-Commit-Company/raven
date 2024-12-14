@@ -9,8 +9,8 @@ import { useMemo } from "react"
 import { DateMonthYear } from "@/utils/dateConversions"
 
 type MessageBoxProps = {
-    message: Message
-    handleScrollToMessage: (messageName: string, channelID: string) => void
+    message: Message & { workspace?: string }
+    handleScrollToMessage: (messageName: string, channelID: string, workspace?: string) => void
 }
 
 export const MessageBox = ({ message, handleScrollToMessage }: MessageBoxProps) => {
@@ -44,7 +44,7 @@ export const MessageBox = ({ message, handleScrollToMessage }: MessageBoxProps) 
                 <Separator orientation='vertical' />
                 <Text as='span' size='1' color='gray'><DateMonthYear date={creation} /></Text>
 
-                <Link size='1' className="invisible group-hover:visible" onClick={() => handleScrollToMessage(message.name, channel_id)}>
+                <Link size='1' className="invisible group-hover:visible cursor-pointer" onClick={() => handleScrollToMessage(message.name, channel_id, message.workspace)}>
                     View in channel
                 </Link>
             </Flex>

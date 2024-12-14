@@ -1,0 +1,94 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "hash",
+ "creation": "2024-10-22 19:46:38.547781",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "user",
+  "is_admin",
+  "column_break_nuhn",
+  "workspace"
+ ],
+ "fields": [
+  {
+   "fieldname": "user",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "User",
+   "options": "Raven User",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_nuhn",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "workspace",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Workspace",
+   "options": "Raven Workspace",
+   "reqd": 1,
+   "search_index": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "is_admin",
+   "fieldtype": "Check",
+   "label": "Is Admin"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2024-11-15 13:11:09.674714",
+ "modified_by": "Administrator",
+ "module": "Raven",
+ "name": "Raven Workspace Member",
+ "naming_rule": "Random",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Raven User",
+   "select": 1,
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Raven Admin",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "quick_entry": 1,
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": []
+}

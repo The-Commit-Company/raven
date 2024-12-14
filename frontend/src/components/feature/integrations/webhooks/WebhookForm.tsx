@@ -12,9 +12,9 @@ import { UserAvatar } from '@/components/common/UserAvatar';
 import { SidebarIcon } from '@/components/layout/Sidebar/SidebarComp';
 import { useGetUser } from '@/hooks/useGetUser';
 import { ChannelIcon } from '@/utils/layout/channelIcon';
-import { Stack } from '@/components/layout/Stack';
+import { HStack, Stack } from '@/components/layout/Stack';
 import { AiOutlineApi, AiOutlineDatabase } from 'react-icons/ai';
-import { BiCodeCurly } from 'react-icons/bi';
+import { BiBuildings, BiCodeCurly } from 'react-icons/bi';
 import { LuWorkflow } from 'react-icons/lu';
 
 const ICON_PROPS = {
@@ -392,10 +392,16 @@ export const DirectMessageItem = ({ user }: { user: UserFields }) => {
 }
 
 export const ChannelItem = ({ channel }: { channel: ChannelListItem }) => {
-    return <Flex direction={'row'} gap={'2'} align={'center'}>
-        <ChannelIcon type={channel.type} size='18' />
-        <Flex justify='between' align={'center'} width='100%'>
-            <Text size='2' className="text-ellipsis line-clamp-1" as='span' >{channel.channel_name}</Text>
+    return <HStack justify='between' width='100%'>
+        <Flex direction={'row'} gap={'2'} align={'center'}>
+            <ChannelIcon type={channel.type} size='18' />
+            <Flex justify='between' align={'center'} width='100%'>
+                <Text size='2' className="text-ellipsis line-clamp-1" as='span' >{channel.channel_name}</Text>
+            </Flex>
         </Flex>
-    </Flex>
+        <HStack gap='1' align='center'>
+            <BiBuildings className='opacity-75' />
+            <Text size='1' className='opacity-75'>{channel.workspace}</Text>
+        </HStack>
+    </HStack>
 }

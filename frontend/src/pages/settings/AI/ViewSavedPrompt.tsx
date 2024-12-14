@@ -60,7 +60,7 @@ const ViewSavedPromptContent = ({ data, mutate }: { data: RavenBotAIPrompt, muta
                     title={data.name}
                     headerBadges={isDirty ? [{ label: "Not Saved", color: "red" }] : undefined}
                     actions={<Button type='submit' disabled={loading}>
-                        {loading && <Loader />}
+                        {loading && <Loader className="text-white" />}
                         {loading ? "Saving" : "Save"}
                     </Button>}
                     breadcrumbs={[{ label: 'Commands', href: '../' }, { label: data.name, href: '', copyToClipboard: true }]}

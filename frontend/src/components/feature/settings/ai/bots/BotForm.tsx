@@ -1,5 +1,5 @@
 import { Box, Tabs } from '@radix-ui/themes'
-import { LuFunctionSquare, LuSparkles } from 'react-icons/lu'
+import { LuSquareFunction, LuSparkles } from 'react-icons/lu'
 import InstructionField from '../InstructionField'
 import { BiBot, BiCode, BiFile } from 'react-icons/bi'
 import GeneralBotForm from './GeneralBotForm'
@@ -24,7 +24,7 @@ const BotForm = ({ isEdit }: { isEdit: boolean }) => {
                 <Tabs.Trigger value='general'><BiBot {...ICON_PROPS} /> General</Tabs.Trigger>
                 {isAiBot ? <Tabs.Trigger value='ai'><LuSparkles {...ICON_PROPS} /> AI</Tabs.Trigger> : null}
                 {isAiBot ? <Tabs.Trigger value='instructions'><BiFile {...ICON_PROPS} /> Instructions</Tabs.Trigger> : null}
-                {isAiBot ? <Tabs.Trigger value='functions'><LuFunctionSquare {...ICON_PROPS} /> Functions</Tabs.Trigger> : null}
+                {isAiBot ? <Tabs.Trigger value='functions'><LuSquareFunction {...ICON_PROPS} /> Functions</Tabs.Trigger> : null}
                 {isEdit ? <Tabs.Trigger value='api-docs'><BiCode {...ICON_PROPS} /> API Docs</Tabs.Trigger> : null}
             </Tabs.List>
             <Box pt='4'>

@@ -88,7 +88,7 @@ export const FileUploadBox = forwardRef((props: FileUploadBoxProps, ref) => {
                     <Text as="span" size="2" color="gray">
                         {__("Drag and drop your file here or")}
                     </Text>
-                    <Button variant={'ghost'} onClick={open} className={"underline not-cal hover:bg-transparent cursor-pointer"}>
+                    <Button variant={'ghost'} type='button' onClick={open} className={"underline not-cal hover:bg-transparent cursor-pointer"}>
                         {__("choose file")}
                     </Button>
                 </Flex>

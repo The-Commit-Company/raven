@@ -92,7 +92,7 @@ export const AlertContent = ({ onClose, onUpdate, doctype, docname, path }: Dele
                 </AlertDialog.Cancel>
                 <AlertDialog.Action>
                     <Button variant="solid" color="red" onClick={onSubmit} disabled={!allowDelete || deletingDoc}>
-                        {deletingDoc && <Loader />}
+                        {deletingDoc && <Loader className="text-white" />}
                         {deletingDoc ? "Deleting" : "Delete"}
                     </Button>
                 </AlertDialog.Action>

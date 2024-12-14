@@ -42,7 +42,7 @@ const CreateBot = () => {
                             title='Create a Bot'
                             // description='Bots can be used to send reminders, run AI assistants, and more.'
                             actions={<Button type='submit' disabled={loading}>
-                                {loading && <Loader />}
+                                {loading && <Loader className="text-white" />}
                                 {loading ? "Creating" : "Create"}
                             </Button>}
                             breadcrumbs={[{ label: 'Bots', href: '../' }, { label: 'New Bot', href: '' }]}

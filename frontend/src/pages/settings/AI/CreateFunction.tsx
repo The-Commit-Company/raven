@@ -42,7 +42,7 @@ const CreateFunction = () => {
                         <SettingsPageHeader
                             title='Create a Function'
                             actions={<Button type='submit' disabled={loading}>
-                                {loading && <Loader />}
+                                {loading && <Loader className="text-white" />}
                                 {loading ? "Creating" : "Create"}
                             </Button>}
                             breadcrumbs={[{ label: 'Functions', href: '../' }, { label: 'New Function', href: '' }]}
