@@ -12,7 +12,7 @@ import { Badge, Button, Dialog, Table, Text } from '@radix-ui/themes'
 import { useBoolean } from '@/hooks/useBoolean'
 import { DIALOG_CONTENT_CLASS } from '@/utils/layout/dialog'
 import AddWorkspaceForm from '@/components/feature/workspaces/AddWorkspaceForm'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { ChannelIcon } from '@/utils/layout/channelIcon'
 
 const WorkspaceList = () => {
@@ -51,12 +51,16 @@ const MyWorkspacesTable = ({ workspaces }: { workspaces: WorkspaceFields[] }) =>
                 {workspaces?.map((workspace) => (
                     <Table.Row key={workspace.name}>
                         <Table.Cell maxWidth={"150px"}>
-                            <HStack align='center'>
+                            {workspace.is_admin ? <Link to={`${workspace.name}`} className='hover:underline underline-offset-4'>
                                 <HStack align='center'>
                                     <UserAvatar src={workspace.logo} alt={workspace.workspace_name} />
                                     <Text weight='medium'>{workspace.workspace_name}</Text>
                                 </HStack>
-                            </HStack>
+                            </Link> :
+                                <HStack align='center'>
+                                    <UserAvatar src={workspace.logo} alt={workspace.workspace_name} />
+                                    <Text weight='medium'>{workspace.workspace_name}</Text>
+                                </HStack>}
                         </Table.Cell>
                         <Table.Cell>
 

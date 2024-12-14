@@ -5,7 +5,7 @@ import frappe
 from frappe import _
 from frappe.model.document import Document
 
-from raven.utils import delete_workspace_members_cache
+from raven.utils import delete_channel_members_cache, delete_workspace_members_cache
 
 
 class RavenWorkspaceMember(Document):
@@ -82,12 +82,15 @@ class RavenWorkspaceMember(Document):
 		workspace_channels = frappe.get_all("Raven Channel", {"workspace": self.workspace}, pluck="name")
 		for channel in workspace_channels:
 			frappe.db.delete("Raven Channel Member", {"channel_id": channel, "user_id": self.user})
+			if not self.flags.ignore_cache_invalidation:
+				delete_channel_members_cache(channel)
 
 	def invalidate_workspace_members_cache(self):
 		"""
 		Invalidate the workspace members cache
 		"""
-		delete_workspace_members_cache(self.workspace)
+		if not self.flags.ignore_cache_invalidation:
+			delete_workspace_members_cache(self.workspace)
 
 
 def on_doctype_update():

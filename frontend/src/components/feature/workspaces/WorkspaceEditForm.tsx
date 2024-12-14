@@ -26,7 +26,7 @@ const WorkspaceEditForm = () => {
                 {errors.description && <ErrorText>{errors.description?.message}</ErrorText>}
             </Stack>
 
-            <Stack>
+            <Stack className='max-w-md'>
                 <Label htmlFor='channel_type'>Workspace Type</Label>
                 <Controller
                     name='type'

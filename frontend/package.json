@@ -54,6 +54,7 @@
     "react-idle-timer": "^5.7.2",
     "react-intersection-observer": "^9.10.3",
     "react-router-dom": "^6.26.1",
+    "react-virtuoso": "^4.12.3",
     "react-zoom-pan-pinch": "^3.4.4",
     "sonner": "^1.7.0",
     "tailwindcss": "^3.4.10",
