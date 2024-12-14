@@ -70,7 +70,7 @@ const FrappeHR = () => {
                             title={__('HR')}
                             description={__("Connect your HR system to Raven to sync employee data and send notifications.")}
                             actions={<Button type='submit' disabled={updatingDoc || !isRavenAdmin}>
-                                {updatingDoc && <Loader />}
+                                {updatingDoc && <Loader className="text-white" />}
                                 {updatingDoc ? __("Saving") : __("Save")}
                             </Button>}
                         />

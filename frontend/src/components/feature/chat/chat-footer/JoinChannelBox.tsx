@@ -40,7 +40,7 @@ export const JoinChannelBox = ({ channelData, user }: JoinChannelBoxProps) => {
                     onClick={joinChannel}
                     size={channelData ? '2' : '1'}
                     disabled={loading}>
-                    {loading && <Loader />}
+                    {loading && <Loader className="text-white" />}
                     {loading ? 'Joining' : <span className="inline-flex gap-1">Join {channelData ? `${channelData?.channel_name}` : "Conversation"}
                     </span>}
                 </Button>

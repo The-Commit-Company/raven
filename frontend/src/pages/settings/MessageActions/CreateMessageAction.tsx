@@ -40,7 +40,7 @@ const CreateMessageAction = () => {
                         <SettingsPageHeader
                             title='Create a Message Action'
                             actions={<Button type='submit' disabled={loading}>
-                                {loading && <Loader />}
+                                {loading && <Loader className="text-white" />}
                                 {loading ? "Creating" : "Create"}
                             </Button>}
                             breadcrumbs={[{ label: 'Message Action', href: '../' }, { label: 'New Message Action', href: '' }]}

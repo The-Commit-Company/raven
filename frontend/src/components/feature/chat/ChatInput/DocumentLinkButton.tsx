@@ -134,7 +134,7 @@ const DocumentLinkForm = ({ channelID, onClose }: { channelID: string, onClose: 
                     </Dialog.Close>
                     <Button type='button' disabled={loading} onClick={methods.handleSubmit(onSubmit)}
                     >
-                        {loading && <Loader />}
+                        {loading && <Loader className="text-white" />}
                         Send
                     </Button>
                 </Flex>

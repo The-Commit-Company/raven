@@ -5,8 +5,10 @@ import { Link, LinkProps } from "react-router-dom";
 
 export const EmptyState = ({ children, className }: PropsWithChildren<{ className?: string }>) => {
     return (
-        <div className={clsx('flex flex-col items-center justify-center w-full h-96 animate-fadein', className)}>
-            {children}
+        <div className="fixed top-[calc(50%)] sm:left-[calc(50%+128px)] left-[calc(50%)] translate-x-[calc(-50%)] translate-y-[-50%]">
+            <div className={clsx('flex flex-col items-center justify-center w-full h-[600px] animate-fadein', className)}>
+                {children}
+            </div>
         </div>
     )
 }

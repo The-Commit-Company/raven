@@ -87,7 +87,7 @@ export const DeleteChannelModal = ({ onClose, onCloseParent, isDrawer, channelDa
                 </DialogCancel>
                 <DialogAction>
                     <Button variant="solid" color="red" onClick={onSubmit} disabled={!allowDelete || deletingDoc}>
-                        {deletingDoc && <Loader />}
+                        {deletingDoc && <Loader className="text-white" />}
                         {deletingDoc ? "Deleting" : "Delete"}
                     </Button>
                 </DialogAction>

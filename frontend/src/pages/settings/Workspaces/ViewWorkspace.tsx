@@ -71,7 +71,7 @@ const ViewWorkspaceContent = ({ data, mutate }: { data: RavenWorkspace, mutate: 
                     title={data.workspace_name}
                     headerBadges={isDirty ? [{ label: "Not Saved", color: "red" }] : undefined}
                     actions={<Button type='submit' disabled={loading}>
-                        {loading && <Loader />}
+                        {loading && <Loader className="text-white" />}
                         {loading ? "Saving" : "Save"}
                     </Button>}
                     breadcrumbs={[{ label: 'Workspaces', href: '../' }, { label: data.workspace_name, href: '', copyToClipboard: true }]}

@@ -61,7 +61,7 @@ const OpenAISettings = () => {
                             title='OpenAI Settings'
                             description='Set your OpenAI API Key to use AI features in Raven.'
                             actions={<Button type='submit' disabled={updatingDoc || !isRavenAdmin}>
-                                {updatingDoc && <Loader />}
+                                {updatingDoc && <Loader className="text-white" />}
                                 {updatingDoc ? "Saving" : "Save"}
                             </Button>}
                         />

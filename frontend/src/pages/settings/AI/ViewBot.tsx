@@ -67,7 +67,7 @@ const ViewBotContent = ({ data, mutate }: { data: RavenBot, mutate: SWRResponse[
                     actions={<HStack>
                         <OpenChatButton bot={data} />
                         <Button type='submit' disabled={loading}>
-                            {loading && <Loader />}
+                            {loading && <Loader className="text-white" />}
                             {loading ? "Saving" : "Save"}
                         </Button>
                     </HStack>}

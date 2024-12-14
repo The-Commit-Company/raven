@@ -85,7 +85,7 @@ const SetCustomStatusContent = ({ onClose }: { onClose: VoidFunction }) => {
                             <Button variant="soft" color="gray">{__("Cancel")}</Button>
                         </Dialog.Close>
                         <Button type='submit' disabled={loading}>
-                            {loading && <Loader />}
+                            {loading && <Loader className="text-white" />}
                             {loading ? __("Saving") : __("Save")}
                         </Button>
                     </Flex>

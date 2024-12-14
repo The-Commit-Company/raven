@@ -168,7 +168,7 @@ const CreateMeetingForm = ({ onClose, channelData }: CreateMeetingFormProps) => 
                         <Button variant="soft" color="gray">Cancel</Button>
                     </Dialog.Close>
                     <Button type='submit' disabled={loading}>
-                        {loading && <Loader />}
+                        {loading && <Loader className="text-white" />}
                         {loading ? "Creating" : "Create"}
                     </Button>
                 </Flex>

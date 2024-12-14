@@ -103,7 +103,7 @@ export const AddChannelMembersModalContent = ({ onClose }: AddChannelMemberModal
                 <Button variant="soft" color="gray">Cancel</Button>
               </Dialog.Close>
               <Button type='submit' disabled={creatingDoc}>
-                {creatingDoc && <Loader />}
+                {creatingDoc && <Loader className="text-white" />}
                 {creatingDoc ? "Saving" : "Save"}
               </Button>
             </Flex>

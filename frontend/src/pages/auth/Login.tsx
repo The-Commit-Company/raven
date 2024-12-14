@@ -146,7 +146,7 @@ export const Component = () => {
                                         <Button type='submit' disabled={isSubmitting}
                                             size='3'
                                             className="not-cal font-medium">
-                                            {isSubmitting ? <Loader /> : 'Login'}
+                                            {isSubmitting ? <Loader className="text-white" /> : 'Login'}
                                         </Button>
                                     </Flex>
 

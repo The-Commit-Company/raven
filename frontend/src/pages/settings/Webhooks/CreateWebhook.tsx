@@ -43,7 +43,7 @@ const CreateWebhook = () => {
                         <SettingsPageHeader
                             title='Create a Webhook'
                             actions={<Button type='submit' disabled={loading}>
-                                {loading && <Loader />}
+                                {loading && <Loader className="text-white" />}
                                 {loading ? "Creating" : "Create"}
                             </Button>}
                             breadcrumbs={[{ label: 'Webhooks', href: '../' }, { label: 'New Webhook', href: '' }]}

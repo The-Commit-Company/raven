@@ -64,7 +64,7 @@ const ViewMessageActionContent = ({ data, mutate }: { data: RavenMessageAction, 
                     headerBadges={isDirty ? [{ label: "Not Saved", color: "red" }] : undefined}
                     actions={<HStack>
                         <Button type='submit' disabled={loading}>
-                            {loading && <Loader />}
+                            {loading && <Loader className="text-white" />}
                             {loading ? "Saving" : "Save"}
                         </Button>
                     </HStack>}

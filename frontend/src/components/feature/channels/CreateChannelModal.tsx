@@ -270,7 +270,7 @@ const CreateChannelContent = ({ updateChannelList, isOpen, setIsOpen }: { update
                         </Button>
                     </Dialog.Close>
                     <Button type='submit' disabled={creatingChannel || !isAdmin?.message}>
-                        {creatingChannel && <Loader />}
+                        {creatingChannel && <Loader className="text-white" />}
                         {creatingChannel ? __("Saving") : __("Save")}
                     </Button>
                 </Flex>
