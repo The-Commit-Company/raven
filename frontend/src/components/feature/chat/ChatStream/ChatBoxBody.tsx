@@ -92,25 +92,46 @@ export const ChatBoxBody = ({ channelData }: ChatBoxBodyProps) => {
 
     const { canUserSendMessage, shouldShowJoinBox } = useMemo(() => {
 
-        let canUserSendMessage = false
-        let shouldShowJoinBox = false
+        if (channelData.is_archived) {
+            return {
+                canUserSendMessage: false,
+                shouldShowJoinBox: false
+            }
+        }
+
+
+        if (channelData.type === 'Open') {
+            return {
+                canUserSendMessage: true,
+                shouldShowJoinBox: false
+            }
+        }
+
+        if (channelMemberProfile) {
+            return {
+                canUserSendMessage: true,
+                shouldShowJoinBox: false
+            }
+        }
 
         const isDM = channelData?.is_direct_message === 1 || channelData?.is_self_message === 1
 
-
-        if (channelData.type === 'Open' || channelMemberProfile && channelData.is_archived === 0) {
-            canUserSendMessage = true
+        // If the channel data is loaded and the member profile is loaded, then check for this, else don't show anything.
+        if (!channelMemberProfile && !isDM && channelData && !isLoading) {
+            console.log("Here", channelData)
+            return {
+                shouldShowJoinBox: true,
+                canUserSendMessage: false
+            }
         }
 
-        if (channelData.is_archived === 0 && !channelMemberProfile && channelData.type !== 'Open' && !isDM) {
-            shouldShowJoinBox = true
-        }
+        return { canUserSendMessage: false, shouldShowJoinBox: false }
 
-        return { canUserSendMessage, shouldShowJoinBox }
-
-    }, [channelMemberProfile, channelData])
+    }, [channelMemberProfile, channelData, isLoading])
 
 
+    console.log("Can Send message", canUserSendMessage)
+    console.log("Show join box", shouldShowJoinBox)
 
 
     const { threadID } = useParams()

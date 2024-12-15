@@ -27,7 +27,7 @@ const ArchiveChannelBoxContent = ({ channelID, isMemberAdmin }: { channelID: str
         <Flex
             direction='column'
             align='center'
-            className="border-2 rounded-md bg-surface animate-fadein"
+            className="border border-gray-6 rounded-md bg-surface animate-fadein sm:mb-0 mb-2"
             p='4'>
             <Stack justify='center' align='center'>
                 <Text as='span' color='gray'>This channel has been archived.</Text>
@@ -53,7 +53,7 @@ const UnArchiveButton = ({ channelID }: { channelID: string }) => {
 
     return (
         <Button
-            size='1'
+            size='2'
             disabled={loading}
             color='gray'
             variant="soft"

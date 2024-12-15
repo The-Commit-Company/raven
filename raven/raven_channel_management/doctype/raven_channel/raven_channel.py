@@ -147,7 +147,7 @@ class RavenChannel(Document):
 					frappe.throw(_("You don't have permission to modify this channel"), frappe.PermissionError)
 
 		# Check if this channel exists in the current workspace
-		if self.workspace:
+		if self.workspace and self.flags.in_insert:
 			if frappe.db.exists(
 				"Raven Channel", {"channel_name": self.channel_name, "workspace": self.workspace}
 			):
