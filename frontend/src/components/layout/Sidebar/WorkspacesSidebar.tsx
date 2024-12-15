@@ -3,7 +3,7 @@ import { HStack, Stack } from '../Stack'
 import useFetchWorkspaces, { WorkspaceFields } from '@/hooks/fetchers/useFetchWorkspaces'
 import { SidebarFooter } from './SidebarFooter'
 import AddWorkspaceSidebarButton from '@/components/feature/workspaces/AddWorkspaceSidebarButton'
-import { Link, useParams } from 'react-router-dom'
+import { Link, useLocation, useParams } from 'react-router-dom'
 import clsx from 'clsx'
 import { useContext, useMemo } from 'react'
 import useUnreadMessageCount from '@/hooks/useUnreadMessageCount'
@@ -40,7 +40,7 @@ const WorkspacesSidebar = () => {
     }, [data, channels, unreadCounts])
 
     return (
-        <Stack className='sm:w-20 w-20 sm:p-0 px-2 pb-4 border-r border-gray-4 dark:border-gray-6 h-screen' justify='between'>
+        <Stack className='w-20 p-0 pb-4 border-r border-gray-4 dark:border-gray-6 h-screen' justify='between'>
             <ScrollArea className='h-[calc(100vh-7rem)]' type="hover" scrollbars="vertical">
                 <Stack align='center' className='px-1 py-2' gap='3'>
                     {myWorkspaces.map((workspace) => (
@@ -68,41 +68,50 @@ const WorkspaceItem = ({ workspace }: { workspace: WorkspaceFields & { unread_co
         logo = '/assets/raven/raven-logo.png'
     }
 
+    const location = useLocation()
+
+    const path = isSelected ? location.pathname : `/${workspace.name}`
+
     const openWorkspace = () => {
         localStorage.setItem('ravenLastWorkspace', workspace.name)
         localStorage.removeItem('ravenLastChannel')
     }
 
     return <HStack position='relative' align='center' className='group'>
-        <Box className={clsx('w-1 h-0 bg-gray-12 rounded-r-full dark:bg-gray-12 absolute -left-3 group-hover:h-4 transition-all duration-200 ease-ease-out-cubic',
-            isSelected && 'h-[90%] group-hover:h-[90%]',
+        <Box className={clsx('w-1 bg-gray-12 rounded-r-full dark:bg-gray-12 absolute sm:-left-3 -left-3.5 group-hover:h-4 transition-all duration-200 ease-ease-out-cubic',
+            isSelected ? 'h-[90%] group-hover:h-[90%] group-active:h-[90%]' : 'group-active:h-4',
             workspace.unread_count > 0 && 'h-1.5'
         )} />
         <Flex align='center' gap='2' width='100%' justify='between' asChild>
             <Tooltip content={workspace.workspace_name} side='right'>
                 <Link aria-label={`Switch to ${workspace.workspace_name} workspace`}
                     className={'cursor-pointer'}
-                    to={`/${workspace.name}`}
+                    to={path}
                     onClick={openWorkspace}
                 >
-                    <Box>
-                        <Avatar
-                            size={{ sm: '3', md: '3' }}
-                            className={clsx('hover:shadow-sm transition-all duration-200')}
-                            color='gray'
-                            fallback={workspace.workspace_name.charAt(0)}
-                            src={logo}
-                        />
-                    </Box>
+                    <WorkspaceLogo workspace_name={workspace.workspace_name} logo={logo} />
                 </Link>
             </Tooltip>
         </Flex>
         {workspace.unread_count > 0 &&
-            <Box className='rounded-full absolute -right-2 -bottom-1 bg-red-11 text-white w-4 h-4 flex items-center justify-center'>
+            <Box className='rounded-full absolute -right-2 -bottom-1 bg-red-11 dark:bg-red-9 text-white w-4 h-4 flex items-center justify-center'>
                 <Text as='span' size='1' weight='medium'>{workspace.unread_count}</Text>
             </Box>
         }
     </HStack>
+}
+
+const WorkspaceLogo = ({ workspace_name, logo }: { workspace_name: string, logo: string }) => {
+    return <Box>
+        <Avatar
+            size={{ sm: '3', md: '3' }}
+            className={clsx('hover:shadow-sm transition-all duration-200')}
+            color='gray'
+            loading='eager'
+            fallback={workspace_name.charAt(0)}
+            src={logo}
+        />
+    </Box>
 }
 
 export default WorkspacesSidebar

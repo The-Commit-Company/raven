@@ -30,7 +30,7 @@ const WorkspaceSwitcherGrid = () => {
     }, [data])
 
     return (
-        <Stack className='sm:p-28 py-16 px-8 gap-16 animate-fadein'>
+        <Stack className='sm:p-28 py-16 sm:px-8 px-4 gap-16 animate-fadein'>
             <div className='container flex mx-auto flex-col gap-5 max-w-screen-lg'>
                 <Stack gap='1'>
                     <Heading className='not-cal' size='4'>My Workspaces</Heading>

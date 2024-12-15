@@ -1,11 +1,9 @@
 import { SettingsSidebar } from '@/components/feature/userSettings/SettingsSidebar'
-import { PageHeader } from '@/components/layout/Heading/PageHeader'
 import { useIsDesktop } from '@/hooks/useMediaQuery'
 import { ChannelListProvider } from '@/utils/channel/ChannelListProvider'
 import { __ } from '@/utils/translations'
 import { UserListProvider } from '@/utils/users/UserListProvider'
 import { Box, Flex, Heading } from '@radix-ui/themes'
-import clsx from 'clsx'
 import { BiChevronLeft } from 'react-icons/bi'
 import { Link } from 'react-router-dom'
 import { Outlet } from "react-router-dom"
@@ -18,7 +16,7 @@ const Settings = () => {
 
     let path = '../'
 
-    if (lastWorkspace && lastChannel) {
+    if (lastWorkspace && lastChannel && isDesktop) {
         path = `/${lastWorkspace}/${lastChannel}`
     } else if (lastWorkspace) {
         path = `/${lastWorkspace}`
