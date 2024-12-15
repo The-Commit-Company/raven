@@ -1,9 +1,9 @@
 import { useFrappeDocTypeEventListener, useFrappeGetCall, useSWRConfig } from "frappe-react-sdk";
 import { PropsWithChildren, createContext, useEffect, useMemo, useState } from "react";
 import { ErrorBanner } from "@/components/layout/AlertBanner/ErrorBanner";
-import { FullPageLoader } from "@/components/layout/Loaders/FullPageLoader";
-import { Box, Flex, Link } from "@radix-ui/themes";
+import { Box, Flex, Link, Text } from "@radix-ui/themes";
 import { RavenUser } from "@/types/Raven/RavenUser";
+import { Stack } from "@/components/layout/Stack";
 
 
 export const UserListContext = createContext<{ users: UserFields[], enabledUsers: UserFields[] }>({
@@ -53,7 +53,12 @@ export const UserListProvider = ({ children }: PropsWithChildren) => {
     }, [data])
 
     if (isLoading) {
-        return <FullPageLoader />
+        return <Flex justify='center' align='center' height='100vh' width='100vw' className='animate-fadein'>
+            <Stack className='text-center' gap='1'>
+                <Text size='7' className='cal-sans tracking-normal'>raven</Text>
+                <Text color='gray' weight='medium'>Setting up your workspace...</Text>
+            </Stack>
+        </Flex>
     }
     if (usersError) {
         return <Flex align='center' justify='center' px='4' mx='auto' className="w-[50vw] h-screen">
