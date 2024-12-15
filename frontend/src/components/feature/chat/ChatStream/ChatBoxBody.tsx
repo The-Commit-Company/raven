@@ -118,7 +118,6 @@ export const ChatBoxBody = ({ channelData }: ChatBoxBodyProps) => {
 
         // If the channel data is loaded and the member profile is loaded, then check for this, else don't show anything.
         if (!channelMemberProfile && !isDM && channelData && !isLoading) {
-            console.log("Here", channelData)
             return {
                 shouldShowJoinBox: true,
                 canUserSendMessage: false
@@ -128,10 +127,6 @@ export const ChatBoxBody = ({ channelData }: ChatBoxBodyProps) => {
         return { canUserSendMessage: false, shouldShowJoinBox: false }
 
     }, [channelMemberProfile, channelData, isLoading])
-
-
-    console.log("Can Send message", canUserSendMessage)
-    console.log("Show join box", shouldShowJoinBox)
 
 
     const { threadID } = useParams()
