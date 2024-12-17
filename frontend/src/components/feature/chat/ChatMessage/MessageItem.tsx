@@ -168,7 +168,7 @@ export const MessageItem = ({ message, setDeleteMessage, isHighlighted, onReplyM
                             rounded-md`, isHighlighted ? 'bg-yellow-50 hover:bg-yellow-50 dark:bg-yellow-300/20 dark:hover:bg-yellow-300/20' : !isDesktop && isHovered ? 'bg-gray-2 dark:bg-gray-3' : '', isEmojiPickerOpen ? 'bg-gray-2 dark:bg-gray-3' : '')}>
                             <Flex className='gap-2.5 sm:gap-3 items-start'>
                                 <MessageLeftElement message={message} user={user} isActive={isActive} />
-                                <Flex direction='column' className='gap-0.5' justify='center' width='100%'>
+                                <Flex direction='column' className='gap-0.5 w-[90%]' justify='center'>
                                     {!is_continuation ? <Flex align='center' gap='2' mt='-1'>
                                         <UserHoverCard
                                             user={user}
