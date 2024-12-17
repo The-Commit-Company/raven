@@ -97,6 +97,8 @@ const router = createBrowserRouter(
               <Route path="create" lazy={() => import('./pages/settings/MessageActions/CreateMessageAction')} />
               <Route path=":ID" lazy={() => import('./pages/settings/MessageActions/ViewMessageAction')} />
             </Route>
+
+            <Route path="help" lazy={() => import('./pages/settings/HelpAndSupport')} />
           </Route>
           <Route path=":workspaceID" element={<MainPage />}>
             <Route index element={<MobileTabsPage />} />
