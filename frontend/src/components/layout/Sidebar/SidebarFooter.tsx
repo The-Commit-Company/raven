@@ -43,7 +43,7 @@ export const SidebarFooter = () => {
             </Tooltip>
         </Box>
         <Separator size='4' className={`bg-gray-4 dark:bg-gray-6`} />
-        <Box className='pb-4'>
+        <Box className='pb-4 sm:pb-0'>
             <DropdownMenu.Root>
                 <Tooltip content="Options" side='right'>
                     <DropdownMenu.Trigger>
