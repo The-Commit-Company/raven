@@ -86,20 +86,15 @@ const LinkPreview = memo(({ messageID }: { messageID: string }) => {
     if (linkPreview && linkPreview.site_name && linkPreview.description) {
 
         const image = linkPreview.absolute_image || linkPreview.image
-        return <Box pt='2' width={{
+        return <Box pt='2' maxWidth={{
             md: '580px',
         }} position='relative' className='group/linkpreview sm:max-w-[580px] max-w-[356px]'>
             <Card asChild className='p-0 sm:p-3'>
                 <a href={href} target='_blank' className='flex sm:items-center flex-col sm:flex-row sm:gap-4 gap-0 sm:pr-4'>
                     {image && <img src={image} alt={linkPreview.title}
-                        className='sm:w-[220px] w-full h-full object-cover sm:object-center sm:h-auto sm:-ml-3 sm:-mt-3 sm:-mb-3'
+                        className='sm:max-w-[220px] w-full h-full object-cover sm:object-center sm:h-auto sm:-ml-3 sm:-mt-3 sm:-mb-3'
                         style={{
                             display: "block",
-                            // marginLeft: '-12px',
-                            // marginTop: '-12px',
-                            // marginBottom: '-12px',
-                            // width: "220px",
-                            // height: "auto",
                             backgroundColor: "var(--gray-5)",
                         }} />
                     }
