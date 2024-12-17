@@ -23,6 +23,7 @@ export const UserProvider: FC<PropsWithChildren> = ({ children }) => {
 
     const handleLogout = async () => {
         localStorage.removeItem('ravenLastChannel')
+        localStorage.removeItem('ravenLastWorkspace')
         localStorage.removeItem('app-cache')
         return logout()
             .then(() => {
