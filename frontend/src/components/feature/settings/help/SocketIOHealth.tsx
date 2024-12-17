@@ -61,8 +61,8 @@ const SocketIOHealth = () => {
                 </Flex>}
 
                 <Link ml={"auto"} underline="always" size='2' target="_blank"
-                    title="http://localhost:8000/app/system-health-report"
-                    href="http://localhost:8000/app/system-health-report">System Health Report <TbReportAnalytics size='15' />
+                    title="/app/system-health-report"
+                    href="/app/system-health-report">System Health Report <TbReportAnalytics size='15' />
                 </Link>
             </Flex>
         </SettingsContentContainer>
