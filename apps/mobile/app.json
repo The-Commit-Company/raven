@@ -22,7 +22,7 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "raven.thecommit.companyk"
+      "package": "raven.thecommit.company"
     },
     "web": {
       "favicon": "./assets/favicon.png"
