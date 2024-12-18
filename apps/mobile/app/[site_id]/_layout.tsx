@@ -1,13 +1,10 @@
-import { Text } from "@components/nativewindui/Text";
 import { router, Stack, useLocalSearchParams } from "expo-router";
 import { createContext, useEffect, useState } from "react";
-import { View } from "react-native";
 import { SiteInformation } from "../../types/SiteInformation";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import * as SecureStore from 'expo-secure-store';
 import { TokenResponse } from "expo-auth-session";
 import { FrappeProvider } from "frappe-react-sdk";
 import FullPageLoader from "@components/layout/FullPageLoader";
+import { getAccessToken, getSiteFromStorage, getTokenEndpoint, storeAccessToken } from "@lib/auth";
 
 export default function SiteLayout() {
 
@@ -27,19 +24,8 @@ export default function SiteLayout() {
 
         let site_info: SiteInformation | null = null
 
-        AsyncStorage.getItem('sites')
-            .then(sites => {
-                if (!sites) {
-                    router.replace('/landing')
-
-                    // TODO: Show the user a toast saying that the site is not found
-
-                    return null
-                }
-
-                const parsedSites: { [key: string]: SiteInformation } = JSON.parse(sites)
-                const siteInfo = parsedSites[site_id]
-
+        getSiteFromStorage(site_id)
+            .then(siteInfo => {
                 if (!siteInfo) {
                     router.replace('/landing')
 
@@ -47,7 +33,6 @@ export default function SiteLayout() {
 
                     return null
                 }
-
                 setSiteInfo(siteInfo)
                 site_info = siteInfo
 
@@ -56,7 +41,7 @@ export default function SiteLayout() {
             .then((siteInfo: SiteInformation | null) => {
                 if (!siteInfo) return null
 
-                return SecureStore.getItemAsync(`${site_id}-access-token`)
+                return getAccessToken(siteInfo.sitename)
             })
             .then(accessToken => {
                 if (!accessToken) {
@@ -66,16 +51,18 @@ export default function SiteLayout() {
 
                     return null
                 }
-                const tokenConfig: TokenResponse = JSON.parse(accessToken)
 
-                let tokenResponse = new TokenResponse(tokenConfig)
+                let tokenResponse = new TokenResponse(accessToken)
 
                 if (tokenResponse.shouldRefresh()) {
                     console.log("Refreshing token")
                     return tokenResponse.refreshAsync({
                         clientId: site_info?.client_id || '',
                     }, {
-                        tokenEndpoint: site_info?.url + '/api/method/frappe.integrations.oauth2.get_token',
+                        tokenEndpoint: getTokenEndpoint(site_info?.url || ''),
+                    }).then(async (tokenResponse) => {
+                        await storeAccessToken(site_info?.sitename || '', tokenResponse)
+                        return tokenResponse
                     })
                 } else {
                     return tokenResponse

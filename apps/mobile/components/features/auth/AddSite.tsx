@@ -7,11 +7,10 @@ import { BottomSheetView } from '@gorhom/bottom-sheet'
 import { useCallback, useState } from 'react'
 import { Alert, View } from 'react-native'
 import * as WebBrowser from 'expo-web-browser'
-import * as SecureStore from 'expo-secure-store';
 import { CodeChallengeMethod, exchangeCodeAsync, makeRedirectUri, ResponseType, TokenResponse, useAuthRequest } from 'expo-auth-session';
-import AsyncStorage from '@react-native-async-storage/async-storage'
 import { router } from 'expo-router'
 import { SiteInformation } from '../../../types/SiteInformation'
+import { addSiteToStorage, discovery, setDefaultSite, storeAccessToken } from '@lib/auth'
 
 WebBrowser.maybeCompleteAuthSession();
 
@@ -87,12 +86,6 @@ const AddSite = (props: Props) => {
     )
 }
 
-const discovery = {
-    authorizationEndpoint: '/api/method/frappe.integrations.oauth2.authorize',
-    tokenEndpoint: '/api/method/frappe.integrations.oauth2.get_token',
-    revocationEndpoint: '/api/method/frappe.integrations.oauth2.revoke_token',
-}
-
 const SiteAuthFlowSheet = ({ siteInformation, onDismiss }: { siteInformation: SiteInformation, onDismiss: () => void }) => {
 
     const discoveryWithURL = {
@@ -141,8 +134,8 @@ const SiteAuthFlowSheet = ({ siteInformation, onDismiss }: { siteInformation: Si
         // 3. Redirect the user to the /[sitename] route
 
         storeAccessToken(siteInformation.sitename, token)
-            .then(() => AsyncStorage.mergeItem('sites', JSON.stringify({ [siteInformation.sitename]: siteInformation })))
-            .then(() => AsyncStorage.setItem(`default-site`, siteInformation.sitename))
+            .then(() => addSiteToStorage(siteInformation.sitename, siteInformation))
+            .then(() => setDefaultSite(siteInformation.sitename))
             .then(() => router.replace(`/${siteInformation.sitename}`))
             .then(() => onDismiss())
     }
@@ -161,10 +154,6 @@ const SiteAuthFlowSheet = ({ siteInformation, onDismiss }: { siteInformation: Si
             <Text>Login</Text>
         </Button>
     </View>
-}
-
-const storeAccessToken = (siteName: string, token: TokenResponse) => {
-    return SecureStore.setItemAsync(`${siteName}-access-token`, JSON.stringify(token))
 }
 
 export default AddSite
