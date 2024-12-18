@@ -141,7 +141,7 @@ const SiteAuthFlowSheet = ({ siteInformation, onDismiss }: { siteInformation: Si
         // 3. Redirect the user to the /[sitename] route
 
         storeAccessToken(siteInformation.sitename, token)
-            .then(() => AsyncStorage.setItem(`${siteInformation.sitename}-site-info`, JSON.stringify(siteInformation)))
+            .then(() => AsyncStorage.mergeItem('sites', JSON.stringify({ [siteInformation.sitename]: siteInformation })))
             .then(() => AsyncStorage.setItem(`default-site`, siteInformation.sitename))
             .then(() => router.replace(`/${siteInformation.sitename}`))
             .then(() => onDismiss())

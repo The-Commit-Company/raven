@@ -1,6 +1,5 @@
 import { router, Stack } from 'expo-router';
 import { Linking, Platform, View } from 'react-native';
-
 import { Avatar, AvatarFallback } from '@components/nativewindui/Avatar';
 import { Button } from '@components/nativewindui/Button';
 import {
@@ -15,6 +14,7 @@ import { cn } from '@lib/cn';
 import { useColorScheme } from '@lib/useColorScheme';
 import ChevronRightIcon from '@assets/icons/ChevronRightIcon.svg';
 import { useFrappeGetCall } from 'frappe-react-sdk';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const SCREEN_OPTIONS = {
     title: 'Profile',
@@ -100,10 +100,20 @@ function ListHeaderComponent() {
 }
 
 function ListFooterComponent() {
+
+    const onLogout = () => {
+        // TODO: Remove the current site from AsyncStorage
+        // Revoke the token
+        // Redirect to the landing page
+
+        AsyncStorage.removeItem('default-site')
+        router.replace('/landing')
+    }
     return (
         <View className="ios:px-0 px-4 pt-8">
             <Button
                 size="lg"
+                onPress={onLogout}
                 variant={Platform.select({ ios: 'primary', default: 'secondary' })}
                 className="border-border bg-card">
                 <Text className="text-destructive">Log Out</Text>
@@ -128,20 +138,26 @@ const DATA: DataItem[] = [
         id: 'name',
         title: 'Name',
         ...(Platform.OS === 'ios' ? { value: 'Janhvi Patil' } : { subTitle: 'Janhvi Patil' }),
-        onPress: () => router.push('/profile/name'),
+        onPress: () => router.push('./name', {
+            relativeToDirectory: true
+        }),
     },
     {
         id: 'username',
         title: 'Username',
         ...(Platform.OS === 'ios' ? { value: '@janhvipatil' } : { subTitle: '@janhvipatil' }),
-        onPress: () => router.push('/profile/username'),
+        onPress: () => router.push('./username', {
+            relativeToDirectory: true
+        }),
     },
     ...(Platform.OS !== 'ios' ? ['Stay up to date'] : ['']),
     {
         id: '4',
         title: 'Notifications',
         ...(Platform.OS === 'ios' ? { value: 'Push' } : { subTitle: 'Push' }),
-        onPress: () => router.push('/profile/notification'),
+        onPress: () => router.push('./notification', {
+            relativeToDirectory: true
+        }),
     },
     {
         id: '7',

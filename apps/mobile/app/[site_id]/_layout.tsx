@@ -1,17 +1,17 @@
 import { Text } from "@components/nativewindui/Text";
-import { Redirect, router, Stack, useLocalSearchParams } from "expo-router";
-import { useContext, useEffect, useState } from "react";
+import { router, Stack, useLocalSearchParams } from "expo-router";
+import { useEffect, useState } from "react";
 import { View } from "react-native";
 import { SiteInformation } from "../../types/SiteInformation";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as SecureStore from 'expo-secure-store';
 import { TokenResponse } from "expo-auth-session";
-import { FrappeConfig, FrappeContext, FrappeProvider, useFrappeGetDoc } from "frappe-react-sdk";
+import { FrappeProvider } from "frappe-react-sdk";
 
 export default function SiteLayout() {
 
     //  Get the site ID from the route
-    const { site_id } = useLocalSearchParams()
+    const { site_id } = useLocalSearchParams<{ site_id: string }>()
 
     // If this page is loaded, we need to fetch the site information and the access token
     // On fetching the access token, we need to check if it's valid, and if not, we need to attempt to refresh it.
@@ -26,8 +26,19 @@ export default function SiteLayout() {
 
         let site_info: SiteInformation | null = null
 
-        AsyncStorage.getItem(`${site_id}-site-info`)
-            .then(siteInfo => {
+        AsyncStorage.getItem('sites')
+            .then(sites => {
+                if (!sites) {
+                    router.replace('/landing')
+
+                    // TODO: Show the user a toast saying that the site is not found
+
+                    return null
+                }
+
+                const parsedSites: { [key: string]: SiteInformation } = JSON.parse(sites)
+                const siteInfo = parsedSites[site_id]
+
                 if (!siteInfo) {
                     router.replace('/landing')
 
@@ -36,11 +47,10 @@ export default function SiteLayout() {
                     return null
                 }
 
-                const parsedSiteInfo: SiteInformation = JSON.parse(siteInfo || '{}')
-                setSiteInfo(parsedSiteInfo)
-                site_info = parsedSiteInfo
+                setSiteInfo(siteInfo)
+                site_info = siteInfo
 
-                return parsedSiteInfo
+                return siteInfo
             })
             .then((siteInfo: SiteInformation | null) => {
                 if (!siteInfo) return null
@@ -95,7 +105,6 @@ export default function SiteLayout() {
                     useToken: true,
                     token: () => accessToken?.accessToken || '',
                 }}
-                socketPort="9000"
                 siteName={siteInfo?.sitename}>
                 <Stack>
                     <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
@@ -103,33 +112,4 @@ export default function SiteLayout() {
             </FrappeProvider>
         }
     </>
-}
-
-const TestSocket = () => {
-
-    const { socket } = useContext(FrappeContext) as FrappeConfig
-
-    const [message, setMessage] = useState('')
-
-    const { data } = useFrappeGetDoc('User', 'Administrator')
-
-    useEffect(() => {
-
-        setTimeout(() => {
-            socket?.on('ice', () => {
-                setMessage('ice')
-            })
-        }, 1000)
-        setTimeout(() => {
-            socket?.emit('fire')
-        }, 2000)
-    }, [])
-
-    return <View className="flex-1 justify-center items-center">
-        <Text>{message}
-            {socket?.connected ? 'Connected' : 'Disconnected'}
-            {data?.name}
-        </Text>
-    </View>
-
 }
