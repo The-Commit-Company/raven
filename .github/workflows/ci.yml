@@ -5,10 +5,10 @@ on:
     branches:
       - master
     paths:
-      - "raven/**"
+      - raven/**
   pull_request:
     paths:
-      - "raven/**"
+      - raven/**
 
 jobs:
   tests:
