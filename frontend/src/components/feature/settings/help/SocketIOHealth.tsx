@@ -62,7 +62,7 @@ const SocketIOHealth = () => {
             </Flex>}
             <div className="pt-2">
                 <Link underline="always" size='2' target="_blank"
-                    title="/app/system-health-report"
+                    title="System Health Report"
                     href="/app/system-health-report"><TbReportAnalytics size='16' className="-mb-0.5 pr-1" />View Full System Health Report
                 </Link>
             </div>

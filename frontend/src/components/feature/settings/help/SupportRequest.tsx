@@ -154,6 +154,7 @@ const SupportRequestForm = ({ onClose }: SupportRequestFormProps) => {
                                     message: "Invalid email address"
                                 }
                             })}
+                            type="email"
                             placeholder="email@example.com"
                             aria-invalid={errors.email ? 'true' : 'false'}
                         />
