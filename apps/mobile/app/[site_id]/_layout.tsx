@@ -7,6 +7,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as SecureStore from 'expo-secure-store';
 import { TokenResponse } from "expo-auth-session";
 import { FrappeProvider } from "frappe-react-sdk";
+import FullPageLoader from "@components/layout/FullPageLoader";
 
 export default function SiteLayout() {
 
@@ -92,12 +93,7 @@ export default function SiteLayout() {
 
     return <>
         <Stack.Screen options={{ headerShown: false }} />
-        {loading ? <View className="flex-1 justify-center items-center gap-2">
-
-            {/* TODO: Change this UI */}
-            <Text className="text-4xl font-bold font-cal-sans">raven</Text>
-            <Text>Setting up your workspace...</Text>
-        </View> :
+        {loading ? <FullPageLoader /> :
             <SiteContext.Provider value={siteInfo}>
                 <FrappeProvider
                     url={siteInfo?.url}

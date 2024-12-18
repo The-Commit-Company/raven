@@ -46,6 +46,7 @@ export default function RootLayout() {
                         <KeyboardProvider statusBarTranslucent navigationBarTranslucent>
                             <ThemeProvider value={NAV_THEME[colorScheme]}>
                                 <Stack>
+                                    <Stack.Screen name="index" />
                                     <Stack.Screen name="landing" />
                                     <Stack.Screen name="[site_id]" options={{ headerShown: false }} />
                                     <Stack.Screen name="+not-found" />
