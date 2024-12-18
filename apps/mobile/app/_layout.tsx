@@ -10,16 +10,25 @@ import { StatusBar } from 'expo-status-bar';
 import { ActionSheetProvider } from '@expo/react-native-action-sheet';
 import { PortalHost } from '@rn-primitives/portal';
 import { KeyboardProvider } from 'react-native-keyboard-controller';
+import { useAsyncStorage } from '@react-native-async-storage/async-storage';
 
 export default function RootLayout() {
 
     const path = usePathname()
 
+    const { getItem } = useAsyncStorage(`default-site`)
     console.log(path)
 
+    // On load, check if the user has a site set
+
     useEffect(() => {
-        // TODO: If authenticated and site set
-        router.replace('/(tabs)/home')
+        getItem().then(site => {
+            if (site) {
+                router.replace(`/${site}`)
+            } else {
+                router.replace('/landing')
+            }
+        })
     }, [])
 
     useInitialAndroidBarSync();
@@ -37,6 +46,8 @@ export default function RootLayout() {
                         <KeyboardProvider statusBarTranslucent navigationBarTranslucent>
                             <ThemeProvider value={NAV_THEME[colorScheme]}>
                                 <Stack>
+                                    <Stack.Screen name="landing" />
+                                    <Stack.Screen name="[site_id]" options={{ headerShown: false }} />
                                     <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
                                     <Stack.Screen name="+not-found" />
                                 </Stack>
