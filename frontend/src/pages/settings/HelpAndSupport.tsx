@@ -1,4 +1,4 @@
-import { Button, Flex, Link, Text } from "@radix-ui/themes";
+import { Button, Code, Flex, Link, Separator, Text } from "@radix-ui/themes";
 import { FiExternalLink, FiMail } from "react-icons/fi"
 import { useBoolean } from "@/hooks/useBoolean"
 import PageContainer from "@/components/layout/Settings/PageContainer"
@@ -7,6 +7,7 @@ import SettingsPageHeader from "@/components/layout/Settings/SettingsPageHeader"
 import { Stack } from "@/components/layout/Stack"
 import CreateSupportTicketDialog from "../../components/feature/settings/help/SupportRequest"
 import SocketIOHealth from "@/components/feature/settings/help/SocketIOHealth"
+import { LuMessageSquareWarning } from "react-icons/lu";
 
 const HelpAndSupport = () => {
     const [open, { on, off }] = useBoolean()
@@ -16,18 +17,25 @@ const HelpAndSupport = () => {
             <SettingsContentContainer>
                 <SettingsPageHeader
                     title='Help and Support'
-                    description='Your gateway to seamless support, system insights, and community resources.'
                 />
 
-                <Stack gap="5" pt="4">
-                    <Flex align="center" gap="2">
-                        <Text color="gray" size="2" as='span' className='font-medium'>Looking for help? Raise a new support request, and our team will assist you promptly. </Text>
-                        <Button size="1" onClick={on} variant="soft" title="Click here to send us feedback or file an issue" aria-label="click here to send us feedback or file an issue">
-                            Click here
-                        </Button>
-                    </Flex>
+                <Stack gap="5">
+                    <Stack>
+                        <Text color="gray" size="2" as='span' className='font-medium'>Have ideas or ran into an issue?</Text>
+                        <div>
+                            <Button size="2" onClick={on} variant="outline"
+                                color='gray'
+                                className="not-cal cursor-pointer"
+                                title="Click here to send us feedback or file an issue" aria-label="click here to send us feedback or file an issue">
+                                <LuMessageSquareWarning />  Contact Us
+                            </Button>
+                        </div>
+
+                    </Stack>
+                    <Separator size='4' />
 
                     <SocketIOHealth />
+                    <Separator size='4' />
 
                     <ul className="list-none">
                         <li>
@@ -48,17 +56,20 @@ const HelpAndSupport = () => {
                                 href="https://ravenchat.ai">Website <FiExternalLink size='12' />
                             </Link>
                         </li>
+                        <li>
+                            <Link underline="always" size='2' target="_blank"
+                                color='gray'
+                                title="support@thecommit.company"
+                                href="mailto:support@thecommit.company">Support Email
+                            </Link>
+                        </li>
                     </ul>
 
-                    <Link underline="always" size='2' target="_blank"
-                        title="support@thecommit.company"
-                        href="mailto:support@thecommit.company">Need support? Email us <FiMail size='15' />
-                    </Link>
 
-                    <Stack justify="end">
+                    <Stack gap='0'>
                         {/* @ts-expect-error */}
-                        <Text size='2' color='gray'><Text size='4' className="cal-sans text-gray-12 dark:text-white">raven</Text> v{frappe?.boot.versions.raven}</Text>
-                        <Text size='1' color='gray'>Crafted by The Commit Company</Text>
+                        <Text size='3' color='gray'><Text size='4' className="cal-sans text-gray-12 dark:text-white">raven</Text> <Code size='2' variant="ghost">v{frappe?.boot.versions.raven}</Code></Text>
+                        <Text size='2' color='gray'>Crafted by The Commit Company</Text>
                     </Stack>
                 </Stack>
 

@@ -1,6 +1,6 @@
 import { ErrorCallout } from "@/components/common/Callouts/ErrorCallouts"
-import SettingsContentContainer from "@/components/layout/Settings/SettingsContentContainer"
-import { Badge, Flex, IconButton, Link, Text } from "@radix-ui/themes"
+import { Stack } from "@/components/layout/Stack"
+import { Badge, Flex, Heading, IconButton, Link, Text } from "@radix-ui/themes"
 import clsx from "clsx"
 import { FrappeConfig, FrappeContext, useFrappeEventListener } from "frappe-react-sdk"
 import { useContext, useEffect, useState } from "react"
@@ -40,32 +40,33 @@ const SocketIOHealth = () => {
     }, []);
 
     return (
-        <SettingsContentContainer>
+        <Stack>
+            <Heading as='h3' size='3' className="not-cal font-semibold">Realtime Connection Test</Heading>
+            <Text size='2' color='gray'>If messages on Raven do not appear in realtime, you can inspect your network connection here.</Text>
             {!loading && socketPingTest === 'Fail' && <ErrorCallout
                 message="Realtime connections are not working on your site. Messages won't be refreshed in real-time."
             />}
-            <Flex gap="9" align="center">
-                <Flex gap="2" align="center">
-                    <Text size="2" color="gray" as='span' className='font-medium'>Real-time Ping Check:</Text>
-                    <Flex align="center" gap="2">
-                        <Badge color={loading ? 'gray' : socketPingTest === "Pass" ? 'green' : 'red'}>{loading ? 'Loading...' : socketPingTest}</Badge>
-                        {!loading && <IconButton title="Send a ping" aria-label="send a ping" color="gray" size="1" variant="ghost" onClick={onPingCheck}>
-                            <LuRefreshCcw className={clsx(loading ? "animate-spin" : null)} size={12} />
-                        </IconButton>}
-                    </Flex>
+            <Flex gap="3" align="center" pt='2'>
+                <Text size="2" color="gray" as='span'>Real-time Ping Check:</Text>
+                <Flex align="center" gap="2">
+                    <Badge color={loading ? 'gray' : socketPingTest === "Pass" ? 'green' : 'red'}>{loading ? 'Loading...' : socketPingTest}</Badge>
+                    {!loading && <IconButton title="Send a ping" aria-label="send a ping" color="gray" size="1" variant="ghost" onClick={onPingCheck}>
+                        <LuRefreshCcw className={clsx(loading ? "animate-spin" : null)} size={12} />
+                    </IconButton>}
                 </Flex>
-
-                {socketTransportMode && <Flex gap="2" align="center">
-                    <Text size="2" color="gray" as='span' className='font-medium'>SocketIO Transport Mode:</Text>
-                    <Badge color="orange">{socketTransportMode}</Badge>
-                </Flex>}
-
-                <Link ml={"auto"} underline="always" size='2' target="_blank"
-                    title="/app/system-health-report"
-                    href="/app/system-health-report">System Health Report <TbReportAnalytics size='15' />
-                </Link>
             </Flex>
-        </SettingsContentContainer>
+
+            {socketTransportMode && <Flex gap="2" align="center">
+                <Text size="2" color="gray" as='span'>SocketIO Transport Mode:</Text>
+                <Badge color="orange">{socketTransportMode}</Badge>
+            </Flex>}
+            <div className="pt-2">
+                <Link underline="always" size='2' target="_blank"
+                    title="/app/system-health-report"
+                    href="/app/system-health-report"><TbReportAnalytics size='16' className="-mb-0.5 pr-1" />View Full System Health Report
+                </Link>
+            </div>
+        </Stack>
     )
 }
 
