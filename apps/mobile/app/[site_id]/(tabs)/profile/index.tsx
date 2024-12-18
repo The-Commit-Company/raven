@@ -14,6 +14,7 @@ import { Text } from '@components/nativewindui/Text';
 import { cn } from '@lib/cn';
 import { useColorScheme } from '@lib/useColorScheme';
 import ChevronRightIcon from '@assets/icons/ChevronRightIcon.svg';
+import { useFrappeGetCall } from 'frappe-react-sdk';
 
 const SCREEN_OPTIONS = {
     title: 'Profile',
@@ -67,9 +68,20 @@ function Item({ info }: { info: ListRenderItemInfo<DataItem> }) {
 }
 
 function ListHeaderComponent() {
+
+    const { data, mutate } = useFrappeGetCall('raven.api.raven_users.get_current_raven_user',
+        undefined,
+        'my_profile',
+        {
+            // revalidateIfStale: false,
+            revalidateOnFocus: false,
+            shouldRetryOnError: false,
+            revalidateOnReconnect: true
+        }
+    )
     return (
         <View className="ios:pb-8 items-center pb-4  pt-8">
-            <Avatar alt="Janhvi Patil's Profile" className="h-36 w-36">
+            <Avatar alt={`${data?.message?.full_name}'s Profile`} className="h-36 w-36">
                 <AvatarFallback>
                     <Text
                         variant="largeTitle"
@@ -77,12 +89,12 @@ function ListHeaderComponent() {
                             'dark:text-background font-medium text-white',
                             Platform.OS === 'ios' && 'dark:text-foreground'
                         )}>
-                        JP
+                        {data?.message?.full_name?.charAt(0) + data?.message?.full_name?.charAt(1)}
                     </Text>
                 </AvatarFallback>
             </Avatar>
             <View className="p-2" />
-            <Text variant="title1" className='font-medium'>Janhvi Patil</Text>
+            <Text variant="title1" className='font-medium'>{data?.message?.full_name}</Text>
         </View>
     );
 }

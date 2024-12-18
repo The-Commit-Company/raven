@@ -1,5 +1,5 @@
 import { Text } from "@components/nativewindui/Text";
-import { router, Stack, useLocalSearchParams } from "expo-router";
+import { Redirect, router, Stack, useLocalSearchParams } from "expo-router";
 import { useContext, useEffect, useState } from "react";
 import { View } from "react-native";
 import { SiteInformation } from "../../types/SiteInformation";
@@ -78,7 +78,6 @@ export default function SiteLayout() {
             .then(() => {
                 setLoading(false)
             })
-
     }, [site_id])
 
     return <>
@@ -98,7 +97,9 @@ export default function SiteLayout() {
                 }}
                 socketPort="9000"
                 siteName={siteInfo?.sitename}>
-                <TestSocket />
+                <Stack>
+                    <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+                </Stack>
             </FrappeProvider>
         }
     </>
