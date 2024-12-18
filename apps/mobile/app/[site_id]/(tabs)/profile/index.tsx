@@ -19,6 +19,7 @@ import { revokeAsync } from 'expo-auth-session';
 import { useContext } from 'react';
 import { SiteContext } from '../../_layout';
 import * as SecureStore from 'expo-secure-store';
+import { clearDefaultSite, DEFAULT_SITE_KEY, deleteAccessToken, getAccessTokenKey, getRevocationEndpoint } from '@lib/auth';
 
 const SCREEN_OPTIONS = {
     title: 'Profile',
@@ -117,11 +118,11 @@ function ListFooterComponent() {
             clientId: siteInformation?.client_id || '',
             token: tokenParams?.token?.() || ''
         }, {
-            revocationEndpoint: siteInformation?.url + '/api/method/frappe.integrations.oauth2.revoke_token'
+            revocationEndpoint: getRevocationEndpoint(siteInformation?.url || '')
         }).then(result => {
-            return SecureStore.deleteItemAsync(`${siteInformation?.sitename}-access-token`)
+            return deleteAccessToken(siteInformation?.sitename || '')
         }).then((result) => {
-            return AsyncStorage.removeItem('default-site')
+            return clearDefaultSite()
         }).then(() => {
             router.replace('/landing')
         }).catch((error) => {
