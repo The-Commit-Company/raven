@@ -1,6 +1,6 @@
 import { Text } from "@components/nativewindui/Text";
 import { router, Stack, useLocalSearchParams } from "expo-router";
-import { useEffect, useState } from "react";
+import { createContext, useEffect, useState } from "react";
 import { View } from "react-native";
 import { SiteInformation } from "../../types/SiteInformation";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -98,18 +98,22 @@ export default function SiteLayout() {
             <Text className="text-4xl font-bold">raven</Text>
             <Text>Setting up your workspace...</Text>
         </View> :
-            <FrappeProvider
-                url={siteInfo?.url}
-                tokenParams={{
-                    type: 'Bearer',
-                    useToken: true,
-                    token: () => accessToken?.accessToken || '',
-                }}
-                siteName={siteInfo?.sitename}>
-                <Stack>
-                    <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-                </Stack>
-            </FrappeProvider>
+            <SiteContext.Provider value={siteInfo}>
+                <FrappeProvider
+                    url={siteInfo?.url}
+                    tokenParams={{
+                        type: 'Bearer',
+                        useToken: true,
+                        token: () => accessToken?.accessToken || '',
+                    }}
+                    siteName={siteInfo?.sitename}>
+                    <Stack>
+                        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+                    </Stack>
+                </FrappeProvider>
+            </SiteContext.Provider>
         }
     </>
 }
+
+export const SiteContext = createContext<SiteInformation | null>(null)
