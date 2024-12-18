@@ -2,7 +2,7 @@ import { Pressable, View } from 'react-native';
 import Animated, { LayoutAnimationConfig, ZoomInRotate } from 'react-native-reanimated';
 
 import { cn } from '@lib/cn';
-import { useColorScheme } from '@lib/useColorScheme';
+import { useColorScheme } from '@hooks/useColorScheme';
 import { COLORS } from '@theme/colors';
 
 import SunIcon from '@assets/icons/SunIcon.svg';

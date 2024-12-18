@@ -11,7 +11,7 @@ import {
 } from '@components/nativewindui/List';
 import { Text } from '@components/nativewindui/Text';
 import { cn } from '@lib/cn';
-import { useColorScheme } from '@lib/useColorScheme';
+import { useColorScheme } from '@hooks/useColorScheme';
 import ChevronRightIcon from '@assets/icons/ChevronRightIcon.svg';
 import { FrappeConfig, FrappeContext, useFrappeGetCall } from 'frappe-react-sdk';
 import AsyncStorage from '@react-native-async-storage/async-storage';

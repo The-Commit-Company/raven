@@ -26,7 +26,7 @@ import type {
 import { Button } from '@components/nativewindui/Button';
 import { Text } from '@components/nativewindui/Text';
 import { cn } from '@lib/cn';
-import { useColorScheme } from '@lib/useColorScheme';
+import { useColorScheme } from '@hooks/useColorScheme';
 
 const SCREEN_OPTIONS = {
   headerShown: false,

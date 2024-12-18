@@ -1,6 +1,6 @@
 import { Switch } from 'react-native';
 
-import { useColorScheme } from '@lib/useColorScheme';
+import { useColorScheme } from '@hooks/useColorScheme';
 import { COLORS } from '@theme/colors';
 
 function Toggle(props: React.ComponentPropsWithoutRef<typeof Switch>) {

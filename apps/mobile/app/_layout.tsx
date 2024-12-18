@@ -4,7 +4,7 @@ import "../global.css";
 import { useEffect } from 'react';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
-import { useColorScheme, useInitialAndroidBarSync } from '@lib/useColorScheme';
+import { useColorScheme, useInitialAndroidBarSync } from '@hooks/useColorScheme';
 import { NAV_THEME } from '@theme/index';
 import { StatusBar } from 'expo-status-bar';
 import { ActionSheetProvider } from '@expo/react-native-action-sheet';

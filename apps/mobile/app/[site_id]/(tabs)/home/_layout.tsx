@@ -1,4 +1,4 @@
-import { useColorScheme } from '@lib/useColorScheme';
+import { useColorScheme } from '@hooks/useColorScheme';
 import { Stack } from 'expo-router';
 
 const HomeLayout = () => {
@@ -13,7 +13,7 @@ const HomeLayout = () => {
             <Stack.Screen name='index'
                 options={{
                     title: 'Home',
-                    headerLargeTitle: true
+                    headerLargeTitle: false
                 }} />
         </Stack>
     )

@@ -18,7 +18,7 @@ import { ActivityIndicator } from '@components/nativewindui/ActivityIndicator';
 import { Text } from '@components/nativewindui/Text';
 import { Button } from '@components/nativewindui/Button';
 import { cn } from '@lib/cn';
-import { useColorScheme } from '@lib/useColorScheme';
+import { useColorScheme } from '@hooks/useColorScheme';
 
 import CheckIcon from '@assets/icons/CheckIcon.svg';
 import ChevronRightIcon from '@assets/icons/ChevronRightIcon.svg';

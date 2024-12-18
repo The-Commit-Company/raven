@@ -6,7 +6,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Text } from '@components/nativewindui/Text';
 import { Button } from '@components/nativewindui/Button';
 import { cn } from '@lib/cn';
-import { useColorScheme } from '@lib/useColorScheme';
+import { useColorScheme } from '@hooks/useColorScheme';
 import { COLORS } from '@theme/colors';
 import CrossIcon from '@assets/icons/CrossIcon.svg';
 import { SvgProps } from 'react-native-svg';
