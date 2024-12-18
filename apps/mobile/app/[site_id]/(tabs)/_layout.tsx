@@ -5,7 +5,7 @@ import HomeIcon from '@assets/icons/HomeIcon.svg';
 import ProfileIcon from '@assets/icons/ProfileIcon.svg';
 import ChatIcon from '@assets/icons/ChatIcon.svg';
 import BellIcon from '@assets/icons/BellIcon.svg';
-import { useColorScheme } from '@lib/useColorScheme'
+import { useColorScheme } from '@hooks/useColorScheme'
 
 export default function TabLayout() {
 

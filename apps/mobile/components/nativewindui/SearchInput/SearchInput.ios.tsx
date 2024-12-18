@@ -21,7 +21,7 @@ import type { SearchInputProps } from './types';
 
 import { Text } from '@components/nativewindui/Text';
 import { cn } from '@lib/cn';
-import { useColorScheme } from '@lib/useColorScheme';
+import { useColorScheme } from '@hooks/useColorScheme';
 
 // Add as class when possible: https://github.com/marklawlor/nativewind/issues/522
 const BORDER_CURVE: ViewStyle = {

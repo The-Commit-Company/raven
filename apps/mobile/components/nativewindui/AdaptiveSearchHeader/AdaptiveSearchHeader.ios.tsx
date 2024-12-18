@@ -9,7 +9,7 @@ import type {
   NativeStackNavigationOptions,
   NativeStackNavigationSearchBarOptions,
 } from './types';
-import { useColorScheme } from '@lib/useColorScheme';
+import { useColorScheme } from '@hooks/useColorScheme';
 
 export function AdaptiveSearchHeader(props: AdaptiveSearchHeaderProps) {
   const id = React.useId();

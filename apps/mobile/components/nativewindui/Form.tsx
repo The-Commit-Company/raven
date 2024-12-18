@@ -3,7 +3,7 @@ import { Platform, View, ViewProps, ViewStyle } from 'react-native';
 
 import { Text } from '@components/nativewindui/Text';
 import { cn } from '@lib/cn';
-import { useColorScheme } from '@lib/useColorScheme';
+import { useColorScheme } from '@hooks/useColorScheme';
 
 const Form = React.forwardRef<View, ViewProps>(({ className, ...props }, ref) => {
   return <View ref={ref} className={cn('flex-1 gap-9', className)} {...props} />;

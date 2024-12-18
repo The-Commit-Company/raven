@@ -22,7 +22,7 @@ import CrossIcon from '@assets/icons/CrossIcon.svg';
 import type { TextFieldProps, TextFieldRef } from './types';
 
 import { cn } from '@lib/cn';
-import { useColorScheme } from '@lib/useColorScheme';
+import { useColorScheme } from '@hooks/useColorScheme';
 
 const TextField = React.forwardRef<TextFieldRef, TextFieldProps>(
   (

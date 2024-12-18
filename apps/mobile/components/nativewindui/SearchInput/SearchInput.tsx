@@ -9,7 +9,7 @@ import CrossIcon from '@assets/icons/CrossIcon.svg';
 
 import { Button } from '@components/nativewindui/Button';
 import { cn } from '@lib/cn';
-import { useColorScheme } from '@lib/useColorScheme';
+import { useColorScheme } from '@hooks/useColorScheme';
 
 const SearchInput = React.forwardRef<React.ElementRef<typeof TextInput>, SearchInputProps>(
   (
