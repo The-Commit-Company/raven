@@ -43,8 +43,20 @@
       "favicon": "./assets/favicon.png"
     },
     "plugins": [
-      "expo-router",
-      "expo-secure-store"
+      [
+        "expo-router"
+      ],
+      [
+        "expo-secure-store"
+      ],
+      [
+        "expo-font",
+        {
+          "fonts": [
+            "./assets/fonts/CalSans-SemiBold.otf"
+          ]
+        }
+      ]
     ],
     "extra": {
       "router": {

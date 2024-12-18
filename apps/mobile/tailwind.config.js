@@ -44,6 +44,9 @@ module.exports = {
       borderWidth: {
         hairline: hairlineWidth(),
       },
+      fontFamily: {
+        "cal-sans": ["CalSans-SemiBold", "sans-serif"],
+      }
     },
   },
   plugins: [],

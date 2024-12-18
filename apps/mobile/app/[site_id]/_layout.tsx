@@ -95,7 +95,7 @@ export default function SiteLayout() {
         {loading ? <View className="flex-1 justify-center items-center gap-2">
 
             {/* TODO: Change this UI */}
-            <Text className="text-4xl font-bold">raven</Text>
+            <Text className="text-4xl font-bold font-cal-sans">raven</Text>
             <Text>Setting up your workspace...</Text>
         </View> :
             <SiteContext.Provider value={siteInfo}>

@@ -15,9 +15,9 @@ import { useAsyncStorage } from '@react-native-async-storage/async-storage';
 export default function RootLayout() {
 
     const path = usePathname()
+    console.log(path)
 
     const { getItem } = useAsyncStorage(`default-site`)
-    console.log(path)
 
     // On load, check if the user has a site set
 
