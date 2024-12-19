@@ -44,7 +44,7 @@ const ChannelList = ({ channels, onChannelSelect, onLongPress }: ChannelListProp
                 <Pressable style={styles.addChannelButton}
                     onPress={() => console.log('Create channel pressed')}>
                     <PlusIcon fill={colors.colors.icon} height={18} width={18} />
-                    <Text style={styles.addChannelText}>Add Channel</Text>
+                    <Text style={styles.addChannelText}>Add channel</Text>
                 </Pressable>
             </>}
         </View>
@@ -80,7 +80,7 @@ const styles = StyleSheet.create({
     addChannelButton: {
         flexDirection: 'row',
         alignItems: 'center',
-        paddingVertical: 12,
+        paddingVertical: 10,
         paddingHorizontal: 10,
         borderRadius: 10,
     },

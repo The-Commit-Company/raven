@@ -8,12 +8,12 @@ const HomeLayout = () => {
     return (
         <Stack screenOptions={{
             headerShadowVisible: false,
-            headerStyle: { backgroundColor: colors.background }
+            headerStyle: { backgroundColor: colors.primary }
         }}>
             <Stack.Screen name='index'
                 options={{
                     title: 'Home',
-                    headerLargeTitle: false
+                    headerShown: false
                 }} />
         </Stack>
     )
