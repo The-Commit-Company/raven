@@ -2,7 +2,17 @@
   "extends": "expo/tsconfig.base",
   "compilerOptions": {
     "strict": true,
+    "composite": true,
+    "moduleResolution": "bundler",
+    "baseUrl": ".",
     "paths": {
+      /** Add all packages to the paths */
+      "@raven/utils/*": [
+        "../../packages/utils/*"
+      ],
+      "@raven/types/*": [
+        "../../packages/types/*"
+      ],
       "@assets/*": [
         "./assets/*"
       ],
@@ -19,5 +29,13 @@
         "./theme/*"
       ]
     }
-  }
+  },
+  "include": [
+    "**/*.ts",
+    "**/*.tsx",
+    /** Use all files in the packages folder */
+    "../../packages/**/*.ts",
+    "../../packages/**/*.tsx",
+    "nativewind-env.d.ts"
+  ]
 }

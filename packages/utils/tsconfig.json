@@ -1,0 +1,15 @@
+{
+    "extends": "@raven/typescript-config/base.json",
+    "include": [
+        "checks.ts",
+        "validations.ts"
+    ],
+    "exclude": [
+        "dist",
+        "build",
+        "node_modules"
+    ],
+    "compilerOptions": {
+        "strict": true,
+    }
+}
