@@ -5,6 +5,7 @@ import { Text } from '@components/nativewindui/Text';
 import { useColorScheme } from '@hooks/useColorScheme';
 import DMList from '@components/features/chat/DMList/DMList';
 import PlusIcon from '@assets/icons/PlusIcon.svg';
+import { SearchInput } from '@components/nativewindui/SearchInput';
 
 export default function Home() {
 
@@ -12,11 +13,14 @@ export default function Home() {
 
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: colors.primary }}>
-            <View style={{ backgroundColor: colors.primary }} className="py-4 px-6 flex-row items-center justify-between">
-                <Pressable onPress={() => console.log('Workspace pressed')}>
-                    <Text className="text-white font-bold">Workspace</Text>
-                </Pressable>
-                <ThemeToggle />
+            <View style={{ backgroundColor: colors.primary }} className="flex flex-col px-4 pb-4 pt-2 gap-2">
+                <View className='flex-row items-center justify-between'>
+                    <Pressable onPress={() => console.log('Workspace pressed')}>
+                        <Text className="text-white font-bold">Workspace</Text>
+                    </Pressable>
+                    <ThemeToggle />
+                </View>
+                <SearchInput />
             </View>
             <ScrollView style={{ backgroundColor: colors.background }} className="rounded-t-[2rem]">
                 <View className="flex flex-col">
@@ -85,22 +89,6 @@ export default function Home() {
                                     content: "Can someone help with deployment?",
                                 },
                                 last_message_timestamp: "2024-12-12T16:45:00Z",
-                            },
-                            {
-                                name: "channel_005",
-                                channel_name: "fun-zone",
-                                type: "Open",
-                                channel_description: "A channel for fun and casual chats.",
-                                is_direct_message: 0,
-                                is_self_message: 0,
-                                is_archived: 0,
-                                creation: "2024-04-01T12:00:00Z",
-                                owner: "user_008",
-                                last_message_details: {
-                                    sender: "user_009",
-                                    content: "Check out this meme!",
-                                },
-                                last_message_timestamp: "2024-12-15T11:00:00Z",
                             },
                             {
                                 name: "channel_006",
@@ -196,7 +184,7 @@ export default function Home() {
                     </Pressable>
                 </View>
             </ScrollView>
-        </SafeAreaView>
+        </SafeAreaView >
     )
 }
 
