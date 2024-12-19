@@ -53,9 +53,10 @@
     "react-native-uitextview": "^1.4.0",
     "react-native-web": "~0.19.13",
     "tailwind-merge": "^2.5.5",
-    "@raven/utils": "*"
+    "@raven/lib": "*"
   },
   "devDependencies": {
+    "@raven/types": "*",
     "@babel/core": "^7.25.2",
     "@types/react": "~18.3.12",
     "autoprefixer": "^10.4.20",

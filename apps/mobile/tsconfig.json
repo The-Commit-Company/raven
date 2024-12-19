@@ -7,11 +7,11 @@
     "baseUrl": ".",
     "paths": {
       /** Add all packages to the paths */
-      "@raven/utils/*": [
-        "../../packages/utils/*"
-      ],
       "@raven/types/*": [
         "../../packages/types/*"
+      ],
+      "@raven/lib/*": [
+        "../../packages/lib/*"
       ],
       "@assets/*": [
         "./assets/*"
@@ -36,6 +36,7 @@
     /** Use all files in the packages folder */
     "../../packages/**/*.ts",
     "../../packages/**/*.tsx",
-    "nativewind-env.d.ts"
+    "nativewind-env.d.ts",
+    "declarations.d.ts"
   ]
 }
