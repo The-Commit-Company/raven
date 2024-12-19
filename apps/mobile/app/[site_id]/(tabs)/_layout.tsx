@@ -2,9 +2,13 @@ import React from 'react';
 import { Tabs } from 'expo-router';
 import { SvgProps } from 'react-native-svg';
 import HomeIcon from '@assets/icons/HomeIcon.svg';
+import HomeOutlineIcon from '@assets/icons/HomeOutlineIcon.svg';
 import ProfileIcon from '@assets/icons/ProfileIcon.svg';
+import ProfileOutlineIcon from '@assets/icons/ProfileOutlineIcon.svg';
 import ChatIcon from '@assets/icons/ChatIcon.svg';
+import ChatOutlineIcon from '@assets/icons/ChatOutlineIcon.svg';
 import BellIcon from '@assets/icons/BellIcon.svg';
+import BellOutlineIcon from '@assets/icons/BellOutlineIcon.svg';
 import { useColorScheme } from '@hooks/useColorScheme'
 
 export default function TabLayout() {
@@ -45,7 +49,7 @@ export default function TabLayout() {
     return (
         <Tabs
             screenOptions={{
-                tabBarStyle,
+                // tabBarStyle,
                 tabBarActiveTintColor: dark ? '#FFFFFF' : colors.primary,
                 tabBarInactiveTintColor: dark ? 'rgba(255, 255, 255, 0.5)' : 'rgba(0, 0, 0, 0.5)',
             }}
