@@ -17,6 +17,7 @@ const IOS_SYSTEM_COLORS = {
         icon: '#1C2024',
         destructive: 'rgb(255, 56, 43)',
         primary: '#5753C6',
+        secondary: "#DBDAFE"
     },
     dark: {
         grey6: 'rgb(21, 21, 24)',
@@ -32,6 +33,7 @@ const IOS_SYSTEM_COLORS = {
         icon: '#B9BBC6',
         destructive: 'rgb(254, 67, 54)',
         primary: '#5753C6',
+        secondary: "#DBDAFE"
     },
 } as const;
 
@@ -52,6 +54,7 @@ const ANDROID_COLORS = {
         icon: '#1C2024',
         destructive: 'rgb(186, 26, 26)',
         primary: '#5753C6',
+        secondary: "#DBDAFE"
     },
     dark: {
         grey6: 'rgb(16, 19, 27)',
@@ -67,6 +70,7 @@ const ANDROID_COLORS = {
         icon: '#B9BBC6',
         destructive: 'rgb(147, 0, 10)',
         primary: '#5753C6',
+        secondary: "#DBDAFE"
     },
 } as const;
 
