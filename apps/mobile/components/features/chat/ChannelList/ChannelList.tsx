@@ -1,15 +1,23 @@
 import React, { useState } from 'react';
 import { View, TouchableOpacity, Pressable, StyleSheet } from 'react-native';
-import { ChannelListItem } from '../../../../types/channels';
 import { ChannelIcon } from './ChannelIcon';
 import { Text } from '@components/nativewindui/Text';
 import ChevronDownIcon from '@assets/icons/ChevronDownIcon.svg';
 import ChevronRightIcon from '@assets/icons/ChevronRightIcon.svg';
 import { useColorScheme } from '@hooks/useColorScheme';
 import PlusIcon from '@assets/icons/PlusIcon.svg';
+import { RavenChannel } from '@raven/types/RavenChannelManagement/RavenChannel';
+
+export type ChannelListItem = Pick<RavenChannel, 'name' | 'channel_name' | 'type' |
+    'channel_description' | 'is_direct_message' | 'is_self_message' |
+    'is_archived' | 'creation' | 'owner' | 'last_message_details' | 'last_message_timestamp' | 'workspace'>
+
+export interface ChannelWithUnreadCount extends ChannelListItem {
+    unread_count: number
+}
 
 interface ChannelListProps {
-    channels: ChannelListItem[];
+    channels: ChannelWithUnreadCount[];
     onChannelSelect: (channelId: string) => void;
     onLongPress: (channelId: string) => void;
 }

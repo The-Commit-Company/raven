@@ -1,15 +1,24 @@
 import React, { useState } from 'react';
 import { View, Pressable, StyleSheet, TouchableOpacity, Platform } from 'react-native';
 import { Text } from '@components/nativewindui/Text';
-import { DMChannelListItem } from '../../../../types/channels';
 import { Avatar, AvatarFallback } from '@components/nativewindui/Avatar';
 import { useColorScheme } from '@hooks/useColorScheme';
 import ChevronDownIcon from '@assets/icons/ChevronDownIcon.svg';
 import ChevronRightIcon from '@assets/icons/ChevronRightIcon.svg';
 import { cn } from '@lib/cn';
+import { ChannelListItem } from '../ChannelList/ChannelList';
+
+export interface DMChannelListItem extends ChannelListItem {
+    peer_user_id: string,
+    is_direct_message: 1,
+}
+
+export interface DMChannelWithUnreadCount extends DMChannelListItem {
+    unread_count: number
+}
 
 interface DMListProps {
-    dms: DMChannelListItem[];
+    dms: DMChannelWithUnreadCount[];
     onDMSelect: (userId: string) => void;
 }
 

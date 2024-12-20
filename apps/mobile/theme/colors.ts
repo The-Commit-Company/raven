@@ -21,7 +21,7 @@ const IOS_SYSTEM_COLORS = {
     },
     dark: {
         grey6: 'rgb(21, 21, 24)',
-        grey5: 'rgb(40, 40, 42)',
+        grey5: 'rgb(30, 30, 32)',
         grey4: 'rgb(55, 55, 57)',
         grey3: 'rgb(70, 70, 73)',
         grey2: 'rgb(99, 99, 102)',
@@ -58,7 +58,7 @@ const ANDROID_COLORS = {
     },
     dark: {
         grey6: 'rgb(16, 19, 27)',
-        grey5: 'rgb(39, 42, 50)',
+        grey5: 'rgb(30, 30, 32)',
         grey4: 'rgb(49, 53, 61)',
         grey3: 'rgb(54, 57, 66)',
         grey2: 'rgb(139, 144, 160)',
