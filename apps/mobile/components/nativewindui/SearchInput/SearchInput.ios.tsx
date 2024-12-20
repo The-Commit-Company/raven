@@ -23,7 +23,6 @@ import { Text } from '@components/nativewindui/Text';
 import { cn } from '@lib/cn';
 import { useColorScheme } from '@hooks/useColorScheme';
 
-// Add as class when possible: https://github.com/marklawlor/nativewind/issues/522
 const BORDER_CURVE: ViewStyle = {
   borderCurve: 'continuous',
 };
@@ -34,7 +33,7 @@ const SearchInput = React.forwardRef<React.ElementRef<typeof TextInput>, SearchI
       value: valueProp,
       onChangeText: onChangeTextProp,
       onFocus: onFocusProp,
-      placeholder = 'Search...',
+      placeholder = 'Jump to or search...',
       cancelText = 'Cancel',
       containerClassName,
       iconContainerClassName,
@@ -45,6 +44,7 @@ const SearchInput = React.forwardRef<React.ElementRef<typeof TextInput>, SearchI
     ref
   ) => {
     const { colors } = useColorScheme();
+
     const inputRef = useAugmentedRef({ ref, methods: { focus, blur, clear } });
     const [showCancel, setShowCancel] = React.useState(false);
     const showCancelDerivedValue = useDerivedValue(() => showCancel, [showCancel]);
@@ -58,7 +58,6 @@ const SearchInput = React.forwardRef<React.ElementRef<typeof TextInput>, SearchI
 
     const rootStyle = useAnimatedStyle(() => {
       if (_WORKLET) {
-        // safely use measure
         const measurement = measure(animatedRef);
         return {
           paddingRight: showCancelDerivedValue.value
@@ -72,9 +71,9 @@ const SearchInput = React.forwardRef<React.ElementRef<typeof TextInput>, SearchI
           : withTiming(0),
       };
     });
+
     const buttonStyle3 = useAnimatedStyle(() => {
       if (_WORKLET) {
-        // safely use measure
         const measurement = measure(animatedRef);
         return {
           position: 'absolute',
@@ -126,20 +125,23 @@ const SearchInput = React.forwardRef<React.ElementRef<typeof TextInput>, SearchI
       <Animated.View className="flex-row items-center" style={rootStyle}>
         <Animated.View
           style={BORDER_CURVE}
-          className={cn('bg-card flex-1 flex-row rounded-lg', containerClassName)}>
+          className={cn(
+            'bg-card/15 flex-1 flex-row rounded-lg',
+            containerClassName
+          )}>
           <View
             className={cn(
-              'absolute bottom-0 left-0 top-0 z-50 justify-center pl-1.5',
+              'absolute bottom-0 left-0 top-0 z-50 justify-center pl-3',
               iconContainerClassName
             )}>
-            <SearchIcon color={iconColor ?? colors.grey3} />
+            <SearchIcon width={16} height={16} fill={colors.greyText} />
           </View>
           <TextInput
             ref={inputRef}
             placeholder={placeholder}
             className={cn(
               !showCancel && 'active:bg-muted/5 dark:active:bg-muted/20',
-              'text-foreground flex-1 rounded-lg py-2 pl-8  pr-1 text-[17px]',
+              'text-foreground flex-1 rounded-lg py-2 pl-9 pr-1 text-[17px]',
               className
             )}
             value={value}
@@ -147,6 +149,7 @@ const SearchInput = React.forwardRef<React.ElementRef<typeof TextInput>, SearchI
             onFocus={onFocus}
             clearButtonMode="while-editing"
             role="searchbox"
+            placeholderTextColor={colors.greyText}
             {...props}
           />
         </Animated.View>
@@ -163,7 +166,7 @@ const SearchInput = React.forwardRef<React.ElementRef<typeof TextInput>, SearchI
             disabled={!showCancel}
             pointerEvents={!showCancel ? 'none' : 'auto'}
             className="flex-1 justify-center active:opacity-50">
-            <Text className="text-primary px-2">{cancelText}</Text>
+            <Text style={{ color: colors.greyText }} className="px-2">{cancelText}</Text>
           </Pressable>
         </Animated.View>
       </Animated.View>
