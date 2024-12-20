@@ -93,7 +93,7 @@ export default function SiteLayout() {
                     siteName={siteInfo?.sitename}>
                     <Providers>
                         <Stack>
-                            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+                            <Stack.Screen name="(tabs)" options={{ headerShown: false, title: 'Home' }} />
                         </Stack>
                     </Providers>
                 </FrappeProvider>
