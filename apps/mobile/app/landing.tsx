@@ -3,7 +3,9 @@ import { View } from 'react-native';
 import { Text } from '@components/nativewindui/Text';
 import AddSite from '@components/features/auth/AddSite';
 
+
 export default function LandingScreen() {
+
     return (
         <>
             <Stack.Screen options={{ title: 'Sites', headerShown: false }} />
