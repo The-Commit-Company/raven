@@ -61,7 +61,11 @@
     "extra": {
       "router": {
         "origin": false
+      },
+      "eas": {
+        "projectId": "3a173ddd-f22a-4f81-8279-40dcee6c29d5"
       }
-    }
+    },
+    "owner": "the-commit-company"
   }
 }

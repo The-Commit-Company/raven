@@ -43,7 +43,7 @@ const ChannelListRow = ({ channel }: { channel: ChannelListItem }) => {
             <Pressable
                 onLongPress={() => console.log(`channel long pressed - ${channel.name}`)}
                 // Use tailwind classes for layout and ios:active state
-                className={`flex-row items-center px-3 py-2 rounded-lg ios:active:bg-[${colors.colors.linkColor}] ios:active:dark:bg-[${colors.colors.linkColor}]`}
+                className='flex-row items-center px-3 py-2 rounded-lg ios:active:bg-linkColor'
                 // Add a subtle ripple effect on Android
                 android_ripple={{ color: 'rgba(0,0,0,0.1)', borderless: false }}
             >
