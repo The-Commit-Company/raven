@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { View, TouchableOpacity, Pressable, StyleSheet } from 'react-native';
 import { ChannelIcon } from './ChannelIcon';
 import { Text } from '@components/nativewindui/Text';
@@ -45,10 +45,9 @@ const ChannelListRow = ({ channel }: { channel: ChannelListItem }) => {
     return (
         <Link href={`../chat/${channel.name}`} asChild>
             <Pressable
-                onPress={() => console.log(`channel selected - ${channel.name}`)}
                 onLongPress={() => console.log(`channel long pressed - ${channel.name}`)}
                 // Use tailwind classes for layout and ios:active state
-                className="flex-row items-center px-3 py-2 rounded-lg ios:active:bg-gray-200"
+                className={`flex-row items-center px-3 py-2 rounded-lg ios:active:bg-[${colors.colors.linkColor}] ios:active:dark:bg-[${colors.colors.linkColor}]`}
                 // Add a subtle ripple effect on Android
                 android_ripple={{ color: 'rgba(0,0,0,0.1)', borderless: false }}
             >

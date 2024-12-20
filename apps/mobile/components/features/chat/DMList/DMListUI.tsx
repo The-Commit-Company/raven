@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { View, Pressable, StyleSheet, TouchableOpacity } from 'react-native';
 import { Text } from '@components/nativewindui/Text';
 import { useColorScheme } from '@hooks/useColorScheme';
@@ -7,6 +7,7 @@ import ChevronRightIcon from '@assets/icons/ChevronRightIcon.svg';
 import { DMChannelListItem } from '@raven/types/common/ChannelListItem';
 import { useGetUser } from '@raven/lib/hooks/useGetUser';
 import UserAvatar from '@components/layout/UserAvatar';
+import { Link } from 'expo-router';
 
 interface DMListUIProps {
     dms: DMChannelListItem[]
@@ -36,17 +37,19 @@ const DMListUI = ({ dms }: DMListUIProps) => {
 
 const DMListRow = ({ dm }: { dm: DMChannelListItem }) => {
     const user = useGetUser(dm.peer_user_id)
+    const colors = useColorScheme()
     return (
-        <Pressable
-            onPress={() => console.log(`dm selected with ${dm.name}`)}
-            // Use tailwind classes for layout and ios:active state
-            className="flex-row items-center px-3 py-2 rounded-lg ios:active:bg-gray-200"
-            // Add a subtle ripple effect on Android
-            android_ripple={{ color: 'rgba(0,0,0,0.1)', borderless: false }}
-        >
-            <UserAvatar src={user?.user_image} alt={user?.full_name ?? user?.name ?? ''} />
-            <Text style={styles.dmChannelText}>{user?.full_name}</Text>
-        </Pressable>
+        <Link href={`../chat/${dm.name}`} asChild>
+            <Pressable
+                // Use tailwind classes for layout and ios:active state
+                className={`flex-row items-center px-3 py-2 rounded-lg ios:active:bg-[${colors.colors.linkColor}] ios:active:dark:bg-[${colors.colors.linkColor}]`}
+                // Add a subtle ripple effect on Android
+                android_ripple={{ color: 'rgba(0,0,0,0.1)', borderless: false }}
+            >
+                <UserAvatar src={user?.user_image} alt={user?.full_name ?? user?.name ?? ''} avatarProps={{ className: 'h-8 w-8' }} />
+                <Text style={styles.dmChannelText}>{user?.full_name}</Text>
+            </Pressable>
+        </Link>
     )
 }
 
