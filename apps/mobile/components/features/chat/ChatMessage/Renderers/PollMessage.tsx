@@ -33,16 +33,16 @@ export const PollMessageBlock = ({ message, ...props }: PollMessageBlockProps) =
     const { data, error, mutate } = useFrappeGetCall<{ message: Poll }>(
         'raven.api.raven_poll.get_poll',
         {
-            message_id: "ut9unqnn73",
+            message_id: message.name,
         },
-        `poll_data_v554ocsr5k`,
+        `poll_data_${message.poll_id}`,
         {
             revalidateOnFocus: false,
             revalidateOnReconnect: false,
         }
     );
 
-    useFrappeDocumentEventListener('Raven Poll', "v554ocsr5k", () => {
+    useFrappeDocumentEventListener('Raven Poll', message.poll_id, () => {
         mutate();
     });
 
@@ -53,7 +53,7 @@ export const PollMessageBlock = ({ message, ...props }: PollMessageBlockProps) =
                     <Text className="text-re-600">{error.message}</Text>
                 </View>
             ) : null}
-            {data ? <PollMessageBox data={data.message} messageID={"ut9unqnn73"} /> : null}
+            {data ? <PollMessageBox data={data.message} messageID={message.name} /> : null}
         </View>
     );
 };
@@ -62,7 +62,7 @@ const PollMessageBox = ({ data, messageID }: { data: Poll; messageID: string }) 
     return (
         <View className="bg-gray-200 dark:bg-gray-950 w-full rounded-md p-3 gap-0.5">
             <View className="flex-row justify-between items-center pb-2">
-                <Text className="text-sm font-medium">{data.poll.question}</Text>
+                <Text className="font-medium">{data.poll.question}</Text>
                 {data.poll.is_anonymous ? (
                     <View className="bg-blue-100 dark:bg-blue-300 rounded">
                         <Text className="text-blue-700 dark:text-blue-800 font-medium text-xs py-1 px-2">Anonymous</Text>
