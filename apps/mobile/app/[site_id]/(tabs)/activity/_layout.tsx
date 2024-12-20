@@ -1,6 +1,7 @@
 import ShareButton from '@components/common/ShareButton';
+import { Button } from '@components/nativewindui/Button';
 import { useColorScheme } from '@hooks/useColorScheme';
-import { Stack } from 'expo-router';
+import { router, Stack } from 'expo-router';
 
 const ActivityLayout = () => {
 
@@ -15,7 +16,10 @@ const ActivityLayout = () => {
                 options={{
                     title: 'Activity',
                     headerLargeTitle: true,
-                    headerRight: () => <ShareButton uri='https://raven-dev.frappe.cloud/private/files/2013_mustang.jpg' />
+                    headerRight: () => <Button onPress={() => router.push({
+                        pathname: '/file-viewer',
+                        params: { uri: 'https://raven-dev.frappe.cloud/private/files/2013_mustang.jpg' },
+                    })} />
                 }} />
         </Stack>
     )

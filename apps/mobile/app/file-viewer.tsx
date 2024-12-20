@@ -1,16 +1,14 @@
 import ShareButton from "@components/common/ShareButton"
 import VideoPlayer from "@components/features/video/VideoPlayer"
+import useFileURL from "@hooks/useFileURL"
 import { getFileExtension, isVideoFile } from "@raven/lib/utils/operations"
 import { Stack, useLocalSearchParams } from "expo-router"
 import WebView from "react-native-webview"
+import { WebViewSourceUri } from "react-native-webview/lib/WebViewTypes"
 
 const FileViewer = () => {
 
-  const { source } = useLocalSearchParams()
-
-  const parsedSource = JSON.parse(source as string)
-
-  const uri = parsedSource?.uri
+  const { uri } = useLocalSearchParams() as { uri: string }
 
   const fileExtension = getFileExtension(uri)
 
@@ -22,17 +20,25 @@ const FileViewer = () => {
       <Stack.Screen options={{
         title: 'Raven',
         headerTitle: `${uri?.split('/').pop()}`,
-        headerRight: () => <ShareButton uri="https://raven-dev.frappe.cloud/private/files/2013_mustang.jpg" />
+        headerRight: () => <ShareButton uri={uri} />
       }} />
       {isVideo ?
-        <VideoPlayer source={parsedSource} />
+        <VideoPlayer uri={uri} />
         :
-        <WebView
-          source={parsedSource}
-          style={{ flex: 1 }}
-        />
+        <FileView uri={uri} />
       }
     </>
+  )
+}
+
+const FileView = ({ uri }: { uri: string }) => {
+  const source = useFileURL(uri)
+
+  return (
+    <WebView
+      source={source as WebViewSourceUri}
+      style={{ flex: 1 }}
+    />
   )
 }
 

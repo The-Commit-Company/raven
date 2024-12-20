@@ -1,8 +1,11 @@
-import { useVideoPlayer, VideoSource, VideoView } from 'expo-video'
+import useFileURL from '@hooks/useFileURL'
+import { useVideoPlayer, VideoView } from 'expo-video'
 
-const VideoPlayer = ({ source }: { source: VideoSource }) => {
+const VideoPlayer = ({ uri }: { uri: string }) => {
 
-    const player = useVideoPlayer(source, player => {
+    const source = useFileURL(uri)
+
+    const player = useVideoPlayer(source ?? {}, player => {
         player.loop = true
         player.play()
     })
