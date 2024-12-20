@@ -1,11 +1,11 @@
 import { Pressable, SafeAreaView, ScrollView, View } from 'react-native';
 import { ThemeToggle } from '@components/nativewindui/ThemeToggle';
-import ChannelList from '@components/features/chat/ChannelList/ChannelList';
 import { Text } from '@components/nativewindui/Text';
 import { useColorScheme } from '@hooks/useColorScheme';
-import DMList from '@components/features/chat/DMList/DMList';
 import PlusIcon from '@assets/icons/PlusIcon.svg';
 import { SearchInput } from '@components/nativewindui/SearchInput';
+import ChannelList from '@components/features/chat/ChannelList/ChannelList';
+import DMList from '@components/features/chat/DMList/DMList';
 
 export default function Home() {
 
@@ -24,13 +24,9 @@ export default function Home() {
             </View>
             <ScrollView style={{ backgroundColor: colors.background }} className="rounded-t-[2rem]">
                 <View className="flex flex-col">
-                    <ChannelList
-                        channels={[]}
-                        onChannelSelect={() => console.log('channel selected')}
-                        onLongPress={() => console.log('channel long pressed')} />
+                    <ChannelList />
                     <Divider />
-                    <DMList dms={[]}
-                        onDMSelect={() => console.log('dm selected')} />
+                    <DMList />
                     <Divider />
                     <Pressable className='flex-row items-center p-5 rounded-lg'
                         onPress={() => console.log('Create channel pressed')}>
