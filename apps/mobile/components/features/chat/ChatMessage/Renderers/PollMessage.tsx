@@ -10,13 +10,7 @@ import { UserFields } from '@raven/types/common/UserFields';
 import { RavenPoll } from '@raven/types/RavenMessaging/RavenPoll';
 import { RavenPollOption } from '@raven/types/RavenMessaging/RavenPollOption';
 import { useColorScheme } from "@hooks/useColorScheme"
-
-export interface PollMessage {
-    text: string,
-    message_type: 'Poll',
-    poll_id: string,
-    content?: string
-}
+import { PollMessage } from '@raven/types/common/Message';
 
 type PollMessageBlockProps = {
     message: PollMessage,
