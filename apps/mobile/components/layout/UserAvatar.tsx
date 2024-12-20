@@ -18,7 +18,8 @@ type Props = {
     imageProps?: ImageProps
     fallbackProps?: FallbackProps
     textProps?: TextProps,
-    indicatorProps?: ViewProps
+    indicatorProps?: ViewProps,
+    avatarProps?: ViewProps
 
 }
 
@@ -43,14 +44,14 @@ const COLOR_MAP: { name: string, bg: string, text: string, botColor: string }[] 
     { name: 'gray', bg: 'bg-gray-400', text: 'text-gray-100', botColor: '#111827' }
 ]
 
-const UserAvatar = ({ src, isActive, alt, availabilityStatus, isBot, imageProps, fallbackProps, textProps, indicatorProps }: Props) => {
+const UserAvatar = ({ src, isActive, alt, availabilityStatus, isBot, imageProps, fallbackProps, textProps, indicatorProps, avatarProps }: Props) => {
 
     const source = useFileURL(src)
     const { bg, text, botColor } = useMemo(() => COLOR_MAP[getColorIndexForAvatar(alt)], [alt])
 
     return (
-        <View className='relative mb-1.5'>
-            <Avatar alt={alt}>
+        <View className='relative'>
+            <Avatar alt={alt} {...avatarProps}>
                 <AvatarImage source={source} {...imageProps} />
                 <AvatarFallback className={cn(bg, fallbackProps?.className)} {...fallbackProps}>
                     <Text {...textProps} className={cn(text, textProps?.className)}>

@@ -6,6 +6,7 @@ import { FrappeProvider } from "frappe-react-sdk";
 import FullPageLoader from "@components/layout/FullPageLoader";
 import { getAccessToken, getSiteFromStorage, getTokenEndpoint, storeAccessToken } from "@lib/auth";
 import Providers from "@lib/Providers";
+import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 
 export default function SiteLayout() {
 
@@ -80,7 +81,6 @@ export default function SiteLayout() {
     }, [site_id])
 
     return <>
-        <Stack.Screen options={{ headerShown: false }} />
         {loading ? <FullPageLoader /> :
             <SiteContext.Provider value={siteInfo}>
                 <FrappeProvider
@@ -92,9 +92,9 @@ export default function SiteLayout() {
                     }}
                     siteName={siteInfo?.sitename}>
                     <Providers>
-                        <Stack>
-                            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-                        </Stack>
+                        <BottomSheetModalProvider>
+                            <Stack />
+                        </BottomSheetModalProvider>
                     </Providers>
                 </FrappeProvider>
             </SiteContext.Provider>

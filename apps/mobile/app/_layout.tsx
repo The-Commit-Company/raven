@@ -1,4 +1,4 @@
-import { router, Stack, usePathname } from 'expo-router';
+import { router, Slot, usePathname } from 'expo-router';
 import { ThemeProvider } from '@react-navigation/native';
 import "../global.css";
 import { useEffect } from 'react';
@@ -47,12 +47,7 @@ export default function RootLayout() {
                     <ActionSheetProvider>
                         <KeyboardProvider statusBarTranslucent navigationBarTranslucent>
                             <ThemeProvider value={NAV_THEME[colorScheme]}>
-                                <Stack>
-                                    <Stack.Screen name="index" />
-                                    <Stack.Screen name="landing" />
-                                    <Stack.Screen name="[site_id]" options={{ headerShown: false }} />
-                                    <Stack.Screen name="+not-found" />
-                                </Stack>
+                                <Slot />
                                 <PortalHost />
                             </ThemeProvider>
                         </KeyboardProvider>
