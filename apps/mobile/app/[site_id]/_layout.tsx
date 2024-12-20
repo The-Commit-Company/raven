@@ -5,6 +5,7 @@ import { TokenResponse } from "expo-auth-session";
 import { FrappeProvider } from "frappe-react-sdk";
 import FullPageLoader from "@components/layout/FullPageLoader";
 import { getAccessToken, getSiteFromStorage, getTokenEndpoint, storeAccessToken } from "@lib/auth";
+import Providers from "@lib/Providers";
 
 export default function SiteLayout() {
 
@@ -90,9 +91,11 @@ export default function SiteLayout() {
                         token: () => accessToken?.accessToken || '',
                     }}
                     siteName={siteInfo?.sitename}>
-                    <Stack>
-                        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-                    </Stack>
+                    <Providers>
+                        <Stack>
+                            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+                        </Stack>
+                    </Providers>
                 </FrappeProvider>
             </SiteContext.Provider>
         }
