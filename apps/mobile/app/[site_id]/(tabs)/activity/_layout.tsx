@@ -15,7 +15,7 @@ const ActivityLayout = () => {
                 options={{
                     title: 'Activity',
                     headerLargeTitle: true,
-                    headerRight: () => <ShareButton source={{ uri: '' }} />
+                    headerRight: () => <ShareButton uri='https://raven-dev.frappe.cloud/private/files/2013_mustang.jpg' />
                 }} />
         </Stack>
     )

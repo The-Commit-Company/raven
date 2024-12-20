@@ -8,12 +8,12 @@ type UseFileURLReturnType = {
   * resource (which should be wrapped in the `require('./path/to/image.png')`
   * function).
   */
-  uri?: string | undefined;
+  uri: string | undefined;
   /**
   * `headers` is an object representing the HTTP headers to send along with the
   * request for a remote image.
   */
-  headers?: { [key: string]: string } | undefined;
+  headers: { [key: string]: string };
 }
 /**
  * Since we need to pass the headers to fetch any private file,
@@ -26,8 +26,16 @@ const useFileURL = (fileURL?: string): UseFileURLReturnType | undefined => {
 
   if (!fileURL) return undefined
 
+  if (!fileURL.startsWith(url)) {
+    return {
+      uri: `${url}${fileURL}`,
+      headers: {
+        Authorization: `bearer ${tokenParams?.token?.()}`
+      }
+    }
+  }
   return {
-    uri: `${url}${fileURL}`,
+    uri: fileURL,
     headers: {
       Authorization: `bearer ${tokenParams?.token?.()}`
     }

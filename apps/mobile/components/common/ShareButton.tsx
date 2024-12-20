@@ -1,6 +1,4 @@
 import { Button, ButtonProps } from "@components/nativewindui/Button"
-import * as Sharing from 'expo-sharing'
-import * as FileSystem from 'expo-file-system'
 import ShareIcon from "@assets/icons/ShareIcon.svg"
 import { toast } from 'sonner-native'
 import { useColorScheme } from "@hooks/useColorScheme"
@@ -17,10 +15,17 @@ const ShareButton = ({ uri, buttonProps, iconProps }: ShareButtonProps) => {
 
     const { colors } = useColorScheme()
 
-    const { shareFile, loading, error } = useFileShare()
+    const { shareFile, loading, error } = useFileShare(uri)
+
+    const handleShare = async () => {
+        shareFile()
+        if (error) {
+            toast.error(error)
+        }
+    }
 
     return (
-        <Button variant="plain" size="icon" onPress={ } {...buttonProps} >
+        <Button variant="plain" size="icon" onPress={handleShare} {...buttonProps} disabled={loading} >
             <ShareIcon height={20} width={20} color={colors.icon} {...iconProps} />
         </Button>
     )

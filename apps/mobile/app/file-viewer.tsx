@@ -22,7 +22,7 @@ const FileViewer = () => {
       <Stack.Screen options={{
         title: 'Raven',
         headerTitle: `${uri?.split('/').pop()}`,
-        headerRight: () => <ShareButton source={parsedSource} />
+        headerRight: () => <ShareButton uri="https://raven-dev.frappe.cloud/private/files/2013_mustang.jpg" />
       }} />
       {isVideo ?
         <VideoPlayer source={parsedSource} />
