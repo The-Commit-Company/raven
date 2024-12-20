@@ -15,9 +15,9 @@ import { useAsyncStorage } from '@react-native-async-storage/async-storage';
 export default function RootLayout() {
 
     const path = usePathname()
+    console.log(path)
 
     const { getItem } = useAsyncStorage(`default-site`)
-    console.log(path)
 
     // On load, check if the user has a site set
 
@@ -46,6 +46,7 @@ export default function RootLayout() {
                         <KeyboardProvider statusBarTranslucent navigationBarTranslucent>
                             <ThemeProvider value={NAV_THEME[colorScheme]}>
                                 <Stack>
+                                    <Stack.Screen name="index" />
                                     <Stack.Screen name="landing" />
                                     <Stack.Screen name="[site_id]" options={{ headerShown: false }} />
                                     <Stack.Screen name="+not-found" />

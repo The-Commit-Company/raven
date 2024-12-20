@@ -11,7 +11,7 @@
     "splash": {
       "image": "./assets/splash-icon.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#000000"
     },
     "ios": {
       "supportsTablet": true,
@@ -35,7 +35,7 @@
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
+        "backgroundColor": "#000000"
       },
       "package": "raven.thecommit.company"
     },
@@ -43,8 +43,20 @@
       "favicon": "./assets/favicon.png"
     },
     "plugins": [
-      "expo-router",
-      "expo-secure-store"
+      [
+        "expo-router"
+      ],
+      [
+        "expo-secure-store"
+      ],
+      [
+        "expo-font",
+        {
+          "fonts": [
+            "./assets/fonts/CalSans-SemiBold.otf"
+          ]
+        }
+      ]
     ],
     "extra": {
       "router": {

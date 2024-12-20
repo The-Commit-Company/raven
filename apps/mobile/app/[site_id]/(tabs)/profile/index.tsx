@@ -13,8 +13,13 @@ import { Text } from '@components/nativewindui/Text';
 import { cn } from '@lib/cn';
 import { useColorScheme } from '@hooks/useColorScheme';
 import ChevronRightIcon from '@assets/icons/ChevronRightIcon.svg';
-import { useFrappeGetCall } from 'frappe-react-sdk';
+import { FrappeConfig, FrappeContext, useFrappeGetCall } from 'frappe-react-sdk';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { revokeAsync } from 'expo-auth-session';
+import { useContext } from 'react';
+import { SiteContext } from '../../_layout';
+import * as SecureStore from 'expo-secure-store';
+import { clearDefaultSite, DEFAULT_SITE_KEY, deleteAccessToken, getAccessTokenKey, getRevocationEndpoint } from '@lib/auth';
 
 const SCREEN_OPTIONS = {
     title: 'Profile',
@@ -101,13 +106,28 @@ function ListHeaderComponent() {
 
 function ListFooterComponent() {
 
+    const siteInformation = useContext(SiteContext)
+    const { tokenParams } = useContext(FrappeContext) as FrappeConfig
+
     const onLogout = () => {
-        // TODO: Remove the current site from AsyncStorage
+        // Remove the current site from AsyncStorage
         // Revoke the token
         // Redirect to the landing page
 
-        AsyncStorage.removeItem('default-site')
-        router.replace('/landing')
+        revokeAsync({
+            clientId: siteInformation?.client_id || '',
+            token: tokenParams?.token?.() || ''
+        }, {
+            revocationEndpoint: getRevocationEndpoint(siteInformation?.url || '')
+        }).then(result => {
+            return deleteAccessToken(siteInformation?.sitename || '')
+        }).then((result) => {
+            return clearDefaultSite()
+        }).then(() => {
+            router.replace('/landing')
+        }).catch((error) => {
+            console.log(error)
+        })
     }
     return (
         <View className="ios:px-0 px-4 pt-8">
