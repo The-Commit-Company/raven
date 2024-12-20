@@ -24,12 +24,12 @@ export function ThemeToggle() {
                     {colorScheme === 'dark'
                         ? ({ pressed }) => (
                             <View className={cn('px-0.5', pressed && 'opacity-50')}>
-                                <MoonIcon color={COLORS.white} />
+                                <MoonIcon color={COLORS.white} width={20} height={20} />
                             </View>
                         )
                         : ({ pressed }) => (
                             <View className={cn('px-0.5', pressed && 'opacity-50')}>
-                                <SunIcon color={COLORS.black} />
+                                <SunIcon color={COLORS.white} width={20} height={20} />
                             </View>
                         )}
                 </Pressable>
