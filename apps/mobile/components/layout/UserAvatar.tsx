@@ -49,7 +49,7 @@ const UserAvatar = ({ src, isActive, alt, availabilityStatus, isBot, imageProps,
     const { bg, text, botColor } = useMemo(() => COLOR_MAP[getColorIndexForAvatar(alt)], [alt])
 
     return (
-        <View className='relative mb-1.5'>
+        <View className='relative'>
             <Avatar alt={alt}>
                 <AvatarImage source={source} {...imageProps} />
                 <AvatarFallback className={cn(bg, fallbackProps?.className)} {...fallbackProps}>
