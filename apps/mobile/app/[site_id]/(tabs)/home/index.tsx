@@ -1,8 +1,15 @@
 import { View } from 'react-native';
 import { ThemeToggle } from '@components/nativewindui/ThemeToggle';
 import ChannelList from '@components/features/chat/ChannelList/ChannelList';
+import { useRouter } from 'expo-router';
 
 export default function Home() {
+
+    const router = useRouter()
+    const handleChannelSelect = (channelId: string) => {
+        router.push('../chat/' + channelId)
+    }
+
     return (
         <View className="flex flex-col gap-4">
             <ThemeToggle />
@@ -105,7 +112,7 @@ export default function Home() {
                         last_message_timestamp: "2024-12-18T14:00:00Z",
                     },
                 ]}
-                onChannelSelect={() => console.log('channel selected')}
+                onChannelSelect={handleChannelSelect}
                 onLongPress={() => console.log('channel long pressed')} />
         </View>
     )
