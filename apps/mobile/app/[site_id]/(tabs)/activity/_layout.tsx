@@ -1,3 +1,4 @@
+import ShareButton from '@components/common/ShareButton';
 import { useColorScheme } from '@hooks/useColorScheme';
 import { Stack } from 'expo-router';
 
@@ -13,7 +14,8 @@ const ActivityLayout = () => {
             <Stack.Screen name='index'
                 options={{
                     title: 'Activity',
-                    headerLargeTitle: true
+                    headerLargeTitle: true,
+                    headerRight: () => <ShareButton source={{ uri: '' }} />
                 }} />
         </Stack>
     )
