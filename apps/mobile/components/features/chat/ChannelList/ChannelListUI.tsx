@@ -5,9 +5,9 @@ import { Text } from '@components/nativewindui/Text';
 import ChevronDownIcon from '@assets/icons/ChevronDownIcon.svg';
 import ChevronRightIcon from '@assets/icons/ChevronRightIcon.svg';
 import { useColorScheme } from '@hooks/useColorScheme';
-import PlusIcon from '@assets/icons/PlusIcon.svg';
 import { ChannelListItem } from '@raven/types/common/ChannelListItem';
 import { Link } from 'expo-router';
+import CreateChannel from '../CreateChannel/CreateChannel';
 
 interface ChannelListUIProps {
     channels: ChannelListItem[];
@@ -30,11 +30,7 @@ const ChannelListUI = ({ channels }: ChannelListUIProps) => {
             </TouchableOpacity>
             {isExpanded && <>
                 {channels.map((channel) => <ChannelListRow key={channel.name} channel={channel} />)}
-                <Pressable style={styles.addChannelButton}
-                    onPress={() => console.log('Create channel pressed')}>
-                    <PlusIcon fill={colors.colors.icon} height={18} width={18} />
-                    <Text style={styles.addChannelText}>Add channel</Text>
-                </Pressable>
+                <CreateChannel />
             </>}
         </View>
     )
@@ -74,17 +70,6 @@ const styles = StyleSheet.create({
         fontSize: 16,
     },
     channelText: {
-        marginLeft: 12,
-        fontSize: 16,
-    },
-    addChannelButton: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        paddingVertical: 10,
-        paddingHorizontal: 10,
-        borderRadius: 10,
-    },
-    addChannelText: {
         marginLeft: 12,
         fontSize: 16,
     },
