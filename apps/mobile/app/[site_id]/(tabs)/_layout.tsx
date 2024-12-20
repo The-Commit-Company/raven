@@ -1,5 +1,5 @@
 import React from 'react';
-import { Tabs } from 'expo-router';
+import { Stack, Tabs } from 'expo-router';
 import { SvgProps } from 'react-native-svg';
 import HomeIcon from '@assets/icons/HomeIcon.svg';
 import ProfileIcon from '@assets/icons/ProfileIcon.svg';
@@ -43,49 +43,52 @@ export default function TabLayout() {
             )
 
     return (
-        <Tabs
-            screenOptions={{
-                tabBarStyle,
-                tabBarActiveTintColor: dark ? '#FFFFFF' : colors.primary,
-                tabBarInactiveTintColor: dark ? 'rgba(255, 255, 255, 0.5)' : 'rgba(0, 0, 0, 0.5)',
-            }}
-        >
-            <Tabs.Screen
-                name="home"
-                options={{
-                    title: 'Home',
-                    headerShown: false,
-                    headerStyle,
-                    tabBarIcon: getTabBarIcon(HomeIcon),
+        <>
+            <Stack.Screen options={{ headerShown: false, title: 'Home' }} />
+            <Tabs
+                screenOptions={{
+                    tabBarStyle,
+                    tabBarActiveTintColor: dark ? '#FFFFFF' : colors.primary,
+                    tabBarInactiveTintColor: dark ? 'rgba(255, 255, 255, 0.5)' : 'rgba(0, 0, 0, 0.5)',
                 }}
-            />
-            <Tabs.Screen
-                name="direct-messages"
-                options={{
-                    title: 'DMs',
-                    headerShown: false,
-                    headerStyle,
-                    tabBarIcon: getTabBarIcon(ChatIcon),
-                }}
-            />
-            <Tabs.Screen
-                name="activity"
-                options={{
-                    title: 'Activity',
-                    headerShown: false,
-                    headerStyle,
-                    tabBarIcon: getTabBarIcon(BellIcon),
-                }}
-            />
-            <Tabs.Screen
-                name="profile"
-                options={{
-                    title: 'Profile',
-                    headerShown: false,
-                    headerStyle,
-                    tabBarIcon: getTabBarIcon(ProfileIcon),
-                }}
-            />
-        </Tabs>
+            >
+                <Tabs.Screen
+                    name="home"
+                    options={{
+                        title: 'Home',
+                        headerShown: false,
+                        headerStyle,
+                        tabBarIcon: getTabBarIcon(HomeIcon),
+                    }}
+                />
+                <Tabs.Screen
+                    name="direct-messages"
+                    options={{
+                        title: 'DMs',
+                        headerShown: false,
+                        headerStyle,
+                        tabBarIcon: getTabBarIcon(ChatIcon),
+                    }}
+                />
+                <Tabs.Screen
+                    name="activity"
+                    options={{
+                        title: 'Activity',
+                        headerShown: false,
+                        headerStyle,
+                        tabBarIcon: getTabBarIcon(BellIcon),
+                    }}
+                />
+                <Tabs.Screen
+                    name="profile"
+                    options={{
+                        title: 'Profile',
+                        headerShown: false,
+                        headerStyle,
+                        tabBarIcon: getTabBarIcon(ProfileIcon),
+                    }}
+                />
+            </Tabs>
+        </>
     )
 }

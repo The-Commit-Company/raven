@@ -81,7 +81,6 @@ export default function SiteLayout() {
     }, [site_id])
 
     return <>
-        <Stack.Screen options={{ headerShown: false }} />
         {loading ? <FullPageLoader /> :
             <SiteContext.Provider value={siteInfo}>
                 <FrappeProvider
@@ -94,9 +93,7 @@ export default function SiteLayout() {
                     siteName={siteInfo?.sitename}>
                     <Providers>
                         <BottomSheetModalProvider>
-                            <Stack>
-                                <Stack.Screen name="(tabs)" options={{ headerShown: false, title: 'Home' }} />
-                            </Stack>
+                            <Stack />
                         </BottomSheetModalProvider>
                     </Providers>
                 </FrappeProvider>
