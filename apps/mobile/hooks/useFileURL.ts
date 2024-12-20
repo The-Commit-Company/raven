@@ -1,0 +1,37 @@
+import { FrappeConfig, FrappeContext } from 'frappe-react-sdk'
+import { useContext } from 'react'
+
+type UseFileURLReturnType = {
+  /**
+  * `uri` is a string representing the resource identifier for the image, which
+  * could be an http address, a local file path, or the name of a static image
+  * resource (which should be wrapped in the `require('./path/to/image.png')`
+  * function).
+  */
+  uri?: string | undefined;
+  /**
+  * `headers` is an object representing the HTTP headers to send along with the
+  * request for a remote image.
+  */
+  headers?: { [key: string]: string } | undefined;
+}
+/**
+ * Since we need to pass the headers to fetch any private file,
+ * Use this hook to get the file URL with the headers to fetch the file in Avatars etc
+ * @param props 
+ * @returns 
+ */
+const useFileURL = (fileURL?: string): UseFileURLReturnType | undefined => {
+  const { tokenParams, url } = useContext(FrappeContext) as FrappeConfig
+
+  if (!fileURL) return undefined
+
+  return {
+    uri: `${url}${fileURL}`,
+    headers: {
+      Authorization: `bearer ${tokenParams?.token?.()}`
+    }
+  }
+}
+
+export default useFileURL
