@@ -1,12 +1,11 @@
-import { Avatar, AvatarFallback, AvatarImage } from '@components/nativewindui/Avatar'
 import { Text } from '@components/nativewindui/Text'
 import useFileURL from '@hooks/useFileURL'
 import { cn } from '@lib/cn'
 import { getColorIndexForAvatar, getInitials } from '@raven/lib/utils/utils'
 import { RavenUser } from '@raven/types/Raven/RavenUser'
-import { FallbackProps, ImageProps } from '@rn-primitives/avatar'
-import React, { useMemo } from 'react'
-import { TextProps, View, ViewProps } from 'react-native'
+import { useCallback, useMemo, useState } from 'react'
+import { StyleSheet, TextProps, View, ViewProps } from 'react-native'
+import { Image, ImageSource, ImageProps } from 'expo-image'
 import BotIcon from '@assets/icons/BotIcon.svg'
 
 type Props = {
@@ -16,7 +15,7 @@ type Props = {
     availabilityStatus?: RavenUser['availability_status'],
     isBot?: boolean,
     imageProps?: ImageProps
-    fallbackProps?: FallbackProps
+    fallbackProps?: ViewProps
     textProps?: TextProps,
     indicatorProps?: ViewProps,
     avatarProps?: ViewProps
@@ -49,20 +48,60 @@ const UserAvatar = ({ src, isActive, alt, availabilityStatus, isBot, imageProps,
     const source = useFileURL(src)
     const { bg, text, botColor } = useMemo(() => COLOR_MAP[getColorIndexForAvatar(alt)], [alt])
 
+    // If there is no source, we need to show the fallback immediately - most common use case of there being a fallback
+    const [status, setStatus] = useState<'error' | 'loaded' | 'loading'>(source ? 'loading' : 'error')
+
+    const onDisplay = useCallback(() => {
+        setStatus('loaded')
+    }, [])
+
+    const onError = useCallback(() => {
+        setStatus('error')
+    }, [])
+
     return (
-        <View className='relative'>
-            <Avatar alt={alt} {...avatarProps}>
-                <AvatarImage source={source} {...imageProps} />
-                <AvatarFallback className={cn(bg, fallbackProps?.className)} {...fallbackProps}>
-                    <Text {...textProps} className={cn(text, textProps?.className)}>
-                        {getInitials(alt)}
-                    </Text>
-                </AvatarFallback>
-            </Avatar>
+        <View {...avatarProps} className={cn('relative w-10 h-10', avatarProps?.className)}>
+            {status === 'error' ? <View {...fallbackProps} className={cn('flex h-full w-full items-center justify-center rounded-lg', bg, fallbackProps?.className)}>
+                <Text {...textProps} className={cn(text, textProps?.className)}>
+                    {getInitials(alt)}
+                </Text>
+            </View> : null}
+            <ImageComponent
+                {...imageProps}
+                status={status}
+                source={source}
+                alt={alt}
+                onDisplay={onDisplay}
+                onError={onError} />
             <ActiveIndicator isActive={isActive} availabilityStatus={availabilityStatus} isBot={isBot} botColor={botColor} {...indicatorProps} />
         </View>
     )
 }
+
+/** Uses expo-image to handle caching the image */
+const ImageComponent = ({ status, source, alt, onDisplay, onError, ...props }: ImageProps & { status: 'error' | 'loaded' | 'loading', source?: ImageSource, alt: string, onDisplay: () => void, onError: () => void } & ImageProps) => {
+
+    if (!source) return null
+    if (status === 'error') return null
+
+    return <Image
+        source={source}
+        alt={alt}
+        style={styles.image}
+        onDisplay={onDisplay}
+        onError={onError}
+        {...props} />
+}
+
+const styles = StyleSheet.create({
+    image: {
+        flex: 1,
+        width: '100%',
+        height: '100%',
+        borderRadius: 8,
+        aspectRatio: 1
+    }
+})
 
 const ActiveIndicator = ({ isActive, availabilityStatus, isBot, botColor, indicatorProps }: Pick<Props, 'isActive' | 'availabilityStatus' | 'isBot'> & { indicatorProps?: ViewProps, botColor?: string }) => {
 
@@ -88,7 +127,6 @@ const ActiveIndicator = ({ isActive, availabilityStatus, isBot, botColor, indica
     }, [availabilityStatus, isActive])
 
     if (isBot) {
-        console.log('botColor', botColor)
         return <View
             {...indicatorProps}
             className={cn('absolute bottom-1 right-0.5 translate-x-1/2 translate-y-1/2', botColor, indicatorProps?.className)}>
