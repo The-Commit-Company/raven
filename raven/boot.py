@@ -11,7 +11,10 @@ def boot_session(bootinfo):
 
 	document_link_override = frappe.get_hooks("raven_document_link_override")
 
-	chat_style = frappe.db.get_value("Raven User", frappe.session.user, "chat_style")
+	if frappe.session.user and frappe.session.user != "Guest":
+		chat_style = frappe.db.get_value("Raven User", frappe.session.user, "chat_style")
+	else:
+		chat_style = "Simple"
 
 	if document_link_override and len(document_link_override) > 0:
 		bootinfo.raven_document_link_override = True
