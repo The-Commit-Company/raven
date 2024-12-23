@@ -35,7 +35,7 @@ const ViewPollVotes = ({ poll }: ViewPollVotesProps) => {
                     { opacity: pressed ? 0.6 : 1.0 },
                 ]}
             >
-                <Text className="text-center text-sm" style={{ color: colors.primary }}>
+                <Text className="text-center text-sm cursor-pointer" style={{ color: colors.primary }}>
                     View Votes
                 </Text>
             </Pressable>
@@ -109,7 +109,7 @@ const VotesBlock = ({ votesData, poll }: { votesData: PollVotesResponse; poll: P
                                 {option.count} vote{option.count > 1 ? 's' : ''}
                             </Text>
                         </View>
-                        <View className="bg-gray-100 dark:bg-gray-800 rounded-md p-2.5">
+                        <View className="bg-gray-100 dark:bg-gray-900 rounded-md p-2.5">
                             {option.users.map((user) => (
                                 <UserVote key={user} user_id={user} />
                             ))}

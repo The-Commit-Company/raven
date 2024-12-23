@@ -14,7 +14,6 @@ import { PollMessage } from '@raven/types/common/Message';
 
 type PollMessageBlockProps = {
     message: PollMessage,
-    user?: UserFields,
 }
 
 export interface Poll {
@@ -54,8 +53,8 @@ export const PollMessageBlock = ({ message, ...props }: PollMessageBlockProps) =
 
 const PollMessageBox = ({ data, messageID }: { data: Poll; messageID: string }) => {
     return (
-        <View className="bg-gray-200 dark:bg-gray-950 w-full rounded-md p-3 gap-0.5">
-            <View className="flex-row justify-between items-center pb-2">
+        <View className="bg-gray-200 dark:bg-gray-900 w-full rounded-md p-3 gap-0.5">
+            <View className="flex-row justify-between items-center pb-3">
                 <Text className="font-medium">{data.poll.question}</Text>
                 {data.poll.is_anonymous ? (
                     <View className="bg-blue-100 dark:bg-blue-300 rounded">
@@ -117,10 +116,10 @@ const PollOption = ({ data, option }: { data: Poll; option: RavenPollOption }) =
     return (
         <View className="relative flex-row justify-between items-center w-full mb-2">
             <Animated.View className={`absolute top-0 left-0 h-full rounded-l`} style={{ width: width, backgroundColor: isCurrentUserVote ? colorScheme === "light" ? colors.secondary : colors.primary : undefined }} />
-            <Text className={`p-2 z-10 ${isCurrentUserVote ? 'font-bold' : 'font-normal'}`}>
+            <Text className={`px-3 py-2 ${isCurrentUserVote ? 'font-bold' : 'font-normal'}`}>
                 {option.option}
             </Text>
-            <Text className={`p-2 z-10 ${isCurrentUserVote ? 'font-bold' : 'font-normal'}`}>
+            <Text className={`px-3 py-2 ${isCurrentUserVote ? 'font-bold' : 'font-normal'}`}>
                 {percentage.toFixed(1)}%
             </Text>
         </View>
@@ -157,7 +156,7 @@ const SingleChoicePoll = ({ data, messageID }: { data: Poll; messageID: string }
     return (
         <View className="gap-3 mt-2">
             {data.poll.options.map((option) => (
-                <View key={option.name} className='flex flex-row gap-3 items-center'>
+                <View key={option.name} className='flex flex-row gap-3 items-center p-2'>
                     <Checkbox
                         disabled={data.poll.is_disabled ? true : false}
                         onCheckedChange={() => onVoteSubmit(option)}
@@ -199,7 +198,7 @@ const MultiChoicePoll = ({ data, messageID }: { data: Poll; messageID: string })
         <View className="gap-4">
             <View className="gap-3 mt-2">
                 {data.poll.options.map((option) => (
-                    <View key={option.name} className='flex flex-row gap-3 items-center'>
+                    <View key={option.name} className='flex flex-row gap-3 items-center p-2'>
                         <Checkbox
                             checked={selectedOptions.includes(option.name)}
                             disabled={!!data.poll.is_disabled}
