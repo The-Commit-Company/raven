@@ -5,8 +5,6 @@ import { View } from "react-native";
 import { useDebounce } from "@raven/lib/hooks/useDebounce";
 import GIFSearchResults from "./GIFSearchResults";
 import GIFFeaturedResults from "./GIFFeaturedResults";
-import { ScrollView } from "react-native-gesture-handler";
-
 
 export const TENOR_SEARCH_API_ENDPOINT_BASE = `https://tenor.googleapis.com/v2/search`;
 export const TENOR_FEATURED_API_ENDPOINT_BASE = `https://tenor.googleapis.com/v2/featured`;
@@ -32,19 +30,13 @@ const GIFPicker = ({ onSelect }: GIFPickerProps) => {
                 />
             </View>
 
-            {/* <ScrollView
-                bounces={false}
-                showsVerticalScrollIndicator={false}
-                contentContainerStyle={{ paddingBottom: 100 }}
-            > */}
             {debouncedText.length >= 2 ? (
                 <GIFSearchResults query={debouncedText} onSelect={onSelect} />
             ) : (
                 <GIFFeaturedResults onSelect={onSelect} />
             )}
-            {/* </ScrollView> */}
 
-            <View className="flex-row items-center justify-center py-2 h-[50px] absolute bottom-0 left-0 right-0 bg-white">
+            <View className="flex-row items-center justify-center py-2 h-[50px] absolute bottom-0 left-0 right-0 bg-white dark:bg-gray-900">
                 <Image
                     source={{
                         uri: "https://www.gstatic.com/tenor/web/attribution/PB_tenor_logo_blue_horizontal.png"

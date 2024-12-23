@@ -1,11 +1,8 @@
 import { TENOR_API_KEY, TENOR_CLIENT_KEY, TENOR_SEARCH_API_ENDPOINT_BASE } from "./GIFPicker";
 import { useMemo, useCallback } from "react";
 import { useSWRInfinite } from "frappe-react-sdk";
-import { View, Image, TouchableOpacity, Dimensions } from "react-native";
+import { Image, TouchableOpacity, Dimensions } from "react-native";
 import { FlashList } from "@shopify/flash-list";
-import { Text } from "@components/nativewindui/Text";
-import { useColorScheme } from "@hooks/useColorScheme";
-import { Button } from "@components/nativewindui/Button";
 
 export interface Props {
     query?: string;
@@ -18,9 +15,8 @@ const fetcher = async (url: string) => {
 };
 
 const GIFSearchResults = ({ query, onSelect }: Props) => {
-    const { colors } = useColorScheme();
     const screenWidth = Dimensions.get('window').width;
-    const columnWidth = screenWidth / 2 - 18;
+    const columnWidth = screenWidth / 2 - 14;
 
     const { data, size, setSize, isLoading } = useSWRInfinite(
         (index: any, previousPageData: any) => {
@@ -55,22 +51,22 @@ const GIFSearchResults = ({ query, onSelect }: Props) => {
 
         return (
             <TouchableOpacity
-                key={gif.id || index}
                 onPress={() => onSelect(gif)}
                 style={{
                     width: columnWidth,
                     height: scaledHeight,
+                    aspectRatio: 1,
                     borderRadius: 5,
                     marginBottom: 8,
-                    marginRight: index % 2 === 0 ? 8 : 0,
+                    marginLeft: index % 2 === 0 ? 0 : 4
                 }}
                 activeOpacity={0.4}
-                className="bg-gray-200"
+                className="bg-gray-200 dark:bg-gray-800"
             >
                 <Image
                     source={{ uri: gif.media_formats.gif.url }}
                     style={{
-                        width: '100%',
+                        width: "100%",
                         height: '100%',
                         borderRadius: 5
                     }}
