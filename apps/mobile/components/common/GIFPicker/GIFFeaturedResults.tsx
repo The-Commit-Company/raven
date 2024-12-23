@@ -1,8 +1,8 @@
-import { TENOR_API_KEY, TENOR_CLIENT_KEY, TENOR_FEATURED_API_ENDPOINT_BASE } from "./GIFPicker";
 import { useMemo, useCallback } from "react";
 import { useSWRInfinite } from "frappe-react-sdk";
 import { Image, TouchableOpacity, Dimensions, View } from "react-native";
 import { FlashList } from "@shopify/flash-list";
+import { TENOR_API_KEY, TENOR_CLIENT_KEY, TENOR_FEATURED_API_ENDPOINT_BASE } from "./GIFPickerKeys";
 
 export interface Props {
     onSelect: (gif: Result) => void;
