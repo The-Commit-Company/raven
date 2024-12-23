@@ -1,12 +1,10 @@
-import React, { useEffect, useMemo, useState } from 'react';
-import { View } from 'react-native';
+import { useEffect, useMemo, useState } from 'react';
+import { Pressable, View } from 'react-native';
 import { useFrappeDocumentEventListener, useFrappeGetCall, useFrappePostCall } from 'frappe-react-sdk';
 import Animated, { useSharedValue, withTiming } from 'react-native-reanimated';
 import { Checkbox } from '@components/nativewindui/Checkbox';
-import { Button } from '@components/nativewindui/Button';
 import ViewPollVotes from '@components/features/polls/ViewPollVotes';
 import { Text } from '@components/nativewindui/Text';
-import { UserFields } from '@raven/types/common/UserFields';
 import { RavenPoll } from '@raven/types/RavenMessaging/RavenPoll';
 import { RavenPollOption } from '@raven/types/RavenMessaging/RavenPollOption';
 import { useColorScheme } from "@hooks/useColorScheme"
@@ -171,6 +169,9 @@ const SingleChoicePoll = ({ data, messageID }: { data: Poll; messageID: string }
 };
 
 const MultiChoicePoll = ({ data, messageID }: { data: Poll; messageID: string }) => {
+
+    const { colors } = useColorScheme()
+
     const [selectedOptions, setSelectedOptions] = useState<string[]>([]);
 
     const { call } = useFrappePostCall('raven.api.raven_poll.add_vote');
@@ -215,9 +216,9 @@ const MultiChoicePoll = ({ data, messageID }: { data: Poll; messageID: string })
                 <Text className="text-sm text-gray-500 mr-4 max-w-[65%]">
                     To view the poll results, please submit your choice(s)
                 </Text>
-                <Button className='bg-transparent' onPress={onVoteSubmit} disabled={!!data.poll.is_disabled || selectedOptions.length === 0}>
-                    <Text className='text-blue-800'>Submit</Text>
-                </Button>
+                <Pressable className='bg-gray-300 dark:bg-gray-800 px-2.5 py-1 rounded-sm' onPress={onVoteSubmit} disabled={!!data.poll.is_disabled || selectedOptions.length === 0}>
+                    <Text className='text-sm font-semibold' style={{ color: colors.primary }}>Submit</Text>
+                </Pressable>
             </View>
         </View>
     );
