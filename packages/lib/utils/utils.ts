@@ -7,7 +7,7 @@
 export const getInitials = (name?: string) => {
     if (!name) return ''
     const [firstName, lastName] = name.split(' ')
-    return firstName[0] + (lastName?.[0] ?? '')
+    return firstName[0].toUpperCase() + (lastName?.[0] ?? '').toUpperCase()
 }
 
 // ----- Avatar Color Generation ----

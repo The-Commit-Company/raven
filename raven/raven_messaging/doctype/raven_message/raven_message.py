@@ -174,7 +174,7 @@ class RavenMessage(Document):
 			return
 
 		# Get the bot user doc
-		peer_user_doc = frappe.get_cached_doc("Raven User", peer_user)
+		peer_user_doc = frappe.get_cached_doc("Raven User", peer_user.get("user_id"))
 
 		if peer_user_doc.type != "Bot" or not peer_user_doc.bot:
 			return

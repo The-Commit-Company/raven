@@ -16,7 +16,7 @@ const SearchInput = React.forwardRef<React.ElementRef<typeof TextInput>, SearchI
     {
       value: valueProp,
       onChangeText: onChangeTextProp,
-      placeholder = 'Search...',
+      placeholder = 'Jump to or search...',
       cancelText = 'Cancel',
       containerClassName,
       iconContainerClassName,
@@ -55,7 +55,7 @@ const SearchInput = React.forwardRef<React.ElementRef<typeof TextInput>, SearchI
         )}
         onPress={focus}>
         <View className={cn('p-2', iconContainerClassName)} pointerEvents="none">
-          <SearchIcon color={iconColor ?? colors.grey2} />
+          <SearchIcon fill={iconColor ?? colors.greyText} />
         </View>
 
         <View className="flex-1" pointerEvents="none">
@@ -63,7 +63,7 @@ const SearchInput = React.forwardRef<React.ElementRef<typeof TextInput>, SearchI
             ref={inputRef}
             placeholder={placeholder}
             className={cn('text-foreground flex-1 rounded-r-full p-2 text-[17px]', className)}
-            placeholderTextColor={colors.grey2}
+            placeholderTextColor={colors.greyText}
             value={value}
             onChangeText={onChangeText}
             role="searchbox"
@@ -73,7 +73,7 @@ const SearchInput = React.forwardRef<React.ElementRef<typeof TextInput>, SearchI
         {!!value && (
           <Animated.View entering={FadeIn} exiting={FadeOut.duration(150)}>
             <Pressable className="p-2" onPress={clear}>
-              <CrossIcon color={colors.grey2} />
+              <CrossIcon fill={colors.greyText} />
             </Pressable>
           </Animated.View>
         )}

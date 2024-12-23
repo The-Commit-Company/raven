@@ -12,6 +12,7 @@ module.exports = {
         ring: withOpacity('ring'),
         background: withOpacity('background'),
         foreground: withOpacity('foreground'),
+        linkColor: withOpacity('linkColor'),
         primary: {
           DEFAULT: withOpacity('primary'),
           foreground: withOpacity('primary-foreground'),

@@ -15,25 +15,29 @@ const IOS_SYSTEM_COLORS = {
         root: 'rgb(255, 255, 255)',
         card: 'rgb(255, 255, 255)',
         icon: '#1C2024',
+        greyText: 'rgb(175, 176, 180)',
         destructive: 'rgb(255, 56, 43)',
         primary: '#5753C6',
-        secondary: "#DBDAFE"
+        secondary: "#DBDAFE",
+        linkColor: '#E6E6EB'
     },
     dark: {
         grey6: 'rgb(21, 21, 24)',
-        grey5: 'rgb(40, 40, 42)',
+        grey5: 'rgb(30, 30, 32)',
         grey4: 'rgb(55, 55, 57)',
         grey3: 'rgb(70, 70, 73)',
         grey2: 'rgb(99, 99, 102)',
         grey: 'rgb(142, 142, 147)',
-        background: 'rgb(0, 0, 0)',
+        background: 'rgb(10, 10, 10)',
         foreground: 'rgb(255, 255, 255)',
         root: 'rgb(0, 0, 0)',
         card: 'rgb(21, 21, 24)',
         icon: '#B9BBC6',
+        greyText: 'rgb(175, 176, 180)',
         destructive: 'rgb(254, 67, 54)',
         primary: '#5753C6',
-        secondary: "#DBDAFE"
+        secondary: "#DBDAFE",
+        linkColor: '#1A1A1A'
     },
 } as const;
 
@@ -52,25 +56,29 @@ const ANDROID_COLORS = {
         root: 'rgb(255, 255, 255)',
         card: 'rgb(255, 255, 255)',
         icon: '#1C2024',
+        greyText: 'rgb(175, 176, 180)',
         destructive: 'rgb(186, 26, 26)',
         primary: '#5753C6',
-        secondary: "#DBDAFE"
+        secondary: "#DBDAFE",
+        linkColor: '#E6E6EB'
     },
     dark: {
         grey6: 'rgb(16, 19, 27)',
-        grey5: 'rgb(39, 42, 50)',
+        grey5: 'rgb(30, 30, 32)',
         grey4: 'rgb(49, 53, 61)',
         grey3: 'rgb(54, 57, 66)',
         grey2: 'rgb(139, 144, 160)',
         grey: 'rgb(193, 198, 215)',
-        background: 'rgb(0, 0, 0)',
+        background: 'rgb(10, 10, 10)',
         foreground: 'rgb(255, 255, 255)',
         root: 'rgb(0, 0, 0)',
         card: 'rgb(16, 19, 27)',
         icon: '#B9BBC6',
+        greyText: 'rgb(175, 176, 180)',
         destructive: 'rgb(147, 0, 10)',
         primary: '#5753C6',
-        secondary: "#DBDAFE"
+        secondary: "#DBDAFE",
+        linkColor: '#1A1A1A'
     },
 } as const;
 
