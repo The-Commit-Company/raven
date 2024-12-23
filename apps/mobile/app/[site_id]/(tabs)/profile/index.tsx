@@ -14,12 +14,11 @@ import { cn } from '@lib/cn';
 import { useColorScheme } from '@hooks/useColorScheme';
 import ChevronRightIcon from '@assets/icons/ChevronRightIcon.svg';
 import { FrappeConfig, FrappeContext, useFrappeGetCall } from 'frappe-react-sdk';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { revokeAsync } from 'expo-auth-session';
 import { useContext } from 'react';
 import { SiteContext } from '../../_layout';
-import * as SecureStore from 'expo-secure-store';
-import { clearDefaultSite, DEFAULT_SITE_KEY, deleteAccessToken, getAccessTokenKey, getRevocationEndpoint } from '@lib/auth';
+import { clearDefaultSite, deleteAccessToken, getRevocationEndpoint } from '@lib/auth';
+import useCurrentRavenUser from '@raven/lib/hooks/useCurrentRavenUser';
 
 const SCREEN_OPTIONS = {
     title: 'Profile',
@@ -31,12 +30,15 @@ const ESTIMATED_ITEM_SIZE =
     ESTIMATED_ITEM_HEIGHT[Platform.OS === 'ios' ? 'titleOnly' : 'withSubTitle'];
 
 export default function Profile() {
+
+    const { myProfile } = useCurrentRavenUser()
+
     return (
         <>
             <Stack.Screen options={SCREEN_OPTIONS} />
             <List
                 variant="insets"
-                data={DATA}
+                data={DATA({ full_name: myProfile?.full_name, custom_status: myProfile?.custom_status })}
                 sectionHeaderAsGap={Platform.OS === 'ios'}
                 estimatedItemSize={ESTIMATED_ITEM_SIZE}
                 renderItem={renderItem}
@@ -152,37 +154,40 @@ type DataItem =
         onPress: () => void;
     };
 
-const DATA: DataItem[] = [
-    ...(Platform.OS !== 'ios' ? ['Basic info'] : []),
-    {
-        id: 'name',
-        title: 'Name',
-        ...(Platform.OS === 'ios' ? { value: 'Janhvi Patil' } : { subTitle: 'Janhvi Patil' }),
-        onPress: () => router.push('./name', {
-            relativeToDirectory: true
-        }),
-    },
-    {
-        id: 'username',
-        title: 'Username',
-        ...(Platform.OS === 'ios' ? { value: '@janhvipatil' } : { subTitle: '@janhvipatil' }),
-        onPress: () => router.push('./username', {
-            relativeToDirectory: true
-        }),
-    },
-    ...(Platform.OS !== 'ios' ? ['Stay up to date'] : ['']),
-    {
-        id: '4',
-        title: 'Notifications',
-        ...(Platform.OS === 'ios' ? { value: 'Push' } : { subTitle: 'Push' }),
-        onPress: () => router.push('./notification', {
-            relativeToDirectory: true
-        }),
-    },
-    {
-        id: '7',
-        title: 'About',
-        ...(Platform.OS === 'ios' ? { value: 'Raven 1.7.1' } : { subTitle: 'Raven 1.7.1' }),
-        onPress: () => Linking.openURL('https://www.ravenchat.ai/'),
-    },
-];
+const DATA = (userData: { full_name: string | undefined, custom_status: string | undefined }): DataItem[] => {
+    return [
+        ...(Platform.OS !== 'ios' ? ['Basic info'] : []),
+        {
+            id: 'fullname',
+            title: 'Full Name',
+            ...(Platform.OS === 'ios' ? { value: userData?.full_name } : { subTitle: userData?.full_name }),
+            onPress: () => router.push('./fullname', {
+                relativeToDirectory: true
+            }),
+        },
+        {
+            id: 'custom_status',
+            title: 'Custom Status',
+            ...(Platform.OS === 'ios' ? { value: userData?.custom_status || "-" } : { subTitle: userData?.custom_status || "-" }),
+            onPress: () => router.push('./custom_status', {
+                relativeToDirectory: true
+            }),
+        },
+        ...(Platform.OS !== 'ios' ? ['Stay up to date'] : ['']),
+        {
+            id: '4',
+            title: 'Notifications',
+            ...(Platform.OS === 'ios' ? { value: 'Push' } : { subTitle: 'Push' }),
+            onPress: () => router.push('./notification', {
+                relativeToDirectory: true
+            }),
+        },
+        {
+            id: '7',
+            title: 'About',
+            ...(Platform.OS === 'ios' ? { value: 'Raven 1.7.1' } : { subTitle: 'Raven 1.7.1' }),
+            onPress: () => Linking.openURL('https://www.ravenchat.ai/'),
+        },
+    ];
+
+}
