@@ -28,6 +28,8 @@ export const DeleteChannelModal = ({ onClose, onCloseParent, isDrawer, channelDa
 
     const navigate = useNavigate()
 
+    const lastWorkspace = localStorage.getItem('ravenLastWorkspace')
+
     const onSubmit = () => {
         if (channelData?.name) {
             deleteDoc('Raven Channel', channelData.name)
@@ -37,8 +39,12 @@ export const DeleteChannelModal = ({ onClose, onCloseParent, isDrawer, channelDa
                     onClose()
                     onCloseParent()
                     localStorage.removeItem('ravenLastChannel')
-                    navigate('/channel')
-                    toast(`Channel ${channelData.name} deleted.`)
+                    if (lastWorkspace) {
+                        navigate(`/${lastWorkspace}`)
+                    } else {
+                        navigate('/')
+                    }
+                    toast(`Channel ${channelData.channel_name} deleted.`)
                 })
         }
     }
