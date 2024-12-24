@@ -1,0 +1,50 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2024-12-15 17:44:18.087743",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "channel_type",
+  "variable_type",
+  "value"
+ ],
+ "fields": [
+  {
+   "fieldname": "channel_type",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Channel Type",
+   "options": "Channel\nUser",
+   "reqd": 1
+  },
+  {
+   "fieldname": "variable_type",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Variable Type",
+   "options": "Static\nDocField\nJinja",
+   "reqd": 1
+  },
+  {
+   "fieldname": "value",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Value",
+   "reqd": 1
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2024-12-15 17:45:47.706896",
+ "modified_by": "Administrator",
+ "module": "Raven Integrations",
+ "name": "Raven Document Notification Recipients",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": []
+}

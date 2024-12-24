@@ -47,6 +47,7 @@ class RavenMessage(Document):
 		mentions: DF.Table[RavenMention]
 		message_reactions: DF.JSON | None
 		message_type: DF.Literal["Text", "Image", "File", "Poll", "System"]
+		notification: DF.Data | None
 		poll_id: DF.Link | None
 		replied_message_details: DF.JSON | None
 		text: DF.LongText | None
