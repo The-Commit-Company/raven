@@ -30,7 +30,7 @@ const QuickReactions = ({ message, onClose }: MessageReactionsProps) => {
             message_id: message?.name,
             reaction: emoji
         }).then(() => {
-            emojiBottomSheetRef.current?.close()
+            emojiBottomSheetRef.current?.close({ duration: 450 })
             onClose();
         }).catch(() => {
             // toast.error("Could not react to message.")
