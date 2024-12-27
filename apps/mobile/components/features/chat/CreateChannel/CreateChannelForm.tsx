@@ -1,6 +1,5 @@
 import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
-import { Controller, FormProvider, useForm } from 'react-hook-form'
-import { useFrappeCreateDoc } from "frappe-react-sdk";
+import { Controller, useFormContext } from 'react-hook-form';
 import { useCallback, useMemo } from "react";
 import { TextInput, TouchableOpacity, View } from "react-native";
 import { Text } from "@components/nativewindui/Text";
@@ -8,35 +7,15 @@ import { ErrorText, FormLabel } from "@components/layout/Form";
 import { ChannelIcon } from "../ChannelList/ChannelIcon";
 import { useColorScheme } from "@hooks/useColorScheme";
 
-type ChannelCreationForm = {
+export type ChannelCreationForm = {
     channel_name: string,
     channel_description: string,
     type: 'Public' | 'Private' | 'Open'
 }
 
-
 const CreateChannelForm = () => {
 
-    const methods = useForm<ChannelCreationForm>({
-        defaultValues: {
-            type: 'Public',
-            channel_name: '',
-            channel_description: ''
-        }
-    })
-
-    const { handleSubmit, watch, formState: { errors }, control, setValue, reset: resetForm } = methods
-
-    const { createDoc, error, loading: creatingChannel, reset: resetCreateHook } = useFrappeCreateDoc()
-
-    const reset = () => {
-        resetCreateHook()
-        resetForm()
-    }
-
-    const onSubmit = async (data: ChannelCreationForm) => {
-        console.log("FORM DATA", data)
-    }
+    const { control, formState: { errors }, setValue, watch } = useFormContext<ChannelCreationForm>()
 
     const handleNameChange = useCallback((text: string) => {
         setValue('channel_name', text?.toLowerCase().replace(' ', '-'))
@@ -67,138 +46,136 @@ const CreateChannelForm = () => {
     const { colors } = useColorScheme()
 
     return (
-        <FormProvider {...methods}>
-            <KeyboardAwareScrollView
-                keyboardShouldPersistTaps="handled"
-                keyboardDismissMode="interactive"
-                contentInsetAdjustmentBehavior="automatic">
+        <KeyboardAwareScrollView
+            keyboardShouldPersistTaps="handled"
+            keyboardDismissMode="interactive"
+            contentInsetAdjustmentBehavior="automatic">
 
-                <View className="flex-col gap-3 justify-start px-5 pt-5 pb-6">
-                    <Text className="text-xl font-cal-sans">
-                        {header}
-                    </Text>
-                    <Text className="text-sm">Channels are where your team communicates. They are best when organized around a topic - #development, for example.</Text>
-                </View>
+            <View className="flex-col gap-3 justify-start px-5 pt-5 pb-6">
+                <Text className="text-xl font-cal-sans">
+                    {header}
+                </Text>
+                <Text className="text-sm">Channels are where your team communicates. They are best when organized around a topic - #development, for example.</Text>
+            </View>
 
-                <View className="px-5 gap-6">
+            <View className="px-5 gap-6">
 
 
-                    <View className="flex-col gap-3">
-                        <FormLabel isRequired>Name</FormLabel>
-                        <Controller
-                            name="channel_name"
-                            control={control}
-                            rules={{
-                                required: "Please add a channel name",
-                                maxLength: {
-                                    value: 50,
-                                    message: "Channel name cannot be more than 50 characters.",
-                                },
-                                minLength: {
-                                    value: 3,
-                                    message: "Channel name cannot be less than 3 characters.",
-                                },
-                                pattern: {
-                                    // no special characters allowed, cannot start with a space
-                                    value: /^[a-zA-Z0-9][a-zA-Z0-9-]*$/,
-                                    message: "Channel name can only contain letters, numbers and hyphens.",
-                                },
-                            }}
-                            render={({ field: { onBlur, value }, fieldState: { error } }) => (
-                                <View className={`flex-row items-center rounded-md border ${error ? "border-red-600" : "border-border"}`}>
-                                    {/* Channel Icon */}
-                                    <View className="mx-3">
-                                        <ChannelIcon type={channelType} fill={colors.icon} />
-                                    </View>
-                                    <TextInput
-                                        className={`flex-1 pt-2 pb-3 text-base`}
-                                        placeholder="dev-team"
-                                        maxLength={50}
-                                        value={value}
-                                        onBlur={onBlur}
-                                        onChangeText={handleNameChange}
-                                        autoFocus
-                                        accessibilityHint={error ? "Channel name is invalid. Please check the error." : undefined}
-                                        aria-invalid={error ? "true" : "false"}
-                                    />
-                                    {/* Character counter */}
-                                    <View className="mx-3">
-                                        <Text className={`text-sm ${error ? "text-red-600" : "text-gray-500"}`}>
-                                            {50 - (value?.length || 0)}
-                                        </Text>
-                                    </View>
+                <View className="flex-col gap-3">
+                    <FormLabel isRequired>Name</FormLabel>
+                    <Controller
+                        name="channel_name"
+                        control={control}
+                        rules={{
+                            required: "Please add a channel name",
+                            maxLength: {
+                                value: 50,
+                                message: "Channel name cannot be more than 50 characters.",
+                            },
+                            minLength: {
+                                value: 3,
+                                message: "Channel name cannot be less than 3 characters.",
+                            },
+                            pattern: {
+                                // no special characters allowed, cannot start with a space
+                                value: /^[a-zA-Z0-9][a-zA-Z0-9-]*$/,
+                                message: "Channel name can only contain letters, numbers and hyphens.",
+                            },
+                        }}
+                        render={({ field: { onBlur, value }, fieldState: { error } }) => (
+                            <View className={`flex-row items-center rounded-md border ${error ? "border-red-600" : "border-border"}`}>
+                                {/* Channel Icon */}
+                                <View className="mx-3">
+                                    <ChannelIcon type={channelType} fill={colors.icon} />
                                 </View>
-                            )}
-                        />
-
-                        {errors?.channel_name && (
-                            <ErrorText>{errors.channel_name?.message}</ErrorText>
-                        )}
-                    </View>
-
-                    <View className="flex-col gap-3">
-                        <View className="flex-row items-center gap-0">
-                            <FormLabel>Description</FormLabel>
-                            <Text className="text-sm">(optional)</Text>
-                        </View>
-                        <Controller
-                            control={control}
-                            name="channel_description"
-                            rules={{
-                                maxLength: {
-                                    value: 140,
-                                    message: "Channel description cannot be more than 140 characters.",
-                                },
-                            }}
-                            render={({ field: { onChange, onBlur, value } }) => (
                                 <TextInput
-                                    className="w-full border border-border rounded-md px-3 pt-2 pb-3 text-base"
-                                    placeholder="Discuss the latest features and ideas and keep track of the deliverables"
-                                    multiline
-                                    numberOfLines={4}
-                                    onChangeText={onChange}
-                                    onBlur={onBlur}
+                                    className={`flex-1 pt-2 pb-3 text-sm`}
+                                    placeholder="dev-team"
+                                    maxLength={50}
                                     value={value}
+                                    onBlur={onBlur}
+                                    onChangeText={handleNameChange}
+                                    autoFocus
+                                    accessibilityHint={error ? "Channel name is invalid. Please check the error." : undefined}
+                                    aria-invalid={error ? "true" : "false"}
                                 />
-                            )}
-                        />
-                        <Text className="text-sm text-gray-500">What is this channel about?</Text>
-                        {errors?.channel_description && (
-                            <ErrorText>{errors.channel_description?.message}</ErrorText>
-                        )}
-                    </View>
-
-                    <View className="flex-col gap-3">
-                        <FormLabel>Channel Type</FormLabel>
-                        <Controller
-                            control={control}
-                            name="type"
-                            render={({ field: { onChange, value } }) => (
-                                <View className="flex-row flex-wrap gap-6">
-                                    {["Public", "Private", "Open"].map((option) => {
-                                        const isSelected = value === option;
-                                        return (
-                                            <TouchableOpacity key={option} onPress={() => onChange(option)}>
-                                                <View className="flex-row items-center gap-2">
-                                                    <View className={`w-[18px] h-[18px] rounded-full border-2 flex items-center justify-center ${isSelected ? "border-primary" : "border-border"}`}>
-                                                        {isSelected && (
-                                                            <View className="w-[8px] h-[8px] bg-primary rounded-full" />
-                                                        )}
-                                                    </View>
-                                                    <Text className="text-base">{option}</Text>
-                                                </View>
-                                            </TouchableOpacity>
-                                        )
-                                    })}
+                                {/* Character counter */}
+                                <View className="mx-3">
+                                    <Text className={`text-sm ${error ? "text-red-600" : "text-gray-500"}`}>
+                                        {50 - (value?.length || 0)}
+                                    </Text>
                                 </View>
-                            )}
-                        />
-                        <Text className="text-sm text-gray-500">{helperText}</Text>
-                    </View>
+                            </View>
+                        )}
+                    />
 
+                    {errors?.channel_name && (
+                        <ErrorText>{errors.channel_name?.message}</ErrorText>
+                    )}
                 </View>
-            </KeyboardAwareScrollView>
-        </FormProvider>
+
+                <View className="flex-col gap-3">
+                    <View className="flex-row items-center gap-0">
+                        <FormLabel>Description</FormLabel>
+                        <Text className="text-sm">(optional)</Text>
+                    </View>
+                    <Controller
+                        control={control}
+                        name="channel_description"
+                        rules={{
+                            maxLength: {
+                                value: 140,
+                                message: "Channel description cannot be more than 140 characters.",
+                            },
+                        }}
+                        render={({ field: { onChange, onBlur, value } }) => (
+                            <TextInput
+                                className="w-full border border-border rounded-md px-3 pt-2 pb-3 text-sm"
+                                placeholder="Discuss the latest features and ideas and keep track of the deliverables"
+                                multiline
+                                numberOfLines={4}
+                                onChangeText={onChange}
+                                onBlur={onBlur}
+                                value={value}
+                            />
+                        )}
+                    />
+                    <Text className="text-sm text-gray-500">What is this channel about?</Text>
+                    {errors?.channel_description && (
+                        <ErrorText>{errors.channel_description?.message}</ErrorText>
+                    )}
+                </View>
+
+                <View className="flex-col gap-3">
+                    <FormLabel>Channel Type</FormLabel>
+                    <Controller
+                        control={control}
+                        name="type"
+                        render={({ field: { onChange, value } }) => (
+                            <View className="flex-row flex-wrap gap-6">
+                                {["Public", "Private", "Open"].map((option) => {
+                                    const isSelected = value === option;
+                                    return (
+                                        <TouchableOpacity key={option} onPress={() => onChange(option)}>
+                                            <View className="flex-row items-center gap-2">
+                                                <View className={`w-[18px] h-[18px] rounded-full border-2 flex items-center justify-center ${isSelected ? "border-primary" : "border-border"}`}>
+                                                    {isSelected && (
+                                                        <View className="w-[8px] h-[8px] bg-primary rounded-full" />
+                                                    )}
+                                                </View>
+                                                <Text className="text-sm">{option}</Text>
+                                            </View>
+                                        </TouchableOpacity>
+                                    )
+                                })}
+                            </View>
+                        )}
+                    />
+                    <Text className="text-sm text-gray-500">{helperText}</Text>
+                </View>
+
+            </View>
+        </KeyboardAwareScrollView>
     )
 }
 
