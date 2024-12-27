@@ -21,8 +21,6 @@ export default function EmojiPickerComponent({ onReact }: EmojiPickerProps) {
         try {
             const storedEmojis = await SecureStore.getItemAsync(RECENT_EMOJIS_KEY);
 
-            console.log(storedEmojis);
-
             if (storedEmojis) {
                 const parseStoreEmojis = JSON.parse(storedEmojis);
 
