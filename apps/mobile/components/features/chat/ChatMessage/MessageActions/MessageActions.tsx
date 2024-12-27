@@ -101,7 +101,7 @@ const MessageAction = ({ onAction, icon, title, loading, loadingText, danger, cl
     return (
         <Pressable
             onPress={onAction}
-            className={clsx('flex flex-row items-center gap-4 p-2 rounded-lg ios:active:bg-linkColor mb-1', className)}
+            className={clsx('flex flex-row items-center gap-3 p-2 rounded-lg ios:active:bg-linkColor mb-1', className)}
             android_ripple={{ color: 'rgba(0,0,0,0.1)', borderless: false }}
             disabled={loading}
         >
