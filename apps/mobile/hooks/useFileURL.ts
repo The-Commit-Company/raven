@@ -8,7 +8,7 @@ type UseFileURLReturnType = {
   * resource (which should be wrapped in the `require('./path/to/image.png')`
   * function).
   */
-  uri: string | undefined;
+  uri: string;
   /**
   * `headers` is an object representing the HTTP headers to send along with the
   * request for a remote image.

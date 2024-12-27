@@ -20,6 +20,10 @@
         --accent-foreground: 255 255 255;
         --destructive: 255 56 43;
         --destructive-foreground: 255 255 255;
+        --error: 206 32 33;
+        --error-background: 251 234 233;
+        --error-heading: 176 20 20;
+        --error-border: 182 22 22;
         --border: 230 230 235;
         --input: 210 210 215;
         --ring: 230 230 235;
@@ -40,6 +44,10 @@
         --android-accent-foreground: 255 255 255;
         --android-destructive: 186 26 26;
         --android-destructive-foreground: 255 255 255;
+        --android-error: 206 32 33;
+        --android-error-background: 251 234 233;
+        --android-error-heading: 176 20 20;
+        --android-error-border: 182 22 22;
         --android-border: 215 217 228;
         --android-input: 210 210 215;
         --android-ring: 215 217 228;
@@ -63,6 +71,10 @@
             --accent-foreground: 255 255 255;
             --destructive: 254 67 54;
             --destructive-foreground: 255 255 255;
+            --error: 176 20 20;
+            --error-background: 39 19 20;
+            --error-heading: 220 50 50;
+            --error-border: 145 22 22;
             --border: 40 40 42;
             --input: 55 55 57;
             --ring: 40 40 42;
@@ -83,6 +95,10 @@
             --android-accent-foreground: 238 177 255;
             --android-destructive: 147 0 10;
             --android-destructive-foreground: 255 255 255;
+            --android-error: 176 20 20;
+            --android-error-background: 39 19 20;
+            --android-error-heading: 220 50 50;
+            --android-error-border: 145 22 22;
             --android-border: 39 42 50;
             --android-input: 55 55 57;
             --android-ring: 39 42 50;
