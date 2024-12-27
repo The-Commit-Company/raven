@@ -10,7 +10,7 @@
         --card-foreground: 8 28 30;
         --popover: 230 230 235;
         --popover-foreground: 0 0 0;
-        --primary: 0 123 254;
+        --primary: 87, 83, 198;
         --primary-foreground: 255 255 255;
         --secondary: 45 175 231;
         --secondary-foreground: 255 255 255;
@@ -24,7 +24,9 @@
         --error-background: 251 234 233;
         --error-heading: 176 20 20;
         --error-border: 182 22 22;
-        --border: 230 230 235;
+        --linkColor: 230, 230, 235;
+        --grayText: 95, 101, 99;
+        --border: 220, 220, 225;
         --input: 210 210 215;
         --ring: 230 230 235;
 
@@ -34,7 +36,7 @@
         --android-card-foreground: 24 28 35;
         --android-popover: 215 217 228;
         --android-popover-foreground: 0 0 0;
-        --android-primary: 0 112 233;
+        --android-primary: 87, 83, 198;
         --android-primary-foreground: 255 255 255;
         --android-secondary: 176 201 255;
         --android-secondary-foreground: 20 55 108;
@@ -48,7 +50,9 @@
         --android-error-background: 251 234 233;
         --android-error-heading: 176 20 20;
         --android-error-border: 182 22 22;
-        --android-border: 215 217 228;
+        --android-linkColor: 230, 230, 235;
+        --android-grayText: 95, 101, 99;
+        --android-border: 220, 220, 225;
         --android-input: 210 210 215;
         --android-ring: 215 217 228;
     }
@@ -61,7 +65,7 @@
             --card-foreground: 255 255 255;
             --popover: 40 40 42;
             --popover-foreground: 255 255 255;
-            --primary: 3 133 255;
+            --primary: 87, 83, 198;
             --primary-foreground: 255 255 255;
             --secondary: 100 211 254;
             --secondary-foreground: 255 255 255;
@@ -75,6 +79,8 @@
             --error-background: 39 19 20;
             --error-heading: 220 50 50;
             --error-border: 145 22 22;
+            --linkColor: 26, 26, 26;
+            --grayText: 184, 188, 186;
             --border: 40 40 42;
             --input: 55 55 57;
             --ring: 40 40 42;
@@ -85,7 +91,7 @@
             --android-card-foreground: 224 226 237;
             --android-popover: 39 42 50;
             --android-popover-foreground: 224 226 237;
-            --android-primary: 3 133 255;
+            --android-primary: 87, 83, 198;
             --android-primary-foreground: 255 255 255;
             --android-secondary: 28 60 114;
             --android-secondary-foreground: 189 209 255;
@@ -99,6 +105,8 @@
             --android-error-background: 39 19 20;
             --android-error-heading: 220 50 50;
             --android-error-border: 145 22 22;
+            --android-linkColor: 26, 26, 26;
+            --android-grayText: 184, 188, 186;
             --android-border: 39 42 50;
             --android-input: 55 55 57;
             --android-ring: 39 42 50;

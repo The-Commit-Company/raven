@@ -5,7 +5,7 @@ import { Text } from '@components/nativewindui/Text'
 import { TextField } from '@components/nativewindui/TextField'
 import { BottomSheetView } from '@gorhom/bottom-sheet'
 import { useCallback, useState } from 'react'
-import { Alert, View } from 'react-native'
+import { Alert, Keyboard, View } from 'react-native'
 import * as WebBrowser from 'expo-web-browser'
 import { CodeChallengeMethod, exchangeCodeAsync, makeRedirectUri, ResponseType, TokenResponse, useAuthRequest } from 'expo-auth-session';
 import { router } from 'expo-router'
@@ -33,6 +33,9 @@ const AddSite = (props: Props) => {
          * 3. TODO: Check if this site is already added (this will be done later)
          * 4. Fetch the site information from the server and prompt the user to login
          */
+
+        // Dismiss the keyboard
+        Keyboard.dismiss()
         let url = siteURL.toLowerCase()
         if (!url.startsWith('https://') && !url.startsWith('http://')) {
             url = 'https://' + url

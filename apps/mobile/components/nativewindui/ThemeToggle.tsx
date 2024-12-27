@@ -17,6 +17,7 @@ export function ThemeToggle() {
                 key={"toggle-" + colorScheme}
                 entering={ZoomInRotate}>
                 <Pressable
+                    hitSlop={10}
                     onPress={() => {
                         setColorScheme(colorScheme === 'dark' ? 'light' : 'dark');
                     }}

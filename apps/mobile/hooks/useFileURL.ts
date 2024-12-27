@@ -26,16 +26,17 @@ const useFileURL = (fileURL?: string): UseFileURLReturnType | undefined => {
 
   if (!fileURL) return undefined
 
-  if (!fileURL.startsWith(url)) {
+  if (fileURL.startsWith('http') || fileURL.startsWith('https')) {
     return {
-      uri: `${url}${fileURL}`,
+      uri: fileURL,
       headers: {
         Authorization: `bearer ${tokenParams?.token?.()}`
       }
     }
   }
+
   return {
-    uri: fileURL,
+    uri: `${url}${fileURL}`
     headers: {
       Authorization: `bearer ${tokenParams?.token?.()}`
     }

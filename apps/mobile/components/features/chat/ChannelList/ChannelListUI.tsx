@@ -5,9 +5,9 @@ import { Text } from '@components/nativewindui/Text';
 import ChevronDownIcon from '@assets/icons/ChevronDownIcon.svg';
 import ChevronRightIcon from '@assets/icons/ChevronRightIcon.svg';
 import { useColorScheme } from '@hooks/useColorScheme';
-import PlusIcon from '@assets/icons/PlusIcon.svg';
 import { ChannelListItem } from '@raven/types/common/ChannelListItem';
-import { Link } from 'expo-router';
+import { Link, router } from 'expo-router';
+import PlusIcon from '@assets/icons/PlusIcon.svg';
 
 interface ChannelListUIProps {
     channels: ChannelListItem[];
@@ -30,8 +30,8 @@ const ChannelListUI = ({ channels }: ChannelListUIProps) => {
             </TouchableOpacity>
             {isExpanded && <>
                 {channels.map((channel) => <ChannelListRow key={channel.name} channel={channel} />)}
-                <Pressable style={styles.addChannelButton}
-                    onPress={() => console.log('Create channel pressed')}>
+                <Pressable style={styles.addChannelButton} className='ios:active:bg-linkColor'
+                    onPress={() => router.push('../home/create-channel', { relativeToDirectory: true })}>
                     <PlusIcon fill={colors.colors.icon} height={18} width={18} />
                     <Text style={styles.addChannelText}>Add channel</Text>
                 </Pressable>
@@ -47,7 +47,7 @@ const ChannelListRow = ({ channel }: { channel: ChannelListItem }) => {
             <Pressable
                 onLongPress={() => console.log(`channel long pressed - ${channel.name}`)}
                 // Use tailwind classes for layout and ios:active state
-                className={`flex-row items-center px-3 py-2 rounded-lg ios:active:bg-[${colors.colors.linkColor}] ios:active:dark:bg-[${colors.colors.linkColor}]`}
+                className='flex-row items-center px-3 py-2 rounded-lg ios:active:bg-linkColor'
                 // Add a subtle ripple effect on Android
                 android_ripple={{ color: 'rgba(0,0,0,0.1)', borderless: false }}
             >

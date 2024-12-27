@@ -18,7 +18,8 @@ const IOS_SYSTEM_COLORS = {
         greyText: 'rgb(175, 176, 180)',
         destructive: 'rgb(255, 56, 43)',
         primary: '#5753C6',
-        linkColor: '#E6E6EB',
+        secondary: "#DBDAFE",
+        linkColor: '#E6E6EB'
     },
     dark: {
         grey6: 'rgb(21, 21, 24)',
@@ -35,7 +36,8 @@ const IOS_SYSTEM_COLORS = {
         greyText: 'rgb(175, 176, 180)',
         destructive: 'rgb(254, 67, 54)',
         primary: '#5753C6',
-        linkColor: '#1A1A1A',
+        secondary: "#DBDAFE",
+        linkColor: '#1A1A1A'
     },
 } as const;
 
@@ -57,7 +59,8 @@ const ANDROID_COLORS = {
         greyText: 'rgb(175, 176, 180)',
         destructive: 'rgb(186, 26, 26)',
         primary: '#5753C6',
-        linkColor: '#E6E6EB',
+        secondary: "#DBDAFE",
+        linkColor: '#E6E6EB'
     },
     dark: {
         grey6: 'rgb(16, 19, 27)',
@@ -74,7 +77,8 @@ const ANDROID_COLORS = {
         greyText: 'rgb(175, 176, 180)',
         destructive: 'rgb(147, 0, 10)',
         primary: '#5753C6',
-        linkColor: '#1A1A1A',
+        secondary: "#DBDAFE",
+        linkColor: '#1A1A1A'
     },
 } as const;
 
