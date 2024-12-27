@@ -106,25 +106,14 @@ const styles = StyleSheet.create({
 const ActiveIndicator = ({ isActive, availabilityStatus, isBot, botColor, indicatorProps }: Pick<Props, 'isActive' | 'availabilityStatus' | 'isBot'> & { indicatorProps?: ViewProps, botColor?: string }) => {
 
     const dotColor = useMemo(() => {
-
-        if (availabilityStatus) {
-            if (availabilityStatus === 'Away') {
-                return 'bg-yellow-500'
-            } else if (availabilityStatus === 'Do not disturb') {
-                return 'bg-red-500'
-            } else if (availabilityStatus === 'Invisible') {
-                return ''
-            } else if (availabilityStatus === 'Available') {
-                return 'bg-green-500'
-            }
+        switch (availabilityStatus) {
+            case 'Away': return 'bg-yellow-500';
+            case 'Do not disturb': return 'bg-red-500';
+            case 'Available':
+            case 'Invisible': return isActive ? 'bg-green-500' : '';
+            default: return '';
         }
-        if (isActive) {
-            return 'bg-green-500'
-        } else {
-            return ''
-        }
-
-    }, [availabilityStatus, isActive])
+    }, [availabilityStatus, isActive]);
 
     if (isBot) {
         return <View
