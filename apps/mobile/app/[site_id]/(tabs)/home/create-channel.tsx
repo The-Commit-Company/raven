@@ -1,4 +1,4 @@
-import CreateChannelForm, { ChannelCreationForm } from '@components/features/chat/CreateChannel/CreateChannelForm';
+import CreateChannelForm, { ChannelCreationForm } from '@components/features/channels/CreateChannel/CreateChannelForm';
 import { Link, router, Stack } from 'expo-router';
 import { Button } from '@components/nativewindui/Button';
 import { Text } from '@components/nativewindui/Text';
