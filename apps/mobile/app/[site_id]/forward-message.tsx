@@ -1,6 +1,7 @@
 import React, { useState, useMemo, useCallback, useEffect } from "react"
 import { router, useLocalSearchParams, useNavigation } from "expo-router"
 import { TextInput, TouchableOpacity, View, Text, KeyboardAvoidingView, Platform, FlatList, Pressable } from "react-native"
+import clsx from "clsx"
 import { ChannelListItem, DMChannelListItem } from "@raven/types/common/ChannelListItem"
 import { useDebounce } from "@raven/lib/hooks/useDebounce"
 import UserAvatar from "@components/layout/UserAvatar"
@@ -30,7 +31,7 @@ function ForwardMessage() {
     const [selectedChannels, setSelectedChannels] = useState<
         (ChannelListItem | DMChannelListItemWithUser)[]
     >([])
-    const [isDropdownVisible, setDropdownVisible] = useState(false)
+    const [isDropdownVisible, setDropdownVisible] = useState(true)
     const [searchInput, setSearchInput] = useState("")
     const debouncedSearchInput = useDebounce(searchInput, 200)
 
@@ -114,7 +115,7 @@ function ForwardMessage() {
         navigation.setOptions({
             headerTitle: "Forward Message",
             headerRight: () => (
-                <TouchableOpacity disabled={isForwarding || !selectedChannels.length} onPress={onForwardMessage} activeOpacity={0.6}>
+                <TouchableOpacity className={clsx(isForwarding || !selectedChannels.length ? "opacity-45" : "")} disabled={isForwarding || !selectedChannels.length} onPress={onForwardMessage} activeOpacity={0.6}>
                     {isForwarding && !error ? <ActivityIndicator size={20} className='text-gray-800 dark:text-white' /> : <SendIcon fill={colors.icon} />}
                 </TouchableOpacity>
             )
@@ -137,8 +138,7 @@ function ForwardMessage() {
                             if (isDMChannel && !user?.enabled) return null
 
                             return (
-                                <View key={channel.name} className="bg-gray-200 dark:bg-gray-900 rounded-md px-2 py-1.5 flex-row items-center gap-2"
-                                >
+                                <View key={channel.name} className="bg-gray-200 dark:bg-gray-900 rounded-md px-2 py-1.5 flex-row items-center gap-2">
                                     {isDMChannel ? (
                                         <UserAvatar
                                             src={user?.user_image ?? ""}
@@ -167,6 +167,7 @@ function ForwardMessage() {
                             )
                         })}
                         <TextInput
+                            autoFocus
                             className="flex-1 text-gray-600"
                             placeholder={selectedChannels.length === 0 ? "Add a channel or DM" : ""}
                             value={searchInput}
@@ -201,9 +202,9 @@ function ForwardMessage() {
                 {/* Message Preview */}
                 {!isDropdownVisible && (
                     <View className="border-l-2 border-gray-300 mx-3 px-3 py-2 mt-5">
-                        <Text className="font-bold dark:text-gray-400 pb-2">Pranav Mene</Text>
-                        <Text className="text-gray-500">Message here...</Text>
-                        <Text className="text-gray-500 mt-2">From a thread in memories | Sun, Oct 6th at 11:40 AM</Text>
+                        <Text className="font-bold text-gray-600 dark:text-gray-400 pb-2">{message?.owner ?? ""}</Text>
+                        <Text className="text-gray-500">{message?.content ?? ""}</Text>
+                        <Text className="text-gray-500 text-xs font-semibold mt-2">{formatDate(message?.creation as string)}</Text>
                     </View>
                 )}
             </View>
@@ -253,3 +254,32 @@ const ChannelRow = React.memo(({ item, handleChannelSelect, currentUserInfo }: a
 })
 
 export default ForwardMessage
+
+
+function formatDate(inputDate: string): string {
+    const date = new Date(inputDate);
+
+    // Get day with ordinal suffix
+    const day = date.getDate();
+    const ordinalSuffix = (n: number): string => {
+        if (n >= 11 && n <= 13) return "th";
+        const lastDigit = n % 10;
+        if (lastDigit === 1) return "st";
+        if (lastDigit === 2) return "nd";
+        if (lastDigit === 3) return "rd";
+        return "th";
+    };
+    const dayWithSuffix = `${day}${ordinalSuffix(day)}`;
+
+    // Format date to required parts
+    const options: Intl.DateTimeFormatOptions = { weekday: "short", month: "short" };
+    const formattedDate = new Intl.DateTimeFormat("en-US", options).format(date);
+
+    // Extract time
+    const optionsTime: Intl.DateTimeFormatOptions = { hour: "numeric", minute: "numeric", hour12: true };
+    const formattedTime = new Intl.DateTimeFormat("en-US", optionsTime).format(date);
+
+    // Combine results
+    const [weekday, month] = formattedDate.split(" ");
+    return `${weekday}, ${month} ${dayWithSuffix} at ${formattedTime}`;
+}
