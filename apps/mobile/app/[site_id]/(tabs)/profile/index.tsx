@@ -19,6 +19,7 @@ import { useContext } from 'react';
 import { SiteContext } from '../../_layout';
 import { clearDefaultSite, deleteAccessToken, getRevocationEndpoint } from '@lib/auth';
 import useCurrentRavenUser from '@raven/lib/hooks/useCurrentRavenUser';
+import { AvailabilityStatus } from './availability_status';
 
 const SCREEN_OPTIONS = {
     title: 'Profile',
@@ -38,7 +39,7 @@ export default function Profile() {
             <Stack.Screen options={SCREEN_OPTIONS} />
             <List
                 variant="insets"
-                data={DATA({ full_name: myProfile?.full_name, custom_status: myProfile?.custom_status })}
+                data={DATA({ full_name: myProfile?.full_name, custom_status: myProfile?.custom_status || "-", availability_status: myProfile?.availability_status || "-" })}
                 sectionHeaderAsGap={Platform.OS === 'ios'}
                 estimatedItemSize={ESTIMATED_ITEM_SIZE}
                 renderItem={renderItem}
@@ -154,7 +155,7 @@ type DataItem =
         onPress: () => void;
     };
 
-const DATA = (userData: { full_name: string | undefined, custom_status: string | undefined }): DataItem[] => {
+const DATA = (userData: { full_name: string | undefined, custom_status: string | undefined, availability_status: AvailabilityStatus | string | undefined }): DataItem[] => {
     return [
         ...(Platform.OS !== 'ios' ? ['Basic info'] : []),
         {
@@ -168,8 +169,16 @@ const DATA = (userData: { full_name: string | undefined, custom_status: string |
         {
             id: 'custom_status',
             title: 'Custom Status',
-            ...(Platform.OS === 'ios' ? { value: userData?.custom_status || "-" } : { subTitle: userData?.custom_status || "-" }),
+            ...(Platform.OS === 'ios' ? { value: userData?.custom_status } : { subTitle: userData?.custom_status }),
             onPress: () => router.push('./custom_status', {
+                relativeToDirectory: true
+            }),
+        },
+        {
+            id: 'availability_status',
+            title: 'Availability Status',
+            ...(Platform.OS === 'ios' ? { value: userData?.availability_status } : { subTitle: userData?.availability_status }),
+            onPress: () => router.push('./availability_status', {
                 relativeToDirectory: true
             }),
         },
