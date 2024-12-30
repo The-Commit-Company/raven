@@ -38,6 +38,7 @@ const ForwardMessageModal = ({ onClose, message }: ForwardMessageModalProps) => 
     const onSubmit = (data: ForwardMessageForm) => {
         if (data.selected_options && data.selected_options.length > 0) {
 
+            console.log(data.selected_options);
 
             call({
                 'message_receivers': data.selected_options,
