@@ -12,6 +12,7 @@ import { useGetUser } from "@/hooks/useGetUser"
 import useIsUserOnLeave from "@/hooks/fetchers/useIsUserOnLeave"
 import { UserContext } from "@/utils/auth/UserProvider"
 import { replaceCurrentUserFromDMChannelName } from "@/utils/operations"
+import { useIsDesktop } from "@/hooks/useMediaQuery"
 
 interface DMChannelHeaderProps {
     channelData: DMChannelListItem,
@@ -49,6 +50,8 @@ export const DMChannelHeader = ({ channelData }: DMChannelHeaderProps) => {
 
     const userName = fullName ?? peer ?? replaceCurrentUserFromDMChannelName(channelData.channel_name, currentUser)
 
+    const isDesktop = useIsDesktop()
+
     return (
         <PageHeader>
             <Flex gap='3' align='center'>
@@ -63,8 +66,11 @@ export const DMChannelHeader = ({ channelData }: DMChannelHeaderProps) => {
                     availabilityStatus={user?.availability_status}
                     skeletonSize='6'
                     isBot={isBot}
-                    size='2' />
-                <Heading size='5'>
+                    size={isDesktop ? '2' : '1'} />
+                <Heading size={{
+                    initial: '4',
+                    sm: '5'
+                }}>
                     <div className="flex items-center gap-2">
                         {userName}
                         {!user && <Badge color='gray' variant='soft'>Deleted</Badge>}

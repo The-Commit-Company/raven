@@ -41,6 +41,13 @@ const EmptyStateForChannel = ({ channelData }: EmptyStateForChannelProps) => {
     const { currentUser } = useContext(UserContext)
     const users = useGetUserRecords()
 
+    const { isAdmin } = useMemo(() => {
+        const channelMember = channelMembers[currentUser]
+        return {
+            isAdmin: channelMember?.is_admin == 1
+        }
+    }, [channelMembers, currentUser])
+
     return (
         <Flex direction='column' className={'p-2'} gap='2'>
             <Flex direction='column' gap='2'>
@@ -51,7 +58,7 @@ const EmptyStateForChannel = ({ channelData }: EmptyStateForChannelProps) => {
                 <Text size='2'>{users[channelData.owner]?.full_name} created this channel on <DateMonthYear date={channelData?.creation} />. This is the very beginning of the <strong>{channelData?.channel_name}</strong> channel.</Text>
                 {channelData?.channel_description && <Text size={'1'} color='gray'>{channelData?.channel_description}</Text>}
             </Flex>
-            {channelData?.is_archived == 0 && channelMembers[currentUser] && <Flex gap='4' className={'z-1'}>
+            {channelData?.is_archived == 0 && isAdmin && <Flex gap='4' className={'z-1'}>
                 <EditDescriptionButton channelData={channelData} />
                 {channelData?.type !== 'Open' && <AddMembersButton channelData={channelData} />}
             </Flex>}
@@ -127,6 +134,20 @@ export const EmptyStateForSavedMessages = () => {
                     <Text size='2' as='span'>
                         You can save messages by simply clicking on the bookmark icon <BiBookmark className={'-mb-0.5'} /> in message actions.
                     </Text>
+                </Flex>
+            </Flex>
+        </Box>
+    )
+}
+
+export const EmptyStateForThreads = () => {
+    return (
+        <Box className={'py-2 px-6'}>
+            <Flex direction='column' gap='2'>
+                <Text size='3'><strong>No threads to show</strong></Text>
+                <Flex direction='column' gap='1'>
+                    <Text as='span' size='2'>Threads are a way to keep conversations organized and focused. You can create a thread by replying to a message.</Text>
+                    <Text as='span' size='2'>You can also start a thread by clicking on the <strong>Create Thread</strong> button on any message.</Text>
                 </Flex>
             </Flex>
         </Box>

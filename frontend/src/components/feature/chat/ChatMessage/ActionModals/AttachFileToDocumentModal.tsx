@@ -6,11 +6,12 @@ import { toast } from "sonner"
 import { ErrorText } from "@/components/common/Form"
 import { Loader } from "@/components/common/Loader"
 import { FrappeConfig, FrappeContext, FrappeError } from "frappe-react-sdk"
-import { ErrorBanner } from "@/components/layout/AlertBanner"
+import { ErrorBanner } from "@/components/layout/AlertBanner/ErrorBanner"
 import LinkFormField from "@/components/common/LinkField/LinkFormField"
 import { useContext, useState } from "react"
 import { FileExtensionIcon } from "@/utils/layout/FileExtIcon"
 import { getFileExtension, getFileName } from "@/utils/operations"
+import useRecentlyUsedDocType from "@/hooks/useRecentlyUsedDocType"
 
 interface AttachFileToDocumentModalProps {
     onClose: () => void,
@@ -36,8 +37,11 @@ const AttachFileToDocumentModal = ({ onClose, message }: AttachFileToDocumentMod
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState<FrappeError | null>(null)
 
+    const { recentlyUsedDoctypes, addRecentlyUsedDocType } = useRecentlyUsedDocType()
+
     const onSubmit = (data: AttachFileToDocumentForm) => {
         if ((message as FileMessage).file) {
+            addRecentlyUsedDocType(data.doctype)
             setLoading(true)
             call.get('frappe.client.get_value', {
                 doctype: 'File',
@@ -111,6 +115,7 @@ const AttachFileToDocumentModal = ({ onClose, message }: AttachFileToDocumentMod
                                 name='doctype'
                                 label='Document Type'
                                 autofocus
+                                suggestedItems={recentlyUsedDoctypes}
                                 rules={{
                                     required: 'Document Type is required',
                                     onChange: onDoctypeChange
@@ -143,7 +148,7 @@ const AttachFileToDocumentModal = ({ onClose, message }: AttachFileToDocumentMod
                         <Button variant="soft" color="gray">Cancel</Button>
                     </Dialog.Close>
                     <Button type='submit' disabled={loading}>
-                        {loading && <Loader />}
+                        {loading && <Loader className="text-white" />}
                         Attach
                     </Button>
                 </Flex>

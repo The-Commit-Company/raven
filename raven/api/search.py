@@ -77,7 +77,7 @@ def get_search_result(
 		.on(channel_member.channel_id == message.channel_id)
 		.join(file_doc, JoinType.left)
 		.on(message.name == file_doc.attached_to_name)
-		.where((channel.type != "Private") | (channel_member.user_id == frappe.session.user))
+		.where(channel_member.user_id == frappe.session.user)
 	)
 
 	if filter_type == "File":

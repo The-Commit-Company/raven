@@ -1,8 +1,16 @@
 import { CustomCallout } from '@/components/common/Callouts/CustomCallout'
 import { HelperText, Label } from '@/components/common/Form'
 import { Loader } from '@/components/common/Loader'
+import CompanyWorkspaceMapping from '@/components/feature/hr/CompanyWorkspaceMapping'
+import { ErrorBanner } from '@/components/layout/AlertBanner/ErrorBanner'
+import PageContainer from '@/components/layout/Settings/PageContainer'
+import SettingsContentContainer from '@/components/layout/Settings/SettingsContentContainer'
+import SettingsPageHeader from '@/components/layout/Settings/SettingsPageHeader'
+import { Stack } from '@/components/layout/Stack'
 import useRavenSettings from '@/hooks/fetchers/useRavenSettings'
 import { RavenSettings } from '@/types/Raven/RavenSettings'
+import { hasRavenAdminRole, isSystemManager } from '@/utils/roles'
+import { __ } from '@/utils/translations'
 import { Button, Checkbox, Flex, Select, Separator, Text } from '@radix-ui/themes'
 import { useFrappeUpdateDoc } from 'frappe-react-sdk'
 import { useEffect } from 'react'
@@ -12,9 +20,13 @@ import { toast } from 'sonner'
 
 const FrappeHR = () => {
 
+    const isRavenAdmin = hasRavenAdminRole() || isSystemManager()
+
     const { ravenSettings, mutate } = useRavenSettings()
 
-    const methods = useForm<RavenSettings>()
+    const methods = useForm<RavenSettings>({
+        disabled: !isRavenAdmin
+    })
 
     const { handleSubmit, control, watch, reset } = methods
 
@@ -24,7 +36,7 @@ const FrappeHR = () => {
         }
     }, [ravenSettings])
 
-    const { updateDoc, loading: updatingDoc } = useFrappeUpdateDoc<RavenSettings>()
+    const { updateDoc, loading: updatingDoc, error } = useFrappeUpdateDoc<RavenSettings>()
 
     const onSubmit = (data: RavenSettings) => {
         toast.promise(updateDoc('Raven Settings', null, {
@@ -37,9 +49,9 @@ const FrappeHR = () => {
         }), {
             loading: 'Updating...',
             success: () => {
-                return `Settings updated`;
+                return __("Settings updated");
             },
-            error: 'There was an error.',
+            error: __("There was an error."),
         })
 
     }
@@ -50,25 +62,25 @@ const FrappeHR = () => {
     const autoCreateDepartment = watch('auto_create_department_channel')
 
     return (
-        <Flex direction='column' gap='4' px='6' py='4'>
+        <PageContainer>
             <FormProvider {...methods}>
                 <form onSubmit={handleSubmit(onSubmit)}>
-                    <Flex direction={'column'} gap='4'>
-                        <Flex justify={'between'} align={'center'}>
-                            <Flex direction='column' gap='0'>
-                                <Text size='3' className={'font-semibold'}>Frappe HR</Text>
-                                {/* <Text size='1' color='gray'>Manage your Raven profile</Text> */}
-                            </Flex>
-                            <Button type='submit' disabled={updatingDoc}>
-                                {updatingDoc && <Loader />}
-                                {updatingDoc ? "Saving" : "Save"}
-                            </Button>
-                        </Flex>
+                    <SettingsContentContainer>
+                        <SettingsPageHeader
+                            title={__('HR')}
+                            description={__("Connect your HR system to Raven to sync employee data and send notifications.")}
+                            actions={<Button type='submit' disabled={updatingDoc || !isRavenAdmin}>
+                                {updatingDoc && <Loader className="text-white" />}
+                                {updatingDoc ? __("Saving") : __("Save")}
+                            </Button>}
+                        />
                         {!isHRInstalled && <CustomCallout
                             iconChildren={<FiAlertTriangle />}
                             rootProps={{ color: 'yellow', variant: 'surface' }}
-                            textChildren="Frappe HR is not installed on this site.">
+                            textChildren={__("HR is not installed on this site.")} >
                         </CustomCallout>}
+
+                        <ErrorBanner error={error} />
 
                         <Flex direction={'column'} gap='2' maxWidth={'480px'}>
                             <Text as="label" size="2">
@@ -79,42 +91,51 @@ const FrappeHR = () => {
                                         name='auto_create_department_channel'
                                         render={({ field }) => (
                                             <Checkbox
+                                                disabled={field.disabled}
+                                                name={field.name}
                                                 checked={field.value ? true : false}
                                                 onCheckedChange={(v) => field.onChange(v ? 1 : 0)}
                                             />
                                         )} />
 
-                                    Automatically create channels for departments
+                                    {__("Automatically create channels for departments")}
                                 </Flex>
                             </Text>
                             <HelperText>
-                                If checked, a channel will be created for each department. Employees in the department will be synced with channel members.
+                                {__("If checked, a channel will be created for each department. Employees in the department will be synced with channel members.")}
                             </HelperText>
                         </Flex>
                         {autoCreateDepartment ?
-                            <Flex direction={'column'} maxWidth={'320px'}>
-                                <Label isRequired>Department Channel Type</Label>
-                                <Controller
-                                    control={control}
-                                    defaultValue={ravenSettings?.department_channel_type}
-                                    name='department_channel_type'
-                                    render={({ field }) => (
-                                        <Select.Root
-                                            value={field.value}
-                                            onValueChange={field.onChange}>
-                                            <Select.Trigger />
-                                            <Select.Content>
-                                                <Select.Item value='Private'>
-                                                    Private
-                                                </Select.Item>
-                                                <Select.Item value='Public'>
-                                                    Public
-                                                </Select.Item>
-                                            </Select.Content>
-                                        </Select.Root>
-                                    )}
-                                />
-                            </Flex> : null
+                            <Stack>
+                                <Flex direction={'column'} maxWidth={'320px'}>
+                                    <Label isRequired htmlFor='department_channel_type'>{__("Department Channel Type")}</Label>
+                                    <Controller
+                                        control={control}
+                                        defaultValue={ravenSettings?.department_channel_type}
+                                        name='department_channel_type'
+                                        render={({ field }) => (
+                                            <Select.Root
+                                                value={field.value}
+                                                disabled={field.disabled}
+                                                name={field.name}
+                                                onValueChange={field.onChange}>
+                                                <Select.Trigger />
+                                                <Select.Content>
+                                                    <Select.Item value='Private'>
+                                                        {__("Private")}
+                                                    </Select.Item>
+                                                    <Select.Item value='Public'>
+                                                        {__("Public")}
+                                                    </Select.Item>
+                                                </Select.Content>
+                                            </Select.Root>
+                                        )}
+                                    />
+                                </Flex>
+
+                                <CompanyWorkspaceMapping />
+                            </Stack>
+                            : null
                         }
                         <Separator size='4' />
                         <Flex direction={'column'} gap='2' maxWidth={'480px'}>
@@ -126,22 +147,24 @@ const FrappeHR = () => {
                                         name='show_if_a_user_is_on_leave'
                                         render={({ field }) => (
                                             <Checkbox
+                                                name={field.name}
+                                                disabled={field.disabled}
                                                 checked={field.value ? true : false}
                                                 onCheckedChange={(v) => field.onChange(v ? 1 : 0)}
                                             />
                                         )} />
 
-                                    Show if a user is on leave
+                                    {__("Show if a user is on leave")}
                                 </Flex>
                             </Text>
                             <HelperText>
-                                If checked, users on Raven are notified if another user is on leave.
+                                {__("If checked, users on Raven are notified if another user is on leave.")}
                             </HelperText>
                         </Flex>
-                    </Flex>
+                    </SettingsContentContainer>
                 </form>
             </FormProvider>
-        </Flex>
+        </PageContainer>
     )
 }
 

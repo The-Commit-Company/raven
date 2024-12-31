@@ -1,8 +1,7 @@
-import { Avatar, Badge, Box, ContextMenu, Flex, HoverCard, Link, Separator, Text, Theme } from '@radix-ui/themes'
+import { Avatar, Badge, Box, BoxProps, ContextMenu, Flex, HoverCard, Link, Text, Theme } from '@radix-ui/themes'
 import { Message, MessageBlock } from '../../../../../../types/Messaging/Message'
 import { MessageContextMenu } from './MessageActions/MessageActions'
 import { DateTooltip, DateTooltipShort } from './Renderers/DateTooltip'
-import { BoxProps } from '@radix-ui/themes/dist/cjs/components/box'
 import { clsx } from 'clsx'
 import { UserAvatar, getInitials } from '@/components/common/UserAvatar'
 import { useGetUser } from '@/hooks/useGetUser'
@@ -25,6 +24,9 @@ import { useIsDesktop } from '@/hooks/useMediaQuery'
 import { useDoubleTap } from 'use-double-tap'
 import useOutsideClick from '@/hooks/useOutsideClick'
 import { getStatusText } from '../../userSettings/AvailabilityStatus/SetUserAvailabilityMenu'
+import { ThreadMessage } from './Renderers/ThreadMessage'
+import OnLeaveBadge from '@/components/common/UserLeaveBadge'
+import { LeftRightLayout } from './LeftRightLayout/LeftRightLayout'
 
 interface MessageBlockProps {
     message: Message,
@@ -36,9 +38,10 @@ interface MessageBlockProps {
     onAttachDocument: (message: Message) => void,
     isHighlighted?: boolean,
     setReactionMessage: (message: Message) => void,
+    showThreadButton?: boolean
 }
 
-export const MessageItem = ({ message, setDeleteMessage, isHighlighted, onReplyMessageClick, setEditMessage, replyToMessage, forwardMessage, onAttachDocument, setReactionMessage }: MessageBlockProps) => {
+export const MessageItem = ({ message, setDeleteMessage, isHighlighted, onReplyMessageClick, setEditMessage, replyToMessage, forwardMessage, onAttachDocument, setReactionMessage, showThreadButton = true }: MessageBlockProps) => {
 
     const { name, owner: userID, is_bot_message, bot, creation: timestamp, message_reactions, is_continuation, linked_message, replied_message_details } = message
 
@@ -106,15 +109,45 @@ export const MessageItem = ({ message, setDeleteMessage, isHighlighted, onReplyM
 
     const [isEmojiPickerOpen, setEmojiPickerOpen] = useState(false)
 
+    // @ts-ignore
+    const CHAT_STYLE = window.frappe?.boot?.chat_style ?? 'Simple'
+
     return (
-        <Box className='relative'>
-            <ContextMenu.Root>
-                <ContextMenu.Trigger
-                    {...bind}
-                    ref={ref}
-                    onMouseEnter={onMouseEnter}
-                    onMouseLeave={onMouseLeave}
-                    className={clsx(`group
+        <>
+            {CHAT_STYLE === 'Left-Right' ? <LeftRightLayout
+                message={message}
+                user={user}
+                isActive={isActive}
+                isHighlighted={isHighlighted}
+                onReplyMessageClick={onReplyMessageClick}
+                onDelete={onDelete}
+                showThreadButton={showThreadButton}
+                onEdit={onEdit}
+                onReply={onReply}
+                onForward={onForward}
+                onViewReaction={onViewReaction}
+                onAttachToDocument={onAttachToDocument}
+            /> :
+                <Box className='relative'>
+                    {!message.is_continuation && message.is_thread ?
+                        <div
+                            className={`absolute 
+                        border-l
+                        border-b
+                        border-gray-5 
+                        h-[calc(100%-66px)] 
+                        rounded-bl-lg
+                        w-6
+                        top-[42px] 
+                        left-6 z-0`}>
+                        </div> : null}
+                    <ContextMenu.Root>
+                        <ContextMenu.Trigger
+                            {...bind}
+                            ref={ref}
+                            onMouseEnter={onMouseEnter}
+                            onMouseLeave={onMouseLeave}
+                            className={clsx(`group
                             sm:hover:bg-gray-2
                             active:bg-gray-2
                             sm:hover:transition-all
@@ -130,78 +163,84 @@ export const MessageItem = ({ message, setDeleteMessage, isHighlighted, onReplyM
                             data-[state=open]:shadow-sm
                             transition-colors
                             px-1
-                            py-2
-                            sm:p-2
+                            py-1.5
+                            sm:p-1.5
                             rounded-md`, isHighlighted ? 'bg-yellow-50 hover:bg-yellow-50 dark:bg-yellow-300/20 dark:hover:bg-yellow-300/20' : !isDesktop && isHovered ? 'bg-gray-2 dark:bg-gray-3' : '', isEmojiPickerOpen ? 'bg-gray-2 dark:bg-gray-3' : '')}>
-                    <Flex className='gap-2.5 sm:gap-3 items-start'>
-                        <MessageLeftElement message={message} user={user} isActive={isActive} />
-                        <Flex direction='column' className='gap-0.5' justify='center' width='100%'>
-                            {!is_continuation ? <Flex align='center' gap='2' mt='-1'>
-                                <UserHoverCard
-                                    user={user}
-                                    userID={userID}
-                                    isActive={isActive} />
-                                <Separator orientation='vertical' />
-                                <DateTooltip timestamp={timestamp} />
+                            <Flex className='gap-2.5 sm:gap-3 items-start'>
+                                <MessageLeftElement message={message} user={user} isActive={isActive} />
+                                <Flex direction='column' className='gap-0.5 w-[90%]' justify='center'>
+                                    {!is_continuation ? <Flex align='center' gap='2' mt='-1'>
+                                        <UserHoverCard
+                                            user={user}
+                                            userID={userID}
+                                            isActive={isActive} />
+                                        <DateTooltip timestamp={timestamp} />
+                                    </Flex>
+                                        : null}
+                                    {/* Message content goes here */}
+                                    {message.is_forwarded === 1 && <Flex className='text-gray-10 text-xs' gap={'1'} align={'center'}><RiShareForwardFill size='12' /> forwarded</Flex>}
+                                    {/* If it's a reply, then show the linked message */}
+                                    {linked_message && replied_message_details && <ReplyMessageBox
+                                        className='sm:min-w-[32rem] cursor-pointer mb-1'
+                                        role='button'
+                                        onClick={() => onReplyMessageClick(linked_message)}
+                                        message={replyMessageDetails} />
+                                    }
+
+                                    { /* Show message according to type */}
+
+                                    <MessageContent
+                                        message={message}
+                                        user={user}
+                                    />
+
+                                    {message.link_doctype && message.link_document && <Box className={clsx(message.is_continuation ? 'ml-0.5' : '-ml-0.5')}>
+                                        <DoctypeLinkRenderer doctype={message.link_doctype} docname={message.link_document} />
+                                    </Box>}
+                                    {message.is_edited === 1 && <Text size='1' className='text-gray-10'>(edited)</Text>}
+                                    {message_reactions?.length &&
+                                        <MessageReactions
+                                            messageID={name}
+                                            message_reactions={message_reactions}
+                                        />
+                                    }
+
+                                    {message.is_thread === 1 ? <ThreadMessage thread={message} /> : null}
+                                </Flex>
+                                {(isHoveredDebounced || isEmojiPickerOpen) &&
+                                    <QuickActions
+                                        message={message}
+                                        onDelete={onDelete}
+                                        isEmojiPickerOpen={isEmojiPickerOpen}
+                                        setIsEmojiPickerOpen={setEmojiPickerOpen}
+                                        onEdit={onEdit}
+                                        onReply={onReply}
+                                        onForward={onForward}
+                                        showThreadButton={showThreadButton}
+                                        onAttachDocument={onAttachToDocument}
+                                    />
+                                }
                             </Flex>
-                                : null}
-                            {/* Message content goes here */}
-                            {message.is_forwarded === 1 && <Flex className='text-gray-10 text-xs' gap={'1'} align={'center'}><RiShareForwardFill size='12' /> forwarded</Flex>}
-                            {/* If it's a reply, then show the linked message */}
-                            {linked_message && replied_message_details && <ReplyMessageBox
-                                className='sm:min-w-[32rem] cursor-pointer mb-1'
-                                role='button'
-                                onClick={() => onReplyMessageClick(linked_message)}
-                                message={replyMessageDetails} />
-                            }
-                            { /* Show message according to type */}
-                            <MessageContent
-                                message={message}
-                                user={user}
-                            />
 
-                            {message.link_doctype && message.link_document && <Box className={clsx(message.is_continuation ? 'ml-0.5' : '-ml-0.5')}>
-                                <DoctypeLinkRenderer doctype={message.link_doctype} docname={message.link_document} />
-                            </Box>}
-                            {message.is_edited === 1 && <Text size='1' className='text-gray-10'>(edited)</Text>}
-                            {message_reactions?.length &&
-                                <MessageReactions
-                                    messageID={name}
-                                    message_reactions={message_reactions}
-                                />
-                            }
-                        </Flex>
-                        {(isHoveredDebounced || isEmojiPickerOpen) &&
-                            <QuickActions
-                                message={message}
-                                onDelete={onDelete}
-                                isEmojiPickerOpen={isEmojiPickerOpen}
-                                setIsEmojiPickerOpen={setEmojiPickerOpen}
-                                onEdit={onEdit}
-                                onReply={onReply}
-                                onForward={onForward}
-                                onAttachDocument={onAttachToDocument}
-                            />
-                        }
-                    </Flex>
+                        </ContextMenu.Trigger>
 
-                </ContextMenu.Trigger>
-
-                <MessageContextMenu
-                    message={message}
-                    onDelete={onDelete}
-                    onEdit={onEdit}
-                    onReply={onReply}
-                    onForward={onForward}
-                    onViewReaction={onViewReaction}
-                    onAttachDocument={onAttachToDocument}
-                />
-            </ContextMenu.Root>
-        </Box >
+                        <MessageContextMenu
+                            message={message}
+                            onDelete={onDelete}
+                            showThreadButton={showThreadButton}
+                            onEdit={onEdit}
+                            onReply={onReply}
+                            onForward={onForward}
+                            onViewReaction={onViewReaction}
+                            onAttachDocument={onAttachToDocument}
+                        />
+                    </ContextMenu.Root>
+                </Box>}
+        </>
     )
 }
 
-interface MessageLeftElementProps extends BoxProps {
+type MessageLeftElementProps = BoxProps & {
     message: MessageBlock['data'],
     user?: UserFields,
     isActive?: boolean
@@ -305,13 +344,14 @@ export const UserHoverCard = memo(({ user, userID, isActive }: UserProps) => {
                             <Text className='text-gray-10' size='1'>Online</Text>
                         </Flex>}
                     </Flex>
+                    {user && !isBot && <OnLeaveBadge userID={user.name} />}
                     {customStatus ? <Text className='text-gray-11' size='1'>{customStatus}</Text> : user && !isBot && <Text className='text-gray-11' size='1'>{user?.name}</Text>}
                 </Flex>
             </Flex>
         </HoverCard.Content>
     </HoverCard.Root>
 })
-interface MessageContentProps extends BoxProps {
+type MessageContentProps = BoxProps & {
     user?: UserFields
     message: Message,
 }

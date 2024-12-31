@@ -9,6 +9,7 @@
     color: var(--accent-11);
 }
 
+
 /* Task list styles */
 /* .tiptap-renderer ul[data-type="taskList"] {
     list-style: none;
@@ -64,3 +65,8 @@
     }
 }
 } */
+
+.tiptap-renderer .table-wrapper {
+    overflow-x: auto;
+    padding-right: 4rem;
+}

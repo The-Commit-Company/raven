@@ -1,8 +1,8 @@
 import { RavenMention } from './RavenMention'
 
-export interface RavenMessage {
-	creation: string
+export interface RavenMessage{
 	name: string
+	creation: string
 	modified: string
 	owner: string
 	modified_by: string
@@ -25,6 +25,8 @@ export interface RavenMessage {
 	linked_message?: string
 	/**	Replied Message Details : JSON	*/
 	replied_message_details?: any
+	/**	Is Thread : Check - This message starts a thread	*/
+	is_thread?: 0 | 1
 	/**	Message Type : Select	*/
 	message_type?: "Text" | "Image" | "File" | "Poll"
 	/**	Content : Long Text	*/

@@ -1,7 +1,7 @@
 import { BubbleMenu, EditorContent, EditorContext, Extension, ReactRenderer, useEditor } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import Underline from '@tiptap/extension-underline'
-import React, { Suspense, lazy, useContext, useEffect } from 'react'
+import React, { Suspense, lazy, useContext, useEffect, useMemo } from 'react'
 import { TextFormattingMenu } from './TextFormattingMenu'
 import Highlight from '@tiptap/extension-highlight'
 import Link from '@tiptap/extension-link'
@@ -35,6 +35,9 @@ import { EmojiSuggestion } from './EmojiSuggestion'
 import { useIsDesktop } from '@/hooks/useMediaQuery'
 import { BiPlus } from 'react-icons/bi'
 import clsx from 'clsx'
+import { ChannelMembers } from '@/hooks/fetchers/useFetchChannelMembers'
+import TimestampRenderer from '../ChatMessage/Renderers/TiptapRenderer/TimestampRenderer'
+import { useParams } from 'react-router-dom'
 const MobileInputActions = lazy(() => import('./MobileActions/MobileInputActions'))
 
 const lowlight = createLowlight(common)
@@ -61,7 +64,10 @@ type TiptapEditorProps = {
     onMessageSend: (message: string, json: any) => Promise<void>,
     messageSending: boolean,
     defaultText?: string,
-    replyMessage?: Message | null
+    replyMessage?: Message | null,
+    channelMembers?: ChannelMembers,
+    channelID?: string,
+    onUserType?: () => void,
 }
 
 export const UserMention = Mention.extend({
@@ -84,11 +90,22 @@ export const ChannelMention = Mention.extend({
         }
     })
 
-const Tiptap = ({ isEdit, slotBefore, fileProps, onMessageSend, replyMessage, clearReplyMessage, placeholder = 'Type a message...', messageSending, sessionStorageKey = 'tiptap-editor', disableSessionStorage = false, defaultText = '' }: TiptapEditorProps) => {
+const Tiptap = ({ isEdit, slotBefore, fileProps, onMessageSend, channelMembers, onUserType, channelID, replyMessage, clearReplyMessage, placeholder = 'Type a message...', messageSending, sessionStorageKey = 'tiptap-editor', disableSessionStorage = false, defaultText = '' }: TiptapEditorProps) => {
 
     const { enabledUsers } = useContext(UserListContext)
 
+    const channelMemberUsers = useMemo(() => {
+        if (channelMembers) {
+            // Filter enabled users to only include users that are in the channel
+            return enabledUsers.filter((user) => user.name in channelMembers)
+        } else {
+            return enabledUsers
+        }
+    }, [channelMembers, enabledUsers])
+
     const { channels } = useContext(ChannelListContext) as ChannelListContextType
+
+    const { workspaceID } = useParams()
 
     // this is a dummy extension only to create custom keydown behavior
     const KeyboardHandler = Extension.create({
@@ -119,6 +136,7 @@ const Tiptap = ({ isEdit, slotBefore, fileProps, onMessageSend, replyMessage, cl
                         .then(() => {
                             this.editor.commands.clearContent(true);
                             this.editor.setEditable(true)
+                            this.editor.commands.focus('start')
                         })
                         .catch(() => {
                             this.editor.setEditable(true)
@@ -308,7 +326,7 @@ const Tiptap = ({ isEdit, slotBefore, fileProps, onMessageSend, replyMessage, cl
             },
             suggestion: {
                 items: (query) => {
-                    return enabledUsers.filter((user) => user.full_name.toLowerCase().startsWith(query.query.toLowerCase()))
+                    return channelMemberUsers.filter((user) => user.full_name.toLowerCase().startsWith(query.query.toLowerCase()))
                         .slice(0, 10);
                 },
                 // char: '@',
@@ -378,7 +396,7 @@ const Tiptap = ({ isEdit, slotBefore, fileProps, onMessageSend, replyMessage, cl
             },
             suggestion: {
                 items: (query) => {
-                    return channels.filter((channel) => channel.channel_name.toLowerCase().startsWith(query.query.toLowerCase()))
+                    return channels.filter((channel) => channel.workspace === workspaceID && channel.channel_name.toLowerCase().startsWith(query.query.toLowerCase()))
                         .slice(0, 10);
                 },
                 // char: '#',
@@ -439,7 +457,8 @@ const Tiptap = ({ isEdit, slotBefore, fileProps, onMessageSend, replyMessage, cl
 
             }
         }),
-        EmojiSuggestion
+        EmojiSuggestion,
+        TimestampRenderer
     ]
 
     const [content, setContent] = useSessionStickyState(defaultText, sessionStorageKey, disableSessionStorage)
@@ -451,6 +470,9 @@ const Tiptap = ({ isEdit, slotBefore, fileProps, onMessageSend, replyMessage, cl
         autofocus: 'end',
         content,
         editorProps: {
+            handleTextInput() {
+                onUserType?.()
+            },
             attributes: {
                 class: 'tiptap-editor' + (replyMessage ? ' replying' : '') + (isEdit ? ' editing-message' : '')
             }
@@ -458,7 +480,7 @@ const Tiptap = ({ isEdit, slotBefore, fileProps, onMessageSend, replyMessage, cl
         onUpdate({ editor }) {
             setContent(editor.getHTML())
         }
-    }, [replyMessage])
+    }, [replyMessage, onUserType])
 
 
 
@@ -473,13 +495,15 @@ const Tiptap = ({ isEdit, slotBefore, fileProps, onMessageSend, replyMessage, cl
 
     if (isDesktop) {
         return (
-            <Box className='border rounded-radius2 border-gray-300 dark:border-gray-500 dark:bg-gray-3 shadow-md'>
+            <Box className='border rounded-radius2 border-gray-300 dark:border-gray-500 dark:bg-gray-3'>
                 <EditorContext.Provider value={{ editor }}>
                     {slotBefore}
                     <EditorContent editor={editor} />
                     <ToolPanel>
                         <TextFormattingMenu />
-                        <RightToolbarButtons fileProps={fileProps} setContent={setContent} sendMessage={onMessageSend} messageSending={messageSending} />
+                        <RightToolbarButtons fileProps={fileProps} setContent={setContent} sendMessage={onMessageSend} messageSending={messageSending}
+                            isEdit={isEdit}
+                            channelID={channelID} />
                     </ToolPanel>
                 </EditorContext.Provider>
             </Box>
@@ -487,15 +511,15 @@ const Tiptap = ({ isEdit, slotBefore, fileProps, onMessageSend, replyMessage, cl
         )
     } else {
         return <Box className={clsx('pt-2 pb-8 w-full bg-white dark:bg-gray-2 z-50 border-t border-t-gray-3 dark:border-t-gray-3',
-            isEdit ? '' : 'fixed bottom-0 left-0 px-4'
+            isEdit ? 'bg-transparent dark:bg-transparent' : 'fixed bottom-0 left-0 px-4'
         )}>
             <EditorContext.Provider value={{ editor }}>
                 {slotBefore}
                 <Flex align='end' gap='2' className='relative'>
                     {!isEdit &&
-                        <div className='w-6'>
-                            <Suspense fallback={<IconButton radius='full' color='gray' variant='soft' size='1' className='mb-2'>
-                                <BiPlus size='18' />
+                        <div className='w-8'>
+                            <Suspense fallback={<IconButton radius='full' color='gray' variant='soft' size='2' className='mb-1'>
+                                <BiPlus size='20' />
                             </IconButton>}>
                                 <MobileInputActions fileProps={fileProps} setContent={setContent} sendMessage={onMessageSend} messageSending={messageSending} />
                             </Suspense>
@@ -514,9 +538,9 @@ const Tiptap = ({ isEdit, slotBefore, fileProps, onMessageSend, replyMessage, cl
                     </BubbleMenu>
                     <EditorContent editor={editor} />
                     <SendButton
-                        size='1'
+                        size='2'
                         variant='soft'
-                        className='bg-transparent mb-2 absolute right-1'
+                        className='bg-transparent mb-1 absolute right-2'
                         sendMessage={onMessageSend}
                         messageSending={messageSending}
                         setContent={setContent} />

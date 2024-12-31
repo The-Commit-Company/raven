@@ -1,10 +1,11 @@
 import { useFrappeDocumentEventListener, useFrappeEventListener, useFrappeGetCall, useFrappePostCall } from 'frappe-react-sdk'
 import { MutableRefObject, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
-import { useBeforeUnload, useLocation, useNavigate, useParams } from 'react-router-dom'
+import { useBeforeUnload, useLocation, useNavigate } from 'react-router-dom'
 import { Message } from '../../../../../../types/Messaging/Message'
 import { getDateObject } from '@/utils/dateConversions/utils'
 import { useDebounce } from '@/hooks/useDebounce'
 import { UserContext } from '@/utils/auth/UserProvider'
+import { useIsMobile } from '@/hooks/useMediaQuery'
 
 interface GetMessagesResponse {
     message: {
@@ -23,13 +24,13 @@ type MessageDateBlock = Message | {
 /**
  * Hook to fetch messages to be rendered on the chat interface
  */
-const useChatStream = (scrollRef: MutableRefObject<HTMLDivElement | null>) => {
-
-    const { channelID } = useParams()
+const useChatStream = (channelID: string, scrollRef: MutableRefObject<HTMLDivElement | null>) => {
 
     const location = useLocation()
     const navigate = useNavigate()
     const { state } = location
+
+    const isMobile = useIsMobile()
 
     const { currentUser } = useContext(UserContext)
 
@@ -72,7 +73,7 @@ const useChatStream = (scrollRef: MutableRefObject<HTMLDivElement | null>) => {
         'channel_id': channelID,
         'base_message': state?.baseMessage ? state.baseMessage : undefined
     }, { path: `get_messages_for_channel_${channelID}`, baseMessage: state?.baseMessage }, {
-        revalidateOnFocus: true,
+        revalidateOnFocus: isMobile ? true : false,
         onSuccess: (data) => {
             if (!highlightedMessage) {
                 if (!data.message.has_new_messages) {
@@ -461,7 +462,9 @@ const useChatStream = (scrollRef: MutableRefObject<HTMLDivElement | null>) => {
                     }
 
                     const currentMessageSender = message.is_bot_message ? message.bot : message.owner
-                    const nextMessageSender = messages[i + 1].is_bot_message ? messages[i + 1].bot : messages[i + 1].owner
+
+                    const nextMessage = messages[i + 1]
+                    const nextMessageSender = nextMessage.message_type === "System" ? null : nextMessage.is_bot_message ? nextMessage.bot : nextMessage.owner
 
                     if (currentMessageSender !== nextMessageSender) {
                         messagesWithDateSeparators.push({

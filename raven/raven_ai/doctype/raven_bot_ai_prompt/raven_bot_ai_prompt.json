@@ -1,0 +1,85 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "naming_series:",
+ "beta": 1,
+ "creation": "2024-09-12 18:23:10.771302",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "prompt",
+  "naming_series",
+  "raven_bot",
+  "is_global"
+ ],
+ "fields": [
+  {
+   "fieldname": "prompt",
+   "fieldtype": "Small Text",
+   "in_list_view": 1,
+   "label": "Prompt",
+   "reqd": 1
+  },
+  {
+   "description": "If added, this prompt will only be shown when interacting with the bot",
+   "fieldname": "raven_bot",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Raven Bot",
+   "options": "Raven Bot"
+  },
+  {
+   "default": "0",
+   "description": "If checked, this prompt will be available to all users on Raven",
+   "fieldname": "is_global",
+   "fieldtype": "Check",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Is Global"
+  },
+  {
+   "fieldname": "naming_series",
+   "fieldtype": "Select",
+   "label": "Naming Series",
+   "options": "PR-.#####."
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2024-12-07 23:31:02.087933",
+ "modified_by": "Administrator",
+ "module": "Raven AI",
+ "name": "Raven Bot AI Prompt",
+ "naming_rule": "By \"Naming Series\" field",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Raven Admin",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": []
+}

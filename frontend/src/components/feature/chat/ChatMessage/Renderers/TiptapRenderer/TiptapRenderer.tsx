@@ -1,4 +1,4 @@
-import { EditorContent, EditorContext, ReactNodeViewRenderer, useEditor } from '@tiptap/react'
+import { EditorContent, EditorContext, mergeAttributes, ReactNodeViewRenderer, useEditor } from '@tiptap/react'
 import { TextMessage } from '../../../../../../../../types/Messaging/Message'
 import { UserFields } from '@/utils/users/UserListProvider'
 import { BoxProps } from '@radix-ui/themes/dist/cjs/components/box'
@@ -15,7 +15,7 @@ import { common, createLowlight } from 'lowlight'
 import python from 'highlight.js/lib/languages/python'
 import { CustomBold } from './Bold'
 import { ChannelMentionRenderer, UserMentionRenderer } from './Mention'
-import { CustomLink, LinkPreview } from './Link'
+import { CustomLink } from './Link'
 import { CustomUnderline } from './Underline'
 import { Image } from '@tiptap/extension-image'
 import { clsx } from 'clsx'
@@ -29,6 +29,9 @@ import TableHeader from '@tiptap/extension-table-header'
 import TableRow from '@tiptap/extension-table-row'
 import TaskItem from '@tiptap/extension-task-item'
 import TaskList from '@tiptap/extension-task-list'
+import Details from './Details'
+import TimestampRenderer from './TimestampRenderer'
+import LinkPreview from './LinkPreview'
 
 const lowlight = createLowlight(common)
 
@@ -43,17 +46,17 @@ type TiptapRendererProps = BoxProps & {
   user?: UserFields,
   showLinkPreview?: boolean,
   isScrolling?: boolean,
-  isTruncated?: boolean
+  showMiniImage?: boolean,
 }
 
-export const TiptapRenderer = ({ message, user, isScrolling = false, isTruncated = false, showLinkPreview = true, ...props }: TiptapRendererProps) => {
+export const TiptapRenderer = ({ message, user, isScrolling = false, showMiniImage = false, showLinkPreview = true, ...props }: TiptapRendererProps) => {
 
   const editor = useEditor({
     content: message.text,
     editable: false,
     editorProps: {
       attributes: {
-        class: isTruncated ? 'tiptap-renderer line-clamp-3' : 'tiptap-renderer'
+        class: clsx('tiptap-renderer'),
       }
     },
     enableCoreExtensions: true,
@@ -114,6 +117,13 @@ export const TiptapRenderer = ({ message, user, isScrolling = false, isTruncated
         HTMLAttributes: {
           class: 'rt-TableRootTable border-l border-r border-t border-gray-4 dark:border-gray-7 my-2'
         }
+      }).extend({
+        renderHTML({ node, HTMLAttributes }) {
+          // Wrap the table in a div with a class that will be styled in CSS
+          return ['div', { class: 'table-wrapper rt-TableRoot rt-r-size-1 rt-variant-ghost' }, ['table', mergeAttributes(HTMLAttributes, node.attrs, {
+            class: 'rt-TableRootTable border-l border-r border-t border-gray-4 dark:border-gray-7 my-2'
+          }), 0]]
+        }
       }),
       TableRow.configure({
         HTMLAttributes: {
@@ -132,7 +142,7 @@ export const TiptapRenderer = ({ message, user, isScrolling = false, isTruncated
       }),
       Image.configure({
         HTMLAttributes: {
-          class: 'w-full max-w-48 sm:max-w-96 mt-1 h-auto'
+          class: showMiniImage ? 'w-auto h-16 max-h-16' : 'w-full max-w-48 sm:max-w-96 mt-1 h-auto'
         },
         inline: true
       }),
@@ -161,6 +171,8 @@ export const TiptapRenderer = ({ message, user, isScrolling = false, isTruncated
           pluginKey: new PluginKey('channelMention'),
         },
       }),
+      Details,
+      TimestampRenderer
     ]
   })
 

@@ -1,9 +1,9 @@
-import { useFrappeCreateDoc } from 'frappe-react-sdk'
+import { useFrappeCreateDoc, useFrappeGetCall, useSWRConfig } from 'frappe-react-sdk'
 import { ChangeEvent, useCallback, useMemo, useState } from 'react'
 import { Controller, FormProvider, useForm } from 'react-hook-form'
-import { BiGlobe, BiHash, BiLockAlt } from 'react-icons/bi'
-import { useNavigate } from 'react-router-dom'
-import { ErrorBanner } from '../../layout/AlertBanner'
+import { BiGlobe, BiHash, BiInfoCircle, BiLockAlt } from 'react-icons/bi'
+import { useNavigate, useParams } from 'react-router-dom'
+import { ErrorBanner } from '@/components/layout/AlertBanner/ErrorBanner'
 import { Box, Button, Dialog, Flex, IconButton, RadioGroup, Text, TextArea, TextField } from '@radix-ui/themes'
 import { ErrorText, HelperText, Label } from '@/components/common/Form'
 import { Loader } from '@/components/common/Loader'
@@ -12,6 +12,8 @@ import { toast } from 'sonner'
 import { FiPlus } from 'react-icons/fi'
 import { useIsDesktop } from '@/hooks/useMediaQuery'
 import { Drawer, DrawerContent, DrawerTrigger } from '@/components/layout/Drawer'
+import { __ } from '@/utils/translations'
+import { CustomCallout } from '@/components/common/Callouts/CustomCallout'
 
 interface ChannelCreationForm {
     channel_name: string,
@@ -29,7 +31,7 @@ export const CreateChannelButton = ({ updateChannelList }: { updateChannelList: 
         return <Dialog.Root open={isOpen} onOpenChange={setIsOpen}>
             <Dialog.Trigger>
                 <IconButton variant='soft' size='1' radius='large' color='gray' aria-label='Create Channel' title='Create Channel'
-                    className='sm:group-hover:visible sm:invisible transition-all ease-ease text-gray-10 dark:text-gray-300 bg-transparent hover:bg-gray-3'>
+                    className='transition-all ease-ease text-gray-10 bg-transparent hover:bg-gray-3 hover:text-gray-12'>
                     <FiPlus size='16' />
                 </IconButton>
             </Dialog.Trigger>
@@ -44,7 +46,7 @@ export const CreateChannelButton = ({ updateChannelList }: { updateChannelList: 
 
             <DrawerTrigger asChild>
                 <IconButton variant='soft' size='1' radius='large' color='gray' aria-label='Create Channel' title='Create Channel'
-                    className='sm:group-hover:visible sm:invisible transition-all ease-ease text-gray-10 dark:text-gray-300 bg-transparent hover:bg-gray-3'>
+                    className='transition-all ease-ease text-gray-10 bg-transparent hover:bg-gray-3 hover:text-gray-12'>
                     <FiPlus size='16' />
                 </IconButton>
             </DrawerTrigger>
@@ -65,6 +67,12 @@ export const CreateChannelButton = ({ updateChannelList }: { updateChannelList: 
 
 const CreateChannelContent = ({ updateChannelList, isOpen, setIsOpen }: { updateChannelList: VoidFunction, setIsOpen: (v: boolean) => void, isOpen: boolean }) => {
 
+
+    const { workspaceID } = useParams()
+
+    const { data: isAdmin } = useFrappeGetCall<{ message: boolean }>('raven.api.workspaces.is_workspace_admin', { workspace: workspaceID }, workspaceID ? undefined : null)
+
+    const { mutate } = useSWRConfig()
     let navigate = useNavigate()
     const methods = useForm<ChannelCreationForm>({
         defaultValues: {
@@ -78,12 +86,13 @@ const CreateChannelContent = ({ updateChannelList, isOpen, setIsOpen }: { update
     const { createDoc, error: channelCreationError, loading: creatingChannel, reset: resetCreateHook } = useFrappeCreateDoc()
 
 
-    const onClose = (channel_name?: string) => {
+    const onClose = (channel_name?: string, workspace?: string) => {
         if (channel_name) {
             // Update channel list when name is provided.
             // Also navigate to new channel
             updateChannelList()
-            navigate(`/channel/${channel_name}`)
+            navigate(`/${workspace}/${channel_name}`)
+            mutate(["channel_members", channel_name])
         }
         setIsOpen(false)
 
@@ -94,16 +103,17 @@ const CreateChannelContent = ({ updateChannelList, isOpen, setIsOpen }: { update
         resetCreateHook()
         resetForm()
     }
-
-
-
     const channelType = watch('type')
 
+
     const onSubmit = (data: ChannelCreationForm) => {
-        createDoc('Raven Channel', data).then(result => {
+        createDoc('Raven Channel', {
+            ...data,
+            workspace: workspaceID
+        }).then(result => {
             if (result) {
-                toast.success('Channel created')
-                onClose(result.name)
+                toast.success(__("Channel created"))
+                onClose(result.name, workspaceID)
             }
         })
     }
@@ -117,20 +127,20 @@ const CreateChannelContent = ({ updateChannelList, isOpen, setIsOpen }: { update
             case 'Private':
                 return {
                     channelIcon: <BiLockAlt />,
-                    header: 'Create a private channel',
-                    helperText: 'When a channel is set to private, it can only be viewed or joined by invitation.'
+                    header: __("Create a private channel"),
+                    helperText: __('When a channel is set to private, it can only be viewed or joined by invitation.')
                 }
             case 'Open':
                 return {
                     channelIcon: <BiGlobe />,
-                    header: 'Create an open channel',
-                    helperText: 'When a channel is set to open, everyone is a member.'
+                    header: __("Create an open channel"),
+                    helperText: __('When a channel is set to open, everyone is a member.')
                 }
             default:
                 return {
                     channelIcon: <BiHash />,
-                    header: 'Create a public channel',
-                    helperText: 'When a channel is set to public, anyone can join the channel and read messages, but only members can post messages.'
+                    header: __('Create a public channel'),
+                    helperText: __('When a channel is set to public, anyone can join the channel and read messages, but only members can post messages.')
                 }
         }
     }, [channelType])
@@ -143,32 +153,37 @@ const CreateChannelContent = ({ updateChannelList, isOpen, setIsOpen }: { update
             {header}
         </Dialog.Title>
         <Dialog.Description size='2'>
-            Channels are where your team communicates. They are best when organized around a topic - #development, for example.
+            {__("Channels are where your team communicates. They are best when organized around a topic - #development, for example.")}
         </Dialog.Description>
         <FormProvider {...methods}>
             <form onSubmit={handleSubmit(onSubmit)}>
                 <Flex direction='column' gap='4' py='4'>
+                    {!isAdmin?.message && <CustomCallout
+                        iconChildren={<BiInfoCircle size='18' />}
+                        rootProps={{ color: 'yellow', variant: 'surface' }}
+                        textChildren={<Text>You cannot create a new channel since you are not an admin of this workspace. Ask an admin to create a channel or make you an admin.</Text>}
+                    />}
                     <ErrorBanner error={channelCreationError} />
                     <Box>
-                        <Label htmlFor='channel_name' isRequired>Name</Label>
+                        <Label htmlFor='channel_name' isRequired>{__("Name")}</Label>
                         <Controller
                             name='channel_name'
                             control={control}
                             rules={{
-                                required: "Please add a channel name",
+                                required: __("Please add a channel name"),
                                 maxLength: {
                                     value: 50,
-                                    message: "Channel name cannot be more than 50 characters."
+                                    message: __("Channel name cannot be more than {0} characters.", ["50"])
                                 },
                                 minLength: {
                                     value: 3,
-                                    message: "Channel name cannot be less than 3 characters."
+                                    message: __("Channel name cannot be less than {0} characters.", ["3"])
                                 },
                                 pattern: {
                                     // no special characters allowed
                                     // cannot start with a space
                                     value: /^[a-zA-Z0-9][a-zA-Z0-9-]*$/,
-                                    message: "Channel name can only contain letters, numbers and hyphens."
+                                    message: __("Channel name can only contain letters, numbers and hyphens.")
                                 }
                             }}
                             render={({ field, fieldState: { error } }) => (
@@ -194,7 +209,7 @@ const CreateChannelContent = ({ updateChannelList, isOpen, setIsOpen }: { update
                     </Box>
 
                     <Box>
-                        <Label htmlFor='channel_description'>Description <Text as='span' weight='light'>(optional)</Text></Label>
+                        <Label htmlFor='channel_description'>{__("Description")} <Text as='span' weight='light'>({__("optional")})</Text></Label>
                         <TextArea
                             maxLength={140}
                             id='channel_description'
@@ -202,7 +217,7 @@ const CreateChannelContent = ({ updateChannelList, isOpen, setIsOpen }: { update
                             {...register('channel_description', {
                                 maxLength: {
                                     value: 140,
-                                    message: "Channel description cannot be more than 140 characters."
+                                    message: __("Channel description cannot be more than {0} characters.", ["140"])
                                 }
                             })}
                             aria-invalid={errors.channel_description ? 'true' : 'false'}
@@ -225,17 +240,17 @@ const CreateChannelContent = ({ updateChannelList, isOpen, setIsOpen }: { update
                                     <Flex gap="4">
                                         <Text as="label" size="2">
                                             <Flex gap="2">
-                                                <RadioGroup.Item value="Public" /> Public
+                                                <RadioGroup.Item value="Public" /> {__("Public")}
                                             </Flex>
                                         </Text>
                                         <Text as="label" size="2">
                                             <Flex gap="2">
-                                                <RadioGroup.Item value="Private" /> Private
+                                                <RadioGroup.Item value="Private" /> {__("Private")}
                                             </Flex>
                                         </Text>
                                         <Text as="label" size="2">
                                             <Flex gap="2">
-                                                <RadioGroup.Item value="Open" /> Open
+                                                <RadioGroup.Item value="Open" /> {__("Open")}
                                             </Flex>
                                         </Text>
                                     </Flex>
@@ -243,20 +258,20 @@ const CreateChannelContent = ({ updateChannelList, isOpen, setIsOpen }: { update
                             )}
                         />
                         {/* Added min height to avoid layout shift when two lines of text are shown */}
-                        <Text size='1' weight='light' className='min-h-[2rem]'>
+                        <HelperText className='min-h-[3rem]'>
                             {helperText}
-                        </Text>
+                        </HelperText>
                     </Flex>
                 </Flex>
                 <Flex gap="3" mt="4" justify="end">
                     <Dialog.Close disabled={creatingChannel}>
                         <Button variant="soft" color="gray">
-                            Cancel
+                            {__("Cancel")}
                         </Button>
                     </Dialog.Close>
-                    <Button type='submit' disabled={creatingChannel}>
-                        {creatingChannel && <Loader />}
-                        {creatingChannel ? "Saving" : "Save"}
+                    <Button type='submit' disabled={creatingChannel || !isAdmin?.message}>
+                        {creatingChannel && <Loader className="text-white" />}
+                        {creatingChannel ? __("Saving") : __("Save")}
                     </Button>
                 </Flex>
             </form>

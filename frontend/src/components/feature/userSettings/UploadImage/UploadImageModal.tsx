@@ -2,17 +2,21 @@ import { Loader } from "@/components/common/Loader"
 import { useUserData } from "@/hooks/useUserData"
 import { Button, Dialog, Flex } from "@radix-ui/themes"
 import { CustomFile } from "../../file-upload/FileDrop"
-import { ErrorBanner } from "@/components/layout/AlertBanner"
+import { ErrorBanner } from "@/components/layout/AlertBanner/ErrorBanner"
 import { useState } from "react"
 import { FrappeError, useFrappeFileUpload } from "frappe-react-sdk"
 import { FileUploadBox } from "./FileUploadBox"
+import { __ } from "@/utils/translations"
 
 interface UploadImageModalProps {
-    onClose: () => void,
-    uploadImage: (file: string) => void
+    uploadImage: (file: string) => void,
+    label?: string,
+    doctype: string,
+    docname: string,
+    fieldname: string,
 }
 
-export const UploadImageModal = ({ onClose, uploadImage }: UploadImageModalProps) => {
+export const UploadImageModal = ({ uploadImage, label = 'Upload Image', doctype, docname, fieldname }: UploadImageModalProps) => {
 
     const [file, setFile] = useState<CustomFile | undefined>()
     const [fileError, setFileError] = useState<FrappeError>()
@@ -28,13 +32,12 @@ export const UploadImageModal = ({ onClose, uploadImage }: UploadImageModalProps
     const uploadFiles = async () => {
         if (file) {
             return upload(file, {
-                doctype: 'Raven User',
-                docname: userData.name,
-                fieldname: 'user_image',
+                doctype: doctype,
+                docname: docname,
+                fieldname: fieldname,
                 isPrivate: true,
             }).then((res) => {
                 uploadImage(res.file_url)
-                onClose()
             }).catch((e) => {
                 setFileError(e)
             })
@@ -43,7 +46,7 @@ export const UploadImageModal = ({ onClose, uploadImage }: UploadImageModalProps
 
     return (
         <>
-            <Dialog.Title>Upload file</Dialog.Title>
+            <Dialog.Title>{label}</Dialog.Title>
 
             <ErrorBanner error={fileError} />
 
@@ -56,11 +59,11 @@ export const UploadImageModal = ({ onClose, uploadImage }: UploadImageModalProps
 
             <Flex gap="3" mt="6" justify="end" align='center'>
                 <Dialog.Close disabled={loading}>
-                    <Button variant="soft" color="gray">Cancel</Button>
+                    <Button variant="soft" color="gray">{__("Cancel")}</Button>
                 </Dialog.Close>
                 <Button type='button' onClick={uploadFiles} disabled={loading}>
                     {loading && <Loader />}
-                    {loading ? "Saving" : "Save"}
+                    {loading ? __("Uploading") : __("Upload")}
                 </Button>
             </Flex>
         </>

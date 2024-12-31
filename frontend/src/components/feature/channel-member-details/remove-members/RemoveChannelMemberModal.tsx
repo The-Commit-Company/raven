@@ -1,5 +1,5 @@
 import { useFrappeDeleteDoc, useFrappeGetCall, useSWRConfig } from 'frappe-react-sdk'
-import { ErrorBanner } from '../../../layout/AlertBanner'
+import { ErrorBanner } from '@/components/layout/AlertBanner/ErrorBanner'
 import { ChannelIcon } from '@/utils/layout/channelIcon'
 import { AlertDialog, Button, Dialog, Flex, Text } from '@radix-ui/themes'
 import { Loader } from '@/components/common/Loader'
@@ -56,7 +56,7 @@ export const RemoveChannelMemberModal = ({ onClose, member }: RemoveChannelMembe
                 <Flex direction={'column'} gap='2'>
                     <ErrorBanner error={errorFetchingChannelMember} />
                     <ErrorBanner error={error} />
-                    <Text size='1'>This person will no longer have access to the channel and can only rejoin by invitation.</Text>
+                    <Text size='2'>This person will no longer have access to the channel.</Text>
                 </Flex>
 
                 <Flex gap="3" mt="4" justify="end">
@@ -67,7 +67,7 @@ export const RemoveChannelMemberModal = ({ onClose, member }: RemoveChannelMembe
                     </AlertDialog.Cancel>
                     <AlertDialog.Action>
                         <Button variant="solid" color="red" onClick={onSubmit} disabled={deletingDoc}>
-                            {deletingDoc && <Loader />}
+                            {deletingDoc && <Loader className="text-white" />}
                             {deletingDoc ? "Removing" : "Remove"}
                         </Button>
                     </AlertDialog.Action>
@@ -95,7 +95,7 @@ export const RemoveChannelMemberModal = ({ onClose, member }: RemoveChannelMembe
                     Cancel
                 </Button>
                 <Button variant="solid" color="red" onClick={onSubmit} disabled={deletingDoc}>
-                    {deletingDoc && <Loader />}
+                    {deletingDoc && <Loader className="text-white" />}
                     {deletingDoc ? "Removing" : "Remove"}
                 </Button>
             </Flex>

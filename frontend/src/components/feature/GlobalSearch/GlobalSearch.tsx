@@ -1,4 +1,3 @@
-import { ChannelSearch } from "./ChannelSearch"
 import { FileSearch } from "./FileSearch"
 import { MessageSearch } from "./MessageSearch"
 import { Dialog, Flex, Tabs, Box } from "@radix-ui/themes"
@@ -66,7 +65,6 @@ const GlobalSearchContent = (props: GlobalSearchModalProps) => {
                 <Tabs.List>
                     <Tabs.Trigger value="0">Messages</Tabs.Trigger>
                     <Tabs.Trigger value="1">Files</Tabs.Trigger>
-                    <Tabs.Trigger value="2">Channels</Tabs.Trigger>
                 </Tabs.List>
                 <Box pt="3" pb="2">
                     <Tabs.Content value="0">
@@ -74,9 +72,6 @@ const GlobalSearchContent = (props: GlobalSearchModalProps) => {
                     </Tabs.Content>
                     <Tabs.Content value="1">
                         <FileSearch onToggleMyChannels={onToggleMyChannels} isOnlyInMyChannels={isOnlyInMyChannels} onToggleSaved={onToggleSaved} isSaved={isSaved} input={input} fromFilter={fromFilter} inFilter={inFilter} withFilter={withFilter} />
-                    </Tabs.Content>
-                    <Tabs.Content value="2">
-                        <ChannelSearch onToggleMyChannels={onToggleMyChannels} isOnlyInMyChannels={isOnlyInMyChannels} input={input} onClose={onClose} />
                     </Tabs.Content>
                 </Box>
             </Tabs.Root>

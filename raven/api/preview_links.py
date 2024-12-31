@@ -80,4 +80,5 @@ def hide_link_preview(message_id: str):
 	message = frappe.get_doc("Raven Message", message_id)
 	message.flags.ignore_permissions = True
 	message.hide_link_preview = 1
+	message.flags.editing_metadata = True
 	message.save()

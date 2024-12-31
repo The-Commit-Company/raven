@@ -3,7 +3,7 @@ import { Poll } from '../chat/ChatMessage/Renderers/PollMessage'
 import { useState } from 'react'
 import { Button, Dialog, Flex, Separator, Text } from '@radix-ui/themes'
 import { DIALOG_CONTENT_CLASS } from '@/utils/layout/dialog'
-import { ErrorBanner } from '@/components/layout/AlertBanner'
+import { ErrorBanner } from '@/components/layout/AlertBanner/ErrorBanner'
 import { UserAvatar } from '@/components/common/UserAvatar'
 import { useGetUser } from '@/hooks/useGetUser'
 import clsx from 'clsx'
@@ -35,7 +35,6 @@ export const ViewPollVotes = ({ poll }: ViewPollVotesProps) => {
         return (
             <Dialog.Root open={open} onOpenChange={setOpen}>
 
-                <Separator className='w-full' />
                 <Dialog.Trigger>
                     <Button variant='ghost' size={'1'} className='-mb-2.5 bg-transparent hover:text-accent-10 w-full'>View Votes</Button>
                 </Dialog.Trigger>

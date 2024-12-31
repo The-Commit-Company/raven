@@ -56,7 +56,7 @@ export const UsersTable = ({ data, selected, setSelected, defaultSelected }: Use
     }
 
     return (
-        <Table.Root variant="surface">
+        <Table.Root variant="surface" className='rounded-sm'>
             <Table.Header>
                 <Table.Row>
                     <Table.ColumnHeaderCell><Checkbox checked={isAllChecked} onCheckedChange={(e) => setAllChecked(e.valueOf() ? true : false)} /></Table.ColumnHeaderCell>

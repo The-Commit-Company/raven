@@ -1,10 +1,12 @@
-import { BackToList } from "@/components/feature/integrations/webhooks/BackToList"
+import { Loader } from "@/components/common/Loader"
 import { SchedulerEventForm, SchedulerEventsForm } from "@/components/feature/settings/scheduler-events/SchedulerEventsForm"
-import { ErrorBanner } from "@/components/layout/AlertBanner"
-import { Box, Button, Flex, Heading, Section } from "@radix-ui/themes"
+import { ErrorBanner } from "@/components/layout/AlertBanner/ErrorBanner"
+import PageContainer from "@/components/layout/Settings/PageContainer"
+import SettingsContentContainer from "@/components/layout/Settings/SettingsContentContainer"
+import SettingsPageHeader from "@/components/layout/Settings/SettingsPageHeader"
+import { Button } from "@radix-ui/themes"
 import { useFrappeCreateDoc } from "frappe-react-sdk"
 import { FormProvider, useForm } from "react-hook-form"
-import { FiArrowLeft } from "react-icons/fi"
 import { useNavigate } from "react-router-dom"
 import { toast } from "sonner"
 
@@ -14,7 +16,7 @@ const CreateSchedulerEvent = () => {
 
     const methods = useForm()
 
-    const { createDoc, error } = useFrappeCreateDoc()
+    const { createDoc, error, loading } = useFrappeCreateDoc()
 
     const onSubmit = (data: Partial<SchedulerEventForm>) => {
         let cron_expression = ''
@@ -43,28 +45,32 @@ const CreateSchedulerEvent = () => {
         })
             .then((doc) => {
                 if (doc) {
-                    navigate(`../scheduled-messages/${doc?.name}`)
+                    navigate(`../${doc?.name}`)
                 }
-                toast.success("Scheduler Event created")
+                toast.success("Scheduled Message created")
             })
     }
     //TODO: Figure out a way to show _server_messages in the UI (especially the script editor might have some errors that we need to show to the user)
     return (
-        <FormProvider {...methods}>
+        <PageContainer>
             <form onSubmit={methods.handleSubmit(onSubmit)}>
-                <Box className="lg:mx-[10rem] md:mx-[5rem] mt-9 h-screen">
-                    <BackToList label="Scheduled Messages" path="/settings/integrations/scheduled-messages" />
-                    <Flex justify={'between'} mt={'6'}>
-                        <Heading>New Scheduled Message</Heading>
-                        <Button type='submit'>Save</Button>
-                    </Flex>
-                    <Section size={'2'}>
+                <FormProvider {...methods}>
+                    <SettingsContentContainer>
+                        <SettingsPageHeader
+                            title='Create a Scheduled Message'
+                            // description='Bots can be used to send reminders, run AI assistants, and more.'
+                            actions={<Button type='submit' disabled={loading}>
+                                {loading && <Loader className="text-white" />}
+                                {loading ? "Creating" : "Create"}
+                            </Button>}
+                            breadcrumbs={[{ label: 'Scheduled Message', href: '../' }, { label: 'New Scheduled Message', href: '' }]}
+                        />
                         <ErrorBanner error={error} />
                         <SchedulerEventsForm />
-                    </Section>
-                </Box>
+                    </SettingsContentContainer>
+                </FormProvider>
             </form>
-        </FormProvider>
+        </PageContainer>
     )
 }
 

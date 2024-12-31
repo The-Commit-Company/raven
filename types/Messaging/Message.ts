@@ -1,4 +1,4 @@
-export type Message = FileMessage | TextMessage | ImageMessage | PollMessage
+export type Message = FileMessage | TextMessage | ImageMessage | PollMessage | SystemMessage
 
 export interface BaseMessage {
     name: string,
@@ -7,7 +7,7 @@ export interface BaseMessage {
     channel_id: string,
     creation: string,
     modified: string,
-    message_type: 'Text' | 'File' | 'Image' | 'Poll',
+    message_type: 'Text' | 'File' | 'Image' | 'Poll' | 'System',
     message_reactions?: string | null,
     is_continuation: 1 | 0
     is_reply: 1 | 0
@@ -22,6 +22,7 @@ export interface BaseMessage {
     is_bot_message?: 1 | 0,
     bot?: string,
     hide_link_preview?: 1 | 0,
+    is_thread: 1 | 0,
 }
 
 export interface FileMessage extends BaseMessage {
@@ -50,6 +51,11 @@ export interface PollMessage extends BaseMessage {
     message_type: 'Poll',
     poll_id: string,
     content?: string
+}
+
+export interface SystemMessage extends BaseMessage {
+    message_type: 'System',
+    text: string,
 }
 
 export type DateBlock = {

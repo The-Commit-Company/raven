@@ -1,0 +1,61 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2024-09-27 16:34:18.404073",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "function",
+  "column_break_xuns",
+  "type",
+  "section_break_osgg",
+  "description"
+ ],
+ "fields": [
+  {
+   "fieldname": "function",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Function",
+   "options": "Raven AI Function",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_xuns",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fetch_from": "function.type",
+   "fieldname": "type",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Type",
+   "read_only": 1
+  },
+  {
+   "fieldname": "section_break_osgg",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fetch_from": "function.description",
+   "fieldname": "description",
+   "fieldtype": "Small Text",
+   "in_list_view": 1,
+   "label": "Description",
+   "read_only": 1
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2024-12-07 23:32:14.061972",
+ "modified_by": "Administrator",
+ "module": "Raven AI",
+ "name": "Raven Bot Functions",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": []
+}

@@ -14,8 +14,11 @@
   "is_synced",
   "linked_doctype",
   "linked_document",
+  "workspace",
   "section_break_evg4",
   "is_direct_message",
+  "is_thread",
+  "is_dm_thread",
   "column_break_puci",
   "is_self_message",
   "column_break_ubts",
@@ -23,7 +26,11 @@
   "section_break_wlnt",
   "last_message_timestamp",
   "column_break_eckt",
-  "last_message_details"
+  "last_message_details",
+  "ai_tab",
+  "is_ai_thread",
+  "openai_thread_id",
+  "thread_bot"
  ],
  "fields": [
   {
@@ -44,8 +51,7 @@
    "in_standard_filter": 1,
    "label": "Channel Name",
    "read_only_depends_on": "eval: doc.is_direct_message || doc.is_self_message",
-   "reqd": 1,
-   "unique": 1
+   "reqd": 1
   },
   {
    "default": "0",
@@ -67,7 +73,7 @@
   },
   {
    "fieldname": "channel_description",
-   "fieldtype": "Data",
+   "fieldtype": "Small Text",
    "label": "Channel Description"
   },
   {
@@ -134,6 +140,53 @@
    "fieldtype": "Check",
    "label": "Is Synced",
    "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "is_thread",
+   "fieldtype": "Check",
+   "label": "Is Thread",
+   "read_only": 1
+  },
+  {
+   "fieldname": "ai_tab",
+   "fieldtype": "Tab Break",
+   "label": "AI"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_ai_thread",
+   "fieldtype": "Check",
+   "in_standard_filter": 1,
+   "label": "Is AI Thread",
+   "read_only": 1
+  },
+  {
+   "fieldname": "openai_thread_id",
+   "fieldtype": "Data",
+   "label": "OpenAI Thread ID",
+   "read_only": 1
+  },
+  {
+   "fieldname": "thread_bot",
+   "fieldtype": "Link",
+   "label": "Thread Bot",
+   "options": "Raven Bot",
+   "read_only": 1
+  },
+  {
+   "fieldname": "workspace",
+   "fieldtype": "Link",
+   "label": "Workspace",
+   "options": "Raven Workspace",
+   "search_index": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "is_dm_thread",
+   "fieldtype": "Check",
+   "label": "Is DM Thread",
+   "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,
@@ -147,7 +200,7 @@
    "link_fieldname": "channel_id"
   }
  ],
- "modified": "2024-06-20 18:26:25.559899",
+ "modified": "2024-12-08 01:24:55.359995",
  "modified_by": "Administrator",
  "module": "Raven Channel Management",
  "name": "Raven Channel",
@@ -168,18 +221,6 @@
   },
   {
    "create": 1,
-   "delete": 1,
-   "email": 1,
-   "export": 1,
-   "if_owner": 1,
-   "print": 1,
-   "read": 1,
-   "report": 1,
-   "role": "Raven User",
-   "share": 1,
-   "write": 1
-  },
-  {
    "delete": 1,
    "email": 1,
    "export": 1,

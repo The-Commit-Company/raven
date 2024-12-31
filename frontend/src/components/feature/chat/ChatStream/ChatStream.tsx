@@ -2,8 +2,7 @@ import { Message } from '../../../../../../types/Messaging/Message'
 import { DeleteMessageDialog, useDeleteMessage } from '../ChatMessage/MessageActions/DeleteMessage'
 import { EditMessageDialog, useEditMessage } from '../ChatMessage/MessageActions/EditMessage'
 import { MessageItem } from '../ChatMessage/MessageItem'
-import { ChannelHistoryFirstMessage } from '@/components/layout/EmptyState'
-import { useParams } from 'react-router-dom'
+import { ChannelHistoryFirstMessage } from '@/components/layout/EmptyState/EmptyState'
 import useChatStream from './useChatStream'
 import { useRef } from 'react'
 import { Loader } from '@/components/common/Loader'
@@ -13,10 +12,11 @@ import { DateSeparator } from '@/components/layout/Divider/DateSeparator'
 import { useInView } from 'react-intersection-observer'
 import { Button } from '@radix-ui/themes'
 import { FiArrowDown } from 'react-icons/fi'
-import { ErrorBanner } from '@/components/layout/AlertBanner'
+import { ErrorBanner } from '@/components/layout/AlertBanner/ErrorBanner'
 import { ForwardMessageDialog, useForwardMessage } from '../ChatMessage/MessageActions/ForwardMessage'
 import AttachFileToDocumentDialog, { useAttachFileToDocument } from '../ChatMessage/MessageActions/AttachFileToDocument'
 import { ReactionAnalyticsDialog, useMessageReactionAnalytics } from '../ChatMessage/MessageActions/MessageReactionAnalytics'
+import SystemMessageBlock from '../ChatMessage/SystemMessageBlock'
 
 /**
  * Anatomy of a message
@@ -64,16 +64,17 @@ import { ReactionAnalyticsDialog, useMessageReactionAnalytics } from '../ChatMes
  */
 
 type Props = {
+    channelID: string,
     replyToMessage: (message: Message) => void,
+    showThreadButton?: boolean
 }
 
-const ChatStream = ({ replyToMessage }: Props) => {
+const ChatStream = ({ channelID, replyToMessage, showThreadButton = true }: Props) => {
 
-    const { channelID } = useParams()
 
     const scrollRef = useRef<HTMLDivElement | null>(null)
 
-    const { messages, hasOlderMessages, loadOlderMessages, goToLatestMessages, hasNewMessages, error, loadNewerMessages, isLoading, highlightedMessage, scrollToMessage } = useChatStream(scrollRef)
+    const { messages, hasOlderMessages, loadOlderMessages, goToLatestMessages, hasNewMessages, error, loadNewerMessages, isLoading, highlightedMessage, scrollToMessage } = useChatStream(channelID, scrollRef)
     const { setDeleteMessage, ...deleteProps } = useDeleteMessage()
 
     const { setEditMessage, ...editProps } = useEditMessage()
@@ -132,6 +133,8 @@ const ChatStream = ({ replyToMessage }: Props) => {
                         return <DateSeparator key={`date-${message.creation}`} id={`date-${message.creation}`} className='p-2 z-10 relative'>
                             {message.creation}
                         </DateSeparator>
+                    } else if (message.message_type === 'System') {
+                        return <SystemMessageBlock key={`${message.name}_${message.modified}`} message={message} />
                     } else {
                         return <div key={`${message.name}_${message.modified}`} id={`message-${message.name}`}>
                             <div className="w-full overflow-x-clip overflow-y-visible text-ellipsis animate-fadein">
@@ -142,9 +145,10 @@ const ChatStream = ({ replyToMessage }: Props) => {
                                     setEditMessage={setEditMessage}
                                     replyToMessage={replyToMessage}
                                     forwardMessage={setForwardMessage}
+                                    showThreadButton={showThreadButton}
                                     onAttachDocument={setAttachDocument}
                                     setDeleteMessage={setDeleteMessage}
-                                    setReactionMessage={setReactionMessage} 
+                                    setReactionMessage={setReactionMessage}
                                 />
                             </div>
                         </div>

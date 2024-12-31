@@ -1,11 +1,14 @@
-
 name: CI
 
 on:
   push:
     branches:
       - master
+    paths:
+      - raven/**
   pull_request:
+    paths:
+      - raven/**
 
 jobs:
   tests:
@@ -42,7 +45,7 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.10'
+          python-version: "3.10"
 
       - name: Setup Node
         uses: actions/setup-node@v3
@@ -88,7 +91,7 @@ jobs:
           bench --site test_site install-app raven
           bench build
         env:
-          CI: 'Yes'
+          CI: "Yes"
 
       - name: Run Tests
         working-directory: /home/runner/frappe-bench

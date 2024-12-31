@@ -1,5 +1,5 @@
 import { Loader } from "@/components/common/Loader"
-import { ErrorBanner } from "@/components/layout/AlertBanner"
+import { ErrorBanner } from "@/components/layout/AlertBanner/ErrorBanner"
 import { AlertDialog, Button, Callout, Checkbox, Flex, Text } from "@radix-ui/themes"
 import { useFrappeDeleteDoc } from "frappe-react-sdk"
 import { useState } from "react"
@@ -79,7 +79,7 @@ export const AlertContent = ({ onClose, onUpdate, doctype, docname, path }: Dele
                 <Text size='2' as='label'>
                     <Flex gap="2" align={'center'}>
                         <Checkbox onClick={() => setAllowDelete(!allowDelete)} color='red' />
-                        Yes, I understand, permanently delete this channel
+                        Yes, I understand, permanently delete this {doctype}.
                     </Flex>
                 </Text>
             </Flex>
@@ -92,7 +92,7 @@ export const AlertContent = ({ onClose, onUpdate, doctype, docname, path }: Dele
                 </AlertDialog.Cancel>
                 <AlertDialog.Action>
                     <Button variant="solid" color="red" onClick={onSubmit} disabled={!allowDelete || deletingDoc}>
-                        {deletingDoc && <Loader />}
+                        {deletingDoc && <Loader className="text-white" />}
                         {deletingDoc ? "Deleting" : "Delete"}
                     </Button>
                 </AlertDialog.Action>

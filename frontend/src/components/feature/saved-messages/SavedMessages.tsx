@@ -1,9 +1,9 @@
 import { useFrappeGetCall } from "frappe-react-sdk"
-import { Link, useNavigate } from "react-router-dom"
+import { Link, useNavigate, useParams } from "react-router-dom"
 import { Message } from "../../../../../types/Messaging/Message"
-import { ErrorBanner } from "../../layout/AlertBanner"
-import { EmptyStateForSavedMessages } from "../../layout/EmptyState/EmptyState"
-import { PageHeader } from "../../layout/Heading/PageHeader"
+import { ErrorBanner } from "@/components/layout/AlertBanner/ErrorBanner"
+import { EmptyStateForSavedMessages } from "@/components/layout/EmptyState/EmptyState"
+import { PageHeader } from "@/components/layout/Heading/PageHeader"
 import { MessageBox } from "../GlobalSearch/MessageBox"
 import { Heading } from "@radix-ui/themes"
 import { Box, Flex } from '@radix-ui/themes'
@@ -13,20 +13,28 @@ const SavedMessages = () => {
 
     const navigate = useNavigate()
 
-    const { data, error } = useFrappeGetCall<{ message: Message[] }>("raven.api.raven_message.get_saved_messages", undefined, undefined, {
+    const { data, error } = useFrappeGetCall<{ message: (Message & { workspace?: string })[] }>("raven.api.raven_message.get_saved_messages", undefined, undefined, {
         revalidateOnFocus: false
     })
 
-    const handleNavigateToChannel = (channelID: string, baseMessage?: string) => {
-        navigate(`/channel/${channelID}`, {
+    const { workspaceID } = useParams()
+
+    const handleNavigateToChannel = (channelID: string, workspace?: string, baseMessage?: string) => {
+        let baseRoute = ''
+        if (workspace) {
+            baseRoute = `/${workspace}`
+        } else {
+            baseRoute = `/${workspaceID}`
+        }
+        navigate(`${baseRoute}/${channelID}`, {
             state: {
                 baseMessage: baseMessage
             }
         })
     }
 
-    const handleScrollToMessage = (messageName: string, channelID: string) => {
-        handleNavigateToChannel(channelID, messageName)
+    const handleScrollToMessage = (messageName: string, channelID: string, workspace?: string) => {
+        handleNavigateToChannel(channelID, workspace, messageName)
     }
 
     return (

@@ -10,12 +10,12 @@
     <a href="https://frappecloud.com/marketplace/apps/raven"><strong>Install on Frappe Cloud»</strong></a>
     <br />
     <br />
-    <a href="https://ravenapp.info"><strong>Learn More »</strong></a>
+    <a href="https://thecommit.company/products/raven"><strong>Learn More »</strong></a>
     <br />
     <br />
     <a href="https://github.com/The-Commit-Company/Raven/issues">Issues</a>
     ·
-    <a href="https://github.com/The-Commit-Company/Raven/discussions">Discussions</a>
+    <a href="https://community.ravenapp.cloud">Community</a>
      ·
     <a href="https://github.com/sponsors/The-Commit-Company?frequency=one-time">Sponsor Us!</a>
   </p>
@@ -136,8 +136,11 @@ Since Raven is a Frappe app, it can be installed via [frappe-bench](https://frap
 Once you have [setup your bench](https://frappeframework.com/docs/v14/user/en/installation) and your [site](https://frappeframework.com/docs/v14/user/en/tutorial/install-and-setup-bench), you can install the app via the following commands:
 
 ```bash
-bench get-app https://github.com/The-Commit-Company/Raven.git
-bench --site yoursite.name install-app raven
+bench get-app https://github.com/The-Commit-Company/raven.git
+```
+
+```bash
+bench --site <yoursite.name> install-app raven
 ```
 
 Post this, you can access Raven on your Frappe site at the `/raven` endpoint (e.g. https://yoursite.com/raven). 

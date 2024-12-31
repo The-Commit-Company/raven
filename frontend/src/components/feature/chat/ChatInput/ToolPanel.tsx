@@ -12,7 +12,7 @@ export const ToolPanel = (props: FlexProps) => {
         <Flex
             justify='between'
             align='center'
-            className='border-t border-t-slate-5 bg-slate-2 rounded-b-radius4'
+            className='border-t border-t-slate-5 bg-slate-2 rounded-b-radius4 overflow-hidden'
             p='1'
             {...props}
         >

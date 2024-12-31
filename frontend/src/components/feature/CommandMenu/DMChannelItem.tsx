@@ -3,7 +3,7 @@ import { useGetUser } from "@/hooks/useGetUser"
 import { Command } from "cmdk"
 import { commandMenuOpenAtom } from "./CommandMenu"
 import { useSetAtom } from "jotai"
-import { useNavigate } from "react-router-dom"
+import { useNavigate, useParams } from "react-router-dom"
 import { useContext } from "react"
 import { UserContext } from "@/utils/auth/UserProvider"
 import { replaceCurrentUserFromDMChannelName } from "@/utils/operations"
@@ -12,12 +12,17 @@ import { Badge, Flex } from "@radix-ui/themes"
 const DMChannelItem = ({ channelID, peer_user_id, channelName }: { channelID: string, channelName: string, peer_user_id: string }) => {
 
     const { currentUser } = useContext(UserContext)
+    const { workspaceID } = useParams()
     const user = useGetUser(peer_user_id)
     const navigate = useNavigate()
     const setOpen = useSetAtom(commandMenuOpenAtom)
 
     const onSelect = () => {
-        navigate(`/channel/${channelID}`)
+        if (workspaceID) {
+            navigate(`/${workspaceID}/${channelID}`)
+        } else {
+            navigate(`/channel/${channelID}`)
+        }
         setOpen(false)
     }
 

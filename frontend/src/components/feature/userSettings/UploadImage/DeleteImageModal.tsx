@@ -1,9 +1,10 @@
 import { useFrappePostCall } from 'frappe-react-sdk'
 import { toast } from 'sonner'
 import { AlertDialog, Button, Flex, Text } from '@radix-ui/themes'
-import { ErrorBanner } from '@/components/layout/AlertBanner'
+import { ErrorBanner } from '@/components/layout/AlertBanner/ErrorBanner'
 import { Loader } from '@/components/common/Loader'
 import useCurrentRavenUser from '@/hooks/useCurrentRavenUser'
+import { __ } from '@/utils/translations'
 
 interface DeleteImageModalProps {
     onClose: () => void
@@ -11,17 +12,14 @@ interface DeleteImageModalProps {
 
 export const DeleteImageModal = ({ onClose }: DeleteImageModalProps) => {
 
-    const { call, error, loading } = useFrappePostCall('frappe.client.set_value')
-    const { myProfile, mutate } = useCurrentRavenUser()
+    const { call, loading, error } = useFrappePostCall('raven.api.raven_users.update_raven_user')
+    const { mutate } = useCurrentRavenUser()
 
     const removeImage = () => {
         call({
-            doctype: 'Raven User',
-            name: myProfile?.name,
-            fieldname: 'user_image',
-            value: ''
+            user_image: ''
         }).then(() => {
-            toast.success("User status updated")
+            toast.success("Profile picture removed.")
             mutate()
             onClose()
         })
@@ -29,23 +27,23 @@ export const DeleteImageModal = ({ onClose }: DeleteImageModalProps) => {
 
     return (
         <>
-            <AlertDialog.Title>Remove Image</AlertDialog.Title>
+            <AlertDialog.Title>{__("Remove Image")}</AlertDialog.Title>
 
             <Flex direction={'column'} gap='2'>
                 <ErrorBanner error={error} />
-                <Text>Are you sure you want to remove this image?</Text>
+                <Text>{__("Are you sure you want to remove this image?")}</Text>
             </Flex>
 
             <Flex gap="3" mt="4" justify="end">
                 <AlertDialog.Cancel>
                     <Button variant="soft" color="gray">
-                        Cancel
+                        {__("Cancel")}
                     </Button>
                 </AlertDialog.Cancel>
                 <AlertDialog.Action>
                     <Button variant="solid" color="red" onClick={removeImage} disabled={loading}>
                         {loading && <Loader />}
-                        {loading ? "Removing" : "Remove"}
+                        {loading ? __("Removing") : __("Remove")}
                     </Button>
                 </AlertDialog.Action>
             </Flex>

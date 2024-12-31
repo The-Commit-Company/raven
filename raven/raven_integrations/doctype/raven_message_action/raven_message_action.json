@@ -1,0 +1,145 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "hash",
+ "creation": "2024-10-16 11:06:04.587296",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "action_name",
+  "enabled",
+  "column_break_tbnt",
+  "action",
+  "document_type",
+  "custom_function_path",
+  "dialog_properties_tab",
+  "title",
+  "description",
+  "success_message",
+  "fields_tab",
+  "fields"
+ ],
+ "fields": [
+  {
+   "description": "Shown on the dialog",
+   "fieldname": "title",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Title",
+   "reqd": 1
+  },
+  {
+   "fieldname": "description",
+   "fieldtype": "Small Text",
+   "label": "Description"
+  },
+  {
+   "fieldname": "column_break_tbnt",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "action",
+   "fieldtype": "Select",
+   "label": "Action",
+   "options": "Create Document\nCustom Function",
+   "reqd": 1
+  },
+  {
+   "depends_on": "eval: doc.action == \"Create Document\";",
+   "fieldname": "document_type",
+   "fieldtype": "Link",
+   "label": "Document Type",
+   "mandatory_depends_on": "eval: doc.action == \"Create Document\";",
+   "options": "DocType"
+  },
+  {
+   "fieldname": "success_message",
+   "fieldtype": "Small Text",
+   "label": "Success Message"
+  },
+  {
+   "default": "1",
+   "fieldname": "enabled",
+   "fieldtype": "Check",
+   "label": "Enabled"
+  },
+  {
+   "fieldname": "action_name",
+   "fieldtype": "Data",
+   "label": "Action Name",
+   "reqd": 1
+  },
+  {
+   "depends_on": "eval: doc.action == \"Custom Function\";",
+   "fieldname": "custom_function_path",
+   "fieldtype": "Small Text",
+   "label": "Custom Function Path",
+   "mandatory_depends_on": "eval: doc.action == \"Custom Function\";"
+  },
+  {
+   "fieldname": "fields_tab",
+   "fieldtype": "Tab Break",
+   "label": "Fields"
+  },
+  {
+   "fieldname": "fields",
+   "fieldtype": "Table",
+   "label": "Fields",
+   "options": "Raven Message Action Fields"
+  },
+  {
+   "fieldname": "dialog_properties_tab",
+   "fieldtype": "Tab Break",
+   "label": "Dialog Properties"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2024-12-07 23:11:20.120854",
+ "modified_by": "Administrator",
+ "module": "Raven Integrations",
+ "name": "Raven Message Action",
+ "naming_rule": "Random",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Raven User",
+   "share": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Raven Admin",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "search_fields": "action_name",
+ "show_title_field_in_link": 1,
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": [],
+ "title_field": "action_name"
+}

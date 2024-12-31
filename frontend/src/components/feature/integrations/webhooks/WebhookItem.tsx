@@ -1,5 +1,5 @@
 import { Loader } from "@/components/common/Loader"
-import { ErrorBanner } from "@/components/layout/AlertBanner"
+import { ErrorBanner } from "@/components/layout/AlertBanner/ErrorBanner"
 import { RavenWebhook } from "@/types/RavenIntegrations/RavenWebhook"
 import { DateMonthYear } from "@/utils/dateConversions"
 import { DIALOG_CONTENT_CLASS } from "@/utils/layout/dialog"
@@ -104,7 +104,7 @@ const DeleteWebhookAlertContent = ({ webhhookID, onClose, mutate }: { webhhookID
                 </AlertDialog.Cancel>
                 <AlertDialog.Action>
                     <Button variant="solid" color="red" onClick={onDelete} disabled={loading}>
-                        {loading && <Loader />}
+                        {loading && <Loader className="text-white" />}
                         {loading ? "Deleting" : `Delete`}
                     </Button>
                 </AlertDialog.Action>

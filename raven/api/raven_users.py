@@ -24,6 +24,15 @@ def get_current_raven_user():
 	return frappe.get_cached_doc("Raven User", {"user": frappe.session.user})
 
 
+@frappe.whitelist(methods=["POST"])
+def update_raven_user(**args):
+	"""
+	Updates the current user's Raven User profile
+	"""
+
+	frappe.get_doc("Raven User", {"user": frappe.session.user}).update(args).save()
+
+
 @frappe.whitelist()
 @frappe.read_only()
 def get_list():
@@ -116,3 +125,33 @@ def add_users_to_raven(users):
 			success_users.append(user_doc)
 
 	return {"success_users": success_users, "failed_users": failed_users}
+
+
+@frappe.whitelist(methods=["POST"])
+def invite_user(email: str, first_name: str = None, last_name: str = None):
+	"""
+	Invites a user to Raven. If the user exists in Frappe, they are added to Raven.
+	"""
+
+	existing_user = frappe.db.exists("User", {"email": email})
+
+	if existing_user:
+		user_doc = frappe.get_doc("User", existing_user)
+		if user_doc.role_profile_name:
+			frappe.throw(_("User has a role profile set. Please set the role to Raven User manually."))
+
+		elif hasattr(user_doc, "role_profiles") and len(user_doc.role_profiles) > 0:
+			frappe.throw(_("User has a role profile set. Please set the role to Raven User manually."))
+
+		user_doc.append("roles", {"role": "Raven User"})
+		user_doc.save()
+		return {"success": True, "message": "User added to Raven"}
+	else:
+		user_doc = frappe.new_doc("User")
+		user_doc.email = email
+		user_doc.first_name = first_name
+		user_doc.last_name = last_name
+		user_doc.send_welcome_email = 1
+		user_doc.append("roles", {"role": "Raven User"})
+		user_doc.insert()
+		return {"success": True, "message": "User added to Raven"}

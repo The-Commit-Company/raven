@@ -3,7 +3,7 @@ import LinkField, { LinkFieldProps } from './LinkField'
 
 interface LinkFormFieldProps extends Omit<LinkFieldProps, 'value' | 'setValue'> {
     name: string,
-    rules: ControllerProps['rules'],
+    rules?: ControllerProps['rules'],
     disabled?: boolean
 }
 
@@ -19,6 +19,7 @@ const LinkFormField = ({ name, rules, ...linkFieldProps }: LinkFormFieldProps) =
             render={({ field }) => (
                 <LinkField
                     value={field.value}
+                    disabled={field.disabled}
                     setValue={field.onChange}
                     {...linkFieldProps}
                 />
