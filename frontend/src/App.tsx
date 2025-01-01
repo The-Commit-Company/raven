@@ -12,6 +12,7 @@ import Cookies from 'js-cookie'
 import ErrorPage from './pages/ErrorPage'
 import WorkspaceSwitcher from './pages/WorkspaceSwitcher'
 import WorkspaceSwitcherGrid from './components/layout/WorkspaceSwitcherGrid'
+import { init } from 'emoji-mart'
 
 /** Following keys will not be cached in app cache */
 const NO_CACHE_KEYS = [
@@ -28,6 +29,19 @@ const isDesktop = window.innerWidth > 768
 
 const lastWorkspace = localStorage.getItem('ravenLastWorkspace') ?? ''
 const lastChannel = localStorage.getItem('ravenLastChannel') ?? ''
+
+
+// Initialize emoji-mart
+init({
+  data: async () => {
+    const response = await fetch(
+      'https://cdn.jsdelivr.net/npm/@emoji-mart/data/sets/14/apple.json',
+    )
+
+    return response.json()
+  },
+  set: 'apple',
+})
 
 
 const router = createBrowserRouter(

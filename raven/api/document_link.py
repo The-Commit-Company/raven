@@ -73,6 +73,7 @@ def get_preview_data(doctype, docname):
 		"preview_image": preview_data.get(image_field),
 		"preview_title": preview_data.get(title_field),
 		"id": preview_data.get("name"),
+		"raven_document_link": get(doctype, docname),
 	}
 
 	for key, val in preview_data.items():
