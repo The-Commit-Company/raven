@@ -1,10 +1,11 @@
 import { useFrappePostCall } from "frappe-react-sdk"
-import { useCallback, useContext, useMemo } from "react"
+import { useCallback, useContext, useMemo, useState } from "react"
 import { UserContext } from "../../../../utils/auth/UserProvider"
 import { getUsers } from "../../../../utils/operations"
 import { useGetUserRecords } from "@/hooks/useGetUserRecords"
 import { Flex, IconButton, Text, Tooltip } from "@radix-ui/themes"
 import { clsx } from "clsx"
+import { EmojiPickerButton } from "./MessageActions/QuickActions/EmojiPickerButton"
 
 export interface ReactionObject {
     // The emoji
@@ -36,6 +37,8 @@ export const MessageReactions = ({ messageID, message_reactions }: { messageID: 
         return Object.values(parsed_json)
     }, [message_reactions])
 
+    if (reactions.length === 0) return null
+
     return (
         <Flex gap='1' mt='1' wrap='wrap'>
             {reactions.map((reaction) => {
@@ -49,8 +52,29 @@ export const MessageReactions = ({ messageID, message_reactions }: { messageID: 
                     />
                 )
             })}
+            <AddReactionButton
+                saveReaction={saveReaction}
+            />
         </Flex>
     )
+}
+
+const AddReactionButton = ({ saveReaction }: { saveReaction: (emoji: string) => void }) => {
+
+    const [isOpen, setIsOpen] = useState(false)
+
+    return <EmojiPickerButton
+        saveReaction={saveReaction}
+        isOpen={isOpen}
+        setIsOpen={setIsOpen}
+        iconButtonProps={{
+            size: '1',
+            className: 'bg-gray-3 dark:bg-gray-5 py-0.5 w-[3ch] text-gray-10 dark:text-gray-11 h-full rounded-md',
+            variant: 'soft',
+            color: 'gray'
+        }}
+        iconSize='15'
+    />
 }
 
 interface ReactionButtonProps {
