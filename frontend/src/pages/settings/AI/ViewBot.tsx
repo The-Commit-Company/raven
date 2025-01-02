@@ -10,7 +10,7 @@ import { RavenBot } from "@/types/RavenBot/RavenBot"
 import { isEmpty } from "@/utils/validations"
 import { Button } from "@radix-ui/themes"
 import { useFrappeGetDoc, useFrappeUpdateDoc, SWRResponse, FrappeContext, FrappeConfig } from "frappe-react-sdk"
-import { useContext } from "react"
+import { useContext, useEffect } from "react"
 import { FormProvider, useForm } from "react-hook-form"
 import { FiExternalLink } from "react-icons/fi"
 import { useNavigate, useParams } from "react-router-dom"
@@ -55,6 +55,19 @@ const ViewBotContent = ({ data, mutate }: { data: RavenBot, mutate: SWRResponse[
                 mutate(doc, { revalidate: false })
             })
     }
+
+    useEffect(() => {
+
+        const down = (e: KeyboardEvent) => {
+            if (e.key === 's' && (e.metaKey || e.ctrlKey)) {
+                e.preventDefault()
+                methods.handleSubmit(onSubmit)()
+            }
+        }
+
+        document.addEventListener('keydown', down)
+        return () => document.removeEventListener('keydown', down)
+    }, [])
 
 
 

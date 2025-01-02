@@ -10,6 +10,7 @@ import PageContainer from '@/components/layout/Settings/PageContainer'
 import SettingsContentContainer from '@/components/layout/Settings/SettingsContentContainer'
 import SettingsPageHeader from '@/components/layout/Settings/SettingsPageHeader'
 import { Loader } from '@/components/common/Loader'
+import { useEffect } from 'react'
 
 const CreateWebhook = () => {
 
@@ -34,6 +35,19 @@ const CreateWebhook = () => {
                 navigate(`../${doc.name}`)
             })
     }
+
+    useEffect(() => {
+
+        const down = (e: KeyboardEvent) => {
+            if (e.key === 's' && (e.metaKey || e.ctrlKey)) {
+                e.preventDefault()
+                methods.handleSubmit(onSubmit)()
+            }
+        }
+
+        document.addEventListener('keydown', down)
+        return () => document.removeEventListener('keydown', down)
+    }, [])
 
     return (
         <PageContainer>

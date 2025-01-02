@@ -9,6 +9,7 @@ import { RavenAIFunction } from "@/types/RavenAI/RavenAIFunction"
 import { isEmpty } from "@/utils/validations"
 import { Button } from "@radix-ui/themes"
 import { SWRResponse, useFrappeGetDoc, useFrappeUpdateDoc } from "frappe-react-sdk"
+import { useEffect } from "react"
 import { FormProvider, useForm } from "react-hook-form"
 import { useParams } from "react-router-dom"
 import { toast } from "sonner"
@@ -50,6 +51,19 @@ const ViewFunctionContent = ({ data, mutate }: { data: RavenAIFunction, mutate: 
                 mutate(doc, { revalidate: false })
             })
     }
+
+    useEffect(() => {
+
+        const down = (e: KeyboardEvent) => {
+            if (e.key === 's' && (e.metaKey || e.ctrlKey)) {
+                e.preventDefault()
+                methods.handleSubmit(onSubmit)()
+            }
+        }
+
+        document.addEventListener('keydown', down)
+        return () => document.removeEventListener('keydown', down)
+    }, [])
 
     return <form onSubmit={methods.handleSubmit(onSubmit)}>
         <FormProvider {...methods}>
