@@ -19,6 +19,7 @@ import { useFrappeDeleteDoc, useFrappeGetCall, useFrappePostCall, useFrappeUpdat
 import { lazy, Suspense, useContext, useMemo, useState } from "react"
 import { BiCog, BiCrown, BiDotsVerticalRounded, BiPlus, BiSolidCrown } from "react-icons/bi"
 import { FiUserMinus } from "react-icons/fi"
+import { TableVirtuoso } from "react-virtuoso"
 import { toast } from "sonner"
 
 const AddWorkspaceMembersModalContent = lazy(() => import('./AddWorkspaceMemberModalContent'))
@@ -63,24 +64,32 @@ const MembersTable = ({ members, isAdmin, workspaceID }: { members: WorkspaceMem
 
     const users = useGetUserRecords()
 
-    return <Table.Root variant="surface" className='rounded-sm'>
-        <Table.Header>
+    return <TableVirtuoso
+        useWindowScroll
+        data={members}
+        components={{
+            Table: (props) => <Table.Root variant='surface' className='rounded-sm' {...props} />,
+            TableHead: Table.Header,
+            TableBody: Table.Body,
+            TableRow: (props) => <Table.Row className="hover:bg-gray-2" {...props} />,
+        }}
+        fixedHeaderContent={() => (
             <Table.Row>
                 <Table.ColumnHeaderCell>Name</Table.ColumnHeaderCell>
                 <Table.ColumnHeaderCell>Joined</Table.ColumnHeaderCell>
                 {isAdmin ? <Table.ColumnHeaderCell></Table.ColumnHeaderCell> : null}
             </Table.Row>
-        </Table.Header>
-        <Table.Body>
-            {members.map((member) => <MemberRow key={member.name} users={users} member={member} isAdmin={isAdmin} workspaceID={workspaceID} />)}
-        </Table.Body>
-    </Table.Root>
+        )}
+        itemContent={(index, member) => {
+            return <MemberRow users={users} member={member} isAdmin={isAdmin} workspaceID={workspaceID} />
+        }}
+    />
 }
 
 const MemberRow = ({ users, member, isAdmin, workspaceID }: { users: Record<string, UserFields>, member: WorkspaceMemberFields, isAdmin: boolean, workspaceID: string }) => {
 
     const user = users[member.user]
-    return <Table.Row>
+    return <>
         <Table.Cell>
             <HStack align='center'>
                 <UserAvatar src={user?.user_image} alt={user?.full_name ?? member.user} size='2' />
@@ -100,7 +109,7 @@ const MemberRow = ({ users, member, isAdmin, workspaceID }: { users: Record<stri
             </Text>
         </Table.Cell>
         {isAdmin ? <Table.Cell><MemberActions member={member} workspaceID={workspaceID} /></Table.Cell> : null}
-    </Table.Row>
+    </>
 }
 
 const MemberActions = ({ member, workspaceID }: { member: WorkspaceMemberFields, workspaceID: string }) => {
