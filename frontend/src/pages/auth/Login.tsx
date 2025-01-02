@@ -93,6 +93,8 @@ export const Component = () => {
                                             name="email"
                                             type="text"
                                             required
+                                            // Adding an ID here so that on Safari, the autofill appears below the field. Else it was appearing in top left corner of the screen.
+                                            id="email"
                                             size='3'
                                             color="gray"
                                             variant={appearance === 'dark' ? "soft" : undefined}
@@ -111,6 +113,7 @@ export const Component = () => {
                                             type={isPasswordOpen ? "text" : "password"}
                                             autoComplete="current-password"
                                             required
+                                            id="password"
                                             size='3'
                                             variant={appearance === 'dark' ? "soft" : undefined}
                                             placeholder="***********"
