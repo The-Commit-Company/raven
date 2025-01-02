@@ -7,6 +7,7 @@ import SettingsPageHeader from '@/components/layout/Settings/SettingsPageHeader'
 import { RavenBotAIPrompt } from '@/types/RavenAI/RavenBotAIPrompt'
 import { Button } from '@radix-ui/themes'
 import { useFrappeCreateDoc } from 'frappe-react-sdk'
+import { useEffect } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router-dom'
 
@@ -27,6 +28,19 @@ const CreateSavedPrompt = () => {
                 navigate(`../${doc.name}`)
             })
     }
+
+    useEffect(() => {
+
+        const down = (e: KeyboardEvent) => {
+            if (e.key === 's' && (e.metaKey || e.ctrlKey)) {
+                e.preventDefault()
+                methods.handleSubmit(onSubmit)()
+            }
+        }
+
+        document.addEventListener('keydown', down)
+        return () => document.removeEventListener('keydown', down)
+    }, [])
 
     return (
         <PageContainer>
