@@ -7,7 +7,7 @@ import { useUserData } from '@/hooks/useUserData'
 import { __ } from '@/utils/translations'
 import { Button, Dialog, Flex, TextField, IconButton } from '@radix-ui/themes'
 import { useFrappePostCall } from 'frappe-react-sdk'
-import { useCallback, useState } from 'react'
+import { useState } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
 import { BiSmile } from 'react-icons/bi'
 import { toast } from 'sonner'
@@ -24,19 +24,16 @@ const SetCustomStatusContent = ({ onClose }: { onClose: VoidFunction }) => {
     })
     const { register, handleSubmit, formState: { errors } } = methods
 
-    const { call, error, loading } = useFrappePostCall('frappe.client.set_value')
-    const onSubmit = useCallback((data: { custom_status: string }) => {
+    const { call, loading, error } = useFrappePostCall('raven.api.raven_users.update_raven_user')
+    const onSubmit = (data: { custom_status: string }) => {
         call({
-            doctype: 'Raven User',
-            name: userData.name,
-            fieldname: 'custom_status',
-            value: data.custom_status
+            custom_status: data.custom_status
         }).then(() => {
             toast.success(__("User status updated"))
             mutate()
             onClose()
         })
-    }, [userData.name])
+    }
 
     const onEmojiSelect = (emoji: string) => {
         methods.setValue('custom_status', `${methods.getValues('custom_status')} ${emoji}`)
@@ -88,7 +85,7 @@ const SetCustomStatusContent = ({ onClose }: { onClose: VoidFunction }) => {
                             <Button variant="soft" color="gray">{__("Cancel")}</Button>
                         </Dialog.Close>
                         <Button type='submit' disabled={loading}>
-                            {loading && <Loader />}
+                            {loading && <Loader className="text-white" />}
                             {loading ? __("Saving") : __("Save")}
                         </Button>
                     </Flex>

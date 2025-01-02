@@ -1,5 +1,5 @@
 import { Controller, FormProvider, useForm } from 'react-hook-form'
-import { useFrappeCreateDoc, useSWRConfig } from 'frappe-react-sdk'
+import { useFrappePostCall, useSWRConfig } from 'frappe-react-sdk'
 import { ErrorBanner } from '@/components/layout/AlertBanner/ErrorBanner'
 import { Loader } from '@/components/common/Loader'
 import { Box, Button, Dialog, Flex, Text } from '@radix-ui/themes'
@@ -33,7 +33,8 @@ export const AddChannelMembersModalContent = ({ onClose }: AddChannelMemberModal
 
   const { mutate } = useSWRConfig()
 
-  const { createDoc, error, loading: creatingDoc } = useFrappeCreateDoc()
+  const { call, error, loading } = useFrappePostCall('raven.api.raven_channel_member.add_channel_members')
+
   const methods = useForm<AddChannelMemberForm>({
     defaultValues: {
       add_members: null
@@ -44,14 +45,10 @@ export const AddChannelMembersModalContent = ({ onClose }: AddChannelMemberModal
 
   const onSubmit = (data: AddChannelMemberForm) => {
     if (data.add_members && data.add_members.length > 0) {
-      const promises = data.add_members.map(async (member) => {
-        return createDoc('Raven Channel Member', {
-          channel_id: channelID,
-          user_id: member.name
-        })
+      call({
+        channel_id: channelID,
+        members: data.add_members.map((member) => member.name)
       })
-
-      Promise.all(promises)
         .then(() => {
           toast.success("Members added")
           mutate(["channel_members", channelID])
@@ -66,10 +63,13 @@ export const AddChannelMembersModalContent = ({ onClose }: AddChannelMemberModal
         <FormProvider {...methods}>
           <form onSubmit={handleSubmit(onSubmit)}>
             <Dialog.Title>
-              <Text>Add members to&nbsp; <ChannelIcon type={channel?.channelData.type} size='18' className='inline-block -mb-0.5' /> {channel?.channelData.channel_name}</Text>
+              <Text as='span'>Add members to <ChannelIcon type={channel?.channelData.type} size='18' className='inline-block -mb-0.5' />{channel?.channelData.channel_name}</Text>
             </Dialog.Title>
+            <Dialog.Description size='2'>
+              New members will be able to see all of <strong>{channel?.channelData.channel_name}</strong>'s history, including any files that have been shared in the channel.
+            </Dialog.Description>
 
-            <Flex gap='2' direction='column' width='100%'>
+            <Flex gap='2' pt='2' direction='column' width='100%'>
               <ErrorBanner error={error} />
               <Box width='100%'>
                 <Flex direction='column' gap='2'>
@@ -93,18 +93,17 @@ export const AddChannelMembersModalContent = ({ onClose }: AddChannelMemberModal
                     </Suspense>
                     <ErrorText>{methods.formState.errors.add_members?.message}</ErrorText>
                   </Flex>
-                  <Text size='1' weight='light'>New members will be able to see all of <strong>{channel?.channelData.channel_name}</strong>'s history, including any files that have been shared in the channel.</Text>
                 </Flex>
               </Box>
             </Flex>
 
             <Flex gap="3" mt="6" justify="end" align='center'>
-              <Dialog.Close disabled={creatingDoc}>
+              <Dialog.Close disabled={loading}>
                 <Button variant="soft" color="gray">Cancel</Button>
               </Dialog.Close>
-              <Button type='submit' disabled={creatingDoc}>
-                {creatingDoc && <Loader />}
-                {creatingDoc ? "Saving" : "Save"}
+              <Button type='submit' disabled={loading}>
+                {loading && <Loader className="text-white" />}
+                {loading ? "Saving" : "Save"}
               </Button>
             </Flex>
 

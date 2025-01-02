@@ -7,7 +7,6 @@ import { ChannelMembers } from "@/hooks/fetchers/useFetchChannelMembers"
 import { useParams } from "react-router-dom"
 interface JoinChannelBoxProps {
     channelData?: ChannelListItem,
-    channelMembers: ChannelMembers,
     user: string,
 }
 
@@ -33,7 +32,7 @@ export const JoinChannelBox = ({ channelData, user }: JoinChannelBoxProps) => {
                 direction='column'
                 align='center'
                 gap={channelData ? '3' : '2'}
-                className="border-2 rounded-md bg-surface border-accent-a6 animate-fadein"
+                className="border border-gray-6 rounded-md bg-surface animate-fadein sm:mb-0 mb-2"
                 p={channelData ? '4' : '3'}>
                 <ErrorBanner error={error} />
                 <Text as='span' size={'2'}>You are not a member of this {channelData ? 'channel' : 'thread'}.</Text>
@@ -41,8 +40,8 @@ export const JoinChannelBox = ({ channelData, user }: JoinChannelBoxProps) => {
                     onClick={joinChannel}
                     size={channelData ? '2' : '1'}
                     disabled={loading}>
-                    {loading && <Loader />}
-                    {loading ? 'Joining' : <span className="inline-flex gap-1">Join {channelData ? `${channelData?.channel_name}` : "Conversation"}
+                    {loading && <Loader className="text-white" />}
+                    {loading ? 'Joining' : <span className="inline-flex gap-1 not-cal font-medium">Join {channelData ? `${channelData?.channel_name}` : "Conversation"}
                     </span>}
                 </Button>
             </Flex>

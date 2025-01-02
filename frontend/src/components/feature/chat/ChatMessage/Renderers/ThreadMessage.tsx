@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom"
+import { Link, useParams } from "react-router-dom"
 import { Message } from "../../../../../../../types/Messaging/Message"
 import { Button, Flex, Text } from "@radix-ui/themes"
 import { useFrappeGetDocCount } from "frappe-react-sdk"
@@ -7,6 +7,8 @@ import { useFrappeDocumentEventListener } from "frappe-react-sdk"
 import { useFrappeEventListener } from "frappe-react-sdk"
 
 export const ThreadMessage = ({ thread }: { thread: Message }) => {
+
+    const { workspaceID } = useParams()
 
     return (
         <div className="mt-2">
@@ -17,7 +19,7 @@ export const ThreadMessage = ({ thread }: { thread: Message }) => {
                     color="gray"
                     variant={'ghost'}
                     className={'not-cal w-fit hover:bg-transparent hover:underline cursor-pointer'}>
-                    <Link to={`/channel/${thread.channel_id}/thread/${thread.name}`}>View Thread</Link>
+                    <Link to={`/${workspaceID}/${thread.channel_id}/thread/${thread.name}`}>View Thread</Link>
                 </Button>
             </Flex>
         </div>

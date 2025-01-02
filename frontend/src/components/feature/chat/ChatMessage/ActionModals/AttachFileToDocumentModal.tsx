@@ -148,7 +148,7 @@ const AttachFileToDocumentModal = ({ onClose, message }: AttachFileToDocumentMod
                         <Button variant="soft" color="gray">Cancel</Button>
                     </Dialog.Close>
                     <Button type='submit' disabled={loading}>
-                        {loading && <Loader />}
+                        {loading && <Loader className="text-white" />}
                         Attach
                     </Button>
                 </Flex>

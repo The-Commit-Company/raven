@@ -143,6 +143,7 @@ export default {
       },
       animation: {
         fadein: 'fadeIn .25s ease-out',
+        fadeinSlow: 'fadeIn 1s ease-in',
         'pulse-bounce': 'pulse-bounce 1.5s infinite',
       },
       keyframes: {

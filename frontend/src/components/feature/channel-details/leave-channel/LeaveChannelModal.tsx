@@ -67,7 +67,7 @@ export const LeaveChannelModal = ({ onClose, channelData, isDrawer, closeDetails
                 </DialogCancel>
                 <DialogAction>
                     <Button variant="solid" color="red" onClick={onSubmit} disabled={deletingDoc}>
-                        {deletingDoc && <Loader />}
+                        {deletingDoc && <Loader className="text-white" />}
                         {deletingDoc ? "Leaving" : "Leave"}
                     </Button>
                 </DialogAction>

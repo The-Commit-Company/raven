@@ -35,6 +35,7 @@ import { BiPlus } from 'react-icons/bi'
 import clsx from 'clsx'
 import { ChannelMembers } from '@/hooks/fetchers/useFetchChannelMembers'
 import TimestampRenderer from '../ChatMessage/Renderers/TiptapRenderer/TimestampRenderer'
+import { useParams } from 'react-router-dom'
 const MobileInputActions = lazy(() => import('./MobileActions/MobileInputActions'))
 
 const lowlight = createLowlight(common)
@@ -101,6 +102,8 @@ const Tiptap = ({ isEdit, slotBefore, fileProps, onMessageSend, channelMembers, 
     }, [channelMembers, enabledUsers])
 
     const { channels } = useContext(ChannelListContext) as ChannelListContextType
+
+    const { workspaceID } = useParams()
 
     // this is a dummy extension only to create custom keydown behavior
     const KeyboardHandler = Extension.create({
@@ -386,7 +389,7 @@ const Tiptap = ({ isEdit, slotBefore, fileProps, onMessageSend, channelMembers, 
             },
             suggestion: {
                 items: (query) => {
-                    return channels.filter((channel) => channel.channel_name.toLowerCase().startsWith(query.query.toLowerCase()))
+                    return channels.filter((channel) => channel.workspace === workspaceID && channel.channel_name.toLowerCase().startsWith(query.query.toLowerCase()))
                         .slice(0, 10);
                 },
                 // char: '#',

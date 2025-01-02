@@ -60,7 +60,7 @@ export const ChangeChannelTypeModal = ({ onClose, channelData, newChannelType }:
                     <Button variant="soft" color="gray">Cancel</Button>
                 </Dialog.Close>
                 <Button onClick={() => changeChannelType(newChannelType)} disabled={updatingDoc}>
-                    {updatingDoc && <Loader />}
+                    {updatingDoc && <Loader className="text-white" />}
                     {updatingDoc ? "Saving" : `Change to ${newChannelType.toLocaleLowerCase()}`}
                 </Button>
             </Flex>

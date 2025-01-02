@@ -1,5 +1,6 @@
 import { Label } from "@/components/common/Form"
 import { UserAvatar } from "@/components/common/UserAvatar"
+import { HStack } from "@/components/layout/Stack"
 import { useIsDesktop } from "@/hooks/useMediaQuery"
 import { ChannelListContext, ChannelListContextType, ChannelListItem } from "@/utils/channel/ChannelListProvider"
 import { ChannelIcon } from "@/utils/layout/channelIcon"
@@ -8,6 +9,7 @@ import { TextField, Text } from "@radix-ui/themes"
 import clsx from "clsx"
 import { useMultipleSelection, useCombobox } from "downshift"
 import { useContext, useMemo, useState } from "react"
+import { BiBuildings } from "react-icons/bi"
 
 interface UsersOrChannelsDropdownProps {
     label?: string,
@@ -214,10 +216,16 @@ const UsersOrChannelsDropdown = ({ selectedOptions, setSelectedOptions, label = 
                             )} key={`${item.name}`}
                                 {...getItemProps({ item, index })}>
                                 {'channel_name' in item ?
-                                    <>
-                                        <ChannelIcon type={item.type} size='14' />
-                                        <Text as='span' weight='medium' size='2'>{item.channel_name}</Text>
-                                    </>
+                                    <HStack justify='between' width='100%'>
+                                        <HStack gap='1' align='center'>
+                                            <ChannelIcon type={item.type} size='14' />
+                                            <Text as='span' weight='medium' size='2'>{item.channel_name}</Text>
+                                        </HStack>
+                                        <HStack gap='1' align='center'>
+                                            <BiBuildings color='gray' />
+                                            <Text size='1' color='gray'>{item.workspace}</Text>
+                                        </HStack>
+                                    </HStack>
                                     :
                                     <>
                                         <UserAvatar src={item.user_image ?? ''} alt={item.full_name} size='2' />

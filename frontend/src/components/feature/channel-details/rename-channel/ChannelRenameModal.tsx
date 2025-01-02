@@ -103,7 +103,7 @@ export const RenameChannelModalContent = ({ channelID, channelName, type, onClos
                         <Button variant="soft" color="gray">Cancel</Button>
                     </Dialog.Close>
                     <Button type='submit' disabled={updatingDoc}>
-                        {updatingDoc && <Loader />}
+                        {updatingDoc && <Loader className="text-white" />}
                         {updatingDoc ? "Saving" : "Save"}
                     </Button>
                 </Flex>

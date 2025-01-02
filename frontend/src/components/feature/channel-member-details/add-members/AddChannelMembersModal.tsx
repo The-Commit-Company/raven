@@ -25,7 +25,8 @@ const AddChannelMembersModal = ({
     if (isDesktop) {
         return (
             <Dialog.Root open={open} onOpenChange={setOpen}>
-                <Dialog.Content className={clsx(DIALOG_CONTENT_CLASS, 'static')}>
+                {/* The backdrop is removed in this case because we don't want the backdrop blur to appear in front of the dropdown contents */}
+                <Dialog.Content className='static'>
                     <AddChannelMembersModalContent
                         onClose={onClose}
                     />

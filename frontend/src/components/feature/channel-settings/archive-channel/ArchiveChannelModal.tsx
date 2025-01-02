@@ -25,7 +25,7 @@ export const ArchiveChannelModal = ({ onClose, onCloseViewDetails, channelData, 
         }).then(() => {
             onClose()
             onCloseViewDetails()
-            navigate('/channel')
+            navigate(`/${channelData.workspace}`)
             toast('Channel archived')
         })
     }
@@ -46,8 +46,8 @@ export const ArchiveChannelModal = ({ onClose, onCloseViewDetails, channelData, 
                 <Text size='2'>Please understand that when you archive <strong>{channelData?.channel_name}</strong>:</Text>
                 <Flex direction='column'>
                     <ul className={'list-inside'}>
-                        <li><Text size='1'>It will be removed from your channel list</Text></li>
-                        <li><Text size='1'>No one will be able to send messages to this channel</Text></li>
+                        <li><Text size='2'>It will be removed from your channel list</Text></li>
+                        <li><Text size='2'>No one will be able to send messages to this channel</Text></li>
                     </ul>
                 </Flex>
                 <Text size='2'>You will still be able to find the channel’s contents via search. And you can always unarchive the channel in the future, if you want.</Text>
@@ -61,7 +61,7 @@ export const ArchiveChannelModal = ({ onClose, onCloseViewDetails, channelData, 
                 </DialogCancel>
                 <DialogAction>
                     <Button variant="solid" color="red" onClick={archiveChannel} disabled={archivingDoc}>
-                        {archivingDoc && <Loader />}
+                        {archivingDoc && <Loader className="text-white" />}
                         {archivingDoc ? "Archiving" : "Archive"}
                     </Button>
                 </DialogAction>

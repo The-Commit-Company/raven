@@ -67,7 +67,7 @@ export const RemoveChannelMemberModal = ({ onClose, member }: RemoveChannelMembe
                     </AlertDialog.Cancel>
                     <AlertDialog.Action>
                         <Button variant="solid" color="red" onClick={onSubmit} disabled={deletingDoc}>
-                            {deletingDoc && <Loader />}
+                            {deletingDoc && <Loader className="text-white" />}
                             {deletingDoc ? "Removing" : "Remove"}
                         </Button>
                     </AlertDialog.Action>
@@ -95,7 +95,7 @@ export const RemoveChannelMemberModal = ({ onClose, member }: RemoveChannelMembe
                     Cancel
                 </Button>
                 <Button variant="solid" color="red" onClick={onSubmit} disabled={deletingDoc}>
-                    {deletingDoc && <Loader />}
+                    {deletingDoc && <Loader className="text-white" />}
                     {deletingDoc ? "Removing" : "Remove"}
                 </Button>
             </Flex>

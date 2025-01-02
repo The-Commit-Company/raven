@@ -56,7 +56,7 @@ export const DeleteMessageModal = ({ onClose, message }: DeleteMessageModalProps
                 </AlertDialog.Cancel>
                 <AlertDialog.Action>
                     <Button variant="solid" color="red" onClick={onSubmit} disabled={deletingDoc}>
-                        {deletingDoc && <Loader />}
+                        {deletingDoc && <Loader className="text-white" />}
                         {deletingDoc ? "Deleting" : "Delete"}
                     </Button>
                 </AlertDialog.Action>

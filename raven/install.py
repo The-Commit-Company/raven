@@ -37,8 +37,38 @@ def create_raven_user_for_administrator():
 
 
 def create_general_channel():
+	default_workspace = frappe.get_doc(
+		{
+			"doctype": "Raven Workspace",
+			"workspace_name": "Raven",
+			"type": "Public",
+		}
+	)
+	default_workspace.insert(ignore_permissions=True)
+
+	# Make all users a member of this workspace and set them as admins
+	users = frappe.get_all("Raven User")
+	for user in users:
+		try:
+			frappe.get_doc(
+				{
+					"doctype": "Raven Workspace Member",
+					"workspace": default_workspace.name,
+					"user": user.name,
+					"is_admin": True,
+				}
+			).insert(ignore_permissions=True)
+		except Exception as e:
+			pass  # nosemgrep
+
 	channel = [
-		{"doctype": "Raven Channel", "name": "general", "type": "Open", "channel_name": "General"}
+		{
+			"doctype": "Raven Channel",
+			"name": "general",
+			"type": "Open",
+			"channel_name": "General",
+			"workspace": default_workspace.name,
+		}
 	]
 
 	make_records(channel)

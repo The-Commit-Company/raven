@@ -41,6 +41,13 @@ const EmptyStateForChannel = ({ channelData }: EmptyStateForChannelProps) => {
     const { currentUser } = useContext(UserContext)
     const users = useGetUserRecords()
 
+    const { isAdmin } = useMemo(() => {
+        const channelMember = channelMembers[currentUser]
+        return {
+            isAdmin: channelMember?.is_admin == 1
+        }
+    }, [channelMembers, currentUser])
+
     return (
         <Flex direction='column' className={'p-2'} gap='2'>
             <Flex direction='column' gap='2'>
@@ -51,7 +58,7 @@ const EmptyStateForChannel = ({ channelData }: EmptyStateForChannelProps) => {
                 <Text size='2'>{users[channelData.owner]?.full_name} created this channel on <DateMonthYear date={channelData?.creation} />. This is the very beginning of the <strong>{channelData?.channel_name}</strong> channel.</Text>
                 {channelData?.channel_description && <Text size={'1'} color='gray'>{channelData?.channel_description}</Text>}
             </Flex>
-            {channelData?.is_archived == 0 && channelMembers[currentUser] && <Flex gap='4' className={'z-1'}>
+            {channelData?.is_archived == 0 && isAdmin && <Flex gap='4' className={'z-1'}>
                 <EditDescriptionButton channelData={channelData} />
                 {channelData?.type !== 'Open' && <AddMembersButton channelData={channelData} />}
             </Flex>}

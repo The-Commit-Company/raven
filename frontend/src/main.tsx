@@ -24,7 +24,7 @@ const registerServiceWorker = () => {
           .then((registration) => {
             // @ts-ignore
             window.frappePushNotification.initialize(registration).then(() => {
-              console.log("Frappe Push Notification initialized")
+              console.info("Frappe Push Notification initialized")
             })
           })
       })

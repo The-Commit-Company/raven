@@ -1,0 +1,20 @@
+[
+    {
+        "doctype": "Raven User",
+        "user": "test@example.com",
+        "type": "User",
+        "enabled": 1
+    },
+    {
+        "doctype": "Raven User",
+        "user": "test1@example.com",
+        "type": "User",
+        "enabled": 1
+    },
+    {
+        "doctype": "Raven User",
+        "user": "test2@example.com",
+        "type": "User",
+        "enabled": 1
+    }
+]

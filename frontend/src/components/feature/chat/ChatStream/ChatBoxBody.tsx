@@ -13,7 +13,7 @@ import { ReplyMessageBox } from "../ChatMessage/ReplyMessageBox/ReplyMessageBox"
 import { BiX } from "react-icons/bi"
 import ChatStream from "./ChatStream"
 import Tiptap from "../ChatInput/Tiptap"
-import useFetchChannelMembers from "@/hooks/fetchers/useFetchChannelMembers"
+import useFetchChannelMembers, { Member } from "@/hooks/fetchers/useFetchChannelMembers"
 import { useParams } from "react-router-dom"
 import clsx from "clsx"
 import { Stack } from "@/components/layout/Stack"
@@ -59,11 +59,11 @@ export const ChatBoxBody = ({ channelData }: ChatBoxBodyProps) => {
         clearSelectedMessage()
     }
 
-    const isUserInChannel = useMemo(() => {
+    const channelMemberProfile: Member | null = useMemo(() => {
         if (user && channelMembers) {
-            return user in channelMembers
+            return channelMembers[user] ?? null
         }
-        return false
+        return null
     }, [user, channelMembers])
 
     const { fileInputRef, files, setFiles, removeFile, uploadFiles, addFile, fileUploadProgress } = useFileUpload(channelData.name)
@@ -90,14 +90,49 @@ export const ChatBoxBody = ({ channelData }: ChatBoxBodyProps) => {
         return null
     }
 
+    const { canUserSendMessage, shouldShowJoinBox } = useMemo(() => {
 
-    const isDM = channelData?.is_direct_message === 1 || channelData?.is_self_message === 1
+        if (channelData.is_archived) {
+            return {
+                canUserSendMessage: false,
+                shouldShowJoinBox: false
+            }
+        }
+
+
+        if (channelData.type === 'Open') {
+            return {
+                canUserSendMessage: true,
+                shouldShowJoinBox: false
+            }
+        }
+
+        if (channelMemberProfile) {
+            return {
+                canUserSendMessage: true,
+                shouldShowJoinBox: false
+            }
+        }
+
+        const isDM = channelData?.is_direct_message === 1 || channelData?.is_self_message === 1
+
+        // If the channel data is loaded and the member profile is loaded, then check for this, else don't show anything.
+        if (!channelMemberProfile && !isDM && channelData && !isLoading) {
+            return {
+                shouldShowJoinBox: true,
+                canUserSendMessage: false
+            }
+        }
+
+        return { canUserSendMessage: false, shouldShowJoinBox: false }
+
+    }, [channelMemberProfile, channelData, isLoading])
+
 
     const { threadID } = useParams()
 
     return (
-        <Flex height='100%' direction='column' justify={'end'} pt='9' className={clsx("w-full overflow-hidden px-2", threadID ? "sm:pl-4" : "sm:px-4")}>
-
+        <ChatBoxBodyContainer>
             <FileDrop
                 files={files}
                 ref={fileInputRef}
@@ -109,8 +144,7 @@ export const ChatBoxBody = ({ channelData }: ChatBoxBodyProps) => {
                     channelID={channelData.name}
                     replyToMessage={handleReplyAction}
                 />
-                {channelData?.is_archived == 0 && (isUserInChannel || channelData?.type === 'Open')
-                    &&
+                {canUserSendMessage &&
                     <Stack>
                         <TypingIndicator channel={channelData.name} />
                         <Tiptap
@@ -137,16 +171,28 @@ export const ChatBoxBody = ({ channelData }: ChatBoxBodyProps) => {
                         />
                     </Stack>
                 }
-                {channelData && !isLoading && <>
-                    {channelData.is_archived == 0 && !isUserInChannel && channelData.type !== 'Open' && !isDM &&
-                        <JoinChannelBox
-                            channelData={channelData}
-                            channelMembers={channelMembers}
-                            user={user} />}
-                    {channelData.is_archived == 1 && <ArchivedChannelBox channelData={channelData} channelMembers={channelMembers} />}
-                </>}
+                {shouldShowJoinBox ?
+                    <JoinChannelBox
+                        channelData={channelData}
+                        user={user} /> : null}
+                <ArchivedChannelBox
+                    channelID={channelData.name}
+                    isArchived={channelData.is_archived}
+                    isMemberAdmin={channelMemberProfile?.is_admin}
+                />
             </FileDrop>
-        </Flex>
+        </ChatBoxBodyContainer>
     )
 
+}
+
+// Separate container to prevent re-rendering when the threadID changes
+
+const ChatBoxBodyContainer = ({ children }: { children: React.ReactNode }) => {
+
+    const { threadID } = useParams()
+
+    return <div className={clsx("flex flex-col overflow-hidden px-2 pt-16 justify-end h-full", threadID ? "sm:pl-4" : "sm:px-4")}>
+        {children}
+    </div>
 }

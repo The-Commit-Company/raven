@@ -8,6 +8,8 @@ export const useDoctypePreview = (doctype: string, docname: string) => {
     const { data, error, isLoading, mutate } = useFrappeGetCall('raven.api.document_link.get_preview_data', {
         doctype,
         docname
+    }, undefined, {
+        shouldRetryOnError: false
     })
 
     return {

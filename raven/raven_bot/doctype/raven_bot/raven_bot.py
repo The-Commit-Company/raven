@@ -242,6 +242,7 @@ class RavenBot(Document):
 		link_doctype: str = None,
 		link_document: str = None,
 		markdown: bool = False,
+		notification_name: str = None,
 	) -> str:
 		"""
 		Send a text message to a channel
@@ -271,6 +272,7 @@ class RavenBot(Document):
 				"bot": self.raven_user,
 				"link_doctype": link_doctype,
 				"link_document": link_document,
+				"notification": notification_name,
 			}
 		)
 		# Bots can probably send messages without permissions? Upto the end user to create bots.
@@ -313,6 +315,7 @@ class RavenBot(Document):
 		link_doctype: str = None,
 		link_document: str = None,
 		markdown: bool = False,
+		notification_name: str = None,
 	) -> str:
 		"""
 		Send a text message to a user in a Direct Message channel
@@ -333,7 +336,9 @@ class RavenBot(Document):
 		channel_id = self.create_direct_message_channel(user_id)
 
 		if channel_id:
-			return self.send_message(channel_id, text, link_doctype, link_document, markdown)
+			return self.send_message(
+				channel_id, text, link_doctype, link_document, markdown, notification_name
+			)
 
 	def get_last_message(self, channel_id: str = None, message_type: str = None) -> Document | None:
 		"""

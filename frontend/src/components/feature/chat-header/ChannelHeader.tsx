@@ -16,10 +16,12 @@ export const ChannelHeader = ({ channelData }: ChannelHeaderProps) => {
 
     // The channel header has the channel name, the channel type icon, edit channel name button, and the view or add members button
 
+    const lastWorkspace = localStorage.getItem('ravenLastWorkspace')
+
     return (
         <PageHeader>
             <Flex align='center'>
-                <Link to='/channel' className="block bg-transparent hover:bg-transparent active:bg-transparent sm:hidden">
+                <Link to={`/${lastWorkspace}`} className="block bg-transparent hover:bg-transparent active:bg-transparent sm:hidden">
                     <BiChevronLeft size='24' className="block text-gray-12" />
                 </Link>
                 <Flex gap='4' align={'center'} className="group animate-fadein pr-4">

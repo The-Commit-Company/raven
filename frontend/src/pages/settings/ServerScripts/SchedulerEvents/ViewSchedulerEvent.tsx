@@ -11,7 +11,7 @@ import { RavenSchedulerEvent } from "@/types/RavenIntegrations/RavenSchedulerEve
 import { isEmpty } from "@/utils/validations"
 import { Button, DropdownMenu, IconButton } from "@radix-ui/themes"
 import { useFrappeGetDoc, useFrappeUpdateDoc } from "frappe-react-sdk"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { FormProvider, useForm } from "react-hook-form"
 import { BiDotsVerticalRounded } from "react-icons/bi"
 import { useParams } from "react-router-dom"
@@ -101,6 +101,19 @@ const ViewSchedulerEventPage = ({ data, onUpdate }: { data: RavenSchedulerEvent,
         setIsOpen(false)
     }
 
+    useEffect(() => {
+
+        const down = (e: KeyboardEvent) => {
+            if (e.key === 's' && (e.metaKey || e.ctrlKey)) {
+                e.preventDefault()
+                methods.handleSubmit(onSubmit)()
+            }
+        }
+
+        document.addEventListener('keydown', down)
+        return () => document.removeEventListener('keydown', down)
+    }, [])
+
     const badges: HeaderBadge[] = data.disabled ? [{ label: "Disabled", color: "gray" }] : [{ label: "Enabled", color: "green" }]
 
     return (
@@ -126,7 +139,7 @@ const ViewSchedulerEventPage = ({ data, onUpdate }: { data: RavenSchedulerEvent,
                                 </DropdownMenu.Content>
                             </DropdownMenu.Root>
                             <Button type='submit' disabled={loading}>
-                                {loading && <Loader />}
+                                {loading && <Loader className="text-white" />}
                                 {loading ? "Saving" : "Save"}
                             </Button>
                         </HStack>

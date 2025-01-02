@@ -4,7 +4,7 @@ import { useCombobox } from "downshift";
 import { Filter, SearchResult, useSearch } from "frappe-react-sdk";
 import { useState } from "react";
 import { Label } from "../Form";
-import { Text, TextField } from "@radix-ui/themes";
+import { Text, TextField, VisuallyHidden } from "@radix-ui/themes";
 import { useIsDesktop } from "@/hooks/useMediaQuery";
 import clsx from "clsx";
 
@@ -20,10 +20,11 @@ export interface LinkFieldProps {
     dropdownClass?: string,
     required?: boolean,
     suggestedItems?: SearchResult[],
+    hideLabel?: boolean
 }
 
 
-const LinkField = ({ doctype, filters, label, placeholder, value, required, setValue, disabled, autofocus, dropdownClass, suggestedItems }: LinkFieldProps) => {
+const LinkField = ({ doctype, filters, hideLabel = false, label, placeholder, value, required, setValue, disabled, autofocus, dropdownClass, suggestedItems }: LinkFieldProps) => {
 
     const [searchText, setSearchText] = useState(value ?? '')
 
@@ -63,9 +64,13 @@ const LinkField = ({ doctype, filters, label, placeholder, value, required, setV
 
     return <div className="w-full">
         <div className="flex flex-col">
-            <Label className="w-fit" isRequired={required} {...getLabelProps()}>
-                {label}
-            </Label>
+            {hideLabel ? <VisuallyHidden>
+                <Label isRequired={required} {...getLabelProps()}></Label>
+            </VisuallyHidden> :
+                <Label className="w-fit" isRequired={required} {...getLabelProps()}>
+                    {label}
+                </Label>
+            }
             <TextField.Root
                 placeholder={placeholder ?? `Search ${doctype}`}
                 className='w-full'

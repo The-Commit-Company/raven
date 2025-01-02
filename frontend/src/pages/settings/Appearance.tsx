@@ -37,6 +37,7 @@ const Appearance = () => {
             fieldname: 'chat_style',
             value: style
         }).then(() => {
+            // @ts-expect-error
             window.frappe.boot.chat_style = style
             mutate()
             toast.success('Chat style updated')
@@ -54,14 +55,12 @@ const Appearance = () => {
                     description={__('Configure how you want the app to look.')}
                 />
 
-                <Stack gap='0' pt='2'>
-                    <Flex gap='4' direction='column' className={'dark:bg-slate-2'}>
-                        <Themes appearance={appearance} setAppearance={setAppearance} />
+                <Stack gap='6' pt='2'>
+                    <Themes appearance={appearance} setAppearance={setAppearance} />
 
-                        <Separator className={'w-full bg-slate-4'} />
+                    <Separator className={'w-full bg-slate-4'} />
 
-                        <ChatLayouts chatStyle={chatStyle?.message?.chat_style ?? 'Simple'} setChatStyle={setChatStyle} appearance={appearance} />
-                    </Flex>
+                    <ChatLayouts chatStyle={chatStyle?.message?.chat_style ?? 'Simple'} setChatStyle={setChatStyle} appearance={appearance} />
                 </Stack>
             </SettingsContentContainer>
         </PageContainer>

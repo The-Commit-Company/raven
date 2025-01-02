@@ -1,17 +1,16 @@
-import { Box, Checkbox, Flex, Text, RadioGroup, Button, Badge } from "@radix-ui/themes"
-import { BoxProps } from "@radix-ui/themes/dist/cjs/components/box"
+import { Box, Checkbox, Flex, Text, RadioGroup, Button, Badge, BoxProps } from "@radix-ui/themes"
 import { useEffect, useMemo, useState } from "react"
 import { UserFields } from "../../../../../utils/users/UserListProvider"
 import { PollMessage } from "../../../../../../../types/Messaging/Message"
 import { useFrappeDocumentEventListener, useFrappeGetCall, useFrappePostCall } from "frappe-react-sdk"
 import { RavenPoll } from "@/types/RavenMessaging/RavenPoll"
-import { ErrorBanner } from "@/components/layout/AlertBanner/ErrorBanner"
+import { ErrorBanner, getErrorMessage } from "@/components/layout/AlertBanner/ErrorBanner"
 import { RavenPollOption } from "@/types/RavenMessaging/RavenPollOption"
 
 import { ViewPollVotes } from "@/components/feature/polls/ViewPollVotes"
 import { toast } from "sonner"
 
-interface PollMessageBlockProps extends BoxProps {
+type PollMessageBlockProps = BoxProps & {
     message: PollMessage,
     user?: UserFields,
 }
@@ -143,6 +142,8 @@ const SingleChoicePoll = ({ data, messageID }: { data: Poll, messageID: string }
             'option_id': option.name
         }).then(() => {
             toast.success('Your vote has been submitted!')
+        }).catch((error) => {
+            toast.error(getErrorMessage(error))
         })
     }
 
@@ -181,6 +182,8 @@ const MultiChoicePoll = ({ data, messageID }: { data: Poll, messageID: string })
             'option_id': selectedOptions
         }).then(() => {
             toast.success('Your vote has been submitted!')
+        }).catch((error) => {
+            toast.error(getErrorMessage(error))
         })
     }
 

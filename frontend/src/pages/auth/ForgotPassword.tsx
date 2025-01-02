@@ -88,7 +88,7 @@ export const Component = () => {
                             <Button type="submit" disabled={isSubmitting}
                                 size='3'
                                 className="not-cal font-medium">
-                                {isSubmitting ? <Loader /> : "Reset Password"}
+                                {isSubmitting ? <Loader className="text-white" /> : "Reset Password"}
                             </Button>
                         </Flex>
                         <Flex direction="column" gap="1" align="center">

@@ -6,6 +6,7 @@ from frappe import _
 from frappe.model.document import Document
 
 from raven.notification import subscribe_user_to_topic, unsubscribe_user_to_topic
+from raven.utils import delete_channel_members_cache
 
 
 class RavenChannelMember(Document):
@@ -29,6 +30,22 @@ class RavenChannelMember(Document):
 
 	def before_validate(self):
 		self.last_visit = frappe.utils.now()
+
+	def validate(self):
+		if (
+			self.has_value_changed("is_admin")
+			and not self.flags.in_insert
+			and not self.flags.ignore_permissions
+		):
+			# Check if the user is an existing admin of the channel
+			if not frappe.db.exists(
+				"Raven Channel Member",
+				{"channel_id": self.channel_id, "user_id": frappe.session.user, "is_admin": 1},
+			):
+				frappe.throw(
+					_("You cannot make yourself an admin of a channel. Please ask another admin to do this."),
+					frappe.PermissionError,
+				)
 
 	def before_insert(self):
 		# 1. A user cannot be a member of a channel more than once
@@ -79,7 +96,7 @@ class RavenChannelMember(Document):
 					"message_type": "System",
 					"text": f"{member_name} was removed by {current_user_name} and {first_member_name} is the new admin of this channel.",
 				}
-			).insert()
+			).insert(ignore_permissions=True)
 		else:
 			# If the member who left is the current user, then add a system message to the channel mentioning that the user left
 			if member_name == current_user_name:
@@ -101,19 +118,11 @@ class RavenChannelMember(Document):
 						"message_type": "System",
 						"text": f"{current_user_name} removed {member_name}.",
 					}
-				).insert()
+				).insert(ignore_permissions=True)
 
 	def on_trash(self):
-
-		if self.flags.ignore_permissions:
-			return
-		if not self.check_if_user_is_member():
-			frappe.throw(
-				_("You don't have permission to remove members from this channel"),
-				frappe.PermissionError,
-			)
-
 		unsubscribe_user_to_topic(self.channel_id, self.user_id)
+		self.invalidate_channel_members_cache()
 
 	def check_if_user_is_member(self):
 		is_member = True
@@ -143,7 +152,9 @@ class RavenChannelMember(Document):
 		"""
 		Subscribe the user to the topic if the channel is not a DM
 		"""
-		is_direct_message = frappe.db.get_value("Raven Channel", self.channel_id, "is_direct_message")
+		is_direct_message = frappe.get_cached_value(
+			"Raven Channel", self.channel_id, "is_direct_message"
+		)
 
 		if not is_direct_message and self.allow_notifications:
 			subscribe_user_to_topic(self.channel_id, self.user_id)
@@ -163,7 +174,7 @@ class RavenChannelMember(Document):
 							"message_type": "System",
 							"text": f"{member_name} joined.",
 						}
-					).insert()
+					).insert(ignore_permissions=True)
 				else:
 					current_user_name = frappe.get_cached_value("Raven User", frappe.session.user, "full_name")
 					frappe.get_doc(
@@ -173,7 +184,9 @@ class RavenChannelMember(Document):
 							"message_type": "System",
 							"text": f"{current_user_name} added {member_name}.",
 						}
-					).insert()
+					).insert(ignore_permissions=True)
+
+		self.invalidate_channel_members_cache()
 
 	def on_update(self):
 		"""
@@ -182,7 +195,9 @@ class RavenChannelMember(Document):
 		old_doc = self.get_doc_before_save()
 		if old_doc:
 			if old_doc.allow_notifications != self.allow_notifications:
-				is_direct_message = frappe.db.get_value("Raven Channel", self.channel_id, "is_direct_message")
+				is_direct_message = frappe.get_cached_value(
+					"Raven Channel", self.channel_id, "is_direct_message"
+				)
 
 				if not is_direct_message:
 					if self.allow_notifications:
@@ -203,13 +218,19 @@ class RavenChannelMember(Document):
 					"message_type": "System",
 					"text": text,
 				}
-			).insert()
+			).insert(ignore_permissions=True)
+
+		self.invalidate_channel_members_cache()
 
 	def get_admin_count(self):
 		return frappe.db.count("Raven Channel Member", {"channel_id": self.channel_id, "is_admin": 1})
 
 	def is_thread(self):
 		return frappe.get_cached_value("Raven Channel", self.channel_id, "is_thread")
+
+	def invalidate_channel_members_cache(self):
+		if not self.flags.ignore_cache_invalidation:
+			delete_channel_members_cache(self.channel_id)
 
 
 def on_doctype_update():

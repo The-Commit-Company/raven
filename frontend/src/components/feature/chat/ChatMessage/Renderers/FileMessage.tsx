@@ -68,23 +68,29 @@ export const FileMessageBlock = memo(({ message, user, ...props }: FileMessageBl
                 <Flex align='center' gap='2'>
                     {isPDF && isDesktop && <PDFPreviewButton message={message} user={user} />}
                     <IconButton
-                        size='1'
+                        size={{
+                            md: '1',
+                            sm: '2',
+                        }}
                         title="Copy link"
                         color='gray'
                         onClick={copyLink}
                         variant="soft"
                     >
-                        <BiLink />
+                        <BiLink className="text-lg sm:text-base" />
                     </IconButton>
                     <IconButton
-                        size='1'
+                        size={{
+                            md: '1',
+                            sm: '2',
+                        }}
                         asChild
                         title="Download"
                         color='gray'
                         variant="soft"
                     >
                         <Link className='no-underline' href={message.file} download>
-                            {isDesktop ? <BiDownload /> : <BiShow />}
+                            {isDesktop ? <BiDownload className="text-lg sm:text-base" /> : <BiShow className="text-lg sm:text-base" />}
                         </Link>
                     </IconButton>
                 </Flex>
@@ -107,12 +113,15 @@ const PDFPreviewButton = ({ message, user }: {
         <Dialog.Root>
             <Dialog.Trigger>
                 <IconButton
-                    size='1'
+                    size={{
+                        md: '1',
+                        sm: '2',
+                    }}
                     color='gray'
                     variant="soft"
                     title='Preview'
                 >
-                    <BiShow />
+                    <BiShow className="text-lg sm:text-base" />
                 </IconButton>
             </Dialog.Trigger>
             <Dialog.Content className={clsx(DIALOG_CONTENT_CLASS, 'min-w-[64rem]')} size='4'>
@@ -129,7 +138,7 @@ const PDFPreviewButton = ({ message, user }: {
                 <Flex justify='end' gap='2' mt='3'>
                     <Button variant='soft' color='gray' asChild>
                         <Link className='no-underline' href={message.file} download>
-                            <BiDownload />
+                            <BiDownload size='18' />
                             Download
                         </Link>
                     </Button>

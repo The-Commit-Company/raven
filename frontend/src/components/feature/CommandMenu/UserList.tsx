@@ -5,7 +5,7 @@ import { UserListContext } from '@/utils/users/UserListProvider'
 import { Command } from 'cmdk'
 import { useContext } from 'react'
 import DMChannelItem from './DMChannelItem'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { useSetAtom } from 'jotai'
 import { commandMenuOpenAtom } from './CommandMenu'
 import { useFrappePostCall } from 'frappe-react-sdk'
@@ -32,6 +32,8 @@ const UserList = () => {
 
 const UserWithoutDMItem = ({ userID }: { userID: string }) => {
 
+    const { workspaceID } = useParams()
+
     const user = useGetUser(userID)
     const navigate = useNavigate()
     const setOpen = useSetAtom(commandMenuOpenAtom)
@@ -41,7 +43,12 @@ const UserWithoutDMItem = ({ userID }: { userID: string }) => {
         call({
             user_id: userID
         }).then((res) => {
-            navigate(`/channel/${res?.message}`)
+            if (workspaceID) {
+                navigate(`/${workspaceID}/${res?.message}`)
+            } else {
+                navigate(`/channel/${res?.message}`)
+            }
+
             setOpen(false)
         }).catch(err => {
             toast.error('Could not create a DM channel', {

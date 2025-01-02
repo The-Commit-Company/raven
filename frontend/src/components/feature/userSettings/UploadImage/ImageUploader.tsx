@@ -11,6 +11,7 @@ import { BiSolidTrash } from "react-icons/bi"
 import { UserAvatar, getInitials } from "@/components/common/UserAvatar"
 import useCurrentRavenUser from "@/hooks/useCurrentRavenUser"
 import { __ } from "@/utils/translations"
+import { getErrorMessage } from "@/components/layout/AlertBanner/ErrorBanner"
 
 interface ImageUploaderProps {
     /** Takes input MIME type as 'key' & array of extensions as 'value'; empty array - all extensions supported */
@@ -22,45 +23,43 @@ interface ImageUploaderProps {
 
 export const ImageUploader = ({ icon, accept = { 'image/*': ['.jpeg', '.jpg', '.png'] }, maxFileSize, ...props }: ImageUploaderProps) => {
 
-    const { call, error } = useFrappePostCall('frappe.client.set_value')
+    const { call } = useFrappePostCall('raven.api.raven_users.update_raven_user')
     const { myProfile, mutate } = useCurrentRavenUser()
+
+    const [isUploadImageModalOpen, setUploadImageModalOpen] = useState(false)
+    const [isDeleteImageModalOpen, setDeleteImageModalOpen] = useState(false)
 
     const uploadImage = (file: string) => {
         if (file) {
             call({
-                doctype: 'Raven User',
-                name: myProfile?.name,
-                fieldname: 'user_image',
-                value: file
+                user_image: file
             }).then(() => {
                 toast(__("Image uploaded successfully."))
                 mutate()
-            }).catch(() => {
-                toast(`There was an error while uploading the image. ${error ? error.exception ?? error.httpStatusText : null}`)
+                setUploadImageModalOpen(false)
+            }).catch((error) => {
+                toast(`There was an error while uploading the image.`, {
+                    description: getErrorMessage(error)
+                })
             })
         }
     }
 
-    const [isUploadImageModalOpen, setUploadImageModalOpen] = useState(false)
-    const [isDeleteImageModalOpen, setDeleteImageModalOpen] = useState(false)
+
 
     return (
         <Flex direction={'column'} gap='3'>
             <Box className={'relative'}>
                 {myProfile?.user_image ? <img src={myProfile?.user_image} alt={'User Image'} className="object-cover h-44 w-44 rounded-xl" />
                     : <UserAvatar alt={myProfile?.full_name} size={'9'} fallback={getInitials(myProfile?.full_name)} className={'h-44 w-44'} />}
-                <UploadImage open={isUploadImageModalOpen} setOpen={setUploadImageModalOpen} uploadImage={uploadImage} />
+                <UploadImage open={isUploadImageModalOpen} setOpen={setUploadImageModalOpen} uploadImage={uploadImage} userID={myProfile?.name ?? ''} />
                 {myProfile?.user_image && <DeleteImage open={isDeleteImageModalOpen} setOpen={setDeleteImageModalOpen} />}
             </Box>
         </Flex>
     )
 }
 
-export const UploadImage = ({ open, setOpen, uploadImage }: { open: boolean, setOpen: (open: boolean) => void, uploadImage: (file: string) => void }) => {
-
-    const onClose = () => {
-        setOpen(false)
-    }
+export const UploadImage = ({ open, setOpen, uploadImage, userID }: { open: boolean, setOpen: (open: boolean) => void, uploadImage: (file: string) => void, userID: string }) => {
 
     return (
         <Dialog.Root open={open} onOpenChange={setOpen}>
@@ -73,7 +72,7 @@ export const UploadImage = ({ open, setOpen, uploadImage }: { open: boolean, set
                 </Dialog.Trigger>
             </Tooltip>
             <Dialog.Content className={DIALOG_CONTENT_CLASS}>
-                <UploadImageModal onClose={onClose} uploadImage={uploadImage} />
+                <UploadImageModal uploadImage={uploadImage} doctype={"Raven User"} docname={userID} fieldname={"user_image"} />
             </Dialog.Content>
         </Dialog.Root>
     )
