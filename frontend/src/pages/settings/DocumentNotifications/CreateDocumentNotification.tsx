@@ -1,28 +1,32 @@
 import { Loader } from '@/components/common/Loader'
-import InstructionTemplateForm from '@/components/feature/settings/ai/InstructionTemplateForm'
+import DocumentNotificationForm from '@/components/feature/document-notifications/DocumentNotificationForm'
 import { ErrorBanner } from '@/components/layout/AlertBanner/ErrorBanner'
 import PageContainer from '@/components/layout/Settings/PageContainer'
 import SettingsContentContainer from '@/components/layout/Settings/SettingsContentContainer'
 import SettingsPageHeader from '@/components/layout/Settings/SettingsPageHeader'
-import { RavenBotInstructionTemplate } from '@/types/RavenAI/RavenBotInstructionTemplate'
+import { RavenDocumentNotification } from '@/types/RavenIntegrations/RavenDocumentNotification'
 import { Button } from '@radix-ui/themes'
 import { useFrappeCreateDoc } from 'frappe-react-sdk'
 import { useEffect } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router-dom'
 
-const CreateInstructionTemplate = () => {
+const CreateDocumentNotification = () => {
 
-    const { createDoc, loading, error } = useFrappeCreateDoc<RavenBotInstructionTemplate>()
+    const { createDoc, loading, error } = useFrappeCreateDoc<RavenDocumentNotification>()
 
-    const methods = useForm<RavenBotInstructionTemplate>({
-        disabled: loading
+    const methods = useForm<RavenDocumentNotification>({
+        disabled: loading,
+        defaultValues: {
+            enabled: 1,
+        }
     })
 
     const navigate = useNavigate()
 
-    const onSubmit = (data: RavenBotInstructionTemplate) => {
-        createDoc("Raven Bot Instruction Template", data)
+
+    const onSubmit = (data: RavenDocumentNotification) => {
+        createDoc("Raven Document Notification", data)
             .then((doc) => {
                 navigate(`../${doc.name}`)
             })
@@ -47,15 +51,15 @@ const CreateInstructionTemplate = () => {
                 <FormProvider {...methods}>
                     <SettingsContentContainer>
                         <SettingsPageHeader
-                            title='Create an Instruction Template'
+                            title='Create a Document Notification'
                             actions={<Button type='submit' disabled={loading}>
                                 {loading && <Loader className="text-white" />}
                                 {loading ? "Creating" : "Create"}
                             </Button>}
-                            breadcrumbs={[{ label: 'Instruction Templates', href: '../' }, { label: 'New Instruction Template', href: '' }]}
+                            breadcrumbs={[{ label: 'Document Notification', href: '../' }, { label: 'New Document Notification', href: '' }]}
                         />
                         <ErrorBanner error={error} />
-                        <InstructionTemplateForm />
+                        <DocumentNotificationForm />
                     </SettingsContentContainer>
                 </FormProvider>
             </form>
@@ -63,4 +67,4 @@ const CreateInstructionTemplate = () => {
     )
 }
 
-export const Component = CreateInstructionTemplate
+export const Component = CreateDocumentNotification

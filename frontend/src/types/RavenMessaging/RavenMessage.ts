@@ -1,8 +1,8 @@
 import { RavenMention } from './RavenMention'
 
 export interface RavenMessage{
-	name: string
 	creation: string
+	name: string
 	modified: string
 	owner: string
 	modified_by: string
@@ -28,7 +28,7 @@ export interface RavenMessage{
 	/**	Is Thread : Check - This message starts a thread	*/
 	is_thread?: 0 | 1
 	/**	Message Type : Select	*/
-	message_type?: "Text" | "Image" | "File" | "Poll"
+	message_type?: "Text" | "Image" | "File" | "Poll" | "System"
 	/**	Content : Long Text	*/
 	content?: string
 	/**	File : Attach	*/
@@ -61,4 +61,6 @@ export interface RavenMessage{
 	bot?: string
 	/**	Hide link preview : Check	*/
 	hide_link_preview?: 0 | 1
+	/**	Notification : Data - Linked to the notification that triggered this message	*/
+	notification?: string
 }
