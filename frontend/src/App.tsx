@@ -88,8 +88,8 @@ const router = createBrowserRouter(
 
             <Route path="document-notifications">
               <Route index lazy={() => import('./pages/settings/DocumentNotifications/DocumentNotificationList')} />
-              {/* <Route path="create" lazy={() => import('./pages/settings/DocumentNotifications/CreateDocumentNotification')} /> */}
-              {/* <Route path=":ID" lazy={() => import('./pages/settings/DocumentNotifications/ViewDocumentNotification')} /> */}
+              <Route path="create" lazy={() => import('./pages/settings/DocumentNotifications/CreateDocumentNotification')} />
+              <Route path=":ID" lazy={() => import('./pages/settings/DocumentNotifications/ViewDocumentNotification')} />
             </Route>
 
 
