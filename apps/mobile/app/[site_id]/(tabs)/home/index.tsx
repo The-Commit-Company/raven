@@ -6,6 +6,7 @@ import PlusIcon from '@assets/icons/PlusIcon.svg';
 import { SearchInput } from '@components/nativewindui/SearchInput';
 import ChannelList from '@components/features/chat/ChannelList/ChannelList';
 import DMList from '@components/features/chat/DMList/DMList';
+import { router } from 'expo-router';
 
 export default function Home() {
 
