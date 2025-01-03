@@ -24,7 +24,7 @@ export default function CreateChannel() {
 
     const siteInfo = useContext(SiteContext)
     const siteID = siteInfo?.sitename
-    const workspace = useGetCurrentWorkspace()
+    const { workspace } = useGetCurrentWorkspace()
 
     const { handleSubmit, reset: resetForm } = methods
     const { createDoc, error, loading: creatingChannel, reset: resetCreateHook } = useFrappeCreateDoc()
