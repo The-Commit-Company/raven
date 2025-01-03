@@ -5,17 +5,17 @@ import { Stack, useLocalSearchParams } from 'expo-router';
 import { Button } from '@components/nativewindui/Button';
 import { Text } from '@components/nativewindui/Text';
 import ChatStream from '@components/features/chat-stream/ChatStream';
+import { ChannelSettingsButton } from '@components/features/channel-settings/ChannelSettingsButton';
 
 const Chat = () => {
     const { id } = useLocalSearchParams();
-
-    console.log("Channel id: ", id);
 
     return (
         <>
             <Stack.Screen options={{
                 headerBackButtonDisplayMode: 'minimal',
                 title: id as string,
+                headerRight: () => <ChannelSettingsButton />
             }} />
             <View className='flex-1'>
                 <ChatStream channelID={id as string} />
