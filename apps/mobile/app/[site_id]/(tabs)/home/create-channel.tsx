@@ -1,4 +1,4 @@
-import CreateChannelForm, { ChannelCreationForm } from '@components/features/chat/CreateChannel/CreateChannelForm';
+import CreateChannelForm, { ChannelCreationForm } from '@components/features/channels/CreateChannel/CreateChannelForm';
 import { Link, router, Stack } from 'expo-router';
 import { Button } from '@components/nativewindui/Button';
 import { Text } from '@components/nativewindui/Text';
@@ -7,6 +7,9 @@ import { useColorScheme } from '@hooks/useColorScheme';
 import { FormProvider, useForm } from 'react-hook-form';
 import { useFrappeCreateDoc } from "frappe-react-sdk";
 import { ActivityIndicator } from '@components/nativewindui/ActivityIndicator';
+import { useContext } from 'react';
+import { SiteContext } from 'app/[site_id]/_layout';
+import { useGetCurrentWorkspace } from '@hooks/useGetCurrentWorkspace';
 
 export default function CreateChannel() {
 
@@ -19,8 +22,11 @@ export default function CreateChannel() {
         }
     })
 
-    const { handleSubmit, reset: resetForm } = methods
+    const siteInfo = useContext(SiteContext)
+    const siteID = siteInfo?.sitename
+    const workspace = useGetCurrentWorkspace()
 
+    const { handleSubmit, reset: resetForm } = methods
     const { createDoc, error, loading: creatingChannel, reset: resetCreateHook } = useFrappeCreateDoc()
 
     const reset = () => {
@@ -29,19 +35,21 @@ export default function CreateChannel() {
     }
 
     const onSubmit = async (data: ChannelCreationForm) => {
-        return createDoc('Raven Channel', data)
-            .then(result => {
-                if (result) {
-                    // TODO: Show success toast
-                    console.log("Channel created", result)
-                    // TODO: Navigate to channel
-                    // router.push(`/home/${result.name}`)
-                    reset()
-                    resetForm()
-                }
-            }).catch(err => {
-                console.log(err)
-            })
+        return createDoc('Raven Channel', {
+            ...data,
+            workspace: workspace
+        }).then(result => {
+            if (result) {
+                // TODO: Show success toast
+                console.log("Channel created", result)
+                // Navigate to channel
+                router.replace(`${siteID}/chat/${result.name}`)
+                reset()
+                resetForm()
+            }
+        }).catch(err => {
+            console.log(err)
+        })
     }
 
     return <>

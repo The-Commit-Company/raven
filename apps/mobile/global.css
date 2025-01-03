@@ -4,7 +4,7 @@
 
 @layer base {
     :root {
-        --background: 242 242 247;
+        --background: 248 248 248;
         --foreground: 0 0 0;
         --card: 255 255 255;
         --card-foreground: 8 28 30;
@@ -25,12 +25,12 @@
         --error-heading: 176 20 20;
         --error-border: 182 22 22;
         --linkColor: 230, 230, 235;
-        --grayText: 95, 101, 99;
+        --grayText: 140, 142, 139;
         --border: 220, 220, 225;
         --input: 210 210 215;
         --ring: 230 230 235;
 
-        --android-background: 249 249 255;
+        --android-background: 248 248 248;
         --android-foreground: 0 0 0;
         --android-card: 255 255 255;
         --android-card-foreground: 24 28 35;
@@ -51,7 +51,7 @@
         --android-error-heading: 176 20 20;
         --android-error-border: 182 22 22;
         --android-linkColor: 230, 230, 235;
-        --android-grayText: 95, 101, 99;
+        --android-grayText: 140, 142, 139;
         --android-border: 220, 220, 225;
         --android-input: 210 210 215;
         --android-ring: 215 217 228;
@@ -80,7 +80,7 @@
             --error-heading: 220 50 50;
             --error-border: 145 22 22;
             --linkColor: 26, 26, 26;
-            --grayText: 184, 188, 186;
+            --grayText: 113, 115, 112;
             --border: 40 40 42;
             --input: 55 55 57;
             --ring: 40 40 42;
@@ -106,7 +106,7 @@
             --android-error-heading: 220 50 50;
             --android-error-border: 145 22 22;
             --android-linkColor: 26, 26, 26;
-            --android-grayText: 184, 188, 186;
+            --android-grayText: 113, 115, 112;
             --android-border: 39 42 50;
             --android-input: 55 55 57;
             --android-ring: 39 42 50;
