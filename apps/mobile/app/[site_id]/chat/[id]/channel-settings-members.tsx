@@ -20,6 +20,7 @@ import TrashIcon from "@assets/icons/TrashIcon.svg"
 import CrownIcon from "@assets/icons/CrownIcon.svg"
 import useCurrentRavenUser from '@raven/lib/hooks/useCurrentRavenUser';
 import { useActionSheet } from '@expo/react-native-action-sheet';
+import { useCurrentChannelData } from '@hooks/useCurrentChannelData';
 
 configureReanimatedLogger({
     strict: false,
@@ -81,32 +82,31 @@ const ChannelMembers = () => {
                 bounces={false}
                 showsVerticalScrollIndicator={false}
             >
-                <View className='flex-1 pb-0'>
-                    <FlashList
-                        data={filteredMembers}
-                        renderItem={({ item }) => {
+                <FlashList
+                    data={filteredMembers}
+                    renderItem={({ item }) => {
 
-                            return (
-                                <ChannelMember member={item as Member} />
-                            )
-                        }}
-                        keyExtractor={(item) => item.name}
-                        estimatedItemSize={56}
-                        ItemSeparatorComponent={() => <Divider className='mx-0' />}
-                        bounces={false}
-                        showsVerticalScrollIndicator={false}
-                    />
-                </View>
+                        return (
+                            <ChannelMember member={item as Member} />
+                        )
+                    }}
+                    keyExtractor={(item) => item.name}
+                    estimatedItemSize={56}
+                    ItemSeparatorComponent={() => <Divider className='mx-0' />}
+                    bounces={false}
+                    showsVerticalScrollIndicator={false}
+                    ListEmptyComponent={() => {
+                        return (
+                            <View className='flex-1 items-center justify-center'>
+                                <Text className='text-gray-500 text-center font-medium'>No channel members found.</Text>
+                            </View>
+                        )
+                    }}
+                />
 
                 {!filteredMembers.length && debouncedText.length ? (
                     <View className='flex-1 items-center justify-center'>
                         <Text className='text-gray-500 text-center font-medium'>No results found for searched text "{debouncedText}"</Text>
-                    </View>
-                ) : null}
-
-                {filteredMembers.length === 0 && !debouncedText.length ? (
-                    <View className='flex-1 items-center justify-center'>
-                        <Text className='text-gray-500 text-center font-medium'>No channel members found.</Text>
                     </View>
                 ) : null}
             </KeyboardAwareScrollView>
@@ -121,8 +121,6 @@ const ChannelMembers = () => {
 export default ChannelMembers
 
 const ChannelMember = ({ member }: { member: Member }) => {
-
-    const { colors } = useColorScheme()
 
     const { id: channelId } = useLocalSearchParams()
 
@@ -206,26 +204,32 @@ const ChannelMember = ({ member }: { member: Member }) => {
 
     const { showActionSheetWithOptions } = useActionSheet();
 
+    const { channel } = useCurrentChannelData(channelId as string ?? "")
+
     const showActions = () => {
         let options = ['Make channel admin', 'Dismiss channel admin', 'Cancel'];
 
         const isAdmin = channelMembers[member.name].is_admin
 
-        showActionSheetWithOptions({
-            options,
-            cancelButtonIndex: 2,
-            disabledButtonIndices: isAdmin ? [0] : [1],
-            destructiveButtonIndex: isAdmin ? 1 : undefined,
-        }, async (selectedIndex: number | undefined) => {
-            switch (selectedIndex) {
-                case 0:
-                    await updateAdminStatus(1);
-                    break;
-                case 1:
-                    await updateAdminStatus(0);
-                    break;
-            }
-        });
+        if (channelMembers[currentUserInfo?.name ?? ""]?.is_admin === 1 && member.name !== currentUserInfo?.name && channel?.channelData.type !== "Open" && channel?.channelData.is_archived === 0) {
+
+            showActionSheetWithOptions({
+                options,
+                cancelButtonIndex: 2,
+                disabledButtonIndices: isAdmin ? [0] : [1],
+                destructiveButtonIndex: isAdmin ? 1 : undefined,
+            }, async (selectedIndex: number | undefined) => {
+                switch (selectedIndex) {
+                    case 0:
+                        await updateAdminStatus(1);
+                        break;
+                    case 1:
+                        await updateAdminStatus(0);
+                        break;
+                }
+            });
+
+        }
     }
 
     return (
