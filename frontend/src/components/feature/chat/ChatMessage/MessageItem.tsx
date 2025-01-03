@@ -305,7 +305,7 @@ export const MessageSenderAvatar = memo(({ user, userID, isActive = false }: Use
         }
 
         {isBot && <span className="absolute block translate-x-1/2 translate-y-1/2 transform rounded-full bottom-0.5 right-0.5">
-            <RiRobot2Fill className="text-accent-11 dark:text-accent-11" size="1rem" />
+            <RiRobot2Fill className="text-accent-11 dark:text-accent-11" size="16px" />
         </span>}
     </span>
     </Theme>

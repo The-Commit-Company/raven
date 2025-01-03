@@ -39,7 +39,7 @@ const FunctionList = (props: Props) => {
                         <Link to='create'>Create</Link>
                     </Button>}
                 />
-                {isLoading && !error && <TableLoader columns={2} />}
+                {isLoading && !error && <TableLoader columns={4} />}
                 <ErrorBanner error={error} />
                 <AINotEnabledCallout />
                 {data && data.length > 0 && <FunctionTable functions={data} />}
