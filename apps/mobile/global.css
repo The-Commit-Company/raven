@@ -4,7 +4,7 @@
 
 @layer base {
     :root {
-        --background: 242 242 247;
+        --background: 248 248 248;
         --foreground: 0 0 0;
         --card: 255 255 255;
         --card-foreground: 8 28 30;
@@ -26,7 +26,7 @@
         --input: 210 210 215;
         --ring: 230 230 235;
 
-        --android-background: 249 249 255;
+        --android-background: 248 248 248;
         --android-foreground: 0 0 0;
         --android-card: 255 255 255;
         --android-card-foreground: 24 28 35;
