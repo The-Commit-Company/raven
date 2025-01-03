@@ -216,7 +216,6 @@ const ChannelMember = ({ member }: { member: Member }) => {
             cancelButtonIndex: 2,
             disabledButtonIndices: isAdmin ? [0] : [1],
             destructiveButtonIndex: isAdmin ? 1 : undefined,
-            icons: [<TrashIcon width={20} height={20} fill={colors.icon} />]
         }, async (selectedIndex: number | undefined) => {
             switch (selectedIndex) {
                 case 0:
