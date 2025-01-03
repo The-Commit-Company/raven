@@ -26,7 +26,8 @@ export const SettingsSidebar = () => {
                 <SettingsGroup title='Integrations' icon={BsBoxes}>
                     {/* <SettingsSidebarItem title="ERPNext" to='erpnext' /> */}
                     <SettingsSidebarItem title="HR" to='hr' />
-                    {/* <SettingsSidebarItem title='Notifications' to='notifications' /> */}
+                    <SettingsSidebarItem title='Document Notifications' to='document-notifications' />
+                    <SettingsSidebarItem title="Document Previews" to='document-previews' />
                     <SettingsSidebarItem title="Message Actions" to='message-actions' />
                     <SettingsSidebarItem title="Scheduled Messages" to='scheduled-messages' />
                     <SettingsSidebarItem title="Webhooks" to='webhooks' />

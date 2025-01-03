@@ -6,6 +6,7 @@ import SettingsContentContainer from "@/components/layout/Settings/SettingsConte
 import SettingsPageHeader from "@/components/layout/Settings/SettingsPageHeader"
 import { Button } from "@radix-ui/themes"
 import { useFrappeCreateDoc } from "frappe-react-sdk"
+import { useEffect } from "react"
 import { FormProvider, useForm } from "react-hook-form"
 import { useNavigate } from "react-router-dom"
 import { toast } from "sonner"
@@ -50,6 +51,19 @@ const CreateSchedulerEvent = () => {
                 toast.success("Scheduled Message created")
             })
     }
+
+    useEffect(() => {
+
+        const down = (e: KeyboardEvent) => {
+            if (e.key === 's' && (e.metaKey || e.ctrlKey)) {
+                e.preventDefault()
+                methods.handleSubmit(onSubmit)()
+            }
+        }
+
+        document.addEventListener('keydown', down)
+        return () => document.removeEventListener('keydown', down)
+    }, [])
     //TODO: Figure out a way to show _server_messages in the UI (especially the script editor might have some errors that we need to show to the user)
     return (
         <PageContainer>

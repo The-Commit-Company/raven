@@ -1,6 +1,8 @@
+import { getErrorMessage } from '@/components/layout/AlertBanner/ErrorBanner'
 import { useFrappeAuth, useSWRConfig } from 'frappe-react-sdk'
 import { FC, PropsWithChildren } from 'react'
 import { createContext } from 'react'
+import { toast } from 'sonner'
 
 interface UserContextProps {
     isLoading: boolean,
@@ -23,6 +25,7 @@ export const UserProvider: FC<PropsWithChildren> = ({ children }) => {
 
     const handleLogout = async () => {
         localStorage.removeItem('ravenLastChannel')
+        localStorage.removeItem('ravenLastWorkspace')
         localStorage.removeItem('app-cache')
         return logout()
             .then(() => {
@@ -44,6 +47,11 @@ export const UserProvider: FC<PropsWithChildren> = ({ children }) => {
                 }
 
                 // window.location.reload()
+            })
+            .catch((error) => {
+                toast.error('Failed to logout', {
+                    description: getErrorMessage(error)
+                })
             })
     }
 

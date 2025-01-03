@@ -1,0 +1,75 @@
+import CreateChannelForm, { ChannelCreationForm } from '@components/features/chat/CreateChannel/CreateChannelForm';
+import { Link, router, Stack } from 'expo-router';
+import { Button } from '@components/nativewindui/Button';
+import { Text } from '@components/nativewindui/Text';
+import CrossIcon from '@assets/icons/CrossIcon.svg';
+import { useColorScheme } from '@hooks/useColorScheme';
+import { FormProvider, useForm } from 'react-hook-form';
+import { useFrappeCreateDoc } from "frappe-react-sdk";
+import { ActivityIndicator } from '@components/nativewindui/ActivityIndicator';
+
+export default function CreateChannel() {
+
+    const { colors } = useColorScheme()
+    const methods = useForm<ChannelCreationForm>({
+        defaultValues: {
+            type: 'Public',
+            channel_name: '',
+            channel_description: ''
+        }
+    })
+
+    const { handleSubmit, reset: resetForm } = methods
+
+    const { createDoc, error, loading: creatingChannel, reset: resetCreateHook } = useFrappeCreateDoc()
+
+    const reset = () => {
+        resetCreateHook()
+        resetForm()
+    }
+
+    const onSubmit = async (data: ChannelCreationForm) => {
+        return createDoc('Raven Channel', data)
+            .then(result => {
+                if (result) {
+                    // TODO: Show success toast
+                    console.log("Channel created", result)
+                    // TODO: Navigate to channel
+                    // router.push(`/home/${result.name}`)
+                    reset()
+                    resetForm()
+                }
+            }).catch(err => {
+                console.log(err)
+            })
+    }
+
+    return <>
+        <Stack.Screen options={{
+            title: 'Add channel',
+            headerLeft() {
+                return (
+                    <Link asChild href="../" relativeToDirectory>
+                        <Button variant="plain" className="ios:px-0" hitSlop={10}>
+                            <CrossIcon fill={colors.icon} height={24} width={24} />
+                        </Button>
+                    </Link>
+                )
+            },
+            headerRight() {
+                return (
+                    <Button variant="plain" className="ios:px-0"
+                        onPress={handleSubmit(onSubmit)}
+                        disabled={creatingChannel}>
+                        {creatingChannel ?
+                            <ActivityIndicator size="small" color={colors.primary} /> :
+                            <Text className="text-primary">Add</Text>}
+                    </Button>
+                )
+            },
+        }} />
+        <FormProvider {...methods}>
+            <CreateChannelForm />
+        </FormProvider>
+    </>
+}

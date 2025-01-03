@@ -6,14 +6,18 @@ const HomeLayout = () => {
     const { colors } = useColorScheme()
 
     return (
-        <Stack screenOptions={{
-            headerShadowVisible: false,
-            headerStyle: { backgroundColor: colors.primary }
-        }}>
+        <Stack>
             <Stack.Screen name='index'
                 options={{
                     title: 'Home',
-                    headerShown: false
+                    headerShown: false,
+                    headerShadowVisible: false,
+                    headerStyle: { backgroundColor: colors.primary }
+                }} />
+            <Stack.Screen name='create-channel'
+                options={{
+                    presentation: 'modal',
+                    headerStyle: { backgroundColor: colors.background }
                 }} />
         </Stack>
     )

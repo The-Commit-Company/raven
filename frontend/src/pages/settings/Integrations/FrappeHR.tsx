@@ -38,6 +38,9 @@ const FrappeHR = () => {
 
     const { updateDoc, loading: updatingDoc, error } = useFrappeUpdateDoc<RavenSettings>()
 
+    //@ts-expect-error
+    const isHRInstalled = window?.frappe?.boot?.versions?.hrms !== undefined
+
     const onSubmit = (data: RavenSettings) => {
         toast.promise(updateDoc('Raven Settings', null, {
             ...(ravenSettings ?? {}),
@@ -56,8 +59,18 @@ const FrappeHR = () => {
 
     }
 
-    //@ts-expect-error
-    const isHRInstalled = window?.frappe?.boot?.versions?.hrms !== undefined
+    useEffect(() => {
+
+        const down = (e: KeyboardEvent) => {
+            if (e.key === 's' && (e.metaKey || e.ctrlKey)) {
+                e.preventDefault()
+                methods.handleSubmit(onSubmit)()
+            }
+        }
+
+        document.addEventListener('keydown', down)
+        return () => document.removeEventListener('keydown', down)
+    }, [])
 
     const autoCreateDepartment = watch('auto_create_department_channel')
 
