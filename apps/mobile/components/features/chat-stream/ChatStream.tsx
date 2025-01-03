@@ -14,7 +14,7 @@ type Props = {
 
 const ChatStream = ({ channelID }: Props) => {
 
-    const listRef = useRef<LegendListRef>(null)
+    const listRef = useRef<FlatList>(null)
 
     const { data, isLoading, error, mutate } = useChatStream(channelID, listRef)
 
@@ -29,14 +29,18 @@ const ChatStream = ({ channelID }: Props) => {
     if (data) {
         return (
             <View style={ContentContainerStyles}>
-                {/* <FlatList
+                <FlatList
                     data={data}
                     ref={listRef}
+                    onContentSizeChange={() => {
+                        setTimeout(() => {
+                            listRef.current?.scrollToEnd({ animated: false })
+                        }, 100)
+                    }}
                     renderItem={MessageContentRenderer}
                     keyExtractor={messageKeyExtractor}
-                // estimatedItemSize={getEstimatedItemSize}
-                /> */}
-                <LegendList
+                />
+                {/* <LegendList
                     ref={listRef}
                     data={data}
                     keyExtractor={messageKeyExtractor}
@@ -48,7 +52,7 @@ const ChatStream = ({ channelID }: Props) => {
                     getEstimatedItemSize={getEstimatedItemSize}
                     renderItem={MessageContentRenderer}
                     recycleItems
-                />
+                /> */}
             </View>
         )
     }

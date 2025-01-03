@@ -19,14 +19,14 @@ const Chat = () => {
             }} />
             <View className='flex-1'>
                 <ChatStream channelID={id as string} />
-                <View className='h-24 absolute bottom-0 w-full bg-white'>
+                {/* <View className='h-24 fixed bottom-0 w-full bg-white'>
                     <View className='px-4 py-2 flex-row h-full w-full gap-2 items-center justify-center'>
                         <TextInput
                             placeholder='Type a message...'
                             className='border h-12 border-border w-[80%] rounded-lg p-2' />
                         <Button size='icon'><Text>S</Text></Button>
                     </View>
-                </View>
+                </View> */}
             </View>
         </>
     )

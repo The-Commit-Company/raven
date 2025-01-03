@@ -20,7 +20,7 @@ export interface DateBlock {
 
 export type MessageDateBlock = Message | DateBlock
 
-const useChatStream = (channelID: string, listRef: React.RefObject<LegendListRef>) => {
+const useChatStream = (channelID: string, listRef: React.RefObject<FlatList>) => {
 
     const { data, isLoading, error, mutate } = useFrappeGetCall<GetMessagesResponse>('raven.api.chat_stream.get_messages', {
         channel_id: channelID,
@@ -29,10 +29,10 @@ const useChatStream = (channelID: string, listRef: React.RefObject<LegendListRef
         // TODO: Add base message
     }, undefined, {
         onSuccess: () => {
-            // listRef.current?.scrollToEnd()
+            // listRef.current?.scrollToEnd({ animated: false })
 
             // setTimeout(() => {
-            //     listRef.current?.scrollToEnd()
+            //     listRef.current?.scrollToEnd({ animated: false })
             // }, 100)
         }
     })
