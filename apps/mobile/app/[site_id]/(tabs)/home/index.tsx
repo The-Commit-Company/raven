@@ -36,8 +36,6 @@ export default function Home() {
                     </Pressable>
                 </View>
             </ScrollView>
-
-            <Text className='text-white px-3 py-2.5' onPress={() => router.push(`../chat/${"tamagui"}/channel-settings-members`)}>Go to channel settings (members)</Text>
         </SafeAreaView>
     )
 }
