@@ -1,6 +1,6 @@
 import { View, Platform } from "react-native"
 import { Text } from "@components/nativewindui/Text"
-import { useLocalSearchParams } from "expo-router"
+import { router, useLocalSearchParams } from "expo-router"
 import { Stack } from "expo-router"
 import { List, ListItem, ListRenderItemInfo, ListSectionHeader } from "@components/nativewindui/List";
 import { ArchiveChannelModal } from "@components/features/channel-settings/ArchiveChannelModal";
@@ -68,6 +68,12 @@ const ChannelSettings = () => {
             icon: <TrashIcon fill={'rgb(185, 28, 28)'} />,
             onPress: () => deleteSheetRef.current?.present(),
             titleClassName: 'text-lg text-red-700'
+        },
+        {
+            id: 'members',
+            title: 'View Members',
+            onPress: () => router.push(`../channel-settings-members`, { relativeToDirectory: true }),
+            titleClassName: 'text-lg'
         }
     ];
 
