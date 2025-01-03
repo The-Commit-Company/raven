@@ -9,7 +9,7 @@ export type WorkspaceFields = Pick<RavenWorkspace, 'name' | 'workspace_name' | '
 const useFetchWorkspaces = () => {
     return useFrappeGetCall<{ message: WorkspaceFields[] }>('raven.api.workspaces.get_list', undefined, 'workspaces_list', {
         revalidateOnFocus: false,
-        revalidateIfStale: false,
+        keepPreviousData: true
     })
 }
 

@@ -377,15 +377,13 @@ const ConditionWebhookForm = () => {
 
 export const DirectMessageItem = ({ user }: { user: UserFields }) => {
 
-    const userData = useGetUser(user?.name)
-
     return <Flex direction={'row'} gap={'2'} align={'center'}>
         <SidebarIcon>
-            <UserAvatar src={userData?.user_image} alt={userData?.full_name} size='1' />
+            <UserAvatar src={user?.user_image} alt={user?.full_name} size='1' />
         </SidebarIcon>
         <Flex justify='between'>
             <Text size='2' className="text-ellipsis line-clamp-1" >
-                {userData?.full_name ?? user?.name}
+                {user?.full_name ?? user?.name}
             </Text>
         </Flex>
     </Flex>
@@ -393,7 +391,7 @@ export const DirectMessageItem = ({ user }: { user: UserFields }) => {
 
 export const ChannelItem = ({ channel }: { channel: ChannelListItem }) => {
     return <HStack justify='between' width='100%'>
-        <Flex direction={'row'} gap={'2'} align={'center'}>
+        <Flex direction={'row'} gap={'1'} align={'center'}>
             <ChannelIcon type={channel.type} size='18' />
             <Flex justify='between' align={'center'} width='100%'>
                 <Text size='2' className="text-ellipsis line-clamp-1" as='span' >{channel.channel_name}</Text>
