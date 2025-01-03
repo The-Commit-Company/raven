@@ -13,7 +13,7 @@ const DirectMessagesLayout = () => {
             <Stack.Screen name='index'
                 options={{
                     title: 'Direct Messages',
-                    headerLargeTitle: true
+                    headerLargeTitle: false,
                 }} />
         </Stack>
     )
