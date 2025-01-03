@@ -2205,6 +2205,11 @@
     "@jridgewell/resolve-uri" "^3.1.0"
     "@jridgewell/sourcemap-codec" "^1.4.14"
 
+"@legendapp/list@^0.5.9":
+  version "0.5.9"
+  resolved "https://registry.yarnpkg.com/@legendapp/list/-/list-0.5.9.tgz#233173a2ad5e99a86afc66a6795c9fa469133702"
+  integrity sha512-lwIZAKmh27J4JAaTpw5lq1+LjH21+hEYIm7Tp3/+C/XnvuZ1G51ULPdjp22gGjCNMyjK6glC4wr3JgAh0/nkaA==
+
 "@mixmark-io/domino@^2.2.0":
   version "2.2.0"
   resolved "https://registry.yarnpkg.com/@mixmark-io/domino/-/domino-2.2.0.tgz#4e8ec69bf1afeb7a14f0628b7e2c0f35bdb336c3"
