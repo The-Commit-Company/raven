@@ -14,7 +14,7 @@ import { Text } from '@components/nativewindui/Text';
 import { Button } from '@components/nativewindui/Button';
 import { cn } from '@lib/cn';
 
-const Alert = React.forwardRef<AlertRef, {}>((_, ref) => {
+const Alert = React.forwardRef<AlertRef, AlertProps>((_, ref) => {
   const [open, setOpen] = React.useState(false);
   const [props, setProps] = React.useState<AlertProps | null>(null);
 
