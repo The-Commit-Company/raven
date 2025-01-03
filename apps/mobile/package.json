@@ -51,8 +51,6 @@
     "react-dom": "18.3.1",
     "react-native": "0.76.5",
     "react-native-gesture-handler": "~2.20.2",
-    "react-native-ios-context-menu": "^2.5.3",
-    "react-native-ios-utilities": "^4.5.2",
     "react-native-keyboard-controller": "^1.15.0",
     "react-native-reanimated": "~3.16.1",
     "react-native-safe-area-context": "4.12.0",
