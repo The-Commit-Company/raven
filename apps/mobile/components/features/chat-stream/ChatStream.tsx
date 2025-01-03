@@ -6,7 +6,6 @@ import { LegendList, LegendListRef } from '@legendapp/list'
 import DateSeparator from './DateSeparator'
 import SystemMessageBlock from './SystemMessageBlock'
 import MessageItem from './MessageItem'
-import { FlashList } from '@shopify/flash-list'
 
 type Props = {
     channelID: string
@@ -14,7 +13,7 @@ type Props = {
 
 const ChatStream = ({ channelID }: Props) => {
 
-    const listRef = useRef<FlatList>(null)
+    const listRef = useRef<LegendListRef>(null)
 
     const { data, isLoading, error, mutate } = useChatStream(channelID, listRef)
 
@@ -29,7 +28,7 @@ const ChatStream = ({ channelID }: Props) => {
     if (data) {
         return (
             <View style={ContentContainerStyles}>
-                <FlatList
+                {/* <FlatList
                     data={data}
                     ref={listRef}
                     onContentSizeChange={() => {
@@ -39,11 +38,12 @@ const ChatStream = ({ channelID }: Props) => {
                     }}
                     renderItem={MessageContentRenderer}
                     keyExtractor={messageKeyExtractor}
-                />
-                {/* <LegendList
+                /> */}
+                <LegendList
                     ref={listRef}
                     data={data}
                     keyExtractor={messageKeyExtractor}
+                    drawDistance={500}
                     alignItemsAtEnd
                     maintainVisibleContentPosition
                     initialScrollIndex={data.length - 1}
@@ -51,8 +51,8 @@ const ChatStream = ({ channelID }: Props) => {
                     maintainScrollAtEndThreshold={0.1}
                     getEstimatedItemSize={getEstimatedItemSize}
                     renderItem={MessageContentRenderer}
-                    recycleItems
-                /> */}
+                    recycleItems={false}
+                />
             </View>
         )
     }
