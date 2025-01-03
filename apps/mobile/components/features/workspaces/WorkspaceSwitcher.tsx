@@ -6,63 +6,36 @@ import ChevronDownIcon from '@assets/icons/ChevronDownIcon.svg';
 import { COLORS } from '@theme/colors';
 import UserAvatar from '@components/layout/UserAvatar'
 import useFetchWorkspaces, { WorkspaceFields } from '@raven/lib/hooks/useFetchWorkspaces';
-import { useContext, useEffect, useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import { Divider } from '@components/layout/Divider';
 import CheckFilledIcon from '@assets/icons/CheckFilledIcon.svg';
 import { useColorScheme } from '@hooks/useColorScheme';
-import { SiteContext } from 'app/[site_id]/_layout';
-import { addWorkspaceToStorage, getWorkspaceFromStorage } from '@lib/workspace';
+import { useGetCurrentWorkspace } from '@hooks/useGetCurrentWorkspace';
 
 const WorkspaceSwitcher = () => {
 
-    const bottomSheetRef = useSheetRef()
-
-    // Get the site ID from context
-    const siteInfo = useContext(SiteContext)
-    const siteID = siteInfo?.sitename
-
-    // Fetch workspaces
     const { data: workspaces } = useFetchWorkspaces()
 
-    // State to store the selected workspace
-    const [selectedWorkspace, setSelectedWorkspace] = useState<any>(null)
+    const workspace = useGetCurrentWorkspace()
+    const selectedWorkspace = workspaces?.message.find((w: WorkspaceFields) => w.name === workspace)
 
-    // Initialize Workspace
-    useEffect(() => {
-        const initializeWorkspace = async () => {
-            // Ensure siteID and workspaces are valid
-            if (!siteID || !workspaces || workspaces.message.length === 0) return
+    if (!selectedWorkspace) return null
 
-            try {
-                // Check AsyncStorage for a saved workspace
-                const savedWorkspace = await getWorkspaceFromStorage(siteID)
+    return (
+        <WorkSpaceSwitcherMenu
+            selectedWorkspace={selectedWorkspace}
+            workspaces={workspaces?.message || []} />
+    )
+}
 
-                if (savedWorkspace) {
-                    // If a workspace exists, set it as selected
-                    const existingWorkspace = workspaces.message.find(
-                        (workspace: any) => workspace.name === savedWorkspace
-                    )
-                    setSelectedWorkspace(existingWorkspace || workspaces.message[0]) // Fallback to the first workspace
-                } else {
-                    // No workspace found, save and select the first workspace
-                    const firstWorkspace = workspaces.message[0]
-                    await addWorkspaceToStorage(siteID, firstWorkspace.name)
-                    setSelectedWorkspace(firstWorkspace)
-                }
-            } catch (error) {
-                console.error("Error initializing workspace:", error)
-            }
-        }
-
-        initializeWorkspace()
-    }, [siteID, workspaces])
-
+const WorkSpaceSwitcherMenu = ({ selectedWorkspace, workspaces }: { selectedWorkspace: WorkspaceFields, workspaces: WorkspaceFields[] }) => {
+    const bottomSheetRef = useSheetRef()
     return (
         <View className='flex-1 gap-3'>
             <TouchableOpacity onPress={() => bottomSheetRef.current?.present()}>
                 <View className='flex-row items-center gap-2'>
                     <UserAvatar alt={selectedWorkspace?.workspace_name ?? 'Workspace Logo'}
-                        src={selectedWorkspace?.logo ?? ''}
+                        src={getLogo(selectedWorkspace)}
                         avatarProps={{ className: 'h-8 w-8' }} />
                     <View className='flex-row items-center gap-1'>
                         <Text className="text-white font-bold">{selectedWorkspace?.workspace_name}</Text>
@@ -72,7 +45,7 @@ const WorkspaceSwitcher = () => {
             </TouchableOpacity>
             <Sheet snapPoints={[500]} ref={bottomSheetRef}>
                 <BottomSheetView className='pb-16'>
-                    <SelectWorkspaceSheet selectedWorkspace={selectedWorkspace} workspaces={workspaces?.message || []} />
+                    <SelectWorkspaceSheet selectedWorkspace={selectedWorkspace} workspaces={workspaces} />
                 </BottomSheetView>
             </Sheet>
         </View>
@@ -141,8 +114,8 @@ const WorkSpaceRow = ({ workspace, isLast }: { workspace: Workspace, isLast: boo
             <View className='flex-row items-center gap-2'>
                 <UserAvatar
                     alt={workspace.workspace_name}
-                    src={workspace.logo}
-                    avatarProps={{ className: 'h-10 w-10' }}
+                    src={getLogo(workspace)}
+                    avatarProps={{ className: 'h-10 w-10 rounded-lg dark:border-border dark:border' }}
                 />
                 <View className='flex-1'>
                     <Text className='text-sm font-semibold'>{workspace.workspace_name}</Text>
@@ -157,6 +130,17 @@ const WorkSpaceRow = ({ workspace, isLast }: { workspace: Workspace, isLast: boo
             {!isLast && <Divider marginHorizontal={0} />}
         </View>
     )
+}
+
+const getLogo = (workspace: WorkspaceFields) => {
+
+    let logo = workspace?.logo || undefined
+
+    if (!logo && workspace?.workspace_name === 'Raven') {
+        logo = '/assets/raven/raven-logo.png'
+    }
+
+    return logo
 }
 
 export default WorkspaceSwitcher
