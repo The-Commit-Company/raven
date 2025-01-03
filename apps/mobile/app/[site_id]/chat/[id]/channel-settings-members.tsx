@@ -81,7 +81,7 @@ const ChannelMembers = () => {
 
         return (
             <Reanimated.View style={styleAnimation}>
-                <TouchableOpacity activeOpacity={0.6} onPress={onSubmit} style={{ width: 70, height: "100%" }} className="bg-red-500 items-center justify-center">
+                <TouchableOpacity activeOpacity={0.6} onPress={onSubmit} style={{ width: 70, height: "100%" }} className="bg-red-500 dark:bg-red-600 items-center justify-center">
                     <TrashIcon width={22} height={22} fill="white" />
                 </TouchableOpacity>
             </Reanimated.View>
@@ -104,6 +104,7 @@ const ChannelMembers = () => {
                         tintColor: colors.primary,
                         placeholder: "Search channel members...",
                     },
+                    headerStyle: { backgroundColor: colors.background }
                 }}
             />
             <KeyboardAwareScrollView

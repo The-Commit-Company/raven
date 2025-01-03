@@ -122,6 +122,7 @@ export default function AddNewChannelMembers() {
                     tintColor: colors.primary,
                     placeholder: "Search members...",
                 },
+                headerStyle: { backgroundColor: colors.background }
             }} />
 
             <KeyboardAwareScrollView
@@ -151,7 +152,7 @@ export default function AddNewChannelMembers() {
                                                     avatarProps={{ className: "w-10 h-10" }}
                                                 />
 
-                                                <View className='w-4 h-4 absolute -bottom-1.5 -right-1.5 items-center justify-center rounded-full border border-gray-100 bg-gray-500 z-50'>
+                                                <View className='w-4 h-4 absolute -bottom-1.5 -right-1.5 items-center justify-center rounded-full border border-gray-100 bg-gray-500 dark:bg-gray-600 z-50'>
                                                     <CrossIcon fill="white" height={13} width={13} />
                                                 </View>
                                             </TouchableOpacity>
