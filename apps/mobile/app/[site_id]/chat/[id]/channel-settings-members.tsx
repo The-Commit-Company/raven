@@ -5,7 +5,7 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { router, Stack, useLocalSearchParams } from 'expo-router';
 import { FlashList } from '@shopify/flash-list';
-import Reanimated, { SharedValue, useAnimatedStyle, ZoomOutLeft } from 'react-native-reanimated';
+import Reanimated, { configureReanimatedLogger, SharedValue, useAnimatedStyle, ZoomOutLeft } from 'react-native-reanimated';
 import { Member, useFetchChannelMembers } from '@raven/lib/hooks/useFetchChannelMembers';
 import { useDebounce } from '@raven/lib/hooks/useDebounce';
 import { UserFields } from '@raven/types/common/UserFields';
@@ -20,7 +20,10 @@ import ReanimatedSwipeable from 'react-native-gesture-handler/ReanimatedSwipeabl
 import TrashIcon from "@assets/icons/TrashIcon.svg"
 import CrownIcon from "@assets/icons/CrownIcon.svg"
 import useCurrentRavenUser from '@raven/lib/hooks/useCurrentRavenUser';
-import Animated from 'react-native-reanimated';
+
+configureReanimatedLogger({
+    strict: false,
+})
 
 const ChannelMembers = () => {
 
