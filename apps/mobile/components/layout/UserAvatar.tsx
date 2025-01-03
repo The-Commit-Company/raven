@@ -90,7 +90,8 @@ const ImageComponent = ({ status, source, alt, onDisplay, onError, ...props }: I
         style={styles.image}
         onDisplay={onDisplay}
         onError={onError}
-        {...props} />
+        {...props}
+    />
 }
 
 const styles = StyleSheet.create({
@@ -98,7 +99,7 @@ const styles = StyleSheet.create({
         flex: 1,
         width: '100%',
         height: '100%',
-        borderRadius: 8,
+        borderRadius: 6,
         aspectRatio: 1
     }
 })
