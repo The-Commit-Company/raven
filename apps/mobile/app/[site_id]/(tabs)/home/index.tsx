@@ -27,12 +27,12 @@ export default function Home() {
                     <ChannelList />
                     <Divider />
                     <DMList />
-                    <Divider />
+                    {/* <Divider />
                     <Pressable className='flex-row items-center p-5 rounded-lg'
                         onPress={() => console.log('Create channel pressed')}>
                         <PlusIcon fill={colors.icon} height={18} width={18} />
                         <Text className='ml-3 text-[16px]'>Add teammates</Text>
-                    </Pressable>
+                    </Pressable> */}
                 </View>
             </ScrollView>
         </SafeAreaView>

@@ -21,7 +21,7 @@
         --destructive: 255 56 43;
         --destructive-foreground: 255 255 255;
         --linkColor: 230, 230, 235;
-        --grayText: 95, 101, 99;
+        --grayText: 140, 142, 139;
         --border: 220, 220, 225;
         --input: 210 210 215;
         --ring: 230 230 235;
@@ -43,7 +43,7 @@
         --android-destructive: 186 26 26;
         --android-destructive-foreground: 255 255 255;
         --android-linkColor: 230, 230, 235;
-        --android-grayText: 95, 101, 99;
+        --android-grayText: 140, 142, 139;
         --android-border: 220, 220, 225;
         --android-input: 210 210 215;
         --android-ring: 215 217 228;
@@ -68,7 +68,7 @@
             --destructive: 254 67 54;
             --destructive-foreground: 255 255 255;
             --linkColor: 26, 26, 26;
-            --grayText: 184, 188, 186;
+            --grayText: 113, 115, 112;
             --border: 40 40 42;
             --input: 55 55 57;
             --ring: 40 40 42;
@@ -90,7 +90,7 @@
             --android-destructive: 147 0 10;
             --android-destructive-foreground: 255 255 255;
             --android-linkColor: 26, 26, 26;
-            --android-grayText: 184, 188, 186;
+            --android-grayText: 113, 115, 112;
             --android-border: 39 42 50;
             --android-input: 55 55 57;
             --android-ring: 39 42 50;

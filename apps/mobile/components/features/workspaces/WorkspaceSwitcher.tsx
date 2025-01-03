@@ -6,53 +6,98 @@ import ChevronDownIcon from '@assets/icons/ChevronDownIcon.svg';
 import { COLORS } from '@theme/colors';
 import UserAvatar from '@components/layout/UserAvatar'
 import useFetchWorkspaces, { WorkspaceFields } from '@raven/lib/hooks/useFetchWorkspaces';
-import { useMemo } from 'react';
+import { useContext, useEffect, useMemo, useState } from 'react';
 import { Divider } from '@components/layout/Divider';
-import CheckIcon from '@assets/icons/CheckIcon.svg';
+import CheckFilledIcon from '@assets/icons/CheckFilledIcon.svg';
 import { useColorScheme } from '@hooks/useColorScheme';
-import { useGlobalSearchParams } from 'expo-router';
-
+import { SiteContext } from 'app/[site_id]/_layout';
+import { addWorkspaceToStorage, getWorkspaceFromStorage } from '@lib/workspace';
 
 const WorkspaceSwitcher = () => {
 
     const bottomSheetRef = useSheetRef()
-    const { workspace_id } = useGlobalSearchParams();
 
-    console.log("Workspace ID: ", workspace_id);
+    // Get the site ID from context
+    const siteInfo = useContext(SiteContext)
+    const siteID = siteInfo?.sitename
+
+    // Fetch workspaces
+    const { data: workspaces } = useFetchWorkspaces()
+
+    // State to store the selected workspace
+    const [selectedWorkspace, setSelectedWorkspace] = useState<any>(null)
+
+    // Initialize Workspace
+    useEffect(() => {
+        const initializeWorkspace = async () => {
+            // Ensure siteID and workspaces are valid
+            if (!siteID || !workspaces || workspaces.message.length === 0) return
+
+            try {
+                // Check AsyncStorage for a saved workspace
+                const savedWorkspace = await getWorkspaceFromStorage(siteID)
+
+                if (savedWorkspace) {
+                    // If a workspace exists, set it as selected
+                    const existingWorkspace = workspaces.message.find(
+                        (workspace: any) => workspace.name === savedWorkspace
+                    )
+                    setSelectedWorkspace(existingWorkspace || workspaces.message[0]) // Fallback to the first workspace
+                } else {
+                    // No workspace found, save and select the first workspace
+                    const firstWorkspace = workspaces.message[0]
+                    await addWorkspaceToStorage(siteID, firstWorkspace.name)
+                    setSelectedWorkspace(firstWorkspace)
+                }
+            } catch (error) {
+                console.error("Error initializing workspace:", error)
+            }
+        }
+
+        initializeWorkspace()
+    }, [siteID, workspaces])
+
     return (
         <View className='flex-1 gap-3'>
             <TouchableOpacity onPress={() => bottomSheetRef.current?.present()}>
                 <View className='flex-row items-center gap-2'>
-                    <UserAvatar alt={'Workspace Logo'} avatarProps={{ className: 'h-8 w-8' }} />
+                    <UserAvatar alt={selectedWorkspace?.workspace_name ?? 'Workspace Logo'}
+                        src={selectedWorkspace?.logo ?? ''}
+                        avatarProps={{ className: 'h-8 w-8' }} />
                     <View className='flex-row items-center gap-1'>
-                        <Text className="text-white font-bold">Workspace</Text>
+                        <Text className="text-white font-bold">{selectedWorkspace?.workspace_name}</Text>
                         <ChevronDownIcon fill={COLORS.white} height={20} width={20} />
                     </View>
                 </View>
             </TouchableOpacity>
             <Sheet snapPoints={[500]} ref={bottomSheetRef}>
                 <BottomSheetView className='pb-16'>
-                    <SelectWorkspaceSheet />
+                    <SelectWorkspaceSheet selectedWorkspace={selectedWorkspace} workspaces={workspaces?.message || []} />
                 </BottomSheetView>
             </Sheet>
         </View>
     )
 }
 
-const SelectWorkspaceSheet = () => {
+type Workspace = WorkspaceFields & { isSelected?: boolean }
+interface SelectWorkspaceSheetProps {
+    selectedWorkspace: Workspace | undefined,
+    workspaces: Workspace[]
+}
 
-    const { data } = useFetchWorkspaces()
-
-    console.log("Data: ", data)
+const SelectWorkspaceSheet = ({ selectedWorkspace, workspaces }: SelectWorkspaceSheetProps) => {
 
     const { myWorkspaces, otherWorkspaces } = useMemo(() => {
-        const myWorkspaces: WorkspaceFields[] = []
-        const otherWorkspaces: WorkspaceFields[] = []
+        const myWorkspaces: Workspace[] = []
+        const otherWorkspaces: Workspace[] = []
 
-        if (data) {
-            data.message.forEach((workspace) => {
+        if (workspaces) {
+            workspaces.forEach((workspace) => {
                 if (workspace.workspace_member_name) {
                     myWorkspaces.push(workspace)
+                    if (workspace.name === selectedWorkspace?.name) {
+                        workspace.isSelected = true
+                    }
                 } else {
                     otherWorkspaces.push(workspace)
                 }
@@ -60,51 +105,56 @@ const SelectWorkspaceSheet = () => {
         }
 
         return { myWorkspaces, otherWorkspaces }
-    }, [data])
+    }, [workspaces])
 
     return (
         <View className='flex flex-col gap-5 px-4'>
-            <View className='flex flex-col gap-0'>
-                <Text className='text-lg font-semibold'>Your workspaces</Text>
-                <Text className='text-sm text-gray-500'>Quickly switch between your workspaces</Text>
-            </View>
-            <View className='flex flex-col gap-4'>
-                {myWorkspaces.map((workspace) => (
-                    <WorkSpaceRow key={workspace.name} workspace={workspace} />
+            <View className='flex flex-col gap-2 border border-border p-2 rounded-xl'>
+                {myWorkspaces.map((workspace, index) => (
+                    <WorkSpaceRow key={workspace.name}
+                        workspace={workspace}
+                        isLast={index === myWorkspaces.length - 1}
+                    />
                 ))}
             </View>
-            {otherWorkspaces.length > 0 && (
-                <>
-                    <Divider marginHorizontal={0} />
-                    <View className='flex flex-col gap-0'>
-                        <Text className='text-lg font-semibold'>Other workspaces</Text>
-                        <Text className='text-sm text-gray-500'>Workspaces that you are not a member of</Text>
-                    </View>
-                    <View className='flex flex-col gap-4'>
-                        {otherWorkspaces.map((workspace) => (
-                            <WorkSpaceRow key={workspace.name} workspace={workspace} />
+            {otherWorkspaces.length > 0 &&
+                <View className='flex flex-col gap-2'>
+                    <Text className='text-xs font-medium text-grayText'>Other workspaces</Text>
+                    <View className='flex flex-col gap-2 border border-border p-2 rounded-xl'>
+                        {otherWorkspaces.map((workspace, index) => (
+                            <WorkSpaceRow key={workspace.name}
+                                workspace={workspace}
+                                isLast={index === otherWorkspaces.length - 1}
+                            />
                         ))}
                     </View>
-                </>
-            )}
+                </View>
+            }
         </View>
     )
 }
 
-const WorkSpaceRow = ({ workspace }: { workspace: WorkspaceFields }) => {
+const WorkSpaceRow = ({ workspace, isLast }: { workspace: Workspace, isLast: boolean }) => {
     const { colors } = useColorScheme()
     return (
-        <View className='flex-row items-center gap-2'>
-            <UserAvatar alt={workspace.workspace_name}
-                src={workspace.logo}
-                avatarProps={{ className: 'h-10 w-10' }} />
-            <View className='flex-1'>
-                <Text className='text-sm font-semibold'>{workspace.workspace_name}</Text>
-                <Text className='text-sm text-gray-500'>{workspace.type}</Text>
+        <View className='flex flex-col gap-2'>
+            <View className='flex-row items-center gap-2'>
+                <UserAvatar
+                    alt={workspace.workspace_name}
+                    src={workspace.logo}
+                    avatarProps={{ className: 'h-10 w-10' }}
+                />
+                <View className='flex-1'>
+                    <Text className='text-sm font-semibold'>{workspace.workspace_name}</Text>
+                    <Text className='text-sm text-gray-500'>{workspace.type}</Text>
+                </View>
+                {workspace.isSelected &&
+                    <View className='mr-2'>
+                        <CheckFilledIcon fill={colors.primary} height={20} width={20} />
+                    </View>
+                }
             </View>
-            <View className='mr-2'>
-                <CheckIcon fill={colors.icon} height={20} width={20} />
-            </View>
+            {!isLast && <Divider marginHorizontal={0} />}
         </View>
     )
 }
