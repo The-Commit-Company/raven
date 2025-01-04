@@ -141,6 +141,7 @@ const AddWorkspaceForm = ({ onClose }: { onClose: (workspaceID?: string) => void
                         <FileUploadBox
                             file={image}
                             onFileChange={setImage}
+                            hideIfLimitReached
                             accept={{ 'image/*': ['.jpeg', '.jpg', '.png', '.svg', '.webp'] }}
                             maxFileSize={10}
                         />

@@ -13,7 +13,11 @@ export interface ReactionObject {
     // The users who reacted with this emoji
     users: string[],
     // The number of users who reacted with this emoji
-    count: number
+    count: number,
+    // Whether the emoji is a custom emoji
+    is_custom?: boolean,
+    // The name of the custom emoji
+    emoji_name: string
 }
 export const MessageReactions = ({ messageID, message_reactions }: { messageID: string, message_reactions?: string | null }) => {
 
@@ -21,11 +25,13 @@ export const MessageReactions = ({ messageID, message_reactions }: { messageID: 
 
     const { call: reactToMessage } = useFrappePostCall('raven.api.reactions.react')
 
-    const saveReaction = useCallback((emoji: string) => {
+    const saveReaction = useCallback((emoji: string, is_custom: boolean = false, emoji_name?: string) => {
         if (messageID) {
             return reactToMessage({
                 message_id: messageID,
-                reaction: emoji
+                reaction: emoji,
+                is_custom,
+                emoji_name
             })
         }
     }, [messageID, reactToMessage])
@@ -34,7 +40,10 @@ export const MessageReactions = ({ messageID, message_reactions }: { messageID: 
     const reactions: ReactionObject[] = useMemo(() => {
         //Parse the string to a JSON object and get an array of reactions
         const parsed_json = JSON.parse(message_reactions ?? '{}') as Record<string, ReactionObject>
-        return Object.values(parsed_json)
+        return Object.entries(parsed_json).map(([key, value]) => ({
+            ...value,
+            emoji_name: key
+        }))
     }, [message_reactions])
 
     if (reactions.length === 0) return null
@@ -59,7 +68,7 @@ export const MessageReactions = ({ messageID, message_reactions }: { messageID: 
     )
 }
 
-const AddReactionButton = ({ saveReaction }: { saveReaction: (emoji: string) => void }) => {
+const AddReactionButton = ({ saveReaction }: { saveReaction: (emoji: string, is_custom: boolean, emoji_name?: string) => void }) => {
 
     const [isOpen, setIsOpen] = useState(false)
 
@@ -79,20 +88,20 @@ const AddReactionButton = ({ saveReaction }: { saveReaction: (emoji: string) => 
 
 interface ReactionButtonProps {
     reaction: ReactionObject,
-    onReactionClick: (e: string) => void,
+    onReactionClick: (e: string, is_custom?: boolean, emoji_name?: string) => void,
     currentUser: string,
     allUsers: Record<string, any>
 }
 const ReactionButton = ({ reaction, onReactionClick, currentUser, allUsers }: ReactionButtonProps) => {
-    const { reaction: emoji, users, count } = reaction
+    const { reaction: emoji, users, count, emoji_name } = reaction
 
     const onClick = useCallback(() => {
-        onReactionClick(emoji)
+        onReactionClick(emoji, reaction.is_custom, emoji_name)
     }, [onReactionClick, emoji])
 
     const { label, currentUserReacted } = useMemo(() => {
         return {
-            label: `${getUsers(users, count, currentUser, allUsers)} reacted with ${emoji}`,
+            label: `${getUsers(users, count, currentUser, allUsers)} reacted with ${emoji_name}`,
             currentUserReacted: users.includes(currentUser)
         }
     }, [allUsers, count, currentUser, reaction, users])
@@ -103,11 +112,16 @@ const ReactionButton = ({ reaction, onReactionClick, currentUser, allUsers }: Re
         </p>}>
             <button
                 onClick={onClick}
-                className={clsx("w-fit sm:h-full text-xs py-0.5 cursor-pointer rounded-md min-w-[5ch] border font-semibold",
+                className={clsx("w-fit sm:h-full text-xs py-0.5 cursor-pointer rounded-md min-w-[4ch] border font-semibold",
                     currentUserReacted ? "bg-blue-50 border-blue-500 dark:border-gray-9 dark:bg-gray-7 sm:dark:hover:bg-gray-7" : "bg-gray-3 border-gray-3 sm:hover:bg-gray-2 sm:hover:border-gray-8 dark:bg-gray-5 sm:dark:hover:bg-gray-5 sm:dark:hover:border-gray-9")}>
-                <Text as='span' className={clsx("block min-w-[3.5ch] tabular-nums text-gray-12", currentUserReacted ? "text-blue-800 dark:text-gray-12" : "text-gray-12")}>
-                    {/* @ts-expect-error */}
-                    <em-emoji native={emoji}></em-emoji> {count}
+                <Text as='span' className={clsx("flex items-center gap-1 min-w-[3ch] tabular-nums text-gray-12", currentUserReacted ? "text-blue-800 dark:text-gray-12" : "text-gray-12")}>
+                    {reaction.is_custom ? <img src={emoji} alt={emoji}
+                        loading="lazy"
+                        className="w-[1.2rem] h-[1.2rem] object-contain object-center" /> :
+                        // @ts-expect-error
+                        <em-emoji native={emoji} src={emoji}></em-emoji>
+                    }
+                    {count}
                 </Text>
             </button>
         </Tooltip>
