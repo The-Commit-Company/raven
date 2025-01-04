@@ -15,12 +15,16 @@ export type EmojiType = {
 
 async function search(value: string, maxResults: number = 10): Promise<EmojiType[]> {
     const emojis = await SearchIndex.search(value, { maxResults: maxResults, caller: undefined })
-    const results = emojis.map((emoji: any) => {
-        return {
-            shortcodes: emoji.skins[0].shortcodes,
-            emoji: emoji.skins[0].native,
-            name: emoji.name,
-            id: emoji.id,
+
+    const results: EmojiType[] = []
+    emojis.forEach((emoji: any) => {
+        if (emoji && emoji.skins[0].native) {
+            results.push({
+                shortcodes: emoji.skins[0].shortcodes,
+                emoji: emoji.skins[0].native,
+                name: emoji.name,
+                id: emoji.id,
+            })
         }
     })
 
@@ -34,16 +38,19 @@ function getTopFavoriteEmojis(maxResults: number = 10): EmojiType[] {
     // @ts-expect-error
     const emojis = FrequentlyUsed.get({ maxFrequentRows: 1, perLine: maxResults })
 
-    const results: EmojiType[] = emojis.map((emoji: string) => {
+    const results: EmojiType[] = []
 
+    emojis.forEach((emoji: string) => {
         // @ts-expect-error
         const e = SearchIndex.get(emoji)
 
-        return {
-            id: e.id,
-            shortcodes: e.skins[0].shortcodes,
-            emoji: e.skins[0].native,
-            name: e.name,
+        if (e && e.skins[0].native) {
+            results.push({
+                id: e.id,
+                shortcodes: e.skins[0].shortcodes,
+                emoji: e.skins[0].native,
+                name: e.name,
+            })
         }
     })
 

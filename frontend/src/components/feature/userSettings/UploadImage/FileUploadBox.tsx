@@ -18,12 +18,14 @@ export type FileUploadBoxProps = FlexProps & {
     /** Takes input MIME type as 'key' & array of extensions as 'value'; empty array - all extensions supported */
     accept?: Accept
     /** Maximum file size in mb that can be selected */
-    maxFileSize?: number
+    maxFileSize?: number,
+    /** Hide the file upload box if the file size limit is reached */
+    hideIfLimitReached?: boolean
 }
 
 export const FileUploadBox = forwardRef((props: FileUploadBoxProps, ref) => {
 
-    const { file, onFileChange, accept, maxFileSize, children, ...compProps } = props
+    const { file, onFileChange, accept, maxFileSize, children, hideIfLimitReached, ...compProps } = props
     const [onDragEnter, setOnDragEnter] = useState(false)
 
     const fileSizeValidator = (file: any) => {
@@ -73,6 +75,10 @@ export const FileUploadBox = forwardRef((props: FileUploadBoxProps, ref) => {
         })
     }
 
+    const toHide = hideIfLimitReached && file
+
+    const supportedFormats = accept ? `Supported formats: ${Object.values(accept).flat().join(", ")}` : __("Supported formats: {0}, {1}, {2}", [".jpeg", ".jpg", ".png"])
+
     return (
         <Flex direction="column" pt='2' gap='2' {...getRootProps()} {...compProps}>
             <Flex
@@ -83,7 +89,7 @@ export const FileUploadBox = forwardRef((props: FileUploadBoxProps, ref) => {
                     width: "100%",
                     height: "150px",
                 }}
-                display={"flex"}>
+                display={toHide ? "none" : "flex"}>
                 <Flex gap={'1'}>
                     <Text as="span" size="2" color="gray">
                         {__("Drag and drop your file here or")}
@@ -94,12 +100,12 @@ export const FileUploadBox = forwardRef((props: FileUploadBoxProps, ref) => {
                 </Flex>
                 <input type="file" style={{ display: "none" }} {...getInputProps()} />
             </Flex>
-            <Flex justify={'between'}>
+            <Flex justify={'between'} display={toHide ? "none" : "flex"}>
                 <Text as="span" size="1" color="gray">
-                    {__("Supported formats: {0}, {1}, {2}", [".jpeg", ".jpg", ".png"])}
+                    {supportedFormats}
                 </Text>
                 <Text as="span" size="1" color="gray">
-                    {__("Maximum file size: {0}MB", [10])}
+                    {__("Maximum file size: {0}MB", [maxFileSize])}
                 </Text>
             </Flex>
             {file && <FileItem file={file} uploadProgress={fileUploadProgress} removeFile={() => removeFile(file.fileID)} />}

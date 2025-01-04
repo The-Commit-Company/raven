@@ -19,19 +19,16 @@ class RavenMessageReaction(Document):
 		from frappe.types import DF
 
 		channel_id: DF.Link | None
+		is_custom: DF.Check
 		message: DF.Link
 		reaction: DF.Data
 		reaction_escaped: DF.Data | None
 	# end: auto-generated types
 
-	def before_save(self):
-		"""Escape the reaction to UTF-8 (XXXX)"""
-		self.reaction_escaped = self.reaction.encode("unicode-escape").decode("utf-8").replace("\\u", "")
-
 	def after_insert(self):
 		# Update the count for the current reaction
-		calculate_message_reaction(self.message)
+		calculate_message_reaction(self.message, self.channel_id)
 
 	def after_delete(self):
 		# Update the count for the current reaction
-		calculate_message_reaction(self.message)
+		calculate_message_reaction(self.message, self.channel_id)

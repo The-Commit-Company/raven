@@ -9,7 +9,7 @@ import clsx from 'clsx'
 const EmojiPicker = lazy(() => import('@/components/common/EmojiPicker/EmojiPicker'))
 
 interface EmojiPickerButtonProps {
-    saveReaction: (emoji: string) => void,
+    saveReaction: (emoji: string, is_custom: boolean, emoji_name?: string) => void,
     isOpen: boolean
     setIsOpen: (open: boolean) => void,
     iconButtonProps?: IconButtonProps,
@@ -22,8 +22,8 @@ export const EmojiPickerButton = ({ saveReaction, isOpen, setIsOpen, iconButtonP
         setIsOpen(false)
     }
 
-    const onEmojiClick = (emoji: string) => {
-        saveReaction(emoji)
+    const onEmojiClick = (emoji: string, is_custom: boolean, emoji_name?: string) => {
+        saveReaction(emoji, is_custom, emoji_name)
         onClose()
     }
 

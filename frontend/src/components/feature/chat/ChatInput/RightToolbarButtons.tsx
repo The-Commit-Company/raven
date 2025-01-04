@@ -111,6 +111,14 @@ const EmojiPickerButton = () => {
         return null
     }
 
+    const onSelect = (emoji: string, is_custom: boolean, emoji_name?: string) => {
+        if (is_custom) {
+            editor.chain().focus().setImage({ src: emoji, alt: emoji_name, title: emoji_name }).run()
+        } else {
+            editor.chain().focus().insertContent(emoji).run()
+        }
+    }
+
     return <Popover.Root>
         <Popover.Trigger>
             <IconButton
@@ -126,7 +134,7 @@ const EmojiPickerButton = () => {
         <Popover.Content>
             <Inset>
                 <Suspense fallback={<Loader />}>
-                    <EmojiPicker onSelect={(e) => editor.chain().focus().insertContent(e).run()} />
+                    <EmojiPicker onSelect={onSelect} allowCustomEmojis={false} />
                 </Suspense>
             </Inset>
         </Popover.Content>
