@@ -78,38 +78,44 @@ const ChannelMembers = () => {
                 keyboardShouldPersistTaps="handled"
                 keyboardDismissMode="interactive"
                 contentInsetAdjustmentBehavior="automatic"
-                contentContainerStyle={{ paddingBottom: insets.bottom }}
+                contentContainerStyle={{ paddingBottom: insets.bottom, height: "auto" }}
                 bounces={false}
                 showsVerticalScrollIndicator={false}
             >
-                <FlashList
-                    data={filteredMembers}
-                    renderItem={({ item }) => {
+                <View className='flex-1'>
+                    <FlashList
+                        data={filteredMembers}
+                        renderItem={({ item }) => {
 
-                        return (
-                            <ChannelMember member={item as Member} />
-                        )
-                    }}
-                    keyExtractor={(item) => item.name}
-                    estimatedItemSize={56}
-                    ItemSeparatorComponent={() => <Divider className='mx-0' />}
-                    bounces={false}
-                    showsVerticalScrollIndicator={false}
-                    ListEmptyComponent={() => {
-                        return (
-                            <View className='flex-1 items-center justify-center'>
-                                <Text className='text-gray-500 text-center font-medium'>No channel members found.</Text>
-                            </View>
-                        )
-                    }}
-                />
-
-                {!filteredMembers.length && debouncedText.length ? (
-                    <View className='flex-1 items-center justify-center'>
-                        <Text className='text-gray-500 text-center font-medium'>No results found for searched text "{debouncedText}"</Text>
-                    </View>
-                ) : null}
+                            return (
+                                <ChannelMember member={item as Member} />
+                            )
+                        }}
+                        keyExtractor={(item) => item.name}
+                        estimatedItemSize={56}
+                        ItemSeparatorComponent={() => <Divider className='mx-0' />}
+                        bounces={false}
+                        showsVerticalScrollIndicator={false}
+                        ListEmptyComponent={!debouncedText.length ? () => {
+                            return (
+                                <View className="flex-1 items-center justify-center min-h-screen">
+                                    <Text className="text-gray-500 text-center font-medium">
+                                        No channel members found.
+                                    </Text>
+                                </View>
+                            )
+                        } : undefined}
+                    />
+                </View>
             </KeyboardAwareScrollView>
+
+            {!filteredMembers.length && debouncedText.length ? (
+                <View className="absolute inset-0 items-center justify-center min-h-screen">
+                    <Text className="text-gray-500 text-center font-medium">
+                        No results found for searched text '{debouncedText}'
+                    </Text>
+                </View>
+            ) : null}
 
             <Button onPress={() => router.push(`./add-new-channel-members`)} variant='primary' className='absolute bottom-10 right-10 w-12 h-12 flex flex-row items-center justify-center' style={{ backgroundColor: colors.primary, borderRadius: "50%" }}>
                 <AddUserIcon width={22} height={22} fill="white" />
