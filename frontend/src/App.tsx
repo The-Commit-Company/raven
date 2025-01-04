@@ -74,6 +74,8 @@ const router = createBrowserRouter(
               <Route path=":ID" lazy={() => import('./pages/settings/Workspaces/ViewWorkspace')} />
             </Route>
 
+            <Route path="emojis" lazy={() => import('./pages/settings/CustomEmojis/CustomEmojiList')} />
+
             <Route path="bots" >
               <Route index lazy={() => import('./pages/settings/AI/BotList')} />
               <Route path="create" lazy={() => import('./pages/settings/AI/CreateBot')} />
