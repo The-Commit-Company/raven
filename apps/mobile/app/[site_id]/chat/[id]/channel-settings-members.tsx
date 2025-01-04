@@ -206,12 +206,14 @@ const ChannelMember = ({ member }: { member: Member }) => {
 
     const { channel } = useCurrentChannelData(channelId as string ?? "")
 
+    const isAllowed = channelMembers[currentUserInfo?.name ?? ""]?.is_admin === 1 && member.name !== currentUserInfo?.name && channel?.channelData.type !== "Open" && channel?.channelData.is_archived === 0
+
     const showActions = () => {
         let options = ['Make channel admin', 'Dismiss channel admin', 'Cancel'];
 
         const isAdmin = channelMembers[member.name].is_admin
 
-        if (channelMembers[currentUserInfo?.name ?? ""]?.is_admin === 1 && member.name !== currentUserInfo?.name && channel?.channelData.type !== "Open" && channel?.channelData.is_archived === 0) {
+        if (isAllowed) {
 
             showActionSheetWithOptions({
                 options,
@@ -239,7 +241,7 @@ const ChannelMember = ({ member }: { member: Member }) => {
             rightThreshold={40}
             renderRightActions={(prog, drag) => RightAction(prog, drag, member)}
         >
-            <TouchableOpacity activeOpacity={0.5} onLongPress={showActions} className='flex-row items-center justify-between rounded-md'>
+            <TouchableOpacity disabled={!isAllowed} activeOpacity={0.5} onLongPress={showActions} className='flex-row items-center justify-between rounded-md'>
                 <View className='gap-3 p-3 flex-row items-center'>
                     <UserAvatar
                         src={member.user_image ?? ""}
