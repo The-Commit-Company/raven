@@ -10,11 +10,13 @@ import { HStack } from '@/components/layout/Stack'
 import { RavenCustomEmoji } from '@/types/RavenMessaging/RavenCustomEmoji'
 import { getDateObject } from '@/utils/dateConversions/utils'
 import { Button, Table, Text, Link } from '@radix-ui/themes'
-import { useFrappeGetDocList } from 'frappe-react-sdk'
+import { useFrappeGetDocList, useSWRConfig } from 'frappe-react-sdk'
 import { useState } from 'react'
 import { LuSmilePlus } from 'react-icons/lu'
 
 const CustomEmojiList = () => {
+
+    const { mutate: globalMutate } = useSWRConfig()
 
     const { data, isLoading, error, mutate } = useFrappeGetDocList<RavenCustomEmoji>("Raven Custom Emoji", {
         fields: ["name", "emoji_name", "image", "keywords", "owner", "creation"],
@@ -31,12 +33,14 @@ const CustomEmojiList = () => {
     const onAddEmoji = (refresh: boolean = false) => {
         if (refresh) {
             mutate()
+            globalMutate('custom-emojis')
         }
         setOpen(false)
     }
 
     const onDeleteEmoji = () => {
         mutate()
+        globalMutate('custom-emojis')
     }
 
     return (
