@@ -62,7 +62,23 @@ const LinkPreview = memo(({ messageID }: { messageID: string }) => {
 
     // const href = editor?.getAttributes('link').href
 
+    if (!href) return null
 
+    const isYoutube = isValidYoutubeUrl(href)
+
+    if (isYoutube) {
+        return <YoutubePreview href={href} messageID={messageID} />
+    }
+
+    return <WebLinkPreview href={href} messageID={messageID} />
+
+
+
+    return null
+
+})
+
+const WebLinkPreview = ({ href, messageID }: { href: string, messageID: string }) => {
     const { data } = useFrappeGetCall<{ message: LinkPreviewDetails[] }>('raven.api.preview_links.get_preview_link', {
         urls: JSON.stringify([href])
     }, href ? `link_preview_${href}` : null, {
@@ -128,7 +144,64 @@ const LinkPreview = memo(({ messageID }: { messageID: string }) => {
     }
 
     return null
+}
 
-})
+const YOUTUBE_REGEX = /^((?:https?:)?\/\/)?((?:www|m|music)\.)?((?:youtube\.com|youtu.be|youtube-nocookie\.com))(\/(?:[\w-]+\?v=|embed\/|v\/)?)([\w-]+)(\S+)?$/
+const isValidYoutubeUrl = (url: string) => {
+    return url.match(YOUTUBE_REGEX)
+}
+
+export const getYoutubeEmbedUrl = (nocookie?: boolean) => {
+    return nocookie ? 'https://www.youtube-nocookie.com/embed/' : 'https://www.youtube.com/embed/'
+}
+
+const getEmbedUrlFromYoutubeUrl = (url: string) => {
+
+    // If it's already an embed url, return it
+    if (url.includes('/embed/')) {
+        return url
+    }
+
+    // if is a youtu.be url, get the id after the /
+    if (url.includes('youtu.be')) {
+        const id = url.split('/').pop()
+
+        if (!id) {
+            return null
+        }
+        return `${getYoutubeEmbedUrl()}${id}`
+    }
+
+    const videoIdRegex = /(?:v=|shorts\/)([-\w]+)/gm
+    const matches = videoIdRegex.exec(url)
+
+    if (!matches || !matches[1]) {
+        return null
+    }
+
+    return `${getYoutubeEmbedUrl()}${matches[1]}`
+
+}
+
+
+const YoutubePreview = ({ href, messageID }: { href: string, messageID: string }) => {
+
+    const embedUrl = getEmbedUrlFromYoutubeUrl(href)
+
+    if (!embedUrl) return null
+
+    return <div data-youtube-video className='pt-2'>
+        <iframe
+            width="480"
+            height="270"
+            src={embedUrl}
+            title="YouTube video player"
+            frameBorder="0"
+            allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; modestbranding=1"
+            referrerPolicy="strict-origin-when-cross-origin"
+            allowFullScreen>
+        </iframe>
+    </div>
+}
 
 export default LinkPreview
