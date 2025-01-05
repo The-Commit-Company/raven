@@ -12,7 +12,7 @@ import { FlashList } from '@shopify/flash-list';
 import UserAvatar from '@components/layout/UserAvatar';
 import { Text } from '@components/nativewindui/Text';
 import { Divider } from '@components/common/DIvider';
-import Animated, { LinearTransition, ZoomIn, ZoomOut } from 'react-native-reanimated';
+import Animated, { Layout, LinearTransition, ZoomIn, ZoomOut } from 'react-native-reanimated';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import CheckIcon from "@assets/icons/CheckIcon.svg"
@@ -138,7 +138,7 @@ export default function AddNewChannelMembers() {
                     <>
                         <View className='flex-1 p-2.5 py-3 items-center flex-wrap inset-0'>
                             <Animated.FlatList
-                                itemLayoutAnimation={LinearTransition.delay(400)}
+                                itemLayoutAnimation={LinearTransition}
                                 data={selectedMembers}
                                 horizontal
                                 renderItem={({ item }) => {
