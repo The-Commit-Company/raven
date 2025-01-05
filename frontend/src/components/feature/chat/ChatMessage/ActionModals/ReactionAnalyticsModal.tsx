@@ -47,7 +47,13 @@ export const ReactionAnalyticsModal = ({ reactions }: ReactionAnalyticsDialogPro
 const TabTrigger = ({ emojiSrc, count, emojiName, isCustom = false }: { emojiSrc: string; count?: number, emojiName: string, isCustom?: boolean }) => (
     <Tabs.Trigger value={emojiSrc} className="text-gray-11" title={emojiName}>
         <Flex gap="2" align="center" justify="center">
-            {isCustom ? <img src={emojiSrc} alt={emojiName} className="w-[1.2rem] h-[1.2rem] object-contain object-center" /> : <Text size="3">{emojiName}</Text>}
+
+            {isCustom ? <img src={emojiSrc} alt={emojiName} className="w-[1.2rem] h-[1.2rem] object-contain object-center" /> :
+                emojiName === 'All' ? <Text size="3">All</Text> :
+                    <Text size="3" className="w-[1.2rem] h-[1.2rem]">
+                        {/* @ts-expect-error */}
+                        <em-emoji native={emojiName} set='apple'></em-emoji></Text>
+            }
             {count && <Text>{count}</Text>}
         </Flex>
     </Tabs.Trigger>
@@ -87,8 +93,9 @@ const UserItem = ({ user, reaction, is_custom, emoji_name }: UserItemProps) => {
                 {is_custom ? (
                     <img src={reaction} alt={emoji_name} title={emoji_name} className="mr-3 w-[1.4rem] h-[1.4rem] object-contain object-center" />
                 ) : (
-                    <Text className="pr-3" size="3" weight="medium">
-                        {reaction}
+                    <Text className="pr-3 h-[1.4rem] w-[1.4rem]" size="3" weight="medium">
+                        {/* @ts-expect-error */}
+                        <em-emoji native={emoji_name} size='1.2em' set='apple'></em-emoji>
                     </Text>
                 )}
             </Flex>
