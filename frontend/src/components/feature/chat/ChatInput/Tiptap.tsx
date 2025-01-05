@@ -30,7 +30,7 @@ import { useSessionStickyState } from '@/hooks/useStickyState'
 import { Message } from '../../../../../../types/Messaging/Message'
 import Image from '@tiptap/extension-image'
 import { EmojiSuggestion } from './EmojiSuggestion'
-import { useIsDesktop } from '@/hooks/useMediaQuery'
+import { useIsDesktop, useIsMobile } from '@/hooks/useMediaQuery'
 import { BiPlus } from 'react-icons/bi'
 import clsx from 'clsx'
 import { ChannelMembers } from '@/hooks/fetchers/useFetchChannelMembers'
@@ -455,8 +455,7 @@ const Tiptap = ({ isEdit, slotBefore, fileProps, onMessageSend, channelMembers, 
     ]
 
     const [content, setContent] = useSessionStickyState(defaultText, sessionStorageKey, disableSessionStorage)
-
-    const isDesktop = useIsDesktop()
+    const isMobile = useIsMobile()
 
     const editor = useEditor({
         extensions,
@@ -478,31 +477,15 @@ const Tiptap = ({ isEdit, slotBefore, fileProps, onMessageSend, channelMembers, 
 
 
     useEffect(() => {
-        if (isDesktop || isEdit) {
+        if (!isMobile || isEdit) {
             setTimeout(() => {
                 editor?.chain().focus().run()
             }, 50)
         }
-    }, [replyMessage, editor, isDesktop, isEdit])
+    }, [replyMessage, editor, isMobile, isEdit])
 
 
-    if (isDesktop) {
-        return (
-            <Box className='border rounded-radius2 border-gray-300 dark:border-gray-500 dark:bg-gray-3'>
-                <EditorContext.Provider value={{ editor }}>
-                    {slotBefore}
-                    <EditorContent editor={editor} />
-                    <ToolPanel>
-                        <TextFormattingMenu />
-                        <RightToolbarButtons fileProps={fileProps} setContent={setContent} sendMessage={onMessageSend} messageSending={messageSending}
-                            isEdit={isEdit}
-                            channelID={channelID} />
-                    </ToolPanel>
-                </EditorContext.Provider>
-            </Box>
-
-        )
-    } else {
+    if (isMobile) {
         return <Box className={clsx('pt-2 pb-8 w-full bg-white dark:bg-gray-2 z-50 border-t border-t-gray-3 dark:border-t-gray-3',
             isEdit ? 'bg-transparent dark:bg-transparent' : 'fixed bottom-0 left-0 px-4'
         )}>
@@ -541,6 +524,22 @@ const Tiptap = ({ isEdit, slotBefore, fileProps, onMessageSend, channelMembers, 
             </EditorContext.Provider>
         </Box>
     }
+
+    return (
+        <Box className='border rounded-radius2 border-gray-300 dark:border-gray-500 dark:bg-gray-3'>
+            <EditorContext.Provider value={{ editor }}>
+                {slotBefore}
+                <EditorContent editor={editor} />
+                <ToolPanel>
+                    <TextFormattingMenu />
+                    <RightToolbarButtons fileProps={fileProps} setContent={setContent} sendMessage={onMessageSend} messageSending={messageSending}
+                        isEdit={isEdit}
+                        channelID={channelID} />
+                </ToolPanel>
+            </EditorContext.Provider>
+        </Box>
+
+    )
 
 
 
