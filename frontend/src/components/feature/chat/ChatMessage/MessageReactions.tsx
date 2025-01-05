@@ -3,7 +3,7 @@ import { useCallback, useContext, useMemo, useState } from "react"
 import { UserContext } from "../../../../utils/auth/UserProvider"
 import { getUsers } from "../../../../utils/operations"
 import { useGetUserRecords } from "@/hooks/useGetUserRecords"
-import { Flex, IconButton, Text, Tooltip } from "@radix-ui/themes"
+import { Flex, Text, Tooltip } from "@radix-ui/themes"
 import { clsx } from "clsx"
 import { EmojiPickerButton } from "./MessageActions/QuickActions/EmojiPickerButton"
 
@@ -114,12 +114,14 @@ const ReactionButton = ({ reaction, onReactionClick, currentUser, allUsers }: Re
                 onClick={onClick}
                 className={clsx("w-fit sm:h-full text-xs py-0.5 cursor-pointer rounded-md min-w-[4ch] border font-semibold",
                     currentUserReacted ? "bg-blue-50 border-blue-500 dark:border-gray-9 dark:bg-gray-7 sm:dark:hover:bg-gray-7" : "bg-gray-3 border-gray-3 sm:hover:bg-gray-2 sm:hover:border-gray-8 dark:bg-gray-5 sm:dark:hover:bg-gray-5 sm:dark:hover:border-gray-9")}>
-                <Text as='span' className={clsx("flex items-center gap-1 min-w-[3ch] tabular-nums text-gray-12", currentUserReacted ? "text-blue-800 dark:text-gray-12" : "text-gray-12")}>
+                <Text as='span' className={clsx("flex items-center gap-1 min-w-[3ch] tabular-nums h-[1.2rem] text-gray-12", currentUserReacted ? "text-blue-800 dark:text-gray-12" : "text-gray-12")}>
                     {reaction.is_custom ? <img src={emoji} alt={emoji}
                         loading="lazy"
-                        className="w-[1.2rem] h-[1.2rem] object-contain object-center" /> :
-                        // @ts-expect-error
-                        <em-emoji native={emoji} src={emoji}></em-emoji>
+                        className="w-[1.1rem] h-[1.1rem] object-contain object-center" /> :
+                        <span className="-mb-1 w-[1.1rem] h-[1.1rem]">
+                            {/* @ts-expect-error */}
+                            <em-emoji native={emoji} set='apple' size='1.2em'></em-emoji>
+                        </span>
                     }
                     {count}
                 </Text>
