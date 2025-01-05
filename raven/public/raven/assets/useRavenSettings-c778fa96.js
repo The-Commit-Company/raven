@@ -1,0 +1,1 @@
+import{bk as n}from"./index-46d9a48d.js";const s=()=>{const{data:e,mutate:t}=n("Raven Settings","Raven Settings","raven_settings",{revalidateOnFocus:!1,dedupingInterval:288e5});return{ravenSettings:e,mutate:t}};export{s as u};
