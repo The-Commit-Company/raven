@@ -3,6 +3,7 @@ from frappe import _
 
 from raven.api.raven_users import get_list
 from raven.utils import get_channel_members as get_channel_members_util
+from raven.utils import get_workspace_members
 
 
 @frappe.whitelist(methods=["GET"])
@@ -24,17 +25,21 @@ def get_channel_members(channel_id):
 	channel_type = frappe.get_cached_value("Raven Channel", channel_id, "type")
 
 	if channel_type == "Open":
-		# Merge the users and channel members
-		for member in all_users:
-			channel_member = channel_members.get(member.name, {})
+		workspace = frappe.get_cached_value("Raven Channel", channel_id, "workspace")
+		workspace_members = get_workspace_members(workspace)
 
-			member_object[member.name] = {
-				"name": member.name,
-				"full_name": member.full_name,
-				"user_image": member.user_image,
-				"first_name": member.first_name,
-				"type": member.type,
-				"availability_status": member.availability_status,
+		# All workspace members are members of an open channel - merge the workspace members with channel members
+		for workspace_member in workspace_members:
+			channel_member = channel_members.get(workspace_member, {})
+			user_obj = next((u for u in all_users if u.name == workspace_member), None)
+
+			member_object[user_obj.name] = {
+				"name": user_obj.name,
+				"full_name": user_obj.full_name,
+				"user_image": user_obj.user_image,
+				"first_name": user_obj.first_name,
+				"type": user_obj.type,
+				"availability_status": user_obj.availability_status,
 				"is_admin": channel_member.get("is_admin", 0),
 				"allow_notifications": channel_member.get("allow_notifications", 1),
 				"channel_member_name": channel_member.get("name", None),
