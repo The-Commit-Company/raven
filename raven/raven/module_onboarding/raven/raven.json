@@ -10,7 +10,7 @@
  "documentation_url": "https://thecommit.company/raven",
  "idx": 0,
  "is_complete": 0,
- "modified": "2024-06-13 20:08:33.779381",
+ "modified": "2025-01-06 19:31:16.034565",
  "modified_by": "Administrator",
  "module": "Raven",
  "name": "Raven",
@@ -26,7 +26,7 @@
    "step": "Review Raven Settings"
   },
   {
-   "step": "Raven: Access the Web App"
+   "step": "Access the Web App"
   }
  ],
  "subtitle": "Simple, work messaging tool",

@@ -146,11 +146,16 @@ class RavenDocumentNotification(Document):
 		return channels, users
 
 
+doctypes_to_be_ignored = ["Raven Document Notification", "Version", "Comment"]
+
+
 def run_document_notification(doc, method):
 	"""
 	Evaluate if a notification should be sent for the document.
 	Enqueues the notifications to be sent on Raven
 	"""
+	if doc.doctype in doctypes_to_be_ignored:
+		return
 
 	if frappe.flags.in_import or frappe.flags.in_patch or frappe.flags.in_install:
 		return
@@ -164,7 +169,7 @@ def run_document_notification(doc, method):
 		)
 		return notifications
 
-	raven_notifications = frappe.cache.hget(
+	raven_notifications = frappe.cache().hget(
 		"raven_doc_notifications", doc.doctype, _get_notifications
 	)
 

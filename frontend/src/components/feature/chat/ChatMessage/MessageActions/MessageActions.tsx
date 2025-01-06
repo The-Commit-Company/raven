@@ -12,6 +12,7 @@ import { AiOutlineEdit } from 'react-icons/ai'
 import { LuForward, LuReply } from 'react-icons/lu'
 import { MdOutlineEmojiEmotions } from "react-icons/md";
 import { CreateThreadContextItem } from './QuickActions/CreateThreadButton'
+import { RiPushpinLine, RiUnpinLine } from 'react-icons/ri'
 import MessageActionSubMenu from './MessageActionSubMenu'
 
 export interface MessageContextMenuProps {
@@ -90,6 +91,7 @@ export const MessageContextMenu = ({ message, onDelete, onEdit, onReply, onForwa
                         </ContextMenu.Group>
                     }
 
+                    <PinMessageAction message={message} />
                     <SaveMessageAction message={message} />
 
                 </ContextMenu.Group>
@@ -164,5 +166,33 @@ const SaveMessageAction = ({ message }: { message: Message }) => {
         </Flex>
     </ContextMenu.Item>
 
+
+}
+
+
+const PinMessageAction = ({ message }: { message: Message }) => {
+
+    const isPinned = message.is_pinned
+    const { call } = useContext(FrappeContext) as FrappeConfig
+
+    const handlePin = () => {
+        call.post('raven.api.raven_channel.toggle_pin_message', {
+            channel_id: message.channel_id,
+            message_id: message.name,
+        }).then(() => {
+            toast.success(`Message ${isPinned ? 'unpinned' : 'pinned'}`)
+        }).catch((e) => {
+            toast.error('Could not perform the action', {
+                description: getErrorMessage(e)
+            })
+        })
+    }
+
+    return <ContextMenu.Item onClick={handlePin}>
+        <Flex gap='2'>
+            {!isPinned ? <RiPushpinLine size='18' /> : <RiUnpinLine size='18' />}
+            {!isPinned ? "Pin" : "Unpin"}
+        </Flex>
+    </ContextMenu.Item>
 
 }
