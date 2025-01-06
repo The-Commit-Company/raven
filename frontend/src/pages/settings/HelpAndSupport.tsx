@@ -68,7 +68,7 @@ const HelpAndSupport = () => {
 
                     <Stack gap='0'>
                         {/* @ts-expect-error */}
-                        <Text size='3' color='gray'><Text size='4' className="cal-sans text-gray-12 dark:text-white">raven</Text> <Code size='2' variant="ghost">v{frappe?.boot.versions.raven}</Code></Text>
+                        <Text size='3' color='gray'><Text size='5' className="cal-sans text-gray-12 dark:text-white">raven</Text> <Code size='2' variant="ghost">v{frappe?.boot.versions.raven}</Code></Text>
                         <Text size='2' color='gray'>Crafted by The Commit Company</Text>
                     </Stack>
                 </Stack>

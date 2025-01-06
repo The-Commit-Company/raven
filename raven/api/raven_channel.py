@@ -62,6 +62,7 @@ def get_channel_list(hide_archived=False):
 			channel.owner,
 			channel.last_message_timestamp,
 			channel.last_message_details,
+			channel.pinned_messages_string,
 			channel.workspace,
 		)
 		.distinct()
@@ -217,6 +218,39 @@ def leave_channel(channel_id):
 
 	for member in members:
 		frappe.delete_doc("Raven Channel Member", member.name)
+
+	return "Ok"
+
+
+@frappe.whitelist()
+def toggle_pin_message(channel_id, message_id):
+	"""
+	Toggle pin/unpin a message in a channel.
+	"""
+	channel = frappe.get_doc("Raven Channel", channel_id)
+
+	pinned_message = None
+
+	# Check whether the message exists in the channel
+	message_exists = frappe.db.get_value("Raven Message", message_id, "channel_id") == channel_id
+
+	if not message_exists:
+		frappe.throw(_("Message does not exist in this channel"))
+
+		# Check if the message is already pinned
+	for pm in channel.pinned_messages:
+		if pm.message_id == message_id:
+			pinned_message = pm
+			break
+
+	if pinned_message:
+		# Unpin the message
+		channel.remove(pinned_message)
+	else:
+		# Pin the message if it's not pinned
+		channel.append("pinned_messages", {"message_id": message_id})
+
+	channel.save()
 
 	return "Ok"
 

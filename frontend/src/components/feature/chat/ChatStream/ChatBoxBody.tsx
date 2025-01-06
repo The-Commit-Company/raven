@@ -142,6 +142,7 @@ export const ChatBoxBody = ({ channelData }: ChatBoxBodyProps) => {
                 maxFileSize={10000000}>
                 <ChatStream
                     channelID={channelData.name}
+                    pinnedMessagesString={channelData.pinned_messages_string}
                     replyToMessage={handleReplyAction}
                 />
                 {canUserSendMessage &&

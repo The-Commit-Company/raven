@@ -71,6 +71,9 @@ export const AddChannelMembersModalContent = ({ onClose }: AddChannelMemberModal
 
             <Flex gap='2' pt='2' direction='column' width='100%'>
               <ErrorBanner error={error} />
+              <Text size='2'>
+                You can only add members from your workspace to this channel.
+              </Text>
               <Box width='100%'>
                 <Flex direction='column' gap='2'>
                   <Flex direction='column' gap='2'>
@@ -87,7 +90,12 @@ export const AddChannelMembersModalContent = ({ onClose }: AddChannelMemberModal
                           }
                         }}
                         render={({ field: { onChange, value } }) => (
-                          <AddMembersDropdown setSelectedUsers={onChange} selectedUsers={value ?? []} channelID={channelID} label='' />
+                          <AddMembersDropdown
+                            setSelectedUsers={onChange}
+                            workspaceID={channel?.channelData.workspace ?? ''}
+                            selectedUsers={value ?? []}
+                            channelID={channelID}
+                            label='' />
                         )}
                       />
                     </Suspense>

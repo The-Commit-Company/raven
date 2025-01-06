@@ -61,7 +61,7 @@ export const ChannelList = ({ channels }: ChannelListProps) => {
                     }}
                 >
                     <div ref={ref} className="flex gap-0.5 flex-col">
-                        {filteredChannels.length === 0 ? <Text size='1' className="pl-1" color='gray'>{__("No channels found")}</Text> : null}
+                        {filteredChannels.length === 0 ? <Text size='1' className="pl-1" color='gray'>{__("No channels in this workspace.")}</Text> : null}
                         {filteredChannels.map((channel: ChannelWithUnreadCount) => <ChannelItem
                             channel={channel}
                             key={channel.name} />)}

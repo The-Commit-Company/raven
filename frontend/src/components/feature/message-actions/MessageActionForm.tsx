@@ -190,7 +190,3 @@ const GeneralTab = () => {
         </Stack>
     </Stack>
 }
-
-const VariablesTab = () => {
-    return <></>
-}
