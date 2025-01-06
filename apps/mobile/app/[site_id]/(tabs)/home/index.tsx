@@ -1,8 +1,6 @@
-import { Pressable, SafeAreaView, ScrollView, View } from 'react-native';
+import { SafeAreaView, ScrollView, View } from 'react-native';
 import { ThemeToggle } from '@components/nativewindui/ThemeToggle';
-import { Text } from '@components/nativewindui/Text';
 import { useColorScheme } from '@hooks/useColorScheme';
-import PlusIcon from '@assets/icons/PlusIcon.svg';
 import { SearchInput } from '@components/nativewindui/SearchInput';
 import ChannelList from '@components/features/channels/ChannelList/ChannelList';
 import DMList from '@components/features/channels/DMList/DMList';
