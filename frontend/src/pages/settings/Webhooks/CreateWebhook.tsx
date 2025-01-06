@@ -2,7 +2,7 @@ import { useFrappeCreateDoc } from 'frappe-react-sdk'
 import { FormProvider, useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router-dom'
 import { Button } from '@radix-ui/themes'
-import { ErrorBanner } from '@/components/layout/AlertBanner'
+import { ErrorBanner } from '@/components/layout/AlertBanner/ErrorBanner'
 import { WebhookForm } from '../../../components/feature/integrations/webhooks/WebhookForm'
 import { RavenWebhook } from '@/types/RavenIntegrations/RavenWebhook'
 import { toast } from 'sonner'
@@ -10,6 +10,7 @@ import PageContainer from '@/components/layout/Settings/PageContainer'
 import SettingsContentContainer from '@/components/layout/Settings/SettingsContentContainer'
 import SettingsPageHeader from '@/components/layout/Settings/SettingsPageHeader'
 import { Loader } from '@/components/common/Loader'
+import { useEffect } from 'react'
 
 const CreateWebhook = () => {
 
@@ -35,6 +36,19 @@ const CreateWebhook = () => {
             })
     }
 
+    useEffect(() => {
+
+        const down = (e: KeyboardEvent) => {
+            if (e.key === 's' && (e.metaKey || e.ctrlKey)) {
+                e.preventDefault()
+                methods.handleSubmit(onSubmit)()
+            }
+        }
+
+        document.addEventListener('keydown', down)
+        return () => document.removeEventListener('keydown', down)
+    }, [])
+
     return (
         <PageContainer>
             <form onSubmit={methods.handleSubmit(onSubmit)}>
@@ -43,7 +57,7 @@ const CreateWebhook = () => {
                         <SettingsPageHeader
                             title='Create a Webhook'
                             actions={<Button type='submit' disabled={loading}>
-                                {loading && <Loader />}
+                                {loading && <Loader className="text-white" />}
                                 {loading ? "Creating" : "Create"}
                             </Button>}
                             breadcrumbs={[{ label: 'Webhooks', href: '../' }, { label: 'New Webhook', href: '' }]}

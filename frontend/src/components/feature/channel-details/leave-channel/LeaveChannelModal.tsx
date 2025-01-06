@@ -1,13 +1,12 @@
 import { useFrappePostCall } from 'frappe-react-sdk'
 import { Fragment, useContext } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { ErrorBanner } from '../../../layout/AlertBanner'
 import { ChannelListContext, ChannelListContextType, ChannelListItem } from '@/utils/channel/ChannelListProvider'
 import { ChannelIcon } from '@/utils/layout/channelIcon'
 import { AlertDialog, Button, Dialog, Flex, Text } from '@radix-ui/themes'
 import { Loader } from '@/components/common/Loader'
 import { toast } from 'sonner'
-import { getErrorMessage } from '@/components/layout/AlertBanner/ErrorBanner'
+import { getErrorMessage, ErrorBanner } from '@/components/layout/AlertBanner/ErrorBanner'
 
 interface LeaveChannelModalProps {
     onClose: () => void,
@@ -28,7 +27,7 @@ export const LeaveChannelModal = ({ onClose, channelData, isDrawer, closeDetails
             toast('You have left the channel')
             onClose()
             mutate()
-            navigate('../general')
+            navigate('../')
             closeDetailsModal()
         }).catch((e) => {
             toast.error('Could not leave channel', {
@@ -68,7 +67,7 @@ export const LeaveChannelModal = ({ onClose, channelData, isDrawer, closeDetails
                 </DialogCancel>
                 <DialogAction>
                     <Button variant="solid" color="red" onClick={onSubmit} disabled={deletingDoc}>
-                        {deletingDoc && <Loader />}
+                        {deletingDoc && <Loader className="text-white" />}
                         {deletingDoc ? "Leaving" : "Leave"}
                     </Button>
                 </DialogAction>

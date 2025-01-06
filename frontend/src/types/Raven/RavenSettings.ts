@@ -1,7 +1,8 @@
+import { RavenHRCompanyWorkspace } from '../RavenIntegrations/RavenHRCompanyWorkspace'
 
 export interface RavenSettings{
-	name: string
 	creation: string
+	name: string
 	modified: string
 	owner: string
 	modified_by: string
@@ -28,6 +29,10 @@ export interface RavenSettings{
 	auto_create_department_channel?: 0 | 1
 	/**	Department Channel Type : Select	*/
 	department_channel_type?: "Public" | "Private"
+	/**	Company Workspace Mapping : Table - Raven HR Company Workspace	*/
+	company_workspace_mapping?: RavenHRCompanyWorkspace[]
 	/**	Show if a user is on leave : Check	*/
 	show_if_a_user_is_on_leave?: 0 | 1
+	/**	OAuth Client : Link - OAuth Client	*/
+	oauth_client?: string
 }

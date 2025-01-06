@@ -1,9 +1,5 @@
 import { Callout } from "@radix-ui/themes";
-import {
-    CalloutIconProps,
-    CalloutRootProps,
-    CalloutTextProps,
-} from "@radix-ui/themes/dist/cjs/components/callout";
+import clsx from "clsx";
 import { PropsWithChildren } from "react";
 
 export type CalloutObject = {
@@ -12,10 +8,10 @@ export type CalloutObject = {
 }
 
 export type CustomCalloutProps = {
-    rootProps?: CalloutRootProps;
-    iconProps?: CalloutIconProps;
+    rootProps?: Callout.RootProps;
+    iconProps?: Callout.IconProps;
     iconChildren?: React.ReactNode;
-    textProps?: CalloutTextProps;
+    textProps?: Callout.TextProps;
     textChildren?: React.ReactNode;
 };
 
@@ -27,7 +23,7 @@ export const CustomCallout = ({
     iconChildren,
 }: PropsWithChildren<CustomCalloutProps>) => {
     return (
-        <Callout.Root {...rootProps}>
+        <Callout.Root {...rootProps} className={clsx("animate-fadein", rootProps?.className)}>
             <Callout.Icon {...iconProps}>{iconChildren}</Callout.Icon>
             <Callout.Text {...textProps}>{textChildren}</Callout.Text>
         </Callout.Root>

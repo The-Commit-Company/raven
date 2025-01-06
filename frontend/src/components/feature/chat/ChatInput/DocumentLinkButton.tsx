@@ -12,7 +12,7 @@ import { Loader } from '@/components/common/Loader'
 import { DoctypeLinkRenderer } from '../ChatMessage/Renderers/DoctypeLinkRenderer'
 import { RavenMessage } from '@/types/RavenMessaging/RavenMessage'
 import { Stack } from '@/components/layout/Stack'
-import { ErrorBanner } from '@/components/layout/AlertBanner'
+import { ErrorBanner } from '@/components/layout/AlertBanner/ErrorBanner'
 import useRecentlyUsedDocType from '@/hooks/useRecentlyUsedDocType'
 
 type Props = {}
@@ -134,7 +134,7 @@ const DocumentLinkForm = ({ channelID, onClose }: { channelID: string, onClose: 
                     </Dialog.Close>
                     <Button type='button' disabled={loading} onClick={methods.handleSubmit(onSubmit)}
                     >
-                        {loading && <Loader />}
+                        {loading && <Loader className="text-white" />}
                         Send
                     </Button>
                 </Flex>

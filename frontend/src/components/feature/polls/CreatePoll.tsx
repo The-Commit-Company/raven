@@ -1,6 +1,5 @@
 import { ErrorText, Label } from "@/components/common/Form"
-import { ErrorBanner } from "@/components/layout/AlertBanner"
-import { getErrorMessage } from "@/components/layout/AlertBanner/ErrorBanner"
+import { ErrorBanner, getErrorMessage } from "@/components/layout/AlertBanner/ErrorBanner"
 import { RavenPoll } from "@/types/RavenMessaging/RavenPoll"
 import { Button, Checkbox, Dialog, Flex, IconButton, TextArea, TextField, Text, Box } from "@radix-ui/themes"
 import { useFrappePostCall } from "frappe-react-sdk"
@@ -9,7 +8,7 @@ import { BiPlus, BiTrash } from "react-icons/bi"
 import { useParams } from "react-router-dom"
 import { toast } from "sonner"
 
-const CreatePollContent = ({ setIsOpen }: { setIsOpen: (open: boolean) => void }) => {
+const CreatePollContent = ({ channelID, setIsOpen }: { channelID: string, setIsOpen: (open: boolean) => void }) => {
 
     const methods = useForm<RavenPoll>({
         // Initialize the form with 2 option fields by default
@@ -76,7 +75,6 @@ const CreatePollContent = ({ setIsOpen }: { setIsOpen: (open: boolean) => void }
     }
 
     const { call: createPoll, error } = useFrappePostCall('raven.api.raven_poll.create_poll')
-    const { channelID } = useParams<{ channelID: string }>()
 
     const onSubmit = async (data: RavenPoll) => {
         return createPoll({

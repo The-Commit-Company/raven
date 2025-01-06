@@ -1,5 +1,5 @@
 import { useFrappeUpdateDoc, useSWRConfig } from 'frappe-react-sdk'
-import { ErrorBanner } from '../../../layout/AlertBanner'
+import { ErrorBanner } from '@/components/layout/AlertBanner/ErrorBanner'
 import { ChannelListItem } from '@/utils/channel/ChannelListProvider'
 import { Button, Dialog, Flex, Text } from '@radix-ui/themes'
 import { Loader } from '@/components/common/Loader'
@@ -60,7 +60,7 @@ export const ChangeChannelTypeModal = ({ onClose, channelData, newChannelType }:
                     <Button variant="soft" color="gray">Cancel</Button>
                 </Dialog.Close>
                 <Button onClick={() => changeChannelType(newChannelType)} disabled={updatingDoc}>
-                    {updatingDoc && <Loader />}
+                    {updatingDoc && <Loader className="text-white" />}
                     {updatingDoc ? "Saving" : `Change to ${newChannelType.toLocaleLowerCase()}`}
                 </Button>
             </Flex>

@@ -1,9 +1,9 @@
 import { useFrappeDocTypeEventListener, useFrappeGetCall, useSWRConfig } from "frappe-react-sdk";
-import { PropsWithChildren, createContext, useMemo } from "react";
-import { ErrorBanner } from "@/components/layout/AlertBanner";
-import { FullPageLoader } from "@/components/layout/Loaders";
-import { Box, Flex, Link } from "@radix-ui/themes";
+import { PropsWithChildren, createContext, useEffect, useMemo, useState } from "react";
+import { ErrorBanner } from "@/components/layout/AlertBanner/ErrorBanner";
+import { Box, Flex, Link, Text } from "@radix-ui/themes";
 import { RavenUser } from "@/types/Raven/RavenUser";
+import { Stack } from "@/components/layout/Stack";
 
 
 export const UserListContext = createContext<{ users: UserFields[], enabledUsers: UserFields[] }>({
@@ -22,14 +22,27 @@ export const UserListProvider = ({ children }: PropsWithChildren) => {
         revalidateOnReconnect: false,
     })
 
-    /** TODO: If a bulk import happens, this gets called multiple times potentially causing the server to go down.
+    const [newUpdatesAvailable, setNewUpdatesAvailable] = useState(false)
+
+    useEffect(() => {
+        let timeout: NodeJS.Timeout | undefined
+        if (newUpdatesAvailable) {
+            timeout = setTimeout(() => {
+                mutate()
+                // Mutate the channel list as well
+                globalMutate(`channel_list`)
+                setNewUpdatesAvailable(false)
+            }, 1000) // 1 second
+        }
+        return () => clearTimeout(timeout)
+    }, [newUpdatesAvailable])
+
+    /** 
+     * If a bulk import happens, this gets called multiple times potentially causing the server to go down.
      * Instead, throttle this - wait for all events to subside
      */
     useFrappeDocTypeEventListener('Raven User', () => {
-        mutate()
-
-        // Mutate the channel list as well
-        globalMutate(`channel_list`)
+        setNewUpdatesAvailable(true)
     })
 
     const { users, enabledUsers } = useMemo(() => {
@@ -40,7 +53,12 @@ export const UserListProvider = ({ children }: PropsWithChildren) => {
     }, [data])
 
     if (isLoading) {
-        return <FullPageLoader />
+        return <Flex justify='center' align='center' height='100vh' width='100vw' className='animate-fadein'>
+            <Stack className='text-center' gap='1'>
+                <Text size='7' className='cal-sans tracking-normal'>raven</Text>
+                <Text color='gray' weight='medium'>Setting up your workspace...</Text>
+            </Stack>
+        </Flex>
     }
     if (usersError) {
         return <Flex align='center' justify='center' px='4' mx='auto' className="w-[50vw] h-screen">

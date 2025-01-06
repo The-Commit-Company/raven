@@ -1,6 +1,8 @@
 import frappe
 from frappe import _
 
+from raven.utils import get_channel_members
+
 
 @frappe.whitelist()
 def create_event(
@@ -70,10 +72,10 @@ def add_participants(event, channel):
 		pass
 
 	else:
-		# Add all members of the channel
-		members = frappe.get_all(
-			"Raven Channel Member", filters={"channel_id": channel}, pluck="user_id"
-		)
+
+		members_map = get_channel_members(channel)
+
+		members = list(members_map.keys())
 
 		for member in members:
 			if member not in participants:

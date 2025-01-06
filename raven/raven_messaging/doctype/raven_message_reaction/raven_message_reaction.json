@@ -9,7 +9,9 @@
  "field_order": [
   "reaction",
   "reaction_escaped",
-  "message"
+  "message",
+  "channel_id",
+  "is_custom"
  ],
  "fields": [
   {
@@ -35,11 +37,23 @@
    "in_list_view": 1,
    "label": "Reaction Escaped",
    "search_index": 1
+  },
+  {
+   "fieldname": "channel_id",
+   "fieldtype": "Link",
+   "label": "Channel ID",
+   "options": "Raven Channel"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_custom",
+   "fieldtype": "Check",
+   "label": "Is Custom"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-11-24 15:25:30.629673",
+ "modified": "2025-01-04 04:43:58.861388",
  "modified_by": "Administrator",
  "module": "Raven Messaging",
  "name": "Raven Message Reaction",

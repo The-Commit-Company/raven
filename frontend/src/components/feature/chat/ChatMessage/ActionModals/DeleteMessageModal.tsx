@@ -1,5 +1,5 @@
 import { useFrappeDeleteDoc } from "frappe-react-sdk"
-import { ErrorBanner } from "../../../../layout/AlertBanner"
+import { ErrorBanner } from "../../../../layout/AlertBanner/ErrorBanner"
 import { AlertDialog, Button, Callout, Flex, Text } from "@radix-ui/themes"
 import { Loader } from "@/components/common/Loader"
 import { FiAlertTriangle } from "react-icons/fi"
@@ -56,7 +56,7 @@ export const DeleteMessageModal = ({ onClose, message }: DeleteMessageModalProps
                 </AlertDialog.Cancel>
                 <AlertDialog.Action>
                     <Button variant="solid" color="red" onClick={onSubmit} disabled={deletingDoc}>
-                        {deletingDoc && <Loader />}
+                        {deletingDoc && <Loader className="text-white" />}
                         {deletingDoc ? "Deleting" : "Delete"}
                     </Button>
                 </AlertDialog.Action>

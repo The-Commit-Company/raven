@@ -1,6 +1,6 @@
 import { ErrorText, Label } from "@/components/common/Form"
 import { Loader } from "@/components/common/Loader"
-import { ErrorBanner } from "@/components/layout/AlertBanner"
+import { ErrorBanner } from "@/components/layout/AlertBanner/ErrorBanner"
 import { Box, Button, Flex, TextField, Text, DropdownMenu, Card, IconButton, Separator, Popover } from "@radix-ui/themes"
 import { useFrappeUpdateDoc } from "frappe-react-sdk"
 import { FormProvider, useForm } from "react-hook-form"
@@ -17,6 +17,7 @@ import PageContainer from "@/components/layout/Settings/PageContainer"
 import SettingsPageHeader from "@/components/layout/Settings/SettingsPageHeader"
 import SettingsContentContainer from "@/components/layout/Settings/SettingsContentContainer"
 import { __ } from "@/utils/translations"
+import { Stack } from "@/components/layout/Stack"
 
 type UserProfile = {
     full_name?: string,
@@ -88,23 +89,29 @@ const UserProfile = () => {
                                 <Flex gap='4' direction='column' className={'py-4 px-6 dark:bg-slate-2'}>
 
                                     <Flex justify={'between'} align={'center'}>
-                                        <Label htmlFor='full_name'>{__("Full Name")}</Label>
-                                        <TextField.Root
-                                            autoFocus
-                                            maxLength={140}
-                                            className={'w-48 sm:w-96'}
-                                            id='full_name'
-                                            placeholder='full name'
-                                            {...register('full_name', {
-                                                maxLength: {
-                                                    value: 140,
-                                                    message: __("Name cannot be more than {0} characters.", [140])
-                                                }
-                                            })}
-                                            aria-invalid={errors.full_name ? 'true' : 'false'}
-                                        />
-                                        {errors?.full_name && <ErrorText>{errors.full_name?.message}</ErrorText>}
+                                        <Label htmlFor='full_name' isRequired>{__("Full Name")}</Label>
+                                        <Stack gap='1'>
+                                            <TextField.Root
+                                                autoFocus
+                                                maxLength={140}
+                                                className={'w-48 sm:w-96'}
+                                                id='full_name'
+                                                placeholder='Full Name'
+                                                {...register('full_name', {
+                                                    maxLength: {
+                                                        value: 140,
+                                                        message: __("Name cannot be more than {0} characters.", [140])
+                                                    },
+                                                    required: __("Name is required")
+                                                })}
+                                                aria-invalid={errors.full_name ? 'true' : 'false'}
+                                            />
+                                            {errors?.full_name && <ErrorText>{errors.full_name?.message}</ErrorText>}
+                                        </Stack>
+
                                     </Flex>
+
+
 
                                     <Separator className={'w-full bg-slate-4'} />
 

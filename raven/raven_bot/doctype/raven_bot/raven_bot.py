@@ -106,13 +106,27 @@ class RavenBot(Document):
 		# Create an OpenAI Assistant for the bot
 		client = get_open_ai_client()
 
-		assistant = client.beta.assistants.create(
-			instructions=self.instruction,
-			model="gpt-4o",
-			name=self.bot_name,
-			description=self.description or "",
-			tools=self.get_tools_for_assistant(),
-		)
+		# Sometimes users face an issue with the OpenAI API returning an error for "model_not_found"
+		# This is usually because the user has not added funds to their OpenAI account.
+		# We need to show this error to the user if the openAI API returns an error for "model_not_found"
+
+		try:
+			assistant = client.beta.assistants.create(
+				instructions=self.instruction,
+				model="gpt-4o",
+				name=self.bot_name,
+				description=self.description or "",
+				tools=self.get_tools_for_assistant(),
+			)
+		except Exception as e:
+			if "model_not_found" in str(e):
+				frappe.throw(
+					_(
+						f"<strong>There was an error creating the bot in OpenAI.</strong><br/>It is possible that your OpenAI account does not have enough funds. Please add funds to your OpenAI account and try again.<br><br/>Error: {e}"
+					)
+				)
+			else:
+				frappe.throw(e)
 
 		self.db_set("openai_assistant_id", assistant.id)
 
@@ -242,6 +256,7 @@ class RavenBot(Document):
 		link_doctype: str = None,
 		link_document: str = None,
 		markdown: bool = False,
+		notification_name: str = None,
 	) -> str:
 		"""
 		Send a text message to a channel
@@ -271,6 +286,7 @@ class RavenBot(Document):
 				"bot": self.raven_user,
 				"link_doctype": link_doctype,
 				"link_document": link_document,
+				"notification": notification_name,
 			}
 		)
 		# Bots can probably send messages without permissions? Upto the end user to create bots.
@@ -313,6 +329,7 @@ class RavenBot(Document):
 		link_doctype: str = None,
 		link_document: str = None,
 		markdown: bool = False,
+		notification_name: str = None,
 	) -> str:
 		"""
 		Send a text message to a user in a Direct Message channel
@@ -333,7 +350,9 @@ class RavenBot(Document):
 		channel_id = self.create_direct_message_channel(user_id)
 
 		if channel_id:
-			return self.send_message(channel_id, text, link_doctype, link_document, markdown)
+			return self.send_message(
+				channel_id, text, link_doctype, link_document, markdown, notification_name
+			)
 
 	def get_last_message(self, channel_id: str = None, message_type: str = None) -> Document | None:
 		"""

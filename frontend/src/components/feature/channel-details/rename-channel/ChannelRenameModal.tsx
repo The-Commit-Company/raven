@@ -1,7 +1,7 @@
 import { useFrappeUpdateDoc } from "frappe-react-sdk"
 import { ChangeEvent, useCallback } from "react"
 import { Controller, FormProvider, useForm } from "react-hook-form"
-import { ErrorBanner } from "../../../layout/AlertBanner"
+import { ErrorBanner } from "@/components/layout/AlertBanner/ErrorBanner"
 import { ChannelIcon } from "@/utils/layout/channelIcon"
 import { ChannelListItem } from "@/utils/channel/ChannelListProvider"
 import { Box, Dialog, Flex, Text, TextField, Button } from "@radix-ui/themes"
@@ -103,7 +103,7 @@ export const RenameChannelModalContent = ({ channelID, channelName, type, onClos
                         <Button variant="soft" color="gray">Cancel</Button>
                     </Dialog.Close>
                     <Button type='submit' disabled={updatingDoc}>
-                        {updatingDoc && <Loader />}
+                        {updatingDoc && <Loader className="text-white" />}
                         {updatingDoc ? "Saving" : "Save"}
                     </Button>
                 </Flex>

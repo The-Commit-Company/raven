@@ -1,11 +1,12 @@
 import { Loader } from "@/components/common/Loader"
 import { SchedulerEventForm, SchedulerEventsForm } from "@/components/feature/settings/scheduler-events/SchedulerEventsForm"
-import { ErrorBanner } from "@/components/layout/AlertBanner"
+import { ErrorBanner } from "@/components/layout/AlertBanner/ErrorBanner"
 import PageContainer from "@/components/layout/Settings/PageContainer"
 import SettingsContentContainer from "@/components/layout/Settings/SettingsContentContainer"
 import SettingsPageHeader from "@/components/layout/Settings/SettingsPageHeader"
 import { Button } from "@radix-ui/themes"
 import { useFrappeCreateDoc } from "frappe-react-sdk"
+import { useEffect } from "react"
 import { FormProvider, useForm } from "react-hook-form"
 import { useNavigate } from "react-router-dom"
 import { toast } from "sonner"
@@ -50,6 +51,19 @@ const CreateSchedulerEvent = () => {
                 toast.success("Scheduled Message created")
             })
     }
+
+    useEffect(() => {
+
+        const down = (e: KeyboardEvent) => {
+            if (e.key === 's' && (e.metaKey || e.ctrlKey)) {
+                e.preventDefault()
+                methods.handleSubmit(onSubmit)()
+            }
+        }
+
+        document.addEventListener('keydown', down)
+        return () => document.removeEventListener('keydown', down)
+    }, [])
     //TODO: Figure out a way to show _server_messages in the UI (especially the script editor might have some errors that we need to show to the user)
     return (
         <PageContainer>
@@ -60,7 +74,7 @@ const CreateSchedulerEvent = () => {
                             title='Create a Scheduled Message'
                             // description='Bots can be used to send reminders, run AI assistants, and more.'
                             actions={<Button type='submit' disabled={loading}>
-                                {loading && <Loader />}
+                                {loading && <Loader className="text-white" />}
                                 {loading ? "Creating" : "Create"}
                             </Button>}
                             breadcrumbs={[{ label: 'Scheduled Message', href: '../' }, { label: 'New Scheduled Message', href: '' }]}

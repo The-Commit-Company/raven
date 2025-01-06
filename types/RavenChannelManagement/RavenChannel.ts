@@ -12,12 +12,24 @@ export interface RavenChannel {
 	idx?: number
 	/**	Channel Name : Data	*/
 	channel_name: string
-	/**	Channel Description : Data	*/
+	/**	Channel Description : Small Text	*/
 	channel_description?: string
 	/**	Type : Select	*/
 	type: "Private" | "Public" | "Open"
+	/**	Is Synced : Check	*/
+	is_synced?: 0 | 1
+	/**	Linked DocType : Link - DocType	*/
+	linked_doctype?: string
+	/**	Linked Document : Dynamic Link	*/
+	linked_document?: string
+	/**	Workspace : Link - Raven Workspace	*/
+	workspace?: string
 	/**	Is Direct Message : Check	*/
 	is_direct_message?: 0 | 1
+	/**	Is Thread : Check	*/
+	is_thread?: 0 | 1
+	/**	Is DM Thread : Check	*/
+	is_dm_thread?: 0 | 1
 	/**	Is Self Message : Check	*/
 	is_self_message?: 0 | 1
 	/**	Is Archived : Check	*/
@@ -26,4 +38,10 @@ export interface RavenChannel {
 	last_message_timestamp?: string
 	/**	Last Message Details : JSON	*/
 	last_message_details?: any
+	/**	Is AI Thread : Check	*/
+	is_ai_thread?: 0 | 1
+	/**	OpenAI Thread ID : Data	*/
+	openai_thread_id?: string
+	/**	Thread Bot : Link - Raven Bot	*/
+	thread_bot?: string
 }

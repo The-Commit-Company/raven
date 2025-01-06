@@ -17,7 +17,7 @@ import { SuccessCallout } from "@/components/common/Callouts/SuccessCallout";
 import { isEmailValid } from "@/utils/validations";
 import { LoginInputs } from "@/types/Auth/Login";
 import AuthContainer from "@/components/layout/AuthContainer";
-import { ErrorBanner } from "@/components/layout/AlertBanner";
+import { ErrorBanner } from "@/components/layout/AlertBanner/ErrorBanner";
 
 
 export const Component = () => {

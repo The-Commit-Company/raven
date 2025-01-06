@@ -1,7 +1,7 @@
 import { Loader } from "@/components/common/Loader"
 import FunctionForm from "@/components/feature/settings/ai/functions/FunctionForm"
-import { ErrorBanner } from "@/components/layout/AlertBanner"
-import { FullPageLoader } from "@/components/layout/Loaders"
+import { ErrorBanner } from "@/components/layout/AlertBanner/ErrorBanner"
+import { FullPageLoader } from "@/components/layout/Loaders/FullPageLoader"
 import PageContainer from "@/components/layout/Settings/PageContainer"
 import SettingsContentContainer from "@/components/layout/Settings/SettingsContentContainer"
 import SettingsPageHeader from "@/components/layout/Settings/SettingsPageHeader"
@@ -9,6 +9,7 @@ import { RavenAIFunction } from "@/types/RavenAI/RavenAIFunction"
 import { isEmpty } from "@/utils/validations"
 import { Button } from "@radix-ui/themes"
 import { SWRResponse, useFrappeGetDoc, useFrappeUpdateDoc } from "frappe-react-sdk"
+import { useEffect } from "react"
 import { FormProvider, useForm } from "react-hook-form"
 import { useParams } from "react-router-dom"
 import { toast } from "sonner"
@@ -51,6 +52,19 @@ const ViewFunctionContent = ({ data, mutate }: { data: RavenAIFunction, mutate: 
             })
     }
 
+    useEffect(() => {
+
+        const down = (e: KeyboardEvent) => {
+            if (e.key === 's' && (e.metaKey || e.ctrlKey)) {
+                e.preventDefault()
+                methods.handleSubmit(onSubmit)()
+            }
+        }
+
+        document.addEventListener('keydown', down)
+        return () => document.removeEventListener('keydown', down)
+    }, [])
+
     return <form onSubmit={methods.handleSubmit(onSubmit)}>
         <FormProvider {...methods}>
             <SettingsContentContainer>
@@ -58,7 +72,7 @@ const ViewFunctionContent = ({ data, mutate }: { data: RavenAIFunction, mutate: 
                     title={data.name}
                     headerBadges={isDirty ? [{ label: "Not Saved", color: "red" }] : undefined}
                     actions={<Button type='submit' disabled={loading}>
-                        {loading && <Loader />}
+                        {loading && <Loader className="text-white" />}
                         {loading ? "Saving" : "Save"}
                     </Button>}
                     breadcrumbs={[{ label: 'Functions', href: '../' }, { label: data.name, href: '', copyToClipboard: true }]}

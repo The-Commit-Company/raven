@@ -9,11 +9,12 @@ import { ErrorText, Label } from "@/components/common/Form";
 import { LoginInputs, LoginContext } from "@/types/Auth/Login";
 import AuthContainer from "@/components/layout/AuthContainer";
 import { TwoFactor } from "@/pages/auth/TwoFactor";
-import { ErrorBanner } from "@/components/layout/AlertBanner";
+import { ErrorBanner } from "@/components/layout/AlertBanner/ErrorBanner";
 import { DateSeparator } from "@/components/layout/Divider/DateSeparator";
 import { FcGoogle } from "react-icons/fc";
 import { useTheme } from "@/ThemeProvider";
 import { Stack } from "@/components/layout/Stack";
+import { ErrorCallout } from "@/components/common/Callouts/ErrorCallouts";
 
 export const SocialProviderIcons = {
     "github": <BiLogoGithub size="24" />,
@@ -66,14 +67,16 @@ export const Component = () => {
             return login({ username: values.email, password: values.password }).then(() => {
                 //Reload the page so that the boot info is fetched again
                 const URL = import.meta.env.VITE_BASE_NAME ? `/${import.meta.env.VITE_BASE_NAME}` : ``
-                window.location.replace(`${URL}/channel`)
+                window.location.replace(`${URL}`)
             }).catch((error) => { setError(error) })
         }
     }
 
     return (
         <AuthContainer>
-            {error && <ErrorBanner error={error} />}
+            {error && <ErrorCallout>
+                {error.message}
+            </ErrorCallout>}
             {
                 isTwoFactorEnabled ? <TwoFactor loginWithTwoFAResponse={loginWithTwoFAResponse} setError={setError} setIsTwoFactorEnabled={setIsTwoFactorEnabled} /> :
                     <Box>
@@ -90,6 +93,8 @@ export const Component = () => {
                                             name="email"
                                             type="text"
                                             required
+                                            // Adding an ID here so that on Safari, the autofill appears below the field. Else it was appearing in top left corner of the screen.
+                                            id="email"
                                             size='3'
                                             color="gray"
                                             variant={appearance === 'dark' ? "soft" : undefined}
@@ -108,6 +113,7 @@ export const Component = () => {
                                             type={isPasswordOpen ? "text" : "password"}
                                             autoComplete="current-password"
                                             required
+                                            id="password"
                                             size='3'
                                             variant={appearance === 'dark' ? "soft" : undefined}
                                             placeholder="***********"
@@ -143,7 +149,7 @@ export const Component = () => {
                                         <Button type='submit' disabled={isSubmitting}
                                             size='3'
                                             className="not-cal font-medium">
-                                            {isSubmitting ? <Loader /> : 'Login'}
+                                            {isSubmitting ? <Loader className="text-white" /> : 'Login'}
                                         </Button>
                                     </Flex>
 

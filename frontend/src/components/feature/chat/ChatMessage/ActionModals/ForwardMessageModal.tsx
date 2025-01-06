@@ -10,7 +10,7 @@ import UsersOrChannelsDropdown from "@/components/feature/selectDropdowns/UsersO
 import { ErrorText } from "@/components/common/Form"
 import { Loader } from "@/components/common/Loader"
 import { useFrappePostCall } from "frappe-react-sdk"
-import { ErrorBanner } from "@/components/layout/AlertBanner"
+import { ErrorBanner } from "@/components/layout/AlertBanner/ErrorBanner"
 
 interface ForwardMessageModalProps {
     onClose: () => void,
@@ -99,7 +99,7 @@ const ForwardMessageModal = ({ onClose, message }: ForwardMessageModalProps) => 
                         <Button variant="soft" color="gray">Cancel</Button>
                     </Dialog.Close>
                     <Button type='submit' disabled={loading}>
-                        {loading && <Loader />}
+                        {loading && <Loader className="text-white" />}
                         {loading ? "Sending" : "Send"}
                     </Button>
                 </Flex>

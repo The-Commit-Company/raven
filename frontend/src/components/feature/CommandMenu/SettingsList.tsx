@@ -1,10 +1,10 @@
 import { Command } from 'cmdk'
 import { useSetAtom } from 'jotai'
-import { BiBot, BiFile, BiGroup, BiMessageSquareDots, BiUserCircle } from 'react-icons/bi'
+import { BiBoltCircle, BiBot, BiFile, BiGroup, BiMessageSquareDots, BiTime, BiUserCircle } from 'react-icons/bi'
 import { useNavigate } from 'react-router-dom'
 import { commandMenuOpenAtom } from './CommandMenu'
 import { PiOpenAiLogo } from 'react-icons/pi'
-import { LuFunctionSquare } from 'react-icons/lu'
+import { LuSquareFunction } from 'react-icons/lu'
 import { AiOutlineApi } from 'react-icons/ai'
 
 type Props = {}
@@ -18,7 +18,7 @@ const SettingsList = (props: Props) => {
     const setOpen = useSetAtom(commandMenuOpenAtom)
 
     const onSelect = (value: string) => {
-        navigate(`/channel/settings/${value}`)
+        navigate(`/settings/${value}`)
         setOpen(false)
     }
     return (
@@ -47,12 +47,17 @@ const SettingsList = (props: Props) => {
                 HR
             </Command.Item>
 
+            <Command.Item value='message-actions' onSelect={onSelect}>
+                <BiBoltCircle size={ICON_SIZE} />
+                Message Actions
+            </Command.Item>
+
             <Command.Item value='scheduled-messages' keywords={['scheduled messages']} onSelect={onSelect}>
-                <BiMessageSquareDots size={ICON_SIZE} />
+                <BiTime size={ICON_SIZE} />
                 Scheduled Messages
             </Command.Item>
 
-            <Command.Item value='webhooks' keywords={['webhooks']} onSelect={onSelect}>
+            <Command.Item value='webhooks' onSelect={onSelect}>
                 <AiOutlineApi size={ICON_SIZE} />
                 Webhooks
             </Command.Item>
@@ -63,7 +68,7 @@ const SettingsList = (props: Props) => {
             </Command.Item>
 
             <Command.Item value='functions' onSelect={onSelect}>
-                <LuFunctionSquare size={ICON_SIZE} />
+                <LuSquareFunction size={ICON_SIZE} />
                 Functions
             </Command.Item>
 

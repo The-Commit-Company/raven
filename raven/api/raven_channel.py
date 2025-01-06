@@ -3,6 +3,7 @@ from frappe import _
 from frappe.query_builder import Order
 
 from raven.api.raven_users import get_current_raven_user
+from raven.utils import get_channel_members, track_channel_visit
 
 
 @frappe.whitelist()
@@ -45,6 +46,8 @@ def get_channel_list(hide_archived=False):
 	channel = frappe.qb.DocType("Raven Channel")
 	channel_member = frappe.qb.DocType("Raven Channel Member")
 
+	workspace_member = frappe.qb.DocType("Raven Workspace Member")
+
 	query = (
 		frappe.qb.from_(channel)
 		.select(
@@ -59,11 +62,15 @@ def get_channel_list(hide_archived=False):
 			channel.owner,
 			channel.last_message_timestamp,
 			channel.last_message_details,
-			channel.pinned_messages_string
+			channel.pinned_messages_string,
+			channel.workspace,
 		)
 		.distinct()
 		.left_join(channel_member)
 		.on(channel.name == channel_member.channel_id)
+		.left_join(workspace_member)
+		.on(channel.workspace == workspace_member.workspace)
+		.where((channel.is_direct_message == 1) | (workspace_member.user == frappe.session.user))
 		.where((channel.type != "Private") | (channel_member.user_id == frappe.session.user))
 		.where(channel.is_thread == 0)
 	)
@@ -107,19 +114,36 @@ def get_channels(hide_archived=False):
 	return channels
 
 
-def get_peer_user_id(channel_id, is_direct_message, is_self_message=False):
+def get_peer_user(channel_id: str, is_direct_message: int, is_self_message: bool = False) -> dict:
 	"""
-	For a given channel, fetches the user id of the peer
+	For a given channel, fetches the peer's member object
 	"""
 	if is_direct_message == 0:
 		return None
 	if is_self_message:
-		return frappe.session.user
-	return frappe.db.get_value(
-		"Raven Channel Member",
-		{"channel_id": channel_id, "user_id": ["!=", frappe.session.user]},
-		"user_id",
-	)
+		return {
+			"user_id": frappe.session.user,
+		}
+
+	members = get_channel_members(channel_id)
+
+	for member in members:
+		if member != frappe.session.user:
+			return members[member]
+
+	return None
+
+
+def get_peer_user_id(
+	channel_id: str, is_direct_message: int, is_self_message: bool = False
+) -> str:
+	"""
+	For a given channel, fetches the user id of the peer
+	"""
+	peer_user = get_peer_user(channel_id, is_direct_message, is_self_message)
+	if peer_user:
+		return peer_user.get("user_id")
+	return None
 
 
 @frappe.whitelist(methods=["POST"])
@@ -201,8 +225,8 @@ def leave_channel(channel_id):
 @frappe.whitelist()
 def toggle_pin_message(channel_id, message_id):
 	"""
-    Toggle pin/unpin a message in a channel.
-    """
+	Toggle pin/unpin a message in a channel.
+	"""
 	channel = frappe.get_doc("Raven Channel", channel_id)
 
 	pinned_message = None
@@ -213,7 +237,7 @@ def toggle_pin_message(channel_id, message_id):
 	if not message_exists:
 		frappe.throw(_("Message does not exist in this channel"))
 
-    # Check if the message is already pinned
+		# Check if the message is already pinned
 	for pm in channel.pinned_messages:
 		if pm.message_id == message_id:
 			pinned_message = pm
@@ -226,7 +250,19 @@ def toggle_pin_message(channel_id, message_id):
 		# Pin the message if it's not pinned
 		channel.append("pinned_messages", {"message_id": message_id})
 
-    # Save both the channel and the message
+		# Save both the channel and the message
 	channel.save()
+
+	return "Ok"
+
+
+@frappe.whitelist()
+def mark_all_messages_as_read(channel_ids: list):
+	"""
+	Mark all messages in these channels as read
+	"""
+	user = frappe.session.user
+	for channel_id in channel_ids:
+		track_channel_visit(channel_id, user=user)
 
 	return "Ok"

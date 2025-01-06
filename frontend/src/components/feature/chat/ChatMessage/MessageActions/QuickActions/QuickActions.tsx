@@ -11,15 +11,17 @@ import { LuReply } from 'react-icons/lu'
 import { toast } from 'sonner'
 import { getErrorMessage } from '@/components/layout/AlertBanner/ErrorBanner'
 import { CreateThreadActionButton } from './CreateThreadButton'
+import clsx from 'clsx'
 
 const QUICK_EMOJIS = ['👍', '✅', '👀', '🎉']
 
 interface QuickActionsProps extends MessageContextMenuProps {
     isEmojiPickerOpen: boolean,
     setIsEmojiPickerOpen: (open: boolean) => void,
+    alignToRight?: boolean,
 }
 
-export const QuickActions = ({ message, onReply, onEdit, isEmojiPickerOpen, setIsEmojiPickerOpen, showThreadButton = true }: QuickActionsProps) => {
+export const QuickActions = ({ message, onReply, onEdit, isEmojiPickerOpen, setIsEmojiPickerOpen, showThreadButton = true, alignToRight = false }: QuickActionsProps) => {
 
     const { currentUser } = useContext(UserContext)
 
@@ -48,10 +50,12 @@ export const QuickActions = ({ message, onReply, onEdit, isEmojiPickerOpen, setI
         e.target.dispatchEvent(evt);
     }
 
-    const onEmojiReact = (emoji: string) => {
+    const onEmojiReact = (emoji: string, is_custom: boolean = false, emoji_name?: string) => {
         call.post('raven.api.reactions.react', {
             message_id: message?.name,
-            reaction: emoji
+            reaction: emoji,
+            is_custom,
+            emoji_name
         }).catch((err) => {
             toast.error("Could not react to message.", {
                 description: getErrorMessage(err)
@@ -59,21 +63,15 @@ export const QuickActions = ({ message, onReply, onEdit, isEmojiPickerOpen, setI
         })
     }
 
+    // @ts-ignore
+    const CHAT_STYLE = window.frappe?.boot?.chat_style ?? 'Simple'
+
     return (
-        <Box ref={toolbarRef} className='absolute
-        -top-6
-        right-4
-        group-hover:visible
-        group-hover:transition-all
-        ease-ease-out-quad
-        group-hover:delay-100
-        z-50
-        p-1
-        shadow-md
-        rounded-md
-        bg-white
-        dark:bg-gray-1
-        invisible'>
+        <Box
+            ref={toolbarRef}
+            className={clsx('absolute group-hover:visible group-hover:transition-all ease-ease-out-quad group-hover:delay-100 z-50 p-1 shadow-md rounded-md bg-white dark:bg-gray-1 invisible',
+                CHAT_STYLE === "Left-Right" ? alignToRight ? "-top-10 right-0" : "-top-10 left-0" : "-top-6 right-4"
+            )}>
             <Flex gap='1'>
                 {QUICK_EMOJIS.map((emoji) => {
                     return <QuickActionButton
@@ -84,7 +82,8 @@ export const QuickActions = ({ message, onReply, onEdit, isEmojiPickerOpen, setI
                         onClick={() => {
                             onEmojiReact(emoji)
                         }}>
-                        {emoji}
+                        {/* @ts-expect-error */}
+                        <em-emoji native={emoji} />
                     </QuickActionButton>
                 })}
 

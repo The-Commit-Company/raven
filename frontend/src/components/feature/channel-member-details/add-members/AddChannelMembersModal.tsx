@@ -1,10 +1,8 @@
-import { DIALOG_CONTENT_CLASS } from '@/utils/layout/dialog'
 import { Dialog } from '@radix-ui/themes'
 import { useCallback } from 'react'
 import { AddChannelMembersModalContent } from './AddChannelMemberModalContent'
 import { useIsDesktop } from '@/hooks/useMediaQuery'
 import { Drawer, DrawerContent } from '@/components/layout/Drawer'
-import clsx from 'clsx'
 
 type Props = {
     open: boolean,
@@ -25,7 +23,8 @@ const AddChannelMembersModal = ({
     if (isDesktop) {
         return (
             <Dialog.Root open={open} onOpenChange={setOpen}>
-                <Dialog.Content className={clsx(DIALOG_CONTENT_CLASS, 'static')}>
+                {/* The backdrop is removed in this case because we don't want the backdrop blur to appear in front of the dropdown contents */}
+                <Dialog.Content className='static'>
                     <AddChannelMembersModalContent
                         onClose={onClose}
                     />

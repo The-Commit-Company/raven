@@ -16,7 +16,7 @@ import { isEmailValid } from "@/utils/validations";
 import AuthContainer from '@/components/layout/AuthContainer';
 import { CalloutObject } from "@/components/common/Callouts/CustomCallout";
 import { SuccessCallout } from "@/components/common/Callouts/SuccessCallout";
-import { ErrorBanner } from "@/components/layout/AlertBanner";
+import { ErrorBanner } from "@/components/layout/AlertBanner/ErrorBanner";
 import { useTheme } from "@/ThemeProvider";
 import { OtherLoginMethods } from "./Login";
 
@@ -116,7 +116,7 @@ export const Component = () => {
                             <Button type="submit" disabled={isSubmitting}
                                 size='3'
                                 className="not-cal font-medium">
-                                {isSubmitting ? <Loader /> : "Sign Up"}
+                                {isSubmitting ? <Loader className="text-white" /> : "Sign Up"}
                             </Button>
                         </Flex>
 

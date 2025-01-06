@@ -56,7 +56,7 @@ ${botVarName}.send_message(channel_id="channel-name", text="This is a test messa
                         Sending a message to a channel
                     </SectionHeading>
                     <Paragraph>
-                        Bots can be used to send messages to channels with html formatted content.
+                        Bots can be used to send messages to channels with HTML formatted content.
                     </Paragraph>
                 </Stack>
                 <CodeBlock

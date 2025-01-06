@@ -20,7 +20,10 @@
   "pinned_channels",
   "user_status_section",
   "availability_status",
-  "custom_status"
+  "custom_status",
+  "chat_style_section",
+  "chat_style",
+  "column_break_xlzh"
  ],
  "fields": [
   {
@@ -60,7 +63,7 @@
    "fieldname": "enabled",
    "fieldtype": "Check",
    "label": "Enabled",
-   "read_only": 1
+   "read_only_depends_on": "eval: doc.type == \"User\";"
   },
   {
    "fieldname": "html_xuuw",
@@ -116,11 +119,26 @@
    "fieldname": "user_status_section",
    "fieldtype": "Section Break",
    "label": "User Status"
+  },
+  {
+   "fieldname": "chat_style_section",
+   "fieldtype": "Section Break",
+   "label": "Chat Layout"
+  },
+  {
+   "fieldname": "chat_style",
+   "fieldtype": "Select",
+   "label": "Chat Style",
+   "options": "Simple\nLeft-Right"
+  },
+  {
+   "fieldname": "column_break_xlzh",
+   "fieldtype": "Column Break"
   }
  ],
  "image_field": "user_image",
  "links": [],
- "modified": "2024-07-26 20:46:52.128509",
+ "modified": "2024-10-25 12:41:02.049148",
  "modified_by": "Administrator",
  "module": "Raven",
  "name": "Raven User",

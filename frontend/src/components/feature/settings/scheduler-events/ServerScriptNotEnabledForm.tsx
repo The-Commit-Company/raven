@@ -18,7 +18,7 @@ const ServerScriptNotEnabledCallout = () => {
     return (
         <CustomCallout
             iconChildren={<BiInfoCircle size='18' />}
-            rootProps={{ color: 'yellow' }}
+            rootProps={{ color: 'yellow', variant: 'surface' }}
             textChildren={<Text>Server scripts are not enabled on this site. Please view the <RadixLink target="_blank" href="https://frappeframework.com/docs/user/en/desk/scripting/server-script" color='yellow' underline='always'>Frappe documentation</RadixLink> for more information.</Text>}
         />
     )

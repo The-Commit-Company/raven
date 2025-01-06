@@ -1,4 +1,5 @@
 import { HStack, Stack } from '@/components/layout/Stack'
+import { useIsMobile } from '@/hooks/useMediaQuery';
 import { Button, Code, Flex, Heading, Link, Text } from '@radix-ui/themes'
 import { useNavigate, useRouteError } from 'react-router-dom'
 
@@ -14,8 +15,24 @@ const ErrorPage = () => {
         navigate(0)
     }
 
+    const isMobile = useIsMobile()
+
     const goToChannels = () => {
-        navigate('/channel')
+
+        if (isMobile) {
+            navigate('/')
+        } else {
+            const lastWorkspace = localStorage.getItem('ravenLastWorkspace')
+            const ravenLastChannel = localStorage.getItem('ravenLastChannel')
+
+            if (lastWorkspace && ravenLastChannel) {
+                navigate(`/${lastWorkspace}/${ravenLastChannel}`)
+            } else if (lastWorkspace) {
+                navigate(`/${lastWorkspace}`)
+            } else {
+                navigate('/')
+            }
+        }
     }
 
     return (
@@ -27,10 +44,11 @@ const ErrorPage = () => {
                 </Heading>
                 <Text>If you face this error again, please report it either on <Link target='_blank' href='https://github.com/frappe/raven/issues'>GitHub</Link> or <Link target='_blank' href='https://https://support.ravenchat.ai/'> our support portal</Link>.</Text>
 
-                <details>
+                {!errorDueToUpdate && <details>
                     <summary><Text size='2'>Show error details</Text></summary>
                     <Code color='gray'>{(error as Error).message}</Code>
                 </details>
+                }
                 <HStack justify='center'>
                     <Button
                         // variant='ghost'
@@ -39,15 +57,16 @@ const ErrorPage = () => {
                         color='gray'
                         className='not-cal'
                         onClick={reloadPage}>
-                        Reload the Page
+                        {errorDueToUpdate ? "Upgrade to a better experience" : "Reload the Page"}
                     </Button>
-                    <Button
+                    {!errorDueToUpdate && <Button
                         // variant='ghost' 
                         variant='soft'
                         color='gray'
                         size='2' className='not-cal' onClick={goToChannels}>
                         Back to Channels
                     </Button>
+                    }
                 </HStack>
 
             </Stack>

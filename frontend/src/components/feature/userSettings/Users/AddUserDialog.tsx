@@ -1,6 +1,6 @@
 import { ErrorText, Label } from "@/components/common/Form"
 import { Loader } from "@/components/common/Loader"
-import { ErrorBanner } from "@/components/layout/AlertBanner"
+import { ErrorBanner } from "@/components/layout/AlertBanner/ErrorBanner"
 import { HStack, Stack } from "@/components/layout/Stack"
 import { DIALOG_CONTENT_CLASS } from "@/utils/layout/dialog"
 import { UserListContext } from "@/utils/users/UserListProvider"
@@ -9,19 +9,19 @@ import { FrappeConfig, FrappeContext, useFrappePostCall } from "frappe-react-sdk
 import { useContext, useState } from "react"
 import { useForm } from "react-hook-form"
 
-type Props = {
-    open: boolean
-    onClose: VoidFunction
-}
+const AddUserDialog = () => {
 
-const AddUserDialog = ({ open, onClose }: Props) => {
+    const [open, setOpen] = useState(false)
 
     return (
-        <Dialog.Root open={open} onOpenChange={onClose}>
+        <Dialog.Root open={open} onOpenChange={setOpen}>
+            <Dialog.Trigger>
+                <Button>Add User</Button>
+            </Dialog.Trigger>
             <Dialog.Content width={'480px'} className={DIALOG_CONTENT_CLASS}>
                 <Dialog.Title mb={'1'}>Add User</Dialog.Title>
                 <Dialog.Description size={'2'}>Invite a new user to Raven.</Dialog.Description>
-                <UserForm onClose={onClose} />
+                <UserForm onClose={() => setOpen(false)} />
             </Dialog.Content>
         </Dialog.Root>
     )
@@ -158,7 +158,7 @@ const UserForm = ({ onClose }: { onClose: VoidFunction }) => {
                     <Button color='gray' variant={'soft'} disabled={loading}>Cancel</Button>
                 </Dialog.Close>
                 <Button disabled={ravenUserExists || loading} onClick={handleSubmit(onSubmit)}>
-                    {loading ? <Loader /> : null}
+                    {loading ? <Loader className="text-white" /> : null}
                     {userExists ? 'Add' : 'Send Invite'}
                 </Button>
             </HStack>
