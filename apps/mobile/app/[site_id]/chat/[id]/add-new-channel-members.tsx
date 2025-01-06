@@ -18,12 +18,18 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import CheckIcon from "@assets/icons/CheckIcon.svg"
 import { ActivityIndicator } from '@components/nativewindui/ActivityIndicator';
 import { useFrappeCreateDoc, useSWRConfig } from 'frappe-react-sdk';
+import { useCurrentChannelData } from '@hooks/useCurrentChannelData';
+import { useFetchWorkspaceMembers } from '@raven/lib/hooks/useFetchWorkspaceMembers';
 
 export default function AddNewChannelMembers() {
 
     const { colors } = useColorScheme()
 
     const { id: channelId } = useLocalSearchParams()
+
+    const { channel } = useCurrentChannelData(channelId as string ?? "")
+
+    const { data: workspaceMembers } = useFetchWorkspaceMembers(channel?.channelData.workspace ?? "")
 
     const [selectedMembers, setSelectedMembers] = useState<Member[]>([]);
 
@@ -38,7 +44,17 @@ export default function AddNewChannelMembers() {
 
     const { channelMembers } = useFetchChannelMembers(channelId as string ?? "");
     const { enabledUsers } = useUserListProvider()
-    const nonChannelMembers = Array.from(enabledUsers.values()).filter(user => !channelMembers?.[user.name]);
+
+    const nonChannelMembers = useMemo(() => {
+
+        const eligibleUsers: { [key: string]: string } = {}
+
+        workspaceMembers?.message.forEach((m) => {
+            eligibleUsers[m.user] = m.name
+        })
+
+        return Array.from(enabledUsers.values()).filter(user => !channelMembers?.[user.name] && eligibleUsers?.[user.name]);
+    }, [])
 
     const filteredMembers = useMemo(() => {
         const lowerCaseInput = debouncedText?.toLowerCase() || '';
