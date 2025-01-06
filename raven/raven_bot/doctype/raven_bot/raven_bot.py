@@ -106,13 +106,27 @@ class RavenBot(Document):
 		# Create an OpenAI Assistant for the bot
 		client = get_open_ai_client()
 
-		assistant = client.beta.assistants.create(
-			instructions=self.instruction,
-			model="gpt-4o",
-			name=self.bot_name,
-			description=self.description or "",
-			tools=self.get_tools_for_assistant(),
-		)
+		# Sometimes users face an issue with the OpenAI API returning an error for "model_not_found"
+		# This is usually because the user has not added funds to their OpenAI account.
+		# We need to show this error to the user if the openAI API returns an error for "model_not_found"
+
+		try:
+			assistant = client.beta.assistants.create(
+				instructions=self.instruction,
+				model="gpt-4o",
+				name=self.bot_name,
+				description=self.description or "",
+				tools=self.get_tools_for_assistant(),
+			)
+		except Exception as e:
+			if "model_not_found" in str(e):
+				frappe.throw(
+					_(
+						f"<strong>There was an error creating the bot in OpenAI.</strong><br/>It is possible that your OpenAI account does not have enough funds. Please add funds to your OpenAI account and try again.<br><br/>Error: {e}"
+					)
+				)
+			else:
+				frappe.throw(e)
 
 		self.db_set("openai_assistant_id", assistant.id)
 

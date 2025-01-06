@@ -105,8 +105,6 @@ const DocTypePreviewEditor = ({ doctype, docname, eligibleFields, previewFields,
             })
     }
 
-    console.log(previewFields)
-
 
     return <Stack>
         {previewFields.length === 0 && <div>
