@@ -167,15 +167,16 @@ class RavenChannel(Document):
 			self.type = "Private"
 		if self.is_direct_message == 0:
 			self.channel_name = self.channel_name.strip().lower().replace(" ", "-")
-		if self.pinned_messages:
-			self.pinned_messages_string = "\n".join(
-				[message.message_id for message in self.pinned_messages]
-			)
 
 		if not self.is_direct_message and not self.workspace and not self.is_dm_thread:
 			workspaces = frappe.get_all("Raven Workspace")
 			if len(workspaces) == 1:
 				self.workspace = workspaces[0].name
+
+		self.set_pinned_messages_string()
+
+	def set_pinned_messages_string(self):
+		self.pinned_messages_string = "\n".join([message.message_id for message in self.pinned_messages])
 
 	def add_members(self, members, is_admin=0):
 		# members is a list of Raven User IDs

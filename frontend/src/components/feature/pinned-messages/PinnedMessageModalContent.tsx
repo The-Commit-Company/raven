@@ -2,7 +2,7 @@ import { Dialog, Flex, IconButton, Text } from '@radix-ui/themes'
 import { useFrappeGetCall } from 'frappe-react-sdk'
 import { useParams } from 'react-router-dom'
 import { Message } from '../../../../../types/Messaging/Message'
-import { ErrorBanner } from '@/components/layout/AlertBanner'
+import { ErrorBanner } from '@/components/layout/AlertBanner/ErrorBanner'
 import { MessageBox } from '../GlobalSearch/MessageBox'
 import { IoClose } from 'react-icons/io5'
 

@@ -245,12 +245,11 @@ def toggle_pin_message(channel_id, message_id):
 
 	if pinned_message:
 		# Unpin the message
-		channel.pinned_messages.remove(pinned_message)
+		channel.remove(pinned_message)
 	else:
 		# Pin the message if it's not pinned
 		channel.append("pinned_messages", {"message_id": message_id})
 
-		# Save both the channel and the message
 	channel.save()
 
 	return "Ok"
