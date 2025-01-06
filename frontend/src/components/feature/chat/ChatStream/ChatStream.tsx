@@ -66,15 +66,16 @@ import SystemMessageBlock from '../ChatMessage/SystemMessageBlock'
 type Props = {
     channelID: string,
     replyToMessage: (message: Message) => void,
-    showThreadButton?: boolean
+    showThreadButton?: boolean,
+    pinnedMessagesString?: string
 }
 
-const ChatStream = ({ channelID, replyToMessage, showThreadButton = true }: Props) => {
+const ChatStream = ({ channelID, replyToMessage, showThreadButton = true, pinnedMessagesString }: Props) => {
 
 
     const scrollRef = useRef<HTMLDivElement | null>(null)
 
-    const { messages, hasOlderMessages, loadOlderMessages, goToLatestMessages, hasNewMessages, error, loadNewerMessages, isLoading, highlightedMessage, scrollToMessage } = useChatStream(channelID, scrollRef)
+    const { messages, hasOlderMessages, loadOlderMessages, goToLatestMessages, hasNewMessages, error, loadNewerMessages, isLoading, highlightedMessage, scrollToMessage } = useChatStream(channelID, scrollRef, pinnedMessagesString)
     const { setDeleteMessage, ...deleteProps } = useDeleteMessage()
 
     const { setEditMessage, ...editProps } = useEditMessage()

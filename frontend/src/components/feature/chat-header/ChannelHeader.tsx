@@ -7,6 +7,7 @@ import ChannelHeaderMenu from "./ChannelHeaderMenu"
 import { ViewChannelMemberAvatars } from "./ViewChannelMemberAvatars"
 import { BiChevronLeft } from "react-icons/bi"
 import { Link } from "react-router-dom"
+import { ViewPinnedMessagesButton } from "../pinned-messages/ViewPinnedMessagesButton"
 
 interface ChannelHeaderProps {
     channelData: ChannelListItem
@@ -34,7 +35,8 @@ export const ChannelHeader = ({ channelData }: ChannelHeaderProps) => {
                             }}
                             className="mb-0.5 text-ellipsis line-clamp-1">{channelData.channel_name}</Heading>
                     </Flex>
-                    <EditChannelNameButton channelID={channelData.name} channel_name={channelData.channel_name} channelType={channelData.type} disabled={channelData.is_archived == 1} />
+                    <EditChannelNameButton channelID={channelData.name} channel_name={channelData.channel_name} channelType={channelData.type} disabled={channelData.is_archived == 1} buttonVisible={!!channelData.pinned_messages_string} />
+                    <ViewPinnedMessagesButton pinnedMessagesString={channelData.pinned_messages_string ?? ''} />
                 </Flex>
             </Flex>
 
