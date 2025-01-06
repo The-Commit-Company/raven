@@ -80,7 +80,8 @@ export const QuickActions = ({ message, onReply, onEdit, isEmojiPickerOpen, setI
                         onClick={() => {
                             onEmojiReact(emoji)
                         }}>
-                        {emoji}
+                        {/* @ts-expect-error */}
+                        <em-emoji native={emoji} />
                     </QuickActionButton>
                 })}
 

@@ -56,7 +56,8 @@
             "./assets/fonts/CalSans-SemiBold.otf"
           ]
         }
-      ]
+      ],
+      "expo-video"
     ],
     "extra": {
       "router": {

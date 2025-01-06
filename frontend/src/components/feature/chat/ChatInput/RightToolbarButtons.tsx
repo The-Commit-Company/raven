@@ -47,7 +47,7 @@ export const RightToolbarButtons = ({ fileProps, channelID, isEdit, ...sendProps
             <Separator orientation='vertical' />
             <Flex gap='3' align='center'>
                 <AISavedPromptsButton />
-                <CreatePollButton />
+                {channelID && <CreatePollButton channelID={channelID} />}
             </Flex>
             <Separator orientation='vertical' />
             <Flex gap='3' align='center'>
@@ -252,7 +252,7 @@ export const SendButton = ({ sendMessage, messageSending, setContent, ...props }
     </IconButton>
 }
 
-const CreatePollButton = () => {
+const CreatePollButton = ({ channelID }: { channelID: string }) => {
 
     const [isOpen, , setIsOpen] = useBoolean(false)
     const { editor } = useCurrentEditor()
@@ -277,7 +277,7 @@ const CreatePollButton = () => {
                 Create a quick poll to get everyone's thoughts on a topic.
             </Dialog.Description>
             <Suspense fallback={<Loader />}>
-                <CreatePollContent setIsOpen={setIsOpen} />
+                <CreatePollContent channelID={channelID} setIsOpen={setIsOpen} />
             </Suspense>
         </Dialog.Content>
     </Dialog.Root>

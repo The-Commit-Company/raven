@@ -11,6 +11,8 @@ import { ActionSheetProvider } from '@expo/react-native-action-sheet';
 import { PortalHost } from '@rn-primitives/portal';
 import { KeyboardProvider } from 'react-native-keyboard-controller';
 import { useAsyncStorage } from '@react-native-async-storage/async-storage';
+import { Toaster } from 'sonner-native';
+import { Text } from 'react-native';
 
 export default function RootLayout() {
 
@@ -51,6 +53,21 @@ export default function RootLayout() {
                         </KeyboardProvider>
                     </ActionSheetProvider>
                 </BottomSheetModalProvider>
+                <Toaster
+                    position="top-center"
+                    duration={2000}
+                    visibleToasts={4}
+                    closeButton={false}
+                    icons={{
+                        error: <Text>💥</Text>,
+                        loading: <Text>🔄</Text>,
+                    }}
+                    toastOptions={{}}
+                    pauseWhenPageIsHidden
+                    richColors
+                    theme='light'
+                    swipeToDismissDirection='left'
+                />
             </GestureHandlerRootView>
         </>
     )
