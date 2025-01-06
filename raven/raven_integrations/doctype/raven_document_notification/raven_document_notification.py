@@ -146,7 +146,7 @@ class RavenDocumentNotification(Document):
 		return channels, users
 
 
-doctypes_to_be_ignored = ["Raven Document Notification", "Version"]
+doctypes_to_be_ignored = ["Raven Document Notification", "Version", "Comment"]
 
 
 def run_document_notification(doc, method):
