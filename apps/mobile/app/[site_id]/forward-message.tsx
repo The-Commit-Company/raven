@@ -9,11 +9,11 @@ import { useChannelListProvider } from "@raven/lib/providers/ChannelListProvider
 import { useGetUserRecords } from "@raven/lib/hooks/useGetUserRecords"
 import { UserFields } from "@raven/types/common/UserFields"
 import useCurrentRavenUser from "@raven/lib/hooks/useCurrentRavenUser"
-import { ChannelIcon } from "@components/features/chat/ChannelList/ChannelIcon"
 import { useColorScheme } from "@hooks/useColorScheme"
 import SendIcon from "@assets/icons/SendIcon.svg"
 import { useFrappePostCall } from "frappe-react-sdk"
 import { ActivityIndicator } from "@components/nativewindui/ActivityIndicator"
+import { ChannelIcon } from "@components/features/channels/ChannelList/ChannelIcon"
 
 type DMChannelListItemWithUser = DMChannelListItem & {
     user: UserFields
