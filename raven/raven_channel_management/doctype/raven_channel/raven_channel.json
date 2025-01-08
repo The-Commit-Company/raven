@@ -27,6 +27,9 @@
   "last_message_timestamp",
   "column_break_eckt",
   "last_message_details",
+  "section_break_acpc",
+  "pinned_messages",
+  "pinned_messages_string",
   "ai_tab",
   "is_ai_thread",
   "openai_thread_id",
@@ -173,6 +176,21 @@
    "label": "Thread Bot",
    "options": "Raven Bot",
    "read_only": 1
+  },
+  {
+   "fieldname": "section_break_acpc",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "pinned_messages",
+   "fieldtype": "Table",
+   "label": "Pinned Messages",
+   "options": "Raven Pinned Messages"
+  },
+  {
+   "fieldname": "pinned_messages_string",
+   "fieldtype": "Small Text",
+   "label": "Pinned Messages String"
   },
   {
    "fieldname": "workspace",
