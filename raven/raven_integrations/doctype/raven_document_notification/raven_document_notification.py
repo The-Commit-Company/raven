@@ -40,7 +40,7 @@ class RavenDocumentNotification(Document):
 		self.validate_message()
 		self.validate_document_type()
 		self.validate_recipients()
-		frappe.cache.hdel("raven_doc_notifications", self.document_type)
+		frappe.cache().hdel("raven_doc_notifications", self.document_type)
 
 	def validate_condition(self):
 		if self.condition:
@@ -85,10 +85,10 @@ class RavenDocumentNotification(Document):
 					)
 
 	def on_update(self):
-		frappe.cache.hdel("raven_doc_notifications", self.document_type)
+		frappe.cache().hdel("raven_doc_notifications", self.document_type)
 
 	def on_trash(self):
-		frappe.cache.hdel("raven_doc_notifications", self.document_type)
+		frappe.cache().hdel("raven_doc_notifications", self.document_type)
 
 	def send_notification(self, context, link_doctype, link_document):
 
