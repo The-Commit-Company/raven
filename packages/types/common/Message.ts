@@ -23,6 +23,8 @@ export interface BaseMessage {
     bot?: string,
     hide_link_preview?: 1 | 0,
     is_thread: 1 | 0,
+    /** Formatted timestamp - being used on the mobile app */
+    formattedTime?: string
 }
 
 export interface FileMessage extends BaseMessage {
