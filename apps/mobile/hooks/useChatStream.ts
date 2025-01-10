@@ -29,10 +29,10 @@ const useChatStream = (channelID: string, listRef: React.RefObject<LegendListRef
         // TODO: Add base message
     }, undefined, {
         onSuccess: () => {
-            // listRef.current?.scrollToEnd()
+            // listRef.current?.scrollToEnd({ animated: false })
 
             // setTimeout(() => {
-            //     listRef.current?.scrollToEnd()
+            //     listRef.current?.scrollToEnd({ animated: false })
             // }, 100)
         }
     })

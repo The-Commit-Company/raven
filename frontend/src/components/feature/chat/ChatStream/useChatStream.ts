@@ -24,7 +24,7 @@ type MessageDateBlock = Message | {
 /**
  * Hook to fetch messages to be rendered on the chat interface
  */
-const useChatStream = (channelID: string, scrollRef: MutableRefObject<HTMLDivElement | null>) => {
+const useChatStream = (channelID: string, scrollRef: MutableRefObject<HTMLDivElement | null>, pinnedMessagesString?: string) => {
 
     const location = useLocation()
     const navigate = useNavigate()
@@ -427,6 +427,9 @@ const useChatStream = (channelID: string, scrollRef: MutableRefObject<HTMLDivEle
         // Also format the date to be displayed in the chat interface
         if (data) {
 
+            let pinnedMessageIDs = pinnedMessagesString?.split('\n') ?? []
+            pinnedMessageIDs = pinnedMessageIDs.map(messageID => messageID.trim())
+
             const messages = [...data.message.messages]
 
             // Messages are already sorted by date - from latest to oldest
@@ -445,7 +448,11 @@ const useChatStream = (channelID: string, scrollRef: MutableRefObject<HTMLDivEle
                     name: currentDate
                 })
 
-                messagesWithDateSeparators.push({ ...messages[messages.length - 1], is_continuation: 0 })
+                messagesWithDateSeparators.push({
+                    ...messages[messages.length - 1],
+                    is_continuation: 0,
+                    is_pinned: pinnedMessageIDs.includes(messages[messages.length - 1].name) ? 1 : 0
+                })
                 // Loop through the messages and add date separators if the date changes
                 for (let i = messages.length - 2; i >= 0; i--) {
 
@@ -469,15 +476,17 @@ const useChatStream = (channelID: string, scrollRef: MutableRefObject<HTMLDivEle
                     if (currentMessageSender !== nextMessageSender) {
                         messagesWithDateSeparators.push({
                             ...message,
-                            is_continuation: 0
+                            is_continuation: 0,
+                            is_pinned: pinnedMessageIDs.includes(message.name) ? 1 : 0
                         })
                     } else if (messageDateTime - currentDateTime > 120000) {
                         messagesWithDateSeparators.push({
                             ...message,
-                            is_continuation: 0
+                            is_continuation: 0,
+                            is_pinned: pinnedMessageIDs.includes(message.name) ? 1 : 0
                         })
                     } else {
-                        messagesWithDateSeparators.push({ ...message, is_continuation: 1 })
+                        messagesWithDateSeparators.push({ ...message, is_continuation: 1, is_pinned: pinnedMessageIDs.includes(message.name) ? 1 : 0 })
                     }
                     currentDate = messageDate
                     currentDateTime = new Date(message.creation).getTime()
@@ -489,7 +498,7 @@ const useChatStream = (channelID: string, scrollRef: MutableRefObject<HTMLDivEle
                 return []
             }
         }
-    }, [data])
+    }, [data, pinnedMessagesString])
 
     const scrollToMessage = (messageID: string) => {
         // Check if the message is in the messages array
