@@ -121,6 +121,43 @@ def save_message(message_id, add=False):
 
 
 @frappe.whitelist()
+def get_pinned_messages(channel_id):
+
+	# check if the user has permission to view the channel
+	frappe.has_permission("Raven Channel", doc=channel_id, ptype="read", throw=True)
+
+	pinnedMessagesString = frappe.db.get_value("Raven Channel", channel_id, "pinned_messages_string")
+	pinnedMessages = pinnedMessagesString.split("\n") if pinnedMessagesString else []
+
+	return frappe.db.get_all(
+		"Raven Message",
+		filters={"name": ["in", pinnedMessages]},
+		fields=[
+			"name",
+			"owner",
+			"creation",
+			"text",
+			"file",
+			"message_type",
+			"message_reactions",
+			"_liked_by",
+			"channel_id",
+			"thumbnail_width",
+			"thumbnail_height",
+			"file_thumbnail",
+			"link_doctype",
+			"link_document",
+			"replied_message_details",
+			"content",
+			"is_edited",
+			"is_thread",
+			"is_forwarded",
+		],
+		order_by="creation asc",
+	)
+
+
+@frappe.whitelist()
 def get_saved_messages():
 	"""
 	Fetches list of all messages liked by the user

@@ -129,6 +129,13 @@ after_uninstall = "raven.uninstall.after_uninstall"
 # Hook on document methods and events
 
 doc_events = {
+	"*": {
+		"after_insert": "raven.raven_integrations.doctype.raven_document_notification.raven_document_notification.run_document_notification",
+		"on_update": "raven.raven_integrations.doctype.raven_document_notification.raven_document_notification.run_document_notification",
+		"on_trash": "raven.raven_integrations.doctype.raven_document_notification.raven_document_notification.run_document_notification",
+		"on_cancel": "raven.raven_integrations.doctype.raven_document_notification.raven_document_notification.run_document_notification",
+		"on_submit": "raven.raven_integrations.doctype.raven_document_notification.raven_document_notification.run_document_notification",
+	},
 	"User": {
 		"after_insert": "raven.raven.doctype.raven_user.raven_user.add_user_to_raven",
 		"on_update": "raven.raven.doctype.raven_user.raven_user.add_user_to_raven",

@@ -10,7 +10,7 @@ type Props = {
 const FullPageLoader = ({ title = 'raven', description = 'Setting up your workspace...' }: Props) => {
     return (
         <View className="flex-1 justify-center items-center gap-2">
-            <Text className="text-4xl font-bold font-cal-sans">{title}</Text>
+            <Text className="text-4xl font-cal-sans">{title}</Text>
             <Text className='text-muted-foreground'>{description}</Text>
         </View>
     )

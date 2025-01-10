@@ -8,7 +8,7 @@ import useFileUpload from "../ChatInput/FileInput/useFileUpload"
 import { CustomFile, FileDrop } from "../../file-upload/FileDrop"
 import { FileListItem } from "../../file-upload/FileListItem"
 import { useSendMessage } from "../ChatInput/useSendMessage"
-import { Flex, Box, IconButton } from "@radix-ui/themes"
+import { Flex, Box, IconButton, Checkbox } from "@radix-ui/themes"
 import { ReplyMessageBox } from "../ChatMessage/ReplyMessageBox/ReplyMessageBox"
 import { BiX } from "react-icons/bi"
 import ChatStream from "./ChatStream"
@@ -16,9 +16,10 @@ import Tiptap from "../ChatInput/Tiptap"
 import useFetchChannelMembers, { Member } from "@/hooks/fetchers/useFetchChannelMembers"
 import { useParams } from "react-router-dom"
 import clsx from "clsx"
-import { Stack } from "@/components/layout/Stack"
+import { HStack, Stack } from "@/components/layout/Stack"
 import TypingIndicator from "../ChatInput/TypingIndicator/TypingIndicator"
 import { useTyping } from "../ChatInput/TypingIndicator/useTypingIndicator"
+import { Label } from "@/components/common/Form"
 
 const COOL_PLACEHOLDERS = [
     "Delivering messages atop dragons 🐉 is available on a chargeable basis.",
@@ -66,7 +67,7 @@ export const ChatBoxBody = ({ channelData }: ChatBoxBodyProps) => {
         return null
     }, [user, channelMembers])
 
-    const { fileInputRef, files, setFiles, removeFile, uploadFiles, addFile, fileUploadProgress } = useFileUpload(channelData.name)
+    const { fileInputRef, files, setFiles, removeFile, uploadFiles, addFile, fileUploadProgress, compressImages, setCompressImages } = useFileUpload(channelData.name)
 
     const { sendMessage, loading } = useSendMessage(channelData.name, files.length, uploadFiles, onMessageSendCompleted, selectedMessage)
 
@@ -142,6 +143,7 @@ export const ChatBoxBody = ({ channelData }: ChatBoxBodyProps) => {
                 maxFileSize={10000000}>
                 <ChatStream
                     channelID={channelData.name}
+                    pinnedMessagesString={channelData.pinned_messages_string}
                     replyToMessage={handleReplyAction}
                 />
                 {canUserSendMessage &&
@@ -164,9 +166,10 @@ export const ChatBoxBody = ({ channelData }: ChatBoxBodyProps) => {
                             messageSending={loading}
                             slotBefore={<Flex direction='column' justify='center' hidden={!selectedMessage && !files.length}>
                                 {selectedMessage && <PreviousMessagePreview selectedMessage={selectedMessage} />}
-                                {files && files.length > 0 && <Flex gap='2' width='100%' align='end' px='2' p='2' wrap='wrap'>
+                                {files && files.length > 0 && <Flex gap='2' width='100%' align='stretch' px='2' p='2' wrap='wrap'>
                                     {files.map((f: CustomFile) => <Box className="grow-0" key={f.fileID}><FileListItem file={f} uploadProgress={fileUploadProgress} removeFile={() => removeFile(f.fileID)} /></Box>)}
                                 </Flex>}
+                                {files.length !== 0 && <CompressImageCheckbox compressImages={compressImages} setCompressImages={setCompressImages} />}
                             </Flex>}
                         />
                     </Stack>
@@ -184,6 +187,17 @@ export const ChatBoxBody = ({ channelData }: ChatBoxBodyProps) => {
         </ChatBoxBodyContainer>
     )
 
+}
+
+const CompressImageCheckbox = ({ compressImages, setCompressImages }: { compressImages: boolean, setCompressImages: (compressImages: boolean) => void }) => {
+    return <div className="px-3">
+        <Label size='2' weight='regular'>
+            <HStack align='center' gap='2'>
+                <Checkbox checked={compressImages} onCheckedChange={() => { setCompressImages(!compressImages) }} />
+                Compress Images
+            </HStack>
+        </Label>
+    </div>
 }
 
 // Separate container to prevent re-rendering when the threadID changes

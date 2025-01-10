@@ -33,7 +33,7 @@ export const TwoFactor = ({ loginWithTwoFAResponse, setError, setIsTwoFactorEnab
         return login(credentials).then((res) => {
             //Reload the page so that the boot info is fetched again
             const URL = import.meta.env.VITE_BASE_NAME ? `/${import.meta.env.VITE_BASE_NAME}` : ``
-            window.location.replace(`${URL}/channel`)
+            window.location.replace(`${URL}`)
         }).catch((error) => setError(error))
     }
 

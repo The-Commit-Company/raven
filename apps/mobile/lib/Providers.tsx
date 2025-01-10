@@ -30,6 +30,15 @@ const Providers = (props: PropsWithChildren) => {
 
 const ChannelListProvider = ({ children }: PropsWithChildren) => {
     const channelListContextData = useChannelListProvider({})
+
+    if (channelListContextData.isLoading) {
+        return <FullPageLoader />
+    }
+
+    if (channelListContextData.error) {
+        return <Text>Error loading channels</Text>
+    }
+
     return <ChannelListContext.Provider value={channelListContextData}>
         {children}
     </ChannelListContext.Provider>

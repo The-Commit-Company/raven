@@ -9,19 +9,19 @@ import { FrappeConfig, FrappeContext, useFrappePostCall } from "frappe-react-sdk
 import { useContext, useState } from "react"
 import { useForm } from "react-hook-form"
 
-type Props = {
-    open: boolean
-    onClose: VoidFunction
-}
+const AddUserDialog = () => {
 
-const AddUserDialog = ({ open, onClose }: Props) => {
+    const [open, setOpen] = useState(false)
 
     return (
-        <Dialog.Root open={open} onOpenChange={onClose}>
+        <Dialog.Root open={open} onOpenChange={setOpen}>
+            <Dialog.Trigger>
+                <Button>Add User</Button>
+            </Dialog.Trigger>
             <Dialog.Content width={'480px'} className={DIALOG_CONTENT_CLASS}>
                 <Dialog.Title mb={'1'}>Add User</Dialog.Title>
                 <Dialog.Description size={'2'}>Invite a new user to Raven.</Dialog.Description>
-                <UserForm onClose={onClose} />
+                <UserForm onClose={() => setOpen(false)} />
             </Dialog.Content>
         </Dialog.Root>
     )

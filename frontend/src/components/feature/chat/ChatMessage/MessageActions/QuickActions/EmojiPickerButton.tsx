@@ -1,41 +1,45 @@
 import { lazy, Suspense } from 'react'
-import { Box, Flex, IconButton, Popover, Portal, Tooltip } from '@radix-ui/themes'
+import { Box, Flex, IconButton, IconButtonProps, Popover, Portal, Tooltip } from '@radix-ui/themes'
 import { DIALOG_CONTENT_CLASS } from '@/utils/layout/dialog'
-import { BiSmile } from 'react-icons/bi'
 import { Loader } from '@/components/common/Loader'
 import { QUICK_ACTION_BUTTON_CLASS } from './QuickActionButton'
+import { LuSmilePlus } from 'react-icons/lu'
+import clsx from 'clsx'
 
 const EmojiPicker = lazy(() => import('@/components/common/EmojiPicker/EmojiPicker'))
 
 interface EmojiPickerButtonProps {
-    saveReaction: (emoji: string) => void,
+    saveReaction: (emoji: string, is_custom: boolean, emoji_name?: string) => void,
     isOpen: boolean
-    setIsOpen: (open: boolean) => void
+    setIsOpen: (open: boolean) => void,
+    iconButtonProps?: IconButtonProps,
+    iconSize?: string
 }
 
-export const EmojiPickerButton = ({ saveReaction, isOpen, setIsOpen }: EmojiPickerButtonProps) => {
+export const EmojiPickerButton = ({ saveReaction, isOpen, setIsOpen, iconButtonProps, iconSize = '18' }: EmojiPickerButtonProps) => {
 
     const onClose = () => {
         setIsOpen(false)
     }
 
-    const onEmojiClick = (emoji: string) => {
-        saveReaction(emoji)
+    const onEmojiClick = (emoji: string, is_custom: boolean, emoji_name?: string) => {
+        saveReaction(emoji, is_custom, emoji_name)
         onClose()
     }
 
     return (
         <Popover.Root open={isOpen} onOpenChange={setIsOpen}>
             <Flex>
-                <Tooltip content='find another reaction'>
+                <Tooltip content='Add reaction'>
                     <Popover.Trigger>
                         <IconButton
                             variant='soft'
                             size='2'
-                            className={QUICK_ACTION_BUTTON_CLASS}
                             color='gray'
-                            aria-label='pick emoji'>
-                            <BiSmile size='18' />
+                            aria-label='pick emoji'
+                            {...iconButtonProps}
+                            className={clsx(QUICK_ACTION_BUTTON_CLASS, iconButtonProps?.className)}>
+                            <LuSmilePlus size={iconSize} />
                         </IconButton>
                     </Popover.Trigger>
                 </Tooltip>

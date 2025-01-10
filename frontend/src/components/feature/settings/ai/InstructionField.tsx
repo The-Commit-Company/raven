@@ -173,7 +173,7 @@ const DynamicInstructionField = ({ allowUsingTemplate, instructionRequired, auto
 
         <Separator className='w-full' />
         <Text size='2'>
-            Here are some variables you can use in your instruction. Simple copy by clicking on the variable.
+            Here are some variables you can use in your instruction. Simply copy by clicking on the variable.
             <br />You can also use standard Jinja variables available in the system.
         </Text>
         <Table.Root variant='surface'>
@@ -190,21 +190,21 @@ const DynamicInstructionField = ({ allowUsingTemplate, instructionRequired, auto
     </Stack >
 }
 
-const VariableRow = ({ variable, description }: { variable: string, description: string }) => {
+export const VariableRow = ({ variable, description, withoutJinja = false }: { variable: string, description: React.ReactNode, withoutJinja?: boolean }) => {
     return <Table.Row>
-        <Table.Cell><VariableTooltip text={variable} /></Table.Cell>
+        <Table.Cell><VariableTooltip text={variable} withoutJinja={withoutJinja} /></Table.Cell>
         <Table.Cell>{description}</Table.Cell>
     </Table.Row>
 }
 
-const VariableTooltip = ({ text }: { text: string }) => {
+export const VariableTooltip = ({ text, withoutJinja = false }: { text: string, withoutJinja?: boolean }) => {
 
     const [tooltip, setTooltip] = useState('')
 
 
     const copyText = (e: React.MouseEvent<HTMLDivElement>) => {
         e.preventDefault()
-        window.navigator.clipboard.writeText("{{ " + text + " }}")
+        window.navigator.clipboard.writeText(withoutJinja ? text : "{{ " + text + " }}")
             .then(() => {
                 setTooltip('Copied!')
                 setTimeout(() => {

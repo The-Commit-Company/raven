@@ -4,7 +4,7 @@ import { MessageContent, MessageSenderAvatar, UserHoverCard } from "../MessageIt
 import { Box, BoxProps, ContextMenu, Flex, Text } from "@radix-ui/themes"
 import { MessageReactions } from "../MessageReactions"
 import { DateTooltip, DateTooltipShort } from "../Renderers/DateTooltip"
-import { RiShareForwardFill } from "react-icons/ri"
+import { RiPushpinFill, RiShareForwardFill } from "react-icons/ri"
 import { ReplyMessageBox } from "../ReplyMessageBox/ReplyMessageBox"
 import { useContext, useMemo, useState } from "react"
 import clsx from "clsx"
@@ -106,7 +106,7 @@ export const LeftRightLayout = ({ message, user, isActive, isHighlighted, onRepl
                                 </Flex> : null}
 
                                 {message.is_forwarded === 1 && <Flex className='text-gray-10 text-xs' gap={'1'} align={'center'}><RiShareForwardFill size='12' /> forwarded</Flex>}
-
+                                {message.is_pinned === 1 && <Flex className='text-accent-9 text-xs' gap={'1'} align={'center'}><RiPushpinFill size='12' /> Pinned</Flex>}
                                 {linked_message && replied_message_details && <ReplyMessageBox
                                     className='sm:max-w-[32rem] max-w-[80vw] cursor-pointer mb-1'
                                     role='button'

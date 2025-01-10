@@ -3,9 +3,60 @@ import Suggestion from '@tiptap/suggestion'
 import { ReactRenderer } from '@tiptap/react'
 import EmojiList from './EmojiList'
 import tippy from 'tippy.js';
-import { NativeEmoji } from 'emoji-picker-element/shared';
 import { PluginKey } from '@tiptap/pm/state';
-import { emojiDatabase } from '@/components/common/EmojiPicker/EmojiPicker';
+import { SearchIndex, FrequentlyUsed } from 'emoji-mart';
+
+export type EmojiType = {
+    shortcodes?: string,
+    emoji?: string,
+    name?: string,
+    id: string,
+}
+
+async function search(value: string, maxResults: number = 10): Promise<EmojiType[]> {
+    const emojis = await SearchIndex.search(value, { maxResults: maxResults, caller: undefined })
+
+    const results: EmojiType[] = []
+    emojis.forEach((emoji: any) => {
+        if (emoji && emoji.skins[0].native) {
+            results.push({
+                shortcodes: emoji.skins[0].shortcodes,
+                emoji: emoji.skins[0].native,
+                name: emoji.name,
+                id: emoji.id,
+            })
+        }
+    })
+
+    return results
+}
+
+function getTopFavoriteEmojis(maxResults: number = 10): EmojiType[] {
+
+    // ID's of emojis
+
+    // @ts-expect-error
+    const emojis = FrequentlyUsed.get({ maxFrequentRows: 1, perLine: maxResults })
+
+    const results: EmojiType[] = []
+
+    emojis.forEach((emoji: string) => {
+        // @ts-expect-error
+        const e = SearchIndex.get(emoji)
+
+        if (e && e.skins[0].native) {
+            results.push({
+                id: e.id,
+                shortcodes: e.skins[0].shortcodes,
+                emoji: e.skins[0].native,
+                name: e.name,
+            })
+        }
+    })
+
+    return results
+}
+
 
 export const EmojiSuggestion = Node.create({
     name: 'emoji',
@@ -25,15 +76,10 @@ export const EmojiSuggestion = Node.create({
                 char: ':',
                 items: (query) => {
                     if (query.query.length !== 0) {
-                        return emojiDatabase.getEmojiBySearchQuery(query.query.toLowerCase()).then((emojis) => {
-                            return emojis.slice(0, 10) as NativeEmoji[]
-                        });
+                        return search(query.query)
                     } else {
-                        return emojiDatabase.getTopFavoriteEmoji(10) as Promise<NativeEmoji[]>
+                        return getTopFavoriteEmojis()
                     }
-
-
-                    return []
                 },
                 render: () => {
                     let component: any;
@@ -91,9 +137,11 @@ export const EmojiSuggestion = Node.create({
                 },
                 command: ({ editor, range, props }) => {
                     // Replace the text from : to with the emoji node
-                    editor.chain().focus().deleteRange(range).insertContent(props.unicode).run()
+                    editor.chain().focus().deleteRange(range).insertContent(props.emoji).run()
 
-                    emojiDatabase.incrementFavoriteEmojiCount(props.unicode)
+                    FrequentlyUsed.add(props.id)
+
+                    // emojiDatabase.incrementFavoriteEmojiCount(props.unicode)
 
                     window.getSelection()?.collapseToEnd()
                 },
