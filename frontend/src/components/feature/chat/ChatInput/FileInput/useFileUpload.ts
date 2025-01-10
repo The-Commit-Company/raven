@@ -16,6 +16,8 @@ export default function useFileUpload(channelID: string, selectedMessage?: Messa
 
   const [files, setFiles] = useState<CustomFile[]>([])
 
+  const [compressImages, setCompressImages] = useState(true)
+
   const filesStateRef = useRef<CustomFile[]>([])
 
   filesStateRef.current = files
@@ -51,6 +53,7 @@ export default function useFileUpload(channelID: string, selectedMessage?: Messa
             doctype: 'Raven Message',
             otherData: {
               channelID: channelID,
+              compressImages: compressImages,
             },
             fieldname: 'file',
           },
@@ -102,6 +105,8 @@ export default function useFileUpload(channelID: string, selectedMessage?: Messa
     setFiles,
     removeFile,
     addFile,
+    compressImages,
+    setCompressImages,
     uploadFiles,
     fileUploadProgress
   }

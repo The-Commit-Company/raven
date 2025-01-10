@@ -1,7 +1,7 @@
 import { useDoctypePreview } from "@/hooks/useDoctypePreview"
 import { AspectRatio, Badge, DataList, DropdownMenu, Flex, Heading, IconButton, Skeleton, Tooltip } from "@radix-ui/themes"
 import { FrappeConfig, FrappeContext, useFrappeGetCall } from "frappe-react-sdk"
-import { useContext, useState } from "react"
+import { useContext, useMemo, useState } from "react"
 import { Grid, Text, Box, Card } from "@radix-ui/themes"
 import { toast } from "sonner"
 import { BiCopy, BiDotsHorizontalRounded, BiGitPullRequest, BiLinkExternal, BiPrinter, BiRightArrowAlt } from "react-icons/bi"
@@ -12,38 +12,15 @@ import { ErrorBanner, getErrorMessage } from "@/components/layout/AlertBanner/Er
 
 export const DoctypeLinkRenderer = ({ doctype, docname }: { doctype: string, docname: string }) => {
 
-    const { call } = useContext(FrappeContext) as FrappeConfig
     const { data, error, isLoading, mutate } = useDoctypePreview(doctype, docname)
 
-    const getRoute = async (doctype: string, docname: string): Promise<string> => {
-
-
-        // @ts-expect-error
-        if (window.frappe.boot.raven_document_link_override) {
-            return call.get('raven.api.document_link.get', {
-                doctype,
-                docname
-            }).then(res => res.message)
-
-        } else {
-            const lowerCaseDoctype = doctype.toLowerCase().split(' ').join('-')
-            return Promise.resolve(`${window.location.origin}/app/${lowerCaseDoctype}/${docname}`)
+    const route = useMemo(() => {
+        if (data && data.raven_document_link) {
+            return data.raven_document_link
         }
-
-    }
-
-    const copyLink = async () => {
-
-        const route = await getRoute(doctype, docname)
-
-        return navigator.clipboard.writeText(route)
-    }
-
-    const openLink = async () => {
-        const route = await getRoute(doctype, docname)
-
-        window.open(route, '_blank')
-    }
+        const lowerCaseDoctype = doctype.toLowerCase().split(' ').join('-')
+        return `${window.location.origin}/app/${lowerCaseDoctype}/${docname}`
+    }, [data, doctype, docname])
 
     return (
         <Box className='max-w-[550px] min-w-[75px] py-2'>
@@ -54,25 +31,24 @@ export const DoctypeLinkRenderer = ({ doctype, docname }: { doctype: string, doc
                         <Card>
                             <ErrorBanner error={error} />
                         </Card> :
-                        <DoctypeCard data={data} doctype={doctype} docname={docname} copyLink={copyLink} openLink={openLink} mutate={mutate} />
+                        <DoctypeCard data={data} doctype={doctype} docname={docname} route={route} mutate={mutate} />
             }
         </Box>
     )
 }
 
 
-const DoctypeCard = ({ data, doctype, copyLink, openLink, docname, mutate }: {
+const DoctypeCard = ({ data, doctype, route, docname, mutate }: {
     data: Record<string, any>,
     doctype: string,
     docname: string,
-    copyLink: () => Promise<void>,
-    openLink: () => Promise<void>,
-    mutate: () => void
+    route: string,
+    mutate: VoidFunction
 }) => {
 
     // utility func to remove known preview fields in order to map rest of them
     const removePreviewFields = (data: Record<string, any>) => {
-        const fieldsToRemove = ['preview_image', 'preview_title', 'id']
+        const fieldsToRemove = ['preview_image', 'preview_title', 'id', 'raven_document_link']
         return Object.keys(data).reduce((acc, key) => {
             if (!fieldsToRemove.includes(key)) {
                 acc[key as keyof typeof data] = data[key]
@@ -82,7 +58,7 @@ const DoctypeCard = ({ data, doctype, copyLink, openLink, docname, mutate }: {
     }
 
     const onCopyLinkClick = () => {
-        toast.promise(copyLink, {
+        toast.promise(() => copyToClipboard(route), {
             loading: 'Copying link...',
             success: 'Link copied!',
             error: 'Failed to copy link'
@@ -151,10 +127,12 @@ const DoctypeCard = ({ data, doctype, copyLink, openLink, docname, mutate }: {
                                 title='Open in new tab'
                                 aria-label="Open in new tab"
                                 color='gray'
-                                onClick={openLink}
+                                asChild
                                 variant='ghost'
                             >
-                                <BiLinkExternal size='18' />
+                                <a href={route} target="_blank">
+                                    <BiLinkExternal size='18' />
+                                </a>
                             </IconButton>
                         </Tooltip>
 

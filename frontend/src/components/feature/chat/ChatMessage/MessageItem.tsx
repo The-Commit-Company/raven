@@ -19,7 +19,7 @@ import { ReplyMessageBox } from './ReplyMessageBox/ReplyMessageBox'
 import { generateAvatarColor } from '../../selectDropdowns/GenerateAvatarColor'
 import { DoctypeLinkRenderer } from './Renderers/DoctypeLinkRenderer'
 import { useDebounce } from '@/hooks/useDebounce'
-import { RiRobot2Fill, RiShareForwardFill } from 'react-icons/ri'
+import { RiPushpinFill, RiRobot2Fill, RiShareForwardFill } from 'react-icons/ri'
 import { useIsDesktop } from '@/hooks/useMediaQuery'
 import { useDoubleTap } from 'use-double-tap'
 import useOutsideClick from '@/hooks/useOutsideClick'
@@ -179,6 +179,7 @@ export const MessageItem = ({ message, setDeleteMessage, isHighlighted, onReplyM
                                         : null}
                                     {/* Message content goes here */}
                                     {message.is_forwarded === 1 && <Flex className='text-gray-10 text-xs' gap={'1'} align={'center'}><RiShareForwardFill size='12' /> forwarded</Flex>}
+                                    {message.is_pinned === 1 && <Flex className='text-accent-9 text-xs' gap={'1'} align={'center'}><RiPushpinFill size='12' /> Pinned</Flex>}
                                     {/* If it's a reply, then show the linked message */}
                                     {linked_message && replied_message_details && <ReplyMessageBox
                                         className='sm:min-w-[32rem] cursor-pointer mb-1'
@@ -305,7 +306,7 @@ export const MessageSenderAvatar = memo(({ user, userID, isActive = false }: Use
         }
 
         {isBot && <span className="absolute block translate-x-1/2 translate-y-1/2 transform rounded-full bottom-0.5 right-0.5">
-            <RiRobot2Fill className="text-accent-11 dark:text-accent-11" size="1rem" />
+            <RiRobot2Fill className="text-accent-11 dark:text-accent-11" size="16px" />
         </span>}
     </span>
     </Theme>

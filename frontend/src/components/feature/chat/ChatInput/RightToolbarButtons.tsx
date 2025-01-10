@@ -47,7 +47,7 @@ export const RightToolbarButtons = ({ fileProps, channelID, isEdit, ...sendProps
             <Separator orientation='vertical' />
             <Flex gap='3' align='center'>
                 <AISavedPromptsButton />
-                <CreatePollButton />
+                {channelID && <CreatePollButton channelID={channelID} />}
             </Flex>
             <Separator orientation='vertical' />
             <Flex gap='3' align='center'>
@@ -111,6 +111,14 @@ const EmojiPickerButton = () => {
         return null
     }
 
+    const onSelect = (emoji: string, is_custom: boolean, emoji_name?: string) => {
+        if (is_custom) {
+            editor.chain().focus().setImage({ src: emoji, alt: emoji_name, title: emoji_name }).run()
+        } else {
+            editor.chain().focus().insertContent(emoji).run()
+        }
+    }
+
     return <Popover.Root>
         <Popover.Trigger>
             <IconButton
@@ -126,7 +134,7 @@ const EmojiPickerButton = () => {
         <Popover.Content>
             <Inset>
                 <Suspense fallback={<Loader />}>
-                    <EmojiPicker onSelect={(e) => editor.chain().focus().insertContent(e).run()} />
+                    <EmojiPicker onSelect={onSelect} allowCustomEmojis={false} />
                 </Suspense>
             </Inset>
         </Popover.Content>
@@ -252,7 +260,7 @@ export const SendButton = ({ sendMessage, messageSending, setContent, ...props }
     </IconButton>
 }
 
-const CreatePollButton = () => {
+const CreatePollButton = ({ channelID }: { channelID: string }) => {
 
     const [isOpen, , setIsOpen] = useBoolean(false)
     const { editor } = useCurrentEditor()
@@ -277,7 +285,7 @@ const CreatePollButton = () => {
                 Create a quick poll to get everyone's thoughts on a topic.
             </Dialog.Description>
             <Suspense fallback={<Loader />}>
-                <CreatePollContent setIsOpen={setIsOpen} />
+                <CreatePollContent channelID={channelID} setIsOpen={setIsOpen} />
             </Suspense>
         </Dialog.Content>
     </Dialog.Root>

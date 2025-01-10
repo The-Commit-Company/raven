@@ -7,14 +7,16 @@ import { useState } from "react"
 import { DIALOG_CONTENT_CLASS } from '@/utils/layout/dialog'
 import { useIsDesktop } from '@/hooks/useMediaQuery'
 import { DrawerContent, DrawerTrigger, Drawer } from '@/components/layout/Drawer'
+import clsx from 'clsx'
 
 interface EditChannelNameButtonProps extends IconButtonProps {
     channelID: string,
     channel_name: string,
-    channelType: ChannelListItem['type']
+    channelType: ChannelListItem['type'],
+    buttonVisible?: boolean,
 }
 
-export const EditChannelNameButton = ({ channelID, channel_name, channelType, ...props }: EditChannelNameButtonProps) => {
+export const EditChannelNameButton = ({ channelID, channel_name, channelType, buttonVisible = false, ...props }: EditChannelNameButtonProps) => {
 
     const [open, setOpen] = useState(false);
 
@@ -31,7 +33,7 @@ export const EditChannelNameButton = ({ channelID, channel_name, channelType, ..
                     <IconButton
                         variant="ghost"
                         color="gray"
-                        className='invisible group-hover:visible'
+                        className={clsx(buttonVisible ? '' : 'invisible group-hover:visible')}
                         aria-label="Click to edit channel name"
                         title='Edit channel name'
                         {...props}>
@@ -53,7 +55,7 @@ export const EditChannelNameButton = ({ channelID, channel_name, channelType, ..
                 <IconButton
                     variant="ghost"
                     color="gray"
-                    className='invisible group-hover:visible'
+                    className={clsx(buttonVisible ? '' : 'invisible group-hover:visible')}
                     aria-label="Click to edit channel name"
                     title='Edit channel name'
                     {...props}>
