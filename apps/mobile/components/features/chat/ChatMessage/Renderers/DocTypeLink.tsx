@@ -148,14 +148,14 @@ const DoctypeCard = memo(({
                     <View className="flex-row gap-2">
                         <TouchableOpacity
                             onPress={openLink}
-                            className="w-8 h-8 items-center justify-center rounded-full bg-gray-200 dark:bg-gray-800"
+                            className="w-7 h-7 items-center justify-center rounded-md bg-gray-200 dark:bg-gray-800"
                             activeOpacity={0.7}
                         >
                             <LinkExternalIcon width={14} height={14} fill={colors.icon} />
                         </TouchableOpacity>
                         <TouchableOpacity
                             onPress={copyLink}
-                            className="w-8 h-8 items-center justify-center rounded-full bg-gray-200 dark:bg-gray-800"
+                            className="w-7 h-7 items-center justify-center rounded-md bg-gray-200 dark:bg-gray-800"
                             activeOpacity={0.7}
                         >
                             <CopyIcon width={14} height={14} fill={colors.icon} />
