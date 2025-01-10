@@ -1,64 +1,43 @@
-import { useContext, useRef, useState } from 'react'
+import { useContext, useState } from 'react'
 import { FrappeConfig, FrappeContext } from 'frappe-react-sdk'
 import { CustomFile } from '@raven/types/common/File'
 
-
-export const fileExt = ['jpg', 'JPG', 'jpeg', 'JPEG', 'png', 'PNG', 'gif', 'GIF']
 export interface FileUploadProgress {
   progress: number,
   isComplete: boolean,
 }
+
+export interface Caption {
+  caption: string,
+  fileName: string,
+}
+
 export default function useFileUpload(channelID: string) {
 
   const { file } = useContext(FrappeContext) as FrappeConfig
-  const fileInputRef = useRef<any>(null)
-
-  const [files, setFiles] = useState<CustomFile[]>([])
-
-  const filesStateRef = useRef<CustomFile[]>([])
-
-  filesStateRef.current = files
 
   const [fileUploadProgress, setFileUploadProgress] = useState<Record<string, FileUploadProgress>>({})
 
-  const addFile = (file: File) => {
-
-    const newFile: CustomFile = file as CustomFile
-    if (newFile) {
-      newFile.fileID = file.name + Date.now()
-      newFile.uploadProgress = 0
-      setFiles((f: any) => [...f, newFile])
-    }
-  }
-  const removeFile = (id: string) => {
-    let newFiles = files.filter(file => file.fileID !== id)
-    setFiles(newFiles)
-    setFileUploadProgress(p => {
-      const newProgress = { ...p }
-      delete newProgress[id]
-      return newProgress
-    })
-  }
-
-  const uploadFiles = async () => {
-    const newFiles = [...filesStateRef.current]
-    if (newFiles.length > 0) {
-      const promises = newFiles.map(async (f: CustomFile) => {
-        return file.uploadFile(f,
+  const uploadFiles = async (files: File[], captions?: Caption[]) => {
+    if (files.length > 0) {
+      const promises = files.map(async (f: File) => {
+        const newFile = f as CustomFile
+        newFile.fileID = newFile.name + Date.now()
+        return file.uploadFile(newFile,
           {
             isPrivate: true,
             doctype: 'Raven Message',
             otherData: {
               channelID: channelID,
+              caption: captions?.find(c => c.fileName === newFile.name)?.caption ?? '',
             },
             fieldname: 'file',
           },
           (bytesUploaded, totalBytes) => {
-            const percentage = Math.round((bytesUploaded / (totalBytes ?? f.size)) * 100)
-
+            const percentage = Math.round((bytesUploaded / (totalBytes ?? newFile.size)) * 100)
             setFileUploadProgress(p => ({
               ...p,
-              [f.fileID]: {
+              [newFile.fileID]: {
                 progress: percentage,
                 isComplete: false,
               },
@@ -66,10 +45,9 @@ export default function useFileUpload(channelID: string) {
           },
           'raven.api.upload_file.upload_file_with_message')
           .then(() => {
-            setFiles(files => files.filter(file => file.fileID !== f.fileID))
             setFileUploadProgress(p => ({
               ...p,
-              [f.fileID]: {
+              [newFile.fileID]: {
                 progress: 100,
                 isComplete: true,
               },
@@ -78,16 +56,14 @@ export default function useFileUpload(channelID: string) {
           .catch(() => {
             setFileUploadProgress(p => {
               const newProgress = { ...p }
-              delete newProgress[f.fileID]
+              delete newProgress[newFile.fileID]
               return newProgress
             })
           })
       })
 
       return Promise.all(promises)
-        .then(() => {
-          setFiles([])
-        }).catch((e) => {
+        .catch((e) => {
           console.error(e)
         })
     } else {
@@ -96,11 +72,6 @@ export default function useFileUpload(channelID: string) {
   }
 
   return {
-    fileInputRef,
-    files,
-    setFiles,
-    removeFile,
-    addFile,
     uploadFiles,
     fileUploadProgress
   }

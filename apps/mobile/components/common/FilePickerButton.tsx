@@ -15,7 +15,9 @@ const FilePickerButton = ({ buttonProps, iconProps, onPick }: FilePickerButtonPr
     const { colors } = useColorScheme()
 
     const pickDocument = async () => {
-        let result = await DocumentPicker.getDocumentAsync()
+        let result = await DocumentPicker.getDocumentAsync({
+            multiple: true
+        })
 
         if (!result.canceled) {
             onPick(result.assets)

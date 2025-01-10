@@ -64,6 +64,7 @@ def upload_file_with_message():
 	message_doc = frappe.new_doc("Raven Message")
 	message_doc.channel_id = frappe.form_dict.channelID
 	message_doc.message_type = "File"
+	message_doc.text = frappe.form_dict.caption
 	message_doc.insert()
 
 	frappe.form_dict.docname = message_doc.name
