@@ -10,6 +10,7 @@ import ChatOutlineIcon from '@assets/icons/ChatOutlineIcon.svg';
 import BellIcon from '@assets/icons/BellIcon.svg';
 import BellOutlineIcon from '@assets/icons/BellOutlineIcon.svg';
 import { useColorScheme } from '@hooks/useColorScheme'
+import { View } from 'react-native';
 
 export default function TabLayout() {
 
@@ -35,28 +36,30 @@ export default function TabLayout() {
         borderBottomColor: dark ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0)',
     }
 
-    const tabBarIconStyle = (focused: boolean) => ({
-        opacity: focused ? 1 : dark ? 0.8 : 0.7,
-    })
-
     const getTabBarIcon =
         (FilledIcon: React.FC<SvgProps>, OutlineIcon: React.FC<SvgProps>) =>
-            ({ color, focused }: { color: string; focused: boolean }) =>
-                focused ? (
-                    <FilledIcon
-                        fill={color}
-                        style={tabBarIconStyle(focused)}
-                        width={24}
-                        height={24}
-                    />
-                ) : (
-                    <OutlineIcon
-                        fill={color}
-                        style={tabBarIconStyle(focused)}
-                        width={24}
-                        height={24}
-                    />
-                )
+            ({ color, focused }: { color: string; focused: boolean }) => (
+                <View style={{ alignItems: 'center' }}>
+                    {focused && (
+                        <View
+                            style={{
+                                position: 'absolute',
+                                top: -10,
+                                width: 40,
+                                height: 3,
+                                borderBottomEndRadius: 2.5,
+                                borderBottomStartRadius: 2.5,
+                                backgroundColor: color,
+                            }}
+                        />
+                    )}
+                    {focused ? (
+                        <FilledIcon fill={color} width={24} height={24} />
+                    ) : (
+                        <OutlineIcon fill={color} width={24} height={24} opacity={0.8} />
+                    )}
+                </View>
+            )
 
     return (
         <>
