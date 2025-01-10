@@ -1,6 +1,6 @@
-import useCurrentRavenUser from '@raven/lib/hooks/useCurrentRavenUser'
 import { useFrappeEventListener, useFrappeGetCall, useSWRConfig } from 'frappe-react-sdk'
 import { useActiveState } from './useActiveState'
+import useCurrentRavenUser from '@raven/lib/hooks/useCurrentRavenUser'
 
 /**
  * Hook to fetch active users from the server.
