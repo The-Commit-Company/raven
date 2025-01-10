@@ -7,7 +7,7 @@ from raven.utils import is_channel_member
 
 
 @frappe.whitelist(methods=["POST"])
-def react(message_id: str, reaction: str):
+def react(message_id: str, reaction: str, is_custom: bool = False, emoji_name: str = None):
 	"""
 	API to react/unreact to a message.
 	Checks if the user can react to the message
@@ -26,7 +26,11 @@ def react(message_id: str, reaction: str):
 		if not is_channel_member(channel_id):
 			frappe.throw(_("You do not have permission to react to this message"), frappe.PermissionError)
 
-	reaction_escaped = reaction.encode("unicode-escape").decode("utf-8").replace("\\u", "")
+	if is_custom:
+		# The reaction is a custom emoji with a URL
+		reaction_escaped = emoji_name
+	else:
+		reaction_escaped = reaction.encode("unicode-escape").decode("utf-8").replace("\\u", "")
 	user = frappe.session.user
 	existing_reaction = frappe.db.exists(
 		"Raven Message Reaction",
@@ -47,16 +51,18 @@ def react(message_id: str, reaction: str):
 				"message": message_id,
 				"channel_id": channel_id,
 				"owner": user,
+				"is_custom": is_custom,
+				"reaction_escaped": reaction_escaped,
 			}
 		).insert(ignore_permissions=True)
 	return "Ok"
 
 
-def calculate_message_reaction(message_id):
+def calculate_message_reaction(message_id, channel_id: str = None):
 
 	reactions = frappe.get_all(
 		"Raven Message Reaction",
-		fields=["owner", "reaction"],
+		fields=["owner", "reaction", "is_custom", "reaction_escaped"],
 		filters={"message": message_id},
 		order_by="reaction_escaped",
 	)
@@ -64,23 +70,25 @@ def calculate_message_reaction(message_id):
 	total_reactions = {}
 
 	for reaction_item in reactions:
-		if reaction_item.reaction in total_reactions:
-			existing_reaction = total_reactions[reaction_item.reaction]
+		item_key = reaction_item.reaction_escaped if reaction_item.is_custom else reaction_item.reaction
+		if item_key in total_reactions:
+			existing_reaction = total_reactions[item_key]
 			new_users = existing_reaction.get("users")
 			new_users.append(reaction_item.owner)
-			total_reactions[reaction_item.reaction] = {
+			total_reactions[item_key] = {
 				"count": existing_reaction.get("count") + 1,
 				"users": new_users,
 				"reaction": reaction_item.reaction,
+				"is_custom": reaction_item.is_custom,
 			}
 
 		else:
-			total_reactions[reaction_item.reaction] = {
+			total_reactions[item_key] = {
 				"count": 1,
 				"users": [reaction_item.owner],
 				"reaction": reaction_item.reaction,
+				"is_custom": reaction_item.is_custom,
 			}
-	channel_id = frappe.get_cached_value("Raven Message", message_id, "channel_id")
 	frappe.db.set_value(
 		"Raven Message",
 		message_id,

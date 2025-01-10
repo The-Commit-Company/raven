@@ -18,7 +18,7 @@ const MessageItem = ({ message }: Props) => {
     const userFullName = user?.full_name || username
 
     return (
-        <View className='flex-1 flex-row px-2 gap-1'>
+        <View className='flex-1 flex-row px-2 py-0.5 gap-1'>
             <MessageAvatar
                 userFullName={userFullName}
                 userImage={user?.user_image}
@@ -31,7 +31,7 @@ const MessageItem = ({ message }: Props) => {
                 <MessageHeader
                     is_continuation={message.is_continuation}
                     userFullName={userFullName}
-                    creation={message.creation}
+                    timestamp={message.formattedTime || ''}
                 />
                 {message.message_type === 'File' && <FileMessageRenderer message={message} />}
                 {/* <Text>{message.text}</Text> */}

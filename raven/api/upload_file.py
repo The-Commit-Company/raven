@@ -6,10 +6,11 @@ import frappe
 from frappe import _
 from frappe.core.doctype.file.utils import get_local_image
 from frappe.handler import upload_file
+from frappe.utils.image import optimize_image
 from PIL import Image, ImageOps
 
 
-def upload_JPEG_wrt_EXIF(content, filename):
+def upload_JPEG_wrt_EXIF(content, filename, optimize=False):
 	"""
 	When a user uploads a JPEG file, we need to transpose the image based on the EXIF data.
 	This is because the image is rotated when it is uploaded to the server.
@@ -30,7 +31,10 @@ def upload_JPEG_wrt_EXIF(content, filename):
 	else:
 		buffer = base64.b64decode(content)
 
-	return frappe.get_doc(
+	if optimize:
+		buffer = optimize_image(buffer, content_type)
+
+	file_doc = frappe.get_doc(
 		{
 			"doctype": "File",
 			"file_name": filename,
@@ -41,6 +45,8 @@ def upload_JPEG_wrt_EXIF(content, filename):
 			"attached_to_field": "file",
 		}
 	).insert()
+
+	return file_doc
 
 
 @frappe.whitelist()
@@ -61,6 +67,15 @@ def upload_file_with_message():
 	frappe.form_dict.doctype = "Raven Message"
 	frappe.form_dict.fieldname = "file"
 
+	if (
+		frappe.form_dict.compressImages == "1"
+		or frappe.form_dict.compressImages == True
+		or frappe.form_dict.compressImages == "true"
+	):
+		frappe.form_dict.optimize = True
+	else:
+		frappe.form_dict.optimize = False
+
 	message_doc = frappe.new_doc("Raven Message")
 	message_doc.channel_id = frappe.form_dict.channelID
 	message_doc.message_type = "File"
@@ -79,9 +94,9 @@ def upload_file_with_message():
         If the file is a JPEG, we need to transpose the image
         Else, we need to upload the file as is
         """
-		if filename.endswith(".jpeg"):
+		if filename.endswith(".jpeg") or filename.endswith(".jpg"):
 			content = file.stream.read()
-			file_doc = upload_JPEG_wrt_EXIF(content, filename)
+			file_doc = upload_JPEG_wrt_EXIF(content, filename, frappe.form_dict.optimize)
 		else:
 			file_doc = upload_file()
 

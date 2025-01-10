@@ -27,14 +27,15 @@ export const UploadImageModal = ({ uploadImage, label = 'Upload Image', doctype,
         setFile(newFile)
     }
 
-    const userData = useUserData()
-
     const uploadFiles = async () => {
         if (file) {
             return upload(file, {
                 doctype: doctype,
                 docname: docname,
                 fieldname: fieldname,
+                otherData: {
+                    optimize: '1',
+                },
                 isPrivate: true,
             }).then((res) => {
                 uploadImage(res.file_url)
