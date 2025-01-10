@@ -1,14 +1,18 @@
 import * as ContextMenu from 'zeego/context-menu';
 import { Alert, Pressable } from 'react-native';
+import * as Clipboard from 'expo-clipboard';
 import { ChannelIcon } from './ChannelIcon';
 import { Text } from '@components/nativewindui/Text';
 import { useColorScheme } from '@hooks/useColorScheme';
 import { ChannelListItem } from '@raven/types/common/ChannelListItem';
 import { router } from 'expo-router';
 import { ChannelListContext, ChannelListContextType } from '@raven/lib/providers/ChannelListProvider';
-import { useFrappePostCall } from 'frappe-react-sdk';
-import { useContext } from 'react';
+import { FrappeConfig, FrappeContext, useFrappePostCall } from 'frappe-react-sdk';
+import { useContext, useMemo } from 'react';
 import { toast } from 'sonner-native';
+import { SiteContext } from 'app/[site_id]/_layout';
+import useCurrentRavenUser from '@raven/lib/hooks/useCurrentRavenUser';
+import { RavenUser } from '@raven/types/Raven/RavenUser';
 
 export function ChannelListRow({ channel }: { channel: ChannelListItem }) {
 
@@ -18,12 +22,19 @@ export function ChannelListRow({ channel }: { channel: ChannelListItem }) {
         console.log(`Muting channel: ${channel.name}`)
     }
 
-    const handleMoveToStarred = () => {
-        console.log(`Moving channel to starred: ${channel.name}`)
-    }
+    const { onMoveToStarred, isStarred } = useMoveToStarred(channel)
 
-    const handleCopyLink = () => {
-        console.log(`Copying link for: ${channel.name}`)
+    const siteInfo = useContext(SiteContext)
+    const siteID = siteInfo?.sitename
+
+    const handleCopyLink = async () => {
+        try {
+            const link = `https://${siteID}/chat/${channel.name}`
+            await Clipboard.setStringAsync(link)
+            toast.success('Channel link copied to clipboard!')
+        } catch (error) {
+            toast.error('Failed to copy channel link.')
+        }
     }
 
     const { onLeaveChannel } = useLeaveChannel(channel)
@@ -88,11 +99,11 @@ export function ChannelListRow({ channel }: { channel: ChannelListItem }) {
                     />
                 </ContextMenu.Item>
 
-                <ContextMenu.Item key="star" onSelect={handleMoveToStarred}>
-                    <ContextMenu.ItemTitle>Move to starred</ContextMenu.ItemTitle>
+                <ContextMenu.Item key="star" onSelect={onMoveToStarred}>
+                    <ContextMenu.ItemTitle>{isStarred ? 'Remove from starred' : 'Move to starred'}</ContextMenu.ItemTitle>
                     <ContextMenu.ItemIcon
                         ios={{
-                            name: 'star',
+                            name: isStarred ? 'star.fill' : 'star',
                             pointSize: 14,
                             weight: 'semibold',
                             scale: 'medium',
@@ -185,4 +196,32 @@ const useLeaveChannel = (channel: ChannelListItem) => {
     }
 
     return { onLeaveChannel }
+}
+
+const useMoveToStarred = (channel: ChannelListItem) => {
+
+    const { myProfile, mutate } = useCurrentRavenUser()
+
+    const isStarred = useMemo(() => {
+        if (myProfile) {
+            return myProfile.pinned_channels?.map(pin => pin.channel_id).includes(channel.name)
+        } else {
+            return false
+        }
+    }, [channel.name, myProfile])
+
+    const { call } = useContext(FrappeContext) as FrappeConfig
+
+    const onMoveToStarred = async () => {
+        call.post('raven.api.raven_channel.toggle_pinned_channel', {
+            channel_id: channel.name
+        }).then((res: { message: RavenUser }) => {
+            toast.success(`${channel.channel_name} ${isStarred ? 'removed from favorites' : 'added to favorites'}`)
+            if (res.message) {
+                mutate({ message: res.message }, { revalidate: false })
+            }
+        })
+    }
+
+    return { onMoveToStarred, isStarred }
 }

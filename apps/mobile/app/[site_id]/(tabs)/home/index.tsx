@@ -1,14 +1,12 @@
-import { Pressable, SafeAreaView, ScrollView, View } from 'react-native';
+import { SafeAreaView, ScrollView, View } from 'react-native';
 import { ThemeToggle } from '@components/nativewindui/ThemeToggle';
-import { Text } from '@components/nativewindui/Text';
 import { useColorScheme } from '@hooks/useColorScheme';
-import PlusIcon from '@assets/icons/PlusIcon.svg';
 import { SearchInput } from '@components/nativewindui/SearchInput';
-import ChannelList from '@components/features/channels/ChannelList/ChannelList';
 import DMList from '@components/features/channels/DMList/DMList';
 import WorkspaceSwitcher from '@components/features/workspaces/WorkspaceSwitcher';
 import { Divider } from '@components/layout/Divider';
 import { useGetCurrentWorkspace } from '@hooks/useGetCurrentWorkspace';
+import ChannelList from '@components/features/channels/ChannelList/ChannelList';
 
 export default function Home() {
 
@@ -30,12 +28,6 @@ export default function Home() {
                     <ChannelList workspace={workspace} />
                     <Divider />
                     <DMList />
-                    {/* <Divider />
-                    <Pressable className='flex-row items-center p-5 rounded-lg'
-                        onPress={() => console.log('Create channel pressed')}>
-                        <PlusIcon fill={colors.icon} height={18} width={18} />
-                        <Text className='ml-3 text-[16px]'>Add teammates</Text>
-                    </Pressable> */}
                 </View>
             </ScrollView>
         </SafeAreaView>
