@@ -2,12 +2,28 @@ import * as NavigationBar from 'expo-navigation-bar';
 import { useColorScheme as useNativewindColorScheme } from 'nativewind';
 import * as React from 'react';
 import { Platform } from 'react-native';
-
 import { COLORS } from '@theme/colors';
+import { atom, useSetAtom } from 'jotai';
+
+export const themeAtom = atom<'light' | 'dark'>('light');
+
+const writeThemeAtom = atom(null, (get, set, value: 'light' | 'dark') => {
+    set(themeAtom, value);
+});
 
 function useColorScheme() {
 
     const { colorScheme, setColorScheme: setNativeWindColorScheme } = useNativewindColorScheme();
+
+    const setThemeAtom = useSetAtom(writeThemeAtom);
+
+    React.useEffect(() => {
+        if (colorScheme) {
+            setThemeAtom(colorScheme);
+        } else {
+            setThemeAtom('light');
+        }
+    }, [colorScheme]);
 
     async function setColorScheme(colorScheme: 'light' | 'dark') {
         setNativeWindColorScheme(colorScheme);
