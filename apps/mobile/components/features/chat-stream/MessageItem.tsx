@@ -31,7 +31,7 @@ const MessageItem = ({ message }: Props) => {
                 <MessageHeader
                     is_continuation={message.is_continuation}
                     userFullName={userFullName}
-                    creation={message.creation}
+                    timestamp={message.formattedTime || ''}
                 />
                 {message.message_type === 'File' && <FileMessageRenderer message={message} />}
                 {/* <Text>{message.text}</Text> */}
