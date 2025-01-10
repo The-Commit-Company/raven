@@ -146,7 +146,14 @@ class RavenDocumentNotification(Document):
 		return channels, users
 
 
-doctypes_to_be_ignored = ["Raven Document Notification", "Version", "Comment"]
+doctypes_to_be_ignored = [
+	"Raven Document Notification",
+	"Version",
+	"Comment",
+	"DocType",
+	"Module Def",
+	"Custom Field",
+]
 
 
 def run_document_notification(doc, method):
@@ -157,7 +164,12 @@ def run_document_notification(doc, method):
 	if doc.doctype in doctypes_to_be_ignored:
 		return
 
-	if frappe.flags.in_import or frappe.flags.in_patch or frappe.flags.in_install:
+	if (
+		frappe.flags.in_import
+		or frappe.flags.in_patch
+		or frappe.flags.in_install
+		or frappe.flags.in_uninstall
+	):
 		return
 
 	def _get_notifications():
