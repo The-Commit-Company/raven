@@ -1,10 +1,14 @@
 import * as ContextMenu from 'zeego/context-menu';
-import { Pressable } from 'react-native';
+import { Alert, Pressable } from 'react-native';
 import { ChannelIcon } from './ChannelIcon';
 import { Text } from '@components/nativewindui/Text';
 import { useColorScheme } from '@hooks/useColorScheme';
 import { ChannelListItem } from '@raven/types/common/ChannelListItem';
 import { router } from 'expo-router';
+import { ChannelListContext, ChannelListContextType } from '@raven/lib/providers/ChannelListProvider';
+import { useFrappePostCall } from 'frappe-react-sdk';
+import { useContext } from 'react';
+import { toast } from 'sonner-native';
 
 export function ChannelListRow({ channel }: { channel: ChannelListItem }) {
 
@@ -22,9 +26,24 @@ export function ChannelListRow({ channel }: { channel: ChannelListItem }) {
         console.log(`Copying link for: ${channel.name}`)
     }
 
-    const handleLeaveChannel = () => {
-        console.log(`Leaving channel: ${channel.name}`)
-    }
+    const { onLeaveChannel } = useLeaveChannel(channel)
+
+    const showAlert = () =>
+        Alert.alert(
+            'Leave channel?',
+            `Are you sure you want to leave ${channel.channel_name} channel?`,
+            [
+                {
+                    text: 'Cancel',
+                    style: 'cancel',
+                },
+                {
+                    text: 'Leave',
+                    style: 'destructive',
+                    onPress: onLeaveChannel
+                },
+            ]
+        )
 
     return (
         <ContextMenu.Root>
@@ -117,7 +136,7 @@ export function ChannelListRow({ channel }: { channel: ChannelListItem }) {
                     />
                 </ContextMenu.Item>
 
-                <ContextMenu.Item key="leave" onSelect={handleLeaveChannel} destructive>
+                <ContextMenu.Item key="leave" destructive onSelect={showAlert}>
                     <ContextMenu.ItemTitle>Leave channel</ContextMenu.ItemTitle>
                     <ContextMenu.ItemIcon
                         ios={{
@@ -145,4 +164,25 @@ export function ChannelListRow({ channel }: { channel: ChannelListItem }) {
             </ContextMenu.Content>
         </ContextMenu.Root>
     )
+}
+
+const useLeaveChannel = (channel: ChannelListItem) => {
+
+    const { call, error } = useFrappePostCall("raven.api.raven_channel.leave_channel")
+    const { mutate } = useContext(ChannelListContext) as ChannelListContextType
+
+    const onLeaveChannel = async () => {
+        return call({ channel_id: channel?.name })
+            .then(() => {
+                toast.success(`You have left ${channel.channel_name} channel`)
+                mutate()
+            })
+            .catch(() => {
+                toast.error('Could not leave channel', {
+                    description: error?.httpStatusText
+                })
+            })
+    }
+
+    return { onLeaveChannel }
 }
