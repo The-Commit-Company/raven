@@ -32,6 +32,7 @@
     "dayjs": "^1.11.13",
     "expo": "^52.0.23",
     "expo-auth-session": "^6.0.1",
+    "expo-clipboard": "~7.0.0",
     "expo-constants": "~17.0.3",
     "expo-document-picker": "~13.0.1",
     "expo-font": "~13.0.1",

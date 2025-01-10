@@ -1,5 +1,6 @@
 import * as ContextMenu from 'zeego/context-menu';
 import { Alert, Pressable } from 'react-native';
+import * as Clipboard from 'expo-clipboard';
 import { ChannelIcon } from './ChannelIcon';
 import { Text } from '@components/nativewindui/Text';
 import { useColorScheme } from '@hooks/useColorScheme';
@@ -9,6 +10,7 @@ import { ChannelListContext, ChannelListContextType } from '@raven/lib/providers
 import { useFrappePostCall } from 'frappe-react-sdk';
 import { useContext } from 'react';
 import { toast } from 'sonner-native';
+import { SiteContext } from 'app/[site_id]/_layout';
 
 export function ChannelListRow({ channel }: { channel: ChannelListItem }) {
 
@@ -22,8 +24,17 @@ export function ChannelListRow({ channel }: { channel: ChannelListItem }) {
         console.log(`Moving channel to starred: ${channel.name}`)
     }
 
-    const handleCopyLink = () => {
-        console.log(`Copying link for: ${channel.name}`)
+    const siteInfo = useContext(SiteContext)
+    const siteID = siteInfo?.sitename
+
+    const handleCopyLink = async () => {
+        try {
+            const link = `https://${siteID}/chat/${channel.name}`
+            await Clipboard.setStringAsync(link)
+            toast.success('Channel link copied to clipboard!')
+        } catch (error) {
+            toast.error('Failed to copy channel link.')
+        }
     }
 
     const { onLeaveChannel } = useLeaveChannel(channel)
