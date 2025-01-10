@@ -4,13 +4,10 @@ import { SiteContext } from 'app/[site_id]/_layout'
 import { useFrappeGetCall } from 'frappe-react-sdk'
 import { useContext, useMemo } from 'react'
 import dayjs from 'dayjs'
-
 import utc from 'dayjs/plugin/utc'
-import timezone from 'dayjs/plugin/timezone'
 import advancedFormat from 'dayjs/plugin/advancedFormat'
 
 dayjs.extend(utc)
-dayjs.extend(timezone)
 dayjs.extend(advancedFormat)
 
 interface GetMessagesResponse {
@@ -34,7 +31,7 @@ const useChatStream = (channelID: string, listRef: React.RefObject<LegendListRef
 
     const siteInformation = useContext(SiteContext)
 
-    const SYSTEM_TIMEZONE = siteInformation?.system_timezone ?? 'Asia/Kolkata'
+    const SYSTEM_TIMEZONE = siteInformation?.system_timezone ? siteInformation.system_timezone : 'Asia/Kolkata'
 
     const { data, isLoading, error, mutate } = useFrappeGetCall<GetMessagesResponse>('raven.api.chat_stream.get_messages', {
         channel_id: channelID,
@@ -77,7 +74,7 @@ const useChatStream = (channelID: string, listRef: React.RefObject<LegendListRef
             // If the date is yesterday, return "Yesterday"
             // Otherwise, return the date in the format "MMM Do" if the date is within the current year
             // Otherwise, return the date in the format "MMM Do, YYYY"
-            const parsedDate = dayjs.tz(currentDate, SYSTEM_TIMEZONE).local()
+            const parsedDate = dayjs(currentDate).local()
             const today = dayjs()
             const yesterday = dayjs().subtract(1, 'day')
 
@@ -102,7 +99,7 @@ const useChatStream = (channelID: string, listRef: React.RefObject<LegendListRef
 
             messagesWithDateSeparators.push({
                 ...messages[messages.length - 1],
-                formattedTime: dayjs.tz(messages[messages.length - 1].creation, SYSTEM_TIMEZONE).local().format('hh:mm A'),
+                formattedTime: dayjs(messages[messages.length - 1].creation).local().format('hh:mm A'),
                 is_continuation: 0
             })
 
@@ -111,11 +108,11 @@ const useChatStream = (channelID: string, listRef: React.RefObject<LegendListRef
                 const message = messages[i]
                 const messageDate = message.creation.split(' ')[0]
                 let messageDateTime = new Date(message.creation.split('.')[0]).getTime()
-                const formattedMessageTime = dayjs.tz(message.creation, SYSTEM_TIMEZONE).local().format('hh:mm A')
+                const formattedMessageTime = dayjs(message.creation).local().format('hh:mm A')
 
                 if (messageDate !== currentDate) {
 
-                    const messageDateObject = dayjs.tz(messageDate, SYSTEM_TIMEZONE).local()
+                    const messageDateObject = dayjs(messageDate).local()
                     let formattedDateString = ""
 
                     if (messageDateObject.isSame(today, 'date')) {
