@@ -1,5 +1,5 @@
 import { useCurrentEditor } from '@tiptap/react'
-import { BiBold, BiCodeAlt, BiCodeBlock, BiHighlight, BiItalic, BiListOl, BiListUl, BiStrikethrough, BiUnderline, BiSolidQuoteAltRight, BiTime } from 'react-icons/bi'
+import { BiBold, BiCodeAlt, BiCodeBlock, BiHighlight, BiItalic, BiListOl, BiListUl, BiStrikethrough, BiUnderline, BiSolidQuoteAltRight, BiListCheck, BiTime } from 'react-icons/bi'
 import { DEFAULT_BUTTON_STYLE, ICON_PROPS } from './ToolPanel'
 import { Box, Flex, IconButton, Separator, Tooltip } from '@radix-ui/themes'
 import { getKeyboardMetaKeyString } from '@/utils/layout/keyboardKey'
@@ -190,6 +190,25 @@ export const TextFormattingMenu = memo(() => {
                         }
                     >
                         <BiListUl {...ICON_PROPS} />
+                    </IconButton>
+                </Tooltip>
+                <Tooltip content={getKeyboardMetaKeyString() + ' + Shift + 9'} aria-label={getKeyboardMetaKeyString() + ' + Shift + 9'}>
+                    <IconButton
+                        onClick={() => editor.chain().focus().liftEmptyBlock().toggleTaskList().run()}
+                        aria-label='check list'
+                        title='Check List'
+                        size='1'
+                        variant='ghost'
+                        className={editor.isActive('taskList') ? highlightBgColor : DEFAULT_BUTTON_STYLE}
+                        disabled={
+                            !editor.can()
+                                .chain()
+                                .focus()
+                                .toggleTaskList()
+                                .run()
+                        }
+                    >
+                        <BiListCheck {...ICON_PROPS} />
                     </IconButton>
                 </Tooltip>
             </Flex>
