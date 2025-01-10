@@ -4,6 +4,7 @@ import { Text } from '@components/nativewindui/Text';
 import { useColorScheme } from '@hooks/useColorScheme';
 import PlusIcon from '@assets/icons/PlusIcon.svg';
 import { SearchInput } from '@components/nativewindui/SearchInput';
+import { router } from 'expo-router';
 import ChannelList from '@components/features/channels/ChannelList/ChannelList';
 import DMList from '@components/features/channels/DMList/DMList';
 import WorkspaceSwitcher from '@components/features/workspaces/WorkspaceSwitcher';
@@ -30,12 +31,12 @@ export default function Home() {
                     <ChannelList workspace={workspace} />
                     <Divider />
                     <DMList />
-                    {/* <Divider />
+                    <Divider />
                     <Pressable className='flex-row items-center p-5 rounded-lg'
                         onPress={() => console.log('Create channel pressed')}>
                         <PlusIcon fill={colors.icon} height={18} width={18} />
                         <Text className='ml-3 text-[16px]'>Add teammates</Text>
-                    </Pressable> */}
+                    </Pressable>
                 </View>
             </ScrollView>
         </SafeAreaView>

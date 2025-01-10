@@ -5690,6 +5690,11 @@ expo-auth-session@^6.0.1:
     expo-web-browser "~14.0.0"
     invariant "^2.2.4"
 
+expo-clipboard@^7.0.0:
+  version "7.0.0"
+  resolved "https://registry.yarnpkg.com/expo-clipboard/-/expo-clipboard-7.0.0.tgz#066b1a781fdaf05e30f282522d3a58f2e651e4cf"
+  integrity sha512-4Vuv1zZPTOiKzIeC0BIGUN8nyzkXlE6jKchtLxcoksBjHPdG5W2eH05B+hppTrK9N3+Xh02z4j3h1cFRqPJ1fw==
+
 expo-constants@~17.0.0, expo-constants@~17.0.3:
   version "17.0.3"
   resolved "https://registry.yarnpkg.com/expo-constants/-/expo-constants-17.0.3.tgz#a05b38e0417d59759ece1642b4d483889e04dbda"
@@ -9327,6 +9332,11 @@ rimraf@~2.6.2:
   integrity sha512-mwqeW5XsA2qAejG46gYdENaxXjx9onRNCfn7L0duuP4hCuTIi/QO7PDK07KJfp1d+izWPrzEJDcSqBa0OZQriA==
   dependencies:
     glob "^7.1.3"
+
+rn-emoji-picker@^1.1.6:
+  version "1.1.6"
+  resolved "https://registry.yarnpkg.com/rn-emoji-picker/-/rn-emoji-picker-1.1.6.tgz#416f4aa7be2d291b2cd73378cdd3e669b3598743"
+  integrity sha512-131WCwJ/KsH/m4Z35VOVO80q3RrbItPsve15hdSn7EHLLmAFgp5koxkfRusvjc5Z5wLeF8Bw5EJT7RKkBWou0w==
 
 rollup@^2.43.1:
   version "2.79.2"
