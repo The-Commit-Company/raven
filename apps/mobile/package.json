@@ -28,6 +28,7 @@
     "@shopify/flash-list": "1.7.1",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "dayjs": "^1.11.13",
     "expo": "^52.0.23",
     "expo-auth-session": "^6.0.1",
     "expo-constants": "~17.0.3",
