@@ -70,6 +70,13 @@ const ChannelSettings = () => {
     }) : [];
 
     const channelSettingsData: (string | ChannelSettingsDataItem | ChannelSettingsDataComponent)[] = [
+        'Channel Members',
+        {
+            id: 'ChannelMembers',
+            component: <MembersTray
+                onViewAll={() => { router.push(`../channel-settings-members`, { relativeToDirectory: true }) }}
+            />
+        } as ChannelSettingsDataComponent,
         'Channel Settings',
         ...changeChannelTypeButtons as ChannelSettingsListData,
         {
@@ -86,13 +93,6 @@ const ChannelSettings = () => {
             icon: <TrashIcon fill={colors.destructive} />,
             titleClassName: 'text-lg text-destructive',
         } as ChannelSettingsDataItem,
-        'Channel Members',
-        {
-            id: 'ChannelMembers',
-            component: <MembersTray
-                onViewAll={() => { router.push(`../channel-settings-members`, { relativeToDirectory: true }) }}
-            />
-        } as ChannelSettingsDataComponent
     ];
 
     return (
