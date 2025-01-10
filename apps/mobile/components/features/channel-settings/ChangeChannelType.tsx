@@ -3,18 +3,11 @@ import { BottomSheetModal, BottomSheetView } from "@gorhom/bottom-sheet";
 import { View } from "react-native"
 import { Button } from "@components/nativewindui/Button";
 import { Text } from "@components/nativewindui/Text";
-import { ChannelType } from "app/[site_id]/chat/[id]/channel-settings";
+import { ChannelSettingsDataItem, ChannelType } from "app/[site_id]/chat/[id]/channel-settings";
 import { useFrappeUpdateDoc, useSWRConfig } from "frappe-react-sdk";
 import { ChannelListItem } from "@raven/types/common/ChannelListItem";
 import { toast } from "sonner-native";
 
-export interface ChannelSettingsDataItem {
-    id: string;
-    title: string;
-    icon?: React.ReactNode;
-    onPress: () => void;
-    titleClassName?: string;
-}
 
 interface ChangeChannelTypeSheetProps {
     channelData: ChannelListItem;

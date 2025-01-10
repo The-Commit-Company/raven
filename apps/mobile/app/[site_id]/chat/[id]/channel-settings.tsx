@@ -12,9 +12,26 @@ import LockIcon from '@assets/icons/LockIcon.svg';
 import GlobeIcon from '@assets/icons/GlobeIcon.svg';
 import HashIcon from '@assets/icons/HashIcon.svg';
 import { useSheetRef } from "@components/nativewindui/Sheet";
-import { ChangeChannelTypeSheet, ChannelSettingsDataItem, getChangeChannelType } from "@components/features/channel-settings/ChangeChannelType";
+import { ChangeChannelTypeSheet, getChangeChannelType } from "@components/features/channel-settings/ChangeChannelType";
 import { ChannelListItem } from "@raven/types/common/ChannelListItem";
 import { useColorScheme } from "@hooks/useColorScheme";
+import { MembersTray } from "@components/features/channel-settings/MembersTray";
+
+
+export type ChannelSettingsDataItem = {
+    id: string;
+    title: string;
+    icon: React.ReactNode;
+    onPress: () => void;
+    titleClassName: string;
+}
+
+export type ChannelSettingsDataComponent = {
+    id: string;
+    component: React.ReactNode;
+}
+
+export type ChannelSettingsListData = (ChannelSettingsDataItem | ChannelSettingsDataComponent)[];
 
 const SCREEN_OPTIONS = {
     title: 'Channel Settings',
@@ -52,29 +69,30 @@ const ChannelSettings = () => {
         }
     }) : [];
 
-    const channelSettingsData: (string | ChannelSettingsDataItem)[] = [
+    const channelSettingsData: (string | ChannelSettingsDataItem | ChannelSettingsDataComponent)[] = [
         'Channel Settings',
-        ...changeChannelTypeButtons,
+        ...changeChannelTypeButtons as ChannelSettingsListData,
         {
-            id: 'archive',
+            id: 'ArchiveChannel',
             title: 'Archive Channel',
-            icon: <ArchiveIcon fill={colors.icon} />,
             onPress: () => archiveSheetRef.current?.present(),
+            icon: <ArchiveIcon fill={colors.icon} />,
             titleClassName: 'text-lg',
-        },
+        } as ChannelSettingsDataItem,
         {
-            id: 'delete',
+            id: 'DeleteChannel',
             title: 'Delete Channel',
-            icon: <TrashIcon fill={'rgb(185, 28, 28)'} />,
             onPress: () => deleteSheetRef.current?.present(),
-            titleClassName: 'text-lg text-red-700'
-        },
+            icon: <TrashIcon fill={colors.destructive} />,
+            titleClassName: 'text-lg text-destructive',
+        } as ChannelSettingsDataItem,
+        'Channel Members',
         {
-            id: 'members',
-            title: 'View Members',
-            onPress: () => router.push(`../channel-settings-members`, { relativeToDirectory: true }),
-            titleClassName: 'text-lg'
-        }
+            id: 'ChannelMembers',
+            component: <MembersTray
+                onViewAll={() => { router.push(`../channel-settings-members`, { relativeToDirectory: true }) }}
+            />
+        } as ChannelSettingsDataComponent
     ];
 
     return (
@@ -83,7 +101,6 @@ const ChannelSettings = () => {
             <List
                 variant="insets"
                 data={channelSettingsData as ChannelSettingsDataItem[]}
-                sectionHeaderAsGap={Platform.OS === 'ios'}
                 estimatedItemSize={64}
                 renderItem={renderItem}
                 ListFooterComponent={<ListFooterComponent />}
@@ -133,6 +150,14 @@ function Item({ info }: { info: ListRenderItemInfo<ChannelSettingsDataItem> }) {
 
     if (typeof info.item === 'string') {
         return <ListSectionHeader {...info} />;
+    }
+
+    if ('component' in info.item) {
+        return (
+            <View>
+                {info.item.component as React.ReactNode}
+            </View>
+        );
     }
 
     return (
