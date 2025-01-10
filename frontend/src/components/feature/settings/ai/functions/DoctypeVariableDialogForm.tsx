@@ -106,7 +106,7 @@ const TableSelectionField = ({ doctype }: { doctype: string }) => {
     </Box>
 }
 
-const VALID_FIELD_TYPES: DocField['fieldtype'][] = [
+export const VALID_DOCTYPE_FIELD_TYPES: DocField['fieldtype'][] = [
     'Autocomplete',
     'Check',
     'Code',
@@ -236,7 +236,7 @@ export const DoctypeFieldSelect = ({ doctype, value, onFieldSelect }: { doctype:
 
         if (!doctypeMeta) return []
 
-        return doctypeMeta.fields?.filter((field) => in_list(VALID_FIELD_TYPES, field.fieldtype))
+        return doctypeMeta.fields?.filter((field) => in_list(VALID_DOCTYPE_FIELD_TYPES, field.fieldtype))
 
     }, [doctypeMeta])
 

@@ -8,7 +8,7 @@ import { BiPlus, BiTrash } from "react-icons/bi"
 import { useParams } from "react-router-dom"
 import { toast } from "sonner"
 
-const CreatePollContent = ({ setIsOpen }: { setIsOpen: (open: boolean) => void }) => {
+const CreatePollContent = ({ channelID, setIsOpen }: { channelID: string, setIsOpen: (open: boolean) => void }) => {
 
     const methods = useForm<RavenPoll>({
         // Initialize the form with 2 option fields by default
@@ -75,7 +75,6 @@ const CreatePollContent = ({ setIsOpen }: { setIsOpen: (open: boolean) => void }
     }
 
     const { call: createPoll, error } = useFrappePostCall('raven.api.raven_poll.create_poll')
-    const { channelID } = useParams<{ channelID: string }>()
 
     const onSubmit = async (data: RavenPoll) => {
         return createPoll({

@@ -33,7 +33,8 @@
   "poll_id",
   "is_bot_message",
   "bot",
-  "hide_link_preview"
+  "hide_link_preview",
+  "notification"
  ],
  "fields": [
   {
@@ -119,7 +120,8 @@
    "fieldname": "link_document",
    "fieldtype": "Dynamic Link",
    "label": "Link Document",
-   "options": "link_doctype"
+   "options": "link_doctype",
+   "search_index": 1
   },
   {
    "default": "0",
@@ -187,11 +189,18 @@
    "fieldname": "is_thread",
    "fieldtype": "Check",
    "label": "Is Thread"
+  },
+  {
+   "description": "Linked to the notification that triggered this message",
+   "fieldname": "notification",
+   "fieldtype": "Data",
+   "label": "Notification",
+   "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-10-11 18:42:44.984706",
+ "modified": "2024-12-15 19:08:54.605919",
  "modified_by": "Administrator",
  "module": "Raven Messaging",
  "name": "Raven Message",

@@ -28,7 +28,7 @@ export const ThreadMessage = ({ thread }: { thread: Message }) => {
 
 export const ThreadReplyCount = ({ thread }: { thread: Message }) => {
 
-    const { data, mutate } = useFrappeGetDocCount<RavenMessage>("Raven Message", [["channel_id", "=", thread.name]], undefined, undefined, undefined, {
+    const { data, mutate } = useFrappeGetDocCount<RavenMessage>("Raven Message", [["channel_id", "=", thread.name], ["message_type", "!=", "System"]], undefined, undefined, undefined, {
         revalidateOnFocus: false,
         shouldRetryOnError: false,
         keepPreviousData: false

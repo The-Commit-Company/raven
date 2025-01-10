@@ -1,12 +1,12 @@
 import { Flex, Text, Theme } from '@radix-ui/themes'
 import { ReactRendererOptions } from '@tiptap/react'
 import { clsx } from 'clsx'
-import { NativeEmoji } from 'emoji-picker-element/shared'
 import {
     forwardRef, useEffect, useImperativeHandle,
     useRef,
     useState,
 } from 'react'
+import { EmojiType } from './EmojiSuggestion'
 
 export default forwardRef((props: ReactRendererOptions['props'], ref) => {
 
@@ -60,16 +60,16 @@ export default forwardRef((props: ReactRendererOptions['props'], ref) => {
             <Flex
                 direction='column'
                 gap='0'
-                className='shadow-lg dark:backdrop-blur-[8px] dark:bg-panel-translucent bg-white overflow-y-scroll max-h-96 rounded-md'
+                className='shadow-lg dark:bg-panel-solid bg-white overflow-y-scroll max-h-96 rounded-md'
             >
                 {props?.items.length
-                    ? props.items.map((item: NativeEmoji, index: number) => (
+                    ? props.items.map((item: EmojiType, index: number) => (
                         <MentionItem
                             item={item}
                             index={index}
                             selectItem={selectItem}
                             selectedIndex={selectedIndex}
-                            key={item.annotation}
+                            key={item.shortcodes ?? item.id}
                             itemsLength={props.items.length}
                         />
                     ))
@@ -80,7 +80,7 @@ export default forwardRef((props: ReactRendererOptions['props'], ref) => {
     )
 })
 
-const MentionItem = ({ item, index, selectItem, selectedIndex, itemsLength }: { itemsLength: number, selectedIndex: number, index: number, item: NativeEmoji, selectItem: (index: number) => void }) => {
+const MentionItem = ({ item, index, selectItem, selectedIndex, itemsLength }: { itemsLength: number, selectedIndex: number, index: number, item: EmojiType, selectItem: (index: number) => void }) => {
 
     const ref = useRef<HTMLDivElement>(null)
 
@@ -93,9 +93,9 @@ const MentionItem = ({ item, index, selectItem, selectedIndex, itemsLength }: { 
         role='button'
         ref={ref}
         align='center'
-        title={item.annotation}
-        aria-label={`Select emoji ${item.annotation}`}
-        className={clsx('px-3 py-1.5 gap-2 rounded-md',
+        title={item.id}
+        aria-label={`Select emoji ${item.id}`}
+        className={clsx('px-3 py-1.5 gap-2 rounded-md cursor-pointer',
             index === itemsLength - 1 ? 'rounded-b-md' : 'rounded-b-none',
             index === 0 ? 'rounded-t-md' : 'rounded-t-none',
             index === selectedIndex ? 'bg-accent-a5' : 'bg-panel-translucent'
@@ -103,6 +103,9 @@ const MentionItem = ({ item, index, selectItem, selectedIndex, itemsLength }: { 
         key={index}
         onClick={() => selectItem(index)}
     >
-        <Text as='span' weight='medium' size='2'>{item.unicode} {item.shortcodes?.[0] ?? item.annotation}</Text>
+
+        <Text as='span' weight='medium' size='2'>
+            {/* @ts-expect-error */}
+            <em-emoji shortcodes={item.shortcodes}></em-emoji> {item.shortcodes ?? item.id}</Text>
     </Flex >
 }

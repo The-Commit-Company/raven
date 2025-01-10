@@ -62,7 +62,7 @@ export default forwardRef((props: ReactRendererOptions['props'], ref) => {
             <Flex
                 direction='column'
                 gap='0'
-                className='shadow-lg dark:backdrop-blur-[32px] dark:bg-panel-translucent bg-white overflow-y-scroll max-h-96 rounded-md'
+                className='shadow-lg dark:bg-panel-solid bg-white overflow-y-scroll max-h-96 rounded-md'
             >
                 {props?.items.length
                     ? props.items.map((item: UserFields, index: number) => (

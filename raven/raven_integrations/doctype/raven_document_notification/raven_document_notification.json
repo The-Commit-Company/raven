@@ -1,0 +1,148 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "field:notification_name",
+ "creation": "2024-12-15 17:36:24.825068",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "notification_name",
+  "enabled",
+  "column_break_hpcq",
+  "sender",
+  "section_break_vsib",
+  "send_alert_on",
+  "column_break_rxyz",
+  "document_type",
+  "conditions_tab",
+  "condition",
+  "recipients_tab",
+  "recipients",
+  "message_content_tab",
+  "message"
+ ],
+ "fields": [
+  {
+   "fieldname": "notification_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Notification Name",
+   "reqd": 1,
+   "unique": 1
+  },
+  {
+   "default": "1",
+   "fieldname": "enabled",
+   "fieldtype": "Check",
+   "label": "Enabled"
+  },
+  {
+   "fieldname": "column_break_hpcq",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "section_break_vsib",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "send_alert_on",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Send Alert On",
+   "options": "New Document\nUpdate\nSubmit\nCancel\nDelete",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_rxyz",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "document_type",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Document Type",
+   "options": "DocType",
+   "reqd": 1,
+   "search_index": 1
+  },
+  {
+   "fieldname": "conditions_tab",
+   "fieldtype": "Tab Break",
+   "label": "Conditions"
+  },
+  {
+   "description": "Optional: The alert will be sent if this expression is true",
+   "fieldname": "condition",
+   "fieldtype": "Code",
+   "label": "Condition"
+  },
+  {
+   "fieldname": "recipients_tab",
+   "fieldtype": "Tab Break",
+   "label": "Recipients"
+  },
+  {
+   "fieldname": "recipients",
+   "fieldtype": "Table",
+   "label": "Recipients",
+   "options": "Raven Document Notification Recipients",
+   "reqd": 1
+  },
+  {
+   "fieldname": "message_content_tab",
+   "fieldtype": "Tab Break",
+   "label": "Message Content"
+  },
+  {
+   "description": "Can be HTML/Markdown/Plain Text. Support Jinja tags",
+   "fieldname": "message",
+   "fieldtype": "Code",
+   "label": "Message",
+   "reqd": 1
+  },
+  {
+   "fieldname": "sender",
+   "fieldtype": "Link",
+   "label": "Sender",
+   "options": "Raven Bot",
+   "reqd": 1
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2024-12-15 19:21:43.452516",
+ "modified_by": "Administrator",
+ "module": "Raven Integrations",
+ "name": "Raven Document Notification",
+ "naming_rule": "By fieldname",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Raven Admin",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": []
+}

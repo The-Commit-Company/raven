@@ -50,10 +50,12 @@ export const QuickActions = ({ message, onReply, onEdit, isEmojiPickerOpen, setI
         e.target.dispatchEvent(evt);
     }
 
-    const onEmojiReact = (emoji: string) => {
+    const onEmojiReact = (emoji: string, is_custom: boolean = false, emoji_name?: string) => {
         call.post('raven.api.reactions.react', {
             message_id: message?.name,
-            reaction: emoji
+            reaction: emoji,
+            is_custom,
+            emoji_name
         }).catch((err) => {
             toast.error("Could not react to message.", {
                 description: getErrorMessage(err)
@@ -80,7 +82,8 @@ export const QuickActions = ({ message, onReply, onEdit, isEmojiPickerOpen, setI
                         onClick={() => {
                             onEmojiReact(emoji)
                         }}>
-                        {emoji}
+                        {/* @ts-expect-error */}
+                        <em-emoji native={emoji} />
                     </QuickActionButton>
                 })}
 

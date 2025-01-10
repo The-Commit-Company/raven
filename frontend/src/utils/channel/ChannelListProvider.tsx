@@ -1,10 +1,10 @@
 import { FrappeConfig, FrappeContext, FrappeError, useFrappeDocTypeEventListener, useFrappeGetCall } from 'frappe-react-sdk'
 import { PropsWithChildren, createContext, useContext, useMemo } from 'react'
 import { KeyedMutator } from 'swr'
-import { RavenChannel } from '../../../../types/RavenChannelManagement/RavenChannel'
 import { useSWRConfig } from 'frappe-react-sdk'
 import { toast } from 'sonner'
 import { getErrorMessage } from '@/components/layout/AlertBanner/ErrorBanner'
+import { RavenChannel } from '@/types/RavenChannelManagement/RavenChannel'
 
 export type UnreadChannelCountItem = { name: string, user_id?: string, unread_count: number, is_direct_message: 0 | 1 }
 
@@ -16,7 +16,7 @@ export type UnreadCountData = {
 
 export type ChannelListItem = Pick<RavenChannel, 'name' | 'channel_name' | 'type' |
     'channel_description' | 'is_direct_message' | 'is_self_message' |
-    'is_archived' | 'creation' | 'owner' | 'last_message_details' | 'last_message_timestamp' | 'workspace'>
+    'is_archived' | 'creation' | 'owner' | 'last_message_details' | 'last_message_timestamp' | 'workspace' | 'pinned_messages_string'>
 
 export interface DMChannelListItem extends ChannelListItem {
     peer_user_id: string,

@@ -42,7 +42,7 @@ const ErrorPage = () => {
                     "A new update is available." :
                     "There was an unexpected error."}
                 </Heading>
-                <Text>If you face this error again, please report it either on <Link target='_blank' href='https://github.com/frappe/raven/issues'>GitHub</Link> or <Link target='_blank' href='https://https://support.ravenchat.ai/'> our support portal</Link>.</Text>
+                <Text>If you face this error again, please report it either on <Link target='_blank' href='https://github.com/frappe/raven/issues'>GitHub</Link> or <Link target='_blank' href='https://support.ravenchat.ai/'> our support portal</Link>.</Text>
 
                 {!errorDueToUpdate && <details>
                     <summary><Text size='2'>Show error details</Text></summary>
