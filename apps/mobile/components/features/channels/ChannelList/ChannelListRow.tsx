@@ -216,7 +216,7 @@ const useMoveToStarred = (channel: ChannelListItem) => {
         call.post('raven.api.raven_channel.toggle_pinned_channel', {
             channel_id: channel.name
         }).then((res: { message: RavenUser }) => {
-            toast.success(`${channel.channel_name} ${isStarred ? 'removed from starred' : 'added to starred'}`)
+            toast.success(`${channel.channel_name} ${isStarred ? 'removed from favorites' : 'added to favorites'}`)
             if (res.message) {
                 mutate({ message: res.message }, { revalidate: false })
             }
