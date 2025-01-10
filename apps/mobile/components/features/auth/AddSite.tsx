@@ -103,7 +103,7 @@ const SiteAuthFlowSheet = ({ siteInformation, onDismiss }: { siteInformation: Si
         usePKCE: true,
         scopes: ['all', 'openid'],
         codeChallengeMethod: CodeChallengeMethod.S256,
-        redirectUri: makeRedirectUri({}),
+        redirectUri: makeRedirectUri({ native: 'raven.thecommit.company:' }),
     }, discoveryWithURL)
 
     const onLoginClick = () => {
@@ -117,9 +117,8 @@ const SiteAuthFlowSheet = ({ siteInformation, onDismiss }: { siteInformation: Si
                         extraParams: {
                             code_verifier: request?.codeVerifier ?? '',
                         },
-                        redirectUri: makeRedirectUri({}),
+                        redirectUri: makeRedirectUri({ native: 'raven.thecommit.company:' }),
                     }, discoveryWithURL).then(data => {
-                        console.log("Access Token: ", data)
                         onAccessTokenReceived(data)
                     }).catch(err => {
                         Alert.alert("Authentication Error", err.message)

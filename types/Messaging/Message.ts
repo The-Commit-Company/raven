@@ -23,6 +23,7 @@ export interface BaseMessage {
     bot?: string,
     hide_link_preview?: 1 | 0,
     is_thread: 1 | 0,
+    is_pinned: 1 | 0,
 }
 
 export interface FileMessage extends BaseMessage {

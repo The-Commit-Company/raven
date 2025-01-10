@@ -49,7 +49,7 @@ def get_workspace_members(workspace_id: str):
 	"""
 	cache_key = f"raven:workspace_members:{workspace_id}"
 
-	data = frappe.cache.get_value(cache_key)
+	data = frappe.cache().get_value(cache_key)
 	if data:
 		return data
 
@@ -60,13 +60,13 @@ def get_workspace_members(workspace_id: str):
 	)
 
 	data = {member.user: member for member in members}
-	frappe.cache.set_value(cache_key, data)
+	frappe.cache().set_value(cache_key, data)
 	return data
 
 
 def delete_workspace_members_cache(workspace_id: str):
 	cache_key = f"raven:workspace_members:{workspace_id}"
-	frappe.cache.delete_value(cache_key)
+	frappe.cache().delete_value(cache_key)
 
 
 def get_workspace_member(workspace_id: str, user: str = None) -> dict:
@@ -97,7 +97,7 @@ def get_channel_members(channel_id: str):
 	"""
 	cache_key = f"raven:channel_members:{channel_id}"
 
-	data = frappe.cache.get_value(cache_key)
+	data = frappe.cache().get_value(cache_key)
 	if data:
 		return data
 
@@ -121,13 +121,13 @@ def get_channel_members(channel_id: str):
 	members = query.run(as_dict=True)
 
 	data = {member.user_id: member for member in members}
-	frappe.cache.set_value(cache_key, data)
+	frappe.cache().set_value(cache_key, data)
 	return data
 
 
 def delete_channel_members_cache(channel_id: str):
 	cache_key = f"raven:channel_members:{channel_id}"
-	frappe.cache.delete_value(cache_key)
+	frappe.cache().delete_value(cache_key)
 
 
 def get_channel_member(channel_id: str, user: str = None) -> dict:

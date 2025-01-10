@@ -17,6 +17,8 @@ class RavenChannel(Document):
 	if TYPE_CHECKING:
 		from frappe.types import DF
 
+		from raven.raven.doctype.raven_pinned_messages.raven_pinned_messages import RavenPinnedMessages
+
 		channel_description: DF.SmallText | None
 		channel_name: DF.Data
 		is_ai_thread: DF.Check
@@ -31,6 +33,8 @@ class RavenChannel(Document):
 		linked_doctype: DF.Link | None
 		linked_document: DF.DynamicLink | None
 		openai_thread_id: DF.Data | None
+		pinned_messages: DF.Table[RavenPinnedMessages]
+		pinned_messages_string: DF.SmallText | None
 		thread_bot: DF.Link | None
 		type: DF.Literal["Private", "Public", "Open"]
 		workspace: DF.Link | None
@@ -168,6 +172,11 @@ class RavenChannel(Document):
 			workspaces = frappe.get_all("Raven Workspace")
 			if len(workspaces) == 1:
 				self.workspace = workspaces[0].name
+
+		self.set_pinned_messages_string()
+
+	def set_pinned_messages_string(self):
+		self.pinned_messages_string = "\n".join([message.message_id for message in self.pinned_messages])
 
 	def add_members(self, members, is_admin=0):
 		# members is a list of Raven User IDs
