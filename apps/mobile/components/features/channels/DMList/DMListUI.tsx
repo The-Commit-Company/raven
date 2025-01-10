@@ -8,6 +8,7 @@ import { DMChannelListItem } from '@raven/types/common/ChannelListItem';
 import { useGetUser } from '@raven/lib/hooks/useGetUser';
 import UserAvatar from '@components/layout/UserAvatar';
 import { Link } from 'expo-router';
+import ChatOutlineIcon from '@assets/icons/ChatOutlineIcon.svg';
 
 interface DMListUIProps {
     dms: DMChannelListItem[]
@@ -25,7 +26,10 @@ const DMListUI = ({ dms }: DMListUIProps) => {
     return (
         <View style={styles.container}>
             <TouchableOpacity onPress={toggleAccordion} style={styles.header} activeOpacity={0.7}>
-                <Text style={styles.headerText}>Direct Messages</Text>
+                <View className="flex-row items-center gap-2">
+                    <ChatOutlineIcon fill={colors.colors.icon} height={18} width={18} />
+                    <Text style={styles.headerText}>Direct Messages</Text>
+                </View>
                 {isExpanded ? <ChevronDownIcon fill={colors.colors.icon} /> : <ChevronRightIcon fill={colors.colors.icon} />}
             </TouchableOpacity>
             {isExpanded && <>
@@ -37,7 +41,6 @@ const DMListUI = ({ dms }: DMListUIProps) => {
 
 const DMListRow = ({ dm }: { dm: DMChannelListItem }) => {
     const user = useGetUser(dm.peer_user_id)
-    const colors = useColorScheme()
     return (
         <Link href={`../chat/${dm.name}`} asChild>
             <Pressable
