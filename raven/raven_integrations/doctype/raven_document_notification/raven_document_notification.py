@@ -261,9 +261,10 @@ def send_raven_notifications(doc, notifications_to_send, link_doctype, link_docu
 
 
 def get_context(doc):
-	Frappe = namedtuple("frappe", ["utils"])
+	Frappe = namedtuple("Frappe", ["frappe"])
+	frappe = Frappe(frappe=get_safe_globals().get("frappe"))
 	return {
 		"doc": doc,
 		"nowdate": nowdate,
-		"frappe": Frappe(utils=get_safe_globals().get("frappe").get("utils")),
+		"frappe": frappe.frappe,
 	}
