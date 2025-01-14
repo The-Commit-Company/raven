@@ -79,7 +79,14 @@ class RavenDocumentNotification(Document):
 				validate_template(recipient.value)
 			if recipient.variable_type == "DocField":
 				# Check if the field exists in the document type
-				if recipient.value not in frappe.get_meta(self.document_type).fields:
+				meta = frappe.get_meta(self.document_type)
+
+				has_field = meta.has_field(recipient.value)
+				if not has_field:
+					if recipient.value == "owner" or recipient.value == "modified_by":
+						has_field = True
+
+				if not has_field:
 					frappe.throw(
 						_("Field {0} does not exist in {1}.").format(recipient.value, self.document_type)
 					)
@@ -261,9 +268,10 @@ def send_raven_notifications(doc, notifications_to_send, link_doctype, link_docu
 
 
 def get_context(doc):
-	Frappe = namedtuple("frappe", ["utils"])
+	Frappe = namedtuple("Frappe", ["frappe"])
+	frappe = Frappe(frappe=get_safe_globals().get("frappe"))
 	return {
 		"doc": doc,
 		"nowdate": nowdate,
-		"frappe": Frappe(utils=get_safe_globals().get("frappe").get("utils")),
+		"frappe": frappe.frappe,
 	}
