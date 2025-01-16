@@ -1,7 +1,7 @@
 import { useColorScheme } from '@hooks/useColorScheme';
 import { Stack } from 'expo-router';
 
-const ActivityLayout = () => {
+const ThreadsLayout = () => {
 
     const { colors } = useColorScheme()
 
@@ -12,11 +12,11 @@ const ActivityLayout = () => {
         }}>
             <Stack.Screen name='index'
                 options={{
-                    title: 'Activity',
+                    title: 'Threads',
                     headerLargeTitle: true
                 }} />
         </Stack>
     )
 }
 
-export default ActivityLayout
+export default ThreadsLayout
