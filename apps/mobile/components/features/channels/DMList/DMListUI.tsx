@@ -26,10 +26,7 @@ const DMListUI = ({ dms }: DMListUIProps) => {
     return (
         <View style={styles.container}>
             <TouchableOpacity onPress={toggleAccordion} style={styles.header} activeOpacity={0.7}>
-                <View className="flex-row items-center gap-2">
-                    <ChatOutlineIcon fill={colors.colors.icon} height={18} width={18} />
-                    <Text style={styles.headerText}>Direct Messages</Text>
-                </View>
+                <Text style={styles.headerText}>Direct Messages</Text>
                 {isExpanded ? <ChevronDownIcon fill={colors.colors.icon} /> : <ChevronRightIcon fill={colors.colors.icon} />}
             </TouchableOpacity>
             {isExpanded && <>
