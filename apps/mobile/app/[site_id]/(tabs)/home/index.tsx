@@ -9,11 +9,11 @@ import { useGetCurrentWorkspace } from '@hooks/useGetCurrentWorkspace';
 import ChannelList from '@components/features/channels/ChannelList/ChannelList';
 import { ViewNotificationsButton } from '@components/features/notifications/ViewNotificationsButton';
 import { ViewSavedMessagesButton } from '@components/features/saved-messages/ViewSavedMessagesButton';
+import QuickActionsFab from '@components/features/quick-actions-fab/QuickActionsFab';
 
 export default function Home() {
 
     const { colors } = useColorScheme()
-
     const { workspace, switchWorkspace } = useGetCurrentWorkspace()
 
     return (
@@ -29,13 +29,20 @@ export default function Home() {
                 </View>
                 <SearchInput />
             </View>
-            <ScrollView style={{ backgroundColor: colors.background }} className="rounded-t-[1.5rem]">
-                <View className="flex flex-col">
-                    <ChannelList workspace={workspace} />
-                    <Divider />
-                    <DMList />
-                </View>
-            </ScrollView>
+
+            <View style={{ flex: 1 }}>
+                <ScrollView
+                    style={{ backgroundColor: colors.background }}
+                    contentContainerStyle={{ paddingBottom: 5 }}
+                    className="rounded-t-[1.2rem]">
+                    <View className="flex flex-col">
+                        <ChannelList workspace={workspace} />
+                        <Divider />
+                        <DMList />
+                    </View>
+                </ScrollView>
+                <QuickActionsFab />
+            </View>
         </SafeAreaView>
     )
 }
