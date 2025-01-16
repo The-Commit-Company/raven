@@ -21,6 +21,7 @@ const SearchInput = React.forwardRef<React.ElementRef<typeof TextInput>, SearchI
       containerClassName,
       iconContainerClassName,
       className,
+      placeholderTextColor,
       iconColor,
       ...props
     },
@@ -63,7 +64,7 @@ const SearchInput = React.forwardRef<React.ElementRef<typeof TextInput>, SearchI
             ref={inputRef}
             placeholder={placeholder}
             className={cn('text-foreground flex-1 rounded-r-full p-2 text-[17px]', className)}
-            placeholderTextColor={colors.greyText}
+            placeholderTextColor={placeholderTextColor ?? colors.greyText}
             value={value}
             onChangeText={onChangeText}
             role="searchbox"

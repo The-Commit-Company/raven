@@ -8,7 +8,6 @@ import { DMChannelListItem } from '@raven/types/common/ChannelListItem';
 import { useGetUser } from '@raven/lib/hooks/useGetUser';
 import UserAvatar from '@components/layout/UserAvatar';
 import { Link } from 'expo-router';
-import ChatOutlineIcon from '@assets/icons/ChatOutlineIcon.svg';
 
 interface DMListUIProps {
     dms: DMChannelListItem[]
@@ -42,7 +41,7 @@ const DMListRow = ({ dm }: { dm: DMChannelListItem }) => {
         <Link href={`../chat/${dm.name}`} asChild>
             <Pressable
                 // Use tailwind classes for layout and ios:active state
-                className='flex-row items-center px-3 py-2 rounded-lg ios:active:bg-linkColor'
+                className='flex-row items-center px-3 py-1.5 rounded-lg ios:active:bg-linkColor'
                 // Add a subtle ripple effect on Android
                 android_ripple={{ color: 'rgba(0,0,0,0.1)', borderless: false }}
             >

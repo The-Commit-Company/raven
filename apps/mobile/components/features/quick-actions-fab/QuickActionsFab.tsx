@@ -26,7 +26,8 @@ const QuickActionsFab = () => {
             <Sheet snapPoints={[500]} ref={bottomSheetRef}>
                 <BottomSheetView className='pb-12'>
                     <View className='flex flex-col'>
-                        <Pressable style={styles.button} className='ios:active:bg-linkColor'>
+                        <Pressable style={styles.button} className='ios:active:bg-linkColor'
+                            onPress={() => router.push('../home/browse-channels', { relativeToDirectory: true })}>
                             <GlobeIcon fill={colors.icon} height={18} width={18} />
                             <Text>Browse channels</Text>
                         </Pressable>
@@ -49,8 +50,8 @@ const QuickActionsFab = () => {
 const styles = StyleSheet.create({
     fab: {
         position: 'absolute',
-        bottom: 20,
-        right: 20,
+        bottom: 16,
+        right: 16,
         width: 45,
         height: 45,
         borderRadius: 30,
