@@ -23,7 +23,7 @@ export default function Home() {
                 </View>
                 <SearchInput />
             </View>
-            <ScrollView style={{ backgroundColor: colors.background }} className="rounded-t-[2rem]">
+            <ScrollView style={{ backgroundColor: colors.background }} className="rounded-t-[1.5rem]">
                 <View className="flex flex-col">
                     <ChannelList workspace={workspace} />
                     <Divider />
