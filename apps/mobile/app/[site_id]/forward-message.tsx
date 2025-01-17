@@ -9,7 +9,7 @@ import { useChannelListProvider } from "@raven/lib/providers/ChannelListProvider
 import { useGetUserRecords } from "@raven/lib/hooks/useGetUserRecords"
 import { UserFields } from "@raven/types/common/UserFields"
 import useCurrentRavenUser from "@raven/lib/hooks/useCurrentRavenUser"
-import { ChannelIcon } from "@components/features/chat/ChannelList/ChannelIcon"
+import { ChannelIcon } from "@components/features/channels/ChannelList/ChannelIcon"
 import { useColorScheme } from "@hooks/useColorScheme"
 import SendIcon from "@assets/icons/SendIcon.svg"
 import { useFrappePostCall } from "frappe-react-sdk"
@@ -149,7 +149,7 @@ function ForwardMessage() {
                                         />
                                     ) : (
                                         <View className="w-6 h-6 rounded-md bg-gray-300 dark:bg-gray-800 justify-center items-center">
-                                            <ChannelIcon size={15} type={channel.type} fill={colors.icon} />
+                                                <ChannelIcon size={15} type={channel.type} fill={colors.icon} />
                                         </View>
                                     )}
 
@@ -241,7 +241,7 @@ const ChannelRow = React.memo(({ item, handleChannelSelect, currentUserInfo }: a
                 />
             ) : (
                 <View className="w-8 h-8 rounded-md bg-gray-200 dark:bg-gray-900 justify-center items-center">
-                    <ChannelIcon size={16} type={item.type} fill={colors.icon} />
+                        <ChannelIcon size={16} type={item.type} fill={colors.icon} />
                 </View>
             )}
             <Text className="text-base dark:text-gray-300">
