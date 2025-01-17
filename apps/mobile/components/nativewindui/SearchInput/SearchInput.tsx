@@ -63,6 +63,7 @@ const SearchInput = React.forwardRef<React.ElementRef<typeof TextInput>, SearchI
           <TextInput
             ref={inputRef}
             placeholder={placeholder}
+            cursorColor={colors.primary}
             className={cn('text-foreground flex-1 rounded-r-full p-2 text-[17px]', className)}
             placeholderTextColor={placeholderTextColor ?? colors.greyText}
             value={value}

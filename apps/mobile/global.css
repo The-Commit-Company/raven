@@ -6,7 +6,7 @@
     :root {
         --background: 248 248 248;
         --foreground: 0 0 0;
-        --card: 255 255 255;
+        --card: 240 240 240;
         --card-foreground: 8 28 30;
         --popover: 230 230 235;
         --popover-foreground: 0 0 0;
@@ -15,7 +15,7 @@
         --secondary: 45 175 231;
         --secondary-foreground: 255 255 255;
         --muted: 175 176 180;
-        --muted-foreground: 142 142 147;
+        --muted-foreground: 98 98 103;
         --accent: 255 40 84;
         --accent-foreground: 255 255 255;
         --destructive: 255 56 43;
@@ -32,7 +32,7 @@
 
         --android-background: 248 248 248;
         --android-foreground: 0 0 0;
-        --android-card: 255 255 255;
+        --android-card: 240 240 240;
         --android-card-foreground: 24 28 35;
         --android-popover: 215 217 228;
         --android-popover-foreground: 0 0 0;
@@ -41,7 +41,7 @@
         --android-secondary: 176 201 255;
         --android-secondary-foreground: 20 55 108;
         --android-muted: 193 198 215;
-        --android-muted-foreground: 65 71 84;
+        --android-muted-foreground: 98 98 103;
         --android-accent: 169 73 204;
         --android-accent-foreground: 255 255 255;
         --android-destructive: 186 26 26;
@@ -61,7 +61,7 @@
         :root {
             --background: 0 0 0;
             --foreground: 255 255 255;
-            --card: 21 21 24;
+            --card: 37 37 39;
             --card-foreground: 255 255 255;
             --popover: 40 40 42;
             --popover-foreground: 255 255 255;
@@ -70,7 +70,7 @@
             --secondary: 100 211 254;
             --secondary-foreground: 255 255 255;
             --muted: 70 70 73;
-            --muted-foreground: 142 142 147;
+            --muted-foreground: 187 187 187;
             --accent: 255 52 95;
             --accent-foreground: 255 255 255;
             --destructive: 254 67 54;
@@ -87,7 +87,7 @@
 
             --android-background: 0 0 0;
             --android-foreground: 255 255 255;
-            --android-card: 16 19 27;
+            --android-card: 37 37 39;
             --android-card-foreground: 224 226 237;
             --android-popover: 39 42 50;
             --android-popover-foreground: 224 226 237;
@@ -96,7 +96,7 @@
             --android-secondary: 28 60 114;
             --android-secondary-foreground: 189 209 255;
             --android-muted: 216 226 255;
-            --android-muted-foreground: 139 144 160;
+            --android-muted-foreground: 187 187 187;
             --android-accent: 83 0 111;
             --android-accent-foreground: 238 177 255;
             --android-destructive: 147 0 10;

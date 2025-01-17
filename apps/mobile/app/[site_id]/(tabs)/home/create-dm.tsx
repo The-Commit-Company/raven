@@ -4,16 +4,14 @@ import CrossIcon from '@assets/icons/CrossIcon.svg';
 import { useColorScheme } from '@hooks/useColorScheme';
 import { View } from 'react-native';
 import { SearchInput } from '@components/nativewindui/SearchInput';
-import { Text } from '@components/nativewindui/Text';
-import ChevronDownIcon from '@assets/icons/ChevronDownIcon.svg';
 
-export default function BrowseChannels() {
+export default function CreateDM() {
 
     const { colors } = useColorScheme()
 
     return <>
         <Stack.Screen options={{
-            title: 'Browse channels',
+            title: 'Create direct message',
             headerLeft() {
                 return (
                     <Link asChild href="../" relativeToDirectory>
@@ -31,18 +29,6 @@ export default function BrowseChannels() {
                     iconColor={colors.destructive}
                     placeholderTextColor={colors.grey} />
             </View>
-            <ChannelFilter />
         </View>
     </>
-}
-
-const ChannelFilter = () => {
-    const { colors } = useColorScheme()
-    return <View className="flex flex-row px-4 gap-2 items-center">
-        <Text className="text-sm">Show:</Text>
-        <View className="flex flex-row items-center gap-1">
-            <Text className="text-sm">All channels</Text>
-            <ChevronDownIcon fill={colors.icon} height={20} width={20} />
-        </View>
-    </View>
 }

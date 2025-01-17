@@ -10,6 +10,7 @@ import { ActivityIndicator } from '@components/nativewindui/ActivityIndicator';
 import { useContext } from 'react';
 import { SiteContext } from 'app/[site_id]/_layout';
 import { useGetCurrentWorkspace } from '@hooks/useGetCurrentWorkspace';
+import { toast } from 'sonner-native';
 
 export default function CreateChannel() {
 
@@ -40,15 +41,14 @@ export default function CreateChannel() {
             workspace: workspace
         }).then(result => {
             if (result) {
-                // TODO: Show success toast
-                console.log("Channel created", result)
+                toast.success("Channel created", result)
                 // Navigate to channel
                 router.replace(`${siteID}/chat/${result.name}`)
                 reset()
                 resetForm()
             }
         }).catch(err => {
-            console.log(err)
+            toast.error("Failed to create channel", err)
         })
     }
 
