@@ -41,7 +41,7 @@ export const PollMessageBlock = ({ message, ...props }: PollMessageBlockProps) =
         <View {...props} className="p-3">
             {error ? (
                 <View className="bg-red-100 p-2 rounded-md">
-                    <Text className="text-re-600">{error.message}</Text>
+                    <Text className="text-red-500">{error.message}</Text>
                 </View>
             ) : null}
             {data ? <PollMessageBox data={data.message} messageID={message.name} /> : null}
@@ -51,7 +51,7 @@ export const PollMessageBlock = ({ message, ...props }: PollMessageBlockProps) =
 
 const PollMessageBox = ({ data, messageID }: { data: Poll; messageID: string }) => {
     return (
-        <View className="bg-gray-200 dark:bg-gray-900 w-full rounded-md p-3 gap-0.5">
+        <View className="bg-gray-100 dark:bg-gray-900 w-full rounded-md p-3 gap-0.5">
             <View className="flex-row justify-between items-center pb-3">
                 <Text className="font-medium">{data.poll.question}</Text>
                 {data.poll.is_anonymous ? (
@@ -216,7 +216,7 @@ const MultiChoicePoll = ({ data, messageID }: { data: Poll; messageID: string })
                 <Text className="text-sm text-gray-500 mr-4 max-w-[65%]">
                     To view the poll results, please submit your choice(s)
                 </Text>
-                <Pressable className='bg-gray-300 dark:bg-gray-800 px-2.5 py-1 rounded-sm' onPress={onVoteSubmit} disabled={!!data.poll.is_disabled || selectedOptions.length === 0}>
+                <Pressable className='bg-gray-200 dark:bg-gray-800 px-2.5 py-1 rounded-sm' onPress={onVoteSubmit} disabled={!!data.poll.is_disabled || selectedOptions.length === 0}>
                     <Text className='text-sm font-semibold' style={{ color: colors.primary }}>Submit</Text>
                 </Pressable>
             </View>
