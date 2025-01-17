@@ -87,7 +87,7 @@ const ChannelDescriptionEdit = () => {
                 <FormProvider {...methods}>
                     <Form className="gap-5 px-4 pt-8">
                         <FormSection>
-                            <View className="p-2.5">
+                            <View className="p-2.5 pb-4">
                                 <FormLabel isRequired>Edit Channel Description</FormLabel>
                                 <Controller
                                     name="channel_description"
