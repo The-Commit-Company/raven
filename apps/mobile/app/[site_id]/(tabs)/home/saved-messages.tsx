@@ -3,15 +3,15 @@ import { Button } from '@components/nativewindui/Button';
 import CrossIcon from '@assets/icons/CrossIcon.svg';
 import { useColorScheme } from '@hooks/useColorScheme';
 import { View } from 'react-native';
-import { SearchInput } from '@components/nativewindui/SearchInput';
+import { Text } from '@components/nativewindui/Text';
 
-export default function CreateDM() {
+export default function SavedMessages() {
 
     const { colors } = useColorScheme()
 
     return <>
         <Stack.Screen options={{
-            title: 'Create direct message',
+            title: 'Saved messages',
             headerLeft() {
                 return (
                     <Link asChild href="../" relativeToDirectory>
@@ -23,11 +23,7 @@ export default function CreateDM() {
             }
         }} />
         <View className="flex-1">
-            <View className="p-3">
-                <SearchInput style={{ backgroundColor: colors.grey5 }}
-                    placeholder="Search"
-                    placeholderTextColor={colors.grey} />
-            </View>
+            <Text>Saved messages</Text>
         </View>
     </>
 }

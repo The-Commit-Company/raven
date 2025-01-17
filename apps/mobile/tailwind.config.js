@@ -47,6 +47,7 @@ module.exports = {
         card: {
           DEFAULT: withOpacity('card'),
           foreground: withOpacity('card-foreground'),
+          background: withOpacity('card-background'),
         },
       },
       borderWidth: {

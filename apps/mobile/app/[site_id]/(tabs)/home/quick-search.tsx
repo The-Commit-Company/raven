@@ -70,17 +70,17 @@ export default function QuickSearch() {
                 />
             </View>
             <View className='flex flex-row justify-center gap-2'>
-                <Pressable style={styles.button} className='ios:active:bg-linkColor bg-card'
+                <Pressable style={styles.button} className='ios:active:bg-linkColor bg-card-background'
                     onPress={() => openMenuItemSheet('../home/browse-channels')}>
                     <HashIcon fill={colors.grey} height={20} width={20} />
                     <Text className='text-sm text-muted-foreground'>View channels</Text>
                 </Pressable>
-                <Pressable style={styles.button} className='ios:active:bg-linkColor bg-card'
+                <Pressable style={styles.button} className='ios:active:bg-linkColor bg-card-background'
                     onPress={() => openMenuItemSheet('../home/create-dm')}>
                     <UserIcon fill={colors.grey} height={20} width={20} />
                     <Text className='text-sm text-muted-foreground'>Open a DM</Text>
                 </Pressable>
-                <Pressable style={styles.button} className='ios:active:bg-linkColor bg-card'
+                <Pressable style={styles.button} className='ios:active:bg-linkColor bg-card-background'
                     onPress={() => openMenuItemSheet('../home/create-channel')}>
                     <PlusIcon fill={colors.grey} height={20} width={20} />
                     <Text className='text-sm text-muted-foreground'>New channel</Text>
