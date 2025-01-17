@@ -3,6 +3,7 @@ import Animated, { LayoutAnimationConfig, ZoomInRotate } from 'react-native-rean
 import { cn } from '@lib/cn';
 import { COLORS } from '@theme/colors';
 import BellOutlineIcon from '@assets/icons/BellOutlineIcon.svg';
+import { Badge } from '@components/nativewindui/Badge';
 
 export function ViewNotificationsButton() {
     return (
@@ -20,6 +21,7 @@ export function ViewNotificationsButton() {
                     {({ pressed }) => (
                         <View className={cn('px-0.5', pressed && 'opacity-50')}>
                             <BellOutlineIcon fill={COLORS.white} width={21} height={21} />
+                            {/* <Badge maxCount={9} textVariant="caption2" variant="info">2</Badge> */}
                         </View>
                     )}
                 </Pressable>
