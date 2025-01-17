@@ -7,37 +7,32 @@ export interface FileUploadProgress {
   isComplete: boolean,
 }
 
-export interface Caption {
-  caption: string,
-  fileName: string,
-}
-
 export default function useFileUpload(channelID: string) {
 
   const { file } = useContext(FrappeContext) as FrappeConfig
 
   const [fileUploadProgress, setFileUploadProgress] = useState<Record<string, FileUploadProgress>>({})
 
-  const uploadFiles = async (files: File[], captions?: Caption[]) => {
+  const uploadFiles = async (files: CustomFile[]) => {
+
     if (files.length > 0) {
-      const promises = files.map(async (f: File) => {
-        const newFile = f as CustomFile
-        newFile.fileID = newFile.name + Date.now()
-        return file.uploadFile(newFile,
+      const promises = files.map(async (f: CustomFile) => {
+
+        return file.uploadFile(f,
           {
             isPrivate: true,
             doctype: 'Raven Message',
             otherData: {
               channelID: channelID,
-              caption: captions?.find(c => c.fileName === newFile.name)?.caption ?? '',
+              caption: f.caption,
             },
             fieldname: 'file',
           },
           (bytesUploaded, totalBytes) => {
-            const percentage = Math.round((bytesUploaded / (totalBytes ?? newFile.size)) * 100)
+            const percentage = Math.round((bytesUploaded / (totalBytes ?? f.size)) * 100)
             setFileUploadProgress(p => ({
               ...p,
-              [newFile.fileID]: {
+              [f.fileID]: {
                 progress: percentage,
                 isComplete: false,
               },
@@ -47,7 +42,7 @@ export default function useFileUpload(channelID: string) {
           .then(() => {
             setFileUploadProgress(p => ({
               ...p,
-              [newFile.fileID]: {
+              [f.fileID]: {
                 progress: 100,
                 isComplete: true,
               },
@@ -56,7 +51,7 @@ export default function useFileUpload(channelID: string) {
           .catch(() => {
             setFileUploadProgress(p => {
               const newProgress = { ...p }
-              delete newProgress[newFile.fileID]
+              delete newProgress[f.fileID]
               return newProgress
             })
           })

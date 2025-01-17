@@ -3,24 +3,40 @@ import FileIcon from "@assets/icons/FileIcon.svg"
 import { useColorScheme } from "@hooks/useColorScheme"
 import { SvgProps } from "react-native-svg"
 import * as DocumentPicker from 'expo-document-picker'
+import { CustomFile } from "@raven/types/common/File"
 
 interface FilePickerButtonProps {
     buttonProps?: ButtonProps
     iconProps?: SvgProps
-    onPick: (files: DocumentPicker.DocumentPickerAsset[]) => void
+    onPick: (files: CustomFile[]) => void
 }
 
 const FilePickerButton = ({ buttonProps, iconProps, onPick }: FilePickerButtonProps) => {
-
     const { colors } = useColorScheme()
 
     const pickDocument = async () => {
-        let result = await DocumentPicker.getDocumentAsync({
-            multiple: true
-        })
+        try {
+            let result = await DocumentPicker.getDocumentAsync({
+                multiple: true
+            })
 
-        if (!result.canceled) {
-            onPick(result.assets)
+            if (!result.canceled) {
+                const parsedFiles = result.assets.map((asset) => {
+                    return {
+                        uri: asset.uri,
+                        name: asset.name,
+                        type: asset.mimeType,
+                        size: asset.size,
+                        fileID: asset.name + Date.now(),
+                    } as any as CustomFile
+                })
+
+                onPick(parsedFiles)
+            } else {
+                console.log('Document picking was canceled.')
+            }
+        } catch (error) {
+            console.error('Error picking documents:', error)
         }
     }
 

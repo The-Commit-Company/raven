@@ -1,22 +1,27 @@
 import { TextInput, View } from 'react-native'
-import { Stack, useLocalSearchParams } from 'expo-router';
+import { router, Stack, useLocalSearchParams } from 'expo-router';
 import { Button } from '@components/nativewindui/Button';
 import { Text } from '@components/nativewindui/Text';
 import ChatStream from '@components/features/chat-stream/ChatStream';
 import FilePickerButton from '@components/common/FilePickerButton';
-import useFileUpload from '@raven/lib/hooks/useFileUpload';
-import { useEffect } from 'react';
+import { CustomFile } from '@raven/types/common/File';
+import { atom, useSetAtom } from 'jotai'
+
+export const filesAtom = atom<CustomFile[]>([])
 
 const Chat = () => {
     const { id } = useLocalSearchParams();
 
-    const { uploadFiles, fileUploadProgress } = useFileUpload(id as string);
+    const setFiles = useSetAtom(filesAtom)
 
     console.log("Channel id: ", id);
 
-    // useEffect(() => {
-    //     console.log(fileUploadProgress);
-    // }, [fileUploadProgress])
+    const handleFilePick = (files: CustomFile[]) => {
+        setFiles(files)
+        router.push('./file-send', {
+            relativeToDirectory: true
+        })
+    }
 
     return (
         <>
@@ -24,13 +29,10 @@ const Chat = () => {
                 title: id as string,
             }} />
             <View className='flex-1'>
-                <ChatStream channelID={id as string} />
+                {/* <ChatStream channelID={id as string} /> */}
                 <View className='h-24 fixed bottom-0 w-full bg-card'>
                     <View className='px-4 py-2 flex-row h-full w-full gap-2 items-center justify-center'>
-                        <FilePickerButton onPick={(assets) => {
-                            const files = assets.map(asset => new File([asset.uri], asset.name, { type: asset.mimeType }));
-                            uploadFiles(files);
-                        }} />
+                        <FilePickerButton onPick={handleFilePick} />
                         <TextInput
                             placeholder='Type a message...'
                             className='border h-12 border-border w-[80%] rounded-lg p-2' />
