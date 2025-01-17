@@ -35,7 +35,7 @@ const DMListUI = ({ dms }: DMListUIProps) => {
     )
 }
 
-const DMListRow = ({ dm }: { dm: DMChannelListItem }) => {
+export const DMListRow = ({ dm }: { dm: DMChannelListItem }) => {
     const user = useGetUser(dm.peer_user_id)
     return (
         <Link href={`../chat/${dm.name}`} asChild>

@@ -4,7 +4,7 @@ import { TouchableOpacity, View } from 'react-native'
 import SearchIcon from '@assets/icons/SearchIcon.svg';
 import { router } from 'expo-router';
 
-const QuickSearch = () => {
+const QuickSearchButton = () => {
 
     const { isDarkColorScheme } = useColorScheme()
     const searchIconColor = isDarkColorScheme ? '#9ca3af' : '#d1d5db'
@@ -21,4 +21,4 @@ const QuickSearch = () => {
     )
 }
 
-export default QuickSearch
+export default QuickSearchButton

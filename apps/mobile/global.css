@@ -6,7 +6,7 @@
     :root {
         --background: 248 248 248;
         --foreground: 0 0 0;
-        --card: 240 240 240;
+        --card: 234 234 234;
         --card-foreground: 8 28 30;
         --popover: 230 230 235;
         --popover-foreground: 0 0 0;
@@ -32,7 +32,7 @@
 
         --android-background: 248 248 248;
         --android-foreground: 0 0 0;
-        --android-card: 240 240 240;
+        --android-card: 234 234 234;
         --android-card-foreground: 24 28 35;
         --android-popover: 215 217 228;
         --android-popover-foreground: 0 0 0;

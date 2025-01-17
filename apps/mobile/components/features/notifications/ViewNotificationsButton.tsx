@@ -21,7 +21,7 @@ export function ViewNotificationsButton() {
                     {({ pressed }) => (
                         <View className={cn('px-0.5', pressed && 'opacity-50')}>
                             <BellOutlineIcon fill={COLORS.white} width={21} height={21} />
-                            {/* <Badge maxCount={9} textVariant="caption2" variant="info">2</Badge> */}
+                            <Badge maxCount={9} textVariant="caption2"></Badge>
                         </View>
                     )}
                 </Pressable>

@@ -8,7 +8,7 @@ import { useGetCurrentWorkspace } from '@hooks/useGetCurrentWorkspace';
 import ChannelList from '@components/features/channels/ChannelList/ChannelList';
 import { ViewNotificationsButton } from '@components/features/notifications/ViewNotificationsButton';
 import { ViewSavedMessagesButton } from '@components/features/saved-messages/ViewSavedMessagesButton';
-import QuickSearch from '@components/features/search/QuickSearch';
+import QuickSearchButton from '@components/features/search/QuickSearchButton';
 
 export default function Home() {
 
@@ -26,10 +26,11 @@ export default function Home() {
                         <ThemeToggle />
                     </View>
                 </View>
-                <QuickSearch />
+                <QuickSearchButton />
             </View>
 
             <ScrollView contentContainerStyle={{ paddingBottom: 5 }}
+                showsVerticalScrollIndicator={false}
                 style={{ flex: 1, backgroundColor: colors.background }}
                 className="rounded-t-[1.2rem]">
                 <View className="flex flex-col">
