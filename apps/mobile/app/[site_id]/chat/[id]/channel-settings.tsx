@@ -20,7 +20,7 @@ import { AboutChannel } from "@components/features/channel-settings/AboutChannel
 import { Button } from "@components/nativewindui/Button";
 import PushNotifications from "@components/features/channel-settings/PushNotifications";
 import CreatedBy from "@components/features/channel-settings/CreatedBy";
-
+import PenIcon from "@assets/icons/PenIcon.svg"
 
 export type ChannelSettingsDataItem = {
     id: string;
@@ -198,7 +198,7 @@ const ChannelNameEditButton = () => {
         <Button variant="plain" onPress={() => {
             router.push(`../channel-name-edit`, { relativeToDirectory: true })
         }}>
-            <Text className="text-primary font-normal">Edit</Text>
+            <PenIcon width={24} height={24} fill={colors.icon} />
         </Button>
     )
 }
