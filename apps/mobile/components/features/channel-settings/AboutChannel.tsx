@@ -33,9 +33,9 @@ export const AboutChannel = () => {
     }
 
     const item = {
-        title: (channelData?.channel_description?.length ?? 0) < 40
-            ? channelData?.channel_description ?? "No description"
-            : (channelData?.channel_description?.substring(0, 40) ?? "") + "...",
+        title: (!channelData?.channel_description || channelData?.channel_description.length < 40)
+            ? "No description"
+            : channelData.channel_description.substring(0, 40) + "...",
         titleClassName: "text-lg truncate",
         onPress: handleEdit
     }
