@@ -16,6 +16,8 @@ import { ChangeChannelTypeSheet, getChangeChannelType } from "@components/featur
 import { ChannelListItem } from "@raven/types/common/ChannelListItem";
 import { useColorScheme } from "@hooks/useColorScheme";
 import { MembersTray } from "@components/features/channel-settings/MembersTray";
+import { AboutChannel } from "@components/features/channel-settings/AboutChannel";
+import { Button } from "@components/nativewindui/Button";
 
 
 export type ChannelSettingsDataItem = {
@@ -34,9 +36,10 @@ export type ChannelSettingsDataComponent = {
 export type ChannelSettingsListData = (ChannelSettingsDataItem | ChannelSettingsDataComponent)[];
 
 const SCREEN_OPTIONS = {
-    title: 'Channel Settings',
+    title: 'Channel Info',
     headerTransparent: Platform.OS === 'ios',
     headerBlurEffect: 'systemMaterial',
+    headerRight: () => <ChannelNameEditButton />,
 } as const;
 
 export type ChannelType = 'Public' | 'Private' | 'Open';
@@ -70,6 +73,11 @@ const ChannelSettings = () => {
     }) : [];
 
     const channelSettingsData: (string | ChannelSettingsDataItem | ChannelSettingsDataComponent)[] = [
+        'Channel Description',
+        {
+            id: 'ChannelDescription',
+            component: <AboutChannel />
+        } as ChannelSettingsDataComponent,
         'Channel Members',
         {
             id: 'ChannelMembers',
@@ -173,5 +181,18 @@ function Item({ info }: { info: ListRenderItemInfo<ChannelSettingsDataItem> }) {
         />
     );
 }
+
+const ChannelNameEditButton = () => {
+    const { colors } = useColorScheme();
+
+    return (
+        <Button variant="plain" onPress={() => {
+            router.push(`../channel-name-edit`, { relativeToDirectory: true })
+        }}>
+            <Text className="text-primary font-normal">Edit</Text>
+        </Button>
+    )
+}
+
 
 export default ChannelSettings;
