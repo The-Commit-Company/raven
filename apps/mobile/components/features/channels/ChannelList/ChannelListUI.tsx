@@ -1,13 +1,14 @@
 import { useState } from 'react';
 import { View, TouchableOpacity, Pressable, StyleSheet } from 'react-native';
-import { ChannelIcon } from './ChannelIcon';
 import { Text } from '@components/nativewindui/Text';
 import ChevronDownIcon from '@assets/icons/ChevronDownIcon.svg';
 import ChevronRightIcon from '@assets/icons/ChevronRightIcon.svg';
 import { useColorScheme } from '@hooks/useColorScheme';
 import { ChannelListItem } from '@raven/types/common/ChannelListItem';
-import { Link, router } from 'expo-router';
+import { router } from 'expo-router';
 import PlusIcon from '@assets/icons/PlusIcon.svg';
+import { ChannelListRow } from './ChannelListRow';
+import HashIcon from '@assets/icons/HashIcon.svg';
 
 interface ChannelListUIProps {
     channels: ChannelListItem[];
@@ -25,7 +26,10 @@ const ChannelListUI = ({ channels }: ChannelListUIProps) => {
     return (
         <View style={styles.container}>
             <TouchableOpacity onPress={toggleAccordion} style={styles.header} activeOpacity={0.7}>
-                <Text style={styles.headerText}>Channels</Text>
+                <View className="flex-row items-center gap-2">
+                    <HashIcon fill={colors.colors.icon} height={18} width={18} />
+                    <Text style={styles.headerText}>Channels</Text>
+                </View>
                 {isExpanded ? <ChevronDownIcon fill={colors.colors.icon} /> : <ChevronRightIcon fill={colors.colors.icon} />}
             </TouchableOpacity>
             {isExpanded && <>
@@ -37,24 +41,6 @@ const ChannelListUI = ({ channels }: ChannelListUIProps) => {
                 </Pressable>
             </>}
         </View>
-    )
-}
-
-const ChannelListRow = ({ channel }: { channel: ChannelListItem }) => {
-    const colors = useColorScheme()
-    return (
-        <Link href={`../chat/${channel.name}`} asChild>
-            <Pressable
-                onLongPress={() => console.log(`channel long pressed - ${channel.name}`)}
-                // Use tailwind classes for layout and ios:active state
-                className='flex-row items-center px-3 py-2 rounded-lg ios:active:bg-linkColor'
-                // Add a subtle ripple effect on Android
-                android_ripple={{ color: 'rgba(0,0,0,0.1)', borderless: false }}
-            >
-                <ChannelIcon type={channel.type} fill={colors.colors.icon} />
-                <Text className="ml-2 text-base">{channel.channel_name}</Text>
-            </Pressable>
-        </Link>
     )
 }
 
