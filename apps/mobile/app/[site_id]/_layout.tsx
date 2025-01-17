@@ -100,6 +100,12 @@ export default function SiteLayout() {
                                         presentation: 'modal',
                                     }}
                                 />
+                                <Stack.Screen
+                                    name="chat/[id]/channel-description-edit"
+                                    options={{
+                                        presentation: 'modal',
+                                    }}
+                                />
                             </Stack>
                         </BottomSheetModalProvider>
                     </Providers>

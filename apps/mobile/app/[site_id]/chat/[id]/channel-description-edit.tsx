@@ -7,17 +7,13 @@ import { useColorScheme } from "@hooks/useColorScheme";
 import { cn } from "@lib/cn";
 import { router, Stack, useLocalSearchParams } from "expo-router";
 import { useFrappeUpdateDoc } from "frappe-react-sdk";
-import { useCallback, useState } from "react";
 import { View, Platform } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-
 import { Controller, FormProvider, useForm } from 'react-hook-form';
-import { ChannelIcon } from "@components/features/channels/ChannelList/ChannelIcon";
 import { useCurrentChannelData } from "@hooks/useCurrentChannelData";
 
-
-const ChannelNameEdit = () => {
+const ChannelDescriptionEdit = () => {
     const { colors } = useColorScheme()
     const insets = useSafeAreaInsets();
 
@@ -25,25 +21,25 @@ const ChannelNameEdit = () => {
 
     const { channel } = useCurrentChannelData(currentChannelID as string ?? "")
 
-    const currentChannelName = channel?.channelData.channel_name ?? ""
+    const currentChannelDescription = channel?.channelData.channel_description ?? ""
 
     const methods = useForm({
         defaultValues: {
-            channel_name: currentChannelName,
+            channel_description: currentChannelDescription,
         }
     });
 
-    const { control, handleSubmit, formState: { errors }, setValue, watch } = methods;
+    const { control, handleSubmit, formState: { errors }, watch } = methods;
 
-    const channelName = watch("channel_name")
+    const channelDescription = watch("channel_description")
 
-    const canSave = !!channelName && channelName !== currentChannelName
+    const canSave = !!channelDescription && channelDescription !== currentChannelDescription
 
     const { updateDoc } = useFrappeUpdateDoc()
 
-    const handleEditChannelName = () => {
+    const handleEditChannelDescription = () => {
         return updateDoc("Raven Channel", currentChannelID as string, {
-            channel_name: channelName ?? currentChannelName,
+            channel_description: channelDescription ?? currentChannelDescription,
         }).then(() => {
             // toast.success(__("Profile updated"))
             // mutate()
@@ -53,15 +49,11 @@ const ChannelNameEdit = () => {
         })
     }
 
-    const handleEditChannelNameChange = useCallback((text: string) => {
-        setValue('channel_name', text?.toLowerCase().replace(' ', '-'))
-    }, [setValue])
-
     return (
         <>
             <Stack.Screen
                 options={{
-                    title: 'Edit Channel Name',
+                    title: 'Edit Channel Description',
                     headerLeft: () => (
                         <Button variant="plain" className="ios:px-0"
                             onPress={() => router.back()}>
@@ -74,7 +66,7 @@ const ChannelNameEdit = () => {
                                 className="ios:px-0"
                                 disabled={!canSave}
                                 variant="plain"
-                                onPress={handleEditChannelName}
+                                onPress={handleEditChannelDescription}
                             >
                                 <Text className={cn(canSave && 'text-primary')}>Save</Text>
                             </Button>
@@ -94,56 +86,36 @@ const ChannelNameEdit = () => {
             >
                 <FormProvider {...methods}>
                     <Form className="gap-5 px-4 pt-8">
-                        <FormSection footnote="Choose unique channel name.">
+                        <FormSection>
                             <View className="p-2.5">
-                                <FormLabel isRequired>Edit Channel Name</FormLabel>
+                                <FormLabel isRequired>Edit Channel Description</FormLabel>
                                 <Controller
-                                    name="channel_name"
+                                    name="channel_description"
                                     control={control}
                                     rules={{
-                                        required: "Please add a channel name",
-                                        maxLength: {
-                                            value: 50,
-                                            message: "Channel name cannot be more than 50 characters.",
-                                        },
-                                        minLength: {
-                                            value: 3,
-                                            message: "Channel name cannot be less than 3 characters.",
-                                        },
-                                        pattern: {
-                                            // no special characters allowed, cannot start with a space
-                                            value: /^[a-zA-Z0-9][a-zA-Z0-9-]*$/,
-                                            message: "Channel name can only contain letters, numbers and hyphens.",
-                                        },
+                                        required: "Please add a channel description",
                                     }}
-                                    render={({ field: { onBlur, value }, fieldState: { error } }) => (
+                                    render={({ field: { onBlur, value, onChange }, fieldState: { error } }) => (
                                         <View className={`mt-2.5 flex-row items-center rounded-md border ${error ? "border-red-600" : "border-border"}`}>
-                                            <View className="mx-3">
-                                                <ChannelIcon type={channel?.channelData.type ?? ""} fill={colors.icon} />
-                                            </View>
                                             <View className="flex-1">
                                                 <TextField
+                                                    className="px-3.5"
                                                     autoFocus
-                                                    className="pl-0.5"
                                                     label={Platform.select({ ios: undefined, default: 'First' })}
-                                                    placeholder="Channel name"
+                                                    placeholder="Channel description"
                                                     value={value}
                                                     onBlur={onBlur}
-                                                    onChangeText={handleEditChannelNameChange}
+                                                    onChangeText={onChange}
+                                                    multiline
                                                 />
-                                            </View>
-                                            <View className="px-3">
-                                                <Text className={`text-sm ${error ? "text-red-600" : "text-gray-500"}`}>
-                                                    {50 - (value?.length || 0)}
-                                                </Text>
                                             </View>
                                         </View>
                                     )}
                                 />
                             </View>
 
-                            {errors?.channel_name && (
-                                <ErrorText>{errors.channel_name?.message}</ErrorText>
+                            {errors?.channel_description && (
+                                <ErrorText>{errors.channel_description?.message}</ErrorText>
                             )}
                         </FormSection>
 
@@ -152,7 +124,7 @@ const ChannelNameEdit = () => {
                                 <Button
                                     className={cn('px-6', !canSave && 'bg-muted')}
                                     disabled={!canSave}
-                                    onPress={handleSubmit(handleEditChannelName)}
+                                    onPress={handleSubmit(handleEditChannelDescription)}
                                 >
                                     <Text
                                         className={cn(canSave && 'text-primary')}
@@ -170,4 +142,4 @@ const ChannelNameEdit = () => {
     );
 }
 
-export default ChannelNameEdit;
+export default ChannelDescriptionEdit;

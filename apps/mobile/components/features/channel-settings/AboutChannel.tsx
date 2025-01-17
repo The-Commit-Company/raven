@@ -1,17 +1,12 @@
 import { ChannelListItem } from "@raven/types/common/ChannelListItem";
-import { router, Stack, useLocalSearchParams } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import { useFrappeGetDoc } from "frappe-react-sdk";
 import { useState } from "react";
-import { View, TextInput } from "react-native";
-import { toast } from "sonner-native";
+import { Pressable, View } from "react-native";
 import { Text } from '@components/nativewindui/Text';
-import { Button } from '@components/nativewindui/Button';
-import { ErrorText, FormLabel } from "@components/layout/Form";
-import { Controller, FormProvider, useForm } from 'react-hook-form';
-import { ChannelIcon } from "../channels/ChannelList/ChannelIcon";
+import { useForm } from 'react-hook-form';
 import { ListItem } from "@components/nativewindui/List";
 import ChevronRight from "@assets/icons/ChevronRightIcon.svg";
-import { useColorScheme } from "@hooks/useColorScheme";
 
 export type ChannelEditSettingsForm = {
     channel_name: string,
@@ -33,20 +28,20 @@ export const AboutChannel = () => {
         },
     );
 
-    const [isEditing, setIsEditing] = useState(false);
-
     const handleEdit = () => {
-        setIsEditing(true);
+        router.push("../channel-description-edit", { relativeToDirectory: true })
     }
 
     const item = {
-        title: channelData?.channel_description || '',
+        title: (channelData?.channel_description?.length ?? 0) < 40
+            ? channelData?.channel_description ?? ""
+            : (channelData?.channel_description?.substring(0, 40) ?? "") + "...",
         titleClassName: "text-lg truncate",
         onPress: handleEdit
     }
 
     return (
-        <View className="py-1 bg-card rounded-lg">
+        <Pressable onPress={item.onPress} className="py-1 bg-card rounded-lg">
             <ListItem
                 index={0}
                 titleClassName={item.titleClassName}
@@ -59,7 +54,7 @@ export const AboutChannel = () => {
                 }
                 isLastInSection
             />
-        </View>
+        </Pressable>
     );
 }
 
