@@ -7,8 +7,8 @@ import ProfileIcon from '@assets/icons/ProfileIcon.svg';
 import ProfileOutlineIcon from '@assets/icons/ProfileOutlineIcon.svg';
 import ChatIcon from '@assets/icons/ChatIcon.svg';
 import ChatOutlineIcon from '@assets/icons/ChatOutlineIcon.svg';
-import BellIcon from '@assets/icons/BellIcon.svg';
-import BellOutlineIcon from '@assets/icons/BellOutlineIcon.svg';
+import ThreadsIcon from '@assets/icons/ThreadsIcon.svg';
+import ThreadsOutlineIcon from '@assets/icons/ThreadsOutlineIcon.svg';
 import { useColorScheme } from '@hooks/useColorScheme'
 
 export default function TabLayout() {
@@ -87,12 +87,12 @@ export default function TabLayout() {
                     }}
                 />
                 <Tabs.Screen
-                    name="activity"
+                    name="threads"
                     options={{
-                        title: 'Activity',
+                        title: 'Threads',
                         headerShown: false,
                         headerStyle,
-                        tabBarIcon: getTabBarIcon(BellIcon, BellOutlineIcon),
+                        tabBarIcon: getTabBarIcon(ThreadsIcon, ThreadsOutlineIcon),
                     }}
                 />
                 <Tabs.Screen
