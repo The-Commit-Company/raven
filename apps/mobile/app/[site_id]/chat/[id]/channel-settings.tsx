@@ -18,6 +18,7 @@ import { useColorScheme } from "@hooks/useColorScheme";
 import { MembersTray } from "@components/features/channel-settings/MembersTray";
 import { AboutChannel } from "@components/features/channel-settings/AboutChannel";
 import { Button } from "@components/nativewindui/Button";
+import PushNotifications from "@components/features/channel-settings/PushNotifications";
 
 
 export type ChannelSettingsDataItem = {
@@ -84,6 +85,11 @@ const ChannelSettings = () => {
             component: <MembersTray
                 onViewAll={() => { router.push(`../channel-settings-members`, { relativeToDirectory: true }) }}
             />
+        } as ChannelSettingsDataComponent,
+        'Push Notifications',
+        {
+            id: 'PushNotifications',
+            component: <PushNotifications channelID={id as string} />
         } as ChannelSettingsDataComponent,
         'Channel Settings',
         ...changeChannelTypeButtons as ChannelSettingsListData,
