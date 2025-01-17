@@ -19,6 +19,7 @@ import { MembersTray } from "@components/features/channel-settings/MembersTray";
 import { AboutChannel } from "@components/features/channel-settings/AboutChannel";
 import { Button } from "@components/nativewindui/Button";
 import PushNotifications from "@components/features/channel-settings/PushNotifications";
+import CreatedBy from "@components/features/channel-settings/CreatedBy";
 
 
 export type ChannelSettingsDataItem = {
@@ -58,9 +59,6 @@ const ChannelSettings = () => {
     const { data: channelData, error, isLoading } = useFrappeGetDoc<ChannelListItem>(
         'Raven Channel',
         id as string,
-        {
-            fields: ['type', 'channel_name', 'name']
-        },
     );
 
     const changeChannelTypeButtons = channelData ? getChangeChannelType({
@@ -107,6 +105,11 @@ const ChannelSettings = () => {
             icon: <TrashIcon fill={colors.destructive} />,
             titleClassName: 'text-lg text-destructive',
         } as ChannelSettingsDataItem,
+        'Created By',
+        {
+            id: 'CreatedBy',
+            component: <CreatedBy channelData={channelData as ChannelListItem} />
+        } as ChannelSettingsDataComponent,
     ];
 
     return (
