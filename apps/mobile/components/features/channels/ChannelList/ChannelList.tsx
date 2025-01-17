@@ -1,15 +1,16 @@
-import useGetChannels from '@raven/lib/hooks/useGetChannels';
-import ChannelListUI from './ChannelListUI';
-import { useMemo } from 'react';
+import { View } from "react-native"
+import AllChannelsList from "./AllChannelsList"
+import PinnedChannelsList from "./PinnedChannelsList"
+import { Divider } from "@components/layout/Divider"
 
 const ChannelList = ({ workspace }: { workspace: string }) => {
-    const { channels } = useGetChannels({ showArchived: false })
-
-    const workspaceChannels = useMemo(() => {
-        return channels?.filter((channel) => channel.workspace === workspace) ?? []
-    }, [channels, workspace])
-
-    return <ChannelListUI channels={workspaceChannels} />
+    return (
+        <View className="flex-1">
+            <PinnedChannelsList workspace={workspace} />
+            <Divider />
+            <AllChannelsList workspace={workspace} />
+        </View>
+    )
 }
 
 export default ChannelList

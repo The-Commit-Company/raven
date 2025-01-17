@@ -61,9 +61,10 @@ const styles = StyleSheet.create({
     },
     addChannelButton: {
         flexDirection: 'row',
+        gap: 0,
         alignItems: 'center',
         paddingVertical: 10,
-        paddingHorizontal: 10,
+        paddingHorizontal: 12,
         borderRadius: 10,
     },
     addChannelText: {

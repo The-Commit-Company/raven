@@ -12,15 +12,17 @@ type Props = {
 
 const MessageAvatar = ({ userID, botID, is_continuation, userFullName, userImage, isBot }: Props) => {
 
+    if (is_continuation) {
+        return <View className='w-12' />
+    }
+
     return (
         <View className='w-12 mt-1.5'>
-            {is_continuation ? <View className='w-10 h-10' /> :
-                <UserAvatar
-                    alt={userFullName}
-                    isBot={isBot}
-                    src={userImage}
-                />
-            }
+            <UserAvatar
+                alt={userFullName}
+                isBot={isBot}
+                src={userImage}
+            />
         </View>
     )
 }
