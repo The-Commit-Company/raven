@@ -3,6 +3,7 @@ import { Text } from '@components/nativewindui/Text'
 import { ChannelListContext, useChannelListProvider } from '@raven/lib/providers/ChannelListProvider'
 import { UserListContext, useUserListProvider } from '@raven/lib/providers/UserListProvider'
 import React, { PropsWithChildren } from 'react'
+import { ActiveUserProvider } from './UserInactivityProvider'
 
 const Providers = (props: PropsWithChildren) => {
 
@@ -16,11 +17,15 @@ const Providers = (props: PropsWithChildren) => {
         return <Text>Error loading users</Text>
     }
 
-    return <UserListContext.Provider value={{ users, enabledUsers }}>
-        <ChannelListProvider>
-            {props.children}
-        </ChannelListProvider>
-    </UserListContext.Provider>
+    return (
+        <ActiveUserProvider>
+            <UserListContext.Provider value={{ users, enabledUsers }}>
+                <ChannelListProvider>
+                    {props.children}
+                </ChannelListProvider>
+            </UserListContext.Provider>
+        </ActiveUserProvider>
+    )
 }
 
 const ChannelListProvider = ({ children }: PropsWithChildren) => {
