@@ -38,6 +38,6 @@ export const useCurrentChannelData = (channelID: string) => {
         }
     }, [channelID, channels])
 
-    return { channel, error, isLoading }
+    return { channel, error, isLoading, workplaceID: channel?.channelData.workspace as string }
 
 }
