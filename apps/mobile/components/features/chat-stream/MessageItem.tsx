@@ -20,7 +20,7 @@ const MessageItem = ({ message }: Props) => {
     const userFullName = user?.full_name || username
 
     return (
-        <View className={clsx('flex-1 flex-row px-2 gap-1', message.is_continuation ? 'pt-0' : 'pt-4')}>
+        <View className={clsx('flex-1 flex-row px-2 gap-1', message.is_continuation ? 'pt-0' : 'pt-2')}>
             <MessageAvatar
                 userFullName={userFullName}
                 userImage={user?.user_image}
