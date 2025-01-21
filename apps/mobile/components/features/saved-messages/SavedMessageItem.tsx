@@ -2,11 +2,13 @@ import { Pressable, View } from 'react-native';
 import { Text } from '@components/nativewindui/Text';
 import { FileMessage, ImageMessage, Message, PollMessage, TextMessage } from '@raven/types/common/Message';
 import MessageItem from '@components/features/chat-stream/MessageItem';
-import { useMemo } from 'react';
+import { useContext, useMemo } from 'react';
 import { DMChannelListItem } from '@raven/types/common/ChannelListItem';
 import { useCurrentChannelData } from '@raven/lib/hooks/useCurrentChannelData';
 import { useGetUserRecords } from '@raven/lib/hooks/useGetUserRecords';
 import { formatDateAndTime } from '@raven/lib/utils/dateConversions';
+import { router } from 'expo-router';
+import { SiteContext } from 'app/[site_id]/_layout';
 
 type BaseMessage = FileMessage | TextMessage | ImageMessage | PollMessage
 
@@ -29,10 +31,16 @@ const SavedMessageItem = ({ message }: { message: Message & { workspace?: string
         }
     }, [channelData])
 
+    const siteInfo = useContext(SiteContext)
+    const siteID = siteInfo?.sitename
+    const handleNavigateToChannel = (channelID: string) => {
+        router.push(`/${siteID}/chat/${channelID}`)
+    }
+
     return (
         <Pressable
-            className='rounded-lg bg-background pb-2'
-            onPress={() => console.log('Message pressed')}>
+            className='rounded-lg pb-2 ios:active:bg-background ios:active:dark:bg-linkColor'
+            onPress={() => handleNavigateToChannel(channel_id)}>
             <View className='flex flex-col justify-between'>
                 <View className='flex flex-row items-center px-2 pt-2 gap-2'>
                     <Text className='text-xs'>{channelName}</Text>
@@ -45,7 +53,7 @@ const SavedMessageItem = ({ message }: { message: Message & { workspace?: string
                     <MessageItem message={message as BaseMessage} />
                 </View>
             </View>
-        </Pressable>
+        </Pressable >
     )
 }
 
