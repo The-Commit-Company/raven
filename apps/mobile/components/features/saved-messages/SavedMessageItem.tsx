@@ -6,6 +6,7 @@ import { useMemo } from 'react';
 import { DMChannelListItem } from '@raven/types/common/ChannelListItem';
 import { useCurrentChannelData } from '@raven/lib/hooks/useCurrentChannelData';
 import { useGetUserRecords } from '@raven/lib/hooks/useGetUserRecords';
+import { formatDateAndTime } from '@raven/lib/utils/dateConversions';
 
 type BaseMessage = FileMessage | TextMessage | ImageMessage | PollMessage
 
@@ -37,7 +38,7 @@ const SavedMessageItem = ({ message }: { message: Message & { workspace?: string
                     <Text className='text-xs'>{channelName}</Text>
                     <Text className='text-xs text-muted'>|</Text>
                     <Text className='text-xs text-muted-foreground'>
-                        {creation}
+                        {formatDateAndTime(creation)}
                     </Text>
                 </View>
                 <View className='flex flex-row'>
