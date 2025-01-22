@@ -1,13 +1,13 @@
 import { View } from "react-native"
 import AllChannelsList from "./AllChannelsList"
 import PinnedChannelsList from "./PinnedChannelsList"
-import { Divider } from "@components/layout/Divider"
+import UnreadChannelsList from "./UnreadChannelsList"
 
 const ChannelList = ({ workspace }: { workspace: string }) => {
     return (
         <View className="flex-1">
+            <UnreadChannelsList workspace={workspace} />
             <PinnedChannelsList workspace={workspace} />
-            <Divider />
             <AllChannelsList workspace={workspace} />
         </View>
     )

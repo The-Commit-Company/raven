@@ -8,6 +8,7 @@ import { ChannelListRow } from "./ChannelListRow"
 import ChevronDownIcon from '@assets/icons/ChevronDownIcon.svg'
 import ChevronRightIcon from '@assets/icons/ChevronRightIcon.svg'
 import { Text } from '@components/nativewindui/Text';
+import { Divider } from "@components/layout/Divider"
 
 const PinnedChannelsList = ({ workspace }: { workspace: string }) => {
 
@@ -38,7 +39,10 @@ const PinnedChannelsList = ({ workspace }: { workspace: string }) => {
     }
 
     return (
-        <PinnedChannelListUI channels={pinnedChannels} />
+        <>
+            <PinnedChannelListUI channels={pinnedChannels} />
+            <Divider />
+        </>
     )
 }
 

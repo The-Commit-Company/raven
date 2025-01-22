@@ -8,7 +8,8 @@ export const Divider = ({ marginHorizontal = 16 }: { marginHorizontal?: number }
             style={{
                 borderBottomWidth: 1,
                 borderBottomColor: colors.grey5,
-                marginHorizontal: marginHorizontal
+                marginHorizontal: marginHorizontal,
+                opacity: 0.6
             }}
         />
     )
