@@ -18,7 +18,7 @@ type UseFileURLReturnType = {
     headers: { [key: string]: string },
 }
 
-export const DoctypeLinkRenderer = ({ doctype, docname }: { doctype: string, docname: string }) => {
+export const DocTypeLinkRenderer = ({ doctype, docname }: { doctype: string, docname: string }) => {
     const { call } = useContext(FrappeContext) as FrappeConfig;
 
     const { data, error, isLoading, mutate } = useDoctypePreview(doctype, docname);
@@ -58,15 +58,15 @@ export const DoctypeLinkRenderer = ({ doctype, docname }: { doctype: string, doc
     }, [getRoute]);
 
     if (isLoading) {
-        return <DoctypeCardSkeleton />
+        return <DocTypeCardSkeleton />
     }
 
     if (error) {
-        return <DoctypeCardError error={error} />
+        return <DocTypeCardError error={error} />
     }
 
     return (
-        <DoctypeCard
+        <DocTypeCard
             data={data}
             doctype={doctype}
             docname={docname}
@@ -76,7 +76,7 @@ export const DoctypeLinkRenderer = ({ doctype, docname }: { doctype: string, doc
     );
 };
 
-const DoctypeCard = memo(({
+const DocTypeCard = memo(({
     data,
     doctype,
     docname,
@@ -136,7 +136,7 @@ const DoctypeCard = memo(({
                 {
                     // check if doctype has preview image or not and render the appropriate variant
                     source ? (
-                        <DoctypeCardWithPreview
+                        <DocTypeCardWithPreview
                             source={source}
                             data={data}
                             doctype={doctype}
@@ -159,7 +159,7 @@ const DoctypeCard = memo(({
                                             className='flex-1'
                                         >
                                             <Pressable onPress={() => onCopyTextClick('Email')}>
-                                                <Text className="text-gray-500 dark:text-gray-300 text-xs truncate">
+                                                <Text className="text-gray-500 dark:text-gray-300 text-xs truncate" numberOfLines={1}>
                                                     {data?.id}
                                                 </Text>
                                             </Pressable>
@@ -211,7 +211,7 @@ const DoctypeCard = memo(({
 });
 
 
-const DoctypeCardWithPreview = ({
+const DocTypeCardWithPreview = ({
     source,
     data,
     doctype,
@@ -283,7 +283,7 @@ const DoctypeCardWithPreview = ({
     )
 }
 
-const DoctypeCardSkeleton = () => {
+const DocTypeCardSkeleton = () => {
     return (
         <View className="border border-gray-200 dark:border-gray-700 bg-gray-100 dark:bg-gray-900 rounded-lg p-2 w-[90%]">
             <View className="gap-1 w-full">
@@ -303,7 +303,7 @@ const DoctypeCardSkeleton = () => {
     )
 }
 
-const DoctypeCardError = ({
+const DocTypeCardError = ({
     error
 }: {
     error: FrappeError
@@ -321,4 +321,4 @@ const DoctypeCardError = ({
     )
 }
 
-export default DoctypeLinkRenderer;
+export default DocTypeLinkRenderer;
