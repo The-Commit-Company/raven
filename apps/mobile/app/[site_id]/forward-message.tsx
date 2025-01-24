@@ -15,6 +15,7 @@ import { useFrappePostCall } from "frappe-react-sdk"
 import { ActivityIndicator } from "@components/nativewindui/ActivityIndicator"
 import { ChannelIcon } from "@components/features/channels/ChannelList/ChannelIcon"
 import { formatDate } from "@raven/lib/utils/dateConversions"
+import { toast } from "sonner-native"
 
 type DMChannelListItemWithUser = DMChannelListItem & {
     user: UserFields
@@ -100,14 +101,12 @@ function ForwardMessage() {
                 'forwarded_message': message,
             })
                 .then(() => {
-                    // toast.success('Message forwarded successfully!')
-                    console.log("Message forwarded successfully");
+                    toast.success('Message forwarded successfully!')
 
                     router.back();
                 })
                 .catch(() => {
-                    // toast.error('Failed to forward message')
-                    console.log("Message forwarded failed");
+                    toast.error('Failed to forward message')
                 });
         }
     }
