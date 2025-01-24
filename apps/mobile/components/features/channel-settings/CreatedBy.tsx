@@ -14,7 +14,7 @@ const CreatedBy = ({ channelData }: CreatedByProps) => {
     return (
         <View className='p-3 bg-card rounded-lg flex-row items-center'>
             {channelData?.owner && <Text>{channelOwner?.full_name ?? channelData?.owner}</Text>}
-            {channelData?.creation && <Text> on {formatDate(channelData?.creation)}</Text>}
+            {channelData?.creation && <Text> on <Text className='text-gray-500'>{formatDate(channelData?.creation)}</Text></Text>}
         </View>
     )
 }
