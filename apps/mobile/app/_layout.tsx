@@ -12,7 +12,12 @@ import { PortalHost } from '@rn-primitives/portal';
 import { KeyboardProvider } from 'react-native-keyboard-controller';
 import { useAsyncStorage } from '@react-native-async-storage/async-storage';
 import { Toaster } from 'sonner-native';
-import { Text } from 'react-native';
+import { Text, LogBox } from 'react-native';
+
+/** Suppressing this for now - see https://github.com/meliorence/react-native-render-html/issues/661 */
+LogBox.ignoreLogs([
+    /Support for defaultProps will be removed/,
+]);
 
 export default function RootLayout() {
 

@@ -1,8 +1,15 @@
 import { LegendListRef } from '@legendapp/list'
 import { Message } from '@raven/types/common/Message'
+import { SiteContext } from 'app/[site_id]/_layout'
 import { useFrappeGetCall } from 'frappe-react-sdk'
-import { useMemo } from 'react'
-import { FlatList } from 'react-native'
+import { useContext, useMemo } from 'react'
+import dayjs from 'dayjs'
+import utc from 'dayjs/plugin/utc'
+import advancedFormat from 'dayjs/plugin/advancedFormat'
+import { formatDate } from '@raven/lib/utils/dateConversions'
+
+dayjs.extend(utc)
+dayjs.extend(advancedFormat)
 
 interface GetMessagesResponse {
     message: {
@@ -15,12 +22,17 @@ interface GetMessagesResponse {
 export interface DateBlock {
     creation: string
     message_type: 'date',
-    name: string
+    name: string,
+    formattedDate: string
 }
 
 export type MessageDateBlock = Message | DateBlock
 
 const useChatStream = (channelID: string, listRef: React.RefObject<LegendListRef>) => {
+
+    const siteInformation = useContext(SiteContext)
+
+    const SYSTEM_TIMEZONE = siteInformation?.system_timezone ? siteInformation.system_timezone : 'Asia/Kolkata'
 
     const { data, isLoading, error, mutate } = useFrappeGetCall<GetMessagesResponse>('raven.api.chat_stream.get_messages', {
         channel_id: channelID,
@@ -59,24 +71,29 @@ const useChatStream = (channelID: string, listRef: React.RefObject<LegendListRef
             let currentDateTime = new Date(messages[messages.length - 1].creation.split('.')[0]).getTime()
 
             messagesWithDateSeparators.push({
-                // TODO: Format the date
                 creation: currentDate,
+                formattedDate: formatDate(currentDate),
                 message_type: 'date',
                 name: currentDate
             })
 
-            messagesWithDateSeparators.push({ ...messages[messages.length - 1], is_continuation: 0 })
+            messagesWithDateSeparators.push({
+                ...messages[messages.length - 1],
+                formattedTime: dayjs(messages[messages.length - 1].creation).local().format('hh:mm A'),
+                is_continuation: 0
+            })
 
             // Loop through the messages and add date separators if the date changes
             for (let i = messages.length - 2; i >= 0; i--) {
                 const message = messages[i]
                 const messageDate = message.creation.split(' ')[0]
                 let messageDateTime = new Date(message.creation.split('.')[0]).getTime()
+                const formattedMessageTime = dayjs(message.creation).local().format('hh:mm A')
 
                 if (messageDate !== currentDate) {
                     messagesWithDateSeparators.push({
-                        // TODO: Format the date
                         creation: messageDate,
+                        formattedDate: formatDate(messageDate),
                         message_type: 'date',
                         name: messageDate
                     })
@@ -88,11 +105,11 @@ const useChatStream = (channelID: string, listRef: React.RefObject<LegendListRef
                 const nextMessageSender = nextMessage.message_type === "System" ? null : nextMessage.is_bot_message ? nextMessage.bot : nextMessage.owner
 
                 if (nextMessageSender !== currentMessageSender) {
-                    messagesWithDateSeparators.push({ ...message, is_continuation: 0 })
+                    messagesWithDateSeparators.push({ ...message, is_continuation: 0, formattedTime: formattedMessageTime })
                 } else if (messageDateTime - currentDateTime > 120000) {
-                    messagesWithDateSeparators.push({ ...message, is_continuation: 0 })
+                    messagesWithDateSeparators.push({ ...message, is_continuation: 0, formattedTime: formattedMessageTime })
                 } else {
-                    messagesWithDateSeparators.push({ ...message, is_continuation: 1 })
+                    messagesWithDateSeparators.push({ ...message, is_continuation: 1, formattedTime: formattedMessageTime })
                 }
 
                 currentDate = messageDate
@@ -107,7 +124,7 @@ const useChatStream = (channelID: string, listRef: React.RefObject<LegendListRef
 
 
 
-    }, [data])
+    }, [data, SYSTEM_TIMEZONE])
 
     return {
         data: messages,

@@ -20,6 +20,7 @@ def get_client_id():
 
 	return {
 		"client_id": frappe.db.get_single_value("Raven Settings", "oauth_client"),
+		"system_timezone": frappe.get_system_settings("time_zone"),
 		"app_name": app_name,
 		"sitename": frappe.local.site,
 		"raven_version": raven_version,

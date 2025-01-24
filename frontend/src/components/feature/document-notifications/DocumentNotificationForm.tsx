@@ -5,7 +5,7 @@ import useDoctypeMeta from '@/hooks/useDoctypeMeta'
 import { RavenDocumentNotification } from '@/types/RavenIntegrations/RavenDocumentNotification'
 import { Badge, Box, Button, Checkbox, Code, Flex, Grid, IconButton, Link, Select, Separator, Table, Text, TextArea, TextField, Tooltip, VisuallyHidden } from '@radix-ui/themes'
 import { Tabs } from '@radix-ui/themes'
-import { Controller, useFieldArray, useFormContext, useWatch } from 'react-hook-form'
+import { Controller, ControllerFieldState, useFieldArray, useFormContext, useWatch } from 'react-hook-form'
 import { LuBell, LuUsers, LuWorkflow } from 'react-icons/lu'
 import { VariableRow } from '../settings/ai/InstructionField'
 import { Fragment, useMemo, useState } from 'react'
@@ -15,6 +15,7 @@ import { BiSearch } from 'react-icons/bi'
 import { FiInfo, FiTrash2 } from 'react-icons/fi'
 import clsx from 'clsx'
 import { DocField } from '@/types/Core/DocField'
+import LinkField from '@/components/common/LinkField/LinkField'
 
 const ICON_PROPS = {
     size: 18,
@@ -353,7 +354,21 @@ const RecipientsTab = () => {
                                 <Label htmlFor={`recipients.${index}.value`}>Value for Row {index + 1}</Label>
                             </VisuallyHidden>
                             <Stack gap='1'>
-                                <RecipientValueField index={index} />
+                                <Controller
+                                    control={control}
+                                    name={`recipients.${index}.value`}
+                                    rules={{
+                                        required: 'Value is required'
+                                    }}
+                                    render={({ field, fieldState }) => (
+                                        <RecipientValueField
+                                            index={index}
+                                            value={field.value}
+                                            onChange={(v: string) => field.onChange(v)}
+                                            fieldState={fieldState}
+                                            onBlur={field.onBlur} />
+                                    )}
+                                />
                             </Stack>
                         </Box>
                     </div>
@@ -380,7 +395,7 @@ const RecipientsTab = () => {
     </Stack>
 }
 
-const RecipientValueField = ({ index }: { index: number }) => {
+const RecipientValueField = ({ index, value, onChange, onBlur, fieldState }: { index: number, value: string, onChange: (v: string) => void, onBlur: () => void, fieldState?: ControllerFieldState }) => {
 
     const { control } = useFormContext<RavenDocumentNotification>()
 
@@ -403,58 +418,57 @@ const RecipientValueField = ({ index }: { index: number }) => {
 
         // const filters: Filter[] = row.channel_type === 'Channel' ? [['is_archived',]]
         if (channel_type === 'Channel') {
-            return <LinkFormField
-                name={`recipients.${index}.value`}
+            return <LinkField
                 label='Channel'
                 hideLabel
                 filters={[['is_direct_message', '=', 0], ['is_archived', '=', 0], ['is_thread', '=', 0]]}
                 required
                 placeholder='Select a channel'
                 doctype='Raven Channel'
-                rules={{
-                    required: 'Channel is required'
-                }}
+                value={value}
+                aria-invalid={fieldState?.error ? 'true' : 'false'}
+                setValue={onChange}
             />
         } else {
-            return <LinkFormField
-                name={`recipients.${index}.value`}
+            return <LinkField
                 label='User'
                 hideLabel
                 filters={[['enabled', '=', 1], ['type', '=', 'User']]}
                 required
                 placeholder='Select a user'
                 doctype='Raven User'
-                rules={{
-                    required: 'User is required'
-                }}
+                value={value}
+                aria-invalid={fieldState?.error ? 'true' : 'false'}
+                setValue={onChange}
             />
         }
     }
 
     if (variable_type === "DocField" && document_type) {
-        return <DoctypeVariableField index={index} type={channel_type} document_type={document_type} />
+        return <DoctypeVariableField
+            index={index}
+            type={channel_type}
+            value={value}
+            onChange={onChange}
+            onBlur={onBlur}
+            document_type={document_type}
+        />
     }
 
-    return <Controller
-        control={control}
-        name={`recipients.${index}.value`}
-        render={({ field, fieldState }) => (
-            <TextField.Root
-                value={field.value}
-                onChange={field.onChange}
-                onBlur={field.onBlur}
-                placeholder='e.g. {{ frappe.db.get_value("Employee", doc.employee_id, "user_id") }}'
-                aria-invalid={fieldState.error ? 'true' : 'false'}
-            />
-        )}
+    return <TextField.Root
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        onBlur={onBlur}
+        placeholder='e.g. {{ frappe.db.get_value("Employee", doc.employee_id, "user_id") }}'
+        aria-invalid={fieldState?.error ? 'true' : 'false'}
     />
 }
 
-const DoctypeVariableField = ({ index, type, document_type }: { index: number, type: 'Channel' | 'User', document_type: string }) => {
+const DoctypeVariableField = ({ type, document_type, value, onChange, onBlur, fieldState }: { index: number, type: 'Channel' | 'User', document_type: string, value: string, onChange: (v: string) => void, onBlur: () => void, fieldState?: ControllerFieldState }) => {
 
     const { doc } = useDoctypeMeta(document_type)
 
-    const { fields, suggestedFields } = useMemo(() => {
+    const { suggestedFields, fields } = useMemo(() => {
 
         const VALID_FIELD_TYPES = [...VALID_DOCTYPE_FIELD_TYPES, 'Read Only']
 
@@ -465,21 +479,26 @@ const DoctypeVariableField = ({ index, type, document_type }: { index: number, t
 
         doc.fields?.forEach((field) => {
             if (in_list(VALID_FIELD_TYPES, field.fieldtype)) {
-                fields.push(field)
 
                 if (field.fieldtype === 'Link') {
                     if (field.options) {
                         if (type === 'Channel') {
                             if (field.options.includes('Raven Channel')) {
                                 suggested.push(field)
+                            } else {
+                                fields.push(field)
                             }
                         }
                         if (type === 'User') {
                             if (field.options.includes('Raven User') || field.options.includes('User')) {
                                 suggested.push(field)
+                            } else {
+                                fields.push(field)
                             }
                         }
                     }
+                } else {
+                    fields.push(field)
                 }
             }
         })
@@ -492,9 +511,10 @@ const DoctypeVariableField = ({ index, type, document_type }: { index: number, t
             options: 'User'
         } as DocField
 
-        fields.push(owner_field)
         if (type === 'User') {
             suggested.push(owner_field)
+        } else {
+            fields.push(owner_field)
         }
 
         const modified_field = {
@@ -504,9 +524,10 @@ const DoctypeVariableField = ({ index, type, document_type }: { index: number, t
             options: 'User'
         } as DocField
 
-        fields.push(modified_field)
         if (type === 'User') {
             suggested.push(modified_field)
+        } else {
+            fields.push(modified_field)
         }
 
         return { fields, suggestedFields: suggested }
@@ -514,8 +535,8 @@ const DoctypeVariableField = ({ index, type, document_type }: { index: number, t
 
     }, [doc, type])
 
-    return <Select.Root>
-        <Select.Trigger placeholder='Pick a field' className='w-full' />
+    return <Select.Root onValueChange={onChange} value={value}>
+        <Select.Trigger placeholder='Pick a field' className='w-full' onBlur={onBlur} aria-invalid={fieldState?.error ? 'true' : 'false'} />
         <Select.Content>
             {suggestedFields.length > 0 && <Select.Group>
                 <Select.Label>Suggested</Select.Label>
