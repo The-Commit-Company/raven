@@ -7,11 +7,12 @@ import { CustomFile } from "@raven/types/common/File"
 
 interface FilePickerButtonProps {
     buttonProps?: ButtonProps
+    icon?: React.ReactNode
     iconProps?: SvgProps
     onPick: (files: CustomFile[]) => void
 }
 
-const FilePickerButton = ({ buttonProps, iconProps, onPick }: FilePickerButtonProps) => {
+const FilePickerButton = ({ buttonProps, iconProps, icon, onPick }: FilePickerButtonProps) => {
     const { colors } = useColorScheme()
 
     const pickDocument = async () => {
@@ -42,7 +43,7 @@ const FilePickerButton = ({ buttonProps, iconProps, onPick }: FilePickerButtonPr
 
     return (
         <Button variant="plain" size="icon" onPress={pickDocument} {...buttonProps} >
-            <FileIcon height={20} width={20} color={colors.icon} {...iconProps} />
+            {icon ?? <FileIcon height={20} width={20} color={colors.icon} {...iconProps} />}
         </Button>
     )
 }

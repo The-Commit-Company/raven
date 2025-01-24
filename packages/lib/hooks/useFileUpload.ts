@@ -48,7 +48,8 @@ export default function useFileUpload(channelID: string) {
               },
             }))
           })
-          .catch(() => {
+          .catch((e) => {
+            console.error(`Error uploading file ${f.name}`, e)
             setFileUploadProgress(p => {
               const newProgress = { ...p }
               delete newProgress[f.fileID]

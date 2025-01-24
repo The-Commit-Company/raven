@@ -1,49 +1,81 @@
-import { Text, TextInput, View } from "react-native"
+import { Animated, Platform, View } from "react-native"
 import PagerView from 'react-native-pager-view'
 import { filesAtom } from "."
-import { useAtomValue } from 'jotai'
+import { useAtom } from 'jotai'
 import { Stack } from "expo-router"
 import { useState } from "react"
-import UniversalFileIcon from "@components/common/UniversalFileIcon"
-import { Button } from "@components/nativewindui/Button"
+import { KeyboardAvoidingView } from "react-native-keyboard-controller"
+import { useSafeAreaInsets } from "react-native-safe-area-context"
+import { useKeyboardVisible } from "@hooks/useKeyboardVisible"
+import { useRef } from "react"
+import { CustomFile } from "@raven/types/common/File"
+import FilePager from "@components/features/file-upload/FilePager"
+import FileCarousel from "@components/features/file-upload/FileCarousel"
+import CaptionInput from "@components/features/file-upload/CaptionInput"
 
 const FileSend = () => {
-    const [headerTitle, setHeaderTitle] = useState<string>()
-    const files = useAtomValue(filesAtom)
+    const [files, setFiles] = useAtom(filesAtom)
+    const [selectedFile, setSelectedFile] = useState<CustomFile>(files[0])
+    const { bottom } = useSafeAreaInsets()
+    const { isKeyboardVisible } = useKeyboardVisible()
+    const pagerRef = useRef<PagerView>(null)
+
+    const opacity = useRef(new Animated.Value(0)).current
+
+    const fadeIn = () => {
+        Animated.timing(opacity, {
+            toValue: 1,
+            duration: 150,
+            useNativeDriver: true,
+        }).start()
+    }
+
+    const fadeOut = () => {
+        Animated.timing(opacity, {
+            toValue: 0,
+            duration: 200,
+            useNativeDriver: true,
+        }).start()
+    }
+
+    const onCaptionChange = (caption: string) => {
+        setSelectedFile((prevFileInfo: CustomFile) => {
+            return { ...prevFileInfo, caption }
+        })
+        setFiles((prevFiles) => {
+            return prevFiles.map((file) => {
+                if (file.fileID === selectedFile.fileID) {
+                    return { ...file, caption }
+                }
+                return file
+            })
+        })
+    }
 
     return (
-        <>
+        <KeyboardAvoidingView
+            behavior={Platform.OS === "ios" ? "padding" : undefined}
+            style={{
+                flex: 1,
+            }}
+            keyboardVerticalOffset={Platform.OS === "ios" ? 100 : 90}
+        >
             <Stack.Screen options={{
-                title: 'Raven',
+                title: 'Send Files',
                 headerShown: true,
-                headerTitle: headerTitle,
+                headerTitle: selectedFile.name,
             }} />
-            <PagerView style={{ flex: 1 }} initialPage={0} onPageSelected={({ nativeEvent }) => {
-                setHeaderTitle(files[nativeEvent.position].name)
-            }}>
-                {files.map((file) => {
-                    if (file.uri) {
-                        return (
-                            <View key={file.fileID} style={{
-                                flex: 1,
-                                justifyContent: 'center',
-                                alignItems: 'center'
-                            }}>
-                                <UniversalFileIcon fileName={file.name} height={100} width={100} />
-                                <View className='h-24 fixed bottom-0 w-full bg-card'>
-                                    <View className='px-4 py-2 flex-row h-full w-full gap-2 items-center justify-center'>
-                                        <TextInput
-                                            placeholder='Type a message...'
-                                            className='border h-12 border-border w-[80%] rounded-lg p-2' />
-                                        <Button size='icon'><Text>S</Text></Button>
-                                    </View>
-                                </View>
-                            </View>
-                        )
-                    }
-                })}
-            </PagerView>
-        </>
+            <FilePager files={files} setSelectedFile={setSelectedFile} fadeIn={fadeIn} fadeOut={fadeOut} pagerRef={pagerRef} />
+            <View
+                className='px-4 py-2 w-full gap-2 items-center justify-center'
+                style={{
+                    bottom: isKeyboardVisible ? 0 : bottom,
+                }}
+            >
+                <FileCarousel files={files} setFiles={setFiles} selectedFile={selectedFile} pagerRef={pagerRef} />
+                <CaptionInput files={files} setFiles={setFiles} onCaptionChange={onCaptionChange} selectedFile={selectedFile} opacity={opacity} />
+            </View>
+        </KeyboardAvoidingView>
     )
 }
 

@@ -29,7 +29,7 @@ const Chat = () => {
                 title: id as string,
             }} />
             <View className='flex-1'>
-                {/* <ChatStream channelID={id as string} /> */}
+                <ChatStream channelID={id as string} />
                 <View className='h-24 fixed bottom-0 w-full bg-card'>
                     <View className='px-4 py-2 flex-row h-full w-full gap-2 items-center justify-center'>
                         <FilePickerButton onPick={handleFilePick} />
