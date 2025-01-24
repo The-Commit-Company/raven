@@ -10,18 +10,32 @@ import FileMessageRenderer from '@components/features/chat/ChatMessage/Renderers
 import { MessageContentRenderer } from '@components/features/chat-stream/MessageItemElements/MessageContentRenderer'
 import DocTypeLinkRenderer from '@components/features/chat/ChatMessage/Renderers/DocTypeLinkRenderer'
 import { PollMessageBlock } from '@components/features/chat/ChatMessage/Renderers/PollMessage'
+import ReplyMessageBox from '@components/features/chat/ChatMessage/ReplyMessageBox/ReplyMessageBox';
+import { useMemo } from 'react';
 
 type Props = {
-    message: FileMessage | PollMessage | TextMessage | ImageMessage
+    message: FileMessage | PollMessage | TextMessage | ImageMessage,
+    onReplyMessagePress: () => void
 }
 
-const MessageItem = ({ message }: Props) => {
+const MessageItem = ({ message, onReplyMessagePress }: Props) => {
+
+    const { linked_message, replied_message_details } = message
 
     const username = message.bot || message.owner
 
     const user = useGetUser(username)
 
     const userFullName = user?.full_name || username
+
+    const replyMessageDetails = useMemo(() => {
+        if (typeof replied_message_details === 'string') {
+            return JSON.parse(replied_message_details)
+        } else {
+            return replied_message_details
+        }
+    }, [replied_message_details])
+
 
     return (
         <View className={clsx('flex-1 flex-row px-2 gap-1', message.is_continuation ? 'pt-0' : 'pt-4')}>
@@ -47,6 +61,13 @@ const MessageItem = ({ message }: Props) => {
                         </Text>
                     </View>}
                 {/* {message.is_pinned === 1 && <Text className='text-xs text-accent'><PushPin size='12' />Pinned</Text>} */}
+
+                {linked_message && replied_message_details && <ReplyMessageBox
+                    className='mb-1'
+                    onPress={onReplyMessagePress}
+                    message={replyMessageDetails}
+                />
+                }
 
                 {message.message_type === 'File' && <FileMessageRenderer message={message} />}
                 {message.text ? <MessageContentRenderer message={message} showLinkPreview={!message.hide_link_preview} /> : null}
