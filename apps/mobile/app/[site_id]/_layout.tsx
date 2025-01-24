@@ -106,6 +106,12 @@ export default function SiteLayout() {
                                         presentation: 'modal',
                                     }}
                                 />
+                                <Stack.Screen
+                                    name="chat/[id]/add-new-channel-members"
+                                    options={{
+                                        presentation: 'modal',
+                                    }}
+                                />
                             </Stack>
                         </BottomSheetModalProvider>
                     </Providers>
