@@ -4,6 +4,7 @@ import { ChannelListContext, useChannelListProvider } from '@raven/lib/providers
 import { UserListContext, useUserListProvider } from '@raven/lib/providers/UserListProvider'
 import React, { PropsWithChildren } from 'react'
 import { View } from 'react-native'
+import { ActiveUserProvider } from './UserInactivityProvider'
 
 const Providers = (props: PropsWithChildren) => {
 
@@ -19,11 +20,15 @@ const Providers = (props: PropsWithChildren) => {
         </View>
     }
 
-    return <UserListContext.Provider value={{ users, enabledUsers }}>
-        <ChannelListProvider>
-            {props.children}
-        </ChannelListProvider>
-    </UserListContext.Provider>
+    return (
+        <ActiveUserProvider>
+            <UserListContext.Provider value={{ users, enabledUsers }}>
+                <ChannelListProvider>
+                    {props.children}
+                </ChannelListProvider>
+            </UserListContext.Provider>
+        </ActiveUserProvider>
+    )
 }
 
 const ChannelListProvider = ({ children }: PropsWithChildren) => {

@@ -28,7 +28,6 @@ export default function BrowseChannels() {
             <View className="p-3">
                 <SearchInput style={{ backgroundColor: colors.grey5 }}
                     placeholder="Search"
-                    iconColor={colors.destructive}
                     placeholderTextColor={colors.grey} />
             </View>
             <ChannelFilter />

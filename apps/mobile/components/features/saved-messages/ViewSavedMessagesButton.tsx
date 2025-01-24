@@ -3,6 +3,7 @@ import Animated, { LayoutAnimationConfig, ZoomInRotate } from 'react-native-rean
 import { cn } from '@lib/cn';
 import { COLORS } from '@theme/colors';
 import BookmarkIcon from '@assets/icons/BookmarkIcon.svg';
+import { router } from 'expo-router';
 
 export function ViewSavedMessagesButton() {
     return (
@@ -14,7 +15,7 @@ export function ViewSavedMessagesButton() {
                 <Pressable
                     hitSlop={10}
                     onPress={() => {
-                        console.log('Viewing saved messages');
+                        router.push('../home/saved-messages', { relativeToDirectory: true })
                     }}
                     className="opacity-80">
                     {({ pressed }) => (
