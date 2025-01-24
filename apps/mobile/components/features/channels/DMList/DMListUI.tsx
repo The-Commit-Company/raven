@@ -8,7 +8,6 @@ import { DMChannelListItem } from '@raven/types/common/ChannelListItem';
 import { useGetUser } from '@raven/lib/hooks/useGetUser';
 import UserAvatar from '@components/layout/UserAvatar';
 import { Link } from 'expo-router';
-import ChatOutlineIcon from '@assets/icons/ChatOutlineIcon.svg';
 
 interface DMListUIProps {
     dms: DMChannelListItem[]
@@ -26,10 +25,7 @@ const DMListUI = ({ dms }: DMListUIProps) => {
     return (
         <View style={styles.container}>
             <TouchableOpacity onPress={toggleAccordion} style={styles.header} activeOpacity={0.7}>
-                <View className="flex-row items-center gap-2">
-                    <ChatOutlineIcon fill={colors.colors.icon} height={18} width={18} />
-                    <Text style={styles.headerText}>Direct Messages</Text>
-                </View>
+                <Text style={styles.headerText}>Direct Messages</Text>
                 {isExpanded ? <ChevronDownIcon fill={colors.colors.icon} /> : <ChevronRightIcon fill={colors.colors.icon} />}
             </TouchableOpacity>
             {isExpanded && <>
@@ -39,13 +35,13 @@ const DMListUI = ({ dms }: DMListUIProps) => {
     )
 }
 
-const DMListRow = ({ dm }: { dm: DMChannelListItem }) => {
+export const DMListRow = ({ dm }: { dm: DMChannelListItem }) => {
     const user = useGetUser(dm.peer_user_id)
     return (
         <Link href={`../chat/${dm.name}`} asChild>
             <Pressable
                 // Use tailwind classes for layout and ios:active state
-                className='flex-row items-center px-3 py-2 rounded-lg ios:active:bg-linkColor'
+                className='flex-row items-center px-3 py-1.5 rounded-lg ios:active:bg-linkColor'
                 // Add a subtle ripple effect on Android
                 android_ripple={{ color: 'rgba(0,0,0,0.1)', borderless: false }}
             >

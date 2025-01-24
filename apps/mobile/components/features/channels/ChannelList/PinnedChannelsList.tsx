@@ -1,13 +1,13 @@
 import useCurrentRavenUser from "@raven/lib/hooks/useCurrentRavenUser"
 import useGetChannels from "@raven/lib/hooks/useGetChannels"
 import { useMemo, useState } from "react"
-import { View, Text, TouchableOpacity, StyleSheet } from "react-native"
+import { View, TouchableOpacity, StyleSheet } from "react-native"
 import { useColorScheme } from "@hooks/useColorScheme"
 import { ChannelListItem } from "@raven/types/common/ChannelListItem"
 import { ChannelListRow } from "./ChannelListRow"
 import ChevronDownIcon from '@assets/icons/ChevronDownIcon.svg'
 import ChevronRightIcon from '@assets/icons/ChevronRightIcon.svg'
-import StarOutlineIcon from '@assets/icons/StarOutlineIcon.svg'
+import { Text } from '@components/nativewindui/Text';
 
 const PinnedChannelsList = ({ workspace }: { workspace: string }) => {
 
@@ -56,10 +56,7 @@ const PinnedChannelListUI = ({ channels }: { channels: ChannelListItem[] }) => {
     return (
         <View style={styles.container}>
             <TouchableOpacity onPress={toggleAccordion} style={styles.header} activeOpacity={0.7}>
-                <View className="flex-row items-center gap-2">
-                    <StarOutlineIcon fill={colors.colors.icon} height={18} width={18} />
-                    <Text style={styles.headerText}>Favorites</Text>
-                </View>
+                <Text style={styles.headerText}>Favorites</Text>
                 {isExpanded ? <ChevronDownIcon fill={colors.colors.icon} /> : <ChevronRightIcon fill={colors.colors.icon} />}
             </TouchableOpacity>
             {isExpanded && <>

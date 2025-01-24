@@ -2,8 +2,6 @@ import { Sheet, useSheetRef } from '@components/nativewindui/Sheet'
 import { Text } from '@components/nativewindui/Text'
 import { BottomSheetView } from '@gorhom/bottom-sheet'
 import { Pressable, TouchableOpacity, View } from 'react-native'
-import ChevronDownIcon from '@assets/icons/ChevronDownIcon.svg';
-import { COLORS } from '@theme/colors';
 import UserAvatar from '@components/layout/UserAvatar'
 import useFetchWorkspaces, { WorkspaceFields } from '@raven/lib/hooks/useFetchWorkspaces';
 import { useCallback, useMemo } from 'react';
@@ -47,10 +45,7 @@ const WorkSpaceSwitcherMenu = ({ selectedWorkspace, workspaces, setWorkspace }: 
                         src={logo}
                         avatarProps={{ className: 'h-8 w-8' }}
                     />
-                    <View className='flex-row items-center gap-1'>
-                        <Text className="text-white font-bold">{selectedWorkspace?.workspace_name}</Text>
-                        <ChevronDownIcon fill={COLORS.white} height={20} width={20} />
-                    </View>
+                    <Text className="text-white font-bold">{selectedWorkspace?.workspace_name}</Text>
                 </View>
             </TouchableOpacity>
             <Sheet snapPoints={[500]} ref={bottomSheetRef}>
