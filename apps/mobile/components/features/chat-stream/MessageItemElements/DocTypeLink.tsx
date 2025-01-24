@@ -245,7 +245,7 @@ const DoctypeCardWithPreview = ({
                     alt={data?.preview_title}
                     cachePolicy='memory-disk'
                 />
-                <View className='flex-col gap-1.5 '>
+                <View className='flex-col gap-1.5 w-[90%]'>
                     <View className="flex-row items-center justify-between gap-2">
                         <View className="rounded px-2 py-1 border" style={{ backgroundColor: colorScheme === "light" ? colors.secondary : colors.primary, borderColor: colorScheme === "light" ? colorToRgba(colors.primary, 0.2) : "transparent" }}>
                             <Text className="text-xs font-bold truncate" style={{ color: colorScheme === "light" ? colors.primary : "white" }}>
@@ -270,7 +270,7 @@ const DoctypeCardWithPreview = ({
                         </View>
                     </View>
                     <Pressable onPress={() => onCopyTextClick('Email')} className=''>
-                        <Text className="text-gray-500 dark:text-gray-300 text-xs truncate">
+                        <Text className="text-gray-500 dark:text-gray-300 text-xs truncate" numberOfLines={1}>
                             {data?.id}
                         </Text>
                     </Pressable>
