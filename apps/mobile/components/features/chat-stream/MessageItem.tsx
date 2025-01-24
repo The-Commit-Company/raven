@@ -6,9 +6,9 @@ import { FileMessage, ImageMessage, PollMessage, TextMessage } from '@raven/type
 import ShareForward from '@assets/icons/ShareForward.svg'
 import MessageAvatar from '@components/features/chat-stream/MessageItemElements/MessageAvatar'
 import MessageHeader from '@components/features/chat-stream/MessageItemElements/MessageHeader'
-import FileMessageRenderer from '@components/features/chat-stream/MessageItemElements/FileMessageRenderer'
+import FileMessageRenderer from '@components/features/chat/ChatMessage/Renderers/FileMessageRenderer'
 import { MessageContentRenderer } from '@components/features/chat-stream/MessageItemElements/MessageContentRenderer'
-import DocTypeLinkRenderer from '@components/features/chat-stream/MessageItemElements/DocTypeLinkRenderer'
+import DocTypeLinkRenderer from '@components/features/chat/ChatMessage/Renderers/DocTypeLinkRenderer'
 import { PollMessageBlock } from '@components/features/chat/ChatMessage/Renderers/PollMessage'
 
 type Props = {

@@ -1,5 +1,5 @@
 import { Message } from "@raven/types/common/Message"
-import LinkPreview from "./LinkPreview"
+import LinkPreview from "@components/features/chat/ChatMessage/Renderers/LinkPreview"
 import MessageTextRenderer from "@components/features/chat-stream/MessageItemElements/MessageTextRenderer"
 import * as htmlparser2 from 'htmlparser2';
 
