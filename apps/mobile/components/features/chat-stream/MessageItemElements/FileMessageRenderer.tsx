@@ -17,7 +17,7 @@ const FileMessageRenderer = ({ message }: Props) => {
     // const isPDF = fileExtension === 'pdf'
     return (
         <Pressable>
-            <Text>{message.file}</Text>
+            <Text className='text-xs text-foreground/50'>{message.file.split('/').pop()}</Text>
         </Pressable>
     )
 }

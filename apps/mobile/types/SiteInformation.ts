@@ -12,4 +12,6 @@ export type SiteInformation = {
     raven_version: string,
     /** Version of Frappe installed on the site */
     frappe_version: string,
+    /** System timezone as set in System Settings */
+    system_timezone: string,
 }
