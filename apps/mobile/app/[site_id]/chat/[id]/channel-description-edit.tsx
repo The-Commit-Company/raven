@@ -12,6 +12,7 @@ import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Controller, FormProvider, useForm } from 'react-hook-form';
 import { useCurrentChannelData } from "@hooks/useCurrentChannelData";
+import { toast } from "sonner-native";
 
 const ChannelDescriptionEdit = () => {
     const { colors } = useColorScheme()
@@ -41,11 +42,10 @@ const ChannelDescriptionEdit = () => {
         return updateDoc("Raven Channel", currentChannelID as string, {
             channel_description: channelDescription ?? currentChannelDescription,
         }).then(() => {
-            // toast.success(__("Profile updated"))
-            // mutate()
+            toast.success("Channel description updated")
             router.back();
         }).catch(() => {
-            // toast.error(__("Profile update failed"))
+            toast.error("Error while updating channel description")
         })
     }
 

@@ -15,6 +15,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Controller, FormProvider, useForm } from 'react-hook-form';
 import { ChannelIcon } from "@components/features/channels/ChannelList/ChannelIcon";
 import { useCurrentChannelData } from "@hooks/useCurrentChannelData";
+import { toast } from "sonner-native";
 
 
 const ChannelNameEdit = () => {
@@ -45,11 +46,10 @@ const ChannelNameEdit = () => {
         return updateDoc("Raven Channel", currentChannelID as string, {
             channel_name: channelName ?? currentChannelName,
         }).then(() => {
-            // toast.success(__("Profile updated"))
-            // mutate()
+            toast.success("Channel name updated")
             router.back();
         }).catch(() => {
-            // toast.error(__("Profile update failed"))
+            toast.error("Error while updating channel name")
         })
     }
 
