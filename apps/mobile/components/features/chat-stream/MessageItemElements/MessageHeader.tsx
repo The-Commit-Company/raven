@@ -11,8 +11,8 @@ const MessageHeader = ({ is_continuation, userFullName, timestamp }: Props) => {
 
     if (is_continuation) return null
     return (
-        <View className='flex-row gap-2 items-baseline'>
-            <Text className='font-medium text-base'>{userFullName}</Text>
+        <View className='flex-row gap-2 items-baseline pb-1'>
+            <Text className='font-medium text-sm'>{userFullName}</Text>
             <Text className='text-xs text-foreground/50'>{timestamp}</Text>
         </View>
     )

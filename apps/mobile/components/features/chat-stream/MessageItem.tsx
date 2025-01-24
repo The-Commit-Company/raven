@@ -4,6 +4,8 @@ import MessageAvatar from './MessageItemElements/MessageAvatar'
 import { useGetUser } from '@raven/lib/hooks/useGetUser'
 import MessageHeader from './MessageItemElements/MessageHeader'
 import FileMessageRenderer from './MessageItemElements/FileMessageRenderer'
+import MessageTextRenderer from './MessageItemElements/MessageTextRenderer'
+import clsx from 'clsx'
 
 type Props = {
     message: FileMessage | PollMessage | TextMessage | ImageMessage
@@ -18,7 +20,7 @@ const MessageItem = ({ message }: Props) => {
     const userFullName = user?.full_name || username
 
     return (
-        <View className='flex-1 flex-row px-2 py-0.5 gap-1'>
+        <View className={clsx('flex-1 flex-row px-2 gap-1', message.is_continuation ? 'pt-0' : 'pt-2')}>
             <MessageAvatar
                 userFullName={userFullName}
                 userImage={user?.user_image}
@@ -27,13 +29,14 @@ const MessageItem = ({ message }: Props) => {
                 botID={message.bot}
                 is_continuation={message.is_continuation}
             />
-            <View>
+            <View className='flex-1 items-start'>
                 <MessageHeader
                     is_continuation={message.is_continuation}
                     userFullName={userFullName}
                     timestamp={message.formattedTime || ''}
                 />
-                {message.message_type === 'File' && <FileMessageRenderer message={message} />}
+                {message.message_type === 'File' ? <FileMessageRenderer message={message} /> : null}
+                {message.text ? <MessageTextRenderer text={message.text} /> : null}
                 {/* <Text>{message.text}</Text> */}
             </View>
         </View>

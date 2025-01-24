@@ -27,7 +27,7 @@ const ChatStream = ({ channelID }: Props) => {
 
     if (data) {
         return (
-            <View style={ContentContainerStyles}>
+            <View style={ContentContainerStyles} className='bg-white dark:bg-background'>
                 {/* <FlatList
                     data={data}
                     ref={listRef}

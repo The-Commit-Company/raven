@@ -6,6 +6,7 @@ import { useContext, useMemo } from 'react'
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
 import advancedFormat from 'dayjs/plugin/advancedFormat'
+import { formatDate } from '@raven/lib/utils/dateConversions'
 
 dayjs.extend(utc)
 dayjs.extend(advancedFormat)
@@ -69,30 +70,9 @@ const useChatStream = (channelID: string, listRef: React.RefObject<LegendListRef
             let currentDate = messages[messages.length - 1].creation.split(' ')[0]
             let currentDateTime = new Date(messages[messages.length - 1].creation.split('.')[0]).getTime()
 
-            // For date separators, we need to format the date in the following way:
-            // If the date is today, return "Today"
-            // If the date is yesterday, return "Yesterday"
-            // Otherwise, return the date in the format "MMM Do" if the date is within the current year
-            // Otherwise, return the date in the format "MMM Do, YYYY"
-            const parsedDate = dayjs(currentDate).local()
-            const today = dayjs()
-            const yesterday = dayjs().subtract(1, 'day')
-
-            let formattedDateString = ""
-
-            if (parsedDate.isSame(today, 'date')) {
-                formattedDateString = "Today"
-            } else if (parsedDate.isSame(yesterday, 'date')) {
-                formattedDateString = "Yesterday"
-            } else if (parsedDate.isSame(today, 'year')) {
-                formattedDateString = parsedDate.format('MMM Do')
-            } else {
-                formattedDateString = parsedDate.format('MMM Do, YYYY')
-            }
-
             messagesWithDateSeparators.push({
                 creation: currentDate,
-                formattedDate: formattedDateString,
+                formattedDate: formatDate(currentDate),
                 message_type: 'date',
                 name: currentDate
             })
@@ -111,23 +91,9 @@ const useChatStream = (channelID: string, listRef: React.RefObject<LegendListRef
                 const formattedMessageTime = dayjs(message.creation).local().format('hh:mm A')
 
                 if (messageDate !== currentDate) {
-
-                    const messageDateObject = dayjs(messageDate).local()
-                    let formattedDateString = ""
-
-                    if (messageDateObject.isSame(today, 'date')) {
-                        formattedDateString = "Today"
-                    } else if (messageDateObject.isSame(yesterday, 'date')) {
-                        formattedDateString = "Yesterday"
-                    } else if (messageDateObject.isSame(today, 'year')) {
-                        formattedDateString = messageDateObject.format('MMM Do')
-                    } else {
-                        formattedDateString = messageDateObject.format('MMM Do, YYYY')
-                    }
-
                     messagesWithDateSeparators.push({
                         creation: messageDate,
-                        formattedDate: formattedDateString,
+                        formattedDate: formatDate(messageDate),
                         message_type: 'date',
                         name: messageDate
                     })
