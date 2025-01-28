@@ -19,7 +19,23 @@ const FileSend = () => {
     const { isKeyboardVisible } = useKeyboardVisible()
     const pagerRef = useRef<PagerView>(null)
 
-    const opacity = useRef(new Animated.Value(0)).current
+    const captionOpacity = useRef(new Animated.Value(0)).current
+
+    const fadeIn = () => {
+        Animated.timing(captionOpacity, {
+            toValue: 1,
+            duration: 170,
+            useNativeDriver: true,
+        }).start()
+    }
+
+    const fadeOut = () => {
+        Animated.timing(captionOpacity, {
+            toValue: 0,
+            duration: 200,
+            useNativeDriver: true,
+        }).start()
+    }
 
     const onCaptionChange = (caption: string) => {
         setSelectedFile((prevFileInfo: CustomFile) => {
@@ -48,14 +64,14 @@ const FileSend = () => {
                 headerShown: true,
                 headerTitle: selectedFile?.name ?? '',
             }} />
-            <FilePager files={files} setSelectedFile={setSelectedFile} pagerRef={pagerRef} setFiles={setFiles} opacity={opacity} />
+            <FilePager files={files} setSelectedFile={setSelectedFile} pagerRef={pagerRef} setFiles={setFiles} fadeIn={fadeIn} fadeOut={fadeOut} />
             <View
                 className='px-4 py-2 w-full gap-2 items-center justify-center'
                 style={{
                     bottom: isKeyboardVisible ? 0 : bottom,
                 }}
             >
-                <CaptionInput files={files} setFiles={setFiles} onCaptionChange={onCaptionChange} selectedFile={selectedFile} opacity={opacity} />
+                <CaptionInput files={files} setFiles={setFiles} onCaptionChange={onCaptionChange} selectedFile={selectedFile} opacity={captionOpacity} />
             </View>
         </KeyboardAvoidingView>
     )

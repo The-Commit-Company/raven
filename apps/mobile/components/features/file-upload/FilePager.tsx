@@ -5,19 +5,23 @@ import PagerView from 'react-native-pager-view'
 import FileCarousel from './FileCarousel'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useKeyboardVisible } from '@hooks/useKeyboardVisible'
+import { useRef } from 'react'
 
 interface FilePagerProps {
     files: CustomFile[]
     setSelectedFile: (file: CustomFile) => void
     pagerRef: React.RefObject<PagerView>
     setFiles: React.Dispatch<React.SetStateAction<CustomFile[]>>
-    opacity: Animated.Value
+    fadeIn: () => void
+    fadeOut: () => void
 }
 
-const FilePager = ({ files, setFiles, setSelectedFile, pagerRef, opacity }: FilePagerProps) => {
+const FilePager = ({ files, setFiles, setSelectedFile, pagerRef, fadeIn, fadeOut }: FilePagerProps) => {
 
     const { bottom } = useSafeAreaInsets()
     const { isKeyboardVisible } = useKeyboardVisible()
+
+    const opacity = useRef(new Animated.Value(0)).current
 
     const handlePageScroll = ({ nativeEvent }: { nativeEvent: { position: number, offset: number } }) => {
         const { position, offset } = nativeEvent
@@ -31,6 +35,18 @@ const FilePager = ({ files, setFiles, setSelectedFile, pagerRef, opacity }: File
             initialPage={0}
             onPageSelected={({ nativeEvent }) => {
                 setSelectedFile(files[nativeEvent.position])
+            }}
+            onPageScrollStateChanged={({ nativeEvent }) => {
+                switch (nativeEvent.pageScrollState) {
+                    case 'dragging':
+                        fadeOut()
+                        break
+                    case 'idle':
+                        fadeIn()
+                        break
+                    case 'settling':
+                        break
+                }
             }}
             onPageScroll={handlePageScroll}
         >

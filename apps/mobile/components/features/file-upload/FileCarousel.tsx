@@ -36,8 +36,8 @@ const FileCarousel = ({ files, setFiles, selectedFile, pagerRef, opacity }: File
         return (
             <Animated.View style={{
                 opacity: opacity.interpolate({
-                    inputRange: [0, 0.5, 1],
-                    outputRange: [1, 0, 1],
+                    inputRange: [0, 0.1, 0.9, 1],
+                    outputRange: [1, 0, 0, 1],
                     extrapolate: 'clamp',
                 }),
                 flex: 1,
