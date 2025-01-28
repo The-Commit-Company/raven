@@ -24,7 +24,7 @@ export default function useFileUpload(channelID: string) {
             doctype: 'Raven Message',
             otherData: {
               channelID: channelID,
-              caption: f.caption,
+              caption: f.caption ?? '',
             },
             fieldname: 'file',
           },
