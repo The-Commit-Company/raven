@@ -34,7 +34,11 @@ const CaptionInput = ({ files, setFiles, onCaptionChange, selectedFile, opacity 
             } />
             <View className='border h-10 border-border w-[80%] rounded-lg p-2'>
                 <Animated.View style={{
-                    opacity,
+                    opacity: opacity.interpolate({
+                        inputRange: [0, 0.5, 1],
+                        outputRange: [1, 0, 1],
+                        extrapolate: 'clamp',
+                    }),
                     flex: 1,
                 }}>
                     <TextInput

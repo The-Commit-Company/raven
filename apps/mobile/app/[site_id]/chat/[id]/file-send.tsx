@@ -10,7 +10,6 @@ import { useKeyboardVisible } from "@hooks/useKeyboardVisible"
 import { useRef } from "react"
 import { CustomFile } from "@raven/types/common/File"
 import FilePager from "@components/features/file-upload/FilePager"
-import FileCarousel from "@components/features/file-upload/FileCarousel"
 import CaptionInput from "@components/features/file-upload/CaptionInput"
 
 const FileSend = () => {
@@ -21,22 +20,6 @@ const FileSend = () => {
     const pagerRef = useRef<PagerView>(null)
 
     const opacity = useRef(new Animated.Value(0)).current
-
-    const fadeIn = () => {
-        Animated.timing(opacity, {
-            toValue: 1,
-            duration: 150,
-            useNativeDriver: true,
-        }).start()
-    }
-
-    const fadeOut = () => {
-        Animated.timing(opacity, {
-            toValue: 0,
-            duration: 200,
-            useNativeDriver: true,
-        }).start()
-    }
 
     const onCaptionChange = (caption: string) => {
         setSelectedFile((prevFileInfo: CustomFile) => {
@@ -63,16 +46,15 @@ const FileSend = () => {
             <Stack.Screen options={{
                 title: 'Send Files',
                 headerShown: true,
-                headerTitle: selectedFile.name,
+                headerTitle: selectedFile?.name ?? '',
             }} />
-            <FilePager files={files} setSelectedFile={setSelectedFile} fadeIn={fadeIn} fadeOut={fadeOut} pagerRef={pagerRef} />
+            <FilePager files={files} setSelectedFile={setSelectedFile} pagerRef={pagerRef} setFiles={setFiles} opacity={opacity} />
             <View
                 className='px-4 py-2 w-full gap-2 items-center justify-center'
                 style={{
                     bottom: isKeyboardVisible ? 0 : bottom,
                 }}
             >
-                <FileCarousel files={files} setFiles={setFiles} selectedFile={selectedFile} pagerRef={pagerRef} />
                 <CaptionInput files={files} setFiles={setFiles} onCaptionChange={onCaptionChange} selectedFile={selectedFile} opacity={opacity} />
             </View>
         </KeyboardAvoidingView>
