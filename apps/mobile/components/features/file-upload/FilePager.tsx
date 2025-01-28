@@ -35,6 +35,7 @@ const FilePager = ({ files, setFiles, setSelectedFile, pagerRef, fadeIn, fadeOut
             initialPage={0}
             onPageSelected={({ nativeEvent }) => {
                 setSelectedFile(files[nativeEvent.position])
+                fadeIn()
             }}
             onPageScrollStateChanged={({ nativeEvent }) => {
                 switch (nativeEvent.pageScrollState) {
