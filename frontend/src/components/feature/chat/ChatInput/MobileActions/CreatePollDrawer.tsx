@@ -7,13 +7,20 @@ const CreatePollContent = lazy(() => import('@/components/feature/polls/CreatePo
 
 const CreatePollDrawer = ({
     isOpen,
-    setIsOpen
+    setIsOpen,
+    channelID
 }: {
     isOpen: boolean,
-    setIsOpen: (open: boolean) => void
+    setIsOpen: (open: boolean) => void,
+    channelID: string
 }) => {
+
+    const onClose = () => {
+        setIsOpen(false)
+    }
+
     return (
-        <Drawer open={isOpen} onOpenChange={setIsOpen}>
+        <Drawer open={isOpen} onClose={onClose}>
             <DrawerContent>
                 <div className='pb-16 min-h-64 px-1 overflow-auto'>
                     <Dialog.Title>
@@ -23,7 +30,7 @@ const CreatePollDrawer = ({
                         Create a quick poll to get everyone's thoughts on a topic.
                     </Dialog.Description>
                     <Suspense fallback={<Loader />}>
-                        <CreatePollContent setIsOpen={setIsOpen} />
+                        <CreatePollContent setIsOpen={setIsOpen} channelID={channelID} />
                     </Suspense>
                 </div>
             </DrawerContent>
