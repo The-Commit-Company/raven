@@ -12,7 +12,7 @@
   },
   "dependencies": {
     "@emoji-mart/react": "^1.1.1",
-    "@radix-ui/themes": "3.1.4",
+    "@radix-ui/themes": "3.1.6",
     "@tiptap/extension-code-block-lowlight": "2.5.9",
     "@tiptap/extension-highlight": "2.5.9",
     "@tiptap/extension-image": "2.5.9",
@@ -76,6 +76,6 @@
     "typescript": "^5.3.3"
   },
   "resolutions": {
-    "@radix-ui/react-dialog": "1.1.1"
+    "@radix-ui/react-dialog": "1.1.4"
   }
 }

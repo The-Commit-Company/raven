@@ -497,7 +497,7 @@ const Tiptap = ({ isEdit, slotBefore, fileProps, onMessageSend, channelMembers, 
                             <Suspense fallback={<IconButton radius='full' color='gray' variant='soft' size='2' className='mb-1'>
                                 <BiPlus size='20' />
                             </IconButton>}>
-                                <MobileInputActions fileProps={fileProps} setContent={setContent} sendMessage={onMessageSend} messageSending={messageSending} />
+                                <MobileInputActions fileProps={fileProps} setContent={setContent} sendMessage={onMessageSend} messageSending={messageSending} channelID={channelID} />
                             </Suspense>
                         </div>
                     }
