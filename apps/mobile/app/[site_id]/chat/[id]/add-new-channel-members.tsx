@@ -42,14 +42,16 @@ export default function AddNewChannelMembers() {
     const { enabledUsers } = useUserListProvider();
 
     const nonChannelMembers = useMemo(() => {
+        if (!workspaceMembers || !enabledUsers) return [];
         const eligibleUsers: { [key: string]: string } = {};
         workspaceMembers?.message.forEach((m) => {
             eligibleUsers[m.user] = m.name;
         });
         return Array.from(enabledUsers.values()).filter(user => !channelMembers?.[user.name] && eligibleUsers?.[user.name]);
-    }, []);
+    }, [workspaceMembers, enabledUsers, channelMembers]);
 
     const filteredMembers = useMemo(() => {
+        if (!nonChannelMembers) return [];
         const lowerCaseInput = debouncedText?.toLowerCase() || '';
         return nonChannelMembers.filter((user: UserFields) => {
             if (!debouncedText) return true;
