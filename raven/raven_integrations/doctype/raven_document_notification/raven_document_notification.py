@@ -44,7 +44,7 @@ class RavenDocumentNotification(Document):
 
 	def validate_condition(self):
 		if self.condition:
-			temp_doc = frappe.get_doc(self.document_type)
+			temp_doc = frappe.new_doc(self.document_type)
 			try:
 				frappe.safe_eval(self.condition, None, get_context(temp_doc.as_dict()))
 			except Exception:
