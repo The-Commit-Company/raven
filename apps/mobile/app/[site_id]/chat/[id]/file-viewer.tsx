@@ -37,7 +37,7 @@ const FileViewer = () => {
   return (
     <>
       <Stack.Screen options={{
-        title: 'Raven',
+        title: 'File Viewer',
         headerShown: showHeader,
         headerTitle: `${uri?.split('/').pop()}`,
         headerRight: () => <ShareButton uri={uri} />

@@ -37,6 +37,7 @@
     "expo-document-picker": "~13.0.1",
     "expo-font": "~13.0.1",
     "expo-image": "~2.0.3",
+    "expo-intent-launcher": "~12.0.2",
     "expo-linking": "~7.0.3",
     "expo-navigation-bar": "~4.0.6",
     "expo-router": "~4.0.15",
@@ -66,9 +67,9 @@
     "react-native-uitextview": "^1.4.0",
     "react-native-user-inactivity": "^1.2.0",
     "react-native-web": "~0.19.13",
-    "rn-emoji-picker": "^1.1.6",
     "react-native-webview": "13.12.5",
     "react-native-zoom-toolkit": "^4.0.0",
+    "rn-emoji-picker": "^1.1.6",
     "sonner-native": "^0.16.2",
     "tailwind-merge": "^2.5.5",
     "zeego": "^2.0.4"
