@@ -12,6 +12,7 @@ import DocTypeLinkRenderer from '@components/features/chat/ChatMessage/Renderers
 import { PollMessageBlock } from '@components/features/chat/ChatMessage/Renderers/PollMessage'
 import ReplyMessageBox from '@components/features/chat/ChatMessage/ReplyMessageBox/ReplyMessageBox';
 import { useMemo } from 'react';
+import PushPin from '@assets/icons/PushPin.svg'
 
 type Props = {
     message: FileMessage | PollMessage | TextMessage | ImageMessage,
@@ -60,7 +61,11 @@ const MessageItem = ({ message, onReplyMessagePress }: Props) => {
                             forwarded
                         </Text>
                     </View>}
-                {/* {message.is_pinned === 1 && <Text className='text-xs text-accent'><PushPin size='12' />Pinned</Text>} */}
+                {message.is_pinned === 1 &&
+                    <View className='flex-row items-center gap-1'>
+                        <PushPin width={12} height={12} />
+                        <Text className='text-xs text-accent'>Pinned</Text>
+                    </View>}
 
                 {linked_message && replied_message_details && <ReplyMessageBox
                     className='mb-1'
