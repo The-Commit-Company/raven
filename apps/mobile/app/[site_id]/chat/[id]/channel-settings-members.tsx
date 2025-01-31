@@ -21,6 +21,7 @@ import CrownIcon from "@assets/icons/CrownIcon.svg"
 import useCurrentRavenUser from '@raven/lib/hooks/useCurrentRavenUser';
 import { useActionSheet } from '@expo/react-native-action-sheet';
 import { useCurrentChannelData } from '@hooks/useCurrentChannelData';
+import { toast } from 'sonner-native';
 
 configureReanimatedLogger({
     strict: false,
@@ -159,16 +160,13 @@ const ChannelMember = ({ member }: { member: Member }) => {
                 reset();
 
                 if (admin === 1) {
-                    //   toast.success("Member has been made an admin");
+                    toast.success("Member has been made an admin");
                 } else {
-                    //   toast.warning("Member is no longer an admin");
+                    toast.warning("Member is no longer an admin");
                 }
             })
             .catch((e) => {
-                // toast.error("Failed to update member status", {
-                //   description: getErrorMessage(e),
-                // });
-                console.log("Failed to update member status");
+                toast.error("Failed to update member status");
                 reset();
             });
     };
@@ -201,7 +199,7 @@ const ChannelMember = ({ member }: { member: Member }) => {
 
         const showAlert = () =>
             Alert.alert(
-                `Remove 'Remove Member?`,
+                `Remove Member?`,
                 `This person will no longer have access to the channel.`,
                 [
                     {
