@@ -6,6 +6,7 @@ import { useFetchChannelMembers } from '@raven/lib/hooks/useFetchChannelMembers'
 import useCurrentRavenUser from '@raven/lib/hooks/useCurrentRavenUser'
 import { Toggle } from '@components/nativewindui/Toggle'
 import { Text } from '@components/nativewindui/Text';
+import { toast } from 'sonner-native';
 
 interface PushNotifications {
     channelID: string
@@ -55,15 +56,17 @@ const PushNotifications = ({ channelID }: PushNotifications) => {
                     }
                 })
                 .catch(() => {
-                    // toast.error('Failed to update notification settings')
+                    toast.error('Failed to update notification settings')
                 })
         }
     }
 
     return (
-        <View className='p-3 bg-card rounded-lg flex-row justify-between items-center'>
-            <Text>{!channelMember?.allow_notifications ? "Enable" : "Disable"}</Text>
-            <Toggle value={channelMember?.allow_notifications ? true : false} onValueChange={onToggle} disabled={!isPushAvailable} />
+        <View className='mt-3'>
+            <View className='p-3 bg-card rounded-lg flex-row justify-between items-center'>
+                <Text>Push Notifications</Text>
+                <Toggle value={channelMember?.allow_notifications ? true : false} onValueChange={onToggle} disabled={!isPushAvailable} />
+            </View>
         </View>
     )
 }

@@ -84,7 +84,6 @@ const ChannelSettings = () => {
                 onViewAll={() => { router.push(`../channel-settings-members`, { relativeToDirectory: true }) }}
             />
         } as ChannelSettingsDataComponent,
-        'Push Notifications',
         {
             id: 'PushNotifications',
             component: <PushNotifications channelID={id as string} />

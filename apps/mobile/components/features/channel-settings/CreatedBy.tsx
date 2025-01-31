@@ -12,9 +12,9 @@ const CreatedBy = ({ channelData }: CreatedByProps) => {
     const channelOwner = useGetUser(channelData?.owner ?? "")
 
     return (
-        <View className='p-3 bg-card rounded-lg flex-row items-center'>
-            {channelData?.owner && <Text>{channelOwner?.full_name ?? channelData?.owner}</Text>}
-            {channelData?.creation && <Text> on <Text className='text-gray-500'>{formatDate(channelData?.creation)}</Text></Text>}
+        <View className='px-3 py-2 bg-card rounded-lg flex-row items-center'>
+            {channelData?.owner && <Text className='text-sm'>{channelOwner?.full_name ?? channelData?.owner}</Text>}
+            {channelData?.creation && <Text className='text-sm'> on <Text className='text-gray-500 text-sm'>{formatDate(channelData?.creation)}</Text></Text>}
         </View>
     )
 }
