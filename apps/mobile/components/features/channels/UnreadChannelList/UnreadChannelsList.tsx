@@ -7,7 +7,7 @@ import ChevronRightIcon from '@assets/icons/ChevronRightIcon.svg'
 import { useColorScheme } from "@hooks/useColorScheme"
 import { Divider } from "@components/layout/Divider"
 import DirectMessageItemElement from './DirectMessageItemElement'
-import { ChannelItemElement } from './ChannelItemElement'
+import ChannelItemElement from './ChannelItemElement'
 
 interface UnreadChannelsListProps {
     unreadChannels: ChannelWithUnreadCount[]
@@ -66,7 +66,7 @@ const UnreadChannelListUI = ({ totalUnreadCount, unreadDMs, unreadChannels }: { 
                 </View>
                 {isExpanded ? <ChevronDownIcon fill={colors.colors.icon} /> : <ChevronRightIcon fill={colors.colors.icon} />}
             </TouchableOpacity>
-            {isExpanded && <View className="flex gap-1 flex-col fade-in">
+            {isExpanded && <View className="flex gap-0.5 flex-col fade-in">
                 {/* Render unread DMs */}
                 {unreadDMs.map(dm => (
                     <DirectMessageItemElement

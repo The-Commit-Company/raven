@@ -13,8 +13,6 @@ const AllChannelsList = ({ workspace }: { workspace: string }) => {
     const { channels, dm_channels } = useContext(ChannelListContext) as ChannelListContextType
     const unread_count = useUnreadMessageCount()
 
-    console.log("UNREAD COUNT", unread_count)
-
     const workspaceChannels = useMemo(() => {
         return channels.filter((channel) => channel.workspace === workspace)
     }, [channels, workspace])
@@ -24,9 +22,6 @@ const AllChannelsList = ({ workspace }: { workspace: string }) => {
         dm_channels,
         unread_count: unread_count?.message
     })
-
-    console.log("UNREAD CHANNELS", unreadChannels)
-    console.log("UNREAD DMs", unreadDMs)
 
     return (
         <View className="flex-1">
