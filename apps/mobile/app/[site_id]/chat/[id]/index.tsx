@@ -17,6 +17,7 @@ const Chat = () => {
         <>
             <Stack.Screen options={{
                 headerBackButtonDisplayMode: 'minimal',
+                title: id as string,
                 headerRight: undefined,
                 headerTitle: () => {
                     return (
