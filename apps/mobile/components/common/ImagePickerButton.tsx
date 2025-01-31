@@ -1,13 +1,13 @@
 import { Button, ButtonProps } from "@components/nativewindui/Button"
-import AddFileIcon from "@assets/icons/AddFileIcon.svg"
+import ImageUpIcon from "@assets/icons/ImageUpIcon.svg"
 import { useColorScheme } from "@hooks/useColorScheme"
 import { SvgProps } from "react-native-svg"
-import * as DocumentPicker from 'expo-document-picker'
+import * as ImagePicker from 'expo-image-picker'
 import { CustomFile } from "@raven/types/common/File"
 import { Text } from '@components/nativewindui/Text'
 import { TextProps } from "react-native"
 
-interface FilePickerButtonProps {
+interface ImagePickerButtonProps {
     buttonProps?: ButtonProps
     icon?: React.ReactNode
     iconProps?: SvgProps
@@ -16,41 +16,41 @@ interface FilePickerButtonProps {
     onPick: (files: CustomFile[]) => void
 }
 
-const FilePickerButton = ({ buttonProps, iconProps, icon, label, labelProps, onPick }: FilePickerButtonProps) => {
+const ImagePickerButton = ({ buttonProps, iconProps, icon, label, labelProps, onPick }: ImagePickerButtonProps) => {
     const { colors } = useColorScheme()
 
-    const pickDocument = async () => {
+    const pickImage = async () => {
         try {
-            let result = await DocumentPicker.getDocumentAsync({
-                multiple: true
+            let result = await ImagePicker.launchImageLibraryAsync({
+                allowsMultipleSelection: true,
             })
 
             if (!result.canceled) {
                 const parsedFiles = result.assets.map((asset) => {
                     return {
                         uri: asset.uri,
-                        name: asset.name,
+                        name: asset.fileName,
                         type: asset.mimeType,
-                        size: asset.size,
-                        fileID: asset.name + Date.now(),
+                        size: asset.fileSize,
+                        fileID: asset.assetId,
                     } as any as CustomFile
                 })
 
                 onPick(parsedFiles)
             } else {
-                console.log('Document picking was canceled.')
+                console.log('Image picking was canceled.')
             }
         } catch (error) {
-            console.error('Error picking documents:', error)
+            console.error('Error picking images:', error)
         }
     }
 
     return (
-        <Button variant="plain" size={label ? "none" : "icon"} onPress={pickDocument} {...buttonProps} >
-            {icon ?? <AddFileIcon height={20} width={20} color={colors.icon} {...iconProps} />}
+        <Button variant="plain" size={label ? "none" : "icon"} onPress={pickImage} {...buttonProps} >
+            {icon ?? <ImageUpIcon height={20} width={20} color={colors.icon} {...iconProps} />}
             {label && <Text className=" text-sm text-foreground" {...labelProps}>{label}</Text>}
         </Button>
     )
 }
 
-export default FilePickerButton
+export default ImagePickerButton
