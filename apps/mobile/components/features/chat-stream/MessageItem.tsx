@@ -3,7 +3,7 @@ import { Text } from '@components/nativewindui/Text';
 import { useGetUser } from '@raven/lib/hooks/useGetUser'
 import clsx from 'clsx'
 import ShareForward from '@assets/icons/ShareForward.svg'
-import { useMemo } from 'react';
+import { useMemo, memo } from 'react';
 import PushPin from '@assets/icons/PushPin.svg'
 import { FileMessage, ImageMessage, PollMessage, TextMessage } from '@raven/types/common/Message'
 import MessageAvatar from '@components/features/chat-stream/MessageItemElements/MessageAvatar'
@@ -20,7 +20,7 @@ type Props = {
     onReplyMessagePress: () => void
 }
 
-const MessageItem = ({ message, onReplyMessagePress }: Props) => {
+const MessageItem = memo(({ message, onReplyMessagePress }: Props) => {
 
     const { linked_message, replied_message_details } = message
 
@@ -89,6 +89,6 @@ const MessageItem = ({ message, onReplyMessagePress }: Props) => {
             </View>
         </View>
     )
-}
+})
 
 export default MessageItem
