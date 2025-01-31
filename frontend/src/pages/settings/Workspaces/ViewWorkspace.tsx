@@ -40,7 +40,6 @@ const ViewWorkspaceContent = ({ data, mutate }: { data: RavenWorkspace, mutate: 
     const { updateDoc, loading, error } = useFrappeUpdateDoc<RavenWorkspace>()
 
     const methods = useForm<RavenWorkspace>({
-        disabled: loading,
         defaultValues: data
     })
 
