@@ -1,14 +1,14 @@
 import { BubbleMenu, EditorContent, EditorContext, Extension, ReactRenderer, useEditor } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import Underline from '@tiptap/extension-underline'
-import React, { Suspense, lazy, useContext, useEffect, useMemo } from 'react'
+import React, { Suspense, lazy, useContext, useEffect, useMemo, useRef } from 'react'
 import { TextFormattingMenu } from './TextFormattingMenu'
 import Highlight from '@tiptap/extension-highlight'
 import Link from '@tiptap/extension-link'
 import Placeholder from '@tiptap/extension-placeholder'
 import './tiptap.styles.css'
 import Mention from '@tiptap/extension-mention'
-import { UserListContext } from '@/utils/users/UserListProvider'
+import { UserFields, UserListContext } from '@/utils/users/UserListProvider'
 import MentionList from './MentionList'
 import tippy from 'tippy.js'
 import { PluginKey } from '@tiptap/pm/state'
@@ -92,12 +92,14 @@ const Tiptap = ({ isEdit, slotBefore, fileProps, onMessageSend, channelMembers, 
 
     const { enabledUsers } = useContext(UserListContext)
 
-    const channelMemberUsers = useMemo(() => {
+    const channelMembersRef = useRef<UserFields[]>([])
+
+    useEffect(() => {
         if (channelMembers) {
             // Filter enabled users to only include users that are in the channel
-            return enabledUsers.filter((user) => user.name in channelMembers)
+            channelMembersRef.current = enabledUsers.filter((user) => user.name in channelMembers)
         } else {
-            return enabledUsers
+            channelMembersRef.current = enabledUsers
         }
     }, [channelMembers, enabledUsers])
 
@@ -319,7 +321,7 @@ const Tiptap = ({ isEdit, slotBefore, fileProps, onMessageSend, channelMembers, 
             },
             suggestion: {
                 items: (query) => {
-                    return channelMemberUsers.filter((user) => user.full_name.toLowerCase().startsWith(query.query.toLowerCase()))
+                    return channelMembersRef.current.filter((user) => user.full_name.toLowerCase().startsWith(query.query.toLowerCase()))
                         .slice(0, 10);
                 },
                 // char: '@',
@@ -497,7 +499,7 @@ const Tiptap = ({ isEdit, slotBefore, fileProps, onMessageSend, channelMembers, 
                             <Suspense fallback={<IconButton radius='full' color='gray' variant='soft' size='2' className='mb-1'>
                                 <BiPlus size='20' />
                             </IconButton>}>
-                                <MobileInputActions fileProps={fileProps} setContent={setContent} sendMessage={onMessageSend} messageSending={messageSending} />
+                                <MobileInputActions fileProps={fileProps} setContent={setContent} sendMessage={onMessageSend} messageSending={messageSending} channelID={channelID} />
                             </Suspense>
                         </div>
                     }
