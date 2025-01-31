@@ -11,7 +11,7 @@ import { useDebounce } from '@raven/lib/hooks/useDebounce';
 import { UserFields } from '@raven/types/common/UserFields';
 import { useUserListProvider } from '@raven/lib/providers/UserListProvider';
 import UserAvatar from '@components/layout/UserAvatar';
-import { Divider } from '@components/common/DIvider';
+import { Divider } from '@components/layout/Divider';
 import AddUserIcon from "@assets/icons/AddUserIcon.svg"
 import { useColorScheme } from '@hooks/useColorScheme';
 import { Button } from '@components/nativewindui/Button';
@@ -59,6 +59,7 @@ const ChannelMembers = () => {
             <Stack.Screen
                 options={{
                     title: 'Channel Members',
+                    headerBackButtonDisplayMode: 'minimal',
                     headerTransparent: Platform.OS === 'ios',
                     headerBlurEffect: 'systemMaterial',
                     headerShadowVisible: true,

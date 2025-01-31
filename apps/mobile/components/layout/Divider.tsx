@@ -1,7 +1,7 @@
 import { View, ViewProps } from "react-native";
 import { useColorScheme } from '@hooks/useColorScheme';
 
-export const Divider = ({ marginHorizontal = 16, className }: { marginHorizontal?: number } & ViewProps) => {
+export const Divider = ({ marginHorizontal = 16, className, ...props }: { marginHorizontal?: number } & ViewProps) => {
     const { colors } = useColorScheme()
     return (
         <View
@@ -11,6 +11,7 @@ export const Divider = ({ marginHorizontal = 16, className }: { marginHorizontal
                 marginHorizontal: marginHorizontal
             }}
             className={className}
+            {...props}
         />
     )
 }
