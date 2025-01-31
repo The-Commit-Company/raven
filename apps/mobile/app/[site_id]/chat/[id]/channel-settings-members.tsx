@@ -86,12 +86,7 @@ const ChannelMembers = () => {
                 <View className='flex-1'>
                     <FlashList
                         data={filteredMembers}
-                        renderItem={({ item }) => {
-
-                            return (
-                                <ChannelMember member={item as Member} />
-                            )
-                        }}
+                        renderItem={({ item }) => <ChannelMember member={item as Member} />}
                         keyExtractor={(item) => item.name}
                         estimatedItemSize={56}
                         ItemSeparatorComponent={() => <Divider className='mx-0' />}
@@ -136,6 +131,10 @@ const ChannelMember = ({ member }: { member: Member }) => {
     const { channelMembers, mutate: updateMembers } = useFetchChannelMembers(channelId as string ?? "");
 
     const { updateDoc, loading: updatingMember, reset } = useFrappeUpdateDoc();
+
+    const { channel } = useCurrentChannelData(channelId as string ?? "")
+
+    const isAllowed = channelMembers[currentUserInfo?.name ?? ""]?.is_admin === 1 && member.name !== currentUserInfo?.name && channel?.channelData.type !== "Open" && channel?.channelData.is_archived === 0
 
     const { data: memberInfo } = useFrappeGetCall<{ message: { name: string } }>(
         "frappe.client.get_value",
@@ -202,7 +201,7 @@ const ChannelMember = ({ member }: { member: Member }) => {
 
         return (
             <Reanimated.View style={styleAnimation}>
-                <TouchableOpacity activeOpacity={0.6} onPress={deleteMember} style={{ width: 70, height: "100%" }} className="bg-red-500 dark:bg-red-600 items-center justify-center">
+                <TouchableOpacity disabled={!isAllowed || deletingDoc} activeOpacity={0.6} onPress={deleteMember} style={{ width: 70, height: "100%" }} className={`bg-red-500 dark:bg-red-600 items-center justify-center ${!isAllowed ? 'opacity-45' : ''}`}>
                     <TrashIcon width={22} height={22} fill="white" />
                 </TouchableOpacity>
             </Reanimated.View>
@@ -210,10 +209,6 @@ const ChannelMember = ({ member }: { member: Member }) => {
     }
 
     const { showActionSheetWithOptions } = useActionSheet();
-
-    const { channel } = useCurrentChannelData(channelId as string ?? "")
-
-    const isAllowed = channelMembers[currentUserInfo?.name ?? ""]?.is_admin === 1 && member.name !== currentUserInfo?.name && channel?.channelData.type !== "Open" && channel?.channelData.is_archived === 0
 
     const showActions = () => {
         let options = ['Make channel admin', 'Dismiss channel admin', 'Cancel'];
@@ -248,7 +243,7 @@ const ChannelMember = ({ member }: { member: Member }) => {
             rightThreshold={40}
             renderRightActions={(prog, drag) => RightAction(prog, drag, member)}
         >
-            <TouchableOpacity disabled={!isAllowed} activeOpacity={0.5} onLongPress={showActions} className='flex-row items-center justify-between rounded-md'>
+            <TouchableOpacity disabled={!isAllowed || updatingMember} activeOpacity={0.5} onLongPress={showActions} className='flex-row items-center justify-between rounded-md'>
                 <View className='gap-3 p-3 flex-row items-center'>
                     <UserAvatar
                         src={member.user_image ?? ""}
