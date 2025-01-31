@@ -2,6 +2,7 @@ import { useCallback, useState } from 'react'
 import { useFrappeGetCall, useFrappePostCall } from 'frappe-react-sdk'
 import { Message } from '@raven/types/common/Message'
 import { Poll } from '../Renderers/PollMessage'
+import { toast } from 'sonner-native'
 
 const useRetractVote = (message: Message) => {
 
@@ -23,12 +24,10 @@ const useRetractVote = (message: Message) => {
                 poll_id: message?.poll_id,
             })
             onSuccess()
-            // toast.success('Vote retracted')
+            toast.success('Vote retracted')
             setIsLoading(false)
         } catch (e: unknown) {
-            // toast.error('Could not retract vote', {
-            //     description: getErrorMessage(e as any)
-            // })
+            toast.error('Could not retract vote')
         }
     }, [message])
 

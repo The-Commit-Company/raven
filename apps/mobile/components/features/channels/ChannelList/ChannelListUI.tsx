@@ -8,7 +8,6 @@ import { ChannelListItem } from '@raven/types/common/ChannelListItem';
 import { router } from 'expo-router';
 import PlusIcon from '@assets/icons/PlusIcon.svg';
 import { ChannelListRow } from './ChannelListRow';
-import HashIcon from '@assets/icons/HashIcon.svg';
 
 interface ChannelListUIProps {
     channels: ChannelListItem[];
@@ -26,10 +25,7 @@ const ChannelListUI = ({ channels }: ChannelListUIProps) => {
     return (
         <View style={styles.container}>
             <TouchableOpacity onPress={toggleAccordion} style={styles.header} activeOpacity={0.7}>
-                <View className="flex-row items-center gap-2">
-                    <HashIcon fill={colors.colors.icon} height={18} width={18} />
-                    <Text style={styles.headerText}>Channels</Text>
-                </View>
+                <Text style={styles.headerText}>Channels</Text>
                 {isExpanded ? <ChevronDownIcon fill={colors.colors.icon} /> : <ChevronRightIcon fill={colors.colors.icon} />}
             </TouchableOpacity>
             {isExpanded && <>
@@ -65,9 +61,10 @@ const styles = StyleSheet.create({
     },
     addChannelButton: {
         flexDirection: 'row',
+        gap: 0,
         alignItems: 'center',
         paddingVertical: 10,
-        paddingHorizontal: 10,
+        paddingHorizontal: 12,
         borderRadius: 10,
     },
     addChannelText: {

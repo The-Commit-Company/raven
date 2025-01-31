@@ -1,6 +1,7 @@
 import { useState, useCallback, useContext, useEffect } from 'react'
 import { FrappeConfig, FrappeContext } from 'frappe-react-sdk'
 import { Message } from '@raven/types/common/Message'
+import { toast } from 'sonner-native'
 
 export const useMessageSave = (message: Message, owner: string | undefined) => {
 
@@ -25,16 +26,14 @@ export const useMessageSave = (message: Message, owner: string | undefined) => {
             setIsSaved(!isSaved)
 
             if (isSaved) {
-                // toast('Message unsaved')
+                toast('Message unsaved')
             } else {
-                // toast.success('Message saved')
+                toast.success('Message saved')
             }
 
             onSuccess()
         } catch (e: unknown) {
-            // toast.error('Could not perform the action', {
-            //     description: getErrorMessage(e as any)
-            // })
+            toast.error('Could not perform the action')
         } finally {
             setIsLoading(false)
         }

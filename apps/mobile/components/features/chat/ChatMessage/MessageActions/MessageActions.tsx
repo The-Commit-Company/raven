@@ -23,10 +23,9 @@ import useRetractVote from './useRetractVote'
 import useMessageDelete from './useMessageDelete'
 import { router } from 'expo-router'
 import { useColorScheme } from '@hooks/useColorScheme'
-import { Divider } from '@components/common/DIvider'
 import { Alert } from '@components/nativewindui/Alert'
-import { Button } from '@components/nativewindui/Button'
 import { AlertRef } from '@components/nativewindui/Alert/types'
+import { Divider } from '@components/layout/Divider'
 
 interface MessageActionsProps {
     message: Message

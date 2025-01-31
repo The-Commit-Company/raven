@@ -5891,7 +5891,7 @@ expo-auth-session@^6.0.1:
     expo-linking "~7.0.0"
     expo-web-browser "~14.0.0"
     invariant "^2.2.4"
-
+    
 expo-clipboard@~7.0.0:
   version "7.0.0"
   resolved "https://registry.yarnpkg.com/expo-clipboard/-/expo-clipboard-7.0.0.tgz#066b1a781fdaf05e30f282522d3a58f2e651e4cf"
@@ -9191,6 +9191,13 @@ react-native-uitextview@^1.4.0:
   resolved "https://registry.yarnpkg.com/react-native-uitextview/-/react-native-uitextview-1.4.0.tgz#d1b583cc173cec00f4fdd03744cca76c54a12fbb"
   integrity sha512-itm/frzkn/ma3+lwmKn2CkBOXPNo4bL8iVwQwjlzix5gVO59T2+axdfoj/Wi+Ra6F76KzNKxSah+7Y8dYmCHbQ==
 
+react-native-user-inactivity@^1.2.0:
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/react-native-user-inactivity/-/react-native-user-inactivity-1.2.0.tgz#b0123951b89db9939eec07cffab724f7e76edcc6"
+  integrity sha512-VR+zv+cKBOSbJyHLJxvDUVluQ4OD/uW9FomAJVWrXCnSO4tYQieaAR3/5oNIfr6JXAJ/ChdJ/eyc06vHEBvlsA==
+  dependencies:
+    usetimeout-react-hook "^0.1.2"
+
 react-native-web@~0.19.13:
   version "0.19.13"
   resolved "https://registry.yarnpkg.com/react-native-web/-/react-native-web-0.19.13.tgz#2d84849bf0251ec0e3a8072fda7f9a7c29375331"
@@ -9576,6 +9583,11 @@ rimraf@~2.6.2:
   integrity sha512-mwqeW5XsA2qAejG46gYdENaxXjx9onRNCfn7L0duuP4hCuTIi/QO7PDK07KJfp1d+izWPrzEJDcSqBa0OZQriA==
   dependencies:
     glob "^7.1.3"
+
+rn-emoji-picker@^1.1.6:
+  version "1.1.6"
+  resolved "https://registry.yarnpkg.com/rn-emoji-picker/-/rn-emoji-picker-1.1.6.tgz#416f4aa7be2d291b2cd73378cdd3e669b3598743"
+  integrity sha512-131WCwJ/KsH/m4Z35VOVO80q3RrbItPsve15hdSn7EHLLmAFgp5koxkfRusvjc5Z5wLeF8Bw5EJT7RKkBWou0w==
 
 rollup@^2.43.1:
   version "2.79.2"
@@ -10812,6 +10824,11 @@ use-sync-external-store@^1.2.2, use-sync-external-store@^1.4.0:
   version "1.4.0"
   resolved "https://registry.yarnpkg.com/use-sync-external-store/-/use-sync-external-store-1.4.0.tgz#adbc795d8eeb47029963016cefdf89dc799fcebc"
   integrity sha512-9WXSPC5fMv61vaupRkCKCxsPxBocVnwakBEkMIHHpkTTg6icbJtg6jzgtLDm4bl3cSHAca52rYWih0k4K3PfHw==
+
+usetimeout-react-hook@^0.1.2:
+  version "0.1.2"
+  resolved "https://registry.yarnpkg.com/usetimeout-react-hook/-/usetimeout-react-hook-0.1.2.tgz#fdeaff9b8fe2b5e5b8d29a3ef9c4054368711c03"
+  integrity sha512-uHc8QsWDznEhWkK+ygX0xWxyObRjy72685EZ5wr3/ipNsK0EYntGnbenKxLNirPKKsng+1KW5CPTAk7qQDY8VQ==
 
 util-deprecate@^1.0.2, util-deprecate@~1.0.1:
   version "1.0.2"
