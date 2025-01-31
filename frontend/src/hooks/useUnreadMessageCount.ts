@@ -115,7 +115,7 @@ const useUnreadMessageCount = () => {
             updateUnreadCountToZero(event.channel_id)
         }
 
-        updateLastMessageInChannelList(event.channel_id)
+        updateLastMessageInChannelList(event.channel_id, event.last_message_timestamp)
     })
 
     const updateUnreadCountToZero = (channel_id?: string) => {
