@@ -39,6 +39,7 @@ export type ChannelSettingsListData = (ChannelSettingsDataItem | ChannelSettings
 
 const SCREEN_OPTIONS = {
     title: 'Channel Info',
+    headerBackButtonDisplayMode: 'minimal',
     headerTransparent: Platform.OS === 'ios',
     headerBlurEffect: 'systemMaterial',
     headerRight: () => <ChannelNameEditButton />,
