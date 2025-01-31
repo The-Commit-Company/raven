@@ -2,8 +2,10 @@ import { View } from 'react-native'
 import { Text } from '@components/nativewindui/Text';
 import { useGetUser } from '@raven/lib/hooks/useGetUser'
 import clsx from 'clsx'
-import { FileMessage, ImageMessage, PollMessage, TextMessage } from '@raven/types/common/Message'
 import ShareForward from '@assets/icons/ShareForward.svg'
+import { useMemo } from 'react';
+import PushPin from '@assets/icons/PushPin.svg'
+import { FileMessage, ImageMessage, PollMessage, TextMessage } from '@raven/types/common/Message'
 import MessageAvatar from '@components/features/chat-stream/MessageItemElements/MessageAvatar'
 import MessageHeader from '@components/features/chat-stream/MessageItemElements/MessageHeader'
 import FileMessageRenderer from '@components/features/chat/ChatMessage/Renderers/FileMessageRenderer'
@@ -11,8 +13,7 @@ import { MessageContentRenderer } from '@components/features/chat-stream/Message
 import DocTypeLinkRenderer from '@components/features/chat/ChatMessage/Renderers/DocTypeLinkRenderer'
 import { PollMessageBlock } from '@components/features/chat/ChatMessage/Renderers/PollMessage'
 import ReplyMessageBox from '@components/features/chat/ChatMessage/ReplyMessageBox/ReplyMessageBox';
-import { useMemo } from 'react';
-import PushPin from '@assets/icons/PushPin.svg'
+import { ImageMessageRenderer } from '@components/features/chat/ChatMessage/Renderers/ImageMessage';
 
 type Props = {
     message: FileMessage | PollMessage | TextMessage | ImageMessage,
@@ -74,8 +75,9 @@ const MessageItem = ({ message, onReplyMessagePress }: Props) => {
                 />
                 }
 
-                {message.message_type === 'File' && <FileMessageRenderer message={message} />}
                 {message.text ? <MessageContentRenderer message={message} showLinkPreview={!message.hide_link_preview} /> : null}
+                {message.message_type === 'Image' && <ImageMessageRenderer message={message} />}
+                {message.message_type === 'File' && <FileMessageRenderer message={message} />}
                 {message.message_type === 'Poll' && <PollMessageBlock message={message} />}
 
                 {message.link_doctype && message.link_document && <View className={clsx(message.is_continuation ? 'ml-0.5' : '-ml-0.5')}>
