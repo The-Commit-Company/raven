@@ -84,23 +84,6 @@ def get_channel_list(hide_archived=False):
 
 
 @frappe.whitelist()
-def get_last_message_details(channel_id: str):
-
-	if frappe.has_permission(doctype="Raven Channel", doc=channel_id, ptype="read"):
-		last_message_timestamp = frappe.get_cached_value(
-			"Raven Channel", channel_id, "last_message_timestamp"
-		)
-		last_message_details = frappe.get_cached_value(
-			"Raven Channel", channel_id, "last_message_details"
-		)
-
-		return {
-			"last_message_timestamp": last_message_timestamp,
-			"last_message_details": last_message_details,
-		}
-
-
-@frappe.whitelist()
 def get_channels(hide_archived=False):
 	channels = get_channel_list(hide_archived)
 	for channel in channels:
