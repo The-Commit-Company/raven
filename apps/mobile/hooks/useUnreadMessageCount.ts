@@ -101,7 +101,7 @@ const useUnreadMessageCount = () => {
             fetchUnreadCountForChannel(event.channel_id)
         }
 
-        updateLastMessageInChannelList(event.channel_id)
+        updateLastMessageInChannelList(event.channel_id, event.last_message_timestamp)
     })
 
     return unread_count

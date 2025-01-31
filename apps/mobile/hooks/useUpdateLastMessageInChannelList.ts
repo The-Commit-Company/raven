@@ -1,14 +1,11 @@
 import { ChannelList } from "@raven/types/common/ChannelListItem"
-import { FrappeConfig, FrappeContext, useSWRConfig } from "frappe-react-sdk"
-import { useContext } from "react"
+import { useSWRConfig } from "frappe-react-sdk"
 
 export const useUpdateLastMessageInChannelList = () => {
 
     const { mutate: globalMutate } = useSWRConfig()
 
-    const { call } = useContext(FrappeContext) as FrappeConfig
-
-    const updateLastMessageInChannelList = async (channelID: string) => {
+    const updateLastMessageInChannelList = async (channelID: string, lastMessageTimestamp: string) => {
 
         globalMutate(`channel_list`, async (channelList?: { message: ChannelList }) => {
             if (channelList) {
@@ -22,58 +19,45 @@ export const useUpdateLastMessageInChannelList = () => {
                 }
 
                 if (isChannelPresent) {
-                    return call.get('raven.api.raven_channel.get_last_message_details', {
-                        channel_id: channelID,
-                    }).then(res => {
-                        if (res && res.message) {
-                            // Update the last message details in the channel list
-                            let newChannels = channelList.message.channels
-                            let newDMChannels = channelList.message.dm_channels
+                    // Update the last message details in the channel list
+                    let newChannels = channelList.message.channels
+                    let newDMChannels = channelList.message.dm_channels
 
-                            if (isMainChannel) {
-                                newChannels = newChannels.map((channel) => {
-                                    if (channel.name === channelID) {
-                                        return {
-                                            ...channel,
-                                            last_message_details: res.message.last_message_details,
-                                            last_message_timestamp: res.message.last_message_timestamp
-                                        }
-                                    }
-                                    return channel
-                                })
-                            }
-
-                            if (isDMChannel) {
-                                newDMChannels = newDMChannels.map((channel) => {
-                                    if (channel.name === channelID) {
-                                        return {
-                                            ...channel,
-                                            last_message_details: res.message.last_message_details,
-                                            last_message_timestamp: res.message.last_message_timestamp
-                                        }
-                                    }
-                                    return channel
-                                })
-                            }
-
-                            return {
-                                message: {
-                                    channels: newChannels,
-                                    dm_channels: newDMChannels,
+                    if (isMainChannel) {
+                        newChannels = newChannels.map((channel) => {
+                            if (channel.name === channelID) {
+                                return {
+                                    ...channel,
+                                    last_message_timestamp: lastMessageTimestamp
                                 }
                             }
-                        }
-                        else {
-                            return channelList
+                            return channel
+                        })
+                    }
+
+                    if (isDMChannel) {
+                        newDMChannels = newDMChannels.map((channel) => {
+                            if (channel.name === channelID) {
+                                return {
+                                    ...channel,
+                                    last_message_timestamp: lastMessageTimestamp
+                                }
+                            }
+                            return channel
+                        })
+                    }
+
+                    return {
+                        message: {
+                            channels: newChannels,
+                            dm_channels: newDMChannels,
                         }
                     }
-                    )
-                } else {
-                    return channelList
                 }
-            } else {
-                return channelList
             }
+
+            // If nothing changed, return the same channel list
+            return channelList
 
         }, {
             revalidate: false

@@ -8,6 +8,7 @@ import { useColorScheme } from "@hooks/useColorScheme"
 import { Divider } from "@components/layout/Divider"
 import DirectMessageItemElement from './DirectMessageItemElement'
 import ChannelItemElement from './ChannelItemElement'
+import UnreadChannelListMoreActions from './UnreadChannelListMoreActions'
 
 interface UnreadChannelsListProps {
     unreadChannels: ChannelWithUnreadCount[]
@@ -37,18 +38,23 @@ const UnreadChannelsList = ({ unreadChannels, unreadDMs }: UnreadChannelsListPro
         return { totalUnreadCount, channelIDs }
     }, [unreadChannels, unreadDMs])
 
+    if (totalUnreadCount === 0) {
+        return null
+    }
+
     return (
         <>
             <UnreadChannelListUI
                 totalUnreadCount={totalUnreadCount}
                 unreadDMs={unreadDMs}
-                unreadChannels={unreadChannels} />
+                unreadChannels={unreadChannels}
+                channelIDs={channelIDs} />
             <Divider />
         </>
     )
 }
 
-const UnreadChannelListUI = ({ totalUnreadCount, unreadDMs, unreadChannels }: { totalUnreadCount: number, unreadDMs: DMChannelWithUnreadCount[], unreadChannels: ChannelWithUnreadCount[] }) => {
+const UnreadChannelListUI = ({ totalUnreadCount, unreadDMs, unreadChannels, channelIDs }: { totalUnreadCount: number, unreadDMs: DMChannelWithUnreadCount[], unreadChannels: ChannelWithUnreadCount[], channelIDs: string[] }) => {
 
     const [isExpanded, setIsExpanded] = useState(true)
     const colors = useColorScheme()
@@ -64,7 +70,10 @@ const UnreadChannelListUI = ({ totalUnreadCount, unreadDMs, unreadChannels }: { 
                     <Text style={styles.headerText}>Unread</Text>
                     {!isExpanded && <Text style={styles.unreadCount} className="bg-card-background">{totalUnreadCount}</Text>}
                 </View>
-                {isExpanded ? <ChevronDownIcon fill={colors.colors.icon} /> : <ChevronRightIcon fill={colors.colors.icon} />}
+                <View className="flex-row items-center gap-1">
+                    <UnreadChannelListMoreActions channelIDs={channelIDs} />
+                    {isExpanded ? <ChevronDownIcon fill={colors.colors.icon} /> : <ChevronRightIcon fill={colors.colors.icon} />}
+                </View>
             </TouchableOpacity>
             {isExpanded && <View className="flex gap-0.5 flex-col fade-in">
                 {/* Render unread DMs */}

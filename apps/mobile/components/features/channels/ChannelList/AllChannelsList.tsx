@@ -25,7 +25,7 @@ const AllChannelsList = ({ workspace }: { workspace: string }) => {
 
     return (
         <View className="flex-1">
-            <UnreadChannelsList unreadChannels={unreadChannels} unreadDMs={unreadDMs} />
+            {unread_count?.message && <UnreadChannelsList unreadChannels={unreadChannels} unreadDMs={unreadDMs} />}
             <PinnedChannelsList channels={readChannels} />
             <ChannelsList channels={readChannels} />
             <DMList dms={readDMs} />
