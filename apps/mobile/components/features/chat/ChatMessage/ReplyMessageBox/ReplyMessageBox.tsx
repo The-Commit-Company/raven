@@ -9,6 +9,7 @@ import { useGetUser } from "@raven/lib/hooks/useGetUser"
 import useFileURL from "@hooks/useFileURL"
 import { Divider } from "@components/layout/Divider"
 import BarChart from '@assets/icons/BarChart.svg'
+import dayjs from "dayjs";
 
 type ReplyMessageBoxProps = ViewProps & {
     message: Partial<Message>
@@ -38,19 +39,20 @@ const ReplyMessageBox = ({ message, children, className, onPress, ...props }: Re
             <View className={clsx('p-2 items-start border border-gray-200 dark:border-gray-700 bg-gray-100 dark:bg-gray-900 shadow-sm shadow-gray-100 dark:shadow-gray-800 rounded-md', className)} {...props}>
                 <View className="border-l-2 pl-2 gap-2 border-gray-200 dark:border-gray-500">
                     <View
-                        className="flex-row items-center justify-between gap-2"
+                        className="flex-row items-center justify-between gap-2 w-full"
                     >
-                        <Text className="text-sm font-medium truncate" numberOfLines={1}>{userFullName}</Text>
+                        <Text className="text-sm font-medium truncate w-1/2" numberOfLines={1}>{userFullName}</Text>
                         <Divider marginHorizontal={0} />
                         <Text className="text-xs text-gray-500">
                             {/* TODO: Format date */}
-                            {message.creation}
+                            {/* {<DateMonthAtHourMinuteAmPm date={message.creation} />} */}
+                            {dayjs(message.creation).format('hh:mm A (Do MMM)')}
                         </Text>
                     </View>
                     <View>
                         {message.message_type === 'Poll' ?
                             <View className="flex-row items-center gap-1">
-                                <BarChart width={14} height={14} />
+                                <BarChart width={14} height={14} fill={'#6b7280'} />
                                 <Text className="line-clamp-2 flex items-center text-sm font-medium">
                                     Poll: {(message as PollMessage).content?.split("\n")?.[0]}
                                 </Text>
