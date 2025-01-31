@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { View, Text, Platform, TouchableOpacity } from 'react-native';
+import { View, Text, Platform, TouchableOpacity, Alert } from 'react-native';
 import { useFrappeDeleteDoc, useFrappeGetCall, useFrappeUpdateDoc, useSWRConfig } from 'frappe-react-sdk';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -199,9 +199,26 @@ const ChannelMember = ({ member }: { member: Member }) => {
             })
         }
 
+        const showAlert = () =>
+            Alert.alert(
+                `Remove 'Remove Member?`,
+                `This person will no longer have access to the channel.`,
+                [
+                    {
+                        text: 'Cancel',
+                        style: 'cancel',
+                    },
+                    {
+                        text: 'Remove',
+                        style: 'destructive',
+                        onPress: deleteMember
+                    },
+                ]
+            )
+
         return (
             <Reanimated.View style={styleAnimation}>
-                <TouchableOpacity disabled={!isAllowed || deletingDoc} activeOpacity={0.6} onPress={deleteMember} style={{ width: 70, height: "100%" }} className={`bg-red-500 dark:bg-red-600 items-center justify-center ${!isAllowed ? 'opacity-45' : ''}`}>
+                <TouchableOpacity disabled={!isAllowed || deletingDoc} activeOpacity={0.6} onPress={showAlert} style={{ width: 70, height: "100%" }} className={`bg-red-500 dark:bg-red-600 items-center justify-center ${!isAllowed ? 'opacity-45' : ''}`}>
                     <TrashIcon width={22} height={22} fill="white" />
                 </TouchableOpacity>
             </Reanimated.View>
