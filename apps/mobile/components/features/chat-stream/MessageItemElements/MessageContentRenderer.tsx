@@ -2,11 +2,13 @@ import { Message } from "@raven/types/common/Message"
 import LinkPreview from "@components/features/chat/ChatMessage/Renderers/LinkPreview"
 import MessageTextRenderer from "@components/features/chat-stream/MessageItemElements/MessageTextRenderer"
 import * as htmlparser2 from 'htmlparser2';
+import { ALLOWED_FILE_EXTENSIONS, getFileExtension } from "@raven/lib/utils/operations";
 
 type MessageContentRendererProps = {
     message: Message,
     showLinkPreview: boolean
 }
+
 
 export const MessageContentRenderer = ({ message, showLinkPreview }: MessageContentRendererProps) => {
 
@@ -27,7 +29,13 @@ const extractFirstLink = (html: string): string | null => {
     const parser = new htmlparser2.Parser({
         onopentag(name, attributes) {
             if (!firstLink && name === 'a' && attributes.href) {
-                // Ignore mailto: links and ensure it's an http(s) link
+                // Ignore mailto: links and ensure it's an http(s) link and does not end with a file extension
+                const fileExtension = getFileExtension(attributes.href)
+                // if file-extension is one of the allowed file extensions, ignore the link
+                if (fileExtension && ALLOWED_FILE_EXTENSIONS.includes(fileExtension)) {
+                    return
+                }
+
                 if (!attributes.href.startsWith('mailto:') &&
                     (attributes.href.startsWith('http://') ||
                         attributes.href.startsWith('https://'))) {
