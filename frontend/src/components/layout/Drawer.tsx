@@ -6,13 +6,16 @@ import { Drawer as DrawerPrimitive } from "vaul"
 const Drawer = ({
     shouldScaleBackground = true,
     ...props
-}: React.ComponentProps<typeof DrawerPrimitive.Root>) => (
-    <DrawerPrimitive.Root
-        // shouldScaleBackground={shouldScaleBackground}
-        setBackgroundColorOnScale={false}
-        {...props}
-    />
-)
+}: React.ComponentProps<typeof DrawerPrimitive.Root>) => {
+
+    return (
+        <DrawerPrimitive.Root
+            // shouldScaleBackground={shouldScaleBackground}
+            setBackgroundColorOnScale={false}
+            {...props}
+        />
+    )
+}
 Drawer.displayName = "Drawer"
 
 const DrawerTrigger = DrawerPrimitive.Trigger
