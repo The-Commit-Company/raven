@@ -8,23 +8,11 @@ const Drawer = ({
     ...props
 }: React.ComponentProps<typeof DrawerPrimitive.Root>) => {
 
-    const onOpenChange = (open: boolean) => {
-        props.onOpenChange?.(open)
-
-        if (!open) {
-            // Temporary workaround for now. Refer: https://github.com/emilkowalski/vaul/issues/492
-            setTimeout(() => {
-                document.body.style.pointerEvents = "auto"
-            }, 100)
-        }
-
-    }
     return (
         <DrawerPrimitive.Root
             // shouldScaleBackground={shouldScaleBackground}
             setBackgroundColorOnScale={false}
             {...props}
-            onOpenChange={onOpenChange}
         />
     )
 }
