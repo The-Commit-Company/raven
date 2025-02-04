@@ -1,10 +1,11 @@
-import { FrappeError, useFrappeDocTypeEventListener, useFrappeGetCall } from 'frappe-react-sdk'
-import { PropsWithChildren, createContext, useMemo } from 'react'
+import { FrappeError, useFrappeEventListener, useFrappeGetCall } from 'frappe-react-sdk'
+import { PropsWithChildren, createContext, useEffect, useMemo, useState } from 'react'
 import { KeyedMutator } from 'swr'
 import { useSWRConfig } from 'frappe-react-sdk'
 import { toast } from 'sonner'
 import { getErrorMessage } from '@/components/layout/AlertBanner/ErrorBanner'
 import { RavenChannel } from '@/types/RavenChannelManagement/RavenChannel'
+import { useIsMobile } from '@/hooks/useMediaQuery'
 
 export type UnreadChannelCountItem = { name: string, user_id?: string, unread_count: number, is_direct_message: 0 | 1 }
 
@@ -56,11 +57,13 @@ export const ChannelListProvider = ({ children }: PropsWithChildren) => {
  */
 export const useFetchChannelList = (): ChannelListContextType => {
 
+    const isMobile = useIsMobile()
+
     const { mutate: globalMutate } = useSWRConfig()
     const { data, mutate, ...rest } = useFrappeGetCall<{ message: ChannelList }>("raven.api.raven_channel.get_all_channels", {
         hide_archived: false
     }, `channel_list`, {
-        revalidateOnFocus: false,
+        revalidateOnFocus: isMobile ? true : false,
         onError: (error) => {
             toast.error("There was an error while fetching the channel list.", {
                 description: getErrorMessage(error)
@@ -68,11 +71,29 @@ export const useFetchChannelList = (): ChannelListContextType => {
         }
     })
 
-    useFrappeDocTypeEventListener('Raven Channel', () => {
-        mutate()
+    const [newUpdatesAvailable, setNewUpdatesAvailable] = useState(0)
 
-        // Also update the unread channel count
-        globalMutate('unread_channel_count')
+    useEffect(() => {
+        let timeout: NodeJS.Timeout | undefined
+        if (newUpdatesAvailable) {
+            timeout = setTimeout(() => {
+                mutate()
+                // Also update the unread channel count
+                globalMutate('unread_channel_count')
+                setNewUpdatesAvailable(0)
+            }, 1000) // 1 second
+        }
+        return () => clearTimeout(timeout)
+    }, [newUpdatesAvailable])
+
+    /** 
+     * If a bulk import happens, this gets called multiple times potentially causing the server to go down.
+     * Instead, throttle this - wait for all events to subside
+     */
+    useFrappeEventListener('channel_list_updated', () => {
+        if (!rest.isValidating) {
+            setNewUpdatesAvailable((n) => n + 1)
+        }
     })
 
     const { sortedChannels, sortedDMChannels } = useMemo(() => {

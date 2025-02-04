@@ -5,7 +5,7 @@ import frappe
 from frappe import _
 from frappe.model.document import Document
 
-from raven.utils import delete_channel_members_cache, is_channel_member
+from raven.utils import delete_channel_members_cache
 
 
 class RavenChannel(Document):
@@ -55,6 +55,16 @@ class RavenChannel(Document):
 
 		delete_channel_members_cache(self.name)
 
+		if not self.is_thread:
+			# Update the channel list for all users
+			frappe.publish_realtime(
+				"channel_list_updated",
+				{
+					"channel_id": self.name,
+				},
+				after_commit=True,
+			)
+
 		# If the channel was a thread, (i.e. a message exists with the same name), remove the 'is_thread' flag from the message
 		if self.is_thread and frappe.db.exists("Raven Message", {"name": self.name}):
 			message_channel_id = frappe.get_cached_value("Raven Message", self.name, "channel_id")
@@ -87,6 +97,16 @@ class RavenChannel(Document):
 		"""
 		# add current user as channel member
 		if not frappe.flags.in_install and not self.flags.do_not_add_member:
+
+			if self.type in ("Open", "Public") and not self.is_thread:
+				# Update the channel list for all users
+				frappe.publish_realtime(
+					"channel_list_updated",
+					{
+						"channel_id": self.name,
+					},
+					after_commit=True,
+				)
 
 			if self.is_direct_message == 1:
 				# Add both users as members

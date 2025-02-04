@@ -21,7 +21,7 @@ interface ChannelCreationForm {
     type: 'Public' | 'Private' | 'Open'
 }
 
-export const CreateChannelButton = ({ updateChannelList }: { updateChannelList: VoidFunction }) => {
+export const CreateChannelButton = () => {
 
     const [isOpen, setIsOpen] = useState(false)
 
@@ -36,7 +36,7 @@ export const CreateChannelButton = ({ updateChannelList }: { updateChannelList: 
                 </IconButton>
             </Dialog.Trigger>
             <Dialog.Content className={DIALOG_CONTENT_CLASS}>
-                <CreateChannelContent updateChannelList={updateChannelList}
+                <CreateChannelContent
                     isOpen={isOpen}
                     setIsOpen={setIsOpen} />
             </Dialog.Content>
@@ -52,7 +52,7 @@ export const CreateChannelButton = ({ updateChannelList }: { updateChannelList: 
             </DrawerTrigger>
             <DrawerContent>
                 <div className='pb-16 overflow-y-scroll min-h-96'>
-                    <CreateChannelContent updateChannelList={updateChannelList}
+                    <CreateChannelContent
                         isOpen={isOpen}
                         setIsOpen={setIsOpen} />
                 </div>
@@ -65,7 +65,7 @@ export const CreateChannelButton = ({ updateChannelList }: { updateChannelList: 
 }
 
 
-const CreateChannelContent = ({ updateChannelList, isOpen, setIsOpen }: { updateChannelList: VoidFunction, setIsOpen: (v: boolean) => void, isOpen: boolean }) => {
+const CreateChannelContent = ({ isOpen, setIsOpen }: { setIsOpen: (v: boolean) => void, isOpen: boolean }) => {
 
 
     const { workspaceID } = useParams()
@@ -90,7 +90,6 @@ const CreateChannelContent = ({ updateChannelList, isOpen, setIsOpen }: { update
         if (channel_name) {
             // Update channel list when name is provided.
             // Also navigate to new channel
-            updateChannelList()
             navigate(`/${workspace}/${channel_name}`)
             mutate(["channel_members", channel_name])
         }
@@ -112,6 +111,22 @@ const CreateChannelContent = ({ updateChannelList, isOpen, setIsOpen }: { update
             workspace: workspaceID
         }).then(result => {
             if (result) {
+                mutate("channel_list", (data) => {
+                    return {
+                        message: {
+                            ...data.message,
+                            channels: [
+                                ...data.message.channels,
+                                {
+                                    ...result,
+                                }
+                            ]
+                        }
+                    }
+
+                }, {
+                    revalidate: false
+                })
                 toast.success(__("Channel created"))
                 onClose(result.name, workspaceID)
             }
