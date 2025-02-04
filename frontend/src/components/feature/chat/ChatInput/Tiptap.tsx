@@ -30,7 +30,7 @@ import { useSessionStickyState } from '@/hooks/useStickyState'
 import { Message } from '../../../../../../types/Messaging/Message'
 import Image from '@tiptap/extension-image'
 import { EmojiSuggestion } from './EmojiSuggestion'
-import { useIsDesktop, useIsMobile } from '@/hooks/useMediaQuery'
+import { useIsMobile } from '@/hooks/useMediaQuery'
 import { BiPlus } from 'react-icons/bi'
 import clsx from 'clsx'
 import { ChannelMembers } from '@/hooks/fetchers/useFetchChannelMembers'
@@ -107,12 +107,17 @@ const Tiptap = ({ isEdit, slotBefore, fileProps, onMessageSend, channelMembers, 
 
     const { workspaceID } = useParams()
 
+    const isMobile = useIsMobile()
+
     // this is a dummy extension only to create custom keydown behavior
     const KeyboardHandler = Extension.create({
         name: 'keyboardHandler',
         addKeyboardShortcuts() {
             return {
                 Enter: () => {
+                    if (matchMedia('(max-width: 768px)').matches) {
+                        return false
+                    }
 
                     const isCodeBlockActive = this.editor.isActive('codeBlock');
                     const isListItemActive = this.editor.isActive('listItem');
@@ -457,7 +462,6 @@ const Tiptap = ({ isEdit, slotBefore, fileProps, onMessageSend, channelMembers, 
     ]
 
     const [content, setContent] = useSessionStickyState(defaultText, sessionStorageKey, disableSessionStorage)
-    const isMobile = useIsMobile()
 
     const editor = useEditor({
         extensions,
