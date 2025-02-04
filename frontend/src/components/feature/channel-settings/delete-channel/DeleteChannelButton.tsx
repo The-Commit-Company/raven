@@ -27,7 +27,7 @@ export const DeleteChannelButton = ({ onClose: onCloseParent, channelData, allow
         return (
             <AlertDialog.Root open={open} onOpenChange={setOpen}>
                 <AlertDialog.Trigger>
-                    <Button className={'py-6 px-4 bg-transparent text-red-700 hover:bg-red-3 not-cal text-left justify-start rounded-none'} disabled={!allowSettingChange}>
+                    <Button className={'py-6 px-4 bg-transparent text-red-700 dark:text-red-500 hover:bg-red-3 dark:hover:bg-red-2 not-cal text-left justify-start rounded-none rounded-b-md'} disabled={!allowSettingChange}>
                         <BiTrash />
                         Delete channel
                     </Button>
@@ -44,7 +44,7 @@ export const DeleteChannelButton = ({ onClose: onCloseParent, channelData, allow
         return (
             <Drawer open={open} onOpenChange={setOpen}>
                 <DrawerTrigger asChild>
-                    <Button className={'py-6 px-4 bg-transparent text-red-700 hover:bg-red-3 not-cal text-left justify-start rounded-none'} disabled={!allowSettingChange}>
+                    <Button className={'py-6 px-4 bg-transparent text-red-700 dark:text-red-500 hover:bg-red-3 dark:hover:bg-red-2 not-cal text-left justify-start rounded-none'} disabled={!allowSettingChange}>
                         <BiTrash />
                         Delete channel
                     </Button>

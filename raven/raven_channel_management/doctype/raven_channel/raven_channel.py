@@ -84,6 +84,17 @@ class RavenChannel(Document):
 				docname=message_channel_id,
 			)
 
+	def on_update(self):
+		if not self.is_thread:
+			# Update the channel list for all users
+			frappe.publish_realtime(
+				"channel_list_updated",
+				{
+					"channel_id": self.name,
+				},
+				after_commit=True,
+			)
+
 	def after_insert(self):
 		"""
 		After inserting a channel, we need to check if it is a direct message channel or not.
