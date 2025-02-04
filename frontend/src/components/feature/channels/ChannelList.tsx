@@ -2,7 +2,6 @@ import { SidebarGroup, SidebarGroupItem, SidebarGroupLabel, SidebarGroupList, Si
 import { SidebarBadge, SidebarViewMoreButton } from "../../layout/Sidebar/SidebarComp"
 import { CreateChannelButton } from "./CreateChannelModal"
 import { useContext, useLayoutEffect, useMemo, useRef, useState } from "react"
-import { ChannelListContext, ChannelListContextType } from "../../../utils/channel/ChannelListProvider"
 import { ChannelIcon } from "@/utils/layout/channelIcon"
 import { ContextMenu, Flex, Text } from "@radix-ui/themes"
 import { useLocation, useParams } from "react-router-dom"
@@ -20,7 +19,6 @@ interface ChannelListProps {
 
 export const ChannelList = ({ channels }: ChannelListProps) => {
 
-    const { mutate } = useContext(ChannelListContext) as ChannelListContextType
     const [showData, setShowData] = useStickyState(true, 'expandChannelList')
 
     const toggle = () => setShowData(d => !d)
@@ -49,7 +47,7 @@ export const ChannelList = ({ channels }: ChannelListProps) => {
                         <SidebarGroupLabel>{__("Channels")}</SidebarGroupLabel>
                     </Flex>
                     <Flex align='center' gap='1'>
-                        <CreateChannelButton updateChannelList={mutate} />
+                        <CreateChannelButton />
                         <SidebarViewMoreButton onClick={toggle} expanded={showData} />
                     </Flex>
                 </Flex>

@@ -18,7 +18,7 @@ const CreateBot = () => {
     const methods = useForm<RavenBot>({
         disabled: loading,
         defaultValues: {
-            is_ai_bot: 1,
+            is_ai_bot: 0,
             enable_file_search: 1,
             enable_code_interpreter: 1
         }
