@@ -115,7 +115,13 @@ const Tiptap = ({ isEdit, slotBefore, fileProps, onMessageSend, channelMembers, 
         addKeyboardShortcuts() {
             return {
                 Enter: () => {
-                    if (matchMedia('(max-width: 768px)').matches) {
+                    //  Check for phone
+                    if (matchMedia('(max-device-width: 768px)').matches) {
+                        return false
+                    }
+
+                    // Check for iPad
+                    if (matchMedia('(max-device-width: 1024px)').matches) {
                         return false
                     }
 
