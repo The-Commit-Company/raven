@@ -62,6 +62,7 @@ class RavenChannel(Document):
 				{
 					"channel_id": self.name,
 				},
+				room="all",
 				after_commit=True,
 			)
 
@@ -92,6 +93,7 @@ class RavenChannel(Document):
 				{
 					"channel_id": self.name,
 				},
+				room="all",
 				after_commit=True,
 			)
 
@@ -116,6 +118,7 @@ class RavenChannel(Document):
 					{
 						"channel_id": self.name,
 					},
+					room="all",
 					after_commit=True,
 				)
 
