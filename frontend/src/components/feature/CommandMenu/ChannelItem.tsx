@@ -27,13 +27,14 @@ const ChannelItem = ({ channel }: { channel: ChannelListItem }) => {
             <Flex gap='2' align='center'>
                 <ChannelIcon type={channel.type} size='18' />
                 {channel.channel_name}
+                {channel.is_archived ? <Badge color='red' variant='soft'>Archived</Badge> : null}
             </Flex>
             <HStack gap='1'>
                 <BiBuildings color='gray' />
                 <Text size='1' color='gray'>{channel.workspace}</Text>
             </HStack>
 
-            {channel.is_archived ? <Badge color='gray' variant='soft'>Archived</Badge> : null}
+
         </Flex>
     </Command.Item>
 }

@@ -62,6 +62,7 @@ class RavenChannel(Document):
 				{
 					"channel_id": self.name,
 				},
+				room="all",
 				after_commit=True,
 			)
 
@@ -82,6 +83,18 @@ class RavenChannel(Document):
 				},
 				doctype="Raven Channel",
 				docname=message_channel_id,
+			)
+
+	def on_update(self):
+		if not self.is_thread:
+			# Update the channel list for all users
+			frappe.publish_realtime(
+				"channel_list_updated",
+				{
+					"channel_id": self.name,
+				},
+				room="all",
+				after_commit=True,
 			)
 
 	def after_insert(self):
@@ -105,6 +118,7 @@ class RavenChannel(Document):
 					{
 						"channel_id": self.name,
 					},
+					room="all",
 					after_commit=True,
 				)
 
