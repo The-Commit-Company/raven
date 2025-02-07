@@ -1,4 +1,4 @@
-import { useContext, useState } from 'react'
+import { SetStateAction, useContext } from 'react'
 import { FrappeConfig, FrappeContext } from 'frappe-react-sdk'
 import { CustomFile } from '@raven/types/common/File'
 
@@ -11,14 +11,12 @@ export default function useFileUpload(channelID: string) {
 
   const { file } = useContext(FrappeContext) as FrappeConfig
 
-  const [fileUploadProgress, setFileUploadProgress] = useState<Record<string, FileUploadProgress>>({})
+  const uploadFiles = async (files: CustomFile[], setFiles: React.Dispatch<SetStateAction<CustomFile[]>>) => {
 
-  const uploadFiles = async (files: CustomFile[]) => {
+    for (const f of files) {
+      try {
 
-    if (files.length > 0) {
-      const promises = files.map(async (f: CustomFile) => {
-
-        return file.uploadFile(f,
+        await file.uploadFile(f,
           {
             isPrivate: true,
             doctype: 'Raven Message',
@@ -30,45 +28,39 @@ export default function useFileUpload(channelID: string) {
           },
           (bytesUploaded, totalBytes) => {
             const percentage = Math.round((bytesUploaded / (totalBytes ?? f.size)) * 100)
-            setFileUploadProgress(p => ({
-              ...p,
-              [f.fileID]: {
-                progress: percentage,
-                isComplete: false,
-              },
-            }))
+            setFiles((prevFiles) => {
+              return prevFiles.map((file) => {
+                if (file.fileID === f.fileID) {
+                  return { ...file, uploadProgress: percentage, uploading: true }
+                }
+                return file
+              })
+            })
           },
-          'raven.api.upload_file.upload_file_with_message')
-          .then(() => {
-            setFileUploadProgress(p => ({
-              ...p,
-              [f.fileID]: {
-                progress: 100,
-                isComplete: true,
-              },
-            }))
-          })
-          .catch((e) => {
-            console.error(`Error uploading file ${f.name}`, e)
-            setFileUploadProgress(p => {
-              const newProgress = { ...p }
-              delete newProgress[f.fileID]
-              return newProgress
+          'raven.api.upload_file.upload_file_with_message'
+        ).then(() => {
+          setFiles((prevFiles) => {
+            return prevFiles.map((file) => {
+              if (file.fileID === f.fileID) {
+                return { ...file, uploadProgress: 100, uploading: false }
+              }
+              return file
             })
           })
-      })
-
-      return Promise.all(promises)
-        .catch((e) => {
-          console.error(e)
         })
-    } else {
-      return Promise.resolve()
+        setFiles((prevFiles) => {
+          return prevFiles.filter((file) => file.fileID !== f.fileID)
+        })
+      } catch (error) {
+        console.error(`Error uploading file ${f.name}`, error)
+        setFiles((prevFiles) => {
+          return prevFiles.filter((file) => file.fileID !== f.fileID)
+        })
+      }
     }
   }
 
   return {
-    uploadFiles,
-    fileUploadProgress
+    uploadFiles
   }
 }

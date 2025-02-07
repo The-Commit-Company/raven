@@ -33,7 +33,7 @@ const ChatStream = ({ channelID }: Props) => {
     if (data) {
         return (
             <View style={{
-                paddingBottom: 80 + (isKeyboardVisible ? 0 : bottom),
+                paddingBottom: 120 + (isKeyboardVisible ? 0 : bottom), // height of the chat input, adjust this accordindly
             }} className='bg-white dark:bg-background'>
                 {/* <FlatList
                     data={data}

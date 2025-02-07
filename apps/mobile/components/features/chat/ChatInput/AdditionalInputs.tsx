@@ -1,21 +1,21 @@
 import { Button } from "@components/nativewindui/Button"
 import { useSheetRef, Sheet } from "@components/nativewindui/Sheet"
-import { BottomSheetView } from "@gorhom/bottom-sheet"
+import { BottomSheetModal, BottomSheetView } from "@gorhom/bottom-sheet"
 import { useColorScheme } from "@hooks/useColorScheme"
 import { View } from "react-native"
 import PlusIcon from "@assets/icons/PlusIcon.svg"
 import FilePickerButton from "@components/common/FilePickerButton"
 import ImagePickerButton from "@components/common/ImagePickerButton"
 import GIFPickerButton from "@components/common/GIFPicker/GIFPickerButton"
-import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { useKeyboardVisible } from "@hooks/useKeyboardVisible"
+import { CustomFile } from "@raven/types/common/File"
+import { useAtom } from 'jotai'
+import { filesAtom } from "app/[site_id]/chat/[id]"
 
 const AdditionalInputs = () => {
     const bottomSheetRef = useSheetRef()
 
     const { colors } = useColorScheme()
-
-    const { bottom } = useSafeAreaInsets()
 
     const { isKeyboardVisible, keyboardHeight } = useKeyboardVisible()
 
@@ -25,9 +25,9 @@ const AdditionalInputs = () => {
                 onPress={() => bottomSheetRef.current?.present()}>
                 <PlusIcon fill={colors.foreground} />
             </Button>
-            <Sheet ref={bottomSheetRef} bottomInset={isKeyboardVisible ? keyboardHeight : bottom} keyboardBehavior='interactive' keyboardBlurBehavior="restore" android_keyboardInputMode="adjustPan">
+            <Sheet ref={bottomSheetRef} bottomInset={isKeyboardVisible ? keyboardHeight : 0} keyboardBehavior='interactive' keyboardBlurBehavior="restore" android_keyboardInputMode="adjustPan">
                 <BottomSheetView className='pb-16'>
-                    <AdditionalInputsSheetContent />
+                    <AdditionalInputsSheetContent bottomSheetRef={bottomSheetRef} />
                 </BottomSheetView>
             </Sheet>
         </View >
@@ -36,11 +36,21 @@ const AdditionalInputs = () => {
 
 export default AdditionalInputs
 
-const AdditionalInputsSheetContent = () => {
+const AdditionalInputsSheetContent = ({ bottomSheetRef }: { bottomSheetRef: React.RefObject<BottomSheetModal> }) => {
+
+    const [, setFiles] = useAtom(filesAtom)
+
+    const handlePick = (files: CustomFile[]) => {
+        setFiles((prevFiles) => {
+            return [...prevFiles, ...files]
+        })
+        bottomSheetRef.current?.close()
+    }
+
     return (
         <View className="flex-col gap-4 justify-start items-start p-4">
-            <FilePickerButton onPick={() => { }} label="Upload files" />
-            <ImagePickerButton onPick={() => { }} label="Upload images" />
+            <FilePickerButton onPick={handlePick} label="Upload files" />
+            <ImagePickerButton onPick={handlePick} label="Upload images" />
             <GIFPickerButton onSelect={() => { }} label="Send GIF" />
         </View>
     )

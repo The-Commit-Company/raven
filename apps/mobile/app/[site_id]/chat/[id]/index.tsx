@@ -1,8 +1,8 @@
 import { KeyboardAvoidingView, Platform, View } from 'react-native'
-import { router, Stack, useLocalSearchParams } from 'expo-router';
+import { Stack, useLocalSearchParams } from 'expo-router';
 import ChatStream from '@components/features/chat-stream/ChatStream';
 import { CustomFile } from '@raven/types/common/File';
-import { atom, useSetAtom } from 'jotai'
+import { atom } from 'jotai'
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useKeyboardVisible } from '@hooks/useKeyboardVisible';
 import ChatInput from '@components/features/chat/ChatInput/ChatInput';
@@ -12,20 +12,11 @@ export const filesAtom = atom<CustomFile[]>([])
 const Chat = () => {
 
     const { bottom } = useSafeAreaInsets()
-    const { isKeyboardVisible } = useKeyboardVisible()
+    const { isKeyboardVisible, keyboardHeight } = useKeyboardVisible()
 
     const { id } = useLocalSearchParams();
 
-    const setFiles = useSetAtom(filesAtom)
-
     console.log("Channel id: ", id);
-
-    const handleFilePick = (files: CustomFile[]) => {
-        setFiles(files)
-        router.push('./file-send', {
-            relativeToDirectory: true
-        })
-    }
 
     return (
         <>
@@ -50,9 +41,9 @@ const Chat = () => {
                     </View>
                 </View> */}
                 <View
-                    className='px-4 py-2 w-full gap-2 items-center justify-center'
+                    className='px-4 py-2 w-full gap-2 items-center justify-center absolute'
                     style={{
-                        bottom: 80 + (isKeyboardVisible ? 0 : bottom),
+                        bottom: isKeyboardVisible ? keyboardHeight : bottom,
                     }}
                 >
                     <ChatInput />
