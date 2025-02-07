@@ -3,20 +3,34 @@ import { router, Stack, useLocalSearchParams } from 'expo-router';
 import { Button } from '@components/nativewindui/Button';
 import { Text } from '@components/nativewindui/Text';
 import ChatStream from '@components/features/chat-stream/ChatStream';
+import { useCurrentChannelData } from '@hooks/useCurrentChannelData';
+import { ChannelIcon } from '@components/features/channels/ChannelList/ChannelIcon';
+import { useColorScheme } from '@hooks/useColorScheme';
+import ChevronLeftIcon from '@assets/icons/ChevronLeftIcon.svg';
+import { useState } from 'react';
+import ChannelInfoModal from '@components/features/channel-settings/ChannelInfoModal';
 
 const Chat = () => {
-    const { id } = useLocalSearchParams();
 
+    const { id } = useLocalSearchParams()
+    const { channel } = useCurrentChannelData(id as string)
+    const colors = useColorScheme()
+
+    const [isModalVisible, setModalVisible] = useState(false)
     const handleOnTitlePress = () => {
-        router.push('./channel-settings', {
-            relativeToDirectory: true
-        })
+        setModalVisible(true)
     }
 
     return (
         <>
             <Stack.Screen options={{
-                headerBackButtonDisplayMode: 'minimal',
+                headerLeft: () => {
+                    return (
+                        <TouchableOpacity onPress={() => router.back()} hitSlop={10}>
+                            <ChevronLeftIcon stroke={colors.colors.foreground} />
+                        </TouchableOpacity>
+                    );
+                },
                 title: id as string,
                 headerRight: undefined,
                 headerTitle: () => {
@@ -24,13 +38,13 @@ const Chat = () => {
                         <TouchableOpacity
                             onPress={handleOnTitlePress}
                             className='flex-1'
-                            activeOpacity={0.5}
-                        >
-                            <View className='flex-row justify-center items-center'>
-                                <Text className='text-md font-bold'>{id as string}</Text>
-                            </View>
+                            activeOpacity={0.5}>
+                            {channel && <View className='flex-row items-center rounded-md p-1'>
+                                <ChannelIcon type={channel.type} fill={colors.colors.foreground} />
+                                <Text className='ml-2 text-base font-semibold'>{id}</Text>
+                            </View>}
                         </TouchableOpacity>
-                    )
+                    );
                 }
             }} />
             <View className='flex-1'>
@@ -44,6 +58,10 @@ const Chat = () => {
                     </View>
                 </View>
             </View>
+            <ChannelInfoModal
+                channel={channel}
+                isModalVisible={isModalVisible}
+                setModalVisible={setModalVisible} />
         </>
     )
 }

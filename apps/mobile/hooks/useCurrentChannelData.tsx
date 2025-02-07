@@ -2,12 +2,12 @@ import { useChannelListProvider } from "@raven/lib/providers/ChannelListProvider
 import { ChannelListItem, DMChannelListItem } from "@raven/types/common/ChannelListItem"
 import { useMemo } from "react"
 
-interface CurrentChannelDMData {
+export interface CurrentChannelDMData {
     channelData: DMChannelListItem,
     type: "dm",
 }
 
-interface CurrentChannelData {
+export interface CurrentChannelData {
     channelData: ChannelListItem,
     type: "channel",
 }

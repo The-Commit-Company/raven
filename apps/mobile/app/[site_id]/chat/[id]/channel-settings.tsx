@@ -1,4 +1,4 @@
-import { View, Platform } from "react-native"
+import { View, TouchableOpacity } from "react-native"
 import { Text } from "@components/nativewindui/Text"
 import { router, useLocalSearchParams } from "expo-router"
 import { Stack } from "expo-router"
@@ -14,13 +14,15 @@ import HashIcon from '@assets/icons/HashIcon.svg';
 import { useSheetRef } from "@components/nativewindui/Sheet";
 import { ChangeChannelTypeSheet, getChangeChannelType } from "@components/features/channel-settings/ChangeChannelType";
 import { ChannelListItem } from "@raven/types/common/ChannelListItem";
-import { useColorScheme } from "@hooks/useColorScheme";
 import { MembersTray } from "@components/features/channel-settings/MembersTray";
 import { AboutChannel } from "@components/features/channel-settings/AboutChannel";
 import { Button } from "@components/nativewindui/Button";
 import PushNotifications from "@components/features/channel-settings/PushNotifications";
 import CreatedBy from "@components/features/channel-settings/CreatedBy";
 import PenIcon from "@assets/icons/PenIcon.svg"
+import ChevronLeftIcon from "@assets/icons/ChevronLeftIcon.svg"
+import ThreeHorizontalDots from "@assets/icons/ThreeHorizontalDots.svg"
+import { useColorScheme } from "@hooks/useColorScheme";
 
 export type ChannelSettingsDataItem = {
     id: string;
@@ -36,14 +38,6 @@ export type ChannelSettingsDataComponent = {
 }
 
 export type ChannelSettingsListData = (ChannelSettingsDataItem | ChannelSettingsDataComponent)[];
-
-const SCREEN_OPTIONS = {
-    title: 'Channel Info',
-    headerBackButtonDisplayMode: 'minimal',
-    headerTransparent: Platform.OS === 'ios',
-    headerBlurEffect: 'systemMaterial',
-    headerRight: () => <ChannelNameEditButton />,
-} as const;
 
 export type ChannelType = 'Public' | 'Private' | 'Open';
 
@@ -114,7 +108,25 @@ const ChannelSettings = () => {
 
     return (
         <>
-            <Stack.Screen options={SCREEN_OPTIONS} />
+            <Stack.Screen options={{
+                headerLeft: () => {
+                    return (
+                        <TouchableOpacity onPress={() => router.back()} hitSlop={10}>
+                            <ChevronLeftIcon stroke={colors.foreground} />
+                        </TouchableOpacity>
+                    )
+                },
+                headerTitle: () => {
+                    return <Text className='ml-2 text-base font-semibold'>Channel Info</Text>
+                },
+                headerRight: () => {
+                    return (
+                        <TouchableOpacity hitSlop={10}>
+                            <ThreeHorizontalDots height={20} width={20} color={colors.foreground} />
+                        </TouchableOpacity>
+                    )
+                }
+            }} />
             <List
                 variant="insets"
                 data={channelSettingsData as ChannelSettingsDataItem[]}
