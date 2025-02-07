@@ -18,11 +18,12 @@ import { MembersTray } from "@components/features/channel-settings/MembersTray";
 import { AboutChannel } from "@components/features/channel-settings/AboutChannel";
 import { Button } from "@components/nativewindui/Button";
 import PushNotifications from "@components/features/channel-settings/PushNotifications";
-import CreatedBy from "@components/features/channel-settings/CreatedBy";
 import PenIcon from "@assets/icons/PenIcon.svg"
 import ChevronLeftIcon from "@assets/icons/ChevronLeftIcon.svg"
 import ThreeHorizontalDots from "@assets/icons/ThreeHorizontalDots.svg"
 import { useColorScheme } from "@hooks/useColorScheme";
+import { useGetUser } from "@raven/lib/hooks/useGetUser";
+import ChannelCreator from "@components/features/channel-settings/ChannelCreator";
 
 export type ChannelSettingsDataItem = {
     id: string;
@@ -66,6 +67,8 @@ const ChannelSettings = () => {
         }
     }) : [];
 
+    const channelOwner = useGetUser(channelData?.owner ?? "")
+
     const channelSettingsData: (string | ChannelSettingsDataItem | ChannelSettingsDataComponent)[] = [
         'Channel Description',
         {
@@ -99,11 +102,6 @@ const ChannelSettings = () => {
             icon: <TrashIcon fill={colors.destructive} />,
             titleClassName: 'text-lg text-destructive',
         } as ChannelSettingsDataItem,
-        'Created By',
-        {
-            id: 'CreatedBy',
-            component: <CreatedBy channelData={channelData as ChannelListItem} />
-        } as ChannelSettingsDataComponent,
     ];
 
     return (
@@ -127,12 +125,15 @@ const ChannelSettings = () => {
                     )
                 }
             }} />
+            <View className="flex-1 p-4">
+                <ChannelCreator channelData={channelData} />
+            </View>
+
             <List
                 variant="insets"
                 data={channelSettingsData as ChannelSettingsDataItem[]}
                 estimatedItemSize={64}
                 renderItem={renderItem}
-                ListFooterComponent={<ListFooterComponent />}
             />
 
             {
@@ -152,7 +153,6 @@ const ChannelSettings = () => {
                     />
                 </>
             }
-
         </>
     );
 };
@@ -160,19 +160,6 @@ const ChannelSettings = () => {
 
 function renderItem(info: ListRenderItemInfo<ChannelSettingsDataItem>) {
     return <Item info={info} />;
-}
-
-const ListFooterComponent = () => {
-    return (
-        <View className="py-4 px-1 gap-0.5">
-            <Text className="text-muted-foreground text-sm">
-                Only channel admins are allowed to change the channel settings
-            </Text>
-            <Text className="text-muted-foreground text-sm">
-                General channel cannot be modified/removed
-            </Text>
-        </View>
-    )
 }
 
 function Item({ info }: { info: ListRenderItemInfo<ChannelSettingsDataItem> }) {
