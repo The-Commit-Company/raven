@@ -22,7 +22,7 @@ export const UserListProvider = ({ children }: PropsWithChildren) => {
         revalidateOnReconnect: false,
     })
 
-    const [newUpdatesAvailable, setNewUpdatesAvailable] = useState(false)
+    const [newUpdatesAvailable, setNewUpdatesAvailable] = useState(0)
 
     useEffect(() => {
         let timeout: NodeJS.Timeout | undefined
@@ -31,7 +31,7 @@ export const UserListProvider = ({ children }: PropsWithChildren) => {
                 mutate()
                 // Mutate the channel list as well
                 globalMutate(`channel_list`)
-                setNewUpdatesAvailable(false)
+                setNewUpdatesAvailable(0)
             }, 1000) // 1 second
         }
         return () => clearTimeout(timeout)
@@ -42,7 +42,7 @@ export const UserListProvider = ({ children }: PropsWithChildren) => {
      * Instead, throttle this - wait for all events to subside
      */
     useFrappeDocTypeEventListener('Raven User', () => {
-        setNewUpdatesAvailable(true)
+        setNewUpdatesAvailable((n) => n + 1)
     })
 
     const { users, enabledUsers } = useMemo(() => {

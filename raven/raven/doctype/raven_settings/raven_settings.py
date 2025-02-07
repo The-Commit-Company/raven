@@ -28,6 +28,7 @@ class RavenSettings(Document):
 		openai_api_key: DF.Password | None
 		openai_organisation_id: DF.Data | None
 		openai_project_id: DF.Data | None
+		push_notification_service: DF.Literal["Frappe Cloud", "Raven"]
 		show_if_a_user_is_on_leave: DF.Check
 		show_raven_on_desk: DF.Check
 		tenor_api_key: DF.Data | None

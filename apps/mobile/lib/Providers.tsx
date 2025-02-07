@@ -3,6 +3,7 @@ import { Text } from '@components/nativewindui/Text'
 import { ChannelListContext, useChannelListProvider } from '@raven/lib/providers/ChannelListProvider'
 import { UserListContext, useUserListProvider } from '@raven/lib/providers/UserListProvider'
 import React, { PropsWithChildren } from 'react'
+import { View } from 'react-native'
 import { ActiveUserProvider } from './UserInactivityProvider'
 
 const Providers = (props: PropsWithChildren) => {
@@ -14,7 +15,9 @@ const Providers = (props: PropsWithChildren) => {
     }
 
     if (error) {
-        return <Text>Error loading users</Text>
+        return <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+            <Text>Error loading users</Text>
+        </View>
     }
 
     return (
@@ -36,7 +39,9 @@ const ChannelListProvider = ({ children }: PropsWithChildren) => {
     }
 
     if (channelListContextData.error) {
-        return <Text>Error loading channels</Text>
+        return <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+            <Text>Error loading channels</Text>
+        </View>
     }
 
     return <ChannelListContext.Provider value={channelListContextData}>
