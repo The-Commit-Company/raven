@@ -34,7 +34,8 @@
   {
    "fieldname": "device_information",
    "fieldtype": "Data",
-   "label": "Device Information"
+   "label": "Device Information",
+   "length": 300
   },
   {
    "fieldname": "column_break_wmua",
@@ -50,7 +51,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-02-07 14:21:09.951155",
+ "modified": "2025-02-07 15:05:59.524997",
  "modified_by": "Administrator",
  "module": "Raven",
  "name": "Raven Push Token",
