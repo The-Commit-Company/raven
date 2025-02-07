@@ -15,15 +15,13 @@ import { useSheetRef } from "@components/nativewindui/Sheet";
 import { ChangeChannelTypeSheet, getChangeChannelType } from "@components/features/channel-settings/ChangeChannelType";
 import { ChannelListItem } from "@raven/types/common/ChannelListItem";
 import { MembersTray } from "@components/features/channel-settings/MembersTray";
-import { AboutChannel } from "@components/features/channel-settings/AboutChannel";
-import { Button } from "@components/nativewindui/Button";
 import PushNotifications from "@components/features/channel-settings/PushNotifications";
-import PenIcon from "@assets/icons/PenIcon.svg"
 import ChevronLeftIcon from "@assets/icons/ChevronLeftIcon.svg"
 import ThreeHorizontalDots from "@assets/icons/ThreeHorizontalDots.svg"
 import { useColorScheme } from "@hooks/useColorScheme";
-import { useGetUser } from "@raven/lib/hooks/useGetUser";
-import ChannelCreator from "@components/features/channel-settings/ChannelCreator";
+import ChannelCreator from "@components/features/channel-settings/BaseDetails/ChannelCreator";
+import { Divider } from "@components/layout/Divider";
+import ChannelBaseDetails from "@components/features/channel-settings/BaseDetails/ChannelBaseDetails";
 
 export type ChannelSettingsDataItem = {
     id: string;
@@ -67,14 +65,7 @@ const ChannelSettings = () => {
         }
     }) : [];
 
-    const channelOwner = useGetUser(channelData?.owner ?? "")
-
     const channelSettingsData: (string | ChannelSettingsDataItem | ChannelSettingsDataComponent)[] = [
-        'Channel Description',
-        {
-            id: 'ChannelDescription',
-            component: <AboutChannel />
-        } as ChannelSettingsDataComponent,
         'Channel Members',
         {
             id: 'ChannelMembers',
@@ -125,16 +116,20 @@ const ChannelSettings = () => {
                     )
                 }
             }} />
-            <View className="flex-1 p-4">
-                <ChannelCreator channelData={channelData} />
+            <View className="flex-1">
+                <View className="flex-col p-4 gap-4">
+                    <ChannelBaseDetails channelData={channelData} />
+                    <Divider className='mx-0' prominent />
+                    <ChannelCreator channelData={channelData} />
+                </View>
             </View>
 
-            <List
+            {/* <List
                 variant="insets"
                 data={channelSettingsData as ChannelSettingsDataItem[]}
                 estimatedItemSize={64}
                 renderItem={renderItem}
-            />
+            /> */}
 
             {
                 channelData &&
@@ -189,18 +184,5 @@ function Item({ info }: { info: ListRenderItemInfo<ChannelSettingsDataItem> }) {
         />
     );
 }
-
-const ChannelNameEditButton = () => {
-    const { colors } = useColorScheme();
-
-    return (
-        <Button variant="plain" onPress={() => {
-            router.push(`../channel-name-edit`, { relativeToDirectory: true })
-        }}>
-            <PenIcon width={24} height={24} fill={colors.icon} />
-        </Button>
-    )
-}
-
 
 export default ChannelSettings;
