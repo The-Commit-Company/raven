@@ -56,7 +56,7 @@ const TAG_BASE_STYLES: TRenderEngineConfig['tagsStyles'] = {
 const lightThemeTagStyles = {
     'a': {
         color: 'rgb(87, 83, 198)',
-        borderBottomColor: 'rgba(87, 83, 198, 0.8)',
+        borderBottomWidth: 0,
     },
     'blockquote': {
         borderLeftColor: 'rgba(87, 83, 198, 0.5)',
@@ -76,7 +76,7 @@ const lightThemeTagStyles = {
 const darkThemeTagStyles = {
     'a': {
         color: '#B1A9FF',
-        borderBottomColor: '#B1A9FF88',
+        borderBottomWidth: 0,
     },
     'blockquote': {
         borderLeftColor: '#6E6ADE',

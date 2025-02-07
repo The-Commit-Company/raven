@@ -9,7 +9,8 @@ type Props = {
 
 const MessageHeader = ({ is_continuation, userFullName, timestamp }: Props) => {
 
-    if (is_continuation) return null
+    if (is_continuation) return <View className='mt-1' />
+
     return (
         <View className='flex-row gap-2 items-baseline pb-1'>
             <Text className='font-medium text-sm'>{userFullName}</Text>

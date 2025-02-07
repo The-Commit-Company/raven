@@ -9,7 +9,6 @@ interface ImageViewerProps {
 }
 
 const ImageViewer = ({ uri, handleShowHeader }: ImageViewerProps) => {
-    console.log('ImageViewer', uri)
     const source = useFileURL(uri)
     if (!source) {
         return <View className="p-2">

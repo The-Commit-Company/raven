@@ -27,7 +27,7 @@ const LinkPreview = memo(({ messageID, href }: LinkPreviewProps) => {
     const image = linkPreview.absolute_image || linkPreview.image;
 
     return (
-        <View className="w-[70%] border border-gray-200 dark:border-gray-700 bg-gray-100 dark:bg-gray-900 rounded-lg overflow-hidden relative">
+        <View className="w-[80%] border border-gray-200 dark:border-gray-700 bg-gray-100 dark:bg-gray-900 rounded-lg overflow-hidden relative">
             <TouchableOpacity onPress={handleLinkPress} activeOpacity={0.7}>
                 <View>
                     <Image

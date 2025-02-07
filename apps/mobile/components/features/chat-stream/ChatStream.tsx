@@ -96,6 +96,12 @@ const messageKeyExtractor = (item: MessageDateBlock) => {
 }
 
 const MessageContentRenderer = ({ item }: { item: MessageDateBlock }) => {
+
+    // TODO: Implement reply message press
+    const onReplyMessagePress = () => {
+        console.log('reply message pressed')
+    }
+
     if (item.message_type === 'date') {
         return <DateSeparator item={item} />
     }
@@ -103,7 +109,7 @@ const MessageContentRenderer = ({ item }: { item: MessageDateBlock }) => {
     if (item.message_type === 'System') {
         return <SystemMessageBlock item={item} />
     }
-    return <MessageItem message={item} />
+    return <MessageItem message={item} onReplyMessagePress={onReplyMessagePress} />
 }
 
 export default ChatStream

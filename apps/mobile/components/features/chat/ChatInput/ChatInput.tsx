@@ -5,11 +5,11 @@ import SendIcon from "@assets/icons/SendIcon.svg"
 import { useColorScheme } from "@hooks/useColorScheme"
 import SendItem from "./SendItem"
 import { useAtom } from 'jotai'
-import { filesAtom } from "app/[site_id]/chat/[id]"
 import useFileUpload from "@raven/lib/hooks/useFileUpload"
 import { useLocalSearchParams } from "expo-router"
 import { CustomFile } from "@raven/types/common/File"
 import { useState } from "react"
+import { filesAtom } from "@lib/filesAtom"
 
 const ChatInput = () => {
 
