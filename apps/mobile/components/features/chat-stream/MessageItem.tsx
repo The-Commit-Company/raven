@@ -9,11 +9,12 @@ import { FileMessage, ImageMessage, PollMessage, TextMessage } from '@raven/type
 import MessageAvatar from '@components/features/chat-stream/MessageItemElements/MessageAvatar'
 import MessageHeader from '@components/features/chat-stream/MessageItemElements/MessageHeader'
 import FileMessageRenderer from '@components/features/chat/ChatMessage/Renderers/FileMessageRenderer'
-import { MessageContentRenderer } from '@components/features/chat-stream/MessageItemElements/MessageContentRenderer'
+import { MessageLinkRenderer } from '@components/features/chat-stream/MessageItemElements/MessageLinkRenderer'
 import DocTypeLinkRenderer from '@components/features/chat/ChatMessage/Renderers/DocTypeLinkRenderer'
 import { PollMessageBlock } from '@components/features/chat/ChatMessage/Renderers/PollMessage'
 import ReplyMessageBox from '@components/features/chat/ChatMessage/ReplyMessageBox/ReplyMessageBox';
 import { ImageMessageRenderer } from '@components/features/chat/ChatMessage/Renderers/ImageMessage';
+import MessageTextRenderer from './MessageItemElements/MessageTextRenderer';
 
 type Props = {
     message: FileMessage | PollMessage | TextMessage | ImageMessage,
@@ -75,7 +76,7 @@ const MessageItem = memo(({ message, onReplyMessagePress }: Props) => {
                 />
                 }
 
-                {message.text ? <MessageContentRenderer message={message} showLinkPreview={!message.hide_link_preview} /> : null}
+                {message.text ? <MessageTextRenderer text={message.text} /> : null}
                 {message.message_type === 'Image' && <ImageMessageRenderer message={message} />}
                 {message.message_type === 'File' && <FileMessageRenderer message={message} />}
                 {message.message_type === 'Poll' && <PollMessageBlock message={message} />}
@@ -85,7 +86,7 @@ const MessageItem = memo(({ message, onReplyMessagePress }: Props) => {
                 </View>}
 
                 {message.is_edited === 1 && <Text className='text-xs text-gray-500 dark:text-gray-400'>(edited)</Text>}
-                {/* <Text>{message.text}</Text> */}
+                {message.hide_link_preview === 0 && <MessageLinkRenderer message={message} />}
             </View>
         </View>
     )

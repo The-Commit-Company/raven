@@ -1,25 +1,21 @@
 import { Message } from "@raven/types/common/Message"
 import LinkPreview from "@components/features/chat/ChatMessage/Renderers/LinkPreview"
-import MessageTextRenderer from "@components/features/chat-stream/MessageItemElements/MessageTextRenderer"
 import * as htmlparser2 from 'htmlparser2';
 import { ALLOWED_FILE_EXTENSIONS, getFileExtension } from "@raven/lib/utils/operations";
 
-type MessageContentRendererProps = {
-    message: Message,
-    showLinkPreview: boolean
+type MessageLinkRendererProps = {
+    message: Message
 }
 
 
-export const MessageContentRenderer = ({ message, showLinkPreview }: MessageContentRendererProps) => {
+export const MessageLinkRenderer = ({ message }: MessageLinkRendererProps) => {
 
     const firstLink = extractFirstLink(message.text)
 
-    if (showLinkPreview && firstLink) {
+    if (firstLink) {
         return <LinkPreview messageID={message.name} href={firstLink} />
     }
-    return (
-        <MessageTextRenderer text={message.text} />
-    )
+    return null
 }
 
 // in message search for first link and extract href to show link preview
