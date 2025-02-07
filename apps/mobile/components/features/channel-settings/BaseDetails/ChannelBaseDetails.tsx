@@ -24,10 +24,7 @@ const ChannelBaseDetails = ({ channelData }: { channelData: FrappeDoc<ChannelLis
                 </Button>
             </View>
             {channelData?.channel_description && (
-                <View className="flex items-start gap-1.5">
-                    <Text className='text-sm font-medium'>Description:</Text>
-                    <Text className='text-sm text-muted-foreground'>{channelData?.channel_description}</Text>
-                </View>
+                <Text className='text-sm font-medium'>Description: <Text className='text-sm font-normal text-muted-foreground'>{channelData?.channel_description}</Text></Text>
             )}
         </View>
     )

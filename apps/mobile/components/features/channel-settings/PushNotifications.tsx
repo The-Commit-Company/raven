@@ -7,6 +7,7 @@ import useCurrentRavenUser from '@raven/lib/hooks/useCurrentRavenUser'
 import { Toggle } from '@components/nativewindui/Toggle'
 import { Text } from '@components/nativewindui/Text';
 import { toast } from 'sonner-native';
+import BellOutlineIcon from '@assets/icons/BellOutlineIcon.svg'
 
 interface PushNotifications {
     channelID: string
@@ -62,9 +63,12 @@ const PushNotifications = ({ channelID }: PushNotifications) => {
     }
 
     return (
-        <View className='mt-3'>
-            <View className='p-3 bg-card rounded-lg flex-row justify-between items-center'>
-                <Text>Push Notifications</Text>
+        <View>
+            <View className='rounded-lg flex-row justify-between items-center'>
+                <View className='flex-row items-center gap-2'>
+                    <BellOutlineIcon height={18} width={18} />
+                    <Text className='text-base'>Push Notifications</Text>
+                </View>
                 <Toggle value={channelMember?.allow_notifications ? true : false} onValueChange={onToggle} disabled={!isPushAvailable} />
             </View>
         </View>

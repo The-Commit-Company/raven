@@ -2,7 +2,6 @@ import { View, TouchableOpacity } from "react-native"
 import { Text } from "@components/nativewindui/Text"
 import { router, useLocalSearchParams } from "expo-router"
 import { Stack } from "expo-router"
-import { List, ListItem, ListRenderItemInfo, ListSectionHeader } from "@components/nativewindui/List";
 import { ArchiveChannelModal } from "@components/features/channel-settings/ArchiveChannelModal";
 import { DeleteChannelModal } from "@components/features/channel-settings/DeleteChannelModal";
 import { useFrappeGetDoc } from "frappe-react-sdk";
@@ -66,17 +65,6 @@ const ChannelSettings = () => {
     }) : [];
 
     const channelSettingsData: (string | ChannelSettingsDataItem | ChannelSettingsDataComponent)[] = [
-        'Channel Members',
-        {
-            id: 'ChannelMembers',
-            component: <MembersTray
-                onViewAll={() => { router.push(`../channel-settings-members`, { relativeToDirectory: true }) }}
-            />
-        } as ChannelSettingsDataComponent,
-        {
-            id: 'PushNotifications',
-            component: <PushNotifications channelID={id as string} />
-        } as ChannelSettingsDataComponent,
         'Channel Settings',
         ...changeChannelTypeButtons as ChannelSettingsListData,
         {
@@ -116,10 +104,16 @@ const ChannelSettings = () => {
                     )
                 }
             }} />
-            <View className="flex-1">
+            <View className="flex-1 bg-card">
                 <View className="flex-col p-4 gap-4">
                     <ChannelBaseDetails channelData={channelData} />
                     <Divider className='mx-0' prominent />
+                    <MembersTray onViewAll={() => { router.push(`../channel-settings-members`, { relativeToDirectory: true }) }} />
+                    <Divider className='mx-0' prominent />
+                    <View className="flex-col gap-3">
+                        <Text className="text-sm font-medium">Settings</Text>
+                        <PushNotifications channelID={id as string} />
+                    </View>
                     <ChannelCreator channelData={channelData} />
                 </View>
             </View>
@@ -149,40 +143,7 @@ const ChannelSettings = () => {
                 </>
             }
         </>
-    );
-};
-
-
-function renderItem(info: ListRenderItemInfo<ChannelSettingsDataItem>) {
-    return <Item info={info} />;
+    )
 }
 
-function Item({ info }: { info: ListRenderItemInfo<ChannelSettingsDataItem> }) {
-
-    if (typeof info.item === 'string') {
-        return <ListSectionHeader {...info} />;
-    }
-
-    if ('component' in info.item) {
-        return (
-            <View>
-                {info.item.component as React.ReactNode}
-            </View>
-        );
-    }
-
-    return (
-        <ListItem
-            titleClassName={info.item.titleClassName}
-            leftView={
-                <View className="flex-1 flex-row items-center gap-1 px-2">
-                    {info.item.icon}
-                </View>
-            }
-            onPress={info.item.onPress}
-            {...info}
-        />
-    );
-}
-
-export default ChannelSettings;
+export default ChannelSettings
