@@ -4,11 +4,14 @@ import { Message } from '@raven/types/common/Message'
 import { Text, Pressable, View } from 'react-native'
 import { ScrollView } from 'react-native-gesture-handler'
 import QuickReactions from './QuickActions/QuickReactions'
+import ReplyIcon from "@assets/icons/ReplyIcon.svg"
 import ForwardIcon from "@assets/icons/ForwardIcon.svg"
 import CopyIcon from "@assets/icons/CopyIcon.svg"
 import BookMarkMinusIcon from "@assets/icons/BookMarkMinusIcon.svg"
 import BookMarkPlusIcon from "@assets/icons/BookMarkPlusIcon.svg"
+import PaperClipIcon from "@assets/icons/PaperClipIcon.svg"
 import TrashIcon from "@assets/icons/TrashIcon.svg"
+import DownloadIcon from "@assets/icons/DownloadIcon.svg"
 import ArrowBackRetractIcon from "@assets/icons/ArrowBackRetractIcon.svg"
 import MessageIcon from "@assets/icons/MessageIcon.svg"
 import { ActivityIndicator } from '@components/nativewindui/ActivityIndicator'
@@ -20,8 +23,8 @@ import useRetractVote from './useRetractVote'
 import useMessageDelete from './useMessageDelete'
 import { router } from 'expo-router'
 import { useColorScheme } from '@hooks/useColorScheme'
-import { Alert } from '@components/nativewindui/Alert'
 import { AlertRef } from '@components/nativewindui/Alert/types'
+import { Alert } from '@components/nativewindui/Alert'
 import { Divider } from '@components/layout/Divider'
 
 interface MessageActionsProps {

@@ -69,8 +69,7 @@
     "react-native-webview": "13.12.5",
     "react-native-zoom-toolkit": "^4.0.0",
     "sonner-native": "^0.16.2",
-    "tailwind-merge": "^2.5.5",
-    "zeego": "^2.0.4"
+    "tailwind-merge": "^2.5.5"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",

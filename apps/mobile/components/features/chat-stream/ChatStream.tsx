@@ -6,6 +6,7 @@ import { LegendList, LegendListRef } from '@legendapp/list'
 import DateSeparator from './DateSeparator'
 import SystemMessageBlock from './SystemMessageBlock'
 import MessageItem from './MessageItem'
+import { PollMessageBlock } from '../chat/ChatMessage/Renderers/PollMessage'
 
 type Props = {
     channelID: string
@@ -100,6 +101,11 @@ const MessageContentRenderer = ({ item }: { item: MessageDateBlock }) => {
     if (item.message_type === 'System') {
         return <SystemMessageBlock item={item} />
     }
+
+    if (item.message_type === "Poll") {
+        return <PollMessageBlock message={item} />
+    }
+
     return <MessageItem message={item} />
 }
 

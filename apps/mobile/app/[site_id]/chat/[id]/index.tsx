@@ -1,7 +1,5 @@
-
-
-import { TextInput, View } from 'react-native'
-import { Stack, useLocalSearchParams } from 'expo-router';
+import { TextInput, TouchableOpacity, View } from 'react-native'
+import { router, Stack, useLocalSearchParams } from 'expo-router';
 import { Button } from '@components/nativewindui/Button';
 import { Text } from '@components/nativewindui/Text';
 import ChatStream from '@components/features/chat-stream/ChatStream';
@@ -9,13 +7,31 @@ import ChatStream from '@components/features/chat-stream/ChatStream';
 const Chat = () => {
     const { id } = useLocalSearchParams();
 
-    console.log("Channel id: ", id);
+    const handleOnTitlePress = () => {
+        router.push('./channel-settings', {
+            relativeToDirectory: true
+        })
+    }
 
     return (
         <>
             <Stack.Screen options={{
                 headerBackButtonDisplayMode: 'minimal',
                 title: id as string,
+                headerRight: undefined,
+                headerTitle: () => {
+                    return (
+                        <TouchableOpacity
+                            onPress={handleOnTitlePress}
+                            className='flex-1'
+                            activeOpacity={0.5}
+                        >
+                            <View className='flex-row justify-center items-center'>
+                                <Text className='text-md font-bold'>{id as string}</Text>
+                            </View>
+                        </TouchableOpacity>
+                    )
+                }
             }} />
             <View className='flex-1'>
                 <ChatStream channelID={id as string} />
