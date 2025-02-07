@@ -7,8 +7,6 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useKeyboardVisible } from '@hooks/useKeyboardVisible';
 import ChatInput from '@components/features/chat/ChatInput/ChatInput';
 
-export const filesAtom = atom<CustomFile[]>([])
-
 const Chat = () => {
 
     const { bottom } = useSafeAreaInsets()

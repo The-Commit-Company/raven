@@ -2,12 +2,12 @@ import UniversalFileIcon from "@components/common/UniversalFileIcon"
 import { CustomFile } from "@raven/types/common/File"
 import { View, Text, ActivityIndicator } from "react-native"
 import { useAtom } from 'jotai'
-import { filesAtom } from "app/[site_id]/chat/[id]"
 import { Button } from "@components/nativewindui/Button"
 import CrossIcon from "@assets/icons/CrossIcon.svg"
 import { useColorScheme } from "@hooks/useColorScheme"
 import { getFileExtension, isImageFile } from "@raven/lib/utils/operations"
 import { Image } from "expo-image"
+import { filesAtom } from "@lib/filesAtom"
 
 const SendItem = ({ file }: { file: CustomFile }) => {
     const [files, setFiles] = useAtom(filesAtom)

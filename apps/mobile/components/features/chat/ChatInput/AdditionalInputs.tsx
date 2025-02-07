@@ -10,7 +10,7 @@ import GIFPickerButton from "@components/common/GIFPicker/GIFPickerButton"
 import { useKeyboardVisible } from "@hooks/useKeyboardVisible"
 import { CustomFile } from "@raven/types/common/File"
 import { useAtom } from 'jotai'
-import { filesAtom } from "app/[site_id]/chat/[id]"
+import { filesAtom } from "@lib/filesAtom"
 
 const AdditionalInputs = () => {
     const bottomSheetRef = useSheetRef()
