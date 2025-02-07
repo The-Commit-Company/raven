@@ -86,7 +86,7 @@ const MessageItem = memo(({ message, onReplyMessagePress }: Props) => {
                 </View>}
 
                 {message.is_edited === 1 && <Text className='text-xs text-gray-500 dark:text-gray-400'>(edited)</Text>}
-                {message.hide_link_preview === 0 && <MessageLinkRenderer message={message} />}
+                {message.hide_link_preview === 0 && message.text && <MessageLinkRenderer message={message} />}
             </View>
         </View>
     )
