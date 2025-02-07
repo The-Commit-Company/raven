@@ -15,21 +15,20 @@
     },
     "ios": {
       "supportsTablet": true,
+      "appleTeamId": "W6346TTZQX",
       "bundleIdentifier": "raven.thecommit.company",
       "config": {
         "usesNonExemptEncryption": false
       },
+      "googleServicesFile": "./GoogleService-Info.plist",
       "infoPlist": {
-        "NSAppTransportSecurity": {
-          "NSAllowsArbitraryLoads": true,
-          "NSAllowsLocalNetworking": true,
-          "NSExceptionDomains": {
-            "localhost": {
-              "NSIncludesSubdomains": true,
-              "NSExceptionAllowsInsecureHTTPLoads": true
-            }
-          }
-        }
+        "UIBackgroundModes": [
+          "remote-notification",
+          "fetch"
+        ]
+      },
+      "entitlements": {
+        "aps-environment": "production"
       }
     },
     "android": {
@@ -37,7 +36,8 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#000000"
       },
-      "package": "raven.thecommit.company"
+      "package": "raven.thecommit.company",
+      "googleServicesFile": "./google-services.json"
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -55,6 +55,16 @@
           "fonts": [
             "./assets/fonts/CalSans-SemiBold.otf"
           ]
+        }
+      ],
+      "@react-native-firebase/app",
+      "@react-native-firebase/messaging",
+      [
+        "expo-build-properties",
+        {
+          "ios": {
+            "useFrameworks": "static"
+          }
         }
       ],
       "expo-video"
