@@ -6,12 +6,17 @@ import { LegendList, LegendListRef } from '@legendapp/list'
 import DateSeparator from './DateSeparator'
 import SystemMessageBlock from './SystemMessageBlock'
 import MessageItem from './MessageItem'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
+import { useKeyboardVisible } from '@hooks/useKeyboardVisible'
 
 type Props = {
     channelID: string
 }
 
 const ChatStream = ({ channelID }: Props) => {
+
+    const { bottom } = useSafeAreaInsets()
+    const { isKeyboardVisible } = useKeyboardVisible()
 
     const listRef = useRef<LegendListRef>(null)
 
@@ -27,7 +32,9 @@ const ChatStream = ({ channelID }: Props) => {
 
     if (data) {
         return (
-            <View style={ContentContainerStyles} className='bg-white dark:bg-background'>
+            <View style={{
+                paddingBottom: 120 + (isKeyboardVisible ? 0 : bottom), // height of the chat input, adjust this accordindly
+            }} className='bg-white dark:bg-background'>
                 {/* <FlatList
                     data={data}
                     ref={listRef}
@@ -86,10 +93,6 @@ const messageKeyExtractor = (item: MessageDateBlock) => {
         return `date-${item.creation}`
     }
     return `${item.name}-${item.modified}`
-}
-
-const ContentContainerStyles = {
-    paddingBottom: 120
 }
 
 const MessageContentRenderer = ({ item }: { item: MessageDateBlock }) => {
