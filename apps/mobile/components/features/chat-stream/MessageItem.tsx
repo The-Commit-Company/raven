@@ -6,7 +6,7 @@ import MessageHeader from './MessageItemElements/MessageHeader'
 import FileMessageRenderer from './MessageItemElements/FileMessageRenderer'
 import MessageTextRenderer from './MessageItemElements/MessageTextRenderer'
 import clsx from 'clsx'
-import MessageReactions from './MessageItemElements/MessageReactions'
+import MessageReactions from './MessageItemElements/Reactions/MessageReactions'
 
 type Props = {
     message: FileMessage | PollMessage | TextMessage | ImageMessage
@@ -39,6 +39,7 @@ const MessageItem = ({ message }: Props) => {
                 {message.message_type === 'File' ? <FileMessageRenderer message={message} /> : null}
                 {message.text ? <MessageTextRenderer text={message.text} /> : null}
                 {/* <Text>{message.text}</Text> */}
+                
                 <MessageReactions messageID={message?.name} message_reactions={message?.message_reactions} />
             </View>
         </View>

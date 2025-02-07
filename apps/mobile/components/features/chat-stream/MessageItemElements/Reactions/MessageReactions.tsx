@@ -1,12 +1,14 @@
 import { useCallback, useMemo } from 'react'
+import { View, Text, TouchableOpacity, Pressable } from 'react-native'
 import { useFrappePostCall } from 'frappe-react-sdk'
-import { View, Text, TouchableOpacity } from 'react-native'
 import useCurrentRavenUser from '@raven/lib/hooks/useCurrentRavenUser'
 import { Sheet, useSheetRef } from '@components/nativewindui/Sheet'
 import { BottomSheetView } from '@gorhom/bottom-sheet'
 import SmilePlus from "@assets/icons/SmileIcon.svg"
 import { useColorScheme } from '@hooks/useColorScheme'
 import EmojiPicker from '@components/common/EmojiPicker/EmojiPicker'
+import ReactionAnalytics from './ReactionsAnalytics'
+import useFileURL from '@hooks/useFileURL'
 import { Image } from 'expo-image'
 
 export interface ReactionObject {
@@ -32,11 +34,13 @@ export default function MessageReactions({ messageID, message_reactions }: Messa
 
     const { call: reactToMessage } = useFrappePostCall('raven.api.reactions.react')
 
-    const saveReaction = useCallback((emoji: string) => {
+    const saveReaction = useCallback((emoji: string, is_custom: boolean, emoji_name?: string) => {
         if (messageID) {
             return reactToMessage({
                 message_id: messageID,
                 reaction: emoji,
+                is_custom,
+                emoji_name
             })
         }
     }, [messageID, reactToMessage])
@@ -53,13 +57,21 @@ export default function MessageReactions({ messageID, message_reactions }: Messa
 
     if (reactions.length === 0) return null
 
-    return (
-        <View className='flex-row gap-1.5 flex-wrap items-center py-2'>
-            {reactions.map((reaction: ReactionObject) => {
-                return <ReactionButton key={reaction.emoji_name} reaction={reaction} currentUser={currentUser?.name} />
-            })}
+    const reactionsSheetRef = useSheetRef()
 
-            <AddEmojiButton saveReaction={saveReaction} />
+    const openReactions = () => reactionsSheetRef.current?.present()
+
+    return (
+        <View>
+            <Pressable className='flex-row gap-1.5 flex-wrap items-center py-2'>
+                {reactions.map((reaction: ReactionObject) => {
+                    return <ReactionButton key={reaction.emoji_name} viewAnalytics={openReactions} reaction={reaction} currentUser={currentUser?.name} saveReaction={saveReaction} />
+                })}
+
+                <AddEmojiButton saveReaction={saveReaction} />
+            </Pressable>
+
+            <ReactionAnalytics reactionsSheetRef={reactionsSheetRef} reactions={reactions} />
         </View>
     )
 }
@@ -67,35 +79,35 @@ export default function MessageReactions({ messageID, message_reactions }: Messa
 interface ReactionButtonProps {
     reaction: ReactionObject
     currentUser: string | undefined
+    saveReaction: (emoji: string, is_custom: boolean, emoji_name?: string) => void
+    viewAnalytics: () => void
 }
-const ReactionButton = ({ reaction, currentUser }: ReactionButtonProps) => {
+const ReactionButton = ({ reaction, currentUser, saveReaction, viewAnalytics }: ReactionButtonProps) => {
 
-    const viewReactionsRef = useSheetRef()
-
-    const onLongPress = () => viewReactionsRef.current?.present()
+    const source = useFileURL(reaction.reaction)
 
     const { currentUserReacted } = useMemo(() => {
         return { currentUserReacted: reaction.users.includes(currentUser ?? "") }
     }, [currentUser, reaction])
 
-    return (
-        <View>
-            <TouchableOpacity onLongPress={onLongPress} activeOpacity={0.7} className={`flex-row rounded-md py-1 px-2 gap-2 ${currentUserReacted ? 'bg-gray-200' : 'bg-gray-100'}`}>
-                <Text className='text-xs'>{reaction.emoji_name}</Text>
-                <Text className='text-xs font-bold text-gray-500'>{reaction.count}</Text>
-            </TouchableOpacity>
+    const onReact = useCallback(() => {
+        saveReaction(reaction.reaction, reaction?.is_custom ?? false, reaction.emoji_name)
+    }, [saveReaction, reaction])
 
-            <Sheet enableDynamicSizing={false} ref={viewReactionsRef} snapPoints={["40%"]}>
-                <BottomSheetView className='flex-1'>
-                    <></>
-                </BottomSheetView>
-            </Sheet>
-        </View>
+    return (
+        <TouchableOpacity onLongPress={viewAnalytics} onPress={onReact} activeOpacity={0.7} className={`flex-row rounded-md py-1 px-2 gap-2 ${currentUserReacted ? 'bg-gray-200' : 'bg-gray-100'}`}>
+            {reaction.is_custom ? (
+                <Image source={source} style={{ width: 16, height: 16 }} />
+            ) : (
+                <Text className='text-xs'>{reaction.reaction}</Text>
+            )}
+            <Text className='text-xs font-bold text-gray-500'>{reaction.count}</Text>
+        </TouchableOpacity>
     )
 }
 
 interface AddEmojiButtonProps {
-    saveReaction: (emoji: string) => void
+    saveReaction: (emoji: string, is_custom: boolean, emoji_name?: string) => void,
 }
 const AddEmojiButton = ({ saveReaction }: AddEmojiButtonProps) => {
 
@@ -106,7 +118,7 @@ const AddEmojiButton = ({ saveReaction }: AddEmojiButtonProps) => {
     const openEmojiPicker = () => emojiPickerRef.current?.present()
 
     const onReact = (emoji: string) => {
-        saveReaction(emoji)
+        saveReaction(emoji, false)
         emojiPickerRef.current?.close({ duration: 450 })
     }
 
