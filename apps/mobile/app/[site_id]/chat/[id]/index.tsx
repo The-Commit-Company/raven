@@ -1,6 +1,5 @@
-import { KeyboardAvoidingView, TextInput, TouchableOpacity, View } from 'react-native'
+import { KeyboardAvoidingView, Platform, TouchableOpacity, View } from 'react-native'
 import { router, Stack, useLocalSearchParams } from 'expo-router';
-import { Button } from '@components/nativewindui/Button';
 import { Text } from '@components/nativewindui/Text';
 import ChatStream from '@components/features/chat-stream/ChatStream';
 import { useCurrentChannelData } from '@hooks/useCurrentChannelData';
@@ -9,8 +8,6 @@ import { useColorScheme } from '@hooks/useColorScheme';
 import ChevronLeftIcon from '@assets/icons/ChevronLeftIcon.svg';
 import { useState } from 'react';
 import ChannelInfoModal from '@components/features/channel-settings/ChannelInfoModal';
-import { CustomFile } from '@raven/types/common/File';
-import { atom } from 'jotai'
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useKeyboardVisible } from '@hooks/useKeyboardVisible';
 import ChatInput from '@components/features/chat/ChatInput/ChatInput';
@@ -19,7 +16,7 @@ const Chat = () => {
 
     const { bottom } = useSafeAreaInsets()
     const { isKeyboardVisible, keyboardHeight } = useKeyboardVisible()
-
+    const { id } = useLocalSearchParams()
     const { channel } = useCurrentChannelData(id as string)
     const colors = useColorScheme()
 
@@ -79,11 +76,10 @@ const Chat = () => {
                 >
                     <ChatInput />
                 </View>
-            </View>
-            <ChannelInfoModal
-                channel={channel}
-                isModalVisible={isModalVisible}
-                setModalVisible={setModalVisible} />
+                <ChannelInfoModal
+                    channel={channel}
+                    isModalVisible={isModalVisible}
+                    setModalVisible={setModalVisible} />
             </KeyboardAvoidingView>
         </>
     )
