@@ -37,9 +37,9 @@ const ChannelSettings = () => {
         channelData,
         bottomSheetModalRef,
         iconMap: {
-            'Public': <GlobeIcon height={18} width={18} fill={colors.icon} />,
-            'Private': <LockIcon height={18} width={18} fill={colors.icon} />,
-            'Open': <HashIcon height={18} width={18} fill={colors.icon} />
+            'Public': <GlobeIcon height={20} width={20} fill={colors.icon} />,
+            'Private': <LockIcon height={20} width={20} fill={colors.icon} />,
+            'Open': <HashIcon height={20} width={20} fill={colors.icon} />
         }
     }) : []
 
@@ -65,15 +65,15 @@ const ChannelSettings = () => {
                     <MembersTray onViewAll={() => router.push(`../channel-settings-members`, { relativeToDirectory: true })} />
                     <Divider className='mx-0' prominent />
                     <View className="flex-col gap-2">
-                        <Text className="text-sm font-medium px-4">Settings</Text>
-                        <View className="flex-col pt-2 gap-1">
+                        <Text className="text-[15px] font-medium px-4">Settings</Text>
+                        <View className="flex-col pt-1 gap-1">
                             <PushNotifications channelID={id as string} />
                             {changeChannelTypeButtons.map((button) => (
                                 <Pressable key={button.id}
                                     onPress={button.onPress}
-                                    className="flex-row items-center gap-2 px-4 py-3 ios:active:bg-linkColor">
+                                    className="flex-row items-center gap-2 px-4 py-2.5 ios:active:bg-linkColor">
                                     {button.icon}
-                                    <Text className="text-[15px]">{button.title}</Text>
+                                    <Text className="text-base">{button.title}</Text>
                                 </Pressable>
                             ))}
                         </View>
@@ -84,23 +84,23 @@ const ChannelSettings = () => {
                             className='rounded-xl ios:active:bg-linkColor border border-border'
                             android_ripple={{ color: 'rgba(0,0,0,0.1)', borderless: false }}
                             onPress={() => archiveSheetRef.current?.present()}>
-                            <ArchiveIcon height={18} width={18} fill={colors.icon} />
-                            <Text className="text-[15px]">Archive Channel</Text>
+                            <ArchiveIcon height={20} width={20} fill={colors.icon} />
+                            <Text className="text-base">Archive Channel</Text>
                         </Pressable>
                         <Pressable
                             style={styles.settingsContainer}
                             className='rounded-xl ios:active:bg-linkColor border border-border'
                             android_ripple={{ color: 'rgba(0,0,0,0.1)', borderless: false }}>
-                            <LeaveIcon height={18} width={18} fill={colors.icon} />
-                            <Text className="text-[15px]">Leave Channel</Text>
+                            <LeaveIcon height={20} width={20} fill={colors.icon} />
+                            <Text className="text-base">Leave Channel</Text>
                         </Pressable>
                         <Pressable
                             style={styles.settingsContainer}
                             className='rounded-xl ios:active:bg-red-50 border border-destructive'
                             android_ripple={{ color: 'rgba(0,0,0,0.1)', borderless: false }}
                             onPress={() => deleteSheetRef.current?.present()}>
-                            <TrashIcon height={18} width={18} fill={colors.destructive} />
-                            <Text className="text-[15px] text-destructive">Delete Channel</Text>
+                            <TrashIcon height={20} width={20} fill={colors.destructive} />
+                            <Text className="text-base text-destructive">Delete Channel</Text>
                         </Pressable>
                     </View>
                     <ChannelCreator channelData={channelData} />

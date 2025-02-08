@@ -28,10 +28,10 @@ export const MembersTray = ({ onViewAll }: MembersTrayProps) => {
     return (
         <View className="flex-col px-4 gap-3">
             <View className="flex-row items-center justify-between">
-                <Text className="text-sm font-medium">Members ({membersCount})</Text>
+                <Text className="text-[15px] font-medium">Members ({membersCount})</Text>
                 <Pressable onPress={onViewAll}>
                     <View className="flex-row items-center justify-end">
-                        <Text className="text-sm font-medium text-primary">View all</Text>
+                        <Text className="text-[15px] font-medium text-primary">View all</Text>
                     </View>
                 </Pressable>
             </View>
@@ -51,12 +51,14 @@ export const MembersTray = ({ onViewAll }: MembersTrayProps) => {
                                 availabilityStatus={member.availability_status}
                                 avatarProps={{ className: "w-14 h-14" }}
                             />
-                            <Text className="text-xs text-center pt-1.5">
-                                {firstName}
-                            </Text>
-                            <Text className="text-xs text-center" numberOfLines={1}>
-                                {restOfName}
-                            </Text>
+                            <View className="flex-col gap-0.5">
+                                <Text className="text-sm text-center pt-1.5">
+                                    {firstName}
+                                </Text>
+                                <Text className="text-sm text-center" numberOfLines={1}>
+                                    {restOfName}
+                                </Text>
+                            </View>
                         </View>
                     )
                 })}
