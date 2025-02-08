@@ -38,7 +38,7 @@ export const PollMessageBlock = ({ message, ...props }: PollMessageBlockProps) =
     });
 
     return (
-        <View {...props} className="p-3">
+        <View className='w-[90%]' {...props}>
             {error ? (
                 <View className="bg-red-100 p-2 rounded-md">
                     <Text className="text-red-500">{error.message}</Text>

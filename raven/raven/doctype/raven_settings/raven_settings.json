@@ -25,7 +25,9 @@
   "attendance_and_leaves_section",
   "show_if_a_user_is_on_leave",
   "raven_mobile_tab",
-  "oauth_client"
+  "oauth_client",
+  "push_notifications_tab",
+  "push_notification_service"
  ],
  "fields": [
   {
@@ -143,12 +145,24 @@
    "label": "Company Workspace Mapping",
    "mandatory_depends_on": "eval:doc.auto_create_department_channel",
    "options": "Raven HR Company Workspace"
+  },
+  {
+   "fieldname": "push_notifications_tab",
+   "fieldtype": "Tab Break",
+   "label": "Push Notifications"
+  },
+  {
+   "default": "Frappe Cloud",
+   "fieldname": "push_notification_service",
+   "fieldtype": "Select",
+   "label": "Push Notification Service",
+   "options": "Frappe Cloud\nRaven"
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2024-12-07 23:29:30.189530",
+ "modified": "2025-02-07 14:27:46.335513",
  "modified_by": "Administrator",
  "module": "Raven",
  "name": "Raven Settings",

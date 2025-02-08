@@ -8,7 +8,8 @@ export const Divider = ({ prominent = false, marginHorizontal = 16, className, .
             style={{
                 borderBottomWidth: 1,
                 borderBottomColor: prominent && isDarkColorScheme ? colors.grey4 : colors.grey5,
-                marginHorizontal: marginHorizontal
+                marginHorizontal: marginHorizontal,
+                opacity: 0.6
             }}
             className={className}
             {...props}

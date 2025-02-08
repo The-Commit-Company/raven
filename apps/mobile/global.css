@@ -84,7 +84,7 @@
             --error-border: 145 22 22;
             --linkColor: 26, 26, 26;
             --grayText: 113, 115, 112;
-            --border: 40 40 42;
+            --border: 80, 80, 84;
             --input: 55 55 57;
             --ring: 40 40 42;
 
@@ -111,7 +111,7 @@
             --android-error-border: 145 22 22;
             --android-linkColor: 26, 26, 26;
             --android-grayText: 113, 115, 112;
-            --android-border: 39 42 50;
+            --android-border: 80, 80, 84;
             --android-input: 55 55 57;
             --android-ring: 39 42 50;
         }
