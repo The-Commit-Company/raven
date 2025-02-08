@@ -41,7 +41,7 @@ export const PollMessageBlock = ({ message, ...props }: PollMessageBlockProps) =
         <View className='w-[90%]' {...props}>
             {error ? (
                 <View className="bg-red-100 p-2 rounded-md">
-                    <Text className="text-re-600">{error.message}</Text>
+                    <Text className="text-red-500">{error.message}</Text>
                 </View>
             ) : null}
             {data ? <PollMessageBox data={data.message} messageID={message.name} /> : null}

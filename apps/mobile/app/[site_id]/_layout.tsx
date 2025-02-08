@@ -93,7 +93,8 @@ export default function SiteLayout() {
                     siteName={siteInfo?.sitename}>
                     <Providers>
                         <BottomSheetModalProvider>
-                            <Stack />
+                            <Stack>
+                            </Stack>
                         </BottomSheetModalProvider>
                     </Providers>
                 </FrappeProvider>
