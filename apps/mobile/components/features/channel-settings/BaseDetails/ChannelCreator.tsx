@@ -10,7 +10,7 @@ const ChannelCreator = ({ channelData }: { channelData: FrappeDoc<ChannelListIte
     const channelOwner = useGetUser(channelData?.owner ?? "")
 
     return (
-        <View className='flex-row items-center gap-1'>
+        <View className='flex-row items-center gap-1 px-4'>
             {channelData?.owner && <Text className='text-sm font-medium'>{channelOwner?.full_name ?? channelData?.owner}</Text>}
             {channelData?.creation && <Text className='text-muted-foreground text-sm'>created this on {formatDate(channelData?.creation)}.</Text>}
         </View>

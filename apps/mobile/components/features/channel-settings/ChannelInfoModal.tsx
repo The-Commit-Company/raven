@@ -1,4 +1,4 @@
-import { TouchableOpacity, View, StyleSheet, Modal } from 'react-native';
+import { TouchableOpacity, View, StyleSheet, Modal, Pressable } from 'react-native';
 import { router } from 'expo-router';
 import { Text } from '@components/nativewindui/Text';
 import ChevronRightIcon from '@assets/icons/ChevronRightIcon.svg';
@@ -69,7 +69,9 @@ const ChannelInfoModal = ({ channel, isModalVisible, setModalVisible }: ChannelI
                 <Animated.View style={[styles.modalContent, animatedModalStyle]} className='bg-card dark:border dark:border-border'>
                     <ModalHeader channel={channel} handleCloseModal={handleCloseModal} />
                     <Divider className='my-2 mx-1' prominent />
-                    <TouchableOpacity>
+                    <Pressable
+                        className='rounded-xl ios:active:bg-linkColor'
+                        android_ripple={{ color: 'rgba(0,0,0,0.1)', borderless: false }}>
                         <View className='flex-row items-center justify-between px-2'>
                             <View className='flex-row items-center'>
                                 <MembersIcon height={20} width={20} color={colors.colors.foreground} />
@@ -77,8 +79,10 @@ const ChannelInfoModal = ({ channel, isModalVisible, setModalVisible }: ChannelI
                             </View>
                             <ChevronRightIcon height={24} width={24} color={colors.colors.foreground} strokeWidth={'1px'} />
                         </View>
-                    </TouchableOpacity>
-                    <TouchableOpacity onPress={handleGoToSettings}>
+                    </Pressable>
+                    <Pressable onPress={handleGoToSettings}
+                        className='rounded-xl ios:active:bg-linkColor'
+                        android_ripple={{ color: 'rgba(0,0,0,0.1)', borderless: false }}>
                         <View className='flex-row items-center justify-between px-2'>
                             <View className='flex-row items-center'>
                                 <SettingsIcon height={20} width={20} color={colors.colors.foreground} />
@@ -86,7 +90,7 @@ const ChannelInfoModal = ({ channel, isModalVisible, setModalVisible }: ChannelI
                             </View>
                             <ChevronRightIcon height={24} width={24} color={colors.colors.foreground} strokeWidth={'1px'} />
                         </View>
-                    </TouchableOpacity>
+                    </Pressable>
                 </Animated.View>
             </TouchableOpacity>
         </Modal>

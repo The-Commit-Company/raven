@@ -9,6 +9,7 @@ import { ActivityIndicator } from '@components/nativewindui/ActivityIndicator';
 import { toast } from 'sonner-native';
 import { useCurrentChannelData } from '@hooks/useCurrentChannelData';
 import EditChannelBaseDetailsForm, { EditChannelDetailsForm } from '@components/features/channel-settings/BaseDetails/EditChannelBaseDetailsForm';
+import { View } from 'react-native';
 
 export default function EditChannelDetails() {
 
@@ -65,8 +66,10 @@ export default function EditChannelDetails() {
                 )
             },
         }} />
-        <FormProvider {...methods}>
-            <EditChannelBaseDetailsForm />
-        </FormProvider>
+        <View className="flex-1 bg-card">
+            <FormProvider {...methods}>
+                <EditChannelBaseDetailsForm />
+            </FormProvider>
+        </View>
     </>
 }

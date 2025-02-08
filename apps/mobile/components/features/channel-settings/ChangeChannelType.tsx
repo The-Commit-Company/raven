@@ -3,7 +3,6 @@ import { BottomSheetModal, BottomSheetView } from "@gorhom/bottom-sheet";
 import { View } from "react-native"
 import { Button } from "@components/nativewindui/Button";
 import { Text } from "@components/nativewindui/Text";
-import { ChannelSettingsDataItem, ChannelType } from "app/[site_id]/chat/[id]/channel-settings";
 import { useFrappeUpdateDoc, useSWRConfig } from "frappe-react-sdk";
 import { ChannelListItem } from "@raven/types/common/ChannelListItem";
 import { toast } from "sonner-native";
@@ -13,6 +12,8 @@ interface ChangeChannelTypeSheetProps {
     channelData: ChannelListItem;
     bottomSheetModalRef: React.RefObject<BottomSheetModal>;
 }
+
+type ChannelType = 'Public' | 'Private' | 'Open';
 
 export const ChangeChannelTypeSheet = ({ channelData, bottomSheetModalRef }: ChangeChannelTypeSheetProps) => {
 
@@ -115,19 +116,18 @@ export const getChangeChannelType = ({
 
     const channelTypeList = channelTypeMap[channelType] as ChannelType[];
 
-    const channelSettingsData: ChannelSettingsDataItem[] = channelTypeList.map((type) => {
+    const channelSettingsData = channelTypeList.map((type) => {
         return {
             id: type,
-            title: `Change to ${type} Channel`,
+            title: `Convert to a${type === 'Open' ? 'n' : ''} ${type.toLowerCase()} channel`,
             onPress: () => {
                 bottomSheetModalRef.current?.present({
                     newChannelType: type,
-                });
+                })
             },
-            icon: iconMap[type],
-            titleClassName: 'text-lg',
+            icon: iconMap[type]
         }
-    });
+    })
 
-    return channelSettingsData;
+    return channelSettingsData
 }

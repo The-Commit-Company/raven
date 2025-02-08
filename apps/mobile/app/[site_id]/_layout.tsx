@@ -94,18 +94,6 @@ export default function SiteLayout() {
                     <Providers>
                         <BottomSheetModalProvider>
                             <Stack>
-                                <Stack.Screen
-                                    name="chat/[id]/channel-name-edit"
-                                    options={{
-                                        presentation: 'modal',
-                                    }}
-                                />
-                                <Stack.Screen
-                                    name="chat/[id]/channel-description-edit"
-                                    options={{
-                                        presentation: 'modal',
-                                    }}
-                                />
                             </Stack>
                         </BottomSheetModalProvider>
                     </Providers>

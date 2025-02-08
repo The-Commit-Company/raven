@@ -12,7 +12,7 @@ const ChannelBaseDetails = ({ channelData }: { channelData: FrappeDoc<ChannelLis
     const { colors } = useColorScheme()
 
     return (
-        <View className="flex-col gap-2">
+        <View className="flex-col pt-4 px-4 gap-2">
             <View className="flex-row justify-between items-center">
                 <View className='flex-row items-center align-baseline gap-1'>
                     <ChannelIcon size={20} type={channelData?.type ?? 'Public'} fill={colors.foreground} />

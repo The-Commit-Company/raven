@@ -39,10 +39,10 @@ const EditChannelBaseDetailsForm = () => {
             keyboardDismissMode="interactive"
             contentInsetAdjustmentBehavior="automatic"
             contentContainerStyle={{ paddingBottom: insets.bottom }}>
-            <Form className="gap-4 p-4">
+            <Form className="p-4 pt-6">
 
                 <FormSection footnote="Choose unique channel name.">
-                    <View className="py-4 px-3 dark:bg-background">
+                    <View>
                         <FormLabel isRequired>Channel Name</FormLabel>
                         <Controller
                             name="channel_name"
@@ -95,7 +95,7 @@ const EditChannelBaseDetailsForm = () => {
                 </FormSection>
 
                 <FormSection>
-                    <View className="py-4 px-3 dark:bg-background">
+                    <View>
                         <FormLabel isRequired>Channel Description</FormLabel>
                         <Controller
                             name="channel_description"

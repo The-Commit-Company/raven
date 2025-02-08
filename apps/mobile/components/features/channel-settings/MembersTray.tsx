@@ -4,8 +4,9 @@ import { Text } from "@components/nativewindui/Text";
 import { useLocalSearchParams } from "expo-router";
 import { useFetchChannelMembers } from "@raven/lib/hooks/useFetchChannelMembers";
 import { ScrollView } from "react-native-gesture-handler";
+
 interface MembersTrayProps {
-    onViewAll: () => void;
+    onViewAll: () => void
 }
 
 export const MembersTray = ({ onViewAll }: MembersTrayProps) => {
@@ -16,8 +17,16 @@ export const MembersTray = ({ onViewAll }: MembersTrayProps) => {
     const displayMembers = Object.values(channelMembers).slice(0, 10)
     const membersCount = channelMembers ? Object.keys(channelMembers).length : 0
 
+    // Helper function to split the full name into first name and the rest
+    const splitName = (fullName: string) => {
+        const names = fullName.split(" ")
+        const firstName = names[0]
+        const restOfName = names.slice(1).join(" ")
+        return { firstName, restOfName }
+    }
+
     return (
-        <View className="flex-col gap-3">
+        <View className="flex-col px-4 gap-3">
             <View className="flex-row items-center justify-between">
                 <Text className="text-sm font-medium">Members ({membersCount})</Text>
                 <Pressable onPress={onViewAll}>
@@ -31,22 +40,26 @@ export const MembersTray = ({ onViewAll }: MembersTrayProps) => {
                 showsHorizontalScrollIndicator={false}
                 contentContainerClassName="flex-row gap-2"
             >
-                {displayMembers.map((member, index) => (
-                    <View className="flex-col gap-2" key={index}>
-                        <UserAvatar
-                            src={member.user_image ?? ""}
-                            alt={member.full_name ?? ""}
-                            availabilityStatus={member.availability_status}
-                            avatarProps={{ className: "w-14 h-14" }}
-                        />
-                        <Text
-                            className="text-xs flex-wrap w-16"
-                            numberOfLines={1}
-                        >
-                            {member.full_name}
-                        </Text>
-                    </View>
-                ))}
+                {displayMembers.map((member, index) => {
+                    const { firstName, restOfName } = splitName(member.full_name ?? "");
+
+                    return (
+                        <View className="flex-col gap-1 items-center" key={index}>
+                            <UserAvatar
+                                src={member.user_image ?? ""}
+                                alt={member.full_name ?? ""}
+                                availabilityStatus={member.availability_status}
+                                avatarProps={{ className: "w-14 h-14" }}
+                            />
+                            <Text className="text-xs text-center pt-1.5">
+                                {firstName}
+                            </Text>
+                            <Text className="text-xs text-center" numberOfLines={1}>
+                                {restOfName}
+                            </Text>
+                        </View>
+                    )
+                })}
             </ScrollView>
         </View>
     )
