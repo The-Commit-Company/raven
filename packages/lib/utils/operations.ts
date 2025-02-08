@@ -66,3 +66,6 @@ export const getFileMimeType = (fileName: string) => {
     };
     return mimeTypes[extension as keyof typeof mimeTypes] || '*/*';
 }
+
+// list of mostly used file extensions
+export const ALLOWED_FILE_EXTENSIONS = ['pdf', 'doc', 'docx', 'xls', 'xlsx', 'csv', 'ppt', 'pptx', 'txt', 'jpg', 'jpeg', 'png', 'gif', 'bmp', 'tiff', 'ico', 'webp', 'mp4', 'webm', 'mp3', 'wav', 'ogg', 'avi', 'mov', 'wmv', 'flv', 'mkv', 'webm']
