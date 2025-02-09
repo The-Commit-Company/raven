@@ -48,46 +48,35 @@ export const ChangeChannelTypeSheet = ({ channelData, bottomSheetModalRef }: Cha
     }
 
     return (
-        <Sheet ref={bottomSheetModalRef} snapPoints={[500]}  >
+        <Sheet ref={bottomSheetModalRef}>
             {(props: { data: { newChannelType: ChannelType } } & any) => {
                 return (
-                    <BottomSheetView
-                        {...props}
-                        className="gap-3"
-                    >
-                        <View className="flex-col gap-3 justify-start px-5 pt-5 pb-6">
+                    <BottomSheetView {...props}>
+                        <View className="flex-col px-4 gap-3 mt-2 mb-20">
                             <Text className="text-xl font-cal-sans">
-                                Change to a {props.data?.newChannelType} channel?
+                                Convert to a{props.data?.newChannelType === 'Open' ? 'n' : ''} {props.data?.newChannelType.toLowerCase()} channel?
+                            </Text>
+                            <Text className="text-sm">Please understand that when you make <Text className="text-sm font-semibold">{channelData?.channel_name}</Text> {`a ${props.data?.newChannelType.toLowerCase()} channel:`}
                             </Text>
                             <Text className="text-sm">
-                                {`Please understand that when you make ${channelData?.channel_name} a ${props.data?.newChannelType} channel:`}
-                            </Text>
-                            <Text
-                                className="text-sm"
-                            >
                                 {getAlertSubMessage(props.data?.newChannelType)}
                             </Text>
-                        </View>
-                        <View className="gap-3 justify-start px-5">
-                            <Button onPress={() => changeChannelType(props.data?.newChannelType)}
-                                disabled={updatingDoc}
-                            >
-                                <Text>
-                                    {updatingDoc ? "Saving" : `Change to ${props.data?.newChannelType}`}
-                                </Text>
-                            </Button>
-                            <Button onPress={handleClose} variant="secondary">
-                                <Text>
-                                    Cancel
-                                </Text>
-                            </Button>
+                            <View className="flex-col gap-3 pt-1">
+                                <Button onPress={() => changeChannelType(props.data?.newChannelType)}
+                                    disabled={updatingDoc}>
+                                    <Text>{updatingDoc ? 'Converting...' : 'Convert'}</Text>
+                                </Button>
+                                <Button onPress={handleClose} variant="plain" className="border border-border">
+                                    <Text>Cancel</Text>
+                                </Button>
+                            </View>
                         </View>
                     </BottomSheetView>
-                );
+                )
             }}
         </Sheet>
-    );
-};
+    )
+}
 
 /**
  * channel type can be - Private, Public, Open
@@ -97,16 +86,9 @@ export const ChangeChannelTypeSheet = ({ channelData, bottomSheetModalRef }: Cha
  * For current type Open - it would return Public and Private
  * For current type Public - it would return Private and Open
 */
-export const getChangeChannelType = ({
-    channelData,
-    bottomSheetModalRef,
-    iconMap
-}: {
-    channelData: ChannelListItem;
-    bottomSheetModalRef: React.RefObject<BottomSheetModal>;
-    iconMap: Record<string, React.ReactNode>
-}) => {
-    const channelType = channelData?.type as ChannelType;
+export const getChangeChannelType = ({ channelData, bottomSheetModalRef, iconMap }: { channelData: ChannelListItem, bottomSheetModalRef: React.RefObject<BottomSheetModal>, iconMap: Record<string, React.ReactNode> }) => {
+
+    const channelType = channelData?.type as ChannelType
 
     const channelTypeMap = {
         'Public': ['Private', 'Open'],
@@ -114,7 +96,7 @@ export const getChangeChannelType = ({
         'Open': ['Public', 'Private']
     }
 
-    const channelTypeList = channelTypeMap[channelType] as ChannelType[];
+    const channelTypeList = channelTypeMap[channelType] as ChannelType[]
 
     const channelSettingsData = channelTypeList.map((type) => {
         return {

@@ -65,7 +65,7 @@ const EditChannelBaseDetailsForm = () => {
                             }}
                             render={({ field: { onBlur, value }, fieldState: { error } }) => (
                                 <View className={`mt-2.5 flex-row items-center rounded-md border ${error ? "border-red-600" : "border-border"}`}>
-                                    <View className="mx-3">
+                                    <View className="ml-3 mr-1 items-center">
                                         <ChannelIcon type={channel?.channelData.type ?? ""} fill={colors.icon} />
                                     </View>
                                     <View className="flex-1">
@@ -96,7 +96,7 @@ const EditChannelBaseDetailsForm = () => {
 
                 <FormSection>
                     <View>
-                        <FormLabel isRequired>Channel Description</FormLabel>
+                        <FormLabel>Channel Description</FormLabel>
                         <Controller
                             name="channel_description"
                             control={control}

@@ -15,18 +15,16 @@ const ChannelBaseDetails = ({ channelData }: { channelData: FrappeDoc<ChannelLis
         <View className="flex-col pt-4 px-4 gap-2">
             <View className="flex-row justify-between items-center">
                 <View className='flex-row items-center align-baseline gap-1'>
-                    <ChannelIcon size={20} type={channelData?.type ?? 'Public'} fill={colors.foreground} />
-                    <Text className='text-lg font-semibold'>{channelData?.channel_name}</Text>
+                    <ChannelIcon size={22} type={channelData?.type ?? 'Public'} fill={colors.foreground} />
+                    <Text className='text-[20px] font-semibold'>{channelData?.channel_name}</Text>
                 </View>
                 <Button variant="plain" size="none"
                     onPress={() => { router.push(`../edit-channel-details`, { relativeToDirectory: true }) }}>
-                    <Text className='text-sm font-medium text-primary mr-1'>Edit</Text>
+                    <Text className='text-[15px] font-medium text-primary mr-1'>Edit</Text>
                 </Button>
             </View>
-            {channelData?.channel_description && (
-                <Text className='text-sm font-medium'>Description: <Text className='text-sm font-normal text-muted-foreground'>{channelData?.channel_description}</Text></Text>
-            )}
-        </View>
+            {channelData?.channel_description && <Text className='text-base font-normal text-muted-foreground'>{channelData?.channel_description}</Text>}
+        </View >
     )
 }
 
