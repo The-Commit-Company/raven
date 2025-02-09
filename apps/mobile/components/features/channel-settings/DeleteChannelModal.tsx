@@ -59,18 +59,17 @@ export const DeleteChannelModal: React.FC<DeleteChannelModalProps> = ({ deleteSh
             {props => {
                 return (
                     <BottomSheetView {...props}>
-                        <View className="flex-col px-4 gap-3 mt-2 mb-16">
+                        <View className="flex-col px-4 gap-3 mt-2 mb-20">
                             <Text className="text-xl font-cal-sans">Delete this Channel?</Text>
                             <Text className="text-sm">
                                 Please understand that when you delete <Text className="text-sm font-semibold">{channelData?.channel_name}</Text>:
                             </Text>
                             <Text className="text-sm">
-                                All messages, including files and images will be removed
+                                All messages, including files and images will be removed. <Text className="text-sm text-muted-foreground">
+                                    (You can archive this channel instead to preserve your messages)
+                                </Text>
                             </Text>
-                            <Text className="text-sm text-muted-foreground">
-                                (You can archive this channel instead to preserve your messages)
-                            </Text>
-                            <Pressable onPress={toggleAllowDelete} className="flex-row gap-2 items-center pt-3">
+                            <Pressable onPress={toggleAllowDelete} className="flex-row gap-2 items-center py-3">
                                 {allowDelete ?
                                     <View className="border border-border rounded-full p-0.5">
                                         <CheckIcon fill={colors.icon} height={20} width={20} />

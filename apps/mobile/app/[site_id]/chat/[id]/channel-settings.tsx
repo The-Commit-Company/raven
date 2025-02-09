@@ -25,7 +25,6 @@ import ArchiveChannel from "@components/features/channel-settings/ArchiveChannel
 const ChannelSettings = () => {
 
     const { id } = useLocalSearchParams()
-    const archiveSheetRef = useSheetRef()
     const deleteSheetRef = useSheetRef()
     const bottomSheetModalRef = useSheetRef()
     const { colors } = useColorScheme()
@@ -99,8 +98,8 @@ const ChannelSettings = () => {
                 </>
             )}
         </>
-    );
-};
+    )
+}
 
 const styles = StyleSheet.create({
     settingsContainer: {
