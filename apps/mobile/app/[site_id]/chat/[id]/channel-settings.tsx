@@ -21,7 +21,7 @@ import { useColorScheme } from "@hooks/useColorScheme";
 import ChannelCreator from "@components/features/channel-settings/BaseDetails/ChannelCreator";
 import { Divider } from "@components/layout/Divider";
 import ChannelBaseDetails from "@components/features/channel-settings/BaseDetails/ChannelBaseDetails";
-import LeaveIcon from "@assets/icons/LeaveIcon.svg";
+import LeaveChannel from "@components/features/channel-settings/LeaveChannel";
 
 const ChannelSettings = () => {
 
@@ -87,13 +87,7 @@ const ChannelSettings = () => {
                             <ArchiveIcon height={20} width={20} fill={colors.icon} />
                             <Text className="text-base">Archive Channel</Text>
                         </Pressable>
-                        <Pressable
-                            style={styles.settingsContainer}
-                            className='rounded-xl ios:active:bg-linkColor border border-border'
-                            android_ripple={{ color: 'rgba(0,0,0,0.1)', borderless: false }}>
-                            <LeaveIcon height={20} width={20} fill={colors.icon} />
-                            <Text className="text-base">Leave Channel</Text>
-                        </Pressable>
+                        <LeaveChannel channel={channelData} />
                         <Pressable
                             style={styles.settingsContainer}
                             className='rounded-xl ios:active:bg-red-50 border border-destructive'
