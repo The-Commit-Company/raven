@@ -44,7 +44,6 @@ const LeaveChannel = ({ channel }: { channel: FrappeDoc<ChannelListItem> | undef
                 [
                     {
                         text: 'Cancel',
-                        style: 'cancel',
                     },
                     {
                         text: 'Leave',

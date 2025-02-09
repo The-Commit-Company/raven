@@ -2,11 +2,9 @@ import { View, TouchableOpacity, StyleSheet, Pressable } from "react-native";
 import { Text } from "@components/nativewindui/Text";
 import { router, useLocalSearchParams } from "expo-router";
 import { Stack } from "expo-router";
-import { ArchiveChannelModal } from "@components/features/channel-settings/ArchiveChannelModal";
 import { DeleteChannelModal } from "@components/features/channel-settings/DeleteChannelModal";
 import { useFrappeGetDoc } from "frappe-react-sdk";
 import TrashIcon from '@assets/icons/TrashIcon.svg';
-import ArchiveIcon from '@assets/icons/ArchiveIcon.svg';
 import LockIcon from '@assets/icons/LockIcon.svg';
 import GlobeIcon from '@assets/icons/GlobeIcon.svg';
 import HashIcon from '@assets/icons/HashIcon.svg';
@@ -22,6 +20,7 @@ import ChannelCreator from "@components/features/channel-settings/BaseDetails/Ch
 import { Divider } from "@components/layout/Divider";
 import ChannelBaseDetails from "@components/features/channel-settings/BaseDetails/ChannelBaseDetails";
 import LeaveChannel from "@components/features/channel-settings/LeaveChannel";
+import ArchiveChannel from "@components/features/channel-settings/ArchiveChannel";
 
 const ChannelSettings = () => {
 
@@ -79,14 +78,7 @@ const ChannelSettings = () => {
                         </View>
                     </View>
                     <View className="flex gap-2 px-4 pb-2">
-                        <Pressable
-                            style={styles.settingsContainer}
-                            className='rounded-xl ios:active:bg-linkColor border border-border'
-                            android_ripple={{ color: 'rgba(0,0,0,0.1)', borderless: false }}
-                            onPress={() => archiveSheetRef.current?.present()}>
-                            <ArchiveIcon height={20} width={20} fill={colors.icon} />
-                            <Text className="text-base">Archive Channel</Text>
-                        </Pressable>
+                        <ArchiveChannel channel={channelData} />
                         <LeaveChannel channel={channelData} />
                         <Pressable
                             style={styles.settingsContainer}
@@ -102,7 +94,6 @@ const ChannelSettings = () => {
             </View>
             {channelData && (
                 <>
-                    <ArchiveChannelModal archiveSheetRef={archiveSheetRef} channelData={channelData} />
                     <DeleteChannelModal deleteSheetRef={deleteSheetRef} channelData={channelData} />
                     <ChangeChannelTypeSheet channelData={channelData} bottomSheetModalRef={bottomSheetModalRef} />
                 </>
