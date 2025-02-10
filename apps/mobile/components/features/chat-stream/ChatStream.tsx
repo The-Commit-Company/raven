@@ -9,6 +9,7 @@ import MessageItem from './MessageItem'
 import { PollMessageBlock } from '../chat/ChatMessage/Renderers/PollMessage'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useKeyboardVisible } from '@hooks/useKeyboardVisible'
+import ChannelHistoryFirstMessage from './FirstMessageBlock'
 
 type Props = {
     channelID: string
@@ -60,6 +61,7 @@ const ChatStream = ({ channelID }: Props) => {
                     getEstimatedItemSize={getEstimatedItemSize}
                     renderItem={MessageContentRenderer}
                     recycleItems={false}
+                    ListHeaderComponent={<ChannelHistoryFirstMessage channelID={channelID} />}
                 />
             </View>
         )
