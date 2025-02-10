@@ -9,12 +9,12 @@ import { Divider } from '@components/layout/Divider';
 import CrossIcon from '@assets/icons/CrossIcon.svg';
 import { ChannelIcon } from '../channels/ChannelList/ChannelIcon';
 import ThreeHorizontalDots from '@assets/icons/ThreeHorizontalDots.svg';
-import { CurrentChannelData, CurrentChannelDMData } from '@hooks/useCurrentChannelData';
 import Animated, { Easing, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import { useEffect } from 'react';
+import { ChannelListItem } from '@raven/types/common/ChannelListItem';
 
 type ChannelInfoModalProps = {
-    channel: CurrentChannelData | CurrentChannelDMData | undefined
+    channel: ChannelListItem
     isModalVisible: boolean
     setModalVisible: (visible: boolean) => void
 }
@@ -97,7 +97,7 @@ const ChannelInfoModal = ({ channel, isModalVisible, setModalVisible }: ChannelI
     )
 }
 
-const ModalHeader = ({ channel, handleCloseModal }: { channel: CurrentChannelData | CurrentChannelDMData | undefined, handleCloseModal: () => void }) => {
+const ModalHeader = ({ channel, handleCloseModal }: { channel: ChannelListItem, handleCloseModal: () => void }) => {
     const colors = useColorScheme()
     return (
         <View className='flex-row items-center justify-between p-2'>
@@ -107,7 +107,7 @@ const ModalHeader = ({ channel, handleCloseModal }: { channel: CurrentChannelDat
                 </TouchableOpacity>
                 {channel && <View className='flex-row items-center ml-3'>
                     <ChannelIcon type={channel.type} fill={colors.colors.foreground} />
-                    <Text className='ml-2 text-base font-semibold'>{channel.channelData.name}</Text>
+                    <Text className='ml-2 text-base font-semibold'>{channel.channel_name}</Text>
                 </View>}
             </View>
             <TouchableOpacity hitSlop={10}>
