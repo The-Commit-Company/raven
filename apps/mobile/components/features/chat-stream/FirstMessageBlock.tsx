@@ -8,6 +8,8 @@ import { useMemo } from "react"
 import { useIsUserActive } from "@hooks/useIsUserActive"
 import { replaceCurrentUserFromDMChannelName } from "@raven/lib/utils/operations"
 import UserAvatar from "@components/layout/UserAvatar"
+import { ChannelIcon } from "../channels/ChannelList/ChannelIcon"
+import { useColorScheme } from "@hooks/useColorScheme"
 
 const ChannelHistoryFirstMessage = ({ channelID }: { channelID: string }) => {
 
@@ -82,9 +84,17 @@ const FirstMessageBlockForDM = ({ channelData }: { channelData: DMChannelListIte
 }
 
 const FirstMessageBlockForChannel = ({ channelData }: { channelData: ChannelListItem }) => {
+    const { colors } = useColorScheme()
     return (
-        <View>
-            <Text>FirstMessageBlockForChannel</Text>
+        <View className="p-3">
+            <View className="flex flex-col gap-2">
+                <View className="flex flex-row items-center gap-1">
+                    <ChannelIcon size={24} type={channelData?.type} fill={colors.foreground} />
+                    <Text className="text-[24px] font-semibold">{channelData?.channel_name}</Text>
+                </View>
+                <Text className="text-base">This is the very beginning of the <Text className="text-base font-semibold">{channelData?.channel_name}</Text> channel.</Text>
+                {channelData?.channel_description && <Text className="text-sm text-muted-foreground">Channel description: {channelData?.channel_description}</Text>}
+            </View>
         </View>
     )
 }
