@@ -8,6 +8,7 @@ import { Toggle } from '@components/nativewindui/Toggle'
 import { Text } from '@components/nativewindui/Text';
 import { toast } from 'sonner-native';
 import BellOutlineIcon from '@assets/icons/BellOutlineIcon.svg'
+import { useColorScheme } from '@hooks/useColorScheme';
 
 interface PushNotifications {
     channelID: string
@@ -32,6 +33,8 @@ const PushNotifications = ({ channelID }: PushNotifications) => {
             isAdmin: channelMember?.is_admin == 1
         }
     }, [channelMembers, currentUserInfo])
+
+    const { colors } = useColorScheme()
 
     const onToggle = () => {
         if (channelMember) {
@@ -66,7 +69,7 @@ const PushNotifications = ({ channelID }: PushNotifications) => {
         <View>
             <View className='px-4 py-1.5 flex-row justify-between'>
                 <View className='flex-row items-center gap-2'>
-                    <BellOutlineIcon height={20} width={20} />
+                    <BellOutlineIcon height={20} width={20} fill={colors.icon} />
                     <Text className='text-base'>Push Notifications</Text>
                 </View>
                 <Toggle value={channelMember?.allow_notifications ? true : false} onValueChange={onToggle} disabled={!isPushAvailable} />
