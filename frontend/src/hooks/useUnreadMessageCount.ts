@@ -36,7 +36,7 @@ const useUnreadMessageCount = () => {
         // Revalidate on focus every minute
         focusThrottleInterval: 60 * 1000,
         // Fetch unread count every 2 minutes
-        refreshInterval: 2 * 60 * 1000,
+        refreshInterval: 5 * 60 * 1000,
         revalidateOnFocus: true,
         revalidateOnReconnect: true,
     })
