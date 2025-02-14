@@ -139,7 +139,7 @@ const ActiveIndicator = ({ isActive, availabilityStatus, isBot, botColor, indica
 
     return <View
         {...indicatorProps}
-        className={cn('absolute bottom-0.5 right-0.5 translate-x-1/2 translate-y-1/2 rounded-full w-2 h-2', dotColor, indicatorProps?.className)}>
+        className={cn('absolute bottom-0.5 right-0.5 translate-x-1/2 translate-y-1/2 rounded-full w-2.5 h-2.5 border-2  border-card', dotColor, indicatorProps?.className)}>
     </View>
 
 }

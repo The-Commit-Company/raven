@@ -35,4 +35,6 @@ export interface RavenSettings{
 	show_if_a_user_is_on_leave?: 0 | 1
 	/**	OAuth Client : Link - OAuth Client	*/
 	oauth_client?: string
+	/**	Push Notification Service : Select	*/
+	push_notification_service?: "Frappe Cloud" | "Raven"
 }

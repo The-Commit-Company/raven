@@ -1,6 +1,7 @@
 import { useState } from "react"
 import { useFrappePostCall } from "frappe-react-sdk"
 import { Message } from "@raven/types/common/Message"
+import { toast } from "sonner-native"
 
 const useCreateThread = (message: Message) => {
   const { call } = useFrappePostCall("raven.api.threads.create_thread")
@@ -10,11 +11,11 @@ const useCreateThread = (message: Message) => {
     setIsLoading(true)
     return call({ message_id: message?.name })
       .then((res) => {
-        // toast.success("Thread created successfully!")
+        toast.success("Thread created successfully!")
         onSuccess()
       })
       .catch(() => {
-        // toast.error("Failed to create thread")
+        toast.error("Failed to create thread")
         throw new Error("Failed to create thread")
       })
       .finally(() => {

@@ -52,10 +52,12 @@ export const DMChannelHeader = ({ channelData }: DMChannelHeaderProps) => {
 
     const isDesktop = useIsDesktop()
 
+    const lastWorkspace = localStorage.getItem('ravenLastWorkspace')
+
     return (
         <PageHeader>
             <Flex gap='3' align='center'>
-                <Link to='/channel' className="block bg-transparent hover:bg-transparent active:bg-transparent sm:hidden">
+                <Link to={`/${lastWorkspace}`} className="block bg-transparent hover:bg-transparent active:bg-transparent sm:hidden">
                     <BiChevronLeft size='24' className="block text-gray-12" />
                 </Link>
                 <UserAvatar

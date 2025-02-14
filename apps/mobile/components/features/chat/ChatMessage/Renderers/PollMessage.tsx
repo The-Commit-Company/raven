@@ -38,10 +38,10 @@ export const PollMessageBlock = ({ message, ...props }: PollMessageBlockProps) =
     });
 
     return (
-        <View {...props} className="p-3">
+        <View className='w-[90%]' {...props}>
             {error ? (
                 <View className="bg-red-100 p-2 rounded-md">
-                    <Text className="text-re-600">{error.message}</Text>
+                    <Text className="text-red-500">{error.message}</Text>
                 </View>
             ) : null}
             {data ? <PollMessageBox data={data.message} messageID={message.name} /> : null}
@@ -51,7 +51,7 @@ export const PollMessageBlock = ({ message, ...props }: PollMessageBlockProps) =
 
 const PollMessageBox = ({ data, messageID }: { data: Poll; messageID: string }) => {
     return (
-        <View className="bg-gray-200 dark:bg-gray-900 w-full rounded-md p-3 gap-0.5">
+        <View className="bg-gray-100 dark:bg-gray-900 w-full rounded-md p-3 gap-0.5">
             <View className="flex-row justify-between items-center pb-3">
                 <Text className="font-medium">{data.poll.question}</Text>
                 {data.poll.is_anonymous ? (

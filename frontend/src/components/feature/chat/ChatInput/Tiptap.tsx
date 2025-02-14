@@ -1,14 +1,14 @@
 import { BubbleMenu, EditorContent, EditorContext, Extension, ReactRenderer, useEditor } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import Underline from '@tiptap/extension-underline'
-import React, { Suspense, lazy, useContext, useEffect, useMemo } from 'react'
+import React, { Suspense, lazy, useContext, useEffect, useMemo, useRef } from 'react'
 import { TextFormattingMenu } from './TextFormattingMenu'
 import Highlight from '@tiptap/extension-highlight'
 import Link from '@tiptap/extension-link'
 import Placeholder from '@tiptap/extension-placeholder'
 import './tiptap.styles.css'
 import Mention from '@tiptap/extension-mention'
-import { UserListContext } from '@/utils/users/UserListProvider'
+import { UserFields, UserListContext } from '@/utils/users/UserListProvider'
 import MentionList from './MentionList'
 import tippy from 'tippy.js'
 import { PluginKey } from '@tiptap/pm/state'
@@ -30,7 +30,7 @@ import { useSessionStickyState } from '@/hooks/useStickyState'
 import { Message } from '../../../../../../types/Messaging/Message'
 import Image from '@tiptap/extension-image'
 import { EmojiSuggestion } from './EmojiSuggestion'
-import { useIsDesktop, useIsMobile } from '@/hooks/useMediaQuery'
+import { useIsMobile } from '@/hooks/useMediaQuery'
 import { BiPlus } from 'react-icons/bi'
 import clsx from 'clsx'
 import { ChannelMembers } from '@/hooks/fetchers/useFetchChannelMembers'
@@ -88,16 +88,28 @@ export const ChannelMention = Mention.extend({
         }
     })
 
+export interface MemberSuggestions extends UserFields {
+    is_member: boolean
+}
+
 const Tiptap = ({ isEdit, slotBefore, fileProps, onMessageSend, channelMembers, onUserType, channelID, replyMessage, clearReplyMessage, placeholder = 'Type a message...', messageSending, sessionStorageKey = 'tiptap-editor', disableSessionStorage = false, defaultText = '' }: TiptapEditorProps) => {
 
     const { enabledUsers } = useContext(UserListContext)
 
-    const channelMemberUsers = useMemo(() => {
+    const channelMembersRef = useRef<MemberSuggestions[]>([])
+
+    useEffect(() => {
         if (channelMembers) {
-            // Filter enabled users to only include users that are in the channel
-            return enabledUsers.filter((user) => user.name in channelMembers)
+            // Sort the user list so that members are at the top
+            channelMembersRef.current = enabledUsers.map((user) => ({
+                ...user,
+                is_member: user.name in channelMembers
+            })).sort((a, b) => a.is_member ? -1 : 1)
         } else {
-            return enabledUsers
+            channelMembersRef.current = enabledUsers.map((user) => ({
+                ...user,
+                is_member: true
+            }))
         }
     }, [channelMembers, enabledUsers])
 
@@ -105,12 +117,23 @@ const Tiptap = ({ isEdit, slotBefore, fileProps, onMessageSend, channelMembers, 
 
     const { workspaceID } = useParams()
 
+    const isMobile = useIsMobile()
+
     // this is a dummy extension only to create custom keydown behavior
     const KeyboardHandler = Extension.create({
         name: 'keyboardHandler',
         addKeyboardShortcuts() {
             return {
                 Enter: () => {
+                    //  Check for phone
+                    if (matchMedia('(max-device-width: 768px)').matches) {
+                        return false
+                    }
+
+                    // Check for iPad
+                    if (matchMedia('(max-device-width: 1024px)').matches) {
+                        return false
+                    }
 
                     const isCodeBlockActive = this.editor.isActive('codeBlock');
                     const isListItemActive = this.editor.isActive('listItem');
@@ -319,7 +342,7 @@ const Tiptap = ({ isEdit, slotBefore, fileProps, onMessageSend, channelMembers, 
             },
             suggestion: {
                 items: (query) => {
-                    return channelMemberUsers.filter((user) => user.full_name.toLowerCase().startsWith(query.query.toLowerCase()))
+                    return channelMembersRef.current.filter((user) => user.full_name.toLowerCase().startsWith(query.query.toLowerCase()))
                         .slice(0, 10);
                 },
                 // char: '@',
@@ -455,7 +478,6 @@ const Tiptap = ({ isEdit, slotBefore, fileProps, onMessageSend, channelMembers, 
     ]
 
     const [content, setContent] = useSessionStickyState(defaultText, sessionStorageKey, disableSessionStorage)
-    const isMobile = useIsMobile()
 
     const editor = useEditor({
         extensions,
@@ -497,7 +519,7 @@ const Tiptap = ({ isEdit, slotBefore, fileProps, onMessageSend, channelMembers, 
                             <Suspense fallback={<IconButton radius='full' color='gray' variant='soft' size='2' className='mb-1'>
                                 <BiPlus size='20' />
                             </IconButton>}>
-                                <MobileInputActions fileProps={fileProps} setContent={setContent} sendMessage={onMessageSend} messageSending={messageSending} />
+                                <MobileInputActions fileProps={fileProps} setContent={setContent} sendMessage={onMessageSend} messageSending={messageSending} channelID={channelID} />
                             </Suspense>
                         </div>
                     }

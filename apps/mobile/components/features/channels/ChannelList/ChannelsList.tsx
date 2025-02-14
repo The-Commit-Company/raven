@@ -1,19 +1,32 @@
-import { useState } from 'react';
+import { Divider } from '@components/layout/Divider';
+import { ChannelListItem } from '@raven/types/common/ChannelListItem';
+import { useMemo, useState } from 'react';
 import { View, TouchableOpacity, Pressable, StyleSheet } from 'react-native';
 import { Text } from '@components/nativewindui/Text';
 import ChevronDownIcon from '@assets/icons/ChevronDownIcon.svg';
 import ChevronRightIcon from '@assets/icons/ChevronRightIcon.svg';
 import { useColorScheme } from '@hooks/useColorScheme';
-import { ChannelListItem } from '@raven/types/common/ChannelListItem';
 import { router } from 'expo-router';
 import PlusIcon from '@assets/icons/PlusIcon.svg';
 import { ChannelListRow } from './ChannelListRow';
+import useCurrentRavenUser from '@raven/lib/hooks/useCurrentRavenUser';
 
-interface ChannelListUIProps {
-    channels: ChannelListItem[];
+const ChannelsList = ({ channels }: { channels: ChannelListItem[] }) => {
+
+    const { myProfile } = useCurrentRavenUser()
+    const pinnedChannelIDs = myProfile?.pinned_channels?.map(pin => pin.channel_id)
+
+    const filteredChannels = useMemo(() => {
+        return channels.filter(channel => !pinnedChannelIDs?.includes(channel.name))
+    }, [channels, pinnedChannelIDs])
+
+    return <>
+        <ChannelListUI channels={filteredChannels} />
+        <Divider />
+    </>
 }
 
-const ChannelListUI = ({ channels }: ChannelListUIProps) => {
+export const ChannelListUI = ({ channels }: { channels: ChannelListItem[] }) => {
 
     const [isExpanded, setIsExpanded] = useState(true)
     const colors = useColorScheme()
@@ -73,4 +86,4 @@ const styles = StyleSheet.create({
     },
 })
 
-export default ChannelListUI
+export default ChannelsList
