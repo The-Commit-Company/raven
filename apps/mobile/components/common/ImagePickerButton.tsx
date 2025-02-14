@@ -23,6 +23,7 @@ const ImagePickerButton = ({ buttonProps, iconProps, icon, label, labelProps, on
         try {
             let result = await ImagePicker.launchImageLibraryAsync({
                 allowsMultipleSelection: true,
+                mediaTypes: ['videos', 'images', 'livePhotos'],
             })
 
             if (!result.canceled) {
