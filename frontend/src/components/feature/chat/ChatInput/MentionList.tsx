@@ -1,6 +1,5 @@
 import { UserAvatar } from '@/components/common/UserAvatar'
 import { useIsUserActive } from '@/hooks/useIsUserActive'
-import { UserFields } from '@/utils/users/UserListProvider'
 import { Flex, Text, Theme } from '@radix-ui/themes'
 import { ReactRendererOptions } from '@tiptap/react'
 import { clsx } from 'clsx'
@@ -9,6 +8,9 @@ import {
     useRef,
     useState,
 } from 'react'
+import { MemberSuggestions } from './Tiptap'
+import { HStack } from '@/components/layout/Stack'
+import { BiUserX } from 'react-icons/bi'
 
 export default forwardRef((props: ReactRendererOptions['props'], ref) => {
 
@@ -65,7 +67,7 @@ export default forwardRef((props: ReactRendererOptions['props'], ref) => {
                 className='shadow-lg dark:bg-panel-solid bg-white overflow-y-scroll max-h-96 rounded-md'
             >
                 {props?.items.length
-                    ? props.items.map((item: UserFields, index: number) => (
+                    ? props.items.map((item: MemberSuggestions, index: number) => (
                         <MentionItem
                             item={item}
                             index={index}
@@ -82,7 +84,7 @@ export default forwardRef((props: ReactRendererOptions['props'], ref) => {
     )
 })
 
-const MentionItem = ({ item, index, selectItem, selectedIndex, itemsLength }: { itemsLength: number, selectedIndex: number, index: number, item: UserFields, selectItem: (index: number) => void }) => {
+const MentionItem = ({ item, index, selectItem, selectedIndex, itemsLength }: { itemsLength: number, selectedIndex: number, index: number, item: MemberSuggestions, selectItem: (index: number) => void }) => {
 
     const isActive = useIsUserActive(item.name)
 
@@ -116,6 +118,10 @@ const MentionItem = ({ item, index, selectItem, selectedIndex, itemsLength }: { 
             isActive={isActive}
             availabilityStatus={item.availability_status}
         />
-        <Text as='span' weight='medium' size='2'> {item.full_name}</Text>
+        <HStack width='100%' justify='between' align='center' gap='2'>
+            <Text as='span' weight='medium' size='2'> {item.full_name}</Text>
+            <Text as='span' color='gray'>{!item.is_member && <BiUserX title='This user is not a member of the channel' />}</Text>
+        </HStack>
+
     </Flex>
 }

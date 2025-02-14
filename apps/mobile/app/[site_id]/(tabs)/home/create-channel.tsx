@@ -59,7 +59,7 @@ export default function CreateChannel() {
                 return (
                     <Link asChild href="../" relativeToDirectory>
                         <Button variant="plain" className="ios:px-0" hitSlop={10}>
-                            <CrossIcon fill={colors.icon} height={24} width={24} />
+                            <CrossIcon color={colors.icon} height={24} width={24} />
                         </Button>
                     </Link>
                 )

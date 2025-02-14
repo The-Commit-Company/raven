@@ -23,8 +23,8 @@ import useRetractVote from './useRetractVote'
 import useMessageDelete from './useMessageDelete'
 import { router } from 'expo-router'
 import { useColorScheme } from '@hooks/useColorScheme'
-import { Alert } from '@components/nativewindui/Alert'
 import { AlertRef } from '@components/nativewindui/Alert/types'
+import { Alert } from '@components/nativewindui/Alert'
 import { Divider } from '@components/layout/Divider'
 
 interface MessageActionsProps {
