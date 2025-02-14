@@ -1,4 +1,4 @@
-import { ScrollView, TextInput, View } from "react-native"
+import { ScrollView, TextInput, useWindowDimensions, View } from "react-native"
 import AdditionalInputs from "./AdditionalInputs"
 import { Button } from "@components/nativewindui/Button"
 import SendIcon from "@assets/icons/SendIcon.svg"
@@ -10,6 +10,7 @@ import { useLocalSearchParams } from "expo-router"
 import { CustomFile } from "@raven/types/common/File"
 import { useState } from "react"
 import { filesAtom } from "@lib/filesAtom"
+import Tiptap from "./Tiptap/Tiptap"
 
 const ChatInput = () => {
 
@@ -18,25 +19,54 @@ const ChatInput = () => {
     const [text, setText] = useState('')
     const [, setFiles] = useAtom(filesAtom)
 
-    const handleSend = (files: CustomFile[]) => {
-        if (files?.length > 0) {
+    const { width, } = useWindowDimensions()
+
+    // State to hold the measured width and height of the chat input.
+    const [inputSize, setInputSize] = useState<{ width: number; height: number }>({
+        width: width - 24,
+        height: 40,
+    });
+
+    const handleSend = async (files?: CustomFile[], content?: string, json?: any) => {
+
+        if (files && files?.length > 0) {
             files[0].caption = text
             uploadFiles(files, setFiles).then(() => {
                 setText('')
                 setFiles([])
             })
+        } else if (content) {
+            console.log(content, json)
         }
     }
 
     return (
         <View className="flex-col gap-2 w-full">
-            <TextInput
-                placeholder='Type a message...'
-                className="color-foreground w-full"
-                onChangeText={(text) => setText(text)}
-                value={text}
-            />
-            <InputBottomBar onSend={handleSend} />
+            {
+                <Tiptap
+                    content={text}
+                    dom={{
+                        scrollEnabled: false,
+                        matchContents: true,
+                        // We use the measured size, which helps avoid an internal scroll in the WebView.
+                        containerStyle: {
+                            width: inputSize.width,
+                            height: inputSize.height,
+                            overflow: "hidden",
+                        },
+                    }}
+
+                    // This callback is invoked from the web side whenever the size changes.
+                    onDOMLayout={({ width, height }: { width: number, height: number }) => {
+                        // Only update if the size has really changed
+                        if (inputSize.width !== width || inputSize.height !== height) {
+                            setInputSize({ width, height });
+                        }
+                    }}
+                    onSend={handleSend}
+                />
+            }
+            {/* <InputBottomBar onSend={handleSend} /> */}
         </View>
     )
 }
