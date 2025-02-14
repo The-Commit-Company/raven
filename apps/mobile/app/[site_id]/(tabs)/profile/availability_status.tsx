@@ -7,7 +7,7 @@ import SolidCircle from "@assets/icons/SolidCIrcleIcon.svg"
 import PowerResetIcon from "@assets/icons/PowerResetIcon.svg"
 import CircleMinusIcon from "@assets/icons/CIrcleMinusIcon.svg"
 import CircleDotIcon from "@assets/icons/CircleDotIcon.svg"
-import { Divider } from '@components/common/DIvider';
+import { Divider } from '@components/layout/Divider';
 
 export type AvailabilityStatus = 'Available' | 'Away' | 'Do not disturb' | 'Invisible' | ''
 
