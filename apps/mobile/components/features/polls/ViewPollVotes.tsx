@@ -1,5 +1,5 @@
 import React from 'react';
-import { Pressable, Image, View } from 'react-native';
+import { Pressable, Image, View, TouchableOpacity } from 'react-native';
 import { useFrappeGetCall } from 'frappe-react-sdk'
 import { BottomSheetView } from '@gorhom/bottom-sheet';
 import { Sheet, useSheetRef } from '@components/nativewindui/Sheet';
@@ -29,21 +29,19 @@ const ViewPollVotes = ({ poll }: ViewPollVotesProps) => {
 
     return (
         <View>
-            <Pressable
+            <TouchableOpacity
                 className="w-full"
                 onPress={() => bottomSheetRef.current?.present()}
-                style={({ pressed }) => [
-                    { opacity: pressed ? 0.6 : 1.0 },
-                ]}
+                activeOpacity={0.6}
             >
                 <Text className="text-center text-sm cursor-pointer" style={{ color: colors.primary }}>
                     View Votes
                 </Text>
-            </Pressable>
+            </TouchableOpacity>
 
             <Sheet snapPoints={[500, '80%']} ref={bottomSheetRef}>
                 <BottomSheetView className='pb-16'>
-                    <ViewPollVotesModalContent poll={poll} />
+                    {poll && <ViewPollVotesModalContent poll={poll} />}
                 </BottomSheetView>
             </Sheet>
         </View>
