@@ -51,7 +51,7 @@ const CameraButton = () => {
         <ImagePickerButton
             icon={<CameraIcon width={12} height={12} fill="white" />}
             onPick={onPick}
-            allowMultiple={false}
+            allowsMultipleSelection={false}
             buttonProps={{ style: { backgroundColor: colors.primary, height: 25, width: 25, borderRadius: 6 } }}
         />
     )
