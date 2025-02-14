@@ -71,7 +71,12 @@ const MembersTable = ({ members, isAdmin, workspaceID }: { members: WorkspaceMem
             Table: (props) => <Table.Root variant='surface' className='rounded-sm' {...props} />,
             TableHead: Table.Header,
             TableBody: Table.Body,
-            TableRow: (props) => <Table.Row className="hover:bg-gray-2" {...props} />,
+            TableRow: (props) => (
+                <Table.Row
+                    className="group hover:bg-gray-2 dark:hover:bg-gray-3 [&:has([data-state='open'])]:bg-gray-2 dark:[&:has([data-state='open'])]:bg-gray-3"
+                    {...props}
+                />
+            ),
         }}
         fixedHeaderContent={() => (
             <Table.Row>
@@ -108,7 +113,7 @@ const MemberRow = ({ users, member, isAdmin, workspaceID }: { users: Record<stri
                 {getDateObject(member.creation).format("Do MMMM YYYY")}
             </Text>
         </Table.Cell>
-        {isAdmin ? <Table.Cell><MemberActions member={member} workspaceID={workspaceID} /></Table.Cell> : null}
+        {isAdmin ? <Table.Cell align='center'><MemberActions member={member} workspaceID={workspaceID} /></Table.Cell> : null}
     </>
 }
 

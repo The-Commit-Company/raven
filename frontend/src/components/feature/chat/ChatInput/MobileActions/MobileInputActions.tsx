@@ -8,7 +8,7 @@ import { useBoolean } from '@/hooks/useBoolean'
 import CreatePollDrawer from './CreatePollDrawer'
 import AddGIFDrawer from './AddGIFDrawer'
 
-const MobileInputActions = ({ fileProps }: RightToolbarButtonsProps) => {
+const MobileInputActions = ({ fileProps, channelID }: RightToolbarButtonsProps) => {
 
     const [isPollOpen, { on: onPollOpen }, setIsPollOpen] = useBoolean()
     const [isGIFPickerOpen, { on: onGIFPickerOpen }, setIsGIFPickerOpen] = useBoolean()
@@ -36,7 +36,7 @@ const MobileInputActions = ({ fileProps }: RightToolbarButtonsProps) => {
                     </DropdownMenu.Item>
                 </DropdownMenu.Content>
             </DropdownMenu.Root>
-            <CreatePollDrawer isOpen={isPollOpen} setIsOpen={setIsPollOpen} />
+            {channelID && <CreatePollDrawer isOpen={isPollOpen} setIsOpen={setIsPollOpen} channelID={channelID} />}
             <AddGIFDrawer isOpen={isGIFPickerOpen} setIsOpen={setIsGIFPickerOpen} />
         </>
     )

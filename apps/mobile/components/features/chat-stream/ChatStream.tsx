@@ -6,12 +6,19 @@ import { LegendList, LegendListRef } from '@legendapp/list'
 import DateSeparator from './DateSeparator'
 import SystemMessageBlock from './SystemMessageBlock'
 import MessageItem from './MessageItem'
+import { PollMessageBlock } from '../chat/ChatMessage/Renderers/PollMessage'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
+import { useKeyboardVisible } from '@hooks/useKeyboardVisible'
+import ChannelHistoryFirstMessage from './FirstMessageBlock'
 
 type Props = {
     channelID: string
 }
 
 const ChatStream = ({ channelID }: Props) => {
+
+    const { bottom } = useSafeAreaInsets()
+    const { isKeyboardVisible } = useKeyboardVisible()
 
     const listRef = useRef<LegendListRef>(null)
 
@@ -27,7 +34,9 @@ const ChatStream = ({ channelID }: Props) => {
 
     if (data) {
         return (
-            <View style={ContentContainerStyles} className='bg-white dark:bg-background'>
+            <View style={{
+                paddingBottom: 120 + (isKeyboardVisible ? 0 : bottom), // height of the chat input, adjust this accordindly
+            }} className='bg-white dark:bg-background px-1'>
                 {/* <FlatList
                     data={data}
                     ref={listRef}
@@ -52,6 +61,7 @@ const ChatStream = ({ channelID }: Props) => {
                     getEstimatedItemSize={getEstimatedItemSize}
                     renderItem={MessageContentRenderer}
                     recycleItems={false}
+                    ListHeaderComponent={<ChannelHistoryFirstMessage channelID={channelID} />}
                 />
             </View>
         )
@@ -88,11 +98,13 @@ const messageKeyExtractor = (item: MessageDateBlock) => {
     return `${item.name}-${item.modified}`
 }
 
-const ContentContainerStyles = {
-    paddingBottom: 120
-}
-
 const MessageContentRenderer = ({ item }: { item: MessageDateBlock }) => {
+
+    // TODO: Implement reply message press
+    const onReplyMessagePress = () => {
+        console.log('reply message pressed')
+    }
+
     if (item.message_type === 'date') {
         return <DateSeparator item={item} />
     }
@@ -100,7 +112,12 @@ const MessageContentRenderer = ({ item }: { item: MessageDateBlock }) => {
     if (item.message_type === 'System') {
         return <SystemMessageBlock item={item} />
     }
-    return <MessageItem message={item} />
+
+    if (item.message_type === "Poll") {
+        return <PollMessageBlock message={item} />
+    }
+
+    return <MessageItem message={item} onReplyMessagePress={onReplyMessagePress} />
 }
 
 export default ChatStream

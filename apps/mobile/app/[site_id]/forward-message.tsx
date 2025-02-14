@@ -9,11 +9,13 @@ import { useChannelListProvider } from "@raven/lib/providers/ChannelListProvider
 import { useGetUserRecords } from "@raven/lib/hooks/useGetUserRecords"
 import { UserFields } from "@raven/types/common/UserFields"
 import useCurrentRavenUser from "@raven/lib/hooks/useCurrentRavenUser"
-import { ChannelIcon } from "@components/features/chat/ChannelList/ChannelIcon"
 import { useColorScheme } from "@hooks/useColorScheme"
 import SendIcon from "@assets/icons/SendIcon.svg"
 import { useFrappePostCall } from "frappe-react-sdk"
 import { ActivityIndicator } from "@components/nativewindui/ActivityIndicator"
+import { ChannelIcon } from "@components/features/channels/ChannelList/ChannelIcon"
+import { formatDate } from "@raven/lib/utils/dateConversions"
+import { toast } from "sonner-native"
 
 type DMChannelListItemWithUser = DMChannelListItem & {
     user: UserFields
@@ -99,14 +101,12 @@ function ForwardMessage() {
                 'forwarded_message': message,
             })
                 .then(() => {
-                    // toast.success('Message forwarded successfully!')
-                    console.log("Message forwarded successfully");
+                    toast.success('Message forwarded successfully!')
 
                     router.back();
                 })
                 .catch(() => {
-                    // toast.error('Failed to forward message')
-                    console.log("Message forwarded failed");
+                    toast.error('Failed to forward message')
                 });
         }
     }
@@ -254,32 +254,3 @@ const ChannelRow = React.memo(({ item, handleChannelSelect, currentUserInfo }: a
 })
 
 export default ForwardMessage
-
-
-function formatDate(inputDate: string): string {
-    const date = new Date(inputDate);
-
-    // Get day with ordinal suffix
-    const day = date.getDate();
-    const ordinalSuffix = (n: number): string => {
-        if (n >= 11 && n <= 13) return "th";
-        const lastDigit = n % 10;
-        if (lastDigit === 1) return "st";
-        if (lastDigit === 2) return "nd";
-        if (lastDigit === 3) return "rd";
-        return "th";
-    };
-    const dayWithSuffix = `${day}${ordinalSuffix(day)}`;
-
-    // Format date to required parts
-    const options: Intl.DateTimeFormatOptions = { weekday: "short", month: "short" };
-    const formattedDate = new Intl.DateTimeFormat("en-US", options).format(date);
-
-    // Extract time
-    const optionsTime: Intl.DateTimeFormatOptions = { hour: "numeric", minute: "numeric", hour12: true };
-    const formattedTime = new Intl.DateTimeFormat("en-US", optionsTime).format(date);
-
-    // Combine results
-    const [weekday, month] = formattedDate.split(" ");
-    return `${weekday}, ${month} ${dayWithSuffix} at ${formattedTime}`;
-}

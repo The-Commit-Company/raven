@@ -1,14 +1,12 @@
 import { SafeAreaView, ScrollView, View } from 'react-native';
 import { ThemeToggle } from '@components/nativewindui/ThemeToggle';
 import { useColorScheme } from '@hooks/useColorScheme';
-import DMList from '@components/features/channels/DMList/DMList';
 import WorkspaceSwitcher from '@components/features/workspaces/WorkspaceSwitcher';
-import { Divider } from '@components/layout/Divider';
 import { useGetCurrentWorkspace } from '@hooks/useGetCurrentWorkspace';
-import ChannelList from '@components/features/channels/ChannelList/ChannelList';
 import { ViewNotificationsButton } from '@components/features/notifications/ViewNotificationsButton';
 import { ViewSavedMessagesButton } from '@components/features/saved-messages/ViewSavedMessagesButton';
 import QuickSearchButton from '@components/features/search/QuickSearchButton';
+import AllChannelsList from '@components/features/channels/ChannelList/AllChannelsList';
 
 export default function Home() {
 
@@ -34,9 +32,7 @@ export default function Home() {
                 style={{ flex: 1, backgroundColor: colors.background }}
                 className="rounded-t-[1.2rem]">
                 <View className="flex flex-col">
-                    <ChannelList workspace={workspace} />
-                    <Divider />
-                    <DMList />
+                    <AllChannelsList workspace={workspace} />
                 </View>
             </ScrollView>
         </SafeAreaView>

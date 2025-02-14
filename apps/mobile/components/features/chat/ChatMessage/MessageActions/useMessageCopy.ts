@@ -1,5 +1,6 @@
 import * as Clipboard from 'expo-clipboard'
 import { Message } from '@raven/types/common/Message'
+import { toast } from 'sonner-native'
 
 export const useMessageCopy = (message: Message) => {
 
@@ -15,10 +16,10 @@ export const useMessageCopy = (message: Message) => {
 
             if (plainText) {
                 await Clipboard.setStringAsync(plainText)
-                // toast.success('Text copied to clipboard')
+                toast.success('Text copied to clipboard')
                 onSuccess()
             } else {
-                // toast.error('Could not copy text')
+                toast.error('Could not copy text')
             }
 
         }
