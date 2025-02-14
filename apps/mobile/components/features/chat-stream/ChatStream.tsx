@@ -113,10 +113,6 @@ const MessageContentRenderer = ({ item }: { item: MessageDateBlock }) => {
         return <SystemMessageBlock item={item} />
     }
 
-    if (item.message_type === "Poll") {
-        return <PollMessageBlock message={item} />
-    }
-
     return <MessageItem message={item} onReplyMessagePress={onReplyMessagePress} />
 }
 
