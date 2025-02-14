@@ -73,8 +73,7 @@ const MessageItem = memo(({ message, onReplyMessagePress }: Props) => {
                     className='mb-1'
                     onPress={onReplyMessagePress}
                     message={replyMessageDetails}
-                />
-                }
+                />}
 
                 {message.text ? <MessageTextRenderer text={message.text} /> : null}
                 {message.message_type === 'Image' && <ImageMessageRenderer message={message} />}
