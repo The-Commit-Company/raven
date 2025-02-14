@@ -8,6 +8,7 @@ import { Poll } from '../chat/ChatMessage/Renderers/PollMessage';
 import { useGetUser } from '@raven/lib/hooks/useGetUser';
 import { useColorScheme } from "@hooks/useColorScheme"
 import UserAvatar from '@components/layout/UserAvatar';
+import { Divider } from '@components/layout/Divider';
 
 type VoteData = {
     users: string[];
@@ -109,9 +110,12 @@ const VotesBlock = ({ votesData, poll }: { votesData: PollVotesResponse; poll: P
                                 {option.count} vote{option.count > 1 ? 's' : ''}
                             </Text>
                         </View>
-                        <View className="bg-gray-100 dark:bg-gray-900 rounded-md p-2.5">
-                            {option.users.map((user) => (
-                                <UserVote key={user} user_id={user} />
+                        <View className="bg-gray-50 dark:bg-gray-900 rounded-md p-2.5">
+                            {option.users.map((user, index) => (
+                                <View key={user}>
+                                    <UserVote user_id={user} />
+                                    {option.users.length - 1 !== index && <Divider className='mx-0 my-2' prominent />}
+                                </View>
                             ))}
                         </View>
                     </View>
