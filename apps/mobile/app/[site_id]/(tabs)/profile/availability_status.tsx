@@ -8,6 +8,7 @@ import PowerResetIcon from "@assets/icons/PowerResetIcon.svg"
 import CircleMinusIcon from "@assets/icons/CIrcleMinusIcon.svg"
 import CircleDotIcon from "@assets/icons/CircleDotIcon.svg"
 import { Divider } from '@components/layout/Divider';
+import { toast } from 'sonner-native';
 
 export type AvailabilityStatus = 'Available' | 'Away' | 'Do not disturb' | 'Invisible' | ''
 
@@ -21,11 +22,11 @@ export default function AvailabilityStatusScreen() {
         return updateDoc("Raven User", myProfile?.name ?? null, {
             availability_status
         }).then(() => {
-            // toast.success(__("Availability status updated"))
+            toast.success("Availability status updated")
             mutate()
             router.back();
         }).catch(() => {
-            // toast.error(__("Availability status update failed"))
+            toast.error("Availability status update failed")
         })
     }
 
