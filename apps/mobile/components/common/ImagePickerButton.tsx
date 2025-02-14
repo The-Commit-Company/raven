@@ -14,15 +14,16 @@ interface ImagePickerButtonProps {
     label?: string
     labelProps?: TextProps
     onPick: (files: CustomFile[]) => void
+    allowMultiple?: boolean
 }
 
-const ImagePickerButton = ({ buttonProps, iconProps, icon, label, labelProps, onPick }: ImagePickerButtonProps) => {
+const ImagePickerButton = ({ buttonProps, iconProps, icon, label, labelProps, onPick, allowMultiple = true }: ImagePickerButtonProps) => {
     const { colors } = useColorScheme()
 
     const pickImage = async () => {
         try {
             let result = await ImagePicker.launchImageLibraryAsync({
-                allowsMultipleSelection: true,
+                allowsMultipleSelection: allowMultiple,
             })
 
             if (!result.canceled) {

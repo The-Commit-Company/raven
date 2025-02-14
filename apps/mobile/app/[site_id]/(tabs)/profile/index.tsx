@@ -1,6 +1,6 @@
 import { router, Stack } from 'expo-router';
-import { Linking, Platform, View } from 'react-native';
-import { Avatar, AvatarFallback } from '@components/nativewindui/Avatar';
+import { Linking, Platform, TouchableOpacity, View } from 'react-native';
+import { Avatar, AvatarFallback, AvatarImage } from '@components/nativewindui/Avatar';
 import { Button } from '@components/nativewindui/Button';
 import {
     ESTIMATED_ITEM_HEIGHT,
@@ -19,6 +19,10 @@ import { useContext } from 'react';
 import { SiteContext } from '../../_layout';
 import { clearDefaultSite, deleteAccessToken, getRevocationEndpoint } from '@lib/auth';
 import useCurrentRavenUser from '@raven/lib/hooks/useCurrentRavenUser';
+import { useGetUser } from '@raven/lib/hooks/useGetUser';
+import useFileURL from '@hooks/useFileURL';
+import DeleteButton from '@components/features/profile/upload-profile/DeleteButton';
+import CameraButton from '@components/features/profile/upload-profile/CameraButton';
 
 const SCREEN_OPTIONS = {
     title: 'Profile',
@@ -76,6 +80,8 @@ function Item({ info }: { info: ListRenderItemInfo<DataItem> }) {
 
 function ListHeaderComponent() {
 
+    const { colors } = useColorScheme()
+
     const { data, mutate } = useFrappeGetCall('raven.api.raven_users.get_current_raven_user',
         undefined,
         'my_profile',
@@ -86,20 +92,33 @@ function ListHeaderComponent() {
             revalidateOnReconnect: true
         }
     )
+
+    const userDetails = useGetUser(data?.message?.name ?? "")
+
+    const source = useFileURL(userDetails?.user_image)
+
     return (
         <View className="ios:pb-8 items-center pb-4  pt-8">
-            <Avatar alt={`${data?.message?.full_name}'s Profile`} className="h-36 w-36">
-                <AvatarFallback>
-                    <Text
-                        variant="largeTitle"
-                        className={cn(
-                            'dark:text-background font-medium text-white',
-                            Platform.OS === 'ios' && 'dark:text-foreground'
-                        )}>
-                        {data?.message?.full_name?.charAt(0) + data?.message?.full_name?.charAt(1)}
-                    </Text>
-                </AvatarFallback>
-            </Avatar>
+            <View className='relative'>
+                <Avatar alt={`${data?.message?.full_name}'s Profile`} className="h-36 w-36">
+                    <AvatarImage source={source} />
+                    <AvatarFallback>
+                        <Text
+                            variant="largeTitle"
+                            className={cn(
+                                'dark:text-background font-medium text-white',
+                                Platform.OS === 'ios' && 'dark:text-foreground'
+                            )}>
+                            {data?.message?.full_name?.charAt(0) + data?.message?.full_name?.charAt(1)}
+                        </Text>
+                    </AvatarFallback>
+                </Avatar>
+
+                <View className='flex flex-column gap-1 absolute -bottom-2 -right-2'>
+                    <DeleteButton />
+                    <CameraButton />
+                </View>
+            </View>
             <View className="p-2" />
             <Text variant="title1" className='font-medium'>{data?.message?.full_name}</Text>
         </View>
