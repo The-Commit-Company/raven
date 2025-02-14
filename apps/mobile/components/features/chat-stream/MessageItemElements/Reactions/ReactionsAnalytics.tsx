@@ -1,7 +1,7 @@
 import React, { useCallback, useMemo, useRef, useState } from 'react'
-import { Dimensions, Pressable, View } from 'react-native'
-import { State, PanGestureHandler, ScrollView, TouchableOpacity } from 'react-native-gesture-handler'
-import Animated, { useSharedValue, useAnimatedStyle, withSpring, runOnJS } from 'react-native-reanimated'
+import { Dimensions, Pressable, View, FlatList } from 'react-native'
+import { State, PanGestureHandler, TouchableOpacity } from 'react-native-gesture-handler'
+import Animated, { useSharedValue, useAnimatedStyle, withSpring, runOnJS, useAnimatedReaction } from 'react-native-reanimated'
 import { BottomSheetModal, BottomSheetView } from '@gorhom/bottom-sheet'
 import { Text } from '@components/nativewindui/Text'
 import { useColorScheme } from '@hooks/useColorScheme'
@@ -23,7 +23,7 @@ const ReactionAnalytics = ({ reactions, reactionsSheetRef }: ReactionAnalyticsPr
 
     const { colors } = useColorScheme()
 
-    const [activeTab, setActiveTab] = useState(0);
+    const activeTabShared = useSharedValue(0);
     const tabIndicatorAnim = useSharedValue(0);
     const panRef = useRef(null);
 
@@ -50,38 +50,48 @@ const ReactionAnalytics = ({ reactions, reactionsSheetRef }: ReactionAnalyticsPr
         return [{ title: "All", is_custom: false, users: all_reacted_members }, ...reactionTabs];
     }, [reactions, all_reacted_members]);
 
+    const handleTabPress = useCallback((index: number) => {
+        activeTabShared.value = index;
+    }, []);
+
     const handleSwipe = useCallback((event: any) => {
         const { translationX, state } = event.nativeEvent;
 
         if (state === State.END) {
-            if (translationX > 50 && activeTab > 0) {
+            if (translationX > 50 && activeTabShared.value > 0) {
                 // Swipe right
-                runOnJS(setActiveTab)(prev => prev - 1);
-            } else if (translationX < -50 && activeTab < tabs.length - 1) {
+                runOnJS(handleTabPress)(activeTabShared.value - 1);
+            } else if (translationX < -50 && activeTabShared.value < tabs.length - 1) {
                 // Swipe left
-                runOnJS(setActiveTab)(prev => prev + 1);
+                runOnJS(handleTabPress)(activeTabShared.value + 1);
             }
         }
-    }, [activeTab, tabs.length]);
+    }, [tabs.length, handleTabPress]);
 
     const tabWidth = useMemo(() => width / Math.max(tabs.length, 1), [tabs.length]);
+
+    useAnimatedReaction(() => activeTabShared.value, (currentValue) => {
+        tabIndicatorAnim.value = withSpring(currentValue, {
+            damping: 12,
+            stiffness: 80
+        });
+    }, [tabWidth]);
 
     const animatedStyle = useAnimatedStyle(() => {
         return {
             transform: [
                 {
-                    translateX: withSpring(tabIndicatorAnim.value * tabWidth, {
-                        damping: 12,
-                        stiffness: 80
-                    }),
+                    translateX: tabIndicatorAnim.value * tabWidth,
                 },
             ],
         };
     });
 
-    React.useEffect(() => {
-        tabIndicatorAnim.value = activeTab;
-    }, [activeTab]);
+    const [currentTabIndex, setCurrentTabIndex] = useState(0);
+
+    useAnimatedReaction(() => Math.round(activeTabShared.value), (currentValue) => {
+        runOnJS(setCurrentTabIndex)(currentValue);
+    }, [tabWidth]);
 
     return (
         <Sheet enableDynamicSizing={false} ref={reactionsSheetRef} snapPoints={["40%"]}>
@@ -92,7 +102,11 @@ const ReactionAnalytics = ({ reactions, reactionsSheetRef }: ReactionAnalyticsPr
 
                         if (tab.is_custom) {
                             return (
-                                <Pressable key={tab.title} onPress={() => setActiveTab(index)} className='flex flex-1 flex-row justify-center items-center'>
+                                <Pressable
+                                    key={tab.title}
+                                    onPress={() => handleTabPress(index)}
+                                    className='flex flex-1 flex-row justify-center items-center'
+                                >
                                     <Image source={source} style={{ width: 20, height: 20 }} />
                                 </Pressable>
                             )
@@ -103,7 +117,7 @@ const ReactionAnalytics = ({ reactions, reactionsSheetRef }: ReactionAnalyticsPr
                                 key={tab.title}
                                 style={{ width: tabWidth }}
                                 className="items-center"
-                                onPress={() => setActiveTab(index)}
+                                onPress={() => handleTabPress(index)}
                                 activeOpacity={0.7}
                             >
                                 <Text className='text-center text-lg py-1.5'>{tab.title}</Text>
@@ -125,16 +139,16 @@ const ReactionAnalytics = ({ reactions, reactionsSheetRef }: ReactionAnalyticsPr
                     onGestureEvent={handleSwipe}
                     onHandlerStateChange={handleSwipe}
                 >
-                    <ScrollView showsVerticalScrollIndicator={false} className="flex-1">
+                    <Animated.View className="flex-1">
                         <UserList
-                            users={tabs[activeTab].users.map((user) => ({
+                            users={tabs[currentTabIndex].users.map((user) => ({
                                 user: user?.user,
                                 reaction: user?.reaction,
                                 is_custom: user?.is_custom,
                                 emoji_name: user?.emoji_name
                             }))}
                         />
-                    </ScrollView>
+                    </Animated.View>
                 </PanGestureHandler>
             </BottomSheetView>
         </Sheet>
@@ -151,25 +165,33 @@ interface UserItemProps {
     emoji_name?: string;
 }
 const UserList = ({ users }: { users: UserItemProps[] }) => {
+    const renderItem = ({ item, index }: { item: UserItemProps; index: number }) => (
+        <View>
+            <UserItem
+                user={item.user}
+                reaction={item.reaction}
+                is_custom={item.is_custom}
+                emoji_name={item.emoji_name}
+            />
+            {index !== users.length - 1 && <Divider />}
+        </View>
+    );
+
+    const keyExtractor = (item: UserItemProps, index: number) => `${item.user}-${index}`;
 
     return (
-        <View>
-            {users.map((user, index) => {
-                return (
-                    <View key={index}>
-                        <UserItem
-                            user={user.user}
-                            reaction={user.reaction}
-                            is_custom={user.is_custom}
-                            emoji_name={user.emoji_name}
-                        />
-                        {users.length - 1 !== index ? <Divider /> : null}
-                    </View>
-                )
-            })}
-        </View>
-    )
-}
+        <FlatList
+            data={users}
+            renderItem={renderItem}
+            keyExtractor={keyExtractor}
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={{ flexGrow: 1 }}
+            initialNumToRender={10}
+            maxToRenderPerBatch={10}
+            windowSize={5}
+        />
+    );
+};
 
 const UserItem = ({ user, reaction, is_custom, emoji_name }: UserItemProps) => {
     const userDetails = useGetUser(user)
