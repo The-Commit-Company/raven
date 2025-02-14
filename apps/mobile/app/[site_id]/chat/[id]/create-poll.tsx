@@ -48,8 +48,6 @@ export default function CreatePollPage() {
 
     const onSubmit = async (data: RavenPoll) => {
 
-        console.log(channelID, data);
-
         return createPoll({
             ...data,
             "channel_id": channelID
@@ -58,9 +56,7 @@ export default function CreatePollPage() {
             reset()
             router.back()
         }).catch((err) => {
-            console.log(err);
-            
-            toast.error("There was an error.")
+            toast.error("Error while creating poll")
         })
     }
 
