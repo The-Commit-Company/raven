@@ -25,12 +25,12 @@ export const AddMembersButton = ({ channelData, ...props }: AddMembersButtonProp
         return (
             <Dialog.Root open={open} onOpenChange={setOpen}>
                 <Dialog.Trigger>
-                    <Button variant="ghost" size='1' {...props} className={clsx("text-nowrap", props.className)}>
+                    <Button variant="ghost" size='1' {...props} className={clsx("text-nowrap not-cal", props.className)}>
                         Add Members
                     </Button>
                 </Dialog.Trigger>
 
-                <Dialog.Content className={clsx(DIALOG_CONTENT_CLASS, 'static')}>
+                <Dialog.Content className={'static'}>
                     <AddChannelMembersModalContent
                         onClose={onClose}
                     />
