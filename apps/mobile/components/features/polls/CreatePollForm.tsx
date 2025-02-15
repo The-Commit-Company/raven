@@ -34,7 +34,6 @@ const CreatePollForm = () => {
         setValue(field, checked)
     }
 
-
     return (
         <KeyboardAwareScrollView
             keyboardShouldPersistTaps="handled"
@@ -118,9 +117,10 @@ const CreatePollForm = () => {
                     <Controller
                         name="is_multi_choice"
                         control={control}
-                        render={({ field }) => (
-                            <Pressable onPress={() => onCheckedChange(!field.value, field.name)} className="flex-row items-center gap-2">
-                                <Checkbox checked={field.value} />
+                        defaultValue={false}
+                        render={({ field: { value, name } }) => (
+                            <Pressable onPress={() => onCheckedChange(!value, name)} className="flex-row items-center gap-2">
+                                <Checkbox checked={value} />
                                 <Text>Allow multiple choices</Text>
                             </Pressable>
                         )}
@@ -128,9 +128,10 @@ const CreatePollForm = () => {
                     <Controller
                         name="is_anonymous"
                         control={control}
-                        render={({ field }) => (
-                            <Pressable onPress={() => onCheckedChange(!field.value, field.name)} className="flex-row items-center gap-2">
-                                <Checkbox checked={field.value} />
+                        defaultValue={false}
+                        render={({ field: { value, name } }) => (
+                            <Pressable onPress={() => onCheckedChange(!value, name)} className="flex-row items-center gap-2">
+                                <Checkbox checked={value} />
                                 <Text>Make poll anonymous</Text>
                             </Pressable>
                         )}

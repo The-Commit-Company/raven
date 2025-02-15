@@ -10,13 +10,15 @@ interface CreatePollButtonProps {
     iconProps?: SvgProps
     icon?: React.ReactNode
     label?: string
+    onSheetClose: () => void
 }
 
-const CreatePollButton = ({ icon, label, buttonProps, iconProps }: CreatePollButtonProps) => {
+const CreatePollButton = ({ icon, label, buttonProps, iconProps, onSheetClose }: CreatePollButtonProps) => {
     const { colors } = useColorScheme()
 
     const navigateToCreatePoll = () => {
         router.push("./create-poll", { relativeToDirectory: true })
+        onSheetClose()
     }
 
     return (

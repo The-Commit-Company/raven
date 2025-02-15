@@ -45,6 +45,10 @@ const AdditionalInputsSheetContent = ({ bottomSheetRef }: { bottomSheetRef: Reac
         setFiles((prevFiles) => {
             return [...prevFiles, ...files]
         })
+        onSheetClose()
+    }
+
+    const onSheetClose = () => {
         bottomSheetRef.current?.close()
     }
 
@@ -53,7 +57,7 @@ const AdditionalInputsSheetContent = ({ bottomSheetRef }: { bottomSheetRef: Reac
             <FilePickerButton onPick={handlePick} label="Upload files" />
             <ImagePickerButton onPick={handlePick} label="Upload images" />
             <GIFPickerButton onSelect={() => { }} label="Send GIF" />
-            <CreatePollButton label="Create Poll" />
+            <CreatePollButton onSheetClose={onSheetClose} label="Create Poll" />
         </View>
     )
 }

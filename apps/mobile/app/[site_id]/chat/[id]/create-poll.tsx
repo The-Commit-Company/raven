@@ -35,6 +35,8 @@ export default function CreatePollPage() {
                 docstatus: 0,
                 option: ''
             }],
+            is_multi_choice: 0,
+            is_anonymous: 0
         }
     })
 
