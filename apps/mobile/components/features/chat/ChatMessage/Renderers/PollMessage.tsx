@@ -39,7 +39,7 @@ export const PollMessageBlock = ({ message, ...props }: PollMessageBlockProps) =
     });
 
     return (
-        <View className='w-[90%]' {...props}>
+        <View className='w-full' {...props}>
             {error ? (
                 <View className="bg-red-100 p-2 rounded-md">
                     <Text className="text-red-500">{error.message}</Text>
@@ -79,9 +79,10 @@ const PollMessageBox = ({ data, messageID }: { data: Poll; messageID: string }) 
                 </View>
             ) : null}
 
-            {!data.poll.is_anonymous ? <View className="h-px bg-gray-200 dark:bg-gray-700 w-full my-2" /> : null}
-
-            {data.poll.is_anonymous ? null : <ViewPollVotes poll={data} />}
+            {data.current_user_votes.length ? <View>
+                {!data.poll.is_anonymous ? <View className="h-px bg-gray-200 dark:bg-gray-700 w-full my-2" /> : null}
+                {data.poll.is_anonymous ? null : <ViewPollVotes poll={data} />}
+            </View> : null}
         </View>
     );
 };
