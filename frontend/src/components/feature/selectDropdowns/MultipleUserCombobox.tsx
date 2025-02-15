@@ -112,7 +112,7 @@ function MultipleUserComboBox({ selectedUsers, setSelectedUsers, getFilteredUser
                                     <Text as='span' size='1' weight={'light'}>{item.name}</Text>
                                 </div>
                             </HStack>
-
+                            <Text as='span' size='1' color='gray' weight='medium'>Add</Text>
                         </li>
                     ))}
             </ul>

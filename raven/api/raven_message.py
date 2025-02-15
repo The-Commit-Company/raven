@@ -540,7 +540,7 @@ def forward_message(message_receivers, forwarded_message):
 			add_forwarded_message_to_channel(dm_channel_id, forwarded_message)
 		else:
 			# send forwarded message to the channel
-			add_forwarded_message_to_channel(receiver["channel_name"], forwarded_message)
+			add_forwarded_message_to_channel(receiver["name"], forwarded_message)
 
 	return "messages forwarded"
 
