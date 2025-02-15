@@ -1,21 +1,31 @@
-import { Alert, TouchableOpacity } from 'react-native'
+import { Alert } from 'react-native'
 import { useFrappePostCall } from 'frappe-react-sdk'
 import { toast } from 'sonner-native'
-import useCurrentRavenUser from '@raven/lib/hooks/useCurrentRavenUser'
+import { Button } from '@components/nativewindui/Button'
+import { Text } from '@components/nativewindui/Text'
+import { useColorScheme } from '@hooks/useColorScheme'
 import TrashIcon from '@assets/icons/TrashIcon.svg'
 
-const DeleteButton = () => {
+interface DeleteButtonProps {
+    onSheetClose: (isMutate?: boolean) => void
+}
 
-    const { call, loading, error } = useFrappePostCall('raven.api.raven_users.update_raven_user')
-    const { mutate } = useCurrentRavenUser()
+const DeleteButton = ({ onSheetClose }: DeleteButtonProps) => {
 
-    const removeImage = () => {
-        call({
-            user_image: ''
-        }).then(() => {
+    const { colors } = useColorScheme()
+
+    const { call, loading } = useFrappePostCall('raven.api.raven_users.update_raven_user')
+
+    const removeImage = async () => {
+        try {
+            await call({
+                user_image: ''
+            })
             toast.success("Profile picture removed.")
-            mutate()
-        })
+            onSheetClose()
+        } catch (error) {
+            toast.error('Error removing profile picture')
+        }
     }
 
     const deleteProfilePicAlert = () =>
@@ -36,9 +46,16 @@ const DeleteButton = () => {
         )
 
     return (
-        <TouchableOpacity disabled={loading} activeOpacity={0.8} onPress={deleteProfilePicAlert} className='p-1.5 rounded-md bg-gray-50'>
-            <TrashIcon width={12} height={12} fill={"red"} />
-        </TouchableOpacity>
+        <Button
+            onPress={deleteProfilePicAlert}
+            className="w-full justify-start"
+            variant='plain'
+            size="icon"
+            disabled={loading}
+        >
+            <TrashIcon height={20} width={20} fill={colors.destructive} />
+            <Text className="text-base font-normal ml-2 text-destructive">{loading ? "Removing photo..." : "Remove photo"}</Text>
+        </Button>
     )
 }
 

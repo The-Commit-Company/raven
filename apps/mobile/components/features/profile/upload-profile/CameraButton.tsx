@@ -3,56 +3,76 @@ import { toast } from 'sonner-native'
 import { useColorScheme } from '@hooks/useColorScheme'
 import ImagePickerButton from '@components/common/ImagePickerButton'
 import { CustomFile } from '@raven/types/common/File'
+import PhotoAlbumIcon from '@assets/icons/PhotoAlbumIcon.svg'
 import useCurrentRavenUser from '@raven/lib/hooks/useCurrentRavenUser'
-import CameraIcon from '@assets/icons/CameraIcon.svg'
+import { ActivityIndicator } from '@components/nativewindui/ActivityIndicator'
 
-const CameraButton = () => {
+interface CameraButtonProps {
+    onSheetClose: () => void
+}
 
-    const { call } = useFrappePostCall('raven.api.raven_users.update_raven_user')
-
-    const { myProfile: currentUserInfo, mutate } = useCurrentRavenUser()
-
-    const { upload, loading } = useFrappeFileUpload()
+const CameraButton = ({ onSheetClose }: CameraButtonProps) => {
 
     const { colors } = useColorScheme()
 
-    const uploadImage = (file: string) => {
+    const { myProfile } = useCurrentRavenUser()
+
+    const { call } = useFrappePostCall('raven.api.raven_users.update_raven_user')
+
+    const { upload, loading } = useFrappeFileUpload()
+
+    const uploadImage = async (file: string) => {
         if (file) {
-            call({
-                user_image: file
-            }).then(() => {
-                toast("Image uploaded successfully.")
-                mutate()
-            }).catch((error) => {
-                toast('Error while uploading profile image')
-            })
+            try {
+                await call({
+                    user_image: file
+                })
+                toast.success("Image uploaded successfully.")
+                onSheetClose()
+            } catch (error) {
+                toast.error('Error while uploading profile image')
+            }
         }
     }
 
-    const onPick = (files: CustomFile[]) => {
+    const onPick = async (files: CustomFile[]) => {
         const file = files[0]
 
         if (file) {
-            return upload(file, {
-                doctype: "Raven User",
-                docname: currentUserInfo?.name,
-                fieldname: "user_image",
-                otherData: {
-                    optimize: '1',
-                },
-                isPrivate: true,
-            }).then((res) => {
-                uploadImage(res.file_url)
-            }).catch(console.log)
+
+            try {
+                const res = await upload(file, {
+                    doctype: "Raven User",
+                    docname: myProfile?.name,
+                    fieldname: "user_image",
+                    otherData: {
+                        optimize: '1',
+                    },
+                    isPrivate: true,
+                })
+                await uploadImage(res.file_url)
+            } catch (error) {
+                console.error(error)
+                toast.error('Error uploading image')
+            }
+
         }
     }
 
     return (
         <ImagePickerButton
-            icon={<CameraIcon width={12} height={12} fill="white" />}
+            label={loading ? "Uploading photo..." : "View photo library"}
+            icon={loading ? <ActivityIndicator /> : <PhotoAlbumIcon width={20} height={20} fill={colors.icon} />}
             onPick={onPick}
             allowsMultipleSelection={false}
-            buttonProps={{ style: { backgroundColor: colors.primary, height: 25, width: 25, borderRadius: 6 } }}
+            buttonProps={{
+                disabled: loading,
+                className: "w-full justify-start",
+                size: "icon"
+            }}
+            labelProps={{
+                className: "text-base font-normal ml-2"
+            }}
         />
     )
 }
