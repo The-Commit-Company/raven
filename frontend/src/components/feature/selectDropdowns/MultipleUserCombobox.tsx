@@ -3,7 +3,7 @@ import { UserAvatar } from "@/components/common/UserAvatar"
 import { HStack, Stack } from "@/components/layout/Stack"
 import { useIsDesktop } from "@/hooks/useMediaQuery"
 import { UserFields } from "@/utils/users/UserListProvider"
-import { ScrollArea, Text, TextField } from "@radix-ui/themes"
+import { ScrollArea, Separator, Text, TextField } from "@radix-ui/themes"
 import clsx from "clsx"
 import { useCombobox, useMultipleSelection } from "downshift"
 import { useMemo, useState } from "react"
@@ -42,28 +42,11 @@ function MultipleUserComboBox({ selectedUsers, setSelectedUsers, getFilteredUser
         itemToString(item) {
             return item ? item.name : ''
         },
-        // defaultHighlightedIndex: 0, // after selection, highlight the first item.
-        // selectedItem: null,
         inputValue,
-        stateReducer(state, actionAndChanges) {
-            const { changes, type } = actionAndChanges
-
-            switch (type) {
-                case useCombobox.stateChangeTypes.InputKeyDownEnter:
-                case useCombobox.stateChangeTypes.ItemClick:
-                    return {
-                        ...changes,
-                        // isOpen: true, // keep the menu open after selection.
-                        // highlightedIndex: 0, // with the first option highlighted.
-                    }
-                default:
-                    return changes
-            }
-        },
         onStateChange({
             inputValue: newInputValue,
             type,
-            selectedItem: newSelectedItem,
+            selectedItem: newSelectedItem
         }) {
             switch (type) {
                 case useCombobox.stateChangeTypes.InputKeyDownEnter:
@@ -105,7 +88,9 @@ function MultipleUserComboBox({ selectedUsers, setSelectedUsers, getFilteredUser
                 </TextField.Root>
             </div>
             <ul
-                className={`sm:w-[550px] w-[24rem] absolute bg-background rounded-b-md mt-1 shadow-md z-[9999] max-h-96 overflow-scroll p-0 ${!(isOpen && items.length) && 'hidden'
+                className={`sm:w-[550px] w-[24rem] absolute bg-background mt-0 shadow-sm dark:shadow-md z-[9999] max-h-96 overflow-scroll p-0
+                    border border-b-0 border-gray-3 dark:border-gray-6
+                    ${!(isOpen && items.length) && 'hidden'
                     }`}
                 {...getMenuProps()}
             >
@@ -113,23 +98,31 @@ function MultipleUserComboBox({ selectedUsers, setSelectedUsers, getFilteredUser
                     items.map((item, index) => (
                         <li
                             className={clsx(
-                                highlightedIndex === index && 'bg-gray-3',
+                                highlightedIndex === index && 'dark:bg-accent-9 bg-gray-3',
                                 selectedItem === item && 'font-bold',
-                                'py-2 px-3 shadow-sm flex gap-2 items-center cursor-default',
+                                'py-2 px-3 flex justify-between gap-2 items-center cursor-default border-b dark:border-gray-6 border-gray-3',
                             )}
                             key={`${item.name}`}
                             {...getItemProps({ item, index })}
                         >
-                            <UserAvatar src={item.user_image ?? ''} alt={item.full_name} size='2' />
-                            <div className='flex flex-col'>
-                                <Text as='span' weight='medium' size='2'>{item.full_name}</Text>
-                                <Text as='span' size='1'>{item.name}</Text>
-                            </div>
-
+                            <HStack>
+                                <UserAvatar src={item.user_image ?? ''} alt={item.full_name} size='2' />
+                                <div className='flex flex-col'>
+                                    <Text as='span' weight='medium' size='2'>{item.full_name}</Text>
+                                    <Text as='span' size='1' weight={'light'}>{item.name}</Text>
+                                </div>
+                            </HStack>
+                            <Text as='span' size='1' color='gray' weight='medium'>Add</Text>
                         </li>
                     ))}
             </ul>
-
+            {selectedUsers.length > 0 && <div className="mt-4 px-1">
+                <Separator size='4' />
+                <div className="pt-1">
+                    <Text as='span' size='1' color='gray' weight='medium'>Selected Members</Text>
+                </div>
+            </div>
+            }
             <ScrollArea className="flex gap-1 my-1 items-center flex-wrap max-h-96" scrollbars='vertical'>
                 {selectedUsers.map(function renderSelectedItem(
                     selectedItemForRender,
@@ -150,7 +143,6 @@ function MultipleUserComboBox({ selectedUsers, setSelectedUsers, getFilteredUser
                                     alt={selectedItemForRender.full_name}
                                     size='2'
                                     variant='solid'
-                                    color='gray'
 
                                 />
                                 <Stack gap='0'>

@@ -7,6 +7,7 @@ import { useState } from "react"
 import WebView from "react-native-webview"
 import { WebViewSourceUri } from "react-native-webview/lib/WebViewTypes"
 import ImageViewer from "@components/features/image/ImageViewer"
+import HeaderBackButton from "@components/common/HeaderBackButton"
 
 const FileViewer = () => {
 
@@ -37,6 +38,8 @@ const FileViewer = () => {
   return (
     <>
       <Stack.Screen options={{
+        headerLeft: () => <HeaderBackButton />,
+        headerTransparent: isImage,
         title: 'File Viewer',
         headerShown: showHeader,
         headerTitle: `${uri?.split('/').pop()}`,

@@ -13,16 +13,19 @@ interface ImagePickerButtonProps {
     iconProps?: SvgProps
     label?: string
     labelProps?: TextProps
+    allowsMultipleSelection?: boolean
+    mediaTypes?: ImagePicker.MediaType
     onPick: (files: CustomFile[]) => void
 }
 
-const ImagePickerButton = ({ buttonProps, iconProps, icon, label, labelProps, onPick }: ImagePickerButtonProps) => {
+const ImagePickerButton = ({ buttonProps, iconProps, icon, label, labelProps, allowsMultipleSelection, mediaTypes, onPick }: ImagePickerButtonProps) => {
     const { colors } = useColorScheme()
 
     const pickImage = async () => {
         try {
             let result = await ImagePicker.launchImageLibraryAsync({
-                allowsMultipleSelection: true,
+                allowsMultipleSelection: allowsMultipleSelection ?? true,
+                mediaTypes: mediaTypes ?? ['videos', 'images', 'livePhotos'],
             })
 
             if (!result.canceled) {

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Pressable, Image, View } from 'react-native';
+import { Pressable, Image, View, TouchableOpacity } from 'react-native';
 import { useFrappeGetCall } from 'frappe-react-sdk'
 import { BottomSheetView } from '@gorhom/bottom-sheet';
 import { Sheet, useSheetRef } from '@components/nativewindui/Sheet';
@@ -8,6 +8,7 @@ import { Poll } from '../chat/ChatMessage/Renderers/PollMessage';
 import { useGetUser } from '@raven/lib/hooks/useGetUser';
 import { useColorScheme } from "@hooks/useColorScheme"
 import UserAvatar from '@components/layout/UserAvatar';
+import { Divider } from '@components/layout/Divider';
 
 type VoteData = {
     users: string[];
@@ -28,21 +29,19 @@ const ViewPollVotes = ({ poll }: ViewPollVotesProps) => {
 
     return (
         <View>
-            <Pressable
+            <TouchableOpacity
                 className="w-full"
                 onPress={() => bottomSheetRef.current?.present()}
-                style={({ pressed }) => [
-                    { opacity: pressed ? 0.6 : 1.0 },
-                ]}
+                activeOpacity={0.6}
             >
                 <Text className="text-center text-sm cursor-pointer" style={{ color: colors.primary }}>
                     View Votes
                 </Text>
-            </Pressable>
+            </TouchableOpacity>
 
             <Sheet snapPoints={[500, '80%']} ref={bottomSheetRef}>
                 <BottomSheetView className='pb-16'>
-                    <ViewPollVotesModalContent poll={poll} />
+                    {poll && <ViewPollVotesModalContent poll={poll} />}
                 </BottomSheetView>
             </Sheet>
         </View>
@@ -109,9 +108,12 @@ const VotesBlock = ({ votesData, poll }: { votesData: PollVotesResponse; poll: P
                                 {option.count} vote{option.count > 1 ? 's' : ''}
                             </Text>
                         </View>
-                        <View className="bg-gray-100 dark:bg-gray-900 rounded-md p-2.5">
-                            {option.users.map((user) => (
-                                <UserVote key={user} user_id={user} />
+                        <View className="bg-gray-50 dark:bg-gray-900 rounded-md p-2.5">
+                            {option.users.map((user, index) => (
+                                <View key={user}>
+                                    <UserVote user_id={user} />
+                                    {option.users.length - 1 !== index && <Divider className='mx-0 my-2' prominent />}
+                                </View>
                             ))}
                         </View>
                     </View>

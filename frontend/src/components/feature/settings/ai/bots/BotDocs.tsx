@@ -48,7 +48,7 @@ ${botVarName}.send_message(channel_id="channel-name", text="This is a test messa
     return (
         <Stack gap='3' pt='2'>
             <Text as='p' size='3'>
-                The following code samples show how to use the bot in a Frappe app or Server Script.
+                The following code samples show how to use the bot/agent in a Frappe app or Server Script.
             </Text>
             <Stack gap='0'>
                 <Stack gap='1'>
