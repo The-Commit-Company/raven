@@ -1,7 +1,7 @@
 import React from 'react';
 import { Dimensions, TouchableOpacity, View } from 'react-native';
 import { FlashList } from '@shopify/flash-list';
-import Animated, { ZoomIn, ZoomOut } from 'react-native-reanimated';
+import Animated, { configureReanimatedLogger, ZoomIn, ZoomOut } from 'react-native-reanimated';
 import CheckIcon from "@assets/icons/CheckIcon.svg";
 import { UserFields } from '@raven/types/common/UserFields';
 import { Member } from '@raven/lib/hooks/useFetchChannelMembers';
@@ -15,6 +15,10 @@ interface MemberListProps {
     handleSelectMember: (member: Member) => void;
     debouncedText: string;
 }
+
+configureReanimatedLogger({
+    strict: false,
+})
 
 const MemberList: React.FC<MemberListProps> = ({ filteredMembers, selectedMembers, handleSelectMember, debouncedText }) => {
     return (

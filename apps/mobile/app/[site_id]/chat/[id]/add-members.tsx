@@ -21,7 +21,7 @@ import { toast } from 'sonner-native';
 
 export default function AddNewChannelMembers() {
     const { colors } = useColorScheme();
-    
+
     const { id: channelId } = useLocalSearchParams();
     const { channel } = useCurrentChannelData(channelId as string ?? "");
 
@@ -37,7 +37,7 @@ export default function AddNewChannelMembers() {
 
     const [inputText, setInputText] = useState("");
     const debouncedText = useDebounce(inputText, 200);
-    
+
     const { channelMembers } = useFetchChannelMembers(channelId as string ?? "");
     const { enabledUsers } = useUserListProvider();
 
@@ -101,15 +101,15 @@ export default function AddNewChannelMembers() {
     return (
         <View className='flex-1 p-3'>
             <Stack.Screen options={{
-                title: 'Add Channel Members',
+                title: 'Add Members',
                 headerLeft() {
                     return (
                         <Link asChild href="../" relativeToDirectory>
                             <Button variant="plain" className="ios:px-0" hitSlop={10}>
-                                <CrossIcon fill={colors.icon} height={24} width={24} />
+                                <CrossIcon color={colors.icon} height={24} width={24} />
                             </Button>
                         </Link>
-                    );
+                    )
                 },
                 headerRight() {
                     return (
