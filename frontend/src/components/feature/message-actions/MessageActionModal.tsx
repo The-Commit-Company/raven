@@ -27,7 +27,7 @@ const MessageActionModal = ({ messageID, actionID, onClose }: MessageActionModal
 
     return <Dialog.Root open={actionID !== ''} onOpenChange={onClose}>
         {action &&
-            <Dialog.Content className={clsx(DIALOG_CONTENT_CLASS)}>
+            <Dialog.Content className={'static'}>
 
                 <Dialog.Title>{action.title}</Dialog.Title>
                 <Dialog.Description size='2'>{action.description ? action.description : action.action}</Dialog.Description>
