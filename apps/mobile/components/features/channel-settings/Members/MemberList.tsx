@@ -1,5 +1,5 @@
 import React from 'react';
-import { Dimensions, TouchableOpacity, View } from 'react-native';
+import { Dimensions, Pressable, View } from 'react-native';
 import { FlashList } from '@shopify/flash-list';
 import Animated, { configureReanimatedLogger, ZoomIn, ZoomOut } from 'react-native-reanimated';
 import CheckIcon from "@assets/icons/CheckIcon.svg";
@@ -8,6 +8,7 @@ import { Member } from '@raven/lib/hooks/useFetchChannelMembers';
 import UserAvatar from '@components/layout/UserAvatar';
 import { Text } from '@components/nativewindui/Text';
 import { Divider } from '@components/layout/Divider';
+import { COLORS } from '@theme/colors';
 
 interface MemberListProps {
     filteredMembers: UserFields[];
@@ -26,31 +27,30 @@ const MemberList: React.FC<MemberListProps> = ({ filteredMembers, selectedMember
             data={filteredMembers}
             renderItem={({ item }) => {
                 const isMemberSelected = selectedMembers.find(member => member.name === item.name);
-
                 return (
-                    <TouchableOpacity activeOpacity={0.6} onPress={() => handleSelectMember(item as Member)} className='flex-row items-center justify-between rounded-md px-2.5'>
-                        <View className='gap-3 py-2.5 flex-row items-center'>
+                    <Pressable onPress={() => handleSelectMember(item as Member)} className='ios:active:bg-background flex-row items-center justify-between rounded-md px-2.5'>
+                        <View className='gap-3 px-2 py-2.5 flex-row items-center'>
                             <View className='relative'>
                                 <UserAvatar
                                     src={item.user_image ?? ""}
                                     alt={item.full_name ?? ""}
                                     availabilityStatus={item.availability_status}
                                 />
-                                <View className='absolute -bottom-1.5 -right-1.5'>
+                                <View>
                                     {isMemberSelected && (
-                                        <Animated.View entering={ZoomIn} exiting={ZoomOut} className='w-5 h-5 items-center justify-center rounded-full border-2 border-gray-100 bg-green-500'>
-                                            <CheckIcon fill="white" width={13} height={13} />
+                                        <Animated.View entering={ZoomIn} exiting={ZoomOut} className='w-4 h-4 absolute -bottom-1.5 -right-1.5 items-center justify-center rounded-full border border-card bg-green z-1'>
+                                            <CheckIcon fill={COLORS.white} height={11} width={11} />
                                         </Animated.View>
                                     )}
                                 </View>
                             </View>
-                            <View className='flex-col gap-1'>
-                                <Text className='text-gray-700 dark:text-gray-300 font-semibold text-sm'>{item.full_name}</Text>
-                                <Text className='text-gray-600 dark:text-gray-400 text-sm'>{item.name}</Text>
+                            <View className='flex-col gap-0.5 justify-center'>
+                                <Text className='text-foreground font-medium text-[15px]'>{item.full_name}</Text>
+                                <Text className='text-muted-foreground text-sm'>{item.name}</Text>
                             </View>
                         </View>
-                    </TouchableOpacity>
-                );
+                    </Pressable>
+                )
             }}
             keyExtractor={(item) => item.name}
             estimatedItemSize={64}
@@ -59,13 +59,13 @@ const MemberList: React.FC<MemberListProps> = ({ filteredMembers, selectedMember
             showsVerticalScrollIndicator={false}
             ListEmptyComponent={!debouncedText.length ? () => (
                 <View className="flex-1 items-center justify-center" style={{ height: Dimensions.get("screen").height - 200 }}>
-                    <Text className="text-gray-500 text-center font-medium">
+                    <Text className="text-[15px] text-center text-muted-foreground">
                         No channel members found.
                     </Text>
                 </View>
             ) : undefined}
         />
-    );
-};
+    )
+}
 
-export default MemberList; 
+export default MemberList

@@ -18,60 +18,63 @@ import { ActivityIndicator } from '@components/nativewindui/ActivityIndicator';
 import SelectedMembers from '@components/features/channel-settings/Members/SelectedMembers';
 import MemberList from '@components/features/channel-settings/Members/MemberList';
 import { toast } from 'sonner-native';
+import { SearchInput } from '@components/nativewindui/SearchInput';
+import { Divider } from '@components/layout/Divider';
 
 export default function AddNewChannelMembers() {
-    const { colors } = useColorScheme();
 
-    const { id: channelId } = useLocalSearchParams();
-    const { channel } = useCurrentChannelData(channelId as string ?? "");
+    const { colors } = useColorScheme()
 
-    const { data: workspaceMembers } = useFetchWorkspaceMembers(channel?.channelData.workspace ?? "");
+    const { id: channelId } = useLocalSearchParams()
+    const { channel } = useCurrentChannelData(channelId as string ?? "")
 
-    const [selectedMembers, setSelectedMembers] = useState<Member[]>([]);
+    const { data: workspaceMembers } = useFetchWorkspaceMembers(channel?.channelData.workspace ?? "")
 
-    const handleDeleteMember = useCallback((member: Member) => {
-        setSelectedMembers((prevMembers: Member[]) => prevMembers.filter(m => m.name !== member.name));
-    }, [setSelectedMembers]);
+    const [selectedMembers, setSelectedMembers] = useState<Member[]>([])
 
-    const insets = useSafeAreaInsets();
+    const handleRemoveMember = useCallback((member: Member) => {
+        setSelectedMembers((prevMembers: Member[]) => prevMembers.filter(m => m.name !== member.name))
+    }, [setSelectedMembers])
 
-    const [inputText, setInputText] = useState("");
-    const debouncedText = useDebounce(inputText, 200);
+    const insets = useSafeAreaInsets()
 
-    const { channelMembers } = useFetchChannelMembers(channelId as string ?? "");
-    const { enabledUsers } = useUserListProvider();
+    const [searchQuery, setSearchQuery] = useState("")
+    const debouncedText = useDebounce(searchQuery, 200)
+
+    const { channelMembers } = useFetchChannelMembers(channelId as string ?? "")
+    const { enabledUsers } = useUserListProvider()
 
     const nonChannelMembers = useMemo(() => {
-        if (!workspaceMembers || !enabledUsers) return [];
-        const eligibleUsers: { [key: string]: string } = {};
+        if (!workspaceMembers || !enabledUsers) return []
+        const eligibleUsers: { [key: string]: string } = {}
         workspaceMembers?.message.forEach((m) => {
-            eligibleUsers[m.user] = m.name;
-        });
-        return Array.from(enabledUsers.values()).filter(user => !channelMembers?.[user.name] && eligibleUsers?.[user.name]);
-    }, [workspaceMembers, enabledUsers, channelMembers]);
+            eligibleUsers[m.user] = m.name
+        })
+        return Array.from(enabledUsers.values()).filter(user => !channelMembers?.[user.name] && eligibleUsers?.[user.name])
+    }, [workspaceMembers, enabledUsers, channelMembers])
 
     const filteredMembers = useMemo(() => {
-        if (!nonChannelMembers) return [];
-        const lowerCaseInput = debouncedText?.toLowerCase() || '';
+        if (!nonChannelMembers) return []
+        const lowerCaseInput = debouncedText?.toLowerCase() || ''
         return nonChannelMembers.filter((user: UserFields) => {
-            if (!debouncedText) return true;
+            if (!debouncedText) return true
             return (
                 user?.full_name.toLowerCase().includes(lowerCaseInput) ||
                 user?.name.toLowerCase().includes(lowerCaseInput)
-            );
-        });
-    }, [debouncedText, nonChannelMembers, selectedMembers]);
+            )
+        })
+    }, [debouncedText, nonChannelMembers, selectedMembers])
 
     const handleSelectMember = useCallback((member: Member) => {
         setSelectedMembers((prevMembers) =>
             prevMembers.find((m) => m.name === member.name)
                 ? prevMembers.filter((m) => m.name !== member.name)
                 : [...prevMembers, member]
-        );
-    }, [selectedMembers]);
+        )
+    }, [selectedMembers])
 
-    const { mutate } = useSWRConfig();
-    const { createDoc, error, loading: creatingDoc } = useFrappeCreateDoc();
+    const { mutate } = useSWRConfig()
+    const { createDoc, error, loading: creatingDoc } = useFrappeCreateDoc()
 
     const submit = () => {
         if (selectedMembers && selectedMembers.length > 0) {
@@ -79,29 +82,27 @@ export default function AddNewChannelMembers() {
                 return createDoc("Raven Channel Member", {
                     channel_id: channelId,
                     user_id: member.name,
-                });
-            });
-
+                })
+            })
             Promise.all(promises)
                 .then(() => {
-                    mutate(["channel_members", channelId]);
-                    router.back();
+                    mutate(["channel_members", channelId])
+                    router.back()
                     toast.success(`Member${selectedMembers.length > 0 ? 's' : ''} added`)
                 })
                 .catch((error) => {
                     toast.error(`Error while adding member${selectedMembers.length > 0 ? 's' : ''}`)
                 })
                 .finally(() => {
-                    setSelectedMembers([]);
-                    setInputText("");
-                });
+                    setSelectedMembers([])
+                    setSearchQuery("")
+                })
         }
-    };
+    }
 
     return (
-        <View className='flex-1 p-3'>
+        <View className='flex-1 bg-card dark:bg-background'>
             <Stack.Screen options={{
-                title: 'Add Members',
                 headerLeft() {
                     return (
                         <Link asChild href="../" relativeToDirectory>
@@ -111,6 +112,7 @@ export default function AddNewChannelMembers() {
                         </Link>
                     )
                 },
+                headerTitle: () => <Text className='ml-2 text-base font-semibold'>Add Members</Text>,
                 headerRight() {
                     return (
                         <Button variant="plain" className="ios:px-0"
@@ -120,18 +122,19 @@ export default function AddNewChannelMembers() {
                                 <ActivityIndicator size="small" color={colors.primary} /> :
                                 <Text className="text-primary">Add</Text>}
                         </Button>
-                    );
-                },
-                headerSearchBarOptions: {
-                    onChangeText: (e) => setInputText(e.nativeEvent.text),
-                    cancelButtonText: "Cancel",
-                    autoFocus: true,
-                    inputType: "text",
-                    tintColor: colors.primary,
-                    placeholder: "Search members...",
-                },
-                headerStyle: { backgroundColor: colors.background }
+                    )
+                }
             }} />
+            <View className='px-4 py-3'>
+                <SearchInput
+                    style={{ backgroundColor: colors.grey6 }}
+                    placeholder="Search"
+                    placeholderTextColor={colors.grey}
+                    onChangeText={setSearchQuery}
+                    value={searchQuery}
+                />
+            </View>
+            <Divider className='mx-0' prominent />
 
             <KeyboardAwareScrollView
                 bottomOffset={8}
@@ -140,16 +143,15 @@ export default function AddNewChannelMembers() {
                 contentInsetAdjustmentBehavior="automatic"
                 contentContainerStyle={{ paddingBottom: insets.bottom }}
                 bounces={false}
-                showsVerticalScrollIndicator={false}
-            >
-                <SelectedMembers selectedMembers={selectedMembers} handleDeleteMember={handleDeleteMember} />
+                showsVerticalScrollIndicator={false}>
+                <SelectedMembers selectedMembers={selectedMembers} handleRemoveMember={handleRemoveMember} />
                 <MemberList filteredMembers={filteredMembers} selectedMembers={selectedMembers} handleSelectMember={handleSelectMember} debouncedText={debouncedText} />
             </KeyboardAwareScrollView>
 
             {!filteredMembers.length && debouncedText.length ? (
-                <View className="absolute inset-0 items-center justify-center min-h-screen">
-                    <Text className="text-gray-500 text-center font-sm">
-                        No results found for searched text '{debouncedText}'
+                <View className="absolute inset-0 items-center justify-center h-80">
+                    <Text className="text-[15px] text-center text-muted-foreground">
+                        No results found for searched text <Text className='text-[15px] text-center text-muted-foreground font-medium'>'{debouncedText}'</Text>
                     </Text>
                 </View>
             ) : null}

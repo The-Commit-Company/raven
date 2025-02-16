@@ -96,7 +96,7 @@ const ChannelMembers = () => {
             </KeyboardAwareScrollView>
 
             {!filteredMembers.length && debouncedText.length ? (
-                <View className="absolute inset-0 items-center justify-center pt-10">
+                <View className="absolute inset-0 items-center justify-center h-60">
                     <Text className="text-[15px] text-center text-muted-foreground">
                         No results found for searched text <Text className='font-semibold'>'{debouncedText}'</Text>
                     </Text>

@@ -134,16 +134,16 @@ const ChannelMemberRow = ({ member }: { member: Member }) => {
             rightThreshold={40}
             renderRightActions={(prog, drag) => RightAction(prog, drag, member)}>
             <View className='px-1'>
-                <Pressable disabled={!isAllowed || updatingMember} onLongPress={showActions} className='flex-row items-center justify-between'>
+                <Pressable disabled={!isAllowed || updatingMember} onLongPress={showActions} className='ios:active:bg-background flex-row items-center justify-between'>
                     <View className='gap-3 p-3 flex-row items-center'>
                         <UserAvatar
                             src={member.user_image ?? ""}
                             alt={member.full_name ?? ""}
                             availabilityStatus={member.availability_status}
                         />
-                        <View className='flex-col gap-0'>
+                        <View className='flex-col gap-0.5 justify-center'>
                             <View className='flex-row gap-2'>
-                                <Text className='text-sm text-foreground font-medium'>
+                                <Text className='text-[15px] text-foreground font-medium'>
                                     {member.full_name?.length > 40
                                         ? `${member.full_name.slice(0, 40)}...`
                                         : member.full_name}
