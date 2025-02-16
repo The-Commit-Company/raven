@@ -12,6 +12,8 @@ import useCurrentRavenUser from '@raven/lib/hooks/useCurrentRavenUser';
 import { useActionSheet } from '@expo/react-native-action-sheet';
 import { useCurrentChannelData } from '@hooks/useCurrentChannelData';
 import { toast } from 'sonner-native';
+import { ActivityIndicator } from '@components/nativewindui/ActivityIndicator';
+import { COLORS } from '@theme/colors';
 
 const ChannelMemberRow = ({ member }: { member: Member }) => {
 
@@ -21,6 +23,7 @@ const ChannelMemberRow = ({ member }: { member: Member }) => {
     const { updateDoc, loading: updatingMember, reset } = useFrappeUpdateDoc()
     const { channel } = useCurrentChannelData(channelId as string ?? "")
     const isAllowed = channelMembers[currentUserInfo?.name ?? ""]?.is_admin === 1 && member.name !== currentUserInfo?.name && channel?.channelData.type !== "Open" && channel?.channelData.is_archived === 0
+    const isBot = member.type === "Bot"
 
     const { data: memberInfo } = useFrappeGetCall<{ message: { name: string } }>("frappe.client.get_value", {
         doctype: "Raven Channel Member",
@@ -31,6 +34,10 @@ const ChannelMemberRow = ({ member }: { member: Member }) => {
     })
 
     const updateAdminStatus = async (admin: 1 | 0) => {
+        if (isBot) {
+            toast.error("Bots cannot be made admins")
+            return
+        }
         return updateDoc("Raven Channel Member", memberInfo?.message.name ?? "", {
             is_admin: admin,
         }).then(() => {
@@ -76,11 +83,10 @@ const ChannelMemberRow = ({ member }: { member: Member }) => {
         const showAlert = () =>
             Alert.alert(
                 `Remove Member?`,
-                `This person will no longer have access to the channel.`,
+                `This ${isBot ? "bot" : "person"} will no longer have access to ${channel?.channelData.channel_name} channel.`,
                 [
                     {
                         text: 'Cancel',
-                        style: 'cancel',
                     },
                     {
                         text: 'Remove',
@@ -93,10 +99,10 @@ const ChannelMemberRow = ({ member }: { member: Member }) => {
         return (
             <Reanimated.View style={styleAnimation}>
                 <Button variant="plain" size="none" disabled={!isAllowed || deletingDoc} onPress={showAlert} style={{ width: 70, height: "100%" }} className={`bg-red-500 dark:bg-red-600 rounded-none items-center justify-center ${!isAllowed ? 'opacity-45' : ''}`}>
-                    <TrashIcon width={22} height={22} fill="white" />
+                    {deletingDoc ? <ActivityIndicator size="small" color={COLORS.white} /> : <TrashIcon width={22} height={22} fill="white" />}
                 </Button>
             </Reanimated.View>
-        );
+        )
     }
 
     const { showActionSheetWithOptions } = useActionSheet()
@@ -107,7 +113,6 @@ const ChannelMemberRow = ({ member }: { member: Member }) => {
         const isAdmin = channelMembers[member.name].is_admin
 
         if (isAllowed) {
-
             showActionSheetWithOptions({
                 options,
                 cancelButtonIndex: 2,
@@ -116,14 +121,13 @@ const ChannelMemberRow = ({ member }: { member: Member }) => {
             }, async (selectedIndex: number | undefined) => {
                 switch (selectedIndex) {
                     case 0:
-                        await updateAdminStatus(1);
-                        break;
+                        await updateAdminStatus(1)
+                        break
                     case 1:
-                        await updateAdminStatus(0);
-                        break;
+                        await updateAdminStatus(0)
+                        break
                 }
             })
-
         }
     }
 
@@ -134,7 +138,7 @@ const ChannelMemberRow = ({ member }: { member: Member }) => {
             rightThreshold={40}
             renderRightActions={(prog, drag) => RightAction(prog, drag, member)}>
             <View className='px-1'>
-                <Pressable disabled={!isAllowed || updatingMember} onLongPress={showActions} className='ios:active:bg-background flex-row items-center justify-between'>
+                <Pressable onLongPress={showActions} className='ios:active:bg-background flex-row items-center justify-between'>
                     <View className='gap-3 p-3 flex-row items-center'>
                         <UserAvatar
                             src={member.user_image ?? ""}
