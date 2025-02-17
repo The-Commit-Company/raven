@@ -2,7 +2,7 @@ import { Link, Stack } from 'expo-router';
 import { Button } from '@components/nativewindui/Button';
 import CrossIcon from '@assets/icons/CrossIcon.svg';
 import { useColorScheme } from '@hooks/useColorScheme';
-import { View } from 'react-native';
+import { FlatList, View } from 'react-native';
 import { Text } from '@components/nativewindui/Text';
 import BookMarkIcon from '@assets/icons/BookmarkIcon.svg';
 import { useFrappeGetCall } from 'frappe-react-sdk';
@@ -21,13 +21,13 @@ export default function SavedMessages() {
                 return (
                     <Link asChild href="../" relativeToDirectory>
                         <Button variant="plain" className="ios:px-0" hitSlop={10}>
-                            <CrossIcon fill={colors.icon} height={24} width={24} />
+                            <CrossIcon color={colors.icon} height={24} width={24} />
                         </Button>
                     </Link>
                 )
             }
         }} />
-        <View style={{ backgroundColor: isDarkColorScheme ? '#000' : '#fff', flex: 1 }}>
+        <View className='flex-1'>
             <SavedMessagesContent />
         </View>
     </>
@@ -45,17 +45,13 @@ const SavedMessagesContent = () => {
         </View>
     }
 
-    if (!data || data.message.length === 0) {
-        return <SavedMessagesEmptyState />
-    }
-
-    return (
-        <View className="flex-1 flex-col p-2 gap-2">
-            {data.message.map((message) => (
-                <SavedMessageItem key={message.name} message={message} />
-            ))}
-        </View>
-    )
+    return <FlatList
+        data={data?.message ?? []}
+        ListEmptyComponent={<SavedMessagesEmptyState />}
+        renderItem={({ item }) => <SavedMessageItem message={item} />}
+        keyExtractor={(item) => item.name}
+        contentContainerStyle={{ paddingTop: 8 }}
+    />
 }
 
 const SavedMessagesEmptyState = () => {

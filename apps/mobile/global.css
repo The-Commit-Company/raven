@@ -4,9 +4,9 @@
 
 @layer base {
     :root {
-        --background: 248 248 248;
+        --background: 255 255 255;
         --foreground: 0 0 0;
-        --card: 255 255 255;
+        --card: 248 248 248;
         --card-background: 234 234 234;
         --card-foreground: 8 28 30;
         --popover: 230 230 235;
@@ -32,9 +32,9 @@
         --ring: 230 230 235;
         --green: 82, 174, 99;
 
-        --android-background: 248 248 248;
+        --android-background: 255 255 255;
         --android-foreground: 0 0 0;
-        --android-card: 255 255 255;
+        --android-card: 248 248 248;
         --android-card-background: 234 234 234;
         --android-card-foreground: 24 28 35;
         --android-popover: 215 217 228;

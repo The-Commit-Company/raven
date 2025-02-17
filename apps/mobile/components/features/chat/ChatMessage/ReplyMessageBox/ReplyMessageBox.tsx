@@ -13,7 +13,7 @@ import dayjs from "dayjs";
 
 type ReplyMessageBoxProps = ViewProps & {
     message: Partial<Message>
-    onPress: () => void
+    onPress?: () => void
 }
 /**
  * UI component to show the message being replied to
