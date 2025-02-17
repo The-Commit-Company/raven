@@ -48,7 +48,7 @@ const ChannelMembers = () => {
                         <ChevronLeftIcon stroke={colors.foreground} />
                     </TouchableOpacity>
                 ),
-                headerTitle: () => <Text className='ml-2 text-base font-semibold'>Members</Text>,
+                headerTitle: () => <Text className='ml-2 text-base text-foreground font-semibold'>Members</Text>,
                 headerRight: () => (
                     <TouchableOpacity onPress={() => router.push(`./add-members`)} hitSlop={10}>
                         <Text className='text-base font-semibold text-primary'>Add</Text>

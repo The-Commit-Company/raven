@@ -9,6 +9,7 @@ import UserAvatar from '@components/layout/UserAvatar';
 import { Text } from '@components/nativewindui/Text';
 import { Divider } from '@components/layout/Divider';
 import { COLORS } from '@theme/colors';
+import { useColorScheme } from '@hooks/useColorScheme';
 
 interface MemberListProps {
     filteredMembers: UserFields[];
@@ -22,13 +23,14 @@ configureReanimatedLogger({
 })
 
 const MemberList: React.FC<MemberListProps> = ({ filteredMembers, selectedMembers, handleSelectMember, debouncedText }) => {
+    const { colors, isDarkColorScheme } = useColorScheme()
     return (
         <FlashList
             data={filteredMembers}
             renderItem={({ item }) => {
                 const isMemberSelected = selectedMembers.find(member => member.name === item.name);
                 return (
-                    <Pressable onPress={() => handleSelectMember(item as Member)} className='ios:active:bg-background flex-row items-center justify-between rounded-md px-2.5'>
+                    <Pressable onPress={() => handleSelectMember(item as Member)} className='ios:active:bg-background dark:ios:active:bg-linkColor flex-row items-center justify-between rounded-md px-2.5'>
                         <View className='gap-3 px-2 py-2.5 flex-row items-center'>
                             <View className='relative'>
                                 <UserAvatar
@@ -39,7 +41,7 @@ const MemberList: React.FC<MemberListProps> = ({ filteredMembers, selectedMember
                                 <View>
                                     {isMemberSelected && (
                                         <Animated.View entering={ZoomIn} exiting={ZoomOut} className='w-4 h-4 absolute -bottom-1.5 -right-1.5 items-center justify-center rounded-full border border-card bg-green z-1'>
-                                            <CheckIcon fill={COLORS.white} height={11} width={11} />
+                                            <CheckIcon fill={isDarkColorScheme ? COLORS.black : COLORS.white} height={11} width={11} />
                                         </Animated.View>
                                     )}
                                 </View>

@@ -44,9 +44,9 @@ const ChannelMemberRow = ({ member }: { member: Member }) => {
             updateMembers()
             reset()
             if (admin === 1) {
-                toast.success("Member has been made an admin")
+                toast.success(`${member.full_name} has been made an admin`)
             } else {
-                toast.warning("Member is no longer an admin")
+                toast.warning(`${member.full_name} is no longer an admin`)
             }
         }).catch((e) => {
             toast.error("Failed to update member status")
@@ -83,7 +83,7 @@ const ChannelMemberRow = ({ member }: { member: Member }) => {
         const showAlert = () =>
             Alert.alert(
                 `Remove Member?`,
-                `This ${isBot ? "bot" : "person"} will no longer have access to ${channel?.channelData.channel_name} channel.`,
+                `${member.full_name} will no longer have access to ${channel?.channelData.channel_name} channel.`,
                 [
                     {
                         text: 'Cancel',
@@ -137,9 +137,9 @@ const ChannelMemberRow = ({ member }: { member: Member }) => {
             enableTrackpadTwoFingerGesture
             rightThreshold={40}
             renderRightActions={(prog, drag) => RightAction(prog, drag, member)}>
-            <View className='px-1'>
-                <Pressable onLongPress={showActions} className='ios:active:bg-background flex-row items-center justify-between'>
-                    <View className='gap-3 p-3 flex-row items-center'>
+            <View>
+                <Pressable onLongPress={showActions} className='ios:active:bg-background dark:ios:active:bg-linkColor flex-row items-center justify-between rounded-md'>
+                    <View className='gap-3 px-4 py-3 flex-row items-center'>
                         <UserAvatar
                             src={member.user_image ?? ""}
                             alt={member.full_name ?? ""}

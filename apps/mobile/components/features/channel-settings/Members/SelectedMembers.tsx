@@ -5,6 +5,7 @@ import CrossIcon from '@assets/icons/CrossIcon.svg';
 import { Member } from '@raven/lib/hooks/useFetchChannelMembers';
 import UserAvatar from '@components/layout/UserAvatar';
 import { Divider } from '@components/layout/Divider';
+import { useColorScheme } from '@hooks/useColorScheme';
 import { COLORS } from '@theme/colors';
 
 interface SelectedMembersProps {
@@ -13,6 +14,7 @@ interface SelectedMembersProps {
 }
 
 const SelectedMembers: React.FC<SelectedMembersProps> = ({ selectedMembers, handleRemoveMember }) => {
+    const { isDarkColorScheme } = useColorScheme()
     return (
         <>
             {selectedMembers.length ? (
@@ -32,8 +34,8 @@ const SelectedMembers: React.FC<SelectedMembersProps> = ({ selectedMembers, hand
                                             availabilityStatus={item.availability_status}
                                             avatarProps={{ className: "w-10 h-10" }}
                                         />
-                                        <View className='w-4 h-4 absolute -bottom-1.5 -right-1.5 items-center justify-center rounded-full border border-card bg-muted-foreground z-1'>
-                                            <CrossIcon color={COLORS.white} height={10} width={10} />
+                                        <View className='w-4 h-4 absolute -bottom-1.5 -right-1.5 items-center justify-center rounded-full border border-card bg-slate-800 dark:bg-slate-300 z-1'>
+                                            <CrossIcon color={isDarkColorScheme ? COLORS.black : COLORS.white} height={11} width={11} />
                                         </View>
                                     </TouchableOpacity>
                                 </Animated.View>
