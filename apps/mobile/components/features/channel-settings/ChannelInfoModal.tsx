@@ -39,6 +39,13 @@ const ChannelInfoModal = ({ channel, isModalVisible, setModalVisible }: ChannelI
         })
     }
 
+    const handleGoToViewMembers = () => {
+        setModalVisible(false)
+        router.push('./channel-members', {
+            relativeToDirectory: true
+        })
+    }
+
     // Animated styles for the modal
     const animatedModalStyle = useAnimatedStyle(() => {
         return {
@@ -69,7 +76,7 @@ const ChannelInfoModal = ({ channel, isModalVisible, setModalVisible }: ChannelI
                 <Animated.View style={[styles.modalContent, animatedModalStyle]} className='bg-card dark:border dark:border-border'>
                     <ModalHeader channel={channel} handleCloseModal={handleCloseModal} />
                     <Divider className='my-2 mx-1' prominent />
-                    <Pressable
+                    <Pressable onPress={handleGoToViewMembers}
                         className='rounded-xl ios:active:bg-linkColor'
                         android_ripple={{ color: 'rgba(0,0,0,0.1)', borderless: false }}>
                         <View className='flex-row items-center justify-between px-2'>
