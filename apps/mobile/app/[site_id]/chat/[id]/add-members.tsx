@@ -101,7 +101,7 @@ export default function AddNewChannelMembers() {
     }
 
     return (
-        <View className='flex-1 bg-card dark:bg-background'>
+        <View className='flex-1 bg-background'>
             <Stack.Screen options={{
                 headerLeft() {
                     return (
@@ -123,7 +123,8 @@ export default function AddNewChannelMembers() {
                                 <Text className="text-primary">Add</Text>}
                         </Button>
                     )
-                }
+                },
+                headerStyle: { backgroundColor: colors.background },
             }} />
             <View className='px-4 py-3'>
                 <SearchInput

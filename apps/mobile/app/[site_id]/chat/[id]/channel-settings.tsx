@@ -44,6 +44,7 @@ const ChannelSettings = () => {
     return (
         <>
             <Stack.Screen options={{
+                headerStyle: { backgroundColor: colors.background },
                 headerLeft: () => <HeaderBackButton />,
                 headerTitle: () => <Text className='ml-2 text-base font-semibold'>Channel Info</Text>,
                 headerRight: () => (
@@ -52,7 +53,7 @@ const ChannelSettings = () => {
                     </TouchableOpacity>
                 )
             }} />
-            <View className="flex-1 bg-card">
+            <View className="flex-1 bg-background">
                 <View className="flex-col gap-5">
                     <ChannelBaseDetails channelData={channelData} />
                     <Divider className='mx-0' prominent />

@@ -41,8 +41,9 @@ const ChannelMembers = () => {
     }, [debouncedText, extractChannelMembers])
 
     return (
-        <View className='flex-1 bg-card dark:bg-background'>
+        <View className='flex-1 bg-background'>
             <Stack.Screen options={{
+                headerStyle: { backgroundColor: colors.background },
                 headerLeft: () => (
                     <TouchableOpacity onPress={() => router.back()} hitSlop={10}>
                         <ChevronLeftIcon stroke={colors.foreground} />

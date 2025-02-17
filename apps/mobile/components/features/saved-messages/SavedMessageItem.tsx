@@ -54,13 +54,13 @@ const SavedMessageItem = ({ message }: { message: Message & { workspace?: string
 
     return (
         <Pressable
-            className='rounded-lg pb-2 ios:active:bg-background ios:active:dark:bg-linkColor'
+            className='pb-2 ios:active:bg-linkColor ios:active:dark:bg-linkColor'
             onPress={() => handleNavigateToChannel(channel_id)}>
             <View>
                 <View className='flex flex-row items-center px-2 pt-2 gap-2'>
-                    <Text className='text-xs'>{channelName}</Text>
-                    <Text className='text-xs text-muted'>|</Text>
-                    <Text className='text-xs text-muted-foreground'>
+                    <Text className='text-[13px]'>{channelName}</Text>
+                    <Text className='text-[13px] text-muted'>|</Text>
+                    <Text className='text-[13px] text-muted-foreground'>
                         {formatDateAndTime(creation)}
                     </Text>
                 </View>
