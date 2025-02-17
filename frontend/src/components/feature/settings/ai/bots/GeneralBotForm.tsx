@@ -62,7 +62,7 @@ const GeneralBotForm = () => {
                                 />
                             )} />
 
-                        Is AI Bot
+                        Is AI Agent
                     </HStack>
                 </Text>
                 <HelperText>

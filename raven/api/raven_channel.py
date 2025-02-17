@@ -64,14 +64,24 @@ def get_channel_list(hide_archived=False):
 			channel.last_message_details,
 			channel.pinned_messages_string,
 			channel.workspace,
+			channel_member.name.as_("member_id"),
 		)
-		.distinct()
 		.left_join(channel_member)
-		.on(channel.name == channel_member.channel_id)
+		.on(
+			(channel.name == channel_member.channel_id) & (channel_member.user_id == frappe.session.user)
+		)
 		.left_join(workspace_member)
-		.on(channel.workspace == workspace_member.workspace)
-		.where((channel.is_direct_message == 1) | (workspace_member.user == frappe.session.user))
-		.where((channel.type != "Private") | (channel_member.user_id == frappe.session.user))
+		.on(
+			(channel.workspace == workspace_member.workspace)
+			& (workspace_member.user == frappe.session.user)
+		)
+		.where(
+			((channel.is_direct_message == 1) & (channel_member.user_id == frappe.session.user))
+			| (
+				(workspace_member.user == frappe.session.user)
+				& ((channel.type != "Private") | (channel_member.user_id == frappe.session.user))
+			)
+		)
 		.where(channel.is_thread == 0)
 	)
 

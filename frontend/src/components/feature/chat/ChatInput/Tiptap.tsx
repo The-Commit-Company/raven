@@ -88,18 +88,28 @@ export const ChannelMention = Mention.extend({
         }
     })
 
+export interface MemberSuggestions extends UserFields {
+    is_member: boolean
+}
+
 const Tiptap = ({ isEdit, slotBefore, fileProps, onMessageSend, channelMembers, onUserType, channelID, replyMessage, clearReplyMessage, placeholder = 'Type a message...', messageSending, sessionStorageKey = 'tiptap-editor', disableSessionStorage = false, defaultText = '' }: TiptapEditorProps) => {
 
     const { enabledUsers } = useContext(UserListContext)
 
-    const channelMembersRef = useRef<UserFields[]>([])
+    const channelMembersRef = useRef<MemberSuggestions[]>([])
 
     useEffect(() => {
         if (channelMembers) {
-            // Filter enabled users to only include users that are in the channel
-            channelMembersRef.current = enabledUsers.filter((user) => user.name in channelMembers)
+            // Sort the user list so that members are at the top
+            channelMembersRef.current = enabledUsers.map((user) => ({
+                ...user,
+                is_member: user.name in channelMembers
+            })).sort((a, b) => a.is_member ? -1 : 1)
         } else {
-            channelMembersRef.current = enabledUsers
+            channelMembersRef.current = enabledUsers.map((user) => ({
+                ...user,
+                is_member: true
+            }))
         }
     }, [channelMembers, enabledUsers])
 
@@ -115,7 +125,13 @@ const Tiptap = ({ isEdit, slotBefore, fileProps, onMessageSend, channelMembers, 
         addKeyboardShortcuts() {
             return {
                 Enter: () => {
-                    if (matchMedia('(max-width: 768px)').matches) {
+                    //  Check for phone
+                    if (matchMedia('(max-device-width: 768px)').matches) {
+                        return false
+                    }
+
+                    // Check for iPad
+                    if (matchMedia('(max-device-width: 1024px)').matches) {
                         return false
                     }
 

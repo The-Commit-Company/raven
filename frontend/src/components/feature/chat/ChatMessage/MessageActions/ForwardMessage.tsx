@@ -36,7 +36,7 @@ export const ForwardMessageDialog = ({ message, isOpen, onClose }: ForwardMessag
 
     if (isDesktop) {
         return <Dialog.Root open={isOpen} onOpenChange={onClose}>
-            <Dialog.Content className={clsx(DIALOG_CONTENT_CLASS, 'static')}>
+            <Dialog.Content className={'static'}>
                 {message &&
                     <ForwardMessageModal
                         message={message}

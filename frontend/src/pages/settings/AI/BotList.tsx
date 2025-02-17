@@ -34,9 +34,9 @@ const BotList = (props: Props) => {
         <PageContainer>
             <SettingsContentContainer>
                 <SettingsPageHeader
-                    title='Bots'
-                    description='Use Bots to send reminders, run AI assistants, and more.'
-                    actions={<Button asChild disabled={!isRavenAdmin} title={!isRavenAdmin ? "You don't have permissions to create bots." : "Create a new bot."}>
+                    title='Agents'
+                    description='Use agents to send reminders, run AI assistants, and more.'
+                    actions={<Button asChild disabled={!isRavenAdmin} title={!isRavenAdmin ? "You don't have permissions to create agents." : "Create a new agents."}>
                         <Link to='create'>Create</Link>
                     </Button>}
                 />
@@ -48,10 +48,10 @@ const BotList = (props: Props) => {
                     <EmptyStateIcon>
                         <BiBot />
                     </EmptyStateIcon>
-                    <EmptyStateTitle>Get started with bots</EmptyStateTitle>
-                    <EmptyStateDescription>Create bots to run automations on Raven.<br />Send reminders, document notifications and run AI assistants.</EmptyStateDescription>
+                    <EmptyStateTitle>Get started with agents</EmptyStateTitle>
+                    <EmptyStateDescription>Create agents to run automations on Raven.<br />Send reminders, document notifications and run AI assistants.</EmptyStateDescription>
                     {isRavenAdmin && <EmptyStateLinkAction to='create'>
-                        Create your first bot
+                        Create your first agent
                     </EmptyStateLinkAction>}
                 </EmptyState>}
             </SettingsContentContainer>

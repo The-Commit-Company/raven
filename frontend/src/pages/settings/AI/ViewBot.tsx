@@ -84,7 +84,7 @@ const ViewBotContent = ({ data, mutate }: { data: RavenBot, mutate: SWRResponse[
                             {loading ? "Saving" : "Save"}
                         </Button>
                     </HStack>}
-                    breadcrumbs={[{ label: 'Bots', href: '../' }, { label: data.name, href: '', copyToClipboard: true }]}
+                    breadcrumbs={[{ label: 'Agents', href: '../' }, { label: data.name, href: '', copyToClipboard: true }]}
                 />
                 <ErrorBanner error={error} />
                 <BotForm isEdit={true} />

@@ -70,7 +70,7 @@ const CreateChannelContent = ({ isOpen, setIsOpen }: { setIsOpen: (v: boolean) =
 
     const { workspaceID } = useParams()
 
-    const { data: isAdmin } = useFrappeGetCall<{ message: boolean }>('raven.api.workspaces.is_workspace_admin', { workspace: workspaceID }, workspaceID ? undefined : null)
+    const { data: canCreateChannel } = useFrappeGetCall<{ message: boolean }>('raven.api.workspaces.can_create_channel', { workspace: workspaceID }, workspaceID ? undefined : null)
 
     const { mutate } = useSWRConfig()
     let navigate = useNavigate()
@@ -173,7 +173,7 @@ const CreateChannelContent = ({ isOpen, setIsOpen }: { setIsOpen: (v: boolean) =
         <FormProvider {...methods}>
             <form onSubmit={handleSubmit(onSubmit)}>
                 <Flex direction='column' gap='4' py='4'>
-                    {!isAdmin?.message && <CustomCallout
+                    {!canCreateChannel?.message && <CustomCallout
                         iconChildren={<BiInfoCircle size='18' />}
                         rootProps={{ color: 'yellow', variant: 'surface' }}
                         textChildren={<Text>You cannot create a new channel since you are not an admin of this workspace. Ask an admin to create a channel or make you an admin.</Text>}
@@ -284,7 +284,7 @@ const CreateChannelContent = ({ isOpen, setIsOpen }: { setIsOpen: (v: boolean) =
                             {__("Cancel")}
                         </Button>
                     </Dialog.Close>
-                    <Button type='submit' disabled={creatingChannel || !isAdmin?.message}>
+                    <Button type='submit' disabled={creatingChannel || !canCreateChannel?.message}>
                         {creatingChannel && <Loader className="text-white" />}
                         {creatingChannel ? __("Saving") : __("Save")}
                     </Button>
