@@ -83,6 +83,18 @@ def is_workspace_admin(workspace: str):
 
 
 @frappe.whitelist()
+def can_create_channel(workspace: str):
+	"""
+	Checks if the current user can create a channel in a workspace
+	"""
+	workspace_doc = frappe.get_doc("Raven Workspace", workspace)
+	if workspace_doc.only_admins_can_create_channels:
+		return is_workspace_admin(workspace)
+
+	return True
+
+
+@frappe.whitelist()
 def fetch_workspace_members(workspace: str):
 	"""
 	Gets all members of a workspace
