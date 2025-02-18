@@ -2,6 +2,7 @@ import { View } from 'react-native'
 import { Text } from '@components/nativewindui/Text';
 import { useGetUser } from '@raven/lib/hooks/useGetUser'
 import clsx from 'clsx'
+import MessageReactions from './MessageItemElements/Reactions/MessageReactions'
 import ShareForward from '@assets/icons/ShareForward.svg'
 import { useMemo, memo } from 'react';
 import PushPin from '@assets/icons/PushPin.svg'
@@ -75,6 +76,9 @@ const MessageItem = memo(({ message, onReplyMessagePress }: Props) => {
                 />}
 
                 {message.text ? <MessageTextRenderer text={message.text} /> : null}
+                {/* <Text>{message.text}</Text> */}
+
+                <MessageReactions messageID={message?.name} message_reactions={message?.message_reactions} />
                 {message.message_type === 'Image' && <ImageMessageRenderer message={message} />}
                 {message.message_type === 'File' && <FileMessageRenderer message={message} />}
                 {message.message_type === 'Poll' && <PollMessageBlock message={message} />}
