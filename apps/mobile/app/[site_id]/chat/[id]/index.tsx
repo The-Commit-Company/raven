@@ -16,11 +16,12 @@ const Chat = () => {
     const { isKeyboardVisible, keyboardHeight } = useKeyboardVisible()
     const { id } = useLocalSearchParams()
     const { channel } = useCurrentChannelData(id as string)
-    const colors = useColorScheme()
+    const { colors } = useColorScheme()
 
     return (
         <>
             <Stack.Screen options={{
+                headerStyle: { backgroundColor: colors.background },
                 headerLeft: () => <HeaderBackButton />,
                 title: id as string,
                 headerRight: undefined,

@@ -54,7 +54,7 @@ function renderItem(info: ListRenderItemInfo<DataItem>) {
 }
 
 function Item({ info }: { info: ListRenderItemInfo<DataItem> }) {
-    const { colors, isDarkColorScheme } = useColorScheme()
+    const { colors } = useColorScheme()
 
     if (typeof info.item === 'string') {
         return <ListSectionHeader {...info} />;
@@ -87,7 +87,7 @@ function ListHeaderComponent() {
         }
     )
     return (
-        <View className="ios:pb-8 items-center pb-4  pt-8">
+        <View className="ios:pb-8 items-center pb-4 pt-8">
             <Avatar alt={`${data?.message?.full_name}'s Profile`} className="h-36 w-36">
                 <AvatarFallback>
                     <Text
@@ -137,7 +137,7 @@ function ListFooterComponent() {
                 size="lg"
                 onPress={onLogout}
                 variant={Platform.select({ ios: 'primary', default: 'secondary' })}
-                className="border-border bg-card">
+                className="border-border bg-background dark:bg-card">
                 <Text className="text-destructive">Log Out</Text>
             </Button>
         </View>

@@ -84,7 +84,7 @@ const ChannelInfoModal = ({ channel, isModalVisible, setModalVisible }: ChannelI
                                 <MembersIcon height={20} width={20} color={colors.colors.foreground} />
                                 <Text style={styles.modalOption}>Members</Text>
                             </View>
-                            <ChevronRightIcon height={24} width={24} color={colors.colors.foreground} strokeWidth={'1px'} />
+                            <ChevronRightIcon height={24} width={24} fill={colors.colors.foreground} strokeWidth={'1px'} />
                         </View>
                     </Pressable>
                     <Pressable onPress={handleGoToSettings}
@@ -95,7 +95,7 @@ const ChannelInfoModal = ({ channel, isModalVisible, setModalVisible }: ChannelI
                                 <SettingsIcon height={20} width={20} color={colors.colors.foreground} />
                                 <Text style={styles.modalOption}>Settings & Details</Text>
                             </View>
-                            <ChevronRightIcon height={24} width={24} color={colors.colors.foreground} strokeWidth={'1px'} />
+                            <ChevronRightIcon height={24} width={24} fill={colors.colors.foreground} strokeWidth={'1px'} />
                         </View>
                     </Pressable>
                 </Animated.View>
