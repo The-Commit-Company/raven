@@ -12,7 +12,6 @@ import clsx from 'clsx';
 import MessageAvatar from '../chat-stream/MessageItemElements/MessageAvatar';
 import { useGetUser } from '@raven/lib/hooks/useGetUser';
 import MessageHeader from '../chat-stream/MessageItemElements/MessageHeader';
-import ReplyMessageBox from '../chat/ChatMessage/ReplyMessageBox/ReplyMessageBox';
 import { ImageMessageRenderer } from '../chat/ChatMessage/Renderers/ImageMessage';
 import { PollMessageBlock } from '../chat/ChatMessage/Renderers/PollMessage';
 import FileMessageRenderer from '../chat/ChatMessage/Renderers/FileMessageRenderer';
@@ -21,6 +20,7 @@ import DocTypeLinkRenderer from '../chat/ChatMessage/Renderers/DocTypeLinkRender
 import { MessageLinkRenderer } from '../chat-stream/MessageItemElements/MessageLinkRenderer';
 import PushPin from '@assets/icons/PushPin.svg'
 import ShareForward from '@assets/icons/ShareForward.svg'
+import ReplyMessageBox from '../chat/ChatMessage/Renderers/ReplyMessageBox';
 
 const SavedMessageItem = ({ message }: { message: Message & { workspace?: string } }) => {
 
@@ -54,17 +54,17 @@ const SavedMessageItem = ({ message }: { message: Message & { workspace?: string
 
     return (
         <Pressable
-            className='pb-2 ios:active:bg-linkColor ios:active:dark:bg-linkColor'
+            className='pb-2 rounded-md ios:active:bg-linkColor ios:active:dark:bg-linkColor'
             onPress={() => handleNavigateToChannel(channel_id)}>
             <View>
-                <View className='flex flex-row items-center px-2 pt-2 gap-2'>
-                    <Text className='text-[13px]'>{channelName}</Text>
+                <View className='flex flex-row items-center px-3 pt-2 gap-2'>
+                    <Text className='text-sm'>{channelName}</Text>
                     <Text className='text-[13px] text-muted'>|</Text>
                     <Text className='text-[13px] text-muted-foreground'>
                         {formatDateAndTime(creation)}
                     </Text>
                 </View>
-                <View className={clsx('flex-1 flex-row px-2 gap-1', message.is_continuation ? 'pt-0' : 'pt-2')}>
+                <View className={clsx('flex-1 flex-row px-3 gap-1', message.is_continuation ? 'pt-0' : 'pt-2')}>
                     <MessageAvatar
                         userFullName={userFullName}
                         userImage={user?.user_image}
@@ -92,9 +92,7 @@ const SavedMessageItem = ({ message }: { message: Message & { workspace?: string
                                 <Text className='text-xs text-accent'>Pinned</Text>
                             </View>}
 
-                        {linked_message && replied_message_details && <ReplyMessageBox
-                            className='mb-1' message={message}
-                        />}
+                        {linked_message && replied_message_details && <ReplyMessageBox message={message} />}
 
                         {message.text ? <MessageTextRenderer text={message.text} /> : null}
                         {message.message_type === 'Image' && <ImageMessageRenderer message={message} />}

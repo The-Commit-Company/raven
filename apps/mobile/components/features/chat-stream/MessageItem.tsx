@@ -12,7 +12,7 @@ import FileMessageRenderer from '@components/features/chat/ChatMessage/Renderers
 import { MessageLinkRenderer } from '@components/features/chat-stream/MessageItemElements/MessageLinkRenderer'
 import DocTypeLinkRenderer from '@components/features/chat/ChatMessage/Renderers/DocTypeLinkRenderer'
 import { PollMessageBlock } from '@components/features/chat/ChatMessage/Renderers/PollMessage'
-import ReplyMessageBox from '@components/features/chat/ChatMessage/ReplyMessageBox/ReplyMessageBox';
+import ReplyMessageBox from '@components/features/chat/ChatMessage/Renderers/ReplyMessageBox';
 import { ImageMessageRenderer } from '@components/features/chat/ChatMessage/Renderers/ImageMessage';
 import MessageTextRenderer from './MessageItemElements/MessageTextRenderer';
 
@@ -70,7 +70,6 @@ const MessageItem = memo(({ message, onReplyMessagePress }: Props) => {
                     </View>}
 
                 {linked_message && replied_message_details && <ReplyMessageBox
-                    className='mb-1'
                     onPress={onReplyMessagePress}
                     message={replyMessageDetails}
                 />}
