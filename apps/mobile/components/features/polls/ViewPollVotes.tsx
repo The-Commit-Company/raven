@@ -1,5 +1,4 @@
-import React from 'react';
-import { Pressable, Image, View, TouchableOpacity } from 'react-native';
+import { View, TouchableOpacity } from 'react-native';
 import { useFrappeGetCall } from 'frappe-react-sdk'
 import { BottomSheetView } from '@gorhom/bottom-sheet';
 import { Sheet, useSheetRef } from '@components/nativewindui/Sheet';
@@ -23,8 +22,8 @@ interface ViewPollVotesProps {
 }
 
 const ViewPollVotes = ({ poll }: ViewPollVotesProps) => {
-    const bottomSheetRef = useSheetRef()
 
+    const bottomSheetRef = useSheetRef()
     const { colors } = useColorScheme()
 
     return (

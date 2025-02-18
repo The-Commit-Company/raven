@@ -1,29 +1,27 @@
 import { useContext } from 'react'
 import { TouchableOpacity, View } from 'react-native'
 import { FrappeConfig, FrappeContext } from 'frappe-react-sdk'
-import { Pressable, ScrollView } from 'react-native'
-import SmileIcon from "@assets/icons/SmileIcon.svg"
+import SmilePlusIcon from "@assets/icons/SmilePlusIcon.svg"
 import { Text } from '@components/nativewindui/Text'
 import { Message } from '@raven/types/common/Message'
-import { COLORS } from '@theme/colors'
 import { useColorScheme } from '@hooks/useColorScheme'
 import { Sheet, useSheetRef } from '@components/nativewindui/Sheet'
 import { BottomSheetView } from '@gorhom/bottom-sheet'
 import EmojiPicker from '@components/common/EmojiPicker/EmojiPicker'
+import { toast } from 'sonner-native'
 
-const QUICK_EMOJIS = ['👍', '✅', '👀', '🎉', '❤️', '👋']
+const QUICK_EMOJIS = ['👍', '✅', '👀', '🎉', '❤️']
 
 interface MessageReactionsProps {
     message: Message | null
     onClose: () => void
 }
+
 const QuickReactions = ({ message, onClose }: MessageReactionsProps) => {
 
     const { colors } = useColorScheme()
-
     const { call } = useContext(FrappeContext) as FrappeConfig
-
-    const emojiBottomSheetRef = useSheetRef();
+    const emojiBottomSheetRef = useSheetRef()
 
     const onReact = (emoji: string) => {
         call.post('raven.api.reactions.react', {
@@ -33,35 +31,31 @@ const QuickReactions = ({ message, onClose }: MessageReactionsProps) => {
             emojiBottomSheetRef.current?.close({ duration: 450 })
             onClose();
         }).catch(() => {
-            // toast.error("Could not react to message.")
+            toast.error("Could not react to message.")
         })
     }
 
     return (
         <>
-            <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-                <View className="flex flex-row gap-3">
-                    {QUICK_EMOJIS.map((reaction) => (
-                        <TouchableOpacity
-                            key={reaction}
-                            onPress={() => onReact(reaction)}
-                            className='p-3 bg-gray-100 dark:bg-gray-800 rounded-full'
-                            activeOpacity={0.6}
-                        >
-                            <Text className=''>{reaction}</Text>
-                        </TouchableOpacity>
-                    ))}
+            <View className="flex flex-row justify-between">
+                {QUICK_EMOJIS.map((reaction) => (
                     <TouchableOpacity
-                        className='p-3 bg-gray-100 dark:bg-gray-800 rounded-full'
-                        activeOpacity={0.6}
-                        onPress={() => emojiBottomSheetRef.current?.present()}
-                    >
-                        <SmileIcon fill={colors.icon} />
+                        key={reaction}
+                        onPress={() => onReact(reaction)}
+                        className='p-3 bg-linkColor rounded-full'
+                        activeOpacity={0.6}>
+                        <Text>{reaction}</Text>
                     </TouchableOpacity>
-                </View>
-            </ScrollView>
+                ))}
+                <TouchableOpacity
+                    className='p-3 bg-linkColor rounded-full'
+                    activeOpacity={0.6}
+                    onPress={() => emojiBottomSheetRef.current?.present()}>
+                    <SmilePlusIcon width={24} height={24} color={colors.icon} />
+                </TouchableOpacity>
+            </View>
 
-            <Sheet enableDynamicSizing={false} ref={emojiBottomSheetRef} snapPoints={["85"]}>
+            <Sheet enableDynamicSizing={false} ref={emojiBottomSheetRef} snapPoints={["50"]}>
                 <BottomSheetView className='flex-1'>
                     <EmojiPicker onReact={onReact} />
                 </BottomSheetView>
