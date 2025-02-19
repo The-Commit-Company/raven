@@ -31,7 +31,7 @@ async function search(value: string, maxResults: number = 10): Promise<EmojiType
     return results
 }
 
-function getTopFavoriteEmojis(maxResults: number = 10): EmojiType[] {
+export function getTopFavoriteEmojis(maxResults: number = 10): EmojiType[] {
 
     // ID's of emojis
 
