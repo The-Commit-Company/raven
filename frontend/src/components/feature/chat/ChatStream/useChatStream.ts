@@ -7,7 +7,7 @@ import { useDebounce } from '@/hooks/useDebounce'
 import { UserContext } from '@/utils/auth/UserProvider'
 import { useIsMobile } from '@/hooks/useMediaQuery'
 
-interface GetMessagesResponse {
+export interface GetMessagesResponse {
     message: {
         messages: Message[],
         has_old_messages: boolean
