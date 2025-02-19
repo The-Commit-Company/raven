@@ -45,6 +45,7 @@ export default function EditChannelDetails() {
     return <>
         <Stack.Screen options={{
             title: 'Edit Channel Details',
+            headerStyle: { backgroundColor: colors.background },
             headerLeft() {
                 return (
                     <Link asChild href="../" relativeToDirectory>
@@ -66,7 +67,7 @@ export default function EditChannelDetails() {
                 )
             },
         }} />
-        <View className="flex-1 bg-card">
+        <View className="flex-1 bg-background">
             <FormProvider {...methods}>
                 <EditChannelBaseDetailsForm />
             </FormProvider>

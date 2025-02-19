@@ -39,6 +39,13 @@ const ChannelInfoModal = ({ channel, isModalVisible, setModalVisible }: ChannelI
         })
     }
 
+    const handleGoToViewMembers = () => {
+        setModalVisible(false)
+        router.push('./channel-members', {
+            relativeToDirectory: true
+        })
+    }
+
     // Animated styles for the modal
     const animatedModalStyle = useAnimatedStyle(() => {
         return {
@@ -69,7 +76,7 @@ const ChannelInfoModal = ({ channel, isModalVisible, setModalVisible }: ChannelI
                 <Animated.View style={[styles.modalContent, animatedModalStyle]} className='bg-card dark:border dark:border-border'>
                     <ModalHeader channel={channel} handleCloseModal={handleCloseModal} />
                     <Divider className='my-2 mx-1' prominent />
-                    <Pressable
+                    <Pressable onPress={handleGoToViewMembers}
                         className='rounded-xl ios:active:bg-linkColor'
                         android_ripple={{ color: 'rgba(0,0,0,0.1)', borderless: false }}>
                         <View className='flex-row items-center justify-between px-2'>
@@ -77,7 +84,7 @@ const ChannelInfoModal = ({ channel, isModalVisible, setModalVisible }: ChannelI
                                 <MembersIcon height={20} width={20} color={colors.colors.foreground} />
                                 <Text style={styles.modalOption}>Members</Text>
                             </View>
-                            <ChevronRightIcon height={24} width={24} color={colors.colors.foreground} strokeWidth={'1px'} />
+                            <ChevronRightIcon height={24} width={24} fill={colors.colors.foreground} strokeWidth={'1px'} />
                         </View>
                     </Pressable>
                     <Pressable onPress={handleGoToSettings}
@@ -88,7 +95,7 @@ const ChannelInfoModal = ({ channel, isModalVisible, setModalVisible }: ChannelI
                                 <SettingsIcon height={20} width={20} color={colors.colors.foreground} />
                                 <Text style={styles.modalOption}>Settings & Details</Text>
                             </View>
-                            <ChevronRightIcon height={24} width={24} color={colors.colors.foreground} strokeWidth={'1px'} />
+                            <ChevronRightIcon height={24} width={24} fill={colors.colors.foreground} strokeWidth={'1px'} />
                         </View>
                     </Pressable>
                 </Animated.View>

@@ -146,7 +146,7 @@ const GeneralFunctionDetails = ({ isEdit }: { isEdit?: boolean }) => {
                 />
             </Box>
             {errors.description && <ErrorText>{errors.description?.message}</ErrorText>}
-            <HelperText>This is used to describe what this function does to the AI Bot.</HelperText>
+            <HelperText>This is used to describe what this function does to the AI Agent.</HelperText>
         </Stack>
 
         <CustomFunction />

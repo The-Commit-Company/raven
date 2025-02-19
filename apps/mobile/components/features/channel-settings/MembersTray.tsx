@@ -1,10 +1,10 @@
 import UserAvatar from "@components/layout/UserAvatar";
-import { Pressable, View } from "react-native";
+import { View } from "react-native";
 import { Text } from "@components/nativewindui/Text";
 import { useLocalSearchParams } from "expo-router";
 import { useFetchChannelMembers } from "@raven/lib/hooks/useFetchChannelMembers";
 import { ScrollView } from "react-native-gesture-handler";
-
+import { Button } from "@components/nativewindui/Button";
 interface MembersTrayProps {
     onViewAll: () => void
 }
@@ -29,11 +29,11 @@ export const MembersTray = ({ onViewAll }: MembersTrayProps) => {
         <View className="flex-col px-4 gap-3">
             <View className="flex-row items-center justify-between">
                 <Text className="text-[15px] font-medium">Members ({membersCount})</Text>
-                <Pressable onPress={onViewAll}>
+                <Button variant="plain" size="none" onPress={onViewAll}>
                     <View className="flex-row items-center justify-end">
                         <Text className="text-[15px] font-medium text-primary">View all</Text>
                     </View>
-                </Pressable>
+                </Button>
             </View>
             <ScrollView
                 horizontal
