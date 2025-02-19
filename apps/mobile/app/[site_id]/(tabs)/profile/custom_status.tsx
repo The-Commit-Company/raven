@@ -22,7 +22,7 @@ export default function CustomStatusScreen() {
 
     const { updateDoc } = useFrappeUpdateDoc()
 
-    const handleFullNameSave = async () => {
+    const handleCustomStatus = async () => {
         return updateDoc("Raven User", myProfile?.name ?? null, {
             custom_status: customStatus,
         }).then(() => {
@@ -47,7 +47,7 @@ export default function CustomStatusScreen() {
                                 className="ios:px-0"
                                 disabled={!canSave}
                                 variant="plain"
-                                onPress={handleFullNameSave}
+                                onPress={handleCustomStatus}
                             >
                                 <Text className={cn(canSave && 'text-primary')}>Save</Text>
                             </Button>
@@ -85,7 +85,7 @@ export default function CustomStatusScreen() {
                             <Button
                                 className={cn('px-6', !canSave && 'bg-muted')}
                                 disabled={!canSave}
-                                onPress={handleFullNameSave}
+                                onPress={handleCustomStatus}
                             >
                                 <Text>Save</Text>
                             </Button>
