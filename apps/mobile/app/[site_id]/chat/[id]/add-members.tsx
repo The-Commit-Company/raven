@@ -112,7 +112,7 @@ export default function AddNewChannelMembers() {
                         </Link>
                     )
                 },
-                headerTitle: () => <Text className='ml-2 text-base font-semibold'>Add Members</Text>,
+                headerTitle: () => <Text className='ml-2 text-base font-semibold'>Add members</Text>,
                 headerRight() {
                     return (
                         <Button variant="plain" className="ios:px-0"

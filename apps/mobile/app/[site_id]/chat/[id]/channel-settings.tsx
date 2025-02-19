@@ -46,7 +46,7 @@ const ChannelSettings = () => {
             <Stack.Screen options={{
                 headerStyle: { backgroundColor: colors.background },
                 headerLeft: () => <HeaderBackButton />,
-                headerTitle: () => <Text className='ml-2 text-base font-semibold'>Channel Info</Text>,
+                headerTitle: () => <Text className='ml-2 text-base font-semibold'>Channel info</Text>,
                 headerRight: () => (
                     <TouchableOpacity hitSlop={10}>
                         <ThreeHorizontalDots height={20} width={20} color={colors.foreground} />

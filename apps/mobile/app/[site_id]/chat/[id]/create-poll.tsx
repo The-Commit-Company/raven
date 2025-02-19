@@ -1,4 +1,4 @@
-import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
+import { Link, Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { FormProvider, useForm } from 'react-hook-form';
 import { Button } from '@components/nativewindui/Button';
 import { Text } from '@components/nativewindui/Text';
@@ -11,10 +11,11 @@ import { useFrappePostCall } from 'frappe-react-sdk';
 import { RavenPoll } from '@raven/types/RavenMessaging/RavenPoll';
 
 export default function CreatePollPage() {
-    const { colors } = useColorScheme();
-    const router = useRouter();
 
-    const { id: channelID } = useLocalSearchParams();
+    const { colors } = useColorScheme()
+    const router = useRouter()
+
+    const { id: channelID } = useLocalSearchParams()
 
     const methods = useForm<RavenPoll>({
         defaultValues: {
@@ -40,16 +41,15 @@ export default function CreatePollPage() {
         }
     })
 
-    const { handleSubmit, reset: resetForm } = methods;
-    const { call: createPoll, loading: creatingPoll, reset: resetCreateHook } = useFrappePostCall('raven.api.raven_poll.create_poll');
+    const { handleSubmit, reset: resetForm } = methods
+    const { call: createPoll, loading: creatingPoll, reset: resetCreateHook } = useFrappePostCall('raven.api.raven_poll.create_poll')
 
     const reset = () => {
         resetForm()
         resetCreateHook()
-    };
+    }
 
     const onSubmit = async (data: RavenPoll) => {
-
         return createPoll({
             ...data,
             "channel_id": channelID
@@ -65,14 +65,17 @@ export default function CreatePollPage() {
     return (
         <>
             <Stack.Screen options={{
-                title: 'Create Poll',
+                headerStyle: { backgroundColor: colors.background },
                 headerLeft() {
                     return (
-                        <Button variant="plain" className="ios:px-0" onPress={() => router.back()} hitSlop={10}>
-                            <CrossIcon fill={colors.icon} height={24} width={24} />
-                        </Button>
-                    );
+                        <Link asChild href="../" relativeToDirectory>
+                            <Button variant="plain" className="ios:px-0" hitSlop={10}>
+                                <CrossIcon color={colors.icon} height={24} width={24} />
+                            </Button>
+                        </Link>
+                    )
                 },
+                headerTitle: () => <Text className='ml-2 text-base font-semibold'>Create poll</Text>,
                 headerRight() {
                     return (
                         <Button variant="plain" className="ios:px-0"
@@ -82,7 +85,7 @@ export default function CreatePollPage() {
                                 <ActivityIndicator size="small" color={colors.primary} /> :
                                 <Text className="text-primary">Create</Text>}
                         </Button>
-                    );
+                    )
                 },
             }} />
 
@@ -90,5 +93,5 @@ export default function CreatePollPage() {
                 <CreatePollForm />
             </FormProvider>
         </>
-    );
+    )
 } 

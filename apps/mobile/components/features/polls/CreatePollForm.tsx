@@ -1,4 +1,4 @@
-import { useFormContext, Controller, useFieldArray } from 'react-hook-form';
+import { useFormContext, Controller, useFieldArray, FieldError } from 'react-hook-form';
 import { View, TextInput, TouchableOpacity, Pressable } from 'react-native';
 import { Text } from '@components/nativewindui/Text';
 import { ErrorText, FormLabel } from '@components/layout/Form';
@@ -8,30 +8,37 @@ import TrashIcon from "@assets/icons/TrashIcon.svg"
 import PlusIcon from "@assets/icons/PlusIcon.svg"
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 
-const CreatePollForm = () => {
-    const { colors } = useColorScheme()
+type PollFormData = {
+    question: string,
+    options: { option: string }[],
+    is_multi_choice: boolean,
+    is_anonymous: boolean
+}
 
-    const { control, formState: { errors }, setValue } = useFormContext();
+const CreatePollForm = () => {
+
+    const { colors } = useColorScheme();
+    const { control, formState: { errors }, setValue } = useFormContext<PollFormData>()
 
     const { fields, append, remove } = useFieldArray({
         control,
         name: 'options'
-    });
+    })
 
     const handleAddOption = () => {
         if (fields.length < 10) {
-            append({ option: '' });
+            append({ option: '' })
         }
-    };
+    }
 
     const handleRemoveOption = (index: number) => {
         if (fields.length > 2) {
-            remove(index);
+            remove(index)
         }
-    };
+    }
 
     const onCheckedChange = (checked: boolean, field: string) => {
-        setValue(field, checked)
+        setValue(field as keyof PollFormData, checked)
     }
 
     return (
@@ -40,8 +47,8 @@ const CreatePollForm = () => {
             keyboardDismissMode="interactive"
             contentInsetAdjustmentBehavior="automatic">
 
-            <View className='px-5 gap-4 pt-5'>
-                <Text className="text-sm">
+            <View className='p-5 gap-5'>
+                <Text className="text-base">
                     Create a quick poll to get everyone's thoughts on a topic.
                 </Text>
 
@@ -50,10 +57,10 @@ const CreatePollForm = () => {
                     <Controller
                         name="question"
                         control={control}
-                        rules={{ required: 'Question is required' }}
+                        rules={{ required: 'Poll question is required' }}
                         render={({ field }) => (
                             <TextInput
-                                className="w-full border border-border rounded-md px-3 pt-2 pb-3 text-sm"
+                                className="w-full border border-border rounded-md px-3 pt-0.5 pb-2 h-12 text-sm"
                                 placeholder="Ask a question"
                                 onChangeText={field.onChange}
                                 onBlur={field.onBlur}
@@ -62,7 +69,7 @@ const CreatePollForm = () => {
                         )}
                     />
                     {errors.question ? (
-                        <ErrorText>{errors?.question.message}</ErrorText>
+                        <ErrorText>{errors.question.message as string}</ErrorText>
                     ) : null}
                 </View>
 
@@ -74,10 +81,10 @@ const CreatePollForm = () => {
                                 <Controller
                                     name={`options.${index}.option`}
                                     control={control}
-                                    rules={{ required: 'Option is required' }}
+                                    rules={{ required: `Option ${index + 1} is required` }}
                                     render={({ field }) => (
                                         <TextInput
-                                            className="flex-1 border border-border rounded-md px-3 pt-2 pb-3 text-sm"
+                                            className="flex-1 border border-border rounded-md px-3 pt-0.5 pb-2 h-12 text-sm"
                                             placeholder={`Option ${index + 1}`}
                                             onChangeText={field.onChange}
                                             onBlur={field.onBlur}
@@ -88,11 +95,10 @@ const CreatePollForm = () => {
                                 <TouchableOpacity activeOpacity={0.6} disabled={fields.length === 2} onPress={() => handleRemoveOption(index)}>
                                     <TrashIcon width={20} height={20} fill={fields.length === 2 ? colors.grey3 : colors.destructive} />
                                 </TouchableOpacity>
-
                             </View>
 
                             {errors?.options?.[index]?.option ? (
-                                <ErrorText>{errors?.options?.[index]?.option.message}</ErrorText>
+                                <ErrorText>{(errors.options[index].option as FieldError).message}</ErrorText>
                             ) : null}
                         </View>
                     ))}
@@ -100,20 +106,19 @@ const CreatePollForm = () => {
                     <View className='flex flex-row justify-between'>
                         <TouchableOpacity activeOpacity={0.6} disabled={fields.length >= 10} onPress={handleAddOption}>
                             <View className='flex flex-row items-center'>
-                                <PlusIcon width={18} height={18} fill={colors.primary} />
-                                <Text className='text-sm pl-1 font-bold' style={{ color: colors.primary }}>
+                                <PlusIcon width={18} height={18} fill={`${fields.length >= 10 ? colors.grey : colors.primary}`} />
+                                <Text className={`text-sm pl-0.5 ${fields.length >= 10 ? 'text-muted-foreground/80' : 'font-semibold text-primary'}`}>
                                     Add Option
                                 </Text>
                             </View>
                         </TouchableOpacity>
 
-                        <Text className="text-gray-500 text-sm">Maximum of 10 options allowed</Text>
+                        <Text className="text-muted-foreground/80 text-sm">Maximum of 10 options allowed</Text>
                     </View>
                 </View>
 
                 <View className='flex-col gap-2'>
                     <FormLabel>Settings</FormLabel>
-
                     <Controller
                         name="is_multi_choice"
                         control={control}
@@ -121,7 +126,7 @@ const CreatePollForm = () => {
                         render={({ field: { value, name } }) => (
                             <Pressable onPress={() => onCheckedChange(!value, name)} className="flex-row items-center gap-2">
                                 <Checkbox checked={value} />
-                                <Text>Allow multiple choices</Text>
+                                <Text className='text-base'>Allow multiple choices</Text>
                             </Pressable>
                         )}
                     />
@@ -132,15 +137,14 @@ const CreatePollForm = () => {
                         render={({ field: { value, name } }) => (
                             <Pressable onPress={() => onCheckedChange(!value, name)} className="flex-row items-center gap-2">
                                 <Checkbox checked={value} />
-                                <Text>Make poll anonymous</Text>
+                                <Text className='text-base'>Make poll anonymous</Text>
                             </Pressable>
                         )}
                     />
                 </View>
-
             </View>
         </KeyboardAwareScrollView>
-    );
-};
+    )
+}
 
-export default CreatePollForm;
+export default CreatePollForm

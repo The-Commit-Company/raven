@@ -1,31 +1,29 @@
 import { router } from "expo-router"
-import { SvgProps } from "react-native-svg"
-import { Button, ButtonProps } from "@components/nativewindui/Button"
 import { useColorScheme } from "@hooks/useColorScheme"
 import { Text } from '@components/nativewindui/Text'
-import BarChartIcon from "@assets/icons/OutlineBarChartIcon.svg"
+import BarChart from "@assets/icons/BarChart.svg"
+import { Pressable } from "react-native"
 
 interface CreatePollButtonProps {
-    buttonProps?: ButtonProps
-    iconProps?: SvgProps
-    icon?: React.ReactNode
-    label?: string
     onSheetClose: () => void
 }
 
-const CreatePollButton = ({ icon, label, buttonProps, iconProps, onSheetClose }: CreatePollButtonProps) => {
-    const { colors } = useColorScheme()
+const CreatePollButton = ({ onSheetClose }: CreatePollButtonProps) => {
 
+    const { colors } = useColorScheme()
     const navigateToCreatePoll = () => {
         router.push("./create-poll", { relativeToDirectory: true })
         onSheetClose()
     }
 
     return (
-        <Button variant="plain" size={label ? "none" : "icon"} onPress={navigateToCreatePoll} {...buttonProps} >
-            {icon ?? <BarChartIcon height={20} width={20} color={colors.icon} {...iconProps} />}
-            {label && <Text className=" text-sm text-foreground">{label}</Text>}
-        </Button>
+        <Pressable
+            onPress={navigateToCreatePoll}
+            className='flex flex-row w-full items-center gap-2 p-2 rounded-lg ios:active:bg-linkColor'
+            android_ripple={{ color: 'rgba(0,0,0,0.1)', borderless: false }}>
+            <BarChart height={20} width={20} fill={colors.icon} />
+            <Text className='text-base text-foreground'>Create Poll</Text>
+        </Pressable>
     )
 }
 
