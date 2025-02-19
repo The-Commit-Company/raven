@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "856329963312",
+    "project_id": "raven-dev-frappe",
+    "storage_bucket": "raven-dev-frappe.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:856329963312:android:c02fb271753b6c89e52af5",
+        "android_client_info": {
+          "package_name": "raven.thecommit.company"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCI_0A-d879P6B89M-YPaFDI1Y9zacC8d0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
