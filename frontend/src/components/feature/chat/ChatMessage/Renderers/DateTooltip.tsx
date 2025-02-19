@@ -49,6 +49,7 @@ export const DateTooltipShort = ({ timestamp }: { timestamp: string }) => {
                 asChild
                 style={{ fontSize: '0.68rem' }}
                 color="gray"
+                className='tabular-nums'
             >
                 <span>{time}</span>
             </Link>
