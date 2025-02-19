@@ -137,6 +137,9 @@ def channel_has_permission(doc, user=None, ptype=None):
 			workspace_member = get_workspace_member(doc.workspace, user)
 			if workspace_member and workspace_member.get("is_admin"):
 				return True
+			# If the workspace allows any member to create a channel, then the user can create a channel
+			if not frappe.db.get_value("Raven Workspace", doc.workspace, "only_admins_can_create_channels"):
+				return True
 
 		if ptype == "delete" or ptype == "write":
 			# Only channel admins can update or delete a channel

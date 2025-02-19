@@ -39,7 +39,7 @@ export const PollMessageBlock = ({ message, ...props }: PollMessageBlockProps) =
     });
 
     return (
-        <View className='w-[90%]' {...props}>
+        <View className='w-full' {...props}>
             {error ? (
                 <View className="bg-red-100 p-2 rounded-md">
                     <Text className="text-red-500">{error.message}</Text>
@@ -53,8 +53,8 @@ export const PollMessageBlock = ({ message, ...props }: PollMessageBlockProps) =
 const PollMessageBox = ({ data, messageID }: { data: Poll; messageID: string }) => {
     return (
         <View className="bg-gray-50 dark:bg-gray-900 w-full rounded-md p-3 gap-0.5">
-            <View className="flex-row justify-between items-center pb-1.5">
-                <Text className="text-base font-semibold">{data.poll.question}</Text>
+            <View className="flex-row justify-between items-start pb-1.5">
+                <Text className="text-base font-semibold max-w-[80%]">{data.poll.question}</Text>
                 {data.poll.is_anonymous ? (
                     <View className="bg-blue-100 dark:bg-blue-300 rounded">
                         <Text className="text-blue-700 dark:text-blue-800 font-medium text-xs py-1 px-2">Anonymous</Text>
@@ -79,9 +79,10 @@ const PollMessageBox = ({ data, messageID }: { data: Poll; messageID: string }) 
                 </View>
             ) : null}
 
-            {!data.poll.is_anonymous ? <View className="h-px bg-gray-200 dark:bg-gray-700 w-full my-2" /> : null}
-
-            {data.poll.is_anonymous ? null : <ViewPollVotes poll={data} />}
+            {data.current_user_votes.length ? <View>
+                {!data.poll.is_anonymous ? <View className="h-px bg-gray-200 dark:bg-gray-700 w-full my-2" /> : null}
+                {data.poll.is_anonymous ? null : <ViewPollVotes poll={data} />}
+            </View> : null}
         </View>
     );
 };

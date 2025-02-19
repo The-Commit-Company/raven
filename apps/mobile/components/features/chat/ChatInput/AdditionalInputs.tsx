@@ -11,6 +11,7 @@ import { useKeyboardVisible } from "@hooks/useKeyboardVisible"
 import { CustomFile } from "@raven/types/common/File"
 import { useAtom } from 'jotai'
 import { filesAtom } from "@lib/filesAtom"
+import CreatePollButton from "@components/common/CreatePollButton"
 
 const AdditionalInputs = () => {
     const bottomSheetRef = useSheetRef()
@@ -44,6 +45,10 @@ const AdditionalInputsSheetContent = ({ bottomSheetRef }: { bottomSheetRef: Reac
         setFiles((prevFiles) => {
             return [...prevFiles, ...files]
         })
+        onSheetClose()
+    }
+
+    const onSheetClose = () => {
         bottomSheetRef.current?.close()
     }
 
@@ -52,6 +57,7 @@ const AdditionalInputsSheetContent = ({ bottomSheetRef }: { bottomSheetRef: Reac
             <FilePickerButton onPick={handlePick} label="Upload files" />
             <ImagePickerButton onPick={handlePick} label="Upload images" />
             <GIFPickerButton onSelect={() => { }} label="Send GIF" />
+            <CreatePollButton onSheetClose={onSheetClose} label="Create Poll" />
         </View>
     )
 }

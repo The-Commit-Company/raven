@@ -94,6 +94,12 @@ export default function SiteLayout() {
                     <Providers>
                         <BottomSheetModalProvider>
                             <Stack>
+                                <Stack.Screen
+                                    name="chat/[id]/create-poll"
+                                    options={{
+                                        presentation: 'modal',
+                                    }}
+                                />
                             </Stack>
                         </BottomSheetModalProvider>
                     </Providers>
