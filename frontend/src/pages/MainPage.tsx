@@ -11,6 +11,7 @@ import { useFetchActiveUsersRealtime } from '@/hooks/fetchers/useFetchActiveUser
 import { useIsMobile } from '@/hooks/useMediaQuery'
 import { showNotification } from '@/utils/pushNotifications'
 import MessageActionController from '@/components/feature/message-actions/MessageActionController'
+import { useActiveSocketConnection } from '@/hooks/useActiveSocketConnection'
 
 const AddRavenUsersPage = lazy(() => import('@/pages/AddRavenUsersPage'))
 
@@ -44,6 +45,8 @@ const MainPageContent = () => {
     }, [])
 
     const isMobile = useIsMobile()
+
+    useActiveSocketConnection()
 
     return <UserListProvider>
         <ChannelListProvider>

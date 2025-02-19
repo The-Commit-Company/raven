@@ -40,7 +40,7 @@ def send_message(channel_id, text, is_reply=False, linked_message=None, json_con
 				}
 			)
 		doc.insert()
-		return "message sent"
+		return doc
 
 
 @frappe.whitelist()

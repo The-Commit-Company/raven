@@ -150,4 +150,4 @@ def upload_file_with_message():
 
 	message_doc.save()
 
-	return message_doc.name
+	return message_doc
