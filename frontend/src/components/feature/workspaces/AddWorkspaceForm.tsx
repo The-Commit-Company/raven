@@ -41,10 +41,13 @@ const AddWorkspaceForm = ({ onClose }: { onClose: (workspaceID?: string) => void
                         doctype: 'Raven Workspace',
                         docname: res.name,
                         fieldname: 'logo',
+                        otherData: {
+                            optimize: '1',
+                        },
                         isPrivate: true,
                     }).then((fileRes) => {
                         return updateDoc("Raven Workspace", res.name, {
-                            logo: fileRes.file_url
+                            logo: fileRes.file_url + "?fid=" + fileRes.name
                         })
                     })
                 }

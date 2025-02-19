@@ -1,6 +1,6 @@
 import { RavenMention } from './RavenMention'
 
-export interface RavenMessage{
+export interface RavenMessage {
 	creation: string
 	name: string
 	modified: string
@@ -28,7 +28,7 @@ export interface RavenMessage{
 	/**	Is Thread : Check - This message starts a thread	*/
 	is_thread?: 0 | 1
 	/**	Message Type : Select	*/
-	message_type?: "Text" | "Image" | "File" | "Poll" | "System"
+	message_type: "Text" | "Image" | "File" | "Poll" | "System"
 	/**	Content : Long Text	*/
 	content?: string
 	/**	File : Attach	*/

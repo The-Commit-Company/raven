@@ -1,5 +1,5 @@
 import { Message } from "../../../../../../types/Messaging/Message"
-import { useMemo, useState } from "react"
+import { useMemo, useRef, useState } from "react"
 import { ArchivedChannelBox } from "../chat-footer/ArchivedChannelBox"
 import { ChannelListItem, DMChannelListItem } from "@/utils/channel/ChannelListProvider"
 import { JoinChannelBox } from "../chat-footer/JoinChannelBox"
@@ -20,6 +20,9 @@ import { HStack, Stack } from "@/components/layout/Stack"
 import TypingIndicator from "../ChatInput/TypingIndicator/TypingIndicator"
 import { useTyping } from "../ChatInput/TypingIndicator/useTypingIndicator"
 import { Label } from "@/components/common/Form"
+import { RavenMessage } from "@/types/RavenMessaging/RavenMessage"
+import { useSWRConfig } from "frappe-react-sdk"
+import { GetMessagesResponse } from "./useChatStream"
 
 const COOL_PLACEHOLDERS = [
     "Delivering messages atop dragons 🐉 is available on a chargeable basis.",
@@ -53,7 +56,63 @@ export const ChatBoxBody = ({ channelData }: ChatBoxBodyProps) => {
         setSelectedMessage(null)
     }
 
-    const onMessageSendCompleted = () => {
+    const { mutate } = useSWRConfig()
+
+    const scrollRef = useRef<HTMLDivElement>(null)
+
+    const onMessageSendCompleted = (messages: RavenMessage[]) => {
+        // Update the messages in the cache
+
+        mutate({ path: `get_messages_for_channel_${channelData.name}` }, (data?: GetMessagesResponse) => {
+            if (data && data?.message.has_new_messages) {
+                return data
+            }
+
+            const existingMessages = data?.message.messages ?? []
+
+            const newMessages = [...existingMessages]
+
+            messages.forEach(message => {
+                // Check if the message is already present in the messages array
+                const messageIndex = existingMessages.findIndex(m => m.name === message.name)
+
+                if (messageIndex !== -1) {
+                    // If the message is already present, update the message
+                    // @ts-ignore
+                    newMessages[messageIndex] = {
+                        ...message,
+                        _liked_by: "",
+                        is_pinned: 0,
+                        is_continuation: 0
+                    }
+                } else {
+                    // If the message is not present, add the message to the array
+                    // @ts-ignore
+                    newMessages.push({
+                        ...message,
+                        _liked_by: "",
+                        is_pinned: 0,
+                        is_continuation: 0
+                    })
+                }
+            })
+
+            return {
+                message: {
+                    messages: newMessages.sort((a, b) => {
+                        return new Date(b.creation).getTime() - new Date(a.creation).getTime()
+                    }),
+                    has_new_messages: false,
+                    has_old_messages: data?.message.has_old_messages ?? false
+                }
+            }
+
+        }, { revalidate: false }).then(() => {
+            // If the user is focused on the page, then we also need to
+            // If the user is the sender of the message, scroll to the bottom
+            scrollRef.current?.scrollTo(0, scrollRef.current?.scrollHeight)
+        })
+
         // Stop the typing indicator
         stopTyping()
         // Clear the selected message
@@ -143,6 +202,7 @@ export const ChatBoxBody = ({ channelData }: ChatBoxBodyProps) => {
                 maxFileSize={10000000}>
                 <ChatStream
                     channelID={channelData.name}
+                    scrollRef={scrollRef}
                     pinnedMessagesString={channelData.pinned_messages_string}
                     replyToMessage={handleReplyAction}
                 />
