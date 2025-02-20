@@ -3,7 +3,6 @@ import { MessageContextMenuProps } from '../MessageActions'
 import { QUICK_ACTION_BUTTON_CLASS, QuickActionButton } from './QuickActionButton'
 import { BiDotsHorizontalRounded } from 'react-icons/bi'
 import { MouseEventHandler, useContext, useRef } from 'react'
-import { FrappeConfig, FrappeContext } from 'frappe-react-sdk'
 import { EmojiPickerButton } from './EmojiPickerButton'
 import { UserContext } from '@/utils/auth/UserProvider'
 import { AiOutlineEdit } from 'react-icons/ai'
@@ -13,6 +12,7 @@ import { getErrorMessage } from '@/components/layout/AlertBanner/ErrorBanner'
 import { CreateThreadActionButton } from './CreateThreadButton'
 import clsx from 'clsx'
 import { EmojiType, getTopFavoriteEmojis } from '../../../ChatInput/EmojiSuggestion'
+import usePostMessageReaction from '@/hooks/usePostMessageReaction'
 
 const topEmojis = getTopFavoriteEmojis(10)
 
@@ -59,8 +59,6 @@ export const QuickActions = ({ message, onReply, onEdit, isEmojiPickerOpen, setI
     const isOwner = currentUser === message?.owner && !message?.is_bot_message
     const toolbarRef = useRef<HTMLDivElement>(null)
 
-    const { call } = useContext(FrappeContext) as FrappeConfig
-
     /**
      * When the user clicks on the more button, we want to trigger a right click event
      * so that we open the context menu instead of duplicating the actions in a dropdown menu
@@ -81,17 +79,16 @@ export const QuickActions = ({ message, onReply, onEdit, isEmojiPickerOpen, setI
         e.target.dispatchEvent(evt);
     }
 
+    const postReaction = usePostMessageReaction()
+
     const onEmojiReact = (emoji: string, is_custom: boolean = false, emoji_name?: string) => {
-        call.post('raven.api.reactions.react', {
-            message_id: message?.name,
-            reaction: emoji,
-            is_custom,
-            emoji_name
-        }).catch((err) => {
-            toast.error("Could not react to message.", {
-                description: getErrorMessage(err)
+        if (message) {
+            postReaction(message, emoji, is_custom, emoji_name).catch((err) => {
+                toast.error("Could not react to message.", {
+                    description: getErrorMessage(err)
+                })
             })
-        })
+        }
     }
 
     // @ts-ignore

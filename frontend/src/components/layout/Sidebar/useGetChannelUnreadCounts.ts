@@ -69,7 +69,6 @@ export const useGetChannelUnreadCounts = ({ channels, dm_channels, unread_count 
                 if ('is_direct_message' in channel && channel.is_direct_message) {
                     readDMs.push(channelWithUnread as DMChannelWithUnreadCount)
                 } else {
-                    console.log(channel.member_id, showOnlyMyChannels)
                     let shouldAddToReadChannels = true
 
                     if (showOnlyMyChannels && !channel.member_id) {
