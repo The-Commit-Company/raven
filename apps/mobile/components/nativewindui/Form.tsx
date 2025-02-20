@@ -74,7 +74,7 @@ const FormSection = React.forwardRef<React.ElementRef<typeof View>, FormSectionP
           <View
             ref={ref}
             className={cn(
-              'ios:overflow-hidden ios:rounded-lg ios:bg-card ios:gap-0 ios:pl-1 gap-4',
+              'ios:rounded-lg ios:bg-background ios:gap-0 ios:pl-1 gap-4',
               className
             )}
             style={style}

@@ -62,7 +62,6 @@ export default function QuickSearch() {
                 <SearchInput
                     style={{ backgroundColor: colors.grey5 }}
                     placeholder="Search"
-                    iconColor={colors.destructive}
                     placeholderTextColor={colors.grey}
                     onChangeText={setSearchQuery}
                     value={searchQuery}

@@ -46,7 +46,7 @@ const FirstMessageBlockForDM = ({ channelData }: { channelData: DMChannelListIte
     const userName = fullName ?? peer ?? replaceCurrentUserFromDMChannelName(channelData.channel_name, currentUserInfo?.name ?? '')
 
     return (
-        <View className="p-3">
+        <View className="pt-6 p-3">
             {channelData?.is_direct_message == 1 && (
                 <View className="flex flex-col gap-3">
                     <View className="flex flex-row gap-3 items-center">
@@ -86,7 +86,7 @@ const FirstMessageBlockForDM = ({ channelData }: { channelData: DMChannelListIte
 const FirstMessageBlockForChannel = ({ channelData }: { channelData: ChannelListItem }) => {
     const { colors } = useColorScheme()
     return (
-        <View className="p-3">
+        <View className="pt-6 p-3">
             <View className="flex flex-col gap-2">
                 <View className="flex flex-row items-center gap-1">
                     <ChannelIcon size={24} type={channelData?.type} fill={colors.foreground} />

@@ -61,7 +61,7 @@ function renderItem(info: ListRenderItemInfo<DataItem>) {
 }
 
 function Item({ info }: { info: ListRenderItemInfo<DataItem> }) {
-    const { colors, isDarkColorScheme } = useColorScheme()
+    const { colors } = useColorScheme()
 
     if (typeof info.item === 'string') {
         return <ListSectionHeader {...info} />;
@@ -130,7 +130,6 @@ function ListHeaderComponent() {
                     </View>
                 </BottomSheetView>
             </Sheet>
-
             <View className="p-2" />
             <Text variant="title1" className='font-medium'>{myProfile?.full_name}</Text>
         </View>
@@ -168,7 +167,7 @@ function ListFooterComponent() {
                 size="lg"
                 onPress={onLogout}
                 variant={Platform.select({ ios: 'primary', default: 'secondary' })}
-                className="border-border bg-card">
+                className="border-border bg-background dark:bg-card">
                 <Text className="text-destructive">Log Out</Text>
             </Button>
         </View>

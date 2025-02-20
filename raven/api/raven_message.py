@@ -40,7 +40,7 @@ def send_message(channel_id, text, is_reply=False, linked_message=None, json_con
 				}
 			)
 		doc.insert()
-		return "message sent"
+		return doc
 
 
 @frappe.whitelist()
@@ -540,7 +540,7 @@ def forward_message(message_receivers, forwarded_message):
 			add_forwarded_message_to_channel(dm_channel_id, forwarded_message)
 		else:
 			# send forwarded message to the channel
-			add_forwarded_message_to_channel(receiver["channel_name"], forwarded_message)
+			add_forwarded_message_to_channel(receiver["name"], forwarded_message)
 
 	return "messages forwarded"
 

@@ -4,9 +4,9 @@
 
 @layer base {
     :root {
-        --background: 248 248 248;
+        --background: 255 255 255;
         --foreground: 0 0 0;
-        --card: 255 255 255;
+        --card: 248 248 248;
         --card-background: 234 234 234;
         --card-foreground: 8 28 30;
         --popover: 230 230 235;
@@ -25,15 +25,16 @@
         --error-background: 251 234 233;
         --error-heading: 176 20 20;
         --error-border: 182 22 22;
-        --linkColor: 230, 230, 235;
+        --linkColor: 241, 241, 244;
         --grayText: 140, 142, 139;
         --border: 220, 220, 225;
         --input: 210 210 215;
         --ring: 230 230 235;
+        --green: 82, 174, 99;
 
-        --android-background: 248 248 248;
+        --android-background: 255 255 255;
         --android-foreground: 0 0 0;
-        --android-card: 255 255 255;
+        --android-card: 248 248 248;
         --android-card-background: 234 234 234;
         --android-card-foreground: 24 28 35;
         --android-popover: 215 217 228;
@@ -52,11 +53,12 @@
         --android-error-background: 251 234 233;
         --android-error-heading: 176 20 20;
         --android-error-border: 182 22 22;
-        --android-linkColor: 230, 230, 235;
+        --android-linkColor: 241, 241, 244;
         --android-grayText: 140, 142, 139;
         --android-border: 220, 220, 225;
         --android-input: 210 210 215;
         --android-ring: 215 217 228;
+        --android-green: 82, 174, 99;
     }
 
     @media (prefers-color-scheme: dark) {
@@ -87,6 +89,7 @@
             --border: 80, 80, 84;
             --input: 55 55 57;
             --ring: 40 40 42;
+            --green: 82, 174, 99;
 
             --android-background: 0 0 0;
             --android-foreground: 255 255 255;
@@ -114,6 +117,7 @@
             --android-border: 80, 80, 84;
             --android-input: 55 55 57;
             --android-ring: 39 42 50;
+            --android-green: 82, 174, 99;
         }
     }
 }

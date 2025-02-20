@@ -44,6 +44,7 @@ const ChannelSettings = () => {
     return (
         <>
             <Stack.Screen options={{
+                headerStyle: { backgroundColor: colors.background },
                 headerLeft: () => <HeaderBackButton />,
                 headerTitle: () => <Text className='ml-2 text-base font-semibold'>Channel Info</Text>,
                 headerRight: () => (
@@ -52,11 +53,11 @@ const ChannelSettings = () => {
                     </TouchableOpacity>
                 )
             }} />
-            <View className="flex-1 bg-card">
+            <View className="flex-1 bg-background">
                 <View className="flex-col gap-5">
                     <ChannelBaseDetails channelData={channelData} />
                     <Divider className='mx-0' prominent />
-                    <MembersTray onViewAll={() => router.push(`../channel-settings-members`, { relativeToDirectory: true })} />
+                    <MembersTray onViewAll={() => router.push(`../channel-members`, { relativeToDirectory: true })} />
                     <Divider className='mx-0' prominent />
                     <View className="flex-col gap-2">
                         <Text className="text-[15px] font-medium px-4">Settings</Text>

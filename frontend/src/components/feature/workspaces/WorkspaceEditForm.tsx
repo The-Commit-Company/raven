@@ -2,7 +2,7 @@ import { ErrorText, HelperText, Label } from '@/components/common/Form'
 import { HStack, Stack } from '@/components/layout/Stack'
 import { RavenWorkspace } from '@/types/Raven/RavenWorkspace'
 import { __ } from '@/utils/translations'
-import { Box, Card, Flex, RadioGroup, Text, TextArea } from '@radix-ui/themes'
+import { Box, Card, Checkbox, Flex, RadioGroup, Text, TextArea } from '@radix-ui/themes'
 import { Controller, useFormContext } from 'react-hook-form'
 import { WorkspaceLogoField } from './WorkspaceLogoField'
 
@@ -62,6 +62,27 @@ const WorkspaceEditForm = () => {
                         <HelperText>
                             {__("When a workspace is set to private, it can only be viewed or joined by invitation.\nWhen a workspace is set to public, anyone can join the workspace and view it's channels.")}
                         </HelperText>
+                    </Stack>
+
+                    <Stack className='max-w-lg'>
+                        <Text as="label" size="2">
+                            <Controller
+                                control={control}
+                                name={"only_admins_can_create_channels"}
+                                render={({ field: { value, onChange, onBlur, name, disabled, ref } }) => (
+                                    <Checkbox
+                                        checked={value ? true : false}
+                                        disabled={disabled}
+                                        name={name}
+                                        aria-invalid={errors.only_admins_can_create_channels ? 'true' : 'false'}
+                                        aria-describedby={errors.only_admins_can_create_channels ? 'only-admins-can-create-channels-error' : undefined}
+                                        aria-required={errors.only_admins_can_create_channels ? 'true' : 'false'}
+                                        onBlur={onBlur}
+                                        ref={ref}
+                                        onCheckedChange={(v) => onChange(v ? 1 : 0)}
+                                    />
+                                )} />&nbsp; Only admins can create channels in this workspace?
+                        </Text>
                     </Stack>
                 </Stack>
             </Stack>

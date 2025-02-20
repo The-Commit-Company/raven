@@ -4,7 +4,7 @@ import { EditMessageDialog, useEditMessage } from '../ChatMessage/MessageActions
 import { MessageItem } from '../ChatMessage/MessageItem'
 import { ChannelHistoryFirstMessage } from '@/components/layout/EmptyState/EmptyState'
 import useChatStream from './useChatStream'
-import { useRef } from 'react'
+import { MutableRefObject } from 'react'
 import { Loader } from '@/components/common/Loader'
 import ChatStreamLoader from './ChatStreamLoader'
 import clsx from 'clsx'
@@ -67,13 +67,11 @@ type Props = {
     channelID: string,
     replyToMessage: (message: Message) => void,
     showThreadButton?: boolean,
+    scrollRef: MutableRefObject<HTMLDivElement | null>,
     pinnedMessagesString?: string
 }
 
-const ChatStream = ({ channelID, replyToMessage, showThreadButton = true, pinnedMessagesString }: Props) => {
-
-
-    const scrollRef = useRef<HTMLDivElement | null>(null)
+const ChatStream = ({ channelID, replyToMessage, showThreadButton = true, pinnedMessagesString, scrollRef }: Props) => {
 
     const { messages, hasOlderMessages, loadOlderMessages, goToLatestMessages, hasNewMessages, error, loadNewerMessages, isLoading, highlightedMessage, scrollToMessage } = useChatStream(channelID, scrollRef, pinnedMessagesString)
     const { setDeleteMessage, ...deleteProps } = useDeleteMessage()

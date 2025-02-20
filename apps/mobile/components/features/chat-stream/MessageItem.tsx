@@ -12,7 +12,7 @@ import FileMessageRenderer from '@components/features/chat/ChatMessage/Renderers
 import { MessageLinkRenderer } from '@components/features/chat-stream/MessageItemElements/MessageLinkRenderer'
 import DocTypeLinkRenderer from '@components/features/chat/ChatMessage/Renderers/DocTypeLinkRenderer'
 import { PollMessageBlock } from '@components/features/chat/ChatMessage/Renderers/PollMessage'
-import ReplyMessageBox from '@components/features/chat/ChatMessage/ReplyMessageBox/ReplyMessageBox';
+import ReplyMessageBox from '@components/features/chat/ChatMessage/Renderers/ReplyMessageBox';
 import { ImageMessageRenderer } from '@components/features/chat/ChatMessage/Renderers/ImageMessage';
 import MessageTextRenderer from './MessageItemElements/MessageTextRenderer';
 
@@ -41,7 +41,7 @@ const MessageItem = memo(({ message, onReplyMessagePress }: Props) => {
 
 
     return (
-        <View className={clsx('flex-1 flex-row px-2 gap-1', message.is_continuation ? 'pt-0' : 'pt-2')}>
+        <View className={clsx('flex-1 flex-row px-3 gap-1', message.is_continuation ? 'pt-0' : 'pt-2')}>
             <MessageAvatar
                 userFullName={userFullName}
                 userImage={user?.user_image}
@@ -70,7 +70,6 @@ const MessageItem = memo(({ message, onReplyMessagePress }: Props) => {
                     </View>}
 
                 {linked_message && replied_message_details && <ReplyMessageBox
-                    className='mb-1'
                     onPress={onReplyMessagePress}
                     message={replyMessageDetails}
                 />}

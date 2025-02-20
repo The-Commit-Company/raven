@@ -41,7 +41,7 @@ class RavenBot(Document):
 
 	def validate(self):
 		if self.is_ai_bot and not self.instruction:
-			frappe.throw(_("Please provide an instruction for this AI Bot."))
+			frappe.throw(_("Please provide an instruction for this AI Agent."))
 
 		self.validate_functions()
 
@@ -53,7 +53,7 @@ class RavenBot(Document):
 				)
 				if needs_write:
 					frappe.throw(
-						f"This bot is not allowed to write documents. Please remove the function {f.function} or allow the bot to write documents."
+						f"This agent is not allowed to write documents. Please remove the function {f.function} or allow the agent to write documents."
 					)
 
 	def on_update(self):
@@ -122,7 +122,7 @@ class RavenBot(Document):
 			if "model_not_found" in str(e):
 				frappe.throw(
 					_(
-						f"<strong>There was an error creating the bot in OpenAI.</strong><br/>It is possible that your OpenAI account does not have enough funds. Please add funds to your OpenAI account and try again.<br><br/>Error: {e}"
+						f"<strong>There was an error creating the agent in OpenAI.</strong><br/>It is possible that your OpenAI account does not have enough funds. Please add funds to your OpenAI account and try again.<br><br/>Error: {e}"
 					)
 				)
 			else:

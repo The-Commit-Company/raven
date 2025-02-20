@@ -15,7 +15,7 @@ export const TextFormattingMenu = memo(() => {
         return <Box></Box>
     }
     return (
-        <Flex gap='2' align='center' px='1' py='1' className='max-w-[60%] overflow-x-auto'>
+        <Flex gap='2' align='center' px='1' py='1' className='sm:max-w-[60%] max-w-[100%] overflow-x-auto'>
             <Flex gap='3' align='center'>
                 <Tooltip content={getKeyboardMetaKeyString() + ' + B'} aria-label={getKeyboardMetaKeyString() + ' + B'}>
                     <IconButton

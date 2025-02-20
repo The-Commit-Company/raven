@@ -14,6 +14,7 @@ module.exports = {
         foreground: withOpacity('foreground'),
         linkColor: withOpacity('linkColor'),
         grayText: withOpacity('grayText'),
+        green: withOpacity('green'),
         primary: {
           DEFAULT: withOpacity('primary'),
           foreground: withOpacity('primary-foreground'),

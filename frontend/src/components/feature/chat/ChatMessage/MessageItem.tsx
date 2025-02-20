@@ -251,7 +251,7 @@ const MessageLeftElement = ({ message, className, user, isActive, ...props }: Me
     // If it's a continuation, then show the timestamp
 
     // Else, show the avatar
-    return <Box className={clsx(message.is_continuation ? 'invisible group-hover:visible flex items-center w-[38px] sm:w-[34px]' : '', className)} {...props}>
+    return <Box className={clsx(message.is_continuation ? 'invisible group-hover:visible flex items-center w-[32px]' : '', className)} {...props}>
         {message.is_continuation ?
             <Box className='-mt-0.5'>
                 <DateTooltipShort timestamp={message.creation} />

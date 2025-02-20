@@ -5,7 +5,7 @@ import { Stack } from '@/components/layout/Stack'
 import { useIsDesktop } from '@/hooks/useMediaQuery'
 import { RavenWorkspace } from '@/types/Raven/RavenWorkspace'
 import { __ } from '@/utils/translations'
-import { Box, Button, Dialog, Flex, RadioGroup, Text, TextArea, TextField } from '@radix-ui/themes'
+import { Box, Button, Checkbox, Dialog, Flex, RadioGroup, Text, TextArea, TextField } from '@radix-ui/themes'
 import { useFrappeCreateDoc, useFrappeFileUpload, useFrappeUpdateDoc, useSWRConfig } from 'frappe-react-sdk'
 import { useState } from 'react'
 import { Controller, FormProvider, useForm } from 'react-hook-form'
@@ -41,10 +41,13 @@ const AddWorkspaceForm = ({ onClose }: { onClose: (workspaceID?: string) => void
                         doctype: 'Raven Workspace',
                         docname: res.name,
                         fieldname: 'logo',
+                        otherData: {
+                            optimize: '1',
+                        },
                         isPrivate: true,
                     }).then((fileRes) => {
                         return updateDoc("Raven Workspace", res.name, {
-                            logo: fileRes.file_url
+                            logo: fileRes.file_url + "?fid=" + fileRes.name
                         })
                     })
                 }
@@ -135,6 +138,26 @@ const AddWorkspaceForm = ({ onClose }: { onClose: (workspaceID?: string) => void
                         <HelperText>
                             {helperText}
                         </HelperText>
+                    </Stack>
+                    <Stack py='2'>
+                        <Text as="label" size="2">
+                            <Controller
+                                control={control}
+                                name={"only_admins_can_create_channels"}
+                                render={({ field: { value, onChange, onBlur, name, disabled, ref } }) => (
+                                    <Checkbox
+                                        checked={value ? true : false}
+                                        disabled={disabled}
+                                        name={name}
+                                        aria-invalid={errors.only_admins_can_create_channels ? 'true' : 'false'}
+                                        aria-describedby={errors.only_admins_can_create_channels ? 'only-admins-can-create-channels-error' : undefined}
+                                        aria-required={errors.only_admins_can_create_channels ? 'true' : 'false'}
+                                        onBlur={onBlur}
+                                        ref={ref}
+                                        onCheckedChange={(v) => onChange(v ? 1 : 0)}
+                                    />
+                                )} />&nbsp; Only admins can create channels in this workspace?
+                        </Text>
                     </Stack>
                     <Stack gap='0'>
                         <Label htmlFor='workspace_image'>Workspace Logo</Label>
