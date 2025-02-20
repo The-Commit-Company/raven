@@ -141,7 +141,7 @@ export const MessageItem = ({ message, setDeleteMessage, isHighlighted, onReplyM
                         top-[42px] 
                         left-6 z-0`}>
                         </div> : null}
-                    <ContextMenu.Root>
+                    <ContextMenu.Root modal={false}>
                         <ContextMenu.Trigger
                             {...bind}
                             ref={ref}

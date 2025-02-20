@@ -11,6 +11,9 @@ import { UnreadList } from '@/components/feature/channel-groups/UnreadList'
 import { ChannelListContext, ChannelListContextType } from '@/utils/channel/ChannelListProvider'
 import { useGetChannelUnreadCounts } from './useGetChannelUnreadCounts'
 import { useParams } from 'react-router-dom'
+import { atomWithStorage } from 'jotai/utils'
+
+export const showOnlyMyChannelsAtom = atomWithStorage('showOnlyMyChannels', false)
 
 export const SidebarBody = () => {
 
@@ -43,8 +46,8 @@ export const SidebarBody = () => {
                         label='Saved'
                         icon={<BiBookmark className='text-gray-12 dark:text-gray-300 mt-0.5 sm:text-sm text-base' />}
                         iconLabel='Saved Message' />
-                    <PinnedChannels unread_count={unread_count?.message} />
                 </Flex>
+                <PinnedChannels unread_count={unread_count?.message} />
                 {(unreadChannels.length > 0 || unreadDMs.length > 0) && <UnreadList unreadChannels={unreadChannels} unreadDMs={unreadDMs} />}
                 <ChannelList channels={readChannels} />
                 <DirectMessageList dm_channels={readDMs} />

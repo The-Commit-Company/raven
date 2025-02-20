@@ -73,10 +73,6 @@ export const MessageContextMenu = ({ message, onDelete, onEdit, onReply, onForwa
                                 </Flex>
                             </ContextMenu.Item>
 
-                            {message.message_type === 'Image' &&
-                                <CopyImageAction message={message} />
-                            }
-
                             <ContextMenu.Item asChild>
                                 <a download href={(message as FileMessage).file}>
                                     <Flex gap='2'>
@@ -133,33 +129,6 @@ export const MessageContextMenu = ({ message, onDelete, onEdit, onReply, onForwa
         </ContextMenu.Content>
     )
 }
-
-const CopyImageAction = ({ message }: { message: Message }) => {
-
-    const handleCopyImage = async () => {
-        fetch((message as ImageMessage).file).then(async (response) => {
-            return response.blob()
-        }).then(async (blob) => {
-            return navigator.clipboard.write([
-                new ClipboardItem({ [blob.type]: blob })
-            ]);
-        }).then(() => {
-            toast.success('Image copied to clipboard');
-        }).catch((e) => {
-            toast.error('Failed to copy image', {
-                description: 'Your browser might not support this feature'
-            });
-        })
-    }
-
-    return <ContextMenu.Item>
-        <Flex gap='2' width='100%' onClick={handleCopyImage}>
-            <BiCopy size='18' />
-            Copy image
-        </Flex>
-    </ContextMenu.Item>
-}
-
 
 const SaveMessageAction = ({ message }: { message: Message }) => {
 

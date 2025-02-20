@@ -101,7 +101,6 @@ const UnreadSectionActions = ({ channelIDs }: { channelIDs: string[] }) => {
 
     const { mutate } = useSWRConfig()
 
-    const [isOpen, setIsOpen] = useState(false)
     const { call } = useFrappePostCall('raven.api.raven_channel.mark_all_messages_as_read')
     const handleMarkAllAsRead = () => {
         call({
@@ -151,11 +150,10 @@ const UnreadSectionActions = ({ channelIDs }: { channelIDs: string[] }) => {
         }).catch(() => {
             toast.error('Failed to mark all messages as read')
         })
-        setIsOpen(false)
     }
 
     return (
-        <DropdownMenu.Root onOpenChange={(open) => setIsOpen(open)}>
+        <DropdownMenu.Root>
             <DropdownMenu.Trigger>
                 <IconButton
                     aria-label={__("Options")}
@@ -163,15 +161,7 @@ const UnreadSectionActions = ({ channelIDs }: { channelIDs: string[] }) => {
                     variant="soft"
                     size="1"
                     radius="large"
-                    className={clsx(
-                        'cursor-pointer transition-all text-gray-10 dark:text-gray-300 bg-transparent',
-                        'sm:hover:bg-gray-3',
-                        {
-                            'sm:invisible sm:group-hover:visible': !isOpen,
-                            'sm:visible': isOpen, // Ensure it's visible when the dropdown is open
-                        },
-                        'ease-ease',
-                        'outline-none'
+                    className={clsx('transition-all ease-ease text-gray-10 bg-transparent hover:bg-gray-3 hover:text-gray-12'
                     )}>
                     <BiDotsVerticalRounded />
                 </IconButton>
