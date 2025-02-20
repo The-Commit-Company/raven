@@ -7,7 +7,7 @@ import { Drawer, DrawerContent } from "@/components/layout/Drawer"
 import { ReactionObject } from "../MessageReactions"
 import { ReactionAnalyticsModal } from "../ActionModals/ReactionAnalyticsModal"
 
-export const useMessageReactionAnalytics = () => {
+export const useMessageReactionAnalytics = (onModalClose?: VoidFunction) => {
     const [message, setMessage] = useState<null | Message>(null)
 
     const message_reactions = message?.message_reactions;
@@ -23,7 +23,8 @@ export const useMessageReactionAnalytics = () => {
 
     const onClose = useCallback(() => {
         setMessage(null)
-    }, [])
+        onModalClose?.()
+    }, [onModalClose])
 
     return {
         reactions,

@@ -41,8 +41,8 @@ export const CreateThreadContextItem = ({ messageID }: { messageID: string }) =>
 
     const handleCreateThread = useCreateThread(messageID)
 
-    return <ContextMenu.Item onClick={handleCreateThread}>
-        <Flex gap='2' align='center'>
+    return <ContextMenu.Item>
+        <Flex gap='2' align='center' width='100%' onClick={handleCreateThread}>
             <BiMessageDetail size='18' />
             Create Thread
 

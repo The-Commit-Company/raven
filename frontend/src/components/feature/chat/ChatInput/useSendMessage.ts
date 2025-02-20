@@ -1,9 +1,10 @@
 import { useFrappePostCall } from 'frappe-react-sdk'
 import { Message } from '../../../../../../types/Messaging/Message'
+import { RavenMessage } from '@/types/RavenMessaging/RavenMessage'
 
-export const useSendMessage = (channelID: string, noOfFiles: number, uploadFiles: () => Promise<void>, handleCancelReply: VoidFunction, selectedMessage?: Message | null) => {
+export const useSendMessage = (channelID: string, noOfFiles: number, uploadFiles: () => Promise<RavenMessage[]>, onMessageSent: (messages: RavenMessage[]) => void, selectedMessage?: Message | null) => {
 
-    const { call, loading } = useFrappePostCall('raven.api.raven_message.send_message')
+    const { call, loading } = useFrappePostCall<{ message: RavenMessage }>('raven.api.raven_message.send_message')
 
     const sendMessage = async (content: string, json?: any): Promise<void> => {
 
@@ -16,15 +17,15 @@ export const useSendMessage = (channelID: string, noOfFiles: number, uploadFiles
                 is_reply: selectedMessage ? 1 : 0,
                 linked_message: selectedMessage ? selectedMessage.name : null
             })
-                .then(() => handleCancelReply())
+                .then((res) => onMessageSent([res.message]))
                 .then(() => uploadFiles())
-                .then(() => {
-                    handleCancelReply()
+                .then((res) => {
+                    onMessageSent(res)
                 })
         } else if (noOfFiles > 0) {
             return uploadFiles()
-                .then(() => {
-                    handleCancelReply()
+                .then((res) => {
+                    onMessageSent(res)
                 })
         } else {
             return Promise.resolve()

@@ -38,7 +38,7 @@ export const UploadImageModal = ({ uploadImage, label = 'Upload Image', doctype,
                 },
                 isPrivate: true,
             }).then((res) => {
-                uploadImage(res.file_url)
+                uploadImage(res.file_url + "?fid=" + res.name)
             }).catch((e) => {
                 setFileError(e)
             })
