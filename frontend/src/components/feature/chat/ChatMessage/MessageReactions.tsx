@@ -8,6 +8,8 @@ import { clsx } from "clsx"
 import { EmojiPickerButton } from "./MessageActions/QuickActions/EmojiPickerButton"
 import usePostMessageReaction from "@/hooks/usePostMessageReaction"
 import { Message } from "../../../../../../types/Messaging/Message"
+import { toast } from "sonner"
+import { getErrorMessage } from "@/components/layout/AlertBanner/ErrorBanner"
 
 export interface ReactionObject {
     // The emoji
@@ -30,6 +32,11 @@ export const MessageReactions = ({ message, message_reactions }: { message: Mess
     const saveReaction = useCallback((emoji: string, is_custom: boolean = false, emoji_name?: string) => {
         if (message) {
             postReaction(message, emoji, is_custom, emoji_name)
+                .catch((err) => {
+                    toast.error("Could not react to message.", {
+                        description: getErrorMessage(err)
+                    })
+                })
         }
     }, [message])
 
