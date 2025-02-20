@@ -130,6 +130,10 @@ def channel_has_permission(doc, user=None, ptype=None):
 			# Check if the user is a member of the main channel
 			return is_channel_member(main_channel, user)
 
+		if ptype == "delete":
+			# Only the creator of the thread can delete the thread
+			return doc.owner == user
+
 	else:
 		# For regular channels
 		if ptype == "create":
