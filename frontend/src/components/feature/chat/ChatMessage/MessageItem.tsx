@@ -201,7 +201,7 @@ export const MessageItem = ({ message, setDeleteMessage, isHighlighted, onReplyM
                                     {message.is_edited === 1 && <Text size='1' className='text-gray-10'>(edited)</Text>}
                                     {message_reactions?.length &&
                                         <MessageReactions
-                                            messageID={name}
+                                            message={message}
                                             message_reactions={message_reactions}
                                         />
                                     }
