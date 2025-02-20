@@ -3,7 +3,7 @@ from frappe import _
 from frappe.query_builder import Order
 
 from raven.api.raven_users import get_current_raven_user
-from raven.utils import get_channel_members, track_channel_visit
+from raven.utils import get_channel_members, is_channel_member, track_channel_visit
 
 
 @frappe.whitelist()
@@ -222,6 +222,10 @@ def toggle_pin_message(channel_id, message_id):
 	"""
 	channel = frappe.get_doc("Raven Channel", channel_id)
 
+	# Check if the user is a member of the channel
+	if not is_channel_member(channel_id):
+		frappe.throw(_("You are not a member of this channel"))
+
 	pinned_message = None
 
 	# Check whether the message exists in the channel
@@ -243,7 +247,7 @@ def toggle_pin_message(channel_id, message_id):
 		# Pin the message if it's not pinned
 		channel.append("pinned_messages", {"message_id": message_id})
 
-	channel.save()
+	channel.save(ignore_permissions=True)
 
 	return "Ok"
 

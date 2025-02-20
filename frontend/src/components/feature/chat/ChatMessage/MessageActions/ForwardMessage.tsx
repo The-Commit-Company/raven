@@ -7,13 +7,14 @@ import { useIsDesktop } from "@/hooks/useMediaQuery"
 import { Drawer, DrawerContent } from "@/components/layout/Drawer"
 import clsx from "clsx"
 
-export const useForwardMessage = () => {
+export const useForwardMessage = (onModalClose?: VoidFunction) => {
 
     const [message, setMessage] = useState<null | Message>(null)
 
     const onClose = useCallback(() => {
         setMessage(null)
-    }, [])
+        onModalClose?.()
+    }, [onModalClose])
 
     return {
         message,
