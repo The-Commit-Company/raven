@@ -97,7 +97,7 @@ const ChatStream = forwardRef(({ channelID, replyToMessage, showThreadButton = t
         onUpArrow: () => {
             if (messages && messages.length > 0) {
                 const lastMessage = messages[messages.length - 1]
-                if (lastMessage.message_type === 'Text' && lastMessage.owner === userID) {
+                if (lastMessage.message_type === 'Text' && lastMessage.owner === userID && !lastMessage.is_bot_message) {
                     setEditMessage(lastMessage)
                 }
             }
