@@ -1,9 +1,9 @@
 import { SidebarGroup, SidebarGroupItem, SidebarGroupLabel, SidebarGroupList, SidebarItem } from "../../layout/Sidebar/SidebarComp"
 import { SidebarBadge, SidebarViewMoreButton } from "../../layout/Sidebar/SidebarComp"
 import { CreateChannelButton } from "./CreateChannelModal"
-import { useContext, useLayoutEffect, useMemo, useRef, useState } from "react"
+import { useCallback, useContext, useLayoutEffect, useMemo, useRef, useState } from "react"
 import { ChannelIcon } from "@/utils/layout/channelIcon"
-import { ContextMenu, Flex, Text } from "@radix-ui/themes"
+import { ContextMenu, DropdownMenu, Flex, IconButton, Text } from "@radix-ui/themes"
 import { useLocation, useParams } from "react-router-dom"
 import { useStickyState } from "@/hooks/useStickyState"
 import useCurrentRavenUser from "@/hooks/useCurrentRavenUser"
@@ -12,6 +12,10 @@ import { FrappeConfig, FrappeContext } from "frappe-react-sdk"
 import { RavenUser } from "@/types/Raven/RavenUser"
 import { __ } from "@/utils/translations"
 import { ChannelWithUnreadCount } from "@/components/layout/Sidebar/useGetChannelUnreadCounts"
+import { useAtom } from "jotai"
+import { showOnlyMyChannelsAtom } from "@/components/layout/Sidebar/SidebarBody"
+import clsx from "clsx"
+import { BiDotsVerticalRounded } from "react-icons/bi"
 
 interface ChannelListProps {
     channels: ChannelWithUnreadCount[]
@@ -48,6 +52,7 @@ export const ChannelList = ({ channels }: ChannelListProps) => {
                     </Flex>
                     <Flex align='center' gap='1'>
                         <CreateChannelButton />
+                        <ChannelListActions />
                         <SidebarViewMoreButton onClick={toggle} expanded={showData} />
                     </Flex>
                 </Flex>
@@ -157,4 +162,38 @@ const PinButton = ({ channelID }: { channelID: string }) => {
         {__("Pin")}
     </ContextMenu.Item>
 
+}
+
+const ChannelListActions = () => {
+
+    const [showOnlyMyChannels, setShowOnlyMyChannels] = useAtom(showOnlyMyChannelsAtom)
+
+    const showAllChannels = useCallback(() => {
+        setShowOnlyMyChannels(false)
+    }, [setShowOnlyMyChannels])
+
+    const hideNonMemberChannels = useCallback(() => {
+        setShowOnlyMyChannels(true)
+    }, [setShowOnlyMyChannels])
+
+    return (
+        <DropdownMenu.Root>
+            <DropdownMenu.Trigger>
+                <IconButton
+                    aria-label={__("Options")}
+                    title={__("Options")}
+                    variant="soft"
+                    size="1"
+                    radius="large"
+                    className={clsx('transition-all ease-ease text-gray-10 bg-transparent hover:bg-gray-3 hover:text-gray-12'
+                    )}>
+                    <BiDotsVerticalRounded />
+                </IconButton>
+            </DropdownMenu.Trigger>
+            <DropdownMenu.Content>
+                {showOnlyMyChannels ? <DropdownMenu.Item onClick={showAllChannels}>Show All Channels</DropdownMenu.Item> :
+                    <DropdownMenu.Item onClick={hideNonMemberChannels}>Show Only My Channels</DropdownMenu.Item>}
+            </DropdownMenu.Content>
+        </DropdownMenu.Root>
+    )
 }
