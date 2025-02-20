@@ -1,5 +1,5 @@
 import { IconButton, Flex, Box } from "@radix-ui/themes"
-import { useMemo, useRef, useState } from "react"
+import { useCallback, useMemo, useRef, useState } from "react"
 import { BiX } from "react-icons/bi"
 import useFileUpload from "../../chat/ChatInput/FileInput/useFileUpload"
 import Tiptap from "../../chat/ChatInput/Tiptap"
@@ -21,6 +21,7 @@ import { Stack } from "@/components/layout/Stack"
 import { useSWRConfig } from "frappe-react-sdk"
 import { GetMessagesResponse } from "../../chat/ChatStream/useChatStream"
 import { RavenMessage } from "@/types/RavenMessaging/RavenMessage"
+import { useIsMobile } from "@/hooks/useMediaQuery"
 
 export const ThreadMessages = ({ threadMessage }: { threadMessage: Message }) => {
 
@@ -105,6 +106,25 @@ export const ThreadMessages = ({ threadMessage }: { threadMessage: Message }) =>
 
     const { sendMessage, loading } = useSendMessage(threadID ?? '', files.length, uploadFiles, onMessageSendCompleted, selectedMessage)
 
+    const chatStreamRef = useRef<any>(null)
+
+    const onUpArrowPressed = useCallback(() => {
+        // Call the up arrow function inside the ChatStream component
+        chatStreamRef.current?.onUpArrow()
+    }, [])
+
+    const tiptapRef = useRef<any>(null)
+
+    const isMobile = useIsMobile()
+
+    // When the edit modal is closed, we need to focus the editor again
+    // Don't do this on mobile since that would open the keyboard
+    const onModalClose = useCallback(() => {
+        if (!isMobile) {
+            tiptapRef.current?.focusEditor()
+        }
+    }, [isMobile])
+
     const PreviousMessagePreview = ({ selectedMessage }: { selectedMessage: any }) => {
 
         if (selectedMessage) {
@@ -152,8 +172,10 @@ export const ThreadMessages = ({ threadMessage }: { threadMessage: Message }) =>
                 <ChatStream
                     channelID={threadID ?? ''}
                     scrollRef={scrollRef}
+                    ref={chatStreamRef}
                     replyToMessage={handleReplyAction}
                     showThreadButton={false}
+                    onModalClose={onModalClose}
                 />
                 <AIEvent channelID={threadID ?? ''} />
 
@@ -169,6 +191,8 @@ export const ThreadMessages = ({ threadMessage }: { threadMessage: Message }) =>
                             fileInputRef,
                             addFile
                         }}
+                        ref={tiptapRef}
+                        onUpArrow={onUpArrowPressed}
                         onUserType={onUserType}
                         channelMembers={channelMembers}
                         clearReplyMessage={clearSelectedMessage}
