@@ -6,7 +6,7 @@
     :root {
         --background: 255 255 255;
         --foreground: 0 0 0;
-        --card: 248 248 248;
+        --card: 248, 248, 248;
         --card-background: 234 234 234;
         --card-foreground: 8 28 30;
         --popover: 230 230 235;
@@ -63,7 +63,7 @@
 
     @media (prefers-color-scheme: dark) {
         :root {
-            --background: 0 0 0;
+            --background: 10 10 10;
             --foreground: 255 255 255;
             --card: 21 21 24;
             --card-background: 37 37 39;
@@ -91,7 +91,7 @@
             --ring: 40 40 42;
             --green: 82, 174, 99;
 
-            --android-background: 0 0 0;
+            --android-background: 10 10 10;
             --android-foreground: 255 255 255;
             --android-card: 16 19 27;
             --android-card-background: 37 37 39;

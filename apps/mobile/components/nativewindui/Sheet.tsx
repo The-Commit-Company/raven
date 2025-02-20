@@ -24,7 +24,7 @@ const Sheet = React.forwardRef<
       index={0}
       backgroundStyle={
         backgroundStyle ?? {
-          backgroundColor: colors.card,
+          backgroundColor: colors.background,
         }
       }
       style={

@@ -69,7 +69,7 @@ const ANDROID_COLORS = {
         grey3: 'rgb(54, 57, 66)',
         grey2: 'rgb(139, 144, 160)',
         grey: 'rgb(193, 198, 215)',
-        background: 'rgb(0, 0, 0)',
+        background: 'rgb(10, 10, 10)',
         foreground: 'rgb(255, 255, 255)',
         root: 'rgb(0, 0, 0)',
         card: 'rgb(16, 19, 27)',

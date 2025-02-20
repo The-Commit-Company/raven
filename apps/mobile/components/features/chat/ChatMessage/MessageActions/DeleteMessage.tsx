@@ -24,17 +24,17 @@ const DeleteMessage = ({ message, onClose }: DeleteMessageProps) => {
         deleteAlertRef.current?.show()
     }, [deleteAlertRef, onClose])
 
-    const { colors } = useColorScheme()
+    const { isDarkColorScheme } = useColorScheme()
 
     return (
         <View>
             <Pressable
                 onPress={onMessageDelete}
-                className='flex flex-row items-center gap-3 px-2 py-3 rounded-lg ios:active:bg-destructive/5'
+                className='flex flex-row items-center gap-3 p-2 rounded-lg ios:active:bg-destructive/5 dark:ios:active:bg-destructive/10'
                 android_ripple={{ color: 'rgba(0,0,0,0.1)', borderless: false }}
                 disabled={loading}>
-                <TrashIcon width={18} height={18} fill={'#dc2626'} />
-                <Text className='text-base text-red-600'>Delete message</Text>
+                <TrashIcon width={18} height={18} fill={isDarkColorScheme ? '#f87171' : '#dc2626'} />
+                <Text className='text-base text-red-600 dark:text-red-400'>Delete message</Text>
             </Pressable>
             <Alert
                 key="delete-message"

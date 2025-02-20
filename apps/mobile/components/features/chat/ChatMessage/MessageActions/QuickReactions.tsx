@@ -42,13 +42,13 @@ const QuickReactions = ({ message, onClose }: MessageReactionsProps) => {
                     <TouchableOpacity
                         key={reaction}
                         onPress={() => onReact(reaction)}
-                        className='p-3 bg-linkColor rounded-full'
+                        className='p-3 bg-card rounded-full'
                         activeOpacity={0.6}>
                         <Text>{reaction}</Text>
                     </TouchableOpacity>
                 ))}
                 <TouchableOpacity
-                    className='p-3 bg-linkColor rounded-full'
+                    className='p-3 bg-card rounded-full'
                     activeOpacity={0.6}
                     onPress={() => emojiBottomSheetRef.current?.present()}>
                     <SmilePlusIcon width={24} height={24} color={colors.icon} />

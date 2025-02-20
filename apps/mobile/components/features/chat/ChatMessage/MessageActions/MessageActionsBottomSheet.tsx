@@ -18,7 +18,7 @@ const MessageActionsBottomSheet: React.FC<MessageActionsBottomSheetProps> = ({ m
     return (
         <Sheet ref={messageActionsSheetRef}>
             <BottomSheetView>
-                <View className="flex-col px-4 mt-2 mb-20">
+                <View className="flex-col px-4 mt-2 mb-16">
                     <MessageActions message={message} onClose={handleClose} />
                 </View>
             </BottomSheetView>

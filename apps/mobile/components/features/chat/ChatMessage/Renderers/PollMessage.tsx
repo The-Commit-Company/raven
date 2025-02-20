@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Pressable, TouchableOpacity, View } from 'react-native';
+import { Pressable, View } from 'react-native';
 import { useFrappeDocumentEventListener, useFrappeGetCall, useFrappePostCall } from 'frappe-react-sdk';
 import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import { Checkbox } from '@components/nativewindui/Checkbox';
@@ -10,6 +10,7 @@ import { RavenPollOption } from '@raven/types/RavenMessaging/RavenPollOption';
 import { useColorScheme } from "@hooks/useColorScheme"
 import { PollMessage } from '@raven/types/common/Message';
 import { toast } from 'sonner-native';
+import { Button } from '@components/nativewindui/Button';
 
 type PollMessageBlockProps = {
     message: PollMessage,
@@ -41,8 +42,8 @@ export const PollMessageBlock = ({ message, ...props }: PollMessageBlockProps) =
     return (
         <View className='w-full' {...props}>
             {error ? (
-                <View className="bg-red-100 p-2 rounded-md">
-                    <Text className="text-red-500">{error.message}</Text>
+                <View className="bg-red-50 p-2 rounded-md">
+                    <Text className="text-sm text-red-500">{error.message} {error.exception}</Text>
                 </View>
             ) : null}
             {data ? <PollMessageBox data={data.message} messageID={message.name} /> : null}
@@ -52,14 +53,9 @@ export const PollMessageBlock = ({ message, ...props }: PollMessageBlockProps) =
 
 const PollMessageBox = ({ data, messageID }: { data: Poll; messageID: string }) => {
     return (
-        <View className="bg-gray-50 dark:bg-gray-900 w-full rounded-md p-3 gap-0.5">
-            <View className="flex-row justify-between items-start pb-1.5">
-                <Text className="text-base font-semibold max-w-[80%]">{data.poll.question}</Text>
-                {data.poll.is_anonymous ? (
-                    <View className="bg-blue-100 dark:bg-blue-300 rounded">
-                        <Text className="text-blue-700 dark:text-blue-800 font-medium text-xs py-1 px-2">Anonymous</Text>
-                    </View>
-                ) : null}
+        <View className="bg-card rounded-md p-3">
+            <View className="flex-col gap-1 pb-2">
+                <Text className="text-base font-medium">{data.poll.question} {data.poll.is_anonymous ? <Text className="text-blue-700 dark:text-blue-800 font-medium text-xs py-1 px-2">(Anonymous)</Text> : null}</Text>
             </View>
             {data.current_user_votes.length > 0 ? (
                 <PollResults data={data} />
@@ -75,12 +71,12 @@ const PollMessageBox = ({ data, messageID }: { data: Poll; messageID: string }) 
 
             {data.poll.is_disabled ? (
                 <View className="bg-gray-100 px-2 py-1 rounded mt-2">
-                    <Text className="text-gray-600 text-xs">Poll is now closed</Text>
+                    <Text className="text-muted-foreground text-xs">Poll is now closed</Text>
                 </View>
             ) : null}
 
             {data.current_user_votes.length ? <View>
-                {!data.poll.is_anonymous ? <View className="h-px bg-gray-200 dark:bg-gray-700 w-full my-2" /> : null}
+                {!data.poll.is_anonymous ? <View className="bg-gray-200 dark:bg-gray-700 w-full my-2" /> : null}
                 {data.poll.is_anonymous ? null : <ViewPollVotes poll={data} />}
             </View> : null}
         </View>
@@ -125,10 +121,10 @@ const PollOption = ({ data, option }: { data: Poll; option: RavenPollOption }) =
                 className={`absolute top-0 left-0 h-full rounded-l ${Math.round(percentage) === 100 ? 'rounded-r' : ''}`}
                 style={animatedStyle}
             />
-            <Text className={`px-2.5 py-1.5 text-sm ${isCurrentUserVote ? 'font-semibold' : 'font-normal'}`}>
+            <Text className={`px-2.5 py-1.5 text-sm ${isCurrentUserVote ? 'font-semibold' : ''}`}>
                 {option.option}
             </Text>
-            <Text className={`px-2.5 py-1.5 text-sm ${isCurrentUserVote ? 'font-semibold' : 'font-normal'}`}>
+            <Text className={`px-2.5 py-1.5 text-sm ${isCurrentUserVote ? 'font-semibold' : ''}`}>
                 {percentage.toFixed(1)}%
             </Text>
         </View>
@@ -141,15 +137,17 @@ const PollResults = ({ data }: { data: Poll }) => {
             {data.poll.options.map((option) => (
                 <PollOption key={option.name} data={data} option={option} />
             ))}
-            <Text className="text-sm text-gray-500 px-2">
-                {data.poll.total_votes} vote{data.poll.total_votes > 1 ? 's' : ''}
+            <Text className="pl-2 text-sm text-muted-foreground">
+                {`${data.poll.total_votes || 0} vote${data.poll.total_votes === 1 ? '' : 's'}`}
             </Text>
         </View>
     );
 };
 
 const SingleChoicePoll = ({ data, messageID }: { data: Poll; messageID: string }) => {
-    const { call } = useFrappePostCall('raven.api.raven_poll.add_vote');
+
+    const { call } = useFrappePostCall('raven.api.raven_poll.add_vote')
+    const [selectedOption, setSelectedOption] = useState<string | null>(null)
 
     const onVoteSubmit = async (option: RavenPollOption) => {
         return call({
@@ -162,30 +160,38 @@ const SingleChoicePoll = ({ data, messageID }: { data: Poll; messageID: string }
         })
     }
 
+    const handleOptionSelect = (option: RavenPollOption) => {
+        if (!data.poll.is_disabled) {
+            setSelectedOption(option.name)
+            onVoteSubmit(option) // Automatically submit the vote when an option is selected
+        }
+    }
+
     return (
-        <View className="gap-3.5 pt-1">
+        <View className="gap-3">
             {data.poll.options.map((option) => (
-                <View key={option.name} className='flex flex-row gap-3 items-center'>
+                <Pressable
+                    key={option.name}
+                    onPress={() => handleOptionSelect(option)}
+                    className='flex flex-row gap-3 items-center py-2'>
                     <Checkbox
-                        disabled={data.poll.is_disabled ? true : false}
-                        onCheckedChange={() => onVoteSubmit(option)}
+                        checked={selectedOption === option.name}
+                        disabled={!!data.poll.is_disabled}
+                        onCheckedChange={() => handleOptionSelect(option)}
                     />
-                    <Text className="text-base text-gray-800 dark:text-gray-200">
+                    <Text className="text-[15px] text-foreground">
                         {option.option}
                     </Text>
-                </View>
+                </Pressable>
             ))}
         </View>
-    );
-};
+    )
+}
 
 const MultiChoicePoll = ({ data, messageID }: { data: Poll; messageID: string }) => {
 
-    const { colors } = useColorScheme()
-
-    const [selectedOptions, setSelectedOptions] = useState<string[]>([]);
-
-    const { call } = useFrappePostCall('raven.api.raven_poll.add_vote');
+    const [selectedOptions, setSelectedOptions] = useState<string[]>([])
+    const { call } = useFrappePostCall('raven.api.raven_poll.add_vote')
 
     const handleCheckboxChange = (name: string, value: boolean | string) => {
         if (value) {
@@ -204,33 +210,48 @@ const MultiChoicePoll = ({ data, messageID }: { data: Poll; messageID: string })
         }).catch((error) => {
             toast.error("Error while submitting poll")
         })
-    };
+    }
 
     return (
-        <View className="gap-4">
-            <View className="gap-3.5 pt-1">
+        <View className="gap-3">
+            <View>
                 {data.poll.options.map((option) => (
-                    <View key={option.name} className='flex flex-row gap-3 items-center'>
+                    <Pressable
+                        key={option.name}
+                        onPress={() => {
+                            if (!data.poll.is_disabled) {
+                                const isSelected = selectedOptions.includes(option.name);
+                                handleCheckboxChange(option.name, !isSelected);
+                            }
+                        }}
+                        className='flex flex-row gap-2 items-center py-2'>
                         <Checkbox
                             checked={selectedOptions.includes(option.name)}
                             disabled={!!data.poll.is_disabled}
                             onCheckedChange={(checked) => !data.poll.is_disabled && handleCheckboxChange(option.name, checked)}
                         />
-                        <Text className="text-base text-gray-800 dark:text-gray-200">
+                        <Text className="text-[15px] text-foreground">
                             {option.option}
                         </Text>
-                    </View>
+                    </Pressable>
                 ))}
             </View>
 
-            <View className="flex w-full flex-row justify-between items-center">
-                <Text className="text-sm text-gray-500 mr-4 max-w-[65%]">
+            <View className="flex flex-col gap-3">
+                <Text className="text-sm text-muted-foreground">
                     To view the poll results, please submit your choice(s)
                 </Text>
-                <TouchableOpacity className='bg-gray-200 dark:bg-gray-800 px-2.5 py-1 rounded' onPress={onVoteSubmit} disabled={!!data.poll.is_disabled || selectedOptions.length === 0}>
-                    <Text className='text-sm font-semibold' style={{ color: colors.primary }}>Submit</Text>
-                </TouchableOpacity>
+                <Button
+                    variant='secondary'
+                    className='rounded-lg'
+                    size='sm'
+                    onPress={onVoteSubmit}
+                    disabled={!!data.poll.is_disabled || selectedOptions.length === 0}>
+                    <Text className='text-sm font-semibold'>
+                        Submit
+                    </Text>
+                </Button>
             </View>
         </View>
-    );
-};
+    )
+}
