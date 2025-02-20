@@ -26,7 +26,7 @@ import json from 'highlight.js/lib/languages/json'
 import python from 'highlight.js/lib/languages/python'
 import { Plugin } from 'prosemirror-state'
 import { Box, Flex, IconButton } from '@radix-ui/themes'
-import { useSessionStickyState } from '@/hooks/useStickyState'
+import { useSessionStickyState, useStickyState } from '@/hooks/useStickyState'
 import { Message } from '../../../../../../types/Messaging/Message'
 import Image from '@tiptap/extension-image'
 import { EmojiSuggestion } from './EmojiSuggestion'
@@ -477,7 +477,7 @@ const Tiptap = ({ isEdit, slotBefore, fileProps, onMessageSend, channelMembers, 
         TimestampRenderer
     ]
 
-    const [content, setContent] = useSessionStickyState(defaultText, sessionStorageKey, disableSessionStorage)
+    const [content, setContent] = useStickyState(defaultText, sessionStorageKey, disableSessionStorage)
 
     const editor = useEditor({
         extensions,
