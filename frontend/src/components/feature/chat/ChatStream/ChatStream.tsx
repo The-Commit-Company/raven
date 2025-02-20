@@ -4,7 +4,7 @@ import { EditMessageDialog, useEditMessage } from '../ChatMessage/MessageActions
 import { MessageItem } from '../ChatMessage/MessageItem'
 import { ChannelHistoryFirstMessage } from '@/components/layout/EmptyState/EmptyState'
 import useChatStream from './useChatStream'
-import { MutableRefObject } from 'react'
+import { forwardRef, MutableRefObject, useImperativeHandle } from 'react'
 import { Loader } from '@/components/common/Loader'
 import ChatStreamLoader from './ChatStreamLoader'
 import clsx from 'clsx'
@@ -17,6 +17,7 @@ import { ForwardMessageDialog, useForwardMessage } from '../ChatMessage/MessageA
 import AttachFileToDocumentDialog, { useAttachFileToDocument } from '../ChatMessage/MessageActions/AttachFileToDocument'
 import { ReactionAnalyticsDialog, useMessageReactionAnalytics } from '../ChatMessage/MessageActions/MessageReactionAnalytics'
 import SystemMessageBlock from '../ChatMessage/SystemMessageBlock'
+import { useUserData } from '@/hooks/useUserData'
 
 /**
  * Anatomy of a message
@@ -68,23 +69,40 @@ type Props = {
     replyToMessage: (message: Message) => void,
     showThreadButton?: boolean,
     scrollRef: MutableRefObject<HTMLDivElement | null>,
-    pinnedMessagesString?: string
+    pinnedMessagesString?: string,
+    onModalClose?: () => void
 }
 
-const ChatStream = ({ channelID, replyToMessage, showThreadButton = true, pinnedMessagesString, scrollRef }: Props) => {
+const ChatStream = forwardRef(({ channelID, replyToMessage, showThreadButton = true, pinnedMessagesString, scrollRef, onModalClose }: Props, ref) => {
 
     const { messages, hasOlderMessages, loadOlderMessages, goToLatestMessages, hasNewMessages, error, loadNewerMessages, isLoading, highlightedMessage, scrollToMessage } = useChatStream(channelID, scrollRef, pinnedMessagesString)
-    const { setDeleteMessage, ...deleteProps } = useDeleteMessage()
+    const { setDeleteMessage, ...deleteProps } = useDeleteMessage(onModalClose)
 
-    const { setEditMessage, ...editProps } = useEditMessage()
-    const { setForwardMessage, ...forwardProps } = useForwardMessage()
-    const { setAttachDocument, ...attachDocProps } = useAttachFileToDocument()
+    const { setEditMessage, ...editProps } = useEditMessage(onModalClose)
+    const { setForwardMessage, ...forwardProps } = useForwardMessage(onModalClose)
+    const { setAttachDocument, ...attachDocProps } = useAttachFileToDocument(onModalClose)
 
-    const { setReactionMessage, ...reactionProps } = useMessageReactionAnalytics()
+    const { setReactionMessage, ...reactionProps } = useMessageReactionAnalytics(onModalClose)
 
     const onReplyMessageClick = (messageID: string) => {
         scrollToMessage(messageID)
     }
+
+    const { name: userID } = useUserData()
+
+    // When the user presses the up arrow, we need to check if the last message is a message sent by the user and is a text message (not system or file)
+    // If so, we need to open the edit modal for that message
+    // This function needs to be called from the parent component
+    useImperativeHandle(ref, () => ({
+        onUpArrow: () => {
+            if (messages && messages.length > 0) {
+                const lastMessage = messages[messages.length - 1]
+                if (lastMessage.message_type === 'Text' && lastMessage.owner === userID) {
+                    setEditMessage(lastMessage)
+                }
+            }
+        }
+    }))
 
     const { ref: oldLoaderRef } = useInView({
         fallbackInView: true,
@@ -177,6 +195,6 @@ const ChatStream = ({ channelID, replyToMessage, showThreadButton = true, pinned
         </div>
 
     )
-}
+})
 
 export default ChatStream

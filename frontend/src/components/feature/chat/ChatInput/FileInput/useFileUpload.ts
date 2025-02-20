@@ -81,7 +81,6 @@ export default function useFileUpload(channelID: string, selectedMessage?: Messa
                 isComplete: true,
               },
             }))
-            console.log(res.data.message)
             return res.data.message
           })
           .catch((e) => {

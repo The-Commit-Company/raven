@@ -11,13 +11,14 @@ type Props = {
     file: string
 }
 
-export const useAttachFileToDocument = () => {
+export const useAttachFileToDocument = (onModalClose?: VoidFunction) => {
 
     const [message, setMessage] = useState<null | Message>(null)
 
     const onClose = useCallback(() => {
         setMessage(null)
-    }, [])
+        onModalClose?.()
+    }, [onModalClose])
 
     return {
         message,

@@ -1,5 +1,5 @@
 import { Message } from "../../../../../../types/Messaging/Message"
-import { useMemo, useRef, useState } from "react"
+import { useCallback, useMemo, useRef, useState } from "react"
 import { ArchivedChannelBox } from "../chat-footer/ArchivedChannelBox"
 import { ChannelListItem, DMChannelListItem } from "@/utils/channel/ChannelListProvider"
 import { JoinChannelBox } from "../chat-footer/JoinChannelBox"
@@ -23,6 +23,7 @@ import { Label } from "@/components/common/Form"
 import { RavenMessage } from "@/types/RavenMessaging/RavenMessage"
 import { useSWRConfig } from "frappe-react-sdk"
 import { GetMessagesResponse } from "./useChatStream"
+import { useIsMobile } from "@/hooks/useMediaQuery"
 
 const COOL_PLACEHOLDERS = [
     "Delivering messages atop dragons 🐉 is available on a chargeable basis.",
@@ -126,6 +127,27 @@ export const ChatBoxBody = ({ channelData }: ChatBoxBodyProps) => {
         return null
     }, [user, channelMembers])
 
+    const chatStreamRef = useRef<any>(null)
+
+    const onUpArrowPressed = useCallback(() => {
+        // Call the up arrow function inside the ChatStream component
+        chatStreamRef.current?.onUpArrow()
+    }, [])
+
+    const tiptapRef = useRef<any>(null)
+
+    const isMobile = useIsMobile()
+
+    // When the edit modal is closed, we need to focus the editor again
+    // Don't do this on mobile since that would open the keyboard
+    const onModalClose = useCallback(() => {
+        if (!isMobile) {
+            setTimeout(() => {
+                tiptapRef.current?.focusEditor()
+            }, 50)
+        }
+    }, [isMobile])
+
     const { fileInputRef, files, setFiles, removeFile, uploadFiles, addFile, fileUploadProgress, compressImages, setCompressImages } = useFileUpload(channelData.name)
 
     const { sendMessage, loading } = useSendMessage(channelData.name, files.length, uploadFiles, onMessageSendCompleted, selectedMessage)
@@ -203,6 +225,8 @@ export const ChatBoxBody = ({ channelData }: ChatBoxBodyProps) => {
                 <ChatStream
                     channelID={channelData.name}
                     scrollRef={scrollRef}
+                    ref={chatStreamRef}
+                    onModalClose={onModalClose}
                     pinnedMessagesString={channelData.pinned_messages_string}
                     replyToMessage={handleReplyAction}
                 />
@@ -216,6 +240,8 @@ export const ChatBoxBody = ({ channelData }: ChatBoxBodyProps) => {
                                 fileInputRef,
                                 addFile
                             }}
+                            ref={tiptapRef}
+                            onUpArrow={onUpArrowPressed}
                             clearReplyMessage={clearSelectedMessage}
                             channelMembers={channelMembers}
                             onUserType={onUserType}
