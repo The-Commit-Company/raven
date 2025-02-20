@@ -118,6 +118,9 @@ export const ImageMessageBlock = memo(({ message, isScrolling = false, user }: I
                     }}
                     width={width}
                     alt={`Image file sent by ${message.owner} at ${message.creation}`}
+                    onContextMenu={(e) => {
+                        e.stopPropagation();
+                    }}
                 />
             </Box>
             {!isScrolling &&
