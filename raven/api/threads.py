@@ -1,7 +1,7 @@
 import frappe
 from frappe import _
-from frappe.query_builder import Order
-from frappe.query_builder.functions import Count
+from frappe.query_builder import Case, Order
+from frappe.query_builder.functions import Coalesce, Count
 
 from raven.api.raven_channel import get_peer_user_id
 from raven.utils import get_channel_members
@@ -81,6 +81,45 @@ def get_all_threads(workspace: str = None, content=None, channel_id=None, is_ai_
 		thread["participants"] = [{"user_id": member} for member in thread_members]
 
 	return threads
+
+
+@frappe.whitelist()
+def get_unread_threads(workspace: str = None):
+	"""
+	Get the number of threads in which the user is a participant and has unread messages > 0
+	"""
+
+	channel = frappe.qb.DocType("Raven Channel")
+	channel_member = frappe.qb.DocType("Raven Channel Member")
+	message = frappe.qb.DocType("Raven Message")
+
+	unread_count_var = Count(
+		Case().when(message.creation > Coalesce(channel_member.last_visit, "2000-11-11"), 1)
+	).as_("unread_count")
+
+	query = (
+		frappe.qb.from_(channel)
+		.select(
+			channel.name,
+			unread_count_var,
+		)
+		.left_join(channel_member)
+		.on(
+			(channel.name == channel_member.channel_id) & (channel_member.user_id == frappe.session.user)
+		)
+		.left_join(message)
+		.on(channel.name == message.channel_id)
+		.where(channel.is_thread == 1)
+		.where(channel.is_ai_thread == 0)
+		.where(channel_member.user_id == frappe.session.user)
+		.having(unread_count_var > 0)
+		.groupby(channel.name)
+	)
+
+	if workspace:
+		query = query.where((channel.workspace == workspace) | (channel.is_dm_thread == 1))
+
+	return query.run(as_dict=True)
 
 
 @frappe.whitelist(methods="POST")

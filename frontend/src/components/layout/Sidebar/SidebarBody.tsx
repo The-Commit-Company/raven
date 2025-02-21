@@ -12,6 +12,7 @@ import { ChannelListContext, ChannelListContextType } from '@/utils/channel/Chan
 import { useGetChannelUnreadCounts } from './useGetChannelUnreadCounts'
 import { useParams } from 'react-router-dom'
 import { atomWithStorage } from 'jotai/utils'
+import useUnreadThreadsCount from '@/hooks/useUnreadThreadsCount'
 
 export const showOnlyMyChannelsAtom = atomWithStorage('showOnlyMyChannels', false)
 
@@ -36,11 +37,12 @@ export const SidebarBody = () => {
         <ScrollArea type="hover" scrollbars="vertical" className='h-[calc(100vh-4rem)]'>
             <Flex direction='column' gap='2' className='overflow-x-hidden pb-12 sm:pb-0' px='2'>
                 <Flex direction='column' gap='1' className='pb-0.5'>
-                    <SidebarItemForPage
+                    <ThreadsButton />
+                    {/* <SidebarItemForPage
                         to={'threads'}
                         label='Threads'
                         icon={<BiMessageAltDetail className='text-gray-12 dark:text-gray-300 mt-1 sm:text-sm text-base' />}
-                        iconLabel='Threads' />
+                        iconLabel='Threads' /> */}
                     <SidebarItemForPage
                         to={'saved-messages'}
                         label='Saved'
@@ -53,6 +55,26 @@ export const SidebarBody = () => {
                 <DirectMessageList dm_channels={readDMs} />
             </Flex>
         </ScrollArea>
+    )
+}
+
+const ThreadsButton = () => {
+
+    const { data: unreadThreads } = useUnreadThreadsCount()
+
+    const totalUnreadThreads = useMemo(() => {
+        return unreadThreads?.message.length || 0
+    }, [unreadThreads])
+
+    console.log(unreadThreads)
+
+    return (
+        <SidebarItemForPage
+            to={'threads'}
+            label='Threads'
+            unreadCount={totalUnreadThreads}
+            icon={<BiMessageAltDetail className='text-gray-12 dark:text-gray-300 mt-1 sm:text-sm text-base' />}
+            iconLabel='Threads' />
     )
 }
 

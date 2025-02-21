@@ -325,9 +325,9 @@ export const UserHoverCard = memo(({ user, userID, isActive }: UserProps) => {
     }, [user, userID])
     return <HoverCard.Root>
         <HoverCard.Trigger>
-            <Link className='text-gray-12 flex items-center gap-1' weight='medium' size='2'>
+            <Text className='text-gray-12 flex items-center gap-1' weight='medium' size='2'>
                 {fullName} {isBot && <Badge color='gray' className='font-semibold px-1 py-0'>Bot</Badge>}
-            </Link>
+            </Text>
         </HoverCard.Trigger>
         <HoverCard.Content size='1'>
             <Flex gap='2' align='center'>
