@@ -177,6 +177,10 @@ const MultiChoicePoll = ({ data, messageID }: { data: Poll, messageID: string })
 
     const { call } = useFrappePostCall('raven.api.raven_poll.add_vote')
     const onVoteSubmit = async () => {
+        if (!selectedOptions.length) {
+            toast.error('Please select at least one option')
+            return
+        }
         return call({
             'message_id': messageID,
             'option_id': selectedOptions
