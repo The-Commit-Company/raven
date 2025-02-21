@@ -1,78 +1,90 @@
-:root {
-  --color-black: #242e39;
-  --color-gray-2: #68707d;
-  --color-gray-4: #c7cdd4;
-  --color-gray-5: #edf1f6;
-}
 
 
 .tiptap-editor {
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  /* margin-bottom: 48px; */
-  background-color: #f00;
-  overflow: hidden;
+  background-color: white;
 }
 
 .editorContent {
-  padding: 12px;
-  overflow: hidden;
+  padding: 8px;
+}
+
+.editorContent > div {
+  height: 100%;
 }
 
 .menu {
   display: flex;
+  justify-content: space-between;
   align-items: center;
-  gap: 8px;
-  width: 100%;
-  height: 40px;
-  padding: 0 8px;
-  border-top: 1px solid var(--color-gray-5);
-  background-color: #fff;
-  color: var(--color-gray-2);
-  margin-top: 0; /* Remove margin since it's contained */
+  background-color: white;
+  border-top: 1px solid #f0f0f0;
 }
 
-
-.button,
-.menu-button {
+.format-button {
   display: flex;
   align-items: center;
   justify-content: center;
-
-  height: 32px;
-
-  margin: 0;
-  padding: 0 8px;
-
-  border: 0;
-  border-radius: 4px;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 6px;
   background: transparent;
-  color: currentColor;
-
-  font-family: inherit;
-  font-size: inherit;
-  line-height: 1;
-  font-weight: inherit;
-
-  white-space: nowrap;
+  color: #1d1c1d;
   cursor: pointer;
 }
 
-.menu-button {
-  width: 32px;
+.format-button-text {
+  font-size: 18px;
+  font-weight: 500;
+}
+
+.format-button:hover {
+  background-color: #e8e8e8;
+}
+
+.send-button {
+  margin-left: auto;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: #9f9f9f;
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.send-button-active {
+  color: #5753C6;
+  opacity: 1;
+  cursor: pointer;
+}
+
+/* Formatting menu styles */
+.formatting-menu {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.formatting-button {
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: #616061;
+  cursor: pointer;
   padding: 0;
 }
 
-.button:hover,
-.button.is-active,
-.menu-button:hover,
-.menu-button.is-active {
-  background-color: var(--color-gray-5);
-  color: var(--color-black);
-}
-
-.button:disabled,
-.menu-button:disabled {
-  color: var(--color-gray-4);
+.formatting-button:hover,
+.formatting-button.is-active {
+  background-color: #e8e8e8;
+  color: #5753C6;
 }

@@ -1,4 +1,4 @@
-import { ScrollView, TextInput, useWindowDimensions, View } from "react-native"
+import { ScrollView, View } from "react-native"
 import AdditionalInputs from "./AdditionalInputs"
 import { Button } from "@components/nativewindui/Button"
 import SendIcon from "@assets/icons/SendIcon.svg"
@@ -11,6 +11,8 @@ import { CustomFile } from "@raven/types/common/File"
 import { useState } from "react"
 import { filesAtom } from "@lib/filesAtom"
 import Tiptap from "./Tiptap/Tiptap"
+import { cn } from "@lib/cn"
+import { useKeyboardVisible } from "@hooks/useKeyboardVisible"
 
 const ChatInput = () => {
 
@@ -19,13 +21,8 @@ const ChatInput = () => {
     const [text, setText] = useState('')
     const [, setFiles] = useAtom(filesAtom)
 
-    const { width, } = useWindowDimensions()
-
     // State to hold the measured width and height of the chat input.
-    const [inputSize, setInputSize] = useState<{ width: number; height: number }>({
-        width: width - 24,
-        height: 40,
-    });
+    const { isKeyboardVisible } = useKeyboardVisible()
 
     const handleSend = async (files?: CustomFile[], content?: string, json?: any) => {
 
@@ -41,32 +38,32 @@ const ChatInput = () => {
     }
 
     return (
-        <View className="flex-col gap-2 w-full">
-            {
+        <View className={cn(
+            "bg-white",
+            "px-2 pt-2",
+            "border-t border-gray-200",
+        )}>
+            <View className="flex-row justify-start items-start">
                 <Tiptap
                     content={text}
                     dom={{
                         scrollEnabled: false,
-                        matchContents: true,
-                        // We use the measured size, which helps avoid an internal scroll in the WebView.
+                        matchContents: false,
                         containerStyle: {
-                            width: inputSize.width,
-                            height: inputSize.height,
-                            overflow: "hidden",
+                            flex: 1,
+                            height: isKeyboardVisible ? 120 : 44,
+                            overflow: 'hidden',
                         },
                     }}
-
-                    // This callback is invoked from the web side whenever the size changes.
-                    onDOMLayout={({ width, height }: { width: number, height: number }) => {
-                        // Only update if the size has really changed
-                        if (inputSize.width !== width || inputSize.height !== height) {
-                            setInputSize({ width, height });
-                        }
-                    }}
                     onSend={handleSend}
+                    isKeyboardVisible={isKeyboardVisible}
                 />
+            </View>
+            {
+                !isKeyboardVisible && (
+                    <InputBottomBar onSend={handleSend} />
+                )
             }
-            {/* <InputBottomBar onSend={handleSend} /> */}
         </View>
     )
 }

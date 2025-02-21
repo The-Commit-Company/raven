@@ -44,15 +44,18 @@ const Chat = () => {
                 }
             }} />
             <KeyboardAvoidingView
-                behavior={Platform.OS === "ios" ? "padding" : undefined}
+                behavior={Platform.OS === "ios" ? "padding" : "height"}
                 style={{ flex: 1 }}
-                keyboardVerticalOffset={Platform.OS === "ios" ? 100 : 90}>
+                keyboardVerticalOffset={Platform.OS === "ios" ? 100 : 90}
+            >
                 <ChatStream channelID={id as string} />
-                <View
-                    className='px-4 py-2 w-full gap-2 items-center justify-center absolute'
-                    style={{ bottom: isKeyboardVisible ? keyboardHeight : bottom }}>
+                <View style={{
+                    paddingBottom: isKeyboardVisible ? 0 : bottom,
+                    overflow: 'hidden',
+                }}>
                     <ChatInput />
                 </View>
+
             </KeyboardAvoidingView>
         </>
     )
