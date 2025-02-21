@@ -41,7 +41,7 @@ export default function NotificationsScreen() {
                     //             onPress={() => {
                     //                 router.back();
                     //             }}>
-                    //             <Text className={cn(canSave && 'text-primary')}>Save</Text>
+                    //             <Text className={cn(canSave && 'text-primary dark:text-secondary')}>Save</Text>
                     //         </Button>
                     //     ),
                     // }),

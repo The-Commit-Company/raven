@@ -5,11 +5,13 @@ import CheckIcon from '@assets/icons/CheckIcon.svg';
 
 import { cn } from '@lib/cn';
 import { COLORS } from '@theme/colors';
+import clsx from 'clsx';
 
 type CheckboxProps = Omit<CheckboxPrimitive.RootProps, 'checked' | 'onCheckedChange'> & {
   defaultChecked?: boolean;
   checked?: boolean;
   onCheckedChange?: (checked: boolean) => void;
+  isMultiChoice?: boolean;
 };
 
 const Checkbox = React.forwardRef<CheckboxPrimitive.RootRef, CheckboxProps>(
@@ -19,6 +21,7 @@ const Checkbox = React.forwardRef<CheckboxPrimitive.RootRef, CheckboxProps>(
       checked: checkedProps,
       onCheckedChange: onCheckedChangeProps,
       defaultChecked = false,
+      isMultiChoice = false,
       ...props
     },
     ref
@@ -31,17 +34,18 @@ const Checkbox = React.forwardRef<CheckboxPrimitive.RootRef, CheckboxProps>(
     return (
       <CheckboxPrimitive.Root
         ref={ref}
-        className={cn(
-          'ios:rounded-full ios:h-[22px] ios:w-[22px] border-muted-foreground h-[18px] w-[18px] rounded-sm border',
+        className={cn(clsx(
+          'ios:rounded-full ios:h-[18px] ios:w-[18px] border-muted-foreground/40 h-[18px] w-[18px] rounded-full border',
+          isMultiChoice && 'ios:rounded-sm rounded-sm',
           checked && 'bg-primary border-0',
           props.disabled && 'opacity-50',
           className
-        )}
+        ))}
         checked={checked}
         onCheckedChange={onCheckedChange}
         {...props}>
         <CheckboxPrimitive.Indicator className={cn('h-full w-full items-center justify-center')}>
-          <CheckIcon color={COLORS.white} />
+          <CheckIcon height={18} width={18} fill={COLORS.white} />
         </CheckboxPrimitive.Indicator>
       </CheckboxPrimitive.Root>
     );

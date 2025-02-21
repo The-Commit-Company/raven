@@ -150,7 +150,7 @@ const Dms = ({ dmChannels }: { dmChannels: DMChannelListItem[] }) => {
                             }}
                             className='flex-row items-center px-3 py-1.5 rounded-lg ios:active:bg-linkColor'
                             android_ripple={{ color: 'rgba(0,0,0,0.1)', borderless: false }}>
-                            <UserAvatar src={user?.user_image} alt={user?.full_name ?? user?.name ?? ''} avatarProps={{ className: 'h-8 w-8' }} />
+                            <UserAvatar src={user?.user_image} alt={user?.full_name ?? user?.name ?? ''} avatarProps={{ className: 'h-8 w-8' }} textProps={{ className: 'text-sm' }} />
                             <Text className='ml-2 text-base'>{user?.full_name}</Text>
                         </Pressable>
                     );

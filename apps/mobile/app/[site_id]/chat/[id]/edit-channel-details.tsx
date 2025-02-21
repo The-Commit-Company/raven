@@ -62,7 +62,7 @@ export default function EditChannelDetails() {
                         disabled={updatingChannel}>
                         {updatingChannel ?
                             <ActivityIndicator size="small" color={colors.primary} /> :
-                            <Text className="text-primary">Save</Text>}
+                            <Text className="text-primary dark:text-secondary">Save</Text>}
                     </Button>
                 )
             },

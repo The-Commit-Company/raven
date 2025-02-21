@@ -1,24 +1,17 @@
-import { Button, ButtonProps } from "@components/nativewindui/Button"
 import AddFileIcon from "@assets/icons/AddFileIcon.svg"
 import { useColorScheme } from "@hooks/useColorScheme"
-import { SvgProps } from "react-native-svg"
 import * as DocumentPicker from 'expo-document-picker'
 import { CustomFile } from "@raven/types/common/File"
 import { Text } from '@components/nativewindui/Text'
-import { TextProps } from "react-native"
+import { Pressable } from "react-native"
 
 interface FilePickerButtonProps {
-    buttonProps?: ButtonProps
-    icon?: React.ReactNode
-    iconProps?: SvgProps
-    label?: string
-    labelProps?: TextProps
     onPick: (files: CustomFile[]) => void
 }
 
-const FilePickerButton = ({ buttonProps, iconProps, icon, label, labelProps, onPick }: FilePickerButtonProps) => {
-    const { colors } = useColorScheme()
+const FilePickerButton = ({ onPick }: FilePickerButtonProps) => {
 
+    const { colors } = useColorScheme()
     const pickDocument = async () => {
         try {
             let result = await DocumentPicker.getDocumentAsync({
@@ -46,10 +39,13 @@ const FilePickerButton = ({ buttonProps, iconProps, icon, label, labelProps, onP
     }
 
     return (
-        <Button variant="plain" size={label ? "none" : "icon"} onPress={pickDocument} {...buttonProps} >
-            {icon ?? <AddFileIcon height={20} width={20} color={colors.icon} {...iconProps} />}
-            {label && <Text className=" text-sm text-foreground" {...labelProps}>{label}</Text>}
-        </Button>
+        <Pressable
+            onPress={pickDocument}
+            className='flex flex-row w-full items-center gap-2 p-2 rounded-lg ios:active:bg-linkColor'
+            android_ripple={{ color: 'rgba(0,0,0,0.1)', borderless: false }}>
+            <AddFileIcon height={20} width={20} color={colors.icon} />
+            <Text className='text-base text-foreground'>Upload Document</Text>
+        </Pressable>
     )
 }
 

@@ -112,7 +112,7 @@ export default function AddNewChannelMembers() {
                         </Link>
                     )
                 },
-                headerTitle: () => <Text className='ml-2 text-base font-semibold'>Add Members</Text>,
+                headerTitle: () => <Text className='ml-2 text-base font-semibold'>Add members</Text>,
                 headerRight() {
                     return (
                         <Button variant="plain" className="ios:px-0"
@@ -120,7 +120,7 @@ export default function AddNewChannelMembers() {
                             disabled={creatingDoc || !selectedMembers.length}>
                             {creatingDoc ?
                                 <ActivityIndicator size="small" color={colors.primary} /> :
-                                <Text className="text-primary">Add</Text>}
+                                <Text className="text-primary dark:text-secondary">Add</Text>}
                         </Button>
                     )
                 },
