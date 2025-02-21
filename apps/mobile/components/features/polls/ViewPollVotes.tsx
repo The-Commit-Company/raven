@@ -108,7 +108,7 @@ const VotesBlock = ({ votesData, poll }: { votesData: PollVotesResponse; poll: P
                                 {option.count} vote{option.count > 1 ? 's' : ''}
                             </Text>
                         </View>
-                        <View className="bg-gray-50 dark:bg-gray-900 rounded-md p-2.5">
+                        <View className="bg-gray-100 dark:bg-gray-900 rounded-md p-2.5">
                             {option.users.map((user, index) => (
                                 <View key={user}>
                                     <UserVote user_id={user} />
