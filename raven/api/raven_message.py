@@ -3,7 +3,7 @@ from datetime import timedelta
 
 import frappe
 from frappe import _
-from frappe.query_builder import Case, JoinType, Order
+from frappe.query_builder import JoinType, Order
 from frappe.query_builder.functions import Coalesce, Count
 
 from raven.api.raven_channel import create_direct_message_channel, get_peer_user_id
@@ -261,18 +261,16 @@ def get_unread_count_for_channels():
 		.where(channel.is_archived == 0)
 		.where(channel.is_thread == 0)
 		.where(message.message_type != "System")
+		.where(
+			message.creation > Coalesce(channel_member.last_visit, "2000-11-11")
+		)  # Only count messages after the last visit for performance
 		.left_join(message)
 		.on(channel.name == message.channel_id)
 	)
 
-	unread_count_var = Count(
-		Case().when(message.creation > Coalesce(channel_member.last_visit, "2000-11-11"), 1)
-	).as_("unread_count")
-
 	channels_query = (
-		query.select(channel.name, channel.is_direct_message, unread_count_var)
+		query.select(channel.name, channel.is_direct_message, Count(message.name).as_("unread_count"))
 		.groupby(channel.name, channel.is_direct_message)
-		.having(unread_count_var > 0)  # Use HAVING instead of WHERE for aggregate filtering
 		.run(as_dict=True)
 	)
 

@@ -1,6 +1,6 @@
 import frappe
 from frappe import _
-from frappe.query_builder import Case, Order
+from frappe.query_builder import Order
 from frappe.query_builder.functions import Coalesce, Count
 
 from raven.api.raven_channel import get_peer_user_id
@@ -93,16 +93,9 @@ def get_unread_threads(workspace: str = None):
 	channel_member = frappe.qb.DocType("Raven Channel Member")
 	message = frappe.qb.DocType("Raven Message")
 
-	unread_count_var = Count(
-		Case().when(message.creation > Coalesce(channel_member.last_visit, "2000-11-11"), 1)
-	).as_("unread_count")
-
 	query = (
 		frappe.qb.from_(channel)
-		.select(
-			channel.name,
-			unread_count_var,
-		)
+		.select(channel.name, Count(message.name).as_("unread_count"))
 		.left_join(channel_member)
 		.on(
 			(channel.name == channel_member.channel_id) & (channel_member.user_id == frappe.session.user)
@@ -111,8 +104,8 @@ def get_unread_threads(workspace: str = None):
 		.on(channel.name == message.channel_id)
 		.where(channel.is_thread == 1)
 		.where(channel.is_ai_thread == 0)
+		.where(message.creation > Coalesce(channel_member.last_visit, "2000-11-11"))
 		.where(channel_member.user_id == frappe.session.user)
-		.having(unread_count_var > 0)
 		.groupby(channel.name)
 	)
 
