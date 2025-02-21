@@ -18,18 +18,18 @@
   align-items: center;
   background-color: white;
   border-top: 1px solid #f0f0f0;
+  padding-top: 4px;
 }
 
 .format-button {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 8px 12px;
+  padding: 8px;
   border: none;
   border-radius: 6px;
   background: transparent;
-  color: #1d1c1d;
-  cursor: pointer;
+  color: rgb(142, 142, 147);
 }
 
 .format-button-text {
@@ -43,17 +43,16 @@
 
 .send-button {
   margin-left: auto;
-  width: 40px;
-  height: 40px;
+  width: 36px;
+  height: 36px;
   display: flex;
   align-items: center;
   justify-content: center;
   border: none;
   border-radius: 6px;
   background: transparent;
-  color: #9f9f9f;
-  opacity: 0.5;
-  cursor: not-allowed;
+  color: hsl(219.25deg 6% 40%);
+  background-color: #F0F0F0;
 }
 
 .send-button-active {
@@ -65,26 +64,20 @@
 /* Formatting menu styles */
 .formatting-menu {
   display: flex;
-  gap: 8px;
+  gap: 2px;
   align-items: center;
 }
 
 .formatting-button {
-  width: 20px;
-  height: 20px;
   display: flex;
   align-items: center;
   justify-content: center;
+  padding: 8px;
   border: none;
   border-radius: 6px;
   background: transparent;
-  color: #616061;
-  cursor: pointer;
-  padding: 0;
 }
 
-.formatting-button:hover,
-.formatting-button.is-active {
-  background-color: #e8e8e8;
-  color: #5753C6;
+.formatting-button.close-button {
+  background-color: transparent;
 }

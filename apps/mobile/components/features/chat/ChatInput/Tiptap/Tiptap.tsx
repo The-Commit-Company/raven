@@ -6,19 +6,25 @@ import Document from "@tiptap/extension-document";
 import Paragraph from "@tiptap/extension-paragraph";
 import Text from "@tiptap/extension-text";
 import Link from "@tiptap/extension-link";
-import Bold from "@tiptap/extension-bold";
-import Underline from "@tiptap/extension-underline";
-import Italic from "@tiptap/extension-italic";
-import Strike from "@tiptap/extension-strike";
 import Code from "@tiptap/extension-code";
 import History from "@tiptap/extension-history";
 import Placeholder from "@tiptap/extension-placeholder";
+import Highlight from '@tiptap/extension-highlight'
+import Underline from '@tiptap/extension-underline'
+import Italic from '@tiptap/extension-italic'
+import Bold from '@tiptap/extension-bold'
+import Strike from '@tiptap/extension-strike'
 import TextFormattingMenu from "./TextFormattingMenu";
+import ListItem from "@tiptap/extension-list-item"
+import BulletList from '@tiptap/extension-bullet-list'
+import OrderedList from '@tiptap/extension-ordered-list'
 import "./tiptap.css";
 
-import styles from "./tiptap.module.css";
+import { useColorScheme } from "@hooks/useColorScheme"
 import { CustomFile } from "@raven/types/common/File";
 import { cn } from "@lib/cn";
+import styles from "./tiptap.module.css";
+import SendIcon from "@assets/icons/SendIcon.svg"
 
 interface TiptapProps {
     content: string;
@@ -40,14 +46,27 @@ const Tiptap = ({
             History,
             Paragraph,
             Text,
-            Link.configure({
-                openOnClick: false,
-            }),
-            Bold,
+            Code,
             Underline,
             Italic,
+            Bold,
             Strike,
-            Code,
+            Highlight.configure({
+                multicolor: true,
+                HTMLAttributes: {
+                    class: 'bg-[var(--yellow-6)] dark:bg-[var(--yellow-11)] px-2 py-1'
+                }
+            }),
+            Link.extend({ inclusive: false }).configure({
+                autolink: true,
+                protocols: ['mailto', 'https', 'http'],
+            }),
+            ListItem,
+            BulletList,
+            OrderedList,
+            // CodeBlock.configure({
+            //     lowlight: lowlight,
+            // }),
             Placeholder.configure({
                 placeholder: 'Type a message...',
             }),
@@ -56,6 +75,7 @@ const Tiptap = ({
         autofocus: "end",
     });
 
+    const { colors } = useColorScheme()
     const [isFormattingMenuOpen, setIsFormattingMenuOpen] = useState(false);
 
     const handleClick = () => {
@@ -126,23 +146,18 @@ const Tiptap = ({
                     <button
                         className={cn(
                             styles["send-button"],
-                            editor?.getText().trim() && styles["send-button-active"]
                         )}
                         onClick={handleSend}
                         disabled={!editor?.getText().trim()}
                     >
-                        <IconSend />
+                        <SendIcon fill={
+                            editor?.getText().trim() ? colors.primary : colors.grey
+                        } />
                     </button>
                 </div>
             )}
         </div>
     );
 };
-
-const IconSend = ({ size = 20, color = "currentColor" }) => (
-    <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" style={{ fill: color, transform: 'none', msFilter: 'none' }}>
-        <path d="m21.426 11.095-17-8A1 1 0 0 0 3.03 4.242l1.212 4.849L12 12l-7.758 2.909-1.212 4.849a.998.998 0 0 0 1.396 1.147l17-8a1 1 0 0 0 0-1.81z"></path>
-    </svg>
-)
 
 export default Tiptap;

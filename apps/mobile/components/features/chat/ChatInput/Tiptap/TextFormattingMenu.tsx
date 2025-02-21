@@ -5,6 +5,18 @@ import { Editor, useCurrentEditor } from '@tiptap/react'
 import { useCallback } from 'react';
 import classNames from "classnames";
 import styles from "./tiptap.module.css";
+import { cn } from "@lib/cn";
+
+import { useColorScheme } from "@hooks/useColorScheme"
+import BoldIcon from "@assets/icons/formatting-icons/Bold.svg"
+import UnderlineIcon from "@assets/icons/formatting-icons/Underline.svg"
+import ItalicIcon from "@assets/icons/formatting-icons/Italic.svg"
+import StrikethroughIcon from "@assets/icons/formatting-icons/Strikethrough.svg"
+import CodeIcon from "@assets/icons/formatting-icons/Code.svg"
+import CodeBlockIcon from "@assets/icons/formatting-icons/CodeBlock.svg"
+import OLListIcon from "@assets/icons/formatting-icons/OLList.svg"
+import ULListIcon from "@assets/icons/formatting-icons/ULList.svg"
+import XIcon from "@assets/icons/CrossIcon.svg"
 
 const TextFormattingMenu = (
     {
@@ -20,6 +32,8 @@ const TextFormattingMenu = (
         return null;
     }
 
+    const { colors } = useColorScheme()
+
     const toggleBold = useCallback(() => {
         editor.chain().focus().toggleBold().run();
     }, [editor]);
@@ -33,214 +47,113 @@ const TextFormattingMenu = (
     }, [editor]);
 
     const toggleStrike = useCallback(() => {
-        editor.chain().focus().toggleStrike().run();
+        editor.chain().focus().toggleStrike().run()
     }, [editor]);
 
     const toggleCode = useCallback(() => {
         editor.chain().focus().toggleCode().run();
     }, [editor]);
 
+    const toggleBulletList = useCallback(() => {
+        editor.chain().focus().toggleBulletList().run()
+    }, [editor]);
+
+    const toggleOrderedList = useCallback(() => {
+        editor.chain().focus().toggleOrderedList().run()
+    }, [editor]);
+
+    // const toggleCodeBlock = useCallback(() => {
+    //     editor.chain().focus().toggleCodeBlock().run();
+    // }, [editor]);
+
     return (
-        <div className={styles.menu}>
-            {/* close formatting menu button */}
+        <div
+            className={styles["formatting-menu"]}>
             <button
-                className={styles["menu-button"]}
+                className={
+                    cn(
+                        styles["formatting-button"],
+                    )
+                }
                 onClick={handleCloseFormattingMenu}
             >
-                <IconX />
+                <XIcon fill={colors.grey} />
             </button>
 
             <button
-                className={styles["menu-button"]}
-                onClick={() => editor.chain().focus().undo().run()}
-                disabled={!editor.can().undo()}
-            >
-                <IconRotateLeft />
-            </button>
-            <button
-                className={styles["menu-button"]}
-                onClick={() => editor.chain().focus().redo().run()}
-                disabled={!editor.can().redo()}
-            >
-                <IconRotateRight />
-            </button>
-
-            <button
-                className={classNames(styles["menu-button"], {
-                    "is-active": editor.isActive("bold"),
-                })}
+                className={cn(
+                    styles["formatting-button"],
+                )}
                 onClick={toggleBold}
             >
-                <IconBold />
+                <BoldIcon fill={editor.isActive('bold') ? colors.primary : colors.grey} />
             </button>
+
             <button
-                className={classNames(styles["menu-button"], {
-                    "is-active": editor.isActive("underline"),
-                })}
-                onClick={toggleUnderline}
-            >
-                <IconUnderline />
-            </button>
-            <button
-                className={classNames(styles["menu-button"], {
-                    "is-active": editor.isActive("intalic"),
-                })}
+                className={cn(
+                    styles["formatting-button"],
+                )}
                 onClick={toggleItalic}
             >
-                <IconItalic />
+                <ItalicIcon fill={editor.isActive('italic') ? colors.primary : colors.grey} />
             </button>
+
             <button
-                className={classNames(styles["menu-button"], {
-                    "is-active": editor.isActive("strike"),
-                })}
+                className={cn(
+                    styles["formatting-button"],
+                )}
+                onClick={toggleUnderline}
+            >
+                <UnderlineIcon fill={editor.isActive('underline') ? colors.primary : colors.grey} />
+            </button>
+
+            <button
+                className={cn(
+                    styles["formatting-button"],
+                )}
                 onClick={toggleStrike}
             >
-                <IconStrikethrough />
+                <StrikethroughIcon fill={editor.isActive('strike') ? colors.primary : colors.grey} />
             </button>
+
             <button
-                className={classNames(styles["menu-button"], {
-                    "is-active": editor.isActive("code"),
-                })}
+                className={cn(
+                    styles["formatting-button"],
+                )}
+                onClick={toggleOrderedList}
+            >
+                <OLListIcon fill={editor.isActive('orderedList') ? colors.primary : colors.grey} />
+            </button>
+
+            <button
+                className={cn(
+                    styles["formatting-button"],
+                )}
+                onClick={toggleBulletList}
+            >
+                <ULListIcon fill={editor.isActive('bulletList') ? colors.primary : colors.grey} />
+            </button>
+
+            <button
+                className={cn(
+                    styles["formatting-button"],
+                )}
                 onClick={toggleCode}
             >
-                <IconCode />
+                <CodeIcon fill={editor.isActive('code') ? colors.primary : colors.grey} />
             </button>
-        </div>
+            {/* <button
+                className={cn(
+                    styles["formatting-button"],
+                    editor.isActive('codeBlock') && styles["is-active"]
+                )}
+                onClick={toggleCodeBlock}
+            >
+                <CodeBlockIcon fill={colors.grey} />
+            </button> */}
 
+        </div >
     );
 }
-
-
-const IconBold = ({ size = 16, color = "currentColor" }) => (
-    <svg
-        xmlns="http://www.w3.org/2000/svg"
-        width={size}
-        height={size}
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke={color}
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-    >
-        <path d="M6 4h8a4 4 0 0 1 4 4 4 4 0 0 1-4 4H6z"></path>
-        <path d="M6 12h9a4 4 0 0 1 4 4 4 4 0 0 1-4 4H6z"></path>
-    </svg>
-);
-
-const IconUnderline = ({ size = 16, color = "currentColor" }) => (
-    <svg
-        xmlns="http://www.w3.org/2000/svg"
-        width={size}
-        height={size}
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke={color}
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-    >
-        <path d="M6 3v7a6 6 0 0 0 6 6 6 6 0 0 0 6-6V3"></path>
-        <line x1="4" y1="21" x2="20" y2="21"></line>
-    </svg>
-);
-
-const IconItalic = ({ size = 16, color = "currentColor" }) => (
-    <svg
-        xmlns="http://www.w3.org/2000/svg"
-        width={size}
-        height={size}
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke={color}
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-    >
-        <path d="M19 4h-9M14 20H5M14.7 4.7L9.2 19.4" />
-    </svg>
-);
-
-const IconCode = ({ size = 16, color = "currentColor" }) => (
-    <svg
-        xmlns="http://www.w3.org/2000/svg"
-        width={size}
-        height={size}
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke={color}
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-    >
-        <polyline points="16 18 22 12 16 6"></polyline>
-        <polyline points="8 6 2 12 8 18"></polyline>
-    </svg>
-);
-
-const IconStrikethrough = ({ size = 16, color = "currentColor" }) => (
-    <svg
-        xmlns="http://www.w3.org/2000/svg"
-        width={size}
-        height={size}
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke={color}
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-    >
-        <path d="M17.3 4.9c-2.3-.6-4.4-1-6.2-.9-2.7 0-5.3.7-5.3 3.6 0 1.5 1.8 3.3 3.6 3.9h.2m8.2 3.7c.3.4.4.8.4 1.3 0 2.9-2.7 3.6-6.2 3.6-2.3 0-4.4-.3-6.2-.9M4 11.5h16" />
-    </svg>
-);
-
-const IconRotateLeft = ({ size = 16, color = "currentColor" }) => (
-    <svg
-        xmlns="http://www.w3.org/2000/svg"
-        width={size}
-        height={size}
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke={color}
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-    >
-        <path d="M2.5 2v6h6M2.66 15.57a10 10 0 1 0 .57-8.38" />
-    </svg>
-);
-
-const IconRotateRight = ({ size = 16, color = "currentColor" }) => (
-    <svg
-        xmlns="http://www.w3.org/2000/svg"
-        width={size}
-        height={size}
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke={color}
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-    >
-        <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38" />
-    </svg>
-);
-
-const IconX = ({ size = 16, color = "currentColor" }) => (
-    <svg
-        xmlns="http://www.w3.org/2000/svg"
-        width={size}
-        height={size}
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke={color}
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-    >
-        <line x1="18" y1="6" x2="6" y2="18"></line>
-        <line x1="6" y1="6" x2="18" y2="18"></line>
-    </svg>
-);
 
 export default TextFormattingMenu;
