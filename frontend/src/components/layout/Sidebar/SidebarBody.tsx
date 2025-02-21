@@ -1,6 +1,6 @@
 import { ChannelList } from '../../feature/channels/ChannelList'
 import { DirectMessageList } from '../../feature/direct-messages/DirectMessageList'
-import { SidebarItem } from './SidebarComp'
+import { SidebarBadge, SidebarItem } from './SidebarComp'
 import { AccessibleIcon, Box, Flex, ScrollArea, Text } from '@radix-ui/themes'
 import useUnreadMessageCount from '@/hooks/useUnreadMessageCount'
 import PinnedChannels from './PinnedChannels'
@@ -26,7 +26,7 @@ export const SidebarBody = () => {
         return channels.filter((channel) => channel.workspace === workspaceID)
     }, [channels, workspaceID])
 
-    const { unreadChannels, readChannels, unreadDMs, readDMs } = useGetChannelUnreadCounts({
+    const { unreadChannels, readChannels, unreadDMs, readDMs, noOfUnreadThreads } = useGetChannelUnreadCounts({
         channels: workspaceChannels,
         dm_channels,
         unread_count: unread_count?.message
@@ -39,6 +39,7 @@ export const SidebarBody = () => {
                     <SidebarItemForPage
                         to={'threads'}
                         label='Threads'
+                        unreadCount={noOfUnreadThreads}
                         icon={<BiMessageAltDetail className='text-gray-12 dark:text-gray-300 mt-1 sm:text-sm text-base' />}
                         iconLabel='Threads' />
                     <SidebarItemForPage
@@ -60,22 +61,27 @@ interface SidebarItemForPageProps {
     to: string
     label: string
     icon: React.ReactNode
-    iconLabel: string
+    iconLabel: string,
+    unreadCount?: number
 }
 
-const SidebarItemForPage = ({ to, label, icon, iconLabel }: SidebarItemForPageProps) => {
+const SidebarItemForPage = ({ to, label, icon, iconLabel, unreadCount }: SidebarItemForPageProps) => {
     return (
         <Box>
-            <SidebarItem to={to} className='py-1 px-[10px]'>
-                <AccessibleIcon label={__(iconLabel)}>
-                    {icon}
-                </AccessibleIcon>
-                <Box>
-                    <Text size={{
-                        initial: '3',
-                        md: '2'
-                    }} className='text-gray-12 dark:text-gray-300 font-semibold'>{__(label)}</Text>
-                </Box>
+            <SidebarItem to={to} className='py-1 px-[10px] flex items-center justify-between'>
+                <div className='flex items-center gap-2'>
+                    <AccessibleIcon label={__(iconLabel)}>
+                        {icon}
+                    </AccessibleIcon>
+                    <Box>
+                        <Text size={{
+                            initial: '3',
+                            md: '2'
+                        }} className='text-gray-12 dark:text-gray-300 font-semibold'>{__(label)}</Text>
+                    </Box>
+                </div>
+
+                {unreadCount && unreadCount > 0 ? <SidebarBadge>{unreadCount}</SidebarBadge> : null}
             </SidebarItem>
         </Box>
     )

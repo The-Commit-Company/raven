@@ -21,13 +21,20 @@ export const useGetChannelUnreadCounts = ({ channels, dm_channels, unread_count 
 
     const showOnlyMyChannels = useAtomValue(showOnlyMyChannelsAtom)
 
-    const { unreadChannels, readChannels, unreadDMs, readDMs } = useMemo(() => {
+    const { unreadChannels, readChannels, unreadDMs, readDMs, noOfUnreadThreads } = useMemo(() => {
 
         const unreadCounts: Record<string, number> = {}
 
+        let noOfUnreadThreads = 0
+
         // Create a mapping of channel names to unread counts
         unread_count?.forEach(item => {
-            unreadCounts[item.name] = item.unread_count || 0
+            if (item.is_thread === 1 && item.unread_count > 0) {
+                console.log(item)
+                noOfUnreadThreads = noOfUnreadThreads + 1
+            } else {
+                unreadCounts[item.name] = item.unread_count || 0
+            }
         })
 
         const unreadChannels: ChannelWithUnreadCount[] = []
@@ -81,9 +88,9 @@ export const useGetChannelUnreadCounts = ({ channels, dm_channels, unread_count 
             }
         });
 
-        return { unreadChannels, readChannels, unreadDMs, readDMs }
+        return { unreadChannels, readChannels, unreadDMs, readDMs, noOfUnreadThreads }
 
     }, [channels, dm_channels, unread_count, showOnlyMyChannels])
 
-    return { unreadChannels, readChannels, unreadDMs, readDMs }
+    return { unreadChannels, readChannels, unreadDMs, readDMs, noOfUnreadThreads }
 }
