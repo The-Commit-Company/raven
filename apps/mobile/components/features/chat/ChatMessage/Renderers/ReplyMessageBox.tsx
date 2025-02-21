@@ -66,14 +66,14 @@ const ReplyMessageBox = ({ message, children, onPress }: ReplyMessageBoxProps) =
                     </View>
                 )
             default:
-                return <Text className="text-[15px] line-clamp-2 text-ellipsis overflow-hidden">{parse(content ?? '')}</Text>
+                return <Text className="text-[15px] text-foreground line-clamp-2 text-ellipsis overflow-hidden">{parse(content ?? '')}</Text>
         }
     }
 
     return (
         <Pressable
             onPress={onPress}
-            className='flex-1 p-2 w-full border border-border rounded-md ios:active:bg-linkColor'
+            className='flex-1 p-2 w-full border border-border bg-background rounded-md ios:active:bg-linkColor'
             android_ripple={{ color: 'rgba(0,0,0,0.1)', borderless: false }}>
             <View className="border-l-2 border-border pl-2 gap-2">
                 <View className="flex-row items-center gap-2">

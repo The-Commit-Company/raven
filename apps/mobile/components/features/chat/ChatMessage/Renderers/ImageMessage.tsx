@@ -10,9 +10,10 @@ interface ImageMessageProps {
     user?: UserFields,
     // Do not load image when scrolling
     isScrolling?: boolean
+    onLongPress?: () => void
 }
 // TODO: Use isScrolling when we want to show the ImageSkeleton
-export const ImageMessageRenderer = ({ message, isScrolling = false }: ImageMessageProps) => {
+export const ImageMessageRenderer = ({ message, onLongPress, isScrolling = false }: ImageMessageProps) => {
 
     const source = useFileURL(message.file)
     const width = message?.thumbnail_width ? message?.thumbnail_width / 2 : 300
@@ -35,6 +36,7 @@ export const ImageMessageRenderer = ({ message, isScrolling = false }: ImageMess
 
             <Pressable
                 onPress={handleImagePress}
+                onLongPress={onLongPress}
             >
                 <Image
                     source={source}

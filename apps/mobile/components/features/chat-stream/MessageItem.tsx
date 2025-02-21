@@ -86,7 +86,7 @@ const MessageItem = memo(({ message, onReplyMessagePress }: Props) => {
                     />}
 
                     {message.text ? <MessageTextRenderer text={message.text} /> : null}
-                    {message.message_type === 'Image' && <ImageMessageRenderer message={message} />}
+                    {message.message_type === 'Image' && <ImageMessageRenderer message={message} onLongPress={onMessageLongPress} />}
                     {message.message_type === 'File' && <FileMessageRenderer message={message} onLongPress={onMessageLongPress} />}
                     {message.message_type === 'Poll' && <PollMessageBlock message={message} />}
 
