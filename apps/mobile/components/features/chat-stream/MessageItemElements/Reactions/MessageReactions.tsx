@@ -4,7 +4,7 @@ import { useFrappePostCall } from 'frappe-react-sdk'
 import useCurrentRavenUser from '@raven/lib/hooks/useCurrentRavenUser'
 import { Sheet, useSheetRef } from '@components/nativewindui/Sheet'
 import { BottomSheetView } from '@gorhom/bottom-sheet'
-import SmilePlus from "@assets/icons/SmileIcon.svg"
+import SmilePlus from "@assets/icons/SmilePlus.svg"
 import { useColorScheme } from '@hooks/useColorScheme'
 import EmojiPicker from '@components/common/EmojiPicker/EmojiPicker'
 import ReactionAnalytics from './ReactionsAnalytics'
@@ -137,7 +137,7 @@ const AddEmojiButton = ({ saveReaction }: AddEmojiButtonProps) => {
     return (
         <View>
             <TouchableOpacity onPress={openEmojiPicker} activeOpacity={0.7} className='flex-row flex-1 items-center bg-gray-100 dark:bg-gray-800 rounded-md py-1 px-2.5 gap-2'>
-                <SmilePlus width={16} height={16} fill={colors.icon} />
+                <SmilePlus width={16} height={16} color={colors.icon} />
             </TouchableOpacity>
 
             <Sheet ref={emojiPickerRef} snapPoints={["65%"]}>
