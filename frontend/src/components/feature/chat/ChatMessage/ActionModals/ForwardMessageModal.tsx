@@ -1,4 +1,4 @@
-import { Flex, Dialog, IconButton, Box, Button } from "@radix-ui/themes"
+import { Flex, Dialog, IconButton, Box, Button, VisuallyHidden } from "@radix-ui/themes"
 import { Suspense } from "react"
 import { BiX } from "react-icons/bi"
 import { Message } from "../../../../../../../types/Messaging/Message"
@@ -61,6 +61,9 @@ const ForwardMessageModal = ({ onClose, message }: ForwardMessageModalProps) => 
             <form onSubmit={handleSubmit(onSubmit)}>
                 <Flex justify={'between'}>
                     <Dialog.Title>Forward Message</Dialog.Title>
+                    <VisuallyHidden>
+                        <Dialog.Description>Forward message to a user or channel</Dialog.Description>
+                    </VisuallyHidden>
                     <Dialog.Close onClick={handleClose}>
                         <IconButton size='1' variant="soft" color="gray">
                             <BiX size='18' />

@@ -62,8 +62,20 @@ const LinkPreview = memo(({ messageID }: { messageID: string }) => {
 
     // const href = editor?.getAttributes('link').href
 
+    if (!href) return null
 
-    const { data } = useFrappeGetCall<{ message: LinkPreviewDetails[] }>('raven.api.preview_links.get_preview_link', {
+    const isYoutube = isValidYoutubeUrl(href)
+
+    if (isYoutube) {
+        return <YoutubePreview href={href} messageID={messageID} />
+    }
+
+    return <WebLinkPreview href={href} messageID={messageID} />
+
+})
+
+const WebLinkPreview = ({ href, messageID }: { href: string, messageID: string }) => {
+    const { data, isLoading } = useFrappeGetCall<{ message: LinkPreviewDetails[] }>('raven.api.preview_links.get_preview_link', {
         urls: JSON.stringify([href])
     }, href ? `link_preview_${href}` : null, {
         revalidateOnFocus: false,
@@ -81,7 +93,9 @@ const LinkPreview = memo(({ messageID }: { messageID: string }) => {
 
     const linkPreview = data?.message?.[0]
 
-    if (!href || !linkPreview) return null
+    if (isLoading) {
+        return <SkeletonWebLinkPreview />
+    }
 
     if (linkPreview && linkPreview.site_name && linkPreview.description) {
 
@@ -128,7 +142,89 @@ const LinkPreview = memo(({ messageID }: { messageID: string }) => {
     }
 
     return null
+}
 
-})
+const SkeletonWebLinkPreview = () => {
+    return <Box pt='2' maxWidth={{
+        md: '580px',
+    }} className='sm:max-w-[580px] max-w-[356px]'>
+        <Card asChild className='p-0 sm:p-3'>
+            <div className='animate-pulse flex sm:items-center flex-col sm:flex-row sm:gap-4 gap-0'>
+                {/* Image skeleton */}
+                <div className="sm:max-w-[220px] w-full h-[160px] sm:h-[120px] bg-gray-200 sm:-ml-3 sm:-mt-3 sm:-mb-3" />
+                {/* Content skeleton */}
+                <Stack className='gap-1.5 sm:p-0 py-3 px-3 flex-1'>
+                    <Stack className='sm:gap-1 gap-0.5'>
+                        <div className="h-5 bg-gray-200 rounded w-3/4" />
+                        <div className="h-4 bg-gray-200 rounded w-1/3" />
+                    </Stack>
+                    <div className="space-y-1.5">
+                        <div className="h-3 bg-gray-200 rounded w-full" />
+                        <div className="h-3 bg-gray-200 rounded w-full" />
+                        <div className="h-3 bg-gray-200 rounded w-2/3" />
+                    </div>
+                </Stack>
+            </div>
+        </Card>
+    </Box>
+}
+
+const YOUTUBE_REGEX = /^((?:https?:)?\/\/)?((?:www|m|music)\.)?((?:youtube\.com|youtu.be|youtube-nocookie\.com))(\/(?:[\w-]+\?v=|embed\/|v\/)?)([\w-]+)(\S+)?$/
+const isValidYoutubeUrl = (url: string) => {
+    return url.match(YOUTUBE_REGEX)
+}
+
+export const getYoutubeEmbedUrl = (nocookie?: boolean) => {
+    return nocookie ? 'https://www.youtube-nocookie.com/embed/' : 'https://www.youtube.com/embed/'
+}
+
+const getEmbedUrlFromYoutubeUrl = (url: string) => {
+
+    // If it's already an embed url, return it
+    if (url.includes('/embed/')) {
+        return url
+    }
+
+    // if is a youtu.be url, get the id after the /
+    if (url.includes('youtu.be')) {
+        const id = url.split('/').pop()
+
+        if (!id) {
+            return null
+        }
+        return `${getYoutubeEmbedUrl()}${id}`
+    }
+
+    const videoIdRegex = /(?:v=|shorts\/)([-\w]+)/gm
+    const matches = videoIdRegex.exec(url)
+
+    if (!matches || !matches[1]) {
+        return null
+    }
+
+    return `${getYoutubeEmbedUrl()}${matches[1]}`
+
+}
+
+
+const YoutubePreview = ({ href, messageID }: { href: string, messageID: string }) => {
+
+    const embedUrl = getEmbedUrlFromYoutubeUrl(href)
+
+    if (!embedUrl) return null
+
+    return <div data-youtube-video className='pt-2'>
+        <iframe
+            width="480"
+            height="270"
+            src={embedUrl}
+            title="YouTube video player"
+            frameBorder="0"
+            allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; modestbranding=1"
+            referrerPolicy="strict-origin-when-cross-origin"
+            allowFullScreen>
+        </iframe>
+    </div>
+}
 
 export default LinkPreview

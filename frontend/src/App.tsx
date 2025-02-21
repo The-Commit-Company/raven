@@ -12,22 +12,43 @@ import Cookies from 'js-cookie'
 import ErrorPage from './pages/ErrorPage'
 import WorkspaceSwitcher from './pages/WorkspaceSwitcher'
 import WorkspaceSwitcherGrid from './components/layout/WorkspaceSwitcherGrid'
+import { init } from 'emoji-mart'
 
 /** Following keys will not be cached in app cache */
-const NO_CACHE_KEYS = [
-  "frappe.desk.form.load.getdoctype",
-  "frappe.desk.search.search_link",
-  "frappe.model.workflow.get_transitions",
-  "frappe.desk.reportview.get_count",
-  "frappe.core.doctype.server_script.server_script.enabled",
-  "raven.api.message_actions.get_action_defaults",
-  "raven.api.document_link.get_preview_data"
+// const NO_CACHE_KEYS = [
+//   "frappe.desk.form.load.getdoctype",
+//   "frappe.desk.search.search_link",
+//   "frappe.model.workflow.get_transitions",
+//   "frappe.desk.reportview.get_count",
+//   "frappe.core.doctype.server_script.server_script.enabled",
+//   "raven.api.message_actions.get_action_defaults",
+//   "raven.api.document_link.get_preview_data"
+// ]
+
+const CACHE_KEYS = [
+  "raven.api.login.get_context",
+  "workspaces_list",
+  "raven.api.raven_users.get_list",
+  "channel_list",
 ]
 
 const isDesktop = window.innerWidth > 768
 
 const lastWorkspace = localStorage.getItem('ravenLastWorkspace') ?? ''
 const lastChannel = localStorage.getItem('ravenLastChannel') ?? ''
+
+
+// Initialize emoji-mart
+init({
+  data: async () => {
+    const response = await fetch(
+      'https://cdn.jsdelivr.net/npm/@emoji-mart/data/sets/14/apple.json',
+    )
+
+    return response.json()
+  },
+  set: 'apple',
+})
 
 
 const router = createBrowserRouter(
@@ -47,11 +68,13 @@ const router = createBrowserRouter(
             <Route path="users" lazy={() => import('./pages/settings/Users/UserList')} />
             <Route path="appearance" lazy={() => import('./pages/settings/Appearance')} />
             <Route path="hr" lazy={() => import('./pages/settings/Integrations/FrappeHR')} />
-
+            <Route path="document-previews" lazy={() => import('./pages/settings/Integrations/DocumentPreviewTool')} />
             <Route path="workspaces" >
               <Route index lazy={() => import('./pages/settings/Workspaces/WorkspaceList')} />
               <Route path=":ID" lazy={() => import('./pages/settings/Workspaces/ViewWorkspace')} />
             </Route>
+
+            <Route path="emojis" lazy={() => import('./pages/settings/CustomEmojis/CustomEmojiList')} />
 
             <Route path="bots" >
               <Route index lazy={() => import('./pages/settings/AI/BotList')} />
@@ -63,6 +86,12 @@ const router = createBrowserRouter(
               <Route index lazy={() => import('./pages/settings/AI/FunctionList')} />
               <Route path="create" lazy={() => import('./pages/settings/AI/CreateFunction')} />
               <Route path=":ID" lazy={() => import('./pages/settings/AI/ViewFunction')} />
+            </Route>
+
+            <Route path="document-notifications">
+              <Route index lazy={() => import('./pages/settings/DocumentNotifications/DocumentNotificationList')} />
+              <Route path="create" lazy={() => import('./pages/settings/DocumentNotifications/CreateDocumentNotification')} />
+              <Route path=":ID" lazy={() => import('./pages/settings/DocumentNotifications/ViewDocumentNotification')} />
             </Route>
 
 
@@ -144,6 +173,7 @@ function App() {
       //@ts-ignore
       swrConfig={{
         errorRetryCount: 2,
+        provider: localStorageProvider
       }}
       siteName={getSiteName()}
     >
@@ -192,18 +222,17 @@ function localStorageProvider() {
       for (const [key, value] of entries) {
 
         let hasCacheKey = false
-        for (const cacheKey of NO_CACHE_KEYS) {
+        for (const cacheKey of CACHE_KEYS) {
           if (key.includes(cacheKey)) {
             hasCacheKey = true
             break
           }
         }
 
-        //Do not cache doctype meta and search link
+        // Cache only the keys that are in CACHE_KEYS
         if (hasCacheKey) {
-          continue
+          cacheEntries.push([key, value])
         }
-        cacheEntries.push([key, value])
       }
       const appCache = JSON.stringify(cacheEntries)
       localStorage.setItem('app-cache', appCache)

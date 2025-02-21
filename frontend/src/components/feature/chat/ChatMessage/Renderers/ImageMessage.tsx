@@ -1,7 +1,7 @@
 import { getFileName } from '@/utils/operations'
 import { ImageMessage } from '../../../../../../../types/Messaging/Message'
 import { Box, Button, Dialog, Flex, IconButton, Link, Text } from '@radix-ui/themes'
-import { Suspense, lazy, memo, useState, useRef, useEffect } from 'react'
+import { Suspense, lazy, memo, useState, useRef, useEffect, useMemo } from 'react'
 import { DIALOG_CONTENT_CLASS } from '@/utils/layout/dialog'
 import { BiDownload, BiChevronDown, BiChevronRight } from 'react-icons/bi'
 import { UserFields } from '@/utils/users/UserListProvider'
@@ -29,8 +29,25 @@ export const ImageMessageBlock = memo(({ message, isScrolling = false, user }: I
 
     const [isVisible, setIsVisible] = useState<boolean>(true)
 
-    const height = isVisible ? (message.thumbnail_height ? isMobile ? message.thumbnail_height / 2 : message.thumbnail_height : '200') : '0'
-    const width = message.thumbnail_width ? isMobile ? message.thumbnail_width / 2 : message.thumbnail_width : '300'
+    const { height, width } = useMemo(() => {
+        if (!isVisible) {
+            return { height: '0', width: '0' }
+        }
+
+        let height = '200'
+        let width = '300'
+
+        if (message.thumbnail_height) {
+            height = isMobile ? String(message.thumbnail_height / 2) : String(message.thumbnail_height)
+        }
+
+        if (message.thumbnail_width) {
+            width = isMobile ? String(message.thumbnail_width / 2) : String(message.thumbnail_width)
+        }
+
+        return { height, width }
+    }, [message.thumbnail_height, message.thumbnail_width, isMobile, isVisible])
+
     const contentRef = useRef<HTMLDivElement | null>(null);
 
     const showImage = () => {
@@ -101,6 +118,9 @@ export const ImageMessageBlock = memo(({ message, isScrolling = false, user }: I
                     }}
                     width={width}
                     alt={`Image file sent by ${message.owner} at ${message.creation}`}
+                    onContextMenu={(e) => {
+                        e.stopPropagation();
+                    }}
                 />
             </Box>
             {!isScrolling &&

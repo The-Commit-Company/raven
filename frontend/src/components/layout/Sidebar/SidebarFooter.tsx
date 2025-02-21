@@ -27,7 +27,7 @@ export const SidebarFooter = () => {
 
     const navigate = useNavigate()
 
-    return <Stack className='mx-auto py-0' align='center' gap='3'>
+    return <Stack className='mx-auto py-0' align='center' gap='2'>
         <Box>
             <Tooltip content="Workspace Explorer" side='right'>
                 <IconButton aria-label='Workspace Explorer' size='3' color='gray' variant='ghost' onClick={() => navigate('/workspace-explorer')}>

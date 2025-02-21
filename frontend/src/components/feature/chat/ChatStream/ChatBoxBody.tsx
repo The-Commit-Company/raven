@@ -1,5 +1,5 @@
 import { Message } from "../../../../../../types/Messaging/Message"
-import { useMemo, useState } from "react"
+import { useCallback, useMemo, useRef, useState } from "react"
 import { ArchivedChannelBox } from "../chat-footer/ArchivedChannelBox"
 import { ChannelListItem, DMChannelListItem } from "@/utils/channel/ChannelListProvider"
 import { JoinChannelBox } from "../chat-footer/JoinChannelBox"
@@ -8,7 +8,7 @@ import useFileUpload from "../ChatInput/FileInput/useFileUpload"
 import { CustomFile, FileDrop } from "../../file-upload/FileDrop"
 import { FileListItem } from "../../file-upload/FileListItem"
 import { useSendMessage } from "../ChatInput/useSendMessage"
-import { Flex, Box, IconButton } from "@radix-ui/themes"
+import { Flex, Box, IconButton, Checkbox } from "@radix-ui/themes"
 import { ReplyMessageBox } from "../ChatMessage/ReplyMessageBox/ReplyMessageBox"
 import { BiX } from "react-icons/bi"
 import ChatStream from "./ChatStream"
@@ -16,9 +16,14 @@ import Tiptap from "../ChatInput/Tiptap"
 import useFetchChannelMembers, { Member } from "@/hooks/fetchers/useFetchChannelMembers"
 import { useParams } from "react-router-dom"
 import clsx from "clsx"
-import { Stack } from "@/components/layout/Stack"
+import { HStack, Stack } from "@/components/layout/Stack"
 import TypingIndicator from "../ChatInput/TypingIndicator/TypingIndicator"
 import { useTyping } from "../ChatInput/TypingIndicator/useTypingIndicator"
+import { Label } from "@/components/common/Form"
+import { RavenMessage } from "@/types/RavenMessaging/RavenMessage"
+import { useSWRConfig } from "frappe-react-sdk"
+import { GetMessagesResponse } from "./useChatStream"
+import { useIsMobile } from "@/hooks/useMediaQuery"
 
 const COOL_PLACEHOLDERS = [
     "Delivering messages atop dragons 🐉 is available on a chargeable basis.",
@@ -52,7 +57,63 @@ export const ChatBoxBody = ({ channelData }: ChatBoxBodyProps) => {
         setSelectedMessage(null)
     }
 
-    const onMessageSendCompleted = () => {
+    const { mutate } = useSWRConfig()
+
+    const scrollRef = useRef<HTMLDivElement>(null)
+
+    const onMessageSendCompleted = (messages: RavenMessage[]) => {
+        // Update the messages in the cache
+
+        mutate({ path: `get_messages_for_channel_${channelData.name}` }, (data?: GetMessagesResponse) => {
+            if (data && data?.message.has_new_messages) {
+                return data
+            }
+
+            const existingMessages = data?.message.messages ?? []
+
+            const newMessages = [...existingMessages]
+
+            messages.forEach(message => {
+                // Check if the message is already present in the messages array
+                const messageIndex = existingMessages.findIndex(m => m.name === message.name)
+
+                if (messageIndex !== -1) {
+                    // If the message is already present, update the message
+                    // @ts-ignore
+                    newMessages[messageIndex] = {
+                        ...message,
+                        _liked_by: "",
+                        is_pinned: 0,
+                        is_continuation: 0
+                    }
+                } else {
+                    // If the message is not present, add the message to the array
+                    // @ts-ignore
+                    newMessages.push({
+                        ...message,
+                        _liked_by: "",
+                        is_pinned: 0,
+                        is_continuation: 0
+                    })
+                }
+            })
+
+            return {
+                message: {
+                    messages: newMessages.sort((a, b) => {
+                        return new Date(b.creation).getTime() - new Date(a.creation).getTime()
+                    }),
+                    has_new_messages: false,
+                    has_old_messages: data?.message.has_old_messages ?? false
+                }
+            }
+
+        }, { revalidate: false }).then(() => {
+            // If the user is focused on the page, then we also need to
+            // If the user is the sender of the message, scroll to the bottom
+            scrollRef.current?.scrollTo(0, scrollRef.current?.scrollHeight)
+        })
+
         // Stop the typing indicator
         stopTyping()
         // Clear the selected message
@@ -66,7 +127,28 @@ export const ChatBoxBody = ({ channelData }: ChatBoxBodyProps) => {
         return null
     }, [user, channelMembers])
 
-    const { fileInputRef, files, setFiles, removeFile, uploadFiles, addFile, fileUploadProgress } = useFileUpload(channelData.name)
+    const chatStreamRef = useRef<any>(null)
+
+    const onUpArrowPressed = useCallback(() => {
+        // Call the up arrow function inside the ChatStream component
+        chatStreamRef.current?.onUpArrow()
+    }, [])
+
+    const tiptapRef = useRef<any>(null)
+
+    const isMobile = useIsMobile()
+
+    // When the edit modal is closed, we need to focus the editor again
+    // Don't do this on mobile since that would open the keyboard
+    const onModalClose = useCallback(() => {
+        if (!isMobile) {
+            setTimeout(() => {
+                tiptapRef.current?.focusEditor()
+            }, 50)
+        }
+    }, [isMobile])
+
+    const { fileInputRef, files, setFiles, removeFile, uploadFiles, addFile, fileUploadProgress, compressImages, setCompressImages } = useFileUpload(channelData.name)
 
     const { sendMessage, loading } = useSendMessage(channelData.name, files.length, uploadFiles, onMessageSendCompleted, selectedMessage)
 
@@ -142,6 +224,10 @@ export const ChatBoxBody = ({ channelData }: ChatBoxBodyProps) => {
                 maxFileSize={10000000}>
                 <ChatStream
                     channelID={channelData.name}
+                    scrollRef={scrollRef}
+                    ref={chatStreamRef}
+                    onModalClose={onModalClose}
+                    pinnedMessagesString={channelData.pinned_messages_string}
                     replyToMessage={handleReplyAction}
                 />
                 {canUserSendMessage &&
@@ -154,6 +240,8 @@ export const ChatBoxBody = ({ channelData }: ChatBoxBodyProps) => {
                                 fileInputRef,
                                 addFile
                             }}
+                            ref={tiptapRef}
+                            onUpArrow={onUpArrowPressed}
                             clearReplyMessage={clearSelectedMessage}
                             channelMembers={channelMembers}
                             onUserType={onUserType}
@@ -164,9 +252,10 @@ export const ChatBoxBody = ({ channelData }: ChatBoxBodyProps) => {
                             messageSending={loading}
                             slotBefore={<Flex direction='column' justify='center' hidden={!selectedMessage && !files.length}>
                                 {selectedMessage && <PreviousMessagePreview selectedMessage={selectedMessage} />}
-                                {files && files.length > 0 && <Flex gap='2' width='100%' align='end' px='2' p='2' wrap='wrap'>
+                                {files && files.length > 0 && <Flex gap='2' width='100%' align='stretch' px='2' p='2' wrap='wrap'>
                                     {files.map((f: CustomFile) => <Box className="grow-0" key={f.fileID}><FileListItem file={f} uploadProgress={fileUploadProgress} removeFile={() => removeFile(f.fileID)} /></Box>)}
                                 </Flex>}
+                                {files.length !== 0 && <CompressImageCheckbox compressImages={compressImages} setCompressImages={setCompressImages} />}
                             </Flex>}
                         />
                     </Stack>
@@ -184,6 +273,17 @@ export const ChatBoxBody = ({ channelData }: ChatBoxBodyProps) => {
         </ChatBoxBodyContainer>
     )
 
+}
+
+const CompressImageCheckbox = ({ compressImages, setCompressImages }: { compressImages: boolean, setCompressImages: (compressImages: boolean) => void }) => {
+    return <div className="px-3">
+        <Label size='2' weight='regular'>
+            <HStack align='center' gap='2'>
+                <Checkbox checked={compressImages} onCheckedChange={() => { setCompressImages(!compressImages) }} />
+                Compress Images
+            </HStack>
+        </Label>
+    </div>
 }
 
 // Separate container to prevent re-rendering when the threadID changes

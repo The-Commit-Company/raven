@@ -32,7 +32,7 @@ export const FilesTable = ({ data }: { data: FileInChannel[] }) => {
                             <Table.Row key={file.name}>
                                 <Table.Cell>
                                     {file.message_type === 'File' ?
-                                        <FileExtensionIcon ext={file.file_type.toLowerCase()} style={{ paddingLeft: '4' }} />
+                                        <FileExtensionIcon ext={file.file_type?.toLowerCase() ?? 'file'} style={{ paddingLeft: '4' }} />
                                         : <ImagePreview file={file} />}
                                 </Table.Cell>
                                 <Table.Cell>
@@ -47,7 +47,7 @@ export const FilesTable = ({ data }: { data: FileInChannel[] }) => {
                                         </DropdownMenu.Root>
                                     </Box>
                                 </Table.Cell>
-                                <Table.Cell>{file.file_type}</Table.Cell>
+                                <Table.Cell>{file.file_type ? file.file_type : 'File'}</Table.Cell>
                                 <Table.Cell>{formatBytes(file.file_size)}</Table.Cell>
                                 <Table.Cell>
                                     <Flex gap='2' align='center'>
@@ -72,7 +72,7 @@ export const FilesTable = ({ data }: { data: FileInChannel[] }) => {
                     <Flex gap='2' align='center'>
                         <Flex className="w-8 items-center justify-center">
                             {file.message_type === 'File' ?
-                                <FileExtensionIcon ext={file.file_type.toLowerCase()} className="px-2" />
+                                <FileExtensionIcon ext={file.file_type?.toLowerCase() ?? 'file'} className="px-2" />
                                 : <ImagePreview file={file} />}
                         </Flex>
 

@@ -13,11 +13,11 @@ def track_channel_visit(channel_id, user=None, commit=False, publish_event_for_u
 	# Get the channel member record
 	channel_member = get_channel_member(channel_id, user)
 
+	now = frappe.utils.now()
+
 	if channel_member:
 		# Update the last visit
-		frappe.db.set_value(
-			"Raven Channel Member", channel_member["name"], "last_visit", frappe.utils.now()
-		)
+		frappe.db.set_value("Raven Channel Member", channel_member["name"], "last_visit", now)
 
 	# Else if the user is not a member of the channel and the channel is open, create a new member record
 	elif frappe.get_cached_value("Raven Channel", channel_id, "type") == "Open":
@@ -26,7 +26,7 @@ def track_channel_visit(channel_id, user=None, commit=False, publish_event_for_u
 				"doctype": "Raven Channel Member",
 				"channel_id": channel_id,
 				"user_id": frappe.session.user,
-				"last_visit": frappe.utils.now(),
+				"last_visit": now,
 			}
 		).insert()
 
@@ -37,7 +37,7 @@ def track_channel_visit(channel_id, user=None, commit=False, publish_event_for_u
 	if publish_event_for_user:
 		frappe.publish_realtime(
 			"raven:unread_channel_count_updated",
-			{"channel_id": channel_id, "sent_by": frappe.session.user},
+			{"channel_id": channel_id, "sent_by": frappe.session.user, "last_message_timestamp": now},
 			user=user,
 		)
 
@@ -49,7 +49,7 @@ def get_workspace_members(workspace_id: str):
 	"""
 	cache_key = f"raven:workspace_members:{workspace_id}"
 
-	data = frappe.cache.get_value(cache_key)
+	data = frappe.cache().get_value(cache_key)
 	if data:
 		return data
 
@@ -60,13 +60,13 @@ def get_workspace_members(workspace_id: str):
 	)
 
 	data = {member.user: member for member in members}
-	frappe.cache.set_value(cache_key, data)
+	frappe.cache().set_value(cache_key, data)
 	return data
 
 
 def delete_workspace_members_cache(workspace_id: str):
 	cache_key = f"raven:workspace_members:{workspace_id}"
-	frappe.cache.delete_value(cache_key)
+	frappe.cache().delete_value(cache_key)
 
 
 def get_workspace_member(workspace_id: str, user: str = None) -> dict:
@@ -97,7 +97,7 @@ def get_channel_members(channel_id: str):
 	"""
 	cache_key = f"raven:channel_members:{channel_id}"
 
-	data = frappe.cache.get_value(cache_key)
+	data = frappe.cache().get_value(cache_key)
 	if data:
 		return data
 
@@ -121,13 +121,13 @@ def get_channel_members(channel_id: str):
 	members = query.run(as_dict=True)
 
 	data = {member.user_id: member for member in members}
-	frappe.cache.set_value(cache_key, data)
+	frappe.cache().set_value(cache_key, data)
 	return data
 
 
 def delete_channel_members_cache(channel_id: str):
 	cache_key = f"raven:channel_members:{channel_id}"
-	frappe.cache.delete_value(cache_key)
+	frappe.cache().delete_value(cache_key)
 
 
 def get_channel_member(channel_id: str, user: str = None) -> dict:

@@ -1,10 +1,8 @@
-import { DIALOG_CONTENT_CLASS } from '@/utils/layout/dialog'
 import { Dialog } from '@radix-ui/themes'
 import { useCallback } from 'react'
 import { AddChannelMembersModalContent } from './AddChannelMemberModalContent'
 import { useIsDesktop } from '@/hooks/useMediaQuery'
 import { Drawer, DrawerContent } from '@/components/layout/Drawer'
-import clsx from 'clsx'
 
 type Props = {
     open: boolean,

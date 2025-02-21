@@ -33,9 +33,14 @@ class TestPermissions(IntegrationTestCase):
 		frappe.set_user("Administrator")
 		frappe.clear_cache()
 
-	def create_test_workspace(self, workspace_type="Public"):
+	def create_test_workspace(self, workspace_type="Public", only_admins_can_create_channels=False):
 		test_workspace = frappe.get_doc(
-			{"doctype": "Raven Workspace", "workspace_name": "Test Workspace", "type": workspace_type}
+			{
+				"doctype": "Raven Workspace",
+				"workspace_name": "Test Workspace",
+				"type": workspace_type,
+				"only_admins_can_create_channels": only_admins_can_create_channels,
+			}
 		)
 		return test_workspace
 
@@ -445,7 +450,9 @@ class TestPermissions(IntegrationTestCase):
 
 		frappe.set_user("test@example.com")
 
-		test_workspace = self.create_test_workspace(workspace_type="Public")
+		test_workspace = self.create_test_workspace(
+			workspace_type="Public", only_admins_can_create_channels=True
+		)
 		test_workspace.insert()
 
 		# Test user should be able to create a channel since they are an admin of the workspace
@@ -489,6 +496,17 @@ class TestPermissions(IntegrationTestCase):
 		# Make test1 not an admin of the workspace
 		test1_workspace_member.is_admin = 0
 		test1_workspace_member.save(ignore_permissions=True)
+
+		# Allow any workspace member to create a channel
+		test_workspace.only_admins_can_create_channels = 0
+		test_workspace.save(ignore_permissions=True)
+
+		# Test1 should now be able to create a channel in the workspace
+		test_channel.insert()
+
+		self.assertEqual(test_channel.name, f"{test_workspace.name}-test-channel")
+
+		test_channel.delete()
 
 		# Direct Message Channels
 
@@ -648,9 +666,21 @@ class TestPermissions(IntegrationTestCase):
 		# Create a thread from the message
 		thread = create_thread(message_id=test_message.name)
 
-		# Users should not be able to delete the thread channel directly
+		frappe.set_user("test1@example.com")
+
+		# Test1 should not be able to delete the thread channel
 		with self.assertRaises(frappe.PermissionError):
 			frappe.delete_doc("Raven Channel", test_message.name)
+
+		frappe.set_user("test@example.com")
+
+		# Test should be able to delete the thread channel
+		frappe.delete_doc("Raven Channel", test_message.name)
+		# The thread channel should be deleted automatically
+		self.assertFalse(frappe.db.exists("Raven Channel", test_message.name))
+
+		# Create a thread again for the same message
+		thread = create_thread(message_id=test_message.name)
 
 		# Delete the message
 		test_message.delete()

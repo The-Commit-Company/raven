@@ -4,7 +4,7 @@ import { FrappeDoc, useFrappeUpdateDoc } from "frappe-react-sdk"
 import { FieldValues, FormProvider, useForm } from "react-hook-form"
 import { KeyedMutator } from 'swr'
 import { BiDotsVerticalRounded } from "react-icons/bi"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { DIALOG_CONTENT_CLASS } from "@/utils/layout/dialog"
 import { Loader } from "@/components/common/Loader"
 import { RavenWebhook } from "@/types/RavenIntegrations/RavenWebhook"
@@ -59,6 +59,19 @@ export const ViewWebhookPage = ({ data, mutate }: { data: FrappeDoc<RavenWebhook
             mutate()
         })
     }
+
+    useEffect(() => {
+
+        const down = (e: KeyboardEvent) => {
+            if (e.key === 's' && (e.metaKey || e.ctrlKey)) {
+                e.preventDefault()
+                methods.handleSubmit(onSubmit)()
+            }
+        }
+
+        document.addEventListener('keydown', down)
+        return () => document.removeEventListener('keydown', down)
+    }, [])
 
     const Badges: HeaderBadge[] = data?.enabled ? [{ label: "Enabled", color: "green" }] : [{ label: "Disabled", color: "gray" }]
 

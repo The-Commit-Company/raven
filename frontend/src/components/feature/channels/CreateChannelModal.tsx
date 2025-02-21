@@ -21,7 +21,7 @@ interface ChannelCreationForm {
     type: 'Public' | 'Private' | 'Open'
 }
 
-export const CreateChannelButton = ({ updateChannelList }: { updateChannelList: VoidFunction }) => {
+export const CreateChannelButton = () => {
 
     const [isOpen, setIsOpen] = useState(false)
 
@@ -36,7 +36,7 @@ export const CreateChannelButton = ({ updateChannelList }: { updateChannelList: 
                 </IconButton>
             </Dialog.Trigger>
             <Dialog.Content className={DIALOG_CONTENT_CLASS}>
-                <CreateChannelContent updateChannelList={updateChannelList}
+                <CreateChannelContent
                     isOpen={isOpen}
                     setIsOpen={setIsOpen} />
             </Dialog.Content>
@@ -52,7 +52,7 @@ export const CreateChannelButton = ({ updateChannelList }: { updateChannelList: 
             </DrawerTrigger>
             <DrawerContent>
                 <div className='pb-16 overflow-y-scroll min-h-96'>
-                    <CreateChannelContent updateChannelList={updateChannelList}
+                    <CreateChannelContent
                         isOpen={isOpen}
                         setIsOpen={setIsOpen} />
                 </div>
@@ -65,12 +65,12 @@ export const CreateChannelButton = ({ updateChannelList }: { updateChannelList: 
 }
 
 
-const CreateChannelContent = ({ updateChannelList, isOpen, setIsOpen }: { updateChannelList: VoidFunction, setIsOpen: (v: boolean) => void, isOpen: boolean }) => {
+const CreateChannelContent = ({ isOpen, setIsOpen }: { setIsOpen: (v: boolean) => void, isOpen: boolean }) => {
 
 
     const { workspaceID } = useParams()
 
-    const { data: isAdmin } = useFrappeGetCall<{ message: boolean }>('raven.api.workspaces.is_workspace_admin', { workspace: workspaceID }, workspaceID ? undefined : null)
+    const { data: canCreateChannel } = useFrappeGetCall<{ message: boolean }>('raven.api.workspaces.can_create_channel', { workspace: workspaceID }, workspaceID ? undefined : null)
 
     const { mutate } = useSWRConfig()
     let navigate = useNavigate()
@@ -90,7 +90,6 @@ const CreateChannelContent = ({ updateChannelList, isOpen, setIsOpen }: { update
         if (channel_name) {
             // Update channel list when name is provided.
             // Also navigate to new channel
-            updateChannelList()
             navigate(`/${workspace}/${channel_name}`)
             mutate(["channel_members", channel_name])
         }
@@ -112,6 +111,22 @@ const CreateChannelContent = ({ updateChannelList, isOpen, setIsOpen }: { update
             workspace: workspaceID
         }).then(result => {
             if (result) {
+                mutate("channel_list", (data) => {
+                    return {
+                        message: {
+                            ...data.message,
+                            channels: [
+                                ...data.message.channels,
+                                {
+                                    ...result,
+                                }
+                            ]
+                        }
+                    }
+
+                }, {
+                    revalidate: false
+                })
                 toast.success(__("Channel created"))
                 onClose(result.name, workspaceID)
             }
@@ -158,7 +173,7 @@ const CreateChannelContent = ({ updateChannelList, isOpen, setIsOpen }: { update
         <FormProvider {...methods}>
             <form onSubmit={handleSubmit(onSubmit)}>
                 <Flex direction='column' gap='4' py='4'>
-                    {!isAdmin?.message && <CustomCallout
+                    {!canCreateChannel?.message && <CustomCallout
                         iconChildren={<BiInfoCircle size='18' />}
                         rootProps={{ color: 'yellow', variant: 'surface' }}
                         textChildren={<Text>You cannot create a new channel since you are not an admin of this workspace. Ask an admin to create a channel or make you an admin.</Text>}
@@ -269,7 +284,7 @@ const CreateChannelContent = ({ updateChannelList, isOpen, setIsOpen }: { update
                             {__("Cancel")}
                         </Button>
                     </Dialog.Close>
-                    <Button type='submit' disabled={creatingChannel || !isAdmin?.message}>
+                    <Button type='submit' disabled={creatingChannel || !canCreateChannel?.message}>
                         {creatingChannel && <Loader className="text-white" />}
                         {creatingChannel ? __("Saving") : __("Save")}
                     </Button>

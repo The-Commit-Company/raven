@@ -5,7 +5,7 @@ import frappe
 from frappe import _
 from frappe.model.document import Document
 
-from raven.utils import delete_channel_members_cache, is_channel_member
+from raven.utils import delete_channel_members_cache
 
 
 class RavenChannel(Document):
@@ -16,6 +16,8 @@ class RavenChannel(Document):
 
 	if TYPE_CHECKING:
 		from frappe.types import DF
+
+		from raven.raven.doctype.raven_pinned_messages.raven_pinned_messages import RavenPinnedMessages
 
 		channel_description: DF.SmallText | None
 		channel_name: DF.Data
@@ -31,6 +33,8 @@ class RavenChannel(Document):
 		linked_doctype: DF.Link | None
 		linked_document: DF.DynamicLink | None
 		openai_thread_id: DF.Data | None
+		pinned_messages: DF.Table[RavenPinnedMessages]
+		pinned_messages_string: DF.SmallText | None
 		thread_bot: DF.Link | None
 		type: DF.Literal["Private", "Public", "Open"]
 		workspace: DF.Link | None
@@ -51,6 +55,17 @@ class RavenChannel(Document):
 
 		delete_channel_members_cache(self.name)
 
+		if not self.is_thread:
+			# Update the channel list for all users
+			frappe.publish_realtime(
+				"channel_list_updated",
+				{
+					"channel_id": self.name,
+				},
+				room="all",
+				after_commit=True,
+			)
+
 		# If the channel was a thread, (i.e. a message exists with the same name), remove the 'is_thread' flag from the message
 		if self.is_thread and frappe.db.exists("Raven Message", {"name": self.name}):
 			message_channel_id = frappe.get_cached_value("Raven Message", self.name, "channel_id")
@@ -70,6 +85,18 @@ class RavenChannel(Document):
 				docname=message_channel_id,
 			)
 
+	def on_update(self):
+		if not self.is_thread:
+			# Update the channel list for all users
+			frappe.publish_realtime(
+				"channel_list_updated",
+				{
+					"channel_id": self.name,
+				},
+				room="all",
+				after_commit=True,
+			)
+
 	def after_insert(self):
 		"""
 		After inserting a channel, we need to check if it is a direct message channel or not.
@@ -83,6 +110,17 @@ class RavenChannel(Document):
 		"""
 		# add current user as channel member
 		if not frappe.flags.in_install and not self.flags.do_not_add_member:
+
+			if self.type in ("Open", "Public") and not self.is_thread:
+				# Update the channel list for all users
+				frappe.publish_realtime(
+					"channel_list_updated",
+					{
+						"channel_id": self.name,
+					},
+					room="all",
+					after_commit=True,
+				)
 
 			if self.is_direct_message == 1:
 				# Add both users as members
@@ -168,6 +206,11 @@ class RavenChannel(Document):
 			workspaces = frappe.get_all("Raven Workspace")
 			if len(workspaces) == 1:
 				self.workspace = workspaces[0].name
+
+		self.set_pinned_messages_string()
+
+	def set_pinned_messages_string(self):
+		self.pinned_messages_string = "\n".join([message.message_id for message in self.pinned_messages])
 
 	def add_members(self, members, is_admin=0):
 		# members is a list of Raven User IDs

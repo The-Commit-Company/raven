@@ -50,6 +50,19 @@ const OpenAISettings = () => {
 
     }
 
+    useEffect(() => {
+
+        const down = (e: KeyboardEvent) => {
+            if (e.key === 's' && (e.metaKey || e.ctrlKey)) {
+                e.preventDefault()
+                methods.handleSubmit(onSubmit)()
+            }
+        }
+
+        document.addEventListener('keydown', down)
+        return () => document.removeEventListener('keydown', down)
+    }, [])
+
     const isAIEnabled = watch('enable_ai_integration')
 
     return (

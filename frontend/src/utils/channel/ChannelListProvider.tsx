@@ -1,10 +1,11 @@
-import { FrappeConfig, FrappeContext, FrappeError, useFrappeDocTypeEventListener, useFrappeGetCall } from 'frappe-react-sdk'
-import { PropsWithChildren, createContext, useContext, useMemo } from 'react'
+import { FrappeError, useFrappeEventListener, useFrappeGetCall } from 'frappe-react-sdk'
+import { PropsWithChildren, createContext, useEffect, useMemo, useState } from 'react'
 import { KeyedMutator } from 'swr'
-import { RavenChannel } from '../../../../types/RavenChannelManagement/RavenChannel'
 import { useSWRConfig } from 'frappe-react-sdk'
 import { toast } from 'sonner'
 import { getErrorMessage } from '@/components/layout/AlertBanner/ErrorBanner'
+import { RavenChannel } from '@/types/RavenChannelManagement/RavenChannel'
+import { useIsMobile } from '@/hooks/useMediaQuery'
 
 export type UnreadChannelCountItem = { name: string, user_id?: string, unread_count: number, is_direct_message: 0 | 1 }
 
@@ -16,7 +17,7 @@ export type UnreadCountData = {
 
 export type ChannelListItem = Pick<RavenChannel, 'name' | 'channel_name' | 'type' |
     'channel_description' | 'is_direct_message' | 'is_self_message' |
-    'is_archived' | 'creation' | 'owner' | 'last_message_details' | 'last_message_timestamp' | 'workspace'>
+    'is_archived' | 'creation' | 'owner' | 'last_message_details' | 'last_message_timestamp' | 'workspace' | 'pinned_messages_string'> & { member_id: string }
 
 export interface DMChannelListItem extends ChannelListItem {
     peer_user_id: string,
@@ -56,11 +57,13 @@ export const ChannelListProvider = ({ children }: PropsWithChildren) => {
  */
 export const useFetchChannelList = (): ChannelListContextType => {
 
+    const isMobile = useIsMobile()
+
     const { mutate: globalMutate } = useSWRConfig()
     const { data, mutate, ...rest } = useFrappeGetCall<{ message: ChannelList }>("raven.api.raven_channel.get_all_channels", {
         hide_archived: false
     }, `channel_list`, {
-        revalidateOnFocus: false,
+        revalidateOnFocus: isMobile ? true : false,
         onError: (error) => {
             toast.error("There was an error while fetching the channel list.", {
                 description: getErrorMessage(error)
@@ -68,11 +71,29 @@ export const useFetchChannelList = (): ChannelListContextType => {
         }
     })
 
-    useFrappeDocTypeEventListener('Raven Channel', () => {
-        mutate()
+    const [newUpdatesAvailable, setNewUpdatesAvailable] = useState(0)
 
-        // Also update the unread channel count
-        globalMutate('unread_channel_count')
+    useEffect(() => {
+        let timeout: NodeJS.Timeout | undefined
+        if (newUpdatesAvailable) {
+            timeout = setTimeout(() => {
+                mutate()
+                // Also update the unread channel count
+                globalMutate('unread_channel_count')
+                setNewUpdatesAvailable(0)
+            }, 1000) // 1 second
+        }
+        return () => clearTimeout(timeout)
+    }, [newUpdatesAvailable])
+
+    /** 
+     * If a bulk import happens, this gets called multiple times potentially causing the server to go down.
+     * Instead, throttle this - wait for all events to subside
+     */
+    useFrappeEventListener('channel_list_updated', () => {
+        if (!rest.isValidating) {
+            setNewUpdatesAvailable((n) => n + 1)
+        }
     })
 
     const { sortedChannels, sortedDMChannels } = useMemo(() => {
@@ -103,14 +124,12 @@ export const useFetchChannelList = (): ChannelListContextType => {
 
 }
 
-// TODO: Is there a better way to do this? Maybe not fetch and use realtime events?
+
 export const useUpdateLastMessageInChannelList = () => {
 
     const { mutate: globalMutate } = useSWRConfig()
 
-    const { call } = useContext(FrappeContext) as FrappeConfig
-
-    const updateLastMessageInChannelList = async (channelID: string) => {
+    const updateLastMessageInChannelList = async (channelID: string, lastMessageTimestamp: string) => {
 
         globalMutate(`channel_list`, async (channelList?: { message: ChannelList }) => {
             if (channelList) {
@@ -124,58 +143,45 @@ export const useUpdateLastMessageInChannelList = () => {
                 }
 
                 if (isChannelPresent) {
-                    return call.get('raven.api.raven_channel.get_last_message_details', {
-                        channel_id: channelID,
-                    }).then(res => {
-                        if (res && res.message) {
-                            // Update the last message details in the channel list
-                            let newChannels = channelList.message.channels
-                            let newDMChannels = channelList.message.dm_channels
+                    // Update the last message details in the channel list
+                    let newChannels = channelList.message.channels
+                    let newDMChannels = channelList.message.dm_channels
 
-                            if (isMainChannel) {
-                                newChannels = newChannels.map((channel) => {
-                                    if (channel.name === channelID) {
-                                        return {
-                                            ...channel,
-                                            last_message_details: res.message.last_message_details,
-                                            last_message_timestamp: res.message.last_message_timestamp
-                                        }
-                                    }
-                                    return channel
-                                })
-                            }
-
-                            if (isDMChannel) {
-                                newDMChannels = newDMChannels.map((channel) => {
-                                    if (channel.name === channelID) {
-                                        return {
-                                            ...channel,
-                                            last_message_details: res.message.last_message_details,
-                                            last_message_timestamp: res.message.last_message_timestamp
-                                        }
-                                    }
-                                    return channel
-                                })
-                            }
-
-                            return {
-                                message: {
-                                    channels: newChannels,
-                                    dm_channels: newDMChannels,
+                    if (isMainChannel) {
+                        newChannels = newChannels.map((channel) => {
+                            if (channel.name === channelID) {
+                                return {
+                                    ...channel,
+                                    last_message_timestamp: lastMessageTimestamp
                                 }
                             }
-                        }
-                        else {
-                            return channelList
+                            return channel
+                        })
+                    }
+
+                    if (isDMChannel) {
+                        newDMChannels = newDMChannels.map((channel) => {
+                            if (channel.name === channelID) {
+                                return {
+                                    ...channel,
+                                    last_message_timestamp: lastMessageTimestamp
+                                }
+                            }
+                            return channel
+                        })
+                    }
+
+                    return {
+                        message: {
+                            channels: newChannels,
+                            dm_channels: newDMChannels,
                         }
                     }
-                    )
-                } else {
-                    return channelList
                 }
-            } else {
-                return channelList
             }
+
+            // If nothing changed, return the same channel list
+            return channelList
 
         }, {
             revalidate: false

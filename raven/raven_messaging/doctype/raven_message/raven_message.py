@@ -47,6 +47,7 @@ class RavenMessage(Document):
 		mentions: DF.Table[RavenMention]
 		message_reactions: DF.JSON | None
 		message_type: DF.Literal["Text", "Image", "File", "Poll", "System"]
+		notification: DF.Data | None
 		poll_id: DF.Link | None
 		replied_message_details: DF.JSON | None
 		text: DF.LongText | None
@@ -234,6 +235,7 @@ class RavenMessage(Document):
 							"channel_id": self.channel_id,
 							"play_sound": True,
 							"sent_by": self.owner,
+							"last_message_timestamp": self.creation,
 						},
 						user=peer_user_doc.user,
 						after_commit=True,
@@ -246,6 +248,7 @@ class RavenMessage(Document):
 					"channel_id": self.channel_id,
 					"play_sound": False,
 					"sent_by": self.owner,
+					"last_message_timestamp": self.creation,
 				},
 				user=self.owner,
 				after_commit=True,
@@ -256,6 +259,7 @@ class RavenMessage(Document):
 				{
 					"channel_id": self.channel_id,
 					"sent_by": self.owner,
+					"last_message_timestamp": self.creation,
 				},
 				after_commit=True,
 				doctype="Raven Message",
@@ -270,6 +274,7 @@ class RavenMessage(Document):
 					"play_sound": False,
 					"sent_by": self.owner,
 					"is_thread": channel_doc.is_thread,
+					"last_message_timestamp": self.creation,
 				},
 				after_commit=True,
 				room="website",
@@ -582,6 +587,21 @@ class RavenMessage(Document):
 			# Delete the thread channel - this will automatically delete all the messages and their reactions in the thread
 			thread_channel_doc = frappe.get_doc("Raven Channel", self.name)
 			thread_channel_doc.delete(ignore_permissions=True)
+
+		# delete the pinned message
+		is_pinned = frappe.get_all(
+			"Raven Pinned Messages", {"message_id": self.name, "parent": self.channel_id}
+		)
+		if is_pinned:
+			channel_doc = frappe.get_doc("Raven Channel", self.channel_id)
+			pinned_row = None
+			for pinned_message in channel_doc.pinned_messages:
+				if pinned_message.message_id == self.name:
+					pinned_row = pinned_message
+					break
+			if pinned_row:
+				channel_doc.remove(pinned_row)
+				channel_doc.save()
 
 
 def on_doctype_update():

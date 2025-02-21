@@ -125,13 +125,7 @@
     media="screen and (device-width: 744px) and (device-height: 1133px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)"
     href="/splash_screens/8.3__iPad_Mini_portrait.png">
 
-  {% if (frappe.session.user != "Guest " and frappe.session.user != "Guest") %}
-  <link rel="preload" href="/api/method/frappe.auth.get_logged_user" as="fetch" crossorigin="use-credentials">
-  <link rel="preload" href="/api/method/raven.api.workspaces.get_list" as="fetch" crossorigin="use-credentials">
-  <link rel="preload" href="/api/method/raven.api.raven_users.get_list" as="fetch" crossorigin="use-credentials">
-  <link rel="preload" href="/api/method/raven.api.raven_channel.get_all_channels?hide_archived=false" as="fetch"
-    crossorigin="use-credentials">
-  {% endif %}
+  <!-- {{ preload_links }} -->
 </head>
 
 <body>

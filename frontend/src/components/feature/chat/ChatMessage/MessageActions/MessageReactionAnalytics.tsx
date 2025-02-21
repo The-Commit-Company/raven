@@ -7,7 +7,7 @@ import { Drawer, DrawerContent } from "@/components/layout/Drawer"
 import { ReactionObject } from "../MessageReactions"
 import { ReactionAnalyticsModal } from "../ActionModals/ReactionAnalyticsModal"
 
-export const useMessageReactionAnalytics = () => {
+export const useMessageReactionAnalytics = (onModalClose?: VoidFunction) => {
     const [message, setMessage] = useState<null | Message>(null)
 
     const message_reactions = message?.message_reactions;
@@ -15,12 +15,16 @@ export const useMessageReactionAnalytics = () => {
     const reactions: ReactionObject[] = useMemo(() => {
         //Parse the string to a JSON object and get an array of reactions
         const parsed_json = JSON.parse(message_reactions ?? '{}') as Record<string, ReactionObject>
-        return Object.values(parsed_json)
+        return Object.entries(parsed_json).map(([key, value]) => ({
+            ...value,
+            emoji_name: key
+        }))
     }, [message_reactions])
 
     const onClose = useCallback(() => {
         setMessage(null)
-    }, [])
+        onModalClose?.()
+    }, [onModalClose])
 
     return {
         reactions,

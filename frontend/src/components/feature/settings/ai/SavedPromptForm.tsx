@@ -54,12 +54,12 @@ const SavedPromptForm = () => {
                 <LinkFormField
                     name='raven_bot'
                     dropdownClass='max-w-[480px]'
-                    label='Bot'
+                    label='Agent'
                     filters={[["is_ai_bot", "=", 1]]}
                     doctype="Raven Bot"
                 />
                 <HelperText>
-                    If added, this prompt will only be shown when interacting with the bot
+                    If added, this prompt will only be shown when interacting with the agent
                 </HelperText>
                 <ErrorText>{errors.raven_bot?.message}</ErrorText>
             </Stack>

@@ -42,7 +42,7 @@ const AIFeaturesBotForm = (props: Props) => {
                                 />
                             )} />
 
-                        Allow Bot to Write Documents
+                        Allow Agent to Write Documents
                     </HStack>
                 </Text>
                 <HelperText>

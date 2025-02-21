@@ -33,7 +33,11 @@ const useUnreadMessageCount = () => {
     const { data: unread_count, mutate: updateCount } = useFrappeGetCall<{ message: UnreadCountData }>("raven.api.raven_message.get_unread_count_for_channels",
         undefined,
         'unread_channel_count', {
-        revalidateOnFocus: false,
+        // Revalidate on focus every minute
+        focusThrottleInterval: 60 * 1000,
+        // Fetch unread count every 2 minutes
+        refreshInterval: 5 * 60 * 1000,
+        revalidateOnFocus: true,
         revalidateOnReconnect: true,
     })
 
@@ -115,7 +119,7 @@ const useUnreadMessageCount = () => {
             updateUnreadCountToZero(event.channel_id)
         }
 
-        updateLastMessageInChannelList(event.channel_id)
+        updateLastMessageInChannelList(event.channel_id, event.last_message_timestamp)
     })
 
     const updateUnreadCountToZero = (channel_id?: string) => {
