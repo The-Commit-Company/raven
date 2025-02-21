@@ -54,7 +54,7 @@ export const PollMessageBlock = ({ message, ...props }: PollMessageBlockProps) =
 const PollMessageBox = ({ data, messageID }: { data: Poll; messageID: string }) => {
     return (
         <View className="bg-card rounded-md p-3">
-            <View className="flex-col gap-1 pb-2">
+            <View className="flex-col gap-1 pb-3">
                 <Text className="text-base font-medium">{data.poll.question} {data.poll.is_anonymous ? <Text className="text-blue-700 dark:text-blue-800 font-medium text-xs py-1 px-2">(Anonymous)</Text> : null}</Text>
             </View>
             {data.current_user_votes.length > 0 ? (
@@ -70,50 +70,47 @@ const PollMessageBox = ({ data, messageID }: { data: Poll; messageID: string }) 
             )}
 
             {data.poll.is_disabled ? (
-                <View className="bg-gray-100 px-2 py-1 rounded mt-2">
-                    <Text className="text-muted-foreground text-xs">Poll is now closed</Text>
-                </View>
+                <Text className="text-muted-foreground text-xs">Poll is now closed</Text>
             ) : null}
 
             {data.current_user_votes.length ? <View>
-                {!data.poll.is_anonymous ? <View className="bg-gray-200 dark:bg-gray-700 w-full my-2" /> : null}
                 {data.poll.is_anonymous ? null : <ViewPollVotes poll={data} />}
             </View> : null}
         </View>
-    );
-};
+    )
+}
 
 const PollOption = ({ data, option }: { data: Poll; option: RavenPollOption }) => {
-    const width = useSharedValue(0);
+
+    const width = useSharedValue(0)
 
     const isCurrentUserVote = useMemo(() => {
-        return data.current_user_votes.some((vote) => vote.option === option.name);
-    }, [data.current_user_votes, option.name]);
+        return data.current_user_votes.some((vote) => vote.option === option.name)
+    }, [data.current_user_votes, option.name])
 
     const percentage = useMemo(() => {
         const getPercentage = (votes: number) => {
             if (data.poll.is_multi_choice) {
-                const totalVotes = data.poll.options.reduce((acc, opt) => acc + (opt.votes ?? 0), 0);
-                return totalVotes ? (votes / totalVotes) * 100 : 0;
+                const totalVotes = data.poll.options.reduce((acc, opt) => acc + (opt.votes ?? 0), 0)
+                return totalVotes ? (votes / totalVotes) * 100 : 0
             }
-            return data.poll.total_votes ? (votes / data.poll.total_votes) * 100 : 0;
-        };
-
-        return getPercentage(option.votes ?? 0);
-    }, [option.votes, data]);
+            return data.poll.total_votes ? (votes / data.poll.total_votes) * 100 : 0
+        }
+        return getPercentage(option.votes ?? 0)
+    }, [option.votes, data])
 
     useEffect(() => {
-        width.value = withTiming(percentage, { duration: 500 });
-    }, [percentage]);
+        width.value = withTiming(percentage, { duration: 500 })
+    }, [percentage])
 
-    const { colors, colorScheme } = useColorScheme();
+    const { colors, colorScheme } = useColorScheme()
 
     const animatedStyle = useAnimatedStyle(() => {
         return {
             width: `${width.value}%`,
             backgroundColor: isCurrentUserVote ? colorScheme === "dark" ? colors.primary : colors?.secondary : colorScheme === "dark" ? colors?.grey4 : colors?.grey5,
-        };
-    });
+        }
+    })
 
     return (
         <View className="relative flex-row justify-between items-center w-full mb-2">
@@ -128,8 +125,8 @@ const PollOption = ({ data, option }: { data: Poll; option: RavenPollOption }) =
                 {percentage.toFixed(1)}%
             </Text>
         </View>
-    );
-};
+    )
+}
 
 const PollResults = ({ data }: { data: Poll }) => {
     return (
@@ -141,8 +138,8 @@ const PollResults = ({ data }: { data: Poll }) => {
                 {`${data.poll.total_votes || 0} vote${data.poll.total_votes === 1 ? '' : 's'}`}
             </Text>
         </View>
-    );
-};
+    )
+}
 
 const SingleChoicePoll = ({ data, messageID }: { data: Poll; messageID: string }) => {
 
@@ -156,7 +153,7 @@ const SingleChoicePoll = ({ data, messageID }: { data: Poll; messageID: string }
         }).then(() => {
             toast.success('Your vote has been submitted!')
         }).catch((error) => {
-            toast.error("Error while submitting poll")
+            toast.error("Could not submit your vote")
         })
     }
 
@@ -168,12 +165,12 @@ const SingleChoicePoll = ({ data, messageID }: { data: Poll; messageID: string }
     }
 
     return (
-        <View className="gap-3">
+        <View className="gap-1">
             {data.poll.options.map((option) => (
                 <Pressable
                     key={option.name}
                     onPress={() => handleOptionSelect(option)}
-                    className='flex flex-row gap-3 items-center py-2'>
+                    className='flex flex-row gap-2 items-center py-2'>
                     <Checkbox
                         checked={selectedOption === option.name}
                         disabled={!!data.poll.is_disabled}
@@ -208,7 +205,7 @@ const MultiChoicePoll = ({ data, messageID }: { data: Poll; messageID: string })
         }).then(() => {
             toast.success('Your vote has been submitted!')
         }).catch((error) => {
-            toast.error("Error while submitting poll")
+            toast.error("Could not submit your vote")
         })
     }
 
@@ -226,6 +223,7 @@ const MultiChoicePoll = ({ data, messageID }: { data: Poll; messageID: string })
                         }}
                         className='flex flex-row gap-2 items-center py-2'>
                         <Checkbox
+                            isMultiChoice={true}
                             checked={selectedOptions.includes(option.name)}
                             disabled={!!data.poll.is_disabled}
                             onCheckedChange={(checked) => !data.poll.is_disabled && handleCheckboxChange(option.name, checked)}
