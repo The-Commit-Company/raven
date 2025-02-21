@@ -103,9 +103,9 @@ const ReactionButton = ({ reaction, currentUser, saveReaction, viewAnalytics }: 
             activeOpacity={0.7}
             style={{
                 borderColor: currentUserReacted ? colors.primary : "transparent",
-                borderWidth: 1
+                borderWidth: 0.5
             }}
-            className={`flex-row rounded-md py-1 px-2 gap-2 bg-gray-100`}
+            className={`flex-row rounded-md py-1 px-2 gap-2 bg-gray-100 dark:bg-gray-800`}
         >
             {reaction.is_custom ? (
                 <Image source={source} style={{ width: 16, height: 16 }} />
@@ -136,7 +136,7 @@ const AddEmojiButton = ({ saveReaction }: AddEmojiButtonProps) => {
 
     return (
         <View>
-            <TouchableOpacity onPress={openEmojiPicker} activeOpacity={0.7} className='flex-row flex-1 items-center bg-gray-100 rounded-md py-1 px-2.5 gap-2'>
+            <TouchableOpacity onPress={openEmojiPicker} activeOpacity={0.7} className='flex-row flex-1 items-center bg-gray-100 dark:bg-gray-800 rounded-md py-1 px-2.5 gap-2'>
                 <SmilePlus width={16} height={16} fill={colors.icon} />
             </TouchableOpacity>
 

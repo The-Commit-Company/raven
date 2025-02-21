@@ -96,7 +96,7 @@ const ReactionAnalytics = ({ reactions, reactionsSheetRef }: ReactionAnalyticsPr
     return (
         <Sheet enableDynamicSizing={false} ref={reactionsSheetRef} snapPoints={["40%"]}>
             <BottomSheetView className='flex-1'>
-                <View className="flex-row bg-white border-3">
+                <View className="flex-row border-3">
                     {tabs.map((tab, index) => {
                         const source = useFileURL(tab.title)
 
@@ -127,9 +127,9 @@ const ReactionAnalytics = ({ reactions, reactionsSheetRef }: ReactionAnalyticsPr
                 </View>
 
                 <View className='relative'>
-                    <View className='h-[3px] bg-gray-100' />
+                    <View className='h-[2px] bg-gray-100 dark:bg-gray-800' />
                     <Animated.View
-                        className="h-[3px] rounded-full opacity-80 absolute"
+                        className="h-[2px] rounded-full opacity-80 absolute"
                         style={[{ width: tabWidth, backgroundColor: colors.primary }, animatedStyle]}
                     />
                 </View>
