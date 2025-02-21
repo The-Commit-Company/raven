@@ -244,6 +244,9 @@ def get_messages_with_dates(channel_id):
 
 @frappe.whitelist()
 def get_unread_count_for_channels():
+	"""
+	Fetch all channels where the user has unread messages > 0
+	"""
 
 	channel = frappe.qb.DocType("Raven Channel")
 	channel_member = frappe.qb.DocType("Raven Channel Member")
@@ -256,22 +259,20 @@ def get_unread_count_for_channels():
 		)
 		.where(channel_member.user_id == frappe.session.user)
 		.where(channel.is_archived == 0)
-		.where(channel.is_ai_thread == 0)
+		.where(channel.is_thread == 0)
 		.where(message.message_type != "System")
 		.left_join(message)
 		.on(channel.name == message.channel_id)
 	)
 
+	unread_count_var = Count(
+		Case().when(message.creation > Coalesce(channel_member.last_visit, "2000-11-11"), 1)
+	).as_("unread_count")
+
 	channels_query = (
-		query.select(
-			channel.name,
-			channel.is_direct_message,
-			channel.is_thread,
-			Count(Case().when(message.creation > Coalesce(channel_member.last_visit, "2000-11-11"), 1)).as_(
-				"unread_count"
-			),
-		)
-		.groupby(channel.name)
+		query.select(channel.name, channel.is_direct_message, unread_count_var)
+		.groupby(channel.name, channel.is_direct_message)
+		.having(unread_count_var > 0)  # Use HAVING instead of WHERE for aggregate filtering
 		.run(as_dict=True)
 	)
 

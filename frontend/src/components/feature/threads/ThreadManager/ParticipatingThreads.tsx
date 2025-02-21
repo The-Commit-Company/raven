@@ -3,7 +3,7 @@ import ThreadsList from './ThreadsList'
 import { IconButton, Select, Text, TextField, Tooltip } from '@radix-ui/themes'
 import { BiFilter, BiSearch } from 'react-icons/bi'
 import { useDebounce } from '@/hooks/useDebounce'
-import { useFetchChannelList } from '@/utils/channel/ChannelListProvider'
+import { useChannelList } from '@/utils/channel/ChannelListProvider'
 import { ChannelIcon } from '@/utils/layout/channelIcon'
 import { toast } from 'sonner'
 
@@ -56,7 +56,7 @@ const SearchFilter = ({ search, setSearch }: { search: string, setSearch: (searc
 
 const ChannelFilter = ({ channel, setChannel }: { channel: string, setChannel: (channel: string) => void }) => {
 
-    const { channels } = useFetchChannelList()
+    const { channels } = useChannelList()
     return (
         <div>
             <Select.Root value={channel} onValueChange={setChannel}>

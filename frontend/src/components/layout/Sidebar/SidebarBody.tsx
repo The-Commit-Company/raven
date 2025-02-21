@@ -2,7 +2,7 @@ import { ChannelList } from '../../feature/channels/ChannelList'
 import { DirectMessageList } from '../../feature/direct-messages/DirectMessageList'
 import { SidebarBadge, SidebarItem } from './SidebarComp'
 import { AccessibleIcon, Box, Flex, ScrollArea, Text } from '@radix-ui/themes'
-import useUnreadMessageCount from '@/hooks/useUnreadMessageCount'
+import { useFetchUnreadMessageCount } from '@/hooks/useUnreadMessageCount'
 import PinnedChannels from './PinnedChannels'
 import React, { useContext, useMemo } from 'react'
 import { BiBookmark, BiMessageAltDetail } from 'react-icons/bi'
@@ -17,7 +17,7 @@ export const showOnlyMyChannelsAtom = atomWithStorage('showOnlyMyChannels', fals
 
 export const SidebarBody = () => {
 
-    const unread_count = useUnreadMessageCount()
+    const unread_count = useFetchUnreadMessageCount()
     const { channels, dm_channels } = useContext(ChannelListContext) as ChannelListContextType
 
     const { workspaceID } = useParams()
@@ -26,7 +26,7 @@ export const SidebarBody = () => {
         return channels.filter((channel) => channel.workspace === workspaceID)
     }, [channels, workspaceID])
 
-    const { unreadChannels, readChannels, unreadDMs, readDMs, noOfUnreadThreads } = useGetChannelUnreadCounts({
+    const { unreadChannels, readChannels, unreadDMs, readDMs } = useGetChannelUnreadCounts({
         channels: workspaceChannels,
         dm_channels,
         unread_count: unread_count?.message
@@ -39,7 +39,6 @@ export const SidebarBody = () => {
                     <SidebarItemForPage
                         to={'threads'}
                         label='Threads'
-                        unreadCount={noOfUnreadThreads}
                         icon={<BiMessageAltDetail className='text-gray-12 dark:text-gray-300 mt-1 sm:text-sm text-base' />}
                         iconLabel='Threads' />
                     <SidebarItemForPage
