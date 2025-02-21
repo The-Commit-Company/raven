@@ -6,12 +6,13 @@ import { EditMessageModal } from "@/components/feature/chat/ChatMessage/ActionMo
 import { useIsDesktop } from "@/hooks/useMediaQuery"
 import { Drawer, DrawerContent } from "@/components/layout/Drawer"
 
-export const useEditMessage = () => {
+export const useEditMessage = (onModalClose?: VoidFunction) => {
     const [message, setMessage] = useState<null | Message>(null)
 
     const onClose = useCallback(() => {
         setMessage(null)
-    }, [])
+        onModalClose?.()
+    }, [onModalClose])
 
 
 

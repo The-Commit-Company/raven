@@ -30,7 +30,9 @@ export const isVideoFile = (ext: string) => {
 export const getFileName = (filename: string) => {
 
     const name = filename?.split('/')[3]
-    return name;
+
+    // Remove the query params from the filename
+    return name?.split('?')[0]
 }
 
 /**

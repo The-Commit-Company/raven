@@ -89,7 +89,7 @@ const CreateChannelForm = () => {
                                     <ChannelIcon type={channelType} fill={colors.icon} />
                                 </View>
                                 <TextInput
-                                    className={`flex-1 pt-2 pb-3 text-sm`}
+                                    className={`flex-1 pt-2 pb-3 text-sm text-foreground`}
                                     placeholder="dev-team"
                                     maxLength={50}
                                     value={value}
@@ -101,7 +101,7 @@ const CreateChannelForm = () => {
                                 />
                                 {/* Character counter */}
                                 <View className="mx-3">
-                                    <Text className={`text-sm ${error ? "text-red-600" : "text-gray-500"}`}>
+                                    <Text className={`text-sm ${error ? "text-red-600" : "text-muted-foreground"}`}>
                                         {50 - (value?.length || 0)}
                                     </Text>
                                 </View>
@@ -130,7 +130,7 @@ const CreateChannelForm = () => {
                         }}
                         render={({ field: { onChange, onBlur, value } }) => (
                             <TextInput
-                                className="w-full border border-border rounded-md px-3 pt-2 pb-3 text-sm"
+                                className="w-full border border-border rounded-md px-3 pt-2 pb-3 text-sm text-foreground"
                                 placeholder="Discuss the latest features and ideas and keep track of the deliverables"
                                 multiline
                                 numberOfLines={4}
@@ -140,7 +140,7 @@ const CreateChannelForm = () => {
                             />
                         )}
                     />
-                    <Text className="text-sm text-gray-500">What is this channel about?</Text>
+                    <Text className="text-sm text-muted-foreground">What is this channel about?</Text>
                     {errors?.channel_description && (
                         <ErrorText>{errors.channel_description?.message}</ErrorText>
                     )}
@@ -171,7 +171,7 @@ const CreateChannelForm = () => {
                             </View>
                         )}
                     />
-                    <Text className="text-sm text-gray-500">{helperText}</Text>
+                    <Text className="text-sm text-muted-foreground">{helperText}</Text>
                 </View>
 
             </View>

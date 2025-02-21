@@ -1,5 +1,6 @@
 import ErrorBanner from "@components/common/ErrorBanner";
 import useFileURL from "@hooks/useFileURL";
+import { router } from "expo-router";
 import { useWindowDimensions, Image, View } from "react-native";
 import { fitContainer, ResumableZoom, Source, useImageResolution } from "react-native-zoom-toolkit";
 
@@ -27,8 +28,6 @@ const ImageComponent = ({ source, handleShowHeader }: { source: Source, handleSh
     const { width, height } = useWindowDimensions()
     const { isFetching, resolution, error } = useImageResolution(source)
     if (isFetching || resolution === undefined || error) {
-        console.log('isFetching', isFetching)
-        console.log('resolution', resolution)
         return <View className="p-2">
             {error && <ErrorBanner error={error} />}
         </View>
@@ -39,8 +38,14 @@ const ImageComponent = ({ source, handleShowHeader }: { source: Source, handleSh
         height,
     })
 
+    const backSwipe = (direction: string) => {
+        if (direction === 'right') {
+            router.back()
+        }
+    }
+
     return (
-        <ResumableZoom maxScale={resolution} onTap={handleShowHeader}>
+        <ResumableZoom extendGestures maxScale={resolution} onTap={handleShowHeader} onSwipe={backSwipe}>
             <Image source={source} style={{ ...size }} resizeMethod={'scale'} />
         </ResumableZoom>
     )

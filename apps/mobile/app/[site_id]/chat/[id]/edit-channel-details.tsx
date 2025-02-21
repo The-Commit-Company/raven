@@ -45,6 +45,7 @@ export default function EditChannelDetails() {
     return <>
         <Stack.Screen options={{
             title: 'Edit Channel Details',
+            headerStyle: { backgroundColor: colors.background },
             headerLeft() {
                 return (
                     <Link asChild href="../" relativeToDirectory>
@@ -61,12 +62,12 @@ export default function EditChannelDetails() {
                         disabled={updatingChannel}>
                         {updatingChannel ?
                             <ActivityIndicator size="small" color={colors.primary} /> :
-                            <Text className="text-primary">Save</Text>}
+                            <Text className="text-primary dark:text-secondary">Save</Text>}
                     </Button>
                 )
             },
         }} />
-        <View className="flex-1 bg-card">
+        <View className="flex-1 bg-background">
             <FormProvider {...methods}>
                 <EditChannelBaseDetailsForm />
             </FormProvider>

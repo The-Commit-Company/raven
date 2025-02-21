@@ -36,7 +36,7 @@ const ChatStream = ({ channelID }: Props) => {
         return (
             <View style={{
                 paddingBottom: 120 + (isKeyboardVisible ? 0 : bottom), // height of the chat input, adjust this accordindly
-            }} className='bg-white dark:bg-background px-1'>
+            }} className='bg-background px-1'>
                 {/* <FlatList
                     data={data}
                     ref={listRef}
@@ -111,10 +111,6 @@ const MessageContentRenderer = ({ item }: { item: MessageDateBlock }) => {
 
     if (item.message_type === 'System') {
         return <SystemMessageBlock item={item} />
-    }
-
-    if (item.message_type === "Poll") {
-        return <PollMessageBlock message={item} />
     }
 
     return <MessageItem message={item} onReplyMessagePress={onReplyMessagePress} />

@@ -32,7 +32,6 @@ def add_channel_members(channel_id: str, members: list[str]):
 	"""
 	Add members to a channel
 	"""
-	frappe.has_permission("Raven Channel", doc=channel_id, ptype="write", throw=True)
 
 	# Since this is a bulk operation, we need to disable cache invalidation (will be handled manually) and ignore permissions (since we already have permission to add members)
 
@@ -41,7 +40,7 @@ def add_channel_members(channel_id: str, members: list[str]):
 			{"doctype": "Raven Channel Member", "channel_id": channel_id, "user_id": member}
 		)
 		member_doc.flags.ignore_cache_invalidation = True
-		member_doc.insert(ignore_permissions=True)
+		member_doc.insert()
 
 	delete_channel_members_cache(channel_id)
 	return True

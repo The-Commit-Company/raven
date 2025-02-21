@@ -35,7 +35,7 @@ const SendItem = ({ file }: { file: CustomFile }) => {
                     }
                     <UniversalFileIcon fileName={file.name} width={40} height={40} />
                     <View className='flex-col gap-1'>
-                        <Text className="line-clamp-1 pr-14">{file.name}</Text>
+                        <Text className="line-clamp-1 pr-14 color-foreground">{file.name}</Text>
                         <Text className="text-xs color-grayText">{extension.toUpperCase()}</Text>
                     </View>
                 </View>}

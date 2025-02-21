@@ -13,7 +13,6 @@ import { ChangeChannelTypeSheet, getChangeChannelType } from "@components/featur
 import { ChannelListItem } from "@raven/types/common/ChannelListItem";
 import { MembersTray } from "@components/features/channel-settings/MembersTray";
 import PushNotifications from "@components/features/channel-settings/PushNotifications";
-import ChevronLeftIcon from "@assets/icons/ChevronLeftIcon.svg";
 import ThreeHorizontalDots from "@assets/icons/ThreeHorizontalDots.svg";
 import { useColorScheme } from "@hooks/useColorScheme";
 import ChannelCreator from "@components/features/channel-settings/BaseDetails/ChannelCreator";
@@ -21,6 +20,7 @@ import { Divider } from "@components/layout/Divider";
 import ChannelBaseDetails from "@components/features/channel-settings/BaseDetails/ChannelBaseDetails";
 import LeaveChannel from "@components/features/channel-settings/LeaveChannel";
 import ArchiveChannel from "@components/features/channel-settings/ArchiveChannel";
+import HeaderBackButton from "@components/common/HeaderBackButton";
 
 const ChannelSettings = () => {
 
@@ -44,23 +44,20 @@ const ChannelSettings = () => {
     return (
         <>
             <Stack.Screen options={{
-                headerLeft: () => (
-                    <TouchableOpacity onPress={() => router.back()} hitSlop={10}>
-                        <ChevronLeftIcon stroke={colors.foreground} />
-                    </TouchableOpacity>
-                ),
-                headerTitle: () => <Text className='ml-2 text-base font-semibold'>Channel Info</Text>,
+                headerStyle: { backgroundColor: colors.background },
+                headerLeft: () => <HeaderBackButton />,
+                headerTitle: () => <Text className='ml-2 text-base font-semibold'>Channel info</Text>,
                 headerRight: () => (
                     <TouchableOpacity hitSlop={10}>
                         <ThreeHorizontalDots height={20} width={20} color={colors.foreground} />
                     </TouchableOpacity>
                 )
             }} />
-            <View className="flex-1 bg-card">
+            <View className="flex-1 bg-background">
                 <View className="flex-col gap-5">
                     <ChannelBaseDetails channelData={channelData} />
                     <Divider className='mx-0' prominent />
-                    <MembersTray onViewAll={() => router.push(`../channel-settings-members`, { relativeToDirectory: true })} />
+                    <MembersTray onViewAll={() => router.push(`../channel-members`, { relativeToDirectory: true })} />
                     <Divider className='mx-0' prominent />
                     <View className="flex-col gap-2">
                         <Text className="text-[15px] font-medium px-4">Settings</Text>

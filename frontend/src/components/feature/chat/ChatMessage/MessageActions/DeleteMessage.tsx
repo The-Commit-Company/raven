@@ -4,13 +4,14 @@ import { AlertDialog } from "@radix-ui/themes"
 import { DIALOG_CONTENT_CLASS } from "@/utils/layout/dialog"
 import { DeleteMessageModal } from "@/components/feature/chat/ChatMessage/ActionModals/DeleteMessageModal"
 
-export const useDeleteMessage = () => {
+export const useDeleteMessage = (onModalClose?: VoidFunction) => {
 
     const [message, setMessage] = useState<null | Message>(null)
 
     const onClose = useCallback(() => {
         setMessage(null)
-    }, [])
+        onModalClose?.()
+    }, [onModalClose])
 
     return {
         message,

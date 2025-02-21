@@ -23,6 +23,6 @@ export const HelperText = (props: TextProps) => {
 
 export const ErrorText = (props: TextProps) => {
     return (
-        <Text className="text-xs text-red-900" {...props} />
+        <Text className="text-xs text-red-700" {...props} />
     )
 }

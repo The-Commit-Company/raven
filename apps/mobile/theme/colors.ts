@@ -10,16 +10,16 @@ const IOS_SYSTEM_COLORS = {
         grey3: 'rgb(199, 199, 204)',
         grey2: 'rgb(175, 176, 180)',
         grey: 'rgb(142, 142, 147)',
-        background: 'rgb(248, 248, 248)',
+        background: 'rgb(255, 255, 255)',
         foreground: 'rgb(0, 0, 0)',
         root: 'rgb(255, 255, 255)',
-        card: 'rgb(255, 255, 255)',
+        card: 'rgb(248, 248, 248)',
         icon: '#1C2024',
         greyText: 'rgb(175, 176, 180)',
         destructive: 'rgb(255, 56, 43)',
         primary: '#5753C6',
         secondary: "#DBDAFE",
-        linkColor: '#E6E6EB'
+        linkColor: '#F1F1F4'
     },
     dark: {
         grey6: 'rgb(21, 21, 24)',
@@ -28,7 +28,7 @@ const IOS_SYSTEM_COLORS = {
         grey3: 'rgb(70, 70, 73)',
         grey2: 'rgb(99, 99, 102)',
         grey: 'rgb(142, 142, 147)',
-        background: 'rgb(10, 10, 10)',
+        background: 'rgb(0, 0, 0)',
         foreground: 'rgb(255, 255, 255)',
         root: 'rgb(0, 0, 0)',
         card: 'rgb(21, 21, 24)',
@@ -51,16 +51,16 @@ const ANDROID_COLORS = {
         grey3: 'rgb(113, 119, 134)',
         grey2: 'rgb(65, 71, 84)',
         grey: 'rgb(24, 28, 35)',
-        background: 'rgb(248, 248, 248)',
+        background: 'rgb(255, 255, 255)',
         foreground: 'rgb(0, 0, 0)',
         root: 'rgb(255, 255, 255)',
-        card: 'rgb(255, 255, 255)',
+        card: 'rgb(248, 248, 248)',
         icon: '#1C2024',
         greyText: 'rgb(175, 176, 180)',
         destructive: 'rgb(186, 26, 26)',
         primary: '#5753C6',
         secondary: "#DBDAFE",
-        linkColor: '#E6E6EB'
+        linkColor: '#F1F1F4'
     },
     dark: {
         grey6: 'rgb(16, 19, 27)',

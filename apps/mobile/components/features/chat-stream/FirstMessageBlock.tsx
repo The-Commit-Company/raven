@@ -46,7 +46,7 @@ const FirstMessageBlockForDM = ({ channelData }: { channelData: DMChannelListIte
     const userName = fullName ?? peer ?? replaceCurrentUserFromDMChannelName(channelData.channel_name, currentUserInfo?.name ?? '')
 
     return (
-        <View className="p-3">
+        <View className="pt-6 p-3">
             {channelData?.is_direct_message == 1 && (
                 <View className="flex flex-col gap-3">
                     <View className="flex flex-row gap-3 items-center">
@@ -67,13 +67,13 @@ const FirstMessageBlockForDM = ({ channelData }: { channelData: DMChannelListIte
                         </View>
                     </View>
                     {channelData?.is_self_message == 1 ? (
-                        <Text className='text-sm'><Text className='text-sm font-semibold'>This space is all yours.</Text> Draft messages, list your to-dos, or keep links and files handy.</Text>
+                        <Text className='text-[15px]'><Text className='text-[15px] font-semibold'>This space is all yours.</Text> Draft messages, list your to-dos, or keep links and files handy.</Text>
                     ) : (
                         <View className="flex flex-row gap-2 items-center">
                             {peer || fullName ? (
-                                <Text className='text-sm'>This is a Direct Message channel between you and <Text className='text-sm font-semibold'>{fullName ?? peer}</Text>.</Text>
+                                <Text className='text-[15px]'>This is a direct message channel between you and <Text className='text-[15px] font-semibold'>{fullName ?? peer}</Text>.</Text>
                             ) : (
-                                <Text className='text-sm'>We could not find the user for this DM channel ({replaceCurrentUserFromDMChannelName(channelData.channel_name, currentUserInfo?.name ?? "")}).</Text>
+                                <Text className='text-[15px]'>We could not find the user for this DM channel ({replaceCurrentUserFromDMChannelName(channelData.channel_name, currentUserInfo?.name ?? "")}).</Text>
                             )}
                         </View>
                     )}
@@ -86,13 +86,13 @@ const FirstMessageBlockForDM = ({ channelData }: { channelData: DMChannelListIte
 const FirstMessageBlockForChannel = ({ channelData }: { channelData: ChannelListItem }) => {
     const { colors } = useColorScheme()
     return (
-        <View className="p-3">
+        <View className="pt-6 p-3">
             <View className="flex flex-col gap-2">
                 <View className="flex flex-row items-center gap-1">
                     <ChannelIcon size={24} type={channelData?.type} fill={colors.foreground} />
                     <Text className="text-[24px] font-semibold">{channelData?.channel_name}</Text>
                 </View>
-                <Text className="text-base">This is the very beginning of the <Text className="text-base font-semibold">{channelData?.channel_name}</Text> channel.</Text>
+                <Text className="text-[15px]">This is the very beginning of the <Text className="text-base font-semibold">{channelData?.channel_name}</Text> channel.</Text>
                 {channelData?.channel_description && <Text className="text-sm text-muted-foreground">Channel description: {channelData?.channel_description}</Text>}
             </View>
         </View>

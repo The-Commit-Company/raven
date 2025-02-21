@@ -116,11 +116,11 @@ const ActiveIndicator = ({ isActive, availabilityStatus, isBot, botColor, indica
             } else if (availabilityStatus === 'Invisible') {
                 return ''
             } else if (availabilityStatus === 'Available') {
-                return 'bg-green-500'
+                return 'bg-[#3E9B4F]'
             }
         }
         if (isActive) {
-            return 'bg-green-500'
+            return 'bg-[#3E9B4F]'
         } else {
             return ''
         }
@@ -139,7 +139,7 @@ const ActiveIndicator = ({ isActive, availabilityStatus, isBot, botColor, indica
 
     return <View
         {...indicatorProps}
-        className={cn('absolute bottom-0.5 right-0.5 translate-x-1/2 translate-y-1/2 rounded-full w-2.5 h-2.5 border-2  border-card', dotColor, indicatorProps?.className)}>
+        className={cn('absolute bottom-0.5 right-0.5 translate-x-1/2 translate-y-1/2 rounded-full w-2.5 h-2.5 border  border-card', dotColor, indicatorProps?.className)}>
     </View>
 
 }

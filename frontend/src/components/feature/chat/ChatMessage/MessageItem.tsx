@@ -141,7 +141,7 @@ export const MessageItem = ({ message, setDeleteMessage, isHighlighted, onReplyM
                         top-[42px] 
                         left-6 z-0`}>
                         </div> : null}
-                    <ContextMenu.Root>
+                    <ContextMenu.Root modal={false}>
                         <ContextMenu.Trigger
                             {...bind}
                             ref={ref}
@@ -165,7 +165,7 @@ export const MessageItem = ({ message, setDeleteMessage, isHighlighted, onReplyM
                             px-1
                             py-1.5
                             sm:p-1.5
-                            rounded-md`, isHighlighted ? 'bg-yellow-50 hover:bg-yellow-50 dark:bg-yellow-300/20 dark:hover:bg-yellow-300/20' : !isDesktop && isHovered ? 'bg-gray-2 dark:bg-gray-3' : '', isEmojiPickerOpen ? 'bg-gray-2 dark:bg-gray-3' : '')}>
+                            rounded-md`, is_continuation ? '' : 'py-2.5 sm:py-3', isHighlighted ? 'bg-yellow-50 hover:bg-yellow-50 dark:bg-yellow-300/20 dark:hover:bg-yellow-300/20' : !isDesktop && isHovered ? 'bg-gray-2 dark:bg-gray-3' : '', isEmojiPickerOpen ? 'bg-gray-2 dark:bg-gray-3' : '')}>
                             <Flex className='gap-2.5 sm:gap-3 items-start'>
                                 <MessageLeftElement message={message} user={user} isActive={isActive} />
                                 <Flex direction='column' className='gap-0.5 w-[90%]' justify='center'>
@@ -201,7 +201,7 @@ export const MessageItem = ({ message, setDeleteMessage, isHighlighted, onReplyM
                                     {message.is_edited === 1 && <Text size='1' className='text-gray-10'>(edited)</Text>}
                                     {message_reactions?.length &&
                                         <MessageReactions
-                                            messageID={name}
+                                            message={message}
                                             message_reactions={message_reactions}
                                         />
                                     }
@@ -251,7 +251,7 @@ const MessageLeftElement = ({ message, className, user, isActive, ...props }: Me
     // If it's a continuation, then show the timestamp
 
     // Else, show the avatar
-    return <Box className={clsx(message.is_continuation ? 'invisible group-hover:visible flex items-center w-[38px] sm:w-[34px]' : '', className)} {...props}>
+    return <Box className={clsx(message.is_continuation ? 'invisible group-hover:visible flex items-center w-[32px]' : '', className)} {...props}>
         {message.is_continuation ?
             <Box className='-mt-0.5'>
                 <DateTooltipShort timestamp={message.creation} />

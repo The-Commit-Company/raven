@@ -3,17 +3,18 @@ import { Stack } from 'expo-router';
 
 const ProfileLayout = () => {
 
-    const { colors } = useColorScheme()
+    const { colors, isDarkColorScheme } = useColorScheme()
 
     return (
         <Stack screenOptions={{
             headerShadowVisible: false,
-            headerStyle: { backgroundColor: colors.background }
+            headerStyle: { backgroundColor: isDarkColorScheme ? colors.background : colors.card }
         }}>
             <Stack.Screen name='index'
                 options={{
                     title: 'Profile',
-                    headerLargeTitle: false
+                    headerLargeTitle: false,
+                    contentStyle: { backgroundColor: isDarkColorScheme ? colors.background : colors.card }
                 }} />
         </Stack>
     )

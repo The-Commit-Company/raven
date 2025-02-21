@@ -3,7 +3,6 @@ import { MessageContextMenuProps } from '../MessageActions'
 import { QUICK_ACTION_BUTTON_CLASS, QuickActionButton } from './QuickActionButton'
 import { BiDotsHorizontalRounded } from 'react-icons/bi'
 import { MouseEventHandler, useContext, useRef } from 'react'
-import { FrappeConfig, FrappeContext } from 'frappe-react-sdk'
 import { EmojiPickerButton } from './EmojiPickerButton'
 import { UserContext } from '@/utils/auth/UserProvider'
 import { AiOutlineEdit } from 'react-icons/ai'
@@ -12,8 +11,40 @@ import { toast } from 'sonner'
 import { getErrorMessage } from '@/components/layout/AlertBanner/ErrorBanner'
 import { CreateThreadActionButton } from './CreateThreadButton'
 import clsx from 'clsx'
+import { EmojiType, getTopFavoriteEmojis } from '../../../ChatInput/EmojiSuggestion'
+import usePostMessageReaction from '@/hooks/usePostMessageReaction'
 
-const QUICK_EMOJIS = ['👍', '✅', '👀', '🎉']
+const topEmojis = getTopFavoriteEmojis(10)
+
+const STANDARD_EMOJIS: EmojiType[] = [{
+    id: '+1',
+    emoji: '👍',
+    name: 'Thumbs Up',
+    shortcodes: ":+1:"
+}, {
+    id: 'white_check_mark',
+    emoji: '✅',
+    name: 'Check Mark Button',
+    shortcodes: ":white_check_mark:"
+},
+{
+    id: 'eyes',
+    emoji: '👀',
+    name: 'Eyes',
+    shortcodes: ":eyes:"
+},
+{
+    id: 'tada',
+    emoji: '🎉',
+    name: 'Party Popper',
+    shortcodes: ":tada:"
+}
+]
+
+// If we have frequently used emojis, then show them, else fill the rest with standard emojis - remove duplicates
+const QUICK_EMOJIS = [...topEmojis, ...STANDARD_EMOJIS].filter((emoji, index, self) =>
+    index === self.findIndex((t) => t.id === emoji.id)
+).slice(0, 4)
 
 interface QuickActionsProps extends MessageContextMenuProps {
     isEmojiPickerOpen: boolean,
@@ -27,8 +58,6 @@ export const QuickActions = ({ message, onReply, onEdit, isEmojiPickerOpen, setI
 
     const isOwner = currentUser === message?.owner && !message?.is_bot_message
     const toolbarRef = useRef<HTMLDivElement>(null)
-
-    const { call } = useContext(FrappeContext) as FrappeConfig
 
     /**
      * When the user clicks on the more button, we want to trigger a right click event
@@ -50,17 +79,16 @@ export const QuickActions = ({ message, onReply, onEdit, isEmojiPickerOpen, setI
         e.target.dispatchEvent(evt);
     }
 
+    const postReaction = usePostMessageReaction()
+
     const onEmojiReact = (emoji: string, is_custom: boolean = false, emoji_name?: string) => {
-        call.post('raven.api.reactions.react', {
-            message_id: message?.name,
-            reaction: emoji,
-            is_custom,
-            emoji_name
-        }).catch((err) => {
-            toast.error("Could not react to message.", {
-                description: getErrorMessage(err)
+        if (message) {
+            postReaction(message, emoji, is_custom, emoji_name).catch((err) => {
+                toast.error("Could not react to message.", {
+                    description: getErrorMessage(err)
+                })
             })
-        })
+        }
     }
 
     // @ts-ignore
@@ -74,17 +102,20 @@ export const QuickActions = ({ message, onReply, onEdit, isEmojiPickerOpen, setI
             )}>
             <Flex gap='1'>
                 {QUICK_EMOJIS.map((emoji) => {
-                    return <QuickActionButton
-                        key={emoji}
-                        className={'text-base'}
-                        tooltip={`React with ${emoji}`}
-                        aria-label={`React with ${emoji}`}
-                        onClick={() => {
-                            onEmojiReact(emoji)
-                        }}>
-                        {/* @ts-expect-error */}
-                        <em-emoji native={emoji} />
-                    </QuickActionButton>
+                    if (emoji.emoji) {
+                        return <QuickActionButton
+                            key={emoji.id}
+                            className={'text-base'}
+                            tooltip={`React with ${emoji.emoji}`}
+                            aria-label={`React with ${emoji.emoji}`}
+                            onClick={() => {
+                                onEmojiReact(emoji.emoji as string)
+                            }}>
+                            {/* @ts-expect-error */}
+                            <em-emoji native={emoji.emoji} />
+                        </QuickActionButton>
+                    }
+                    return null
                 })}
 
                 <EmojiPickerButton

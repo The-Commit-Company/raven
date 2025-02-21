@@ -30,7 +30,7 @@ export const AddMembersButton = ({ channelData, ...props }: AddMembersButtonProp
                     </Button>
                 </Dialog.Trigger>
 
-                <Dialog.Content className={clsx(DIALOG_CONTENT_CLASS, 'static')}>
+                <Dialog.Content className={'static'}>
                     <AddChannelMembersModalContent
                         onClose={onClose}
                     />
