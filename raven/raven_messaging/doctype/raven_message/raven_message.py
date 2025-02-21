@@ -571,7 +571,7 @@ class RavenMessage(Document):
 				after_commit=after_commit,
 			)
 
-			if self.message_type != "System":
+			if self.message_type != "System" and not self.is_bot_message:
 				# track the visit of the user to the channel if a new message is created
 				track_channel_visit(channel_id=self.channel_id, user=self.owner)
 				# frappe.enqueue(method=track_channel_visit, channel_id=self.channel_id, user=self.owner)
