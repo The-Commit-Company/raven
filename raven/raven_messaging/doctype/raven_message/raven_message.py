@@ -281,7 +281,7 @@ class RavenMessage(Document):
 					"last_message_timestamp": self.creation,
 				},
 				after_commit=True,
-				room="website",
+				room="all",
 			)
 
 	def process_mentions(self):

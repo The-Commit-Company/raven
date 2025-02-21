@@ -129,6 +129,13 @@ def delete_channel_members_cache(channel_id: str):
 	cache_key = f"raven:channel_members:{channel_id}"
 	frappe.cache().delete_value(cache_key)
 
+	frappe.publish_realtime(
+		"channel_members_updated",
+		{"channel_id": channel_id},
+		room="all",
+		after_commit=True,
+	)
+
 
 def get_channel_member(channel_id: str, user: str = None) -> dict:
 	"""

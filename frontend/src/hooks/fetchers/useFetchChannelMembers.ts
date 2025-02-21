@@ -22,7 +22,7 @@ const useFetchChannelMembers = (channelID: string) => {
         channel_id: channelID
     }, ["channel_members", channelID], {
         keepPreviousData: true,
-        dedupingInterval: 1000 * 60 * 2, // Revalidate every 2 minutes
+        dedupingInterval: 1000 * 60 * 5, // Revalidate every 5 minutes
     })
 
     return {
