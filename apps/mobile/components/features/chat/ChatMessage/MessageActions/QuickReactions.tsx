@@ -1,7 +1,7 @@
 import { useContext } from 'react'
 import { TouchableOpacity, View } from 'react-native'
 import { FrappeConfig, FrappeContext } from 'frappe-react-sdk'
-import SmilePlusIcon from "@assets/icons/SmilePlusIcon.svg"
+import SmilePlus from "@assets/icons/SmilePlus.svg"
 import { Text } from '@components/nativewindui/Text'
 import { Message } from '@raven/types/common/Message'
 import { useColorScheme } from '@hooks/useColorScheme'
@@ -51,7 +51,7 @@ const QuickReactions = ({ message, onClose }: MessageReactionsProps) => {
                     className='p-3 bg-card rounded-full'
                     activeOpacity={0.6}
                     onPress={() => emojiBottomSheetRef.current?.present()}>
-                    <SmilePlusIcon width={24} height={24} color={colors.icon} />
+                    <SmilePlus width={24} height={24} color={colors.icon} />
                 </TouchableOpacity>
             </View>
 
