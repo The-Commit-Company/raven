@@ -43,17 +43,21 @@ export const MessageSearch = ({ onToggleMyChannels, isOnlyInMyChannels, onToggle
 
     const navigate = useNavigate()
 
-    const handleNavigateToChannel = (channelID: string, baseMessage?: string) => {
+    const handleNavigateToChannel = (channelID: string, baseMessage?: string, workspace?: string) => {
         onClose()
-        navigate(`/channel/${channelID}`, {
+        let path = `/channel/${channelID}`
+        if (workspace) {
+            path = `/${workspace}/${channelID}`
+        }
+        navigate(path, {
             state: {
                 baseMessage
             }
         })
     }
 
-    const handleScrollToMessage = async (messageName: string, channelID: string) => {
-        handleNavigateToChannel(channelID, messageName)
+    const handleScrollToMessage = async (messageName: string, channelID: string, workspace?: string) => {
+        handleNavigateToChannel(channelID, messageName, workspace)
     }
 
     const users = useGetUserRecords()
