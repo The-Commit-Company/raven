@@ -93,7 +93,6 @@ const useChatStream = (channelID: string, scrollRef: MutableRefObject<HTMLDivEle
      * Need to scroll down twice because the scrollHeight is not updated immediately after the first scroll
      */
     useLayoutEffect(() => {
-        // if (done) {
 
         setTimeout(() => {
             scrollRef.current?.scroll({
@@ -111,7 +110,6 @@ const useChatStream = (channelID: string, scrollRef: MutableRefObject<HTMLDivEle
 
 
         scrollRef.current?.scrollTo(0, scrollRef.current?.scrollHeight)
-        // }
     }, [done, channelID])
 
 
@@ -442,11 +440,12 @@ const useChatStream = (channelID: string, scrollRef: MutableRefObject<HTMLDivEle
                 let currentDate = messages[messages.length - 1].creation.split(' ')[0]
                 let currentDateTime = new Date(messages[messages.length - 1].creation.split('.')[0]).getTime()
 
-                messagesWithDateSeparators.push({
-                    creation: getDateObject(`${currentDate} 00:00:00`).format('Do MMMM YYYY'),
-                    message_type: 'date',
-                    name: currentDate
-                })
+                // Do not add the date separator to the oldest message since we don't know if it's the first message of the day
+                // messagesWithDateSeparators.push({
+                //     creation: getDateObject(`${currentDate} 00:00:00`).format('Do MMMM YYYY'),
+                //     message_type: 'date',
+                //     name: currentDate
+                // })
 
                 messagesWithDateSeparators.push({
                     ...messages[messages.length - 1],

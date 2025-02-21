@@ -4,7 +4,7 @@ import { EditMessageDialog, useEditMessage } from '../ChatMessage/MessageActions
 import { MessageItem } from '../ChatMessage/MessageItem'
 import { ChannelHistoryFirstMessage } from '@/components/layout/EmptyState/EmptyState'
 import useChatStream from './useChatStream'
-import { forwardRef, MutableRefObject, useImperativeHandle } from 'react'
+import { forwardRef, MutableRefObject, useEffect, useImperativeHandle } from 'react'
 import { Loader } from '@/components/common/Loader'
 import ChatStreamLoader from './ChatStreamLoader'
 import clsx from 'clsx'
@@ -110,15 +110,17 @@ const ChatStream = forwardRef(({ channelID, replyToMessage, showThreadButton = t
         skip: !hasOlderMessages,
         onChange: (async (inView) => {
             if (inView && hasOlderMessages) {
-                const lastMessage = messages ? messages[0] : null;
-                await loadOlderMessages()
-                // Restore the scroll position to the last message before loading more
-                if (lastMessage?.message_type === 'date') {
-                    document.getElementById(`date-${lastMessage?.creation}`)?.scrollIntoView()
-                } else {
-                    document.getElementById(`message-${lastMessage?.name}`)?.scrollIntoView()
-                }
+                const currentScrollPosition = scrollRef.current?.scrollTop || 0
+                const scrollHeight = scrollRef.current?.scrollHeight || 0
 
+                await loadOlderMessages()
+
+                // After loading, adjust scroll position to maintain the same relative position
+                if (scrollRef.current) {
+                    const newScrollHeight = scrollRef.current.scrollHeight
+                    const heightDiff = newScrollHeight - scrollHeight
+                    scrollRef.current.scrollTop = currentScrollPosition + heightDiff
+                }
             }
         })
     });
@@ -133,6 +135,30 @@ const ChatStream = forwardRef(({ channelID, replyToMessage, showThreadButton = t
             }
         }
     });
+
+    // Add a resize observer so that if the user is near the bottom of the chat, we can scroll to the bottom when the user resizes the window + any link previews are loaded
+    useEffect(() => {
+        if (!scrollRef.current) return
+
+        const observer = new ResizeObserver(() => {
+            const scrollContainer = scrollRef.current
+            if (!scrollContainer) return
+
+            // Check if we're near bottom before adjusting scroll
+            if (scrollContainer.scrollTop + scrollContainer.clientHeight >= scrollContainer.scrollHeight - 100) {
+                scrollContainer.scrollTo({
+                    top: scrollContainer.scrollHeight,
+                    behavior: 'smooth'
+                })
+            }
+        })
+
+        observer.observe(scrollRef.current)
+
+        return () => {
+            observer.disconnect()
+        }
+    }, []) // Only run once on mount since we're just observing the container
 
     return (
         <div className='relative h-full flex flex-col overflow-y-auto pb-16 sm:pb-0' ref={scrollRef}>
@@ -154,7 +180,7 @@ const ChatStream = forwardRef(({ channelID, replyToMessage, showThreadButton = t
                         return <SystemMessageBlock key={`${message.name}_${message.modified}`} message={message} />
                     } else {
                         return <div key={`${message.name}_${message.modified}`} id={`message-${message.name}`}>
-                            <div className="w-full overflow-x-clip overflow-y-visible text-ellipsis animate-fadein">
+                            <div className="w-full overflow-x-clip overflow-y-visible text-ellipsis">
                                 <MessageItem
                                     message={message}
                                     isHighlighted={highlightedMessage === message.name}

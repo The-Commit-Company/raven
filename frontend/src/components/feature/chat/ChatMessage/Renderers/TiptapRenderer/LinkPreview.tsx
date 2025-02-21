@@ -72,14 +72,10 @@ const LinkPreview = memo(({ messageID }: { messageID: string }) => {
 
     return <WebLinkPreview href={href} messageID={messageID} />
 
-
-
-    return null
-
 })
 
 const WebLinkPreview = ({ href, messageID }: { href: string, messageID: string }) => {
-    const { data } = useFrappeGetCall<{ message: LinkPreviewDetails[] }>('raven.api.preview_links.get_preview_link', {
+    const { data, isLoading } = useFrappeGetCall<{ message: LinkPreviewDetails[] }>('raven.api.preview_links.get_preview_link', {
         urls: JSON.stringify([href])
     }, href ? `link_preview_${href}` : null, {
         revalidateOnFocus: false,
@@ -97,7 +93,9 @@ const WebLinkPreview = ({ href, messageID }: { href: string, messageID: string }
 
     const linkPreview = data?.message?.[0]
 
-    if (!href || !linkPreview) return null
+    if (isLoading) {
+        return <SkeletonWebLinkPreview />
+    }
 
     if (linkPreview && linkPreview.site_name && linkPreview.description) {
 
@@ -144,6 +142,31 @@ const WebLinkPreview = ({ href, messageID }: { href: string, messageID: string }
     }
 
     return null
+}
+
+const SkeletonWebLinkPreview = () => {
+    return <Box pt='2' maxWidth={{
+        md: '580px',
+    }} className='sm:max-w-[580px] max-w-[356px]'>
+        <Card asChild className='p-0 sm:p-3'>
+            <div className='animate-pulse flex sm:items-center flex-col sm:flex-row sm:gap-4 gap-0'>
+                {/* Image skeleton */}
+                <div className="sm:max-w-[220px] w-full h-[160px] sm:h-[120px] bg-gray-200 sm:-ml-3 sm:-mt-3 sm:-mb-3" />
+                {/* Content skeleton */}
+                <Stack className='gap-1.5 sm:p-0 py-3 px-3 flex-1'>
+                    <Stack className='sm:gap-1 gap-0.5'>
+                        <div className="h-5 bg-gray-200 rounded w-3/4" />
+                        <div className="h-4 bg-gray-200 rounded w-1/3" />
+                    </Stack>
+                    <div className="space-y-1.5">
+                        <div className="h-3 bg-gray-200 rounded w-full" />
+                        <div className="h-3 bg-gray-200 rounded w-full" />
+                        <div className="h-3 bg-gray-200 rounded w-2/3" />
+                    </div>
+                </Stack>
+            </div>
+        </Card>
+    </Box>
 }
 
 const YOUTUBE_REGEX = /^((?:https?:)?\/\/)?((?:www|m|music)\.)?((?:youtube\.com|youtu.be|youtube-nocookie\.com))(\/(?:[\w-]+\?v=|embed\/|v\/)?)([\w-]+)(\S+)?$/
