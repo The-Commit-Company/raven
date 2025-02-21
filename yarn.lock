@@ -6470,6 +6470,14 @@ expo-secure-store@~14.0.1:
   resolved "https://registry.yarnpkg.com/expo-secure-store/-/expo-secure-store-14.0.1.tgz#8953d5966430f5ff262f4d99e7551205870078d7"
   integrity sha512-QUS+j4+UG4jRQalgnpmTvvrFnMVLqPiUZRzYPnG3+JrZ5kwVW2w6YS3WWerPoR7C6g3y/a2htRxRSylsDs+TaQ==
 
+expo-share-extension@^3.0.0-2:
+  version "3.0.0-2"
+  resolved "https://registry.yarnpkg.com/expo-share-extension/-/expo-share-extension-3.0.0-2.tgz#c18edf18b8a40d3c93b648c6f5f531e5237c0903"
+  integrity sha512-1phobWXgES72XEpICJbfIkfiqxRcj1cQo/PieMpVNir/9h4K1ifkeNdMDOlVsfUb9ZBTWl7Jsfn16zAJblGNFw==
+  dependencies:
+    semver "^7.6.3"
+    zod "^3.23.8"
+
 expo-sharing@~13.0.1:
   version "13.0.1"
   resolved "https://registry.yarnpkg.com/expo-sharing/-/expo-sharing-13.0.1.tgz#f5221ce44190a12649a6639e619d83e318c768a1"
@@ -11959,6 +11967,11 @@ zeego@^2.0.4:
     "@radix-ui/react-context-menu" "^2.0.1"
     "@radix-ui/react-dropdown-menu" "^2.0.1"
     sf-symbols-typescript "^2.0.0"
+
+zod@^3.23.8:
+  version "3.24.2"
+  resolved "https://registry.yarnpkg.com/zod/-/zod-3.24.2.tgz#8efa74126287c675e92f46871cfc8d15c34372b3"
+  integrity sha512-lY7CDW43ECgW9u1TcT3IoXHflywfVqDYze4waEz812jR/bZ8FHDsl7pFQoSZTz5N+2NqRXs8GBwnAwo3ZNxqhQ==
 
 zustand@^4.4.7:
   version "4.5.6"

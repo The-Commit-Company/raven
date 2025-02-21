@@ -67,7 +67,13 @@
           }
         }
       ],
-      "expo-video"
+      "expo-video",
+      [
+        "expo-share-extension",
+        {
+          "googleServicesFile": "./GoogleService-Info.plist"
+        }
+      ]
     ],
     "extra": {
       "router": {

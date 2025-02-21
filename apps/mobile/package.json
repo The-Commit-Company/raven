@@ -1,7 +1,7 @@
 {
   "name": "@raven/mobile",
   "version": "1.0.0",
-  "main": "expo-router/entry",
+  "main": "index.ts",
   "scripts": {
     "start": "expo start",
     "android": "expo run:android",
@@ -46,6 +46,7 @@
     "expo-navigation-bar": "~4.0.8",
     "expo-router": "~4.0.17",
     "expo-secure-store": "~14.0.1",
+    "expo-share-extension": "^3.0.0-2",
     "expo-sharing": "~13.0.1",
     "expo-status-bar": "~2.0.1",
     "expo-system-ui": "~4.0.8",
