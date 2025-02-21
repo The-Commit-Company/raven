@@ -16,6 +16,8 @@ import { ActivityIndicator } from "@components/nativewindui/ActivityIndicator"
 import { ChannelIcon } from "@components/features/channels/ChannelList/ChannelIcon"
 import { formatDate } from "@raven/lib/utils/dateConversions"
 import { toast } from "sonner-native"
+import HeaderBackButton from "@components/common/HeaderBackButton"
+import CrossIcon from '@assets/icons/CrossIcon.svg';
 
 type DMChannelListItemWithUser = DMChannelListItem & {
     user: UserFields
@@ -118,7 +120,8 @@ function ForwardMessage() {
                 <TouchableOpacity className={clsx(isForwarding || !selectedChannels.length ? "opacity-45" : "")} disabled={isForwarding || !selectedChannels.length} onPress={onForwardMessage} activeOpacity={0.6}>
                     {isForwarding && !error ? <ActivityIndicator size={20} className='text-gray-800 dark:text-white' /> : <SendIcon fill={colors.icon} />}
                 </TouchableOpacity>
-            )
+            ),
+            headerLeft: () => <HeaderBackButton />,
         })
     }, [navigation, selectedChannels])
 
@@ -138,7 +141,7 @@ function ForwardMessage() {
                             if (isDMChannel && !user?.enabled) return null
 
                             return (
-                                <View key={channel.name} className="bg-gray-200 dark:bg-gray-900 rounded-md px-2 py-1.5 flex-row items-center gap-2">
+                                <View key={channel.name} className="bg-gray-100 dark:bg-gray-900 rounded-md px-2 py-1.5 flex-row items-center gap-2">
                                     {isDMChannel ? (
                                         <UserAvatar
                                             src={user?.user_image ?? ""}
@@ -158,11 +161,9 @@ function ForwardMessage() {
                                             ? `${user?.full_name}${currentUserInfo?.name === user?.name ? " (You)" : ""}`
                                             : channel.channel_name}
                                     </Text>
-                                    <Pressable onPress={() => handleRemoveChannel(channel)} className="w-5 h-5 rounded-full bg-gray-300 dark:bg-gray-800 ml-1">
-                                        <Text className="text-gray-500 dark:text-gray-400 text-xs align-middle font-semibold m-auto">
-                                            X
-                                        </Text>
-                                    </Pressable>
+                                    <TouchableOpacity activeOpacity={0.7} onPress={() => handleRemoveChannel(channel)} className="flex justify-center items-center w-5 h-5 rounded-full bg-gray-300 dark:bg-gray-800 ml-1">
+                                        <CrossIcon fill={colors.icon} height={11} width={11} />
+                                    </TouchableOpacity>
                                 </View>
                             )
                         })}
