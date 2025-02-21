@@ -136,6 +136,7 @@ export const ThreadMessages = ({ threadMessage }: { threadMessage: Message }) =>
                 <IconButton
                     color='gray'
                     size='1'
+                    className="z-50"
                     variant="soft"
                     onClick={clearSelectedMessage}>
                     <BiX size='20' />

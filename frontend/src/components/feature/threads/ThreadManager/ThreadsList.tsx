@@ -1,22 +1,25 @@
-import { ThreadPreviewBox } from './ThreadPreviewBox'
-import { ThreadMessage } from './Threads'
+import { ThreadPreviewBox } from '../ThreadPreviewBox'
+import { ThreadMessage } from '../Threads'
 import { useFrappeGetCall } from 'frappe-react-sdk'
-import { Flex } from '@radix-ui/themes'
 import { ErrorBanner } from '@/components/layout/AlertBanner/ErrorBanner'
 import { EmptyStateForThreads } from '@/components/layout/EmptyState/EmptyState'
 import { useParams } from 'react-router-dom'
 
 type Props = {
-    aiThreads?: 0 | 1
+    aiThreads?: 0 | 1,
+    content?: string,
+    channel?: string
 }
 
-const ThreadsList = ({ aiThreads }: Props) => {
+const ThreadsList = ({ aiThreads, content, channel }: Props) => {
 
     const { workspaceID } = useParams()
 
     const { data, error } = useFrappeGetCall<{ message: ThreadMessage[] }>("raven.api.threads.get_all_threads", {
         is_ai_thread: aiThreads,
-        workspace: workspaceID
+        workspace: workspaceID,
+        content: content,
+        channel_id: channel
     }, undefined, {
         revalidateOnFocus: false
     })
@@ -29,11 +32,11 @@ const ThreadsList = ({ aiThreads }: Props) => {
         return <EmptyStateForThreads />
     }
 
-    return <Flex direction='column' gap='3' justify='start' pt='2'>
+    return <ul className='list-none'>
         {data?.message?.map((thread) => {
             return <ThreadPreviewBox key={thread.name} thread={thread} />
         })}
-    </Flex>
+    </ul>
 
 }
 

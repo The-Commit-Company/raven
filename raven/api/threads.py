@@ -1,13 +1,14 @@
 import frappe
 from frappe import _
 from frappe.query_builder import Order
+from frappe.query_builder.functions import Count
 
 from raven.api.raven_channel import get_peer_user_id
 from raven.utils import get_channel_members
 
 
 @frappe.whitelist()
-def get_all_threads(workspace: str = None, is_ai_thread=0):
+def get_all_threads(workspace: str = None, content=None, channel_id=None, is_ai_thread=0):
 	"""
 	Get all the threads in which the user is a participant
 	(We are not fetching the messages inside a thread here, just the main thread message,
@@ -18,7 +19,8 @@ def get_all_threads(workspace: str = None, is_ai_thread=0):
 
 	channel = frappe.qb.DocType("Raven Channel")
 	channel_member = frappe.qb.DocType("Raven Channel Member")
-	message = frappe.qb.DocType("Raven Message")
+	message = frappe.qb.DocType("Raven Message").as_("message")
+	thread_messages = frappe.qb.DocType("Raven Message").as_("thread_messages")
 
 	query = (
 		frappe.qb.from_(channel)
@@ -43,20 +45,34 @@ def get_all_threads(workspace: str = None, is_ai_thread=0):
 			message.image_width,
 			message.owner,
 			message.creation,
+			Count(thread_messages.name).as_("reply_count"),
 		)
 		.left_join(message)
-		.on(channel.name == message.name)
+		.on((message.is_thread == 1) & (message.name == channel.name))
 		.left_join(channel_member)
-		.on(channel.name == channel_member.channel_id)
+		.on(
+			(channel.name == channel_member.channel_id) & (channel_member.user_id == frappe.session.user)
+		)
+		.left_join(thread_messages)
+		.on(channel.name == thread_messages.channel_id)
 		.where(channel_member.user_id == frappe.session.user)
 		.where(channel.is_thread == 1)
 		.where(channel.is_ai_thread == is_ai_thread)
+		.groupby(channel.name)
 	)
 
 	if workspace:
 		query = query.where((channel.workspace == workspace) | (channel.is_dm_thread == 1))
 
+	if content:
+		query = query.where(message.content.like(f"%{content}%"))
+
+	if channel_id and channel_id != "all":
+		query = query.where(message.channel_id == channel_id)
+
 	query = query.orderby(channel.last_message_timestamp, order=Order.desc)
+
+	# return
 	threads = query.run(as_dict=True)
 
 	for thread in threads:

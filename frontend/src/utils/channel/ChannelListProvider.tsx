@@ -7,13 +7,9 @@ import { getErrorMessage } from '@/components/layout/AlertBanner/ErrorBanner'
 import { RavenChannel } from '@/types/RavenChannelManagement/RavenChannel'
 import { useIsMobile } from '@/hooks/useMediaQuery'
 
-export type UnreadChannelCountItem = { name: string, user_id?: string, unread_count: number, is_direct_message: 0 | 1 }
+export type UnreadChannelCountItem = { name: string, user_id?: string, unread_count: number, is_direct_message: 0 | 1, is_thread: 0 | 1 }
 
-export type UnreadCountData = {
-    total_unread_count_in_channels: number,
-    total_unread_count_in_dms: number,
-    channels: UnreadChannelCountItem[]
-}
+export type UnreadCountData = UnreadChannelCountItem[]
 
 export type ChannelListItem = Pick<RavenChannel, 'name' | 'channel_name' | 'type' |
     'channel_description' | 'is_direct_message' | 'is_self_message' |

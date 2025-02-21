@@ -256,7 +256,7 @@ def get_unread_count_for_channels():
 		)
 		.where(channel_member.user_id == frappe.session.user)
 		.where(channel.is_archived == 0)
-		.where(channel.is_thread == 0)
+		.where(channel.is_ai_thread == 0)
 		.where(message.message_type != "System")
 		.left_join(message)
 		.on(channel.name == message.channel_id)
@@ -266,6 +266,7 @@ def get_unread_count_for_channels():
 		query.select(
 			channel.name,
 			channel.is_direct_message,
+			channel.is_thread,
 			Count(Case().when(message.creation > Coalesce(channel_member.last_visit, "2000-11-11"), 1)).as_(
 				"unread_count"
 			),
@@ -274,20 +275,7 @@ def get_unread_count_for_channels():
 		.run(as_dict=True)
 	)
 
-	total_unread_count_in_channels = 0
-	total_unread_count_in_dms = 0
-	for channel in channels_query:
-		if channel.is_direct_message:
-			total_unread_count_in_dms += channel["unread_count"]
-		else:
-			total_unread_count_in_channels += channel["unread_count"]
-
-	result = {
-		"total_unread_count_in_channels": total_unread_count_in_channels,
-		"total_unread_count_in_dms": total_unread_count_in_dms,
-		"channels": channels_query,
-	}
-	return result
+	return channels_query
 
 
 @frappe.whitelist()
