@@ -1,6 +1,6 @@
 import { router, Stack } from 'expo-router';
-import { Linking, Platform, View } from 'react-native';
-import { Avatar, AvatarFallback } from '@components/nativewindui/Avatar';
+import { Linking, Platform, TouchableOpacity, View } from 'react-native';
+import { Avatar, AvatarFallback, AvatarImage } from '@components/nativewindui/Avatar';
 import { Button } from '@components/nativewindui/Button';
 import {
     ESTIMATED_ITEM_HEIGHT,
@@ -13,12 +13,19 @@ import { Text } from '@components/nativewindui/Text';
 import { cn } from '@lib/cn';
 import { useColorScheme } from '@hooks/useColorScheme';
 import ChevronRightIcon from '@assets/icons/ChevronRightIcon.svg';
-import { FrappeConfig, FrappeContext, useFrappeGetCall } from 'frappe-react-sdk';
+import { FrappeConfig, FrappeContext } from 'frappe-react-sdk';
 import { revokeAsync } from 'expo-auth-session';
 import { useContext } from 'react';
 import { SiteContext } from '../../_layout';
 import { clearDefaultSite, deleteAccessToken, getRevocationEndpoint } from '@lib/auth';
 import useCurrentRavenUser from '@raven/lib/hooks/useCurrentRavenUser';
+import useFileURL from '@hooks/useFileURL';
+import DeleteButton from '@components/features/profile/upload-profile/DeleteButton';
+import CameraButton from '@components/features/profile/upload-profile/CameraButton';
+import { Sheet, useSheetRef } from '@components/nativewindui/Sheet';
+import { BottomSheetView } from '@gorhom/bottom-sheet';
+import ViewProfileButton from '@components/features/profile/upload-profile/ViewProfileButton';
+import { Divider } from '@components/layout/Divider';
 
 const SCREEN_OPTIONS = {
     title: 'Profile',
@@ -76,32 +83,55 @@ function Item({ info }: { info: ListRenderItemInfo<DataItem> }) {
 
 function ListHeaderComponent() {
 
-    const { data, mutate } = useFrappeGetCall('raven.api.raven_users.get_current_raven_user',
-        undefined,
-        'my_profile',
-        {
-            // revalidateIfStale: false,
-            revalidateOnFocus: false,
-            shouldRetryOnError: false,
-            revalidateOnReconnect: true
+    const { myProfile, mutate } = useCurrentRavenUser()
+
+    const source = useFileURL(myProfile?.user_image ?? "")
+
+    const bottomSheetRef = useSheetRef()
+
+    const onSheetClose = (isMutate: boolean = true) => {
+        bottomSheetRef.current?.close()
+
+        if (isMutate) {
+            mutate()
         }
-    )
+    }
+
     return (
         <View className="ios:pb-8 items-center pb-4 pt-8">
-            <Avatar alt={`${data?.message?.full_name}'s Profile`} className="h-36 w-36">
-                <AvatarFallback>
-                    <Text
-                        variant="largeTitle"
-                        className={cn(
-                            'dark:text-background font-medium text-white',
-                            Platform.OS === 'ios' && 'dark:text-foreground'
-                        )}>
-                        {data?.message?.full_name?.charAt(0) + data?.message?.full_name?.charAt(1)}
-                    </Text>
-                </AvatarFallback>
-            </Avatar>
+            <TouchableOpacity activeOpacity={0.8} onPress={() => bottomSheetRef.current?.present()} className='relative'>
+                <Avatar alt={`${myProfile?.full_name}'s Profile`} className="h-36 w-36">
+                    <AvatarImage source={source} />
+                    <AvatarFallback>
+                        <Text
+                            variant="largeTitle"
+                            className={cn(
+                                'dark:text-background font-medium text-white',
+                                Platform.OS === 'ios' && 'dark:text-foreground'
+                            )}>
+                            {myProfile?.full_name?.charAt(0)}{myProfile?.full_name?.charAt(1)}
+                        </Text>
+                    </AvatarFallback>
+                </Avatar>
+            </TouchableOpacity>
+
+            <Sheet ref={bottomSheetRef}>
+                <BottomSheetView className='flex flex-colum gap-1 pb-10'>
+                    <Text className='px-4 text-lg font-semibold'>Upload Photo</Text>
+                    <View className='p-4 flex-col justify-start items-stretch w-full gap-1'>
+                        <CameraButton onSheetClose={onSheetClose} />
+                        {myProfile?.user_image ? (
+                            <>
+                                <ViewProfileButton uri={source?.uri ?? ""} onSheetClose={onSheetClose} />
+                                <Divider className='mx-0 my-0.5' prominent />
+                                <DeleteButton onSheetClose={onSheetClose} />
+                            </>
+                        ) : null}
+                    </View>
+                </BottomSheetView>
+            </Sheet>
             <View className="p-2" />
-            <Text variant="title1" className='font-medium'>{data?.message?.full_name}</Text>
+            <Text variant="title1" className='font-medium'>{myProfile?.full_name}</Text>
         </View>
     );
 }
