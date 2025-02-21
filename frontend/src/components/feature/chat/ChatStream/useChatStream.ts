@@ -69,47 +69,94 @@ const useChatStream = (channelID: string, scrollRef: MutableRefObject<HTMLDivEle
      */
     const latestMessagesLoaded = useRef(false)
 
+    /**
+     * Ensures scroll to bottom happens after all content is loaded
+     * Uses both RAF and a backup timeout for reliability
+     */
+    const scrollToBottom = (behavior: ScrollBehavior = 'auto') => {
+        if (!scrollRef.current) return
+
+        // First immediate scroll attempt
+        requestAnimationFrame(() => {
+            if (scrollRef.current) {
+                scrollRef.current.scrollTo({
+                    top: scrollRef.current.scrollHeight,
+                    behavior
+                })
+            }
+        })
+
+        // Second attempt after a short delay
+        const shortDelayTimer = setTimeout(() => {
+            if (scrollRef.current) {
+                scrollRef.current.scrollTo({
+                    top: scrollRef.current.scrollHeight,
+                    behavior
+                })
+            }
+        }, 100)
+
+        // Final backup attempt after longer delay
+        const backupTimer = setTimeout(() => {
+            if (scrollRef.current) {
+                scrollRef.current.scrollTo({
+                    top: scrollRef.current.scrollHeight,
+                    behavior
+                })
+            }
+        }, 500)
+
+        return () => {
+            clearTimeout(shortDelayTimer)
+            clearTimeout(backupTimer)
+        }
+    }
+
+    const scrollToMessageElement = (messageID: string, behavior: ScrollBehavior = 'smooth') => {
+        const timeoutId = setTimeout(() => {
+            document.getElementById(`message-${messageID}`)?.scrollIntoView({
+                behavior,
+                block: 'center'
+            })
+        }, 100)
+        return timeoutId
+    }
+
+
     const { data, isLoading, error, mutate } = useFrappeGetCall<GetMessagesResponse>('raven.api.chat_stream.get_messages', {
         'channel_id': channelID,
         'base_message': state?.baseMessage ? state.baseMessage : undefined
     }, { path: `get_messages_for_channel_${channelID}`, baseMessage: state?.baseMessage }, {
         revalidateOnFocus: isMobile ? true : false,
         onSuccess: (data) => {
+            let cleanup: (() => void) | undefined
+
             if (!highlightedMessage) {
                 if (!data.message.has_new_messages) {
-                    setDone(true)
+                    cleanup = scrollToBottom()
                     latestMessagesLoaded.current = true
                 }
             } else {
-                setTimeout(() => {
-                    document.getElementById(`message-${highlightedMessage}`)?.scrollIntoView({ behavior: 'smooth', block: 'center' })
-                }, 100)
+                const timeoutId = scrollToMessageElement(highlightedMessage)
+                cleanup = () => clearTimeout(timeoutId)
+            }
+
+            return () => {
+                if (cleanup) cleanup()
             }
         }
     })
 
-    const scrollToBottom = (behavior: ScrollBehavior = 'auto') => {
-        if (!scrollRef.current) return
-
-        // Use requestAnimationFrame to ensure DOM updates are complete
-        requestAnimationFrame(() => {
-            scrollRef.current?.scrollTo({
-                top: scrollRef.current.scrollHeight,
-                behavior
-            })
-        })
-    }
-
     /**
-     * When loading is complete, scroll down to the bottom
+     * Additional effect to handle channel switches
+     * This helps ensure proper scrolling when switching between channels
      */
-    useLayoutEffect(() => {
-        if (!done || !data?.message.messages.length) return
-
-        // Only scroll to bottom on initial load or channel change
-        scrollToBottom()
-    }, [done, channelID])
-
+    useEffect(() => {
+        if (data?.message.messages.length && !highlightedMessage && !data.message.has_new_messages) {
+            const cleanup = scrollToBottom()
+            return cleanup
+        }
+    }, [channelID, data?.message.messages.length])
 
     /** If the user has already loaded all the latest messages and exits the channel, we update the timestamp of last visit  */
 

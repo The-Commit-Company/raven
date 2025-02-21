@@ -139,7 +139,7 @@ const ChatStream = forwardRef(({ channelID, replyToMessage, showThreadButton = t
                 requestAnimationFrame(() => {
                     scrollContainer.scrollTo({
                         top: scrollContainer.scrollHeight,
-                        behavior: 'smooth'
+                        behavior: 'instant'
                     })
                 })
             }
