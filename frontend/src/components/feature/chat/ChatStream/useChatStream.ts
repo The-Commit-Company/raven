@@ -88,28 +88,26 @@ const useChatStream = (channelID: string, scrollRef: MutableRefObject<HTMLDivEle
         }
     })
 
+    const scrollToBottom = (behavior: ScrollBehavior = 'auto') => {
+        if (!scrollRef.current) return
+
+        // Use requestAnimationFrame to ensure DOM updates are complete
+        requestAnimationFrame(() => {
+            scrollRef.current?.scrollTo({
+                top: scrollRef.current.scrollHeight,
+                behavior
+            })
+        })
+    }
+
     /**
      * When loading is complete, scroll down to the bottom
-     * Need to scroll down twice because the scrollHeight is not updated immediately after the first scroll
      */
     useLayoutEffect(() => {
+        if (!done || !data?.message.messages.length) return
 
-        setTimeout(() => {
-            scrollRef.current?.scroll({
-                top: scrollRef.current?.scrollHeight,
-                // behavior: 'smooth',
-            })
-        }, 50)
-
-        setTimeout(() => {
-            scrollRef.current?.scroll({
-                top: scrollRef.current?.scrollHeight,
-                // behavior: 'smooth',
-            })
-        }, 200)
-
-
-        scrollRef.current?.scrollTo(0, scrollRef.current?.scrollHeight)
+        // Only scroll to bottom on initial load or channel change
+        scrollToBottom()
     }, [done, channelID])
 
 
@@ -194,14 +192,12 @@ const useChatStream = (channelID: string, scrollRef: MutableRefObject<HTMLDivEle
                 revalidate: false,
             }).then(() => {
                 if (data?.message.has_new_messages === false) {
-                    // If the user is focused on the page, then we also need to
                     if (scrollRef.current) {
-                        // We only scroll to the bottom if the user is close to the bottom
-                        if (scrollRef.current.scrollTop + scrollRef.current.clientHeight >= scrollRef.current.scrollHeight - 100) {
-                            scrollRef.current?.scrollTo(0, scrollRef.current?.scrollHeight)
-                        } else if (event.message_details.owner === currentUser) {
-                            // If the user is the sender of the message, scroll to the bottom
-                            scrollRef.current?.scrollTo(0, scrollRef.current?.scrollHeight)
+                        const isNearBottom = scrollRef.current.scrollTop + scrollRef.current.clientHeight >=
+                            scrollRef.current.scrollHeight - 100
+
+                        if (isNearBottom || event.message_details.owner === currentUser) {
+                            scrollToBottom('smooth') // Smooth scroll for better UX when user is watching
                         }
                     }
                 }
@@ -328,10 +324,17 @@ const useChatStream = (channelID: string, scrollRef: MutableRefObject<HTMLDivEle
 
     /** Callback to load older messages */
     const loadOlderMessages = () => {
-
         if (!doneDebounced || loadingOlderMessages || !data?.message.has_old_messages) {
             return Promise.resolve()
         }
+
+        // Store current scroll position and height before loading
+        const scrollContainer = scrollRef.current
+        if (!scrollContainer) return Promise.resolve()
+
+        const previousScrollHeight = scrollContainer.scrollHeight
+        const previousScrollTop = scrollContainer.scrollTop
+
         return mutate((d) => {
             let oldestMessage: Message | null = null;
             if (d && d.message.messages.length > 0) {
@@ -365,6 +368,15 @@ const useChatStream = (channelID: string, scrollRef: MutableRefObject<HTMLDivEle
             return d
         }, {
             revalidate: false,
+        }).then(() => {
+            // After mutation, restore relative scroll position
+            requestAnimationFrame(() => {
+                if (scrollContainer) {
+                    const newScrollHeight = scrollContainer.scrollHeight
+                    const heightDifference = newScrollHeight - previousScrollHeight
+                    scrollContainer.scrollTop = previousScrollTop + heightDifference
+                }
+            })
         })
     }
 
@@ -416,6 +428,8 @@ const useChatStream = (channelID: string, scrollRef: MutableRefObject<HTMLDivEle
         }).then((res) => {
             if (res?.message.has_new_messages === false) {
                 latestMessagesLoaded.current = true
+                // Smooth scroll to bottom when loading new messages
+                scrollToBottom('smooth')
             }
         })
     }
