@@ -60,9 +60,6 @@ const useChatStream = (channelID: string, scrollRef: MutableRefObject<HTMLDivEle
     const { call: fetchOlderMessages, loading: loadingOlderMessages } = useFrappePostCall('raven.api.chat_stream.get_older_messages')
     const { call: fetchNewerMessages, loading: loadingNewerMessages } = useFrappePostCall('raven.api.chat_stream.get_newer_messages')
 
-    /** State variable used to track if the latest messages have been fetched and to scroll to the bottom of the chat stream */
-    const [done, setDone] = useState(false)
-
     /**
      * Ref that is updated when no new messages are available
      * Used to track visit when the user leaves the channel
@@ -152,11 +149,9 @@ const useChatStream = (channelID: string, scrollRef: MutableRefObject<HTMLDivEle
      * This helps ensure proper scrolling when switching between channels
      */
     useEffect(() => {
-        if (data?.message.messages.length && !highlightedMessage && !data.message.has_new_messages) {
-            const cleanup = scrollToBottom()
-            return cleanup
-        }
-    }, [channelID, data?.message.messages.length])
+        const cleanup = scrollToBottom()
+        return cleanup
+    }, [channelID])
 
     /** If the user has already loaded all the latest messages and exits the channel, we update the timestamp of last visit  */
 
@@ -366,12 +361,9 @@ const useChatStream = (channelID: string, scrollRef: MutableRefObject<HTMLDivEle
 
     })
 
-    // Do not loader older messages if the first request is just completed
-    const doneDebounced = useDebounce(done, 1000)
-
     /** Callback to load older messages */
     const loadOlderMessages = () => {
-        if (!doneDebounced || loadingOlderMessages || !data?.message.has_old_messages) {
+        if (loadingOlderMessages || !data?.message.has_old_messages) {
             return Promise.resolve()
         }
 
