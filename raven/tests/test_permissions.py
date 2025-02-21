@@ -666,9 +666,21 @@ class TestPermissions(IntegrationTestCase):
 		# Create a thread from the message
 		thread = create_thread(message_id=test_message.name)
 
-		# Users should not be able to delete the thread channel directly
+		frappe.set_user("test1@example.com")
+
+		# Test1 should not be able to delete the thread channel
 		with self.assertRaises(frappe.PermissionError):
 			frappe.delete_doc("Raven Channel", test_message.name)
+
+		frappe.set_user("test@example.com")
+
+		# Test should be able to delete the thread channel
+		frappe.delete_doc("Raven Channel", test_message.name)
+		# The thread channel should be deleted automatically
+		self.assertFalse(frappe.db.exists("Raven Channel", test_message.name))
+
+		# Create a thread again for the same message
+		thread = create_thread(message_id=test_message.name)
 
 		# Delete the message
 		test_message.delete()

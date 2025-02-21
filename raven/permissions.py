@@ -120,15 +120,19 @@ def channel_has_permission(doc, user=None, ptype=None):
 
 		if ptype == "create":
 			# Users can create threads in channels they are a member of the main channel in which the thread is created
-			main_channel = frappe.db.get_value("Raven Message", doc.channel_name, "channel_id")
+			main_channel = frappe.get_cached_value("Raven Message", doc.channel_name, "channel_id")
 
 			if is_channel_member(main_channel, user):
 				return True
 
 		if ptype == "read":
-			main_channel = frappe.db.get_value("Raven Message", doc.channel_name, "channel_id")
+			main_channel = frappe.get_cached_value("Raven Message", doc.channel_name, "channel_id")
 			# Check if the user is a member of the main channel
 			return is_channel_member(main_channel, user)
+
+		if ptype == "delete":
+			# Only the creator of the thread can delete the thread
+			return doc.owner == user
 
 	else:
 		# For regular channels
@@ -265,8 +269,17 @@ def message_has_permission(doc, user=None, ptype=None):
 	# To send any message, the user needs to be a member of the channel
 
 	channel_member = get_channel_member(doc.channel_id, user)
+
 	if not channel_member:
-		return False
+		# Check if the channel is a thread
+		is_thread = frappe.get_cached_value("Raven Channel", doc.channel_id, "is_thread")
+		if is_thread:
+			# Check if the user is a member of the main channel
+			main_channel = frappe.get_cached_value("Raven Message", doc.channel_id, "channel_id")
+			channel_member = is_channel_member(main_channel, user)
+
+		if not channel_member:
+			return False
 
 	if ptype == "read":
 		return True

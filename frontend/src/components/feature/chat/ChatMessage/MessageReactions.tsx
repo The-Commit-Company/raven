@@ -6,6 +6,10 @@ import { useGetUserRecords } from "@/hooks/useGetUserRecords"
 import { Flex, Text, Tooltip } from "@radix-ui/themes"
 import { clsx } from "clsx"
 import { EmojiPickerButton } from "./MessageActions/QuickActions/EmojiPickerButton"
+import usePostMessageReaction from "@/hooks/usePostMessageReaction"
+import { Message } from "../../../../../../types/Messaging/Message"
+import { toast } from "sonner"
+import { getErrorMessage } from "@/components/layout/AlertBanner/ErrorBanner"
 
 export interface ReactionObject {
     // The emoji
@@ -19,22 +23,22 @@ export interface ReactionObject {
     // The name of the custom emoji
     emoji_name: string
 }
-export const MessageReactions = ({ messageID, message_reactions }: { messageID: string, message_reactions?: string | null }) => {
+export const MessageReactions = ({ message, message_reactions }: { message: Message, message_reactions?: string | null }) => {
 
     const { currentUser } = useContext(UserContext)
 
-    const { call: reactToMessage } = useFrappePostCall('raven.api.reactions.react')
+    const postReaction = usePostMessageReaction()
 
     const saveReaction = useCallback((emoji: string, is_custom: boolean = false, emoji_name?: string) => {
-        if (messageID) {
-            return reactToMessage({
-                message_id: messageID,
-                reaction: emoji,
-                is_custom,
-                emoji_name
-            })
+        if (message) {
+            postReaction(message, emoji, is_custom, emoji_name)
+                .catch((err) => {
+                    toast.error("Could not react to message.", {
+                        description: getErrorMessage(err)
+                    })
+                })
         }
-    }, [messageID, reactToMessage])
+    }, [message])
 
     const allUsers = useGetUserRecords()
     const reactions: ReactionObject[] = useMemo(() => {
@@ -107,9 +111,9 @@ const ReactionButton = ({ reaction, onReactionClick, currentUser, allUsers }: Re
     }, [allUsers, count, currentUser, reaction, users])
 
     return (
-        <Tooltip content={<p className="my-0 max-w-96">
+        <Tooltip content={<span className="my-0 max-w-96">
             {label}
-        </p>}>
+        </span>}>
             <button
                 onClick={onClick}
                 className={clsx("w-fit sm:h-full text-xs py-0.5 cursor-pointer rounded-md min-w-[4ch] border font-semibold",

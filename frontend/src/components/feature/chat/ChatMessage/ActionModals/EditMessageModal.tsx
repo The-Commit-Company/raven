@@ -1,7 +1,7 @@
 import { useFrappeUpdateDoc } from "frappe-react-sdk"
 import { Suspense, lazy, useEffect } from "react"
 import { ErrorBanner } from "../../../../layout/AlertBanner/ErrorBanner"
-import { IconButton, Dialog, Flex, Text } from "@radix-ui/themes"
+import { IconButton, Dialog, Flex, Text, VisuallyHidden } from "@radix-ui/themes"
 import { BiX } from "react-icons/bi"
 import { Loader } from "@/components/common/Loader"
 import { TextMessage } from "../../../../../../../types/Messaging/Message"
@@ -34,6 +34,9 @@ export const EditMessageModal = ({ onClose, message }: EditMessageModalProps) =>
         <>
             <Flex justify={'between'}>
                 <Dialog.Title>Edit Message</Dialog.Title>
+                <VisuallyHidden>
+                    <Dialog.Description>Type in the new message text</Dialog.Description>
+                </VisuallyHidden>
                 <Dialog.Close disabled={updatingDoc} className="invisible sm:visible">
                     <IconButton size='1' variant="soft" color="gray">
                         <BiX size='18' />

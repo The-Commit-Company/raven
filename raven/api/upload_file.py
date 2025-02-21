@@ -102,7 +102,7 @@ def upload_file_with_message():
 
 	message_doc.reload()
 
-	message_doc.file = file_doc.file_url
+	message_doc.file = file_doc.unique_url
 
 	if file_doc.file_type in fileExt:
 
@@ -150,4 +150,4 @@ def upload_file_with_message():
 
 	message_doc.save()
 
-	return message_doc.name
+	return message_doc

@@ -127,7 +127,7 @@ export const LeftRightLayout = ({ message, user, isActive, isHighlighted, onRepl
 
                                 {message_reactions?.length &&
                                     <MessageReactions
-                                        messageID={name}
+                                        message={message}
                                         message_reactions={message_reactions}
                                     />
                                 }
