@@ -136,7 +136,7 @@ const AddEmojiButton = ({ saveReaction }: AddEmojiButtonProps) => {
 
     return (
         <View>
-            <TouchableOpacity onPress={openEmojiPicker} activeOpacity={0.7} className='flex-row flex-1 bg-gray-100 rounded-md py-1 px-2.5 gap-2'>
+            <TouchableOpacity onPress={openEmojiPicker} activeOpacity={0.7} className='flex-row flex-1 items-center bg-gray-100 rounded-md py-1 px-2.5 gap-2'>
                 <SmilePlus width={16} height={16} fill={colors.icon} />
             </TouchableOpacity>
 
