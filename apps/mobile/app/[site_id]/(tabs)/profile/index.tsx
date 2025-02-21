@@ -1,7 +1,6 @@
 import { router, Stack } from 'expo-router';
-import { Linking, Platform, TouchableOpacity, View } from 'react-native';
+import { Platform, ScrollView, TouchableOpacity, View } from 'react-native';
 import { Avatar, AvatarFallback, AvatarImage } from '@components/nativewindui/Avatar';
-import { Button } from '@components/nativewindui/Button';
 import {
     ESTIMATED_ITEM_HEIGHT,
     List,
@@ -13,11 +12,6 @@ import { Text } from '@components/nativewindui/Text';
 import { cn } from '@lib/cn';
 import { useColorScheme } from '@hooks/useColorScheme';
 import ChevronRightIcon from '@assets/icons/ChevronRightIcon.svg';
-import { FrappeConfig, FrappeContext } from 'frappe-react-sdk';
-import { revokeAsync } from 'expo-auth-session';
-import { useContext } from 'react';
-import { SiteContext } from '../../_layout';
-import { clearDefaultSite, deleteAccessToken, getRevocationEndpoint } from '@lib/auth';
 import useCurrentRavenUser from '@raven/lib/hooks/useCurrentRavenUser';
 import useFileURL from '@hooks/useFileURL';
 import DeleteButton from '@components/features/profile/upload-profile/DeleteButton';
@@ -26,6 +20,11 @@ import { Sheet, useSheetRef } from '@components/nativewindui/Sheet';
 import { BottomSheetView } from '@gorhom/bottom-sheet';
 import ViewProfileButton from '@components/features/profile/upload-profile/ViewProfileButton';
 import { Divider } from '@components/layout/Divider';
+import LogOutButton from '@components/features/profile/profile-settings/LogOutButton';
+import NotificationSetting from '@components/features/profile/profile-settings/NotificationSetting';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import AppearanceSetting from '@components/features/profile/profile-settings/AppearanceSetting';
+
 
 const SCREEN_OPTIONS = {
     title: 'Profile',
@@ -39,19 +38,40 @@ const ESTIMATED_ITEM_SIZE =
 export default function Profile() {
 
     const { myProfile } = useCurrentRavenUser()
+    const insets = useSafeAreaInsets()
 
     return (
         <>
             <Stack.Screen options={SCREEN_OPTIONS} />
-            <List
-                variant="insets"
-                data={DATA({ full_name: myProfile?.full_name, custom_status: myProfile?.custom_status })}
-                sectionHeaderAsGap={Platform.OS === 'ios'}
-                estimatedItemSize={ESTIMATED_ITEM_SIZE}
-                renderItem={renderItem}
-                ListHeaderComponent={<ListHeaderComponent />}
-                ListFooterComponent={<ListFooterComponent />}
-            />
+            <View className='flex-1 px-3'>
+                <ScrollView
+                    contentInsetAdjustmentBehavior="automatic"
+                    showsVerticalScrollIndicator={false}
+                    contentContainerStyle={{ paddingBottom: insets.bottom }}>
+                    <View className='flex flex-col gap-6'>
+                        <List
+                            variant="insets"
+                            data={DATA({ full_name: myProfile?.full_name, custom_status: myProfile?.custom_status })}
+                            sectionHeaderAsGap={Platform.OS === 'ios'}
+                            estimatedItemSize={ESTIMATED_ITEM_SIZE}
+                            renderItem={renderItem}
+                            ListHeaderComponent={<ListHeaderComponent />}
+                        />
+                        <View className='flex flex-col gap-0.5'>
+                            <NotificationSetting />
+                            <AppearanceSetting />
+                        </View>
+                        <LogOutButton />
+                        <View className='flex flex-col justify-center items-center pt-6 pb-3 gap-1.5'>
+                            <Text className='text-base text-muted-foreground/90 font-cal-sans'>raven</Text>
+                            <View className='flex flex-col items-center justify-center'>
+                                <Text className='text-xs text-muted-foreground/80'>by The Commit Company</Text>
+                                <Text className='text-xs text-muted-foreground/80'>Version 1.7.1 (1)</Text>
+                            </View>
+                        </View>
+                    </View>
+                </ScrollView>
+            </View>
         </>
     );
 }
@@ -136,44 +156,6 @@ function ListHeaderComponent() {
     );
 }
 
-function ListFooterComponent() {
-
-    const siteInformation = useContext(SiteContext)
-    const { tokenParams } = useContext(FrappeContext) as FrappeConfig
-
-    const onLogout = () => {
-        // Remove the current site from AsyncStorage
-        // Revoke the token
-        // Redirect to the landing page
-
-        revokeAsync({
-            clientId: siteInformation?.client_id || '',
-            token: tokenParams?.token?.() || ''
-        }, {
-            revocationEndpoint: getRevocationEndpoint(siteInformation?.url || '')
-        }).then(result => {
-            return deleteAccessToken(siteInformation?.sitename || '')
-        }).then((result) => {
-            return clearDefaultSite()
-        }).then(() => {
-            router.replace('/landing')
-        }).catch((error) => {
-            console.log(error)
-        })
-    }
-    return (
-        <View className="ios:px-0 px-4 pt-8">
-            <Button
-                size="lg"
-                onPress={onLogout}
-                variant={Platform.select({ ios: 'primary', default: 'secondary' })}
-                className="border-border bg-background dark:bg-card">
-                <Text className="text-destructive">Log Out</Text>
-            </Button>
-        </View>
-    );
-}
-
 type DataItem =
     | string
     | {
@@ -204,20 +186,6 @@ const DATA = (userData: { full_name: string | undefined, custom_status: string |
             }),
         },
         ...(Platform.OS !== 'ios' ? ['Stay up to date'] : ['']),
-        {
-            id: '4',
-            title: 'Notifications',
-            ...(Platform.OS === 'ios' ? { value: 'Push' } : { subTitle: 'Push' }),
-            onPress: () => router.push('./notification', {
-                relativeToDirectory: true
-            }),
-        },
-        {
-            id: '7',
-            title: 'About',
-            ...(Platform.OS === 'ios' ? { value: 'Raven 1.7.1' } : { subTitle: 'Raven 1.7.1' }),
-            onPress: () => Linking.openURL('https://www.ravenchat.ai/'),
-        },
     ];
 
 }
