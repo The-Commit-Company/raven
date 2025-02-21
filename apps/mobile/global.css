@@ -13,7 +13,7 @@
         --popover-foreground: 0 0 0;
         --primary: 87, 83, 198;
         --primary-foreground: 255 255 255;
-        --secondary: 45 175 231;
+        --secondary: 120, 123, 227;
         --secondary-foreground: 255 255 255;
         --muted: 175 176 180;
         --muted-foreground: 98 98 103;
@@ -41,7 +41,7 @@
         --android-popover-foreground: 0 0 0;
         --android-primary: 87, 83, 198;
         --android-primary-foreground: 255 255 255;
-        --android-secondary: 176 201 255;
+        --android-secondary: 120, 123, 227;
         --android-secondary-foreground: 20 55 108;
         --android-muted: 193 198 215;
         --android-muted-foreground: 98 98 103;
@@ -72,7 +72,7 @@
             --popover-foreground: 255 255 255;
             --primary: 91, 91, 214;
             --primary-foreground: 255 255 255;
-            --secondary: 100 211 254;
+            --secondary: 120, 123, 227;
             --secondary-foreground: 255 255 255;
             --muted: 70 70 73;
             --muted-foreground: 187 187 187;
@@ -100,7 +100,7 @@
             --android-popover-foreground: 224 226 237;
             --android-primary: 91, 91, 214;
             --android-primary-foreground: 255 255 255;
-            --android-secondary: 28 60 114;
+            --android-secondary: 120, 123, 227;
             --android-secondary-foreground: 189 209 255;
             --android-muted: 216 226 255;
             --android-muted-foreground: 187 187 187;

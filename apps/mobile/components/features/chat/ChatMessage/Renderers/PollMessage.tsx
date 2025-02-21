@@ -11,6 +11,7 @@ import { useColorScheme } from "@hooks/useColorScheme"
 import { PollMessage } from '@raven/types/common/Message';
 import { toast } from 'sonner-native';
 import { Button } from '@components/nativewindui/Button';
+import ErrorBanner from '@components/common/ErrorBanner';
 
 type PollMessageBlockProps = {
     message: PollMessage,
@@ -41,11 +42,7 @@ export const PollMessageBlock = ({ message, ...props }: PollMessageBlockProps) =
 
     return (
         <View className='w-full' {...props}>
-            {error ? (
-                <View className="bg-red-50 p-2 rounded-md">
-                    <Text className="text-sm text-red-500">{error.message} {error.exception}</Text>
-                </View>
-            ) : null}
+            {error && <ErrorBanner error={error} />}
             {data ? <PollMessageBox data={data.message} messageID={message.name} /> : null}
         </View>
     );
@@ -55,7 +52,7 @@ const PollMessageBox = ({ data, messageID }: { data: Poll; messageID: string }) 
     return (
         <View className="bg-card rounded-md p-3">
             <View className="flex-col gap-1 pb-3">
-                <Text className="text-base font-medium">{data.poll.question} {data.poll.is_anonymous ? <Text className="text-blue-700 dark:text-blue-800 font-medium text-xs py-1 px-2">(Anonymous)</Text> : null}</Text>
+                <Text className="text-base font-medium">{data.poll.question} {data.poll.is_anonymous ? <Text className="text-primary dark:text-secondary font-medium text-xs py-1 px-2">(Anonymous)</Text> : null}</Text>
             </View>
             {data.current_user_votes.length > 0 ? (
                 <PollResults data={data} />

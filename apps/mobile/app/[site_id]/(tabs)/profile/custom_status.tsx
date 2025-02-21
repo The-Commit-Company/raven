@@ -49,7 +49,7 @@ export default function CustomStatusScreen() {
                                 variant="plain"
                                 onPress={handleFullNameSave}
                             >
-                                <Text className={cn(canSave && 'text-primary')}>Save</Text>
+                                <Text className={cn(canSave && 'text-primary dark:text-secondary')}>Save</Text>
                             </Button>
                         ),
                     }),

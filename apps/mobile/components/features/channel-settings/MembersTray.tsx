@@ -31,7 +31,7 @@ export const MembersTray = ({ onViewAll }: MembersTrayProps) => {
                 <Text className="text-[15px] font-medium">Members ({membersCount})</Text>
                 <Button variant="plain" size="none" onPress={onViewAll}>
                     <View className="flex-row items-center justify-end">
-                        <Text className="text-[15px] font-medium text-primary">View all</Text>
+                        <Text className="text-[15px] font-medium text-primary dark:text-secondary">View all</Text>
                     </View>
                 </Button>
             </View>

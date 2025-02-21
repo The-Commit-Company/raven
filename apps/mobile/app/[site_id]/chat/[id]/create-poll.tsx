@@ -83,7 +83,7 @@ export default function CreatePollPage() {
                             disabled={creatingPoll}>
                             {creatingPoll ?
                                 <ActivityIndicator size="small" color={colors.primary} /> :
-                                <Text className="text-primary">Create</Text>}
+                                <Text className="text-primary dark:text-secondary">Create</Text>}
                         </Button>
                     )
                 },

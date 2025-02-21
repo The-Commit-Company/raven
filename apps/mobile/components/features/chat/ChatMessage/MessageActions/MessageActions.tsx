@@ -1,9 +1,7 @@
-import { Message } from '@raven/types/common/Message'
+import { FileMessage, Message } from '@raven/types/common/Message'
 import { View } from 'react-native'
 import QuickReactions from './QuickReactions'
-import ArrowBackRetractIcon from "@assets/icons/ArrowBackRetractIcon.svg"
 import useCurrentRavenUser from '@raven/lib/hooks/useCurrentRavenUser'
-import { useColorScheme } from '@hooks/useColorScheme'
 import DeleteMessage from './DeleteMessage'
 import ReplyToMessage from './ReplyToMessage'
 import ForwardMessage from './ForwardMessage'
@@ -11,6 +9,8 @@ import SaveMessage from './SaveMessage'
 import CreateThread from './CreateThread'
 import CopyMessage from './CopyMessage'
 import RetractVote from './RetractVote'
+import CopyMessageLink from './CopyMessageLink'
+import DownloadMessageFile from './DownloadMessageFile'
 
 interface MessageActionsProps {
     message: Message
@@ -19,10 +19,7 @@ interface MessageActionsProps {
 
 const MessageActions = ({ message, onClose }: MessageActionsProps) => {
 
-    const { colors } = useColorScheme()
-
     const { myProfile } = useCurrentRavenUser()
-
     const isOwner = myProfile?.name === message?.owner && !message?.is_bot_message
 
     return (
@@ -38,15 +35,21 @@ const MessageActions = ({ message, onClose }: MessageActionsProps) => {
 
             <View className='flex flex-col gap-0'>
 
-                {message?.message_type === 'Poll' ? <RetractVote message={message} onClose={onClose} /> : null}
+                {(message && message.message_type === 'Poll') && <RetractVote message={message} onClose={onClose} />}
 
-                {!message?.is_thread ? <CreateThread message={message} onClose={onClose} /> : null}
+                {(message && !message.is_thread) && <CreateThread message={message} onClose={onClose} />}
 
-                {/* <MessageAction title='Copy Link' icon={<PaperClipIcon />} onAction={() => { }} /> */}
-                {message?.message_type === "Text" ? <CopyMessage message={message} onClose={onClose} /> : null}
-                {/* <MessageAction title='Download' icon={<DownloadIcon />} onAction={() => { }} /> */}
+                {(message && message.message_type === 'Text') && <CopyMessage message={message} onClose={onClose} />}
 
-                {isOwner ? <DeleteMessage message={message} onClose={onClose} /> : null}
+                {(message && ['File', 'Image'].includes(message.message_type)) &&
+                    <View className='flex flex-col gap-0'>
+                        <CopyMessageLink message={message as FileMessage} onClose={onClose} />
+                        <DownloadMessageFile message={message as FileMessage} onClose={onClose} />
+                    </View>
+                }
+
+                {(message && isOwner) && <DeleteMessage message={message} onClose={onClose} />}
+
             </View>
 
         </View>

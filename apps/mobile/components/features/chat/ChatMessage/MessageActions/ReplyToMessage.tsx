@@ -21,7 +21,7 @@ const ReplyToMessage = ({ message, onClose }: ReplyToMessageProps) => {
             onPress={onReplyToMessage}
             className='flex-1 flex flex-col items-center gap-3 px-2 py-3 rounded-lg bg-card'
             android_ripple={{ color: 'rgba(0,0,0,0.1)', borderless: false }}>
-            <ReplyIcon width={18} height={18} color={colors.icon} />
+            <ReplyIcon width={18} height={18} fill={colors.icon} />
             <Text className='text-[15px] font-medium text-foreground/80'>Reply</Text>
         </Pressable>
     )

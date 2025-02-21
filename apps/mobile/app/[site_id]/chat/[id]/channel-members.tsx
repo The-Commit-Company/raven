@@ -52,7 +52,7 @@ const ChannelMembers = () => {
                 headerTitle: () => <Text className='ml-2 text-base text-foreground font-semibold'>Members</Text>,
                 headerRight: () => (
                     <TouchableOpacity onPress={() => router.push(`./add-members`)} hitSlop={10}>
-                        <Text className='text-base font-semibold text-primary'>Add</Text>
+                        <Text className='text-base font-semibold text-primary dark:text-secondary'>Add</Text>
                     </TouchableOpacity>
                 )
             }} />

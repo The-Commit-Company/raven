@@ -120,7 +120,7 @@ export default function AddNewChannelMembers() {
                             disabled={creatingDoc || !selectedMembers.length}>
                             {creatingDoc ?
                                 <ActivityIndicator size="small" color={colors.primary} /> :
-                                <Text className="text-primary">Add</Text>}
+                                <Text className="text-primary dark:text-secondary">Add</Text>}
                         </Button>
                     )
                 },

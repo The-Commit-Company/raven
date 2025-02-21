@@ -31,7 +31,7 @@ const ViewPollVotes = ({ poll }: ViewPollVotesProps) => {
                 className="w-full pt-2"
                 onPress={() => bottomSheetRef.current?.present()}
                 activeOpacity={0.6}>
-                <Text className="text-center text-sm text-primary font-medium">
+                <Text className="text-center text-sm text-primary dark:text-secondary font-medium">
                     View votes
                 </Text>
             </TouchableOpacity>

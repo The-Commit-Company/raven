@@ -107,7 +107,7 @@ const CreatePollForm = () => {
                         <TouchableOpacity activeOpacity={0.6} disabled={fields.length >= 10} onPress={handleAddOption}>
                             <View className='flex flex-row items-center'>
                                 <PlusIcon width={18} height={18} fill={`${fields.length >= 10 ? colors.grey : colors.primary}`} />
-                                <Text className={`text-sm pl-0.5 ${fields.length >= 10 ? 'text-muted-foreground/80' : 'font-semibold text-primary'}`}>
+                                <Text className={`text-sm pl-0.5 ${fields.length >= 10 ? 'text-muted-foreground/80' : 'font-semibold text-primary dark:text-secondary'}`}>
                                     Add Option
                                 </Text>
                             </View>

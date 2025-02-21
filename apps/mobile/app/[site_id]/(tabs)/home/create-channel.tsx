@@ -71,7 +71,7 @@ export default function CreateChannel() {
                         disabled={creatingChannel}>
                         {creatingChannel ?
                             <ActivityIndicator size="small" color={colors.primary} /> :
-                            <Text className="text-primary">Add</Text>}
+                            <Text className="text-primary dark:text-secondary">Add</Text>}
                     </Button>
                 )
             },
