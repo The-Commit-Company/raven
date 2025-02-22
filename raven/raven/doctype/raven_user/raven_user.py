@@ -122,14 +122,14 @@ def add_user_to_raven(doc, method):
 
 			if has_raven_role:
 				raven_user = frappe.get_doc("Raven User", {"user": doc.name})
-				if not doc.full_name:
-					raven_user.full_name = doc.first_name
+				# if not doc.full_name:
+				raven_user.full_name = doc.first_name
 				raven_user.enabled = doc.enabled
 				raven_user.save(ignore_permissions=True)
 			else:
 				raven_user = frappe.get_doc("Raven User", {"user": doc.name})
-				if not doc.full_name:
-					raven_user.full_name = doc.first_name
+				# if not doc.full_name:
+				raven_user.full_name = doc.first_name
 				raven_user.enabled = 0
 				raven_user.save(ignore_permissions=True)
 		else:
@@ -158,3 +158,4 @@ def remove_user_from_raven(doc, method):
 	if frappe.db.exists("Raven User", {"user": doc.name}):
 		raven_user = frappe.get_doc("Raven User", {"user": doc.name})
 		raven_user.delete(ignore_permissions=True)
+ 
