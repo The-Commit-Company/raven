@@ -76,6 +76,13 @@ export const UserMention = Mention.extend({
         suggestion: {
             char: '@',
             pluginKey: new PluginKey('userMention'),
+            // Allow any character to be a prefix for a user mention
+            allowedPrefixes: null,
+            allow: (props) => {
+                // Do not allow mentions if the preceding character is a letter or digit
+                const precedingCharacter = props.state.doc.textBetween(props.range.from - 1, props.range.from, '')
+                return !/[a-zA-Z0-9]/.test(precedingCharacter)
+            }
         }
     })
 
@@ -86,6 +93,13 @@ export const ChannelMention = Mention.extend({
         suggestion: {
             char: '#',
             pluginKey: new PluginKey('channelMention'),
+            // Allow any character to be a prefix for a channel mention
+            allowedPrefixes: null,
+            allow: (props) => {
+                // Do not allow mentions if the preceding character is a letter or digit
+                const precedingCharacter = props.state.doc.textBetween(props.range.from - 1, props.range.from, '')
+                return !/[a-zA-Z0-9]/.test(precedingCharacter)
+            }
         }
     })
 
