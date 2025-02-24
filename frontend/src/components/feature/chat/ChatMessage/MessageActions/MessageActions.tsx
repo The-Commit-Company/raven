@@ -133,7 +133,7 @@ export const MessageContextMenu = ({ message, onDelete, onEdit, onReply, onForwa
 const SaveMessageAction = ({ message }: { message: Message }) => {
 
     const { currentUser } = useContext(UserContext)
-    const isSaved = JSON.parse(message._liked_by ?? '[]').includes(currentUser)
+    const isSaved = JSON.parse(message._liked_by ? message._liked_by : '[]').includes(currentUser)
 
     const { call } = useContext(FrappeContext) as FrappeConfig
 

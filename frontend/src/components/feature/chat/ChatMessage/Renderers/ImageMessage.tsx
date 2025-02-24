@@ -46,7 +46,7 @@ export const ImageMessageBlock = memo(({ message, isScrolling = false, user }: I
         }
 
         return { height, width }
-    }, [message.thumbnail_height, message.thumbnail_width, isMobile])
+    }, [message.thumbnail_height, message.thumbnail_width, isMobile, isVisible])
 
     const contentRef = useRef<HTMLDivElement | null>(null);
 

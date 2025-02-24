@@ -70,6 +70,7 @@ def get_search_result(
 			message.channel_id,
 			message.text,
 			message.content,
+			channel.workspace,
 		)
 		.join(channel, JoinType.left)
 		.on(message.channel_id == channel.name)
