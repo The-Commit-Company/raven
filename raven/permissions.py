@@ -308,9 +308,6 @@ def raven_poll_vote_has_permission(doc, user=None, ptype=None):
 			if not is_anonymous:
 				if ptype == "read":
 					return True
-			else:
-				if ptype == "create":
-					return True
 
 	return False
 
