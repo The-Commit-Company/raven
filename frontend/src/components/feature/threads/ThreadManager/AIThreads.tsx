@@ -1,17 +1,14 @@
-import { useState } from 'react'
-import ThreadsList from './ThreadsList'
 import { useDebounce } from '@/hooks/useDebounce'
-import { ChannelFilter, SearchFilter, UnreadFilter } from './Filters'
+import { useState } from 'react'
+import { SearchFilter, UnreadFilter } from './Filters'
+import ThreadsList from './ThreadsList'
 
 type Props = {}
 
-const ParticipatingThreads = (props: Props) => {
-
+const AIThreads = (props: Props) => {
     const [search, setSearch] = useState('')
 
     const debouncedSearch = useDebounce(search, 250)
-
-    const [channel, setChannel] = useState('all')
 
     const [onlyShowUnread, setOnlyShowUnread] = useState(false)
 
@@ -21,20 +18,18 @@ const ParticipatingThreads = (props: Props) => {
 
                 <SearchFilter search={search} setSearch={setSearch} />
 
-
                 <div className='flex gap-2'>
-                    <ChannelFilter channel={channel} setChannel={setChannel} />
                     <UnreadFilter onlyShowUnread={onlyShowUnread} setOnlyShowUnread={setOnlyShowUnread} />
                 </div>
             </div>
             <div className="h-[calc(100vh-10rem)] overflow-y-auto">
                 <ThreadsList
                     content={debouncedSearch}
-                    channel={channel}
+                    aiThreads={1}
                 />
             </div>
         </div>
     )
 }
 
-export default ParticipatingThreads
+export default AIThreads

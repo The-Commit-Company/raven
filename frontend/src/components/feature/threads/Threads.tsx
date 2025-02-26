@@ -5,6 +5,7 @@ import { Link, Outlet, useParams } from "react-router-dom"
 import ThreadsList from "./ThreadManager/ThreadsList"
 import ParticipatingThreads from "./ThreadManager/ParticipatingThreads"
 import clsx from "clsx"
+import AIThreads from "./ThreadManager/AIThreads"
 
 export type ThreadMessage = {
     bot: string,
@@ -61,7 +62,7 @@ const Threads = () => {
                             <ThreadsList />
                         </Tabs.Content>
                         <Tabs.Content value="AI Threads" className="h-[calc(100vh-6rem)] overflow-y-auto">
-                            <ThreadsList aiThreads={1} />
+                            <AIThreads />
                         </Tabs.Content>
                     </Tabs.Root>
                 </Box>
