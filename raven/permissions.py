@@ -293,7 +293,7 @@ def raven_poll_vote_has_permission(doc, user=None, ptype=None):
 
 	if ptype == "create":
 		# User can only vote if they are a member of the channel
-		channel_id = frappe.db.get_value("Raven Message", {"poll_id": doc.poll_id}, "channel_id")
+		channel_id = frappe.get_cached_value("Raven Message", {"poll_id": doc.poll_id}, "channel_id")
 		if is_channel_member(channel_id):
 			if doc.owner == user:
 				return True
