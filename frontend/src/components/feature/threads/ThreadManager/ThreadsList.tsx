@@ -111,10 +111,15 @@ const ThreadsList = ({ aiThreads, content, channel }: Props) => {
         return <EmptyStateForThreads />
     }
 
-    return <ul className='list-none'>
-        {threads.map((thread) => {
-            return <ThreadPreviewBox key={thread.name} thread={thread} unreadCount={unreadThreadsMap?.[thread.name] ?? 0} />
-        })}
+    return <ul className='list-none' role='list'>
+        {threads.map((thread) => (
+            <li key={thread.name} role='listitem'>
+                <ThreadPreviewBox
+                    thread={thread}
+                    unreadCount={unreadThreadsMap?.[thread.name] ?? 0}
+                />
+            </li>
+        ))}
         <div ref={observerTarget} className="h-4" />
         {isLoadingMore && <BeatLoader text='Loading more threads...' />}
     </ul>
