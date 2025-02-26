@@ -31,6 +31,8 @@ def get_all_threads(
 			channel.workspace,
 			channel.last_message_timestamp,
 			channel.last_message_details,
+			channel.is_ai_thread,
+			channel.is_dm_thread,
 			message.name.as_("thread_message_id"),
 			message.channel_id,
 			message.message_type,
@@ -80,9 +82,10 @@ def get_all_threads(
 	threads = query.run(as_dict=True)
 
 	for thread in threads:
-		# Fetch the participants of the thread
-		thread_members = get_channel_members(thread["name"])
-		thread["participants"] = [{"user_id": member} for member in thread_members]
+		# Fetch the participants of the thread if it's not an AI thread or a DM thread
+		if not thread["is_ai_thread"] and not thread["is_dm_thread"]:
+			thread_members = get_channel_members(thread["name"])
+			thread["participants"] = [{"user_id": member} for member in thread_members]
 
 	return threads
 
