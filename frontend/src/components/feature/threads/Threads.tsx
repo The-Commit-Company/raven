@@ -51,8 +51,8 @@ const Threads = () => {
                     <Tabs.Root defaultValue="Participating">
                         <Tabs.List className="px-4">
                             <Tabs.Trigger value="Participating">Participating</Tabs.Trigger>
-                            <Tabs.Trigger value="Threads">Other Threads</Tabs.Trigger>
-                            <Tabs.Trigger value="AI Threads">AI Threads</Tabs.Trigger>
+                            <Tabs.Trigger value="Threads">Other</Tabs.Trigger>
+                            <Tabs.Trigger value="AI Threads">AI</Tabs.Trigger>
                         </Tabs.List>
                         <Tabs.Content value="Participating">
                             <ParticipatingThreads />

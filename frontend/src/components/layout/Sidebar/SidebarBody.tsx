@@ -66,8 +66,6 @@ const ThreadsButton = () => {
         return unreadThreads?.message.length || 0
     }, [unreadThreads])
 
-    console.log(unreadThreads)
-
     return (
         <SidebarItemForPage
             to={'threads'}

@@ -8,7 +8,9 @@ from raven.utils import get_channel_members
 
 
 @frappe.whitelist()
-def get_all_threads(workspace: str = None, content=None, channel_id=None, is_ai_thread=0):
+def get_all_threads(
+	workspace: str = None, content=None, channel_id=None, is_ai_thread=0, start_after=0, limit=10
+):
 	"""
 	Get all the threads in which the user is a participant
 	(We are not fetching the messages inside a thread here, just the main thread message,
@@ -58,6 +60,8 @@ def get_all_threads(workspace: str = None, content=None, channel_id=None, is_ai_
 		.where(channel_member.user_id == frappe.session.user)
 		.where(channel.is_thread == 1)
 		.where(channel.is_ai_thread == is_ai_thread)
+		.limit(limit)
+		.offset(start_after)
 		.groupby(channel.name)
 	)
 
