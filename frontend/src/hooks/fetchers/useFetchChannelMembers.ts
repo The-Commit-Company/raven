@@ -21,8 +21,8 @@ const useFetchChannelMembers = (channelID: string) => {
     const { data, error, isLoading, mutate } = useFrappeGetCall<{ message: ChannelMembers }>('raven.api.chat.get_channel_members', {
         channel_id: channelID
     }, ["channel_members", channelID], {
-        dedupingInterval: 1000 * 60 * 5, // Set to 5 minutes,
-        revalidateOnMount: true
+        keepPreviousData: true,
+        dedupingInterval: 1000 * 60 * 5, // Revalidate every 5 minutes
     })
 
     return {

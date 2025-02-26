@@ -1,4 +1,4 @@
-import { useFetchChannelList } from '@/utils/channel/ChannelListProvider'
+import { useChannelList } from '@/utils/channel/ChannelListProvider'
 import { Command } from 'cmdk'
 import ChannelItem from './ChannelItem'
 
@@ -6,7 +6,7 @@ type Props = {}
 
 const ArchivedChannelList = (props: Props) => {
 
-    const { channels } = useFetchChannelList()
+    const { channels } = useChannelList()
 
     const archivedChannels = channels.filter((channel) => channel.is_archived)
     return (

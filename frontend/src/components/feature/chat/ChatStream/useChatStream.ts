@@ -60,14 +60,65 @@ const useChatStream = (channelID: string, scrollRef: MutableRefObject<HTMLDivEle
     const { call: fetchOlderMessages, loading: loadingOlderMessages } = useFrappePostCall('raven.api.chat_stream.get_older_messages')
     const { call: fetchNewerMessages, loading: loadingNewerMessages } = useFrappePostCall('raven.api.chat_stream.get_newer_messages')
 
-    /** State variable used to track if the latest messages have been fetched and to scroll to the bottom of the chat stream */
-    const [done, setDone] = useState(false)
-
     /**
      * Ref that is updated when no new messages are available
      * Used to track visit when the user leaves the channel
      */
     const latestMessagesLoaded = useRef(false)
+
+    /**
+     * Ensures scroll to bottom happens after all content is loaded
+     * Uses both RAF and a backup timeout for reliability
+     */
+    const scrollToBottom = (behavior: ScrollBehavior = 'auto') => {
+        if (!scrollRef.current) return
+
+        // First immediate scroll attempt
+        requestAnimationFrame(() => {
+            if (scrollRef.current) {
+                scrollRef.current.scrollTo({
+                    top: scrollRef.current.scrollHeight,
+                    behavior
+                })
+            }
+        })
+
+        // Second attempt after a short delay
+        const shortDelayTimer = setTimeout(() => {
+            if (scrollRef.current) {
+                scrollRef.current.scrollTo({
+                    top: scrollRef.current.scrollHeight,
+                    behavior
+                })
+            }
+        }, 100)
+
+        // Final backup attempt after longer delay
+        const backupTimer = setTimeout(() => {
+            if (scrollRef.current) {
+                scrollRef.current.scrollTo({
+                    top: scrollRef.current.scrollHeight,
+                    behavior
+                })
+            }
+        }, 500)
+
+        return () => {
+            clearTimeout(shortDelayTimer)
+            clearTimeout(backupTimer)
+        }
+    }
+
+    const scrollToMessageElement = (messageID: string, behavior: ScrollBehavior = 'smooth') => {
+        const timeoutId = setTimeout(() => {
+            document.getElementById(`message-${messageID}`)?.scrollIntoView({
+                behavior,
+                block: 'center'
+            })
+        }, 100)
+        return timeoutId
+    }
+
 
     const { data, isLoading, error, mutate } = useFrappeGetCall<GetMessagesResponse>('raven.api.chat_stream.get_messages', {
         'channel_id': channelID,
@@ -75,43 +126,32 @@ const useChatStream = (channelID: string, scrollRef: MutableRefObject<HTMLDivEle
     }, { path: `get_messages_for_channel_${channelID}`, baseMessage: state?.baseMessage }, {
         revalidateOnFocus: isMobile ? true : false,
         onSuccess: (data) => {
+            let cleanup: (() => void) | undefined
+
             if (!highlightedMessage) {
                 if (!data.message.has_new_messages) {
-                    setDone(true)
+                    cleanup = scrollToBottom()
                     latestMessagesLoaded.current = true
                 }
             } else {
-                setTimeout(() => {
-                    document.getElementById(`message-${highlightedMessage}`)?.scrollIntoView({ behavior: 'smooth', block: 'center' })
-                }, 100)
+                const timeoutId = scrollToMessageElement(highlightedMessage)
+                cleanup = () => clearTimeout(timeoutId)
+            }
+
+            return () => {
+                if (cleanup) cleanup()
             }
         }
     })
 
     /**
-     * When loading is complete, scroll down to the bottom
-     * Need to scroll down twice because the scrollHeight is not updated immediately after the first scroll
+     * Additional effect to handle channel switches
+     * This helps ensure proper scrolling when switching between channels
      */
-    useLayoutEffect(() => {
-
-        setTimeout(() => {
-            scrollRef.current?.scroll({
-                top: scrollRef.current?.scrollHeight,
-                // behavior: 'smooth',
-            })
-        }, 50)
-
-        setTimeout(() => {
-            scrollRef.current?.scroll({
-                top: scrollRef.current?.scrollHeight,
-                // behavior: 'smooth',
-            })
-        }, 200)
-
-
-        scrollRef.current?.scrollTo(0, scrollRef.current?.scrollHeight)
-    }, [done, channelID])
-
+    useEffect(() => {
+        const cleanup = scrollToBottom()
+        return cleanup
+    }, [channelID])
 
     /** If the user has already loaded all the latest messages and exits the channel, we update the timestamp of last visit  */
 
@@ -194,14 +234,12 @@ const useChatStream = (channelID: string, scrollRef: MutableRefObject<HTMLDivEle
                 revalidate: false,
             }).then(() => {
                 if (data?.message.has_new_messages === false) {
-                    // If the user is focused on the page, then we also need to
                     if (scrollRef.current) {
-                        // We only scroll to the bottom if the user is close to the bottom
-                        if (scrollRef.current.scrollTop + scrollRef.current.clientHeight >= scrollRef.current.scrollHeight - 100) {
-                            scrollRef.current?.scrollTo(0, scrollRef.current?.scrollHeight)
-                        } else if (event.message_details.owner === currentUser) {
-                            // If the user is the sender of the message, scroll to the bottom
-                            scrollRef.current?.scrollTo(0, scrollRef.current?.scrollHeight)
+                        const isNearBottom = scrollRef.current.scrollTop + scrollRef.current.clientHeight >=
+                            scrollRef.current.scrollHeight - 100
+
+                        if (isNearBottom || event.message_details.owner === currentUser) {
+                            scrollToBottom('smooth') // Smooth scroll for better UX when user is watching
                         }
                     }
                 }
@@ -323,15 +361,19 @@ const useChatStream = (channelID: string, scrollRef: MutableRefObject<HTMLDivEle
 
     })
 
-    // Do not loader older messages if the first request is just completed
-    const doneDebounced = useDebounce(done, 1000)
-
     /** Callback to load older messages */
     const loadOlderMessages = () => {
-
-        if (!doneDebounced || loadingOlderMessages || !data?.message.has_old_messages) {
+        if (loadingOlderMessages || !data?.message.has_old_messages) {
             return Promise.resolve()
         }
+
+        // Store current scroll position and height before loading
+        const scrollContainer = scrollRef.current
+        if (!scrollContainer) return Promise.resolve()
+
+        const previousScrollHeight = scrollContainer.scrollHeight
+        const previousScrollTop = scrollContainer.scrollTop
+
         return mutate((d) => {
             let oldestMessage: Message | null = null;
             if (d && d.message.messages.length > 0) {
@@ -365,6 +407,15 @@ const useChatStream = (channelID: string, scrollRef: MutableRefObject<HTMLDivEle
             return d
         }, {
             revalidate: false,
+        }).then(() => {
+            // After mutation, restore relative scroll position
+            requestAnimationFrame(() => {
+                if (scrollContainer) {
+                    const newScrollHeight = scrollContainer.scrollHeight
+                    const heightDifference = newScrollHeight - previousScrollHeight
+                    scrollContainer.scrollTop = previousScrollTop + heightDifference
+                }
+            })
         })
     }
 
@@ -416,6 +467,8 @@ const useChatStream = (channelID: string, scrollRef: MutableRefObject<HTMLDivEle
         }).then((res) => {
             if (res?.message.has_new_messages === false) {
                 latestMessagesLoaded.current = true
+                // Smooth scroll to bottom when loading new messages
+                scrollToBottom('smooth')
             }
         })
     }

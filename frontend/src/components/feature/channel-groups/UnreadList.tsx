@@ -110,7 +110,7 @@ const UnreadSectionActions = ({ channelIDs }: { channelIDs: string[] }) => {
             mutate('unread_channel_count', (d: { message: UnreadCountData } | undefined) => {
                 if (d?.message) {
                     // Update all channels with unread count as 0
-                    const newChannels = d.message.channels.map(c => {
+                    const newChannels = d.message.map(c => {
                         if (c.name && channelIDs.includes(c.name)) {
                             return {
                                 ...c,
@@ -120,28 +120,8 @@ const UnreadSectionActions = ({ channelIDs }: { channelIDs: string[] }) => {
                         return c
                     })
 
-                    const total_unread_count_in_channels = newChannels.reduce((acc: number, c) => {
-                        if (!c.is_direct_message) {
-                            return acc + c.unread_count
-                        } else {
-                            return acc
-                        }
-                    }, 0)
-
-                    const total_unread_count_in_dms = newChannels.reduce((acc: number, c) => {
-                        if (c.is_direct_message) {
-                            return acc + c.unread_count
-                        } else {
-                            return acc
-                        }
-                    }, 0)
-
                     return {
-                        message: {
-                            total_unread_count_in_channels,
-                            total_unread_count_in_dms,
-                            channels: newChannels
-                        }
+                        message: newChannels
                     }
                 }
             }, {

@@ -1,13 +1,16 @@
 import frappe
 from frappe import _
 from frappe.query_builder import Order
+from frappe.query_builder.functions import Coalesce, Count
 
 from raven.api.raven_channel import get_peer_user_id
 from raven.utils import get_channel_members
 
 
 @frappe.whitelist()
-def get_all_threads(workspace: str = None, is_ai_thread=0):
+def get_all_threads(
+	workspace: str = None, content=None, channel_id=None, is_ai_thread=0, start_after=0, limit=10
+):
 	"""
 	Get all the threads in which the user is a participant
 	(We are not fetching the messages inside a thread here, just the main thread message,
@@ -18,7 +21,8 @@ def get_all_threads(workspace: str = None, is_ai_thread=0):
 
 	channel = frappe.qb.DocType("Raven Channel")
 	channel_member = frappe.qb.DocType("Raven Channel Member")
-	message = frappe.qb.DocType("Raven Message")
+	message = frappe.qb.DocType("Raven Message").as_("message")
+	thread_messages = frappe.qb.DocType("Raven Message").as_("thread_messages")
 
 	query = (
 		frappe.qb.from_(channel)
@@ -27,6 +31,8 @@ def get_all_threads(workspace: str = None, is_ai_thread=0):
 			channel.workspace,
 			channel.last_message_timestamp,
 			channel.last_message_details,
+			channel.is_ai_thread,
+			channel.is_dm_thread,
 			message.name.as_("thread_message_id"),
 			message.channel_id,
 			message.message_type,
@@ -43,28 +49,77 @@ def get_all_threads(workspace: str = None, is_ai_thread=0):
 			message.image_width,
 			message.owner,
 			message.creation,
+			Count(thread_messages.name).as_("reply_count"),
 		)
 		.left_join(message)
-		.on(channel.name == message.name)
+		.on((message.is_thread == 1) & (message.name == channel.name))
 		.left_join(channel_member)
-		.on(channel.name == channel_member.channel_id)
+		.on(
+			(channel.name == channel_member.channel_id) & (channel_member.user_id == frappe.session.user)
+		)
+		.left_join(thread_messages)
+		.on(channel.name == thread_messages.channel_id)
 		.where(channel_member.user_id == frappe.session.user)
 		.where(channel.is_thread == 1)
 		.where(channel.is_ai_thread == is_ai_thread)
+		.limit(limit)
+		.offset(start_after)
+		.groupby(channel.name)
 	)
 
 	if workspace:
 		query = query.where((channel.workspace == workspace) | (channel.is_dm_thread == 1))
 
+	if content:
+		query = query.where(message.content.like(f"%{content}%"))
+
+	if channel_id and channel_id != "all":
+		query = query.where(message.channel_id == channel_id)
+
 	query = query.orderby(channel.last_message_timestamp, order=Order.desc)
+
+	# return
 	threads = query.run(as_dict=True)
 
 	for thread in threads:
-		# Fetch the participants of the thread
-		thread_members = get_channel_members(thread["name"])
-		thread["participants"] = [{"user_id": member} for member in thread_members]
+		# Fetch the participants of the thread if it's not an AI thread or a DM thread
+		if not thread["is_ai_thread"] and not thread["is_dm_thread"]:
+			thread_members = get_channel_members(thread["name"])
+			thread["participants"] = [{"user_id": member} for member in thread_members]
 
 	return threads
+
+
+@frappe.whitelist()
+def get_unread_threads(workspace: str = None):
+	"""
+	Get the number of threads in which the user is a participant and has unread messages > 0
+	"""
+
+	channel = frappe.qb.DocType("Raven Channel")
+	channel_member = frappe.qb.DocType("Raven Channel Member")
+	message = frappe.qb.DocType("Raven Message")
+
+	query = (
+		frappe.qb.from_(channel)
+		.select(channel.name, Count(message.name).as_("unread_count"))
+		.left_join(channel_member)
+		.on(
+			(channel.name == channel_member.channel_id) & (channel_member.user_id == frappe.session.user)
+		)
+		.left_join(message)
+		.on(channel.name == message.channel_id)
+		.where(channel.is_thread == 1)
+		.where(channel.is_ai_thread == 0)
+		.where(message.creation > Coalesce(channel_member.last_visit, "2000-11-11"))
+		.where(channel_member.user_id == frappe.session.user)
+		.groupby(channel.name)
+	)
+
+	if workspace:
+		query = query.where((channel.workspace == workspace) | (channel.is_dm_thread == 1))
+
+	return query.run(as_dict=True)
 
 
 @frappe.whitelist(methods="POST")

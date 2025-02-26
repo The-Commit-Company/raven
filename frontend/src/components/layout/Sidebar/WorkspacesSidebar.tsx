@@ -15,7 +15,7 @@ const WorkspacesSidebar = () => {
 
     const { data } = useFetchWorkspaces()
 
-    const unreadCounts = useUnreadMessageCount()
+    const { unread_count } = useUnreadMessageCount()
     const { channels } = useContext(ChannelListContext) as ChannelListContextType
 
     const myWorkspaces: (WorkspaceFields & { unread_count: number })[] = useMemo(() => {
@@ -26,8 +26,8 @@ const WorkspacesSidebar = () => {
         // Loop over all channels in the channels context and find it's unread count and add it to the workspace_unread_counts object
         channels.forEach((channel) => {
             if (channel.workspace) {
-                let unread_count = unreadCounts?.message.channels?.find((c) => c.name === channel.name)?.unread_count || 0
-                workspace_unread_counts[channel.workspace] = (workspace_unread_counts?.[channel.workspace] || 0) + unread_count
+                let unreadCounts = unread_count?.message?.find((c) => c.name === channel.name)?.unread_count || 0
+                workspace_unread_counts[channel.workspace] = (workspace_unread_counts?.[channel.workspace] || 0) + unreadCounts
             }
         })
 
@@ -39,7 +39,7 @@ const WorkspacesSidebar = () => {
         })
 
         return myWorkspacesWithUnreadCounts
-    }, [data, channels, unreadCounts])
+    }, [data, channels, unread_count])
 
     return (
         <Stack className='w-20 p-0 pb-4 border-r border-gray-4 dark:border-gray-6 h-screen' justify='between'>

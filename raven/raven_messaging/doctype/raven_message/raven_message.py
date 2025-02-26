@@ -235,6 +235,7 @@ class RavenMessage(Document):
 							"channel_id": self.channel_id,
 							"play_sound": True,
 							"sent_by": self.owner,
+							"is_dm_channel": True,
 							"last_message_timestamp": self.creation,
 						},
 						user=peer_user_doc.user,
@@ -247,6 +248,7 @@ class RavenMessage(Document):
 				{
 					"channel_id": self.channel_id,
 					"play_sound": False,
+					"is_dm_channel": True,
 					"sent_by": self.owner,
 					"last_message_timestamp": self.creation,
 				},
@@ -260,6 +262,7 @@ class RavenMessage(Document):
 					"channel_id": self.channel_id,
 					"sent_by": self.owner,
 					"last_message_timestamp": self.creation,
+					"is_dm_channel": False,
 				},
 				after_commit=True,
 				doctype="Raven Message",
@@ -273,11 +276,12 @@ class RavenMessage(Document):
 					"channel_id": self.channel_id,
 					"play_sound": False,
 					"sent_by": self.owner,
+					"is_dm_channel": False,
 					"is_thread": channel_doc.is_thread,
 					"last_message_timestamp": self.creation,
 				},
 				after_commit=True,
-				room="website",
+				room="all",
 			)
 
 	def process_mentions(self):
@@ -567,7 +571,7 @@ class RavenMessage(Document):
 				after_commit=after_commit,
 			)
 
-			if self.message_type != "System":
+			if self.message_type != "System" and not self.is_bot_message:
 				# track the visit of the user to the channel if a new message is created
 				track_channel_visit(channel_id=self.channel_id, user=self.owner)
 				# frappe.enqueue(method=track_channel_visit, channel_id=self.channel_id, user=self.owner)

@@ -1,11 +1,11 @@
-import { useFetchChannelList } from '@/utils/channel/ChannelListProvider'
+import { useChannelList } from '@/utils/channel/ChannelListProvider'
 import { Command } from 'cmdk'
 import ChannelItem from './ChannelItem'
 import { useMemo } from 'react'
 
 const ChannelList = () => {
 
-    const { channels } = useFetchChannelList()
+    const { channels } = useChannelList()
 
     // The channels are already sorted by last_message_timestamp, so we just need to sort the archived channels to the bottom
     const sortedChannels = useMemo(() => {
