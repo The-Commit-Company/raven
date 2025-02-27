@@ -50,12 +50,12 @@ export const UnreadFilter = ({ onlyShowUnread, setOnlyShowUnread }: { onlyShowUn
 
         if (currentValue) {
             toast.info('Viewing all threads', {
-                position: 'top-center',
+                position: 'bottom-center',
                 duration: 800
             })
         } else {
             toast.info('Viewing only unread threads', {
-                position: 'top-center',
+                position: 'bottom-center',
                 duration: 800
             })
         }

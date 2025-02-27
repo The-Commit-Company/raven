@@ -74,7 +74,7 @@ const ThreadsList = ({ aiThreads, content, channel, endpoint = "raven.api.thread
         }, {
         revalidateFirstPage: false,
         revalidateOnFocus: false,
-        revalidateIfStale: false,
+        revalidateIfStale: true,
     }
     )
 
@@ -149,7 +149,7 @@ const ThreadsList = ({ aiThreads, content, channel, endpoint = "raven.api.thread
 
 const EmptyStateForThreads = ({ isFiltered = false }: { isFiltered?: boolean }) => {
     const content = useMemo(() => isFiltered ? {
-        title: "You're all caught up!",
+        title: "You're all caught up",
         description: 'There are no unread threads to show. Clear the filter to see all threads.'
     } : {
         title: 'No threads yet',

@@ -60,10 +60,10 @@ const LastMessagePreview = ({ details, timestamp, isActive }: { details: LastMes
                 <div className='mt-1 text-gray-9'>
                     <LuListTree size='18' />
                 </div>
-                <Box className={clsx('flex-1 rounded-md border py-2 px-2.5',
+                <Box className={clsx('flex-1 rounded-md border py-2 px-2.5 dark:shadow-lg',
                     isActive
-                        ? 'bg-gray-3 dark:bg-gray-4 border-gray-5' // Selected state
-                        : 'bg-gray-2 dark:bg-gray-3 border-gray-3 group-hover:border-gray-4 group-hover:bg-gray-3/70 dark:group-hover:bg-gray-4/70' // Normal & hover state
+                        ? 'bg-gray-3 dark:bg-gray-4 border-gray-5 dark:border-gray-6' // Selected state
+                        : 'bg-gray-2 dark:bg-gray-3 border-gray-3 dark:border-gray-5 group-hover:border-gray-4 group-hover:bg-gray-3/70 dark:group-hover:bg-gray-4/70' // Normal & hover state
                 )}>
                     <Flex gap='2' align='start'>
                         <div className='mt-0.5'>
@@ -130,7 +130,7 @@ export const ThreadPreviewBox = ({ thread, unreadCount }: { thread: ThreadMessag
             className={({ isActive }) => clsx(
                 "group block hover:bg-gray-2 dark:hover:bg-gray-4 px-4 py-4 border-b border-gray-4",
                 "focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-8 focus-visible:ring-inset",
-                isActive && "bg-gray-3 dark:bg-gray-4"
+                isActive && "bg-gray-3 dark:bg-gray-3"
             )}>
             {({ isActive }) => (
                 <div className='flex w-full justify-between items-center gap-2'>
