@@ -4,7 +4,9 @@ import { useDebounce } from '@/hooks/useDebounce'
 import { ChannelFilter, SearchFilter, UnreadFilter } from './Filters'
 
 type Props = {}
-
+/**
+ * Component for displaying participating threads - where the user is a member of the thread
+ */
 const ParticipatingThreads = (props: Props) => {
 
     const [search, setSearch] = useState('')

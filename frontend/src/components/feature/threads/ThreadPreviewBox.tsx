@@ -63,7 +63,7 @@ export const ThreadPreviewBox = ({ thread, unreadCount }: { thread: ThreadMessag
                             <Box>
                                 <UserHoverCard user={user} userID={thread.owner} isActive={false} />
                             </Box>
-                            <MessageContent message={thread as unknown as Message} user={user} />
+                            <MessageContent message={thread as unknown as Message} user={user} forceHideLinkPreview />
                         </Flex>
                     </Flex>
                     <Flex align={'center'} gap='2' className='pl-11'>

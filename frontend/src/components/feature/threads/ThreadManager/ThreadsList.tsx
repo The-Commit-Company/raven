@@ -9,9 +9,14 @@ import { useContext, useMemo, useCallback, useRef, useEffect } from 'react'
 import BeatLoader from '@/components/layout/Loaders/BeatLoader'
 
 type Props = {
+    /** Whether to fetch AI threads */
     aiThreads?: 0 | 1,
+    /** Content to search for */
     content?: string,
-    channel?: string
+    /** Channel to filter by */
+    channel?: string,
+    /** Endpoint to fetch threads from. Defaults to `raven.api.threads.get_all_threads` */
+    endpoint?: string
 }
 
 const PAGE_SIZE = 5
@@ -28,7 +33,7 @@ type GetThreadsSWRKey = [string, {
     startAfter: number
 }]
 
-const ThreadsList = ({ aiThreads, content, channel }: Props) => {
+const ThreadsList = ({ aiThreads, content, channel, endpoint = "raven.api.threads.get_all_threads" }: Props) => {
 
     const { workspaceID } = useParams()
 
@@ -47,7 +52,7 @@ const ThreadsList = ({ aiThreads, content, channel }: Props) => {
         (pageIndex, previousPageData) => {
             if (previousPageData && !previousPageData.message.length) return null
             const startAfter = pageIndex * PAGE_SIZE
-            return ["raven.api.threads.get_all_threads", {
+            return [endpoint, {
                 is_ai_thread: aiThreads,
                 workspace: workspaceID,
                 content: content,
@@ -55,7 +60,7 @@ const ThreadsList = ({ aiThreads, content, channel }: Props) => {
                 startAfter
             }] // SWR key
         }, (swrKey: GetThreadsSWRKey) => {
-            return call.get<GetThreadsReturnType>("raven.api.threads.get_all_threads", {
+            return call.get<GetThreadsReturnType>(endpoint, {
                 is_ai_thread: swrKey[1].is_ai_thread,
                 workspace: swrKey[1].workspace,
                 content: swrKey[1].content,

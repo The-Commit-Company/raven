@@ -1,19 +1,19 @@
-import { useDebounce } from '@/hooks/useDebounce'
 import { useState } from 'react'
-import { SearchFilter, UnreadFilter } from './Filters'
 import ThreadsList from './ThreadsList'
+import { useDebounce } from '@/hooks/useDebounce'
+import { ChannelFilter, SearchFilter } from './Filters'
 
 type Props = {}
-
 /**
- * Component for displaying AI threads - these are all DMs with the AI
+ * Component for displaying other threads - where the user is not a member of the thread but is a member of the channel
  */
-const AIThreads = (props: Props) => {
+const OtherThreads = (props: Props) => {
+
     const [search, setSearch] = useState('')
 
     const debouncedSearch = useDebounce(search, 250)
 
-    const [onlyShowUnread, setOnlyShowUnread] = useState(false)
+    const [channel, setChannel] = useState('all')
 
     return (
         <div>
@@ -21,18 +21,20 @@ const AIThreads = (props: Props) => {
 
                 <SearchFilter search={search} setSearch={setSearch} />
 
+
                 <div className='flex gap-2'>
-                    <UnreadFilter onlyShowUnread={onlyShowUnread} setOnlyShowUnread={setOnlyShowUnread} />
+                    <ChannelFilter channel={channel} setChannel={setChannel} />
                 </div>
             </div>
             <div className="h-[calc(100vh-10rem)] overflow-y-auto">
                 <ThreadsList
                     content={debouncedSearch}
-                    aiThreads={1}
+                    endpoint='raven.api.threads.get_other_threads'
+                    channel={channel}
                 />
             </div>
         </div>
     )
 }
 
-export default AIThreads
+export default OtherThreads

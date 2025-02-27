@@ -2,10 +2,10 @@ import { PageHeader } from "@/components/layout/Heading/PageHeader"
 import { Box, Flex, Heading, Tabs } from "@radix-ui/themes"
 import { BiChevronLeft } from "react-icons/bi"
 import { Link, Outlet, useParams } from "react-router-dom"
-import ThreadsList from "./ThreadManager/ThreadsList"
 import ParticipatingThreads from "./ThreadManager/ParticipatingThreads"
 import clsx from "clsx"
 import AIThreads from "./ThreadManager/AIThreads"
+import OtherThreads from "./ThreadManager/OtherThreads"
 
 export type ThreadMessage = {
     bot: string,
@@ -52,14 +52,14 @@ const Threads = () => {
                     <Tabs.Root defaultValue="Participating">
                         <Tabs.List className="px-4">
                             <Tabs.Trigger value="Participating">Participating</Tabs.Trigger>
-                            <Tabs.Trigger value="Threads">Other</Tabs.Trigger>
-                            <Tabs.Trigger value="AI Threads">AI</Tabs.Trigger>
+                            <Tabs.Trigger value="Other">Other</Tabs.Trigger>
+                            <Tabs.Trigger value="AI Threads">AI Agents</Tabs.Trigger>
                         </Tabs.List>
                         <Tabs.Content value="Participating">
                             <ParticipatingThreads />
                         </Tabs.Content>
-                        <Tabs.Content value="Threads" className="h-[calc(100vh-6rem)] overflow-y-auto">
-                            <ThreadsList />
+                        <Tabs.Content value="Other" className="h-[calc(100vh-6rem)] overflow-y-auto">
+                            <OtherThreads />
                         </Tabs.Content>
                         <Tabs.Content value="AI Threads" className="h-[calc(100vh-6rem)] overflow-y-auto">
                             <AIThreads />

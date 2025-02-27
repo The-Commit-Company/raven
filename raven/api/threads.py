@@ -91,6 +91,94 @@ def get_all_threads(
 
 
 @frappe.whitelist()
+def get_other_threads(
+	workspace: str = None, content=None, channel_id=None, is_ai_thread=0, start_after=0, limit=10
+):
+	"""
+	Get all the threads in which the user is not a participant, but is a member of the channel
+	"""
+
+	channel = frappe.qb.DocType("Raven Channel")
+	channel_member = frappe.qb.DocType("Raven Channel Member")
+	thread_channel = frappe.qb.DocType("Raven Channel").as_("thread_channel")
+	main_thread_message = frappe.qb.DocType("Raven Message").as_("main_thread_message")
+	thread_channel_member = frappe.qb.DocType("Raven Channel Member").as_("thread_channel_member")
+	thread_message = frappe.qb.DocType("Raven Message").as_("thread_message")
+
+	# Build the query to get threads where user is not a participant but has access to main channel
+	query = (
+		frappe.qb.from_(thread_channel)
+		.select(
+			thread_channel.name,
+			thread_channel.workspace,
+			thread_channel.last_message_timestamp,
+			thread_channel.last_message_details,
+			thread_channel.is_ai_thread,
+			thread_channel.is_dm_thread,
+			main_thread_message.name.as_("thread_message_id"),
+			main_thread_message.channel_id,
+			main_thread_message.message_type,
+			main_thread_message.text,
+			main_thread_message.content,
+			main_thread_message.file,
+			main_thread_message.poll_id,
+			main_thread_message.is_bot_message,
+			main_thread_message.bot,
+			main_thread_message.hide_link_preview,
+			main_thread_message.link_doctype,
+			main_thread_message.link_document,
+			main_thread_message.image_height,
+			main_thread_message.image_width,
+			main_thread_message.owner,
+			main_thread_message.creation,
+			Count(thread_message.name).as_("reply_count"),
+		)
+		.left_join(main_thread_message)
+		.on((main_thread_message.is_thread == 1) & (main_thread_message.name == thread_channel.name))
+		.left_join(thread_message)
+		.on(thread_channel.name == thread_message.channel_id)
+		.left_join(channel_member)
+		.on(
+			(main_thread_message.channel_id == channel_member.channel_id)
+			& (channel_member.user_id == frappe.session.user)
+		)
+		.left_join(thread_channel_member)
+		.on(
+			(thread_channel.name == thread_channel_member.channel_id)
+			& (thread_channel_member.user_id == frappe.session.user)
+		)
+		.where(thread_channel.is_thread == 1)
+		.where(thread_channel.is_ai_thread == is_ai_thread)
+		.where(channel_member.user_id == frappe.session.user)  # User must be member of main channel
+		.where(thread_channel_member.user_id.isnull())  # User must NOT be member of thread channel
+		.limit(limit)
+		.offset(start_after)
+		.groupby(thread_channel.name)
+	)
+
+	if workspace:
+		query = query.where((thread_channel.workspace == workspace) | (thread_channel.is_dm_thread == 1))
+
+	if content:
+		query = query.where(main_thread_message.content.like(f"%{content}%"))
+
+	if channel_id and channel_id != "all":
+		query = query.where(main_thread_message.channel_id == channel_id)
+
+	query = query.orderby(thread_channel.last_message_timestamp, order=Order.desc)
+
+	threads = query.run(as_dict=True)
+
+	for thread in threads:
+		# Fetch the participants of the thread if it's not an AI thread or a DM thread
+		if not thread["is_ai_thread"] and not thread["is_dm_thread"]:
+			thread_members = get_channel_members(thread["name"])
+			thread["participants"] = [{"user_id": member} for member in thread_members]
+
+	return threads
+
+
+@frappe.whitelist()
 def get_unread_threads(workspace: str = None):
 	"""
 	Get the number of threads in which the user is a participant and has unread messages > 0
