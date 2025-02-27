@@ -2,11 +2,12 @@ import { ThreadPreviewBox } from '../ThreadPreviewBox'
 import { ThreadMessage } from '../Threads'
 import { FrappeConfig, FrappeContext, FrappeError, useSWRInfinite } from 'frappe-react-sdk'
 import { ErrorBanner } from '@/components/layout/AlertBanner/ErrorBanner'
-import { EmptyStateForThreads } from '@/components/layout/EmptyState/EmptyState'
 import { useParams } from 'react-router-dom'
 import useUnreadThreadsCount from '@/hooks/useUnreadThreadsCount'
 import { useContext, useMemo, useCallback, useRef, useEffect } from 'react'
 import BeatLoader from '@/components/layout/Loaders/BeatLoader'
+import { Flex, Text } from '@radix-ui/themes'
+import { LuListTree } from 'react-icons/lu'
 
 type Props = {
     /** Whether to fetch AI threads */
@@ -129,7 +130,7 @@ const ThreadsList = ({ aiThreads, content, channel, endpoint = "raven.api.thread
     }
 
     if (threads.length === 0) {
-        return <EmptyStateForThreads />
+        return <EmptyStateForThreads isFiltered={onlyShowUnread} />
     }
 
     return <ul className='list-none' role='list'>
@@ -144,6 +145,35 @@ const ThreadsList = ({ aiThreads, content, channel, endpoint = "raven.api.thread
         <div ref={observerTarget} className="h-4" />
         {isLoadingMore && <BeatLoader text='Loading more threads...' />}
     </ul>
+}
+
+const EmptyStateForThreads = ({ isFiltered = false }: { isFiltered?: boolean }) => {
+    const content = useMemo(() => isFiltered ? {
+        title: "You're all caught up!",
+        description: 'There are no unread threads to show. Clear the filter to see all threads.'
+    } : {
+        title: 'No threads yet',
+        description: 'Threads help keep conversations organized. Reply to any message to start a new thread or use the thread icon on messages to join existing discussions.'
+    }, [isFiltered])
+
+    return (
+        <Flex
+            direction='column'
+            align='center'
+            justify='center'
+            className='h-[400px] px-6 text-center'
+        >
+            <div className='text-gray-8 mb-4'>
+                <LuListTree size={48} />
+            </div>
+            <Text size='5' weight='medium' className='mb-2'>
+                {content.title}
+            </Text>
+            <Text as='p' size='2' color='gray' className='max-w-[400px]'>
+                {content.description}
+            </Text>
+        </Flex>
+    )
 }
 
 export default ThreadsList
