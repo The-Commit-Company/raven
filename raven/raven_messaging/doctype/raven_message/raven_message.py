@@ -125,6 +125,7 @@ class RavenMessage(Document):
 
 	def after_insert(self):
 		if self.message_type != "System":
+			self.set_last_message_timestamp()
 			self.publish_unread_count_event()
 
 		if self.message_type == "Text":
@@ -199,7 +200,7 @@ class RavenMessage(Document):
 		# Update directly via SQL since we do not want to invalidate the document cache
 		message_details = {
 			"message_id": self.name,
-			"content": self.content if self.message_type == "Text" else self.file,
+			"content": self.content,
 			"message_type": self.message_type,
 			"owner": self.owner,
 			"is_bot_message": self.is_bot_message,
@@ -216,8 +217,6 @@ class RavenMessage(Document):
 		query.run()
 
 	def publish_unread_count_event(self):
-
-		self.set_last_message_timestamp()
 
 		channel_doc = frappe.get_cached_doc("Raven Channel", self.channel_id)
 		# If the message is a direct message, then we can only send it to one user
