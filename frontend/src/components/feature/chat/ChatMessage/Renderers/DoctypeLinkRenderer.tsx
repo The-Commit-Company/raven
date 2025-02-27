@@ -197,7 +197,7 @@ const DoctypeCard = ({ data, doctype, route, docname, mutate }: {
                                     {item}
                                 </DataList.Label>
                                 <DataList.Value>
-                                    {data[item]}
+                                    {typeof data[item] === 'string' ? data[item].replace(/<[^>]*>/g, '') : data[item]}
                                 </DataList.Value>
                             </DataList.Item>
                         ))
