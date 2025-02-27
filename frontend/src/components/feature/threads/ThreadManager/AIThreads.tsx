@@ -29,6 +29,7 @@ const AIThreads = (props: Props) => {
                 <ThreadsList
                     content={debouncedSearch}
                     aiThreads={1}
+                    onlyShowUnread={onlyShowUnread}
                 />
             </div>
         </div>

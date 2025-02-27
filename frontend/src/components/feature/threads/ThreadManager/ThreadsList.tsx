@@ -16,7 +16,9 @@ type Props = {
     /** Channel to filter by */
     channel?: string,
     /** Endpoint to fetch threads from. Defaults to `raven.api.threads.get_all_threads` */
-    endpoint?: string
+    endpoint?: string,
+    /** Whether to only show unread threads */
+    onlyShowUnread?: boolean
 }
 
 const PAGE_SIZE = 5
@@ -33,7 +35,7 @@ type GetThreadsSWRKey = [string, {
     startAfter: number
 }]
 
-const ThreadsList = ({ aiThreads, content, channel, endpoint = "raven.api.threads.get_all_threads" }: Props) => {
+const ThreadsList = ({ aiThreads, content, channel, endpoint = "raven.api.threads.get_all_threads", onlyShowUnread }: Props) => {
 
     const { workspaceID } = useParams()
 
@@ -48,7 +50,7 @@ const ThreadsList = ({ aiThreads, content, channel, endpoint = "raven.api.thread
 
     const { call } = useContext(FrappeContext) as FrappeConfig
 
-    const { data, size, isLoading, setSize, error, isValidating } = useSWRInfinite<GetThreadsReturnType, FrappeError>(
+    const { data, size, isLoading, setSize, error } = useSWRInfinite<GetThreadsReturnType, FrappeError>(
         (pageIndex, previousPageData) => {
             if (previousPageData && !previousPageData.message.length) return null
             const startAfter = pageIndex * PAGE_SIZE
@@ -81,7 +83,17 @@ const ThreadsList = ({ aiThreads, content, channel, endpoint = "raven.api.thread
 
     const isReachingEnd = isEmpty || (data && data[data.length - 1]?.message?.length < PAGE_SIZE)
 
-    const threads = data?.flatMap((page) => page.message) ?? []
+    const threads = useMemo(() => {
+        const threads = data?.flatMap((page) => page.message) ?? []
+
+        if (onlyShowUnread && unreadThreadsMap) {
+            return threads.filter((thread) => {
+                return unreadThreadsMap?.[thread.name] ?? 0 > 0
+            })
+        }
+
+        return threads
+    }, [data, onlyShowUnread, unreadThreadsMap])
 
     const observerTarget = useRef<HTMLDivElement>(null)
 
@@ -113,6 +125,10 @@ const ThreadsList = ({ aiThreads, content, channel, endpoint = "raven.api.thread
     }
 
     if (isEmpty) {
+        return <EmptyStateForThreads />
+    }
+
+    if (threads.length === 0) {
         return <EmptyStateForThreads />
     }
 

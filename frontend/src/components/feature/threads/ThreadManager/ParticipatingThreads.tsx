@@ -33,6 +33,7 @@ const ParticipatingThreads = (props: Props) => {
                 <ThreadsList
                     content={debouncedSearch}
                     channel={channel}
+                    onlyShowUnread={onlyShowUnread}
                 />
             </div>
         </div>
