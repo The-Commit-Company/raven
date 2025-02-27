@@ -1,12 +1,38 @@
 import { UserContext } from "@/utils/auth/UserProvider"
-import { UnreadCountData, useUpdateLastMessageInChannelList } from "@/utils/channel/ChannelListProvider"
+import { DMChannelListItem, UnreadCountData, useChannelList, useUpdateLastMessageInChannelList } from "@/utils/channel/ChannelListProvider"
 import { useFrappeGetCall, FrappeContext, FrappeConfig, useFrappeEventListener } from "frappe-react-sdk"
 import { useContext, useEffect } from "react"
 import { useParams, useLocation } from "react-router-dom"
 
 /**
+ * Hook to read the unread message count for all channels
+ * This only fetches the unread message count for all channels once
+ * @returns 
+ */
+const useUnreadMessageCount = () => {
+
+    const { data: unread_count, mutate: updateCount } = useFrappeGetCall<{ message: UnreadCountData }>("raven.api.raven_message.get_unread_count_for_channels",
+        undefined,
+        'unread_channel_count', {
+        // Revalidate on focus every minute
+        focusThrottleInterval: 60 * 1000,
+        // Fetch unread count every 2 minutes
+        refreshInterval: 5 * 60 * 1000,
+        revalidateOnFocus: true,
+        revalidateOnReconnect: true,
+    })
+
+    return {
+        unread_count,
+        updateCount
+    }
+}
+
+export default useUnreadMessageCount
+
+/**
  *
- * Hook to manage unread message count
+ * Hook to manage unread message count state with realtime events. This is only used in the sidebar.
 
     For every channel member, we store a last_visit timestamp in the Raven Channel Member doctype. To get the number of unread messages, we can simply look at the no. of messages created after this timestamp for any given channel.
 
@@ -27,68 +53,69 @@ import { useParams, useLocation } from "react-router-dom"
 
  * @returns unread_count - The unread message count for the current user
  */
-const useUnreadMessageCount = () => {
+export const useFetchUnreadMessageCount = () => {
 
     const { currentUser } = useContext(UserContext)
-    const { data: unread_count, mutate: updateCount } = useFrappeGetCall<{ message: UnreadCountData }>("raven.api.raven_message.get_unread_count_for_channels",
-        undefined,
-        'unread_channel_count', {
-        // Revalidate on focus every minute
-        focusThrottleInterval: 60 * 1000,
-        // Fetch unread count every 2 minutes
-        refreshInterval: 5 * 60 * 1000,
-        revalidateOnFocus: true,
-        revalidateOnReconnect: true,
-    })
+
+    const { channels, dm_channels } = useChannelList()
+
+    const { unread_count, updateCount } = useUnreadMessageCount()
 
     const { call } = useContext(FrappeContext) as FrappeConfig
 
     const fetchUnreadCountForChannel = async (channelID: string) => {
 
+        // Check if the user has this channel and is a member of the channel
+        let channelData = null
+
+        // Search in channels
+        const channel = channels.find(c => c.name === channelID && c.member_id)
+        if (channel) {
+            channelData = channel
+        } else {
+            // Search in dm_channels
+            const dmChannel = dm_channels.find(c => c.name === channelID && c.member_id)
+            if (dmChannel) {
+                channelData = dmChannel
+            }
+        }
+
+        if (!channelData) {
+            // The event was published for a channel that the user does not have access to
+            return
+        }
+
+
         updateCount(d => {
             if (d) {
-                // If the channel ID is present in the unread count, then fetch and update the unread count for the channel
-                if (d.message.channels.find(c => c.name === channelID)) {
-                    return call.get('raven.api.raven_message.get_unread_count_for_channel', {
-                        channel_id: channelID
-                    }).then((data: { message: number }) => {
-                        const newChannels = d.message.channels.map(c => {
-                            if (c.name === channelID)
-                                return {
-                                    ...c,
-                                    unread_count: data.message
-                                }
-                            return c
+                return call.get('raven.api.raven_message.get_unread_count_for_channel', {
+                    channel_id: channelID
+                }).then((data: { message: number }) => {
+
+                    // Update the unread count for the channel
+                    const newChannels = [...d.message]
+
+                    const isChannelAlreadyPresent = d.message.findIndex(c => c.name === channelID)
+
+                    if (isChannelAlreadyPresent === -1) {
+                        newChannels.push({
+                            is_direct_message: channelData.is_direct_message ? 1 : 0,
+                            name: channelID,
+                            user_id: (channelData as DMChannelListItem).peer_user_id,
+                            unread_count: data.message
                         })
-
-                        const total_unread_count_in_channels = newChannels.reduce((acc: number, c) => {
-                            if (!c.is_direct_message) {
-                                return acc + c.unread_count
-                            } else {
-                                return acc
-                            }
-                        }, 0)
-
-                        const total_unread_count_in_dms = newChannels.reduce((acc: number, c) => {
-                            if (c.is_direct_message) {
-                                return acc + c.unread_count
-                            } else {
-                                return acc
-                            }
-                        }, 0)
-
-                        return {
-                            message: {
-                                total_unread_count_in_channels,
-                                total_unread_count_in_dms,
-                                channels: newChannels
-                            }
+                    } else {
+                        newChannels[isChannelAlreadyPresent] = {
+                            ...d.message[isChannelAlreadyPresent],
+                            unread_count: data.message
                         }
                     }
-                    )
-                } else {
-                    return d
+
+                    return {
+                        message: newChannels
+                    }
                 }
+                )
             } else {
                 return d
             }
@@ -126,7 +153,7 @@ const useUnreadMessageCount = () => {
 
         updateCount(d => {
             if (d) {
-                const newChannels = d.message.channels.map(c => {
+                const newChannels = d.message.map(c => {
                     if (c.name === channel_id)
                         return {
                             ...c,
@@ -135,28 +162,8 @@ const useUnreadMessageCount = () => {
                     return c
                 })
 
-                const total_unread_count_in_channels = newChannels.reduce((acc: number, c) => {
-                    if (!c.is_direct_message) {
-                        return acc + c.unread_count
-                    } else {
-                        return acc
-                    }
-                }, 0)
-
-                const total_unread_count_in_dms = newChannels.reduce((acc: number, c) => {
-                    if (c.is_direct_message) {
-                        return acc + c.unread_count
-                    } else {
-                        return acc
-                    }
-                }, 0)
-
                 return {
-                    message: {
-                        total_unread_count_in_channels,
-                        total_unread_count_in_dms,
-                        channels: newChannels
-                    }
+                    message: newChannels
                 }
 
             } else {
@@ -171,7 +178,9 @@ const useUnreadMessageCount = () => {
         // @ts-expect-error
         const app_name = window.app_name || "Raven"
         if (unread_count) {
-            const total_count = unread_count.message.total_unread_count_in_channels + unread_count.message.total_unread_count_in_dms
+            const total_count = unread_count.message.reduce((acc: number, c) => {
+                return acc + c.unread_count
+            }, 0)
 
             // Update document title with unread message count
             if (total_count > 0) {
@@ -186,5 +195,3 @@ const useUnreadMessageCount = () => {
 
     return unread_count
 }
-
-export default useUnreadMessageCount

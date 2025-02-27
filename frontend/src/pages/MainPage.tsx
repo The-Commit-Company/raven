@@ -12,6 +12,7 @@ import { useIsMobile } from '@/hooks/useMediaQuery'
 import { showNotification } from '@/utils/pushNotifications'
 import MessageActionController from '@/components/feature/message-actions/MessageActionController'
 import { useActiveSocketConnection } from '@/hooks/useActiveSocketConnection'
+import { useFrappeEventListener, useSWRConfig } from 'frappe-react-sdk'
 
 const AddRavenUsersPage = lazy(() => import('@/pages/AddRavenUsersPage'))
 
@@ -47,6 +48,13 @@ const MainPageContent = () => {
     const isMobile = useIsMobile()
 
     useActiveSocketConnection()
+
+    // Listen to channel members updated events and invalidate the channel members cache
+    const { mutate } = useSWRConfig()
+
+    useFrappeEventListener('channel_members_updated', (payload) => {
+        mutate(["channel_members", payload.channel_id])
+    })
 
     return <UserListProvider>
         <ChannelListProvider>

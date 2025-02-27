@@ -132,7 +132,7 @@ const router = createBrowserRouter(
           <Route path=":workspaceID" element={<MainPage />}>
             <Route index element={<MobileTabsPage />} />
             <Route path="threads" lazy={() => import('./components/feature/threads/Threads')}>
-              <Route path="thread/:threadID" lazy={() => import('./components/feature/threads/ThreadDrawer/ThreadDrawer')} />
+              <Route path=":threadID" lazy={() => import('./components/feature/threads/ThreadManager/ViewThread')} />
             </Route>
             <Route path="saved-messages" lazy={() => import('./components/feature/saved-messages/SavedMessages')} />
 

@@ -8,6 +8,9 @@ interface ViewThreadParticipantsProps {
 
 export const ViewThreadParticipants = ({ participants }: ViewThreadParticipantsProps) => {
 
+    if (participants.length === 0)
+        return null
+
     const totalParticipants = Object.keys(participants).length
     const extraNumber = Math.min(totalParticipants - 3, 9)
 

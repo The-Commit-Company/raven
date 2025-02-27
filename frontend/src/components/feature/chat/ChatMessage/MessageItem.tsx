@@ -325,9 +325,9 @@ export const UserHoverCard = memo(({ user, userID, isActive }: UserProps) => {
     }, [user, userID])
     return <HoverCard.Root>
         <HoverCard.Trigger>
-            <Link className='text-gray-12 flex items-center gap-1' weight='medium' size='2'>
+            <Text className='text-gray-12 flex items-center gap-1' weight='medium' size='2'>
                 {fullName} {isBot && <Badge color='gray' className='font-semibold px-1 py-0'>Bot</Badge>}
-            </Link>
+            </Text>
         </HoverCard.Trigger>
         <HoverCard.Content size='1'>
             <Flex gap='2' align='center'>
@@ -355,14 +355,15 @@ export const UserHoverCard = memo(({ user, userID, isActive }: UserProps) => {
 type MessageContentProps = BoxProps & {
     user?: UserFields
     message: Message,
+    forceHideLinkPreview?: boolean
 }
-export const MessageContent = ({ message, user, ...props }: MessageContentProps) => {
+export const MessageContent = ({ message, user, forceHideLinkPreview = false, ...props }: MessageContentProps) => {
 
     return <Box {...props}>
         {message.text ? <TiptapRenderer message={{
             ...message,
             message_type: 'Text'
-        }} user={user} showLinkPreview={message.hide_link_preview ? false : true} /> : null}
+        }} user={user} showLinkPreview={forceHideLinkPreview ? false : message.hide_link_preview ? false : true} /> : null}
         {message.message_type === 'Image' && <ImageMessageBlock message={message} user={user} />}
         {message.message_type === 'File' && <FileMessageBlock message={message} user={user} />}
         {message.message_type === 'Poll' && <PollMessageBlock message={message} user={user} />}
