@@ -56,6 +56,15 @@ const MainPageContent = () => {
         mutate(["channel_members", payload.channel_id])
     })
 
+    // Listen to realtime event for new message count
+    useFrappeEventListener('thread_reply', (event) => {
+        mutate(["thread_reply_count", event.channel_id], {
+            message: event.number_of_replies
+        }, {
+            revalidate: false
+        })
+    })
+
     return <UserListProvider>
         <ChannelListProvider>
             <Flex>

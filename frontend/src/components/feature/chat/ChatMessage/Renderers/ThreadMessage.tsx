@@ -1,10 +1,7 @@
 import { Link, useParams } from "react-router-dom"
 import { Message } from "../../../../../../../types/Messaging/Message"
 import { Button, Flex, Text } from "@radix-ui/themes"
-import { useFrappeGetDocCount } from "frappe-react-sdk"
-import { RavenMessage } from "@/types/RavenMessaging/RavenMessage"
-import { useFrappeDocumentEventListener } from "frappe-react-sdk"
-import { useFrappeEventListener } from "frappe-react-sdk"
+import { useFrappeGetCall } from "frappe-react-sdk"
 
 export const ThreadMessage = ({ thread }: { thread: Message }) => {
 
@@ -28,21 +25,15 @@ export const ThreadMessage = ({ thread }: { thread: Message }) => {
 
 export const ThreadReplyCount = ({ thread }: { thread: Message }) => {
 
-    const { data, mutate } = useFrappeGetDocCount<RavenMessage>("Raven Message", [["channel_id", "=", thread.name], ["message_type", "!=", "System"]], undefined, undefined, undefined, {
+    const { data } = useFrappeGetCall<{ message: number }>("raven.api.threads.get_number_of_replies", {
+        thread_id: thread.name
+    }, ["thread_reply_count", thread.name], {
         revalidateOnFocus: false,
-        shouldRetryOnError: false,
-        keepPreviousData: false
-    })
-
-    // Listen to realtime event for new message count
-    useFrappeDocumentEventListener('Raven Message', thread.name, () => { })
-
-    useFrappeEventListener('thread_reply_created', () => {
-        mutate()
+        shouldRetryOnError: false
     })
 
     return <Flex gap='1' align={'center'}>
-        <Text size='1' className={'font-semibold text-accent-a11'}>{data ?? 0}</Text>
-        <Text size='1' className={'font-semibold text-accent-a11'}>{data && data === 1 ? 'Reply' : 'Replies'}</Text>
+        <Text size='1' className={'font-semibold text-accent-a11'}>{data?.message ?? 0}</Text>
+        <Text size='1' className={'font-semibold text-accent-a11'}>{data?.message === 1 ? 'Reply' : 'Replies'}</Text>
     </Flex>
 }

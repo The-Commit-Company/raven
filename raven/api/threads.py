@@ -4,10 +4,18 @@ from frappe.query_builder import Order
 from frappe.query_builder.functions import Coalesce, Count
 
 from raven.api.raven_channel import get_peer_user_id
-from raven.utils import get_channel_members
+from raven.utils import get_channel_members, get_thread_reply_count
 
 
-@frappe.whitelist()
+@frappe.whitelist(methods=["GET"])
+def get_number_of_replies(thread_id: str):
+	"""
+	Get the number of replies in a thread
+	"""
+	return get_thread_reply_count(thread_id)
+
+
+@frappe.whitelist(methods=["GET"])
 def get_all_threads(
 	workspace: str = None, content=None, channel_id=None, is_ai_thread=0, start_after=0, limit=10
 ):
@@ -90,7 +98,7 @@ def get_all_threads(
 	return threads
 
 
-@frappe.whitelist()
+@frappe.whitelist(methods=["GET"])
 def get_other_threads(
 	workspace: str = None, content=None, channel_id=None, is_ai_thread=0, start_after=0, limit=10
 ):
@@ -98,7 +106,6 @@ def get_other_threads(
 	Get all the threads in which the user is not a participant, but is a member of the channel
 	"""
 
-	channel = frappe.qb.DocType("Raven Channel")
 	channel_member = frappe.qb.DocType("Raven Channel Member")
 	thread_channel = frappe.qb.DocType("Raven Channel").as_("thread_channel")
 	main_thread_message = frappe.qb.DocType("Raven Message").as_("main_thread_message")
@@ -178,7 +185,7 @@ def get_other_threads(
 	return threads
 
 
-@frappe.whitelist()
+@frappe.whitelist(methods=["GET"])
 def get_unread_threads(workspace: str = None):
 	"""
 	Get the number of threads in which the user is a participant and has unread messages > 0
@@ -210,7 +217,7 @@ def get_unread_threads(workspace: str = None):
 	return query.run(as_dict=True)
 
 
-@frappe.whitelist(methods="POST")
+@frappe.whitelist(methods=["POST"])
 def create_thread(message_id):
 	"""
 	A thread can be created by any user with read access to the channel in which the message has been sent.
