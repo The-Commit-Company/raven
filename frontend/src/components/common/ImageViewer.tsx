@@ -6,7 +6,7 @@ interface ImageViewerProps extends ReactZoomPanPinchProps {
     children: React.ReactNode
 
 }
-const ImageViewer = ({ children, ...props }: PropsWithChildren) => {
+const ImageViewer = ({ children, ...props }: ImageViewerProps) => {
     return (
         <TransformWrapper centerOnInit centerZoomedOut limitToBounds {...props}>
             <TransformComponent>
