@@ -19,12 +19,12 @@ const useUnreadCount = () => {
     },
   );
 
-  const totalUnread =
-    (data?.message?.total_unread_count_in_channels ?? 0) +
-    (data?.message?.total_unread_count_in_dms ?? 0);
+  const totalUnread = data?.message?.reduce((acc, c) => {
+    return acc + c.unread_count
+  }, 0)
 
   return {
-    ...(data?.message ?? {}),
+    channels: data?.message ?? [],
     totalUnread,
   };
 };

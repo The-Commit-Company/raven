@@ -25,3 +25,8 @@ export const DateMonthAtHourMinuteAmPm = (props: Props) => {
 
     return getDateObject(props.date).format("Do MMMM [at] hh:mm A")
 }
+
+export const getTimePassed = (date: string) => {
+
+    return getDateObject(date).fromNow()
+}

@@ -49,7 +49,7 @@ const ChatSpaceArea = ({ channelID }: { channelID: string }) => {
                 //@ts-ignore
                 mutate('unread_channel_count', (d: { message: UnreadCountData } | undefined) => {
                     if (d) {
-                        const newChannels: UnreadChannelCountItem[] = d.message.channels.map(c => {
+                        const newChannels: UnreadChannelCountItem[] = d.message.map(c => {
                             if (c.name === channelID)
                                 return {
                                     ...c,
@@ -58,30 +58,9 @@ const ChatSpaceArea = ({ channelID }: { channelID: string }) => {
                             return c
                         })
 
-                        const total_unread_count_in_channels = newChannels.reduce((acc: number, c) => {
-                            if (!c.user_id) {
-                                return acc + c.unread_count
-                            } else {
-                                return acc
-                            }
-                        }, 0)
-
-                        const total_unread_count_in_dms = newChannels.reduce((acc: number, c) => {
-                            if (c.user_id) {
-                                return acc + c.unread_count
-                            } else {
-                                return acc
-                            }
-                        }, 0)
-
 
                         return {
-                            message: {
-                                ...d.message,
-                                channels: newChannels,
-                                total_unread_count_in_channels,
-                                total_unread_count_in_dms
-                            }
+                            message: newChannels,
                         }
                     }
                     else {

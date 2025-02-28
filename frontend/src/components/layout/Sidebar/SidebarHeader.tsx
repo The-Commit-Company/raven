@@ -8,6 +8,7 @@ import { __ } from '@/utils/translations'
 import { HStack } from '../Stack'
 import { getKeyboardMetaKeyString } from '@/utils/layout/keyboardKey'
 import { useIsDesktop } from '@/hooks/useMediaQuery'
+import MentionsButton from './MentionsButton'
 
 export const SidebarHeader = () => {
 
@@ -23,6 +24,7 @@ export const SidebarHeader = () => {
                     pt='2'
                 >
                     <CommandMenuButton />
+                    <MentionsButton />
                 </Flex>
             </header>
         )
@@ -37,7 +39,8 @@ export const SidebarHeader = () => {
                 pt='1'
                 height='48px'>
                 <Text as='span' size='6' className='cal-sans pl-1'>raven</Text>
-                <Flex align='center' gap='3' className='pr-1 sm:pr-0'>
+                <Flex align='center' gap='4' className='pr-1 sm:pr-0'>
+                    <MentionsButton />
                     <SearchButton />
                     <ColorModeToggleButton />
                 </Flex>
@@ -57,7 +60,7 @@ const CommandMenuButton = () => {
         onClick={() => setOpen(true)}
         aria-label='Open command menu'
         title={__("Open command menu")}
-        className='bg-gray-3 hover:bg-gray-4 p-2 rounded-md flex justify-between items-center w-full text-gray-11 sm:hover:text-gray-12'
+        className='bg-gray-3 hover:bg-gray-4 p-2 rounded-md flex justify-between items-center min-w-48 text-gray-11 sm:hover:text-gray-12'
         color='gray'
     >
         <HStack>
@@ -79,7 +82,7 @@ const SearchButton = () => {
                 aria-label='Open command menu'
                 title={__("Open command menu")}
                 color='gray'
-                className='text-gray-11 sm:hover:text-gray-12'
+                className='text-gray-11 sm:hover:text-gray-12 p-2'
                 variant='ghost'
                 onClick={() => setOpen(true)}
             >
@@ -108,7 +111,7 @@ const ColorModeToggleButton = () => {
             aria-label='Toggle theme'
             title={__("Toggle theme")}
             color='gray'
-            className='text-gray-11 sm:hover:text-gray-12'
+            className='text-gray-11 sm:hover:text-gray-12 p-2'
             variant='ghost'
             onClick={toggleTheme}>
             {appearance === 'light' ? <BiMoon className='text-lg sm:text-base' /> : <BiSun className='text-lg sm:text-base' />}

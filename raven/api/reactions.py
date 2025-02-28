@@ -64,7 +64,7 @@ def calculate_message_reaction(message_id, channel_id: str = None):
 		"Raven Message Reaction",
 		fields=["owner", "reaction", "is_custom", "reaction_escaped"],
 		filters={"message": message_id},
-		order_by="reaction_escaped",
+		order_by="creation",
 	)
 
 	total_reactions = {}
