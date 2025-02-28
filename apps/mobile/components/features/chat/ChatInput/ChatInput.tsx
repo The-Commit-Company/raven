@@ -13,27 +13,40 @@ import { filesAtom } from "@lib/filesAtom"
 import Tiptap from "./Tiptap/Tiptap"
 import { cn } from "@lib/cn"
 import { useKeyboardVisible } from "@hooks/useKeyboardVisible"
+import { useSendMessage } from "@raven/lib/hooks/useSendMessage"
 
 const ChatInput = () => {
 
     const { id } = useLocalSearchParams()
     const { uploadFiles } = useFileUpload(id as string)
     const [text, setText] = useState('')
-    const [, setFiles] = useAtom(filesAtom)
+    const [files, setFiles] = useAtom(filesAtom)
 
     // State to hold the measured width and height of the chat input.
     const { isKeyboardVisible } = useKeyboardVisible()
 
+    const handleCancelReply = () => {
+        console.log('cancel reply')
+    }
+
+    const { sendMessage, loading } = useSendMessage(id as string, files.length, uploadFiles, handleCancelReply)
+
     const handleSend = async (files?: CustomFile[], content?: string, json?: any) => {
 
+        setText(content ?? '')
+
         if (files && files?.length > 0) {
-            files[0].caption = text
-            uploadFiles(files, setFiles).then(() => {
-                setText('')
-                setFiles([])
+            // set the caption to first file
+            setFiles((prevFiles) => {
+                return prevFiles.map((file) => {
+                    if (file.fileID === files[0].fileID) {
+                        return { ...file, caption: text }
+                    }
+                    return file
+                })
             })
         } else if (content) {
-            console.log(content, json)
+            await sendMessage(content, json)
         }
     }
 

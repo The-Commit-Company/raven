@@ -17,10 +17,10 @@
   justify-content: space-between;
   align-items: center;
   background-color: white;
-  border-top: 1px solid #f0f0f0;
   padding-top: 4px;
 }
 
+/* Format Button - the button that opens the formatting menu */
 .format-button {
   display: flex;
   align-items: center;
@@ -37,35 +37,29 @@
   font-weight: 500;
 }
 
-.format-button:hover {
-  background-color: #e8e8e8;
-}
-
 .send-button {
-  margin-left: auto;
-  width: 36px;
-  height: 36px;
   display: flex;
   align-items: center;
   justify-content: center;
+  padding: 8px;
   border: none;
   border-radius: 6px;
   background: transparent;
-  color: hsl(219.25deg 6% 40%);
-  background-color: #F0F0F0;
+  color: rgb(142, 142, 147);
 }
 
 .send-button-active {
   color: #5753C6;
   opacity: 1;
-  cursor: pointer;
 }
 
-/* Formatting menu styles */
+/* Formatting menu styles for icon buttons like Bold, Italic, etc. */
 .formatting-menu {
   display: flex;
   gap: 2px;
   align-items: center;
+  /* horizontal scroll */
+  overflow-x: auto;
 }
 
 .formatting-button {

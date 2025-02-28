@@ -20,11 +20,10 @@ import BulletList from '@tiptap/extension-bullet-list'
 import OrderedList from '@tiptap/extension-ordered-list'
 import "./tiptap.css";
 
-import { useColorScheme } from "@hooks/useColorScheme"
 import { CustomFile } from "@raven/types/common/File";
 import { cn } from "@lib/cn";
 import styles from "./tiptap.module.css";
-import SendIcon from "@assets/icons/SendIcon.svg"
+import { BiSolidSend } from "react-icons/bi";
 
 interface TiptapProps {
     content: string;
@@ -75,36 +74,45 @@ const Tiptap = ({
         autofocus: "end",
     });
 
-    const { colors } = useColorScheme()
     const [isFormattingMenuOpen, setIsFormattingMenuOpen] = useState(false);
 
-    const handleClick = () => {
-        setIsFormattingMenuOpen(!isFormattingMenuOpen)
-        // click should not unfocus the editor
+    // Ensure editor remains focused so that the keyboard doesn't dismiss
+    const keepEditorFocused = () => {
         editor?.chain().focus().run()
+    }
+
+    const handleFormattingMenuButtonClick = () => {
+        setIsFormattingMenuOpen(!isFormattingMenuOpen)
+        keepEditorFocused()
     }
 
     const handleCloseFormattingMenu = () => {
         setIsFormattingMenuOpen(false)
-        // click should not unfocus the editor
-        editor?.chain().focus().run()
+        keepEditorFocused()
     }
 
+
+
     const handleSend = () => {
-        const content = editor?.getText()
-        const json = editor?.getJSON()
-        if (content) {
-            onSend([], content, json).then(() => {
-                // focus the editor
-                editor?.chain().focus().run()
-                // clear the editor
-                editor?.commands.setContent('')
-                // close the formatting menu
-                setIsFormattingMenuOpen(false)
-            }).catch((error) => {
-                console.error(error)
-            })
-        }
+        if (!editor) return
+
+        keepEditorFocused()
+        const hasContent = editor?.getText()?.trim().length > 0
+        if (!hasContent) return
+
+        let content = ''
+        let json = {}
+        content = editor?.getHTML()
+        json = editor?.getJSON()
+
+        console.log(content, json)
+
+        onSend([], content, json).then(() => {
+            editor?.commands.clearContent(true)
+            editor?.setEditable(true)
+        }).catch((error) => {
+            editor?.setEditable(true)
+        })
     }
 
     return (
@@ -128,11 +136,14 @@ const Tiptap = ({
             />
 
             {isKeyboardVisible && (
-                <div className={styles.menu}>
+                <div
+                    className={styles.menu}
+                    onClick={keepEditorFocused}
+                >
                     {!isFormattingMenuOpen ? (
                         <button
                             className={styles["format-button"]}
-                            onClick={handleClick}
+                            onClick={handleFormattingMenuButtonClick}
                         >
                             <span className={styles["format-button-text"]}>Aa</span>
                         </button>
@@ -146,13 +157,11 @@ const Tiptap = ({
                     <button
                         className={cn(
                             styles["send-button"],
+                            editor?.getText().trim() ? styles["send-button-active"] : ''
                         )}
                         onClick={handleSend}
-                        disabled={!editor?.getText().trim()}
                     >
-                        <SendIcon fill={
-                            editor?.getText().trim() ? colors.primary : colors.grey
-                        } />
+                        <BiSolidSend size={24} />
                     </button>
                 </div>
             )}
