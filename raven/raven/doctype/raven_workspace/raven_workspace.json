@@ -11,7 +11,8 @@
   "can_only_join_via_invite",
   "description",
   "column_break_svnf",
-  "logo"
+  "logo",
+  "only_admins_can_create_channels"
  ],
  "fields": [
   {
@@ -50,6 +51,13 @@
    "fieldname": "description",
    "fieldtype": "Small Text",
    "label": "Description"
+  },
+  {
+   "default": "0",
+   "description": "If unchecked, any workspace member can create a channel",
+   "fieldname": "only_admins_can_create_channels",
+   "fieldtype": "Check",
+   "label": "Only allow admins to create channels in the workspace"
   }
  ],
  "index_web_pages_for_search": 1,
@@ -60,7 +68,7 @@
   }
  ],
  "make_attachments_public": 1,
- "modified": "2024-12-06 17:19:48.638139",
+ "modified": "2025-02-15 17:41:08.057640",
  "modified_by": "Administrator",
  "module": "Raven",
  "name": "Raven Workspace",

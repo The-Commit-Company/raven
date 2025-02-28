@@ -141,7 +141,7 @@ export const MessageItem = ({ message, setDeleteMessage, isHighlighted, onReplyM
                         top-[42px] 
                         left-6 z-0`}>
                         </div> : null}
-                    <ContextMenu.Root>
+                    <ContextMenu.Root modal={false}>
                         <ContextMenu.Trigger
                             {...bind}
                             ref={ref}
@@ -165,7 +165,7 @@ export const MessageItem = ({ message, setDeleteMessage, isHighlighted, onReplyM
                             px-1
                             py-1.5
                             sm:p-1.5
-                            rounded-md`, isHighlighted ? 'bg-yellow-50 hover:bg-yellow-50 dark:bg-yellow-300/20 dark:hover:bg-yellow-300/20' : !isDesktop && isHovered ? 'bg-gray-2 dark:bg-gray-3' : '', isEmojiPickerOpen ? 'bg-gray-2 dark:bg-gray-3' : '')}>
+                            rounded-md`, is_continuation ? '' : 'py-2.5 sm:py-3', isHighlighted ? 'bg-yellow-50 hover:bg-yellow-50 dark:bg-yellow-300/20 dark:hover:bg-yellow-300/20' : !isDesktop && isHovered ? 'bg-gray-2 dark:bg-gray-3' : '', isEmojiPickerOpen ? 'bg-gray-2 dark:bg-gray-3' : '')}>
                             <Flex className='gap-2.5 sm:gap-3 items-start'>
                                 <MessageLeftElement message={message} user={user} isActive={isActive} />
                                 <Flex direction='column' className='gap-0.5 w-[90%]' justify='center'>
@@ -201,7 +201,7 @@ export const MessageItem = ({ message, setDeleteMessage, isHighlighted, onReplyM
                                     {message.is_edited === 1 && <Text size='1' className='text-gray-10'>(edited)</Text>}
                                     {message_reactions?.length &&
                                         <MessageReactions
-                                            messageID={name}
+                                            message={message}
                                             message_reactions={message_reactions}
                                         />
                                     }
@@ -251,7 +251,7 @@ const MessageLeftElement = ({ message, className, user, isActive, ...props }: Me
     // If it's a continuation, then show the timestamp
 
     // Else, show the avatar
-    return <Box className={clsx(message.is_continuation ? 'invisible group-hover:visible flex items-center w-[38px] sm:w-[34px]' : '', className)} {...props}>
+    return <Box className={clsx(message.is_continuation ? 'invisible group-hover:visible flex items-center w-[32px]' : '', className)} {...props}>
         {message.is_continuation ?
             <Box className='-mt-0.5'>
                 <DateTooltipShort timestamp={message.creation} />
@@ -325,9 +325,9 @@ export const UserHoverCard = memo(({ user, userID, isActive }: UserProps) => {
     }, [user, userID])
     return <HoverCard.Root>
         <HoverCard.Trigger>
-            <Link className='text-gray-12 flex items-center gap-1' weight='medium' size='2'>
+            <Text className='text-gray-12 flex items-center gap-1' weight='medium' size='2'>
                 {fullName} {isBot && <Badge color='gray' className='font-semibold px-1 py-0'>Bot</Badge>}
-            </Link>
+            </Text>
         </HoverCard.Trigger>
         <HoverCard.Content size='1'>
             <Flex gap='2' align='center'>
@@ -355,14 +355,15 @@ export const UserHoverCard = memo(({ user, userID, isActive }: UserProps) => {
 type MessageContentProps = BoxProps & {
     user?: UserFields
     message: Message,
+    forceHideLinkPreview?: boolean
 }
-export const MessageContent = ({ message, user, ...props }: MessageContentProps) => {
+export const MessageContent = ({ message, user, forceHideLinkPreview = false, ...props }: MessageContentProps) => {
 
     return <Box {...props}>
         {message.text ? <TiptapRenderer message={{
             ...message,
             message_type: 'Text'
-        }} user={user} showLinkPreview={message.hide_link_preview ? false : true} /> : null}
+        }} user={user} showLinkPreview={forceHideLinkPreview ? false : message.hide_link_preview ? false : true} /> : null}
         {message.message_type === 'Image' && <ImageMessageBlock message={message} user={user} />}
         {message.message_type === 'File' && <FileMessageBlock message={message} user={user} />}
         {message.message_type === 'Poll' && <PollMessageBlock message={message} user={user} />}

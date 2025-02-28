@@ -1,7 +1,7 @@
-import { BubbleMenu, EditorContent, EditorContext, Extension, ReactRenderer, useEditor } from '@tiptap/react'
+import { BubbleMenu, Editor, EditorContent, EditorContext, Extension, ReactRenderer, useEditor } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import Underline from '@tiptap/extension-underline'
-import React, { Suspense, lazy, useContext, useEffect, useMemo, useRef } from 'react'
+import React, { Suspense, forwardRef, lazy, useContext, useEffect, useImperativeHandle, useMemo, useRef } from 'react'
 import { TextFormattingMenu } from './TextFormattingMenu'
 import Highlight from '@tiptap/extension-highlight'
 import Link from '@tiptap/extension-link'
@@ -26,7 +26,7 @@ import json from 'highlight.js/lib/languages/json'
 import python from 'highlight.js/lib/languages/python'
 import { Plugin } from 'prosemirror-state'
 import { Box, Flex, IconButton } from '@radix-ui/themes'
-import { useSessionStickyState } from '@/hooks/useStickyState'
+import { useStickyState } from '@/hooks/useStickyState'
 import { Message } from '../../../../../../types/Messaging/Message'
 import Image from '@tiptap/extension-image'
 import { EmojiSuggestion } from './EmojiSuggestion'
@@ -36,6 +36,8 @@ import clsx from 'clsx'
 import { ChannelMembers } from '@/hooks/fetchers/useFetchChannelMembers'
 import TimestampRenderer from '../ChatMessage/Renderers/TiptapRenderer/TimestampRenderer'
 import { useParams } from 'react-router-dom'
+import { useAtom } from 'jotai'
+import { EnterKeyBehaviourAtom } from '@/utils/preferences'
 const MobileInputActions = lazy(() => import('./MobileActions/MobileInputActions'))
 
 const lowlight = createLowlight(common)
@@ -66,6 +68,7 @@ type TiptapEditorProps = {
     channelMembers?: ChannelMembers,
     channelID?: string,
     onUserType?: () => void,
+    onUpArrow?: () => void,
 }
 
 export const UserMention = Mention.extend({
@@ -75,6 +78,13 @@ export const UserMention = Mention.extend({
         suggestion: {
             char: '@',
             pluginKey: new PluginKey('userMention'),
+            // Allow any character to be a prefix for a user mention
+            allowedPrefixes: null,
+            allow: (props) => {
+                // Do not allow mentions if the preceding character is a letter or digit
+                const precedingCharacter = props.state.doc.textBetween(props.range.from - 1, props.range.from, '')
+                return !/[a-zA-Z0-9]/.test(precedingCharacter)
+            }
         }
     })
 
@@ -85,6 +95,13 @@ export const ChannelMention = Mention.extend({
         suggestion: {
             char: '#',
             pluginKey: new PluginKey('channelMention'),
+            // Allow any character to be a prefix for a channel mention
+            allowedPrefixes: null,
+            allow: (props) => {
+                // Do not allow mentions if the preceding character is a letter or digit
+                const precedingCharacter = props.state.doc.textBetween(props.range.from - 1, props.range.from, '')
+                return !/[a-zA-Z0-9]/.test(precedingCharacter)
+            }
         }
     })
 
@@ -92,7 +109,7 @@ export interface MemberSuggestions extends UserFields {
     is_member: boolean
 }
 
-const Tiptap = ({ isEdit, slotBefore, fileProps, onMessageSend, channelMembers, onUserType, channelID, replyMessage, clearReplyMessage, placeholder = 'Type a message...', messageSending, sessionStorageKey = 'tiptap-editor', disableSessionStorage = false, defaultText = '' }: TiptapEditorProps) => {
+const Tiptap = forwardRef(({ isEdit, slotBefore, fileProps, onMessageSend, onUpArrow, channelMembers, onUserType, channelID, replyMessage, clearReplyMessage, placeholder = 'Type a message...', messageSending, sessionStorageKey = 'tiptap-editor', disableSessionStorage = false, defaultText = '' }: TiptapEditorProps, ref) => {
 
     const { enabledUsers } = useContext(UserListContext)
 
@@ -119,6 +136,40 @@ const Tiptap = ({ isEdit, slotBefore, fileProps, onMessageSend, channelMembers, 
 
     const isMobile = useIsMobile()
 
+    const [enterKeyBehaviour] = useAtom(EnterKeyBehaviourAtom)
+
+    const handleMessageSendAction = (editor: any) => {
+
+        const hasContent = editor.getText().trim().length > 0
+        let html = ''
+        let json = {}
+        if (hasContent) {
+            html = editor.getHTML()
+            json = editor.getJSON()
+        }
+
+        editor.setEditable(false)
+
+        onMessageSend(html, json)
+            .then(() => {
+                editor.commands.clearContent(true);
+                editor.setEditable(true)
+                editor.commands.focus('start')
+            })
+            .catch(() => {
+                editor.setEditable(true)
+            })
+        return editor.commands.clearContent(true);
+    }
+
+    const handleNewLineAction = (editor: any) => {
+        return editor.commands.first(({ commands }: { commands: any }) => [
+            () => commands.newlineInCode(),
+            () => commands.createParagraphNear(),
+            () => commands.liftEmptyBlock(),
+            () => commands.splitBlock(),
+        ]);
+    }
     // this is a dummy extension only to create custom keydown behavior
     const KeyboardHandler = Extension.create({
         name: 'keyboardHandler',
@@ -138,30 +189,18 @@ const Tiptap = ({ isEdit, slotBefore, fileProps, onMessageSend, channelMembers, 
                     const isCodeBlockActive = this.editor.isActive('codeBlock');
                     const isListItemActive = this.editor.isActive('listItem');
 
-                    const hasContent = this.editor.getText().trim().length > 0
+
 
                     if (isCodeBlockActive || isListItemActive) {
                         return false;
                     }
-                    let html = ''
-                    let json = {}
-                    if (hasContent) {
-                        html = this.editor.getHTML()
-                        json = this.editor.getJSON()
+
+                    if (enterKeyBehaviour === 'send-message') {
+                        return handleMessageSendAction(this.editor)
+                    } else {
+                        return handleNewLineAction(this.editor)
                     }
 
-                    this.editor.setEditable(false)
-
-                    onMessageSend(html, json)
-                        .then(() => {
-                            this.editor.commands.clearContent(true);
-                            this.editor.setEditable(true)
-                            this.editor.commands.focus('start')
-                        })
-                        .catch(() => {
-                            this.editor.setEditable(true)
-                        })
-                    return this.editor.commands.clearContent(true);
                 },
 
                 'Mod-Enter': () => {
@@ -214,13 +253,19 @@ const Tiptap = ({ isEdit, slotBefore, fileProps, onMessageSend, channelMembers, 
                     return false
                 },
                 'Shift-Enter': () => {
-                    return this.editor.commands.first(({ commands }) => [
-                        () => commands.newlineInCode(),
-                        () => commands.createParagraphNear(),
-                        () => commands.liftEmptyBlock(),
-                        () => commands.splitBlock(),
-                    ]);
+                    if (enterKeyBehaviour === 'send-message') {
+                        return handleNewLineAction(this.editor)
+                    } else {
+                        return handleMessageSendAction(this.editor)
+                    }
                 },
+                'ArrowUp': () => {
+                    // If the editor is empty, call the onUpArrow function
+                    if (this.editor.isEmpty) {
+                        onUpArrow?.()
+                    }
+                    return false
+                }
             };
         },
         addProseMirrorPlugins() {
@@ -477,7 +522,7 @@ const Tiptap = ({ isEdit, slotBefore, fileProps, onMessageSend, channelMembers, 
         TimestampRenderer
     ]
 
-    const [content, setContent] = useSessionStickyState(defaultText, sessionStorageKey, disableSessionStorage)
+    const [content, setContent] = useStickyState(defaultText, sessionStorageKey, disableSessionStorage)
 
     const editor = useEditor({
         extensions,
@@ -505,6 +550,12 @@ const Tiptap = ({ isEdit, slotBefore, fileProps, onMessageSend, channelMembers, 
             }, 50)
         }
     }, [replyMessage, editor, isMobile, isEdit])
+
+    useImperativeHandle(ref, () => ({
+        focusEditor: () => {
+            editor?.chain().focus().run()
+        }
+    }))
 
 
     if (isMobile) {
@@ -565,6 +616,6 @@ const Tiptap = ({ isEdit, slotBefore, fileProps, onMessageSend, channelMembers, 
 
 
 
-}
+})
 
 export default Tiptap

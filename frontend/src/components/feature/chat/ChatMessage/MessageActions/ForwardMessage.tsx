@@ -7,13 +7,14 @@ import { useIsDesktop } from "@/hooks/useMediaQuery"
 import { Drawer, DrawerContent } from "@/components/layout/Drawer"
 import clsx from "clsx"
 
-export const useForwardMessage = () => {
+export const useForwardMessage = (onModalClose?: VoidFunction) => {
 
     const [message, setMessage] = useState<null | Message>(null)
 
     const onClose = useCallback(() => {
         setMessage(null)
-    }, [])
+        onModalClose?.()
+    }, [onModalClose])
 
     return {
         message,
@@ -36,7 +37,7 @@ export const ForwardMessageDialog = ({ message, isOpen, onClose }: ForwardMessag
 
     if (isDesktop) {
         return <Dialog.Root open={isOpen} onOpenChange={onClose}>
-            <Dialog.Content className={clsx(DIALOG_CONTENT_CLASS, 'static')}>
+            <Dialog.Content className={'static'}>
                 {message &&
                     <ForwardMessageModal
                         message={message}

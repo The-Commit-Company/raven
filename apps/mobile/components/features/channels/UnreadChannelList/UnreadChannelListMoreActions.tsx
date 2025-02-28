@@ -74,8 +74,6 @@ const UnreadChannelListMoreActions = ({ channelIDs }: { channelIDs: string[] }) 
                 <DropdownMenu.Item key="mark-all-unread-as-read" onSelect={handleMarkAllAsRead}>
                     <DropdownMenu.ItemTitle>Mark all as read</DropdownMenu.ItemTitle>
                 </DropdownMenu.Item>
-                <DropdownMenu.Separator />
-                <DropdownMenu.Arrow />
             </DropdownMenu.Content>
         </DropdownMenu.Root>
     )

@@ -1,5 +1,5 @@
 import { FrappeError, useFrappeEventListener, useFrappeGetCall } from 'frappe-react-sdk'
-import { PropsWithChildren, createContext, useEffect, useMemo, useState } from 'react'
+import { PropsWithChildren, createContext, useContext, useEffect, useMemo, useState } from 'react'
 import { KeyedMutator } from 'swr'
 import { useSWRConfig } from 'frappe-react-sdk'
 import { toast } from 'sonner'
@@ -9,11 +9,7 @@ import { useIsMobile } from '@/hooks/useMediaQuery'
 
 export type UnreadChannelCountItem = { name: string, user_id?: string, unread_count: number, is_direct_message: 0 | 1 }
 
-export type UnreadCountData = {
-    total_unread_count_in_channels: number,
-    total_unread_count_in_dms: number,
-    channels: UnreadChannelCountItem[]
-}
+export type UnreadCountData = UnreadChannelCountItem[]
 
 export type ChannelListItem = Pick<RavenChannel, 'name' | 'channel_name' | 'type' |
     'channel_description' | 'is_direct_message' | 'is_self_message' |
@@ -51,11 +47,20 @@ export const ChannelListProvider = ({ children }: PropsWithChildren) => {
     )
 }
 
+/** Use this hook to get the channel list */
+export const useChannelList = (): ChannelListContextType => {
+    const context = useContext(ChannelListContext)
+    if (!context) {
+        throw new Error('useChannelList must be used within a ChannelListProvider')
+    }
+    return context
+}
+
 /**
  * Hook to fetch the channel list - all channels + DM's + other users if any
  * Also listens to the channel_list_updated event to update the channel list
  */
-export const useFetchChannelList = (): ChannelListContextType => {
+const useFetchChannelList = (): ChannelListContextType => {
 
     const isMobile = useIsMobile()
 

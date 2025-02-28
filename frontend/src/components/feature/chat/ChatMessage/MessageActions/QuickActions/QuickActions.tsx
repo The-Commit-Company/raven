@@ -3,7 +3,6 @@ import { MessageContextMenuProps } from '../MessageActions'
 import { QUICK_ACTION_BUTTON_CLASS, QuickActionButton } from './QuickActionButton'
 import { BiDotsHorizontalRounded } from 'react-icons/bi'
 import { MouseEventHandler, useContext, useRef } from 'react'
-import { FrappeConfig, FrappeContext } from 'frappe-react-sdk'
 import { EmojiPickerButton } from './EmojiPickerButton'
 import { UserContext } from '@/utils/auth/UserProvider'
 import { AiOutlineEdit } from 'react-icons/ai'
@@ -12,8 +11,9 @@ import { toast } from 'sonner'
 import { getErrorMessage } from '@/components/layout/AlertBanner/ErrorBanner'
 import { CreateThreadActionButton } from './CreateThreadButton'
 import clsx from 'clsx'
-
-const QUICK_EMOJIS = ['👍', '✅', '👀', '🎉']
+import usePostMessageReaction from '@/hooks/usePostMessageReaction'
+import { useAtomValue } from 'jotai'
+import { QuickEmojisAtom } from '@/utils/preferences'
 
 interface QuickActionsProps extends MessageContextMenuProps {
     isEmojiPickerOpen: boolean,
@@ -25,10 +25,10 @@ export const QuickActions = ({ message, onReply, onEdit, isEmojiPickerOpen, setI
 
     const { currentUser } = useContext(UserContext)
 
+    const quickEmojis = useAtomValue(QuickEmojisAtom)
+
     const isOwner = currentUser === message?.owner && !message?.is_bot_message
     const toolbarRef = useRef<HTMLDivElement>(null)
-
-    const { call } = useContext(FrappeContext) as FrappeConfig
 
     /**
      * When the user clicks on the more button, we want to trigger a right click event
@@ -50,17 +50,16 @@ export const QuickActions = ({ message, onReply, onEdit, isEmojiPickerOpen, setI
         e.target.dispatchEvent(evt);
     }
 
+    const postReaction = usePostMessageReaction()
+
     const onEmojiReact = (emoji: string, is_custom: boolean = false, emoji_name?: string) => {
-        call.post('raven.api.reactions.react', {
-            message_id: message?.name,
-            reaction: emoji,
-            is_custom,
-            emoji_name
-        }).catch((err) => {
-            toast.error("Could not react to message.", {
-                description: getErrorMessage(err)
+        if (message) {
+            postReaction(message, emoji, is_custom, emoji_name).catch((err) => {
+                toast.error("Could not react to message.", {
+                    description: getErrorMessage(err)
+                })
             })
-        })
+        }
     }
 
     // @ts-ignore
@@ -73,7 +72,7 @@ export const QuickActions = ({ message, onReply, onEdit, isEmojiPickerOpen, setI
                 CHAT_STYLE === "Left-Right" ? alignToRight ? "-top-10 right-0" : "-top-10 left-0" : "-top-6 right-4"
             )}>
             <Flex gap='1'>
-                {QUICK_EMOJIS.map((emoji) => {
+                {quickEmojis.map((emoji) => {
                     return <QuickActionButton
                         key={emoji}
                         className={'text-base'}
@@ -82,8 +81,7 @@ export const QuickActions = ({ message, onReply, onEdit, isEmojiPickerOpen, setI
                         onClick={() => {
                             onEmojiReact(emoji)
                         }}>
-                        {/* @ts-expect-error */}
-                        <em-emoji native={emoji} />
+                        {emoji}
                     </QuickActionButton>
                 })}
 

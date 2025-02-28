@@ -31,7 +31,7 @@ async function search(value: string, maxResults: number = 10): Promise<EmojiType
     return results
 }
 
-function getTopFavoriteEmojis(maxResults: number = 10): EmojiType[] {
+export function getTopFavoriteEmojis(maxResults: number = 10): EmojiType[] {
 
     // ID's of emojis
 
@@ -74,6 +74,8 @@ export const EmojiSuggestion = Node.create({
             Suggestion({
                 editor: this.editor,
                 char: ':',
+                // Allow any character to be a prefix for an emoji
+                allowedPrefixes: null,
                 items: (query) => {
                     if (query.query.length !== 0) {
                         return search(query.query)

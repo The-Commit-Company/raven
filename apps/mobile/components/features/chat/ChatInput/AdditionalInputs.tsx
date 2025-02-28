@@ -11,12 +11,12 @@ import { useKeyboardVisible } from "@hooks/useKeyboardVisible"
 import { CustomFile } from "@raven/types/common/File"
 import { useAtom } from 'jotai'
 import { filesAtom } from "@lib/filesAtom"
+import CreatePollButton from "@components/common/CreatePollButton"
 
 const AdditionalInputs = () => {
+
     const bottomSheetRef = useSheetRef()
-
     const { colors } = useColorScheme()
-
     const { isKeyboardVisible, keyboardHeight } = useKeyboardVisible()
 
     return (
@@ -30,7 +30,7 @@ const AdditionalInputs = () => {
                     <AdditionalInputsSheetContent bottomSheetRef={bottomSheetRef} />
                 </BottomSheetView>
             </Sheet>
-        </View >
+        </View>
     )
 }
 
@@ -44,14 +44,23 @@ const AdditionalInputsSheetContent = ({ bottomSheetRef }: { bottomSheetRef: Reac
         setFiles((prevFiles) => {
             return [...prevFiles, ...files]
         })
+        onSheetClose()
+    }
+
+    const handleGIFSelect = (gif: any) => {
+        console.log(gif)
+    }
+
+    const onSheetClose = () => {
         bottomSheetRef.current?.close()
     }
 
     return (
-        <View className="flex-col gap-4 justify-start items-start p-4">
-            <FilePickerButton onPick={handlePick} label="Upload files" />
-            <ImagePickerButton onPick={handlePick} label="Upload images" />
-            <GIFPickerButton onSelect={() => { }} label="Send GIF" />
+        <View className="flex-col justify-start items-start px-3 w-full">
+            <FilePickerButton onPick={handlePick} />
+            <ImagePickerButton onPick={handlePick} />
+            <GIFPickerButton onSelect={handleGIFSelect} />
+            <CreatePollButton onSheetClose={onSheetClose} />
         </View>
     )
 }

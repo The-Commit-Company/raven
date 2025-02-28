@@ -1,5 +1,5 @@
 import { IconButton, Flex, Box } from "@radix-ui/themes"
-import { useMemo, useState } from "react"
+import { useCallback, useMemo, useRef, useState } from "react"
 import { BiX } from "react-icons/bi"
 import useFileUpload from "../../chat/ChatInput/FileInput/useFileUpload"
 import Tiptap from "../../chat/ChatInput/Tiptap"
@@ -7,7 +7,6 @@ import { useSendMessage } from "@raven/lib/hooks/useSendMessage"
 import { ReplyMessageBox } from "../../chat/ChatMessage/ReplyMessageBox/ReplyMessageBox"
 import { CustomFile, FileDrop } from "../../file-upload/FileDrop"
 import { FileListItem } from "../../file-upload/FileListItem"
-import { useParams } from "react-router-dom"
 import { Message } from "../../../../../../types/Messaging/Message"
 import ChatStream from "../../chat/ChatStream/ChatStream"
 import { JoinChannelBox } from "../../chat/chat-footer/JoinChannelBox"
@@ -18,10 +17,15 @@ import AIEvent from "../../ai/AIEvent"
 import { useTyping } from "../../chat/ChatInput/TypingIndicator/useTypingIndicator"
 import TypingIndicator from "../../chat/ChatInput/TypingIndicator/TypingIndicator"
 import { Stack } from "@/components/layout/Stack"
+import { useSWRConfig } from "frappe-react-sdk"
+import { GetMessagesResponse } from "../../chat/ChatStream/useChatStream"
+import { RavenMessage } from "@/types/RavenMessaging/RavenMessage"
+import { useIsMobile } from "@/hooks/useMediaQuery"
 
 export const ThreadMessages = ({ threadMessage }: { threadMessage: Message }) => {
 
-    const { threadID, channelID } = useParams()
+    const threadID = threadMessage.name
+    const channelID = threadMessage.channel_id
 
     const { channelMembers } = useFetchChannelMembers(channelID ?? '')
 
@@ -38,7 +42,60 @@ export const ThreadMessages = ({ threadMessage }: { threadMessage: Message }) =>
         setSelectedMessage(null)
     }
 
-    const onMessageSendCompleted = () => {
+    const scrollRef = useRef<HTMLDivElement>(null)
+
+    const { mutate } = useSWRConfig()
+
+    const onMessageSendCompleted = (messages: RavenMessage[]) => {
+        mutate({ path: `get_messages_for_channel_${threadID}` }, (data?: GetMessagesResponse) => {
+            if (data && data?.message.has_new_messages) {
+                return data
+            }
+
+            const existingMessages = data?.message.messages ?? []
+
+            const newMessages = [...existingMessages]
+
+            messages.forEach(message => {
+                // Check if the message is already present in the messages array
+                const messageIndex = existingMessages.findIndex(m => m.name === message.name)
+
+                if (messageIndex !== -1) {
+                    // If the message is already present, update the message
+                    // @ts-ignore
+                    newMessages[messageIndex] = {
+                        ...message,
+                        _liked_by: "",
+                        is_pinned: 0,
+                        is_continuation: 0
+                    }
+                } else {
+                    // If the message is not present, add the message to the array
+                    // @ts-ignore
+                    newMessages.push({
+                        ...message,
+                        _liked_by: "",
+                        is_pinned: 0,
+                        is_continuation: 0
+                    })
+                }
+            })
+
+            return {
+                message: {
+                    messages: newMessages.sort((a, b) => {
+                        return new Date(b.creation).getTime() - new Date(a.creation).getTime()
+                    }),
+                    has_new_messages: false,
+                    has_old_messages: data?.message.has_old_messages ?? false
+                }
+            }
+
+        }, { revalidate: false }).then(() => {
+            // If the user is focused on the page, then we also need to
+            // If the user is the sender of the message, scroll to the bottom
+            scrollRef.current?.scrollTo(0, scrollRef.current?.scrollHeight)
+        })
         // Stop the typing indicator
         stopTyping()
         // Clear the selected message
@@ -48,6 +105,25 @@ export const ThreadMessages = ({ threadMessage }: { threadMessage: Message }) =>
     const { fileInputRef, files, setFiles, removeFile, uploadFiles, addFile, fileUploadProgress } = useFileUpload(threadID ?? '')
 
     const { sendMessage, loading } = useSendMessage(threadID ?? '', files.length, uploadFiles, onMessageSendCompleted, selectedMessage)
+
+    const chatStreamRef = useRef<any>(null)
+
+    const onUpArrowPressed = useCallback(() => {
+        // Call the up arrow function inside the ChatStream component
+        chatStreamRef.current?.onUpArrow()
+    }, [])
+
+    const tiptapRef = useRef<any>(null)
+
+    const isMobile = useIsMobile()
+
+    // When the edit modal is closed, we need to focus the editor again
+    // Don't do this on mobile since that would open the keyboard
+    const onModalClose = useCallback(() => {
+        if (!isMobile) {
+            tiptapRef.current?.focusEditor()
+        }
+    }, [isMobile])
 
     const PreviousMessagePreview = ({ selectedMessage }: { selectedMessage: any }) => {
 
@@ -60,6 +136,7 @@ export const ThreadMessages = ({ threadMessage }: { threadMessage: Message }) =>
                 <IconButton
                     color='gray'
                     size='1'
+                    className="z-50"
                     variant="soft"
                     onClick={clearSelectedMessage}>
                     <BiX size='20' />
@@ -95,8 +172,11 @@ export const ThreadMessages = ({ threadMessage }: { threadMessage: Message }) =>
                 <ThreadFirstMessage message={threadMessage} />
                 <ChatStream
                     channelID={threadID ?? ''}
+                    scrollRef={scrollRef}
+                    ref={chatStreamRef}
                     replyToMessage={handleReplyAction}
                     showThreadButton={false}
+                    onModalClose={onModalClose}
                 />
                 <AIEvent channelID={threadID ?? ''} />
 
@@ -112,6 +192,8 @@ export const ThreadMessages = ({ threadMessage }: { threadMessage: Message }) =>
                             fileInputRef,
                             addFile
                         }}
+                        ref={tiptapRef}
+                        onUpArrow={onUpArrowPressed}
                         onUserType={onUserType}
                         channelMembers={channelMembers}
                         clearReplyMessage={clearSelectedMessage}

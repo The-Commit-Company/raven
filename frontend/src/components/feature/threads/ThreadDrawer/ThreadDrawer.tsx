@@ -6,6 +6,7 @@ import { ErrorBanner } from '@/components/layout/AlertBanner/ErrorBanner'
 import { FullPageLoader } from '@/components/layout/Loaders/FullPageLoader'
 import { ThreadHeader } from './ThreadHeader'
 import { Message } from '../../../../../../types/Messaging/Message'
+import useThreadPageActive from '@/hooks/useThreadPageActive'
 
 const ThreadDrawer = () => {
 
@@ -15,6 +16,8 @@ const ThreadDrawer = () => {
         shouldRetryOnError: false,
         keepPreviousData: false
     })
+
+    useThreadPageActive(threadID)
 
     return (
         <div>

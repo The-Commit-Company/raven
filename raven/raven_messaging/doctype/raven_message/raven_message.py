@@ -13,7 +13,7 @@ from pytz import timezone, utc
 from raven.ai.ai import handle_ai_thread_message, handle_bot_dm
 from raven.api.raven_channel import get_peer_user
 from raven.notification import send_notification_to_topic, send_notification_to_user
-from raven.utils import track_channel_visit
+from raven.utils import clear_thread_reply_count_cache, get_thread_reply_count, track_channel_visit
 
 
 class RavenMessage(Document):
@@ -125,6 +125,7 @@ class RavenMessage(Document):
 
 	def after_insert(self):
 		if self.message_type != "System":
+			self.set_last_message_timestamp()
 			self.publish_unread_count_event()
 
 		if self.message_type == "Text":
@@ -199,7 +200,7 @@ class RavenMessage(Document):
 		# Update directly via SQL since we do not want to invalidate the document cache
 		message_details = {
 			"message_id": self.name,
-			"content": self.content if self.message_type == "Text" else self.file,
+			"content": self.content,
 			"message_type": self.message_type,
 			"owner": self.owner,
 			"is_bot_message": self.is_bot_message,
@@ -217,8 +218,6 @@ class RavenMessage(Document):
 
 	def publish_unread_count_event(self):
 
-		self.set_last_message_timestamp()
-
 		channel_doc = frappe.get_cached_doc("Raven Channel", self.channel_id)
 		# If the message is a direct message, then we can only send it to one user
 		if channel_doc.is_direct_message:
@@ -235,6 +234,7 @@ class RavenMessage(Document):
 							"channel_id": self.channel_id,
 							"play_sound": True,
 							"sent_by": self.owner,
+							"is_dm_channel": True,
 							"last_message_timestamp": self.creation,
 						},
 						user=peer_user_doc.user,
@@ -247,6 +247,7 @@ class RavenMessage(Document):
 				{
 					"channel_id": self.channel_id,
 					"play_sound": False,
+					"is_dm_channel": True,
 					"sent_by": self.owner,
 					"last_message_timestamp": self.creation,
 				},
@@ -254,16 +255,22 @@ class RavenMessage(Document):
 				after_commit=True,
 			)
 		elif channel_doc.is_thread:
+			# TODO: Might be a good idea to just send this to the users who are participants in the thread - maybe not a lot of users?
+
+			# Clear the thread reply count cache
+			clear_thread_reply_count_cache(self.channel_id)
+			# Get the number of replies in the thread
+			reply_count = get_thread_reply_count(self.channel_id)
 			frappe.publish_realtime(
-				"thread_reply_created",
+				"thread_reply",
 				{
 					"channel_id": self.channel_id,
 					"sent_by": self.owner,
 					"last_message_timestamp": self.creation,
+					"number_of_replies": reply_count,
 				},
 				after_commit=True,
-				doctype="Raven Message",
-				docname=self.channel_id,
+				room="all",
 			)
 		else:
 			# This event needs to be published to all users on Raven (desk + website)
@@ -273,11 +280,12 @@ class RavenMessage(Document):
 					"channel_id": self.channel_id,
 					"play_sound": False,
 					"sent_by": self.owner,
+					"is_dm_channel": False,
 					"is_thread": channel_doc.is_thread,
 					"last_message_timestamp": self.creation,
 				},
 				after_commit=True,
-				room="website",
+				room="all",
 			)
 
 	def process_mentions(self):
@@ -296,6 +304,16 @@ class RavenMessage(Document):
 				if user_id and user_id not in entered_ids:
 					self.append("mentions", {"user": user_id})
 					entered_ids.add(user_id)
+
+					frappe.publish_realtime(
+						"raven_mention",
+						{
+							"channel_id": self.channel_id,
+							"user_id": user_id,
+						},
+						user=user_id,
+						after_commit=True,
+					)
 
 	def send_push_notification(self):
 		# TODO: Send Push Notification for the following:
@@ -567,7 +585,7 @@ class RavenMessage(Document):
 				after_commit=after_commit,
 			)
 
-			if self.message_type != "System":
+			if self.message_type != "System" and not self.is_bot_message:
 				# track the visit of the user to the channel if a new message is created
 				track_channel_visit(channel_id=self.channel_id, user=self.owner)
 				# frappe.enqueue(method=track_channel_visit, channel_id=self.channel_id, user=self.owner)

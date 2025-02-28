@@ -80,6 +80,16 @@ def upload_file_with_message():
 	message_doc.channel_id = frappe.form_dict.channelID
 	message_doc.message_type = "File"
 	message_doc.text = frappe.form_dict.caption
+
+	# If no caption is provided, use the filename as the caption
+	if not frappe.form_dict.caption:
+		# Get the filename
+		try:
+			filename = frappe.request.files["file"].filename
+		except Exception:
+			filename = "File"
+		message_doc.content = filename
+
 	message_doc.insert()
 
 	frappe.form_dict.docname = message_doc.name
@@ -102,7 +112,7 @@ def upload_file_with_message():
 
 	message_doc.reload()
 
-	message_doc.file = file_doc.file_url
+	message_doc.file = file_doc.unique_url
 
 	if file_doc.file_type in fileExt:
 
@@ -150,4 +160,4 @@ def upload_file_with_message():
 
 	message_doc.save()
 
-	return message_doc.name
+	return message_doc

@@ -55,7 +55,7 @@ const rootVariants = cva('min-h-2 flex-1', {
   variants: {
     variant: {
       insets: 'ios:px-4',
-      'full-width': 'ios:bg-card ios:dark:bg-background',
+      'full-width': 'ios:bg-background ios:dark:bg-card',
     },
     sectionHeaderAsGap: {
       true: '',
@@ -66,7 +66,7 @@ const rootVariants = cva('min-h-2 flex-1', {
     {
       variant: 'full-width',
       sectionHeaderAsGap: true,
-      className: 'bg-card dark:bg-background',
+      className: 'bg-background dark:bg-card',
     },
   ],
   defaultVariants: {
@@ -181,11 +181,11 @@ type ListItemProps<T extends ListDataItem> = PressableProps &
   };
 type ListItemRef = React.Ref<View>;
 
-const itemVariants = cva('ios:gap-0 flex-row gap-0 bg-card', {
+const itemVariants = cva('ios:gap-0 flex-row gap-0 bg-background dark:bg-card', {
   variants: {
     variant: {
-      insets: 'ios:bg-card bg-card/70',
-      'full-width': 'bg-card dark:bg-background',
+      insets: 'ios:bg-background ios:dark:bg-card bg-background/70 dark:bg-card/70',
+      'full-width': 'bg-background dark:bg-card',
     },
     sectionHeaderAsGap: {
       true: '',
@@ -380,7 +380,7 @@ function ListSectionHeaderComponent<T extends ListDataItem>(
     return (
       <View
         className={cn(
-          'bg-background',
+          'bg-card dark:bg-background',
           Platform.OS !== 'ios' && 'border-border/25 dark:border-border/80 border-b',
           className
         )}
@@ -395,7 +395,7 @@ function ListSectionHeaderComponent<T extends ListDataItem>(
       className={cn(
         'ios:pb-1 pb-4 pl-4 pt-4',
         Platform.OS !== 'ios' && 'border-border/25 dark:border-border/80 border-b',
-        variant === 'full-width' ? 'bg-card dark:bg-background' : 'bg-background',
+        'bg-background dark:bg-card',
         className
       )}
       {...props}

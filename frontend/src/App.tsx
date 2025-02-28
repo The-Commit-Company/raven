@@ -67,6 +67,7 @@ const router = createBrowserRouter(
             <Route path="profile" lazy={() => import('./components/feature/userSettings/UserProfile/UserProfile')} />
             <Route path="users" lazy={() => import('./pages/settings/Users/UserList')} />
             <Route path="appearance" lazy={() => import('./pages/settings/Appearance')} />
+            <Route path="preferences" lazy={() => import('./pages/settings/Preferences')} />
             <Route path="hr" lazy={() => import('./pages/settings/Integrations/FrappeHR')} />
             <Route path="document-previews" lazy={() => import('./pages/settings/Integrations/DocumentPreviewTool')} />
             <Route path="workspaces" >
@@ -132,7 +133,7 @@ const router = createBrowserRouter(
           <Route path=":workspaceID" element={<MainPage />}>
             <Route index element={<MobileTabsPage />} />
             <Route path="threads" lazy={() => import('./components/feature/threads/Threads')}>
-              <Route path="thread/:threadID" lazy={() => import('./components/feature/threads/ThreadDrawer/ThreadDrawer')} />
+              <Route path=":threadID" lazy={() => import('./components/feature/threads/ThreadManager/ViewThread')} />
             </Route>
             <Route path="saved-messages" lazy={() => import('./components/feature/saved-messages/SavedMessages')} />
 

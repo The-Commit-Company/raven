@@ -67,7 +67,7 @@ const SavedPromptTable = ({ data }: { data: RavenBotAIPrompt[] }) => {
             <Table.Header>
                 <Table.Row>
                     <Table.ColumnHeaderCell>Name</Table.ColumnHeaderCell>
-                    <Table.ColumnHeaderCell>Bot</Table.ColumnHeaderCell>
+                    <Table.ColumnHeaderCell>Agent</Table.ColumnHeaderCell>
                     <Table.ColumnHeaderCell>Is Global?</Table.ColumnHeaderCell>
                 </Table.Row>
             </Table.Header>

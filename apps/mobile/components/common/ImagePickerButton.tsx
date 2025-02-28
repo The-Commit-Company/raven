@@ -1,28 +1,24 @@
-import { Button, ButtonProps } from "@components/nativewindui/Button"
 import ImageUpIcon from "@assets/icons/ImageUpIcon.svg"
 import { useColorScheme } from "@hooks/useColorScheme"
-import { SvgProps } from "react-native-svg"
 import * as ImagePicker from 'expo-image-picker'
 import { CustomFile } from "@raven/types/common/File"
 import { Text } from '@components/nativewindui/Text'
-import { TextProps } from "react-native"
+import { Pressable } from "react-native"
 
 interface ImagePickerButtonProps {
-    buttonProps?: ButtonProps
-    icon?: React.ReactNode
-    iconProps?: SvgProps
-    label?: string
-    labelProps?: TextProps
+    allowsMultipleSelection?: boolean
+    mediaTypes?: ImagePicker.MediaType
     onPick: (files: CustomFile[]) => void
 }
 
-const ImagePickerButton = ({ buttonProps, iconProps, icon, label, labelProps, onPick }: ImagePickerButtonProps) => {
-    const { colors } = useColorScheme()
+const ImagePickerButton = ({ allowsMultipleSelection, mediaTypes, onPick }: ImagePickerButtonProps) => {
 
+    const { colors } = useColorScheme()
     const pickImage = async () => {
         try {
             let result = await ImagePicker.launchImageLibraryAsync({
-                allowsMultipleSelection: true,
+                allowsMultipleSelection: allowsMultipleSelection ?? true,
+                mediaTypes: mediaTypes ?? ['videos', 'images', 'livePhotos'],
             })
 
             if (!result.canceled) {
@@ -46,10 +42,13 @@ const ImagePickerButton = ({ buttonProps, iconProps, icon, label, labelProps, on
     }
 
     return (
-        <Button variant="plain" size={label ? "none" : "icon"} onPress={pickImage} {...buttonProps} >
-            {icon ?? <ImageUpIcon height={20} width={20} color={colors.icon} {...iconProps} />}
-            {label && <Text className=" text-sm text-foreground" {...labelProps}>{label}</Text>}
-        </Button>
+        <Pressable
+            onPress={pickImage}
+            className='flex flex-row w-full items-center gap-2 p-2 rounded-lg ios:active:bg-linkColor'
+            android_ripple={{ color: 'rgba(0,0,0,0.1)', borderless: false }}>
+            <ImageUpIcon height={20} width={20} color={colors.icon} />
+            <Text className='text-base text-foreground'>Upload Image</Text>
+        </Pressable>
     )
 }
 

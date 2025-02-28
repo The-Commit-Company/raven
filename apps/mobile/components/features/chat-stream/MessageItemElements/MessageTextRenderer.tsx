@@ -112,7 +112,7 @@ const tagStylesAtom = atom((get) => {
 })
 
 const baseStylesAtom = atom((get) => ({
-    fontSize: 14,
+    fontSize: 16,
     color: get(themeAtom) === 'light' ? 'rgb(0, 0, 0)' : 'rgb(255, 255, 255)',
 }))
 

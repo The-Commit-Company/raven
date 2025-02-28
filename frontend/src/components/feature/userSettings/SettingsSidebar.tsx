@@ -3,9 +3,9 @@ import { Box, Flex, Separator, Text } from '@radix-ui/themes'
 import clsx from 'clsx'
 import { PropsWithChildren, createElement } from 'react';
 import { IconType } from 'react-icons'
-import { BiBot, BiBuildings, BiHelpCircle } from 'react-icons/bi'
+import { BiBot, BiBuildings } from 'react-icons/bi'
 import { BsBoxes } from 'react-icons/bs'
-import { FiHelpCircle, FiLifeBuoy } from 'react-icons/fi';
+import { FiLifeBuoy } from 'react-icons/fi';
 import { LuCircleUserRound } from 'react-icons/lu'
 import { NavLink } from 'react-router-dom'
 
@@ -16,6 +16,7 @@ export const SettingsSidebar = () => {
                 <SettingsGroup title="My Account" icon={LuCircleUserRound}>
                     <SettingsSidebarItem title="Profile" to='profile' />
                     <SettingsSidebarItem title="Appearance" to='appearance' />
+                    <SettingsSidebarItem title="Preferences" to='preferences' />
                 </SettingsGroup>
                 <SettingsSeparator />
                 <SettingsGroup title="Workspace" icon={BiBuildings}>
@@ -37,7 +38,7 @@ export const SettingsSidebar = () => {
                 </SettingsGroup>
                 <SettingsSeparator />
                 <SettingsGroup title="AI" icon={BiBot}>
-                    <SettingsSidebarItem title="Bots" to='bots' />
+                    <SettingsSidebarItem title="Agents" to='bots' />
                     <SettingsSidebarItem title="Functions" to='functions' />
                     <SettingsSidebarItem title="Instructions" to="instructions" />
                     <SettingsSidebarItem title="Commands" to='commands' />

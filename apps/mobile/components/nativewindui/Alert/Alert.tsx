@@ -97,7 +97,7 @@ const Alert = React.forwardRef<AlertRef, AlertProps>((_, ref) => {
                               'text-[14px] font-medium',
                               button.style === 'destructive'
                                 ? 'text-foreground'
-                                : 'text-primary'
+                                : 'text-primary dark:text-secondary'
                             )}>
                             {button.text}
                           </Text>

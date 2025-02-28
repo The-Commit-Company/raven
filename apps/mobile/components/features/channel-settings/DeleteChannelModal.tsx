@@ -59,7 +59,7 @@ export const DeleteChannelModal: React.FC<DeleteChannelModalProps> = ({ deleteSh
             {props => {
                 return (
                     <BottomSheetView {...props}>
-                        <View className="flex-col px-4 gap-3 mt-2 mb-20">
+                        <View className="flex-col px-4 gap-3 mt-2 mb-16">
                             <Text className="text-xl font-cal-sans">Delete this Channel?</Text>
                             <Text className="text-sm">
                                 Please understand that when you delete <Text className="text-sm font-semibold">{channelData?.channel_name}</Text>:

@@ -7,10 +7,13 @@ import { useState } from "react"
 import WebView from "react-native-webview"
 import { WebViewSourceUri } from "react-native-webview/lib/WebViewTypes"
 import ImageViewer from "@components/features/image/ImageViewer"
+import HeaderBackButton from "@components/common/HeaderBackButton"
+import { useColorScheme } from "@hooks/useColorScheme"
 
 const FileViewer = () => {
 
   const { uri } = useLocalSearchParams() as { uri: string }
+  const { colors } = useColorScheme()
 
   const [showHeader, setShowHeader] = useState(true)
 
@@ -37,6 +40,9 @@ const FileViewer = () => {
   return (
     <>
       <Stack.Screen options={{
+        headerStyle: { backgroundColor: colors.background },
+        headerLeft: () => <HeaderBackButton />,
+        headerTransparent: isImage,
         title: 'File Viewer',
         headerShown: showHeader,
         headerTitle: `${uri?.split('/').pop()}`,
