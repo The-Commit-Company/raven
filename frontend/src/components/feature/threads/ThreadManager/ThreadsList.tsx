@@ -33,7 +33,8 @@ type GetThreadsSWRKey = [string, {
     workspace: string,
     content: string,
     channel_id: string,
-    startAfter: number
+    startAfter: number,
+    onlyShowUnread: boolean
 }]
 
 const ThreadsList = ({ aiThreads, content, channel, endpoint = "raven.api.threads.get_all_threads", onlyShowUnread }: Props) => {
@@ -60,7 +61,8 @@ const ThreadsList = ({ aiThreads, content, channel, endpoint = "raven.api.thread
                 workspace: workspaceID,
                 content: content,
                 channel_id: channel,
-                startAfter
+                startAfter,
+                onlyShowUnread
             }] // SWR key
         }, (swrKey: GetThreadsSWRKey) => {
             return call.get<GetThreadsReturnType>(endpoint, {
@@ -69,7 +71,8 @@ const ThreadsList = ({ aiThreads, content, channel, endpoint = "raven.api.thread
                 content: swrKey[1].content,
                 channel_id: swrKey[1].channel_id,
                 start_after: swrKey[1].startAfter,
-                limit: PAGE_SIZE
+                limit: PAGE_SIZE,
+                only_show_unread: swrKey[1].onlyShowUnread
             })
         }, {
         revalidateFirstPage: false,
@@ -84,17 +87,7 @@ const ThreadsList = ({ aiThreads, content, channel, endpoint = "raven.api.thread
 
     const isReachingEnd = isEmpty || (data && data[data.length - 1]?.message?.length < PAGE_SIZE)
 
-    const threads = useMemo(() => {
-        const threads = data?.flatMap((page) => page.message) ?? []
-
-        if (onlyShowUnread && unreadThreadsMap) {
-            return threads.filter((thread) => {
-                return unreadThreadsMap?.[thread.name] ?? 0 > 0
-            })
-        }
-
-        return threads
-    }, [data, onlyShowUnread, unreadThreadsMap])
+    const threads = data?.flatMap((page) => page.message) ?? []
 
     const observerTarget = useRef<HTMLDivElement>(null)
 
@@ -126,10 +119,6 @@ const ThreadsList = ({ aiThreads, content, channel, endpoint = "raven.api.thread
     }
 
     if (isEmpty) {
-        return <EmptyStateForThreads />
-    }
-
-    if (threads.length === 0) {
         return <EmptyStateForThreads isFiltered={onlyShowUnread} />
     }
 
