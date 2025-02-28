@@ -57,7 +57,7 @@ const UserAvailability = () => {
                     <DropdownMenu.Content side='bottom' align='end'>
                         <DropdownMenu.Item key="available" onSelect={() => setAvailabilityStatus('Available')}>
                             <DropdownMenu.ItemIcon ios={{
-                                name: 'checkmark.circle.fill', // Green circle for Available
+                                name: 'checkmark.circle', // Green circle for Available
                                 pointSize: 16,
                                 scale: 'medium',
                                 hierarchicalColor: {
@@ -74,14 +74,14 @@ const UserAvailability = () => {
                                 scale: 'medium',
                                 hierarchicalColor: {
                                     dark: '#FFD699',
-                                    light: '#FFCC77',
+                                    light: 'orange',
                                 },
                             }} />
                             <DropdownMenu.ItemTitle>Away</DropdownMenu.ItemTitle>
                         </DropdownMenu.Item>
                         <DropdownMenu.Item key="do-not-disturb" onSelect={() => setAvailabilityStatus('Do not disturb')}>
                             <DropdownMenu.ItemIcon ios={{
-                                name: 'minus.circle.fill', // Minus circle for Do Not Disturb
+                                name: 'minus.circle', // Minus circle for Do Not Disturb
                                 pointSize: 16,
                                 scale: 'medium',
                                 hierarchicalColor: {

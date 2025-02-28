@@ -1,12 +1,21 @@
-import { View } from 'react-native'
+import { TouchableOpacity, View } from 'react-native'
 import { Text } from '@components/nativewindui/Text'
 import SmileIcon from '@assets/icons/SmileIcon.svg'
 import { useColorScheme } from '@hooks/useColorScheme'
 import useCurrentRavenUser from '@raven/lib/hooks/useCurrentRavenUser'
+import { router } from 'expo-router'
 
 const CustomStatus = () => {
+
     const { colors } = useColorScheme()
     const { myProfile } = useCurrentRavenUser()
+
+    const handleGoToCustomStatus = () => {
+        router.push('./custom-status', {
+            relativeToDirectory: true
+        })
+    }
+
     return (
         <View>
             <View className='flex flex-row py-2.5 px-4 rounded-xl justify-between bg-background dark:bg-card'>
@@ -14,7 +23,9 @@ const CustomStatus = () => {
                     <SmileIcon height={18} width={18} fill={colors.icon} />
                     <Text className='text-base'>Status</Text>
                 </View>
-                {myProfile?.custom_status ? <Text className='text-sm text-foreground'>{myProfile?.custom_status}</Text> : <Text className='text-sm text-primary'>Add</Text>}
+                <TouchableOpacity onPress={handleGoToCustomStatus}>
+                    {myProfile?.custom_status ? <Text className='text-sm text-foreground'>{myProfile?.custom_status}</Text> : <Text className='text-sm font-medium text-primary'>Add</Text>}
+                </TouchableOpacity>
             </View>
         </View>
     )
