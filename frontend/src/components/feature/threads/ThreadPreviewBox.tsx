@@ -128,7 +128,7 @@ export const ThreadPreviewBox = ({ thread, unreadCount }: { thread: ThreadMessag
             to={`/${workspaceID}/threads/${thread.name}`}
             tabIndex={0}
             className={({ isActive }) => clsx(
-                "group block hover:bg-gray-2 dark:hover:bg-gray-4 px-4 py-4 border-b border-gray-4",
+                "group block hover:bg-gray-2 dark:hover:bg-gray-4 px-4 py-4 border-b border-gray-4 overflow-hidden",
                 "focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-8 focus-visible:ring-inset",
                 isActive && "bg-gray-3 dark:bg-gray-3"
             )}>

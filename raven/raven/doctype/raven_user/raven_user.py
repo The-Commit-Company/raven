@@ -24,6 +24,7 @@ class RavenUser(Document):
 		enabled: DF.Check
 		first_name: DF.Data | None
 		full_name: DF.Data
+		last_mention_viewed_on: DF.Datetime | None
 		pinned_channels: DF.Table[RavenPinnedChannels]
 		type: DF.Literal["User", "Bot"]
 		user: DF.Link | None
