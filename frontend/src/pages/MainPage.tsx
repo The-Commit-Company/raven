@@ -1,6 +1,6 @@
 import { Flex, Box } from '@radix-ui/themes'
-import { Outlet } from 'react-router-dom'
-import { lazy, Suspense, useEffect } from 'react'
+import { Outlet, useParams } from 'react-router-dom'
+import { lazy, Suspense, useContext, useEffect } from 'react'
 import { Sidebar } from '../components/layout/Sidebar/Sidebar'
 import { ChannelListProvider } from '../utils/channel/ChannelListProvider'
 import { UserListProvider } from '@/utils/users/UserListProvider'
@@ -13,6 +13,8 @@ import { showNotification } from '@/utils/pushNotifications'
 import MessageActionController from '@/components/feature/message-actions/MessageActionController'
 import { useActiveSocketConnection } from '@/hooks/useActiveSocketConnection'
 import { useFrappeEventListener, useSWRConfig } from 'frappe-react-sdk'
+import { useUnreadThreadsCountEventListener } from '@/hooks/useUnreadThreadsCount'
+import { UserContext } from '@/utils/auth/UserProvider'
 
 const AddRavenUsersPage = lazy(() => import('@/pages/AddRavenUsersPage'))
 
@@ -36,6 +38,8 @@ export const MainPage = () => {
 
 const MainPageContent = () => {
 
+    const { currentUser } = useContext(UserContext)
+
     useFetchActiveUsersRealtime()
 
     useEffect(() => {
@@ -56,13 +60,30 @@ const MainPageContent = () => {
         mutate(["channel_members", payload.channel_id])
     })
 
+    const onThreadReplyEvent = useUnreadThreadsCountEventListener()
+
+    const { threadID } = useParams()
+
     // Listen to realtime event for new message count
     useFrappeEventListener('thread_reply', (event) => {
-        mutate(["thread_reply_count", event.channel_id], {
-            message: event.number_of_replies
-        }, {
-            revalidate: false
-        })
+
+        if (event.channel_id) {
+            mutate(["thread_reply_count", event.channel_id], {
+                message: event.number_of_replies
+            }, {
+                revalidate: false
+            })
+        }
+
+        // Unread count only needs to be fetched for certain conditions
+
+        // Ignore the event if the message is sent by the current user
+        if (event.sent_by === currentUser) return
+
+        // Ignore the event if the message is in the current open thread
+        if (threadID === event.channel_id) return
+
+        onThreadReplyEvent(event.channel_id)
     })
 
     return <UserListProvider>

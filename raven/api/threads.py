@@ -44,7 +44,7 @@ def get_all_threads(
 			channel.name,
 			channel.workspace,
 			channel.last_message_timestamp,
-			channel.last_message_details,
+			# channel.last_message_details,
 			channel.is_ai_thread,
 			channel.is_dm_thread,
 			message.name.as_("thread_message_id"),
@@ -130,7 +130,7 @@ def get_other_threads(
 			thread_channel.name,
 			thread_channel.workspace,
 			thread_channel.last_message_timestamp,
-			thread_channel.last_message_details,
+			# thread_channel.last_message_details,
 			thread_channel.is_ai_thread,
 			thread_channel.is_dm_thread,
 			main_thread_message.name.as_("thread_message_id"),
@@ -197,7 +197,7 @@ def get_other_threads(
 
 
 @frappe.whitelist(methods=["GET"])
-def get_unread_threads(workspace: str = None):
+def get_unread_threads(workspace: str = None, thread_id: str = None):
 	"""
 	Get the number of threads in which the user is a participant and has unread messages > 0
 	"""
@@ -224,6 +224,9 @@ def get_unread_threads(workspace: str = None):
 
 	if workspace:
 		query = query.where((channel.workspace == workspace) | (channel.is_dm_thread == 1))
+
+	if thread_id:
+		query = query.where(channel.name == thread_id)
 
 	return query.run(as_dict=True)
 
