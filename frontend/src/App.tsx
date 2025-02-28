@@ -67,6 +67,7 @@ const router = createBrowserRouter(
             <Route path="profile" lazy={() => import('./components/feature/userSettings/UserProfile/UserProfile')} />
             <Route path="users" lazy={() => import('./pages/settings/Users/UserList')} />
             <Route path="appearance" lazy={() => import('./pages/settings/Appearance')} />
+            <Route path="preferences" lazy={() => import('./pages/settings/Preferences')} />
             <Route path="hr" lazy={() => import('./pages/settings/Integrations/FrappeHR')} />
             <Route path="document-previews" lazy={() => import('./pages/settings/Integrations/DocumentPreviewTool')} />
             <Route path="workspaces" >
