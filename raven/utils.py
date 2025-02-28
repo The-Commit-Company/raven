@@ -129,6 +129,13 @@ def delete_channel_members_cache(channel_id: str):
 	cache_key = f"raven:channel_members:{channel_id}"
 	frappe.cache().delete_value(cache_key)
 
+	frappe.publish_realtime(
+		"channel_members_updated",
+		{"channel_id": channel_id},
+		room="all",
+		after_commit=True,
+	)
+
 
 def get_channel_member(channel_id: str, user: str = None) -> dict:
 	"""
@@ -159,3 +166,21 @@ def get_raven_user(user_id: str) -> str:
 	"""
 	# TODO: Run this via cache
 	return frappe.db.get_value("Raven User", {"user": user_id}, "name")
+
+
+def get_thread_reply_count(thread_id: str) -> int:
+	"""
+	Get the number of replies in a thread
+	"""
+	return frappe.cache().hget(
+		"raven:thread_reply_count",
+		thread_id,
+		lambda: frappe.db.count("Raven Message", {"channel_id": thread_id}),
+	)
+
+
+def clear_thread_reply_count_cache(thread_id: str):
+	"""
+	Clear the thread reply count cache
+	"""
+	frappe.cache().hdel("raven:thread_reply_count", thread_id)

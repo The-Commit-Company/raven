@@ -3,7 +3,7 @@ from datetime import timedelta
 
 import frappe
 from frappe import _
-from frappe.query_builder import Case, JoinType, Order
+from frappe.query_builder import JoinType, Order
 from frappe.query_builder.functions import Coalesce, Count
 
 from raven.api.raven_channel import create_direct_message_channel, get_peer_user_id
@@ -244,6 +244,9 @@ def get_messages_with_dates(channel_id):
 
 @frappe.whitelist()
 def get_unread_count_for_channels():
+	"""
+	Fetch all channels where the user has unread messages > 0
+	"""
 
 	channel = frappe.qb.DocType("Raven Channel")
 	channel_member = frappe.qb.DocType("Raven Channel Member")
@@ -258,36 +261,20 @@ def get_unread_count_for_channels():
 		.where(channel.is_archived == 0)
 		.where(channel.is_thread == 0)
 		.where(message.message_type != "System")
+		.where(
+			message.creation > Coalesce(channel_member.last_visit, "2000-11-11")
+		)  # Only count messages after the last visit for performance
 		.left_join(message)
 		.on(channel.name == message.channel_id)
 	)
 
 	channels_query = (
-		query.select(
-			channel.name,
-			channel.is_direct_message,
-			Count(Case().when(message.creation > Coalesce(channel_member.last_visit, "2000-11-11"), 1)).as_(
-				"unread_count"
-			),
-		)
-		.groupby(channel.name)
+		query.select(channel.name, channel.is_direct_message, Count(message.name).as_("unread_count"))
+		.groupby(channel.name, channel.is_direct_message)
 		.run(as_dict=True)
 	)
 
-	total_unread_count_in_channels = 0
-	total_unread_count_in_dms = 0
-	for channel in channels_query:
-		if channel.is_direct_message:
-			total_unread_count_in_dms += channel["unread_count"]
-		else:
-			total_unread_count_in_channels += channel["unread_count"]
-
-	result = {
-		"total_unread_count_in_channels": total_unread_count_in_channels,
-		"total_unread_count_in_dms": total_unread_count_in_dms,
-		"channels": channels_query,
-	}
-	return result
+	return channels_query
 
 
 @frappe.whitelist()

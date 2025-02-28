@@ -7,7 +7,6 @@ import { useSendMessage } from "../../chat/ChatInput/useSendMessage"
 import { ReplyMessageBox } from "../../chat/ChatMessage/ReplyMessageBox/ReplyMessageBox"
 import { CustomFile, FileDrop } from "../../file-upload/FileDrop"
 import { FileListItem } from "../../file-upload/FileListItem"
-import { useParams } from "react-router-dom"
 import { Message } from "../../../../../../types/Messaging/Message"
 import ChatStream from "../../chat/ChatStream/ChatStream"
 import { JoinChannelBox } from "../../chat/chat-footer/JoinChannelBox"
@@ -25,7 +24,8 @@ import { useIsMobile } from "@/hooks/useMediaQuery"
 
 export const ThreadMessages = ({ threadMessage }: { threadMessage: Message }) => {
 
-    const { threadID, channelID } = useParams()
+    const threadID = threadMessage.name
+    const channelID = threadMessage.channel_id
 
     const { channelMembers } = useFetchChannelMembers(channelID ?? '')
 
@@ -136,6 +136,7 @@ export const ThreadMessages = ({ threadMessage }: { threadMessage: Message }) =>
                 <IconButton
                     color='gray'
                     size='1'
+                    className="z-50"
                     variant="soft"
                     onClick={clearSelectedMessage}>
                     <BiX size='20' />
