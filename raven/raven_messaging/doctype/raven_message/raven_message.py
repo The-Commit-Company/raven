@@ -305,6 +305,16 @@ class RavenMessage(Document):
 					self.append("mentions", {"user": user_id})
 					entered_ids.add(user_id)
 
+					frappe.publish_realtime(
+						"raven_mention",
+						{
+							"channel_id": self.channel_id,
+							"user_id": user_id,
+						},
+						user=user_id,
+						after_commit=True,
+					)
+
 	def send_push_notification(self):
 		# TODO: Send Push Notification for the following:
 		# 1. If the message is a direct message, send a push notification to the other user
