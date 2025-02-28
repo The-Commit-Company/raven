@@ -27,8 +27,10 @@ const MentionsButton = () => {
         mutate()
     })
 
-    const onClose = () => {
-        mutate({ message: 0 }, { revalidate: false })
+    const onClose = (open: boolean) => {
+        if (!open) {
+            mutate({ message: 0 }, { revalidate: false })
+        }
     }
 
     return (
