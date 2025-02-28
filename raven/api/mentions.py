@@ -53,6 +53,7 @@ def get_mentions(limit: int = 10, start: int = 0):
 			{"user": frappe.session.user},
 			"last_mention_viewed_on",
 			frappe.utils.get_datetime(),
+			update_modified=False,
 		)
 	return result
 
