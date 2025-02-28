@@ -1,25 +1,20 @@
 import { useFrappeFileUpload, useFrappePostCall } from 'frappe-react-sdk'
 import { toast } from 'sonner-native'
-import { useColorScheme } from '@hooks/useColorScheme'
 import ImagePickerButton from '@components/common/ImagePickerButton'
 import { CustomFile } from '@raven/types/common/File'
-import PhotoAlbumIcon from '@assets/icons/PhotoAlbumIcon.svg'
 import useCurrentRavenUser from '@raven/lib/hooks/useCurrentRavenUser'
-import { ActivityIndicator } from '@components/nativewindui/ActivityIndicator'
 
-interface CameraButtonProps {
+interface UploadImageProps {
     onSheetClose: () => void
 }
 
-const CameraButton = ({ onSheetClose }: CameraButtonProps) => {
-
-    const { colors } = useColorScheme()
+const UploadImage = ({ onSheetClose }: UploadImageProps) => {
 
     const { myProfile } = useCurrentRavenUser()
 
     const { call } = useFrappePostCall('raven.api.raven_users.update_raven_user')
 
-    const { upload, loading } = useFrappeFileUpload()
+    const { upload } = useFrappeFileUpload()
 
     const uploadImage = async (file: string) => {
         if (file) {
@@ -60,21 +55,8 @@ const CameraButton = ({ onSheetClose }: CameraButtonProps) => {
     }
 
     return (
-        <ImagePickerButton
-            label={loading ? "Uploading photo..." : "View photo library"}
-            icon={loading ? <ActivityIndicator /> : <PhotoAlbumIcon width={20} height={20} fill={colors.icon} />}
-            onPick={onPick}
-            allowsMultipleSelection={false}
-            buttonProps={{
-                disabled: loading,
-                className: "w-full justify-start",
-                size: "icon"
-            }}
-            labelProps={{
-                className: "text-base font-normal ml-2"
-            }}
-        />
+        <ImagePickerButton onPick={onPick} allowsMultipleSelection={false} />
     )
 }
 
-export default CameraButton
+export default UploadImage
