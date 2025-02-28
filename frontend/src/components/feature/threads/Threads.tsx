@@ -1,12 +1,11 @@
 import { PageHeader } from "@/components/layout/Heading/PageHeader"
-import { Badge, Box, Flex, Heading, Tabs } from "@radix-ui/themes"
+import { Box, Flex, Heading, Tabs } from "@radix-ui/themes"
 import { BiChevronLeft } from "react-icons/bi"
 import { Link, Outlet, useParams } from "react-router-dom"
 import ParticipatingThreads from "./ThreadManager/ParticipatingThreads"
 import clsx from "clsx"
 import AIThreads from "./ThreadManager/AIThreads"
 import OtherThreads from "./ThreadManager/OtherThreads"
-import { HStack } from "@/components/layout/Stack"
 
 export type ThreadMessage = {
     bot: string,
@@ -43,10 +42,7 @@ const Threads = () => {
                     <Link to={`/${workspaceID}`} className="block bg-transparent hover:bg-transparent active:bg-transparent sm:hidden">
                         <BiChevronLeft size='24' className="block text-gray-12" />
                     </Link>
-                    <HStack align='center' gap='2'>
-                        <Heading size='5'>Threads</Heading>
-                        <Badge variant="surface" className="mt-0.5">Beta</Badge>
-                    </HStack>
+                    <Heading size='5'>Threads</Heading>
                 </Flex>
             </PageHeader>
             <div className="flex gap-0">
