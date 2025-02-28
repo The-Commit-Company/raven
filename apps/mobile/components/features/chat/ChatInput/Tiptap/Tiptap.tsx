@@ -92,7 +92,6 @@ const Tiptap = ({
     }
 
 
-
     const handleSend = () => {
         if (!editor) return
 
@@ -105,8 +104,6 @@ const Tiptap = ({
         content = editor?.getHTML()
         json = editor?.getJSON()
 
-        console.log(content, json)
-
         onSend([], content, json).then(() => {
             editor?.commands.clearContent(true)
             editor?.setEditable(true)
@@ -117,22 +114,11 @@ const Tiptap = ({
 
     return (
         <div
-            className={styles["tiptap-editor"]}
-            style={{
-                width: '100%',
-                display: 'flex',
-                flexDirection: 'column',
-                overflow: 'hidden',
-            }}
+            className={styles.editorContainer}
         >
             <EditorContent
                 editor={editor}
                 className={styles.editorContent}
-                style={{
-                    flex: 1,
-                    maxHeight: 60,
-                    overflowY: 'auto',
-                }}
             />
 
             {isKeyboardVisible && (

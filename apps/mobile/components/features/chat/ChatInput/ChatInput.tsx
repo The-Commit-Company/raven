@@ -52,21 +52,21 @@ const ChatInput = () => {
 
     return (
         <View className={cn(
-            "bg-white",
-            "px-2 pt-2",
-            "border-t border-gray-200",
+            "bg-white dark:bg-background",
+            "border border-b-0 border-gray-300 dark:border-gray-900 rounded-t-lg",
         )}>
             <View className="flex-row justify-start items-start">
                 <Tiptap
                     content={text}
                     dom={{
                         scrollEnabled: false,
-                        matchContents: false,
+                        matchContents: true,
                         containerStyle: {
-                            flex: 1,
-                            height: isKeyboardVisible ? 120 : 44,
-                            overflow: 'hidden',
+                            paddingHorizontal: 4,
+                            paddingTop: 4,
                         },
+                        // prefer expo dom view over react native webview as react native webview has internal scroll issue.
+                        useExpoDOMWebView: true,
                     }}
                     onSend={handleSend}
                     isKeyboardVisible={isKeyboardVisible}
@@ -86,7 +86,7 @@ const InputBottomBar = ({ onSend }: { onSend: (files: CustomFile[]) => void }) =
     const [files] = useAtom(filesAtom)
 
     return (
-        <View>
+        <View className="px-2 py-1">
             <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
                 <View className="flex-row gap-2 justify-start items-start py-2 pr-2">
                     {files.length > 0 && files.map((file) => (

@@ -51,7 +51,8 @@ const Chat = () => {
                 <ChatStream channelID={id as string} />
                 <View style={{
                     paddingBottom: isKeyboardVisible ? 0 : bottom,
-                    overflow: 'hidden',
+                    paddingInline: 2,
+                    backgroundColor: colors.colors.background
                 }}>
                     <ChatInput />
                 </View>
