@@ -1,40 +1,111 @@
 import { View } from 'react-native'
 import { Text } from '@components/nativewindui/Text'
-import { useColorScheme } from '@hooks/useColorScheme'
 import * as DropdownMenu from 'zeego/dropdown-menu'
-import CircleIcon from '@assets/icons/CircleIcon.svg'
+import { useFrappePostCall } from 'frappe-react-sdk'
+import { toast } from 'sonner'
+import useCurrentRavenUser from '@raven/lib/hooks/useCurrentRavenUser'
+
+export type AvailabilityStatus = 'Available' | 'Away' | 'Do not disturb' | 'Invisible' | ''
 
 const UserAvailability = () => {
 
-    const { colors } = useColorScheme()
+    const { myProfile, mutate } = useCurrentRavenUser()
+    const { call } = useFrappePostCall('raven.api.raven_users.update_raven_user')
+
+    const setAvailabilityStatus = (status: AvailabilityStatus) => {
+        call({
+            'availability_status': status
+        }).then(() => {
+            toast.success("Availability updated!", {
+                duration: 600
+            })
+            mutate()
+        }).catch((error) => {
+            toast.error('Error updating availability', {
+                description: error.message
+            })
+        })
+    }
+
+    const getStatusText = (status: AvailabilityStatus) => {
+        switch (status) {
+            case 'Available':
+                return 'Available'
+            case 'Away':
+                return 'Away'
+            case 'Do not disturb':
+                return 'Do Not Disturb'
+            case 'Invisible':
+                return 'Invisible'
+            default:
+                return 'Available'
+        }
+    }
 
     return (
         <View>
-            <View className='flex flex-row py-2.5 px-4 rounded-xl items-center justify-between bg-background dark:bg-card'>
-                <View className='flex-row items-center gap-3'>
-                    <CircleIcon height={14} width={14} color={colors.icon} />
+            <View className='flex flex-row py-2.5 px-4 rounded-xl justify-between bg-background dark:bg-card'>
+                <View className='flex-row items-center gap-2'>
                     <Text className='text-base'>Availability</Text>
                 </View>
                 <DropdownMenu.Root>
                     <DropdownMenu.Trigger>
-                        <Text className='text-sm text-muted-foreground/80'>Available</Text>
+                        <Text className='text-sm text-muted-foreground/80'>
+                            {getStatusText(myProfile?.availability_status ?? 'Available')}
+                        </Text>
                     </DropdownMenu.Trigger>
                     <DropdownMenu.Content side='bottom' align='end'>
-                        <DropdownMenu.Item key="light">
+                        <DropdownMenu.Item key="available" onSelect={() => setAvailabilityStatus('Available')}>
                             <DropdownMenu.ItemIcon ios={{
-                                name: 'sun.max', // Sun icon for light mode
+                                name: 'checkmark.circle.fill', // Green circle for Available
                                 pointSize: 16,
                                 scale: 'medium',
                                 hierarchicalColor: {
-                                    dark: 'gray',
-                                    light: 'gray',
+                                    dark: '#93C572',
+                                    light: 'green',
                                 },
                             }} />
-                            <DropdownMenu.ItemTitle>Light</DropdownMenu.ItemTitle>
+                            <DropdownMenu.ItemTitle>Available</DropdownMenu.ItemTitle>
                         </DropdownMenu.Item>
-                        <DropdownMenu.Item key="dark">
+                        <DropdownMenu.Item key="away" onSelect={() => setAvailabilityStatus('Away')}>
                             <DropdownMenu.ItemIcon ios={{
-                                name: 'moon', // Moon icon for dark mode
+                                name: 'clock', // Clock icon for Away
+                                pointSize: 16,
+                                scale: 'medium',
+                                hierarchicalColor: {
+                                    dark: '#FFD699',
+                                    light: '#FFCC77',
+                                },
+                            }} />
+                            <DropdownMenu.ItemTitle>Away</DropdownMenu.ItemTitle>
+                        </DropdownMenu.Item>
+                        <DropdownMenu.Item key="do-not-disturb" onSelect={() => setAvailabilityStatus('Do not disturb')}>
+                            <DropdownMenu.ItemIcon ios={{
+                                name: 'minus.circle.fill', // Minus circle for Do Not Disturb
+                                pointSize: 16,
+                                scale: 'medium',
+                                hierarchicalColor: {
+                                    dark: '#E06666',
+                                    light: '#D22B2B',
+                                },
+                            }} />
+                            <DropdownMenu.ItemTitle>Do Not Disturb</DropdownMenu.ItemTitle>
+                        </DropdownMenu.Item>
+                        <DropdownMenu.Item key="invisible" onSelect={() => setAvailabilityStatus('Invisible')}>
+                            <DropdownMenu.ItemIcon ios={{
+                                name: 'circle', // Dot circle for Invisible
+                                pointSize: 16,
+                                scale: 'medium',
+                                hierarchicalColor: {
+                                    dark: 'gray',
+                                    light: '#BEBEBE',
+                                },
+                            }} />
+                            <DropdownMenu.ItemTitle>Invisible</DropdownMenu.ItemTitle>
+                        </DropdownMenu.Item>
+                        <DropdownMenu.Item key="reset" onSelect={() => setAvailabilityStatus('')}>
+                            <DropdownMenu.ItemIcon ios={{
+                                name: 'arrow.clockwise', // Refresh icon for Reset
                                 pointSize: 16,
                                 scale: 'medium',
                                 hierarchicalColor: {
@@ -42,7 +113,7 @@ const UserAvailability = () => {
                                     light: 'gray',
                                 },
                             }} />
-                            <DropdownMenu.ItemTitle>Dark</DropdownMenu.ItemTitle>
+                            <DropdownMenu.ItemTitle>Reset</DropdownMenu.ItemTitle>
                         </DropdownMenu.Item>
                     </DropdownMenu.Content>
                 </DropdownMenu.Root>

@@ -1,7 +1,5 @@
-import { Platform, TouchableOpacity, View } from 'react-native';
-import { Avatar, AvatarFallback, AvatarImage } from '@components/nativewindui/Avatar';
+import { TouchableOpacity, View } from 'react-native';
 import { Text } from '@components/nativewindui/Text';
-import { cn } from '@lib/cn';
 import useCurrentRavenUser from '@raven/lib/hooks/useCurrentRavenUser';
 import useFileURL from '@hooks/useFileURL';
 import { Sheet, useSheetRef } from '@components/nativewindui/Sheet';
@@ -9,6 +7,7 @@ import { BottomSheetView } from '@gorhom/bottom-sheet';
 import RemoveImage from '@components/features/profile/upload-profile/RemoveImage';
 import ViewImage from '@components/features/profile/upload-profile/ViewImage';
 import UploadImage from '@components/features/profile/upload-profile/UploadImage';
+import UserAvatar from '@components/layout/UserAvatar';
 
 const ProfilePicture = () => {
 
@@ -26,19 +25,16 @@ const ProfilePicture = () => {
     return (
         <View className="items-center py-3">
             <TouchableOpacity activeOpacity={0.8} onPress={() => bottomSheetRef.current?.present()} className='relative'>
-                <Avatar alt={`${myProfile?.full_name}'s Profile`} className="h-40 w-40">
-                    <AvatarImage source={source} />
-                    <AvatarFallback>
-                        <Text
-                            variant="largeTitle"
-                            className={cn(
-                                'dark:text-background font-medium text-white',
-                                Platform.OS === 'ios' && 'dark:text-foreground'
-                            )}>
-                            {myProfile?.full_name?.charAt(0)}{myProfile?.full_name?.charAt(1)}
-                        </Text>
-                    </AvatarFallback>
-                </Avatar>
+                <UserAvatar
+                    src={myProfile?.user_image ?? ""}
+                    alt={`${myProfile?.full_name}`}
+                    availabilityStatus={myProfile?.availability_status ? myProfile?.availability_status : 'Available'}
+                    imageProps={{ className: 'w-40 h-40' }}
+                    fallbackProps={{ className: 'w-40 h-40 border border-border' }}
+                    textProps={{ className: 'text-5xl' }}
+                    indicatorProps={{ className: 'w-4 h-4' }}
+                    avatarProps={{ className: "w-40 h-40" }}
+                />
             </TouchableOpacity>
 
             <Sheet ref={bottomSheetRef}>
