@@ -154,7 +154,7 @@ const useUnreadMessageCount = () => {
 
     }
 
-    return unread_count
+    return unread_count?.message
 }
 
 export default useUnreadMessageCount
