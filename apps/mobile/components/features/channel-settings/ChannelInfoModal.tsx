@@ -4,6 +4,7 @@ import { Text } from '@components/nativewindui/Text';
 import ChevronRightIcon from '@assets/icons/ChevronRightIcon.svg';
 import SettingsIcon from '@assets/icons/SettingsIcon.svg';
 import MembersIcon from '@assets/icons/MembersIcon.svg';
+import HollowFileIcon from "@assets/icons/HollowFileIcon.svg";
 import { useColorScheme } from '@hooks/useColorScheme';
 import { Divider } from '@components/layout/Divider';
 import CrossIcon from '@assets/icons/CrossIcon.svg';
@@ -46,6 +47,14 @@ const ChannelInfoModal = ({ channel, isModalVisible, setModalVisible }: ChannelI
         })
     }
 
+
+    const handleGoToViewFiles = () => {
+        setModalVisible(false)
+        router.push('./view-files', {
+            relativeToDirectory: true
+        })
+    }
+
     // Animated styles for the modal
     const animatedModalStyle = useAnimatedStyle(() => {
         return {
@@ -57,7 +66,7 @@ const ChannelInfoModal = ({ channel, isModalVisible, setModalVisible }: ChannelI
     // Start animation when modal becomes visible
     useEffect(() => {
         if (isModalVisible) {
-            modalHeight.value = withTiming(165, { duration: 250, easing: Easing.out(Easing.ease) })
+            modalHeight.value = withTiming(210, { duration: 250, easing: Easing.out(Easing.ease) })
             modalOpacity.value = withTiming(1, { duration: 250 })
         }
     }, [isModalVisible])
@@ -94,6 +103,17 @@ const ChannelInfoModal = ({ channel, isModalVisible, setModalVisible }: ChannelI
                             <View className='flex-row items-center'>
                                 <SettingsIcon height={20} width={20} color={colors.colors.foreground} />
                                 <Text style={styles.modalOption}>Settings & Details</Text>
+                            </View>
+                            <ChevronRightIcon height={24} width={24} fill={colors.colors.foreground} strokeWidth={'1px'} />
+                        </View>
+                    </Pressable>
+                    <Pressable onPress={handleGoToViewFiles}
+                        className='rounded-xl ios:active:bg-linkColor'
+                        android_ripple={{ color: 'rgba(0,0,0,0.1)', borderless: false }}>
+                        <View className='flex-row items-center justify-between px-2'>
+                            <View className='flex-row items-center'>
+                                <HollowFileIcon height={20} width={20} color={colors.colors.foreground} />
+                                <Text style={styles.modalOption}>View Files</Text>
                             </View>
                             <ChevronRightIcon height={24} width={24} fill={colors.colors.foreground} strokeWidth={'1px'} />
                         </View>

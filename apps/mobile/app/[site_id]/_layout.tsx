@@ -100,6 +100,18 @@ export default function SiteLayout() {
                                         presentation: 'modal',
                                     }}
                                 />
+                                <Stack.Screen
+                                    name="chat/[id]/view-files"
+                                    options={{
+                                        presentation: 'modal',
+                                    }}
+                                />
+                                <Stack.Screen
+                                    name="chat/[id]/file-viewer"
+                                    options={{
+                                        presentation: 'fullScreenModal',
+                                    }}
+                                />
                             </Stack>
                         </BottomSheetModalProvider>
                     </Providers>
