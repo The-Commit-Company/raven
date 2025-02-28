@@ -13,7 +13,7 @@ from pytz import timezone, utc
 from raven.ai.ai import handle_ai_thread_message, handle_bot_dm
 from raven.api.raven_channel import get_peer_user
 from raven.notification import send_notification_to_topic, send_notification_to_user
-from raven.utils import track_channel_visit
+from raven.utils import clear_thread_reply_count_cache, get_thread_reply_count, track_channel_visit
 
 
 class RavenMessage(Document):
@@ -255,17 +255,22 @@ class RavenMessage(Document):
 				after_commit=True,
 			)
 		elif channel_doc.is_thread:
+			# TODO: Might be a good idea to just send this to the users who are participants in the thread - maybe not a lot of users?
+
+			# Clear the thread reply count cache
+			clear_thread_reply_count_cache(self.channel_id)
+			# Get the number of replies in the thread
+			reply_count = get_thread_reply_count(self.channel_id)
 			frappe.publish_realtime(
-				"thread_reply_created",
+				"thread_reply",
 				{
 					"channel_id": self.channel_id,
 					"sent_by": self.owner,
 					"last_message_timestamp": self.creation,
-					"is_dm_channel": False,
+					"number_of_replies": reply_count,
 				},
 				after_commit=True,
-				doctype="Raven Message",
-				docname=self.channel_id,
+				room="all",
 			)
 		else:
 			# This event needs to be published to all users on Raven (desk + website)
