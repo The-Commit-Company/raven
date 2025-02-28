@@ -1,6 +1,6 @@
 "use dom";
 
-import { Editor, useCurrentEditor } from '@tiptap/react'
+import { Editor } from '@tiptap/react'
 
 import { useCallback } from 'react';
 import classNames from "classnames";
@@ -13,10 +13,9 @@ import UnderlineIcon from "@assets/icons/formatting-icons/Underline.svg"
 import ItalicIcon from "@assets/icons/formatting-icons/Italic.svg"
 import StrikethroughIcon from "@assets/icons/formatting-icons/Strikethrough.svg"
 import CodeIcon from "@assets/icons/formatting-icons/Code.svg"
-import CodeBlockIcon from "@assets/icons/formatting-icons/CodeBlock.svg"
 import OLListIcon from "@assets/icons/formatting-icons/OLList.svg"
 import ULListIcon from "@assets/icons/formatting-icons/ULList.svg"
-import XIcon from "@assets/icons/CrossIcon.svg"
+import { BiX } from 'react-icons/bi'
 
 const TextFormattingMenu = (
     {
@@ -77,7 +76,7 @@ const TextFormattingMenu = (
                 }
                 onClick={handleCloseFormattingMenu}
             >
-                <XIcon fill={colors.grey} />
+                <BiX fill={colors.grey2} size={24} />
             </button>
 
             <button
@@ -86,7 +85,7 @@ const TextFormattingMenu = (
                 )}
                 onClick={toggleBold}
             >
-                <BoldIcon fill={editor.isActive('bold') ? colors.primary : colors.grey} />
+                <BoldIcon fill={editor.isActive('bold') ? colors.primary : colors.grey2} />
             </button>
 
             <button
@@ -95,7 +94,7 @@ const TextFormattingMenu = (
                 )}
                 onClick={toggleItalic}
             >
-                <ItalicIcon fill={editor.isActive('italic') ? colors.primary : colors.grey} />
+                <ItalicIcon fill={editor.isActive('italic') ? colors.primary : colors.grey2} />
             </button>
 
             <button
@@ -104,7 +103,7 @@ const TextFormattingMenu = (
                 )}
                 onClick={toggleUnderline}
             >
-                <UnderlineIcon fill={editor.isActive('underline') ? colors.primary : colors.grey} />
+                <UnderlineIcon fill={editor.isActive('underline') ? colors.primary : colors.grey2} />
             </button>
 
             <button
@@ -113,7 +112,7 @@ const TextFormattingMenu = (
                 )}
                 onClick={toggleStrike}
             >
-                <StrikethroughIcon fill={editor.isActive('strike') ? colors.primary : colors.grey} />
+                <StrikethroughIcon fill={editor.isActive('strike') ? colors.primary : colors.grey2} />
             </button>
 
             <button
@@ -122,7 +121,7 @@ const TextFormattingMenu = (
                 )}
                 onClick={toggleOrderedList}
             >
-                <OLListIcon fill={editor.isActive('orderedList') ? colors.primary : colors.grey} />
+                <OLListIcon fill={editor.isActive('orderedList') ? colors.primary : colors.grey2} />
             </button>
 
             <button
@@ -131,7 +130,7 @@ const TextFormattingMenu = (
                 )}
                 onClick={toggleBulletList}
             >
-                <ULListIcon fill={editor.isActive('bulletList') ? colors.primary : colors.grey} />
+                <ULListIcon fill={editor.isActive('bulletList') ? colors.primary : colors.grey2} />
             </button>
 
             <button
@@ -140,7 +139,7 @@ const TextFormattingMenu = (
                 )}
                 onClick={toggleCode}
             >
-                <CodeIcon fill={editor.isActive('code') ? colors.primary : colors.grey} />
+                <CodeIcon fill={editor.isActive('code') ? colors.primary : colors.grey2} />
             </button>
             {/* <button
                 className={cn(

@@ -2,16 +2,13 @@
 .ProseMirror {
   font-size: 16px;
   line-height: 1.5;
-  color: #1d1c1d;
+  color: color(display-p3 .113 .125 .14);
   caret-color: #5753C6;
-  -webkit-font-smoothing: antialiased;
-  /* padding: 8px 12px; */
-  /* min-height: 24px; */
 }
 
 /* Placeholder styling */
 .ProseMirror p.is-editor-empty:first-child::before {
-  color: rgb(var(--primary));
+  color: color(display-p3 .547 .553 .592);
   content: attr(data-placeholder);
   float: left;
   height: 0;
@@ -75,4 +72,10 @@
 
 .ProseMirror > * + * {
   margin-top: 16px;
+}
+
+@media (prefers-color-scheme: dark) {
+  .ProseMirror {
+    color: color(display-p3 .93 .933 .94);
+  }
 }

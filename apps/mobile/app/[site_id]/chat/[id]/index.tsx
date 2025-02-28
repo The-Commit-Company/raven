@@ -9,6 +9,7 @@ import { useKeyboardVisible } from '@hooks/useKeyboardVisible';
 import ChatInput from '@components/features/chat/ChatInput/ChatInput';
 import DMChannelHeader from '@components/features/chat/ChatHeader/DMChannelHeader';
 import ChannelHeader from '@components/features/chat/ChatHeader/ChannelHeader';
+import { cn } from '@lib/cn';
 
 const Chat = () => {
 
@@ -49,11 +50,14 @@ const Chat = () => {
                 keyboardVerticalOffset={Platform.OS === "ios" ? 100 : 90}
             >
                 <ChatStream channelID={id as string} />
-                <View style={{
-                    paddingBottom: isKeyboardVisible ? 0 : bottom,
-                    paddingInline: 2,
-                    backgroundColor: colors.colors.background
-                }}>
+                <View
+                    className={cn(
+                        'bg-white dark:bg-background',
+                    )}
+                    style={{
+                        paddingBottom: isKeyboardVisible ? 0 : bottom,
+                    }}
+                >
                     <ChatInput />
                 </View>
 

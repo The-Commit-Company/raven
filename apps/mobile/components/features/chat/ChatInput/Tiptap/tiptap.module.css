@@ -42,7 +42,7 @@
   border: none;
   border-radius: 6px;
   background: transparent;
-  color: rgb(142, 142, 147);
+  color: rgb(199, 199, 204);
 }
 
 .format-button-text {
@@ -57,8 +57,8 @@
   padding: 8px;
   border: none;
   border-radius: 6px;
+  color:rgb(199, 199, 204);
   background: transparent;
-  color: rgb(142, 142, 147);
 }
 
 .send-button-active {
@@ -83,8 +83,4 @@
   border: none;
   border-radius: 6px;
   background: transparent;
-}
-
-.formatting-button.close-button {
-  background-color: transparent;
 }

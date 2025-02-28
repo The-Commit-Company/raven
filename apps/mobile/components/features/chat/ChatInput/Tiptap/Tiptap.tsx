@@ -23,6 +23,7 @@ import "./tiptap.css";
 import { CustomFile } from "@raven/types/common/File";
 import { cn } from "@lib/cn";
 import styles from "./tiptap.module.css";
+import './tiptap.css'
 import { BiSolidSend } from "react-icons/bi";
 
 interface TiptapProps {
