@@ -75,7 +75,6 @@ const ThreadsList = ({ aiThreads, content, channel, endpoint = "raven.api.thread
                 only_show_unread: swrKey[1].onlyShowUnread
             })
         }, {
-        revalidateFirstPage: false,
         revalidateOnFocus: false,
         revalidateIfStale: true,
     }

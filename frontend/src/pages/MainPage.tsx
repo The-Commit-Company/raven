@@ -67,20 +67,23 @@ const MainPageContent = () => {
     // Listen to realtime event for new message count
     useFrappeEventListener('thread_reply', (event) => {
 
-        // Ignore the event if the message is sent by the current user
-        if (event.sent_by === currentUser) return
-
-        // Ignore the event if the message is in the current open thread
-        if (threadID === event.channel_id) return
-
         if (event.channel_id) {
             mutate(["thread_reply_count", event.channel_id], {
                 message: event.number_of_replies
             }, {
                 revalidate: false
             })
-            onThreadReplyEvent(event.channel_id)
         }
+
+        // Unread count only needs to be fetched for certain conditions
+
+        // Ignore the event if the message is sent by the current user
+        if (event.sent_by === currentUser) return
+
+        // Ignore the event if the message is in the current open thread
+        if (threadID === event.channel_id) return
+
+        onThreadReplyEvent(event.channel_id)
     })
 
     return <UserListProvider>

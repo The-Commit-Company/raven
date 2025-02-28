@@ -18,7 +18,6 @@ export type ThreadMessage = {
     image_height: string
     image_width: string,
     is_bot_message: 0 | 1,
-    last_message_details: string,
     last_message_timestamp: string,
     link_doctype: string,
     link_document: string,

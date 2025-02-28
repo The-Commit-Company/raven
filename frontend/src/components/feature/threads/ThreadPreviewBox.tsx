@@ -12,84 +12,84 @@ import { useMemo } from 'react'
 import { DMChannelListItem } from '@/utils/channel/ChannelListProvider'
 import { useGetUserRecords } from '@/hooks/useGetUserRecords'
 import clsx from 'clsx'
-import { UserAvatar } from '@/components/common/UserAvatar'
-import parse from 'html-react-parser';
-import { HStack } from '@/components/layout/Stack'
-import { BiFile, BiImage, BiPoll } from 'react-icons/bi'
-import { LuListTree } from 'react-icons/lu'
+// import { UserAvatar } from '@/components/common/UserAvatar'
+// import parse from 'html-react-parser';
+// import { HStack } from '@/components/layout/Stack'
+// import { BiFile, BiImage, BiPoll } from 'react-icons/bi'
+// import { LuListTree } from 'react-icons/lu'
 
-interface LastMessageDetails {
-    content: string;
-    owner: string;
-    is_bot_message: 0 | 1;
-    bot?: string;
-    message_type: 'Text' | 'File' | 'Image' | 'Poll' | 'System';
-}
+// interface LastMessageDetails {
+//     content: string;
+//     owner: string;
+//     is_bot_message: 0 | 1;
+//     bot?: string;
+//     message_type: 'Text' | 'File' | 'Image' | 'Poll' | 'System';
+// }
 
-const parseLastMessageDetails = (lastMessageDetails: string): LastMessageDetails | null => {
-    try {
-        const parsed = JSON.parse(lastMessageDetails)
-        // Validate required fields
-        if (typeof parsed.owner === 'string' &&
-            (parsed.is_bot_message === 0 || parsed.is_bot_message === 1) &&
-            typeof parsed.message_type === 'string') {
-            return parsed as LastMessageDetails
-        }
-        return null
-    } catch (e) {
-        return null
-    }
-}
+// const parseLastMessageDetails = (lastMessageDetails: string): LastMessageDetails | null => {
+//     try {
+//         const parsed = JSON.parse(lastMessageDetails)
+//         // Validate required fields
+//         if (typeof parsed.owner === 'string' &&
+//             (parsed.is_bot_message === 0 || parsed.is_bot_message === 1) &&
+//             typeof parsed.message_type === 'string') {
+//             return parsed as LastMessageDetails
+//         }
+//         return null
+//     } catch (e) {
+//         return null
+//     }
+// }
 
-const LastMessagePreview = ({ details, timestamp, isActive }: { details: LastMessageDetails, timestamp: string, isActive: boolean }) => {
-    const user = useGetUser(details.owner)
+// const LastMessagePreview = ({ details, timestamp, isActive }: { details: LastMessageDetails, timestamp: string, isActive: boolean }) => {
+//     const user = useGetUser(details.owner)
 
-    const plainTextContent = useMemo(() => {
-        if (details.content) {
-            // Create a temporary div to parse HTML and get plain text
-            const temp = document.createElement('div')
-            temp.innerHTML = details.content
-            return temp.textContent || temp.innerText || ''
-        }
-        return ''
-    }, [details.content])
+//     const plainTextContent = useMemo(() => {
+//         if (details.content) {
+//             // Create a temporary div to parse HTML and get plain text
+//             const temp = document.createElement('div')
+//             temp.innerHTML = details.content
+//             return temp.textContent || temp.innerText || ''
+//         }
+//         return ''
+//     }, [details.content])
 
-    return (
-        <Box className='pl-9 mt-2'>
-            <Flex gap='2'>
-                <div className='mt-1 text-gray-9'>
-                    <LuListTree size='18' />
-                </div>
-                <Box className={clsx('flex-1 rounded-md border py-2 px-2.5 dark:shadow-lg',
-                    isActive
-                        ? 'bg-gray-3 dark:bg-gray-4 border-gray-5 dark:border-gray-6' // Selected state
-                        : 'bg-gray-2 dark:bg-gray-3 border-gray-3 dark:border-gray-5 group-hover:border-gray-4 group-hover:bg-gray-3/70 dark:group-hover:bg-gray-4/70' // Normal & hover state
-                )}>
-                    <Flex gap='2' align='start'>
-                        <div className='mt-0.5'>
-                            <UserAvatar src={user?.user_image} alt={user?.full_name} size='2' isBot={user?.type === 'Bot'} />
-                        </div>
-                        <Flex direction='column' className='gap-0.5' justify='center'>
-                            <Text className='text-sm' weight='medium'>{user?.full_name ?? details.owner}
-                                {timestamp && <Text as='span' className='ml-1.5 font-light text-xs'>{getTimePassed(timestamp)}</Text>}
-                            </Text>
-                            <HStack align='center' gap='1'>
-                                {details.message_type === 'File' && <BiFile size='16' />}
-                                {details.message_type === 'Image' && <BiImage size='16' />}
-                                {details.message_type === 'Poll' && <BiPoll size='16' />}
-                                {details.content &&
-                                    <Text size='2' className='line-clamp-2' title={plainTextContent}>
-                                        {parse(details.content)}
-                                    </Text>
-                                }
-                            </HStack>
-                        </Flex>
-                    </Flex>
-                </Box>
-            </Flex>
-        </Box>
-    )
-}
+//     return (
+//         <Box className='pl-9 mt-2'>
+//             <Flex gap='2'>
+//                 <div className='mt-1 text-gray-9'>
+//                     <LuListTree size='18' />
+//                 </div>
+//                 <Box className={clsx('flex-1 rounded-md border py-2 px-2.5 dark:shadow-lg',
+//                     isActive
+//                         ? 'bg-gray-3 dark:bg-gray-4 border-gray-5 dark:border-gray-6' // Selected state
+//                         : 'bg-gray-2 dark:bg-gray-3 border-gray-3 dark:border-gray-5 group-hover:border-gray-4 group-hover:bg-gray-3/70 dark:group-hover:bg-gray-4/70' // Normal & hover state
+//                 )}>
+//                     <Flex gap='2' align='start'>
+//                         <div className='mt-0.5'>
+//                             <UserAvatar src={user?.user_image} alt={user?.full_name} size='2' isBot={user?.type === 'Bot'} />
+//                         </div>
+//                         <Flex direction='column' className='gap-0.5' justify='center'>
+//                             <Text className='text-sm' weight='medium'>{user?.full_name ?? details.owner}
+//                                 {timestamp && <Text as='span' className='ml-1.5 font-light text-xs'>{getTimePassed(timestamp)}</Text>}
+//                             </Text>
+//                             <HStack align='center' gap='1'>
+//                                 {details.message_type === 'File' && <BiFile size='16' />}
+//                                 {details.message_type === 'Image' && <BiImage size='16' />}
+//                                 {details.message_type === 'Poll' && <BiPoll size='16' />}
+//                                 {details.content &&
+//                                     <Text size='2' className='line-clamp-2' title={plainTextContent}>
+//                                         {parse(details.content)}
+//                                     </Text>
+//                                 }
+//                             </HStack>
+//                         </Flex>
+//                     </Flex>
+//                 </Box>
+//             </Flex>
+//         </Box>
+//     )
+// }
 
 export const ThreadPreviewBox = ({ thread, unreadCount }: { thread: ThreadMessage, unreadCount: number }) => {
 
@@ -116,12 +116,12 @@ export const ThreadPreviewBox = ({ thread, unreadCount }: { thread: ThreadMessag
 
     const { workspaceID } = useParams()
 
-    const lastMessageDetails = useMemo(() => {
-        if (thread.last_message_details) {
-            return parseLastMessageDetails(thread.last_message_details)
-        }
-        return null
-    }, [thread.last_message_details])
+    // const lastMessageDetails = useMemo(() => {
+    //     if (thread.last_message_details) {
+    //         return parseLastMessageDetails(thread.last_message_details)
+    //     }
+    //     return null
+    // }, [thread.last_message_details])
 
     return (
         <NavLink
@@ -155,11 +155,11 @@ export const ThreadPreviewBox = ({ thread, unreadCount }: { thread: ThreadMessag
                             <ViewThreadParticipants participants={thread.participants ?? []} />
                             <Text as='div' size='1' className={'font-medium text-accent-a11'}>{thread.reply_count ?? 0} {thread.reply_count && thread.reply_count === 1 ? 'Reply' : 'Replies'}</Text>
                         </Flex>
-                        {lastMessageDetails && <LastMessagePreview
+                        {/* {lastMessageDetails && <LastMessagePreview
                             details={lastMessageDetails}
                             timestamp={thread.last_message_timestamp}
                             isActive={isActive}
-                        />}
+                        />} */}
                     </Flex>
                     {unreadCount > 0 && <Badge variant='soft' className='font-bold' size='2'>{unreadCount}</Badge>}
                 </div>
