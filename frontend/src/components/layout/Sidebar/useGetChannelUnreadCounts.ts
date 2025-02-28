@@ -26,7 +26,7 @@ export const useGetChannelUnreadCounts = ({ channels, dm_channels, unread_count 
         const unreadCounts: Record<string, number> = {}
 
         // Create a mapping of channel names to unread counts
-        unread_count?.channels?.forEach(item => {
+        unread_count?.forEach(item => {
             unreadCounts[item.name] = item.unread_count || 0
         })
 

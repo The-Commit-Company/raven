@@ -21,7 +21,7 @@ const PinnedChannels = ({ unread_count }: { unread_count?: UnreadCountData }) =>
 
             return channels.filter(channel => pinnedChannelIDs?.includes(channel.name) && channel.is_archived === 0 && channel.workspace === workspaceID)
                 .map(channel => {
-                    const count = unread_count?.channels.find((unread) => unread.name === channel.name)?.unread_count || 0
+                    const count = unread_count?.find((unread) => unread.name === channel.name)?.unread_count || 0
                     return {
                         ...channel,
                         unread_count: count

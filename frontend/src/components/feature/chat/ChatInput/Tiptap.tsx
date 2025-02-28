@@ -1,4 +1,4 @@
-import { BubbleMenu, EditorContent, EditorContext, Extension, ReactRenderer, useEditor } from '@tiptap/react'
+import { BubbleMenu, Editor, EditorContent, EditorContext, Extension, ReactRenderer, useEditor } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import Underline from '@tiptap/extension-underline'
 import React, { Suspense, forwardRef, lazy, useContext, useEffect, useImperativeHandle, useMemo, useRef } from 'react'
@@ -36,6 +36,8 @@ import clsx from 'clsx'
 import { ChannelMembers } from '@/hooks/fetchers/useFetchChannelMembers'
 import TimestampRenderer from '../ChatMessage/Renderers/TiptapRenderer/TimestampRenderer'
 import { useParams } from 'react-router-dom'
+import { useAtom } from 'jotai'
+import { EnterKeyBehaviourAtom } from '@/utils/preferences'
 const MobileInputActions = lazy(() => import('./MobileActions/MobileInputActions'))
 
 const lowlight = createLowlight(common)
@@ -134,6 +136,40 @@ const Tiptap = forwardRef(({ isEdit, slotBefore, fileProps, onMessageSend, onUpA
 
     const isMobile = useIsMobile()
 
+    const [enterKeyBehaviour] = useAtom(EnterKeyBehaviourAtom)
+
+    const handleMessageSendAction = (editor: any) => {
+
+        const hasContent = editor.getText().trim().length > 0
+        let html = ''
+        let json = {}
+        if (hasContent) {
+            html = editor.getHTML()
+            json = editor.getJSON()
+        }
+
+        editor.setEditable(false)
+
+        onMessageSend(html, json)
+            .then(() => {
+                editor.commands.clearContent(true);
+                editor.setEditable(true)
+                editor.commands.focus('start')
+            })
+            .catch(() => {
+                editor.setEditable(true)
+            })
+        return editor.commands.clearContent(true);
+    }
+
+    const handleNewLineAction = (editor: any) => {
+        return editor.commands.first(({ commands }: { commands: any }) => [
+            () => commands.newlineInCode(),
+            () => commands.createParagraphNear(),
+            () => commands.liftEmptyBlock(),
+            () => commands.splitBlock(),
+        ]);
+    }
     // this is a dummy extension only to create custom keydown behavior
     const KeyboardHandler = Extension.create({
         name: 'keyboardHandler',
@@ -153,30 +189,18 @@ const Tiptap = forwardRef(({ isEdit, slotBefore, fileProps, onMessageSend, onUpA
                     const isCodeBlockActive = this.editor.isActive('codeBlock');
                     const isListItemActive = this.editor.isActive('listItem');
 
-                    const hasContent = this.editor.getText().trim().length > 0
+
 
                     if (isCodeBlockActive || isListItemActive) {
                         return false;
                     }
-                    let html = ''
-                    let json = {}
-                    if (hasContent) {
-                        html = this.editor.getHTML()
-                        json = this.editor.getJSON()
+
+                    if (enterKeyBehaviour === 'send-message') {
+                        return handleMessageSendAction(this.editor)
+                    } else {
+                        return handleNewLineAction(this.editor)
                     }
 
-                    this.editor.setEditable(false)
-
-                    onMessageSend(html, json)
-                        .then(() => {
-                            this.editor.commands.clearContent(true);
-                            this.editor.setEditable(true)
-                            this.editor.commands.focus('start')
-                        })
-                        .catch(() => {
-                            this.editor.setEditable(true)
-                        })
-                    return this.editor.commands.clearContent(true);
                 },
 
                 'Mod-Enter': () => {
@@ -229,12 +253,11 @@ const Tiptap = forwardRef(({ isEdit, slotBefore, fileProps, onMessageSend, onUpA
                     return false
                 },
                 'Shift-Enter': () => {
-                    return this.editor.commands.first(({ commands }) => [
-                        () => commands.newlineInCode(),
-                        () => commands.createParagraphNear(),
-                        () => commands.liftEmptyBlock(),
-                        () => commands.splitBlock(),
-                    ]);
+                    if (enterKeyBehaviour === 'send-message') {
+                        return handleNewLineAction(this.editor)
+                    } else {
+                        return handleMessageSendAction(this.editor)
+                    }
                 },
                 'ArrowUp': () => {
                     // If the editor is empty, call the onUpArrow function
