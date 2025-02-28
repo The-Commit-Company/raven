@@ -1,5 +1,5 @@
 import { useFrappePostCall } from 'frappe-react-sdk'
-import { Message } from '../../../../../../types/Messaging/Message'
+import { Message } from '@raven/types/common/Message'
 
 export const useSendMessage = (channelID: string, noOfFiles: number, uploadFiles: () => Promise<void>, handleCancelReply: VoidFunction, selectedMessage?: Message | null) => {
 
