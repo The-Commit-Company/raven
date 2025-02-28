@@ -197,7 +197,7 @@ def get_other_threads(
 
 
 @frappe.whitelist(methods=["GET"])
-def get_unread_threads(workspace: str = None):
+def get_unread_threads(workspace: str = None, thread_id: str = None):
 	"""
 	Get the number of threads in which the user is a participant and has unread messages > 0
 	"""
@@ -224,6 +224,9 @@ def get_unread_threads(workspace: str = None):
 
 	if workspace:
 		query = query.where((channel.workspace == workspace) | (channel.is_dm_thread == 1))
+
+	if thread_id:
+		query = query.where(channel.name == thread_id)
 
 	return query.run(as_dict=True)
 

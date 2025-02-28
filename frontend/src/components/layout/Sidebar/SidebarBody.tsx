@@ -60,11 +60,14 @@ export const SidebarBody = () => {
 
 const ThreadsButton = () => {
 
+    const { threadID } = useParams()
+
     const { data: unreadThreads } = useUnreadThreadsCount()
 
     const totalUnreadThreads = useMemo(() => {
-        return unreadThreads?.message.length || 0
-    }, [unreadThreads])
+        // Need to remove the current thread ID from the unread threads if it exists. The current thread is not included in the unread threads since the user is already on the thread
+        return unreadThreads?.message.filter((t) => t.name !== threadID).length || 0
+    }, [unreadThreads, threadID])
 
     return (
         <SidebarItemForPage
