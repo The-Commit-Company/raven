@@ -2,6 +2,7 @@ import { useState } from 'react'
 import ThreadsList from './ThreadsList'
 import { useDebounce } from '@/hooks/useDebounce'
 import { ChannelFilter, SearchFilter, UnreadFilter } from './Filters'
+import { useStickyState } from '@/hooks/useStickyState'
 
 type Props = {}
 /**
@@ -15,7 +16,7 @@ const ParticipatingThreads = (props: Props) => {
 
     const [channel, setChannel] = useState('all')
 
-    const [onlyShowUnread, setOnlyShowUnread] = useState(false)
+    const [onlyShowUnread, setOnlyShowUnread] = useStickyState(true, 'raven-participating-threads-only-show-unread')
 
     return (
         <div>
