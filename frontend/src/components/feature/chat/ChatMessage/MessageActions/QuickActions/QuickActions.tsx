@@ -12,8 +12,8 @@ import { getErrorMessage } from '@/components/layout/AlertBanner/ErrorBanner'
 import { CreateThreadActionButton } from './CreateThreadButton'
 import clsx from 'clsx'
 import usePostMessageReaction from '@/hooks/usePostMessageReaction'
-
-const QUICK_EMOJIS = ["👍", "✅", "👀", "🎉"]
+import { useAtomValue } from 'jotai'
+import { QuickEmojisAtom } from '@/utils/preferences'
 
 interface QuickActionsProps extends MessageContextMenuProps {
     isEmojiPickerOpen: boolean,
@@ -24,6 +24,8 @@ interface QuickActionsProps extends MessageContextMenuProps {
 export const QuickActions = ({ message, onReply, onEdit, isEmojiPickerOpen, setIsEmojiPickerOpen, showThreadButton = true, alignToRight = false }: QuickActionsProps) => {
 
     const { currentUser } = useContext(UserContext)
+
+    const quickEmojis = useAtomValue(QuickEmojisAtom)
 
     const isOwner = currentUser === message?.owner && !message?.is_bot_message
     const toolbarRef = useRef<HTMLDivElement>(null)
@@ -70,7 +72,7 @@ export const QuickActions = ({ message, onReply, onEdit, isEmojiPickerOpen, setI
                 CHAT_STYLE === "Left-Right" ? alignToRight ? "-top-10 right-0" : "-top-10 left-0" : "-top-6 right-4"
             )}>
             <Flex gap='1'>
-                {QUICK_EMOJIS.map((emoji) => {
+                {quickEmojis.map((emoji) => {
                     return <QuickActionButton
                         key={emoji}
                         className={'text-base'}
