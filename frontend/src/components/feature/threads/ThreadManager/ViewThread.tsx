@@ -6,6 +6,7 @@ import { FullPageLoader } from '@/components/layout/Loaders/FullPageLoader'
 import { Message } from '../../../../../../types/Messaging/Message'
 import { ThreadMessages } from '../ThreadDrawer/ThreadMessages'
 import { ThreadHeader } from '../ThreadDrawer/ThreadHeader'
+import useThreadPageActive from '@/hooks/useThreadPageActive'
 
 /**
  * Component to view a thread within the Thread Manager. Similar to the ThreadDrawer, but without the border and better header.
@@ -19,6 +20,8 @@ const ViewThread = () => {
         shouldRetryOnError: false,
         keepPreviousData: false
     })
+
+    useThreadPageActive(threadID)
 
     return (
         <div>
