@@ -2,11 +2,7 @@ import { ChannelListItem, DMChannelListItem } from '@raven/types/common/ChannelL
 import { useMemo } from 'react';
 
 export type UnreadChannelCountItem = { name: string, user_id?: string, unread_count: number, is_direct_message: 0 | 1 }
-export type UnreadCountData = {
-    total_unread_count_in_channels: number,
-    total_unread_count_in_dms: number,
-    channels: UnreadChannelCountItem[]
-}
+export type UnreadCountData = UnreadChannelCountItem[]
 
 export interface UseGetChannelUnreadCountProps {
     channels: ChannelListItem[]
@@ -29,7 +25,7 @@ export const useGetChannelUnreadCounts = ({ channels, dm_channels, unread_count 
         const unreadCounts: Record<string, number> = {}
 
         // Create a mapping of channel names to unread counts
-        unread_count?.channels?.forEach(item => {
+        unread_count?.forEach(item => {
             unreadCounts[item.name] = item.unread_count || 0
         })
 
