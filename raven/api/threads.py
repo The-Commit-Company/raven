@@ -17,7 +17,13 @@ def get_number_of_replies(thread_id: str):
 
 @frappe.whitelist(methods=["GET"])
 def get_all_threads(
-	workspace: str = None, content=None, channel_id=None, is_ai_thread=0, start_after=0, limit=10
+	workspace: str = None,
+	content=None,
+	channel_id=None,
+	is_ai_thread=0,
+	start_after=0,
+	limit=10,
+	only_show_unread=False,
 ):
 	"""
 	Get all the threads in which the user is a participant
@@ -83,6 +89,11 @@ def get_all_threads(
 
 	if channel_id and channel_id != "all":
 		query = query.where(message.channel_id == channel_id)
+
+	if only_show_unread == True or only_show_unread == "true":
+		query = query.where(
+			channel.last_message_timestamp > Coalesce(channel_member.last_visit, "2000-11-11")
+		)
 
 	query = query.orderby(channel.last_message_timestamp, order=Order.desc)
 
