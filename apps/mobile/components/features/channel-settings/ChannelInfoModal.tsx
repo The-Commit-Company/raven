@@ -112,7 +112,7 @@ const ChannelInfoModal = ({ channel, isModalVisible, setModalVisible }: ChannelI
                         android_ripple={{ color: 'rgba(0,0,0,0.1)', borderless: false }}>
                         <View className='flex-row items-center justify-between px-2'>
                             <View className='flex-row items-center'>
-                                <HollowFileIcon height={20} width={20} color={colors.colors.foreground} />
+                                <HollowFileIcon height={20} width={20} fill={colors.colors.foreground} />
                                 <Text style={styles.modalOption}>View Files</Text>
                             </View>
                             <ChevronRightIcon height={24} width={24} fill={colors.colors.foreground} strokeWidth={'1px'} />

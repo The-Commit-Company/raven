@@ -20,13 +20,13 @@ export const PageLengthSelector = ({
     const { colors } = useColorScheme()
 
     return (
-        <View className="border border-gray-300 dark:border-gray-500 rounded-md p-2">
+        <View className="border border-gray-300 dark:border-gray-600 rounded-md py-1.5 px-2">
             <DropdownMenu.Root>
                 <DropdownMenu.Trigger>
-                    <View className='flex flex-row gap-1 items-center'>
+                    <TouchableOpacity activeOpacity={0.6} className='flex flex-row gap-1 items-center'>
                         <Text className='text-sm'>{selectedValue.toString()} rows</Text>
                         <ChevronDownIcon width={18} height={18} fill={colors.icon} className='ml-3' />
-                    </View>
+                    </TouchableOpacity>
                 </DropdownMenu.Trigger>
                 <DropdownMenu.Content>
                     {options.map((option) => (

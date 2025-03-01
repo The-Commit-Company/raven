@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useFrappeGetCall } from "frappe-react-sdk";
-import { KeyboardAvoidingView, Platform, View, Text, TextInput, ActivityIndicator } from "react-native";
+import { KeyboardAvoidingView, Platform, View, Text, TextInput, ActivityIndicator, TouchableOpacity } from "react-native";
 import { Stack, useLocalSearchParams } from "expo-router";
 import * as DropdownMenu from 'zeego/dropdown-menu'
 import { useDebounce } from "@raven/lib/hooks/useDebounce";
@@ -11,6 +11,7 @@ import FilesTable from "@components/features/files/FilesTable";
 import { useColorScheme } from "@hooks/useColorScheme";
 import HeaderBackButton from "@components/common/HeaderBackButton";
 import UniversalFileIcon from "@components/common/UniversalFileIcon";
+import HollowFileIcon from "@assets/icons/HollowFileIcon.svg"
 
 export type FileInChannel = {
     name: string;
@@ -43,7 +44,7 @@ const ViewFiles = () => {
     const { colors } = useColorScheme()
 
     const [searchText, setSearchText] = useState("");
-    const debouncedText = useDebounce(searchText, 200);
+    const debouncedText = useDebounce(searchText, 400);
     const [fileType, setFileType] = useState("any");
 
     const { id: channelID } = useLocalSearchParams();
@@ -91,7 +92,7 @@ const ViewFiles = () => {
                 <View className="flex-1 p-3">
                     <View className="flex-row gap-2">
                         <TextInput
-                            className="flex-1 border dark:text-white border-gray-300 dark:border-gray-500 rounded-md p-2"
+                            className="flex-1 border dark:text-white border-gray-300 dark:border-gray-600 rounded-md p-2"
                             placeholder="Search for file"
                             value={searchText}
                             onChangeText={setSearchText}
@@ -99,14 +100,14 @@ const ViewFiles = () => {
 
                         <DropdownMenu.Root>
                             <DropdownMenu.Trigger>
-                                <View className='border border-gray-300 dark:border-gray-500 rounded-md p-2'>
+                                <TouchableOpacity activeOpacity={0.6} className='flex-row items-center gap-1.5 border border-gray-300 dark:border-gray-600 rounded-md p-2'>
+                                    {fileType === "any" ? (
+                                        <HollowFileIcon width={18} height={18} fill={colors.icon} />
+                                    ) : <UniversalFileIcon fileName={fileType} width={18} height={18} />}
                                     <Text className='dark:text-white text-sm'>{fileType === "any" ? "File Type" : fileTypes.find((type) => type.value === fileType)?.label}</Text>
-                                </View>
+                                </TouchableOpacity>
                             </DropdownMenu.Trigger>
                             <DropdownMenu.Content>
-                                {/* @ts-ignore */}
-                                <DropdownMenu.Label>File Type</DropdownMenu.Label>
-
                                 {fileTypes.map((type) => (
                                     <DropdownMenu.Item key={type.value} onSelect={() => onFileTypeSelect(type.value)}>
                                         <DropdownMenu.ItemTitle>

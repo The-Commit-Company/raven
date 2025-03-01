@@ -63,14 +63,14 @@ const FileTableRow = ({ file }: { file: FileInChannel }) => {
                 <View className="flex-row gap-2">
                     <TouchableOpacity
                         onPress={copy}
-                        className="bg-gray-200 dark:bg-gray-700 p-1.5 rounded-md"
+                        className="bg-gray-200 dark:bg-gray-800 p-1.5 rounded-md"
                         activeOpacity={0.6}
                     >
                         <LinkIcon width={14} height={14} fill={colors.icon} />
                     </TouchableOpacity>
                     <TouchableOpacity
                         onPress={download}
-                        className="bg-gray-200 dark:bg-gray-700 p-1.5 rounded-md"
+                        className="bg-gray-200 dark:bg-gray-800 p-1.5 rounded-md"
                         activeOpacity={0.6}
                     >
                         <DownloadIcon width={14} height={14} fill={colors.icon} />
@@ -109,8 +109,8 @@ const Preview = ({ file }: { file: FileInChannel }) => {
     }
 
     return (
-        <TouchableOpacity activeOpacity={0.6} onPress={openFileAction} className="bg-gray-200 dark:bg-gray-700 rounded-md p-3">
-            <UniversalFileIcon fileName={fileName} width={22} height={22} />
+        <TouchableOpacity activeOpacity={0.6} onPress={openFileAction} className="bg-gray-200 dark:bg-gray-800 rounded-md p-3">
+            <UniversalFileIcon fileName={fileName} width={28} height={28} />
         </TouchableOpacity>
     )
 }

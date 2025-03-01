@@ -1,7 +1,6 @@
 import { useColorScheme } from '@hooks/useColorScheme';
 import { View, Text, TouchableOpacity } from 'react-native';
-import ChevronLeft from "@assets/icons/ChevronLeftIcon.svg"
-import ChevronRight from "@assets/icons/ChevronRightIcon.svg"
+import Chevron from "@assets/icons/ChevronRightIcon.svg"
 
 interface PageSelectorProps {
     start: number;
@@ -30,12 +29,17 @@ export const PageSelector = ({
                 className={`rounded-full ${start <= 1 ? 'opacity-50' : ''}`}
                 disabled={start <= 1}
                 onPress={gotoPreviousPage}
-                style={{ backgroundColor: 'transparent' }}
             >
-                <ChevronLeft color={colors.icon} width={20} height={20} />
+                <Chevron
+                    fill={colors.icon}
+                    width={20}
+                    height={20}
+                    style={{ transform: [{ rotate: '180deg' }] }}
+                />
             </TouchableOpacity>
 
-            <Text className="dark:text-white text-sm">
+
+            <Text className="dark:text-white text-xs">
                 {start} - {end} of {totalRows}
             </Text>
 
@@ -44,9 +48,8 @@ export const PageSelector = ({
                 className={`rounded-full ${end === totalRows ? 'opacity-50' : ''}`}
                 disabled={end === totalRows}
                 onPress={gotoNextPage}
-                style={{ backgroundColor: 'transparent' }}
             >
-                <ChevronRight fill={colors.icon} width={20} height={20} />
+                <Chevron fill={colors.icon} width={20} height={20} />
             </TouchableOpacity>
         </View>
     );
