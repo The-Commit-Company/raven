@@ -1,6 +1,6 @@
 import { useFrappePostCall } from 'frappe-react-sdk'
-import { Message } from '../../../../../../types/Messaging/Message'
-import { RavenMessage } from '@/types/RavenMessaging/RavenMessage'
+import { Message } from '@raven/types/common/Message'
+import { RavenMessage } from '@raven/types/RavenMessaging/RavenMessage'
 
 export const useSendMessage = (channelID: string, noOfFiles: number, uploadFiles: () => Promise<RavenMessage[]>, onMessageSent: (messages: RavenMessage[]) => void, selectedMessage?: Message | null) => {
 

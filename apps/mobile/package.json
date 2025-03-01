@@ -12,6 +12,7 @@
     "nuke:android": "rm -rf ./android"
   },
   "dependencies": {
+    "@expo/dom-webview": "^0.0.2",
     "@expo/react-native-action-sheet": "^4.1.0",
     "@gorhom/bottom-sheet": "^5.0.6",
     "@legendapp/list": "^0.5.9",
