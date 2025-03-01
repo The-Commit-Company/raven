@@ -37,7 +37,7 @@ const TypingIndicator = ({ channel }: Props) => {
     if (typingString === '') return null
 
     return (
-        <HStack className='gap-1.5 pl-0.5 pt-1' align='center'>
+        <HStack className='gap-1.5 pl-0.5 pt-1 relative sm:bottom-0 bottom-16 sm:pb-0 pb-2' align='center'>
             <div className="flex items-center space-x-1 -mb-0.5">
                 <div className="w-1.5 h-1.5 bg-gray-12 rounded-full animate-pulse-bounce" style={{ animationDelay: '0ms' }}></div>
                 <div className="w-1.5 h-1.5 bg-gray-12 rounded-full animate-pulse-bounce" style={{ animationDelay: '150ms' }}></div>
