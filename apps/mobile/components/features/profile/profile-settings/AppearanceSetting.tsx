@@ -16,7 +16,7 @@ const AppearanceSetting = () => {
                 </View>
                 <DropdownMenu.Root>
                     <DropdownMenu.Trigger>
-                        <Text className='text-sm text-muted-foreground/80'>{colorScheme === 'light' ? 'Light' : 'Dark'}</Text>
+                        <Text className='text-base text-muted-foreground/80'>{colorScheme === 'light' ? 'Light' : 'Dark'}</Text>
                     </DropdownMenu.Trigger>
                     <DropdownMenu.Content side='bottom' align='end'>
                         <DropdownMenu.Item key="light" onSelect={() => setColorScheme('light')}>

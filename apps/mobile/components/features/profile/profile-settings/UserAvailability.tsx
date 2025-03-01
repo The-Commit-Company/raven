@@ -50,7 +50,7 @@ const UserAvailability = () => {
                 </View>
                 <DropdownMenu.Root>
                     <DropdownMenu.Trigger>
-                        <Text className='text-sm text-muted-foreground/80'>
+                        <Text className='text-base text-muted-foreground/80'>
                             {getStatusText(myProfile?.availability_status ?? 'Available')}
                         </Text>
                     </DropdownMenu.Trigger>

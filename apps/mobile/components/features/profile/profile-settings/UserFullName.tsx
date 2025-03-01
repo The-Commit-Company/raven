@@ -23,7 +23,7 @@ const UserFullName = () => {
                     <Text className='text-base'>Name</Text>
                 </View>
                 <TouchableOpacity onPress={handleGoToFullNameUpdate}>
-                    <Text className='text-[15px] text-foreground'>{myProfile?.full_name}</Text>
+                    <Text className='text-base text-foreground'>{myProfile?.full_name}</Text>
                 </TouchableOpacity>
             </View>
         </View>
