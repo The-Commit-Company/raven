@@ -242,7 +242,7 @@ const MessageContent = ({ content }: { content: string }) => {
     return (
         <Text as='p' className="text-sm line-clamp-2 text-ellipsis">
             <div className="[&_.mention]:text-accent-11">
-                {parse(content)}
+                {typeof content === 'string' ? parse(content) : content}
             </div>
         </Text>
     )
