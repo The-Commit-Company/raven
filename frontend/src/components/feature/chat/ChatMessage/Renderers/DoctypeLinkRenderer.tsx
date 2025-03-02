@@ -197,7 +197,7 @@ const DoctypeCard = ({ data, doctype, route, docname, mutate }: {
                                     {item}
                                 </DataList.Label>
                                 <DataList.Value>
-                                    {parse(data[item] ?? '')}
+                                    {typeof data[item] === 'string' ? parse(data[item]) : data[item]}
                                 </DataList.Value>
                             </DataList.Item>
                         ))
