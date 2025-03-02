@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link, router, Stack } from 'expo-router';
 import { Platform, View } from 'react-native';
-import { useFrappeUpdateDoc } from 'frappe-react-sdk';
+import { useFrappePostCall } from 'frappe-react-sdk';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Button } from '@components/nativewindui/Button';
@@ -21,15 +21,15 @@ export default function CustomStatusScreen() {
     const insets = useSafeAreaInsets()
     const [customStatus, setCustomStatus] = useState(myProfile?.custom_status ?? '')
 
-    const { updateDoc, loading } = useFrappeUpdateDoc()
+    const { call, loading } = useFrappePostCall('raven.api.raven_users.update_raven_user')
 
     const handleCustomStatusUpdate = async () => {
-        return updateDoc("Raven User", myProfile?.name ?? '', {
-            custom_status: customStatus,
+        call({
+            custom_status: customStatus
         }).then(() => {
             toast.success("Status updated")
             mutate()
-            router.back();
+            router.back()
         }).catch(() => {
             toast.error("Failed to update status")
         })
@@ -55,7 +55,7 @@ export default function CustomStatusScreen() {
                         return (
                             <Button variant="plain" className="ios:px-0"
                                 onPress={handleCustomStatusUpdate}
-                                disabled={loading || !customStatus.length}>
+                                disabled={loading}>
                                 {loading ?
                                     <ActivityIndicator size="small" color={colors.primary} /> :
                                     <Text className="text-primary dark:text-secondary">Save</Text>}

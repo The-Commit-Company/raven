@@ -32,7 +32,7 @@ const ProfilePicture = () => {
                     imageProps={{ className: 'w-40 h-40' }}
                     fallbackProps={{ className: 'w-40 h-40 border border-border' }}
                     textProps={{ className: 'text-5xl' }}
-                    indicatorProps={{ className: 'w-4 h-4' }}
+                    indicatorProps={{ className: 'w-3.5 h-3.5' }}
                     avatarProps={{ className: "w-40 h-40" }}
                 />
             </TouchableOpacity>

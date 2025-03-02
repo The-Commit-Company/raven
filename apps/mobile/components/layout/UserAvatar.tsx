@@ -19,7 +19,6 @@ type Props = {
     textProps?: TextProps,
     indicatorProps?: ViewProps,
     avatarProps?: ViewProps
-
 }
 
 // These need to kept here since Nativewind/Tailwind needs the variables in the source file to be defined to compile
@@ -73,7 +72,7 @@ const UserAvatar = ({ src, isActive, alt, availabilityStatus, isBot, imageProps,
                 alt={alt}
                 onDisplay={onDisplay}
                 onError={onError} />
-            <ActiveIndicator isActive={isActive} availabilityStatus={availabilityStatus} isBot={isBot} botColor={botColor} {...indicatorProps} />
+            <ActiveIndicator isActive={isActive} availabilityStatus={availabilityStatus} isBot={isBot} botColor={botColor} indicatorProps={indicatorProps} />
         </View>
     )
 }

@@ -24,7 +24,11 @@ const CustomStatus = () => {
                     <Text className='text-base'>Status</Text>
                 </View>
                 <TouchableOpacity onPress={handleGoToCustomStatus}>
-                    {myProfile?.custom_status ? <Text className='text-sm text-foreground'>{myProfile?.custom_status}</Text> : <Text className='text-sm font-medium text-primary'>Add</Text>}
+                    {myProfile?.custom_status ? <Text className='text-base text-muted-foreground' numberOfLines={1}
+                        ellipsizeMode="tail" // Add ellipsis at the end
+                        style={{ maxWidth: 200 }} >
+                        {myProfile?.custom_status}
+                    </Text> : <Text className='text-base font-medium text-primary'>Add</Text>}
                 </TouchableOpacity>
             </View>
         </View>
