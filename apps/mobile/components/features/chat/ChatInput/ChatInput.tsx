@@ -13,7 +13,7 @@ import { filesAtom } from "@lib/filesAtom"
 import Tiptap from "./Tiptap/Tiptap"
 import { cn } from "@lib/cn"
 import { useKeyboardVisible } from "@hooks/useKeyboardVisible"
-import { useSendMessage } from "@raven/lib/hooks/useSendMessage"
+import { useSendMessage } from "@hooks/useSendMessage"
 
 const ChatInput = () => {
 
