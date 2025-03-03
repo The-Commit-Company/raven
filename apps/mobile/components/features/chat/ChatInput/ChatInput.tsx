@@ -1,4 +1,4 @@
-import { ScrollView, TextInput, View } from "react-native"
+import { ScrollView, View } from "react-native"
 import AdditionalInputs from "./AdditionalInputs"
 import { Button } from "@components/nativewindui/Button"
 import SendIcon from "@assets/icons/SendIcon.svg"
@@ -10,33 +10,73 @@ import { useLocalSearchParams } from "expo-router"
 import { CustomFile } from "@raven/types/common/File"
 import { useState } from "react"
 import { filesAtom } from "@lib/filesAtom"
+import Tiptap from "./Tiptap/Tiptap"
+import { cn } from "@lib/cn"
+import { useKeyboardVisible } from "@hooks/useKeyboardVisible"
+import { useSendMessage } from "@hooks/useSendMessage"
 
 const ChatInput = () => {
 
     const { id } = useLocalSearchParams()
     const { uploadFiles } = useFileUpload(id as string)
     const [text, setText] = useState('')
-    const [, setFiles] = useAtom(filesAtom)
+    const [files, setFiles] = useAtom(filesAtom)
 
-    const handleSend = (files: CustomFile[]) => {
-        if (files?.length > 0) {
-            files[0].caption = text
-            uploadFiles(files, setFiles).then(() => {
-                setText('')
-                setFiles([])
+    // State to hold the measured width and height of the chat input.
+    const { isKeyboardVisible } = useKeyboardVisible()
+
+    const handleCancelReply = () => {
+        console.log('cancel reply')
+    }
+
+    const { sendMessage, loading } = useSendMessage(id as string, files.length, uploadFiles, handleCancelReply)
+
+    const handleSend = async (files?: CustomFile[], content?: string, json?: any) => {
+
+        setText(content ?? '')
+
+        if (files && files?.length > 0) {
+            // set the caption to first file
+            setFiles((prevFiles) => {
+                return prevFiles.map((file) => {
+                    if (file.fileID === files[0].fileID) {
+                        return { ...file, caption: text }
+                    }
+                    return file
+                })
             })
+        } else if (content) {
+            await sendMessage(content, json)
         }
     }
 
     return (
-        <View className="flex-col gap-2 w-full">
-            <TextInput
-                placeholder='Type a message...'
-                className="color-foreground w-full"
-                onChangeText={(text) => setText(text)}
-                value={text}
-            />
-            <InputBottomBar onSend={handleSend} />
+        <View className={cn(
+            "bg-white dark:bg-background",
+            "border border-b-0 border-gray-300 dark:border-gray-900 rounded-t-lg",
+        )}>
+            <View className="flex-row justify-start items-start">
+                <Tiptap
+                    content={text}
+                    dom={{
+                        scrollEnabled: false,
+                        matchContents: true,
+                        containerStyle: {
+                            paddingHorizontal: 4,
+                            paddingTop: 4,
+                        },
+                        // prefer expo dom view over react native webview as react native webview has internal scroll issue.
+                        useExpoDOMWebView: true,
+                    }}
+                    onSend={handleSend}
+                    isKeyboardVisible={isKeyboardVisible}
+                />
+            </View>
+            {
+                !isKeyboardVisible && (
+                    <InputBottomBar onSend={handleSend} />
+                )
+            }
         </View>
     )
 }
@@ -46,7 +86,7 @@ const InputBottomBar = ({ onSend }: { onSend: (files: CustomFile[]) => void }) =
     const [files] = useAtom(filesAtom)
 
     return (
-        <View>
+        <View className="px-2 py-1">
             <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
                 <View className="flex-row gap-2 justify-start items-start py-2 pr-2">
                     {files.length > 0 && files.map((file) => (
