@@ -1,5 +1,7 @@
 import { Divider } from "@components/layout/Divider"
 import UserAvatar from "@components/layout/UserAvatar"
+import { SearchInput } from "@components/nativewindui/SearchInput"
+import { useColorScheme } from "@hooks/useColorScheme"
 import { useIsUserActive } from "@hooks/useIsUserActive"
 import useUnreadMessageCount from "@hooks/useUnreadMessageCount"
 import useCurrentRavenUser from "@raven/lib/hooks/useCurrentRavenUser"
@@ -25,10 +27,19 @@ const AllDMsList = memo(({ workspace }: { workspace: string }) => {
         unread_count: unread_count
     })
 
+    const { colors } = useColorScheme()
+
     return (
         <View className="flex flex-col">
+            <View className="flex-1">
+                <View className="p-3">
+                    <SearchInput style={{ backgroundColor: colors.grey5 }}
+                        placeholder="Search"
+                        placeholderTextColor={colors.grey} />
+                </View>
+            </View>
             {unreadDMs.map((dm) => <UnreadDMRow key={dm.name} dm={dm} />)}
-            {readDMs.map((dm) => <DMRow key={dm.name} dm={dm} />)}
+            {readDMs.filter((dm) => dm.last_message_details).map((dm) => <DMRow key={dm.name} dm={dm} />)}
         </View>
     )
 })
@@ -36,15 +47,13 @@ const AllDMsList = memo(({ workspace }: { workspace: string }) => {
 interface DMRowBaseProps {
     dm: DMChannelListItem | DMChannelWithUnreadCount
     isUnread?: boolean
-    unreadCount?: number
 }
 
-const DMRowBase = memo(({ dm, isUnread = false, unreadCount }: DMRowBaseProps) => {
+const DMRowBase = memo(({ dm, isUnread = false }: DMRowBaseProps) => {
     const { myProfile } = useCurrentRavenUser()
     const user = useGetUser(dm.peer_user_id)
     const isActive = useIsUserActive(dm.peer_user_id)
 
-    // Parse JSON only once
     const lastMessageContent = useMemo(() => {
         if (!dm.last_message_details) return "Say hi 👋"
         try {
@@ -55,12 +64,22 @@ const DMRowBase = memo(({ dm, isUnread = false, unreadCount }: DMRowBaseProps) =
         }
     }, [dm.last_message_details])
 
+    const { colors } = useColorScheme()
+
     return (
         <Link href={`../chat/${dm.name}`} asChild>
             <Pressable
-                className='flex-row items-center gap-3 px-3 ios:active:bg-linkColor'
+                className='flex-row items-center gap-2 ios:active:bg-linkColor'
                 android_ripple={{ color: 'rgba(0,0,0,0.1)', borderless: false }}
             >
+                <View
+                    style={{
+                        width: 7,
+                        height: 7,
+                        borderRadius: '100%',
+                        backgroundColor: isUnread ? colors.primary : 'transparent',
+                    }}
+                />
                 <UserAvatar
                     src={user?.user_image}
                     alt={user?.full_name ?? user?.name ?? ''}
@@ -69,8 +88,8 @@ const DMRowBase = memo(({ dm, isUnread = false, unreadCount }: DMRowBaseProps) =
                     avatarProps={{ className: 'h-10 w-10' }}
                 />
 
-                <View className='flex-col gap-2 pt-2'>
-                    <View className='flex-row justify-between pr-14'>
+                <View className='flex-col gap-2 pt-2 pl-1  flex-1'>
+                    <View className='flex-row justify-between pr-3'>
                         <Text
                             className='text-base color-foreground'
                             style={{ fontWeight: isUnread ? 'bold' : 'normal' }}
@@ -85,27 +104,13 @@ const DMRowBase = memo(({ dm, isUnread = false, unreadCount }: DMRowBaseProps) =
                         )}
                     </View>
 
-                    <View className='flex-row justify-between'>
+                    <View className='flex-row justify-between pr-2'>
                         <Text
-                            className='text-sm color-muted-foreground line-clamp-1 pr-14'
+                            className='text-sm color-muted-foreground line-clamp-1'
                             style={{ fontWeight: isUnread ? 'bold' : 'normal' }}
                         >
                             {lastMessageContent}
                         </Text>
-
-                        {unreadCount !== undefined && unreadCount > 0 && (
-                            <Text
-                                style={{
-                                    borderRadius: 6,
-                                    fontWeight: '700',
-                                    fontSize: 12,
-                                    paddingHorizontal: 10,
-                                }}
-                                className="bg-card-background"
-                            >
-                                {unreadCount}
-                            </Text>
-                        )}
                     </View>
 
                     <Divider prominent size={2} marginHorizontal={0} className="min-w-full" />
@@ -120,7 +125,7 @@ interface UnreadDMRowProps {
 }
 
 const UnreadDMRow = memo(({ dm }: UnreadDMRowProps) => {
-    return <DMRowBase dm={dm} isUnread={true} unreadCount={dm.unread_count} />
+    return <DMRowBase dm={dm} isUnread={true} />
 })
 
 interface DMRowProps {
@@ -144,6 +149,10 @@ const LastMessageTimestamp = memo(({ timestamp }: LastMessageTimestampProps) => 
 
         if (diff < 1000 * 60 * 60 * 24) {
             return date.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })
+        }
+
+        else if (diff < 1000 * 60 * 60 * 24 * 7) {
+            return date.toLocaleDateString([], { weekday: 'long' })
         }
 
         return date.toLocaleDateString([], { month: 'short', day: 'numeric' })
