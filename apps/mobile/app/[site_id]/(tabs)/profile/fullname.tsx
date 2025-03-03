@@ -71,7 +71,7 @@ export default function FullNameScreen() {
                 contentInsetAdjustmentBehavior="automatic"
                 contentContainerStyle={{ paddingBottom: insets.bottom }}>
                 <Form className="gap-5 px-4 pt-8">
-                    <FormSection footnote="Choose unique name which indentifies you.">
+                    <FormSection footnote="This name will be used to identify you in the app.">
                         <FormItem>
                             <TextField
                                 autoFocus

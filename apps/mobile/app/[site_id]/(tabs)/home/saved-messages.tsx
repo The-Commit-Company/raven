@@ -1,14 +1,15 @@
 import { Link, Stack } from 'expo-router';
 import { Button } from '@components/nativewindui/Button';
-import CrossIcon from '@assets/icons/CrossIcon.svg';
 import { useColorScheme } from '@hooks/useColorScheme';
-import { FlatList, View } from 'react-native';
+import { View } from 'react-native';
 import { Text } from '@components/nativewindui/Text';
 import BookMarkIcon from '@assets/icons/BookmarkIcon.svg';
 import { useFrappeGetCall } from 'frappe-react-sdk';
 import { Message } from '@raven/types/common/Message';
 import { ActivityIndicator } from '@components/nativewindui/ActivityIndicator';
 import SavedMessageItem from '@components/features/saved-messages/SavedMessageItem';
+import ChevronLeftIcon from '@assets/icons/ChevronLeftIcon.svg';
+import { LegendList } from '@legendapp/list';
 
 export default function SavedMessages() {
 
@@ -22,7 +23,7 @@ export default function SavedMessages() {
                 return (
                     <Link asChild href="../" relativeToDirectory>
                         <Button variant="plain" className="ios:px-0" hitSlop={10}>
-                            <CrossIcon color={colors.icon} height={24} width={24} />
+                            <ChevronLeftIcon color={colors.icon} />
                         </Button>
                     </Link>
                 )
@@ -48,7 +49,7 @@ const SavedMessagesContent = () => {
         </View>
     }
 
-    return <FlatList
+    return <LegendList
         data={data?.message ?? []}
         ListEmptyComponent={<SavedMessagesEmptyState />}
         renderItem={({ item }) => <SavedMessageItem message={item} />}

@@ -8,6 +8,8 @@ import { useCallback, useMemo } from 'react';
 import { Divider } from '@components/layout/Divider';
 import CheckFilledIcon from '@assets/icons/CheckFilledIcon.svg';
 import { useColorScheme } from '@hooks/useColorScheme';
+import ChevronDownIcon from '@assets/icons/ChevronDownIcon.svg'
+import { COLORS } from '@theme/colors'
 
 const WorkspaceSwitcher = ({ workspace, setWorkspace }: { workspace: string, setWorkspace: (workspace: string) => Promise<void> }) => {
 
@@ -45,7 +47,10 @@ const WorkSpaceSwitcherMenu = ({ selectedWorkspace, workspaces, setWorkspace }: 
                         src={logo}
                         avatarProps={{ className: 'h-8 w-8' }}
                     />
-                    <Text className="text-white font-bold">{selectedWorkspace?.workspace_name}</Text>
+                    <View className='flex-row items-center gap-1'>
+                        <Text className="text-white font-bold">{selectedWorkspace?.workspace_name}</Text>
+                        <ChevronDownIcon height={20} width={20} fill={COLORS.white} />
+                    </View>
                 </View>
             </TouchableOpacity>
             <Sheet snapPoints={[500]} ref={bottomSheetRef}>
