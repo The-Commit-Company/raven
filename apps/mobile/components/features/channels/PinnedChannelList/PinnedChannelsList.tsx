@@ -30,7 +30,7 @@ const PinnedChannelsList = ({ channels }: { channels: ChannelListItem[] }) => {
     return (
         <>
             <PinnedChannelListUI channels={pinnedChannels} />
-            <Divider />
+            <Divider prominent />
         </>
     )
 }

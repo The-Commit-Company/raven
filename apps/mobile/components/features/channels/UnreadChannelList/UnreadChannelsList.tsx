@@ -49,7 +49,7 @@ const UnreadChannelsList = ({ unreadChannels, unreadDMs }: UnreadChannelsListPro
                 unreadDMs={unreadDMs}
                 unreadChannels={unreadChannels}
                 channelIDs={channelIDs} />
-            <Divider />
+            <Divider prominent />
         </>
     )
 }
