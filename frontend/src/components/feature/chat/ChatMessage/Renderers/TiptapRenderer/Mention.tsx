@@ -2,15 +2,14 @@ import { UserAvatar } from '@/components/common/UserAvatar';
 import { getStatusText } from '@/components/feature/userSettings/AvailabilityStatus/SetUserAvailabilityMenu';
 import { useGetUser } from '@/hooks/useGetUser';
 import { useIsUserActive } from '@/hooks/useIsUserActive';
-import { Badge, Flex, HoverCard, Link, Text } from '@radix-ui/themes';
+import { Flex, HoverCard, Link, Text } from '@radix-ui/themes';
 import { NodeViewRendererProps, NodeViewWrapper } from "@tiptap/react";
 import { FrappeConfig, FrappeContext } from 'frappe-react-sdk';
 import { BsFillCircleFill } from 'react-icons/bs';
 import { toast } from 'sonner';
-import { Link as RouterLink, useNavigate } from 'react-router-dom';
+import { Link as RouterLink, useNavigate, useParams } from 'react-router-dom';
 import { useContext } from 'react';
 import { getErrorMessage } from '@/components/layout/AlertBanner/ErrorBanner';
-import useIsUserOnLeave from '@/hooks/fetchers/useIsUserOnLeave';
 import OnLeaveBadge from '@/components/common/UserLeaveBadge';
 
 
@@ -26,12 +25,14 @@ export const UserMentionRenderer = ({ node }: NodeViewRendererProps) => {
 
     const navigate = useNavigate()
 
+    const { workspaceID } = useParams()
+
     const onClick = () => {
         if (user) {
             call.post('raven.api.raven_channel.create_direct_message_channel', {
                 user_id: user?.name
             }).then((res) => {
-                navigate(`/channel/${res?.message}`)
+                navigate(`/${workspaceID}/${res?.message}`)
             }).catch(err => {
                 toast.error('Could not create a DM channel', {
                     description: getErrorMessage(err)
