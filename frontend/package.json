@@ -35,7 +35,7 @@
     "chrono-node": "^2.7.7",
     "clsx": "^2.1.0",
     "cmdk": "^1.0.4",
-    "cva": "npm:class-variance-authority",
+    "class-variance-authority": "^0.7.1",
     "dayjs": "^1.11.11",
     "downshift": "^8.3.1",
     "emoji-mart": "^5.6.0",
