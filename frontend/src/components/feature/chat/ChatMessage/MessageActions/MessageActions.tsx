@@ -9,11 +9,12 @@ import { RetractVote } from './RetractVote'
 import { toast } from 'sonner'
 import { getErrorMessage } from '@/components/layout/AlertBanner/ErrorBanner'
 import { AiOutlineEdit } from 'react-icons/ai'
-import { LuForward, LuReply } from 'react-icons/lu'
+import { LuForward, LuLink, LuReply } from 'react-icons/lu'
 import { MdOutlineEmojiEmotions } from "react-icons/md";
 import { CreateThreadContextItem } from './QuickActions/CreateThreadButton'
 import { RiPushpinLine, RiUnpinLine } from 'react-icons/ri'
 import MessageActionSubMenu from './MessageActionSubMenu'
+import { useParams } from 'react-router-dom'
 
 export interface MessageContextMenuProps {
     message?: Message | null,
@@ -29,6 +30,8 @@ export const MessageContextMenu = ({ message, onDelete, onEdit, onReply, onForwa
 
     const copy = useMessageCopy(message)
     const { currentUser } = useContext(UserContext)
+
+    const { workspaceID } = useParams()
 
     const isOwner = currentUser === message?.owner && !message?.is_bot_message
 
@@ -46,6 +49,7 @@ export const MessageContextMenu = ({ message, onDelete, onEdit, onReply, onForwa
                         Reply
                     </Flex>
                 </ContextMenu.Item>
+
                 <ContextMenu.Item>
                     <Flex gap='2' width='100%' onClick={onForward}>
                         <LuForward size='18' />
@@ -53,6 +57,7 @@ export const MessageContextMenu = ({ message, onDelete, onEdit, onReply, onForwa
                     </Flex>
                 </ContextMenu.Item>
                 {message && !message.is_thread && showThreadButton && <CreateThreadContextItem messageID={message.name} />}
+                <CopyMessageLink message={message} />
                 <ContextMenu.Separator />
                 <ContextMenu.Group>
                     {message.message_type === 'Text' &&
@@ -128,6 +133,29 @@ export const MessageContextMenu = ({ message, onDelete, onEdit, onReply, onForwa
             </> : null}
         </ContextMenu.Content>
     )
+}
+
+const CopyMessageLink = ({ message }: { message: Message }) => {
+    const { workspaceID, threadID } = useParams()
+
+    const onClick = () => {
+        const basePath = `${import.meta.env.VITE_BASE_NAME}`
+
+        const isMessageInThread = threadID === message.channel_id
+        if (isMessageInThread) {
+            navigator.clipboard.writeText(`${window.location.origin}${basePath}/${workspaceID}/threads/${threadID}?message_id=${message.name}`)
+        } else {
+            navigator.clipboard.writeText(`${window.location.origin}${basePath}/${workspaceID}/${message.channel_id}?message_id=${message.name}`)
+        }
+        toast.success('Message link copied to clipboard')
+    }
+
+    return <ContextMenu.Item>
+        <Flex gap='2' width='100%' onClick={onClick}>
+            <BiLink size='18' />
+            Copy Message Link
+        </Flex>
+    </ContextMenu.Item>
 }
 
 const SaveMessageAction = ({ message }: { message: Message }) => {

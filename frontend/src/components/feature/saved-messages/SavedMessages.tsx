@@ -26,10 +26,10 @@ const SavedMessages = () => {
         } else {
             baseRoute = `/${workspaceID}`
         }
-        navigate(`${baseRoute}/${channelID}`, {
-            state: {
-                baseMessage: baseMessage
-            }
+
+        navigate({
+            pathname: `${baseRoute}/${channelID}`,
+            search: `message_id=${baseMessage}`
         })
     }
 

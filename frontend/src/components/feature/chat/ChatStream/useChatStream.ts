@@ -1,6 +1,6 @@
 import { useFrappeDocumentEventListener, useFrappeEventListener, useFrappeGetCall, useFrappePostCall } from 'frappe-react-sdk'
 import { MutableRefObject, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
-import { useBeforeUnload, useLocation, useNavigate } from 'react-router-dom'
+import { useBeforeUnload, useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 import { Message } from '../../../../../../types/Messaging/Message'
 import { getDateObject } from '@/utils/dateConversions/utils'
 import { useDebounce } from '@/hooks/useDebounce'
@@ -28,19 +28,16 @@ const useChatStream = (channelID: string, scrollRef: MutableRefObject<HTMLDivEle
 
     const location = useLocation()
     const navigate = useNavigate()
-    const { state } = location
 
     const isMobile = useIsMobile()
 
     const { currentUser } = useContext(UserContext)
 
+    const [searchParams, setSearchParams] = useSearchParams()
 
-    const [highlightedMessage, setHighlightedMessage] = useState<string | null>(state?.baseMessage ? state.baseMessage : null)
+    const selected_message = searchParams.get('message_id')
 
-    /** On page reload, we need to clear the state */
-    useBeforeUnload(() => {
-        window.history.replaceState({}, '')
-    })
+    const [highlightedMessage, setHighlightedMessage] = useState<string | null>(selected_message ? selected_message : null)
 
     useEffect(() => {
         let timer: NodeJS.Timeout | null = null;
@@ -110,20 +107,40 @@ const useChatStream = (channelID: string, scrollRef: MutableRefObject<HTMLDivEle
     }
 
     const scrollToMessageElement = (messageID: string, behavior: ScrollBehavior = 'smooth') => {
-        const timeoutId = setTimeout(() => {
+
+        // First immediate scroll attempt
+        requestAnimationFrame(() => {
+            document.getElementById(`message-${messageID}`)?.scrollIntoView({
+                behavior,
+                block: 'center'
+            })
+        })
+
+        const shortDelayTimer = setTimeout(() => {
             document.getElementById(`message-${messageID}`)?.scrollIntoView({
                 behavior,
                 block: 'center'
             })
         }, 100)
-        return timeoutId
+
+        const backupTimer = setTimeout(() => {
+            document.getElementById(`message-${messageID}`)?.scrollIntoView({
+                behavior,
+                block: 'center'
+            })
+        }, 250)
+
+        return () => {
+            clearTimeout(shortDelayTimer)
+            clearTimeout(backupTimer)
+        }
     }
 
 
     const { data, isLoading, error, mutate } = useFrappeGetCall<GetMessagesResponse>('raven.api.chat_stream.get_messages', {
         'channel_id': channelID,
-        'base_message': state?.baseMessage ? state.baseMessage : undefined
-    }, { path: `get_messages_for_channel_${channelID}`, baseMessage: state?.baseMessage }, {
+        'base_message': selected_message ? selected_message : undefined
+    }, { path: `get_messages_for_channel_${channelID}`, baseMessage: selected_message ? selected_message : undefined }, {
         revalidateOnFocus: isMobile ? true : false,
         onSuccess: (data) => {
             let cleanup: (() => void) | undefined
@@ -134,8 +151,7 @@ const useChatStream = (channelID: string, scrollRef: MutableRefObject<HTMLDivEle
                     latestMessagesLoaded.current = true
                 }
             } else {
-                const timeoutId = scrollToMessageElement(highlightedMessage)
-                cleanup = () => clearTimeout(timeoutId)
+                cleanup = scrollToMessageElement(highlightedMessage)
             }
 
             return () => {
@@ -149,8 +165,11 @@ const useChatStream = (channelID: string, scrollRef: MutableRefObject<HTMLDivEle
      * This helps ensure proper scrolling when switching between channels
      */
     useEffect(() => {
-        const cleanup = scrollToBottom()
-        return cleanup
+        // Do not call this if the user is viewing a specific message
+        if (!searchParams.get('message_id')) {
+            const cleanup = scrollToBottom()
+            return cleanup
+        }
     }, [channelID])
 
     /** If the user has already loaded all the latest messages and exits the channel, we update the timestamp of last visit  */
@@ -564,20 +583,14 @@ const useChatStream = (channelID: string, scrollRef: MutableRefObject<HTMLDivEle
 
         } else {
             // If not, change the base message, fetch the message and scroll to it.
-            navigate(location, {
-                state: {
-                    baseMessage: messageID
-                }
-            })
+            setSearchParams({ message_id: messageID })
             setHighlightedMessage(messageID)
         }
 
     }
 
     const goToLatestMessages = () => {
-        navigate(location, {
-            replace: true
-        })
+        setSearchParams({})
     }
 
     return {
