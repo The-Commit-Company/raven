@@ -28,9 +28,6 @@ class RavenChannelMember(Document):
 		user_id: DF.Link
 	# end: auto-generated types
 
-	def before_validate(self):
-		self.last_visit = frappe.utils.now()
-
 	def validate(self):
 		if (
 			self.has_value_changed("is_admin")

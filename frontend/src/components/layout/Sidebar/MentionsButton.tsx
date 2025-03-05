@@ -179,19 +179,21 @@ const MentionsList = () => {
 const MentionItem = ({ mention }: { mention: MentionObject }) => {
     const { workspaceID } = useParams()
 
-    const { to, baseMessage } = useMemo(() => {
+    const to = useMemo(() => {
         const w = mention.workspace ? mention.workspace : workspaceID
         if (mention.is_thread) {
-            return { to: `/${w}/threads/${mention.channel_id}` }
+            return { path: `/${w}/threads/${mention.channel_id}`, search: undefined }
         }
-        return { to: `/${w}/${mention.channel_id}`, baseMessage: mention.name }
+        return { path: `/${w}/${mention.channel_id}`, search: `message_id=${mention.name}` }
     }, [mention, workspaceID])
 
     return (
         <Popover.Close>
             <Link
-                to={to}
-                state={{ baseMessage }}
+                to={{
+                    pathname: to.path,
+                    search: to.search
+                }}
                 className="block py-3 px-4 hover:bg-gray-2 dark:hover:bg-gray-4 text-left"
             >
                 <HStack gap="3" justify="between" align="start">
