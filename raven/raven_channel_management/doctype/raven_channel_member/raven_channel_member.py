@@ -45,6 +45,7 @@ class RavenChannelMember(Document):
 				)
 
 	def before_insert(self):
+		self.last_visit = frappe.utils.now()
 		# 1. A user cannot be a member of a channel more than once
 		if frappe.db.exists(
 			"Raven Channel Member", {"channel_id": self.channel_id, "user_id": self.user_id}
