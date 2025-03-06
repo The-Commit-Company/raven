@@ -90,6 +90,10 @@ def upload_file_with_message():
 			filename = "File"
 		message_doc.content = filename
 
+	message_doc.is_reply = frappe.form_dict.is_reply
+	if message_doc.is_reply == "1" or message_doc.is_reply == 1:
+		message_doc.linked_message = frappe.form_dict.linked_message
+
 	message_doc.insert()
 
 	frappe.form_dict.docname = message_doc.name

@@ -30,7 +30,7 @@ import { useStickyState } from '@/hooks/useStickyState'
 import { Message } from '../../../../../../types/Messaging/Message'
 import Image from '@tiptap/extension-image'
 import { EmojiSuggestion } from './EmojiSuggestion'
-import { useIsMobile } from '@/hooks/useMediaQuery'
+import { useIsDesktop, useIsMobile } from '@/hooks/useMediaQuery'
 import { BiPlus } from 'react-icons/bi'
 import clsx from 'clsx'
 import { ChannelMembers } from '@/hooks/fetchers/useFetchChannelMembers'
@@ -524,9 +524,10 @@ const Tiptap = forwardRef(({ isEdit, slotBefore, fileProps, onMessageSend, onUpA
 
     const [content, setContent] = useStickyState(defaultText, sessionStorageKey, disableSessionStorage)
 
+    const isDesktop = useIsDesktop()
+
     const editor = useEditor({
         extensions,
-        autofocus: 'end',
         content,
         editorProps: {
             handleTextInput() {
@@ -544,12 +545,12 @@ const Tiptap = forwardRef(({ isEdit, slotBefore, fileProps, onMessageSend, onUpA
 
 
     useEffect(() => {
-        if (!isMobile || isEdit) {
+        if (isDesktop || isEdit) {
             setTimeout(() => {
-                editor?.chain().focus().run()
+                editor?.chain().focus('end').run()
             }, 50)
         }
-    }, [replyMessage, editor, isMobile, isEdit])
+    }, [editor, isDesktop, isEdit, replyMessage])
 
     useImperativeHandle(ref, () => ({
         focusEditor: () => {

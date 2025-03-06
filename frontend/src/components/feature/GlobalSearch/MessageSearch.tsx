@@ -49,10 +49,9 @@ export const MessageSearch = ({ onToggleMyChannels, isOnlyInMyChannels, onToggle
         if (workspace) {
             path = `/${workspace}/${channelID}`
         }
-        navigate(path, {
-            state: {
-                baseMessage
-            }
+        navigate({
+            pathname: path,
+            search: `message_id=${baseMessage}`
         })
     }
 
