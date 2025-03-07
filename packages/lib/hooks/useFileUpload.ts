@@ -1,7 +1,8 @@
-import { SetStateAction, useContext } from 'react'
+import { SetStateAction, useContext, useState } from 'react'
 import { FrappeConfig, FrappeContext } from 'frappe-react-sdk'
 import { CustomFile } from '@raven/types/common/File'
-
+import { filesAtom } from '@lib/filesAtom'
+import { useAtom } from 'jotai'
 export interface FileUploadProgress {
   progress: number,
   isComplete: boolean,
@@ -10,8 +11,9 @@ export interface FileUploadProgress {
 export default function useFileUpload(channelID: string) {
 
   const { file } = useContext(FrappeContext) as FrappeConfig
+  const [files, setFiles] = useAtom(filesAtom)
 
-  const uploadFiles = async (files: CustomFile[], setFiles: React.Dispatch<SetStateAction<CustomFile[]>>) => {
+  const uploadFiles = async () => {
 
     for (const f of files) {
       try {
