@@ -538,6 +538,9 @@ def add_forwarded_message_to_channel(channel_id, forwarded_message):
 	change the owner to the current user and timestamp to now,
 	mark it as forwarded
 	"""
+	# If the forwarded message has a file, we need to remove the "fid" from the URL - this is done so that the new user can access the file
+	if forwarded_message.get("file"):
+		forwarded_message["file"] = forwarded_message["file"].split("?")[0]
 	doc = frappe.get_doc(
 		{
 			"doctype": "Raven Message",
