@@ -1,11 +1,10 @@
-import { TokenResponse } from 'expo-auth-session'
 import { FrappeProvider } from 'frappe-react-sdk'
 import { PropsWithChildren } from 'react'
 import { SiteInformation } from 'types/SiteInformation'
 import { AppState, AppStateStatus } from 'react-native'
 import { NetworkState, addNetworkStateListener } from 'expo-network'
 
-const FrappeNativeProvider = ({ siteInfo, accessToken, children }: PropsWithChildren<{ siteInfo: SiteInformation | null, accessToken: TokenResponse | null }>) => {
+const FrappeNativeProvider = ({ siteInfo, getAccessToken, children }: PropsWithChildren<{ siteInfo: SiteInformation | null, getAccessToken: () => string }>) => {
 
     return (
         <FrappeProvider
@@ -13,7 +12,7 @@ const FrappeNativeProvider = ({ siteInfo, accessToken, children }: PropsWithChil
             tokenParams={{
                 type: 'Bearer',
                 useToken: true,
-                token: () => accessToken?.accessToken || '',
+                token: getAccessToken,
             }}
             siteName={siteInfo?.sitename}
 
