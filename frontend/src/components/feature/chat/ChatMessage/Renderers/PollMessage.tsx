@@ -143,7 +143,9 @@ const SingleChoicePoll = ({ data, messageID }: { data: Poll, messageID: string }
         }).then(() => {
             toast.success('Your vote has been submitted!')
         }).catch((error) => {
-            toast.error(getErrorMessage(error))
+            toast.error("There was an error submitting your vote.", {
+                description: getErrorMessage(error)
+            })
         })
     }
 
@@ -187,7 +189,9 @@ const MultiChoicePoll = ({ data, messageID }: { data: Poll, messageID: string })
         }).then(() => {
             toast.success('Your vote has been submitted!')
         }).catch((error) => {
-            toast.error(getErrorMessage(error))
+            toast.error("There was an error submitting your vote.", {
+                description: getErrorMessage(error)
+            })
         })
     }
 

@@ -19,6 +19,8 @@ export interface RavenUser{
 	bot?: string
 	/**	Enabled : Check	*/
 	enabled?: 0 | 1
+	/**	Last Mention Viewed On : Datetime	*/
+	last_mention_viewed_on?: string
 	/**	Full Name : Data	*/
 	full_name: string
 	/**	First Name : Data	*/
@@ -31,4 +33,6 @@ export interface RavenUser{
 	availability_status?: "" | "Available" | "Away" | "Do not disturb" | "Invisible"
 	/**	Custom Status : Data	*/
 	custom_status?: string
+	/**	Chat Style : Select	*/
+	chat_style?: "Simple" | "Left-Right"
 }

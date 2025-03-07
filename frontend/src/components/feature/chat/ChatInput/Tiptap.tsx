@@ -1,4 +1,4 @@
-import { BubbleMenu, EditorContent, EditorContext, Extension, ReactRenderer, useEditor } from '@tiptap/react'
+import { BubbleMenu, Editor, EditorContent, EditorContext, Extension, ReactRenderer, useEditor } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import Underline from '@tiptap/extension-underline'
 import React, { Suspense, forwardRef, lazy, useContext, useEffect, useImperativeHandle, useMemo, useRef } from 'react'
@@ -32,12 +32,14 @@ import { useStickyState } from '@/hooks/useStickyState'
 import { Message } from '../../../../../../types/Messaging/Message'
 import Image from '@tiptap/extension-image'
 import { EmojiSuggestion } from './EmojiSuggestion'
-import { useIsMobile } from '@/hooks/useMediaQuery'
+import { useIsDesktop, useIsMobile } from '@/hooks/useMediaQuery'
 import { BiPlus } from 'react-icons/bi'
 import clsx from 'clsx'
 import { ChannelMembers } from '@/hooks/fetchers/useFetchChannelMembers'
 import TimestampRenderer from '../ChatMessage/Renderers/TiptapRenderer/TimestampRenderer'
 import { useParams } from 'react-router-dom'
+import { useAtom } from 'jotai'
+import { EnterKeyBehaviourAtom } from '@/utils/preferences'
 const MobileInputActions = lazy(() => import('./MobileActions/MobileInputActions'))
 
 const lowlight = createLowlight(common)
@@ -78,6 +80,13 @@ export const UserMention = Mention.extend({
         suggestion: {
             char: '@',
             pluginKey: new PluginKey('userMention'),
+            // Allow any character to be a prefix for a user mention
+            allowedPrefixes: null,
+            allow: (props) => {
+                // Do not allow mentions if the preceding character is a letter or digit
+                const precedingCharacter = props.state.doc.textBetween(props.range.from - 1, props.range.from, '')
+                return !/[a-zA-Z0-9]/.test(precedingCharacter)
+            }
         }
     })
 
@@ -88,6 +97,13 @@ export const ChannelMention = Mention.extend({
         suggestion: {
             char: '#',
             pluginKey: new PluginKey('channelMention'),
+            // Allow any character to be a prefix for a channel mention
+            allowedPrefixes: null,
+            allow: (props) => {
+                // Do not allow mentions if the preceding character is a letter or digit
+                const precedingCharacter = props.state.doc.textBetween(props.range.from - 1, props.range.from, '')
+                return !/[a-zA-Z0-9]/.test(precedingCharacter)
+            }
         }
     })
 
@@ -122,6 +138,40 @@ const Tiptap = forwardRef(({ isEdit, slotBefore, fileProps, onMessageSend, onUpA
 
     const isMobile = useIsMobile()
 
+    const [enterKeyBehaviour] = useAtom(EnterKeyBehaviourAtom)
+
+    const handleMessageSendAction = (editor: any) => {
+
+        const hasContent = editor.getText().trim().length > 0
+        let html = ''
+        let json = {}
+        if (hasContent) {
+            html = editor.getHTML()
+            json = editor.getJSON()
+        }
+
+        editor.setEditable(false)
+
+        onMessageSend(html, json)
+            .then(() => {
+                editor.commands.clearContent(true);
+                editor.setEditable(true)
+                editor.commands.focus('start')
+            })
+            .catch(() => {
+                editor.setEditable(true)
+            })
+        return editor.commands.clearContent(true);
+    }
+
+    const handleNewLineAction = (editor: any) => {
+        return editor.commands.first(({ commands }: { commands: any }) => [
+            () => commands.newlineInCode(),
+            () => commands.createParagraphNear(),
+            () => commands.liftEmptyBlock(),
+            () => commands.splitBlock(),
+        ]);
+    }
     // this is a dummy extension only to create custom keydown behavior
     const KeyboardHandler = Extension.create({
         name: 'keyboardHandler',
@@ -142,30 +192,18 @@ const Tiptap = forwardRef(({ isEdit, slotBefore, fileProps, onMessageSend, onUpA
                     const isListItemActive = this.editor.isActive('listItem');
                     const isTaskListActive = this.editor.isActive('taskList');
 
-                    const hasContent = this.editor.getText().trim().length > 0
+
 
                     if (isCodeBlockActive || isListItemActive || isTaskListActive) {
                         return false;
                     }
-                    let html = ''
-                    let json = {}
-                    if (hasContent) {
-                        html = this.editor.getHTML()
-                        json = this.editor.getJSON()
+
+                    if (enterKeyBehaviour === 'send-message') {
+                        return handleMessageSendAction(this.editor)
+                    } else {
+                        return handleNewLineAction(this.editor)
                     }
 
-                    this.editor.setEditable(false)
-
-                    onMessageSend(html, json)
-                        .then(() => {
-                            this.editor.commands.clearContent(true);
-                            this.editor.setEditable(true)
-                            this.editor.commands.focus('start')
-                        })
-                        .catch(() => {
-                            this.editor.setEditable(true)
-                        })
-                    return this.editor.commands.clearContent(true);
                 },
 
                 'Mod-Enter': () => {
@@ -218,12 +256,11 @@ const Tiptap = forwardRef(({ isEdit, slotBefore, fileProps, onMessageSend, onUpA
                     return false
                 },
                 'Shift-Enter': () => {
-                    return this.editor.commands.first(({ commands }) => [
-                        () => commands.newlineInCode(),
-                        () => commands.createParagraphNear(),
-                        () => commands.liftEmptyBlock(),
-                        () => commands.splitBlock(),
-                    ]);
+                    if (enterKeyBehaviour === 'send-message') {
+                        return handleNewLineAction(this.editor)
+                    } else {
+                        return handleMessageSendAction(this.editor)
+                    }
                 },
                 'ArrowUp': () => {
                     // If the editor is empty, call the onUpArrow function
@@ -494,9 +531,10 @@ const Tiptap = forwardRef(({ isEdit, slotBefore, fileProps, onMessageSend, onUpA
 
     const [content, setContent] = useStickyState(defaultText, sessionStorageKey, disableSessionStorage)
 
+    const isDesktop = useIsDesktop()
+
     const editor = useEditor({
         extensions,
-        autofocus: 'end',
         content,
         editorProps: {
             handleTextInput() {
@@ -514,12 +552,12 @@ const Tiptap = forwardRef(({ isEdit, slotBefore, fileProps, onMessageSend, onUpA
 
 
     useEffect(() => {
-        if (!isMobile || isEdit) {
+        if (isDesktop || isEdit) {
             setTimeout(() => {
-                editor?.chain().focus().run()
+                editor?.chain().focus('end').run()
             }, 50)
         }
-    }, [replyMessage, editor, isMobile, isEdit])
+    }, [editor, isDesktop, isEdit, replyMessage])
 
     useImperativeHandle(ref, () => ({
         focusEditor: () => {
@@ -534,7 +572,7 @@ const Tiptap = forwardRef(({ isEdit, slotBefore, fileProps, onMessageSend, onUpA
         )}>
             <EditorContext.Provider value={{ editor }}>
                 {slotBefore}
-                <Flex align='end' gap='2' className='relative'>
+                <Flex align='end' gap='2' className='w-full'>
                     {!isEdit &&
                         <div className='w-8'>
                             <Suspense fallback={<IconButton radius='full' color='gray' variant='soft' size='2' className='mb-1'>
@@ -555,14 +593,20 @@ const Tiptap = forwardRef(({ isEdit, slotBefore, fileProps, onMessageSend, onUpA
                             <TextFormattingMenu />
                         </div>
                     </BubbleMenu>
-                    <EditorContent editor={editor} />
-                    <SendButton
-                        size='2'
-                        variant='soft'
-                        className='bg-transparent mb-1 absolute right-2'
-                        sendMessage={onMessageSend}
-                        messageSending={messageSending}
-                        setContent={setContent} />
+                    <div className='border-[1.5px] flex items-end justify-between border-gray-4 rounded-radius2 w-[calc(100vw-72px)] focus-within:border-accent-a8'>
+                        <div className='w-[90%]'>
+                            <EditorContent editor={editor} />
+                        </div>
+                        <div className='w-[10%] mb-0.5 flex items-center justify-center h-full'>
+                            <SendButton
+                                size='2'
+                                variant='soft'
+                                className='bg-transparent'
+                                sendMessage={onMessageSend}
+                                messageSending={messageSending}
+                                setContent={setContent} />
+                        </div>
+                    </div>
                 </Flex>
             </EditorContext.Provider>
         </Box>

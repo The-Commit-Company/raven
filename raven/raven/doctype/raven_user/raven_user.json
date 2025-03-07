@@ -11,6 +11,7 @@
   "user",
   "bot",
   "enabled",
+  "last_mention_viewed_on",
   "column_break_dwio",
   "full_name",
   "first_name",
@@ -134,11 +135,17 @@
   {
    "fieldname": "column_break_xlzh",
    "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "last_mention_viewed_on",
+   "fieldtype": "Datetime",
+   "label": "Last Mention Viewed On"
   }
  ],
+ "grid_page_length": 50,
  "image_field": "user_image",
  "links": [],
- "modified": "2024-10-25 12:41:02.049148",
+ "modified": "2025-02-28 15:48:53.835541",
  "modified_by": "Administrator",
  "module": "Raven",
  "name": "Raven User",
@@ -171,6 +178,7 @@
    "write": 1
   }
  ],
+ "row_format": "Dynamic",
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": [],

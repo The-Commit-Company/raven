@@ -39,23 +39,7 @@
     .tiptap-editor.ProseMirror {
         min-height: 20px;
         padding: 8px;
-        width: calc(100vw - 96px);
         max-height: 300px;
-        border: 1.5px solid var(--gray-4);
-        border-radius: var(--radius-3);
-    }
-
-    .tiptap-editor.editing-message.ProseMirror {
-        width: calc(100vw - 96px);
-    }
-
-    .tiptap-editor.replying.ProseMirror {
-        border-radius: var(--radius-3);
-    }
-
-    .tiptap-editor.ProseMirror:focus {
-        outline: 1.5px solid var(--color-focus-root);
-        outline-offset: -1.5px;
     }
 }
 

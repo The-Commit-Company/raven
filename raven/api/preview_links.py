@@ -78,6 +78,10 @@ def hide_link_preview(message_id: str):
 	Remove the preview from the message
 	"""
 	message = frappe.get_doc("Raven Message", message_id)
+
+	if not message.has_permission():
+		frappe.throw("You do not have permission to hide link previews on this message.")
+
 	message.flags.ignore_permissions = True
 	message.hide_link_preview = 1
 	message.flags.editing_metadata = True

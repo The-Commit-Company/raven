@@ -5,7 +5,7 @@ import { FullPageLoader } from "@/components/layout/Loaders/FullPageLoader"
 import { useCurrentChannelData } from "@/hooks/useCurrentChannelData"
 import { useEffect } from "react"
 import { Box, Grid } from '@radix-ui/themes'
-import { Outlet, useLocation, useParams } from "react-router-dom"
+import { Outlet, useParams, useSearchParams } from "react-router-dom"
 import { useSWRConfig } from "frappe-react-sdk"
 import { UnreadChannelCountItem, UnreadCountData } from "@/utils/channel/ChannelListProvider"
 import { useIsMobile } from "@/hooks/useMediaQuery"
@@ -32,7 +32,9 @@ const ChatSpaceArea = ({ channelID }: { channelID: string }) => {
     const { channel, error, isLoading } = useCurrentChannelData(channelID)
     const { mutate, cache } = useSWRConfig()
 
-    const { state } = useLocation()
+    const [searchParams] = useSearchParams()
+
+    const baseMessage = searchParams.get('message_id')
 
     useEffect(() => {
 
@@ -44,12 +46,12 @@ const ChatSpaceArea = ({ channelID }: { channelID: string }) => {
         // If unread count is present
         if (unread_count?.data) {
             // If the user entered the channel without a base message
-            if (!state?.baseMessage) {
+            if (!baseMessage) {
                 // Mutate the unread channel count to set the unread count of the current channel to 0
                 //@ts-ignore
                 mutate('unread_channel_count', (d: { message: UnreadCountData } | undefined) => {
                     if (d) {
-                        const newChannels: UnreadChannelCountItem[] = d.message.channels.map(c => {
+                        const newChannels: UnreadChannelCountItem[] = d.message.map(c => {
                             if (c.name === channelID)
                                 return {
                                     ...c,
@@ -58,30 +60,9 @@ const ChatSpaceArea = ({ channelID }: { channelID: string }) => {
                             return c
                         })
 
-                        const total_unread_count_in_channels = newChannels.reduce((acc: number, c) => {
-                            if (!c.user_id) {
-                                return acc + c.unread_count
-                            } else {
-                                return acc
-                            }
-                        }, 0)
-
-                        const total_unread_count_in_dms = newChannels.reduce((acc: number, c) => {
-                            if (c.user_id) {
-                                return acc + c.unread_count
-                            } else {
-                                return acc
-                            }
-                        }, 0)
-
 
                         return {
-                            message: {
-                                ...d.message,
-                                channels: newChannels,
-                                total_unread_count_in_channels,
-                                total_unread_count_in_dms
-                            }
+                            message: newChannels,
                         }
                     }
                     else {
@@ -95,7 +76,7 @@ const ChatSpaceArea = ({ channelID }: { channelID: string }) => {
             }
         }
 
-    }, [channelID, state?.baseMessage])
+    }, [channelID, baseMessage])
 
     return <Grid columns={threadID && !isMobile ? "2" : "1"} gap="2" rows="repeat(2, 64px)" width="auto" className="dark:bg-gray-2 bg-white h-screen">
         {threadID && isMobile ? null : <Box>

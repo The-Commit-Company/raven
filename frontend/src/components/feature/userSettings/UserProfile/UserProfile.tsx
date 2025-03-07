@@ -18,8 +18,9 @@ import SettingsPageHeader from "@/components/layout/Settings/SettingsPageHeader"
 import SettingsContentContainer from "@/components/layout/Settings/SettingsContentContainer"
 import { __ } from "@/utils/translations"
 import { Stack } from "@/components/layout/Stack"
+import { RavenUser } from "@/types/Raven/RavenUser"
 
-type UserProfile = {
+type UserProfileType = {
     full_name?: string,
     user_image?: string,
     availability_status?: string,
@@ -28,8 +29,18 @@ type UserProfile = {
 
 const UserProfile = () => {
 
-    const { myProfile, mutate } = useCurrentRavenUser()
-    const methods = useForm<UserProfile>({
+    const { myProfile, mutate, } = useCurrentRavenUser()
+
+    if (myProfile) return <UserProfileForm myProfile={myProfile} />
+
+    return null
+
+}
+
+const UserProfileForm = ({ myProfile }: { myProfile: RavenUser }) => {
+
+    const { mutate } = useCurrentRavenUser()
+    const methods = useForm<UserProfileType>({
         defaultValues: {
             full_name: myProfile?.full_name ?? '',
             user_image: myProfile?.user_image ?? '',
@@ -42,10 +53,9 @@ const UserProfile = () => {
 
     const [availabilityStatus, setAvailabilityStatus] = useState(myProfile?.availability_status ?? '')
 
-    const onSubmit = (data: UserProfile) => {
+    const onSubmit = (data: UserProfileType) => {
         updateDoc("Raven User", myProfile?.name ?? null, {
             full_name: data.full_name,
-            user_image: data.user_image,
             availability_status: availabilityStatus,
             custom_status: data.custom_status
         }).then(() => {

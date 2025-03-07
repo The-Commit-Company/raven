@@ -26,12 +26,17 @@ def handle_bot_dm(message, bot):
 
 		if message.message_type == "File" and not check_if_bot_has_file_search(bot, message.channel_id):
 			return
-		# Upload the file to OpenAI
-		file = create_file_in_openai(message.file, message.message_type, client)
 
-		content, attachments = get_content_attachment_for_file(
-			message.message_type, file.id, message.file
-		)
+		# If the file has an "fid" query parameter, we need to remove that from the file_url
+		if "fid" in message.file:
+			file_url = message.file.split("?fid=")[0]
+		else:
+			file_url = message.file
+
+		# Upload the file to OpenAI
+		file = create_file_in_openai(file_url, message.message_type, client)
+
+		content, attachments = get_content_attachment_for_file(message.message_type, file.id, file_url)
 
 		ai_thread = client.beta.threads.create(
 			messages=[
@@ -114,11 +119,15 @@ def handle_ai_thread_message(message, channel):
 
 	if message.message_type in ["File", "Image"]:
 
+		file_url = message.file
+		if "fid" in file_url:
+			file_url = file_url.split("?fid=")[0]
+
 		if message.message_type == "File" and not check_if_bot_has_file_search(bot, channel.name):
 			return
 		# Upload the file to OpenAI
 		try:
-			file = create_file_in_openai(message.file, message.message_type, client)
+			file = create_file_in_openai(file_url, message.message_type, client)
 		except Exception as e:
 			frappe.log_error("Raven AI Error", frappe.get_traceback())
 			bot.send_message(
@@ -128,9 +137,7 @@ def handle_ai_thread_message(message, channel):
 			)
 			return
 
-		content, attachments = get_content_attachment_for_file(
-			message.message_type, file.id, message.file
-		)
+		content, attachments = get_content_attachment_for_file(message.message_type, file.id, file_url)
 
 		try:
 			client.beta.threads.messages.create(

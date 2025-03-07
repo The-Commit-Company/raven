@@ -448,7 +448,10 @@ const FieldForm = ({ doctype, field, onAdd }: { doctype?: string, field?: RavenM
                                             <Select.Item value='creation'>Creation (Datetime)</Select.Item>
                                             <Select.Item value='message_type'>Message Type</Select.Item>
                                             <Select.Item value='link_doctype'>Linked DocType</Select.Item>
-                                            <Select.Item value='link_document'>Link Document</Select.Item>
+                                            <Select.Item value='link_document'>Linked Document</Select.Item>
+                                            <Select.Item value='channel_id'>Channel ID</Select.Item>
+                                            <Select.Item value='workspace_id'>Workspace ID</Select.Item>
+                                            <Select.Item value='message_url'>Message URL</Select.Item>
                                         </Select.Content>
                                     </Select.Root>
 
