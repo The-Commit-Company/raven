@@ -21,7 +21,7 @@ export const ReplyMessageBox = ({ message, children, className, ...props }: Repl
     const user = useGetUser(message.owner)
 
     return (
-        <Flex className={clsx('p-2 items-start bg-white border border-gray-5 shadow-sm dark:bg-gray-3 dark:border-gray-6 rounded-md', className)} {...props}>
+        <Flex className={clsx('p-2 items-start bg-white border border-gray-5 shadow-sm dark:bg-gray-3 dark:border-gray-6 rounded-md overflow-hidden', className)} {...props}>
             <Flex gap='1' direction='column' className="border-l-2 pl-2 border-gray-8">
                 <Flex gap='2' align='center'>
                     <Text as='span' size='1' weight='medium' truncate>{user?.full_name ?? message.owner}</Text>
@@ -42,7 +42,7 @@ export const ReplyMessageBox = ({ message, children, className, ...props }: Repl
 
                                 <Text as='span' size='2'>{getFileName((message as FileMessage).file)}</Text>
                             </Flex>
-                            : <Text as='span' size='2' className="line-clamp-2">{parse((message as TextMessage).content ?? '')}</Text>
+                            : <Text as='span' size='2' className="line-clamp-2 text-ellipsis">{parse((message as TextMessage).content ?? '')}</Text>
                     }
                 </Box>
             </Flex>
