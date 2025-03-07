@@ -111,6 +111,9 @@ const ThreadsList = ({ aiThreads, content, channel, endpoint = "raven.api.thread
             keyExtractor={(item) => item.name}
             renderItem={({ item }) => (
                 <View role='listitem'>
+                    <View className='flex flex-row items-center gap-2'>
+                        <Text>{item.name}</Text>
+                    </View>
                     {/* <ThreadPreviewBox
                         thread={item}
                         unreadCount={unreadThreadsMap?.[item.name] ?? 0}
@@ -125,6 +128,8 @@ const ThreadsList = ({ aiThreads, content, channel, endpoint = "raven.api.thread
                 </View>
             }
             ListEmptyComponent={<EmptyStateForThreads isFiltered={onlyShowUnread} />}
+            estimatedItemSize={50}
+            style={{ flex: 1, paddingTop: 4 }}
         />
     )
 }

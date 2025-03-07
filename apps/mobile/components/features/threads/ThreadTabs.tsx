@@ -39,12 +39,14 @@ const ThreadTabs = () => {
     }
 
     return (
-        <View className='flex-1 flex-col gap-4 px-4 pt-4'>
-            <SegmentedControl
-                values={values}
-                selectedIndex={selectedIndex}
-                onIndexChange={handleIndexChange}
-            />
+        <View className='flex-1 flex-col gap-3 pt-4'>
+            <View className='px-4'>
+                <SegmentedControl
+                    values={values}
+                    selectedIndex={selectedIndex}
+                    onIndexChange={handleIndexChange}
+                />
+            </View>
             <ScrollView>
                 {selectedIndex === 0 && <ParticipatingThreads />}
                 {selectedIndex === 1 && <OtherThreads />}
