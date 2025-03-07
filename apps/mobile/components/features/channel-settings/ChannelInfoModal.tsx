@@ -12,6 +12,7 @@ import ThreeHorizontalDots from '@assets/icons/ThreeHorizontalDots.svg';
 import Animated, { Easing, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import { useEffect } from 'react';
 import { ChannelListItem } from '@raven/types/common/ChannelListItem';
+import PinIcon from '@assets/icons/PinIcon.svg';
 
 type ChannelInfoModalProps = {
     channel: ChannelListItem
@@ -57,7 +58,7 @@ const ChannelInfoModal = ({ channel, isModalVisible, setModalVisible }: ChannelI
     // Start animation when modal becomes visible
     useEffect(() => {
         if (isModalVisible) {
-            modalHeight.value = withTiming(165, { duration: 250, easing: Easing.out(Easing.ease) })
+            modalHeight.value = withTiming(210, { duration: 250, easing: Easing.out(Easing.ease) })
             modalOpacity.value = withTiming(1, { duration: 250 })
         }
     }, [isModalVisible])
@@ -94,6 +95,17 @@ const ChannelInfoModal = ({ channel, isModalVisible, setModalVisible }: ChannelI
                             <View className='flex-row items-center'>
                                 <SettingsIcon height={20} width={20} color={colors.colors.foreground} />
                                 <Text style={styles.modalOption}>Settings & Details</Text>
+                            </View>
+                            <ChevronRightIcon height={24} width={24} fill={colors.colors.foreground} strokeWidth={'1px'} />
+                        </View>
+                    </Pressable>
+                    <Pressable onPress={() => { }}
+                        className='rounded-xl ios:active:bg-linkColor'
+                        android_ripple={{ color: 'rgba(0,0,0,0.1)', borderless: false }}>
+                        <View className='flex-row items-center justify-between px-2'>
+                            <View className='flex-row items-center'>
+                                <PinIcon height={20} width={20} color={colors.colors.foreground} />
+                                <Text style={styles.modalOption}>Pins</Text>
                             </View>
                             <ChevronRightIcon height={24} width={24} fill={colors.colors.foreground} strokeWidth={'1px'} />
                         </View>

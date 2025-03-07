@@ -5,7 +5,7 @@ import clsx from 'clsx'
 import MessageReactions from './MessageItemElements/Reactions/MessageReactions'
 import ShareForward from '@assets/icons/ShareForward.svg'
 import { useMemo, memo } from 'react';
-import PushPin from '@assets/icons/PushPin.svg'
+import PinIcon from '@assets/icons/PinIcon.svg'
 import { FileMessage, ImageMessage, PollMessage, TextMessage } from '@raven/types/common/Message'
 import MessageAvatar from '@components/features/chat-stream/MessageItemElements/MessageAvatar'
 import MessageHeader from '@components/features/chat-stream/MessageItemElements/MessageHeader'
@@ -77,7 +77,7 @@ const MessageItem = memo(({ message, onReplyMessagePress }: Props) => {
                         </View>}
                     {message.is_pinned === 1 &&
                         <View className='flex-row items-center gap-1'>
-                            <PushPin width={12} height={12} />
+                            <PinIcon width={12} height={12} />
                             <Text className='text-xs text-accent'>Pinned</Text>
                         </View>}
 
@@ -87,9 +87,9 @@ const MessageItem = memo(({ message, onReplyMessagePress }: Props) => {
                     />}
 
                     {message.text ? <MessageTextRenderer text={message.text} /> : null}
-        
+
                     <MessageReactions messageID={message?.name} message_reactions={message?.message_reactions} />
-        
+
                     {message.message_type === 'Image' && <ImageMessageRenderer message={message} onLongPress={onMessageLongPress} />}
                     {message.message_type === 'File' && <FileMessageRenderer message={message} onLongPress={onMessageLongPress} />}
                     {message.message_type === 'Poll' && <PollMessageBlock message={message} />}
