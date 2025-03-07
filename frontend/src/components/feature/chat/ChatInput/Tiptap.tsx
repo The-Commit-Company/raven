@@ -565,7 +565,7 @@ const Tiptap = forwardRef(({ isEdit, slotBefore, fileProps, onMessageSend, onUpA
         )}>
             <EditorContext.Provider value={{ editor }}>
                 {slotBefore}
-                <Flex align='end' gap='2' className='relative'>
+                <Flex align='end' gap='2' className='w-full'>
                     {!isEdit &&
                         <div className='w-8'>
                             <Suspense fallback={<IconButton radius='full' color='gray' variant='soft' size='2' className='mb-1'>
@@ -586,14 +586,20 @@ const Tiptap = forwardRef(({ isEdit, slotBefore, fileProps, onMessageSend, onUpA
                             <TextFormattingMenu />
                         </div>
                     </BubbleMenu>
-                    <EditorContent editor={editor} />
-                    <SendButton
-                        size='2'
-                        variant='soft'
-                        className='bg-transparent mb-1 absolute right-2'
-                        sendMessage={onMessageSend}
-                        messageSending={messageSending}
-                        setContent={setContent} />
+                    <div className='border-[1.5px] flex items-end justify-between border-gray-4 rounded-radius2 w-[calc(100vw-72px)] focus-within:border-accent-a8'>
+                        <div className='w-[90%]'>
+                            <EditorContent editor={editor} />
+                        </div>
+                        <div className='w-[10%] mb-0.5 flex items-center justify-center h-full'>
+                            <SendButton
+                                size='2'
+                                variant='soft'
+                                className='bg-transparent'
+                                sendMessage={onMessageSend}
+                                messageSending={messageSending}
+                                setContent={setContent} />
+                        </div>
+                    </div>
                 </Flex>
             </EditorContext.Provider>
         </Box>
