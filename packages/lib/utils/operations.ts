@@ -15,7 +15,7 @@ export const replaceCurrentUserFromDMChannelName = (channelName: string, current
  */
 export const getFileExtension = (filename: string) => {
 
-    const extension = filename?.split('.').pop()?.toLocaleLowerCase() ?? ''
+    const extension = filename?.split('.').pop()?.split('?')[0].toLocaleLowerCase() ?? ''
     return extension;
 }
 

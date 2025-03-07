@@ -20,12 +20,12 @@ const AllChannelsList = ({ workspace }: { workspace: string }) => {
     const { unreadChannels, readChannels, unreadDMs, readDMs } = useGetChannelUnreadCounts({
         channels: workspaceChannels,
         dm_channels,
-        unread_count: unread_count?.message
+        unread_count: unread_count
     })
 
     return (
         <View className="flex-1">
-            {unread_count?.message && <UnreadChannelsList unreadChannels={unreadChannels} unreadDMs={unreadDMs} />}
+            {unread_count && <UnreadChannelsList unreadChannels={unreadChannels} unreadDMs={unreadDMs} />}
             <PinnedChannelsList channels={readChannels} />
             <ChannelsList channels={readChannels} />
             <DMList dms={readDMs} />
