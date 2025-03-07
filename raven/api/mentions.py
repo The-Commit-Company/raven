@@ -10,6 +10,10 @@ def get_mentions(limit: int = 10, start: int = 0):
 	Also update the last mention viewed date if the start is 0
 	"""
 
+	# Max number of mentions that we will return is 100
+	if start >= 100:
+		return []
+
 	mention = frappe.qb.DocType("Raven Mention")
 	message = frappe.qb.DocType("Raven Message")
 	channel = frappe.qb.DocType("Raven Channel")

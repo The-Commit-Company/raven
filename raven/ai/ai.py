@@ -27,11 +27,11 @@ def handle_bot_dm(message, bot):
 		if message.message_type == "File" and not check_if_bot_has_file_search(bot, message.channel_id):
 			return
 
-		# If the file_url has an "fid" query parameter, we need to remove that from the file_url
-		if "fid" in message.file_url:
-			file_url = message.file_url.split("?fid=")[0]
+		# If the file has an "fid" query parameter, we need to remove that from the file_url
+		if "fid" in message.file:
+			file_url = message.file.split("?fid=")[0]
 		else:
-			file_url = message.file_url
+			file_url = message.file
 
 		# Upload the file to OpenAI
 		file = create_file_in_openai(file_url, message.message_type, client)

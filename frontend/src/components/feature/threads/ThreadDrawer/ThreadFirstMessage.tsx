@@ -31,7 +31,7 @@ export const ThreadFirstMessage = ({ message, user, ...props }: MessageContentPr
         setContentHeight(contentRef.current?.clientHeight ?? null)
     })
 
-    const showButton = ((contentHeight && contentHeight == 24) || showMore) && message.message_type === 'Text'
+    const showButton = ((contentHeight && contentHeight >= 40) || showMore) && message.message_type === 'Text'
 
     return <Flex gap='3' pb='2' pt='7' className="bg-white dark:bg-gray-2 border-gray-4 sm:dark:border-gray-6 border-b">
         <MessageSenderAvatar userID={message.owner} user={threadOwner} isActive={isActive} />
@@ -40,7 +40,7 @@ export const ThreadFirstMessage = ({ message, user, ...props }: MessageContentPr
                 <UserHoverCard user={threadOwner} userID={message.owner} isActive={isActive} />
             </Box>
             <Box>
-                <Box ref={contentRef} className={clsx('overflow-y-hidden', showMore ? 'max-h-min' : 'max-h-6')} {...props}>
+                <Box ref={contentRef} className={clsx('overflow-y-hidden', showMore ? 'max-h-min' : 'max-h-10')} {...props}>
                     {message.text ?
                         <TiptapRenderer
                             message={{

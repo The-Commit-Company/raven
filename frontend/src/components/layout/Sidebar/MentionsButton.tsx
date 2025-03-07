@@ -50,7 +50,7 @@ const MentionsButton = () => {
                     </Box>}
                 </IconButton>
             </Popover.Trigger>
-            <Popover.Content width="480px" className="p-0">
+            <Popover.Content width={{ initial: '360px', md: '480px' }} className="p-0">
                 <MentionsList />
             </Popover.Content>
         </Popover.Root>
@@ -149,7 +149,7 @@ const MentionsList = () => {
                 <Text size='5' weight='medium' className='mb-2'>
                     No mentions yet
                 </Text>
-                <Text as='p' size='2' color='gray' className='max-w-[400px]'>
+                <Text as='p' size='2' color='gray' className='sm:max-w-[400px] max-w-[320px]'>
                     When someone mentions you in a message, you'll see it here.
                 </Text>
             </Flex>
@@ -157,7 +157,7 @@ const MentionsList = () => {
     }
 
     return (
-        <ul role='list' className='list-none h-[320px] overflow-y-auto'>
+        <ul role='list' className='list-none h-[380px] overflow-y-auto'>
             {mentions.map((mention) => (
                 <li key={mention.name} role='listitem' className='border-b border-gray-4 last:border-0'>
                     <MentionItem mention={mention} />
@@ -165,7 +165,7 @@ const MentionsList = () => {
             ))}
             <div ref={observerTarget} className="h-4">
                 {isReachingEnd && <div className='p-4'>
-                    <Text as='span' size='2' color='gray' className='max-w-[400px] text-center'>
+                    <Text as='span' size='2' color='gray' className='sm:max-w-[400px] max-w-[320px] text-center'>
                         You've reached the end of your mentions.
                     </Text>
                 </div>}
@@ -196,10 +196,7 @@ const MentionItem = ({ mention }: { mention: MentionObject }) => {
                 }}
                 className="block py-3 px-4 hover:bg-gray-2 dark:hover:bg-gray-4 text-left"
             >
-                <HStack gap="3" justify="between" align="start">
-                    <ChannelContext mention={mention} />
-                    <TimeStamp creation={mention.creation} />
-                </HStack>
+                <ChannelContext mention={mention} />
             </Link>
         </Popover.Close>
     )
@@ -210,27 +207,30 @@ const ChannelContext = ({ mention }: { mention: MentionObject }) => {
     const senderName = user?.full_name ?? mention.owner
 
     return (
-        <HStack gap="2" align="start">
+        <HStack gap="2" align="start" className='w-full'>
             <UserAvatar src={user?.user_image} alt={senderName} size="2" className='mt-0.5' />
-            <Box>
-                <HStack gap="1" align="center">
-                    <Text size="2" weight="medium">{senderName}</Text>
-                    <Text size="1" as="span">
-                        {mention.is_thread ? (
-                            <HStack gap="1" align="center" className="inline-flex">
-                                in <BiMessageAltDetail size="14" className="mt-[0.5px]" /> thread
+            <Box className='w-full'>
+                <HStack className='w-full justify-between'>
+                    <HStack gap="1" align="center" className='w-full'>
+                        <Text size="2" weight="medium">{senderName}</Text>
+                        <Text size="1" as="span">
+                            {mention.is_thread ? (
+                                <HStack gap="1" align="center" className="inline-flex">
+                                    in <BiMessageAltDetail size="14" className="mt-[0.5px]" /> thread
 
-                            </HStack>
-                        ) : mention.is_direct_message ? (
-                            null
-                        ) : (
-                            <>
-                                <HStack align="center" className="inline-flex gap-0.5">
-                                    in  <ChannelIcon type={mention.channel_type} size="14" className="mt-[0.5px]" /> {mention.channel_name}
                                 </HStack>
-                            </>
-                        )}
-                    </Text>
+                            ) : mention.is_direct_message ? (
+                                null
+                            ) : (
+                                <>
+                                    <HStack align="center" className="inline-flex gap-0.5">
+                                        in  <ChannelIcon type={mention.channel_type} size="14" className="mt-[0.5px]" /> {mention.channel_name}
+                                    </HStack>
+                                </>
+                            )}
+                        </Text>
+                    </HStack>
+                    <TimeStamp creation={mention.creation} />
                 </HStack>
                 <Box className="mt-0.5">
                     <MessageContent content={mention.text} />
@@ -242,7 +242,7 @@ const ChannelContext = ({ mention }: { mention: MentionObject }) => {
 
 const MessageContent = ({ content }: { content: string }) => {
     return (
-        <Text as='p' className="text-sm line-clamp-2 text-ellipsis">
+        <Text as='p' className="text-sm line-clamp-2 text-ellipsis sm:w-[320px] w-[200px]">
             <div className="[&_.mention]:text-accent-11">
                 {typeof content === 'string' ? parse(content) : content}
             </div>
