@@ -18,20 +18,22 @@ type FileMessageBlockProps = BoxProps & {
 
 export const FileMessageBlock = memo(({ message, user, ...props }: FileMessageBlockProps) => {
 
-    const fileExtension = getFileExtension(message.file)
+    const fileURL = message.file?.split('?')[0]
 
-    const fileName = getFileName(message.file)
+    const fileExtension = getFileExtension(fileURL)
+
+    const fileName = getFileName(fileURL)
 
     const isVideo = isVideoFile(fileExtension)
 
     const isPDF = fileExtension === 'pdf'
 
     const copyLink = () => {
-        if (message.file.startsWith('http') || message.file.startsWith('https')) {
-            navigator.clipboard.writeText(message.file)
+        if (fileURL.startsWith('http') || fileURL.startsWith('https')) {
+            navigator.clipboard.writeText(fileURL)
         }
         else {
-            navigator.clipboard.writeText(window.location.origin + message.file)
+            navigator.clipboard.writeText(window.location.origin + fileURL)
         }
 
         toast.success('Link copied')
