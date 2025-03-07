@@ -7,6 +7,7 @@ import FullPageLoader from "@components/layout/FullPageLoader";
 import { getAccessToken, getSiteFromStorage, getTokenEndpoint, storeAccessToken } from "@lib/auth";
 import Providers from "@lib/Providers";
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
+import FrappeNativeProvider from "@lib/FrappeNativeProvider";
 
 export default function SiteLayout() {
 
@@ -83,14 +84,7 @@ export default function SiteLayout() {
     return <>
         {loading ? <FullPageLoader /> :
             <SiteContext.Provider value={siteInfo}>
-                <FrappeProvider
-                    url={siteInfo?.url}
-                    tokenParams={{
-                        type: 'Bearer',
-                        useToken: true,
-                        token: () => accessToken?.accessToken || '',
-                    }}
-                    siteName={siteInfo?.sitename}>
+                <FrappeNativeProvider siteInfo={siteInfo} accessToken={accessToken}>
                     <Providers>
                         <BottomSheetModalProvider>
                             <Stack>
@@ -103,7 +97,7 @@ export default function SiteLayout() {
                             </Stack>
                         </BottomSheetModalProvider>
                     </Providers>
-                </FrappeProvider>
+                </FrappeNativeProvider>
             </SiteContext.Provider>
         }
     </>
