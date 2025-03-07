@@ -4,7 +4,12 @@ import { useDebounce } from "@raven/lib/hooks/useDebounce"
 import { SearchInput } from "@components/nativewindui/SearchInput"
 import { useColorScheme } from "@hooks/useColorScheme"
 import ThreadsList from "./ThreadsList"
+import { Divider } from "@components/layout/Divider"
+import UnreadFilter from "./thread-filters/UnreadFilter"
 
+/**
+ * Component for displaying AI threads - these are all DMs with the AI
+ */
 const AIThreads = () => {
 
     const [onlyShowUnread, setOnlyShowUnread] = useState(false)
@@ -13,19 +18,27 @@ const AIThreads = () => {
     const { colors } = useColorScheme()
 
     return (
-        <View className="flex flex-col gap-4 w-full">
-            <SearchInput
-                style={{ backgroundColor: colors.grey6 }}
-                placeholder="Search"
-                placeholderTextColor={colors.grey}
-                onChangeText={setSearchQuery}
-                value={searchQuery}
-            />
-            <ThreadsList
-                content={debouncedText}
-                aiThreads={1}
-                onlyShowUnread={onlyShowUnread}
-            />
+        <View className="flex flex-col gap-3">
+            <View className="flex flex-row items-center gap-2 px-4">
+                <View className="flex-1 max-w-[90%]">
+                    <SearchInput
+                        style={{ backgroundColor: colors.grey6 }}
+                        placeholder="Search"
+                        placeholderTextColor={colors.grey}
+                        onChangeText={setSearchQuery}
+                        value={searchQuery}
+                    />
+                </View>
+                <UnreadFilter onlyShowUnread={onlyShowUnread} setOnlyShowUnread={setOnlyShowUnread} />
+            </View>
+            <Divider marginHorizontal={0} prominent />
+            <View className='px-4'>
+                <ThreadsList
+                    content={debouncedText}
+                    aiThreads={1}
+                    onlyShowUnread={onlyShowUnread}
+                />
+            </View>
         </View>
     )
 }
