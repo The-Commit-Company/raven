@@ -1,13 +1,13 @@
+import { useMemo, useCallback, useContext } from 'react'
+import { View, ActivityIndicator, Text } from 'react-native'
 import { FrappeConfig, FrappeContext, FrappeError, useSWRInfinite } from 'frappe-react-sdk'
-import { useContext, useMemo, useCallback, useRef, useEffect } from 'react'
 import ErrorBanner from '@components/common/ErrorBanner'
-import { ActivityIndicator } from '@components/nativewindui/ActivityIndicator'
-import { View } from 'react-native'
 import { ThreadMessage } from './ThreadTabs'
-import { Text } from '@components/nativewindui/Text'
-import ThreadsIcon from '@assets/icons/ThreadsIcon.svg'
+import ThreadsOutlineIcon from '@assets/icons/ThreadsOutlineIcon.svg'
 import { useGetCurrentWorkspace } from '@hooks/useGetCurrentWorkspace'
 import useUnreadThreadsCount from '@hooks/useUnreadThreadsCount'
+import { LegendList } from '@legendapp/list'
+import { useColorScheme } from "@hooks/useColorScheme"
 
 type Props = {
     /** Whether to fetch AI threads */
@@ -87,54 +87,50 @@ const ThreadsList = ({ aiThreads, content, channel, endpoint = "raven.api.thread
 
     const threads = data?.flatMap((page) => page.message) ?? []
 
-    const observerTarget = useRef<HTMLDivElement>(null)
-
     const loadMore = useCallback(() => {
         if (!isReachingEnd && !isLoadingMore) {
             setSize(size + 1)
         }
     }, [isReachingEnd, isLoadingMore, setSize, size])
 
-    useEffect(() => {
-        const observer = new IntersectionObserver(
-            (entries) => {
-                if (entries[0].isIntersecting) {
-                    loadMore()
-                }
-            },
-            { threshold: 0.1 }
-        )
-
-        if (observerTarget.current) {
-            observer.observe(observerTarget.current)
-        }
-
-        return () => observer.disconnect()
-    }, [loadMore])
+    if (isLoading) {
+        return <View className="flex-1 justify-center items-center h-full">
+            <ActivityIndicator />
+        </View>
+    }
 
     if (error) {
-        return <ErrorBanner error={error} />
+        return (
+            <ErrorBanner error={error} />
+        )
     }
 
-    if (isEmpty) {
-        return <EmptyStateForThreads isFiltered={onlyShowUnread} />
-    }
-
-    return <ul className='list-none' role='list'>
-        {threads.map((thread) => (
-            <li key={thread.name} role='listitem'>
-                {/* <ThreadPreviewBox
-                    thread={thread}
-                    unreadCount={unreadThreadsMap?.[thread.name] ?? 0}
-                /> */}
-            </li>
-        ))}
-        <div ref={observerTarget} className="h-4" />
-        {isLoadingMore && <ActivityIndicator />}
-    </ul>
+    return (
+        <LegendList
+            data={threads ?? []}
+            keyExtractor={(item) => item.name}
+            renderItem={({ item }) => (
+                <View role='listitem'>
+                    {/* <ThreadPreviewBox
+                        thread={item}
+                        unreadCount={unreadThreadsMap?.[item.name] ?? 0}
+                    /> */}
+                </View>
+            )}
+            onEndReached={loadMore}
+            onEndReachedThreshold={0.1}
+            ListFooterComponent={
+                <View className='flex flex-row justify-center items-center'>
+                    {isLoadingMore && <ActivityIndicator />}
+                </View>
+            }
+            ListEmptyComponent={<EmptyStateForThreads isFiltered={onlyShowUnread} />}
+        />
+    )
 }
 
 const EmptyStateForThreads = ({ isFiltered = false }: { isFiltered?: boolean }) => {
+
     const content = useMemo(() => isFiltered ? {
         title: "You're all caught up",
         description: 'There are no unread threads to show. Clear the filter to see all threads.'
@@ -143,15 +139,17 @@ const EmptyStateForThreads = ({ isFiltered = false }: { isFiltered?: boolean }) 
         description: 'Threads help keep conversations organized. Reply to any message to start a new thread or use the thread icon on messages to join existing discussions.'
     }, [isFiltered])
 
+    const { colors } = useColorScheme()
+
     return (
-        <View className={'flex flex-col items-center justify-center h-[400px] px-6 text-center'}>
-            <View className='text-gray-8 mb-4'>
-                <ThreadsIcon width={20} height={20} />
+        <View className="flex flex-col gap-2 bg-background">
+            <View className="flex flex-row items-center gap-2">
+                <ThreadsOutlineIcon fill={colors.icon} height={20} width={20} />
+                <Text className="text-foreground text-base font-medium">
+                    {content.title}
+                </Text>
             </View>
-            <Text className='font-semibold mb-2'>
-                {content.title}
-            </Text>
-            <Text className='text-gray-8 max-w-[400px]'>
+            <Text className="text-sm text-foreground/60">
                 {content.description}
             </Text>
         </View>

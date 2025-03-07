@@ -10,6 +10,7 @@ import { ActivityIndicator } from '@components/nativewindui/ActivityIndicator';
 import SavedMessageItem from '@components/features/saved-messages/SavedMessageItem';
 import ChevronLeftIcon from '@assets/icons/ChevronLeftIcon.svg';
 import { LegendList } from '@legendapp/list';
+import ErrorBanner from '@components/common/ErrorBanner';
 
 export default function SavedMessages() {
 
@@ -39,7 +40,7 @@ const SavedMessagesContent = () => {
 
     const { colors } = useColorScheme()
 
-    const { data, isLoading } = useFrappeGetCall<{ message: (Message & { workspace?: string })[] }>("raven.api.raven_message.get_saved_messages", undefined, undefined, {
+    const { data, isLoading, error } = useFrappeGetCall<{ message: (Message & { workspace?: string })[] }>("raven.api.raven_message.get_saved_messages", undefined, undefined, {
         revalidateOnFocus: false
     })
 
@@ -47,6 +48,14 @@ const SavedMessagesContent = () => {
         return <View className="flex-1 justify-center items-center h-full">
             <ActivityIndicator />
         </View>
+    }
+
+    if (error) {
+        return (
+            <View className='p-4'>
+                <ErrorBanner error={error} />
+            </View>
+        )
     }
 
     return <LegendList
