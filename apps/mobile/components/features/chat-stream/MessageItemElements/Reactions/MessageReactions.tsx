@@ -11,6 +11,8 @@ import ReactionAnalytics from './ReactionsAnalytics'
 import useFileURL from '@hooks/useFileURL'
 import { Image } from 'expo-image'
 import clsx from 'clsx'
+import { ImpactFeedbackStyle } from 'expo-haptics'
+import { impactAsync } from 'expo-haptics'
 
 export interface ReactionObject {
     // The emoji
@@ -58,7 +60,10 @@ export default function MessageReactions({ messageID, message_reactions }: Messa
 
     const reactionsSheetRef = useSheetRef()
 
-    const openReactions = () => reactionsSheetRef.current?.present()
+    const openReactions = () => {
+        impactAsync(ImpactFeedbackStyle.Light)
+        reactionsSheetRef.current?.present()
+    }
 
     if (reactions.length === 0) return null
 
