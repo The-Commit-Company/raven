@@ -1,11 +1,13 @@
-import { addWorkspaceToStorage, getWorkspaceFromStorage } from '@lib/workspace';
-import useFetchWorkspaces from '@raven/lib/hooks/useFetchWorkspaces';
 import { SiteContext } from 'app/[site_id]/_layout';
-import { useCallback, useContext, useEffect, useState } from 'react';
+import { useCallback, useContext } from 'react';
+import { atomFamily, atomWithStorage } from 'jotai/utils';
+import { useAtom } from 'jotai';
+
+/** Atom Family for storing selected workspace for multiple sites */
+export const selectedWorkspaceFamily = atomFamily((siteID: string) => atomWithStorage<string>(`${siteID}-selected-workspace`, ''))
 
 /**
  * Hook to get the current workspace from async storage
- * @returns {string | null} The current workspace
  */
 
 export const useGetCurrentWorkspace = () => {
@@ -13,39 +15,16 @@ export const useGetCurrentWorkspace = () => {
     const siteInfo = useContext(SiteContext)
     const siteID = siteInfo?.sitename
 
-    const [workspace, setWorkspace] = useState<string>('')
-
-    // Fetch workspaces
-    const { data: workspaces } = useFetchWorkspaces()
-
-    useEffect(() => {
-        const fetchWorkspace = async () => {
-            if (siteID) {
-                const storedWorkspace = await getWorkspaceFromStorage(siteID)
-
-                if (storedWorkspace) {
-                    setWorkspace(storedWorkspace)
-                } else {
-                    const firstWorkspace = workspaces?.message[0]
-                    if (firstWorkspace) {
-                        await addWorkspaceToStorage(siteID, firstWorkspace.name)
-                        setWorkspace(firstWorkspace.name)
-                    }
-                }
-            }
-        }
-        fetchWorkspace()
-    }, [siteID])
+    const [selectedWorkspace, setSelectedWorkspace] = useAtom(selectedWorkspaceFamily(siteID || ''))
 
     const switchWorkspace = useCallback(async (workspace: string) => {
         if (siteID) {
-            await addWorkspaceToStorage(siteID, workspace)
-            setWorkspace(workspace)
+            setSelectedWorkspace(workspace)
         }
     }, [siteID])
 
     return {
-        workspace,
+        workspace: selectedWorkspace,
         switchWorkspace
     }
 }

@@ -1,10 +1,14 @@
 import FullPageLoader from '@components/layout/FullPageLoader'
 import { ChannelListContext, useChannelListProvider } from '@raven/lib/providers/ChannelListProvider'
 import { UserListContext, useUserListProvider } from '@raven/lib/providers/UserListProvider'
-import { PropsWithChildren } from 'react'
+import { PropsWithChildren, useContext, useEffect } from 'react'
 import { View } from 'react-native'
 import { ActiveUserProvider } from './UserInactivityProvider'
 import ErrorBanner from '@components/common/ErrorBanner'
+import useFetchWorkspaces from '@raven/lib/hooks/useFetchWorkspaces'
+import { SiteContext } from 'app/[site_id]/_layout'
+import { useAtom } from 'jotai'
+import { selectedWorkspaceFamily } from '@hooks/useGetCurrentWorkspace'
 import LogOutButton from '@components/features/profile/profile-settings/LogOutButton'
 
 const Providers = (props: PropsWithChildren) => {
@@ -48,8 +52,26 @@ const ChannelListProvider = ({ children }: PropsWithChildren) => {
     }
 
     return <ChannelListContext.Provider value={channelListContextData}>
-        {children}
+        <WorkspaceProvider>
+            {children}
+        </WorkspaceProvider>
     </ChannelListContext.Provider>
+}
+
+const WorkspaceProvider = ({ children }: PropsWithChildren) => {
+
+    const siteInfo = useContext(SiteContext)
+
+    const [selectedWorkspace, setSelectedWorkspace] = useAtom(selectedWorkspaceFamily(siteInfo?.sitename || ''))
+    const { data } = useFetchWorkspaces()
+
+    useEffect(() => {
+        if (data && data.message.length > 0 && !selectedWorkspace) {
+            setSelectedWorkspace(data.message[0].name)
+        }
+    }, [data])
+
+    return children
 }
 
 export default Providers

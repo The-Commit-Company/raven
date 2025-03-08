@@ -7637,7 +7637,7 @@ join-component@^1.1.0:
   resolved "https://registry.yarnpkg.com/join-component/-/join-component-1.1.0.tgz#b8417b750661a392bee2c2537c68b2a9d4977cd5"
   integrity sha512-bF7vcQxbODoGK1imE2P9GS9aw4zD0Sd+Hni68IMZLj7zRnquH7dXUmMw9hDI5S/Jzt7q+IyTXN0rSg2GI0IKhQ==
 
-jotai@^2.10.3:
+jotai@^2.10.3, jotai@^2.12.1:
   version "2.12.1"
   resolved "https://registry.yarnpkg.com/jotai/-/jotai-2.12.1.tgz#dc5480b63820a664afb235b5da770df4d906a30d"
   integrity sha512-VUW0nMPYIru5g89tdxwr9ftiVdc/nGV9jvHISN8Ucx+m1vI9dBeHemfqYzEuw5XSkmYjD/MEyApN9k6yrATsZQ==
