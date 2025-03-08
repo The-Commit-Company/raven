@@ -1,7 +1,13 @@
 import { View, ViewProps } from "react-native";
 import { useColorScheme } from '@hooks/useColorScheme';
 
-export const Divider = ({ prominent = false, size = 1, className, size?: number, ...props }: { prominent?: boolean } & ViewProps) => {
+
+type DividerProps = ViewProps & {
+    prominent?: boolean
+    size?: number
+}
+
+export const Divider = ({ prominent = false, size = 1, className, ...props }: DividerProps) => {
     const { colors, isDarkColorScheme } = useColorScheme()
     return (
         <View
