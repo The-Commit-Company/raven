@@ -22,7 +22,7 @@ const ChannelsList = ({ channels }: { channels: ChannelListItem[] }) => {
 
     return <>
         <ChannelListUI channels={filteredChannels} />
-        <Divider />
+        <Divider prominent />
     </>
 }
 

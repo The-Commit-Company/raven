@@ -25,7 +25,6 @@ const Chat = () => {
                 headerStyle: { backgroundColor: colors.background },
                 headerLeft: () => <HeaderBackButton />,
                 title: id as string,
-                headerRight: undefined,
                 headerTitle: () => {
                     return (
                         <>

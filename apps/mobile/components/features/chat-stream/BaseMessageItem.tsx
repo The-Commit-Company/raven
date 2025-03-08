@@ -32,7 +32,7 @@ export const BaseMessageItem = ({ message }: { message: Message }) => {
                 botID={message.bot}
                 is_continuation={message.is_continuation}
             />
-            <View className='flex-1 items-start gap-1'>
+            <View className='flex-1 items-start gap-0'>
                 <MessageHeader
                     is_continuation={message.is_continuation}
                     userFullName={userFullName}
