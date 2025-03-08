@@ -41,8 +41,8 @@ const LinkPreview = memo(({ messageID, href }: LinkPreviewProps) => {
                                 {linkPreview.site_name}
                             </Text>
                         </View>
-                        <Text className="text-xs text-muted-foreground pt-1.5" numberOfLines={10}>
-                            {linkPreview.description?.replace(/\n/g, ' ')}
+                        <Text className="text-xs text-muted-foreground pt-1.5 text-ellipsis" numberOfLines={2}>
+                            {linkPreview.description}
                         </Text>
                     </View>
                 </View>

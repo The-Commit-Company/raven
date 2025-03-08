@@ -1,5 +1,5 @@
 import { useCallback, useMemo } from 'react'
-import { View, Text, TouchableOpacity, Pressable } from 'react-native'
+import { View, Text, TouchableOpacity } from 'react-native'
 import { useFrappePostCall } from 'frappe-react-sdk'
 import useCurrentRavenUser from '@raven/lib/hooks/useCurrentRavenUser'
 import { Sheet, useSheetRef } from '@components/nativewindui/Sheet'
@@ -10,6 +10,7 @@ import EmojiPicker from '@components/common/EmojiPicker/EmojiPicker'
 import ReactionAnalytics from './ReactionsAnalytics'
 import useFileURL from '@hooks/useFileURL'
 import { Image } from 'expo-image'
+import clsx from 'clsx'
 
 export interface ReactionObject {
     // The emoji
@@ -55,24 +56,29 @@ export default function MessageReactions({ messageID, message_reactions }: Messa
 
     }, [message_reactions])
 
-    if (reactions.length === 0) return null
-
     const reactionsSheetRef = useSheetRef()
 
     const openReactions = () => reactionsSheetRef.current?.present()
 
+    if (reactions.length === 0) return null
+
     return (
-        <View>
-            <Pressable className='flex-row gap-1.5 flex-wrap items-center py-2'>
+        <>
+            <View className='flex-row gap-x-1.5 gap-y-1 flex-wrap items-center py-2'>
                 {reactions.map((reaction: ReactionObject) => {
-                    return <ReactionButton key={reaction.emoji_name} viewAnalytics={openReactions} reaction={reaction} currentUser={currentUser?.name} saveReaction={saveReaction} />
+                    return <ReactionButton
+                        key={reaction.emoji_name}
+                        viewAnalytics={openReactions}
+                        reaction={reaction}
+                        currentUser={currentUser?.name}
+                        saveReaction={saveReaction} />
                 })}
 
                 <AddEmojiButton saveReaction={saveReaction} />
-            </Pressable>
+            </View>
 
             <ReactionAnalytics reactionsSheetRef={reactionsSheetRef} reactions={reactions} />
-        </View>
+        </>
     )
 }
 
@@ -83,10 +89,6 @@ interface ReactionButtonProps {
     viewAnalytics: () => void
 }
 const ReactionButton = ({ reaction, currentUser, saveReaction, viewAnalytics }: ReactionButtonProps) => {
-
-    const { colors } = useColorScheme()
-
-    const source = useFileURL(reaction.reaction)
 
     const { currentUserReacted } = useMemo(() => {
         return { currentUserReacted: reaction.users.includes(currentUser ?? "") }
@@ -101,21 +103,24 @@ const ReactionButton = ({ reaction, currentUser, saveReaction, viewAnalytics }: 
             onLongPress={viewAnalytics}
             onPress={onReact}
             activeOpacity={0.7}
-            style={{
-                borderColor: currentUserReacted ? colors.primary : "transparent",
-                borderWidth: 0.5
-            }}
-            className={`flex-row rounded-md py-1 px-2 gap-2 bg-gray-100 dark:bg-gray-800`}
+            className={clsx(`flex-row rounded-md py-1 px-2 gap-2 border-[0.5px]`,
+                currentUserReacted ? "bg-blue-50/80 border-blue-600 dark:border-muted-foreground/40 dark:bg-muted" : "bg-card dark:bg-muted/50 border-muted/50")}
         >
             {reaction.is_custom ? (
-                <Image source={source} style={{ width: 16, height: 16 }} />
+                <CustomEmojiView emoji={reaction.reaction} />
             ) : (
                 <Text className='text-xs'>{reaction.reaction}</Text>
             )}
-            <Text className='text-xs font-bold text-gray-500'>{reaction.count}</Text>
+            <Text className={clsx('text-xs font-bold', currentUserReacted ? "text-foreground dark:text-foreground" : "text-foreground")}>{reaction.count}</Text>
         </TouchableOpacity>
 
     )
+}
+
+const CustomEmojiView = ({ emoji }: { emoji: string }) => {
+    const source = useFileURL(emoji)
+
+    return <Image source={source} style={{ width: 18, height: 18 }} contentFit='scale-down' contentPosition={'center'} />
 }
 
 interface AddEmojiButtonProps {
@@ -136,7 +141,7 @@ const AddEmojiButton = ({ saveReaction }: AddEmojiButtonProps) => {
 
     return (
         <View>
-            <TouchableOpacity onPress={openEmojiPicker} activeOpacity={0.7} className='flex-row flex-1 items-center bg-gray-100 dark:bg-gray-800 rounded-md py-1 px-2.5 gap-2'>
+            <TouchableOpacity onPress={openEmojiPicker} activeOpacity={0.7} className='flex-row items-center bg-card border-card dark:border-muted/50 dark:bg-muted/50 border-[0.5px] rounded-md py-1 px-3 min-w-[4ch]'>
                 <SmilePlus width={16} height={16} color={colors.icon} />
             </TouchableOpacity>
 
