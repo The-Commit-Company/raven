@@ -28,9 +28,6 @@ class RavenChannelMember(Document):
 		user_id: DF.Link
 	# end: auto-generated types
 
-	def before_validate(self):
-		self.last_visit = frappe.utils.now()
-
 	def validate(self):
 		if (
 			self.has_value_changed("is_admin")
@@ -48,6 +45,7 @@ class RavenChannelMember(Document):
 				)
 
 	def before_insert(self):
+		self.last_visit = frappe.utils.now()
 		# 1. A user cannot be a member of a channel more than once
 		if frappe.db.exists(
 			"Raven Channel Member", {"channel_id": self.channel_id, "user_id": self.user_id}

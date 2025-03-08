@@ -12,7 +12,7 @@ export interface FileUploadProgress {
   progress: number,
   isComplete: boolean,
 }
-export default function useFileUpload(channelID: string, selectedMessage?: Message | null) {
+export default function useFileUpload(channelID: string) {
 
   const { file } = useContext(FrappeContext) as FrappeConfig
   const fileInputRef = useRef<any>(null)
@@ -46,10 +46,10 @@ export default function useFileUpload(channelID: string, selectedMessage?: Messa
     })
   }
 
-  const uploadFiles = async (): Promise<RavenMessage[]> => {
+  const uploadFiles = async (selectedMessage?: Message | null): Promise<RavenMessage[]> => {
     const newFiles = [...filesStateRef.current]
     if (newFiles.length > 0) {
-      const promises: Promise<RavenMessage | null>[] = newFiles.map(async (f: CustomFile) => {
+      const promises: Promise<RavenMessage | null>[] = newFiles.map(async (f: CustomFile, index: number) => {
         return file.uploadFile(f,
           {
             isPrivate: true,
@@ -57,6 +57,8 @@ export default function useFileUpload(channelID: string, selectedMessage?: Messa
             otherData: {
               channelID: channelID,
               compressImages: compressImages,
+              is_reply: index === 0 ? selectedMessage ? 1 : 0 : 0,
+              linked_message: index === 0 ? selectedMessage ? selectedMessage.name : null : null
             },
             fieldname: 'file',
           },

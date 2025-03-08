@@ -1,0 +1,81 @@
+/* Basic editor styles */
+.ProseMirror {
+  font-size: 16px;
+  line-height: 1.5;
+  color: color(display-p3 .113 .125 .14);
+  caret-color: #5753C6;
+}
+
+/* Placeholder styling */
+.ProseMirror p.is-editor-empty:first-child::before {
+  color: color(display-p3 .547 .553 .592);
+  content: attr(data-placeholder);
+  float: left;
+  height: 0;
+  pointer-events: none;
+  font-size: 16px;
+}
+
+/* Typography and block elements */
+.ProseMirror p {
+  margin: 0;
+  padding: 0;
+}
+
+.ProseMirror p + p {
+  margin-top: 8px;
+}
+
+/* Code blocks */
+.ProseMirror code {
+  padding: 2px 4px;
+  border-radius: 4px;
+  background-color: #f8f8f8;
+  color: #e01e5a;
+  font-family: 'Menlo', monospace;
+  font-size: 13px;
+}
+
+/* Blockquotes */
+.ProseMirror blockquote {
+  border-left: 3px solid #e8e8e8;
+  margin: 8px 0;
+  padding-left: 12px;
+  color: #616061;
+}
+
+/* Lists */
+.ProseMirror ul,
+.ProseMirror ol {
+  padding-left: 24px;
+  margin: 8px 0;
+}
+
+/* Links */
+.ProseMirror a {
+  color: #5753C6; /* Slack's link color */
+  text-decoration: none;
+}
+
+.ProseMirror a:hover {
+  text-decoration: underline;
+}
+
+.editor-mini .ProseMirror {
+  padding-top: 8px;
+}
+
+.ProseMirror-focused {
+  border-color: #242e39;
+  outline: none;
+}
+
+.ProseMirror > * + * {
+  margin-top: 16px;
+}
+
+@media (prefers-color-scheme: dark) {
+  .ProseMirror {
+    color: color(display-p3 .93 .933 .94);
+  }
+}

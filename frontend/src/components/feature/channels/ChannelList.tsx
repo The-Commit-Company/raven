@@ -4,7 +4,7 @@ import { CreateChannelButton } from "./CreateChannelModal"
 import { useCallback, useContext, useLayoutEffect, useMemo, useRef, useState } from "react"
 import { ChannelIcon } from "@/utils/layout/channelIcon"
 import { ContextMenu, DropdownMenu, Flex, IconButton, Text } from "@radix-ui/themes"
-import { useLocation, useParams } from "react-router-dom"
+import { useParams, useSearchParams } from "react-router-dom"
 import { useStickyState } from "@/hooks/useStickyState"
 import useCurrentRavenUser from "@/hooks/useCurrentRavenUser"
 import { RiPushpinLine, RiUnpinLine } from "react-icons/ri"
@@ -83,13 +83,13 @@ export const ChannelItemElement = ({ channel }: { channel: ChannelWithUnreadCoun
 
     const { channelID } = useParams()
 
-    const { state } = useLocation()
+    const [searchParams] = useSearchParams()
 
     /**
      * Show the unread count if it exists and either the channel is not the current channel,
      * or if it is the current channel, the user is viewing a base message
      */
-    const showUnread = channel.unread_count && (channelID !== channel.name || state?.baseMessage)
+    const showUnread = channel.unread_count && (channelID !== channel.name || searchParams.get('message_id'))
 
     return (
         <ContextMenu.Root>

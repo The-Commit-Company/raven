@@ -1,4 +1,5 @@
 import frappe
+import openai
 
 from raven.ai.handler import get_variables_for_instructions
 
@@ -27,3 +28,11 @@ def get_saved_prompts(bot: str = None):
 	prompts = sorted(prompts, key=lambda x: x.get("raven_bot") == bot, reverse=True)
 
 	return prompts
+
+
+@frappe.whitelist()
+def get_open_ai_version():
+	"""
+	API to get the version of the OpenAI Python client
+	"""
+	return openai.__version__

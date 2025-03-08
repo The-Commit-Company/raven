@@ -9,6 +9,7 @@ import ChatInput from '@components/features/chat/ChatInput/ChatInput';
 import DMChannelHeader from '@components/features/chat/ChatHeader/DMChannelHeader';
 import ChannelHeader from '@components/features/chat/ChatHeader/ChannelHeader';
 import HeaderBackButton from '@components/common/HeaderBackButton';
+import { cn } from '@lib/cn';
 
 const Chat = () => {
 
@@ -38,15 +39,22 @@ const Chat = () => {
                 }
             }} />
             <KeyboardAvoidingView
-                behavior={Platform.OS === "ios" ? "padding" : undefined}
+                behavior={Platform.OS === "ios" ? "padding" : "height"}
                 style={{ flex: 1 }}
-                keyboardVerticalOffset={Platform.OS === "ios" ? 100 : 90}>
+                keyboardVerticalOffset={Platform.OS === "ios" ? 100 : 90}
+            >
                 <ChatStream channelID={id as string} />
                 <View
-                    className='px-4 py-2 w-full gap-2 items-center justify-center absolute'
-                    style={{ bottom: isKeyboardVisible ? keyboardHeight : bottom }}>
+                    className={cn(
+                        'bg-white dark:bg-background',
+                    )}
+                    style={{
+                        paddingBottom: isKeyboardVisible ? 0 : bottom,
+                    }}
+                >
                     <ChatInput />
                 </View>
+
             </KeyboardAvoidingView>
         </>
     )

@@ -34,9 +34,7 @@ const ChatStream = ({ channelID }: Props) => {
 
     if (data) {
         return (
-            <View style={{
-                paddingBottom: 120 + (isKeyboardVisible ? 0 : bottom), // height of the chat input, adjust this accordindly
-            }} className='bg-background px-1'>
+            <View className='bg-white dark:bg-background px-1 flex-1'>
                 {/* <FlatList
                     data={data}
                     ref={listRef}
@@ -61,6 +59,11 @@ const ChatStream = ({ channelID }: Props) => {
                     getEstimatedItemSize={getEstimatedItemSize}
                     renderItem={MessageContentRenderer}
                     recycleItems={false}
+                    contentContainerStyle={{
+                        paddingHorizontal: 4,
+                        // Add bottom padding to prevent last message from being hidden under ChatInput
+                        paddingBottom: 0
+                    }}
                     ListHeaderComponent={<ChannelHistoryFirstMessage channelID={channelID} />}
                 />
             </View>
