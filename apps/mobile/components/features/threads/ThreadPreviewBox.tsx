@@ -3,10 +3,8 @@ import { Text } from '@components/nativewindui/Text'
 import { ThreadMessage } from './ThreadTabs'
 import { useGetUserRecords } from '@raven/lib/hooks/useGetUserRecords'
 import { useCurrentChannelData } from '@hooks/useCurrentChannelData'
-import { useContext, useMemo } from 'react'
+import { useMemo } from 'react'
 import { DMChannelListItem } from '@raven/types/common/ChannelListItem'
-import { router } from 'expo-router'
-import { SiteContext } from 'app/[site_id]/_layout'
 import { BaseMessageItem } from '../chat-stream/BaseMessageItem'
 import { Message } from '@raven/types/common/Message'
 import { formatDateAndTime } from '@raven/lib/utils/dateConversions'
@@ -14,6 +12,7 @@ import { ChannelIcon } from '../channels/ChannelList/ChannelIcon'
 import { useColorScheme } from '@hooks/useColorScheme'
 import ViewThreadParticipants from './ViewThreadParticipants'
 import { Divider } from '@components/layout/Divider'
+import { useRouteToThread } from '@hooks/useRouting'
 
 const ThreadPreviewBox = ({ thread, unreadCount }: { thread: ThreadMessage, unreadCount: number }) => {
 
@@ -37,10 +36,10 @@ const ThreadPreviewBox = ({ thread, unreadCount }: { thread: ThreadMessage, unre
         }
     }, [channelData, users])
 
-    const siteInfo = useContext(SiteContext)
-    const siteID = siteInfo?.sitename
+    const routeToThread = useRouteToThread()
+
     const handleNavigateToThread = () => {
-        router.push(`/${siteID}/thread/${thread.name}`)
+        routeToThread(thread.name)
     }
 
     const { colors } = useColorScheme()

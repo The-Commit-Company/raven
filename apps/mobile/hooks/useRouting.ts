@@ -22,6 +22,26 @@ export const useRouteToChannel = () => {
 }
 
 /**
+ * Hook to route to a thread of the current site
+ * Can route using either replace or push. Defaults to push
+ */
+export const useRouteToThread = () => {
+    const router = useRouter()
+    const siteInfo = useSiteContext()
+    const siteID = siteInfo?.sitename
+
+    const goToThread = (threadID: string, method: 'replace' | 'push' = 'push') => {
+        if (method === 'replace') {
+            router.replace(`/${siteID}/thread/${threadID}`)
+        } else {
+            router.push(`/${siteID}/thread/${threadID}`)
+        }
+    }
+
+    return goToThread
+}
+
+/**
  * Hook to route to the home page of the current site
  * Can route using either replace or push. Defaults to replace
  */

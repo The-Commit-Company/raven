@@ -126,7 +126,7 @@ const ThreadsList = ({ aiThreads, content, channel, endpoint = "raven.api.thread
                 </View>
             }
             ListEmptyComponent={<EmptyStateForThreads isFiltered={onlyShowUnread} searchText={content} />}
-            estimatedItemSize={25}
+            estimatedItemSize={250}
             style={{ flex: 1 }}
         />
     )

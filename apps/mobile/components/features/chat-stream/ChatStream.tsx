@@ -101,6 +101,8 @@ const LINK_PREVIEW_HEIGHT = 240
  * Adjust these whenever you change the styles of the components that impact the height
 */
 const getEstimatedItemSize = (index: number, item: MessageDateBlock) => {
+
+    if (!item) return 0
     if (item?.message_type === 'date') {
         return DATE_MESSAGE_HEIGHT
     }

@@ -19,6 +19,12 @@ LogBox.ignoreLogs([
     /Support for defaultProps will be removed/,
 ]);
 
+if (__DEV__) {
+    LogBox.ignoreLogs([
+        /Support for defaultProps will be removed/,
+    ]);
+}
+
 export default function RootLayout() {
 
     const path = usePathname()
