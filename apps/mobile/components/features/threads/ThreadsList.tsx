@@ -8,6 +8,7 @@ import { useGetCurrentWorkspace } from '@hooks/useGetCurrentWorkspace'
 import useUnreadThreadsCount from '@hooks/useUnreadThreadsCount'
 import { LegendList } from '@legendapp/list'
 import { useColorScheme } from "@hooks/useColorScheme"
+import ThreadPreviewBox from './ThreadPreviewBox'
 
 type Props = {
     /** Whether to fetch AI threads */
@@ -111,13 +112,10 @@ const ThreadsList = ({ aiThreads, content, channel, endpoint = "raven.api.thread
             keyExtractor={(item) => item.name}
             renderItem={({ item }) => (
                 <View role='listitem'>
-                    <View className='flex flex-row items-center gap-2'>
-                        <Text>{item.name}</Text>
-                    </View>
-                    {/* <ThreadPreviewBox
+                    <ThreadPreviewBox
                         thread={item}
                         unreadCount={unreadThreadsMap?.[item.name] ?? 0}
-                    /> */}
+                    />
                 </View>
             )}
             onEndReached={loadMore}
@@ -128,8 +126,8 @@ const ThreadsList = ({ aiThreads, content, channel, endpoint = "raven.api.thread
                 </View>
             }
             ListEmptyComponent={<EmptyStateForThreads isFiltered={onlyShowUnread} />}
-            estimatedItemSize={50}
-            style={{ flex: 1, paddingTop: 4 }}
+            estimatedItemSize={25}
+            style={{ flex: 1 }}
         />
     )
 }
@@ -147,7 +145,7 @@ const EmptyStateForThreads = ({ isFiltered = false }: { isFiltered?: boolean }) 
     const { colors } = useColorScheme()
 
     return (
-        <View className="flex flex-col gap-2 bg-background">
+        <View className="flex flex-col gap-2 bg-background px-2 pt-2">
             <View className="flex flex-row items-center gap-2">
                 <ThreadsOutlineIcon fill={colors.icon} height={20} width={20} />
                 <Text className="text-foreground text-base font-medium">

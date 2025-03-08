@@ -22,7 +22,7 @@ const OtherThreads = () => {
     const [channel, setChannel] = useState('all')
 
     return (
-        <View className="flex flex-col gap-3">
+        <View className="flex flex-col">
             <View className='flex flex-col gap-3 px-4'>
                 <View className="flex flex-row items-center gap-2">
                     <View className="flex-1 max-w-[90%]">
@@ -48,8 +48,8 @@ const OtherThreads = () => {
                     </TouchableOpacity>
                 )}
             </View>
-            <Divider marginHorizontal={0} prominent />
-            <View className='px-4'>
+            <Divider className='mx-0 mt-3 mb-2' prominent />
+            <View className='px-2'>
                 <ThreadsList
                     content={debouncedText}
                     endpoint='raven.api.threads.get_other_threads'

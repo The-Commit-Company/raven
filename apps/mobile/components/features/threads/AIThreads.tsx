@@ -18,7 +18,7 @@ const AIThreads = () => {
     const { colors } = useColorScheme()
 
     return (
-        <View className="flex flex-col gap-3">
+        <View className="flex flex-col">
             <View className="flex flex-row items-center gap-2 px-4">
                 <View className="flex-1 max-w-[90%]">
                     <SearchInput
@@ -31,8 +31,8 @@ const AIThreads = () => {
                 </View>
                 <UnreadFilter onlyShowUnread={onlyShowUnread} setOnlyShowUnread={setOnlyShowUnread} />
             </View>
-            <Divider marginHorizontal={0} prominent />
-            <View className='px-4'>
+            <Divider className='mx-0 mt-3 mb-2' prominent />
+            <View className='px-2'>
                 <ThreadsList
                     content={debouncedText}
                     aiThreads={1}
