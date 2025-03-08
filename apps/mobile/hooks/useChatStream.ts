@@ -1,12 +1,12 @@
 import { LegendListRef } from '@legendapp/list'
 import { Message } from '@raven/types/common/Message'
-import { SiteContext } from 'app/[site_id]/_layout'
 import { useFrappeGetCall } from 'frappe-react-sdk'
-import { useContext, useMemo } from 'react'
+import { useMemo } from 'react'
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
 import advancedFormat from 'dayjs/plugin/advancedFormat'
 import { formatDate } from '@raven/lib/utils/dateConversions'
+import useSiteContext from './useSiteContext'
 
 dayjs.extend(utc)
 dayjs.extend(advancedFormat)
@@ -30,7 +30,7 @@ export type MessageDateBlock = Message | DateBlock
 
 const useChatStream = (channelID: string, listRef: React.RefObject<LegendListRef>) => {
 
-    const siteInformation = useContext(SiteContext)
+    const siteInformation = useSiteContext()
 
     const SYSTEM_TIMEZONE = siteInformation?.system_timezone ? siteInformation.system_timezone : 'Asia/Kolkata'
 

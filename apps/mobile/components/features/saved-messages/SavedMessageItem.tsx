@@ -1,14 +1,13 @@
 import { Pressable, View } from 'react-native';
 import { Text } from '@components/nativewindui/Text';
 import { Message } from '@raven/types/common/Message';
-import { useContext, useMemo } from 'react';
+import { useMemo } from 'react';
 import { DMChannelListItem } from '@raven/types/common/ChannelListItem';
 import { useCurrentChannelData } from '@raven/lib/hooks/useCurrentChannelData';
 import { useGetUserRecords } from '@raven/lib/hooks/useGetUserRecords';
 import { formatDateAndTime } from '@raven/lib/utils/dateConversions';
-import { router } from 'expo-router';
-import { SiteContext } from 'app/[site_id]/_layout';
 import { BaseMessageItem } from '../chat-stream/BaseMessageItem';
+import { useRouteToChannel } from '@hooks/useRouting';
 
 const SavedMessageItem = ({ message }: { message: Message & { workspace?: string } }) => {
 
@@ -29,10 +28,9 @@ const SavedMessageItem = ({ message }: { message: Message & { workspace?: string
         }
     }, [channelData])
 
-    const siteInfo = useContext(SiteContext)
-    const siteID = siteInfo?.sitename
+    const goToChannel = useRouteToChannel()
     const handleNavigateToChannel = (channelID: string) => {
-        router.push(`/${siteID}/chat/${channelID}`)
+        goToChannel(channelID)
     }
 
     return (

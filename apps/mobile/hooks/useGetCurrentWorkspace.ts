@@ -1,7 +1,7 @@
-import { SiteContext } from 'app/[site_id]/_layout';
-import { useCallback, useContext } from 'react';
+import { useCallback } from 'react';
 import { atomFamily, atomWithStorage } from 'jotai/utils';
 import { useAtom } from 'jotai';
+import useSiteContext from './useSiteContext';
 
 /** Atom Family for storing selected workspace for multiple sites */
 export const selectedWorkspaceFamily = atomFamily((siteID: string) => atomWithStorage<string>(`${siteID}-selected-workspace`, ''))
@@ -12,7 +12,7 @@ export const selectedWorkspaceFamily = atomFamily((siteID: string) => atomWithSt
 
 export const useGetCurrentWorkspace = () => {
 
-    const siteInfo = useContext(SiteContext)
+    const siteInfo = useSiteContext()
     const siteID = siteInfo?.sitename
 
     const [selectedWorkspace, setSelectedWorkspace] = useAtom(selectedWorkspaceFamily(siteID || ''))

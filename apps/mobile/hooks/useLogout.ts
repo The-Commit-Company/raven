@@ -3,14 +3,14 @@ import { FrappeConfig, FrappeContext } from 'frappe-react-sdk';
 import { revokeAsync } from 'expo-auth-session';
 import { useContext } from 'react';
 import { clearDefaultSite, deleteAccessToken, getRevocationEndpoint } from '@lib/auth';
-import { SiteContext } from 'app/[site_id]/_layout';
 import { toast } from 'sonner-native';
 import { useSetAtom } from 'jotai';
 import { selectedWorkspaceFamily } from './useGetCurrentWorkspace';
+import useSiteContext from './useSiteContext';
 
 
 export const useLogout = () => {
-    const siteInformation = useContext(SiteContext)
+    const siteInformation = useSiteContext()
     const { tokenParams } = useContext(FrappeContext) as FrappeConfig
 
     const setSelectedWorkspace = useSetAtom(selectedWorkspaceFamily(siteInformation?.sitename || ''))

@@ -6,10 +6,10 @@ import { View } from 'react-native'
 import { ActiveUserProvider } from './UserInactivityProvider'
 import ErrorBanner from '@components/common/ErrorBanner'
 import useFetchWorkspaces from '@raven/lib/hooks/useFetchWorkspaces'
-import { SiteContext } from 'app/[site_id]/_layout'
 import { useAtom } from 'jotai'
 import { selectedWorkspaceFamily } from '@hooks/useGetCurrentWorkspace'
 import LogOutButton from '@components/features/profile/profile-settings/LogOutButton'
+import useSiteContext from '@hooks/useSiteContext'
 
 const Providers = (props: PropsWithChildren) => {
 
@@ -60,7 +60,7 @@ const ChannelListProvider = ({ children }: PropsWithChildren) => {
 
 const WorkspaceProvider = ({ children }: PropsWithChildren) => {
 
-    const siteInfo = useContext(SiteContext)
+    const siteInfo = useSiteContext()
 
     const [selectedWorkspace, setSelectedWorkspace] = useAtom(selectedWorkspaceFamily(siteInfo?.sitename || ''))
     const { data } = useFetchWorkspaces()
