@@ -268,24 +268,16 @@ def message_has_permission(doc, user=None, ptype=None):
 
 	# To send any message, the user needs to be a member of the channel
 
-	channel_member = get_channel_member(doc.channel_id, user)
-
-	if not channel_member:
-		# Check if the channel is a thread
-		is_thread = frappe.get_cached_value("Raven Channel", doc.channel_id, "is_thread")
-		if is_thread:
-			# Check if the user is a member of the main channel
-			main_channel = frappe.get_cached_value("Raven Message", doc.channel_id, "channel_id")
-			channel_member = is_channel_member(main_channel, user)
-
-		if not channel_member:
-			return False
-
 	if ptype == "read":
-		return True
+		channel_doc = frappe.get_cached_doc("Raven Channel", doc.channel_id)
+		return channel_has_permission(channel_doc, user, ptype)
 
 	# To create, update, or delete a message, the user needs to own this message
 	if ptype in ["create", "write", "delete"]:
+		channel_member = get_channel_member(doc.channel_id, user)
+		if not channel_member:
+			return False
+
 		return doc.owner == user
 
 	return False
@@ -299,16 +291,22 @@ def raven_poll_vote_has_permission(doc, user=None, ptype=None):
 	if not frappe.has_permission("Raven Poll", doc=doc.poll_id, ptype="read", user=user):
 		return False
 
-	if ptype in ["read", "create", "delete"]:
+	if ptype == "create":
+		# User can only vote if they are a member of the channel
+		channel_id = frappe.get_cached_value("Raven Message", {"poll_id": doc.poll_id}, "channel_id")
+		if is_channel_member(channel_id):
+			if doc.owner == user:
+				return True
+			else:
+				return False
+
+	if ptype in ["read", "delete"]:
 		if doc.owner == user:
 			return True
 		else:
 			is_anonymous = frappe.get_cached_value("Raven Poll", doc.poll_id, "is_anonymous")
 			if not is_anonymous:
 				if ptype == "read":
-					return True
-			else:
-				if ptype == "create":
 					return True
 
 	return False

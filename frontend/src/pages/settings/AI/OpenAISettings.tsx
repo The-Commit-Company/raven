@@ -7,7 +7,7 @@ import useRavenSettings from '@/hooks/fetchers/useRavenSettings'
 import { RavenSettings } from '@/types/Raven/RavenSettings'
 import { hasRavenAdminRole, isSystemManager } from '@/utils/roles'
 import { Box, Button, Checkbox, Flex, Separator, Text, TextField } from '@radix-ui/themes'
-import { useFrappeUpdateDoc } from 'frappe-react-sdk'
+import { useFrappeGetCall, useFrappeUpdateDoc } from 'frappe-react-sdk'
 import { useEffect } from 'react'
 import { Controller, FormProvider, useForm } from 'react-hook-form'
 import { toast } from 'sonner'
@@ -64,6 +64,8 @@ const OpenAISettings = () => {
     }, [])
 
     const isAIEnabled = watch('enable_ai_integration')
+
+    const { data: openaiVersion } = useFrappeGetCall<{ message: string }>('raven.api.ai_features.get_open_ai_version')
 
     return (
         <PageContainer>
@@ -169,6 +171,8 @@ const OpenAISettings = () => {
                             </Box>
                             : null
                         }
+
+                        {openaiVersion && <Text color='gray' size='2'>OpenAI Python SDK Version: {openaiVersion.message}</Text>}
                     </SettingsContentContainer>
                 </form>
             </FormProvider>

@@ -1,14 +1,16 @@
 import { Link, Stack } from 'expo-router';
 import { Button } from '@components/nativewindui/Button';
-import CrossIcon from '@assets/icons/CrossIcon.svg';
 import { useColorScheme } from '@hooks/useColorScheme';
-import { FlatList, View } from 'react-native';
+import { View } from 'react-native';
 import { Text } from '@components/nativewindui/Text';
 import BookMarkIcon from '@assets/icons/BookmarkIcon.svg';
 import { useFrappeGetCall } from 'frappe-react-sdk';
 import { Message } from '@raven/types/common/Message';
 import { ActivityIndicator } from '@components/nativewindui/ActivityIndicator';
 import SavedMessageItem from '@components/features/saved-messages/SavedMessageItem';
+import ChevronLeftIcon from '@assets/icons/ChevronLeftIcon.svg';
+import { LegendList } from '@legendapp/list';
+import ErrorBanner from '@components/common/ErrorBanner';
 
 export default function SavedMessages() {
 
@@ -22,7 +24,7 @@ export default function SavedMessages() {
                 return (
                     <Link asChild href="../" relativeToDirectory>
                         <Button variant="plain" className="ios:px-0" hitSlop={10}>
-                            <CrossIcon color={colors.icon} height={24} width={24} />
+                            <ChevronLeftIcon color={colors.icon} />
                         </Button>
                     </Link>
                 )
@@ -38,7 +40,7 @@ const SavedMessagesContent = () => {
 
     const { colors } = useColorScheme()
 
-    const { data, isLoading } = useFrappeGetCall<{ message: (Message & { workspace?: string })[] }>("raven.api.raven_message.get_saved_messages", undefined, undefined, {
+    const { data, isLoading, error } = useFrappeGetCall<{ message: (Message & { workspace?: string })[] }>("raven.api.raven_message.get_saved_messages", undefined, undefined, {
         revalidateOnFocus: false
     })
 
@@ -48,7 +50,15 @@ const SavedMessagesContent = () => {
         </View>
     }
 
-    return <FlatList
+    if (error) {
+        return (
+            <View className='p-4'>
+                <ErrorBanner error={error} />
+            </View>
+        )
+    }
+
+    return <LegendList
         data={data?.message ?? []}
         ListEmptyComponent={<SavedMessagesEmptyState />}
         renderItem={({ item }) => <SavedMessageItem message={item} />}

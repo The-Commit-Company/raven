@@ -44,11 +44,11 @@ const useUnreadMessageCount = () => {
         updateCount(d => {
             if (d) {
                 // If the channel ID is present in the unread count, then fetch and update the unread count for the channel
-                if (d.message.channels.find(c => c.name === channelID)) {
+                if (d.message.find(c => c.name === channelID)) {
                     return call.get('raven.api.raven_message.get_unread_count_for_channel', {
                         channel_id: channelID
                     }).then((data: { message: number }) => {
-                        const newChannels = d.message.channels.map(c => {
+                        const newChannels = d.message.map(c => {
                             if (c.name === channelID)
                                 return {
                                     ...c,
@@ -57,28 +57,9 @@ const useUnreadMessageCount = () => {
                             return c
                         })
 
-                        const total_unread_count_in_channels = newChannels.reduce((acc: number, c) => {
-                            if (!c.is_direct_message) {
-                                return acc + c.unread_count
-                            } else {
-                                return acc
-                            }
-                        }, 0)
-
-                        const total_unread_count_in_dms = newChannels.reduce((acc: number, c) => {
-                            if (c.is_direct_message) {
-                                return acc + c.unread_count
-                            } else {
-                                return acc
-                            }
-                        }, 0)
 
                         return {
-                            message: {
-                                total_unread_count_in_channels,
-                                total_unread_count_in_dms,
-                                channels: newChannels
-                            }
+                            message: newChannels
                         }
                     }
                     )
@@ -113,7 +94,7 @@ const useUnreadMessageCount = () => {
 
         updateCount(d => {
             if (d) {
-                const newChannels = d.message.channels.map(c => {
+                const newChannels = d.message.map(c => {
                     if (c.name === channel_id)
                         return {
                             ...c,
@@ -122,28 +103,8 @@ const useUnreadMessageCount = () => {
                     return c
                 })
 
-                const total_unread_count_in_channels = newChannels.reduce((acc: number, c) => {
-                    if (!c.is_direct_message) {
-                        return acc + c.unread_count
-                    } else {
-                        return acc
-                    }
-                }, 0)
-
-                const total_unread_count_in_dms = newChannels.reduce((acc: number, c) => {
-                    if (c.is_direct_message) {
-                        return acc + c.unread_count
-                    } else {
-                        return acc
-                    }
-                }, 0)
-
                 return {
-                    message: {
-                        total_unread_count_in_channels,
-                        total_unread_count_in_dms,
-                        channels: newChannels
-                    }
+                    message: newChannels
                 }
 
             } else {
@@ -154,7 +115,7 @@ const useUnreadMessageCount = () => {
 
     }
 
-    return unread_count
+    return unread_count?.message
 }
 
 export default useUnreadMessageCount

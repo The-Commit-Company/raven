@@ -8,7 +8,7 @@ import { BiCopy, BiDotsHorizontalRounded, BiGitPullRequest, BiLinkExternal, BiPr
 import useDoctypeMeta from "@/hooks/useDoctypeMeta"
 import { HStack } from "@/components/layout/Stack"
 import { ErrorBanner, getErrorMessage } from "@/components/layout/AlertBanner/ErrorBanner"
-
+import parse from 'html-react-parser';
 
 export const DoctypeLinkRenderer = ({ doctype, docname }: { doctype: string, docname: string }) => {
 
@@ -197,7 +197,7 @@ const DoctypeCard = ({ data, doctype, route, docname, mutate }: {
                                     {item}
                                 </DataList.Label>
                                 <DataList.Value>
-                                    {data[item]}
+                                    {typeof data[item] === 'string' ? parse(data[item]) : data[item]}
                                 </DataList.Value>
                             </DataList.Item>
                         ))

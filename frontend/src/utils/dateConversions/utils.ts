@@ -2,10 +2,11 @@ import * as dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
 import timezone from 'dayjs/plugin/timezone'
 import advancedFormat from 'dayjs/plugin/advancedFormat'
-
+import relativeTime from 'dayjs/plugin/relativeTime'
 dayjs.extend(utc)
 dayjs.extend(timezone)
 dayjs.extend(advancedFormat)
+dayjs.extend(relativeTime)
 
 const DEFAULT_TIME_ZONE = 'Asia/Kolkata'
 //@ts-expect-error

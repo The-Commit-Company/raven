@@ -1,15 +1,25 @@
 import { LegendListRef } from '@legendapp/list'
 import { Message } from '@raven/types/common/Message'
-import { SiteContext } from 'app/[site_id]/_layout'
 import { useFrappeGetCall } from 'frappe-react-sdk'
-import { useContext, useMemo } from 'react'
+import { useMemo } from 'react'
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
 import advancedFormat from 'dayjs/plugin/advancedFormat'
 import { formatDate } from '@raven/lib/utils/dateConversions'
+import useSiteContext from './useSiteContext'
 
 dayjs.extend(utc)
 dayjs.extend(advancedFormat)
+
+//regex to check if the text contains an <a></a> tag
+const LINK_PREVIEW_REGEX = /<a\b[^>]*>(.*?)<\/a>/
+
+const checkIfMessageContainsLinkPreview = (message: Message) => {
+    if (message.text && message.hide_link_preview === 0) {
+        return LINK_PREVIEW_REGEX.test(message.text)
+    }
+    return false
+}
 
 interface GetMessagesResponse {
     message: {
@@ -30,7 +40,7 @@ export type MessageDateBlock = Message | DateBlock
 
 const useChatStream = (channelID: string, listRef: React.RefObject<LegendListRef>) => {
 
-    const siteInformation = useContext(SiteContext)
+    const siteInformation = useSiteContext()
 
     const SYSTEM_TIMEZONE = siteInformation?.system_timezone ? siteInformation.system_timezone : 'Asia/Kolkata'
 
@@ -77,9 +87,12 @@ const useChatStream = (channelID: string, listRef: React.RefObject<LegendListRef
                 name: currentDate
             })
 
+            const lastMessage = messages[messages.length - 1]
+
             messagesWithDateSeparators.push({
-                ...messages[messages.length - 1],
-                formattedTime: dayjs(messages[messages.length - 1].creation).local().format('hh:mm A'),
+                ...lastMessage,
+                might_contain_link_preview: checkIfMessageContainsLinkPreview(lastMessage),
+                formattedTime: dayjs(lastMessage.creation).local().format('hh:mm A'),
                 is_continuation: 0
             })
 
@@ -89,6 +102,7 @@ const useChatStream = (channelID: string, listRef: React.RefObject<LegendListRef
                 const messageDate = message.creation.split(' ')[0]
                 let messageDateTime = new Date(message.creation.split('.')[0]).getTime()
                 const formattedMessageTime = dayjs(message.creation).local().format('hh:mm A')
+                const might_contain_link_preview = checkIfMessageContainsLinkPreview(message)
 
                 if (messageDate !== currentDate) {
                     messagesWithDateSeparators.push({
@@ -105,11 +119,11 @@ const useChatStream = (channelID: string, listRef: React.RefObject<LegendListRef
                 const nextMessageSender = nextMessage.message_type === "System" ? null : nextMessage.is_bot_message ? nextMessage.bot : nextMessage.owner
 
                 if (nextMessageSender !== currentMessageSender) {
-                    messagesWithDateSeparators.push({ ...message, is_continuation: 0, formattedTime: formattedMessageTime })
+                    messagesWithDateSeparators.push({ ...message, is_continuation: 0, formattedTime: formattedMessageTime, might_contain_link_preview })
                 } else if (messageDateTime - currentDateTime > 120000) {
-                    messagesWithDateSeparators.push({ ...message, is_continuation: 0, formattedTime: formattedMessageTime })
+                    messagesWithDateSeparators.push({ ...message, is_continuation: 0, formattedTime: formattedMessageTime, might_contain_link_preview })
                 } else {
-                    messagesWithDateSeparators.push({ ...message, is_continuation: 1, formattedTime: formattedMessageTime })
+                    messagesWithDateSeparators.push({ ...message, is_continuation: 1, formattedTime: formattedMessageTime, might_contain_link_preview })
                 }
 
                 currentDate = messageDate

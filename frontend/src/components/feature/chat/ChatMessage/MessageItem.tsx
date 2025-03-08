@@ -1,4 +1,4 @@
-import { Avatar, Badge, Box, BoxProps, ContextMenu, Flex, HoverCard, Link, Text, Theme } from '@radix-ui/themes'
+import { Avatar, Badge, Box, BoxProps, Button, ContextMenu, Flex, HoverCard, IconButton, Link, Text, Theme } from '@radix-ui/themes'
 import { Message, MessageBlock } from '../../../../../../types/Messaging/Message'
 import { MessageContextMenu } from './MessageActions/MessageActions'
 import { DateTooltip, DateTooltipShort } from './Renderers/DateTooltip'
@@ -14,7 +14,7 @@ import { FileMessageBlock } from './Renderers/FileMessage'
 import { PollMessageBlock } from './Renderers/PollMessage'
 import { TiptapRenderer } from './Renderers/TiptapRenderer/TiptapRenderer'
 import { QuickActions } from './MessageActions/QuickActions/QuickActions'
-import { memo, useMemo, useState } from 'react'
+import { memo, useContext, useMemo, useState } from 'react'
 import { ReplyMessageBox } from './ReplyMessageBox/ReplyMessageBox'
 import { generateAvatarColor } from '../../selectDropdowns/GenerateAvatarColor'
 import { DoctypeLinkRenderer } from './Renderers/DoctypeLinkRenderer'
@@ -27,6 +27,14 @@ import { getStatusText } from '../../userSettings/AvailabilityStatus/SetUserAvai
 import { ThreadMessage } from './Renderers/ThreadMessage'
 import OnLeaveBadge from '@/components/common/UserLeaveBadge'
 import { LeftRightLayout } from './LeftRightLayout/LeftRightLayout'
+import { useParams } from 'react-router-dom'
+import { FrappeConfig } from 'frappe-react-sdk'
+import { FrappeContext } from 'frappe-react-sdk'
+import { useNavigate } from 'react-router-dom'
+import { toast } from 'sonner'
+import { getErrorMessage } from '@/components/layout/AlertBanner/ErrorBanner'
+import { Stack } from '@/components/layout/Stack'
+import { BiChat } from 'react-icons/bi'
 
 interface MessageBlockProps {
     message: Message,
@@ -325,44 +333,78 @@ export const UserHoverCard = memo(({ user, userID, isActive }: UserProps) => {
     }, [user, userID])
     return <HoverCard.Root>
         <HoverCard.Trigger>
-            <Link className='text-gray-12 flex items-center gap-1' weight='medium' size='2'>
+            <Text className='text-gray-12 flex items-center gap-1' weight='medium' size='2'>
                 {fullName} {isBot && <Badge color='gray' className='font-semibold px-1 py-0'>Bot</Badge>}
-            </Link>
+            </Text>
         </HoverCard.Trigger>
         <HoverCard.Content size='1'>
-            <Flex gap='2' align='center'>
-                <UserAvatar src={userImage} alt={fullName} size='4' isBot={isBot} />
-                <Flex direction='column'>
-                    <Flex gap='3' align='center'>
-                        <Text className='text-gray-12' weight='bold' size='3'>{fullName}</Text>
-                        {/* if availabilityStatus is set to 'Invisible', don't show the status */}
-                        {availabilityStatus && availabilityStatus !== 'Invisible' && <Flex className='text-gray-10 text-xs flex gap-1 items-center'>
-                            {getStatusText(availabilityStatus)}
-                        </Flex>}
-                        {/* only show user active status if the user has not explicitly set their availability status */}
-                        {!availabilityStatus && isActive && <Flex gap='1' align='center'>
-                            <BsFillCircleFill color={'green'} size='8' />
-                            <Text className='text-gray-10' size='1'>Online</Text>
-                        </Flex>}
+            <Stack>
+                <Flex gap='2' align='center'>
+                    <UserAvatar src={userImage} alt={fullName} size='4' isBot={isBot} />
+                    <Flex direction='column'>
+                        <Flex gap='3' align='center'>
+                            <Text className='text-gray-12' weight='bold' size='3'>{fullName}</Text>
+                            {/* if availabilityStatus is set to 'Invisible', don't show the status */}
+                            {availabilityStatus && availabilityStatus !== 'Invisible' && <Flex className='text-gray-10 text-xs flex gap-1 items-center'>
+                                {getStatusText(availabilityStatus)}
+                            </Flex>}
+                            {/* only show user active status if the user has not explicitly set their availability status */}
+                            {!availabilityStatus && isActive && <Flex gap='1' align='center'>
+                                <BsFillCircleFill color={'green'} size='8' />
+                                <Text className='text-gray-10' size='1'>Online</Text>
+                            </Flex>}
+                        </Flex>
+                        {user && !isBot && <OnLeaveBadge userID={user.name} />}
+                        {customStatus ? <Text className='text-gray-11' size='1'>{customStatus}</Text> : user && !isBot && <Text className='text-gray-11' size='1'>{user?.name}</Text>}
                     </Flex>
-                    {user && !isBot && <OnLeaveBadge userID={user.name} />}
-                    {customStatus ? <Text className='text-gray-11' size='1'>{customStatus}</Text> : user && !isBot && <Text className='text-gray-11' size='1'>{user?.name}</Text>}
                 </Flex>
-            </Flex>
+
+                <StartDMButton userID={userID} />
+            </Stack>
         </HoverCard.Content>
     </HoverCard.Root>
 })
 type MessageContentProps = BoxProps & {
     user?: UserFields
     message: Message,
+    forceHideLinkPreview?: boolean
 }
-export const MessageContent = ({ message, user, ...props }: MessageContentProps) => {
+
+const StartDMButton = ({ userID }: { userID: string }) => {
+
+    const { call } = useContext(FrappeContext) as FrappeConfig
+
+    const navigate = useNavigate()
+
+    const { workspaceID } = useParams()
+
+    const onClick = () => {
+        if (userID) {
+            call.post('raven.api.raven_channel.create_direct_message_channel', {
+                user_id: userID
+            }).then((res) => {
+                navigate(`/${workspaceID}/${res?.message}`)
+            }).catch(err => {
+                toast.error('Could not create a DM channel', {
+                    description: getErrorMessage(err)
+                })
+            })
+        }
+
+    }
+
+    return <Button variant='soft' className='not-cal' size='1' onClick={onClick}>
+        <BiChat size='14' /> Message
+    </Button>
+
+}
+export const MessageContent = ({ message, user, forceHideLinkPreview = false, ...props }: MessageContentProps) => {
 
     return <Box {...props}>
         {message.text ? <TiptapRenderer message={{
             ...message,
             message_type: 'Text'
-        }} user={user} showLinkPreview={message.hide_link_preview ? false : true} /> : null}
+        }} user={user} showLinkPreview={forceHideLinkPreview ? false : message.hide_link_preview ? false : true} /> : null}
         {message.message_type === 'Image' && <ImageMessageBlock message={message} user={user} />}
         {message.message_type === 'File' && <FileMessageBlock message={message} user={user} />}
         {message.message_type === 'Poll' && <PollMessageBlock message={message} user={user} />}

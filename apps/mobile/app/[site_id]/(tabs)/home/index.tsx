@@ -3,10 +3,10 @@ import { ThemeToggle } from '@components/nativewindui/ThemeToggle';
 import { useColorScheme } from '@hooks/useColorScheme';
 import WorkspaceSwitcher from '@components/features/workspaces/WorkspaceSwitcher';
 import { useGetCurrentWorkspace } from '@hooks/useGetCurrentWorkspace';
-import { ViewNotificationsButton } from '@components/features/notifications/ViewNotificationsButton';
 import { ViewSavedMessagesButton } from '@components/features/saved-messages/ViewSavedMessagesButton';
 import QuickSearchButton from '@components/features/search/QuickSearchButton';
 import AllChannelsList from '@components/features/channels/ChannelList/AllChannelsList';
+import { ViewMentionsButton } from '@components/features/mentions/ViewMentionsButton';
 
 export default function Home() {
 
@@ -19,7 +19,7 @@ export default function Home() {
                 <View className='flex-row items-center justify-between'>
                     <WorkspaceSwitcher workspace={workspace} setWorkspace={switchWorkspace} />
                     <View className='flex-row items-center gap-3'>
-                        <ViewNotificationsButton />
+                        <ViewMentionsButton />
                         <ViewSavedMessagesButton />
                         <ThemeToggle />
                     </View>

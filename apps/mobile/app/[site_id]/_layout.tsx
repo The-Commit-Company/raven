@@ -1,12 +1,15 @@
 import { router, Stack, useLocalSearchParams } from "expo-router";
-import { createContext, useEffect, useState } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import { SiteInformation } from "../../types/SiteInformation";
 import { TokenResponse } from "expo-auth-session";
-import { FrappeProvider } from "frappe-react-sdk";
 import FullPageLoader from "@components/layout/FullPageLoader";
 import { getAccessToken, getSiteFromStorage, getTokenEndpoint, storeAccessToken } from "@lib/auth";
 import Providers from "@lib/Providers";
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
+import FrappeNativeProvider from "@lib/FrappeNativeProvider";
+import { useNetworkState } from 'expo-network';
+import { toast } from "sonner-native";
+import { SiteContext } from "@hooks/useSiteContext";
 
 export default function SiteLayout() {
 
@@ -19,8 +22,70 @@ export default function SiteLayout() {
 
     const [loading, setLoading] = useState(true)
     const [siteInfo, setSiteInfo] = useState<SiteInformation | null>(null)
-    const [accessToken, setAccessToken] = useState<TokenResponse | null>(null)
+    const accessTokenRef = useRef<TokenResponse | null>(null)
+    const networkState = useNetworkState();
 
+    // Constants for token refresh timing
+    const REFRESH_INTERVAL = 5 * 60 * 1000; // 5 minutes in milliseconds
+    const REFRESH_THRESHOLD = REFRESH_INTERVAL + (2 * 60 * 1000); // Check interval + 2 minutes buffer
+
+    // Token refresh interval effect - now only handles periodic checks
+    useEffect(() => {
+
+        const shouldRefreshToken = (token: TokenResponse): boolean => {
+            if (!token.expiresIn) return false;
+
+            const expirationTime = token.issuedAt + token.expiresIn * 1000; // Convert expiresIn to milliseconds
+            const currentTime = Date.now();
+            const timeUntilExpiry = expirationTime - currentTime;
+
+            // Refresh if token will expire within our threshold
+            return timeUntilExpiry <= REFRESH_THRESHOLD;
+        };
+
+        const refreshTokenIfNeeded = async () => {
+            if (!accessTokenRef.current || !siteInfo) return;
+
+            const isOnline = networkState.isConnected && networkState.isInternetReachable;
+            if (!isOnline) {
+                console.log("Skipping token refresh - device is offline");
+                return;
+            }
+
+            // Check if token needs refresh based on our proactive threshold
+            if (shouldRefreshToken(accessTokenRef.current)) {
+                console.log("Proactively refreshing token");
+                try {
+                    const newToken = await accessTokenRef.current.refreshAsync(
+                        {
+                            clientId: siteInfo.client_id,
+                        },
+                        {
+                            tokenEndpoint: getTokenEndpoint(siteInfo.url),
+                        }
+                    );
+                    await storeAccessToken(siteInfo.sitename, newToken);
+                    accessTokenRef.current = newToken;
+                    console.log("Token refreshed successfully");
+                } catch (error) {
+                    console.error("Token refresh failed:", error);
+                    if (isOnline) {
+                        toast.error("You have been logged out of the site. Please login again.")
+                        router.replace('/landing');
+                    }
+                }
+            }
+        };
+
+        const refreshInterval = setInterval(() => {
+            const isOnline = networkState.isConnected && networkState.isInternetReachable;
+            if (isOnline) {
+                refreshTokenIfNeeded();
+            }
+        }, REFRESH_INTERVAL);
+
+        return () => clearInterval(refreshInterval);
+    }, [siteInfo, networkState]);
 
     useEffect(() => {
 
@@ -49,7 +114,9 @@ export default function SiteLayout() {
                 if (!accessToken) {
                     router.replace('/landing')
 
-                    // TODO: Show the user a toast saying that the site is not found
+                    // Show the user a toast saying that the site is not found
+
+                    toast.error("The site you are trying to access was not found. Please try logging in again.")
 
                     return null
                 }
@@ -72,25 +139,23 @@ export default function SiteLayout() {
             })
             .then(tokenResponse => {
                 if (!tokenResponse) return
-
-                setAccessToken(tokenResponse)
+                accessTokenRef.current = tokenResponse
             })
             .then(() => {
                 setLoading(false)
             })
     }, [site_id])
 
+    // We need to check if the access token is expired or not and keep it refreshed
+
+    const getToken = useCallback(() => {
+        return accessTokenRef.current?.accessToken || ''
+    }, [])
+
     return <>
         {loading ? <FullPageLoader /> :
             <SiteContext.Provider value={siteInfo}>
-                <FrappeProvider
-                    url={siteInfo?.url}
-                    tokenParams={{
-                        type: 'Bearer',
-                        useToken: true,
-                        token: () => accessToken?.accessToken || '',
-                    }}
-                    siteName={siteInfo?.sitename}>
+                <FrappeNativeProvider siteInfo={siteInfo} getAccessToken={getToken}>
                     <Providers>
                         <BottomSheetModalProvider>
                             <Stack>
@@ -115,10 +180,8 @@ export default function SiteLayout() {
                             </Stack>
                         </BottomSheetModalProvider>
                     </Providers>
-                </FrappeProvider>
+                </FrappeNativeProvider>
             </SiteContext.Provider>
         }
     </>
 }
-
-export const SiteContext = createContext<SiteInformation | null>(null)

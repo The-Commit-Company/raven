@@ -36,7 +36,7 @@ const CommandMenu = () => {
     if (isDesktop) {
         return (
             <Dialog.Root open={open} onOpenChange={setOpen}>
-                <Dialog.Content className={clsx(DIALOG_CONTENT_CLASS, 'p-4 rounded-md')}>
+                <Dialog.Content className={clsx(DIALOG_CONTENT_CLASS, 'p-4 rounded-md dark:backdrop-blur-[64px]')}>
                     <VisuallyHidden>
                         <Dialog.Title>Command Menu</Dialog.Title>
                         <Dialog.Description>

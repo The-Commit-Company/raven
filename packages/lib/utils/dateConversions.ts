@@ -1,7 +1,17 @@
 import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
+import timezone from 'dayjs/plugin/timezone';
+import advancedFormat from 'dayjs/plugin/advancedFormat';
+import relativeTime from 'dayjs/plugin/relativeTime';
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
+dayjs.extend(advancedFormat);
+dayjs.extend(relativeTime);
+
+export const SYSTEM_TIMEZONE = 'UTC'
 
 export const formatDate = (date: string) => {
-
     const parsedDate = dayjs(date).local()
     const today = dayjs()
     const yesterday = dayjs().subtract(1, 'day')
@@ -30,4 +40,12 @@ export const formatDateAndTime = (date: string) => {
     const time = dayjs(date).format('hh:mm A')
     const formattedDate = formatDate(date)
     return `${formattedDate}, ${time}`
+}
+
+export const getDateObject = (timestamp: string): dayjs.Dayjs => {
+    return dayjs.tz(timestamp, SYSTEM_TIMEZONE).local()
+}
+
+export const getTimePassed = (date: string) => {
+    return getDateObject(date).fromNow()
 }

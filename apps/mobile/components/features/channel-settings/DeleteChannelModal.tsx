@@ -6,12 +6,11 @@ import { Text } from "@components/nativewindui/Text";
 import { ChannelListItem } from "@raven/types/common/ChannelListItem";
 import { useContext, useState } from "react";
 import { useFrappeDeleteDoc } from "frappe-react-sdk";
-import { router } from "expo-router";
-import { SiteContext } from "app/[site_id]/_layout";
 import { toast } from "sonner-native";
 import CheckIcon from "@assets/icons/CheckIcon.svg";
 import { useColorScheme } from '@hooks/useColorScheme';
 import { ChannelListContext, ChannelListContextType } from "@raven/lib/providers/ChannelListProvider";
+import { useRouteToHome } from "@hooks/useRouting";
 
 interface DeleteChannelModalProps {
     deleteSheetRef: React.RefObject<BottomSheetModal>
@@ -25,9 +24,9 @@ export const DeleteChannelModal: React.FC<DeleteChannelModalProps> = ({ deleteSh
 
     const [allowDelete, setAllowDelete] = useState(false)
 
-    const siteContext = useContext(SiteContext)
-    const siteId = siteContext?.sitename
     const { colors } = useColorScheme()
+
+    const goToHome = useRouteToHome()
 
     const handleDeleteChannel = async () => {
         if (channelData?.name) {
@@ -36,7 +35,7 @@ export const DeleteChannelModal: React.FC<DeleteChannelModalProps> = ({ deleteSh
                     toast.success(`Channel ${channelData?.channel_name} has been deleted.`)
                     mutate()
                     handleClose()
-                    router.replace(`/${siteId}/home`)
+                    goToHome()
                 })
                 .catch(() => {
                     toast.error('Could not delete channel', {

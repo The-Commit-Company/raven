@@ -36,7 +36,7 @@ const AIEvent = ({ channelID }: Props) => {
     return (
         <div className={clsx(
             'w-full transition-all duration-300 ease-ease-out-quart',
-            showAIEvent ? 'translate-y-0 opacity-100 z-50' : 'translate-y-full opacity-0 h-0'
+            showAIEvent ? 'translate-y-0 opacity-100 z-50 sm:pb-0 pb-16' : 'translate-y-full opacity-0 h-0'
         )}>
             <div className="flex items-center gap-2 py-2 px-2 bg-white dark:bg-gray-2">
                 <Loader />

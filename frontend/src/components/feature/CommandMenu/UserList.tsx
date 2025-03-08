@@ -1,6 +1,6 @@
 import { UserAvatar } from '@/components/common/UserAvatar'
 import { useGetUser } from '@/hooks/useGetUser'
-import { useFetchChannelList } from '@/utils/channel/ChannelListProvider'
+import { useChannelList } from '@/utils/channel/ChannelListProvider'
 import { UserListContext } from '@/utils/users/UserListProvider'
 import { Command } from 'cmdk'
 import { useContext } from 'react'
@@ -16,7 +16,7 @@ import { getErrorMessage } from '@/components/layout/AlertBanner/ErrorBanner'
 
 const UserList = () => {
 
-    const { dm_channels } = useFetchChannelList()
+    const { dm_channels } = useChannelList()
 
     const { users } = useContext(UserListContext)
 

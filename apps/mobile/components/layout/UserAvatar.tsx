@@ -18,8 +18,8 @@ type Props = {
     fallbackProps?: ViewProps
     textProps?: TextProps,
     indicatorProps?: ViewProps,
-    avatarProps?: ViewProps
-
+    avatarProps?: ViewProps,
+    rounded?: boolean
 }
 
 // These need to kept here since Nativewind/Tailwind needs the variables in the source file to be defined to compile
@@ -43,7 +43,7 @@ const COLOR_MAP: { name: string, bg: string, text: string, botColor: string }[] 
     { name: 'gray', bg: 'bg-gray-400', text: 'text-gray-100', botColor: '#111827' }
 ]
 
-const UserAvatar = ({ src, isActive, alt, availabilityStatus, isBot, imageProps, fallbackProps, textProps, indicatorProps, avatarProps }: Props) => {
+const UserAvatar = ({ src, isActive, alt, availabilityStatus, isBot, imageProps, fallbackProps, textProps, indicatorProps, avatarProps, rounded = false }: Props) => {
 
     const source = useFileURL(src)
     const { bg, text, botColor } = useMemo(() => COLOR_MAP[getColorIndexForAvatar(alt)], [alt])
@@ -72,14 +72,15 @@ const UserAvatar = ({ src, isActive, alt, availabilityStatus, isBot, imageProps,
                 source={source}
                 alt={alt}
                 onDisplay={onDisplay}
-                onError={onError} />
-            <ActiveIndicator isActive={isActive} availabilityStatus={availabilityStatus} isBot={isBot} botColor={botColor} {...indicatorProps} />
+                onError={onError}
+                rounded={rounded} />
+            <ActiveIndicator isActive={isActive} availabilityStatus={availabilityStatus} isBot={isBot} botColor={botColor} indicatorProps={indicatorProps} />
         </View>
     )
 }
 
 /** Uses expo-image to handle caching the image */
-const ImageComponent = ({ status, source, alt, onDisplay, onError, ...props }: ImageProps & { status: 'error' | 'loaded' | 'loading', source?: ImageSource, alt: string, onDisplay: () => void, onError: () => void } & ImageProps) => {
+const ImageComponent = ({ status, source, alt, onDisplay, onError, rounded, ...props }: ImageProps & { status: 'error' | 'loaded' | 'loading', source?: ImageSource, alt: string, onDisplay: () => void, onError: () => void, rounded?: boolean } & ImageProps) => {
 
     if (!source) return null
     if (status === 'error') return null
@@ -87,22 +88,18 @@ const ImageComponent = ({ status, source, alt, onDisplay, onError, ...props }: I
     return <Image
         source={source}
         alt={alt}
-        style={styles.image}
+        style={{
+            flex: 1,
+            width: '100%',
+            height: '100%',
+            borderRadius: rounded ? 40 : 6,
+            aspectRatio: 1,
+        }}
         onDisplay={onDisplay}
         onError={onError}
         {...props}
     />
 }
-
-const styles = StyleSheet.create({
-    image: {
-        flex: 1,
-        width: '100%',
-        height: '100%',
-        borderRadius: 6,
-        aspectRatio: 1
-    }
-})
 
 const ActiveIndicator = ({ isActive, availabilityStatus, isBot, botColor, indicatorProps }: Pick<Props, 'isActive' | 'availabilityStatus' | 'isBot'> & { indicatorProps?: ViewProps, botColor?: string }) => {
 

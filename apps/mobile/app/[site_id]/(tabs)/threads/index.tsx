@@ -1,10 +1,30 @@
-import { View } from 'react-native';
-import { Text } from '@components/nativewindui/Text';
+import { ScrollView, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Stack } from 'expo-router';
+import ThreadTabs from '@components/features/threads/ThreadTabs';
+import { useColorScheme } from '@hooks/useColorScheme';
 
 export default function Threads() {
+
+    const insets = useSafeAreaInsets()
+    const { colors } = useColorScheme()
+
+    const threadID = '123'
+
     return (
-        <View className="flex flex-1 items-center justify-center">
-            <Text className="text-2xl font-bold">Threads</Text>
-        </View>
+        <>
+            <Stack.Screen options={{
+                headerLargeTitle: false,
+                headerStyle: { backgroundColor: colors.background },
+            }} />
+            <View className='flex-1'>
+                <ScrollView
+                    contentInsetAdjustmentBehavior="automatic"
+                    showsVerticalScrollIndicator={false}
+                    contentContainerStyle={{ paddingBottom: insets.bottom }}>
+                    <ThreadTabs threadID={threadID} />
+                </ScrollView>
+            </View>
+        </>
     )
 }

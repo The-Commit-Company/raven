@@ -11,40 +11,9 @@ import { toast } from 'sonner'
 import { getErrorMessage } from '@/components/layout/AlertBanner/ErrorBanner'
 import { CreateThreadActionButton } from './CreateThreadButton'
 import clsx from 'clsx'
-import { EmojiType, getTopFavoriteEmojis } from '../../../ChatInput/EmojiSuggestion'
 import usePostMessageReaction from '@/hooks/usePostMessageReaction'
-
-const topEmojis = getTopFavoriteEmojis(10)
-
-const STANDARD_EMOJIS: EmojiType[] = [{
-    id: '+1',
-    emoji: '👍',
-    name: 'Thumbs Up',
-    shortcodes: ":+1:"
-}, {
-    id: 'white_check_mark',
-    emoji: '✅',
-    name: 'Check Mark Button',
-    shortcodes: ":white_check_mark:"
-},
-{
-    id: 'eyes',
-    emoji: '👀',
-    name: 'Eyes',
-    shortcodes: ":eyes:"
-},
-{
-    id: 'tada',
-    emoji: '🎉',
-    name: 'Party Popper',
-    shortcodes: ":tada:"
-}
-]
-
-// If we have frequently used emojis, then show them, else fill the rest with standard emojis - remove duplicates
-const QUICK_EMOJIS = [...topEmojis, ...STANDARD_EMOJIS].filter((emoji, index, self) =>
-    index === self.findIndex((t) => t.id === emoji.id)
-).slice(0, 4)
+import { useAtomValue } from 'jotai'
+import { QuickEmojisAtom } from '@/utils/preferences'
 
 interface QuickActionsProps extends MessageContextMenuProps {
     isEmojiPickerOpen: boolean,
@@ -55,6 +24,8 @@ interface QuickActionsProps extends MessageContextMenuProps {
 export const QuickActions = ({ message, onReply, onEdit, isEmojiPickerOpen, setIsEmojiPickerOpen, showThreadButton = true, alignToRight = false }: QuickActionsProps) => {
 
     const { currentUser } = useContext(UserContext)
+
+    const quickEmojis = useAtomValue(QuickEmojisAtom)
 
     const isOwner = currentUser === message?.owner && !message?.is_bot_message
     const toolbarRef = useRef<HTMLDivElement>(null)
@@ -101,21 +72,17 @@ export const QuickActions = ({ message, onReply, onEdit, isEmojiPickerOpen, setI
                 CHAT_STYLE === "Left-Right" ? alignToRight ? "-top-10 right-0" : "-top-10 left-0" : "-top-6 right-4"
             )}>
             <Flex gap='1'>
-                {QUICK_EMOJIS.map((emoji) => {
-                    if (emoji.emoji) {
-                        return <QuickActionButton
-                            key={emoji.id}
-                            className={'text-base'}
-                            tooltip={`React with ${emoji.emoji}`}
-                            aria-label={`React with ${emoji.emoji}`}
-                            onClick={() => {
-                                onEmojiReact(emoji.emoji as string)
-                            }}>
-                            {/* @ts-expect-error */}
-                            <em-emoji native={emoji.emoji} />
-                        </QuickActionButton>
-                    }
-                    return null
+                {quickEmojis.map((emoji) => {
+                    return <QuickActionButton
+                        key={emoji}
+                        className={'text-base'}
+                        tooltip={`React with ${emoji}`}
+                        aria-label={`React with ${emoji}`}
+                        onClick={() => {
+                            onEmojiReact(emoji)
+                        }}>
+                        {emoji}
+                    </QuickActionButton>
                 })}
 
                 <EmojiPickerButton

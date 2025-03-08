@@ -110,17 +110,7 @@ const ChatStream = forwardRef(({ channelID, replyToMessage, showThreadButton = t
         skip: !hasOlderMessages,
         onChange: (async (inView) => {
             if (inView && hasOlderMessages) {
-                const currentScrollPosition = scrollRef.current?.scrollTop || 0
-                const scrollHeight = scrollRef.current?.scrollHeight || 0
-
                 await loadOlderMessages()
-
-                // After loading, adjust scroll position to maintain the same relative position
-                if (scrollRef.current) {
-                    const newScrollHeight = scrollRef.current.scrollHeight
-                    const heightDiff = newScrollHeight - scrollHeight
-                    scrollRef.current.scrollTop = currentScrollPosition + heightDiff
-                }
             }
         })
     });
@@ -146,9 +136,11 @@ const ChatStream = forwardRef(({ channelID, replyToMessage, showThreadButton = t
 
             // Check if we're near bottom before adjusting scroll
             if (scrollContainer.scrollTop + scrollContainer.clientHeight >= scrollContainer.scrollHeight - 100) {
-                scrollContainer.scrollTo({
-                    top: scrollContainer.scrollHeight,
-                    behavior: 'smooth'
+                requestAnimationFrame(() => {
+                    scrollContainer.scrollTo({
+                        top: scrollContainer.scrollHeight,
+                        behavior: 'instant'
+                    })
                 })
             }
         })

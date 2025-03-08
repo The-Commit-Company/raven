@@ -1,61 +1,69 @@
 import { useState } from 'react';
-import { router, Stack } from 'expo-router';
+import { Link, router, Stack } from 'expo-router';
 import { Platform, View } from 'react-native';
-import { useFrappeUpdateDoc } from 'frappe-react-sdk';
+import { useFrappePostCall } from 'frappe-react-sdk';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Button } from '@components/nativewindui/Button';
 import { Form, FormItem, FormSection } from '@components/nativewindui/Form';
 import { Text } from '@components/nativewindui/Text';
 import { TextField } from '@components/nativewindui/TextField';
-import { cn } from '@lib/cn';
 import useCurrentRavenUser from '@raven/lib/hooks/useCurrentRavenUser';
+import { toast } from 'sonner-native';
+import { useColorScheme } from '@hooks/useColorScheme';
+import { ActivityIndicator } from '@components/nativewindui/ActivityIndicator';
+import CrossIcon from '@assets/icons/CrossIcon.svg';
 
 export default function CustomStatusScreen() {
 
     const { myProfile, mutate } = useCurrentRavenUser()
 
-    const insets = useSafeAreaInsets();
-    const [customStatus, setCustomStatus] = useState(myProfile?.custom_status ?? "");
+    const insets = useSafeAreaInsets()
+    const [customStatus, setCustomStatus] = useState(myProfile?.custom_status ?? '')
 
-    const canSave = !!customStatus && customStatus !== myProfile?.custom_status;
+    const { call, loading } = useFrappePostCall('raven.api.raven_users.update_raven_user')
 
-    const { updateDoc } = useFrappeUpdateDoc()
-
-    const handleFullNameSave = async () => {
-        return updateDoc("Raven User", myProfile?.name ?? null, {
-            custom_status: customStatus,
+    const handleCustomStatusUpdate = async () => {
+        call({
+            custom_status: customStatus
         }).then(() => {
-            // toast.success(__("Custom status updated"))
+            toast.success("Status updated")
             mutate()
-            router.back();
+            router.back()
         }).catch(() => {
-            // toast.error(__("Custom status update failed"))
+            toast.error("Failed to update status")
         })
     }
+
+    const { colors } = useColorScheme()
 
     return (
         <>
             <Stack.Screen
                 options={{
-                    title: 'Custom Status',
-                    headerTransparent: Platform.OS === 'ios',
-                    headerBlurEffect: 'systemMaterial',
-                    headerRight: Platform.select({
-                        ios: () => (
-                            <Button
-                                className="ios:px-0"
-                                disabled={!canSave}
-                                variant="plain"
-                                onPress={handleFullNameSave}
-                            >
-                                <Text className={cn(canSave && 'text-primary dark:text-secondary')}>Save</Text>
+                    headerLeft() {
+                        return (
+                            <Link asChild href="../" relativeToDirectory>
+                                <Button variant="plain" className="ios:px-0" hitSlop={10}>
+                                    <CrossIcon color={colors.icon} height={24} width={24} />
+                                </Button>
+                            </Link>
+                        )
+                    },
+                    headerTitle: () => <Text className='ml-2 text-base font-semibold'>Custom status</Text>,
+                    headerRight() {
+                        return (
+                            <Button variant="plain" className="ios:px-0"
+                                onPress={handleCustomStatusUpdate}
+                                disabled={loading}>
+                                {loading ?
+                                    <ActivityIndicator size="small" color={colors.primary} /> :
+                                    <Text className="text-primary dark:text-secondary">Save</Text>}
                             </Button>
-                        ),
-                    }),
-                }}
-            />
-
+                        )
+                    },
+                    headerStyle: { backgroundColor: colors.background },
+                }} />
             <KeyboardAwareScrollView
                 bottomOffset={8}
                 keyboardShouldPersistTaps="handled"
@@ -80,19 +88,8 @@ export default function CustomStatusScreen() {
                             />
                         </FormItem>
                     </FormSection>
-                    {Platform.OS !== 'ios' && (
-                        <View className="items-end">
-                            <Button
-                                className={cn('px-6', !canSave && 'bg-muted')}
-                                disabled={!canSave}
-                                onPress={handleFullNameSave}
-                            >
-                                <Text>Save</Text>
-                            </Button>
-                        </View>
-                    )}
                 </Form>
             </KeyboardAwareScrollView>
         </>
-    );
+    )
 }

@@ -150,7 +150,7 @@ export const ChatBoxBody = ({ channelData }: ChatBoxBodyProps) => {
 
     const { fileInputRef, files, setFiles, removeFile, uploadFiles, addFile, fileUploadProgress, compressImages, setCompressImages } = useFileUpload(channelData.name)
 
-    const { sendMessage, loading } = useSendMessage(channelData.name, files.length, uploadFiles, onMessageSendCompleted, selectedMessage)
+    const { sendMessage, loading } = useSendMessage(channelData.name, uploadFiles, onMessageSendCompleted, selectedMessage)
 
     const PreviousMessagePreview = ({ selectedMessage }: { selectedMessage: any }) => {
 

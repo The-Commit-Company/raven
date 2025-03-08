@@ -26,6 +26,8 @@ export interface BaseMessage {
     /** Formatted timestamp - being used on the mobile app */
     formattedTime?: string,
     is_pinned: 1 | 0,
+    might_contain_link_preview?: boolean,
+    content?: string
 }
 
 export interface FileMessage extends BaseMessage {
