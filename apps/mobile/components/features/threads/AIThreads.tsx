@@ -31,14 +31,12 @@ const AIThreads = () => {
                 </View>
                 <UnreadFilter onlyShowUnread={onlyShowUnread} setOnlyShowUnread={setOnlyShowUnread} />
             </View>
-            <Divider className='mx-0 mt-3 mb-2' prominent />
-            <View className='px-2'>
-                <ThreadsList
-                    content={debouncedText}
-                    aiThreads={1}
-                    onlyShowUnread={onlyShowUnread}
-                />
-            </View>
+            <Divider className='mx-0 mt-3' prominent />
+            <ThreadsList
+                content={debouncedText}
+                aiThreads={1}
+                onlyShowUnread={onlyShowUnread}
+            />
         </View>
     )
 }

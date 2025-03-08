@@ -48,14 +48,12 @@ const OtherThreads = () => {
                     </TouchableOpacity>
                 )}
             </View>
-            <Divider className='mx-0 mt-3 mb-2' prominent />
-            <View className='px-2'>
-                <ThreadsList
-                    content={debouncedText}
-                    endpoint='raven.api.threads.get_other_threads'
-                    channel={channel}
-                />
-            </View>
+            <Divider className='mx-0 mt-3' prominent />
+            <ThreadsList
+                content={debouncedText}
+                endpoint='raven.api.threads.get_other_threads'
+                channel={channel}
+            />
         </View>
     )
 }

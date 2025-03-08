@@ -125,27 +125,38 @@ const ThreadsList = ({ aiThreads, content, channel, endpoint = "raven.api.thread
                     {isLoadingMore && <ActivityIndicator />}
                 </View>
             }
-            ListEmptyComponent={<EmptyStateForThreads isFiltered={onlyShowUnread} />}
+            ListEmptyComponent={<EmptyStateForThreads isFiltered={onlyShowUnread} searchText={content} />}
             estimatedItemSize={25}
             style={{ flex: 1 }}
         />
     )
 }
 
-const EmptyStateForThreads = ({ isFiltered = false }: { isFiltered?: boolean }) => {
+const EmptyStateForThreads = ({ isFiltered = false, searchText }: { isFiltered?: boolean, searchText?: string }) => {
 
-    const content = useMemo(() => isFiltered ? {
-        title: "You're all caught up",
-        description: 'There are no unread threads to show. Clear the filter to see all threads.'
-    } : {
-        title: 'No threads yet',
-        description: 'Threads help keep conversations organized. Reply to any message to start a new thread or use the thread icon on messages to join existing discussions.'
-    }, [isFiltered])
+    const content = useMemo(() => {
+        if (searchText && !isFiltered) {
+            return {
+                title: "No results found",
+                description: `No threads match your search for "${searchText}". Try a different search term.`
+            }
+        } else if (isFiltered) {
+            return {
+                title: "You're all caught up",
+                description: 'There are no unread threads to show. Clear the filter to see all threads.'
+            }
+        } else {
+            return {
+                title: 'No threads yet',
+                description: 'Threads help keep conversations organized. Reply to any message to start a new thread or use the thread icon on messages to join existing discussions.'
+            }
+        }
+    }, [isFiltered, searchText])
 
     const { colors } = useColorScheme()
 
     return (
-        <View className="flex flex-col gap-2 bg-background px-2 pt-2">
+        <View className="flex flex-col gap-2 bg-background p-4">
             <View className="flex flex-row items-center gap-2">
                 <ThreadsOutlineIcon fill={colors.icon} height={20} width={20} />
                 <Text className="text-foreground text-base font-medium">
