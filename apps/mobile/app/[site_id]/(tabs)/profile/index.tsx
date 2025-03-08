@@ -9,7 +9,7 @@ import UserAvailability from '@components/features/profile/profile-settings/User
 import UserFullName from '@components/features/profile/profile-settings/UserFullName';
 import CustomStatus from '@components/features/profile/profile-settings/CustomStatus';
 import ProfilePicture from '@components/features/profile/upload-profile/ProfilePicture';
-import Application from 'expo-application';
+import { nativeApplicationVersion, nativeBuildVersion } from 'expo-application';
 
 const SCREEN_OPTIONS = {
     title: 'Profile',
@@ -43,11 +43,11 @@ export default function Profile() {
                             <UserAvailability />
                         </View>
                         <LogOutButton />
-                        <View className='flex flex-col justify-center items-center pt-2 gap-1.5'>
-                            <Text className='text-base text-muted-foreground/90 font-cal-sans'>raven</Text>
+                        <View className='flex flex-col justify-center items-center pt-2 gap-1'>
+                            <Text className='text-lg text-muted-foreground/90 font-cal-sans'>raven</Text>
                             <View className='flex flex-col items-center justify-center'>
                                 <Text className='text-xs text-muted-foreground/80'>by The Commit Company</Text>
-                                <Text className='text-xs text-muted-foreground/80'>Version {Application.nativeApplicationVersion} ({Application.nativeBuildVersion})</Text>
+                                <Text className='text-xs text-muted-foreground/80'>Version {nativeApplicationVersion} ({nativeBuildVersion})</Text>
                             </View>
                         </View>
                     </View>

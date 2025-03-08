@@ -18,6 +18,7 @@ import { ImageMessageRenderer } from '@components/features/chat/ChatMessage/Rend
 import MessageTextRenderer from './MessageItemElements/MessageTextRenderer';
 import MessageActionsBottomSheet from '../chat/ChatMessage/MessageActions/MessageActionsBottomSheet';
 import { useSheetRef } from '@components/nativewindui/Sheet';
+import { impactAsync, ImpactFeedbackStyle } from 'expo-haptics';
 
 type Props = {
     message: FileMessage | PollMessage | TextMessage | ImageMessage,
@@ -45,6 +46,7 @@ const MessageItem = memo(({ message, onReplyMessagePress }: Props) => {
     const messageActionsSheetRef = useSheetRef()
 
     const onMessageLongPress = () => {
+        impactAsync(ImpactFeedbackStyle.Light)
         messageActionsSheetRef.current?.present()
     }
 
@@ -62,44 +64,44 @@ const MessageItem = memo(({ message, onReplyMessagePress }: Props) => {
                     botID={message.bot}
                     is_continuation={message.is_continuation}
                 />
-                <View className='flex-1 items-start gap-1'>
+                <View className='flex-1 items-start'>
                     <MessageHeader
                         is_continuation={message.is_continuation}
                         userFullName={userFullName}
                         timestamp={message.formattedTime || ''}
                     />
-                    {message.is_forwarded === 1 &&
-                        <View className='flex-row items-center gap-1'>
-                            <ShareForward fill={'#6b7280'} width={12} height={12} />
-                            <Text className='text-xs text-muted-foreground'>
-                                forwarded
-                            </Text>
+                    <View className='flex-1 gap-1'>
+                        {message.is_forwarded === 1 &&
+                            <View className='flex-row items-center gap-1'>
+                                <ShareForward fill={'#6b7280'} width={12} height={12} />
+                                <Text className='text-xs text-muted-foreground'>
+                                    forwarded
+                                </Text>
+                            </View>}
+                        {message.is_pinned === 1 &&
+                            <View className='flex-row items-center gap-1'>
+                                <PushPin width={12} height={12} />
+                                <Text className='text-xs text-accent'>Pinned</Text>
+                            </View>}
+
+                        {linked_message && replied_message_details && <ReplyMessageBox
+                            onPress={onReplyMessagePress}
+                            message={replyMessageDetails}
+                        />}
+
+                        {message.text ? <MessageTextRenderer text={message.text} /> : null}
+                        {message.message_type === 'Image' && <ImageMessageRenderer message={message} onLongPress={onMessageLongPress} />}
+                        {message.message_type === 'File' && <FileMessageRenderer message={message} onLongPress={onMessageLongPress} />}
+                        {message.message_type === 'Poll' && <PollMessageBlock message={message} />}
+
+                        {message.link_doctype && message.link_document && <View className={clsx(message.is_continuation ? 'ml-0.5' : '-ml-0.5')}>
+                            <DocTypeLinkRenderer doctype={message.link_doctype} docname={message.link_document} />
                         </View>}
-                    {message.is_pinned === 1 &&
-                        <View className='flex-row items-center gap-1'>
-                            <PushPin width={12} height={12} />
-                            <Text className='text-xs text-accent'>Pinned</Text>
-                        </View>}
 
-                    {linked_message && replied_message_details && <ReplyMessageBox
-                        onPress={onReplyMessagePress}
-                        message={replyMessageDetails}
-                    />}
-
-                    {message.text ? <MessageTextRenderer text={message.text} /> : null}
-        
-                    <MessageReactions messageID={message?.name} message_reactions={message?.message_reactions} />
-        
-                    {message.message_type === 'Image' && <ImageMessageRenderer message={message} onLongPress={onMessageLongPress} />}
-                    {message.message_type === 'File' && <FileMessageRenderer message={message} onLongPress={onMessageLongPress} />}
-                    {message.message_type === 'Poll' && <PollMessageBlock message={message} />}
-
-                    {message.link_doctype && message.link_document && <View className={clsx(message.is_continuation ? 'ml-0.5' : '-ml-0.5')}>
-                        <DocTypeLinkRenderer doctype={message.link_doctype} docname={message.link_document} />
-                    </View>}
-
-                    {message.is_edited === 1 && <Text className='text-xs text-muted-foreground'>(edited)</Text>}
-                    {message.hide_link_preview === 0 && message.text && <MessageLinkRenderer message={message} />}
+                        {message.is_edited === 1 && <Text className='text-xs text-muted-foreground'>(edited)</Text>}
+                        {message.hide_link_preview === 0 && message.text && <MessageLinkRenderer message={message} />}
+                        <MessageReactions messageID={message?.name} message_reactions={message?.message_reactions} />
+                    </View>
                 </View>
             </View>
             {message && <MessageActionsBottomSheet

@@ -11,7 +11,6 @@ import { useCallback, useContext, useMemo } from 'react';
 import { RavenChannel } from '@raven/types/RavenChannelManagement/RavenChannel';
 import { RavenMessage } from '@raven/types/RavenMessaging/RavenMessage';
 import { getTimePassed } from '@raven/lib/utils/dateConversions';
-import { SiteContext } from 'app/[site_id]/_layout';
 import { DMChannelListItem } from '@raven/types/common/ChannelListItem';
 import { useCurrentChannelData } from '@hooks/useCurrentChannelData';
 import { useGetUserRecords } from '@raven/lib/hooks/useGetUserRecords';
@@ -19,6 +18,7 @@ import { ChannelIcon } from '@components/features/channels/ChannelList/ChannelIc
 import { BaseMessageItem } from '@components/features/chat-stream/BaseMessageItem';
 import { Message } from '@raven/types/common/Message';
 import ChevronLeftIcon from '@assets/icons/ChevronLeftIcon.svg';
+import { useRouteToChannel } from '@hooks/useRouting';
 
 interface MentionObject {
     /** ID of the message */
@@ -126,10 +126,10 @@ const MentionListItem = ({ message }: { message: MentionObject }) => {
     const { creation, channel_id } = message
     const users = useGetUserRecords()
 
-    const siteInfo = useContext(SiteContext)
-    const siteID = siteInfo?.sitename
+    const goToChannel = useRouteToChannel()
+
     const handleNavigateToChannel = (channelID: string) => {
-        router.push(`/${siteID}/chat/${channelID}`)
+        goToChannel(channelID)
     }
 
     const { channel } = useCurrentChannelData(channel_id)

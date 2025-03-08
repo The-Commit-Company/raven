@@ -4,7 +4,9 @@ import { useColorScheme } from '@hooks/useColorScheme'
 import { Text } from '@components/nativewindui/Text'
 import { Toggle } from '@components/nativewindui/Toggle'
 import { useCallback, useEffect, useState } from 'react'
-import messaging, { getMessaging } from '@react-native-firebase/messaging';
+import { AuthorizationStatus, getMessaging } from '@react-native-firebase/messaging';
+
+const messaging = getMessaging()
 
 const NotificationSetting = () => {
 
@@ -12,16 +14,16 @@ const NotificationSetting = () => {
     const [enabled, setEnabled] = useState(false)
 
     useEffect(() => {
-        messaging().hasPermission().then((hasPermission) => {
-            setEnabled(hasPermission === messaging.AuthorizationStatus.AUTHORIZED)
+        messaging.hasPermission().then((hasPermission) => {
+            setEnabled(hasPermission === AuthorizationStatus.AUTHORIZED)
         })
     }, [])
 
     const onToggle = useCallback(() => {
-        getMessaging().requestPermission().then((authorizationStatus: -1 | 0 | 1) => {
+        messaging.requestPermission().then((authorizationStatus) => {
             console.log('authorizationStatus', authorizationStatus)
         }).then(() => {
-            messaging().getToken().then((token) => {
+            messaging.getToken().then((token) => {
                 console.log('token', token)
             })
         })

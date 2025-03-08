@@ -16,6 +16,7 @@ const TAG_BASE_STYLES: TRenderEngineConfig['tagsStyles'] = {
         paddingBottom: 2,
         fontStyle: 'italic',
         marginLeft: 4,
+        lineHeight: 22,
     },
     'code': {
         padding: 4,
@@ -26,14 +27,17 @@ const TAG_BASE_STYLES: TRenderEngineConfig['tagsStyles'] = {
         marginTop: 0,
         whiteSpace: 'pre',
         paddingBottom: 4,
+        lineHeight: 22,
     },
     'ol': {
         marginTop: 2,
         marginBottom: 2,
+        lineHeight: 22,
     },
     'ul': {
         marginTop: 2,
         marginBottom: 2,
+        lineHeight: 22,
     },
     'img': {
         width: '200px',
@@ -44,12 +48,14 @@ const TAG_BASE_STYLES: TRenderEngineConfig['tagsStyles'] = {
     'a': {
         textDecorationLine: 'none',
         borderBottomWidth: 1,
+        lineHeight: 22,
     },
     'pre': {
         padding: 8,
         marginTop: 2,
         marginBottom: 2,
         borderRadius: 4,
+        lineHeight: 22,
     }
 }
 

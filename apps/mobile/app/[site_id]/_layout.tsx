@@ -1,5 +1,5 @@
 import { router, Stack, useLocalSearchParams } from "expo-router";
-import { createContext, useEffect, useState, useRef, useCallback } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import { SiteInformation } from "../../types/SiteInformation";
 import { TokenResponse } from "expo-auth-session";
 import FullPageLoader from "@components/layout/FullPageLoader";
@@ -9,6 +9,7 @@ import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 import FrappeNativeProvider from "@lib/FrappeNativeProvider";
 import { useNetworkState } from 'expo-network';
 import { toast } from "sonner-native";
+import { SiteContext } from "@hooks/useSiteContext";
 
 export default function SiteLayout() {
 
@@ -172,5 +173,3 @@ export default function SiteLayout() {
         }
     </>
 }
-
-export const SiteContext = createContext<SiteInformation | null>(null)

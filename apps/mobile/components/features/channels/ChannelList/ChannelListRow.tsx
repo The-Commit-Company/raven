@@ -10,9 +10,10 @@ import { ChannelListContext, ChannelListContextType } from '@raven/lib/providers
 import { FrappeConfig, FrappeContext, useFrappePostCall } from 'frappe-react-sdk';
 import { useContext, useMemo } from 'react';
 import { toast } from 'sonner-native';
-import { SiteContext } from 'app/[site_id]/_layout';
 import useCurrentRavenUser from '@raven/lib/hooks/useCurrentRavenUser';
 import { RavenUser } from '@raven/types/Raven/RavenUser';
+import useSiteContext from '@hooks/useSiteContext';
+import { impactAsync, ImpactFeedbackStyle } from 'expo-haptics';
 
 export function ChannelListRow({ channel }: { channel: ChannelListItem }) {
 
@@ -24,8 +25,8 @@ export function ChannelListRow({ channel }: { channel: ChannelListItem }) {
 
     const { onMoveToStarred, isStarred } = useMoveToStarred(channel)
 
-    const siteInfo = useContext(SiteContext)
-    const siteID = siteInfo?.sitename
+    const siteInfo = useSiteContext()
+    const siteID = siteInfo?.url
 
     const handleCopyLink = async () => {
         try {
@@ -63,7 +64,7 @@ export function ChannelListRow({ channel }: { channel: ChannelListItem }) {
                     // short press -> navigate
                     onPress={() => router.push(`../chat/${channel.name}`)}
                     // long press -> show context menu
-                    onLongPress={() => console.log(`channel long pressed - ${channel.name}`)}
+                    onLongPress={() => impactAsync(ImpactFeedbackStyle.Light)}
                     // Use tailwind classes for layout and ios:active state
                     className='flex-row items-center px-3 py-2 rounded-lg ios:active:bg-linkColor'
                     // Add a subtle ripple effect on Android

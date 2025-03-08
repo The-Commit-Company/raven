@@ -1,32 +1,30 @@
 import { Alert } from '@components/nativewindui/Alert';
 import { Text } from '@components/nativewindui/Text';
-import { router } from 'expo-router';
 import { FrappeDoc, useFrappePostCall } from 'frappe-react-sdk';
 import { useContext } from 'react';
 import { ChannelListContext, ChannelListContextType } from '@raven/lib/providers/ChannelListProvider';
 import { toast } from 'sonner-native';
 import { ChannelListItem } from '@raven/types/common/ChannelListItem';
-import { SiteContext } from 'app/[site_id]/_layout';
 import { Pressable } from 'react-native';
 import LeaveIcon from "@assets/icons/LeaveIcon.svg";
 import { useColorScheme } from '@hooks/useColorScheme';
 import { StyleSheet } from 'react-native';
+import { useRouteToHome } from '@hooks/useRouting';
 
 const LeaveChannel = ({ channel }: { channel: FrappeDoc<ChannelListItem> | undefined }) => {
 
     const { call, error } = useFrappePostCall("raven.api.raven_channel.leave_channel")
     const { mutate } = useContext(ChannelListContext) as ChannelListContextType
 
-    const siteContext = useContext(SiteContext)
-    const siteId = siteContext?.sitename
-
     const { colors } = useColorScheme()
+
+    const goToHome = useRouteToHome()
 
     const onLeaveChannel = async () => {
         return call({ channel_id: channel?.name })
             .then(() => {
                 toast.success(`You have left ${channel?.channel_name} channel`)
-                router.replace(`${siteId}/home`)
+                goToHome()
                 mutate()
             })
             .catch(() => {

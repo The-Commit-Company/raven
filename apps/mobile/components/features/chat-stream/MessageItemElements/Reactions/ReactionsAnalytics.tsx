@@ -1,6 +1,6 @@
 import React, { useCallback, useMemo, useRef, useState } from 'react'
-import { Dimensions, Pressable, View, FlatList } from 'react-native'
-import { State, PanGestureHandler, TouchableOpacity } from 'react-native-gesture-handler'
+import { Dimensions, Pressable, View } from 'react-native'
+import { State, PanGestureHandler } from 'react-native-gesture-handler'
 import Animated, { useSharedValue, useAnimatedStyle, withSpring, runOnJS, useAnimatedReaction } from 'react-native-reanimated'
 import { BottomSheetModal, BottomSheetView } from '@gorhom/bottom-sheet'
 import { Text } from '@components/nativewindui/Text'
@@ -12,6 +12,7 @@ import { Sheet } from '@components/nativewindui/Sheet'
 import { ReactionObject } from './MessageReactions'
 import useFileURL from '@hooks/useFileURL'
 import { Image } from 'expo-image'
+import { LegendList } from '@legendapp/list'
 
 const { width } = Dimensions.get('window');
 
@@ -20,6 +21,19 @@ interface ReactionAnalyticsProps {
     reactionsSheetRef: React.RefObject<BottomSheetModal>;
 }
 const ReactionAnalytics = ({ reactions, reactionsSheetRef }: ReactionAnalyticsProps) => {
+
+
+
+    return (
+        <Sheet enableDynamicSizing={false} ref={reactionsSheetRef} snapPoints={["60%", "90%"]}>
+            <ReactionAnalyticsContent reactions={reactions} />
+        </Sheet>
+    )
+}
+
+export default ReactionAnalytics;
+
+const ReactionAnalyticsContent = ({ reactions }: { reactions: ReactionObject[] }) => {
 
     const { colors } = useColorScheme()
 
@@ -93,69 +107,53 @@ const ReactionAnalytics = ({ reactions, reactionsSheetRef }: ReactionAnalyticsPr
         runOnJS(setCurrentTabIndex)(currentValue);
     }, [tabWidth]);
 
-    return (
-        <Sheet enableDynamicSizing={false} ref={reactionsSheetRef} snapPoints={["40%"]}>
-            <BottomSheetView className='flex-1'>
-                <View className="flex-row border-3">
-                    {tabs.map((tab, index) => {
-                        const source = useFileURL(tab.title)
 
-                        if (tab.is_custom) {
-                            return (
-                                <Pressable
-                                    key={tab.title}
-                                    onPress={() => handleTabPress(index)}
-                                    className='flex flex-1 flex-row justify-center items-center'
-                                >
-                                    <Image source={source} style={{ width: 20, height: 20 }} />
-                                </Pressable>
-                            )
+    return <BottomSheetView className='flex-1'>
+        <View className="flex-row border-3">
+            {tabs.map((tab, index) => {
+                return (
+                    <Pressable
+                        key={tab.title}
+                        style={{ width: tabWidth }}
+                        className="justify-center flex-1 items-center"
+                        onPress={() => handleTabPress(index)}
+                        hitSlop={10}
+                    >
+                        {tab.is_custom ?
+                            <CustomEmojiView emoji={tab.title} width={20} height={20} emojiName={tab.title} /> :
+                            <Text className='text-center text-lg py-1.5'>{tab.title}</Text>
                         }
+                    </Pressable>
+                )
+            })}
+        </View>
 
-                        return (
-                            <TouchableOpacity
-                                key={tab.title}
-                                style={{ width: tabWidth }}
-                                className="items-center"
-                                onPress={() => handleTabPress(index)}
-                                activeOpacity={0.7}
-                            >
-                                <Text className='text-center text-lg py-1.5'>{tab.title}</Text>
-                            </TouchableOpacity>
-                        )
-                    })}
-                </View>
+        <View className='relative'>
+            <View className='h-[2px] bg-gray-100 dark:bg-gray-800' />
+            <Animated.View
+                className="h-[2px] rounded-full opacity-80 absolute"
+                style={[{ width: tabWidth, backgroundColor: colors.primary }, animatedStyle]}
+            />
+        </View>
 
-                <View className='relative'>
-                    <View className='h-[2px] bg-gray-100 dark:bg-gray-800' />
-                    <Animated.View
-                        className="h-[2px] rounded-full opacity-80 absolute"
-                        style={[{ width: tabWidth, backgroundColor: colors.primary }, animatedStyle]}
-                    />
-                </View>
-
-                <PanGestureHandler
-                    ref={panRef}
-                    onGestureEvent={handleSwipe}
-                    onHandlerStateChange={handleSwipe}
-                >
-                    <Animated.View className="flex-1">
-                        <UserList
-                            users={tabs[currentTabIndex].users.map((user) => ({
-                                user: user?.user,
-                                reaction: user?.reaction,
-                                is_custom: user?.is_custom,
-                                emoji_name: user?.emoji_name
-                            }))}
-                        />
-                    </Animated.View>
-                </PanGestureHandler>
-            </BottomSheetView>
-        </Sheet>
-    )
+        <PanGestureHandler
+            ref={panRef}
+            onGestureEvent={handleSwipe}
+            onHandlerStateChange={handleSwipe}
+        >
+            <Animated.View className="flex-1">
+                <UserList
+                    users={tabs[currentTabIndex].users.map((user) => ({
+                        user: user?.user,
+                        reaction: user?.reaction,
+                        is_custom: user?.is_custom,
+                        emoji_name: user?.emoji_name
+                    }))}
+                />
+            </Animated.View>
+        </PanGestureHandler>
+    </BottomSheetView>
 }
-
-export default ReactionAnalytics;
 
 
 interface UserItemProps {
@@ -177,27 +175,21 @@ const UserList = ({ users }: { users: UserItemProps[] }) => {
         </View>
     );
 
-    const keyExtractor = (item: UserItemProps, index: number) => `${item.user}-${index}`;
-
     return (
-        <FlatList
+        <LegendList
             data={users}
             renderItem={renderItem}
+            estimatedItemSize={57}
             keyExtractor={keyExtractor}
-            showsVerticalScrollIndicator={false}
-            contentContainerStyle={{ flexGrow: 1 }}
-            initialNumToRender={10}
-            maxToRenderPerBatch={10}
-            windowSize={5}
         />
     );
 };
 
+const keyExtractor = (item: UserItemProps, index: number) => `${item.user}-${index}`;
+
 const UserItem = ({ user, reaction, is_custom, emoji_name }: UserItemProps) => {
     const userDetails = useGetUser(user)
     const userName = userDetails?.full_name ?? user
-
-    const source = useFileURL(reaction)
 
     return (
         <View className='flex-row items-center justify-between p-3'>
@@ -205,12 +197,15 @@ const UserItem = ({ user, reaction, is_custom, emoji_name }: UserItemProps) => {
                 <UserAvatar
                     src={userDetails?.user_image ?? ""}
                     alt={userName}
+                    avatarProps={{
+                        className: 'w-8 h-8'
+                    }}
                 />
-                <Text>{userName}</Text>
+                <Text className='text-base'>{userName}</Text>
             </View>
 
-            {!!is_custom ? (
-                <Image source={source} alt={emoji_name} style={{ width: 20, height: 20 }} />
+            {is_custom && reaction ? (
+                <CustomEmojiView emoji={reaction} width={20} height={20} emojiName={emoji_name} />
             ) : (
                 <Text className='text-lg opacity-80'>
                     {reaction}
@@ -218,4 +213,10 @@ const UserItem = ({ user, reaction, is_custom, emoji_name }: UserItemProps) => {
             )}
         </View>
     )
+}
+
+const CustomEmojiView = ({ emoji, width = 18, height = 18, emojiName }: { emoji: string, width?: number, height?: number, emojiName?: string }) => {
+    const source = useFileURL(emoji)
+
+    return <Image source={source} style={{ width, height }} alt={emojiName ?? emoji} contentFit='scale-down' contentPosition={'center'} />
 }
