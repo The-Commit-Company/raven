@@ -151,7 +151,7 @@ const WorkspaceRow = ({ workspace, isLast, setWorkspace, isOtherWorkspace = fals
                     </View>
                 }
             </View>
-            {!isLast && <Divider marginHorizontal={0} />}
+            {!isLast && <Divider className='mx-0' />}
         </Pressable>
     )
 }
