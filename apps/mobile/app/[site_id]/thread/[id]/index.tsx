@@ -1,21 +1,17 @@
 import { KeyboardAvoidingView, Platform, View } from 'react-native'
 import { Stack, useLocalSearchParams } from 'expo-router';
 import ChatStream from '@components/features/chat-stream/ChatStream';
-import { useCurrentChannelData } from '@hooks/useCurrentChannelData';
 import { useColorScheme } from '@hooks/useColorScheme';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useKeyboardVisible } from '@hooks/useKeyboardVisible';
 import ChatInput from '@components/features/chat/ChatInput/ChatInput';
-import DMChannelHeader from '@components/features/chat/ChatHeader/DMChannelHeader';
-import ChannelHeader from '@components/features/chat/ChatHeader/ChannelHeader';
 import HeaderBackButton from '@components/common/HeaderBackButton';
 
-const Chat = () => {
+const Thread = () => {
 
     const { bottom } = useSafeAreaInsets()
     const { isKeyboardVisible, keyboardHeight } = useKeyboardVisible()
     const { id } = useLocalSearchParams()
-    const { channel } = useCurrentChannelData(id as string)
     const { colors } = useColorScheme()
 
     return (
@@ -24,18 +20,7 @@ const Chat = () => {
                 headerStyle: { backgroundColor: colors.background },
                 headerLeft: () => <HeaderBackButton />,
                 title: id as string,
-                headerTitle: () => {
-                    return (
-                        <>
-                            {channel && <>
-                                {channel.type === 'dm' ?
-                                    <DMChannelHeader channelData={channel.channelData} /> :
-                                    <ChannelHeader channelData={channel.channelData} />
-                                }
-                            </>}
-                        </>
-                    )
-                }
+                headerTitle: 'Thread'
             }} />
             <KeyboardAvoidingView
                 behavior={Platform.OS === "ios" ? "padding" : undefined}
@@ -52,4 +37,4 @@ const Chat = () => {
     )
 }
 
-export default Chat
+export default Thread

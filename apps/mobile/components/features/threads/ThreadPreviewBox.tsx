@@ -40,7 +40,7 @@ const ThreadPreviewBox = ({ thread, unreadCount }: { thread: ThreadMessage, unre
     const siteInfo = useContext(SiteContext)
     const siteID = siteInfo?.sitename
     const handleNavigateToThread = () => {
-        router.push(`/${siteID}/chat/threads/${thread.name}`)
+        router.push(`/${siteID}/thread/${thread.name}`)
     }
 
     const { colors } = useColorScheme()
