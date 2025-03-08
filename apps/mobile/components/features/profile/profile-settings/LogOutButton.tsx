@@ -8,6 +8,7 @@ import { useContext } from 'react';
 import { clearDefaultSite, deleteAccessToken, getRevocationEndpoint } from '@lib/auth';
 import LogOutIcon from '@assets/icons/LogOutIcon.svg';
 import { SiteContext } from 'app/[site_id]/_layout';
+import { toast } from 'sonner-native';
 
 const LogOutButton = () => {
 
@@ -24,14 +25,15 @@ const LogOutButton = () => {
             token: tokenParams?.token?.() || ''
         }, {
             revocationEndpoint: getRevocationEndpoint(siteInformation?.url || '')
-        }).then(result => {
+        }).finally(() => {
             return deleteAccessToken(siteInformation?.sitename || '')
         }).then((result) => {
             return clearDefaultSite()
         }).then(() => {
             router.replace('/landing')
         }).catch((error) => {
-            console.log(error)
+            console.error(error)
+            toast.error('Failed to log out')
         })
     }
 

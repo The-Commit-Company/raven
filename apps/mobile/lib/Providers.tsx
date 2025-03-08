@@ -1,10 +1,11 @@
 import FullPageLoader from '@components/layout/FullPageLoader'
-import { Text } from '@components/nativewindui/Text'
 import { ChannelListContext, useChannelListProvider } from '@raven/lib/providers/ChannelListProvider'
 import { UserListContext, useUserListProvider } from '@raven/lib/providers/UserListProvider'
-import React, { PropsWithChildren } from 'react'
+import { PropsWithChildren } from 'react'
 import { View } from 'react-native'
 import { ActiveUserProvider } from './UserInactivityProvider'
+import ErrorBanner from '@components/common/ErrorBanner'
+import LogOutButton from '@components/features/profile/profile-settings/LogOutButton'
 
 const Providers = (props: PropsWithChildren) => {
 
@@ -16,7 +17,9 @@ const Providers = (props: PropsWithChildren) => {
 
     if (error) {
         return <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-            <Text>Error loading users</Text>
+            <ErrorBanner error={error} />
+
+            <LogOutButton />
         </View>
     }
 
@@ -40,7 +43,7 @@ const ChannelListProvider = ({ children }: PropsWithChildren) => {
 
     if (channelListContextData.error) {
         return <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-            <Text>Error loading channels</Text>
+            <ErrorBanner error={channelListContextData.error} />
         </View>
     }
 
