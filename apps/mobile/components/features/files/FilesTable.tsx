@@ -43,19 +43,19 @@ const FileTableRow = ({ file }: { file: FileInChannel }) => {
     const download = useFileDownload(file?.file_url, file?.file_name);
 
     return (
-        <View className="bg-gray-50 dark:bg-gray-900 p-2.5 mb-2.5 rounded-md">
+        <View className="bg-card p-2.5 mb-2.5 rounded-md">
             <View className="flex-row items-start justify-between">
                 <View className="flex-row gap-2 items-start">
                     <Preview file={file} />
 
                     <View>
                         <View className="gap-1 w-[260px]">
-                            <Text className="text-black dark:text-white">
+                            <Text className="text-foreground">
                                 {file.file_name.length < 30 ? file.file_name : file.file_name.slice(0, 30) + "..."}
                             </Text>
-                            <Text className="text-xs text-gray-500">{formatBytes(file.file_size)}</Text>
+                            <Text className="text-xs text-muted">{formatBytes(file.file_size)}</Text>
                         </View>
-                        <Text className="text-gray-500 text-xs mt-1">
+                        <Text className="text-muted-foreground text-xs mt-1">
                             by {file.full_name ?? file.owner} on {formatDate(file.creation)}
                         </Text>
                     </View>
@@ -63,15 +63,15 @@ const FileTableRow = ({ file }: { file: FileInChannel }) => {
                 <View className="flex-row gap-2">
                     <TouchableOpacity
                         onPress={copy}
-                        className="bg-gray-200 dark:bg-gray-800 p-1.5 rounded-md"
-                        activeOpacity={0.6}
+                        className="border-[0.5px] border-muted p-1.5 rounded-md"
+                        activeOpacity={0.7}
                     >
                         <LinkIcon width={14} height={14} fill={colors.icon} />
                     </TouchableOpacity>
                     <TouchableOpacity
                         onPress={download}
-                        className="bg-gray-200 dark:bg-gray-800 p-1.5 rounded-md"
-                        activeOpacity={0.6}
+                        className="border-[0.5px] border-muted p-1.5 rounded-md"
+                        activeOpacity={0.7}
                     >
                         <DownloadIcon width={14} height={14} fill={colors.icon} />
                     </TouchableOpacity>
@@ -109,7 +109,7 @@ const Preview = ({ file }: { file: FileInChannel }) => {
     }
 
     return (
-        <TouchableOpacity activeOpacity={0.6} onPress={openFileAction} className="bg-gray-200 dark:bg-gray-800 rounded-md p-3">
+        <TouchableOpacity activeOpacity={0.6} onPress={openFileAction} className="border-[0.5px] border-muted rounded-md p-3">
             <UniversalFileIcon fileName={fileName} width={28} height={28} />
         </TouchableOpacity>
     )
