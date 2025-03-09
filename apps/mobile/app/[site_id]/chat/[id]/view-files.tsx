@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useFrappeGetCall } from "frappe-react-sdk";
-import { KeyboardAvoidingView, Platform, View, Text, TextInput, ActivityIndicator, TouchableOpacity } from "react-native";
+import { KeyboardAvoidingView, Platform, View, Text, ActivityIndicator } from "react-native";
 import { Stack, useLocalSearchParams } from "expo-router";
 import * as DropdownMenu from 'zeego/dropdown-menu'
 import { useDebounce } from "@raven/lib/hooks/useDebounce";
@@ -12,6 +12,7 @@ import { useColorScheme } from "@hooks/useColorScheme";
 import HeaderBackButton from "@components/common/HeaderBackButton";
 import UniversalFileIcon from "@components/common/UniversalFileIcon";
 import HollowFileIcon from "@assets/icons/HollowFileIcon.svg"
+import { SearchInput } from "@components/nativewindui/SearchInput";
 
 export type FileInChannel = {
     name: string;
@@ -90,22 +91,25 @@ const ViewFiles = () => {
                 behavior={Platform.OS === "ios" ? "padding" : "height"}
             >
                 <View className="flex-1 p-3">
-                    <View className="flex-row gap-2">
-                        <TextInput
-                            className="flex-1 border dark:text-white border-gray-300 dark:border-gray-600 rounded-md p-2"
-                            placeholder="Search for file"
-                            value={searchText}
-                            onChangeText={setSearchText}
-                        />
+                    <View className="flex flex-row items-center gap-2">
+                        <View className="flex-1">
+                            <SearchInput
+                                style={{ backgroundColor: colors.grey6 }}
+                                placeholder="Search"
+                                placeholderTextColor={colors.grey}
+                                onChangeText={setSearchText}
+                                value={searchText}
+                            />
+                        </View>
 
                         <DropdownMenu.Root>
                             <DropdownMenu.Trigger>
-                                <TouchableOpacity activeOpacity={0.6} className='flex-row items-center gap-1.5 border border-gray-300 dark:border-gray-600 rounded-md p-2'>
+                                <View className={`flex flex-row gap-1.5 items-center p-2 border border-border rounded-md ${fileType !== 'any' ? 'border-[0.5px] border-primary bg-primary/5' : ''}`}>
                                     {fileType === "any" ? (
                                         <HollowFileIcon width={18} height={18} fill={colors.icon} />
                                     ) : <UniversalFileIcon fileName={fileType} width={18} height={18} />}
                                     <Text className='dark:text-white text-sm'>{fileType === "any" ? "File Type" : fileTypes.find((type) => type.value === fileType)?.label}</Text>
-                                </TouchableOpacity>
+                                </View>
                             </DropdownMenu.Trigger>
                             <DropdownMenu.Content>
                                 {fileTypes.map((type) => (
@@ -122,7 +126,7 @@ const ViewFiles = () => {
                         </DropdownMenu.Root>
                     </View>
 
-                    <View className="flex-row justify-between items-center py-2">
+                    {data.message.length > 0 ? <View className="flex-row justify-between items-center py-2">
                         <PageLengthSelector
                             options={[10, 20, 50, 100]}
                             selectedValue={selectedPageLength}
@@ -135,7 +139,7 @@ const ViewFiles = () => {
                             gotoNextPage={nextPage}
                             gotoPreviousPage={previousPage}
                         />
-                    </View>
+                    </View> : null}
 
                     {isLoading ? (
                         <View className="flex-1 justify-center items-center">
