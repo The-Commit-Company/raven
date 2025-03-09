@@ -126,7 +126,7 @@ const ViewFiles = () => {
                         </DropdownMenu.Root>
                     </View>
 
-                    {data.message.length > 0 ? <View className="flex-row justify-between items-center py-2">
+                    {data?.message.length > 0 ? <View className="flex-row justify-between items-center py-2">
                         <PageLengthSelector
                             options={[10, 20, 50, 100]}
                             selectedValue={selectedPageLength}
