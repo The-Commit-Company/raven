@@ -1,7 +1,7 @@
 import FullPageLoader from '@components/layout/FullPageLoader'
 import { ChannelListContext, useChannelListProvider } from '@raven/lib/providers/ChannelListProvider'
 import { UserListContext, useUserListProvider } from '@raven/lib/providers/UserListProvider'
-import { PropsWithChildren, useContext, useEffect } from 'react'
+import { PropsWithChildren, Suspense, useContext, useEffect } from 'react'
 import { View } from 'react-native'
 import { ActiveUserProvider } from './UserInactivityProvider'
 import ErrorBanner from '@components/common/ErrorBanner'
@@ -52,9 +52,11 @@ const ChannelListProvider = ({ children }: PropsWithChildren) => {
     }
 
     return <ChannelListContext.Provider value={channelListContextData}>
-        <WorkspaceProvider>
-            {children}
-        </WorkspaceProvider>
+        <Suspense>
+            <WorkspaceProvider>
+                {children}
+            </WorkspaceProvider>
+        </Suspense>
     </ChannelListContext.Provider>
 }
 
