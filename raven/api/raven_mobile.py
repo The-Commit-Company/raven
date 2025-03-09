@@ -31,3 +31,28 @@ def get_client_id():
 
 
 # TODO: API to fetch boot information for the app - settings like GIF API key etc.
+
+
+@frappe.whitelist(methods=["POST"])
+def create_oauth_client():
+	"""
+	API to create an OAuth Client for the mobile app.
+	"""
+	raven_settings = frappe.get_doc("Raven Settings")
+	existing_oauth_client = raven_settings.oauth_client
+
+	if not existing_oauth_client:
+		oauth_client = frappe.new_doc("OAuth Client")
+	else:
+		oauth_client = frappe.get_doc("OAuth Client", existing_oauth_client)
+
+	oauth_client.app_name = "Raven Mobile"
+	oauth_client.scopes = "all openid"
+	oauth_client.redirect_uris = "raven.thecommit.company:"
+	oauth_client.default_redirect_uri = "raven.thecommit.company:"
+	oauth_client.grant_type = "Authorization Code"
+	oauth_client.response_type = "Code"
+	oauth_client.save()
+	raven_settings.oauth_client = oauth_client.name
+	raven_settings.save()
+	return {"message": "OAuth Client created successfully"}
