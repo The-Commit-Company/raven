@@ -14,16 +14,14 @@ const PADDING_BOTTOM = Platform.OS === 'ios' ? 20 : 0;
 
 const useGradualAnimation = () => {
     const height = useSharedValue(PADDING_BOTTOM)
-    const progress = useSharedValue(0)
     useKeyboardHandler({
         onMove: (event) => {
             "worklet";
             height.value = Math.max(event.height, PADDING_BOTTOM)
-            progress.value = event.progress
         },
     }, [])
 
-    return { height, progress }
+    return { height }
 }
 
 const Chat = () => {

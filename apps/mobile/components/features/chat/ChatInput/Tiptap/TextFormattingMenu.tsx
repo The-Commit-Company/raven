@@ -3,7 +3,6 @@
 import { Editor } from '@tiptap/react'
 
 import { useCallback } from 'react';
-import classNames from "classnames";
 import styles from "./tiptap.module.css";
 import { cn } from "@lib/cn";
 
