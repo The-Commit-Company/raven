@@ -114,13 +114,18 @@ const darkThemeStyles: TRenderEngineConfig['tagsStyles'] = Object.keys(TAG_BASE_
 // Create a read only theme atom value for the tagStyles
 
 const tagStylesAtom = atom((get) => {
-    return get(themeAtom) === 'light' ? lightThemeStyles : darkThemeStyles
+    const theme = get(themeAtom)
+    return theme.state === 'hasData' ? theme.data === 'light' ? lightThemeStyles : darkThemeStyles : lightThemeStyles
 })
 
-const baseStylesAtom = atom((get) => ({
-    fontSize: 16,
-    color: get(themeAtom) === 'light' ? 'rgb(0, 0, 0)' : 'rgb(255, 255, 255)',
-}))
+const baseStylesAtom = atom((get) => {
+    const theme = get(themeAtom)
+    return {
+        fontSize: 16,
+        color: theme.state === 'hasData' ? theme.data === 'light' ? 'rgb(0, 0, 0)' : 'rgb(255, 255, 255)' : 'rgb(0, 0, 0)',
+    }
+}
+)
 
 const renderers = {
     span: CustomMentionRenderer
@@ -139,7 +144,8 @@ const classesStylesDark = {
 }
 
 const classesStylesAtom = atom((get) => {
-    return get(themeAtom) === 'light' ? classesStylesLight : classesStylesDark
+    const theme = get(themeAtom)
+    return theme.state === 'hasData' ? theme.data === 'light' ? classesStylesLight : classesStylesDark : classesStylesLight
 })
 
 const MessageTextRenderer = ({ text }: Props) => {

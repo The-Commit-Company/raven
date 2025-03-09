@@ -89,8 +89,8 @@ const FirstMessageBlockForChannel = ({ channelData }: { channelData: ChannelList
         <View className="pt-6 p-3">
             <View className="flex flex-col gap-2">
                 <View className="flex flex-row items-center gap-1">
-                    <ChannelIcon size={24} type={channelData?.type} fill={colors.foreground} />
-                    <Text className="text-[24px] font-semibold">{channelData?.channel_name}</Text>
+                    <ChannelIcon size={20} type={channelData?.type} fill={colors.foreground} />
+                    <Text className="text-lg font-semibold">{channelData?.channel_name}</Text>
                 </View>
                 <Text className="text-[15px]">This is the very beginning of the <Text className="text-base font-semibold">{channelData?.channel_name}</Text> channel.</Text>
                 {channelData?.channel_description && <Text className="text-sm text-muted-foreground">Channel description: {channelData?.channel_description}</Text>}
