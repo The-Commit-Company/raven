@@ -7,6 +7,7 @@ import utc from 'dayjs/plugin/utc'
 import advancedFormat from 'dayjs/plugin/advancedFormat'
 import { formatDate } from '@raven/lib/utils/dateConversions'
 import useSiteContext from './useSiteContext'
+import { FlatList } from 'react-native'
 
 dayjs.extend(utc)
 dayjs.extend(advancedFormat)
@@ -38,7 +39,7 @@ export interface DateBlock {
 
 export type MessageDateBlock = Message | DateBlock
 
-const useChatStream = (channelID: string, listRef: React.RefObject<LegendListRef>) => {
+const useChatStream = (channelID: string, listRef: React.RefObject<FlatList>) => {
 
     const siteInformation = useSiteContext()
 
@@ -51,7 +52,7 @@ const useChatStream = (channelID: string, listRef: React.RefObject<LegendListRef
         // TODO: Add base message
     }, undefined, {
         onSuccess: () => {
-            // listRef.current?.scrollToEnd({ animated: false })
+            // listRef.current?.scroll({ animated: false })
 
             // setTimeout(() => {
             //     listRef.current?.scrollToEnd({ animated: false })
@@ -130,7 +131,7 @@ const useChatStream = (channelID: string, listRef: React.RefObject<LegendListRef
                 currentDateTime = new Date(message.creation).getTime()
             }
 
-            return messagesWithDateSeparators
+            return messagesWithDateSeparators.reverse()
         }
         else {
             return []

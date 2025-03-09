@@ -51,11 +51,19 @@ const ChatInput = () => {
     }
 
     return (
-        <View className={cn(
-            "bg-white dark:bg-background",
-            "border border-b-0 border-gray-300 dark:border-gray-900 rounded-t-lg",
-        )}>
-            <View className="flex-row justify-start items-start">
+        <View
+        // className={cn(
+        //     "bg-white dark:bg-background pb-8",
+        //     "border border-b-0 border-gray-300 dark:border-gray-900 rounded-t-lg min-h-16",
+        // )}
+        >
+            <View className="flex-row justify-start items-start min-h-10">
+                {/* <TextInput
+                    className="flex-1"
+                    value={text}
+                    placeholder="Type a message"
+                    onChangeText={setText}
+                /> */}
                 <Tiptap
                     content={text}
                     dom={{
@@ -73,9 +81,9 @@ const ChatInput = () => {
                 />
             </View>
             {
-                !isKeyboardVisible && (
-                    <InputBottomBar onSend={handleSend} />
-                )
+                // !isKeyboardVisible && (
+                <InputBottomBar onSend={handleSend} />
+                // )
             }
         </View>
     )

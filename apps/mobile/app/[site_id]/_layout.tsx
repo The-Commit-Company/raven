@@ -39,6 +39,8 @@ export default function SiteLayout() {
             const currentTime = Date.now();
             const timeUntilExpiry = expirationTime - currentTime;
 
+            console.log('timeUntilExpiry', timeUntilExpiry)
+
             // Refresh if token will expire within our threshold
             return timeUntilExpiry <= REFRESH_THRESHOLD;
         };
