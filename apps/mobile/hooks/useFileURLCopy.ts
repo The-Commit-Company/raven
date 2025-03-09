@@ -1,7 +1,6 @@
 import { toast } from "sonner-native"
 import * as Clipboard from 'expo-clipboard'
-import { useContext } from "react"
-import { SiteContext } from "app/[site_id]/_layout"
+import useSiteContext from "./useSiteContext"
 
 /**
  * Simple hook to copy a file URL to the clipboard and present a toast message
@@ -10,7 +9,7 @@ import { SiteContext } from "app/[site_id]/_layout"
  */
 const useFileURLCopy = (file: string) => {
 
-    const siteInfo = useContext(SiteContext)
+    const siteInfo = useSiteContext()
 
     const copy = async () => {
         if (file.startsWith('http') || file.startsWith('https')) {

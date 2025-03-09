@@ -1,7 +1,6 @@
 import { toast } from "sonner-native"
 import * as FileSystem from 'expo-file-system'
-import { useContext } from "react"
-import { SiteContext } from "app/[site_id]/_layout"
+import useSiteContext from "./useSiteContext"
 
 /**
  * Simple hook to download a file and present a toast message
@@ -11,7 +10,7 @@ import { SiteContext } from "app/[site_id]/_layout"
  */
 const useFileDownload = (file: string, fileName: string) => {
 
-    const siteInfo = useContext(SiteContext)
+    const siteInfo = useSiteContext()
 
     const download = async () => {
         const downloadPath = FileSystem.documentDirectory + fileName
