@@ -5,10 +5,10 @@ import { ChannelListContext, ChannelListContextType } from "@raven/lib/providers
 import { useContext, useMemo, useState } from "react"
 import { View, Text, ActivityIndicator } from "react-native"
 import DMRow from "./DMRow"
-import { LegendList } from "@legendapp/list"
 import ChatOutlineIcon from "@assets/icons/ChatOutlineIcon.svg"
 import ErrorBanner from "@components/common/ErrorBanner"
 import { Divider } from "@components/layout/Divider"
+import { FlashList } from "@shopify/flash-list"
 
 const AllDMsList = () => {
 
@@ -21,6 +21,7 @@ const AllDMsList = () => {
         return dm_channels.filter(dm => dm.last_message_details)
     }, [dm_channels])
 
+    // TODO: Add search for DMs
     const [searchQuery, setSearchQuery] = useState('')
     const filteredDMs = useMemo(() => {
         return allDMs.filter(dm => dm.peer_user_id.toLowerCase().includes(searchQuery.toLowerCase()))
@@ -50,14 +51,14 @@ const AllDMsList = () => {
                 />
             </View>
             <Divider prominent />
-            <LegendList
+            <FlashList
                 data={filteredDMs ?? []}
                 keyExtractor={(item) => item.name}
                 renderItem={({ item }) => {
                     const isUnread = unread_count ? unread_count.some(item => item.unread_count > 0) : false
                     return (
                         <View role='listitem'>
-                            <View className="flex flex-col gap-1">
+                            <View className="flex flex-col gap-0">
                                 <DMRow dm={item} isUnread={isUnread} />
                                 <Divider prominent />
                             </View>
