@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useFrappeGetCall } from "frappe-react-sdk";
 import { KeyboardAvoidingView, Platform, View, Text, ActivityIndicator } from "react-native";
 import { Stack, useLocalSearchParams } from "expo-router";
@@ -73,6 +73,10 @@ const ViewFiles = () => {
         setFileType(value);
         goToPage(1)
     }
+
+    const fileTypeName = useMemo(() => {
+        return fileType === "any" ? "" : fileTypes.find((type) => type.value === fileType)?.label;
+    }, [fileType])
 
     return (
         <>
@@ -150,7 +154,10 @@ const ViewFiles = () => {
                     ) : (
                         <View className="flex-1 justify-center items-center">
                             <Text className="dark:text-white font-medium">Nothing to see here</Text>
-                            <Text className="dark:text-white pt-2">No files found in this channel</Text>
+                            <Text className="dark:text-white pt-2">
+                                No files found in this channel{fileType !== "any" && ` of type `}
+                                <Text className="font-bold">{fileTypeName}</Text>
+                            </Text>
                         </View>
                     )}
                 </View>
