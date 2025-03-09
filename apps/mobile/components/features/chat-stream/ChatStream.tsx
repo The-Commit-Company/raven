@@ -1,7 +1,5 @@
-import { Text } from '@components/nativewindui/Text'
 import useChatStream, { MessageDateBlock } from '@hooks/useChatStream'
 import { useRef } from 'react'
-import { View } from 'react-native'
 import { LegendList, LegendListRef } from '@legendapp/list'
 import DateSeparator from './DateSeparator'
 import SystemMessageBlock from './SystemMessageBlock'
