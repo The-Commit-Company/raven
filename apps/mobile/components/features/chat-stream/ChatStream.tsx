@@ -56,6 +56,7 @@ const ChatStream = ({ channelID }: Props) => {
             keyExtractor={messageKeyExtractor}
             // drawDistance={500}
             alignItemsAtEnd
+            keyboardDismissMode='on-drag'
             maintainVisibleContentPosition
             waitForInitialLayout
             initialScrollIndex={data.length - 1}

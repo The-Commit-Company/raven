@@ -13,16 +13,26 @@ import { filesAtom } from "@lib/filesAtom"
 import Tiptap from "./Tiptap/Tiptap"
 import { cn } from "@lib/cn"
 import { useSendMessage } from "@hooks/useSendMessage"
-import Animated, { interpolate, useAnimatedStyle, useSharedValue } from "react-native-reanimated"
+import Animated, {
+    interpolate,
+    useAnimatedStyle,
+    withTiming,
+    useSharedValue
+} from "react-native-reanimated"
 import { useKeyboardHandler } from "react-native-keyboard-controller"
 
-const ChatInput = () => {
+const TIMING_CONFIG = {
+    duration: 250,
+}
 
+const SHOW_TIMING_CONFIG = {
+    duration: 150,
+}
+
+const ChatInput = () => {
     const { id } = useLocalSearchParams()
     const { uploadFiles } = useFileUpload(id as string)
-
     const [files, setFiles] = useAtom(filesAtom)
-
     const [content, setContent] = useState('')
     const [json, setJSON] = useState<any>(null)
 
@@ -30,20 +40,60 @@ const ChatInput = () => {
         console.log('cancel reply')
     }
 
-    // const [isKeyboardVisible, setIsKeyboardVisible] = useState(false)
     const progress = useSharedValue(0)
+    const isKeyboardClosing = useSharedValue(false)
 
     useKeyboardHandler({
         onMove: (event) => {
             "worklet";
+            // Track if keyboard is closing to handle toolbar appearance
+            isKeyboardClosing.value = event.progress < progress.value
             progress.value = event.progress
         },
     }, [])
 
     const toolbarStyles = useAnimatedStyle(() => {
+        const shouldShowToolbar = progress.value < 0.6
         return {
-            height: interpolate(progress.value, [0, 1], [60, 0]),
-            opacity: 1 - progress.value,
+            height: withTiming(
+                shouldShowToolbar ? 60 : 0,
+                shouldShowToolbar ? SHOW_TIMING_CONFIG : TIMING_CONFIG
+            ),
+            opacity: shouldShowToolbar ? 1 : 0,
+            overflow: 'hidden',
+            position: 'absolute',
+            bottom: 0,
+            left: 0,
+            right: 0,
+            zIndex: 10
+        }
+    })
+
+    const containerStyles = useAnimatedStyle(() => {
+        return {
+            height: interpolate(
+                progress.value,
+                [0, 0.4, 1],
+                [120, 100, 100]
+            ),
+        }
+    })
+
+    const editorContainerStyles = useAnimatedStyle(() => {
+        return {
+            flex: 1,
+            paddingBottom: interpolate(
+                progress.value,
+                [0, 0.4, 1],
+                [60, 0, 0]
+            ),
+            position: 'relative',
+            zIndex: 2,
+            minHeight: interpolate(
+                progress.value,
+                [0, 0.4, 1],
+                [60, 100, 100]
+            ),
         }
     })
 
@@ -110,13 +160,14 @@ const ChatInput = () => {
     }, [])
 
     return (
-        <View
+        <Animated.View
+            style={containerStyles}
             className={cn(
                 "bg-white dark:bg-background gap-4",
                 "border border-b-0 border-gray-300 dark:border-gray-900 rounded-t-lg",
             )}
         >
-            <View className="flex-row justify-start items-start">
+            <Animated.View style={editorContainerStyles} className="flex-row justify-start items-start flex-1">
                 <Tiptap
                     content={content}
                     isKeyboardVisible={isKeyboardVisible}
@@ -128,16 +179,17 @@ const ChatInput = () => {
                         containerStyle: {
                             paddingHorizontal: 4,
                             paddingTop: 4,
+                            flex: 1,
                         },
                         // prefer expo dom view over react native webview as react native webview has internal scroll issue.
                         useExpoDOMWebView: true,
                     }}
                 />
-            </View>
+            </Animated.View>
             <Animated.View style={toolbarStyles}>
                 <InputBottomBar onSend={handleSend} />
             </Animated.View>
-        </View>
+        </Animated.View>
     )
 }
 
