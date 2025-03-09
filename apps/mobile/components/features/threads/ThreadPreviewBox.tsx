@@ -70,7 +70,7 @@ const ThreadPreviewBox = ({ thread, unreadCount }: { thread: ThreadMessage, unre
                     </View>
                 </View>
             </Pressable>
-            <Divider className='mx-0' />
+            <Divider prominent className='mx-0' />
         </View>
     )
 }

@@ -4,15 +4,14 @@ import { useColorScheme } from '@hooks/useColorScheme';
 
 type DividerProps = ViewProps & {
     prominent?: boolean
-    size?: number
 }
 
-export const Divider = ({ prominent = false, size = 1, className, ...props }: DividerProps) => {
+export const Divider = ({ prominent = false, className, ...props }: DividerProps) => {
     const { colors, isDarkColorScheme } = useColorScheme()
     return (
         <View
             style={{
-                borderBottomWidth: size,
+                borderBottomWidth: 1,
                 borderBottomColor: prominent && isDarkColorScheme ? colors.grey4 : colors.grey5,
                 opacity: 0.6
             }}
