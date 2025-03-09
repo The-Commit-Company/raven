@@ -51,7 +51,7 @@ export default function CreateChannel() {
 
     return <>
         <Stack.Screen options={{
-            title: 'Add channel',
+            title: 'Add Channel',
             headerLeft() {
                 return (
                     <Link asChild href="../" relativeToDirectory>

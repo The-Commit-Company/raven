@@ -46,7 +46,7 @@ export default function QuickSearch() {
 
     return <>
         <Stack.Screen options={{
-            title: 'Quick search',
+            title: 'Quick Search',
             headerLeft() {
                 return (
                     <Link asChild href="../" relativeToDirectory>

@@ -19,7 +19,6 @@ const Thread = () => {
             <Stack.Screen options={{
                 headerStyle: { backgroundColor: colors.background },
                 headerLeft: () => <HeaderBackButton />,
-                title: id as string,
                 headerTitle: 'Thread'
             }} />
             <KeyboardAvoidingView

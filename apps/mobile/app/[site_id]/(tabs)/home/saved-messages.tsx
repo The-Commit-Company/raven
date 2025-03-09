@@ -18,7 +18,7 @@ export default function SavedMessages() {
 
     return <>
         <Stack.Screen options={{
-            title: 'Saved messages',
+            title: 'Saved Messages',
             headerStyle: { backgroundColor: colors.background },
             headerLeft() {
                 return (

@@ -9,11 +9,10 @@ export default function Threads() {
     const insets = useSafeAreaInsets()
     const { colors } = useColorScheme()
 
-    const threadID = '123'
-
     return (
         <>
             <Stack.Screen options={{
+                title: 'Threads',
                 headerLargeTitle: false,
                 headerStyle: { backgroundColor: colors.background },
             }} />
@@ -22,7 +21,7 @@ export default function Threads() {
                     contentInsetAdjustmentBehavior="automatic"
                     showsVerticalScrollIndicator={false}
                     contentContainerStyle={{ paddingBottom: insets.bottom }}>
-                    <ThreadTabs threadID={threadID} />
+                    <ThreadTabs />
                 </ScrollView>
             </View>
         </>

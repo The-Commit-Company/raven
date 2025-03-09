@@ -11,7 +11,7 @@ export default function CreateDM() {
 
     return <>
         <Stack.Screen options={{
-            title: 'Create direct message',
+            title: 'Create DM',
             headerLeft() {
                 return (
                     <Link asChild href="../" relativeToDirectory>
