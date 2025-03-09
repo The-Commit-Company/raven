@@ -35,7 +35,7 @@ export default function SiteLayout() {
         const shouldRefreshToken = (token: TokenResponse): boolean => {
             if (!token.expiresIn) return false;
 
-            const expirationTime = token.issuedAt + token.expiresIn * 1000; // Convert expiresIn to milliseconds
+            const expirationTime = (token.issuedAt + token.expiresIn) * 1000; // Convert expiresIn to milliseconds
             const currentTime = Date.now();
             const timeUntilExpiry = expirationTime - currentTime;
 
