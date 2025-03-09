@@ -118,7 +118,7 @@ export default function SiteLayout() {
 
                     // Show the user a toast saying that the site is not found
 
-                    toast.error("The site you are trying to access was not found. Please try logging in again.")
+                    toast.error("We could not find the stored credentials for this site. Please try logging in again.")
 
                     return null
                 }
