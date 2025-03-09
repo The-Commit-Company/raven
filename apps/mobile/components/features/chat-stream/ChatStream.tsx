@@ -1,7 +1,7 @@
 import { Text } from '@components/nativewindui/Text'
 import useChatStream, { MessageDateBlock } from '@hooks/useChatStream'
 import { useRef } from 'react'
-import { FlatList, View } from 'react-native'
+import { View } from 'react-native'
 import { LegendList, LegendListRef } from '@legendapp/list'
 import DateSeparator from './DateSeparator'
 import SystemMessageBlock from './SystemMessageBlock'
@@ -15,65 +15,64 @@ type Props = {
 const ChatStream = ({ channelID }: Props) => {
 
 
-    const listRef = useRef<FlatList>(null)
+    const listRef = useRef<LegendListRef>(null)
 
     const { data, isLoading, error, mutate } = useChatStream(channelID, listRef)
 
-    return <FlatList
-        data={data}
-        ref={listRef}
-        inverted
-        keyboardDismissMode='on-drag'
-        // onContentSizeChange={() => {
-        //     setTimeout(() => {
-        //         listRef.current?.scrollToEnd({ animated: false })
-        //     }, 100)
-        // }}
-        ListEmptyComponent={isLoading ? <View>
-            {/* TODO: Add skeleton loader here */}
-            <Text>Loading...</Text>
-        </View> : null}
-        onStartReached={() => {
-            // TODO: Load newer messages
-            console.log('onStartReached')
-        }}
-        onEndReached={() => {
-            // TODO: Load older messages
-            console.log('onEndReached')
-        }}
-        renderItem={MessageContentRenderer}
-        keyExtractor={messageKeyExtractor}
-        ListFooterComponent={<ChannelHistoryFirstMessage channelID={channelID} />}
-    />
+    // return <FlatList
+    //     data={data}
+    //     ref={listRef}
+    //     inverted
+    //     maintainVisibleContentPosition={{
+    //         minIndexForVisible: 0
+    //     }}
+    //     keyboardDismissMode='on-drag'
+    //     // onContentSizeChange={() => {
+    //     //     setTimeout(() => {
+    //     //         listRef.current?.scrollToEnd({ animated: false })
+    //     //     }, 100)
+    //     // }}
+    //     ListEmptyComponent={isLoading ? <View>
+    //         {/* TODO: Add skeleton loader here */}
+    //         <Text>Loading...</Text>
+    //     </View> : null}
+    //     onStartReached={() => {
+    //         // TODO: Load newer messages
+    //         console.log('onStartReached')
+    //     }}
+    //     onEndReached={() => {
+    //         // TODO: Load older messages
+    //         console.log('onEndReached')
+    //     }}
+    //     renderItem={MessageContentRenderer}
+    //     keyExtractor={messageKeyExtractor}
+    //     ListFooterComponent={<ChannelHistoryFirstMessage channelID={channelID} />}
+    // />
 
     return (
-        <View className='bg-white dark:bg-background px-1 flex-1'>
-
-            {/* <LegendList
-                    ref={listRef}
-                    data={data}
-                    keyExtractor={messageKeyExtractor}
-                    // drawDistance={500}
-                    alignItemsAtEnd
-                    maintainVisibleContentPosition
-                    waitForInitialLayout
-                    initialScrollIndex={data.length - 1}
-                    maintainScrollAtEnd
-                    maintainScrollAtEndThreshold={0.1}
-                    getEstimatedItemSize={getEstimatedItemSize}
-                    renderItem={MessageContentRenderer}
-                    recycleItems={false}
-                    // contentContainerStyle={{
-                    //     paddingHorizontal: 4,
-                    //     // Add bottom padding to prevent last message from being hidden under ChatInput
-                    //     paddingBottom: 0
-                    // }}
-                    ListHeaderComponentStyle={{
-                        paddingBottom: 32
-                    }}
-                    ListHeaderComponent={<ChannelHistoryFirstMessage channelID={channelID} />}
-                /> */}
-        </View>
+        <LegendList
+            ref={listRef}
+            data={data}
+            keyExtractor={messageKeyExtractor}
+            // drawDistance={500}
+            alignItemsAtEnd
+            maintainVisibleContentPosition
+            waitForInitialLayout
+            initialScrollIndex={data.length - 1}
+            maintainScrollAtEnd
+            maintainScrollAtEndThreshold={0.1}
+            getEstimatedItemSize={getEstimatedItemSize}
+            renderItem={MessageContentRenderer}
+            recycleItems={false}
+            contentContainerStyle={{
+                paddingBottom: 32
+            }}
+        // contentContainerStyle={{
+        //     paddingHorizontal: 4,
+        //     // Add bottom padding to prevent last message from being hidden under ChatInput
+        //     paddingBottom: 0
+        // }}
+        />
     )
 
 }
@@ -105,6 +104,10 @@ const getEstimatedItemSize = (index: number, item: MessageDateBlock) => {
     if (!item) return 80
     if (item?.message_type === 'date') {
         return DATE_MESSAGE_HEIGHT
+    }
+
+    if (item?.message_type === 'header') {
+        return 91
     }
 
     if (item?.message_type === 'System') {
@@ -158,6 +161,11 @@ const messageKeyExtractor = (item: MessageDateBlock) => {
     if (!item) {
         return 'empty'
     }
+
+    if (item.message_type === 'header') {
+        return `header-${item.name}`
+    }
+
     if (item.message_type === 'date') {
         return `date-${item.creation}`
     }
@@ -177,6 +185,10 @@ const MessageContentRenderer = ({ item }: { item: MessageDateBlock }) => {
 
     if (item.message_type === 'System') {
         return <SystemMessageBlock item={item} />
+    }
+
+    if (item.message_type === 'header') {
+        return <ChannelHistoryFirstMessage channelID={item.name} />
     }
 
     return <MessageItem message={item} onReplyMessagePress={onReplyMessagePress} />

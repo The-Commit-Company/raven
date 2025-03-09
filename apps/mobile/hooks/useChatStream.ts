@@ -37,9 +37,14 @@ export interface DateBlock {
     formattedDate: string
 }
 
-export type MessageDateBlock = Message | DateBlock
+export interface HeaderBlock {
+    message_type: 'header',
+    name: string
+}
 
-const useChatStream = (channelID: string, listRef: React.RefObject<FlatList>) => {
+export type MessageDateBlock = Message | DateBlock | HeaderBlock
+
+const useChatStream = (channelID: string, listRef: React.RefObject<LegendListRef>) => {
 
     const siteInformation = useSiteContext()
 
@@ -76,6 +81,13 @@ const useChatStream = (channelID: string, listRef: React.RefObject<FlatList>) =>
         const messages = [...data.message.messages]
 
         const messagesWithDateSeparators: MessageDateBlock[] = []
+
+        if (!data.message.has_old_messages || messages.length === 0) {
+            messagesWithDateSeparators.push({
+                message_type: 'header',
+                name: channelID,
+            })
+        }
 
         if (messages.length > 0) {
             let currentDate = messages[messages.length - 1].creation.split(' ')[0]
@@ -131,10 +143,10 @@ const useChatStream = (channelID: string, listRef: React.RefObject<FlatList>) =>
                 currentDateTime = new Date(message.creation).getTime()
             }
 
-            return messagesWithDateSeparators.reverse()
+            return messagesWithDateSeparators
         }
         else {
-            return []
+            return messagesWithDateSeparators
         }
 
 
