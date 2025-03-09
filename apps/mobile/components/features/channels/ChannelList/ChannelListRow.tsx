@@ -64,7 +64,7 @@ export function ChannelListRow({ channel }: { channel: ChannelListItem }) {
                     // short press -> navigate
                     onPress={() => router.push(`../chat/${channel.name}`)}
                     // long press -> show context menu
-                    onLongPress={() => impactAsync(ImpactFeedbackStyle.Light)}
+                    // onLongPress={() => impactAsync(ImpactFeedbackStyle.Light)}
                     // Use tailwind classes for layout and ios:active state
                     className='flex-row items-center px-3 py-2 rounded-lg ios:active:bg-linkColor'
                     // Add a subtle ripple effect on Android
