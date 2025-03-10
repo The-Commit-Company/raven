@@ -75,7 +75,7 @@ export default function CreatePollPage() {
                         </Link>
                     )
                 },
-                headerTitle: () => <Text className='ml-2 text-base font-semibold'>Create poll</Text>,
+                headerTitle: () => <Text className='ml-2 text-base font-semibold'>Create Poll</Text>,
                 headerRight() {
                     return (
                         <Button variant="plain" className="ios:px-0"

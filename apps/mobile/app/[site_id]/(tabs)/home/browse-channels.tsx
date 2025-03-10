@@ -13,7 +13,7 @@ export default function BrowseChannels() {
 
     return <>
         <Stack.Screen options={{
-            title: 'Browse channels',
+            title: 'Browse Channels',
             headerLeft() {
                 return (
                     <Link asChild href="../" relativeToDirectory>

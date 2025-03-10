@@ -17,6 +17,7 @@ interface DMRowProps {
 }
 
 const DMRow = ({ dm, isUnread = false }: DMRowProps) => {
+
     const { myProfile } = useCurrentRavenUser()
     const user = useGetUser(dm.peer_user_id)
     const isActive = useIsUserActive(dm.peer_user_id)
@@ -40,57 +41,65 @@ const DMRow = ({ dm, isUnread = false }: DMRowProps) => {
 
     return (
         <Link href={`../chat/${dm.name}`} asChild>
-            <Pressable
-                className='flex-row items-center gap-2 py-1 ios:active:bg-linkColor'
-                android_ripple={{ color: 'rgba(0,0,0,0.1)', borderless: false }}
-            >
-                <View
-                    style={{
-                        width: 7,
-                        height: 7,
-                        borderRadius: '100%',
-                        backgroundColor: isUnread ? colors.primary : 'transparent',
-                    }}
-                />
-                <UserAvatar
-                    src={user?.user_image}
-                    alt={user?.full_name ?? user?.name ?? ''}
-                    isActive={isActive}
-                    availabilityStatus={user?.availability_status}
-                    avatarProps={{ className: 'h-10 w-10' }}
-                />
+            <View className='flex flex-row items-center'>
 
-                <View className='flex-col gap-1 p-1 flex-1 overflow-hidden'>
-                    <View className='flex-row justify-between pr-3'>
-                        <Text
-                            className='text-base color-foreground'
-                            style={{ fontWeight: isUnread ? 'bold' : 'normal' }}
-                        >
-                            {user?.full_name} {myProfile?.name === user?.name && '(You)'}
-                        </Text>
-                        {dm.last_message_timestamp && (
-                            <LastMessageTimestamp
-                                timestamp={dm.last_message_timestamp}
-                                isUnread={isUnread}
-                            />
-                        )}
-                    </View>
-
-                    <View style={{ maxHeight: 20, maxWidth: '100%' }}>
-                        <Markdown
-                            flatListProps={{
-                                scrollEnabled: false,
-                                initialNumToRender: 1,
-                                maxToRenderPerBatch: 1,
+                <Pressable
+                    className='flex-row relative items-center gap-2 pt-2 px-4 pb-1 ios:active:bg-linkColor'
+                    android_ripple={{ color: 'rgba(0,0,0,0.1)', borderless: false }}>
+                    {({ pressed, hovered }) => <>
+                        <View
+                            style={{
+                                width: 6,
+                                height: 6,
+                                position: 'absolute',
+                                left: 4,
+                                top: 27,
+                                borderRadius: '100%',
+                                backgroundColor: isUnread ? colors.primary : 'transparent',
                             }}
-                            value={lastMessageContent || ''}
-                            renderer={renderer}
                         />
-                    </View>
-                </View>
-            </Pressable>
+                        <UserAvatar
+                            src={user?.user_image}
+                            alt={user?.full_name ?? user?.name ?? ''}
+                            isActive={isActive}
+                            availabilityStatus={user?.availability_status}
+                            avatarProps={{ className: 'h-10 w-10' }}
+                        />
+                        <View className='flex-1 flex-col overflow-hidden'>
+                            <View className='flex flex-row justify-between items-center'>
+                                <Text
+                                    className='text-base text-foreground'
+                                    style={{ fontWeight: isUnread ? 'bold' : '400' }}>
+                                    {user?.full_name} {myProfile?.name === user?.name && '(You)'}
+                                </Text>
+                                {dm.last_message_timestamp && (
+                                    <LastMessageTimestamp
+                                        timestamp={dm.last_message_timestamp}
+                                        isUnread={isUnread}
+                                    />
+                                )}
+                            </View>
+                            <View style={{ maxHeight: 30, maxWidth: '100%', }}>
+                                <Markdown
+                                    flatListProps={{
+                                        scrollEnabled: false,
+                                        initialNumToRender: 1,
+                                        maxToRenderPerBatch: 1,
+                                        contentContainerStyle: {
+                                            backgroundColor: hovered || pressed ? colors.linkColor : 'transparent',
+                                        }
+                                    }}
+                                    value={lastMessageContent || ''}
+                                    renderer={renderer}
+                                />
+                            </View>
+                        </View>
+                    </>}
+                </Pressable>
+            </View>
         </Link>
     )
+
 }
 
 interface LastMessageTimestampProps {
@@ -116,9 +125,7 @@ const LastMessageTimestamp = ({ timestamp }: LastMessageTimestampProps) => {
     }, [timestamp])
 
     return (
-        <Text
-            className='text-sm color-muted-foreground'
-        >
+        <Text className='text-sm text-muted-foreground'>
             {displayTimestamp}
         </Text>
     )

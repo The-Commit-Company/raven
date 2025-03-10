@@ -4,6 +4,8 @@ import * as DropdownMenu from 'zeego/dropdown-menu'
 import { useFrappePostCall } from 'frappe-react-sdk'
 import { toast } from 'sonner'
 import useCurrentRavenUser from '@raven/lib/hooks/useCurrentRavenUser'
+import CircleIcon from '@assets/icons/CircleIcon.svg'
+import { useColorScheme } from '@hooks/useColorScheme'
 
 export type AvailabilityStatus = 'Available' | 'Away' | 'Do not disturb' | 'Invisible' | ''
 
@@ -42,10 +44,13 @@ const UserAvailability = () => {
         }
     }
 
+    const { colors } = useColorScheme()
+
     return (
         <View>
             <View className='flex flex-row py-2.5 px-4 rounded-xl justify-between bg-background dark:bg-card'>
-                <View className='flex-row items-center gap-2'>
+                <View className='flex-row items-center gap-2.5'>
+                    <CircleIcon height={15} width={15} color={colors.icon} strokeWidth={2.5} />
                     <Text className='text-base'>Availability</Text>
                 </View>
                 <DropdownMenu.Root>
