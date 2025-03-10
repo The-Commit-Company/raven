@@ -90,3 +90,9 @@ def execute_action(action_id: str, message_id: str, values: dict):
 			return function_name(**values)
 		else:
 			frappe.throw(_("Function {0} not found").format(action.custom_function_path))
+
+	if action.action == "Server Script":
+		script = frappe.get_doc("Server Script", action.server_script)
+		if script.disabled:
+			frappe.throw(_("Server Script {0} is disabled").format(action.server_script))
+		script.execute_method()
