@@ -1,9 +1,9 @@
 import { router, Stack, useLocalSearchParams } from "expo-router";
 import { useEffect, useState, useRef, useCallback } from "react";
 import { SiteInformation } from "../../types/SiteInformation";
-import { TokenResponse } from "expo-auth-session";
+import { revokeAsync, TokenResponse } from "expo-auth-session";
 import FullPageLoader from "@components/layout/FullPageLoader";
-import { getAccessToken, getSiteFromStorage, getTokenEndpoint, storeAccessToken } from "@lib/auth";
+import { getAccessToken, getRevocationEndpoint, getSiteFromStorage, getTokenEndpoint, storeAccessToken } from "@lib/auth";
 import Providers from "@lib/Providers";
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 import FrappeNativeProvider from "@lib/FrappeNativeProvider";
@@ -39,8 +39,6 @@ export default function SiteLayout() {
             const currentTime = Date.now();
             const timeUntilExpiry = expirationTime - currentTime;
 
-            console.log('timeUntilExpiry', timeUntilExpiry)
-
             // Refresh if token will expire within our threshold
             return timeUntilExpiry <= REFRESH_THRESHOLD;
         };
@@ -58,6 +56,8 @@ export default function SiteLayout() {
             if (shouldRefreshToken(accessTokenRef.current)) {
                 console.log("Proactively refreshing token");
                 try {
+
+                    const oldToken = `${accessTokenRef.current.accessToken}`
                     const newToken = await accessTokenRef.current.refreshAsync(
                         {
                             clientId: siteInfo.client_id,
@@ -67,8 +67,24 @@ export default function SiteLayout() {
                         }
                     );
                     await storeAccessToken(siteInfo.sitename, newToken);
+
+                    // Store the new token in the ref before revoking the old token since some API calls might be in-flight
                     accessTokenRef.current = newToken;
+
                     console.log("Token refreshed successfully");
+                    // Now we need to revoke the old token
+                    try {
+                        await revokeAsync({
+                            clientId: siteInfo.client_id,
+                            token: oldToken,
+                        }, {
+                            revocationEndpoint: getRevocationEndpoint(siteInfo.url),
+                        })
+                    } catch (error) {
+                        // Can ignore this error since it's not a big deal if it fails
+                        console.error("Error revoking old token:", error);
+                    }
+
                 } catch (error) {
                     console.error("Token refresh failed:", error);
                     if (isOnline) {
@@ -126,6 +142,9 @@ export default function SiteLayout() {
                 let tokenResponse = new TokenResponse(accessToken)
 
                 if (tokenResponse.shouldRefresh()) {
+
+                    const oldToken = `${tokenResponse.accessToken}`
+
                     console.log("Refreshing token")
                     return tokenResponse.refreshAsync({
                         clientId: site_info?.client_id || '',
@@ -133,6 +152,19 @@ export default function SiteLayout() {
                         tokenEndpoint: getTokenEndpoint(site_info?.url || ''),
                     }).then(async (tokenResponse) => {
                         await storeAccessToken(site_info?.sitename || '', tokenResponse)
+
+                        // Revoke the old token
+                        try {
+                            await revokeAsync({
+                                clientId: site_info?.client_id || '',
+                                token: oldToken,
+                            }, {
+                                revocationEndpoint: getRevocationEndpoint(site_info?.url || ''),
+                            })
+                        } catch (error) {
+                            console.error("Error revoking old token:", error);
+                        }
+
                         return tokenResponse
                     })
                 } else {
