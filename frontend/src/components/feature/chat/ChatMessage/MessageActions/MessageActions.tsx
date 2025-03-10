@@ -137,7 +137,10 @@ const CopyMessageLink = ({ message }: { message: Message }) => {
     const { workspaceID, threadID } = useParams()
 
     const onClick = () => {
-        const basePath = `${import.meta.env.VITE_BASE_NAME}`
+        let basePath = `${import.meta.env.VITE_BASE_NAME}`
+        if (!window.location.origin.endsWith("/")) {
+            basePath = "/" + basePath
+        }
 
         const isMessageInThread = threadID === message.channel_id
         if (isMessageInThread) {
