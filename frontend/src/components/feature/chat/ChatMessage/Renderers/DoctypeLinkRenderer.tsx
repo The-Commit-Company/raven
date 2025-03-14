@@ -9,6 +9,16 @@ import useDoctypeMeta from "@/hooks/useDoctypeMeta"
 import { HStack } from "@/components/layout/Stack"
 import { ErrorBanner, getErrorMessage } from "@/components/layout/AlertBanner/ErrorBanner"
 import parse from 'html-react-parser';
+import VideoCallMessageRenderer from "@/components/feature/video-calling/VideoCallMessageRenderer"
+
+export const DoctypeLinkMessageRenderer = ({ doctype, docname }: { doctype: string, docname: string }) => {
+
+    if (doctype !== 'Raven LiveKit Room') {
+        return <DoctypeLinkRenderer doctype={doctype} docname={docname} />
+    }
+
+    return <VideoCallMessageRenderer roomID={docname} />
+}
 
 export const DoctypeLinkRenderer = ({ doctype, docname }: { doctype: string, docname: string }) => {
 

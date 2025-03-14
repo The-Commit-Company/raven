@@ -46,7 +46,7 @@ const ChannelHeaderMenu = ({ channelData }: Props) => {
         <><DropdownMenu.Root>
             <DropdownMenu.Trigger>
                 <IconButton color='gray' className='bg-transparent text-gray-12 hover:bg-gray-3'>
-                    <BiDotsVerticalRounded />
+                    <BiDotsVerticalRounded size='18' />
                 </IconButton>
             </DropdownMenu.Trigger>
             <DropdownMenu.Content className='min-w-48'>

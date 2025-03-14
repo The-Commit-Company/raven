@@ -141,6 +141,9 @@ const router = createBrowserRouter(
               <Route path="thread/:threadID" lazy={() => import('./components/feature/threads/ThreadDrawer/ThreadDrawer')} />
             </Route>
           </Route>
+          <Route path="meeting-room" lazy={() => import('./pages/meeting/MeetingPage')}>
+            <Route path=":roomID" lazy={() => import('./pages/meeting/MeetingRoom')} />
+          </Route>
         </Route>
       </Route>
       <Route path='*' lazy={() => import('./pages/NotFound')} />

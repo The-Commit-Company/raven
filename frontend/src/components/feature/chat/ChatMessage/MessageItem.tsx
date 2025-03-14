@@ -17,7 +17,7 @@ import { QuickActions } from './MessageActions/QuickActions/QuickActions'
 import { memo, useContext, useMemo, useState } from 'react'
 import { ReplyMessageBox } from './ReplyMessageBox/ReplyMessageBox'
 import { generateAvatarColor } from '../../selectDropdowns/GenerateAvatarColor'
-import { DoctypeLinkRenderer } from './Renderers/DoctypeLinkRenderer'
+import { DoctypeLinkMessageRenderer } from './Renderers/DoctypeLinkRenderer'
 import { useDebounce } from '@/hooks/useDebounce'
 import { RiPushpinFill, RiRobot2Fill, RiShareForwardFill } from 'react-icons/ri'
 import { useIsDesktop } from '@/hooks/useMediaQuery'
@@ -204,7 +204,7 @@ export const MessageItem = ({ message, setDeleteMessage, isHighlighted, onReplyM
                                     />
 
                                     {message.link_doctype && message.link_document && <Box className={clsx(message.is_continuation ? 'ml-0.5' : '-ml-0.5')}>
-                                        <DoctypeLinkRenderer doctype={message.link_doctype} docname={message.link_document} />
+                                        <DoctypeLinkMessageRenderer doctype={message.link_doctype} docname={message.link_document} />
                                     </Box>}
                                     {message.is_edited === 1 && <Text size='1' className='text-gray-10'>(edited)</Text>}
                                     {message_reactions?.length &&
