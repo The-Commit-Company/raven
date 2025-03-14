@@ -1,4 +1,5 @@
 import frappe
+from frappe import _
 from livekit import api
 
 
@@ -9,20 +10,20 @@ def join_room(room_id: str):
 	room = frappe.get_doc("Raven LiveKit Room", room_id)
 
 	if not room.has_permission():
-		frappe.throw("You do not have permission to join this room.")
+		frappe.throw(_("You do not have permission to join this room."))
 
 	user = frappe.session.user
 
 	participant_name = frappe.db.get_value("Raven User", user, "full_name")
 
 	if not participant_name:
-		frappe.throw("User not found")
+		frappe.throw(_("User not found"))
 
 	# We now need to generate a token for the user
 	raven_settings = frappe.get_doc("Raven Settings")
 
 	if not raven_settings.enable_video_calling_via_livekit:
-		frappe.throw("Video calling is not enabled.")
+		frappe.throw(_("Video calling is not enabled."))
 
 	api_secret = raven_settings.get_password("livekit_api_secret")
 
@@ -49,6 +50,6 @@ def get_room_details(room_id: str):
 	room = frappe.get_cached_doc("Raven LiveKit Room", room_id)
 
 	if not room.has_permission():
-		frappe.throw("You do not have permission to view the details of this call.")
+		frappe.throw(_("You do not have permission to view the details of this call."))
 
 	return room
