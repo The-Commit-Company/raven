@@ -58,7 +58,7 @@ const ChatStream = ({ channelID, isThread = false }: Props) => {
             keyboardDismissMode='on-drag'
             maintainVisibleContentPosition
             waitForInitialLayout
-            initialScrollIndex={data.length > 0 ? data.length - 1 : undefined}
+            // initialScrollIndex={data.length > 0 ? data.length - 1 : undefined}
             maintainScrollAtEnd
             maintainScrollAtEndThreshold={0.1}
             getEstimatedItemSize={getEstimatedItemSize}

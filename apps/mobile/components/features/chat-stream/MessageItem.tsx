@@ -24,13 +24,12 @@ import { useAtomValue } from 'jotai';
 import { doubleTapMessageEmojiAtom } from '@lib/preferences';
 
 type Props = {
-    message: FileMessage | PollMessage | TextMessage | ImageMessage,
-    onReplyMessagePress: () => void
+    message: FileMessage | PollMessage | TextMessage | ImageMessage
 }
 
 const DOUBLE_TAP_DELAY = 300; // milliseconds
 
-const MessageItem = memo(({ message, onReplyMessagePress }: Props) => {
+const MessageItem = memo(({ message }: Props) => {
 
     const { linked_message, replied_message_details } = message
 
@@ -117,7 +116,9 @@ const MessageItem = memo(({ message, onReplyMessagePress }: Props) => {
                             </View>}
 
                         {linked_message && replied_message_details && <ReplyMessageBox
-                            onPress={onReplyMessagePress}
+                            // onPress={() => {
+                            //     console.log('reply message pressed')
+                            // }}
                             message={replyMessageDetails}
                         />}
 

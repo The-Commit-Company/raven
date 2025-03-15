@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { ScrollView, View } from 'react-native'
+import { View } from 'react-native'
 import AIThreads from './AIThreads'
 import OtherThreads from './OtherThreads'
 import ParticipatingThreads from './ParticipatingThreads'
@@ -47,11 +47,11 @@ const ThreadTabs = () => {
                     onIndexChange={handleIndexChange}
                 />
             </View>
-            <ScrollView>
+            <View>
                 {selectedIndex === 0 && <ParticipatingThreads />}
                 {selectedIndex === 1 && <OtherThreads />}
                 {selectedIndex === 2 && <AIThreads />}
-            </ScrollView>
+            </View>
         </View>
     )
 }

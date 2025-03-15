@@ -58,7 +58,7 @@ const Chat = () => {
                     )
                 }
             }} />
-            <View style={{ flex: 1, justifyContent: 'space-between' }}>
+            <View className='flex-1'>
                 <ChatStream channelID={id as string} />
                 <ChatInput />
                 <Animated.View style={fakeView} />
