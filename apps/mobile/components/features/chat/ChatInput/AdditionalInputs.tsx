@@ -21,9 +21,10 @@ const AdditionalInputs = () => {
 
     return (
         <View>
-            <Button size='icon' variant="tonal" style={{ borderRadius: '100%' }}
+            <Button size='icon' style={{ borderRadius: '100%' }} className="h-8 w-8"
+                hitSlop={10}
                 onPress={() => bottomSheetRef.current?.present()}>
-                <PlusIcon fill={colors.foreground} />
+                <PlusIcon fill={"#FFF"} />
             </Button>
             <Sheet ref={bottomSheetRef} bottomInset={isKeyboardVisible ? keyboardHeight : 0} keyboardBehavior='interactive' keyboardBlurBehavior="restore" android_keyboardInputMode="adjustPan">
                 <BottomSheetView className='pb-16'>
