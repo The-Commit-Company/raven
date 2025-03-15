@@ -5,8 +5,6 @@ import DateSeparator from './DateSeparator'
 import SystemMessageBlock from './SystemMessageBlock'
 import MessageItem from './MessageItem'
 import ChannelHistoryFirstMessage from './FirstMessageBlock'
-import { FlatList, View } from 'react-native'
-import { Text } from '@components/nativewindui/Text'
 
 type Props = {
     channelID: string
@@ -59,7 +57,7 @@ const ChatStream = ({ channelID }: Props) => {
             keyboardDismissMode='on-drag'
             maintainVisibleContentPosition
             waitForInitialLayout
-            initialScrollIndex={data.length - 1}
+            initialScrollIndex={data.length > 0 ? data.length - 1 : undefined}
             maintainScrollAtEnd
             maintainScrollAtEndThreshold={0.1}
             getEstimatedItemSize={getEstimatedItemSize}
