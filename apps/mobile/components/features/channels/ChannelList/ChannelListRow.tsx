@@ -13,7 +13,6 @@ import { toast } from 'sonner-native';
 import useCurrentRavenUser from '@raven/lib/hooks/useCurrentRavenUser';
 import { RavenUser } from '@raven/types/Raven/RavenUser';
 import useSiteContext from '@hooks/useSiteContext';
-import { impactAsync, ImpactFeedbackStyle } from 'expo-haptics';
 
 export function ChannelListRow({ channel }: { channel: ChannelListItem }) {
 
