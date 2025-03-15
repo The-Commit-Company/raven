@@ -21,8 +21,6 @@ const useReactToMessage = () => {
     const postReaction = useCallback((message: Message, emoji: string, is_custom: boolean = false, emoji_name?: string) => {
         if (!user) return Promise.resolve()
 
-        console.log("Reacting to message", message.text, emoji)
-
         const updateMessageWithReaction = (data?: GetMessagesResponse) => {
             const existingMessages = data?.message.messages ?? []
 

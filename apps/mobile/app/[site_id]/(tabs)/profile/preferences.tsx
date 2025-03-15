@@ -13,7 +13,7 @@ import { useState } from 'react';
 import { Sheet, useSheetRef } from '@components/nativewindui/Sheet';
 import { BottomSheetView } from '@gorhom/bottom-sheet';
 
-const REACTION_PRESSABLE_STYLES = 'w-12 h-12 flex items-center justify-center p-2 bg-card dark:bg-card rounded-xl active:bg-muted/20'
+const REACTION_PRESSABLE_STYLES = 'w-12 h-12 flex items-center justify-center p-2 bg-card dark:bg-card rounded-full active:bg-muted/20'
 
 export default function PreferencesScreen() {
 
@@ -68,8 +68,8 @@ export default function PreferencesScreen() {
                 contentInsetAdjustmentBehavior="automatic"
                 contentContainerStyle={{ paddingBottom: insets.bottom }}>
                 <Form className="gap-5 px-4 pt-8">
-                    <FormSection footnote="Double tapping a message will add a reaction to it.">
-                        <FormItem>
+                    <FormSection footnote="Set your preferred emoji for reactions on double tap.">
+                        <FormItem className='py-0.5'>
                             <Pressable onPress={() => openEmojiPicker('doubleTapMessageEmoji')}
                                 hitSlop={10}
                                 className='bg-card dark:bg-card rounded-xl active:bg-muted/20'>
@@ -85,46 +85,48 @@ export default function PreferencesScreen() {
                         </FormItem>
                     </FormSection>
 
-                    <FormSection footnote="Long pressing a message will show a quick reaction picker.">
-                        <View className='flex flex-col gap-2 px-2'>
-                            <Text className='text-base font-medium'>Preferred Emojis for Reactions</Text>
-                            <View className='flex flex-row gap-2 justify-around'>
-                                <Pressable
-                                    onPress={() => openEmojiPicker('quickReactionEmojis-1')}
-                                    hitSlop={10}
-                                    className={REACTION_PRESSABLE_STYLES}>
-                                    <Text className='text-xl'>{quickReactionEmojis[0]}</Text>
-                                </Pressable>
+                    <FormSection footnote="Tap an emoji to set it as your preferred reaction.">
+                        <FormItem className='py-0.5'>
+                            <View className='flex flex-col gap-2 px-2'>
+                                <Text className='text-base font-medium'>Preferred Emojis for Reactions</Text>
+                                <View className='flex flex-row gap-2 justify-around'>
+                                    <Pressable
+                                        onPress={() => openEmojiPicker('quickReactionEmojis-1')}
+                                        hitSlop={10}
+                                        className={REACTION_PRESSABLE_STYLES}>
+                                        <Text className='text-xl'>{quickReactionEmojis[0]}</Text>
+                                    </Pressable>
 
-                                <Pressable
-                                    onPress={() => openEmojiPicker('quickReactionEmojis-2')}
-                                    hitSlop={10}
-                                    className={REACTION_PRESSABLE_STYLES}>
-                                    <Text className='text-xl'>{quickReactionEmojis[1]}</Text>
-                                </Pressable>
+                                    <Pressable
+                                        onPress={() => openEmojiPicker('quickReactionEmojis-2')}
+                                        hitSlop={10}
+                                        className={REACTION_PRESSABLE_STYLES}>
+                                        <Text className='text-xl'>{quickReactionEmojis[1]}</Text>
+                                    </Pressable>
 
-                                <Pressable
-                                    onPress={() => openEmojiPicker('quickReactionEmojis-3')}
-                                    hitSlop={10}
-                                    className={REACTION_PRESSABLE_STYLES}>
-                                    <Text className='text-xl'>{quickReactionEmojis[2]}</Text>
-                                </Pressable>
+                                    <Pressable
+                                        onPress={() => openEmojiPicker('quickReactionEmojis-3')}
+                                        hitSlop={10}
+                                        className={REACTION_PRESSABLE_STYLES}>
+                                        <Text className='text-xl'>{quickReactionEmojis[2]}</Text>
+                                    </Pressable>
 
-                                <Pressable
-                                    onPress={() => openEmojiPicker('quickReactionEmojis-4')}
-                                    hitSlop={10}
-                                    className={REACTION_PRESSABLE_STYLES}>
-                                    <Text className='text-xl'>{quickReactionEmojis[3]}</Text>
-                                </Pressable>
+                                    <Pressable
+                                        onPress={() => openEmojiPicker('quickReactionEmojis-4')}
+                                        hitSlop={10}
+                                        className={REACTION_PRESSABLE_STYLES}>
+                                        <Text className='text-xl'>{quickReactionEmojis[3]}</Text>
+                                    </Pressable>
 
-                                <Pressable
-                                    onPress={() => openEmojiPicker('quickReactionEmojis-5')}
-                                    hitSlop={10}
-                                    className={REACTION_PRESSABLE_STYLES}>
-                                    <Text className='text-xl'>{quickReactionEmojis[4]}</Text>
-                                </Pressable>
+                                    <Pressable
+                                        onPress={() => openEmojiPicker('quickReactionEmojis-5')}
+                                        hitSlop={10}
+                                        className={REACTION_PRESSABLE_STYLES}>
+                                        <Text className='text-xl'>{quickReactionEmojis[4]}</Text>
+                                    </Pressable>
+                                </View>
                             </View>
-                        </View>
+                        </FormItem>
                     </FormSection>
                 </Form>
                 <Sheet enableDynamicSizing={false} ref={emojiBottomSheetRef} snapPoints={["80"]}>
