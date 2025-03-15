@@ -4,19 +4,20 @@
   "main": "expo-router/entry",
   "scripts": {
     "start": "expo start",
-    "android": "expo run:android",
-    "ios": "expo run:ios",
+    "android": "npm run patch && expo run:android",
+    "ios": "npm run patch && expo run:ios",
     "web": "expo start --web",
     "nuke": "rm -rf ./node_modules && rm -rf ./ios && rm -rf ./android && rm -rf ./.expo",
     "nuke:ios": "rm -rf ./ios",
-    "nuke:android": "rm -rf ./android"
+    "nuke:android": "rm -rf ./android",
+    "patch": "cd ../../ && patch-package && cd ./apps/mobile"
   },
   "dependencies": {
     "@expensify/react-native-live-markdown": "^0.1.250",
     "@expo/dom-webview": "^0.0.2",
     "@expo/react-native-action-sheet": "^4.1.0",
-    "@gorhom/bottom-sheet": "^5.0.6",
-    "@legendapp/list": "^1.0.0-beta.11",
+    "@gorhom/bottom-sheet": "^5.1.2",
+    "@legendapp/list": "^1.0.0-beta.20",
     "@raven/lib": "*",
     "@react-native-async-storage/async-storage": "1.23.1",
     "@react-native-firebase/app": "^21.11.0",
@@ -86,7 +87,7 @@
     "rn-emoji-picker": "^1.1.6",
     "sonner-native": "^0.17.0",
     "tailwind-merge": "^2.5.5",
-    "zeego": "^3.0.3"
+    "zeego": "^3.0.5"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",

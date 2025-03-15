@@ -2420,10 +2420,10 @@
   resolved "https://registry.yarnpkg.com/@floating-ui/utils/-/utils-0.2.9.tgz#50dea3616bc8191fb8e112283b49eaff03e78429"
   integrity sha512-MDWhGtE+eHw5JW7lq4qhc5yRLS11ERl1c7Z6Xd0a58DozHES6EnNNwUWbMiG4J9Cgj053Bhk8zvlhFYKVhULwg==
 
-"@gorhom/bottom-sheet@^5.0.6":
-  version "5.1.1"
-  resolved "https://registry.yarnpkg.com/@gorhom/bottom-sheet/-/bottom-sheet-5.1.1.tgz#43ecb9e7b4d4ca4b4cefdf3b6b497f7715f350bc"
-  integrity sha512-Y8FiuRmeZYaP+ZGQ0axDwWrrKqVp4ByYRs1D2fTJTxHMt081MHHRQsqmZ3SK7AFp3cSID+vTqnD8w/KAASpy+w==
+"@gorhom/bottom-sheet@^5.1.2":
+  version "5.1.2"
+  resolved "https://registry.yarnpkg.com/@gorhom/bottom-sheet/-/bottom-sheet-5.1.2.tgz#509992983ce2905d5899d1c7cab1cd3950c8c238"
+  integrity sha512-5np8oL2krqAsVKLRE4YmtkZkyZeFiitoki72bEpVhZb8SRTNuAEeSbP3noq5srKpcRsboCr7uI+xmMyrWUd9kw==
   dependencies:
     "@gorhom/portal" "1.0.14"
     invariant "^2.2.4"
@@ -2605,10 +2605,10 @@
   resolved "https://registry.yarnpkg.com/@jsamr/react-native-li/-/react-native-li-2.3.1.tgz#12a5b5f6e3971cec77b96bee58104eed0ae9314a"
   integrity sha512-Qbo4NEj48SQ4k8FZJHFE2fgZDKTWaUGmVxcIQh3msg5JezLdTMMHuRRDYctfdHI6L0FZGObmEv3haWbIvmol8w==
 
-"@legendapp/list@^1.0.0-beta.11":
-  version "1.0.0-beta.11"
-  resolved "https://registry.yarnpkg.com/@legendapp/list/-/list-1.0.0-beta.11.tgz#cbf85aefc08d4cf48d5a43540dd837aa42855725"
-  integrity sha512-7hJ3hiB3J04f0muWbB8WDCuwhWdZJTSeQnCpqc8oKUE/mbKSjKlfArmDgXgZn5xEomg+M32pdw9PTKZCFt2EUA==
+"@legendapp/list@^1.0.0-beta.20":
+  version "1.0.0-beta.20"
+  resolved "https://registry.yarnpkg.com/@legendapp/list/-/list-1.0.0-beta.20.tgz#8c41bff391a29b446cd6c438b830750c63bac73f"
+  integrity sha512-X60UZcwk2YPvN1BlyjfLRZhQ4uOUNkot2aXu4VSi1TzpPiXc7wqAaqgtiZhQ7eCHChC+kMK226HHTrydZ6BbFQ==
 
 "@mixmark-io/domino@^2.2.0":
   version "2.2.0"
@@ -12014,10 +12014,10 @@ yocto-queue@^0.1.0:
   resolved "https://registry.yarnpkg.com/yocto-queue/-/yocto-queue-0.1.0.tgz#0294eb3dee05028d31ee1a5fa2c556a6aaf10a1b"
   integrity sha512-rVksvsnNCdJ/ohGc6xgPwyN8eheCxsiLM8mxuE/t/mOVqJewPuO1miLpTHQiRgTKCLexL4MeAFVagts7HmNZ2Q==
 
-zeego@^3.0.3:
-  version "3.0.3"
-  resolved "https://registry.yarnpkg.com/zeego/-/zeego-3.0.3.tgz#85c43cdf79259efda5cce1ed926ce348d799af18"
-  integrity sha512-YonC72+xx/yh0+N3WbhPBTNBTjoZ47f4nw8C2zLTMcsCKyxMRHFlX9bxGEpey1G0+jyA7Ye88y7M2yUJcw7fDg==
+zeego@^3.0.5:
+  version "3.0.5"
+  resolved "https://registry.yarnpkg.com/zeego/-/zeego-3.0.5.tgz#db435a2e47b47c60e0bb180991cc86d942225254"
+  integrity sha512-ex+bNsxHzXWWO6dCF5759dFa6NssXilRex3+S/Nuk7pRYLs99JnamWdKq5TCxowpZop5lhb16EAs9ZsonaOT3w==
   dependencies:
     "@radix-ui/react-context-menu" "^2.0.1"
     "@radix-ui/react-dropdown-menu" "^2.0.1"
