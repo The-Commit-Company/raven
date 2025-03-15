@@ -40,6 +40,53 @@ const useChatStream = (channelID: string, listRef: React.RefObject<LegendListRef
 
     const siteInformation = useSiteContext()
 
+    /**
+     * Ensures scroll to bottom happens after all content is loaded
+     * Uses both RAF and a backup timeout for reliability
+     */
+    const scrollToBottom = (index: number, animated: boolean = false) => {
+        if (!listRef.current) return
+
+        listRef.current.scrollToIndex({
+            index
+        })
+
+        // // First immediate scroll attempt
+        requestAnimationFrame(() => {
+            if (listRef.current) {
+                listRef.current.scrollToIndex({
+                    index,
+                    animated
+                })
+            }
+        })
+
+        // Second attempt after a short delay
+        const shortDelayTimer = setTimeout(() => {
+            if (listRef.current) {
+                listRef.current.scrollToIndex({
+                    index,
+                    animated
+                })
+            }
+        }, 100)
+
+        // Final backup attempt after longer delay
+        const backupTimer = setTimeout(() => {
+            if (listRef.current) {
+                listRef.current.scrollToIndex({
+                    index,
+                    animated
+                })
+            }
+        }, 500)
+
+        return () => {
+            clearTimeout(shortDelayTimer)
+            clearTimeout(backupTimer)
+        }
+    }
+
     const SYSTEM_TIMEZONE = siteInformation?.system_timezone ? siteInformation.system_timezone : 'Asia/Kolkata'
 
     const { data, isLoading, error, mutate } = useFrappeGetCall<GetMessagesResponse>('raven.api.chat_stream.get_messages', {
@@ -48,15 +95,15 @@ const useChatStream = (channelID: string, listRef: React.RefObject<LegendListRef
 
         // TODO: Add base message
     }, { path: `get_messages_for_channel_${channelID}` }, {
-        onSuccess: () => {
-            // requestAnimationFrame(() => {
-            //     listRef.current?.scrollToEnd({ animated: true })
-            // })
-            // listRef.current?.scroll({ animated: false })
+        onSuccess: (data) => {
 
-            // setTimeout(() => {
-            //     listRef.current?.scrollToEnd({ animated: false })
-            // }, 100)
+            const index = data.message.messages.length > 0 ? data.message.messages.length - 1 : 0
+
+            let cleanup = scrollToBottom(index, false)
+
+            if (cleanup) {
+                cleanup()
+            }
         }
     })
 
