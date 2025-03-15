@@ -276,6 +276,8 @@ class RavenBot(Document):
 
 		if markdown:
 			text = frappe.utils.md_to_html(text)
+			# Remove trailing newline if it exists
+			text = text.rstrip("\n")
 		doc = frappe.get_doc(
 			{
 				"doctype": "Raven Message",
