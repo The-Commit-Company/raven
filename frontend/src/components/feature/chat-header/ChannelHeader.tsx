@@ -8,6 +8,8 @@ import { ViewChannelMemberAvatars } from "./ViewChannelMemberAvatars"
 import { BiChevronLeft } from "react-icons/bi"
 import { Link } from "react-router-dom"
 import { ViewPinnedMessagesButton } from "../pinned-messages/ViewPinnedMessagesButton"
+import CreateVideoCallButton from "../video-calling/CreateVideoCallButton"
+import { HStack } from "@/components/layout/Stack"
 
 interface ChannelHeaderProps {
     channelData: ChannelListItem
@@ -42,7 +44,10 @@ export const ChannelHeader = ({ channelData }: ChannelHeaderProps) => {
 
             <Flex gap='2' align='center' className="animate-fadein">
                 <ViewChannelMemberAvatars channelData={channelData} />
-                <ChannelHeaderMenu channelData={channelData} />
+                <HStack gap='0'>
+                    {channelData.member_id && <CreateVideoCallButton channelData={channelData} />}
+                    <ChannelHeaderMenu channelData={channelData} />
+                </HStack>
             </Flex>
         </PageHeader>
     )

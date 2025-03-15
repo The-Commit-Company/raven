@@ -284,6 +284,35 @@ def message_has_permission(doc, user=None, ptype=None):
 	return False
 
 
+def raven_livekit_room_has_permission(doc, user=None, ptype=None):
+	if ptype == "read":
+		# Check if the user is a participant in the room
+		is_participant = False
+
+		for p in doc.participants:
+			if p.raven_user == user:
+				is_participant = True
+				break
+
+		if is_participant:
+			return True
+
+		channel = frappe.get_cached_doc("Raven Channel", doc.channel_id)
+		return channel_has_permission(channel, user, ptype)
+
+	if ptype == "create":
+		channel_member = get_channel_member(doc.channel_id, user)
+		if not channel_member:
+			return False
+		else:
+			return True
+
+	if ptype == "write" or ptype == "delete":
+		return doc.owner == user
+
+	return False
+
+
 def raven_poll_vote_has_permission(doc, user=None, ptype=None):
 	"""
 	Allowed users can add a vote to a poll and read votes (if the poll is not anonymous)

@@ -1,0 +1,105 @@
+{
+ "actions": [],
+ "autoname": "hash",
+ "creation": "2025-03-14 18:55:31.017010",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "channel_id",
+  "workspace",
+  "room_name",
+  "column_break_efjv",
+  "description",
+  "section_break_recu",
+  "invite_entire_channel",
+  "participants"
+ ],
+ "fields": [
+  {
+   "fieldname": "room_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Room Name",
+   "reqd": 1
+  },
+  {
+   "fieldname": "description",
+   "fieldtype": "Small Text",
+   "label": "Description"
+  },
+  {
+   "fieldname": "channel_id",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Channel",
+   "options": "Raven Channel",
+   "reqd": 1
+  },
+  {
+   "fieldname": "workspace",
+   "fieldtype": "Link",
+   "label": "Workspace",
+   "options": "Raven Workspace"
+  },
+  {
+   "fieldname": "column_break_efjv",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "section_break_recu",
+   "fieldtype": "Section Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "invite_entire_channel",
+   "fieldtype": "Check",
+   "label": "Invite Entire Channel"
+  },
+  {
+   "fieldname": "participants",
+   "fieldtype": "Table",
+   "label": "Participants",
+   "options": "Raven LiveKit Room Participants"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2025-03-14 22:16:06.530145",
+ "modified_by": "Administrator",
+ "module": "Raven Integrations",
+ "name": "Raven LiveKit Room",
+ "naming_rule": "Random",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Raven User",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": [],
+ "title_field": "room_name"
+}
