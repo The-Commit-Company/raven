@@ -2,7 +2,6 @@ import { useColorScheme } from '@hooks/useColorScheme'
 import { TouchableOpacity } from 'react-native'
 import ThreeHorizontalDots from '@assets/icons/ThreeHorizontalDots.svg'
 import * as DropdownMenu from 'zeego/dropdown-menu'
-import { useLocalSearchParams } from 'expo-router'
 import { useFetchChannelMembers } from '@raven/lib/hooks/useFetchChannelMembers';
 import { useMemo } from 'react';
 import useCurrentRavenUser from '@raven/lib/hooks/useCurrentRavenUser';
@@ -10,9 +9,8 @@ import MuteThread from './MuteThread';
 import DeleteThread from './DeleteThread';
 import LeaveThread from './LeaveThread';
 
-const ThreadActions = () => {
+const ThreadActions = ({ threadID }: { threadID: string }) => {
 
-    const { id: threadID } = useLocalSearchParams()
     const { colors } = useColorScheme()
 
     const { channelMembers } = useFetchChannelMembers(threadID as string)
@@ -24,8 +22,6 @@ const ThreadActions = () => {
         }
         return null
     }, [user, channelMembers])
-
-    console.log("channelMember", channelMember)
 
     if (!channelMember) return null
 
