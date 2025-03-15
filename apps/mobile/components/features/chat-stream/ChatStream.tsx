@@ -7,15 +7,16 @@ import MessageItem from './MessageItem'
 import ChannelHistoryFirstMessage from './FirstMessageBlock'
 
 type Props = {
-    channelID: string
+    channelID: string,
+    isThread?: boolean
 }
 
-const ChatStream = ({ channelID }: Props) => {
+const ChatStream = ({ channelID, isThread = false }: Props) => {
 
 
     const listRef = useRef<LegendListRef>(null)
 
-    const { data, isLoading, error, mutate } = useChatStream(channelID, listRef)
+    const { data, isLoading, error, mutate } = useChatStream(channelID, listRef, isThread)
 
     // return <FlatList
     //     data={data}

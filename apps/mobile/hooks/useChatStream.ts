@@ -31,14 +31,17 @@ export interface DateBlock {
 
 export interface HeaderBlock {
     message_type: 'header',
-    name: string
+    name: string,
+    is_thread: boolean
 }
 
 export type MessageDateBlock = Message | DateBlock | HeaderBlock
 
-const useChatStream = (channelID: string, listRef: React.RefObject<LegendListRef>) => {
+const useChatStream = (channelID: string, listRef: React.RefObject<LegendListRef>, isThread: boolean = false) => {
 
     const siteInformation = useSiteContext()
+
+    const SYSTEM_TIMEZONE = siteInformation?.system_timezone ? siteInformation.system_timezone : 'Asia/Kolkata'
 
     /**
      * Ensures scroll to bottom happens after all content is loaded
@@ -87,8 +90,6 @@ const useChatStream = (channelID: string, listRef: React.RefObject<LegendListRef
         }
     }
 
-    const SYSTEM_TIMEZONE = siteInformation?.system_timezone ? siteInformation.system_timezone : 'Asia/Kolkata'
-
     const { data, isLoading, error, mutate } = useFrappeGetCall<GetMessagesResponse>('raven.api.chat_stream.get_messages', {
         channel_id: channelID,
         limit: 20
@@ -127,6 +128,7 @@ const useChatStream = (channelID: string, listRef: React.RefObject<LegendListRef
         if (!data.message.has_old_messages || messages.length === 0) {
             messagesWithDateSeparators.push({
                 message_type: 'header',
+                is_thread: isThread,
                 name: channelID,
             })
         }
@@ -193,7 +195,7 @@ const useChatStream = (channelID: string, listRef: React.RefObject<LegendListRef
 
 
 
-    }, [data, SYSTEM_TIMEZONE])
+    }, [data, isThread, SYSTEM_TIMEZONE])
 
     return {
         data: messages,

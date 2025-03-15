@@ -46,7 +46,7 @@ const Thread = () => {
                 headerRight: () => <ThreadActions threadID={id as string} />
             }} />
             <View className='flex-1 justify-between'>
-                <ChatStream channelID={id as string} />
+                <ChatStream channelID={id as string} isThread />
                 <ChatInput />
                 <Animated.View style={fakeView} />
             </View>

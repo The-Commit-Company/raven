@@ -25,7 +25,9 @@ const ChannelHistoryFirstMessage = ({ channelID }: { channelID: string }) => {
         }
     }
 
-    return null
+    return <View className="pt-8 p-3">
+        <Text>You're at the beginning of this channel.</Text>
+    </View>
 }
 
 const FirstMessageBlockForDM = ({ channelData }: { channelData: DMChannelListItem }) => {
