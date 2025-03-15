@@ -125,16 +125,6 @@ export default function PreferencesScreen() {
                                 </Pressable>
                             </View>
                         </View>
-                        {/* <View onPress={() => openEmojiPicker('doubleTapMessageEmoji')} className='bg-card dark:bg-card rounded-xl active:bg-muted/20'>
-                            <View className='flex flex-row py-2.5 px-4 justify-between'>
-                                <View className='flex-row items-center gap-2'>
-                                    <Text className='text-base'>React on Double Tap with</Text>
-                                </View>
-                                <View>
-                                    <Text className='text-base text-muted-foreground/80'>{doubleTapMessageEmoji}</Text>
-                                </View>
-                            </View>
-                        </View> */}
                     </FormSection>
                 </Form>
                 <Sheet enableDynamicSizing={false} ref={emojiBottomSheetRef} snapPoints={["80"]}>
