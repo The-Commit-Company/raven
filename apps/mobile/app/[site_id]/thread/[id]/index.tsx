@@ -6,6 +6,7 @@ import { Platform, View } from 'react-native';
 import Animated, { useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
 import ChatInput from '@components/features/chat/ChatInput/ChatInput';
 import { useKeyboardHandler } from 'react-native-keyboard-controller';
+import ThreadActions from '@components/features/threads/thread-actions/ThreadActions';
 
 const PADDING_BOTTOM = Platform.OS === 'ios' ? 20 : 0;
 
@@ -41,7 +42,8 @@ const Thread = () => {
             <Stack.Screen options={{
                 headerStyle: { backgroundColor: colors.background },
                 headerLeft: () => <HeaderBackButton />,
-                headerTitle: 'Thread'
+                headerTitle: 'Thread',
+                headerRight: () => <ThreadActions />
             }} />
             <View className='flex-1 justify-between'>
                 <ChatStream channelID={id as string} />
