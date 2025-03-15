@@ -41,6 +41,7 @@ export const ImageMessageRenderer = ({ message, onLongPress, isScrolling = false
                 <Image
                     source={source}
                     style={{
+                        borderRadius: 8,
                         width: width,
                         height: height,
                     }}
