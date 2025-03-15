@@ -1,4 +1,4 @@
-import { Keyboard, ScrollView, View } from "react-native"
+import { Keyboard, NativeSyntheticEvent, ScrollView, TextInputChangeEventData, View } from "react-native"
 import AdditionalInputs from "./AdditionalInputs"
 import { Button } from "@components/nativewindui/Button"
 import SendIcon from "@assets/icons/SendIcon.svg"
@@ -10,7 +10,8 @@ import { useLocalSearchParams } from "expo-router"
 import { CustomFile } from "@raven/types/common/File"
 import { useCallback, useEffect, useState } from "react"
 import { filesAtom } from "@lib/filesAtom"
-import Tiptap from "./Tiptap/Tiptap"
+import { MarkdownTextInput, parseExpensiMark } from "@expensify/react-native-live-markdown"
+// import Tiptap from "./Tiptap/Tiptap"
 import { cn } from "@lib/cn"
 import { useSendMessage } from "@hooks/useSendMessage"
 import Animated, {
@@ -33,8 +34,7 @@ const ChatInput = () => {
     const { id } = useLocalSearchParams()
     const { uploadFiles } = useFileUpload(id as string)
     const [files, setFiles] = useAtom(filesAtom)
-    const [content, setContent] = useState('')
-    const [json, setJSON] = useState<any>(null)
+    const [content, setContent] = useState('Hello, *world*!')
 
     const handleCancelReply = () => {
         console.log('cancel reply')
@@ -101,7 +101,7 @@ const ChatInput = () => {
 
     const handleSend = async (files?: CustomFile[]) => {
 
-        console.log('html', content, json)
+        console.log('html', content)
 
         // setText(content ?? '')
 
@@ -117,12 +117,10 @@ const ChatInput = () => {
             })
 
             setContent('')
-            setJSON(null)
         } else if (content) {
             console.log('content', content)
-            await sendMessage(content, json)
+            await sendMessage(content)
             setContent('')
-            setJSON(null)
         }
     }
 
@@ -130,17 +128,11 @@ const ChatInput = () => {
         if (content) {
             return sendMessage(content, json).then(() => {
                 setContent('')
-                setJSON(null)
             })
         }
 
         return Promise.resolve()
     }
-
-    const onEditorBlur = useCallback((content: string, json: any) => {
-        setContent(content)
-        setJSON(json)
-    }, [])
 
     const [isKeyboardVisible, setIsKeyboardVisible] = useState(false)
 
@@ -159,16 +151,27 @@ const ChatInput = () => {
         }
     }, [])
 
+    const onChange = (e: NativeSyntheticEvent<TextInputChangeEventData>) => {
+        setContent(e.nativeEvent.text)
+    }
+
     return (
         <Animated.View
             style={containerStyles}
             className={cn(
-                "bg-white dark:bg-background gap-4",
+                "bg-white dark:bg-background gap-4 min-h-16",
                 "border border-b-0 border-gray-300 dark:border-gray-900 rounded-t-lg",
             )}
         >
-            <Animated.View style={editorContainerStyles} className="flex-row justify-start items-start flex-1">
-                <Tiptap
+            <Animated.View
+                style={editorContainerStyles}
+                className="flex-row justify-start items-start flex-1">
+                <MarkdownTextInput
+                    value={content}
+                    onChange={onChange}
+                    parser={parseExpensiMark}
+                />
+                {/* <Tiptap
                     content={content}
                     isKeyboardVisible={isKeyboardVisible}
                     onSend={onEditorSendClicked}
@@ -184,9 +187,11 @@ const ChatInput = () => {
                         // prefer expo dom view over react native webview as react native webview has internal scroll issue.
                         useExpoDOMWebView: true,
                     }}
-                />
+                /> */}
             </Animated.View>
-            <Animated.View style={toolbarStyles}>
+            <Animated.View
+                style={toolbarStyles}
+            >
                 <InputBottomBar onSend={handleSend} />
             </Animated.View>
         </Animated.View>
