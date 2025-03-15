@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link, router, Stack } from 'expo-router';
+import { router, Stack } from 'expo-router';
 import { Platform, View } from 'react-native';
 import { useFrappePostCall } from 'frappe-react-sdk';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
@@ -12,7 +12,7 @@ import useCurrentRavenUser from '@raven/lib/hooks/useCurrentRavenUser';
 import { toast } from 'sonner-native';
 import { useColorScheme } from '@hooks/useColorScheme';
 import { ActivityIndicator } from '@components/nativewindui/ActivityIndicator';
-import CrossIcon from '@assets/icons/CrossIcon.svg';
+import HeaderBackButton from '@components/common/HeaderBackButton';
 
 export default function CustomStatusScreen() {
 
@@ -43,11 +43,7 @@ export default function CustomStatusScreen() {
                 options={{
                     headerLeft() {
                         return (
-                            <Link asChild href="../" relativeToDirectory>
-                                <Button variant="plain" className="ios:px-0" hitSlop={10}>
-                                    <CrossIcon color={colors.icon} height={24} width={24} />
-                                </Button>
-                            </Link>
+                            <HeaderBackButton />
                         )
                     },
                     headerTitle: () => <Text className='ml-2 text-base font-semibold'>Custom Status</Text>,

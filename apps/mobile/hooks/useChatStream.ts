@@ -7,7 +7,7 @@ import utc from 'dayjs/plugin/utc'
 import advancedFormat from 'dayjs/plugin/advancedFormat'
 import { formatDate } from '@raven/lib/utils/dateConversions'
 import useSiteContext from './useSiteContext'
-import { FlatList } from 'react-native'
+import { GetMessagesResponse } from '@raven/types/common/ChatStream'
 
 dayjs.extend(utc)
 dayjs.extend(advancedFormat)
@@ -20,14 +20,6 @@ const checkIfMessageContainsLinkPreview = (message: Message) => {
         return LINK_PREVIEW_REGEX.test(message.text)
     }
     return false
-}
-
-interface GetMessagesResponse {
-    message: {
-        messages: Message[],
-        has_old_messages: boolean
-        has_new_messages: boolean
-    }
 }
 
 export interface DateBlock {
@@ -55,8 +47,11 @@ const useChatStream = (channelID: string, listRef: React.RefObject<LegendListRef
         limit: 20
 
         // TODO: Add base message
-    }, undefined, {
+    }, { path: `get_messages_for_channel_${channelID}` }, {
         onSuccess: () => {
+            // requestAnimationFrame(() => {
+            //     listRef.current?.scrollToEnd({ animated: true })
+            // })
             // listRef.current?.scroll({ animated: false })
 
             // setTimeout(() => {

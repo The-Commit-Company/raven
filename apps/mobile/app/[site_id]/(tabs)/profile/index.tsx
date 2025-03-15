@@ -10,6 +10,7 @@ import UserFullName from '@components/features/profile/profile-settings/UserFull
 import CustomStatus from '@components/features/profile/profile-settings/CustomStatus';
 import ProfilePicture from '@components/features/profile/upload-profile/ProfilePicture';
 import { nativeApplicationVersion, nativeBuildVersion } from 'expo-application';
+import Preferences from '@components/features/profile/profile-settings/Preferences';
 
 const SCREEN_OPTIONS = {
     title: 'Profile',
@@ -35,12 +36,13 @@ export default function Profile() {
                             <Text className='pl-2 pb-1 text-xs text-muted-foreground/80'>Personal Info</Text>
                             <UserFullName />
                             <CustomStatus />
+                            <UserAvailability />
                         </View>
                         <View className='flex flex-col gap-0.5'>
                             <Text className='pl-2 pb-1 text-xs text-muted-foreground/80'>Preferences</Text>
                             <NotificationSetting />
                             <AppearanceSetting />
-                            <UserAvailability />
+                            <Preferences />
                         </View>
                         <LogOutButton />
                         <View className='flex flex-col justify-center items-center pt-2 gap-1'>
