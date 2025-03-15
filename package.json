@@ -23,7 +23,5 @@
   "devDependencies": {
     "turbo": "^2.3.3"
   },
-  "dependencies": {
-    "patch-package": "^8.0.0"
-  }
+  "dependencies": {}
 }
