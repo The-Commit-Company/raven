@@ -40,6 +40,7 @@
     "expo-build-properties": "~0.13.2",
     "expo-clipboard": "~7.0.1",
     "expo-constants": "~17.0.5",
+    "expo-device": "~7.0.2",
     "expo-document-picker": "~13.0.3",
     "expo-font": "~13.0.3",
     "expo-haptics": "~14.0.1",
