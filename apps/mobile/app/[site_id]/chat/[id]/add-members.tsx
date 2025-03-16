@@ -18,8 +18,8 @@ import { ActivityIndicator } from '@components/nativewindui/ActivityIndicator';
 import SelectedMembers from '@components/features/channel-settings/Members/SelectedMembers';
 import MemberList from '@components/features/channel-settings/Members/MemberList';
 import { toast } from 'sonner-native';
-import { SearchInput } from '@components/nativewindui/SearchInput';
 import { Divider } from '@components/layout/Divider';
+import SearchInput from '@components/common/SearchInput/SearchInput';
 
 export default function AddNewChannelMembers() {
 
@@ -128,9 +128,6 @@ export default function AddNewChannelMembers() {
             }} />
             <View className='px-4 py-3'>
                 <SearchInput
-                    style={{ backgroundColor: colors.grey6 }}
-                    placeholder="Search"
-                    placeholderTextColor={colors.grey}
                     onChangeText={setSearchQuery}
                     value={searchQuery}
                 />

@@ -2,7 +2,6 @@ import { TouchableOpacity, View } from 'react-native'
 import { useState } from 'react'
 import { useDebounce } from '@raven/lib/hooks/useDebounce'
 import { useColorScheme } from '@hooks/useColorScheme'
-import { SearchInput } from '@components/nativewindui/SearchInput'
 import ThreadsList from './ThreadsList'
 import ChannelFilter from './thread-filters/ChannelFilter'
 import { Text } from '@components/nativewindui/Text'
@@ -10,6 +9,7 @@ import { ChannelIcon } from '../channels/ChannelList/ChannelIcon'
 import CrossIcon from '@assets/icons/CrossIcon.svg'
 import { COLORS } from '@theme/colors'
 import { Divider } from '@components/layout/Divider'
+import SearchInput from '@components/common/SearchInput/SearchInput'
 
 /**
  * Component for displaying other threads - where the user is not a member of the thread but is a member of the channel
@@ -27,9 +27,6 @@ const OtherThreads = () => {
                 <View className="flex flex-row items-center gap-2">
                     <View className="flex-1 max-w-[90%]">
                         <SearchInput
-                            style={{ backgroundColor: colors.grey6 }}
-                            placeholder="Search"
-                            placeholderTextColor={colors.grey}
                             onChangeText={setSearchQuery}
                             value={searchQuery}
                         />
