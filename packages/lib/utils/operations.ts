@@ -48,8 +48,9 @@ export const isImageFile = (ext: string) => {
  */
 export const getFileName = (filename: string) => {
 
-    const name = filename?.split('/')[3]
-    return name;
+    const name = filename?.split('?')[0]
+
+    return name?.split('/')[3]
 }
 
 export const getFileMimeType = (fileName: string) => {

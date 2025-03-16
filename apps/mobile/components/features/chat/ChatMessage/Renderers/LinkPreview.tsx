@@ -30,7 +30,7 @@ const LinkPreview = memo(({ messageID, href }: LinkPreviewProps) => {
                 <View>
                     <Image
                         source={{ uri: image }}
-                        className="w-full h-36 bg-card-background/20"
+                        className="w-full h-36 min-w-[100%] bg-card-background/20"
                     />
                     <View className="p-2 pt-2.5">
                         <View className='gap-1'>

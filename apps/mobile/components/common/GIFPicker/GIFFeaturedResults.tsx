@@ -1,8 +1,9 @@
 import { useMemo, useCallback } from "react";
 import { useSWRInfinite } from "frappe-react-sdk";
-import { Image, TouchableOpacity, Dimensions, View } from "react-native";
+import { TouchableOpacity, Dimensions } from "react-native";
 import { FlashList } from "@shopify/flash-list";
 import { TENOR_API_KEY, TENOR_CLIENT_KEY, TENOR_FEATURED_API_ENDPOINT_BASE } from "./GIFPickerKeys";
+import { Image } from "expo-image";
 
 export interface Props {
     onSelect: (gif: Result) => void;
@@ -60,9 +61,10 @@ const GIFFeaturedResults = ({ onSelect }: Props) => {
                     marginLeft: index % 2 === 0 ? 0 : 4
                 }}
                 activeOpacity={0.4}
-                className="bg-gray-200 dark:bg-gray-800"
+                className="bg-background"
             >
                 <Image
+                    contentFit="cover"
                     source={{ uri: gif.media_formats.gif.url }}
                     style={{
                         width: "100%",

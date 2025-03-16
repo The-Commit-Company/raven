@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link, router, Stack } from 'expo-router';
+import { router, Stack } from 'expo-router';
 import { Platform, View } from 'react-native';
 import { useFrappeUpdateDoc } from 'frappe-react-sdk';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
@@ -9,10 +9,10 @@ import { Form, FormItem, FormSection } from '@components/nativewindui/Form';
 import { Text } from '@components/nativewindui/Text';
 import { TextField } from '@components/nativewindui/TextField';
 import useCurrentRavenUser from '@raven/lib/hooks/useCurrentRavenUser';
-import CrossIcon from '@assets/icons/CrossIcon.svg';
 import { useColorScheme } from '@hooks/useColorScheme';
 import { ActivityIndicator } from '@components/nativewindui/ActivityIndicator';
 import { toast } from 'sonner-native';
+import HeaderBackButton from '@components/common/HeaderBackButton';
 
 export default function FullNameScreen() {
 
@@ -43,14 +43,10 @@ export default function FullNameScreen() {
                 options={{
                     headerLeft() {
                         return (
-                            <Link asChild href="../" relativeToDirectory>
-                                <Button variant="plain" className="ios:px-0" hitSlop={10}>
-                                    <CrossIcon color={colors.icon} height={24} width={24} />
-                                </Button>
-                            </Link>
+                            <HeaderBackButton />
                         )
                     },
-                    headerTitle: () => <Text className='ml-2 text-base font-semibold'>User name</Text>,
+                    headerTitle: () => <Text className='ml-2 text-base font-semibold'>User Name</Text>,
                     headerRight() {
                         return (
                             <Button variant="plain" className="ios:px-0"

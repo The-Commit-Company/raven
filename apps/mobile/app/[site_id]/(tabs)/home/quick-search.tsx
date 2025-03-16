@@ -3,7 +3,6 @@ import { Button } from '@components/nativewindui/Button';
 import CrossIcon from '@assets/icons/CrossIcon.svg';
 import { useColorScheme } from '@hooks/useColorScheme';
 import { Pressable, View, StyleSheet, ScrollView } from 'react-native';
-import { SearchInput } from '@components/nativewindui/SearchInput';
 import { Text } from '@components/nativewindui/Text';
 import HashIcon from '@assets/icons/HashIcon.svg';
 import PlusIcon from '@assets/icons/PlusIcon.svg';
@@ -15,6 +14,7 @@ import { useGetUser } from '@raven/lib/hooks/useGetUser';
 import UserAvatar from '@components/layout/UserAvatar';
 import { useState } from 'react';
 import { ChannelListItem, DMChannelListItem } from '@raven/types/common/ChannelListItem';
+import SearchInput from '@components/common/SearchInput/SearchInput';
 
 export default function QuickSearch() {
 
@@ -46,7 +46,7 @@ export default function QuickSearch() {
 
     return <>
         <Stack.Screen options={{
-            title: 'Quick search',
+            title: 'Quick Search',
             headerLeft() {
                 return (
                     <Link asChild href="../" relativeToDirectory>
@@ -60,9 +60,6 @@ export default function QuickSearch() {
         <View className="flex flex-col gap-3 p-3">
             <View>
                 <SearchInput
-                    style={{ backgroundColor: colors.grey5 }}
-                    placeholder="Search"
-                    placeholderTextColor={colors.grey}
                     onChangeText={setSearchQuery}
                     value={searchQuery}
                 />

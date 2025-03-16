@@ -39,7 +39,7 @@ const DeleteMessage = ({ message, onClose }: DeleteMessageProps) => {
             <Alert
                 key="delete-message"
                 ref={deleteAlertRef}
-                title="Delete Message"
+                title="Delete message?"
                 message="Are you sure you want to delete this message? It will be deleted for all users."
                 buttons={[
                     {

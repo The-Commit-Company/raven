@@ -36,6 +36,7 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#000000"
       },
+      "softwareKeyboardLayoutMode": "pan",
       "package": "raven.thecommit.company",
       "googleServicesFile": "./google-services.json"
     },

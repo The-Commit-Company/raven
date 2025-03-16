@@ -4,7 +4,7 @@ import { useGetUser } from '@raven/lib/hooks/useGetUser'
 import clsx from 'clsx'
 import MessageReactions from './MessageItemElements/Reactions/MessageReactions'
 import ShareForward from '@assets/icons/ShareForward.svg'
-import { useMemo, memo } from 'react';
+import { useMemo, memo, useCallback, useRef } from 'react';
 import PushPin from '@assets/icons/PushPin.svg'
 import { FileMessage, ImageMessage, PollMessage, TextMessage } from '@raven/types/common/Message'
 import MessageAvatar from '@components/features/chat-stream/MessageItemElements/MessageAvatar'
@@ -19,13 +19,17 @@ import MessageTextRenderer from './MessageItemElements/MessageTextRenderer';
 import MessageActionsBottomSheet from '../chat/ChatMessage/MessageActions/MessageActionsBottomSheet';
 import { useSheetRef } from '@components/nativewindui/Sheet';
 import { impactAsync, ImpactFeedbackStyle } from 'expo-haptics';
+import useReactToMessage from '@raven/lib/hooks/useReactToMessage';
+import { useAtomValue } from 'jotai';
+import { doubleTapMessageEmojiAtom } from '@lib/preferences';
 
 type Props = {
-    message: FileMessage | PollMessage | TextMessage | ImageMessage,
-    onReplyMessagePress: () => void
+    message: FileMessage | PollMessage | TextMessage | ImageMessage
 }
 
-const MessageItem = memo(({ message, onReplyMessagePress }: Props) => {
+const DOUBLE_TAP_DELAY = 300; // milliseconds
+
+const MessageItem = memo(({ message }: Props) => {
 
     const { linked_message, replied_message_details } = message
 
@@ -45,16 +49,43 @@ const MessageItem = memo(({ message, onReplyMessagePress }: Props) => {
 
     const messageActionsSheetRef = useSheetRef()
 
-    const onMessageLongPress = () => {
-        impactAsync(ImpactFeedbackStyle.Light)
+    const react = useReactToMessage()
+
+    const doubleTapMessageEmoji = useAtomValue(doubleTapMessageEmojiAtom)
+
+    const lastTap = useRef<number>(0);
+
+    const onLongPress = useCallback(() => {
+        impactAsync(ImpactFeedbackStyle.Medium)
         messageActionsSheetRef.current?.present()
-    }
+    }, [])
+
+    const onDoubleTap = useCallback(() => {
+        impactAsync(ImpactFeedbackStyle.Light)
+        react(message, doubleTapMessageEmoji ?? '👍')
+    }, [react, message, doubleTapMessageEmoji])
+
+    const onPress = useCallback(() => {
+        const now = Date.now();
+
+        if (lastTap.current && (now - lastTap.current) < DOUBLE_TAP_DELAY) {
+            // Double tap detected
+            onDoubleTap();
+            lastTap.current = 0;
+        } else {
+            lastTap.current = now;
+        }
+    }, [onDoubleTap]);
 
     return (
         <Pressable
+            hitSlop={10}
             className='rounded-md ios:active:bg-linkColor/60'
-            android_ripple={{ color: 'rgba(0,0,0,0.1)', borderless: false }}
-            onLongPress={onMessageLongPress}>
+            onLongPress={onLongPress}
+            onPress={onPress}
+            android_ripple={{ color: 'rgba(0,0,0,0.1)', borderless: false }
+            }
+        >
             <View className={clsx('flex-1 flex-row px-3 gap-1', message.is_continuation ? 'pt-0' : 'pt-2')}>
                 <MessageAvatar
                     userFullName={userFullName}
@@ -85,13 +116,15 @@ const MessageItem = memo(({ message, onReplyMessagePress }: Props) => {
                             </View>}
 
                         {linked_message && replied_message_details && <ReplyMessageBox
-                            onPress={onReplyMessagePress}
+                            // onPress={() => {
+                            //     console.log('reply message pressed')
+                            // }}
                             message={replyMessageDetails}
                         />}
 
                         {message.text ? <MessageTextRenderer text={message.text} /> : null}
-                        {message.message_type === 'Image' && <ImageMessageRenderer message={message} onLongPress={onMessageLongPress} />}
-                        {message.message_type === 'File' && <FileMessageRenderer message={message} onLongPress={onMessageLongPress} />}
+                        {message.message_type === 'Image' && <ImageMessageRenderer message={message} />}
+                        {message.message_type === 'File' && <FileMessageRenderer message={message} />}
                         {message.message_type === 'Poll' && <PollMessageBlock message={message} />}
 
                         {message.link_doctype && message.link_document && <View className={clsx(message.is_continuation ? 'ml-0.5' : '-ml-0.5')}>
@@ -106,7 +139,8 @@ const MessageItem = memo(({ message, onReplyMessagePress }: Props) => {
             </View>
             {message && <MessageActionsBottomSheet
                 messageActionsSheetRef={messageActionsSheetRef}
-                message={message} />}
+                message={message}
+            />}
         </Pressable>
     )
 })

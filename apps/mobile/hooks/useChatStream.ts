@@ -7,6 +7,7 @@ import utc from 'dayjs/plugin/utc'
 import advancedFormat from 'dayjs/plugin/advancedFormat'
 import { formatDate } from '@raven/lib/utils/dateConversions'
 import useSiteContext from './useSiteContext'
+import { GetMessagesResponse } from '@raven/types/common/ChatStream'
 
 dayjs.extend(utc)
 dayjs.extend(advancedFormat)
@@ -21,14 +22,6 @@ const checkIfMessageContainsLinkPreview = (message: Message) => {
     return false
 }
 
-interface GetMessagesResponse {
-    message: {
-        messages: Message[],
-        has_old_messages: boolean
-        has_new_messages: boolean
-    }
-}
-
 export interface DateBlock {
     creation: string
     message_type: 'date',
@@ -36,26 +29,82 @@ export interface DateBlock {
     formattedDate: string
 }
 
-export type MessageDateBlock = Message | DateBlock
+export interface HeaderBlock {
+    message_type: 'header',
+    name: string,
+    is_thread: boolean
+}
 
-const useChatStream = (channelID: string, listRef: React.RefObject<LegendListRef>) => {
+export type MessageDateBlock = Message | DateBlock | HeaderBlock
+
+const useChatStream = (channelID: string, listRef: React.RefObject<LegendListRef>, isThread: boolean = false) => {
 
     const siteInformation = useSiteContext()
 
     const SYSTEM_TIMEZONE = siteInformation?.system_timezone ? siteInformation.system_timezone : 'Asia/Kolkata'
+
+    /**
+     * Ensures scroll to bottom happens after all content is loaded
+     * Uses both RAF and a backup timeout for reliability
+     */
+    const scrollToBottom = (index: number, animated: boolean = false) => {
+        if (!listRef.current) return
+
+        listRef.current.scrollToIndex({
+            index
+        })
+
+        // // First immediate scroll attempt
+        requestAnimationFrame(() => {
+            if (listRef.current) {
+                listRef.current.scrollToIndex({
+                    index,
+                    animated
+                })
+            }
+        })
+
+        // Second attempt after a short delay
+        const shortDelayTimer = setTimeout(() => {
+            if (listRef.current) {
+                listRef.current.scrollToIndex({
+                    index,
+                    animated
+                })
+            }
+        }, 100)
+
+        // Final backup attempt after longer delay
+        const backupTimer = setTimeout(() => {
+            if (listRef.current) {
+                listRef.current.scrollToIndex({
+                    index,
+                    animated
+                })
+            }
+        }, 500)
+
+        return () => {
+            clearTimeout(shortDelayTimer)
+            clearTimeout(backupTimer)
+        }
+    }
 
     const { data, isLoading, error, mutate } = useFrappeGetCall<GetMessagesResponse>('raven.api.chat_stream.get_messages', {
         channel_id: channelID,
         limit: 20
 
         // TODO: Add base message
-    }, undefined, {
-        onSuccess: () => {
-            // listRef.current?.scrollToEnd({ animated: false })
+    }, { path: `get_messages_for_channel_${channelID}` }, {
+        onSuccess: (data) => {
 
-            // setTimeout(() => {
-            //     listRef.current?.scrollToEnd({ animated: false })
-            // }, 100)
+            const index = data.message.messages.length > 0 ? data.message.messages.length - 1 : 0
+
+            let cleanup = scrollToBottom(index, false)
+
+            if (cleanup) {
+                cleanup()
+            }
         }
     })
 
@@ -75,6 +124,14 @@ const useChatStream = (channelID: string, listRef: React.RefObject<LegendListRef
         const messages = [...data.message.messages]
 
         const messagesWithDateSeparators: MessageDateBlock[] = []
+
+        if (!data.message.has_old_messages || messages.length === 0) {
+            messagesWithDateSeparators.push({
+                message_type: 'header',
+                is_thread: isThread,
+                name: channelID,
+            })
+        }
 
         if (messages.length > 0) {
             let currentDate = messages[messages.length - 1].creation.split(' ')[0]
@@ -133,12 +190,12 @@ const useChatStream = (channelID: string, listRef: React.RefObject<LegendListRef
             return messagesWithDateSeparators
         }
         else {
-            return []
+            return messagesWithDateSeparators
         }
 
 
 
-    }, [data, SYSTEM_TIMEZONE])
+    }, [data, isThread, SYSTEM_TIMEZONE])
 
     return {
         data: messages,
