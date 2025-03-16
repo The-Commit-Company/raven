@@ -41,9 +41,9 @@ const DMChannelHeader = ({ channelData }: { channelData: DMChannelListItem }) =>
                 isBot={isBot}
                 availabilityStatus={user?.availability_status}
                 avatarProps={{ className: "w-6 h-6" }}
-                fallbackProps={{ className: "rounded-lg" }}
-                textProps={{ className: "text-xs font-semibold" }}
-                imageProps={{ className: "rounded-lg" }}
+                fallbackProps={{ className: "rounded-[4px]" }}
+                textProps={{ className: "text-xs font-medium" }}
+                imageProps={{ className: "rounded-[4px]" }}
             />
             <Text className='text-base font-semibold text-foreground'>{userName}</Text>
         </View>

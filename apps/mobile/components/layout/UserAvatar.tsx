@@ -1,12 +1,12 @@
 import { Text } from '@components/nativewindui/Text'
 import useFileURL from '@hooks/useFileURL'
 import { cn } from '@lib/cn'
-import { getColorIndexForAvatar, getInitials } from '@raven/lib/utils/utils'
 import { RavenUser } from '@raven/types/Raven/RavenUser'
 import { useCallback, useMemo, useState } from 'react'
-import { StyleSheet, TextProps, View, ViewProps } from 'react-native'
+import { TextProps, View, ViewProps } from 'react-native'
 import { Image, ImageSource, ImageProps } from 'expo-image'
 import BotIcon from '@assets/icons/BotIcon.svg'
+import { getHashOfString, getInitials } from '@raven/lib/utils/utils'
 
 type Props = {
     alt: string,
@@ -24,24 +24,30 @@ type Props = {
 
 // These need to kept here since Nativewind/Tailwind needs the variables in the source file to be defined to compile
 const COLOR_MAP: { name: string, bg: string, text: string, botColor: string }[] = [
-    { name: 'red', bg: 'bg-red-400', text: 'text-red-100', botColor: '#7F1D1D' },
-    { name: 'rose', bg: 'bg-rose-400', text: 'text-rose-100', botColor: '#881337' },
-    { name: 'pink', bg: 'bg-pink-400', text: 'text-pink-100', botColor: '#831843' },
-    { name: 'purple', bg: 'bg-purple-400', text: 'text-purple-100', botColor: '#581C87' },
-    { name: 'violet', bg: 'bg-violet-400', text: 'text-violet-100', botColor: '#4C1D95' },
-    { name: 'indigo', bg: 'bg-indigo-400', text: 'text-indigo-100', botColor: '#312E81' },
-    { name: 'blue', bg: 'bg-blue-400', text: 'text-blue-100', botColor: '#1E3A8A' },
-    { name: 'cyan', bg: 'bg-cyan-400', text: 'text-cyan-100', botColor: '#164E63' },
-    { name: 'teal', bg: 'bg-teal-400', text: 'text-teal-100', botColor: '#134E4A' },
-    { name: 'green', bg: 'bg-green-400', text: 'text-green-100', botColor: '#14532D' },
-    { name: 'orange', bg: 'bg-orange-400', text: 'text-orange-100', botColor: '#7C2D12' },
-    { name: 'sky', bg: 'bg-sky-400', text: 'text-sky-100', botColor: '#0C4A6E' },
-    { name: 'emerald', bg: 'bg-emerald-400', text: 'text-emerald-100', botColor: '#064E3B' },
-    { name: 'lime', bg: 'bg-lime-400', text: 'text-lime-100', botColor: '#365314' },
-    { name: 'yellow', bg: 'bg-yellow-400', text: 'text-yellow-100', botColor: '#713F12' },
-    { name: 'amber', bg: 'bg-amber-400', text: 'text-amber-100', botColor: '#78350F' },
-    { name: 'gray', bg: 'bg-gray-400', text: 'text-gray-100', botColor: '#111827' }
+    { name: 'red', bg: 'bg-red-400/30', text: 'text-red-100', botColor: '#7F1D1D' },
+    { name: 'rose', bg: 'bg-rose-400/30', text: 'text-rose-100', botColor: '#881337' },
+    { name: 'pink', bg: 'bg-pink-400/30', text: 'text-pink-100', botColor: '#831843' },
+    { name: 'purple', bg: 'bg-purple-400/30', text: 'text-purple-100', botColor: '#581C87' },
+    { name: 'violet', bg: 'bg-violet-400/30', text: 'text-violet-100', botColor: '#4C1D95' },
+    { name: 'indigo', bg: 'bg-indigo-400/30', text: 'text-indigo-100', botColor: '#312E81' },
+    { name: 'blue', bg: 'bg-blue-400/30', text: 'text-blue-100', botColor: '#1E3A8A' },
+    { name: 'cyan', bg: 'bg-cyan-400/30', text: 'text-cyan-100', botColor: '#164E63' },
+    { name: 'teal', bg: 'bg-teal-400/30', text: 'text-teal-100', botColor: '#134E4A' },
+    { name: 'green', bg: 'bg-green-400/30', text: 'text-green-100', botColor: '#14532D' },
+    { name: 'orange', bg: 'bg-orange-400/30', text: 'text-orange-100', botColor: '#7C2D12' },
+    { name: 'sky', bg: 'bg-sky-400/30', text: 'text-sky-100', botColor: '#0C4A6E' },
+    { name: 'emerald', bg: 'bg-emerald-400/30', text: 'text-emerald-100', botColor: '#064E3B' },
+    { name: 'lime', bg: 'bg-lime-400/30', text: 'text-lime-100', botColor: '#365314' },
+    { name: 'yellow', bg: 'bg-yellow-400/30', text: 'text-yellow-100', botColor: '#713F12' },
+    { name: 'amber', bg: 'bg-amber-400/30', text: 'text-amber-100', botColor: '#78350F' },
+    { name: 'gray', bg: 'bg-gray-400/30', text: 'text-gray-100', botColor: '#111827' }
 ]
+
+// Get a color index based on the hashed name
+const getColorIndexForAvatar = (name: string): number => {
+    const hash = getHashOfString(name)
+    return hash % COLOR_MAP.length // Map the hash to a valid index
+}
 
 const UserAvatar = ({ src, isActive, alt, availabilityStatus, isBot, imageProps, fallbackProps, textProps, indicatorProps, avatarProps, rounded = false }: Props) => {
 
@@ -61,8 +67,11 @@ const UserAvatar = ({ src, isActive, alt, availabilityStatus, isBot, imageProps,
 
     return (
         <View {...avatarProps} className={cn('relative w-10 h-10', avatarProps?.className)}>
-            {status === 'error' ? <View {...fallbackProps} className={cn('flex h-full w-full items-center justify-center rounded-lg', bg, fallbackProps?.className)}>
-                <Text {...textProps} className={cn(text, textProps?.className)}>
+            {status === 'error' ? <View {...fallbackProps}
+                className={cn('flex h-full w-full items-center justify-center rounded-[4px]', bg, fallbackProps?.className)}>
+                <Text {...textProps}
+                    style={{ color: botColor }}
+                    className={cn(text, textProps?.className)}>
                     {getInitials(alt)}
                 </Text>
             </View> : null}
@@ -92,7 +101,7 @@ const ImageComponent = ({ status, source, alt, onDisplay, onError, rounded, ...p
             flex: 1,
             width: '100%',
             height: '100%',
-            borderRadius: rounded ? 40 : 6,
+            borderRadius: rounded ? 40 : 4,
             aspectRatio: 1,
         }}
         onDisplay={onDisplay}
