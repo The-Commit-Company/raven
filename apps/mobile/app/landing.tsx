@@ -8,7 +8,7 @@ export default function LandingScreen() {
     return (
         <>
             <Stack.Screen options={{ title: 'Sites', headerShown: false }} />
-            <View className='flex-1 justify-center pt-48 px-6 gap-3'>
+            <View className='flex-1 justify-center pt-48 px-6 gap-3 bg-background'>
                 <Text className='text-5xl font-cal-sans text-foreground'>raven</Text>
                 <View className='h-2' />
                 <AddSite />
