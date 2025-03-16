@@ -4,7 +4,7 @@ import { useGetUser } from '@raven/lib/hooks/useGetUser'
 import clsx from 'clsx'
 import MessageReactions from './MessageItemElements/Reactions/MessageReactions'
 import ShareForward from '@assets/icons/ShareForward.svg'
-import { useMemo, memo, useCallback, useRef } from 'react';
+import { memo, useCallback, useRef } from 'react';
 import PushPin from '@assets/icons/PushPin.svg'
 import { FileMessage, ImageMessage, PollMessage, TextMessage } from '@raven/types/common/Message'
 import MessageAvatar from '@components/features/chat-stream/MessageItemElements/MessageAvatar'
@@ -37,16 +37,6 @@ const MessageItem = memo(({ message }: Props) => {
     const user = useGetUser(username)
 
     const userFullName = user?.full_name || username
-
-    const replyMessageDetails = useMemo(() => {
-        if (typeof replied_message_details === 'string') {
-            return JSON.parse(replied_message_details)
-        } else {
-            return replied_message_details
-        }
-    }, [replied_message_details])
-
-
 
     const react = useReactToMessage()
 
@@ -120,7 +110,7 @@ const MessageItem = memo(({ message }: Props) => {
                             // onPress={() => {
                             //     console.log('reply message pressed')
                             // }}
-                            message={replyMessageDetails}
+                            message={message}
                         />}
 
                         {message.text ? <MessageTextRenderer text={message.text} /> : null}
