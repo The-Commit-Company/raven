@@ -1,11 +1,11 @@
 import { View } from "react-native"
 import { useState } from "react"
 import { useDebounce } from "@raven/lib/hooks/useDebounce"
-import { SearchInput } from "@components/nativewindui/SearchInput"
 import { useColorScheme } from "@hooks/useColorScheme"
 import ThreadsList from "./ThreadsList"
 import { Divider } from "@components/layout/Divider"
 import UnreadFilter from "./thread-filters/UnreadFilter"
+import SearchInput from "@components/common/SearchInput/SearchInput"
 
 /**
  * Component for displaying AI threads - these are all DMs with the AI
@@ -22,9 +22,6 @@ const AIThreads = () => {
             <View className="flex flex-row items-center gap-2 px-4">
                 <View className="flex-1 max-w-[90%]">
                     <SearchInput
-                        style={{ backgroundColor: colors.grey6 }}
-                        placeholder="Search"
-                        placeholderTextColor={colors.grey}
                         onChangeText={setSearchQuery}
                         value={searchQuery}
                     />

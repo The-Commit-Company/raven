@@ -12,7 +12,7 @@ import { Divider } from '@components/layout/Divider';
 import { useColorScheme } from '@hooks/useColorScheme';
 import ChevronLeftIcon from '@assets/icons/ChevronLeftIcon.svg';
 import ChannelMemberRow from '@components/features/channel-settings/Members/ChannelMemberRow';
-import { SearchInput } from '@components/nativewindui/SearchInput';
+import SearchInput from '@components/common/SearchInput/SearchInput';
 
 const ChannelMembers = () => {
 
@@ -58,9 +58,6 @@ const ChannelMembers = () => {
             }} />
             <View className='px-4 py-3'>
                 <SearchInput
-                    style={{ backgroundColor: colors.grey6 }}
-                    placeholder="Search"
-                    placeholderTextColor={colors.grey}
                     onChangeText={setSearchQuery}
                     value={searchQuery}
                 />

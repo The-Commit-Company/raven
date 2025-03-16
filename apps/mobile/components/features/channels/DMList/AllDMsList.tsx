@@ -1,4 +1,3 @@
-import { SearchInput } from "@components/nativewindui/SearchInput"
 import { useColorScheme } from "@hooks/useColorScheme"
 import useUnreadMessageCount from "@hooks/useUnreadMessageCount"
 import { ChannelListContext, ChannelListContextType } from "@raven/lib/providers/ChannelListProvider"
@@ -9,6 +8,7 @@ import ChatOutlineIcon from "@assets/icons/ChatOutlineIcon.svg"
 import ErrorBanner from "@components/common/ErrorBanner"
 import { Divider } from "@components/layout/Divider"
 import { FlashList } from "@shopify/flash-list"
+import SearchInput from "@components/common/SearchInput/SearchInput"
 
 const AllDMsList = () => {
 
@@ -43,9 +43,6 @@ const AllDMsList = () => {
         <View className="flex flex-col">
             <View className="p-3">
                 <SearchInput
-                    style={{ backgroundColor: colors.grey6 }}
-                    placeholder="Search"
-                    placeholderTextColor={colors.grey}
                     onChangeText={setSearchQuery}
                     value={searchQuery}
                 />
