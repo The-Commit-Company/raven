@@ -8,17 +8,14 @@ import { BottomSheetView } from '@gorhom/bottom-sheet'
 import EmojiPicker from '@components/common/EmojiPicker/EmojiPicker'
 import { toast } from 'sonner-native'
 import useReactToMessage from '@raven/lib/hooks/useReactToMessage'
-import { useAtomValue } from 'jotai'
-import { quickReactionEmojisAtom } from '@lib/preferences'
 
 interface MessageReactionsProps {
     message: Message | null
     onClose: () => void
+    quickReactionEmojis: string[]
 }
 
-const QuickReactions = ({ message, onClose }: MessageReactionsProps) => {
-
-    const quickReactionEmojis = useAtomValue(quickReactionEmojisAtom)
+const QuickReactions = ({ message, onClose, quickReactionEmojis }: MessageReactionsProps) => {
 
     const { colors } = useColorScheme()
     const emojiBottomSheetRef = useSheetRef()
@@ -52,7 +49,8 @@ const QuickReactions = ({ message, onClose }: MessageReactionsProps) => {
                 <TouchableOpacity
                     className='p-3 bg-card rounded-full'
                     activeOpacity={0.6}
-                    onPress={() => emojiBottomSheetRef.current?.present()}>
+                    onPress={() => emojiBottomSheetRef.current?.present()}
+                >
                     <SmilePlus width={24} height={24} color={colors.icon} />
                 </TouchableOpacity>
             </View>
