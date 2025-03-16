@@ -1,6 +1,6 @@
 import { LegendListRef } from '@legendapp/list'
 import { Message } from '@raven/types/common/Message'
-import { useFrappeGetCall } from 'frappe-react-sdk'
+import { useFrappeDocumentEventListener, useFrappeEventListener, useFrappeGetCall } from 'frappe-react-sdk'
 import { useMemo } from 'react'
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
@@ -109,6 +109,38 @@ const useChatStream = (channelID: string, listRef?: React.RefObject<LegendListRe
     })
 
     // TODO: Add websocket connection and message parsing
+
+    useFrappeDocumentEventListener('Raven Channel', channelID ?? '', () => { })
+
+    // If a message has new reactions, update the message
+    useFrappeEventListener('message_reacted', (event) => {
+        mutate(d => {
+            if (event.message_id && d) {
+                const newMessages = d.message.messages.map((message) => {
+                    if (message.name === event.message_id) {
+                        return {
+                            ...message,
+                            message_reactions: event.reactions
+                        }
+                    } else {
+                        return message
+                    }
+                })
+
+                return ({
+                    message: {
+                        messages: newMessages,
+                        has_old_messages: d.message.has_old_messages,
+                        has_new_messages: d.message.has_new_messages
+                    }
+                })
+            } else {
+                return d
+            }
+        }, {
+            revalidate: false,
+        })
+    })
 
 
     const messages = useMemo(() => {

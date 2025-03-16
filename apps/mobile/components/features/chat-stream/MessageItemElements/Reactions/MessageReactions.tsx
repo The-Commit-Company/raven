@@ -1,6 +1,5 @@
 import { useCallback, useMemo } from 'react'
 import { View, Text, TouchableOpacity } from 'react-native'
-import { useFrappePostCall } from 'frappe-react-sdk'
 import useCurrentRavenUser from '@raven/lib/hooks/useCurrentRavenUser'
 import { Sheet, useSheetRef } from '@components/nativewindui/Sheet'
 import { BottomSheetView } from '@gorhom/bottom-sheet'
@@ -13,6 +12,8 @@ import { Image } from 'expo-image'
 import clsx from 'clsx'
 import { ImpactFeedbackStyle } from 'expo-haptics'
 import { impactAsync } from 'expo-haptics'
+import useReactToMessage from '@raven/lib/hooks/useReactToMessage'
+import { Message } from '@raven/types/common/Message'
 
 export interface ReactionObject {
     // The emoji
@@ -28,25 +29,21 @@ export interface ReactionObject {
 }
 
 interface MessageReactionsProps {
-    messageID: string
-    message_reactions: string | null | undefined
+    message: Message
 }
-export default function MessageReactions({ messageID, message_reactions }: MessageReactionsProps) {
+export default function MessageReactions({ message }: MessageReactionsProps) {
+
+    const message_reactions = message.message_reactions
 
     const { myProfile: currentUser } = useCurrentRavenUser()
 
-    const { call: reactToMessage } = useFrappePostCall('raven.api.reactions.react')
+    const reactToMessage = useReactToMessage()
 
     const saveReaction = useCallback((emoji: string, is_custom: boolean, emoji_name?: string) => {
-        if (messageID) {
-            return reactToMessage({
-                message_id: messageID,
-                reaction: emoji,
-                is_custom,
-                emoji_name
-            })
+        if (message) {
+            return reactToMessage(message, emoji, is_custom, emoji_name)
         }
-    }, [messageID, reactToMessage])
+    }, [message, reactToMessage])
 
     const reactions: ReactionObject[] = useMemo(() => {
         const parsed_json = JSON.parse(message_reactions ?? '{}') as Record<string, ReactionObject>

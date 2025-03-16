@@ -133,7 +133,7 @@ const MessageItem = memo(({ message }: Props) => {
 
                         {message.is_edited === 1 && <Text className='text-xs text-muted-foreground'>(edited)</Text>}
                         {message.hide_link_preview === 0 && message.text && <MessageLinkRenderer message={message} />}
-                        <MessageReactions messageID={message?.name} message_reactions={message?.message_reactions} />
+                        <MessageReactions message={message} />
                     </View>
                 </View>
             </View>
