@@ -1,7 +1,6 @@
 import { Button } from "@components/nativewindui/Button"
 import { useSheetRef, Sheet } from "@components/nativewindui/Sheet"
 import { BottomSheetModal, BottomSheetView } from "@gorhom/bottom-sheet"
-import { useColorScheme } from "@hooks/useColorScheme"
 import { View } from "react-native"
 import PlusIcon from "@assets/icons/PlusIcon.svg"
 import FilePickerButton from "@components/common/FilePickerButton"
@@ -9,14 +8,14 @@ import ImagePickerButton from "@components/common/ImagePickerButton"
 import GIFPickerButton from "@components/common/GIFPicker/GIFPickerButton"
 import { useKeyboardVisible } from "@hooks/useKeyboardVisible"
 import { CustomFile } from "@raven/types/common/File"
-import { useAtom } from 'jotai'
-import { filesAtom } from "@lib/filesAtom"
+import { useSetAtom } from 'jotai'
+import { filesAtomFamily } from "@lib/ChatInputUtils"
 import CreatePollButton from "@components/common/CreatePollButton"
+import useSiteContext from "@hooks/useSiteContext"
 
-const AdditionalInputs = () => {
+const AdditionalInputs = ({ channelID }: { channelID: string }) => {
 
     const bottomSheetRef = useSheetRef()
-    const { colors } = useColorScheme()
     const { isKeyboardVisible, keyboardHeight } = useKeyboardVisible()
 
     return (
@@ -28,7 +27,7 @@ const AdditionalInputs = () => {
             </Button>
             <Sheet ref={bottomSheetRef} bottomInset={isKeyboardVisible ? keyboardHeight : 0} keyboardBehavior='interactive' keyboardBlurBehavior="restore" android_keyboardInputMode="adjustPan">
                 <BottomSheetView className='pb-16'>
-                    <AdditionalInputsSheetContent bottomSheetRef={bottomSheetRef} />
+                    <AdditionalInputsSheetContent bottomSheetRef={bottomSheetRef} channelID={channelID} />
                 </BottomSheetView>
             </Sheet>
         </View>
@@ -37,9 +36,12 @@ const AdditionalInputs = () => {
 
 export default AdditionalInputs
 
-const AdditionalInputsSheetContent = ({ bottomSheetRef }: { bottomSheetRef: React.RefObject<BottomSheetModal> }) => {
+const AdditionalInputsSheetContent = ({ bottomSheetRef, channelID }: { bottomSheetRef: React.RefObject<BottomSheetModal>, channelID: string }) => {
 
-    const [, setFiles] = useAtom(filesAtom)
+    const siteInfo = useSiteContext()
+    const siteID = siteInfo?.sitename ?? ''
+
+    const setFiles = useSetAtom(filesAtomFamily(siteID + channelID))
 
     const handlePick = (files: CustomFile[]) => {
         setFiles((prevFiles) => {

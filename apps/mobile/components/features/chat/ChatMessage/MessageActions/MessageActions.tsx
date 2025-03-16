@@ -14,10 +14,11 @@ import DownloadMessageFile from './DownloadMessageFile'
 
 interface MessageActionsProps {
     message: Message
-    onClose: () => void
+    onClose: () => void,
+    quickReactionEmojis: string[]
 }
 
-const MessageActions = ({ message, onClose }: MessageActionsProps) => {
+const MessageActions = ({ message, onClose, quickReactionEmojis }: MessageActionsProps) => {
 
     const { myProfile } = useCurrentRavenUser()
     const isOwner = myProfile?.name === message?.owner && !message?.is_bot_message
@@ -25,7 +26,7 @@ const MessageActions = ({ message, onClose }: MessageActionsProps) => {
     return (
         <View className='flex flex-col gap-4'>
 
-            <QuickReactions message={message} onClose={onClose} />
+            <QuickReactions message={message} onClose={onClose} quickReactionEmojis={quickReactionEmojis} />
 
             <View className='flex flex-row gap-4 w-full'>
                 <ReplyToMessage message={message} onClose={onClose} />

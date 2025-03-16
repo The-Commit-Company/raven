@@ -4,7 +4,7 @@ import { useGetUser } from '@raven/lib/hooks/useGetUser'
 import clsx from 'clsx'
 import MessageReactions from './MessageItemElements/Reactions/MessageReactions'
 import ShareForward from '@assets/icons/ShareForward.svg'
-import { useMemo, memo, useCallback, useRef } from 'react';
+import { memo, useCallback, useRef } from 'react';
 import PushPin from '@assets/icons/PushPin.svg'
 import { FileMessage, ImageMessage, PollMessage, TextMessage } from '@raven/types/common/Message'
 import MessageAvatar from '@components/features/chat-stream/MessageItemElements/MessageAvatar'
@@ -16,12 +16,11 @@ import { PollMessageBlock } from '@components/features/chat/ChatMessage/Renderer
 import ReplyMessageBox from '@components/features/chat/ChatMessage/Renderers/ReplyMessageBox';
 import { ImageMessageRenderer } from '@components/features/chat/ChatMessage/Renderers/ImageMessage';
 import MessageTextRenderer from './MessageItemElements/MessageTextRenderer';
-import MessageActionsBottomSheet from '../chat/ChatMessage/MessageActions/MessageActionsBottomSheet';
-import { useSheetRef } from '@components/nativewindui/Sheet';
 import { impactAsync, ImpactFeedbackStyle } from 'expo-haptics';
 import useReactToMessage from '@raven/lib/hooks/useReactToMessage';
-import { useAtomValue } from 'jotai';
+import { useAtomValue, useSetAtom } from 'jotai';
 import { doubleTapMessageEmojiAtom } from '@lib/preferences';
+import { messageActionsSelectedMessageAtom } from '@lib/ChatInputUtils';
 
 type Props = {
     message: FileMessage | PollMessage | TextMessage | ImageMessage
@@ -39,17 +38,9 @@ const MessageItem = memo(({ message }: Props) => {
 
     const userFullName = user?.full_name || username
 
-    const replyMessageDetails = useMemo(() => {
-        if (typeof replied_message_details === 'string') {
-            return JSON.parse(replied_message_details)
-        } else {
-            return replied_message_details
-        }
-    }, [replied_message_details])
-
-    const messageActionsSheetRef = useSheetRef()
-
     const react = useReactToMessage()
+
+    const setSelectedMessage = useSetAtom(messageActionsSelectedMessageAtom)
 
     const doubleTapMessageEmoji = useAtomValue(doubleTapMessageEmojiAtom)
 
@@ -57,8 +48,8 @@ const MessageItem = memo(({ message }: Props) => {
 
     const onLongPress = useCallback(() => {
         impactAsync(ImpactFeedbackStyle.Medium)
-        messageActionsSheetRef.current?.present()
-    }, [])
+        setSelectedMessage(message)
+    }, [message])
 
     const onDoubleTap = useCallback(() => {
         impactAsync(ImpactFeedbackStyle.Light)
@@ -119,7 +110,7 @@ const MessageItem = memo(({ message }: Props) => {
                             // onPress={() => {
                             //     console.log('reply message pressed')
                             // }}
-                            message={replyMessageDetails}
+                            message={message}
                         />}
 
                         {message.text ? <MessageTextRenderer text={message.text} /> : null}
@@ -133,14 +124,10 @@ const MessageItem = memo(({ message }: Props) => {
 
                         {message.is_edited === 1 && <Text className='text-xs text-muted-foreground'>(edited)</Text>}
                         {message.hide_link_preview === 0 && message.text && <MessageLinkRenderer message={message} />}
-                        <MessageReactions messageID={message?.name} message_reactions={message?.message_reactions} />
+                        <MessageReactions message={message} />
                     </View>
                 </View>
             </View>
-            {message && <MessageActionsBottomSheet
-                messageActionsSheetRef={messageActionsSheetRef}
-                message={message}
-            />}
         </Pressable>
     )
 })

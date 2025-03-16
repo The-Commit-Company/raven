@@ -19,22 +19,25 @@ export const useLogout = () => {
         // Remove the current site from AsyncStorage
         // Revoke the token
         // Redirect to the landing page
-        revokeAsync({
-            clientId: siteInformation?.client_id || '',
-            token: tokenParams?.token?.() || ''
-        }, {
-            revocationEndpoint: getRevocationEndpoint(siteInformation?.url || '')
-        }).finally(() => {
-            return deleteAccessToken(siteInformation?.sitename || '')
-        }).then((result) => {
-            setSelectedWorkspace('')
-            return clearDefaultSite()
-        }).then(() => {
-            router.replace('/landing')
-        }).catch((error) => {
-            console.error(error)
-            toast.error('Failed to log out')
-        })
+        setSelectedWorkspace('')
+        clearDefaultSite()
+            .then(() => {
+                router.replace('/landing')
+            })
+            .then(() => {
+                deleteAccessToken(siteInformation?.sitename || '')
+            })
+            .catch((error) => {
+                console.error(error)
+                toast.error('Failed to log out')
+            }).then(() => {
+                revokeAsync({
+                    clientId: siteInformation?.client_id || '',
+                    token: tokenParams?.token?.() || ''
+                }, {
+                    revocationEndpoint: getRevocationEndpoint(siteInformation?.url || '')
+                })
+            })
     }
 
     return logout
