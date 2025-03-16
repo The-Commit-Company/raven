@@ -1,16 +1,14 @@
 import UniversalFileIcon from "@components/common/UniversalFileIcon"
 import { CustomFile } from "@raven/types/common/File"
 import { View, Text, ActivityIndicator } from "react-native"
-import { useAtom } from 'jotai'
 import { Button } from "@components/nativewindui/Button"
 import CrossIcon from "@assets/icons/CrossIcon.svg"
 import { useColorScheme } from "@hooks/useColorScheme"
 import { getFileExtension, isImageFile } from "@raven/lib/utils/operations"
 import { Image } from "expo-image"
-import { filesAtom } from "@lib/filesAtom"
 
-const SendItem = ({ file }: { file: CustomFile }) => {
-    const [files, setFiles] = useAtom(filesAtom)
+const SendItem = ({ file, numberOfFiles, removeFile }: { file: CustomFile, numberOfFiles: number, removeFile: (file: CustomFile) => void }) => {
+
     const { colors } = useColorScheme()
     const extension = getFileExtension(file.name)
     const isImage = isImageFile(extension)
@@ -27,7 +25,7 @@ const SendItem = ({ file }: { file: CustomFile }) => {
                     }
                 </View>
                 :
-                <View className='bg-card rounded-lg py-1 flex-row items-center gap-2 border-border border line-clamp-1' style={{ width: (files.length > 1 ? 200 : 350) }}>
+                <View className='bg-card rounded-lg py-1 flex-row items-center gap-2 border-border border line-clamp-1' style={{ width: (numberOfFiles > 1 ? 200 : 350) }}>
                     {file.uploading &&
                         <View className='bg-card absolute left-0 z-50 bottom-0 opacity-50' style={{ width: 40, height: 40 }}>
                             <ActivityIndicator size='small' color={colors.foreground} className="absolute left-2.5 bottom-3 z-50" />
@@ -41,9 +39,7 @@ const SendItem = ({ file }: { file: CustomFile }) => {
                 </View>}
             <Button size='none' variant='primary' className="absolute right-0 top-0 mt-[-8px] mr-[-8px] bg-foreground border-card border-2" style={{ borderRadius: '100%' }}
                 onPress={() => {
-                    setFiles((prevFiles) => {
-                        return prevFiles.filter((f) => f.fileID !== file.fileID)
-                    })
+                    removeFile(file)
                 }
                 }>
                 <CrossIcon fill={colors.card} stroke={colors.card} width={14} height={14} />

@@ -1,43 +1,16 @@
-import { Platform, View } from 'react-native'
 import { Stack, useLocalSearchParams } from 'expo-router';
-import ChatStream from '@components/features/chat-stream/ChatStream';
 import { useCurrentChannelData } from '@hooks/useCurrentChannelData';
 import { useColorScheme } from '@hooks/useColorScheme';
-import ChatInput from '@components/features/chat/ChatInput/ChatInput';
 import DMChannelHeader from '@components/features/chat/ChatHeader/DMChannelHeader';
 import ChannelHeader from '@components/features/chat/ChatHeader/ChannelHeader';
 import HeaderBackButton from '@components/common/HeaderBackButton';
-import Animated, { useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
-import { useKeyboardHandler } from 'react-native-keyboard-controller';
-
-const PADDING_BOTTOM = Platform.OS === 'ios' ? 20 : 0;
-
-const useGradualAnimation = () => {
-    const height = useSharedValue(PADDING_BOTTOM)
-    useKeyboardHandler({
-        onMove: (event) => {
-            "worklet";
-            height.value = Math.max(event.height, PADDING_BOTTOM)
-        },
-    }, [])
-
-    return { height }
-}
+import ChatLayout from '@components/features/chat/ChatLayout';
 
 const Chat = () => {
 
     const { id } = useLocalSearchParams()
     const { channel } = useCurrentChannelData(id as string)
     const { colors } = useColorScheme()
-
-    const { height } = useGradualAnimation()
-
-    const fakeView = useAnimatedStyle(() => {
-        return {
-            height: Math.abs(height.value),
-            marginBottom: height.value > 0 ? 0 : PADDING_BOTTOM,
-        }
-    })
 
     return (
         <>
@@ -58,11 +31,9 @@ const Chat = () => {
                     )
                 }
             }} />
-            <View className='flex-1'>
-                <ChatStream channelID={id as string} />
-                <ChatInput />
-                <Animated.View style={fakeView} />
-            </View>
+
+            <ChatLayout channelID={id as string} />
+
         </>
     )
 }

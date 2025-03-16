@@ -1,22 +1,38 @@
 import useChatStream, { MessageDateBlock } from '@hooks/useChatStream'
-import { useRef } from 'react'
+import { RefObject } from 'react'
 import { LegendList, LegendListRef } from '@legendapp/list'
 import DateSeparator from './DateSeparator'
 import SystemMessageBlock from './SystemMessageBlock'
 import MessageItem from './MessageItem'
 import ChannelHistoryFirstMessage from './FirstMessageBlock'
+import { useAtomValue } from 'jotai'
+import { doubleTapMessageEmojiAtom } from '@lib/preferences'
+import { View } from 'react-native'
+import FullPageLoader from '@components/layout/FullPageLoader'
 
 type Props = {
     channelID: string,
-    isThread?: boolean
+    isThread?: boolean,
+    scrollRef?: RefObject<LegendListRef>
 }
 
-const ChatStream = ({ channelID, isThread = false }: Props) => {
+const ChatStream = ({ channelID, isThread = false, scrollRef }: Props) => {
 
 
-    const listRef = useRef<LegendListRef>(null)
+    /** Fetching this here to avoid blank screen when the user opens the chat. 
+     * Each message item fetches this atom value
+     * 
+     * If this is not fetched here, the chat stream sometimes remains blank
+     */
+    const doubleTapMessageEmoji = useAtomValue(doubleTapMessageEmojiAtom)
 
-    const { data, isLoading, error, mutate } = useChatStream(channelID, listRef, isThread)
+    const { data, isLoading, error, mutate, loadOlderMessages, loadNewerMessages } = useChatStream(channelID, scrollRef, isThread)
+
+    if (isLoading) {
+        return <View className='flex-1 justify-center items-center'>
+            <FullPageLoader title='' description='Fetching messages...' />
+        </View>
+    }
 
     // return <FlatList
     //     data={data}
@@ -50,7 +66,7 @@ const ChatStream = ({ channelID, isThread = false }: Props) => {
 
     return (
         <LegendList
-            ref={listRef}
+            ref={scrollRef}
             data={data}
             keyExtractor={messageKeyExtractor}
             // drawDistance={500}
@@ -58,7 +74,7 @@ const ChatStream = ({ channelID, isThread = false }: Props) => {
             keyboardDismissMode='on-drag'
             maintainVisibleContentPosition
             waitForInitialLayout
-            // initialScrollIndex={data.length > 0 ? data.length - 1 : undefined}
+            initialScrollIndex={data.length > 0 ? data.length - 1 : undefined}
             maintainScrollAtEnd
             maintainScrollAtEndThreshold={0.1}
             getEstimatedItemSize={getEstimatedItemSize}
@@ -67,6 +83,8 @@ const ChatStream = ({ channelID, isThread = false }: Props) => {
             contentContainerStyle={{
                 paddingBottom: 32
             }}
+            onStartReached={loadOlderMessages}
+            onEndReached={loadNewerMessages}
         // contentContainerStyle={{
         //     paddingHorizontal: 4,
         //     // Add bottom padding to prevent last message from being hidden under ChatInput
@@ -174,11 +192,6 @@ const messageKeyExtractor = (item: MessageDateBlock) => {
 
 const MessageContentRenderer = ({ item }: { item: MessageDateBlock }) => {
 
-    // TODO: Implement reply message press
-    const onReplyMessagePress = () => {
-        console.log('reply message pressed')
-    }
-
     if (item.message_type === 'date') {
         return <DateSeparator item={item} />
     }
@@ -191,7 +204,7 @@ const MessageContentRenderer = ({ item }: { item: MessageDateBlock }) => {
         return <ChannelHistoryFirstMessage channelID={item.name} />
     }
 
-    return <MessageItem message={item} onReplyMessagePress={onReplyMessagePress} />
+    return <MessageItem message={item} />
 }
 
 export default ChatStream
