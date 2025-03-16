@@ -1,10 +1,10 @@
 import { Image } from "expo-image";
 import { useState } from "react";
-import { SearchInput } from "@components/nativewindui/SearchInput";
 import { View } from "react-native";
 import { useDebounce } from "@raven/lib/hooks/useDebounce";
 import GIFSearchResults from "./GIFSearchResults";
 import GIFFeaturedResults from "./GIFFeaturedResults";
+import SearchInput from "../SearchInput/SearchInput";
 
 export interface GIFPickerProps {
     onSelect: (gif: any) => void;
@@ -20,8 +20,7 @@ const GIFPicker = ({ onSelect }: GIFPickerProps) => {
                 <SearchInput
                     value={searchText}
                     onChangeText={setSearchText}
-                    className="border border-gray-200"
-                    placeholder="Search GIFs"
+                    placeholder="Search for a GIF"
                 />
             </View>
 
