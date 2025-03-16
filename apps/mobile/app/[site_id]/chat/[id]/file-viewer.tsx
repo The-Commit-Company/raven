@@ -45,7 +45,7 @@ const FileViewer = () => {
         headerTransparent: isImage,
         title: 'File Viewer',
         headerShown: showHeader,
-        headerTitle: `${uri?.split('/').pop()}`,
+        headerTitle: `${uri?.split('?')[0]?.split('/').pop()}`,
         headerRight: () => <ShareButton uri={uri} />
       }} />
       {renderFile()}

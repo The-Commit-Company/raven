@@ -30,12 +30,13 @@ const GIFPicker = ({ onSelect }: GIFPickerProps) => {
                 <GIFFeaturedResults onSelect={onSelect} />
             )}
 
-            <View className="flex-row items-center justify-center py-2 h-[50px] absolute bottom-0 left-0 right-0 bg-white dark:bg-gray-900">
+            <View className="flex-row items-center justify-center py-2 h-[50px] absolute bottom-0 left-0 right-0 bg-background">
                 <Image
                     source={{
                         uri: "https://www.gstatic.com/tenor/web/attribution/PB_tenor_logo_blue_horizontal.png"
                     }}
-                    style={{ width: 160, height: 20 }}
+                    contentFit="contain"
+                    style={{ width: 100, height: 16 }}
                 />
             </View>
         </View>
