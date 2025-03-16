@@ -1,6 +1,6 @@
 import { LegendListRef } from '@legendapp/list'
 import { Message } from '@raven/types/common/Message'
-import { useFrappeDocumentEventListener, useFrappeEventListener, useFrappeGetCall } from 'frappe-react-sdk'
+import { useFrappeDocumentEventListener, useFrappeEventListener, useFrappeGetCall, useFrappePostCall } from 'frappe-react-sdk'
 import { useMemo } from 'react'
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
@@ -47,18 +47,13 @@ const useChatStream = (channelID: string, listRef?: React.RefObject<LegendListRe
      * Ensures scroll to bottom happens after all content is loaded
      * Uses both RAF and a backup timeout for reliability
      */
-    const scrollToBottom = (index: number, animated: boolean = false) => {
+    const scrollToBottom = (animated: boolean = false) => {
         if (!listRef?.current) return
-
-        listRef.current.scrollToIndex({
-            index
-        })
 
         // // First immediate scroll attempt
         requestAnimationFrame(() => {
             if (listRef.current) {
-                listRef.current.scrollToIndex({
-                    index,
+                listRef.current.scrollToEnd({
                     animated
                 })
             }
@@ -67,8 +62,7 @@ const useChatStream = (channelID: string, listRef?: React.RefObject<LegendListRe
         // Second attempt after a short delay
         const shortDelayTimer = setTimeout(() => {
             if (listRef.current) {
-                listRef.current.scrollToIndex({
-                    index,
+                listRef.current.scrollToEnd({
                     animated
                 })
             }
@@ -77,8 +71,7 @@ const useChatStream = (channelID: string, listRef?: React.RefObject<LegendListRe
         // Final backup attempt after longer delay
         const backupTimer = setTimeout(() => {
             if (listRef.current) {
-                listRef.current.scrollToIndex({
-                    index,
+                listRef.current.scrollToEnd({
                     animated
                 })
             }
@@ -96,11 +89,11 @@ const useChatStream = (channelID: string, listRef?: React.RefObject<LegendListRe
 
         // TODO: Add base message
     }, { path: `get_messages_for_channel_${channelID}` }, {
-        onSuccess: (data) => {
+        onSuccess: () => {
 
-            const index = data.message.messages.length > 0 ? data.message.messages.length - 1 : 0
+            listRef?.current?.scrollToEnd()
 
-            let cleanup = scrollToBottom(index, false)
+            let cleanup = scrollToBottom(false)
 
             if (cleanup) {
                 cleanup()
@@ -111,6 +104,100 @@ const useChatStream = (channelID: string, listRef?: React.RefObject<LegendListRe
     // TODO: Add websocket connection and message parsing
 
     useFrappeDocumentEventListener('Raven Channel', channelID ?? '', () => { })
+
+    // If there are new messages in the channel, update the messages
+    useFrappeEventListener('message_created', (event) => {
+        if (event.channel_id === channelID) {
+
+            mutate((d) => {
+                if (d && d.message.has_new_messages === false) {
+                    // Update the array of messages - append the new message in it and then sort it by date
+                    const existingMessages = d.message.messages ?? []
+
+                    const newMessages = [...existingMessages]
+                    if (event.message_details) {
+                        // Check if the message is already present in the messages array
+                        const messageIndex = existingMessages.findIndex(message => message.name === event.message_details.name)
+
+                        if (messageIndex !== -1) {
+                            // If the message is already present, update the message
+                            newMessages[messageIndex] = event.message_details
+                        } else {
+                            // If the message is not present, add the message to the array
+                            newMessages.push(event.message_details)
+                        }
+                    }
+
+                    newMessages.sort((a, b) => {
+                        return new Date(b.creation).getTime() - new Date(a.creation).getTime()
+                    })
+                    return ({
+                        message: {
+                            messages: newMessages,
+                            has_old_messages: d.message.has_old_messages ?? false,
+                            has_new_messages: d.message.has_new_messages ?? false
+                        }
+                    })
+                } else {
+                    return d
+                }
+
+            }, {
+                revalidate: false,
+            })
+        }
+    })
+
+    // If a message is edited, update the specific message
+    useFrappeEventListener('message_edited', (event) => {
+
+        mutate((d) => {
+            if (event.message_id && d) {
+                const newMessages = d.message.messages.map((message) => {
+                    if (message.name === event.message_id) {
+                        return {
+                            ...message,
+                            ...event.message_details,
+                        }
+                    } else {
+                        return message
+                    }
+                })
+
+                return ({
+                    message: {
+                        messages: newMessages,
+                        has_old_messages: d.message.has_old_messages,
+                        has_new_messages: d.message.has_new_messages
+                    }
+                })
+            } else {
+                return d
+            }
+        }, {
+            revalidate: false,
+        })
+    })
+    // If a message is deleted, update the messages array
+    useFrappeEventListener('message_deleted', (event) => {
+
+        mutate((d) => {
+            if (d) {
+                const newMessages = d.message.messages.filter((message) => message.name !== event.message_id)
+                return ({
+                    message: {
+                        messages: newMessages,
+                        has_old_messages: d.message.has_old_messages,
+                        has_new_messages: d.message.has_new_messages
+                    }
+                })
+            } else {
+                return d
+            }
+        }, {
+            revalidate: false,
+        })
+    })
 
     // If a message has new reactions, update the message
     useFrappeEventListener('message_reacted', (event) => {
@@ -142,6 +229,130 @@ const useChatStream = (channelID: string, listRef?: React.RefObject<LegendListRe
         })
     })
 
+    // If a message is saved/unsaved, update the message
+    useFrappeEventListener('message_saved', (event) => {
+
+        mutate((d) => {
+            if (event.message_id && d) {
+                const newMessages = d.message.messages.map((message) => {
+                    if (message.name === event.message_id) {
+                        return {
+                            ...message,
+                            _liked_by: event.liked_by,
+                        }
+                    } else {
+                        return message
+                    }
+                })
+
+                return ({
+                    message: {
+                        messages: newMessages,
+                        has_old_messages: d.message.has_old_messages,
+                        has_new_messages: d.message.has_new_messages
+                    }
+                })
+            } else {
+                return d
+            }
+        }, {
+            revalidate: false
+        })
+
+    })
+
+    const { call: fetchOlderMessages, loading: loadingOlderMessages } = useFrappePostCall('raven.api.chat_stream.get_older_messages')
+    const { call: fetchNewerMessages, loading: loadingNewerMessages } = useFrappePostCall('raven.api.chat_stream.get_newer_messages')
+
+    /** Callback to load older messages */
+    const loadOlderMessages = () => {
+        if (loadingOlderMessages || !data?.message.has_old_messages) {
+            return Promise.resolve()
+        }
+
+        return mutate((d) => {
+            let oldestMessage: Message | null = null;
+            if (d && d.message.messages.length > 0) {
+                if (d.message.has_old_messages) {
+                    oldestMessage = d.message.messages[d.message.messages.length - 1]
+
+                    if (oldestMessage) {
+
+                        return fetchOlderMessages({
+                            channel_id: channelID,
+                            from_message: oldestMessage.name,
+                        }).then((res) => {
+
+                            const mergedMessages = [...d.message.messages, ...res?.message.messages ?? []]
+
+                            return {
+                                message: {
+                                    messages: mergedMessages,
+                                    has_old_messages: res?.message.has_old_messages ?? false,
+                                    has_new_messages: d?.message.has_new_messages ?? false
+                                }
+                            }
+
+                        }).catch(() => {
+                            // TODO: Handle errors here
+                            return d
+                        })
+                    }
+                }
+            }
+            return d
+        }, {
+            revalidate: false,
+        })
+    }
+
+    /** Callback to load newer messages */
+    const loadNewerMessages = () => {
+
+        if (loadingNewerMessages || !data?.message.has_new_messages) {
+            return Promise.resolve()
+        }
+
+        // if (highlightedMessage) {
+        //     // Do not load new messages when we are scrolling to a specific message via base message
+        //     return Promise.resolve()
+        // }
+        mutate((d) => {
+            let newestMessage: Message | null = null;
+            if (d && d.message.messages.length > 0) {
+                if (d.message.has_new_messages) {
+                    newestMessage = d.message.messages[0]
+
+                    if (newestMessage) {
+
+                        return fetchNewerMessages({
+                            channel_id: channelID,
+                            from_message: newestMessage.name,
+                            limit: 10
+                        }).then((res: any) => {
+
+                            const mergedMessages = [...res?.message.messages ?? [], ...d.message.messages]
+
+                            return {
+                                message: {
+                                    messages: mergedMessages,
+                                    has_old_messages: d?.message.has_old_messages ?? false,
+                                    has_new_messages: res?.message.has_new_messages ?? false
+                                }
+                            }
+
+                        }).catch(() => {
+                            // TODO: Handle errors here
+                            return d
+                        })
+                    }
+                }
+            }
+            return d
+        }, {
+            revalidate: false,
+        })
+    }
 
     const messages = useMemo(() => {
 
@@ -233,7 +444,9 @@ const useChatStream = (channelID: string, listRef?: React.RefObject<LegendListRe
         data: messages,
         isLoading,
         error,
-        mutate
+        mutate,
+        loadOlderMessages,
+        loadNewerMessages
     }
 
 

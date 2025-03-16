@@ -1,5 +1,5 @@
 import useChatStream, { MessageDateBlock } from '@hooks/useChatStream'
-import { RefObject, useRef } from 'react'
+import { RefObject } from 'react'
 import { LegendList, LegendListRef } from '@legendapp/list'
 import DateSeparator from './DateSeparator'
 import SystemMessageBlock from './SystemMessageBlock'
@@ -14,7 +14,7 @@ type Props = {
 
 const ChatStream = ({ channelID, isThread = false, scrollRef }: Props) => {
 
-    const { data, isLoading, error, mutate } = useChatStream(channelID, scrollRef, isThread)
+    const { data, isLoading, error, mutate, loadOlderMessages, loadNewerMessages } = useChatStream(channelID, scrollRef, isThread)
 
     // return <FlatList
     //     data={data}
@@ -65,6 +65,8 @@ const ChatStream = ({ channelID, isThread = false, scrollRef }: Props) => {
             contentContainerStyle={{
                 paddingBottom: 32
             }}
+            onStartReached={loadOlderMessages}
+            onEndReached={loadNewerMessages}
         // contentContainerStyle={{
         //     paddingHorizontal: 4,
         //     // Add bottom padding to prevent last message from being hidden under ChatInput
