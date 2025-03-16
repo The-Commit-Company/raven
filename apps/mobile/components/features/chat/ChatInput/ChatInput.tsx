@@ -5,21 +5,28 @@ import SendIcon from "@assets/icons/SendIcon.svg"
 import { useColorScheme } from "@hooks/useColorScheme"
 import SendItem from "./SendItem"
 import { useAtom } from 'jotai'
-import { useLocalSearchParams } from "expo-router"
 import { CustomFile } from "@raven/types/common/File"
-import { FC, useRef, useState } from "react"
-import { filesAtom } from "@lib/filesAtom"
+import { FC, useState } from "react"
+import { filesAtomFamily } from "@lib/filesAtom"
 import { useSendMessage } from "@hooks/useSendMessage"
 import { MentionInput, MentionSuggestionsProps, replaceMentionValues } from 'react-native-controlled-mentions'
 import { Text } from "@components/nativewindui/Text"
 import markdownit from 'markdown-it'
+import useSiteContext from "@hooks/useSiteContext"
 
-const ChatInput = () => {
+interface ChatInputProps {
+    channelID: string
+    onSendMessage?: () => void
+}
+
+const ChatInput = ({ channelID, onSendMessage }: ChatInputProps) => {
     // const { id } = useLocalSearchParams()
     // const { uploadFiles } = useFileUpload(id as string)
-    // const [files, setFiles] = useAtom(filesAtom)
 
     const [content, setContent] = useState('Hello world!')
+
+    const siteInfo = useSiteContext()
+    const siteID = siteInfo?.sitename ?? ''
 
     const handleCancelReply = () => {
         console.log('cancel reply')
@@ -79,8 +86,6 @@ const ChatInput = () => {
             return mention.original
         })
 
-        console.log('replacedValue', replacedValue)
-
         // console.log('parsedContent - ExpensiMark', parsedContent)
 
         // We can allow HTML tags since this is only on the client side. XSS Protection is handled by Frappe on the server side.
@@ -89,21 +94,15 @@ const ChatInput = () => {
         let html = md.render(replacedValue)
 
         console.log('html', html)
+
+        onSendMessage?.()
     }
 
     return <View className="flex flex-col bg-background">
-        {/* {files.length > 0 && <View className="px-2 py-1 border-t border-border">
-            <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
-                <View className="flex-row gap-2 justify-start items-start py-2 pr-2">
-                    {files.map((file) => (
-                        <SendItem key={file.fileID} file={file} />
-                    ))}
-                </View>
-            </ScrollView>
-        </View>
-        } */}
+        {siteID && <FileScroller channelID={channelID} siteID={siteID} />}
+
         <View className="flex-row items-end px-4 py-2 gap-2 min-h-16 justify-between">
-            <AdditionalInputs />
+            <AdditionalInputs channelID={channelID} />
             <View className="flex-1 border-border border p-2 rounded-lg w-full min-h-8">
                 <MentionInput
                     value={content}
@@ -164,6 +163,39 @@ const renderSuggestions: FC<MentionSuggestionsProps> = ({ keyword, onSuggestionP
         </View>
     );
 };
+
+const FileScroller = ({ channelID, siteID }: { channelID: string, siteID: string }) => {
+
+
+
+    console.log('channelID', channelID, siteID)
+
+    const [files, setFiles] = useAtom(filesAtomFamily(siteID + channelID))
+
+    const removeFile = (file: CustomFile) => {
+        setFiles((prevFiles) => {
+            return prevFiles.filter((f) => f.fileID !== file.fileID)
+        })
+    }
+
+    return <View>
+        {files.length > 0 && <View className="px-2 py-1 border-t border-border">
+            <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
+                <View className="flex-row gap-2 justify-start items-start py-2 pr-2">
+                    {files.map((file) => (
+                        <SendItem
+                            key={file.fileID}
+                            file={file}
+                            numberOfFiles={files.length}
+                            removeFile={removeFile}
+                        />
+                    ))}
+                </View>
+            </ScrollView>
+        </View>
+        }
+    </View>
+}
 
 
 export default ChatInput

@@ -7,6 +7,8 @@ import Animated, { useAnimatedStyle, useSharedValue } from 'react-native-reanima
 import ChatInput from '@components/features/chat/ChatInput/ChatInput';
 import { useKeyboardHandler } from 'react-native-keyboard-controller';
 import ThreadActions from '@components/features/threads/thread-actions/ThreadActions';
+import { LegendListRef } from '@legendapp/list';
+import { useRef } from 'react';
 
 const PADDING_BOTTOM = Platform.OS === 'ios' ? 20 : 0;
 
@@ -37,6 +39,18 @@ const Thread = () => {
         }
     })
 
+    const scrollRef = useRef<LegendListRef>(null)
+
+    const scrollToBottom = () => {
+        scrollRef.current?.scrollToEnd({
+            animated: true
+        })
+    }
+
+    const onSendMessage = () => {
+        scrollToBottom()
+    }
+
     return (
         <>
             <Stack.Screen options={{
@@ -46,8 +60,8 @@ const Thread = () => {
                 headerRight: () => <ThreadActions threadID={id as string} />
             }} />
             <View className='flex-1'>
-                <ChatStream channelID={id as string} isThread />
-                <ChatInput />
+                <ChatStream channelID={id as string} isThread scrollRef={scrollRef} />
+                <ChatInput channelID={id as string} onSendMessage={onSendMessage} />
                 <Animated.View style={fakeView} />
             </View>
         </>

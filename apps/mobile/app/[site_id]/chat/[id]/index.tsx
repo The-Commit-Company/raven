@@ -9,6 +9,8 @@ import ChannelHeader from '@components/features/chat/ChatHeader/ChannelHeader';
 import HeaderBackButton from '@components/common/HeaderBackButton';
 import Animated, { useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
 import { useKeyboardHandler } from 'react-native-keyboard-controller';
+import { useRef } from 'react';
+import { LegendListRef } from '@legendapp/list';
 
 const PADDING_BOTTOM = Platform.OS === 'ios' ? 20 : 0;
 
@@ -39,6 +41,18 @@ const Chat = () => {
         }
     })
 
+    const scrollRef = useRef<LegendListRef>(null)
+
+    const scrollToBottom = () => {
+        scrollRef.current?.scrollToEnd({
+            animated: true
+        })
+    }
+
+    const onSendMessage = () => {
+        scrollToBottom()
+    }
+
     return (
         <>
             <Stack.Screen options={{
@@ -59,8 +73,8 @@ const Chat = () => {
                 }
             }} />
             <View className='flex-1'>
-                <ChatStream channelID={id as string} />
-                <ChatInput />
+                <ChatStream channelID={id as string} scrollRef={scrollRef} />
+                <ChatInput channelID={id as string} onSendMessage={onSendMessage} />
                 <Animated.View style={fakeView} />
             </View>
         </>

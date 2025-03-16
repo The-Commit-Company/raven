@@ -37,7 +37,7 @@ export interface HeaderBlock {
 
 export type MessageDateBlock = Message | DateBlock | HeaderBlock
 
-const useChatStream = (channelID: string, listRef: React.RefObject<LegendListRef>, isThread: boolean = false) => {
+const useChatStream = (channelID: string, listRef?: React.RefObject<LegendListRef>, isThread: boolean = false) => {
 
     const siteInformation = useSiteContext()
 
@@ -48,7 +48,7 @@ const useChatStream = (channelID: string, listRef: React.RefObject<LegendListRef
      * Uses both RAF and a backup timeout for reliability
      */
     const scrollToBottom = (index: number, animated: boolean = false) => {
-        if (!listRef.current) return
+        if (!listRef?.current) return
 
         listRef.current.scrollToIndex({
             index

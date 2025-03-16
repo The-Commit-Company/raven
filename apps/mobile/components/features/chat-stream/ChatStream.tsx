@@ -1,5 +1,5 @@
 import useChatStream, { MessageDateBlock } from '@hooks/useChatStream'
-import { useRef } from 'react'
+import { RefObject, useRef } from 'react'
 import { LegendList, LegendListRef } from '@legendapp/list'
 import DateSeparator from './DateSeparator'
 import SystemMessageBlock from './SystemMessageBlock'
@@ -8,15 +8,13 @@ import ChannelHistoryFirstMessage from './FirstMessageBlock'
 
 type Props = {
     channelID: string,
-    isThread?: boolean
+    isThread?: boolean,
+    scrollRef?: RefObject<LegendListRef>
 }
 
-const ChatStream = ({ channelID, isThread = false }: Props) => {
+const ChatStream = ({ channelID, isThread = false, scrollRef }: Props) => {
 
-
-    const listRef = useRef<LegendListRef>(null)
-
-    const { data, isLoading, error, mutate } = useChatStream(channelID, listRef, isThread)
+    const { data, isLoading, error, mutate } = useChatStream(channelID, scrollRef, isThread)
 
     // return <FlatList
     //     data={data}
@@ -50,7 +48,7 @@ const ChatStream = ({ channelID, isThread = false }: Props) => {
 
     return (
         <LegendList
-            ref={listRef}
+            ref={scrollRef}
             data={data}
             keyExtractor={messageKeyExtractor}
             // drawDistance={500}
@@ -174,11 +172,6 @@ const messageKeyExtractor = (item: MessageDateBlock) => {
 
 const MessageContentRenderer = ({ item }: { item: MessageDateBlock }) => {
 
-    // TODO: Implement reply message press
-    const onReplyMessagePress = () => {
-        console.log('reply message pressed')
-    }
-
     if (item.message_type === 'date') {
         return <DateSeparator item={item} />
     }
@@ -191,7 +184,7 @@ const MessageContentRenderer = ({ item }: { item: MessageDateBlock }) => {
         return <ChannelHistoryFirstMessage channelID={item.name} />
     }
 
-    return <MessageItem message={item} onReplyMessagePress={onReplyMessagePress} />
+    return <MessageItem message={item} />
 }
 
 export default ChatStream
