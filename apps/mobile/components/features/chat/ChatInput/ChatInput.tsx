@@ -7,7 +7,7 @@ import SendItem from "./SendItem"
 import { useAtom } from 'jotai'
 import { CustomFile } from "@raven/types/common/File"
 import { FC, useState } from "react"
-import { filesAtomFamily } from "@lib/filesAtom"
+import { filesAtomFamily } from "@lib/ChatInputUtils"
 import { useSendMessage } from "@hooks/useSendMessage"
 import { MentionInput, MentionSuggestionsProps, replaceMentionValues } from 'react-native-controlled-mentions'
 import { Text } from "@components/nativewindui/Text"

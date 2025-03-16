@@ -9,7 +9,7 @@ import GIFPickerButton from "@components/common/GIFPicker/GIFPickerButton"
 import { useKeyboardVisible } from "@hooks/useKeyboardVisible"
 import { CustomFile } from "@raven/types/common/File"
 import { useSetAtom } from 'jotai'
-import { filesAtomFamily } from "@lib/filesAtom"
+import { filesAtomFamily } from "@lib/ChatInputUtils"
 import CreatePollButton from "@components/common/CreatePollButton"
 import useSiteContext from "@hooks/useSiteContext"
 
