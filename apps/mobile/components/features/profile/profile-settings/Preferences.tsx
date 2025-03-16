@@ -2,7 +2,7 @@ import { Pressable, View } from 'react-native'
 import { Text } from '@components/nativewindui/Text'
 import SettingsIcon from '@assets/icons/SettingsIcon.svg'
 import { useColorScheme } from '@hooks/useColorScheme'
-import ChevronRightIcon from '@assets/icons/ChevronRightIcon.svg'
+import ChevronRightIconThin from '@assets/icons/ChevronRightIconThin.svg'
 import { router } from 'expo-router'
 
 const Preferences = () => {
@@ -23,7 +23,7 @@ const Preferences = () => {
                     <Text className='text-base'>Preferences</Text>
                 </View>
                 <View className='flex-row h-10 items-center'>
-                    <ChevronRightIcon height={28} width={28} fill={colors.greyText} opacity={0.8} />
+                    <ChevronRightIconThin height={22} width={22} color={colors.grey} />
                 </View>
             </View>
         </Pressable>

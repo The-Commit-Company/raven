@@ -15,8 +15,6 @@ const AllDMsList = () => {
     const { dm_channels, error, isLoading } = useContext(ChannelListContext) as ChannelListContextType
     const unread_count = useUnreadMessageCount()
 
-    const { colors } = useColorScheme()
-
     const allDMs = useMemo(() => {
         return dm_channels.filter(dm => dm.last_message_details)
     }, [dm_channels])
@@ -48,24 +46,22 @@ const AllDMsList = () => {
                 />
             </View>
             <Divider prominent />
-            <FlashList
-                data={filteredDMs ?? []}
-                keyExtractor={(item) => item.name}
-                renderItem={({ item }) => {
-                    const isUnread = unread_count ? unread_count.some(item => item.unread_count > 0) : false
-                    return (
-                        <View role='listitem'>
-                            <View className="flex flex-col gap-0">
-                                <DMRow dm={item} isUnread={isUnread} />
-                                <Divider prominent />
-                            </View>
-                        </View>
-                    )
-                }}
-                showsVerticalScrollIndicator={false}
-                estimatedItemSize={66}
-                ListEmptyComponent={<DMListEmptyState searchQuery={searchQuery} />}
-            />
+            <View className='flex-1'>
+                <FlashList
+                    data={filteredDMs ?? []}
+                    renderItem={({ item }) => {
+                        const isUnread = unread_count ? unread_count.some(item => item.unread_count > 0) : false
+                        return <DMRow dm={item} isUnread={isUnread} />
+                    }}
+                    keyExtractor={(item) => item.name}
+                    estimatedItemSize={64}
+                    ItemSeparatorComponent={() => <Divider />}
+                    bounces={false}
+                    showsVerticalScrollIndicator={false}
+                    ListEmptyComponent={<DMListEmptyState searchQuery={searchQuery} />}
+                />
+                <Divider prominent />
+            </View>
         </View>
     )
 }
