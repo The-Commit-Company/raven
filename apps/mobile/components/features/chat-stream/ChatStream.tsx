@@ -5,6 +5,10 @@ import DateSeparator from './DateSeparator'
 import SystemMessageBlock from './SystemMessageBlock'
 import MessageItem from './MessageItem'
 import ChannelHistoryFirstMessage from './FirstMessageBlock'
+import { useAtomValue } from 'jotai'
+import { doubleTapMessageEmojiAtom } from '@lib/preferences'
+import { View } from 'react-native'
+import FullPageLoader from '@components/layout/FullPageLoader'
 
 type Props = {
     channelID: string,
@@ -14,7 +18,21 @@ type Props = {
 
 const ChatStream = ({ channelID, isThread = false, scrollRef }: Props) => {
 
+
+    /** Fetching this here to avoid blank screen when the user opens the chat. 
+     * Each message item fetches this atom value
+     * 
+     * If this is not fetched here, the chat stream sometimes remains blank
+     */
+    const doubleTapMessageEmoji = useAtomValue(doubleTapMessageEmojiAtom)
+
     const { data, isLoading, error, mutate, loadOlderMessages, loadNewerMessages } = useChatStream(channelID, scrollRef, isThread)
+
+    if (isLoading) {
+        return <View className='flex-1 justify-center items-center'>
+            <FullPageLoader title='' description='Fetching messages...' />
+        </View>
+    }
 
     // return <FlatList
     //     data={data}
@@ -56,7 +74,7 @@ const ChatStream = ({ channelID, isThread = false, scrollRef }: Props) => {
             keyboardDismissMode='on-drag'
             maintainVisibleContentPosition
             waitForInitialLayout
-            // initialScrollIndex={data.length > 0 ? data.length - 1 : undefined}
+            initialScrollIndex={data.length > 0 ? data.length - 1 : undefined}
             maintainScrollAtEnd
             maintainScrollAtEndThreshold={0.1}
             getEstimatedItemSize={getEstimatedItemSize}

@@ -166,10 +166,6 @@ const renderSuggestions: FC<MentionSuggestionsProps> = ({ keyword, onSuggestionP
 
 const FileScroller = ({ channelID, siteID }: { channelID: string, siteID: string }) => {
 
-
-
-    console.log('channelID', channelID, siteID)
-
     const [files, setFiles] = useAtom(filesAtomFamily(siteID + channelID))
 
     const removeFile = (file: CustomFile) => {
