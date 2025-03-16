@@ -442,7 +442,7 @@ const useChatStream = (channelID: string, scrollRef: MutableRefObject<HTMLDivEle
     const loadNewerMessages = () => {
 
         if (loadingNewerMessages || !data?.message.has_new_messages) {
-            Promise.resolve()
+            return Promise.resolve()
         }
 
         if (highlightedMessage) {
