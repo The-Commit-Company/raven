@@ -16,12 +16,11 @@ import { PollMessageBlock } from '@components/features/chat/ChatMessage/Renderer
 import ReplyMessageBox from '@components/features/chat/ChatMessage/Renderers/ReplyMessageBox';
 import { ImageMessageRenderer } from '@components/features/chat/ChatMessage/Renderers/ImageMessage';
 import MessageTextRenderer from './MessageItemElements/MessageTextRenderer';
-import MessageActionsBottomSheet from '../chat/ChatMessage/MessageActions/MessageActionsBottomSheet';
-import { useSheetRef } from '@components/nativewindui/Sheet';
 import { impactAsync, ImpactFeedbackStyle } from 'expo-haptics';
 import useReactToMessage from '@raven/lib/hooks/useReactToMessage';
-import { useAtomValue } from 'jotai';
+import { useAtomValue, useSetAtom } from 'jotai';
 import { doubleTapMessageEmojiAtom } from '@lib/preferences';
+import { messageActionsSelectedMessageAtom } from '@lib/ChatInputUtils';
 
 type Props = {
     message: FileMessage | PollMessage | TextMessage | ImageMessage
@@ -47,9 +46,11 @@ const MessageItem = memo(({ message }: Props) => {
         }
     }, [replied_message_details])
 
-    const messageActionsSheetRef = useSheetRef()
+
 
     const react = useReactToMessage()
+
+    const setSelectedMessage = useSetAtom(messageActionsSelectedMessageAtom)
 
     const doubleTapMessageEmoji = useAtomValue(doubleTapMessageEmojiAtom)
 
@@ -57,8 +58,8 @@ const MessageItem = memo(({ message }: Props) => {
 
     const onLongPress = useCallback(() => {
         impactAsync(ImpactFeedbackStyle.Medium)
-        messageActionsSheetRef.current?.present()
-    }, [])
+        setSelectedMessage(message)
+    }, [message])
 
     const onDoubleTap = useCallback(() => {
         impactAsync(ImpactFeedbackStyle.Light)
@@ -137,10 +138,6 @@ const MessageItem = memo(({ message }: Props) => {
                     </View>
                 </View>
             </View>
-            {message && <MessageActionsBottomSheet
-                messageActionsSheetRef={messageActionsSheetRef}
-                message={message}
-            />}
         </Pressable>
     )
 })
