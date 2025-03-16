@@ -2,13 +2,15 @@ import { useColorScheme } from "@hooks/useColorScheme"
 import useUnreadMessageCount from "@hooks/useUnreadMessageCount"
 import { ChannelListContext, ChannelListContextType } from "@raven/lib/providers/ChannelListProvider"
 import { useContext, useMemo, useState } from "react"
-import { View, Text, ActivityIndicator } from "react-native"
+import { View, ActivityIndicator } from "react-native"
 import DMRow from "./DMRow"
 import ChatOutlineIcon from "@assets/icons/ChatOutlineIcon.svg"
 import ErrorBanner from "@components/common/ErrorBanner"
 import { Divider } from "@components/layout/Divider"
 import { FlashList } from "@shopify/flash-list"
 import SearchInput from "@components/common/SearchInput/SearchInput"
+import { useDebounce } from "@raven/lib/hooks/useDebounce"
+import { Text } from "@components/nativewindui/Text"
 
 const AllDMsList = () => {
 
@@ -16,14 +18,17 @@ const AllDMsList = () => {
     const unread_count = useUnreadMessageCount()
 
     const allDMs = useMemo(() => {
-        return dm_channels.filter(dm => dm.last_message_details)
-    }, [dm_channels])
+        return dm_channels.filter(dm => dm.last_message_details).map(dm => ({
+            ...dm,
+            unread_count: unread_count?.find(item => item.name === dm.name)?.unread_count ?? 0
+        }))
+    }, [dm_channels, unread_count])
 
-    // TODO: Add search for DMs
     const [searchQuery, setSearchQuery] = useState('')
+    const debouncedSearchQuery = useDebounce(searchQuery, 500)
     const filteredDMs = useMemo(() => {
-        return allDMs.filter(dm => dm.peer_user_id.toLowerCase().includes(searchQuery.toLowerCase()))
-    }, [allDMs, searchQuery])
+        return allDMs.filter(dm => dm.peer_user_id.toLowerCase().includes(debouncedSearchQuery.toLowerCase()))
+    }, [allDMs, debouncedSearchQuery])
 
     if (isLoading) {
         return <View className="flex-1 justify-center items-center h-full">
@@ -50,8 +55,7 @@ const AllDMsList = () => {
                 <FlashList
                     data={filteredDMs ?? []}
                     renderItem={({ item }) => {
-                        const isUnread = unread_count ? unread_count.some(item => item.unread_count > 0) : false
-                        return <DMRow dm={item} isUnread={isUnread} />
+                        return <DMRow dm={item} />
                     }}
                     keyExtractor={(item) => item.name}
                     estimatedItemSize={64}
