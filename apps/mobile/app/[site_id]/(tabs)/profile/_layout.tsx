@@ -13,7 +13,7 @@ const ProfileLayout = () => {
             <Stack.Screen name='index'
                 options={{
                     title: 'Profile',
-                    headerLargeTitle: false,
+                    headerShadowVisible: true,
                     contentStyle: { backgroundColor: isDarkColorScheme ? colors.background : colors.card }
                 }} />
         </Stack>

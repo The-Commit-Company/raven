@@ -2,30 +2,33 @@ import { useColorScheme } from "@hooks/useColorScheme"
 import useUnreadMessageCount from "@hooks/useUnreadMessageCount"
 import { ChannelListContext, ChannelListContextType } from "@raven/lib/providers/ChannelListProvider"
 import { useContext, useMemo, useState } from "react"
-import { View, Text, ActivityIndicator } from "react-native"
+import { View, ActivityIndicator } from "react-native"
 import DMRow from "./DMRow"
 import ChatOutlineIcon from "@assets/icons/ChatOutlineIcon.svg"
 import ErrorBanner from "@components/common/ErrorBanner"
 import { Divider } from "@components/layout/Divider"
 import { FlashList } from "@shopify/flash-list"
 import SearchInput from "@components/common/SearchInput/SearchInput"
+import { useDebounce } from "@raven/lib/hooks/useDebounce"
+import { Text } from "@components/nativewindui/Text"
 
 const AllDMsList = () => {
 
     const { dm_channels, error, isLoading } = useContext(ChannelListContext) as ChannelListContextType
     const unread_count = useUnreadMessageCount()
 
-    const { colors } = useColorScheme()
-
     const allDMs = useMemo(() => {
-        return dm_channels.filter(dm => dm.last_message_details)
-    }, [dm_channels])
+        return dm_channels.filter(dm => dm.last_message_details).map(dm => ({
+            ...dm,
+            unread_count: unread_count?.find(item => item.name === dm.name)?.unread_count ?? 0
+        }))
+    }, [dm_channels, unread_count])
 
-    // TODO: Add search for DMs
     const [searchQuery, setSearchQuery] = useState('')
+    const debouncedSearchQuery = useDebounce(searchQuery, 500)
     const filteredDMs = useMemo(() => {
-        return allDMs.filter(dm => dm.peer_user_id.toLowerCase().includes(searchQuery.toLowerCase()))
-    }, [allDMs, searchQuery])
+        return allDMs.filter(dm => dm.peer_user_id.toLowerCase().includes(debouncedSearchQuery.toLowerCase()))
+    }, [allDMs, debouncedSearchQuery])
 
     if (isLoading) {
         return <View className="flex-1 justify-center items-center h-full">
@@ -48,24 +51,21 @@ const AllDMsList = () => {
                 />
             </View>
             <Divider prominent />
-            <FlashList
-                data={filteredDMs ?? []}
-                keyExtractor={(item) => item.name}
-                renderItem={({ item }) => {
-                    const isUnread = unread_count ? unread_count.some(item => item.unread_count > 0) : false
-                    return (
-                        <View role='listitem'>
-                            <View className="flex flex-col gap-0">
-                                <DMRow dm={item} isUnread={isUnread} />
-                                <Divider prominent />
-                            </View>
-                        </View>
-                    )
-                }}
-                showsVerticalScrollIndicator={false}
-                estimatedItemSize={66}
-                ListEmptyComponent={<DMListEmptyState searchQuery={searchQuery} />}
-            />
+            <View className='flex-1'>
+                <FlashList
+                    data={filteredDMs ?? []}
+                    renderItem={({ item }) => {
+                        return <DMRow dm={item} />
+                    }}
+                    keyExtractor={(item) => item.name}
+                    estimatedItemSize={64}
+                    ItemSeparatorComponent={() => <Divider />}
+                    bounces={false}
+                    showsVerticalScrollIndicator={false}
+                    ListEmptyComponent={<DMListEmptyState searchQuery={searchQuery} />}
+                />
+                <Divider prominent />
+            </View>
         </View>
     )
 }

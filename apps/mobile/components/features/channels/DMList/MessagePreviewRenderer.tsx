@@ -18,7 +18,7 @@ export class MessagePreviewRenderer extends Renderer implements RendererInterfac
                 key={this.getKey()}
                 ellipsizeMode="tail"
                 style={{
-                    fontWeight: this.isUnread ? 'bold' : 'normal',
+                    fontWeight: 'normal',
                     color: this.colors.primary,
                 }}
             >
@@ -33,9 +33,9 @@ export class MessagePreviewRenderer extends Renderer implements RendererInterfac
                 key={this.getKey()}
                 ellipsizeMode="tail"
                 style={{
-                    fontWeight: this.isUnread ? 'bold' : 'normal',
+                    fontWeight: 'normal',
                     fontSize: 14,
-                    color: this.colors.grey,
+                    color: this.isUnread ? this.colors.foreground : this.colors.grey,
                 }}
             >
                 {text}
