@@ -15,7 +15,6 @@ const GIFPickerButton = ({ onSelect }: GIFPickerButtonProps) => {
 
     const { colors } = useColorScheme()
     const gifSheetRef = useSheetRef()
-    const { top } = useSafeAreaInsets()
 
     const openGIFPicker = () => {
         gifSheetRef.current?.present()
@@ -30,8 +29,8 @@ const GIFPickerButton = ({ onSelect }: GIFPickerButtonProps) => {
                 <GIFIcon height={20} width={20} fill={colors.icon} />
                 <Text className='text-base text-foreground'>Send GIF</Text>
             </Pressable>
-            <Sheet ref={gifSheetRef} topInset={top}>
-                <BottomSheetView className='pb-16'>
+            <Sheet enableDynamicSizing={false} ref={gifSheetRef} snapPoints={['80']}>
+                <BottomSheetView className='pb-12'>
                     <GIFPicker onSelect={onSelect} />
                 </BottomSheetView>
             </Sheet>

@@ -36,11 +36,11 @@ const FileMessageRenderer = ({ message, onLongPress }: Props) => {
     }
 
     return (
-        <Pressable onPress={openFile} onLongPress={onLongPress} className='mb-1'>
+        <Pressable onPress={openFile} onLongPress={onLongPress} className='mb-1 w-full'>
             <View className='rounded-md p-2 border border-linkColor dark:border-border bg-background w-full'>
                 <View className='flex-row items-center gap-2 p-2 w-full'>
                     <UniversalFileIcon fileName={fileName} />
-                    <Text className='text-sm font-medium line-clamp-1 truncate flex-1' numberOfLines={1}>
+                    <Text className='text-sm font-medium text-foreground line-clamp-1 truncate flex-1' numberOfLines={1}>
                         {fileName}
                     </Text>
                 </View>
