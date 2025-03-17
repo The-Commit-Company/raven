@@ -24,7 +24,7 @@ const ChatInput = ({ channelID, onSendMessage }: ChatInputProps) => {
     // const { id } = useLocalSearchParams()
     // const { uploadFiles } = useFileUpload(id as string)
 
-    const [content, setContent] = useState('Hello world!')
+    const [content, setContent] = useState('')
 
     const siteInfo = useSiteContext()
     const siteID = siteInfo?.sitename ?? ''
@@ -99,16 +99,18 @@ const ChatInput = ({ channelID, onSendMessage }: ChatInputProps) => {
         onSendMessage?.()
     }
 
-    return <View className="flex flex-col bg-background">
+    return <View className="flex flex-col gap-1 bg-background">
         <TypingIndicator channel={channelID} />
         {siteID && <FileScroller channelID={channelID} siteID={siteID} />}
 
-        <View className="flex-row items-end px-4 py-2 gap-2 min-h-16 justify-between">
+        <View className="flex-row items-end px-4 pt-2 pb-4 gap-2 min-h-16 justify-between border-t border-l border-r border-border rounded-2xl">
             <AdditionalInputs channelID={channelID} />
-            <View className="flex-1 border-border border p-2 rounded-lg w-full min-h-8">
+            <View className="flex-1 p-2 pb-3 rounded-lg w-full">
                 <MentionInput
                     value={content}
                     multiline
+                    placeholderTextColor={colors.grey}
+                    placeholder="Type a message..."
                     onChange={setContent}
                     partTypes={[
                         {
@@ -125,8 +127,8 @@ const ChatInput = ({ channelID, onSendMessage }: ChatInputProps) => {
                 />
             </View>
             <View>
-                <Button size='icon' variant="plain" className="w-8 h-8" hitSlop={10} onPress={onSend}>
-                    <SendIcon fill={colors.primary} />
+                <Button size='icon' variant="plain" className="w-8 h-8 rounded-full mb-1" hitSlop={10} onPress={onSend}>
+                    <SendIcon fill={content ? colors.primary : colors.grey2} />
                 </Button>
             </View>
         </View>

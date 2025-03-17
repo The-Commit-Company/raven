@@ -12,18 +12,21 @@ import { useSetAtom } from 'jotai'
 import { filesAtomFamily } from "@lib/ChatInputUtils"
 import CreatePollButton from "@components/common/CreatePollButton"
 import useSiteContext from "@hooks/useSiteContext"
+import { useColorScheme } from "@hooks/useColorScheme"
 
 const AdditionalInputs = ({ channelID }: { channelID: string }) => {
 
     const bottomSheetRef = useSheetRef()
     const { isKeyboardVisible, keyboardHeight } = useKeyboardVisible()
 
+    const { colors } = useColorScheme()
+
     return (
         <View>
-            <Button size='icon' style={{ borderRadius: '100%' }} className="h-8 w-8"
+            <Button size='icon' style={{ borderRadius: '100%' }} className="bg-card-background h-8 w-8 mb-1"
                 hitSlop={10}
                 onPress={() => bottomSheetRef.current?.present()}>
-                <PlusIcon fill={"#FFF"} />
+                <PlusIcon fill={colors.grey} width={22} height={22} />
             </Button>
             <Sheet ref={bottomSheetRef} bottomInset={isKeyboardVisible ? keyboardHeight : 0} keyboardBehavior='interactive' keyboardBlurBehavior="restore" android_keyboardInputMode="adjustPan">
                 <BottomSheetView className='pb-16'>
