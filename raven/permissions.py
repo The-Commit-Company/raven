@@ -127,8 +127,9 @@ def channel_has_permission(doc, user=None, ptype=None):
 
 		if ptype == "read":
 			main_channel = frappe.get_cached_value("Raven Message", doc.channel_name, "channel_id")
-			# Check if the user is a member of the main channel
-			return is_channel_member(main_channel, user)
+			# Check if the user has read permission to the main channel
+			channel_doc = frappe.get_cached_doc("Raven Channel", main_channel)
+			return channel_doc.has_permission("read", user=user)
 
 		if ptype == "delete":
 			# Only the creator of the thread can delete the thread

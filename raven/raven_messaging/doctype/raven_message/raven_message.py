@@ -298,6 +298,7 @@ class RavenMessage(Document):
 			return
 
 		entered_ids = set()
+		self.mentions = []
 		for item in content:
 			if item.get("type") == "userMention":
 				user_id = item.get("attrs", {}).get("id")

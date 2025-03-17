@@ -26,11 +26,12 @@ ul {
 }
 
 .radix-themes {
-    --heading-font-family: 'Cal Sans', sans-serif;
+    --heading-font-family: 'Cal Sans', var(--default-font-family);
+    ;
 }
 
 .rt-Button {
-    font-family: 'Cal Sans', sans-serif;
+    font-family: 'Cal Sans', var(--default-font-family);
 }
 
 .not-cal {
