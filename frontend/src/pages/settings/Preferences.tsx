@@ -41,7 +41,7 @@ const Preferences = () => {
                         <HelperText>
                             {enterKeyBehaviour === 'send-message'
                                 ? 'Pressing Enter will immediately send your message. Use Shift+Enter to add a new line.'
-                                : 'Pressing Enter will add a new line. Use Shift+Enter or Ctrl/Cmd+Enter to send your message.'
+                                : 'Pressing Enter will add a new line. Use Ctrl/Cmd+Enter to send your message.'
                             }
                         </HelperText>
                     </Stack>
