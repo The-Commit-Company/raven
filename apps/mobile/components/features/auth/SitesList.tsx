@@ -42,7 +42,7 @@ const SitesList = () => {
             <View className='flex w-full gap-2'>
                 <Text className='text-foreground text-base'>Select an existing site</Text>
                 {Object.entries(sites).map(([siteName, siteInformation]) => (
-                    <Pressable key={siteName} onPress={() => handleSitePress(siteName)} className='bg-card dark:bg-card rounded-md px-2 py-2 active:bg-card-background/50 dark:active:bg-card/80'>
+                    <Pressable key={siteName} onPress={() => handleSitePress(siteName)} className='bg-card dark:bg-card rounded-lg px-2 py-2 active:bg-card-background/50 dark:active:bg-card/80'>
                         <View className='flex flex-row pr-2 items-center justify-between'>
                             <View className='flex-row items-center gap-2'>
                                 <Avatar alt="Site Logo">
@@ -61,7 +61,7 @@ const SitesList = () => {
                 ))}
                 <View className='w-full flex-row items-center gap-2 pt-4'>
                     <Divider className='flex-1' />
-                    <Text className='text-muted-foreground text-sm'>or</Text>
+                    <Text className='text-muted-foreground text-base'>or</Text>
                     <Divider className='flex-1' />
                 </View>
             </View>
