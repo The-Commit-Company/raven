@@ -4,15 +4,14 @@ import { KeyboardAvoidingView, Platform, View, Text, ActivityIndicator } from "r
 import { Stack, useLocalSearchParams } from "expo-router";
 import * as DropdownMenu from 'zeego/dropdown-menu'
 import { useDebounce } from "@raven/lib/hooks/useDebounce";
-import { usePagination } from "@hooks/usePagination";
-import { PageLengthSelector } from "@components/features/pagination/PageLengthSelector";
-import { PageSelector } from "@components/features/pagination/PageSelector";
 import FilesTable from "@components/features/files/FilesTable";
 import { useColorScheme } from "@hooks/useColorScheme";
 import HeaderBackButton from "@components/common/HeaderBackButton";
 import UniversalFileIcon from "@components/common/UniversalFileIcon";
 import HollowFileIcon from "@assets/icons/HollowFileIcon.svg"
-import { SearchInput } from "@components/nativewindui/SearchInput";
+import SearchInput from "@components/common/SearchInput/SearchInput";
+import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export type FileInChannel = {
     name: string;
@@ -41,8 +40,9 @@ export const fileTypes = [
 ];
 
 const ViewFiles = () => {
-
     const { colors } = useColorScheme()
+
+    const insets = useSafeAreaInsets()
 
     const [searchText, setSearchText] = useState("");
     const debouncedText = useDebounce(searchText, 400);
@@ -50,33 +50,23 @@ const ViewFiles = () => {
 
     const { id: channelID } = useLocalSearchParams();
 
-    const { data: count } = useFrappeGetCall("raven.api.raven_message.get_count_for_pagination_of_files", {
-        channel_id: channelID,
-        file_name: debouncedText,
-        file_type: fileType === "any" ? undefined : fileType,
-    });
-
-    const { start, selectedPageLength, setPageLength, nextPage, previousPage, goToPage } = usePagination(
-        10,
-        count?.message ?? 0
-    );
-
     const { data, isLoading } = useFrappeGetCall("raven.api.raven_message.get_all_files_shared_in_channel", {
         channel_id: channelID,
         file_name: debouncedText,
-        file_type: fileType === "any" ? undefined : fileType,
-        start_after: start > 0 ? start - 1 : 0,
-        page_length: selectedPageLength,
-    });
+        file_type: fileType === "any" ? undefined : fileType
+    }, undefined);
 
-    const onFileTypeSelect = (value: string) => {
-        setFileType(value);
-        goToPage(1)
-    }
+    const onFileTypeSelect = (fileType: string) => {
+        setFileType(fileType);
+    };
 
     const fileTypeName = useMemo(() => {
         return fileType === "any" ? "" : fileTypes.find((type) => type.value === fileType)?.label;
-    }, [fileType])
+    }, [fileType]);
+
+    const onSearchText = (value: string) => {
+        setSearchText(value)
+    }
 
     return (
         <>
@@ -95,14 +85,12 @@ const ViewFiles = () => {
                 behavior={Platform.OS === "ios" ? "padding" : "height"}
             >
                 <View className="flex-1 p-3">
-                    <View className="flex flex-row items-center gap-2">
+                    <View className="flex flex-row items-center gap-2 pb-2.5">
                         <View className="flex-1">
                             <SearchInput
-                                style={{ backgroundColor: colors.grey6 }}
-                                placeholder="Search"
-                                placeholderTextColor={colors.grey}
-                                onChangeText={setSearchText}
                                 value={searchText}
+                                onChangeText={onSearchText}
+                                placeholder="Search files"
                             />
                         </View>
 
@@ -111,7 +99,7 @@ const ViewFiles = () => {
                                 <View className={`flex flex-row gap-1.5 items-center p-2 border border-border rounded-md ${fileType !== 'any' ? 'border-[0.5px] border-primary bg-primary/5' : ''}`}>
                                     {fileType === "any" ? (
                                         <HollowFileIcon width={18} height={18} fill={colors.icon} />
-                                    ) : <UniversalFileIcon fileName={fileType} width={18} height={18} />}
+                                    ) : <UniversalFileIcon fileName={fileType === "image" ? ".png" : fileType} width={18} height={18} />}
                                     <Text className='dark:text-white text-sm'>{fileType === "any" ? "File Type" : fileTypes.find((type) => type.value === fileType)?.label}</Text>
                                 </View>
                             </DropdownMenu.Trigger>
@@ -121,29 +109,11 @@ const ViewFiles = () => {
                                         <DropdownMenu.ItemTitle>
                                             {type.label}
                                         </DropdownMenu.ItemTitle>
-                                        <DropdownMenu.ItemIcon>
-                                            <UniversalFileIcon fileName="IMG_0111375473.jpg" />
-                                        </DropdownMenu.ItemIcon>
                                     </DropdownMenu.Item>
                                 ))}
                             </DropdownMenu.Content>
                         </DropdownMenu.Root>
                     </View>
-
-                    {data?.message.length > 0 ? <View className="flex-row justify-between items-center py-2">
-                        <PageLengthSelector
-                            options={[10, 20, 50, 100]}
-                            selectedValue={selectedPageLength}
-                            updateValue={(value) => setPageLength(value)}
-                        />
-                        <PageSelector
-                            rowsPerPage={selectedPageLength}
-                            start={start}
-                            totalRows={count?.message ?? 0}
-                            gotoNextPage={nextPage}
-                            gotoPreviousPage={previousPage}
-                        />
-                    </View> : null}
 
                     {isLoading ? (
                         <View className="flex-1 justify-center items-center">

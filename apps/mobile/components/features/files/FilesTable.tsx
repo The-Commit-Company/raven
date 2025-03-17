@@ -8,27 +8,28 @@ import { FileInChannel } from "app/[site_id]/chat/[id]/view-files";
 import { formatDate } from "@raven/lib/utils/dateConversions";
 import UniversalFileIcon from "@components/common/UniversalFileIcon";
 import { useColorScheme } from "@hooks/useColorScheme";
-import { FlashList } from "@shopify/flash-list";
 import { router } from "expo-router";
 import { useOpenFileOnAndroid } from "@hooks/useOpenFileOnAndroid";
 import useFileURL from "@hooks/useFileURL";
 import { formatBytes, getFileName } from "@raven/lib/utils/operations";
 import { useMemo } from "react";
 import { WebViewSourceUri } from "react-native-webview/lib/WebViewTypes";
+import { LegendList } from "@legendapp/list";
 
 const FilesTable = ({ data }: { data: FileInChannel[] }) => {
     const insets = useSafeAreaInsets();
 
     return (
-        <FlashList
+        <LegendList
             data={data}
-            keyExtractor={(item, index) => item.file_url + item.file_name + index}
+            keyExtractor={(item) => item.name}
             renderItem={({ item }) => <FileTableRow file={item} />}
             keyboardShouldPersistTaps="handled"
             showsVerticalScrollIndicator={false}
             estimatedItemSize={78}
-            contentContainerStyle={{ paddingTop: 5, paddingBottom: insets.bottom + 20 }}
+            contentContainerStyle={{ paddingTop: 5, paddingBottom: insets.bottom }}
             contentInsetAdjustmentBehavior="automatic"
+            onEndReachedThreshold={0.5}
         />
     );
 };
