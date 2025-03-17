@@ -10,6 +10,7 @@ import clsx from 'clsx'
 import { MdOutlineBarChart } from 'react-icons/md'
 import { getFileExtension, getFileName } from '@/utils/operations'
 import { FileExtensionIcon } from '@/utils/layout/FileExtIcon'
+import { DateTooltip } from '../../chat/ChatMessage/Renderers/DateTooltip'
 
 type MessageContentProps = BoxProps & {
     user?: UserFields
@@ -36,9 +37,10 @@ export const ThreadFirstMessage = ({ message, user, ...props }: MessageContentPr
     return <Flex gap='3' pb='2' pt='7' className="bg-white dark:bg-gray-2 border-gray-4 sm:dark:border-gray-6 border-b">
         <MessageSenderAvatar userID={message.owner} user={threadOwner} isActive={isActive} />
         <Flex direction='column' gap='0.5' justify='center' width='100%'>
-            <Box mt='-1'>
+            <Flex align='center' gap='2' mt='-1'>
                 <UserHoverCard user={threadOwner} userID={message.owner} isActive={isActive} />
-            </Box>
+                <DateTooltip timestamp={message.creation} timeFormat='Do MMM [at] hh:mm A' />
+            </Flex>
             <Box>
                 <Box ref={contentRef} className={clsx('overflow-y-hidden', showMore ? 'max-h-min' : 'max-h-10')} {...props}>
                     {message.text ?
