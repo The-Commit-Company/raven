@@ -63,7 +63,7 @@
 
     @media (prefers-color-scheme: dark) {
         :root {
-            --background: 10 10 10;
+            --background: 26 26 26;
             --foreground: 255 255 255;
             --card: 21 21 24;
             --card-background: 37 37 39;
@@ -91,7 +91,7 @@
             --ring: 40 40 42;
             --green: 82, 174, 99;
 
-            --android-background: 10 10 10;
+            --android-background: 26 26 26;
             --android-foreground: 255 255 255;
             --android-card: 16 19 27;
             --android-card-background: 37 37 39;

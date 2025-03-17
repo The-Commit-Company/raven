@@ -59,7 +59,7 @@ const AllDMsList = () => {
                     }}
                     keyExtractor={(item) => item.name}
                     estimatedItemSize={64}
-                    ItemSeparatorComponent={() => <Divider />}
+                    ItemSeparatorComponent={() => <Divider prominent />}
                     bounces={false}
                     showsVerticalScrollIndicator={false}
                     ListEmptyComponent={<DMListEmptyState searchQuery={searchQuery} />}
