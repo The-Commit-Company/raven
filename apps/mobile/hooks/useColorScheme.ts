@@ -7,7 +7,7 @@ import { useAtom, useSetAtom } from 'jotai';
 import { atomWithStorage, createJSONStorage, loadable } from 'jotai/utils';
 import AsyncStorage from "@react-native-async-storage/async-storage"
 
-const themeAsyncAtom = atomWithStorage<'light' | 'dark'>('theme', 'light',
+const themeAsyncAtom = atomWithStorage<'light' | 'dark' | undefined>('theme', undefined,
     createJSONStorage(() => AsyncStorage), {
     getOnInit: true
 });
@@ -24,10 +24,9 @@ function useColorScheme() {
 
     React.useEffect(() => {
         if (theme.state === 'hasData') {
+
             if (theme.data) {
                 setNativeWindColorScheme(theme.data);
-            } else {
-                setNativeWindColorScheme('light');
             }
         }
     }, [theme]);

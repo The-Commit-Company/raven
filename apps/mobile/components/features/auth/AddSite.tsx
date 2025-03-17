@@ -2,15 +2,15 @@ import { Avatar, AvatarImage } from '@components/nativewindui/Avatar'
 import { Button } from '@components/nativewindui/Button'
 import { Sheet, useSheetRef } from '@components/nativewindui/Sheet'
 import { Text } from '@components/nativewindui/Text'
-import { TextField } from '@components/nativewindui/TextField'
 import { BottomSheetView } from '@gorhom/bottom-sheet'
 import { useCallback, useState } from 'react'
-import { Alert, Keyboard, View } from 'react-native'
+import { Alert, Keyboard, TextInput, View } from 'react-native'
 import * as WebBrowser from 'expo-web-browser'
 import { CodeChallengeMethod, exchangeCodeAsync, makeRedirectUri, ResponseType, TokenResponse, useAuthRequest } from 'expo-auth-session';
 import { router } from 'expo-router'
 import { SiteInformation } from '../../../types/SiteInformation'
 import { addSiteToStorage, discovery, setDefaultSite, storeAccessToken } from '@lib/auth'
+import { FormLabel } from '@components/layout/Form'
 
 WebBrowser.maybeCompleteAuthSession();
 
@@ -69,14 +69,22 @@ const AddSite = (props: Props) => {
 
     return (
         <View className='flex-1 gap-3'>
-            <TextField
-                placeholder='https://ravenchat.ai'
-                inputMode='url'
-                autoCapitalize='none'
-                autoComplete='off'
-                autoCorrect={false}
-                label='Site URL'
-                onChangeText={setSiteURL} />
+            <View className="flex-col gap-2">
+                <View className="flex-row items-center gap-0">
+                    <FormLabel className='text-base'>Site URL</FormLabel>
+                </View>
+                <TextInput
+                    className="w-full border border-border rounded-md px-3 pt-2 pb-3 text-base text-foreground"
+                    numberOfLines={1}
+                    inputMode='url'
+                    autoCapitalize='none'
+                    placeholder='raven.frappe.cloud'
+                    autoCorrect={false}
+                    autoComplete='off'
+                    onChangeText={setSiteURL}
+                    value={siteURL}
+                />
+            </View>
             <Button onPress={handleAddSite}>
                 <Text>Add Site</Text>
             </Button>
@@ -89,7 +97,7 @@ const AddSite = (props: Props) => {
     )
 }
 
-const SiteAuthFlowSheet = ({ siteInformation, onDismiss }: { siteInformation: SiteInformation, onDismiss: () => void }) => {
+export const SiteAuthFlowSheet = ({ siteInformation, onDismiss }: { siteInformation: SiteInformation, onDismiss: () => void }) => {
 
     const discoveryWithURL = {
         authorizationEndpoint: siteInformation.url + discovery.authorizationEndpoint,
@@ -148,8 +156,8 @@ const SiteAuthFlowSheet = ({ siteInformation, onDismiss }: { siteInformation: Si
                 <AvatarImage source={{ uri: (siteInformation.url) + (siteInformation.logo) }} width={100} height={100} />
             </Avatar>
             <View className='flex-1'>
-                <Text>{siteInformation?.app_name}</Text>
-                <Text>{siteInformation?.url}</Text>
+                <Text className='text-base font-medium'>{siteInformation?.app_name}</Text>
+                <Text className='text-sm text-muted-foreground'>{siteInformation?.url}</Text>
             </View>
         </View>
         <Button onPress={onLoginClick} disabled={!request}>

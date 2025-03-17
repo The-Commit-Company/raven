@@ -12,16 +12,30 @@ export class MessagePreviewRenderer extends Renderer implements RendererInterfac
         this.colors = colors
     }
 
+    link(href: string): ReactNode {
+        return (
+            <Text
+                key={this.getKey()}
+                ellipsizeMode="tail"
+                style={{
+                    fontWeight: 'normal',
+                    color: this.colors.primary,
+                }}
+            >
+                {href}
+            </Text>
+        )
+    }
+
     text(text: string): ReactNode {
         return (
             <Text
                 key={this.getKey()}
-                numberOfLines={1}
                 ellipsizeMode="tail"
                 style={{
-                    fontWeight: this.isUnread ? 'bold' : 'normal',
+                    fontWeight: 'normal',
                     fontSize: 14,
-                    color: this.colors.grey,
+                    color: this.isUnread ? this.colors.foreground : this.colors.grey,
                 }}
             >
                 {text}

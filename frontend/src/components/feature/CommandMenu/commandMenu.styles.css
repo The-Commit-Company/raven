@@ -4,7 +4,7 @@
     --box-shadow: var(--shadow-3);
     --border: 1px solid var(--gray-1);
     --item: var(--gray-2);
-    --item-hover: var(--gray-3);
+    --item-hover: var(--gray-a3);
     --text: var(--gray-12);
     --text-alt: var(--gray-9);
 }
@@ -15,7 +15,7 @@
     --box-shadow: var(--shadow-3);
     --border: 1px solid var(--gray-1);
     --item: var(--gray-2);
-    --item-hover: var(--gray-5);
+    --item-hover: var(--gray-a4);
     --text: var(--gray-12);
     --text-alt: var(--gray-11);
 }
@@ -63,6 +63,7 @@
 .command-menu [cmdk-item]:hover {
     transition-property: background;
     background: var(--item-hover);
+    color: var(--text);
 }
 
 .command-menu [cmdk-item]+[cmdk-item] {

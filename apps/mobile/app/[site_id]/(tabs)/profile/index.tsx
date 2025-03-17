@@ -30,7 +30,7 @@ export default function Profile() {
                     contentInsetAdjustmentBehavior="automatic"
                     showsVerticalScrollIndicator={false}
                     contentContainerStyle={{ paddingBottom: insets.bottom }}>
-                    <View className='flex flex-col gap-4'>
+                    <View className='flex flex-col gap-4 mt-1.5'>
                         <ProfilePicture />
                         <View className='flex flex-col gap-0.5'>
                             <Text className='pl-2 pb-1 text-xs text-muted-foreground/80'>Personal Info</Text>

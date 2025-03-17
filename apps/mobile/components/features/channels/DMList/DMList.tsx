@@ -49,7 +49,9 @@ export const DMListRow = ({ dm }: { dm: DMChannelListItem }) => {
                     src={user?.user_image ?? ""}
                     alt={user?.full_name ?? ""}
                     availabilityStatus={user?.availability_status}
-                    avatarProps={{ className: "w-8 h-8" }} />
+                    avatarProps={{ className: "w-8 h-8" }}
+                    textProps={{ className: "text-sm font-medium" }}
+                    isBot={user?.type === 'Bot'} />
                 <Text style={styles.dmChannelText}>{user?.full_name}</Text>
             </Pressable>
         </Link>

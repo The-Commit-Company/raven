@@ -253,11 +253,7 @@ const Tiptap = forwardRef(({ isEdit, slotBefore, fileProps, onMessageSend, onUpA
                     return false
                 },
                 'Shift-Enter': () => {
-                    if (enterKeyBehaviour === 'send-message') {
-                        return handleNewLineAction(this.editor)
-                    } else {
-                        return handleMessageSendAction(this.editor)
-                    }
+                    return handleNewLineAction(this.editor)
                 },
                 'ArrowUp': () => {
                     // If the editor is empty, call the onUpArrow function

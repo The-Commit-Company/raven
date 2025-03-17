@@ -7,7 +7,6 @@ import SettingsContentContainer from "@/components/layout/Settings/SettingsConte
 import SettingsPageHeader from "@/components/layout/Settings/SettingsPageHeader"
 import { HStack } from "@/components/layout/Stack"
 import { RavenMessageAction } from "@/types/RavenIntegrations/RavenMessageAction"
-import { isEmpty } from "@/utils/validations"
 import { Button } from "@radix-ui/themes"
 import { useFrappeGetDoc, useFrappeUpdateDoc, SWRResponse } from "frappe-react-sdk"
 import { useEffect } from "react"
@@ -41,9 +40,7 @@ const ViewMessageActionContent = ({ data, mutate }: { data: RavenMessageAction, 
         defaultValues: data
     })
 
-    const { formState: { dirtyFields } } = methods
-
-    const isDirty = !isEmpty(dirtyFields)
+    const { formState: { isDirty } } = methods
 
 
     const onSubmit = (data: RavenMessageAction) => {
