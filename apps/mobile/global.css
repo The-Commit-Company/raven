@@ -63,9 +63,9 @@
 
     @media (prefers-color-scheme: dark) {
         :root {
-            --background: 26 26 26;
+            --background: 13 13 13;
             --foreground: 255 255 255;
-            --card: 21 21 24;
+            --card: 26, 26, 29;
             --card-background: 37 37 39;
             --card-foreground: 255 255 255;
             --popover: 40 40 42;
@@ -91,9 +91,9 @@
             --ring: 40 40 42;
             --green: 82, 174, 99;
 
-            --android-background: 26 26 26;
+            --android-background: 13 13 13;
             --android-foreground: 255 255 255;
-            --android-card: 16 19 27;
+            --android-card: 26, 26, 29;
             --android-card-background: 37 37 39;
             --android-card-foreground: 224 226 237;
             --android-popover: 39 42 50;
