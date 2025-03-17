@@ -13,6 +13,7 @@ import { MentionInput, MentionSuggestionsProps, replaceMentionValues } from 'rea
 import { Text } from "@components/nativewindui/Text"
 import markdownit from 'markdown-it'
 import useSiteContext from "@hooks/useSiteContext"
+import TypingIndicator from "./TypingIndicator"
 
 interface ChatInputProps {
     channelID: string
@@ -99,6 +100,7 @@ const ChatInput = ({ channelID, onSendMessage }: ChatInputProps) => {
     }
 
     return <View className="flex flex-col bg-background">
+        <TypingIndicator channel={channelID} />
         {siteID && <FileScroller channelID={channelID} siteID={siteID} />}
 
         <View className="flex-row items-end px-4 py-2 gap-2 min-h-16 justify-between">
@@ -121,7 +123,6 @@ const ChatInput = ({ channelID, onSendMessage }: ChatInputProps) => {
                     ]}
                     className="text-sm"
                 />
-                {/* <InputComponentMemoized onChange={onChange} ref={inputRef} defaultContent={content.current} /> */}
             </View>
             <View>
                 <Button size='icon' variant="plain" className="w-8 h-8" hitSlop={10} onPress={onSend}>
