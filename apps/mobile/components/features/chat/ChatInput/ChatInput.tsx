@@ -1,4 +1,4 @@
-import { Pressable, ScrollView, View } from "react-native"
+import { ScrollView, View } from "react-native"
 import AdditionalInputs from "./AdditionalInputs"
 import { Button } from "@components/nativewindui/Button"
 import SendIcon from "@assets/icons/SendIcon.svg"
@@ -6,14 +6,14 @@ import { useColorScheme } from "@hooks/useColorScheme"
 import SendItem from "./SendItem"
 import { useAtom } from 'jotai'
 import { CustomFile } from "@raven/types/common/File"
-import { FC, useState } from "react"
+import { useState } from "react"
 import { filesAtomFamily } from "@lib/ChatInputUtils"
 import { useSendMessage } from "@hooks/useSendMessage"
-import { MentionInput, MentionSuggestionsProps, replaceMentionValues } from 'react-native-controlled-mentions'
-import { Text } from "@components/nativewindui/Text"
+import { MentionInput, replaceMentionValues } from 'react-native-controlled-mentions'
 import markdownit from 'markdown-it'
 import useSiteContext from "@hooks/useSiteContext"
 import TypingIndicator from "./TypingIndicator"
+import { UserMentions } from "./mentions"
 
 interface ChatInputProps {
     channelID: string
@@ -31,37 +31,14 @@ const ChatInput = ({ channelID, onSendMessage }: ChatInputProps) => {
 
     const handleCancelReply = () => {
         console.log('cancel reply')
+        setContent('')
+        onSendMessage?.()
     }
 
     // console.log("Rednered")
 
 
-    // const { sendMessage, loading } = useSendMessage(id as string, files.length, uploadFiles, handleCancelReply)
-
-    // const handleSend = async (files?: CustomFile[]) => {
-
-    //     console.log('html', content)
-
-    //     // setText(content ?? '')
-
-    //     if (files && files?.length > 0) {
-    //         // set the caption to first file
-    //         setFiles((prevFiles) => {
-    //             return prevFiles.map((file) => {
-    //                 if (file.fileID === files[0].fileID) {
-    //                     return { ...file, caption: content }
-    //                 }
-    //                 return file
-    //             })
-    //         })
-
-    //         setContent('')
-    //     } else if (content) {
-    //         console.log('content', content)
-    //         await sendMessage(content)
-    //         setContent('')
-    //     }
-    // }
+    const { sendMessage, loading } = useSendMessage(channelID as string, 0, async () => Promise.resolve(), handleCancelReply)
 
     const { colors } = useColorScheme()
 
@@ -96,16 +73,18 @@ const ChatInput = ({ channelID, onSendMessage }: ChatInputProps) => {
 
         console.log('html', html)
 
-        onSendMessage?.()
+        sendMessage(html)
     }
 
     return <View className="flex flex-col gap-1 bg-background">
         <TypingIndicator channel={channelID} />
         {siteID && <FileScroller channelID={channelID} siteID={siteID} />}
 
-        <View className="flex-row items-end px-4 pt-2 pb-4 gap-2 min-h-16 justify-between border-t border-l border-r border-border rounded-2xl">
+        <View className={`flex-row items-end px-4 pt-2 pb-4 gap-2 
+            min-h-16 justify-between`}>
             <AdditionalInputs channelID={channelID} />
-            <View className="flex-1 p-2 pb-3 rounded-lg w-full">
+            <View className="flex-1  border border-border rounded-lg">
+
                 <MentionInput
                     value={content}
                     multiline
@@ -114,20 +93,28 @@ const ChatInput = ({ channelID, onSendMessage }: ChatInputProps) => {
                     onChange={setContent}
                     partTypes={[
                         {
+                            isBottomMentionSuggestionsRender: false,
                             trigger: '@', // Should be a single character like '@' or '#'
-                            renderSuggestions,
-                            textStyle: { fontWeight: 'bold', color: 'blue' }, // The mention style in the input
+                            renderSuggestions: (props) => <UserMentions {...props} channelID={channelID} />,
+                            textStyle: { fontWeight: 'medium', color: colors.primary }, // The mention style in the input
                         },
                         {
                             pattern: /(https?:\/\/|www\.)[-a-zA-Z0-9@:%._\+~#=]{1,256}\.(xn--)?[a-z0-9-]{2,20}\b([-a-zA-Z0-9@:%_\+\[\],.~#?&\/=]*[-a-zA-Z0-9@:%_\+\]~#?&\/=])*/gi,
                             textStyle: { color: 'blue' },
                         },
                     ]}
+                    style={{
+                        padding: 12
+                    }}
+                    containerStyle={{
+                        position: 'static'
+                    }}
                     className="text-sm"
                 />
+
             </View>
             <View>
-                <Button size='icon' variant="plain" className="w-8 h-8 rounded-full mb-1" hitSlop={10} onPress={onSend}>
+                <Button disabled={loading || !content} size='icon' variant="plain" className="w-8 h-8 rounded-full mb-1" hitSlop={10} onPress={onSend}>
                     <SendIcon fill={content ? colors.primary : colors.grey2} />
                 </Button>
             </View>
@@ -135,37 +122,7 @@ const ChatInput = ({ channelID, onSendMessage }: ChatInputProps) => {
     </View>
 }
 
-const suggestions = [
-    { id: '1', name: 'David Tabaka' },
-    { id: '2', name: 'Mary' },
-    { id: '3', name: 'Tony' },
-    { id: '4', name: 'Mike' },
-    { id: '5', name: 'Grey' },
-];
 
-const renderSuggestions: FC<MentionSuggestionsProps> = ({ keyword, onSuggestionPress }) => {
-    if (keyword == null) {
-        return null;
-    }
-
-    return (
-        <View>
-            {suggestions
-                .filter(one => one.name.toLocaleLowerCase().includes(keyword.toLocaleLowerCase()))
-                .map(one => (
-                    <Pressable
-                        key={one.id}
-                        onPress={() => onSuggestionPress(one)}
-
-                        style={{ padding: 12 }}
-                    >
-                        <Text>{one.name}</Text>
-                    </Pressable>
-                ))
-            }
-        </View>
-    );
-};
 
 const FileScroller = ({ channelID, siteID }: { channelID: string, siteID: string }) => {
 
