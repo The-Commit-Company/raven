@@ -18,7 +18,7 @@ export default function TabLayout() {
 
     // Common styles
     const tabBarStyle = {
-        backgroundColor: dark ? 'rgba(08, 08, 08, 0.8)' : 'rgba(255, 255, 255, 0.8)',
+        backgroundColor: dark ? 'rgba(18, 18, 18, 0.8)' : 'rgba(255, 255, 255, 0.8)',
         borderTopWidth: 1,
         borderTopColor: dark ? 'rgba(255, 255, 255, 0.12)' : 'rgba(0, 0, 0, 0.05)',
         paddingTop: 4,
@@ -30,7 +30,7 @@ export default function TabLayout() {
     }
 
     const headerStyle = {
-        backgroundColor: dark ? 'rgba(08, 08, 08, 0)' : 'rgba(249, 249, 249, 1)',
+        backgroundColor: dark ? 'rgba(18, 18, 18, 0)' : 'rgba(249, 249, 249, 1)',
         borderBottomWidth: 1,
         borderBottomColor: dark ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0)',
     }
