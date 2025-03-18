@@ -103,14 +103,14 @@ const MessageItem = memo(({ message }: Props) => {
                             {message.is_forwarded === 1 &&
                                 <View className='flex-row items-center gap-1'>
                                     <ShareForward fill={'#6b7280'} width={12} height={12} />
-                                    <Text className='text-xs text-muted-foreground'>
+                                    <Text className='text-sm text-muted-foreground'>
                                         forwarded
                                     </Text>
                                 </View>}
                             {message.is_pinned === 1 &&
                                 <View className='flex-row items-center gap-1'>
                                     <PushPin width={12} height={12} />
-                                    <Text className='text-xs text-accent'>Pinned</Text>
+                                    <Text className='text-sm text-accent'>Pinned</Text>
                                 </View>}
 
                             {linked_message && replied_message_details && <ReplyMessageBox

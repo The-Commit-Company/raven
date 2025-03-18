@@ -38,7 +38,7 @@ const ChatInput = ({ channelID, onSendMessage }: ChatInputProps) => {
     // console.log("Rednered")
 
 
-    const { sendMessage, loading } = useSendMessage(channelID as string, 0, async () => Promise.resolve(), handleCancelReply)
+    const { sendMessage, loading } = useSendMessage(channelID as string, handleCancelReply)
 
     const { colors } = useColorScheme()
 

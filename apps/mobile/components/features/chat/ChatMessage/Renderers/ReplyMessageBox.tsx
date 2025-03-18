@@ -65,7 +65,7 @@ const ReplyMessageBox = ({ message, onPress }: ReplyMessageBoxProps) => {
                     <Text className="text-sm font-medium" numberOfLines={1}>
                         {userFullName}
                     </Text>
-                    <Text className="text-[13px] text-muted-foreground">
+                    <Text className="text-xs text-muted-foreground">
                         {formattedDate}
                     </Text>
                 </View>
@@ -78,8 +78,8 @@ const ReplyMessageBox = ({ message, onPress }: ReplyMessageBoxProps) => {
 const ContentRenderer = ({ content }: { content: string }) => {
 
     const { colors } = useColorScheme()
-    const renderer = new MessagePreviewRenderer(false, colors);
-    return <Text className="text-[15px] text-foreground line-clamp-2 text-ellipsis overflow-hidden">
+    const renderer = new MessagePreviewRenderer(true, colors);
+    return <Text className="text-base text-foreground line-clamp-2 text-ellipsis overflow-hidden">
         <Markdown
             flatListProps={{
                 scrollEnabled: false,
@@ -119,7 +119,7 @@ const ImageFileReplyBlock = ({ file, messageType, owner }: { file: string, messa
                 <UniversalFileIcon width={18} height={18} fileName={fileName} />
             )}
             <View className="flex-row items-start gap-1">
-                <Text className="text-[15px] line-clamp-2 text-ellipsis overflow-hidden">
+                <Text className="text-base line-clamp-2 text-ellipsis overflow-hidden">
                     {fileName}
                 </Text>
             </View>

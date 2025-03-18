@@ -1,10 +1,15 @@
 import { useFrappePostCall } from 'frappe-react-sdk'
 import { Message } from '@raven/types/common/Message'
-import { RavenMessage } from '@raven/types/RavenMessaging/RavenMessage'
+import useFileUpload from '@raven/lib/hooks/useFileUpload'
+import { useAtomValue } from 'jotai'
+import { selectedReplyMessageAtomFamily } from '@lib/ChatInputUtils'
 
 // TODO: This is older version of the useSendMessage hook compared to web, needs to be updated.
-export const useSendMessage = (channelID: string, noOfFiles: number, uploadFiles: () => Promise<void>, handleCancelReply: VoidFunction, selectedMessage?: Message | null) => {
+export const useSendMessage = (channelID: string, onSend: VoidFunction) => {
 
+
+    const selectedMessage = useAtomValue(selectedReplyMessageAtomFamily(channelID))
+    const { uploadFiles } = useFileUpload(channelID)
     const { call, loading } = useFrappePostCall('raven.api.raven_message.send_message')
 
     const sendMessage = async (content: string, json?: any): Promise<void> => {
@@ -18,18 +23,16 @@ export const useSendMessage = (channelID: string, noOfFiles: number, uploadFiles
                 is_reply: selectedMessage ? 1 : 0,
                 linked_message: selectedMessage ? selectedMessage.name : null
             })
-                .then(() => handleCancelReply())
+                .then(() => onSend())
                 .then(() => uploadFiles())
                 .then(() => {
-                    handleCancelReply()
-                })
-        } else if (noOfFiles > 0) {
-            return uploadFiles()
-                .then(() => {
-                    handleCancelReply()
+                    onSend()
                 })
         } else {
-            return Promise.resolve()
+            return uploadFiles()
+                .then(() => {
+                    onSend()
+                })
         }
     }
 

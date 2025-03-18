@@ -9,7 +9,7 @@ type Props = {
 const SystemMessageBlock = ({ item }: Props) => {
     return (
         <View className='px-3 py-2'>
-            <Text className='text-sm text-grayText'>{item.text}</Text>
+            <Text className='text-sm text-muted-foreground'>{item.text}</Text>
         </View>
     )
 }

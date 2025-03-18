@@ -16,28 +16,34 @@ const TAG_BASE_STYLES: TRenderEngineConfig['tagsStyles'] = {
         paddingBottom: 2,
         fontStyle: 'italic',
         marginLeft: 4,
-        lineHeight: 22,
+        lineHeight: 24,
+        fontSize: 18,
     },
     'code': {
         padding: 4,
         borderRadius: 4,
+        lineHeight: 24,
+        fontSize: 18,
     },
     'p': {
         marginBottom: 0,
+        fontSize: 18,
         marginTop: 0,
         whiteSpace: 'pre',
         paddingBottom: 4,
-        lineHeight: 22,
+        lineHeight: 24,
     },
     'ol': {
         marginTop: 2,
         marginBottom: 2,
-        lineHeight: 22,
+        lineHeight: 24,
+        fontSize: 18,
     },
     'ul': {
         marginTop: 2,
         marginBottom: 2,
-        lineHeight: 22,
+        lineHeight: 24,
+        fontSize: 18,
     },
     'img': {
         width: '200px',
@@ -48,14 +54,16 @@ const TAG_BASE_STYLES: TRenderEngineConfig['tagsStyles'] = {
     'a': {
         textDecorationLine: 'none',
         borderBottomWidth: 1,
-        lineHeight: 22,
+        lineHeight: 24,
+        fontSize: 18,
     },
     'pre': {
         padding: 8,
         marginTop: 2,
         marginBottom: 2,
         borderRadius: 4,
-        lineHeight: 22,
+        lineHeight: 24,
+        fontSize: 18,
     }
 }
 

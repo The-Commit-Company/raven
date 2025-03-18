@@ -131,7 +131,7 @@ const DocTypeCard = memo(({
     }, [data, removePreviewFields]);
 
     return (
-        <View className="border border-gray-200 dark:border-gray-700 bg-gray-100 dark:bg-gray-900 rounded-lg p-2 w-[90%]">
+        <View className="border border-border bg-card-background/20 rounded-lg p-2">
             <View className='gap-1.5'>
                 {
                     // check if doctype has preview image or not and render the appropriate variant

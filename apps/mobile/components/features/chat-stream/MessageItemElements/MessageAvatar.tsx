@@ -17,7 +17,7 @@ const MessageAvatar = ({ userID, botID, is_continuation, userFullName, userImage
     }
 
     return (
-        <View className='w-12 mt-1'>
+        <View className='w-12 mt-1.5'>
             <UserAvatar
                 alt={userFullName}
                 isBot={isBot}
