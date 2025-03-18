@@ -47,8 +47,8 @@ const DMRow = ({ dm }: { dm: DMChannelWithUnreadCount }) => {
                 {({ pressed, hovered }) => <>
                     <View
                         style={{
-                            width: 6,
-                            height: 6,
+                            width: 7,
+                            height: 7,
                             position: 'absolute',
                             left: 6,
                             top: 27,
