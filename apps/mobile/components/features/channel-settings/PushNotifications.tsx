@@ -67,9 +67,9 @@ const PushNotifications = ({ channelID }: PushNotifications) => {
 
     return (
         <View>
-            <View className='px-4 py-1.5 flex-row justify-between'>
+            <View className='flex flex-row py-2.5 px-4 rounded-xl justify-between bg-background dark:bg-card'>
                 <View className='flex-row items-center gap-2'>
-                    <BellOutlineIcon height={20} width={20} fill={colors.icon} />
+                    <BellOutlineIcon height={18} width={18} fill={colors.icon} />
                     <Text className='text-base'>Push Notifications</Text>
                 </View>
                 <Toggle value={channelMember?.allow_notifications ? true : false} onValueChange={onToggle} disabled={!isPushAvailable} />

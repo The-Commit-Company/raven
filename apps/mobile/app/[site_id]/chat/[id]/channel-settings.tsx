@@ -1,15 +1,9 @@
-import { View, TouchableOpacity, StyleSheet, Pressable } from "react-native";
+import { View, TouchableOpacity } from "react-native";
 import { Text } from "@components/nativewindui/Text";
 import { router, useLocalSearchParams } from "expo-router";
 import { Stack } from "expo-router";
-import { DeleteChannelModal } from "@components/features/channel-settings/DeleteChannelModal";
+import { DeleteChannel } from "@components/features/channel-settings/DeleteChannelModal";
 import { useFrappeGetDoc } from "frappe-react-sdk";
-import TrashIcon from '@assets/icons/TrashIcon.svg';
-import LockIcon from '@assets/icons/LockIcon.svg';
-import GlobeIcon from '@assets/icons/GlobeIcon.svg';
-import HashIcon from '@assets/icons/HashIcon.svg';
-import { useSheetRef } from "@components/nativewindui/Sheet";
-import { ChangeChannelTypeSheet, getChangeChannelType } from "@components/features/channel-settings/ChangeChannelType";
 import { ChannelListItem } from "@raven/types/common/ChannelListItem";
 import { MembersTray } from "@components/features/channel-settings/MembersTray";
 import PushNotifications from "@components/features/channel-settings/PushNotifications";
@@ -21,30 +15,23 @@ import ChannelBaseDetails from "@components/features/channel-settings/BaseDetail
 import LeaveChannel from "@components/features/channel-settings/LeaveChannel";
 import ArchiveChannel from "@components/features/channel-settings/ArchiveChannel";
 import HeaderBackButton from "@components/common/HeaderBackButton";
+import useCurrentRavenUser from "@raven/lib/hooks/useCurrentRavenUser";
+import { useFetchChannelMembers } from "@raven/lib/hooks/useFetchChannelMembers";
+import { ChangeChannelType } from "@components/features/channel-settings/ChangeChannelType";
 
 const ChannelSettings = () => {
 
     const { id } = useLocalSearchParams()
-    const deleteSheetRef = useSheetRef()
-    const bottomSheetModalRef = useSheetRef()
-    const { colors } = useColorScheme()
-
+    const { colors, isDarkColorScheme } = useColorScheme()
     const { data: channelData } = useFrappeGetDoc<ChannelListItem>('Raven Channel', id as string)
-
-    const changeChannelTypeButtons = channelData ? getChangeChannelType({
-        channelData,
-        bottomSheetModalRef,
-        iconMap: {
-            'Public': <GlobeIcon height={20} width={20} fill={colors.icon} />,
-            'Private': <LockIcon height={20} width={20} fill={colors.icon} />,
-            'Open': <HashIcon height={20} width={20} fill={colors.icon} />
-        }
-    }) : []
+    const { myProfile: currentUserInfo } = useCurrentRavenUser()
+    const { channelMembers } = useFetchChannelMembers(id as string ?? "")
+    const isAllowed = channelMembers[currentUserInfo?.name ?? ""]?.is_admin === 1
 
     return (
         <>
             <Stack.Screen options={{
-                headerStyle: { backgroundColor: colors.background },
+                headerStyle: { backgroundColor: isDarkColorScheme ? colors.background : colors.card },
                 headerLeft: () => <HeaderBackButton />,
                 headerTitle: () => <Text className='ml-2 text-base font-semibold'>Channel Info</Text>,
                 headerRight: () => (
@@ -53,60 +40,43 @@ const ChannelSettings = () => {
                     </TouchableOpacity>
                 )
             }} />
-            <View className="flex-1 bg-background">
+            <View className="flex-1 bg-card dark:bg-background">
                 <View className="flex-col gap-5">
                     <ChannelBaseDetails channelData={channelData} />
                     <Divider className='mx-0' prominent />
                     <MembersTray onViewAll={() => router.push(`../channel-members`, { relativeToDirectory: true })} />
                     <Divider className='mx-0' prominent />
-                    <View className="flex-col gap-2">
-                        <Text className="text-[15px] font-medium px-4">Settings</Text>
-                        <View className="flex-col pt-1 gap-1">
-                            <PushNotifications channelID={id as string} />
-                            {changeChannelTypeButtons.map((button) => (
-                                <Pressable key={button.id}
-                                    onPress={button.onPress}
-                                    className="flex-row items-center gap-2 px-4 py-2.5 ios:active:bg-linkColor">
-                                    {button.icon}
-                                    <Text className="text-base">{button.title}</Text>
-                                </Pressable>
-                            ))}
+                    {isAllowed ?
+                        <View className='flex flex-col gap-4 px-3'>
+                            <View className='flex flex-col gap-0.5'>
+                                <Text className='pl-2 pb-1 text-xs text-muted-foreground/80'>Settings</Text>
+                                <PushNotifications channelID={id as string} />
+                                <ChangeChannelType channelData={channelData} />
+                            </View>
+                            <View className='flex flex-col gap-0.5'>
+                                <Text className='pl-2 pb-1 text-xs text-muted-foreground/80'>Danger Zone</Text>
+                                <ArchiveChannel channel={channelData} />
+                                <LeaveChannel channel={channelData} />
+                                <DeleteChannel channelData={channelData} />
+                            </View>
                         </View>
-                    </View>
-                    <View className="flex gap-2 px-4 pb-2">
-                        <ArchiveChannel channel={channelData} />
-                        <LeaveChannel channel={channelData} />
-                        <Pressable
-                            style={styles.settingsContainer}
-                            className='rounded-xl ios:active:bg-red-50 border border-destructive'
-                            android_ripple={{ color: 'rgba(0,0,0,0.1)', borderless: false }}
-                            onPress={() => deleteSheetRef.current?.present()}>
-                            <TrashIcon height={20} width={20} fill={colors.destructive} />
-                            <Text className="text-base text-destructive">Delete Channel</Text>
-                        </Pressable>
-                    </View>
+                        :
+                        <View className='flex flex-col gap-4 px-3'>
+                            <View className='flex flex-col gap-0.5'>
+                                <Text className='pl-2 pb-1 text-xs text-muted-foreground/80'>Settings</Text>
+                                <PushNotifications channelID={id as string} />
+                            </View>
+                            {channelData?.type !== 'Open' && <View className='flex flex-col gap-0.5'>
+                                <Text className='pl-2 pb-1 text-xs text-muted-foreground/80'>Danger Zone</Text>
+                                <LeaveChannel channel={channelData} />
+                            </View>}
+                        </View>
+                    }
                     <ChannelCreator channelData={channelData} />
                 </View>
             </View>
-            {channelData && (
-                <>
-                    <DeleteChannelModal deleteSheetRef={deleteSheetRef} channelData={channelData} />
-                    <ChangeChannelTypeSheet channelData={channelData} bottomSheetModalRef={bottomSheetModalRef} />
-                </>
-            )}
         </>
     )
 }
-
-const styles = StyleSheet.create({
-    settingsContainer: {
-        justifyContent: 'center',
-        flexDirection: 'row',
-        alignItems: 'center',
-        gap: 8,
-        padding: 12,
-        borderRadius: 12,
-    }
-})
 
 export default ChannelSettings

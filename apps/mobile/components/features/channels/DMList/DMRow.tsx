@@ -82,7 +82,7 @@ const DMRow = ({ dm }: { dm: DMChannelWithUnreadCount }) => {
                             <View
                                 style={{ maxHeight: 30, maxWidth: dm.unread_count > 0 ? '90%' : '100%', }}
                                 className='flex flex-row items-center gap-1'>
-                                {isSentByUser ? <Text className='text-xs text-muted-foreground'>You:</Text> : null}
+                                {isSentByUser ? <Text className='text-[14px] text-muted-foreground/70'>You:</Text> : null}
                                 <Markdown
                                     flatListProps={{
                                         scrollEnabled: false,

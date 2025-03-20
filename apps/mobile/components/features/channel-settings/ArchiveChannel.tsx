@@ -2,14 +2,13 @@ import { ChannelListContext, ChannelListContextType } from '@raven/lib/providers
 import { ChannelListItem } from '@raven/types/common/ChannelListItem'
 import { FrappeDoc, useFrappeUpdateDoc } from 'frappe-react-sdk'
 import { useContext } from 'react'
-import { Pressable, StyleSheet } from 'react-native'
+import { Pressable } from 'react-native'
 import { toast } from 'sonner-native'
 import { Alert } from '@components/nativewindui/Alert'
 import { Text } from '@components/nativewindui/Text'
 import ArchiveIcon from "@assets/icons/ArchiveIcon.svg";
 import { useColorScheme } from '@hooks/useColorScheme'
 import { useRouteToHome } from '@hooks/useRouting'
-
 
 const ArchiveChannel = ({ channel }: { channel: FrappeDoc<ChannelListItem> | undefined }) => {
 
@@ -50,25 +49,13 @@ const ArchiveChannel = ({ channel }: { channel: FrappeDoc<ChannelListItem> | und
                     },
                 ]} >
             <Pressable
-                style={styles.settingsContainer}
-                className='rounded-xl ios:active:bg-linkColor border border-border'
+                className='flex flex-row items-center py-3 px-4 rounded-xl gap-3 bg-background dark:bg-card active:bg-card-background/50 dark:active:bg-card/80'
                 android_ripple={{ color: 'rgba(0,0,0,0.1)', borderless: false }}>
-                <ArchiveIcon height={20} width={20} fill={colors.icon} />
+                <ArchiveIcon height={18} width={18} fill={colors.icon} />
                 <Text className="text-base">{loading ? 'Archiving...' : 'Archive Channel'}</Text>
             </Pressable>
         </Alert>
     )
 }
-
-const styles = StyleSheet.create({
-    settingsContainer: {
-        justifyContent: 'center',
-        flexDirection: 'row',
-        alignItems: 'center',
-        gap: 8,
-        padding: 12,
-        borderRadius: 12
-    }
-})
 
 export default ArchiveChannel
