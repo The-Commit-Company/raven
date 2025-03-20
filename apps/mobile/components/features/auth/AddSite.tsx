@@ -74,7 +74,7 @@ const AddSite = (props: Props) => {
                     <FormLabel className='text-base'>Site URL</FormLabel>
                 </View>
                 <TextInput
-                    className="w-full border border-border rounded-md px-3 pt-2 pb-3 text-base text-foreground"
+                    className="w-full border py-3 text-[16px] border-border rounded-md px-3 text-foreground"
                     numberOfLines={1}
                     inputMode='url'
                     autoCapitalize='none'

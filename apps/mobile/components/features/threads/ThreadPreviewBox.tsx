@@ -64,7 +64,7 @@ const ThreadPreviewBox = ({ thread, unreadCount }: { thread: ThreadMessage, unre
                         {unreadCount > 0 && <Text className='font-bold text-xs text-primary bg-primary/10 rounded-md px-1.5 py-0.5 mx-2 mt-2'>{unreadCount}</Text>}
                     </View>
                     <BaseMessageItem message={thread as unknown as Message} />
-                    <View className='flex flex-row items-center gap-2 pl-16 pt-1'>
+                    <View className='flex flex-row items-center gap-2 pl-16 pt-2'>
                         <ViewThreadParticipants participants={thread.participants ?? []} />
                         <Text className={'text-xs font-medium text-primary dark:text-secondary'}>{thread.reply_count ?? 0} {thread.reply_count && thread.reply_count === 1 ? 'Reply' : 'Replies'}</Text>
                     </View>

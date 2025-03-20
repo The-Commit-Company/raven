@@ -18,8 +18,6 @@ type Props = {
 
 const FileMessageRenderer = ({ message, doubleTapGesture }: Props) => {
 
-    const fileName = getFileName(message.file)
-
     const source = useFileURL((message as FileMessage).file ?? "");
 
     const { openFile: openFileOnAndroid } = useOpenFileOnAndroid()
@@ -46,20 +44,28 @@ const FileMessageRenderer = ({ message, doubleTapGesture }: Props) => {
             .onStart(() => {
                 runOnJS(handleFilePress)()
             }).requireExternalGestureToFail(doubleTapGesture)
+
     }, [handleFilePress, doubleTapGesture])
 
     return (
         <GestureDetector gesture={singleTapGesture}>
-            <View className='rounded-md mb-1 p-2 border border-linkColor dark:border-border bg-background w-full'>
-                <View className='flex-row items-center gap-2 p-2 w-full'>
-                    <UniversalFileIcon fileName={fileName} />
-                    <Text className='text-base font-medium text-foreground line-clamp-1 truncate flex-1' numberOfLines={1}>
-                        {fileName}
-                    </Text>
-                </View>
-            </View>
+            <FileMessageView message={message} />
         </GestureDetector>
     )
+}
+
+
+export const FileMessageView = ({ message }: { message: FileMessage }) => {
+
+    const fileName = getFileName(message.file)
+    return <View className='rounded-md mb-1 p-2 border border-linkColor dark:border-border bg-background w-full'>
+        <View className='flex-row items-center gap-2 p-2 w-full'>
+            <UniversalFileIcon fileName={fileName} />
+            <Text className='text-base font-medium text-foreground line-clamp-1 truncate flex-1' numberOfLines={1}>
+                {fileName}
+            </Text>
+        </View>
+    </View>
 }
 
 export default FileMessageRenderer

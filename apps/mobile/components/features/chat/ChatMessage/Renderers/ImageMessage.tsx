@@ -2,7 +2,7 @@ import { ImageMessage } from "@raven/types/common/Message";
 import { UserFields } from "@raven/types/common/UserFields";
 import { View } from "react-native";
 import { Image } from "expo-image";
-import useFileURL from "@hooks/useFileURL";
+import useFileURL, { UseFileURLReturnType } from "@hooks/useFileURL";
 import { Gesture, GestureDetector, TapGesture } from "react-native-gesture-handler";
 import { runOnJS } from "react-native-reanimated";
 import { router } from "expo-router";
@@ -16,9 +16,8 @@ interface ImageMessageProps {
 
 export const ImageMessageRenderer = ({ message, doubleTapGesture }: ImageMessageProps) => {
 
-    const source = useFileURL(message.file)
-    const width = message?.thumbnail_width ? message?.thumbnail_width / 2 : 300
-    const height = message?.thumbnail_height ? message?.thumbnail_height / 2 : 200
+
+    const { source, ...otherAttributes } = useGetImageAttributes(message)
 
     const handleImagePress = useCallback(() => {
         router.push({
@@ -41,28 +40,63 @@ export const ImageMessageRenderer = ({ message, doubleTapGesture }: ImageMessage
 
 
     return (
-        <View
-            className="flex-row items-center gap-1"
-        >
-            <ImageSkeleton width={width} height={height} />
-            <GestureDetector gesture={singleTapGesture}>
-                <Image
-                    source={source}
-                    style={{
-                        borderRadius: 8,
-                        width: width,
-                        height: height,
-                    }}
-                    contentFit="cover"
-                    transition={200}
-                    alt={`Image file sent by ${message.owner} at ${message.creation}`}
-                />
-            </GestureDetector>
-
-
-        </View>
+        <GestureDetector gesture={singleTapGesture}>
+            <ImageMessageLayout source={source} {...otherAttributes} />
+        </GestureDetector>
     )
 
+}
+
+const useGetImageAttributes = (message: ImageMessage) => {
+    const source = useFileURL(message.file)
+    const { width, height, alt } = useMemo(() => {
+        const width = message?.thumbnail_width ? message?.thumbnail_width / 2 : 300
+        const height = message?.thumbnail_height ? message?.thumbnail_height / 2 : 200
+        const alt = `Image file sent by ${message.owner} at ${message.creation}`
+
+        return { width, height, alt }
+    }, [message])
+
+    return { source, width, height, alt }
+}
+
+
+export const ImageMessageView = ({ message }: { message: ImageMessage }) => {
+
+    const attributes = useGetImageAttributes(message)
+
+
+    return <View
+        className="flex-row items-center gap-1"
+    >
+        <ImageMessageLayout {...attributes} />
+    </View>
+
+
+}
+
+const ImageMessageLayout = ({ source, width, height, alt }: { source?: UseFileURLReturnType, width: number, height: number, alt: string }) => {
+
+    return <View
+        className="flex-row items-center gap-1"
+    >
+        <ImageSkeleton width={width} height={height} />
+
+        <Image
+            source={source}
+            style={{
+                borderRadius: 8,
+                width: width,
+                height: height,
+            }}
+            contentFit="cover"
+            transition={200}
+            alt={alt}
+        />
+
+
+
+    </View>
 }
 
 
