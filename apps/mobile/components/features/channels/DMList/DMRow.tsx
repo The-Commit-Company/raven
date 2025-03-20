@@ -89,7 +89,7 @@ const DMRow = ({ dm }: { dm: DMChannelWithUnreadCount }) => {
                                         initialNumToRender: 1,
                                         maxToRenderPerBatch: 1,
                                         contentContainerStyle: {
-                                            backgroundColor: hovered || pressed ? colors.linkColor : 'transparent',
+                                            backgroundColor: hovered || pressed ? colors.linkColor : colors.background,
                                         }
                                     }}
                                     value={lastMessageContent || ''}

@@ -125,6 +125,9 @@ const ThreadsList = ({ aiThreads, content, channel, endpoint = "raven.api.thread
                     {isLoadingMore && <ActivityIndicator />}
                 </View>
             }
+            contentContainerStyle={{
+                paddingBottom: 64
+            }}
             ListEmptyComponent={<EmptyStateForThreads isFiltered={onlyShowUnread} searchText={content} />}
             estimatedItemSize={250}
             style={{ flexGrow: 1 }}
