@@ -70,12 +70,9 @@ const UserAvatar = ({ src, isActive, alt, availabilityStatus, isBot, imageProps,
             {status === 'error' ? <View {...fallbackProps}
                 className={cn('flex h-full w-full items-center justify-center rounded-[4px]', bg, fallbackProps?.className)}>
                 <Text {...textProps}
-                    style={{
-                        color: botColor
-                    }}
                     className={cn(
                         text,
-                        `dark:text-muted-foreground`,
+                        `text-foreground`,
                         textProps?.className
                     )}
                 >
