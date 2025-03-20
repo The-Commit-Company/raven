@@ -1,21 +1,55 @@
-import { Sheet } from "@components/nativewindui/Sheet";
+import { Sheet, useSheetRef } from "@components/nativewindui/Sheet";
 import { BottomSheetModal, BottomSheetView } from "@gorhom/bottom-sheet";
-import { View } from "react-native"
+import { Pressable, View } from "react-native"
 import { Button } from "@components/nativewindui/Button";
 import { Text } from "@components/nativewindui/Text";
-import { useFrappeUpdateDoc, useSWRConfig } from "frappe-react-sdk";
+import { FrappeDoc, useFrappeUpdateDoc, useSWRConfig } from "frappe-react-sdk";
 import { ChannelListItem } from "@raven/types/common/ChannelListItem";
 import { toast } from "sonner-native";
+import GlobeIcon from "@assets/icons/GlobeIcon.svg";
+import LockIcon from "@assets/icons/LockIcon.svg";
+import HashIcon from "@assets/icons/HashIcon.svg";
+import { useColorScheme } from "@hooks/useColorScheme";
+
+export const ChangeChannelType = ({ channelData }: { channelData: FrappeDoc<ChannelListItem> | undefined }) => {
+
+    const bottomSheetModalRef = useSheetRef()
+    const { colors } = useColorScheme()
+    const changeChannelTypeButtons = channelData ? getChangeChannelType({
+        channelData,
+        bottomSheetModalRef,
+        iconMap: {
+            'Public': <GlobeIcon height={18} width={18} fill={colors.icon} />,
+            'Private': <LockIcon height={18} width={18} fill={colors.icon} />,
+            'Open': <HashIcon height={18} width={18} fill={colors.icon} />
+        }
+    }) : []
+
+    return (
+        <>
+            {changeChannelTypeButtons.map((button) => (
+                <Pressable key={button.id}
+                    onPress={button.onPress}
+                    className='flex flex-row items-center py-3 px-4 rounded-xl gap-3 bg-background dark:bg-card active:bg-card-background/50 dark:active:bg-card/80'>
+                    {button.icon}
+                    <Text className="text-base">{button.title}</Text>
+                </Pressable>
+            ))}
+
+            <ChangeChannelTypeSheet channelData={channelData} bottomSheetModalRef={bottomSheetModalRef} />
+        </>
+    )
+}
 
 
 interface ChangeChannelTypeSheetProps {
-    channelData: ChannelListItem;
+    channelData: FrappeDoc<ChannelListItem> | undefined;
     bottomSheetModalRef: React.RefObject<BottomSheetModal>;
 }
 
 type ChannelType = 'Public' | 'Private' | 'Open';
 
-export const ChangeChannelTypeSheet = ({ channelData, bottomSheetModalRef }: ChangeChannelTypeSheetProps) => {
+const ChangeChannelTypeSheet = ({ channelData, bottomSheetModalRef }: ChangeChannelTypeSheetProps) => {
 
     const { mutate } = useSWRConfig()
     const { updateDoc, loading: updatingDoc, error } = useFrappeUpdateDoc();
@@ -37,7 +71,7 @@ export const ChangeChannelTypeSheet = ({ channelData, bottomSheetModalRef }: Cha
         updateDoc("Raven Channel", channelData?.name ?? null, {
             type: newChannelType
         }).then(() => {
-            mutate(["channel_members", channelData.name])
+            mutate(["channel_members", channelData?.name])
             toast.success("Channel changed to " + newChannelType.toLocaleLowerCase());
             handleClose();
         });
@@ -78,6 +112,7 @@ export const ChangeChannelTypeSheet = ({ channelData, bottomSheetModalRef }: Cha
     )
 }
 
+
 /**
  * channel type can be - Private, Public, Open
  * Change Channel Type would take in current channel type and change it to the next type depending on the current type
@@ -86,7 +121,7 @@ export const ChangeChannelTypeSheet = ({ channelData, bottomSheetModalRef }: Cha
  * For current type Open - it would return Public and Private
  * For current type Public - it would return Private and Open
 */
-export const getChangeChannelType = ({ channelData, bottomSheetModalRef, iconMap }: { channelData: ChannelListItem, bottomSheetModalRef: React.RefObject<BottomSheetModal>, iconMap: Record<string, React.ReactNode> }) => {
+const getChangeChannelType = ({ channelData, bottomSheetModalRef, iconMap }: { channelData: ChannelListItem, bottomSheetModalRef: React.RefObject<BottomSheetModal>, iconMap: Record<string, React.ReactNode> }) => {
 
     const channelType = channelData?.type as ChannelType
 
