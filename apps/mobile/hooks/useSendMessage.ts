@@ -5,11 +5,11 @@ import { useAtomValue } from 'jotai'
 import { selectedReplyMessageAtomFamily } from '@lib/ChatInputUtils'
 
 // TODO: This is older version of the useSendMessage hook compared to web, needs to be updated.
-export const useSendMessage = (channelID: string, onSend: VoidFunction) => {
+export const useSendMessage = (siteID: string, channelID: string, onSend: VoidFunction) => {
 
 
     const selectedMessage = useAtomValue(selectedReplyMessageAtomFamily(channelID))
-    const { uploadFiles } = useFileUpload(channelID)
+    const { uploadFiles } = useFileUpload(siteID, channelID)
     const { call, loading } = useFrappePostCall('raven.api.raven_message.send_message')
 
     const sendMessage = async (content: string, sendWithoutFiles = false): Promise<void> => {
@@ -31,7 +31,7 @@ export const useSendMessage = (channelID: string, onSend: VoidFunction) => {
                 .then(() => {
                     onSend()
                 })
-        } else if (!sendWithoutFiles) {
+        } else {
             return uploadFiles()
                 .then(() => {
                     onSend()

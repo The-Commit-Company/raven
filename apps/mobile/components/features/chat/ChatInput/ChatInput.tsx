@@ -38,7 +38,7 @@ const ChatInput = ({ channelID, onSendMessage }: ChatInputProps) => {
     // console.log("Rednered")
 
 
-    const { sendMessage, loading } = useSendMessage(channelID as string, handleCancelReply)
+    const { sendMessage, loading } = useSendMessage(siteID, channelID as string, handleCancelReply)
 
     const { colors } = useColorScheme()
 
@@ -120,8 +120,8 @@ const ChatInput = ({ channelID, onSendMessage }: ChatInputProps) => {
 
             </View>
             <View>
-                <Button disabled={loading || !content} size='icon' variant="plain" className="w-8 h-8 rounded-full mb-1" hitSlop={10} onPress={onSend}>
-                    <SendIcon fill={content ? colors.primary : colors.grey2} />
+                <Button disabled={loading} size='icon' variant="plain" className="w-8 h-8 rounded-full mb-1" hitSlop={10} onPress={onSend}>
+                    <SendIcon fill={colors.primary} />
                 </Button>
             </View>
         </View>

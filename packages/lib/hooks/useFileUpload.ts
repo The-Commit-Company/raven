@@ -8,10 +8,10 @@ export interface FileUploadProgress {
   isComplete: boolean,
 }
 
-export default function useFileUpload(channelID: string) {
+export default function useFileUpload(siteID: string, channelID: string) {
 
   const { file } = useContext(FrappeContext) as FrappeConfig
-  const [files, setFiles] = useAtom(filesAtomFamily(channelID))
+  const [files, setFiles] = useAtom(filesAtomFamily(siteID + channelID))
 
   const uploadFiles = async () => {
 
