@@ -238,6 +238,7 @@ const Actions = ({ data, doctype, docname }: { data: Record<string, any>, doctyp
 
     return <View className='flex flex-row justify-between gap-2 py-2'>
         <Pressable
+            hitSlop={10}
             className='p-2 rounded-lg bg-card flex flex-row items-center gap-2 active:bg-linkColor'
             onPress={openLink}>
             <LinkExternalIcon fill={colors.icon} width={20} height={20} />
@@ -246,12 +247,14 @@ const Actions = ({ data, doctype, docname }: { data: Record<string, any>, doctyp
         </Pressable>
         <View className='flex flex-row gap-2'>
             <Pressable
+                hitSlop={10}
                 className='p-2 rounded-lg bg-card flex flex-row items-center gap-2 active:bg-linkColor'
                 onPress={copyLink}>
                 <CopyIcon fill={colors.icon} width={20} height={20} />
             </Pressable>
 
             <Pressable
+                hitSlop={10}
                 className='p-2 rounded-lg bg-card flex flex-row items-center gap-2 active:bg-linkColor'
                 onPress={onShareLinkClick}>
                 <ShareIcon color={colors.icon} width={20} height={20} />
