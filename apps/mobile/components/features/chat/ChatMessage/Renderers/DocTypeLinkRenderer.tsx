@@ -160,14 +160,14 @@ const FieldData = ({ fields, size = 'sm', className }: { fields: [string, any][]
     return <View className={clsx("gap-1", className)}>
         {fields.map(([item, value], index) => (
             <View key={item + index} className="flex flex-wrap">
-                <View className='w-28 max-w-28'>
+                <View>
                     <Text
                         className={clsx("text-sm text-muted-foreground font-medium", size === 'base' && 'text-base')}
                     >
                         {item}
                     </Text>
                 </View>
-                <View className='max-w-full'>
+                <View>
                     <Text className={clsx("text-sm text-foreground", size === 'base' && 'text-base')} numberOfLines={1}>
                         {value}
                     </Text>
