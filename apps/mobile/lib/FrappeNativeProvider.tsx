@@ -15,8 +15,8 @@ const FrappeNativeProvider = ({ siteInfo, getAccessToken, children }: PropsWithC
                 token: getAccessToken,
             }}
             siteName={siteInfo?.sitename}
-
             swrConfig={{
+                keepPreviousData: true,
                 // A provider is required to use initFocus and initReconnect
                 provider: () => new Map(),
                 isVisible() {
