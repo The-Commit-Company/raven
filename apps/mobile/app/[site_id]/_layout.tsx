@@ -199,6 +199,12 @@ export default function SiteLayout() {
                                         presentation: 'modal',
                                     }}
                                 />
+                                <Stack.Screen
+                                    name="thread/[id]/create-poll"
+                                    options={{
+                                        presentation: 'modal',
+                                    }}
+                                />
                             </Stack>
                         </BottomSheetModalProvider>
                     </Providers>
