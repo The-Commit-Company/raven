@@ -27,7 +27,7 @@ export default function QuickSearch() {
 
     const [searchQuery, setSearchQuery] = useState('')
 
-    const { channels } = useGetChannels({ showArchived: true })
+    const { channels } = useGetChannels({ showArchived: false })
     const { dmChannels } = useGetDirectMessageChannels()
 
     // Filter channels based on search query
