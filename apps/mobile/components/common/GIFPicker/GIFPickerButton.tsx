@@ -5,7 +5,6 @@ import { Pressable } from "react-native"
 import { Sheet, useSheetRef } from "@components/nativewindui/Sheet"
 import { BottomSheetView } from "@gorhom/bottom-sheet"
 import GIFPicker from "./GIFPicker"
-import { useSafeAreaInsets } from "react-native-safe-area-context"
 
 interface GIFPickerButtonProps {
     onSelect: (gif: any) => void
@@ -20,6 +19,11 @@ const GIFPickerButton = ({ onSelect }: GIFPickerButtonProps) => {
         gifSheetRef.current?.present()
     }
 
+    const handleGIFSelect = (gif: any) => {
+        onSelect(gif)
+        gifSheetRef.current?.dismiss()
+    }
+
     return (
         <>
             <Pressable
@@ -32,7 +36,7 @@ const GIFPickerButton = ({ onSelect }: GIFPickerButtonProps) => {
             </Pressable>
             <Sheet enableDynamicSizing={false} ref={gifSheetRef} snapPoints={['80']}>
                 <BottomSheetView className='pb-12'>
-                    <GIFPicker onSelect={onSelect} />
+                    <GIFPicker onSelect={handleGIFSelect} />
                 </BottomSheetView>
             </Sheet>
         </>

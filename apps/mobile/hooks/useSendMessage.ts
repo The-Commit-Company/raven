@@ -12,23 +12,26 @@ export const useSendMessage = (channelID: string, onSend: VoidFunction) => {
     const { uploadFiles } = useFileUpload(channelID)
     const { call, loading } = useFrappePostCall('raven.api.raven_message.send_message')
 
-    const sendMessage = async (content: string, json?: any): Promise<void> => {
+    const sendMessage = async (content: string, sendWithoutFiles = false): Promise<void> => {
 
         if (content) {
 
             return call({
                 channel_id: channelID,
                 text: content,
-                json_content: json,
                 is_reply: selectedMessage ? 1 : 0,
                 linked_message: selectedMessage ? selectedMessage.name : null
             })
                 .then(() => onSend())
-                .then(() => uploadFiles())
+                .then(() => {
+                    if (!sendWithoutFiles) {
+                        return uploadFiles()
+                    }
+                })
                 .then(() => {
                     onSend()
                 })
-        } else {
+        } else if (!sendWithoutFiles) {
             return uploadFiles()
                 .then(() => {
                     onSend()

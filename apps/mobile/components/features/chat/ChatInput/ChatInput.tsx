@@ -76,13 +76,19 @@ const ChatInput = ({ channelID, onSendMessage }: ChatInputProps) => {
         sendMessage(html)
     }
 
+
+    // This is used by the GIF Picker and additional inputs (doctype link sending etc)
+    const onMessageContentSend = (content: string) => {
+        sendMessage(content, true)
+    }
+
     return <View className="flex flex-col gap-1 bg-background">
         <TypingIndicator channel={channelID} />
         {siteID && <FileScroller channelID={channelID} siteID={siteID} />}
 
         <View className={`flex-row items-end px-4 pt-2 pb-4 gap-2 
             min-h-16 justify-between`}>
-            <AdditionalInputs channelID={channelID} />
+            <AdditionalInputs channelID={channelID} onMessageContentSend={onMessageContentSend} />
             <View className="flex-1  border border-border rounded-lg">
 
                 <MentionInput

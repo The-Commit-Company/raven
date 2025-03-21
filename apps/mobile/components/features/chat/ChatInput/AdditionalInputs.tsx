@@ -14,7 +14,7 @@ import CreatePollButton from "@components/common/CreatePollButton"
 import useSiteContext from "@hooks/useSiteContext"
 import { useColorScheme } from "@hooks/useColorScheme"
 
-const AdditionalInputs = ({ channelID }: { channelID: string }) => {
+const AdditionalInputs = ({ channelID, onMessageContentSend }: { channelID: string, onMessageContentSend: (content: string) => void }) => {
 
     const bottomSheetRef = useSheetRef()
     const { isKeyboardVisible, keyboardHeight } = useKeyboardVisible()
@@ -30,7 +30,7 @@ const AdditionalInputs = ({ channelID }: { channelID: string }) => {
             </Button>
             <Sheet ref={bottomSheetRef} bottomInset={isKeyboardVisible ? keyboardHeight : 0} keyboardBehavior='interactive' keyboardBlurBehavior="restore" android_keyboardInputMode="adjustPan">
                 <BottomSheetView className='pb-16'>
-                    <AdditionalInputsSheetContent bottomSheetRef={bottomSheetRef} channelID={channelID} />
+                    <AdditionalInputsSheetContent bottomSheetRef={bottomSheetRef} channelID={channelID} onMessageContentSend={onMessageContentSend} />
                 </BottomSheetView>
             </Sheet>
         </View>
@@ -39,7 +39,7 @@ const AdditionalInputs = ({ channelID }: { channelID: string }) => {
 
 export default AdditionalInputs
 
-const AdditionalInputsSheetContent = ({ bottomSheetRef, channelID }: { bottomSheetRef: React.RefObject<BottomSheetModal>, channelID: string }) => {
+const AdditionalInputsSheetContent = ({ bottomSheetRef, channelID, onMessageContentSend }: { bottomSheetRef: React.RefObject<BottomSheetModal>, channelID: string, onMessageContentSend: (content: string) => void }) => {
 
     const siteInfo = useSiteContext()
     const siteID = siteInfo?.sitename ?? ''
@@ -54,11 +54,14 @@ const AdditionalInputsSheetContent = ({ bottomSheetRef, channelID }: { bottomShe
     }
 
     const handleGIFSelect = (gif: any) => {
-        console.log(gif)
+
+        const content = `<p class="rt-Text text-sm"><img src="${gif.media_formats.gif.url}"><br></p>`
+        onMessageContentSend(content)
+        onSheetClose()
     }
 
     const onSheetClose = () => {
-        bottomSheetRef.current?.close()
+        bottomSheetRef.current?.dismiss()
     }
 
     return (
