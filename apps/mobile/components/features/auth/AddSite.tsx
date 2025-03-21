@@ -22,6 +22,8 @@ const AddSite = (props: Props) => {
 
     const bottomSheetRef = useSheetRef()
 
+    const [isLoading, setIsLoading] = useState(false)
+
     const [siteInformation, setSiteInformation] = useState<SiteInformation | null>(null)
 
     const handleAddSite = () => {
@@ -40,6 +42,8 @@ const AddSite = (props: Props) => {
         if (!url.startsWith('https://') && !url.startsWith('http://')) {
             url = 'https://' + url
         }
+
+        setIsLoading(true)
 
         fetch(`${url}/api/method/raven.api.raven_mobile.get_client_id`)
             .then(res => res.json())
@@ -60,6 +64,9 @@ const AddSite = (props: Props) => {
                 // TODO: Show error message/toast
                 Alert.alert('Error', 'Failed to fetch site information. Please check the URL and try again.')
                 console.error(err)
+            })
+            .finally(() => {
+                setIsLoading(false)
             })
     }
 
@@ -85,7 +92,7 @@ const AddSite = (props: Props) => {
                     value={siteURL}
                 />
             </View>
-            <Button onPress={handleAddSite}>
+            <Button onPress={handleAddSite} disabled={isLoading}>
                 <Text>Add Site</Text>
             </Button>
             <Sheet snapPoints={[400]} ref={bottomSheetRef} onDismiss={clearSiteInformation}>
