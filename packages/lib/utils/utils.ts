@@ -12,13 +12,17 @@ export const getInitials = (name?: string) => {
 
 // ----- Avatar Color Generation ----
 // Hashing function to convert a string to a number
-export const getHashOfString = (str: string): number => {
-    let hash = 0
+export const getHashOfString = (str: string) => {
+    let hash = 0;
     for (let i = 0; i < str.length; i++) {
-        hash = (hash << 5) - hash + str.charCodeAt(i)
-        hash |= 0 // Convert to 32-bit integer
+        hash = str.charCodeAt(i) + ((hash << 5) - hash)
     }
-    return Math.abs(hash) // Ensure the hash is positive
+    hash = Math.abs(hash)
+    return hash
+}
+
+export const normalizeHash = (hash: number, min: number, max: number) => {
+    return Math.floor((hash % (max - min)) + min)
 }
 
 export const colorToRgba = (color: string, alpha: number) => {
