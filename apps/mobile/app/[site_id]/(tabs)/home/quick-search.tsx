@@ -27,7 +27,7 @@ export default function QuickSearch() {
 
     const [searchQuery, setSearchQuery] = useState('')
 
-    const { channels } = useGetChannels({ showArchived: true })
+    const { channels } = useGetChannels({ showArchived: false })
     const { dmChannels } = useGetDirectMessageChannels()
 
     // Filter channels based on search query
@@ -39,8 +39,7 @@ export default function QuickSearch() {
     const filteredDms = dmChannels.filter(dm => {
         const user = useGetUser(dm.peer_user_id);
         return (
-            (user?.full_name?.toLowerCase().includes(searchQuery.toLowerCase())) ||
-            (user?.name?.toLowerCase().includes(searchQuery.toLowerCase()))
+            (user?.full_name?.toLowerCase().includes(searchQuery.toLowerCase()))
         )
     })
 
@@ -73,7 +72,7 @@ export default function QuickSearch() {
                 <Pressable style={styles.button} className='ios:active:bg-linkColor bg-card'
                     onPress={() => openMenuItemSheet('../home/create-dm')}>
                     <UserIcon fill={colors.grey} height={20} width={20} />
-                    <Text className='text-sm text-muted-foreground'>Open a DM</Text>
+                    <Text className='text-sm text-muted-foreground'>Create DM</Text>
                 </Pressable>
                 <Pressable style={styles.button} className='ios:active:bg-linkColor bg-card'
                     onPress={() => openMenuItemSheet('../home/create-channel')}>
@@ -116,10 +115,15 @@ const Channels = ({ channels }: { channels: ChannelListItem[] }) => {
                             router.back();
                             router.push(`../../chat/${channel.name}`);
                         }}
-                        className='flex-row items-center px-3 py-2 rounded-lg ios:active:bg-linkColor'
+                        className='flex flex-row gap-2 items-center px-3 py-2 rounded-lg ios:active:bg-linkColor'
                         android_ripple={{ color: 'rgba(0,0,0,0.1)', borderless: false }}>
                         <ChannelIcon type={channel.type} fill={colors.colors.icon} />
-                        <Text className="ml-2 text-base">{channel.channel_name}</Text>
+                        <Text className="text-base">{channel.channel_name}</Text>
+                        {channel.is_archived ?
+                            <View className='px-1 mt-0.5 py-0.5 rounded-sm bg-red-100'>
+                                <Text className="text-[11px] text-red-700">Archived</Text>
+                            </View>
+                            : null}
                     </Pressable>
                 ))
             ) : (
@@ -147,7 +151,13 @@ const Dms = ({ dmChannels }: { dmChannels: DMChannelListItem[] }) => {
                             }}
                             className='flex-row items-center px-3 py-1.5 rounded-lg ios:active:bg-linkColor'
                             android_ripple={{ color: 'rgba(0,0,0,0.1)', borderless: false }}>
-                            <UserAvatar src={user?.user_image} alt={user?.full_name ?? user?.name ?? ''} avatarProps={{ className: 'h-8 w-8' }} textProps={{ className: 'text-sm' }} />
+                            <UserAvatar
+                                src={user?.user_image}
+                                alt={user?.full_name ?? user?.name ?? ''}
+                                avatarProps={{ className: 'h-8 w-8' }}
+                                textProps={{ className: 'text-sm' }}
+                                isBot={user?.type === 'Bot'}
+                            />
                             <Text className='ml-2 text-base'>{user?.full_name}</Text>
                         </Pressable>
                     );
