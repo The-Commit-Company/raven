@@ -112,7 +112,7 @@ const ChannelInfoModal = ({ channel, isModalVisible, setModalVisible }: ChannelI
                         <View className='flex-row items-center justify-between px-2'>
                             <View className='flex-row items-center'>
                                 <HollowFilesIcon height={20} width={20} fill={colors.colors.foreground} />
-                                <Text style={styles.modalOption}>Images and Documents</Text>
+                                <Text style={styles.modalOption}>Images and Files</Text>
                             </View>
                             <ChevronRightIcon height={24} width={24} fill={colors.colors.foreground} strokeWidth={'1px'} />
                         </View>

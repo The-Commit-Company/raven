@@ -34,7 +34,7 @@ export default function Files() {
     return (
         <>
             <Stack.Screen options={{
-                title: 'Images and Documents',
+                title: 'Images and Files',
                 headerLargeTitle: false,
                 headerStyle: { backgroundColor: colors.background },
                 headerBackButtonDisplayMode: 'minimal'
