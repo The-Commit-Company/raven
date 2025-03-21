@@ -7,8 +7,6 @@ import { Link } from "expo-router"
 import { useMemo } from "react"
 import { Pressable, View } from "react-native"
 import { Text } from "@components/nativewindui/Text"
-import Markdown from "react-native-marked"
-import { MessagePreviewRenderer } from "./MessagePreviewRenderer"
 import { DMChannelWithUnreadCount } from "@raven/lib/hooks/useGetChannelUnreadCounts"
 import dayjs from "dayjs"
 
@@ -36,8 +34,6 @@ const DMRow = ({ dm }: { dm: DMChannelWithUnreadCount }) => {
     }, [dm.last_message_details])
 
     const isUnread = dm.unread_count > 0
-
-    const renderer = new MessagePreviewRenderer(isUnread, colors)
 
     return (
         <Link href={`../chat/${dm.name}`} asChild>
@@ -83,18 +79,7 @@ const DMRow = ({ dm }: { dm: DMChannelWithUnreadCount }) => {
                                 style={{ maxHeight: 30, maxWidth: dm.unread_count > 0 ? '90%' : '100%', }}
                                 className='flex flex-row items-center gap-1'>
                                 {isSentByUser ? <Text className='text-[14px] text-muted-foreground/70'>You:</Text> : null}
-                                <Markdown
-                                    flatListProps={{
-                                        scrollEnabled: false,
-                                        initialNumToRender: 1,
-                                        maxToRenderPerBatch: 1,
-                                        contentContainerStyle: {
-                                            backgroundColor: hovered || pressed ? colors.linkColor : colors.background,
-                                        }
-                                    }}
-                                    value={lastMessageContent || ''}
-                                    renderer={renderer}
-                                />
+                                <Text className='text-[14px] text-muted-foreground/70 line-clamp-1'>{lastMessageContent}</Text>
                             </View>
                             {(dm.unread_count && dm.unread_count > 0) ?
                                 <View className='px-1.5 py-0.5 rounded-md bg-primary/20 dark:bg-primary'>
