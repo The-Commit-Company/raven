@@ -7,9 +7,10 @@ import { getAccessToken, getRevocationEndpoint, getSiteFromStorage, getTokenEndp
 import Providers from "@lib/Providers";
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 import FrappeNativeProvider from "@lib/FrappeNativeProvider";
-import { useNetworkState } from 'expo-network';
+import { addNetworkStateListener, useNetworkState } from 'expo-network';
 import { toast } from "sonner-native";
 import { SiteContext } from "@hooks/useSiteContext";
+import { AppState } from "react-native";
 
 export default function SiteLayout() {
 
@@ -29,6 +30,7 @@ export default function SiteLayout() {
     const REFRESH_INTERVAL = 5 * 60 * 1000; // 5 minutes in milliseconds
     const REFRESH_THRESHOLD = REFRESH_INTERVAL + (2 * 60 * 1000); // Check interval + 2 minutes buffer
 
+    // We need to check if the access token is expired or not and keep it refreshed
     // Token refresh interval effect - now only handles periodic checks
     useEffect(() => {
 
@@ -102,8 +104,31 @@ export default function SiteLayout() {
             }
         }, REFRESH_INTERVAL);
 
-        return () => clearInterval(refreshInterval);
+        // If the application is in the background and then the user comes back, we need to check if the token is expired
+        // If it is, we need to refresh it. We also need to do the same for network state changes
+
+        const focusSubscription = AppState.addEventListener('change', (state) => {
+            if (state === 'active') {
+                refreshTokenIfNeeded()
+            }
+        })
+
+        // Add a listener for the network state
+        const networkSubscription = addNetworkStateListener((state) => {
+            if (state.isConnected && state.isInternetReachable) {
+                refreshTokenIfNeeded()
+            }
+        })
+
+        return () => {
+            clearInterval(refreshInterval)
+            focusSubscription.remove()
+            networkSubscription.remove()
+        }
     }, [siteInfo, networkState]);
+
+
+
 
     useEffect(() => {
 
@@ -179,8 +204,6 @@ export default function SiteLayout() {
                 setLoading(false)
             })
     }, [site_id])
-
-    // We need to check if the access token is expired or not and keep it refreshed
 
     const getToken = useCallback(() => {
         return accessTokenRef.current?.accessToken || ''
