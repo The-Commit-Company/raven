@@ -2,8 +2,6 @@ import { TouchableOpacity, View, StyleSheet, Modal, Pressable } from 'react-nati
 import { router } from 'expo-router';
 import { Text } from '@components/nativewindui/Text';
 import ChevronRightIcon from '@assets/icons/ChevronRightIcon.svg';
-import SettingsIcon from '@assets/icons/SettingsIcon.svg';
-import MembersIcon from '@assets/icons/MembersIcon.svg';
 import HollowFilesIcon from '@assets/icons/HollowFilesIcon.svg';
 import { useColorScheme } from '@hooks/useColorScheme';
 import { Divider } from '@components/layout/Divider';
@@ -12,15 +10,16 @@ import { ChannelIcon } from '../channels/ChannelList/ChannelIcon';
 import ThreeHorizontalDots from '@assets/icons/ThreeHorizontalDots.svg';
 import Animated, { Easing, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import { useEffect } from 'react';
-import { ChannelListItem } from '@raven/types/common/ChannelListItem';
+import { DMChannelListItem } from '@raven/types/common/ChannelListItem';
+import { useGetUser } from '@raven/lib/hooks/useGetUser';
 
-type ChannelInfoModalProps = {
-    channel: ChannelListItem
+type DMChannelInfoModalProps = {
+    channel: DMChannelListItem
     isModalVisible: boolean
     setModalVisible: (visible: boolean) => void
 }
 
-const ChannelInfoModal = ({ channel, isModalVisible, setModalVisible }: ChannelInfoModalProps) => {
+const DMChannelInfoModal = ({ channel, isModalVisible, setModalVisible }: DMChannelInfoModalProps) => {
 
     // Animation values
     const modalHeight = useSharedValue(0)
@@ -31,20 +30,6 @@ const ChannelInfoModal = ({ channel, isModalVisible, setModalVisible }: ChannelI
         modalHeight.value = withTiming(0, { duration: 100, easing: Easing.out(Easing.ease) });
         modalOpacity.value = withTiming(0, { duration: 100 });
         setTimeout(() => setModalVisible(false), 100)
-    }
-
-    const handleGoToSettings = () => {
-        setModalVisible(false)
-        router.push('./channel-settings', {
-            relativeToDirectory: true
-        })
-    }
-
-    const handleGoToViewMembers = () => {
-        setModalVisible(false)
-        router.push('./channel-members', {
-            relativeToDirectory: true
-        })
     }
 
     const handleGoToSharedFiles = () => {
@@ -65,7 +50,7 @@ const ChannelInfoModal = ({ channel, isModalVisible, setModalVisible }: ChannelI
     // Start animation when modal becomes visible
     useEffect(() => {
         if (isModalVisible) {
-            modalHeight.value = withTiming(210, { duration: 250, easing: Easing.out(Easing.ease) })
+            modalHeight.value = withTiming(120, { duration: 250, easing: Easing.out(Easing.ease) })
             modalOpacity.value = withTiming(1, { duration: 250 })
         }
     }, [isModalVisible])
@@ -84,28 +69,6 @@ const ChannelInfoModal = ({ channel, isModalVisible, setModalVisible }: ChannelI
                 <Animated.View style={[styles.modalContent, animatedModalStyle]} className='bg-card dark:border dark:border-border'>
                     <ModalHeader channel={channel} handleCloseModal={handleCloseModal} />
                     <Divider className='my-2 mx-1' prominent />
-                    <Pressable onPress={handleGoToViewMembers}
-                        className='rounded-xl ios:active:bg-linkColor'
-                        android_ripple={{ color: 'rgba(0,0,0,0.1)', borderless: false }}>
-                        <View className='flex-row items-center justify-between px-2'>
-                            <View className='flex-row items-center'>
-                                <MembersIcon height={20} width={20} color={colors.colors.foreground} />
-                                <Text style={styles.modalOption}>Members</Text>
-                            </View>
-                            <ChevronRightIcon height={24} width={24} fill={colors.colors.foreground} strokeWidth={'1px'} />
-                        </View>
-                    </Pressable>
-                    <Pressable onPress={handleGoToSettings}
-                        className='rounded-xl ios:active:bg-linkColor'
-                        android_ripple={{ color: 'rgba(0,0,0,0.1)', borderless: false }}>
-                        <View className='flex-row items-center justify-between px-2'>
-                            <View className='flex-row items-center'>
-                                <SettingsIcon height={20} width={20} color={colors.colors.foreground} />
-                                <Text style={styles.modalOption}>Settings & Details</Text>
-                            </View>
-                            <ChevronRightIcon height={24} width={24} fill={colors.colors.foreground} strokeWidth={'1px'} />
-                        </View>
-                    </Pressable>
                     <Pressable onPress={handleGoToSharedFiles}
                         className='rounded-xl ios:active:bg-linkColor'
                         android_ripple={{ color: 'rgba(0,0,0,0.1)', borderless: false }}>
@@ -123,8 +86,12 @@ const ChannelInfoModal = ({ channel, isModalVisible, setModalVisible }: ChannelI
     )
 }
 
-const ModalHeader = ({ channel, handleCloseModal }: { channel: ChannelListItem, handleCloseModal: () => void }) => {
+const ModalHeader = ({ channel, handleCloseModal }: { channel: DMChannelListItem, handleCloseModal: () => void }) => {
     const colors = useColorScheme()
+
+    const peer = channel.peer_user_id
+    const user = useGetUser(peer)
+
     return (
         <View className='flex-row items-center justify-between p-2'>
             <View className='flex-row items-center'>
@@ -133,7 +100,7 @@ const ModalHeader = ({ channel, handleCloseModal }: { channel: ChannelListItem, 
                 </TouchableOpacity>
                 {channel && <View className='flex-row items-center ml-3'>
                     <ChannelIcon type={channel.type} fill={colors.colors.foreground} />
-                    <Text className='ml-2 text-base font-semibold'>{channel.channel_name}</Text>
+                    <Text className='ml-2 text-base font-semibold'>{user?.full_name ?? peer}</Text>
                 </View>}
             </View>
             <TouchableOpacity hitSlop={10}>
@@ -166,4 +133,4 @@ const styles = StyleSheet.create({
 })
 
 
-export default ChannelInfoModal
+export default DMChannelInfoModal
