@@ -10,11 +10,14 @@ export const useRouteToChannel = () => {
     const siteInfo = useSiteContext()
     const router = useRouter()
 
-    const goToChannel = (channelID: string, method: 'replace' | 'push' = 'push') => {
+    const goToChannel = (channelID: string, method: 'replace' | 'push' = 'push', type: 'Channel' | 'Thread' = 'Channel') => {
+
+        const path = type === 'Channel' ? 'chat' : 'thread'
+
         if (method === 'replace') {
-            router.replace(`/${siteInfo?.sitename}/chat/${channelID}`)
+            router.replace(`/${siteInfo?.sitename}/${path}/${channelID}`)
         } else {
-            router.push(`/${siteInfo?.sitename}/chat/${channelID}`)
+            router.push(`/${siteInfo?.sitename}/${path}/${channelID}`)
         }
     }
 
