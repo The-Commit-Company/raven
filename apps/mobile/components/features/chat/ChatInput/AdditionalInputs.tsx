@@ -62,7 +62,7 @@ const AdditionalInputsSheetContent = ({ bottomSheetRef, channelID }: { bottomShe
     }
 
     return (
-        <View className="flex-col justify-start items-start px-3 w-full">
+        <View className="flex-col justify-start items-start px-3 w-full gap-1">
             <FilePickerButton onPick={handlePick} />
             <ImagePickerButton onPick={handlePick} />
             <GIFPickerButton onSelect={handleGIFSelect} />

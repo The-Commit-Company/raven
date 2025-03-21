@@ -24,6 +24,7 @@ const GIFPickerButton = ({ onSelect }: GIFPickerButtonProps) => {
         <>
             <Pressable
                 onPress={openGIFPicker}
+                hitSlop={10}
                 className='flex flex-row w-full items-center gap-2 p-2 rounded-lg ios:active:bg-linkColor'
                 android_ripple={{ color: 'rgba(0,0,0,0.1)', borderless: false }}>
                 <GIFIcon height={20} width={20} fill={colors.icon} />
