@@ -110,7 +110,8 @@ const ChatInput = ({ channelID, onSendMessage }: ChatInputProps) => {
                         },
                     ]}
                     style={{
-                        padding: 12
+                        padding: 12,
+                        color: colors.foreground,
                     }}
                     containerStyle={{
                         position: 'static'
