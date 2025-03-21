@@ -14,6 +14,8 @@ import { ImpactFeedbackStyle } from 'expo-haptics'
 import { impactAsync } from 'expo-haptics'
 import useReactToMessage from '@raven/lib/hooks/useReactToMessage'
 import { Message } from '@raven/types/common/Message'
+import { Gesture, GestureDetector, LongPressGesture } from 'react-native-gesture-handler'
+import { runOnJS } from 'react-native-reanimated'
 
 export interface ReactionObject {
     // The emoji
@@ -29,9 +31,10 @@ export interface ReactionObject {
 }
 
 interface MessageReactionsProps {
-    message: Message
+    message: Message,
+    longPressGesture: LongPressGesture
 }
-export default function MessageReactions({ message }: MessageReactionsProps) {
+export default function MessageReactions({ message, longPressGesture }: MessageReactionsProps) {
 
     const message_reactions = message.message_reactions
 
@@ -70,7 +73,8 @@ export default function MessageReactions({ message }: MessageReactionsProps) {
                 {reactions.map((reaction: ReactionObject) => {
                     return <ReactionButton
                         key={reaction.emoji_name}
-                        viewAnalytics={openReactions}
+                        onLongPress={openReactions}
+                        longPressGesture={longPressGesture}
                         reaction={reaction}
                         currentUser={currentUser?.name}
                         saveReaction={saveReaction} />
@@ -87,10 +91,11 @@ export default function MessageReactions({ message }: MessageReactionsProps) {
 interface ReactionButtonProps {
     reaction: ReactionObject
     currentUser: string | undefined
-    saveReaction: (emoji: string, is_custom: boolean, emoji_name?: string) => void
-    viewAnalytics: () => void
+    saveReaction: (emoji: string, is_custom: boolean, emoji_name?: string) => void,
+    onLongPress: () => void,
+    longPressGesture: LongPressGesture
 }
-const ReactionButton = ({ reaction, currentUser, saveReaction, viewAnalytics }: ReactionButtonProps) => {
+const ReactionButton = ({ reaction, currentUser, saveReaction, onLongPress, longPressGesture }: ReactionButtonProps) => {
 
     const { currentUserReacted } = useMemo(() => {
         return { currentUserReacted: reaction.users.includes(currentUser ?? "") }
@@ -100,21 +105,32 @@ const ReactionButton = ({ reaction, currentUser, saveReaction, viewAnalytics }: 
         saveReaction(reaction.reaction, reaction?.is_custom ?? false, reaction.emoji_name)
     }, [saveReaction, reaction])
 
+    /** Route to file viewer on single tap - but wait for double tap to fail */
+    const reactionLongPressGesture = useMemo(() => {
+        return Gesture.LongPress()
+            .hitSlop(10)
+            .minDuration(250)
+            .onStart(() => {
+                runOnJS(onLongPress)()
+            }).blocksExternalGesture(longPressGesture)
+    }, [onLongPress, longPressGesture])
+
     return (
-        <TouchableOpacity
-            onLongPress={viewAnalytics}
-            onPress={onReact}
-            activeOpacity={0.7}
-            className={clsx(`flex-row rounded-md py-1 px-2 gap-2 border-[0.5px]`,
-                currentUserReacted ? "bg-blue-50/80 border-blue-600 dark:border-muted-foreground/40 dark:bg-muted" : "bg-card dark:bg-muted/50 border-muted/50")}
-        >
-            {reaction.is_custom ? (
-                <CustomEmojiView emoji={reaction.reaction} />
-            ) : (
-                <Text className='text-xs'>{reaction.reaction}</Text>
-            )}
-            <Text className={clsx('text-xs font-bold', currentUserReacted ? "text-foreground dark:text-foreground" : "text-foreground")}>{reaction.count}</Text>
-        </TouchableOpacity>
+        <GestureDetector gesture={reactionLongPressGesture}>
+            <TouchableOpacity
+                onPress={onReact}
+                activeOpacity={0.7}
+                className={clsx(`flex-row rounded-md py-1 px-2 gap-2 border-[0.5px]`,
+                    currentUserReacted ? "bg-blue-50/80 border-blue-600 dark:border-muted-foreground/40 dark:bg-muted" : "bg-card dark:bg-muted/50 border-muted/50")}
+            >
+                {reaction.is_custom ? (
+                    <CustomEmojiView emoji={reaction.reaction} />
+                ) : (
+                    <Text className='text-xs'>{reaction.reaction}</Text>
+                )}
+                <Text className={clsx('text-xs font-bold', currentUserReacted ? "text-foreground dark:text-foreground" : "text-foreground")}>{reaction.count}</Text>
+            </TouchableOpacity>
+        </GestureDetector>
 
     )
 }
