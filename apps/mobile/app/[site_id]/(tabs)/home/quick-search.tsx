@@ -72,7 +72,7 @@ export default function QuickSearch() {
                 <Pressable style={styles.button} className='ios:active:bg-linkColor bg-card'
                     onPress={() => openMenuItemSheet('../home/create-dm')}>
                     <UserIcon fill={colors.grey} height={20} width={20} />
-                    <Text className='text-sm text-muted-foreground'>Open a DM</Text>
+                    <Text className='text-sm text-muted-foreground'>Create DM</Text>
                 </Pressable>
                 <Pressable style={styles.button} className='ios:active:bg-linkColor bg-card'
                     onPress={() => openMenuItemSheet('../home/create-channel')}>
