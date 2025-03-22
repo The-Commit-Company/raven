@@ -6,11 +6,11 @@ import TxtIcon from "@assets/icons/TxtIcon.svg"
 import ImageIcon from "@assets/icons/ImageIcon.svg"
 import ZipIcon from "@assets/icons/ZipIcon.svg"
 import PdfIcon from "@assets/icons/PdfIcon.svg"
-import SheetIcon from "@assets/icons/SheetIcon.svg"
 import SlideIcon from "@assets/icons/SlideIcon.svg"
 import VideoIcon from "@assets/icons/VideoIcon.svg"
 import AudioIcon from "@assets/icons/AudioIcon.svg"
-
+import ExcelIcon from "@assets/icons/ExcelIcon.svg"
+import { View } from "react-native"
 interface FileIconProps extends SvgProps {
     fileName: string
 }
@@ -21,33 +21,50 @@ const UniversalFileIcon = ({ fileName, ...props }: FileIconProps) => {
 
     switch (extension) {
         case 'pdf':
-            return <PdfIcon {...props} fill={'#E5484D'} />
+            return <View style={{
+                backgroundColor: '#E5484D',
+                borderRadius: 4,
+            }}><PdfIcon {...props} fill={'#FFFFFF'} />
+            </View>
         case 'doc':
         case 'docx':
-            return <DocIcon {...props} fill={'#8EC8F6'} />
+            return <View style={{
+                backgroundColor: '#2B7CD3',
+                borderRadius: 4,
+            }}><DocIcon {...props} fill={'#FFFFFF'} />
+            </View>
         case 'xls':
         case 'xlsx':
         case 'csv':
-            return <SheetIcon {...props} stroke={'#30A46C'} />
+            return <View style={{
+                backgroundColor: '#0F9D58',
+                borderRadius: 4,
+            }}><ExcelIcon {...props} fill={'#FFFFFF'} />
+            </View>
         case 'ppt':
         case 'pptx':
         case 'key':
-            return <SlideIcon {...props} fill={'#EC9455'} />
+            return <SlideIcon {...props} fill={'#ED6C47'} />
         case 'txt':
             return <TxtIcon {...props} fill={'#B8BCBA'} />
         case 'zip':
         case 'rar':
-            return <ZipIcon {...props} fill={'#FBE577'} />
+        case 'gzip':
+            return <ZipIcon {...props} fill="#FFA700" />
         case 'mp3':
-            return <AudioIcon {...props} stroke={'#D0CDD7'} />
+        case 'wav':
+            return <AudioIcon {...props} stroke={'#F6870F'} />
         case 'mp4':
         case 'webm':
-            return <VideoIcon {...props} stroke={'#EAACC3'} />
+            return <View style={{
+                backgroundColor: '#7133EA',
+                borderRadius: 4,
+            }}><VideoIcon {...props} fill={'#FFFFFF'} />
+            </View>
         case 'jpg':
         case 'jpeg':
         case 'png':
-        case 'gif':
-            return <ImageIcon {...props} fill={'#60B3D7'} />
+            return <ImageIcon {...props} fill={'#B8BCBA'} />
         default:
             return <FileIcon {...props} fill={'#B8BCBA'} />
     }

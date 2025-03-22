@@ -30,7 +30,7 @@ export const ChangeChannelType = ({ channelData }: { channelData: FrappeDoc<Chan
             {changeChannelTypeButtons.map((button) => (
                 <Pressable key={button.id}
                     onPress={button.onPress}
-                    className='flex flex-row items-center py-3 px-4 rounded-xl gap-3 bg-background dark:bg-card active:bg-card-background/50 dark:active:bg-card/80'>
+                    className='flex flex-row items-center py-3 px-4 rounded-xl gap-2 bg-background dark:bg-card active:bg-card-background/50 dark:active:bg-card/80'>
                     {button.icon}
                     <Text className="text-base">{button.title}</Text>
                 </Pressable>

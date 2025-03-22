@@ -1,6 +1,6 @@
 import { View, TouchableOpacity } from 'react-native';
 import { useFrappeGetCall } from 'frappe-react-sdk'
-import { BottomSheetView } from '@gorhom/bottom-sheet';
+import { BottomSheetScrollView, BottomSheetView } from '@gorhom/bottom-sheet';
 import { Sheet, useSheetRef } from '@components/nativewindui/Sheet';
 import { Text } from '@components/nativewindui/Text';
 import { Poll } from '../chat/ChatMessage/Renderers/PollMessage';
@@ -36,12 +36,12 @@ const ViewPollVotes = ({ poll }: ViewPollVotesProps) => {
                 </Text>
             </TouchableOpacity>
 
-            <Sheet ref={bottomSheetRef}>
-                <BottomSheetView>
+            <Sheet ref={bottomSheetRef} enableDynamicSizing maxDynamicContentSize={720}>
+                <BottomSheetScrollView>
                     <View className="flex-col px-4 mt-2 mb-16">
                         {poll && <ViewPollVotesModalContent poll={poll} />}
                     </View>
-                </BottomSheetView>
+                </BottomSheetScrollView>
             </Sheet>
         </View>
     );
