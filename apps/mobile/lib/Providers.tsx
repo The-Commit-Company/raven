@@ -1,7 +1,7 @@
 import FullPageLoader from '@components/layout/FullPageLoader'
 import { ChannelListContext, useChannelListProvider } from '@raven/lib/providers/ChannelListProvider'
 import { UserListContext, useUserListProvider } from '@raven/lib/providers/UserListProvider'
-import { PropsWithChildren, Suspense, useContext, useEffect, useState } from 'react'
+import { PropsWithChildren, Suspense, useEffect } from 'react'
 import { View } from 'react-native'
 import { ActiveUserProvider } from './UserInactivityProvider'
 import ErrorBanner from '@components/common/ErrorBanner'
@@ -11,48 +11,12 @@ import { selectedWorkspaceFamily } from '@hooks/useGetCurrentWorkspace'
 import LogOutButton from '@components/features/profile/profile-settings/LogOutButton'
 import useSiteContext from '@hooks/useSiteContext'
 import { useFetchUnreadMessageCount } from '@hooks/useUnreadMessageCount'
-import { FrappeConfig, FrappeContext, useFrappeEventListener, useSWRConfig } from 'frappe-react-sdk'
+import { useFrappeEventListener, useSWRConfig } from 'frappe-react-sdk'
 import { useUnreadThreadsCountEventListener } from '@hooks/useUnreadThreadsCount'
 import useCurrentRavenUser from '@raven/lib/hooks/useCurrentRavenUser'
 import { useActiveSocketConnection } from '@hooks/useActiveSocketConnection'
 
 const Providers = (props: PropsWithChildren) => {
-
-    // const isConnected = useActiveSocketConnection()
-
-    const [socketConnected, setSocketConnected] = useState(false)
-
-    const { socket } = useContext(FrappeContext) as FrappeConfig
-
-    useEffect(() => {
-
-        const listener = socket?.on('connect', () => {
-            console.log("Connected to socket")
-            setSocketConnected(true)
-        })
-
-        const reconnectListener = socket?.on('reconnect', () => {
-            console.log("Reconnected to socket")
-            setSocketConnected(true)
-        })
-
-        const disconnectedListener = socket?.on('disconnect', () => {
-            console.log("Disconnected from socket")
-            setSocketConnected(false)
-        })
-
-        // return () => {
-        //     listener?.off()
-        //     reconnectListener?.off()
-        // }
-
-    }, [])
-
-    console.log('socketConnected', socketConnected)
-
-    if (!socketConnected) {
-        return <FullPageLoader />
-    }
 
     return (
         <UserListProvider>
