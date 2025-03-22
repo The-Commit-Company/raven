@@ -246,6 +246,8 @@ permission_query_conditions = {
 	"Raven Message": "raven.permissions.raven_message_query",
 	"Raven Poll": "raven.permissions.raven_poll_query",
 	"Raven Poll Vote": "raven.permissions.raven_poll_vote_query",
+	"Raven Workspace": "raven.permissions.raven_workspace_query",
+	"Raven Workspace Member": "raven.permissions.raven_workspace_member_query",
 }
 
 has_permission = {
