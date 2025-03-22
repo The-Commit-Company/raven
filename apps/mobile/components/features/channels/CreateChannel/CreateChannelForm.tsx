@@ -61,7 +61,7 @@ const CreateChannelForm = () => {
             <View className="px-5 gap-6">
 
 
-                <View className="flex-col gap-3">
+                <View className="flex-col gap-2">
                     <FormLabel isRequired>Name</FormLabel>
                     <Controller
                         name="channel_name"
@@ -89,7 +89,7 @@ const CreateChannelForm = () => {
                                     <ChannelIcon type={channelType} fill={colors.icon} />
                                 </View>
                                 <TextInput
-                                    className={`flex-1 pt-2 pb-3 text-sm text-foreground`}
+                                    className={`flex-1 pt-2 pb-2 text-[16px] text-foreground`}
                                     placeholder="dev-team"
                                     maxLength={50}
                                     value={value}
@@ -114,7 +114,7 @@ const CreateChannelForm = () => {
                     )}
                 </View>
 
-                <View className="flex-col gap-3">
+                <View className="flex-col gap-2">
                     <View className="flex-row items-center gap-0">
                         <FormLabel>Description</FormLabel>
                         <Text className="text-sm">(optional)</Text>
@@ -130,10 +130,10 @@ const CreateChannelForm = () => {
                         }}
                         render={({ field: { onChange, onBlur, value } }) => (
                             <TextInput
-                                className="w-full border border-border rounded-md px-3 pt-2 pb-3 text-sm text-foreground"
+                                className="w-full min-h-24 border border-border rounded-md px-3 pt-2 pb-2 text-[16px] leading-5 text-foreground"
                                 placeholder="Discuss the latest features and ideas and keep track of the deliverables"
                                 multiline
-                                numberOfLines={4}
+                                numberOfLines={6}
                                 onChangeText={onChange}
                                 onBlur={onBlur}
                                 value={value}
