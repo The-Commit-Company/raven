@@ -5,6 +5,7 @@ import { useState } from 'react';
 import { useDebounce } from '@raven/lib/hooks/useDebounce';
 import SearchInput from '@components/common/SearchInput/SearchInput';
 import MediaTabs from './MediaTabs';
+import HeaderBackButton from '@components/common/HeaderBackButton';
 
 export type MediaInChannel = {
     name: string;
@@ -35,7 +36,7 @@ export default function Media() {
                 title: 'Images and Files',
                 headerLargeTitle: false,
                 headerStyle: { backgroundColor: colors.background },
-                headerBackButtonDisplayMode: 'minimal'
+                headerLeft: () => <HeaderBackButton />,
             }} />
             <View className='flex-1 gap-3'>
                 <View className='pt-3 px-3'>
