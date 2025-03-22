@@ -19,6 +19,7 @@ const ThreadPreviewBox = ({ thread, unreadCount }: { thread: ThreadMessage, unre
     const users = useGetUserRecords()
     const { channel } = useCurrentChannelData(thread.channel_id)
     const channelData = channel?.channelData
+
     const channelDetails = useMemo(() => {
         if (channelData) {
             if (channelData.is_direct_message) {
@@ -32,6 +33,11 @@ const ThreadPreviewBox = ({ thread, unreadCount }: { thread: ThreadMessage, unre
                     channelIcon: channelData.type,
                     channelName: channelData.channel_name
                 }
+            }
+        } else {
+            return {
+                channelIcon: '',
+                channelName: 'Deleted Channel'
             }
         }
     }, [channelData, users])
@@ -66,7 +72,7 @@ const ThreadPreviewBox = ({ thread, unreadCount }: { thread: ThreadMessage, unre
                     <BaseMessageItem message={thread as unknown as Message} />
                     <View className='flex flex-row items-center gap-2 pl-16 pt-2'>
                         <ViewThreadParticipants participants={thread.participants ?? []} />
-                        <Text className={'text-xs font-medium text-primary dark:text-secondary'}>{thread.reply_count ?? 0} {thread.reply_count && thread.reply_count === 1 ? 'Reply' : 'Replies'}</Text>
+                        <Text className={'text-sm font-medium text-primary dark:text-secondary'}>{thread.reply_count ?? 0} {thread.reply_count && thread.reply_count === 1 ? 'Reply' : 'Replies'}</Text>
                     </View>
                 </View>
             </Pressable>

@@ -56,6 +56,7 @@ const COLOR_MAP: { name: string, bg: string, text: string, botColor: string, bot
 
 // Get a color index based on the hashed name
 const getColorIndexForAvatar = (name: string): number => {
+    if (!name) return 0
     const hash = getHashOfString(name)
     return normalizeHash(hash, 0, COLOR_MAP.length) // Map the hash to a valid index
 }
