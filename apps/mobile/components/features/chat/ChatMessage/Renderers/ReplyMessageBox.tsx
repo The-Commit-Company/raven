@@ -9,8 +9,6 @@ import { formatDateAndTime } from "@raven/lib/utils/dateConversions";
 import { useColorScheme } from "@hooks/useColorScheme";
 import UniversalFileIcon from "@components/common/UniversalFileIcon";
 import { useMemo } from "react";
-import Markdown from "react-native-marked";
-import { MessagePreviewRenderer } from "@components/features/channels/DMList/MessagePreviewRenderer";
 
 type ReplyMessageBoxProps = ViewProps & {
     message: any
@@ -51,14 +49,16 @@ const ReplyMessageBox = ({ message, onPress }: ReplyMessageBoxProps) => {
                 return <ImageFileReplyBlock file={replyMessageDetails.file} messageType={replyMessageDetails.message_type} owner={replyMessageDetails.owner} />
 
             default:
-                return <ContentRenderer content={replyMessageDetails.content} />
+                return <Text className="text-base text-foreground line-clamp-2 text-ellipsis overflow-hidden">
+                    {replyMessageDetails.content}
+                </Text>
         }
     }
 
     return (
         <Pressable
             onPress={onPress}
-            className='flex-1 p-2 w-full border border-border bg-background rounded-md ios:active:bg-linkColor'
+            className='flex-1 p-2 w-full border border-border bg-background rounded-md ios:active:bg-linkColor/50'
             android_ripple={{ color: 'rgba(0,0,0,0.1)', borderless: false }}>
             <View className="border-l-2 border-border pl-2 gap-2">
                 <View className="flex-row items-center gap-2">
@@ -74,27 +74,6 @@ const ReplyMessageBox = ({ message, onPress }: ReplyMessageBoxProps) => {
         </Pressable>
     )
 }
-
-const ContentRenderer = ({ content }: { content: string }) => {
-
-    const { colors } = useColorScheme()
-    const renderer = new MessagePreviewRenderer(true, colors);
-    return <Text className="text-base text-foreground line-clamp-2 text-ellipsis overflow-hidden">
-        <Markdown
-            flatListProps={{
-                scrollEnabled: false,
-                initialNumToRender: 1,
-                maxToRenderPerBatch: 1,
-                contentContainerStyle: {
-                    backgroundColor: 'transparent',
-                }
-            }}
-            value={content || ''}
-            renderer={renderer}
-        />
-    </Text>
-}
-
 
 const ImageFileReplyBlock = ({ file, messageType, owner }: { file: string, messageType: string, owner: string }) => {
 
