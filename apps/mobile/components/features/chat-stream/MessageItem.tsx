@@ -23,6 +23,7 @@ import { doubleTapMessageEmojiAtom } from '@lib/preferences';
 import { messageActionsSelectedMessageAtom } from '@lib/ChatInputUtils';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import { runOnJS } from 'react-native-reanimated';
+import ViewThreadButton from './MessageItemElements/ViewThreadButton';
 
 type Props = {
     message: FileMessage | PollMessage | TextMessage | ImageMessage
@@ -79,11 +80,30 @@ const MessageItem = memo(({ message }: Props) => {
         <GestureDetector gesture={Gesture.Exclusive(doubleTapGesture, longPressGesture)}>
             <Pressable
                 hitSlop={10}
-                className='rounded-md ios:active:bg-linkColor/60'
+                className='relative rounded-md ios:active:bg-linkColor/60'
                 // onLongPress={onLongPress}
                 android_ripple={{ color: 'rgba(0,0,0,0.1)', borderless: false }
                 }
             >
+                {!message.is_continuation && message.is_thread ?
+                    <View
+                        className={`absolute 
+                        w-8
+                        h-full
+                        pb-9
+                        pt-[34px]
+                        top-5
+                        left-8 z-0`}>
+                        <View className='
+                        border-b
+                        border-l
+                        h-full
+                        z-0
+                        border-border
+                        rounded-bl-xl'>
+
+                        </View>
+                    </View> : null}
                 <View className={clsx('flex-1 flex-row px-3 gap-1', message.is_continuation ? 'pt-0' : 'pt-2')}>
                     <MessageAvatar
                         userFullName={userFullName}
@@ -132,6 +152,7 @@ const MessageItem = memo(({ message }: Props) => {
                             {message.is_edited === 1 && <Text className='text-xs text-muted-foreground'>(edited)</Text>}
                             {message.hide_link_preview === 0 && message.text && <MessageLinkRenderer message={message} />}
                             <MessageReactions message={message} longPressGesture={longPressGesture} />
+                            {message.is_thread === 1 && <View className='flex self-start mt-1'><ViewThreadButton message={message} /></View>}
                         </View>
                     </View>
                 </View>
