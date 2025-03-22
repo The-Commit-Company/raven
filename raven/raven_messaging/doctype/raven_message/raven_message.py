@@ -82,7 +82,16 @@ class RavenMessage(Document):
 		self.remove_empty_trailing_paragraphs(soup)
 		self.extract_mentions(soup)
 
-		self.content = soup.get_text(" ", strip=True)
+		text_content = soup.get_text(" ", strip=True)
+
+		if not text_content:
+			# Check if the content has a GIF
+			for img in soup.find_all("img"):
+				if "media.tenor.com" in img.get("src"):
+					text_content = "Sent a GIF"
+					break
+
+		self.content = text_content
 
 	def extract_mentions(self, soup):
 		"""
