@@ -62,7 +62,7 @@ const DocTypeCard = memo(({
 
         const allFields = Object.entries(Object.keys(data).reduce((acc, key) => {
             if (!fieldsToRemove.includes(key)) {
-                acc[key as keyof typeof data] = data[key];
+                acc[key as keyof typeof data] = data[key]?.replace(/<[^>]*>?/g, '');
             }
             return acc;
         }, {} as Record<string, any>))
