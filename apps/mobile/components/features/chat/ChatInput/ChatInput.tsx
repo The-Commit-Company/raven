@@ -14,6 +14,7 @@ import markdownit from 'markdown-it'
 import useSiteContext from "@hooks/useSiteContext"
 import TypingIndicator from "./TypingIndicator"
 import { UserMentions } from "./mentions"
+import ReplyMessagePreview from "./ReplyMessagePreview"
 
 interface ChatInputProps {
     channelID: string
@@ -84,6 +85,7 @@ const ChatInput = ({ channelID, onSendMessage }: ChatInputProps) => {
 
     return <View className="flex flex-col gap-1 bg-background">
         <TypingIndicator channel={channelID} />
+        {siteID && <ReplyMessagePreview channelID={channelID} siteID={siteID} />}
         {siteID && <FileScroller channelID={channelID} siteID={siteID} />}
 
         <View className={`flex-row items-end px-4 pt-2 pb-4 gap-2 
@@ -128,8 +130,6 @@ const ChatInput = ({ channelID, onSendMessage }: ChatInputProps) => {
         </View>
     </View>
 }
-
-
 
 const FileScroller = ({ channelID, siteID }: { channelID: string, siteID: string }) => {
 
