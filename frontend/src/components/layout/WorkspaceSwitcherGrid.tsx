@@ -3,7 +3,7 @@ import { Avatar, Card, Grid, Heading, Text } from '@radix-ui/themes'
 import { Link } from 'react-router-dom'
 import { HStack, Stack } from './Stack'
 import { useMemo } from 'react'
-import { useFrappeGetDocCount, useFrappePostCall, useSWRConfig } from 'frappe-react-sdk'
+import { useFrappeGetCall, useFrappePostCall, useSWRConfig } from 'frappe-react-sdk'
 import { MdArrowOutward } from 'react-icons/md'
 import { toast } from 'sonner'
 import { getErrorMessage } from './AlertBanner/ErrorBanner'
@@ -71,21 +71,21 @@ const WorkspaceSwitcherGrid = () => {
 }
 
 const WorkspaceMemberCount = ({ workspace }: { workspace: string }) => {
-    const { data } = useFrappeGetDocCount('Raven Workspace Member', [['workspace', '=', workspace]], true)
+    const { data } = useFrappeGetCall('raven.api.workspaces.get_workspace_member_count', { workspace })
 
     if (data === undefined) {
         return null
     }
 
-    if (data === 0) {
+    if (data.message === 0) {
         return <Text size='2' as='span' color='gray' weight='medium'>No members</Text>
     }
 
-    if (data === 1) {
+    if (data.message === 1) {
         return <Text size='2' as='span' color='gray' weight='medium'>1 solo member</Text>
     }
 
-    return <Text size='2' as='span' color='gray' weight='medium'>{data} members</Text>
+    return <Text size='2' as='span' color='gray' weight='medium'>{data.message} members</Text>
 }
 
 const getLogo = (workspace: WorkspaceFields) => {
