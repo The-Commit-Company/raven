@@ -5,7 +5,7 @@ import clsx from "clsx"
 import { ChannelListItem, DMChannelListItem } from "@raven/types/common/ChannelListItem"
 import { useDebounce } from "@raven/lib/hooks/useDebounce"
 import UserAvatar from "@components/layout/UserAvatar"
-import { useChannelListProvider } from "@raven/lib/providers/ChannelListProvider"
+import { useChannelList } from "@raven/lib/providers/ChannelListProvider"
 import { useGetUserRecords } from "@raven/lib/hooks/useGetUserRecords"
 import { UserFields } from "@raven/types/common/UserFields"
 import useCurrentRavenUser from "@raven/lib/hooks/useCurrentRavenUser"
@@ -30,7 +30,7 @@ function ForwardMessage() {
 
     const navigation = useNavigation()
 
-    const { channels, dm_channels } = useChannelListProvider({})
+    const { channels, dm_channels } = useChannelList()
 
     const [selectedChannels, setSelectedChannels] = useState<
         (ChannelListItem | DMChannelListItemWithUser)[]

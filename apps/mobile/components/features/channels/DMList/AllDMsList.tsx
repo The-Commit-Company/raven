@@ -15,12 +15,12 @@ import { Text } from "@components/nativewindui/Text"
 const AllDMsList = () => {
 
     const { dm_channels, error, isLoading } = useContext(ChannelListContext) as ChannelListContextType
-    const unread_count = useUnreadMessageCount()
+    const { unread_count } = useUnreadMessageCount()
 
     const allDMs = useMemo(() => {
         return dm_channels.filter(dm => dm.last_message_details).map(dm => ({
             ...dm,
-            unread_count: unread_count?.find(item => item.name === dm.name)?.unread_count ?? 0
+            unread_count: unread_count?.message.find(item => item.name === dm.name)?.unread_count ?? 0
         }))
     }, [dm_channels, unread_count])
 

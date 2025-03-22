@@ -11,7 +11,7 @@ import ChannelsList from "./ChannelsList"
 const AllChannelsList = ({ workspace }: { workspace: string }) => {
 
     const { channels, dm_channels } = useContext(ChannelListContext) as ChannelListContextType
-    const unread_count = useUnreadMessageCount()
+    const { unread_count } = useUnreadMessageCount()
 
     const workspaceChannels = useMemo(() => {
         return channels.filter((channel) => channel.workspace === workspace)
@@ -20,7 +20,7 @@ const AllChannelsList = ({ workspace }: { workspace: string }) => {
     const { unreadChannels, readChannels, unreadDMs, readDMs } = useGetChannelUnreadCounts({
         channels: workspaceChannels,
         dm_channels,
-        unread_count: unread_count
+        unread_count: unread_count?.message
     })
 
     return (

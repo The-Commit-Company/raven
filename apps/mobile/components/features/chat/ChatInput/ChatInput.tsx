@@ -31,7 +31,6 @@ const ChatInput = ({ channelID, onSendMessage }: ChatInputProps) => {
     const siteID = siteInfo?.sitename ?? ''
 
     const handleCancelReply = () => {
-        console.log('cancel reply')
         setContent('')
         onSendMessage?.()
     }
@@ -71,8 +70,6 @@ const ChatInput = ({ channelID, onSendMessage }: ChatInputProps) => {
         const md = markdownit({ breaks: true, linkify: true, html: true })
 
         let html = md.render(replacedValue)
-
-        console.log('html', html)
 
         sendMessage(html)
     }
