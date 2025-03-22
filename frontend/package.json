@@ -12,6 +12,8 @@
   },
   "dependencies": {
     "@emoji-mart/react": "^1.1.1",
+    "@livekit/components-react": "^2.8.1",
+    "@livekit/components-styles": "^1.1.4",
     "@radix-ui/themes": "^3.2.0",
     "@tiptap/extension-code-block-lowlight": "2.5.9",
     "@tiptap/extension-highlight": "2.5.9",
@@ -45,6 +47,7 @@
     "html-react-parser": "^5.1.8",
     "jotai": "^2.10.3",
     "js-cookie": "^3.0.5",
+    "livekit-client": "^2.9.6",
     "lowlight": "^3.1.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",

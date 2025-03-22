@@ -1,0 +1,9 @@
+[data-lk-theme="default"] {
+    --lk-accent-bg: var(--accent-9);
+    --lk-accent2: var(--accent-10);
+}
+
+/* .dark [data-lk-theme="default"] {
+    --lk-accent-bg: var(--accent-9);
+    --lk-accent2: var(--accent-10);
+} */

@@ -13,6 +13,7 @@ import useIsUserOnLeave from "@/hooks/fetchers/useIsUserOnLeave"
 import { UserContext } from "@/utils/auth/UserProvider"
 import { replaceCurrentUserFromDMChannelName } from "@/utils/operations"
 import { useIsDesktop } from "@/hooks/useMediaQuery"
+import CreateVideoCallButton from "../video-calling/CreateVideoCallButton"
 
 interface DMChannelHeaderProps {
     channelData: DMChannelListItem,
@@ -83,7 +84,8 @@ export const DMChannelHeader = ({ channelData }: DMChannelHeaderProps) => {
                     </div>
                 </Heading>
             </Flex>
-            <Flex gap='4' align='center'>
+            <Flex gap='1' align='center'>
+                {channelData.is_self_message === 0 && <CreateVideoCallButton channelData={channelData} />}
                 <ChannelHeaderMenu channelData={channelData} />
             </Flex>
         </PageHeader>
