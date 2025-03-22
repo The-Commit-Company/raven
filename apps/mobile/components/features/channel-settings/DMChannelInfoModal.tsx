@@ -32,9 +32,9 @@ const DMChannelInfoModal = ({ channel, isModalVisible, setModalVisible }: DMChan
         setTimeout(() => setModalVisible(false), 100)
     }
 
-    const handleGoToSharedFiles = () => {
+    const handleGoToSharedMedia = () => {
         setModalVisible(false)
-        router.push('./view-files', {
+        router.push('./view-media', {
             relativeToDirectory: true
         })
     }
@@ -69,7 +69,7 @@ const DMChannelInfoModal = ({ channel, isModalVisible, setModalVisible }: DMChan
                 <Animated.View style={[styles.modalContent, animatedModalStyle]} className='bg-card dark:border dark:border-border'>
                     <ModalHeader channel={channel} handleCloseModal={handleCloseModal} />
                     <Divider className='my-2 mx-1' prominent />
-                    <Pressable onPress={handleGoToSharedFiles}
+                    <Pressable onPress={handleGoToSharedMedia}
                         className='rounded-xl ios:active:bg-linkColor'
                         android_ripple={{ color: 'rgba(0,0,0,0.1)', borderless: false }}>
                         <View className='flex-row items-center justify-between px-2'>

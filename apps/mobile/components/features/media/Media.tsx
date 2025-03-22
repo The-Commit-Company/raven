@@ -1,12 +1,12 @@
 import { View } from 'react-native';
 import { Stack } from 'expo-router';
 import { useColorScheme } from '@hooks/useColorScheme';
-import FilesTabs from './FIlesTabs';
 import { useState } from 'react';
 import { useDebounce } from '@raven/lib/hooks/useDebounce';
 import SearchInput from '@components/common/SearchInput/SearchInput';
+import MediaTabs from './MediaTabs';
 
-export type FileInChannel = {
+export type MediaInChannel = {
     name: string;
     channel_id: string;
     owner: string;
@@ -23,9 +23,7 @@ export type FileInChannel = {
     file_thumbnail?: string;
 };
 
-export const GET_FILES_END_POINTS = 'raven.api.raven_message.get_all_files_shared_in_channel'
-
-export default function Files() {
+export default function Media() {
     const { colors } = useColorScheme()
 
     const [searchText, setSearchText] = useState("");
@@ -44,10 +42,10 @@ export default function Files() {
                     <SearchInput
                         value={searchText}
                         onChangeText={setSearchText}
-                        placeholder="Search files"
+                        placeholder="Search images and files"
                     />
                 </View>
-                <FilesTabs searchQuery={debouncedText} />
+                <MediaTabs searchQuery={debouncedText} />
             </View>
         </>
     )

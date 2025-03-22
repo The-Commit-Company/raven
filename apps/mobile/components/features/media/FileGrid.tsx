@@ -4,7 +4,7 @@ import { FrappeConfig, FrappeContext, useSWRInfinite } from 'frappe-react-sdk';
 import { ActivityIndicator } from '@components/nativewindui/ActivityIndicator';
 import { useColorScheme } from '@hooks/useColorScheme';
 import { LegendList } from '@legendapp/list';
-import { GET_FILES_END_POINTS, FileInChannel } from './Files';
+import { MediaInChannel } from './Media';
 import { useOpenFileOnAndroid } from '@hooks/useOpenFileOnAndroid';
 import useFileURL from '@hooks/useFileURL';
 import { WebViewSourceUri } from 'react-native-webview/lib/WebViewTypes';
@@ -16,28 +16,28 @@ import { formatBytes, getFileName } from '@raven/lib/utils/operations';
 import UniversalFileIcon from '@components/common/UniversalFileIcon';
 import HollowFilesIcon from "@assets/icons/HollowFilesIcon.svg"
 import DotIcon from "@assets/icons/DotIcon.svg"
-import { formatDate } from '@raven/lib/utils/dateConversions';
+import { getStandardDateFormat } from '@raven/lib/utils/dateConversions';
 
 const PAGE_SIZE = 12
 
-const DocGrid = ({ searchQuery }: { searchQuery: string }) => {
+const FileGrid = ({ searchQuery }: { searchQuery: string }) => {
     const { colors } = useColorScheme();
     const { id: channelID } = useLocalSearchParams();
     const { call } = useContext(FrappeContext) as FrappeConfig;
 
-    const { data, size, isLoading, setSize, error } = useSWRInfinite<FileInChannel[]>(
-        (pageIndex: number, previousPageData: FileInChannel[] | null) => {
+    const { data, size, isLoading, setSize, error } = useSWRInfinite<MediaInChannel[]>(
+        (pageIndex: number, previousPageData: MediaInChannel[] | null) => {
             if (previousPageData && previousPageData.length === 0) return null;
             return {
                 channel_id: channelID,
                 file_name: searchQuery,
-                file_type: "any", // need to pass "file" to get all the files
+                file_type: "file",
                 page_length: PAGE_SIZE,
                 start_after: pageIndex * PAGE_SIZE,
             };
         },
         async (params) => {
-            const response = await call.get(GET_FILES_END_POINTS, params);
+            const response = await call.get("raven.api.raven_message.get_all_files_shared_in_channel", params);
             return response.message;
         },
         {
@@ -82,8 +82,8 @@ const DocGrid = ({ searchQuery }: { searchQuery: string }) => {
     return (
         <LegendList
             data={documents}
-            renderItem={({ item }) => <DocListItem file={item} />}
-            estimatedItemSize={139}
+            renderItem={({ item }) => <FileListItem file={item} />}
+            estimatedItemSize={56}
             keyExtractor={(item, index) => `${item?.name}-${index}`}
             contentContainerStyle={{ backgroundColor: colors.background, paddingBottom: 10 }}
             showsVerticalScrollIndicator={false}
@@ -101,9 +101,9 @@ const DocGrid = ({ searchQuery }: { searchQuery: string }) => {
     );
 };
 
-export default DocGrid
+export default FileGrid
 
-const DocListItem = ({ file }: { file: FileInChannel }) => {
+const FileListItem = ({ file }: { file: MediaInChannel }) => {
 
     const { colors } = useColorScheme()
 
@@ -155,13 +155,13 @@ const DocListItem = ({ file }: { file: FileInChannel }) => {
                     </View>
                 </View>
 
-                <Text className='text-muted-foreground text-xs self-end'>{formatDate(file.creation)}</Text>
+                <Text className='text-muted-foreground text-xs self-end'>{getStandardDateFormat(file.creation)}</Text>
             </View>
         </Pressable>
     )
 }
 
-const Preview = ({ file }: { file: FileInChannel }) => {
+const Preview = ({ file }: { file: MediaInChannel }) => {
 
     const fileName = useMemo(() => getFileName(file.file_url ?? ""), [file])
 

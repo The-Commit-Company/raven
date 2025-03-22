@@ -47,9 +47,9 @@ const ChannelInfoModal = ({ channel, isModalVisible, setModalVisible }: ChannelI
         })
     }
 
-    const handleGoToSharedFiles = () => {
+    const handleGoToSharedMedia = () => {
         setModalVisible(false)
-        router.push('./view-files', {
+        router.push('./view-media', {
             relativeToDirectory: true
         })
     }
@@ -106,7 +106,7 @@ const ChannelInfoModal = ({ channel, isModalVisible, setModalVisible }: ChannelI
                             <ChevronRightIcon height={24} width={24} fill={colors.colors.foreground} strokeWidth={'1px'} />
                         </View>
                     </Pressable>
-                    <Pressable onPress={handleGoToSharedFiles}
+                    <Pressable onPress={handleGoToSharedMedia}
                         className='rounded-xl ios:active:bg-linkColor'
                         android_ripple={{ color: 'rgba(0,0,0,0.1)', borderless: false }}>
                         <View className='flex-row items-center justify-between px-2'>

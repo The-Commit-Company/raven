@@ -1,29 +1,28 @@
-import { Platform, TouchableOpacity, View } from 'react-native'
-import { router, useLocalSearchParams } from 'expo-router';
+import { useCallback, useContext } from 'react';
 import { FrappeConfig, FrappeContext, useSWRInfinite } from 'frappe-react-sdk';
+import { Dimensions, Platform, Pressable, View } from 'react-native'
+import { router, useLocalSearchParams } from 'expo-router';
+import { Image } from 'expo-image';
+import { LegendList } from '@legendapp/list';
 import { ActivityIndicator } from '@components/nativewindui/ActivityIndicator';
 import { useColorScheme } from '@hooks/useColorScheme';
-import { LegendList } from '@legendapp/list';
-import { GET_FILES_END_POINTS, FileInChannel } from './Files';
+import { MediaInChannel } from './Media';
 import { useOpenFileOnAndroid } from '@hooks/useOpenFileOnAndroid';
 import useFileURL from '@hooks/useFileURL';
 import { WebViewSourceUri } from 'react-native-webview/lib/WebViewTypes';
-import { Image } from 'expo-image';
 import { Text } from '@components/nativewindui/Text';
 import ErrorBanner from '@components/common/ErrorBanner';
 import ImageIcon from "@assets/icons/ImageIcon.svg"
-import { useCallback, useContext } from 'react';
-import { Divider } from '@components/layout/Divider';
 
-const PAGE_SIZE = 12
+const PAGE_SIZE = 18
 
-const ImageGrid = ({ searchQuery }: { searchQuery: string }) => {
+const ImageGrid = ({ searchQuery, gap = 6, columns = 3 }: { searchQuery: string, gap?: number, columns?: number }) => {
     const { colors } = useColorScheme();
     const { id: channelID } = useLocalSearchParams();
     const { call } = useContext(FrappeContext) as FrappeConfig;
 
-    const { data, size, isLoading, setSize, error } = useSWRInfinite<FileInChannel[]>(
-        (pageIndex: number, previousPageData: FileInChannel[] | null) => {
+    const { data, size, isLoading, setSize, error } = useSWRInfinite<MediaInChannel[]>(
+        (pageIndex: number, previousPageData: MediaInChannel[] | null) => {
             if (previousPageData && previousPageData.length === 0) return null;
             return {
                 channel_id: channelID,
@@ -34,7 +33,7 @@ const ImageGrid = ({ searchQuery }: { searchQuery: string }) => {
             };
         },
         async (params) => {
-            const response = await call.get(GET_FILES_END_POINTS, params);
+            const response = await call.get("raven.api.raven_message.get_all_files_shared_in_channel", params);
             return response.message;
         },
         {
@@ -50,12 +49,13 @@ const ImageGrid = ({ searchQuery }: { searchQuery: string }) => {
 
     const loadMore = useCallback(() => {
         if (!isReachingEnd && !isLoadingMore) {
-            setSize((prevSize) => {
-
-                return prevSize + 1;
-            });
+            setSize((prevSize) => prevSize + 1);
         }
     }, [isReachingEnd, isLoadingMore, setSize]);
+
+    const screenWidth = Dimensions.get('window').width - 6 // 6 = padding(px-3)
+
+    const imageSize = (screenWidth - (gap * (columns - 1))) / columns;
 
     if (isLoading) {
         return (
@@ -82,15 +82,14 @@ const ImageGrid = ({ searchQuery }: { searchQuery: string }) => {
             <LegendList
                 data={images}
                 renderItem={({ item }) => <ImageListItem file={item} />}
-                numColumns={3}
-                estimatedItemSize={139}
+                numColumns={columns}
+                estimatedItemSize={imageSize}
                 keyExtractor={(item, index) => `${item?.name}-${index}`}
                 contentContainerStyle={{ backgroundColor: colors.background, paddingBottom: 10 }}
-                columnWrapperStyle={{ gap: 6 }}
+                columnWrapperStyle={{ gap }}
                 showsVerticalScrollIndicator={false}
                 onEndReached={loadMore}
                 onEndReachedThreshold={0.5}
-                ItemSeparatorComponent={() => <Divider />}
                 ListFooterComponent={
                     isLoadingMore ? (
                         <View className="py-4">
@@ -105,7 +104,7 @@ const ImageGrid = ({ searchQuery }: { searchQuery: string }) => {
 
 export default ImageGrid
 
-const ImageListItem = ({ file }: { file: FileInChannel }) => {
+const ImageListItem = ({ file }: { file: MediaInChannel }) => {
 
     const { openFile: openFileOnAndroid } = useOpenFileOnAndroid()
 
@@ -131,7 +130,7 @@ const ImageListItem = ({ file }: { file: FileInChannel }) => {
     }
 
     return (
-        <TouchableOpacity activeOpacity={0.7} onPress={openFileAction}>
+        <Pressable onPress={openFileAction}>
             <Image
                 source={source}
                 style={{
@@ -143,7 +142,7 @@ const ImageListItem = ({ file }: { file: FileInChannel }) => {
                 alt={file.file_name}
                 cachePolicy="memory"
             />
-        </TouchableOpacity>
+        </Pressable>
     )
 }
 
