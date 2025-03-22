@@ -108,6 +108,15 @@ def fetch_workspace_members(workspace: str):
 
 
 @frappe.whitelist()
+def get_workspace_member_count(workspace: str):
+	"""
+	Gets the number of members in a workspace
+	"""
+	frappe.has_permission("Raven Workspace", doc=workspace, throw=True)
+	return frappe.db.count("Raven Workspace Member", filters={"workspace": workspace})
+
+
+@frappe.whitelist()
 def add_workspace_members(workspace: str, members: list):
 	"""
 	Adds members to a workspace
