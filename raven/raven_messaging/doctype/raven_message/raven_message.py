@@ -272,7 +272,7 @@ class RavenMessage(Document):
 
 		return message_details
 
-	def publish_unread_count_event(self, last_message_details):
+	def publish_unread_count_event(self, last_message_details=None):
 
 		channel_doc = frappe.get_cached_doc("Raven Channel", self.channel_id)
 		# If the message is a direct message, then we can only send it to one user
