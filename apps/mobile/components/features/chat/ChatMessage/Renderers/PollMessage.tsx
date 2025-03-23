@@ -41,7 +41,7 @@ export const PollMessageBlock = ({ message, ...props }: PollMessageBlockProps) =
     });
 
     return (
-        <View className='w-full' {...props}>
+        <View className='w-full pt-0.5' {...props}>
             {error && <ErrorBanner error={error} />}
             {data ? <PollMessageBox data={data.message} messageID={message.name} /> : null}
         </View>

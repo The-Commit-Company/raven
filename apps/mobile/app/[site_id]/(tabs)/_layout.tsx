@@ -10,6 +10,7 @@ import ChatOutlineIcon from '@assets/icons/ChatOutlineIcon.svg';
 import ThreadsIcon from '@assets/icons/ThreadsIcon.svg';
 import ThreadsOutlineIcon from '@assets/icons/ThreadsOutlineIcon.svg';
 import { useColorScheme } from '@hooks/useColorScheme'
+import { Platform } from 'react-native';
 
 export default function TabLayout() {
 
@@ -22,11 +23,12 @@ export default function TabLayout() {
         borderTopWidth: 1,
         borderTopColor: dark ? 'rgba(255, 255, 255, 0.12)' : 'rgba(0, 0, 0, 0.05)',
         paddingTop: 4,
-        shadowColor: dark ? '#000' : '#000',
-        shadowOffset: { width: 0, height: -2 },
+        marginBottom: Platform.OS === 'ios' ? 0 : 8,
+        shadowColor: '#000',
+        shadowOffset: Platform.OS === 'ios' ? { width: 0, height: -2 } : undefined,
         shadowOpacity: 0.03,
         shadowRadius: 5,
-        elevation: 5
+        elevation: Platform.OS === 'ios' ? 5 : 0
     }
 
     const headerStyle = {

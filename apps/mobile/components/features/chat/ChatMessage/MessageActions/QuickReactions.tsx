@@ -55,7 +55,7 @@ const QuickReactions = ({ message, onClose, quickReactionEmojis }: MessageReacti
                 </TouchableOpacity>
             </View>
 
-            <Sheet enableDynamicSizing={false} ref={emojiBottomSheetRef} snapPoints={["80"]}>
+            <Sheet enableDynamicSizing={true} ref={emojiBottomSheetRef} snapPoints={["80"]}>
                 <BottomSheetView className='flex-1'>
                     <EmojiPicker onReact={onReact} />
                 </BottomSheetView>

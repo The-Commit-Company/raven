@@ -80,7 +80,7 @@ const DocTypeCard = memo(({
     }, [sheetRef, data]);
 
     return <>
-        <Pressable className='p-2.5 flex gap-1 bg-background dark:bg-card-background/40 shadow-card border border-border dark:border-border/50 rounded-md w-80 overflow-hidden' onPress={onPress}>
+        <Pressable className='p-2.5 flex gap-1 bg-background dark:bg-card-background/40 shadow-card border border-border dark:border-border/50 rounded-md overflow-hidden' onPress={onPress}>
             <View className='flex flex-row gap-2 w-full overflow-hidden'>
                 {data.preview_image && <View className='mt-0.5'>
                     <UserAvatar

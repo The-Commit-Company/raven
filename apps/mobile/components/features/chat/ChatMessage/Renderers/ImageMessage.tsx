@@ -41,7 +41,7 @@ export const ImageMessageRenderer = ({ message, doubleTapGesture }: ImageMessage
 
     return (
         <GestureDetector gesture={singleTapGesture}>
-            <View collapsable={false} className='flex-1 w-full'>
+            <View collapsable={false} className='flex-1 pt-0.5 w-full'>
                 <ImageMessageLayout source={source} {...otherAttributes} />
             </View>
         </GestureDetector>

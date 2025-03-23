@@ -104,7 +104,7 @@ const MessageItem = memo(({ message }: Props) => {
 
                         </View>
                     </View> : null}
-                <View className={clsx('flex-1 flex-row px-3 gap-1 pb-2', message.is_continuation ? 'pt-1' : 'pt-2')}>
+                <View className={clsx('flex-1 flex-row px-3 gap-1 pb-1', message.is_continuation ? 'pt-1' : 'pt-2')}>
                     <MessageAvatar
                         userFullName={userFullName}
                         userImage={user?.user_image}
@@ -119,7 +119,7 @@ const MessageItem = memo(({ message }: Props) => {
                             userFullName={userFullName}
                             timestamp={message.formattedTime || ''}
                         />
-                        <View className='flex-1 gap-1'>
+                        <View className='flex-1 w-full gap-1'>
                             {message.is_forwarded === 1 &&
                                 <View className='flex-row items-center gap-1'>
                                     <ShareForward fill={'#6b7280'} width={12} height={12} />
@@ -145,7 +145,7 @@ const MessageItem = memo(({ message }: Props) => {
                             {message.message_type === 'File' && <FileMessageRenderer message={message} doubleTapGesture={doubleTapGesture} />}
                             {message.message_type === 'Poll' && <PollMessageBlock message={message} />}
 
-                            {message.link_doctype && message.link_document && <View className={clsx(message.is_continuation ? 'ml-0.5' : '-ml-0.5')}>
+                            {message.link_doctype && message.link_document && <View className={clsx('pt-0.5', message.is_continuation ? 'ml-0.5' : '-ml-0.5')}>
                                 <DocTypeLinkRenderer doctype={message.link_doctype} docname={message.link_document} />
                             </View>}
 

@@ -11,12 +11,15 @@ import { router } from 'expo-router'
 import { SiteInformation } from '../../../types/SiteInformation'
 import { addSiteToStorage, discovery, setDefaultSite, storeAccessToken } from '@lib/auth'
 import { FormLabel } from '@components/layout/Form'
+import { useColorScheme } from '@hooks/useColorScheme'
 
 WebBrowser.maybeCompleteAuthSession();
 
 type Props = {}
 
 const AddSite = (props: Props) => {
+
+    const { colors } = useColorScheme()
 
     const [siteURL, setSiteURL] = useState('')
 
@@ -86,6 +89,7 @@ const AddSite = (props: Props) => {
                     inputMode='url'
                     autoCapitalize='none'
                     placeholder='raven.frappe.cloud'
+                    placeholderTextColor={colors.grey2}
                     autoCorrect={false}
                     autoComplete='off'
                     onChangeText={setSiteURL}

@@ -2,9 +2,10 @@ import { ChannelIcon } from '@components/features/channels/ChannelList/ChannelIc
 import { useColorScheme } from '@hooks/useColorScheme'
 import { ChannelListItem } from '@raven/types/common/ChannelListItem'
 import { useState } from 'react'
-import { TouchableOpacity, View } from 'react-native'
+import { View } from 'react-native'
 import { Text } from '@components/nativewindui/Text'
 import ChannelInfoModal from '@components/features/channel-settings/ChannelInfoModal'
+import { TouchableOpacity } from '@gorhom/bottom-sheet'
 
 const ChannelHeader = ({ channelData }: { channelData: ChannelListItem }) => {
 
@@ -16,6 +17,8 @@ const ChannelHeader = ({ channelData }: { channelData: ChannelListItem }) => {
 
     return (
         <>
+            {/* Importing TouchableOpacity from @gorhom/bottom-sheet so that it works on android
+            + does not center align the text anywhere else */}
             <TouchableOpacity
                 onPress={handleOnTitlePress}
                 className='flex-1'

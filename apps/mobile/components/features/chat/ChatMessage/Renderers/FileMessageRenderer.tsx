@@ -49,7 +49,7 @@ const FileMessageRenderer = ({ message, doubleTapGesture }: Props) => {
 
     return (
         <GestureDetector gesture={singleTapGesture}>
-            <View className='flex-1 w-full' collapsable={false}>
+            <View className='flex-1 w-full pt-0.5' collapsable={false}>
                 <FileMessageView message={message} />
             </View>
         </GestureDetector>
