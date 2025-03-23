@@ -162,7 +162,7 @@ const FieldData = ({ fields, size = 'sm', className }: { fields: [string, any][]
             <View key={item + index} className="flex flex-wrap">
                 <View>
                     <Text
-                        className={clsx("text-sm text-muted-foreground font-medium", size === 'base' && 'text-base')}
+                        className={clsx("text-sm text-muted-foreground", size === 'base' && 'text-base')}
                     >
                         {item}
                     </Text>

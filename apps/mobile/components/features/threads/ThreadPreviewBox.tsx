@@ -67,7 +67,7 @@ const ThreadPreviewBox = ({ thread, unreadCount }: { thread: ThreadMessage, unre
                                 {formatDateAndTime(thread.creation)}
                             </Text>
                         </View>
-                        {unreadCount && unreadCount > 0 && <Text className='font-bold text-xs text-primary bg-primary/10 rounded-md px-1.5 py-0.5 mx-2 mt-2'>{unreadCount}</Text>}
+                        {unreadCount && unreadCount > 0 ? <Text className='font-bold text-xs text-primary bg-primary/10 rounded-md px-1.5 py-0.5 mx-2 mt-2'>{unreadCount}</Text> : null}
                     </View>
                     <BaseMessageItem message={thread as unknown as Message} />
                     <View className='flex flex-row items-center gap-2 pl-16 pt-2'>

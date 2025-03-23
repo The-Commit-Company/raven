@@ -1,4 +1,4 @@
-import { ScrollView, View } from "react-native"
+import { Keyboard, ScrollView, View } from "react-native"
 import AdditionalInputs from "./AdditionalInputs"
 import { Button } from "@components/nativewindui/Button"
 import SendIcon from "@assets/icons/SendIcon.svg"
@@ -72,6 +72,9 @@ const ChatInput = ({ channelID, onSendMessage }: ChatInputProps) => {
         let html = md.render(replacedValue)
 
         sendMessage(html)
+            .then(() => {
+                Keyboard.dismiss()
+            })
     }
 
 
