@@ -93,7 +93,7 @@ def calculate_message_reaction(message_id, channel_id: str = None):
 		"Raven Message",
 		message_id,
 		"message_reactions",
-		json.dumps(total_reactions),
+		json.dumps(total_reactions, indent=4),
 		update_modified=False,
 	)
 	frappe.publish_realtime(
