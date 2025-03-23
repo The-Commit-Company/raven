@@ -4,10 +4,10 @@ import { Button } from "@components/nativewindui/Button"
 import SendIcon from "@assets/icons/SendIcon.svg"
 import { useColorScheme } from "@hooks/useColorScheme"
 import SendItem from "./SendItem"
-import { useAtom } from 'jotai'
+import { useAtom, useSetAtom } from 'jotai'
 import { CustomFile } from "@raven/types/common/File"
 import { useState } from "react"
-import { filesAtomFamily } from "@lib/ChatInputUtils"
+import { filesAtomFamily, selectedReplyMessageAtomFamily } from "@lib/ChatInputUtils"
 import { useSendMessage } from "@hooks/useSendMessage"
 import { MentionInput, replaceMentionValues } from 'react-native-controlled-mentions'
 import markdownit from 'markdown-it'
@@ -30,9 +30,12 @@ const ChatInput = ({ channelID, onSendMessage }: ChatInputProps) => {
     const siteInfo = useSiteContext()
     const siteID = siteInfo?.sitename ?? ''
 
+    const setSelectedMessage = useSetAtom(selectedReplyMessageAtomFamily(siteID + channelID))
+
     const handleCancelReply = () => {
         setContent('')
         onSendMessage?.()
+        setSelectedMessage(null)
     }
 
     // console.log("Rednered")

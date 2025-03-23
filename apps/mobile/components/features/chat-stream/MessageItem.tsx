@@ -104,7 +104,7 @@ const MessageItem = memo(({ message }: Props) => {
 
                         </View>
                     </View> : null}
-                <View className={clsx('flex-1 flex-row px-3 gap-1', message.is_continuation ? 'pt-0' : 'pt-2')}>
+                <View className={clsx('flex-1 flex-row px-3 gap-1 pb-2', message.is_continuation ? 'pt-1' : 'pt-2')}>
                     <MessageAvatar
                         userFullName={userFullName}
                         userImage={user?.user_image}
