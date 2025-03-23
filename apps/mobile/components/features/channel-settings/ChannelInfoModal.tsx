@@ -136,9 +136,9 @@ const ModalHeader = ({ channel, handleCloseModal }: { channel: ChannelListItem, 
                     <Text className='ml-2 text-base font-semibold'>{channel.channel_name}</Text>
                 </View>}
             </View>
-            <TouchableOpacity hitSlop={10}>
+            {/* <TouchableOpacity hitSlop={10}>
                 <ThreeHorizontalDots height={20} width={20} color={colors.colors.foreground} />
-            </TouchableOpacity>
+            </TouchableOpacity> */}
         </View>
     )
 }

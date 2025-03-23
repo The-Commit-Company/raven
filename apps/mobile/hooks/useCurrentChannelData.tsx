@@ -1,4 +1,4 @@
-import { useChannelListProvider } from "@raven/lib/providers/ChannelListProvider"
+import { useChannelList } from "@raven/lib/providers/ChannelListProvider"
 import { ChannelListItem, DMChannelListItem } from "@raven/types/common/ChannelListItem"
 import { useMemo } from "react"
 
@@ -14,7 +14,7 @@ export interface CurrentChannelData {
 
 export const useCurrentChannelData = (channelID: string) => {
 
-    const { channels, dm_channels, error, isLoading } = useChannelListProvider({})
+    const { channels, dm_channels, error, isLoading } = useChannelList()
 
     const channel: CurrentChannelData | CurrentChannelDMData | undefined = useMemo(() => {
         if (channelID) {

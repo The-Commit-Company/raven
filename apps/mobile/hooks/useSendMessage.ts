@@ -1,5 +1,4 @@
 import { useFrappePostCall } from 'frappe-react-sdk'
-import { Message } from '@raven/types/common/Message'
 import useFileUpload from '@raven/lib/hooks/useFileUpload'
 import { useAtomValue } from 'jotai'
 import { selectedReplyMessageAtomFamily } from '@lib/ChatInputUtils'
@@ -8,7 +7,7 @@ import { selectedReplyMessageAtomFamily } from '@lib/ChatInputUtils'
 export const useSendMessage = (siteID: string, channelID: string, onSend: VoidFunction) => {
 
 
-    const selectedMessage = useAtomValue(selectedReplyMessageAtomFamily(channelID))
+    const selectedMessage = useAtomValue(selectedReplyMessageAtomFamily(siteID + channelID))
     const { uploadFiles } = useFileUpload(siteID, channelID)
     const { call, loading } = useFrappePostCall('raven.api.raven_message.send_message')
 

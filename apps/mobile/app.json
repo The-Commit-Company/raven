@@ -14,7 +14,7 @@
       "backgroundColor": "#000000"
     },
     "ios": {
-      "supportsTablet": true,
+      "supportsTablet": false,
       "appleTeamId": "W6346TTZQX",
       "bundleIdentifier": "raven.thecommit.company",
       "config": {

@@ -33,28 +33,37 @@ const useReactToMessage = () => {
                 // If the message ID matches, we need to update the reactions object
                 const existingReactions = JSON.parse(m.message_reactions ?? '{}') as Record<string, ReactionObject>
 
-                // Check if the emoji is already in the reactions object
-                if (existingReactions[emoji]) {
-                    // If it is, check how many users have reacted to the message
-                    const userCount = existingReactions[emoji].count
+                const emojiKey = is_custom ? (emoji_name ?? emoji) : emoji
 
-                    // If the user has already reacted, remove their reaction
-                    if (userCount > 1) {
-                        existingReactions[emoji].users = existingReactions[emoji].users.filter(u => u !== user?.name)
-                        existingReactions[emoji].count = existingReactions[emoji].count - 1
+                // Check if the emoji is already in the reactions object
+                if (existingReactions[emojiKey]) {
+                    const hasCurrentUserReacted = existingReactions[emojiKey].users.includes(user.name)
+                    // If it is, check how many users have reacted to the message
+                    const userCount = existingReactions[emojiKey].count
+
+                    if (hasCurrentUserReacted) {
+                        // Remove the user from the reaction
+                        if (userCount === 1) {
+                            delete existingReactions[emojiKey]
+                        } else {
+                            existingReactions[emojiKey].users = existingReactions[emojiKey].users.filter(u => u !== user.name)
+                            existingReactions[emojiKey].count = existingReactions[emojiKey].count - 1
+                        }
                     } else {
-                        // If there is only one user, remove the reaction
-                        delete existingReactions[emoji]
+                        // If the user has not reacted, add them to the reaction
+                        existingReactions[emojiKey].users.push(user.name)
+                        existingReactions[emojiKey].count = existingReactions[emojiKey].count + 1
                     }
                 } else {
                     // If it's not, add it
-                    existingReactions[emoji] = {
+                    existingReactions[emojiKey] = {
                         reaction: emoji,
-                        users: [user?.name],
+                        users: [user.name],
                         count: 1,
                         emoji_name: emoji_name ?? ''
                     }
                 }
+
                 return {
                     ...m,
                     message_reactions: JSON.stringify(existingReactions)

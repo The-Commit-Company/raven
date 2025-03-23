@@ -31,7 +31,7 @@ const DMRow = ({ dm }: { dm: DMChannelWithUnreadCount }) => {
             }
         }
         return { lastMessageContent, isSentByUser }
-    }, [dm.last_message_details])
+    }, [dm.last_message_details, myProfile?.name])
 
     const isUnread = dm.unread_count > 0
 
@@ -54,7 +54,7 @@ const DMRow = ({ dm }: { dm: DMChannelWithUnreadCount }) => {
                     />
                     <UserAvatar
                         src={user?.user_image}
-                        alt={user?.full_name ?? user?.name ?? ''}
+                        alt={user?.full_name ?? user?.name ?? dm.peer_user_id}
                         isActive={isActive}
                         isBot={user?.type === 'Bot'}
                         availabilityStatus={user?.availability_status}
@@ -65,14 +65,14 @@ const DMRow = ({ dm }: { dm: DMChannelWithUnreadCount }) => {
                             <Text
                                 className='text-base text-foreground'
                                 style={{ fontWeight: isUnread ? '600' : '400' }}>
-                                {user?.full_name} {myProfile?.name === user?.name && '(You)'}
+                                {user?.full_name ?? dm.peer_user_id} {myProfile?.name === dm.peer_user_id && '(You)'}
                             </Text>
-                            {dm.last_message_timestamp && (
+                            {dm.last_message_timestamp ? (
                                 <LastMessageTimestamp
                                     timestamp={dm.last_message_timestamp}
                                     isUnread={isUnread}
                                 />
-                            )}
+                            ) : null}
                         </View>
                         <View className='flex flex-row items-center gap-1 justify-between'>
                             <View
@@ -105,6 +105,10 @@ const LastMessageTimestamp = ({ timestamp }: LastMessageTimestampProps) => {
     const displayTimestamp = useMemo(() => {
 
         const dateObj = dayjs(timestamp)
+
+        if (!dateObj.isValid()) {
+            return timestamp
+        }
 
         const today = dayjs()
         const yesterday = today.subtract(1, 'day')

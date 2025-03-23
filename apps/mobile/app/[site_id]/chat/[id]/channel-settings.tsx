@@ -34,11 +34,11 @@ const ChannelSettings = () => {
                 headerStyle: { backgroundColor: isDarkColorScheme ? colors.background : colors.card },
                 headerLeft: () => <HeaderBackButton />,
                 headerTitle: () => <Text className='ml-2 text-base font-semibold'>Channel Info</Text>,
-                headerRight: () => (
-                    <TouchableOpacity hitSlop={10}>
-                        <ThreeHorizontalDots height={20} width={20} color={colors.foreground} />
-                    </TouchableOpacity>
-                )
+                // headerRight: () => (
+                //     <TouchableOpacity hitSlop={10}>
+                //         <ThreeHorizontalDots height={20} width={20} color={colors.foreground} />
+                //     </TouchableOpacity>
+                // )
             }} />
             <View className="flex-1 bg-card dark:bg-background">
                 <View className="flex-col gap-5">

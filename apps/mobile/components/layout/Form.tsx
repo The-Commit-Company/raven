@@ -9,7 +9,7 @@ type FormLabelProps = TextProps & {
 
 export const FormLabel = ({ children, isRequired, ...props }: FormLabelProps) => {
     return (
-        <Text className="text-sm font-semibold" {...props}>
+        <Text className="text-base font-semibold" {...props}>
             {children} {isRequired && <Text className='text-red-600'>*</Text>}
         </Text>
     )

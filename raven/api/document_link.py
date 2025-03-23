@@ -1,7 +1,7 @@
 import frappe
 from frappe.custom.doctype.property_setter.property_setter import delete_property_setter
 from frappe.desk.utils import slug
-from frappe.model.meta import no_value_fields, table_fields
+from frappe.model import no_value_fields, table_fields
 from frappe.utils import get_url
 
 

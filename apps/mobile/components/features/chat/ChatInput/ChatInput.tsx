@@ -1,19 +1,20 @@
-import { ScrollView, View } from "react-native"
+import { Keyboard, ScrollView, View } from "react-native"
 import AdditionalInputs from "./AdditionalInputs"
 import { Button } from "@components/nativewindui/Button"
 import SendIcon from "@assets/icons/SendIcon.svg"
 import { useColorScheme } from "@hooks/useColorScheme"
 import SendItem from "./SendItem"
-import { useAtom } from 'jotai'
+import { useAtom, useSetAtom } from 'jotai'
 import { CustomFile } from "@raven/types/common/File"
 import { useState } from "react"
-import { filesAtomFamily } from "@lib/ChatInputUtils"
+import { filesAtomFamily, selectedReplyMessageAtomFamily } from "@lib/ChatInputUtils"
 import { useSendMessage } from "@hooks/useSendMessage"
 import { MentionInput, replaceMentionValues } from 'react-native-controlled-mentions'
 import markdownit from 'markdown-it'
 import useSiteContext from "@hooks/useSiteContext"
 import TypingIndicator from "./TypingIndicator"
 import { UserMentions } from "./mentions"
+import ReplyMessagePreview from "./ReplyMessagePreview"
 
 interface ChatInputProps {
     channelID: string
@@ -29,10 +30,12 @@ const ChatInput = ({ channelID, onSendMessage }: ChatInputProps) => {
     const siteInfo = useSiteContext()
     const siteID = siteInfo?.sitename ?? ''
 
+    const setSelectedMessage = useSetAtom(selectedReplyMessageAtomFamily(siteID + channelID))
+
     const handleCancelReply = () => {
-        console.log('cancel reply')
         setContent('')
         onSendMessage?.()
+        setSelectedMessage(null)
     }
 
     // console.log("Rednered")
@@ -71,9 +74,10 @@ const ChatInput = ({ channelID, onSendMessage }: ChatInputProps) => {
 
         let html = md.render(replacedValue)
 
-        console.log('html', html)
-
         sendMessage(html)
+            .then(() => {
+                Keyboard.dismiss()
+            })
     }
 
 
@@ -84,6 +88,7 @@ const ChatInput = ({ channelID, onSendMessage }: ChatInputProps) => {
 
     return <View className="flex flex-col gap-1 bg-background">
         <TypingIndicator channel={channelID} />
+        {siteID && <ReplyMessagePreview channelID={channelID} siteID={siteID} />}
         {siteID && <FileScroller channelID={channelID} siteID={siteID} />}
 
         <View className={`flex-row items-end px-4 pt-2 pb-4 gap-2 
@@ -129,8 +134,6 @@ const ChatInput = ({ channelID, onSendMessage }: ChatInputProps) => {
     </View>
 }
 
-
-
 const FileScroller = ({ channelID, siteID }: { channelID: string, siteID: string }) => {
 
     const [files, setFiles] = useAtom(filesAtomFamily(siteID + channelID))
@@ -142,9 +145,9 @@ const FileScroller = ({ channelID, siteID }: { channelID: string, siteID: string
     }
 
     return <View>
-        {files.length > 0 && <View className="px-2 py-1 border-t border-border">
+        {files.length > 0 && <View className="px-2 pt-2 border-t border-border">
             <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
-                <View className="flex-row gap-2 justify-start items-start py-2 pr-2">
+                <View className="flex-row gap-4 justify-start items-start py-2 pr-2">
                     {files.map((file) => (
                         <SendItem
                             key={file.fileID}

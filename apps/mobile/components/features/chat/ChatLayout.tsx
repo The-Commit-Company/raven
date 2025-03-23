@@ -53,7 +53,7 @@ const ChatLayout = ({ channelID, isThread = false }: Props) => {
 
     const messageActionsSheetRef = useSheetRef()
 
-    const [selectedMessage, setSelectedMessage] = useAtom(messageActionsSelectedMessageAtom)
+    const [selectedMessage, setSelectedMessage] = useAtom(messageActionsSelectedMessageAtom(isThread ? 'thread' : 'channel'))
 
     const handleSheetClose = () => {
         setSelectedMessage(null)
@@ -75,7 +75,7 @@ const ChatLayout = ({ channelID, isThread = false }: Props) => {
     return (
         <>
             <View className='flex-1'>
-                <ChatStream channelID={channelID} scrollRef={scrollRef} />
+                <ChatStream channelID={channelID} scrollRef={scrollRef} isThread={isThread} />
                 <ChatInput channelID={channelID} onSendMessage={onSendMessage} />
                 <Animated.View style={fakeView} />
             </View>

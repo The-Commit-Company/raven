@@ -27,7 +27,7 @@ export const DocTypeLinkRenderer = ({ doctype, docname }: { doctype: string, doc
         return <DocTypeCardSkeleton />
     }
 
-    if (error) {
+    if (!data && error) {
         return <DocTypeCardError error={error} doctype={doctype} docname={docname} />
     }
 
@@ -62,7 +62,7 @@ const DocTypeCard = memo(({
 
         const allFields = Object.entries(Object.keys(data).reduce((acc, key) => {
             if (!fieldsToRemove.includes(key)) {
-                acc[key as keyof typeof data] = data[key];
+                acc[key as keyof typeof data] = data[key]?.replace(/<[^>]*>?/g, '');
             }
             return acc;
         }, {} as Record<string, any>))
@@ -80,8 +80,8 @@ const DocTypeCard = memo(({
     }, [sheetRef, data]);
 
     return <>
-        <Pressable className='p-2.5 flex gap-1 bg-background dark:bg-card-background/40 shadow-card border border-border dark:border-border/50 rounded-md min-w-80' onPress={onPress}>
-            <View className='flex flex-row gap-2 w-full'>
+        <Pressable className='p-2.5 flex gap-1 bg-background dark:bg-card-background/40 shadow-card border border-border dark:border-border/50 rounded-md w-80 overflow-hidden' onPress={onPress}>
+            <View className='flex flex-row gap-2 w-full overflow-hidden'>
                 {data.preview_image && <View className='mt-0.5'>
                     <UserAvatar
                         alt={data.preview_title ?? docname}
@@ -89,9 +89,9 @@ const DocTypeCard = memo(({
                     />
                 </View>
                 }
-                <View className='flex gap-1'>
+                <View className='flex gap-1 overflow-hidden'>
                     <DocTypeBadge doctype={doctype} />
-                    {data.preview_title && data.preview_title !== docname && <Text className='text-sm text-muted-foreground text-ellipsis'>
+                    {data.preview_title && data.preview_title !== docname && <Text className='text-sm text-muted-foreground text-ellipsis overflow-x-hidden'>
                         {docname}
                     </Text>}
 
@@ -162,7 +162,7 @@ const FieldData = ({ fields, size = 'sm', className }: { fields: [string, any][]
             <View key={item + index} className="flex flex-wrap">
                 <View>
                     <Text
-                        className={clsx("text-sm text-muted-foreground font-medium", size === 'base' && 'text-base')}
+                        className={clsx("text-sm text-muted-foreground", size === 'base' && 'text-base')}
                     >
                         {item}
                     </Text>

@@ -12,35 +12,30 @@ from raven.utils import get_channel_member, is_channel_member, track_channel_vis
 
 @frappe.whitelist(methods=["POST"])
 def send_message(channel_id, text, is_reply=False, linked_message=None, json_content=None):
-
-	# remove empty list items
-	clean_text = text.replace("<li><br></li>", "").strip()
-
-	if clean_text:
-		if is_reply:
-			doc = frappe.get_doc(
-				{
-					"doctype": "Raven Message",
-					"channel_id": channel_id,
-					"text": clean_text,
-					"message_type": "Text",
-					"is_reply": is_reply,
-					"linked_message": linked_message,
-					"json": json_content,
-				}
-			)
-		else:
-			doc = frappe.get_doc(
-				{
-					"doctype": "Raven Message",
-					"channel_id": channel_id,
-					"text": clean_text,
-					"message_type": "Text",
-					"json": json_content,
-				}
-			)
-		doc.insert()
-		return doc
+	if is_reply:
+		doc = frappe.get_doc(
+			{
+				"doctype": "Raven Message",
+				"channel_id": channel_id,
+				"text": text,
+				"message_type": "Text",
+				"is_reply": is_reply,
+				"linked_message": linked_message,
+				"json": json_content,
+			}
+		)
+	else:
+		doc = frappe.get_doc(
+			{
+				"doctype": "Raven Message",
+				"channel_id": channel_id,
+				"text": text,
+				"message_type": "Text",
+				"json": json_content,
+			}
+		)
+	doc.insert()
+	return doc
 
 
 @frappe.whitelist()

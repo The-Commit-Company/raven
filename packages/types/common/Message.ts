@@ -27,7 +27,8 @@ export interface BaseMessage {
     formattedTime?: string,
     is_pinned: 1 | 0,
     might_contain_link_preview?: boolean,
-    content?: string
+    content?: string,
+    isOpenInThread?: boolean
 }
 
 export interface FileMessage extends BaseMessage {

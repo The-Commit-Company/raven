@@ -32,7 +32,7 @@ export interface DateBlock {
 export interface HeaderBlock {
     message_type: 'header',
     name: string,
-    is_thread: boolean
+    isOpenInThread: boolean
 }
 
 export type MessageDateBlock = Message | DateBlock | HeaderBlock
@@ -371,7 +371,7 @@ const useChatStream = (channelID: string, listRef?: React.RefObject<LegendListRe
         if (!data.message.has_old_messages || messages.length === 0) {
             messagesWithDateSeparators.push({
                 message_type: 'header',
-                is_thread: isThread,
+                isOpenInThread: isThread,
                 name: channelID,
             })
         }
@@ -393,7 +393,8 @@ const useChatStream = (channelID: string, listRef?: React.RefObject<LegendListRe
                 ...lastMessage,
                 might_contain_link_preview: checkIfMessageContainsLinkPreview(lastMessage),
                 formattedTime: dayjs(lastMessage.creation).local().format('hh:mm A'),
-                is_continuation: 0
+                is_continuation: 0,
+                isOpenInThread: isThread,
             })
 
             // Loop through the messages and add date separators if the date changes
@@ -419,11 +420,11 @@ const useChatStream = (channelID: string, listRef?: React.RefObject<LegendListRe
                 const nextMessageSender = nextMessage.message_type === "System" ? null : nextMessage.is_bot_message ? nextMessage.bot : nextMessage.owner
 
                 if (nextMessageSender !== currentMessageSender) {
-                    messagesWithDateSeparators.push({ ...message, is_continuation: 0, formattedTime: formattedMessageTime, might_contain_link_preview })
+                    messagesWithDateSeparators.push({ ...message, isOpenInThread: isThread, is_continuation: 0, formattedTime: formattedMessageTime, might_contain_link_preview })
                 } else if (messageDateTime - currentDateTime > 120000) {
-                    messagesWithDateSeparators.push({ ...message, is_continuation: 0, formattedTime: formattedMessageTime, might_contain_link_preview })
+                    messagesWithDateSeparators.push({ ...message, isOpenInThread: isThread, is_continuation: 0, formattedTime: formattedMessageTime, might_contain_link_preview })
                 } else {
-                    messagesWithDateSeparators.push({ ...message, is_continuation: 1, formattedTime: formattedMessageTime, might_contain_link_preview })
+                    messagesWithDateSeparators.push({ ...message, isOpenInThread: isThread, is_continuation: 1, formattedTime: formattedMessageTime, might_contain_link_preview })
                 }
 
                 currentDate = messageDate

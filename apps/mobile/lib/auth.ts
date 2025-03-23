@@ -61,7 +61,8 @@ export const getRevocationEndpoint = (siteURL: string) => `${siteURL}${discovery
  * @param token - The access token
  */
 export const storeAccessToken = (siteName: string, token: TokenResponse) => {
-    return SecureStore.setItemAsync(getAccessTokenKey(siteName), JSON.stringify(token))
+    const tokenWithoutIDToken = { ...token, idToken: undefined }
+    return SecureStore.setItemAsync(getAccessTokenKey(siteName), JSON.stringify(tokenWithoutIDToken))
 }
 
 /** 

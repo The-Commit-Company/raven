@@ -2,7 +2,7 @@ import { Link, router, Stack } from 'expo-router';
 import { Button } from '@components/nativewindui/Button';
 import CrossIcon from '@assets/icons/CrossIcon.svg';
 import { useColorScheme } from '@hooks/useColorScheme';
-import { Pressable, View } from 'react-native';
+import { Pressable, ScrollView, View } from 'react-native';
 import { Text } from '@components/nativewindui/Text';
 import SearchInput from '@components/common/SearchInput/SearchInput';
 import { ChannelIcon } from '@components/features/channels/ChannelList/ChannelIcon';
@@ -55,7 +55,7 @@ export default function BrowseChannels() {
                 </View>
                 <ChannelFilter channel={channelType} setChannel={setChannelType} />
             </View>
-            <View className="px-1">
+            <ScrollView className="px-1" contentContainerStyle={{ paddingBottom: 16 }}>
                 {filteredChannelsByType.length > 0 ? (
                     filteredChannelsByType.map((channel) => (
                         <Pressable
@@ -80,7 +80,7 @@ export default function BrowseChannels() {
                         No matching channels found
                     </Text>
                 )}
-            </View>
+            </ScrollView>
         </View>
     </>
 }
