@@ -7,4 +7,4 @@ export const filesAtomFamily = atomFamily((id: string) => atom<CustomFile[]>([])
 
 export const selectedReplyMessageAtomFamily = atomFamily((id: string) => atom<Message | null>(null))
 
-export const messageActionsSelectedMessageAtom = atom<Message | null>(null)
+export const messageActionsSelectedMessageAtom = atomFamily((t: 'channel' | 'thread') => atom<Message | null>(null))

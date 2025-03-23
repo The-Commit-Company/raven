@@ -201,7 +201,7 @@ const MessageContentRenderer = ({ item }: { item: MessageDateBlock }) => {
     }
 
     if (item.message_type === 'header') {
-        return <ChannelHistoryFirstMessage channelID={item.name} />
+        return <ChannelHistoryFirstMessage channelID={item.name} isThread={item.isOpenInThread} />
     }
 
     return <MessageItem message={item} />

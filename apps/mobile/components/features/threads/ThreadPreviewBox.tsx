@@ -14,7 +14,7 @@ import ViewThreadParticipants from './ViewThreadParticipants'
 import { Divider } from '@components/layout/Divider'
 import { useRouteToThread } from '@hooks/useRouting'
 
-const ThreadPreviewBox = ({ thread, unreadCount }: { thread: ThreadMessage, unreadCount: number }) => {
+const ThreadPreviewBox = ({ thread, unreadCount }: { thread: ThreadMessage, unreadCount?: number }) => {
 
     const users = useGetUserRecords()
     const { channel } = useCurrentChannelData(thread.channel_id)
@@ -57,7 +57,7 @@ const ThreadPreviewBox = ({ thread, unreadCount }: { thread: ThreadMessage, unre
                 onPress={handleNavigateToThread}>
                 <View>
                     <View className='flex flex-row items-center justify-between'>
-                        <View className={`flex flex-row items-center px-3 gap-2 ${unreadCount > 0 ? 'pt-0' : 'pt-2'}`}>
+                        <View className={`flex flex-row items-center px-3 gap-2 ${unreadCount && unreadCount > 0 ? 'pt-0' : 'pt-2'}`}>
                             <View className='flex flex-row items-center gap-1'>
                                 {channelDetails?.channelIcon && <ChannelIcon type={channelDetails?.channelIcon as "Private" | "Public" | "Open"} fill={colors.icon} size={14} />}
                                 <Text className='text-sm'>{channelDetails?.channelName}</Text>
@@ -67,7 +67,7 @@ const ThreadPreviewBox = ({ thread, unreadCount }: { thread: ThreadMessage, unre
                                 {formatDateAndTime(thread.creation)}
                             </Text>
                         </View>
-                        {unreadCount > 0 && <Text className='font-bold text-xs text-primary bg-primary/10 rounded-md px-1.5 py-0.5 mx-2 mt-2'>{unreadCount}</Text>}
+                        {unreadCount && unreadCount > 0 && <Text className='font-bold text-xs text-primary bg-primary/10 rounded-md px-1.5 py-0.5 mx-2 mt-2'>{unreadCount}</Text>}
                     </View>
                     <BaseMessageItem message={thread as unknown as Message} />
                     <View className='flex flex-row items-center gap-2 pl-16 pt-2'>

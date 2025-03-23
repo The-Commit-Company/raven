@@ -60,7 +60,7 @@ const MessageItem = memo(({ message }: Props) => {
     }, [doubleTapMessageEmoji, reactToMessage])
 
     /** Long press to open the message actions sheet */
-    const setSelectedMessage = useSetAtom(messageActionsSelectedMessageAtom)
+    const setSelectedMessage = useSetAtom(messageActionsSelectedMessageAtom(message.isOpenInThread ? 'thread' : 'channel'))
 
     const longPressToSelectMessage = useCallback(() => {
         impactAsync(ImpactFeedbackStyle.Medium)
