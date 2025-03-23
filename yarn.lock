@@ -2590,12 +2590,12 @@
     "@jridgewell/resolve-uri" "^3.1.0"
     "@jridgewell/sourcemap-codec" "^1.4.14"
 
-"@jsamr/counter-style@2.0.2", "@jsamr/counter-style@^2.0.1":
+"@jsamr/counter-style@^2.0.1":
   version "2.0.2"
   resolved "https://registry.yarnpkg.com/@jsamr/counter-style/-/counter-style-2.0.2.tgz#6f08cfa98e1f0416dc1d7f2d8ac38a8cdb004c5d"
   integrity sha512-2mXudGVtSzVxWEA7B9jZLKjoXUeUFYDDtFrQoC0IFX9/Dszz4t1vZOmafi3JSw/FxD+udMQ+4TAFR8Qs0J3URQ==
 
-"@jsamr/react-native-li@2.3.1", "@jsamr/react-native-li@^2.3.0":
+"@jsamr/react-native-li@^2.3.0":
   version "2.3.1"
   resolved "https://registry.yarnpkg.com/@jsamr/react-native-li/-/react-native-li-2.3.1.tgz#12a5b5f6e3971cec77b96bee58104eed0ae9314a"
   integrity sha512-Qbo4NEj48SQ4k8FZJHFE2fgZDKTWaUGmVxcIQh3msg5JezLdTMMHuRRDYctfdHI6L0FZGObmEv3haWbIvmol8w==
@@ -6933,11 +6933,6 @@ html-dom-parser@5.0.13:
     domhandler "5.0.3"
     htmlparser2 "10.0.0"
 
-html-entities@2.5.2:
-  version "2.5.2"
-  resolved "https://registry.yarnpkg.com/html-entities/-/html-entities-2.5.2.tgz#201a3cf95d3a15be7099521620d19dfb4f65359f"
-  integrity sha512-K//PSRMQk4FZ78Kyau+mZurHn3FH0Vwr+H36eE0rPbeYkRRi9YxceYPhuN60UwWorxyKHhqoAJl2OFKa4BVtaA==
-
 html-react-parser@^5.1.8:
   version "5.2.2"
   resolved "https://registry.yarnpkg.com/html-react-parser/-/html-react-parser-5.2.2.tgz#a4159c14f08c06280ff793ce35f872c2283227cb"
@@ -7968,11 +7963,6 @@ markdown-it@^14.0.0, markdown-it@^14.1.0:
     mdurl "^2.0.0"
     punycode.js "^2.3.1"
     uc.micro "^2.1.0"
-
-marked@5.0.5:
-  version "5.0.5"
-  resolved "https://registry.yarnpkg.com/marked/-/marked-5.0.5.tgz#1c7bd284d7d29d7d75d6241b26e5d5bf3b558a12"
-  integrity sha512-auTmKJTBwZM/GLVFOhmkY7pL8v/0DxiDaXRC2kEyajcNJ0XXn9NphLD0106dbWrbPwcyD4Y0Dus16OkCzUMkfg==
 
 marky@^1.2.2:
   version "1.2.5"
@@ -9432,18 +9422,6 @@ react-native-keyboard-controller@^1.15.0:
   dependencies:
     react-native-is-edge-to-edge "^1.1.6"
 
-react-native-marked@^6.0.7:
-  version "6.0.7"
-  resolved "https://registry.yarnpkg.com/react-native-marked/-/react-native-marked-6.0.7.tgz#81eeebfba5b109e4b7469bab70d681320755988b"
-  integrity sha512-LN307u/O9go3qYYbaLPhZ12B9wzSCS97rIpplZFLiu4lUm621PUq+RIiMrXBIP+gJL4eMw/P1rtkQ6hHzHdbbw==
-  dependencies:
-    "@jsamr/counter-style" "2.0.2"
-    "@jsamr/react-native-li" "2.3.1"
-    html-entities "2.5.2"
-    marked "5.0.5"
-    react-native-table-component "1.2.2"
-    svg-parser "2.0.4"
-
 react-native-reanimated@~3.16.1:
   version "3.16.7"
   resolved "https://registry.yarnpkg.com/react-native-reanimated/-/react-native-reanimated-3.16.7.tgz#6c7fa516f62c6743c24d955dada00e3c5323d50d"
@@ -9507,11 +9485,6 @@ react-native-svg@15.8.0:
     css-select "^5.1.0"
     css-tree "^1.1.3"
     warn-once "0.1.1"
-
-react-native-table-component@1.2.2:
-  version "1.2.2"
-  resolved "https://registry.yarnpkg.com/react-native-table-component/-/react-native-table-component-1.2.2.tgz#1c9bdcd8f1fd7edf10d1e93ebc3b7877ecd74def"
-  integrity sha512-7bbsi5431iWcjj3toASh8lFHGi6AG/+MTd4M7GuksXKxx/CFs/Qwv1Ys7D2wgyuYKe3hxWNfSVrteFj0tOYXYw==
 
 react-native-uitextview@^1.4.0:
   version "1.4.0"
@@ -10639,7 +10612,7 @@ supports-preserve-symlinks-flag@^1.0.0:
   resolved "https://registry.yarnpkg.com/supports-preserve-symlinks-flag/-/supports-preserve-symlinks-flag-1.0.0.tgz#6eda4bd344a3c94aea376d4cc31bc77311039e09"
   integrity sha512-ot0WnXS9fgdkgIcePe6RHNk1WA8+muPa6cSjeR3V8K27q9BB1rTE3R1p7Hv0z1ZyAc8s6Vvv8DIyWf681MAt0w==
 
-svg-parser@2.0.4, svg-parser@^2.0.4:
+svg-parser@^2.0.4:
   version "2.0.4"
   resolved "https://registry.yarnpkg.com/svg-parser/-/svg-parser-2.0.4.tgz#fdc2e29e13951736140b76cb122c8ee6630eb6b5"
   integrity sha512-e4hG1hRwoOdRb37cIMSgzNsxyzKfayW6VOflrwvR+/bzrkyxY/31WkbgnQpgtrNp1SdpJvpUAGTa/ZoiPNDuRQ==
