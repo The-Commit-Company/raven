@@ -1,11 +1,11 @@
 import { View } from 'react-native';
-import Files from '@components/features/files/Files';
+import Media from '@components/features/media/Media';
 
 export default function ViewFiles() {
 
     return (
         <View className='flex-1'>
-            <Files />
+            <Media />
         </View>
     )
 }
