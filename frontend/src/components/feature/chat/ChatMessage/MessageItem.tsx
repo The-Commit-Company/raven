@@ -120,6 +120,20 @@ export const MessageItem = ({ message, setDeleteMessage, isHighlighted, onReplyM
     // @ts-ignore
     const CHAT_STYLE = window.frappe?.boot?.chat_style ?? 'Simple'
 
+    const [selectedText, setSelectedText] = useState('')
+
+    const onContextMenuChange = (open: boolean) => {
+        if (open) {
+            // Get the selection that te user is actually highlighting
+            const selection = document.getSelection()
+            if (selection) {
+                setSelectedText(selection.toString().trim())
+            }
+        } else {
+            setSelectedText('')
+        }
+    }
+
     return (
         <>
             {CHAT_STYLE === 'Left-Right' ? <LeftRightLayout
@@ -149,7 +163,7 @@ export const MessageItem = ({ message, setDeleteMessage, isHighlighted, onReplyM
                         top-[42px] 
                         left-6 z-0`}>
                         </div> : null}
-                    <ContextMenu.Root modal={false}>
+                    <ContextMenu.Root modal={false} onOpenChange={onContextMenuChange}>
                         <ContextMenu.Trigger
                             {...bind}
                             ref={ref}
@@ -241,6 +255,7 @@ export const MessageItem = ({ message, setDeleteMessage, isHighlighted, onReplyM
                             onReply={onReply}
                             onForward={onForward}
                             onViewReaction={onViewReaction}
+                            selectedText={selectedText}
                             onAttachDocument={onAttachToDocument}
                         />
                     </ContextMenu.Root>

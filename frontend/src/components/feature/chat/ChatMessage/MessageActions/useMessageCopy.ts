@@ -3,10 +3,15 @@ import { Message } from '../../../../../../../types/Messaging/Message'
 import turndown from 'turndown'
 type Props = {}
 
-export const useMessageCopy = (message?: Message | null) => {
+export const useMessageCopy = (message?: Message | null, selectedText?: string) => {
 
     const copy = () => {
         if (!message) return
+        if (selectedText) {
+            navigator.clipboard.writeText(selectedText)
+            toast.success('Text copied to clipboard')
+            return
+        }
         if (message.message_type === 'Text') {
 
             // Remove all empty lines

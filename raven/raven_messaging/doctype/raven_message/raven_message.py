@@ -504,7 +504,7 @@ class RavenMessage(Document):
 
 		# delete poll if the message is of type poll after deleting the message
 		if self.message_type == "Poll":
-			frappe.delete_doc("Raven Poll", self.poll_id)
+			frappe.delete_doc("Raven Poll", self.poll_id, ignore_permissions=True, delete_permanently=True)
 
 		# TEMP: this is a temp fix for the Desk interface
 		self.publish_deprecated_event_for_desk()
