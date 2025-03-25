@@ -41,7 +41,7 @@ export const useUpdateLastMessageInChannelList = () => {
                                 return {
                                     ...channel,
                                     last_message_timestamp: lastMessageTimestamp,
-                                    last_message_details: lastMessageDetails
+                                    last_message_details: lastMessageDetails || channel.last_message_details
                                 }
                             }
                             return channel

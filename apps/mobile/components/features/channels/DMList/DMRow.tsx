@@ -38,7 +38,7 @@ const DMRow = ({ dm }: { dm: DMChannelWithUnreadCount }) => {
     return (
         <Link href={`../chat/${dm.name}`} asChild>
             <Pressable
-                className='flex flex-row relative items-center gap-3 py-2.5 px-4 ios:active:bg-linkColor'
+                className='flex flex-row relative items-center gap-3 py-3 px-4 ios:active:bg-linkColor'
                 android_ripple={{ color: 'rgba(0,0,0,0.1)', borderless: false }}>
                 {({ pressed, hovered }) => <>
                     <View
@@ -47,7 +47,7 @@ const DMRow = ({ dm }: { dm: DMChannelWithUnreadCount }) => {
                             height: 7,
                             position: 'absolute',
                             left: 6,
-                            top: 27,
+                            top: 36,
                             borderRadius: '100%',
                             backgroundColor: isUnread ? colors.primary : 'transparent',
                         }}
@@ -58,12 +58,12 @@ const DMRow = ({ dm }: { dm: DMChannelWithUnreadCount }) => {
                         isActive={isActive}
                         isBot={user?.type === 'Bot'}
                         availabilityStatus={user?.availability_status}
-                        avatarProps={{ className: 'h-10 w-10' }}
+                        avatarProps={{ className: 'h-11 w-11' }}
                     />
                     <View className='flex-1 flex-col overflow-hidden'>
                         <View className='flex flex-row justify-between items-center'>
                             <Text
-                                className='text-base text-foreground'
+                                className='text-lg text-foreground'
                                 style={{ fontWeight: isUnread ? '600' : '400' }}>
                                 {user?.full_name ?? dm.peer_user_id} {myProfile?.name === dm.peer_user_id && '(You)'}
                             </Text>
@@ -78,12 +78,12 @@ const DMRow = ({ dm }: { dm: DMChannelWithUnreadCount }) => {
                             <View
                                 style={{ maxHeight: 30, maxWidth: dm.unread_count > 0 ? '90%' : '100%', }}
                                 className='flex flex-row items-center gap-1'>
-                                {isSentByUser ? <Text className='text-[14px] text-muted-foreground/70'>You:</Text> : null}
-                                <Text className='text-[14px] text-muted-foreground/70 line-clamp-1'>{lastMessageContent}</Text>
+                                {isSentByUser ? <Text className='text-base text-muted-foreground'>You:</Text> : null}
+                                <Text className='text-base text-muted-foreground line-clamp-1'>{lastMessageContent}</Text>
                             </View>
                             {(dm.unread_count && dm.unread_count > 0) ?
                                 <View className='px-1.5 py-0.5 rounded-md bg-primary/20 dark:bg-primary'>
-                                    <Text className='text-xs text-primary dark:text-white font-semibold'>{dm.unread_count}</Text>
+                                    <Text className='text-[13px] text-primary dark:text-white font-semibold'>{dm.unread_count}</Text>
                                 </View>
                                 : null
                             }
@@ -114,7 +114,14 @@ const LastMessageTimestamp = ({ timestamp }: LastMessageTimestampProps) => {
         const yesterday = today.subtract(1, 'day')
 
         if (dateObj.isSame(today, 'day')) {
-            return dateObj.fromNow()
+            // If the difference is less than 1 minute, show "Just now"
+            if (Math.abs(dateObj.diff(today, 'minute')) < 1) {
+                return 'just now'
+            }
+            if (Math.abs(dateObj.diff(today, 'hour')) < 1) {
+                return dateObj.fromNow()
+            }
+            return dateObj.format('HH:mm')
         }
 
         if (dateObj.isSame(yesterday, 'day')) {

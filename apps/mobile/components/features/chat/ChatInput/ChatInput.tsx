@@ -38,8 +38,6 @@ const ChatInput = ({ channelID, onSendMessage }: ChatInputProps) => {
         setSelectedMessage(null)
     }
 
-    // console.log("Rednered")
-
 
     const { sendMessage, loading } = useSendMessage(siteID, channelID as string, handleCancelReply)
 
@@ -111,17 +109,18 @@ const ChatInput = ({ channelID, onSendMessage }: ChatInputProps) => {
                         },
                         {
                             pattern: /(https?:\/\/|www\.)[-a-zA-Z0-9@:%._\+~#=]{1,256}\.(xn--)?[a-z0-9-]{2,20}\b([-a-zA-Z0-9@:%_\+\[\],.~#?&\/=]*[-a-zA-Z0-9@:%_\+\]~#?&\/=])*/gi,
-                            textStyle: { color: 'blue' },
+                            textStyle: { color: colors.primary, fontSize: 16 },
                         },
                     ]}
                     style={{
                         padding: 12,
                         color: colors.foreground,
+                        fontSize: 16,
                     }}
                     containerStyle={{
                         position: 'static'
                     }}
-                    className="text-sm"
+                    className="text-base"
                 />
 
             </View>

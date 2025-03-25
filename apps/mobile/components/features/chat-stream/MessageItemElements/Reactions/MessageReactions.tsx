@@ -102,6 +102,7 @@ const ReactionButton = ({ reaction, currentUser, saveReaction, onLongPress, long
     }, [currentUser, reaction])
 
     const onReact = useCallback(() => {
+        impactAsync(ImpactFeedbackStyle.Light)
         saveReaction(reaction.reaction, reaction?.is_custom ?? false, reaction.emoji_name)
     }, [saveReaction, reaction])
 
@@ -120,15 +121,15 @@ const ReactionButton = ({ reaction, currentUser, saveReaction, onLongPress, long
             <TouchableOpacity
                 onPress={onReact}
                 activeOpacity={0.7}
-                className={clsx(`flex-row rounded-md py-1 px-2 gap-2 border-[0.5px]`,
+                className={clsx(`flex-row rounded-xl py-1 px-2 gap-2 border`,
                     currentUserReacted ? "bg-blue-50/80 border-blue-600 dark:border-muted-foreground/40 dark:bg-muted" : "bg-card dark:bg-muted/50 border-muted/50")}
             >
                 {reaction.is_custom ? (
                     <CustomEmojiView emoji={reaction.reaction} />
                 ) : (
-                    <Text className='text-xs'>{reaction.reaction}</Text>
+                    <Text className='text-sm'>{reaction.reaction}</Text>
                 )}
-                <Text className={clsx('text-xs font-bold', currentUserReacted ? "text-foreground dark:text-foreground" : "text-foreground")}>{reaction.count}</Text>
+                <Text className={clsx('text-sm font-bold', currentUserReacted ? "text-foreground dark:text-foreground" : "text-foreground")}>{reaction.count}</Text>
             </TouchableOpacity>
         </GestureDetector>
 
@@ -138,7 +139,7 @@ const ReactionButton = ({ reaction, currentUser, saveReaction, onLongPress, long
 const CustomEmojiView = ({ emoji }: { emoji: string }) => {
     const source = useFileURL(emoji)
 
-    return <Image source={source} style={{ width: 18, height: 18 }} contentFit='scale-down' contentPosition={'center'} />
+    return <Image source={source} style={{ width: 20, height: 20, borderRadius: 2 }} contentFit='scale-down' contentPosition={'center'} />
 }
 
 interface AddEmojiButtonProps {
@@ -159,8 +160,8 @@ const AddEmojiButton = ({ saveReaction }: AddEmojiButtonProps) => {
 
     return (
         <View>
-            <TouchableOpacity onPress={openEmojiPicker} activeOpacity={0.7} className='flex-row items-center bg-card border-card dark:border-muted/50 dark:bg-muted/50 border-[0.5px] rounded-md py-1 px-3 min-w-[4ch]'>
-                <SmilePlus width={16} height={16} color={colors.icon} />
+            <TouchableOpacity onPress={openEmojiPicker} activeOpacity={0.7} className='flex-row items-center bg-card border-card dark:border-muted/50 dark:bg-muted/50 border rounded-xl py-1 px-3 min-w-[5ch]'>
+                <SmilePlus width={20} height={20} color={colors.icon} />
             </TouchableOpacity>
 
             <Sheet ref={emojiPickerRef} snapPoints={["65%"]}>
