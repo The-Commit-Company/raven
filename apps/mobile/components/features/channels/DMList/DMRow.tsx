@@ -114,6 +114,10 @@ const LastMessageTimestamp = ({ timestamp }: LastMessageTimestampProps) => {
         const yesterday = today.subtract(1, 'day')
 
         if (dateObj.isSame(today, 'day')) {
+            // If the difference is less than 1 minute, show "Just now"
+            if (Math.abs(dateObj.diff(today, 'minute')) < 1) {
+                return 'just now'
+            }
             return dateObj.fromNow()
         }
 
