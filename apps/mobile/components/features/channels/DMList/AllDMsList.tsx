@@ -50,7 +50,7 @@ const AllDMsList = () => {
                     value={searchQuery}
                 />
             </View>
-            <Divider prominent />
+            <Divider />
             <View className='flex-1'>
                 <FlashList
                     data={filteredDMs ?? []}
@@ -58,8 +58,8 @@ const AllDMsList = () => {
                         return <DMRow dm={item} />
                     }}
                     keyExtractor={(item) => item.name}
-                    estimatedItemSize={64}
-                    ItemSeparatorComponent={() => <Divider prominent />}
+                    estimatedItemSize={68}
+                    ItemSeparatorComponent={() => <Divider />}
                     bounces={false}
                     showsVerticalScrollIndicator={false}
                     ListEmptyComponent={<DMListEmptyState searchQuery={searchQuery} />}
