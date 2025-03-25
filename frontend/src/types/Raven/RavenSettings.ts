@@ -37,4 +37,12 @@ export interface RavenSettings{
 	oauth_client?: string
 	/**	Push Notification Service : Select	*/
 	push_notification_service?: "Frappe Cloud" | "Raven"
+	/**	Enable Video Calling via LiveKit : Check	*/
+	enable_video_calling_via_livekit?: 0 | 1
+	/**	LiveKit URL : Data	*/
+	livekit_url?: string
+	/**	LiveKit API Key : Data	*/
+	livekit_api_key?: string
+	/**	LiveKit API Secret : Password	*/
+	livekit_api_secret?: string
 }

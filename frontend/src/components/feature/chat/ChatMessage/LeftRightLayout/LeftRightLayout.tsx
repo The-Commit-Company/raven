@@ -3,12 +3,12 @@ import { Message, MessageBlock } from "../../../../../../../types/Messaging/Mess
 import { MessageContent, MessageSenderAvatar, UserHoverCard } from "../MessageItem"
 import { Box, BoxProps, ContextMenu, Flex, Text } from "@radix-ui/themes"
 import { MessageReactions } from "../MessageReactions"
-import { DateTooltip, DateTooltipShort } from "../Renderers/DateTooltip"
+import { DateTooltip } from "../Renderers/DateTooltip"
 import { RiPushpinFill, RiShareForwardFill } from "react-icons/ri"
 import { ReplyMessageBox } from "../ReplyMessageBox/ReplyMessageBox"
 import { useContext, useMemo, useState } from "react"
 import clsx from "clsx"
-import { DoctypeLinkRenderer } from "../Renderers/DoctypeLinkRenderer"
+import { DoctypeLinkMessageRenderer } from "../Renderers/DoctypeLinkRenderer"
 import { ThreadMessage } from "../Renderers/ThreadMessage"
 import { UserContext } from "@/utils/auth/UserProvider"
 import { Stack } from "@/components/layout/Stack"
@@ -134,7 +134,7 @@ export const LeftRightLayout = ({ message, user, isActive, isHighlighted, onRepl
                                 />
 
                                 {message.link_doctype && message.link_document && <Box className={clsx(message.is_continuation ? 'ml-0.5' : '-ml-0.5')}>
-                                    <DoctypeLinkRenderer doctype={message.link_doctype} docname={message.link_document} />
+                                    <DoctypeLinkMessageRenderer doctype={message.link_doctype} docname={message.link_document} />
                                 </Box>}
 
                                 {message.is_edited === 1 && <Text size='1' className='text-gray-10'>(edited)</Text>}
