@@ -2,13 +2,15 @@ import { ErrorText, HelperText, Label } from '@/components/common/Form'
 import LinkFormField from '@/components/common/LinkField/LinkFormField'
 import { HStack, Stack } from '@/components/layout/Stack'
 import { RavenMessageAction } from '@/types/RavenIntegrations/RavenMessageAction'
-import { Box, Checkbox, Grid, Select, Text, TextArea, TextField } from '@radix-ui/themes'
+import { Box, Button, Checkbox, Dialog, Grid, Link, ScrollArea, Select, Text, TextArea, TextField } from '@radix-ui/themes'
 import { Tabs } from '@radix-ui/themes'
 import { ChangeEvent } from 'react'
-import { Controller, useFormContext } from 'react-hook-form'
-import { BiBoltCircle } from 'react-icons/bi'
+import { Controller, useFormContext, useWatch } from 'react-hook-form'
+import { BiBoltCircle, BiCode, BiCodeAlt } from 'react-icons/bi'
 import { LuVariable } from 'react-icons/lu'
 import MessageActionVariableBuilder from './MessageActionVariableBuilder'
+import { FiExternalLink } from 'react-icons/fi'
+import CodeBlock from '@/components/layout/CodeBlock'
 
 const ICON_PROPS = {
     size: 18,
@@ -41,7 +43,9 @@ export default MessageActionForm
 const GeneralTab = () => {
     const { register, control, formState: { errors }, setValue, watch } = useFormContext<RavenMessageAction>()
 
-    const action = watch('action')
+    const action = useWatch({ control, name: 'action' })
+
+    const serverScript = useWatch({ control, name: 'server_script' })
 
     const onActionChange = (event: ChangeEvent<HTMLSelectElement>) => {
 
@@ -51,6 +55,10 @@ const GeneralTab = () => {
 
         if (event.target.value !== "Create Document") {
             setValue('document_type', '')
+        }
+
+        if (event.target.value !== "Server Script") {
+            setValue('server_script', '')
         }
     }
     return <Stack gap='4'>
@@ -88,7 +96,8 @@ const GeneralTab = () => {
                                 <Select.Trigger placeholder='Pick an action type' className='w-full' autoFocus />
                                 <Select.Content>
                                     <Select.Item value='Create Document'>Create Document</Select.Item>
-                                    <Select.Item value='Custom Function'>Custom Function</Select.Item>
+                                    <Select.Item value='Custom Function'>Custom Function (API)</Select.Item>
+                                    <Select.Item value='Server Script'>Server Script</Select.Item>
                                 </Select.Content>
                             </Select.Root>
                         )}
@@ -134,9 +143,37 @@ const GeneralTab = () => {
                     Dotted path to the custom function/API. Cannot contain spaces.
                 </HelperText>
                 {errors.custom_function_path && <ErrorText>{errors.custom_function_path?.message}</ErrorText>}
+                {EXAMPLES[action] ? <div><ViewDocsButton /></div> : null}
             </Stack>}
 
+            {action === 'Server Script' && <Stack>
+                <LinkFormField
+                    name='server_script'
+                    label='Server Script'
+                    required
+                    filters={[["disabled", "=", 0], ["script_type", "=", "API"]]}
+                    doctype='Server Script'
+                    rules={{
+                        required: action === "Server Script" ? 'Server Script is required' : false,
+                    }}
+                />
+                <HelperText className='leading-6'>
+                    The Server Script you want this action to run. Server Scripts need to be of type "API".<br />
+                    {serverScript ? <Link href={`/app/server-script/${serverScript}`} target='_blank'>Configure {serverScript} <FiExternalLink /></Link>
+                        :
+                        <Link href="/app/server-script/list" target='_blank'>View Server Scripts <FiExternalLink /></Link>
+                    }
+
+                </HelperText>
+                {errors.server_script && <ErrorText>{errors.server_script?.message}</ErrorText>}
+                {EXAMPLES[action] ? <div><ViewDocsButton /></div> : null}
+
+            </Stack>}
+
+
+
         </Grid>
+
         <Stack>
             <Text as="label" size="2">
                 <HStack>
@@ -189,4 +226,56 @@ const GeneralTab = () => {
             <HelperText>The message shown in the toast after performing the action.</HelperText>
         </Stack>
     </Stack>
+}
+
+const ViewDocsButton = () => {
+    const { control } = useFormContext<RavenMessageAction>()
+
+    const action = useWatch({ control, name: 'action' })
+
+    return <Dialog.Root>
+        <Dialog.Trigger>
+            <Button className='not-cal' variant='outline'><BiCodeAlt /> View Docs</Button>
+        </Dialog.Trigger>
+        <Dialog.Content>
+            <Dialog.Title>
+                Documentation
+            </Dialog.Title>
+            <Dialog.Description size='2'>
+                The following code sample shows how to use the message action values in a {action}.
+            </Dialog.Description>
+            <div>
+                <CodeBlock code={EXAMPLES[action]} />
+            </div>
+        </Dialog.Content>
+    </Dialog.Root>
+}
+
+const EXAMPLES: Record<RavenMessageAction['action'], string> = {
+    "Server Script": `# Server Scripts would get the values in "frappe.form_dict"
+{
+    "message_id": "123",
+    "action_id": "abc",
+    "values": {  
+    # Values from the fields in the message action dialog
+        "field1": "value1",
+        "field2": "value2"
+    }
+}
+
+# You can use the values to perform any action like this:
+print(frappe.form_dict.values.field1)`,
+    "Create Document": ``,
+    "Custom Function": ` # The API would be called directly with the values from the message action dialog.
+
+# Example:
+@frappe.whitelist()
+def create_ticket(field1, field2):
+    # Do something with the values
+    frappe.get_doc({
+        "doctype": "Ticket",
+        "field1": field1,
+        "field2": field2
+    }).insert()
+`
 }

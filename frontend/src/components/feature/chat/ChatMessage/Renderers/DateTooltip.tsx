@@ -2,7 +2,7 @@ import { useMemo } from 'react'
 import { Tooltip, Link } from '@radix-ui/themes'
 import { getDateObject } from '@/utils/dateConversions/utils'
 
-export const DateTooltip = ({ timestamp }: { timestamp: string }) => {
+export const DateTooltip = ({ timestamp, timeFormat = "hh:mm A" }: { timestamp: string, timeFormat?: string }) => {
 
     const { tooltipContent, time } = useMemo(() => {
 
@@ -10,10 +10,10 @@ export const DateTooltip = ({ timestamp }: { timestamp: string }) => {
 
         return {
             tooltipContent: dateObj.format("Do MMMM [at] hh:mm A"),
-            time: dateObj.format("hh:mm A")
+            time: dateObj.format(timeFormat)
         }
 
-    }, [timestamp])
+    }, [timestamp, timeFormat])
 
     return (
         <Tooltip content={tooltipContent}>

@@ -35,8 +35,8 @@ def create_poll(
 	# Poll message content is the poll question and options separated by a newline. (This would help with the searchability of the poll)
 	poll_message_content = f"{question}\n"
 
-	for option in options:
-		poll_message_content += f" {option['option']}\n"
+	for index, option in enumerate(options):
+		poll_message_content += f"{index + 1}. {option['option']}\n"
 
 	# Send a message to the channel with type "poll" and the poll_id.
 	message = frappe.get_doc(

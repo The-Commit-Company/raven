@@ -81,7 +81,7 @@ export const TiptapRenderer = ({ message, user, isScrolling = false, showMiniIma
         },
         paragraph: {
           HTMLAttributes: {
-            class: 'rt-Text leading-tight text-sm'
+            class: 'rt-Text text-sm'
           }
         },
         code: {
