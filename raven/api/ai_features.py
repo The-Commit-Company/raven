@@ -9,6 +9,8 @@ def get_instruction_preview(instruction):
 	"""
 	Function to get the rendered instructions for the bot
 	"""
+	frappe.has_permission(doctype="Raven Bot", ptype="write", throw=True)
+
 	instructions = frappe.render_template(instruction, get_variables_for_instructions())
 	return instructions
 
@@ -35,4 +37,5 @@ def get_open_ai_version():
 	"""
 	API to get the version of the OpenAI Python client
 	"""
+	frappe.has_permission(doctype="Raven Bot", ptype="read", throw=True)
 	return openai.__version__

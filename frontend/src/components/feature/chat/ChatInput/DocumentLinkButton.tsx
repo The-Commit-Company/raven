@@ -1,7 +1,6 @@
 import { Box, Button, Dialog, Flex, IconButton, Tooltip } from '@radix-ui/themes'
 import { DEFAULT_BUTTON_STYLE, ICON_PROPS } from './ToolPanel'
 import { LuFileBox } from 'react-icons/lu'
-import { DIALOG_CONTENT_CLASS } from '@/utils/layout/dialog'
 import { FormProvider, useForm } from 'react-hook-form'
 import LinkFormField from '@/components/common/LinkField/LinkFormField'
 import { ErrorText } from '@/components/common/Form'
@@ -34,7 +33,7 @@ const DocumentLinkButton = ({ channelID }: { channelID: string }) => {
                 </IconButton>
             </Dialog.Trigger>
         </Tooltip>
-        <Dialog.Content className={clsx(DIALOG_CONTENT_CLASS, 'static')}>
+        <Dialog.Content className={'static'}>
             <Dialog.Title className='mb-1'>Send a document</Dialog.Title>
             <Dialog.Description size='2'>Choose a document from the system to send.</Dialog.Description>
             <DocumentLinkForm channelID={channelID} onClose={off} />

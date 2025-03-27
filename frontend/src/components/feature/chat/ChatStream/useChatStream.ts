@@ -442,7 +442,7 @@ const useChatStream = (channelID: string, scrollRef: MutableRefObject<HTMLDivEle
     const loadNewerMessages = () => {
 
         if (loadingNewerMessages || !data?.message.has_new_messages) {
-            Promise.resolve()
+            return Promise.resolve()
         }
 
         if (highlightedMessage) {
@@ -513,11 +513,11 @@ const useChatStream = (channelID: string, scrollRef: MutableRefObject<HTMLDivEle
                 let currentDateTime = new Date(messages[messages.length - 1].creation.split('.')[0]).getTime()
 
                 // Do not add the date separator to the oldest message since we don't know if it's the first message of the day
-                // messagesWithDateSeparators.push({
-                //     creation: getDateObject(`${currentDate} 00:00:00`).format('Do MMMM YYYY'),
-                //     message_type: 'date',
-                //     name: currentDate
-                // })
+                messagesWithDateSeparators.push({
+                    creation: getDateObject(`${currentDate} 00:00:00`).format('Do MMMM YYYY'),
+                    message_type: 'date',
+                    name: currentDate
+                })
 
                 messagesWithDateSeparators.push({
                     ...messages[messages.length - 1],

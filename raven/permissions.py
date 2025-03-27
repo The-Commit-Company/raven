@@ -331,6 +331,30 @@ def raven_poll_has_permission(doc, user=None, ptype=None):
 	return False
 
 
+def raven_workspace_query(user):
+	if not user:
+		user = frappe.session.user
+
+	# Get all workspaces that the user is a member of
+	workspace_members = frappe.get_all(
+		"Raven Workspace Member", filters={"user": user}, fields=["workspace"]
+	)
+
+	return f"`tabRaven Workspace`.name in ({', '.join([frappe.db.escape(member.workspace) for member in workspace_members])}) OR `tabRaven Workspace`.type = 'Public'"
+
+
+def raven_workspace_member_query(user):
+	if not user:
+		user = frappe.session.user
+
+	# Get all workspaces that the user is a member of
+	workspace_members = frappe.get_all(
+		"Raven Workspace Member", filters={"user": user}, fields=["workspace"]
+	)
+
+	return f"`tabRaven Workspace Member`.workspace in ({', '.join([frappe.db.escape(member.workspace) for member in workspace_members])})"
+
+
 def raven_channel_query(user):
 	if not user:
 		user = frappe.session.user
