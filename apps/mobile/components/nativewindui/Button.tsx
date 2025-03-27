@@ -10,37 +10,22 @@ import { COLORS } from '@theme/colors';
 const buttonVariants = cva('flex-row items-center justify-center gap-2', {
   variants: {
     variant: {
-      primary: 'ios:active:opacity-80 bg-primary',
-      secondary: 'ios:border-primary ios:active:bg-primary/5 border border-foreground/40',
+      primary: 'active:opacity-80 bg-primary',
+      secondary: 'border-primary active:bg-primary/5 border',
       tonal:
-        'ios:bg-primary/10 dark:ios:bg-primary/10 ios:active:bg-primary/15 bg-primary/15 dark:bg-primary/30',
-      plain: 'ios:active:opacity-70',
+        'bg-primary/10 dark:bg-primary/10 active:bg-primary/15',
+      plain: 'active:opacity-70',
     },
     size: {
       none: '',
       sm: 'py-1 px-2.5 rounded-full',
-      md: 'ios:rounded-lg py-2 ios:py-1.5 ios:px-3.5 px-5 rounded-full',
-      lg: 'py-2.5 px-5 ios:py-2 rounded-xl gap-2',
-      icon: 'ios:rounded-lg h-10 w-10 rounded-full',
+      md: 'rounded-lg py-1.5 px-3.5',
+      lg: 'px-5 py-2 rounded-xl gap-2',
+      icon: 'rounded-lg h-10 w-10',
     },
   },
   defaultVariants: {
     variant: 'primary',
-    size: 'md',
-  },
-});
-
-const androidRootVariants = cva('overflow-hidden', {
-  variants: {
-    size: {
-      none: '',
-      icon: 'rounded-full',
-      sm: 'rounded-full',
-      md: 'rounded-full',
-      lg: 'rounded-xl',
-    },
-  },
-  defaultVariants: {
     size: 'md',
   },
 });
@@ -125,14 +110,7 @@ const Button = React.forwardRef<React.ElementRef<typeof Pressable>, ButtonProps>
 
     return (
       <TextClassContext.Provider value={buttonTextVariants({ variant, size })}>
-        <Root
-          className={Platform.select({
-            ios: undefined,
-            default: androidRootVariants({
-              size,
-              className: androidRootClassName,
-            }),
-          })}>
+        <Root>
           <Pressable
             className={cn(
               props.disabled && 'opacity-50',

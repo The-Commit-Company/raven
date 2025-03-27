@@ -18,7 +18,7 @@ const AllDMsList = () => {
     const { unread_count } = useUnreadMessageCount()
 
     const allDMs = useMemo(() => {
-        return dm_channels.filter(dm => dm.last_message_details).map(dm => ({
+        return dm_channels.map(dm => ({
             ...dm,
             unread_count: unread_count?.message.find(item => item.name === dm.name)?.unread_count ?? 0
         }))
@@ -50,7 +50,7 @@ const AllDMsList = () => {
                     value={searchQuery}
                 />
             </View>
-            <Divider prominent />
+            <Divider />
             <View className='flex-1'>
                 <FlashList
                     data={filteredDMs ?? []}
@@ -58,8 +58,8 @@ const AllDMsList = () => {
                         return <DMRow dm={item} />
                     }}
                     keyExtractor={(item) => item.name}
-                    estimatedItemSize={64}
-                    ItemSeparatorComponent={() => <Divider prominent />}
+                    estimatedItemSize={68}
+                    ItemSeparatorComponent={() => <Divider />}
                     bounces={false}
                     showsVerticalScrollIndicator={false}
                     ListEmptyComponent={<DMListEmptyState searchQuery={searchQuery} />}

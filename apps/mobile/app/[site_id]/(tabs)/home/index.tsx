@@ -15,7 +15,7 @@ export default function Home() {
 
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: colors.primary }}>
-            <View style={{ backgroundColor: colors.primary }} className="flex flex-col px-4 pb-3 pt-2 gap-2">
+            <View style={{ backgroundColor: colors.primary }} className="flex flex-col px-4 pb-3 pt-2 gap-2 android:pt-12">
                 <View className='flex-row items-center justify-between'>
                     <WorkspaceSwitcher workspace={workspace} setWorkspace={switchWorkspace} />
                     <View className='flex-row items-center gap-3'>

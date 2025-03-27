@@ -96,7 +96,7 @@ const LinkField = ({ doctype, filters, hideLabel = false, label, placeholder, va
                 items.map((item, index) => (
                     <li
                         className={clsx(
-                            highlightedIndex === index && 'bg-accent-4',
+                            highlightedIndex === index && 'bg-gray-3 dark:bg-gray-4',
                             selectedItem === item && 'font-bold',
                             'py-2 px-3 shadow-sm flex gap-2 items-center',
                         )}

@@ -48,8 +48,10 @@ const TAG_BASE_STYLES: TRenderEngineConfig['tagsStyles'] = {
     'img': {
         width: '200px',
         height: 'auto',
+        display: 'flex',
+        justifyContent: 'flex-start',
         margin: 0,
-        padding: 0
+        padding: 0,
     },
     'a': {
         textDecorationLine: 'none',
@@ -168,7 +170,7 @@ const MessageTextRenderer = ({ text }: Props) => {
     const paddingWidth = width - 160
 
     return (
-        <View className='flex-1'>
+        <View className='flex-1 pt-0.5'>
             <RenderHtml
                 baseStyle={baseStyles}
                 contentWidth={paddingWidth}

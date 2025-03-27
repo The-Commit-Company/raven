@@ -1,4 +1,4 @@
-import { TouchableOpacity, View, StyleSheet, Modal, Pressable } from 'react-native';
+import { TouchableOpacity, View, StyleSheet, Modal, Pressable, Platform } from 'react-native';
 import { router } from 'expo-router';
 import { Text } from '@components/nativewindui/Text';
 import ChevronRightIcon from '@assets/icons/ChevronRightIcon.svg';
@@ -149,7 +149,7 @@ const styles = StyleSheet.create({
         justifyContent: 'flex-start',
         alignItems: 'flex-end',
         backgroundColor: 'rgba(0, 0, 0, 0.5)',
-        paddingTop: 60,
+        paddingTop: Platform.OS === 'ios' ? 60 : 8,
     },
     modalContent: {
         width: '95%',
