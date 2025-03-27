@@ -2,7 +2,7 @@
   "name": "raven-ui",
   "private": true,
   "license": "AGPL-3.0-only",
-  "version": "2.1.10",
+  "version": "2.1.11",
   "type": "module",
   "scripts": {
     "dev": "vite",
