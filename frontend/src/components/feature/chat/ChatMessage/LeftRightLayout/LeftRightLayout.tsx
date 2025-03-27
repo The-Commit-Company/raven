@@ -80,11 +80,25 @@ export const LeftRightLayout = ({ message, user, isActive, isHighlighted, onRepl
 
     const alignToRight = CHAT_STYLE === "Left-Right" && currentUser === userID && !is_bot_message
 
+    const [selectedText, setSelectedText] = useState('')
+
+    const onContextMenuChange = (open: boolean) => {
+        if (open) {
+            // Get the selection that te user is actually highlighting
+            const selection = document.getSelection()
+            if (selection) {
+                setSelectedText(selection.toString().trim())
+            }
+        } else {
+            setSelectedText('')
+        }
+    }
+
     return (
         <div className={clsx('flex py-0.5', alignToRight ? 'justify-end mr-4' : 'justify-start')}>
             <Flex align={'start'} gap={'2'}>
                 {!alignToRight && <MessageLeftElement message={message} user={user} isActive={isActive} className="mt-[5px]" />}
-                <ContextMenu.Root>
+                <ContextMenu.Root modal={false} onOpenChange={onContextMenuChange}>
                     <ContextMenu.Trigger
                         {...bind}
                         ref={ref}
@@ -157,6 +171,7 @@ export const LeftRightLayout = ({ message, user, isActive, isHighlighted, onRepl
                         onDelete={onDelete}
                         showThreadButton={showThreadButton}
                         onEdit={onEdit}
+                        selectedText={selectedText}
                         onReply={onReply}
                         onForward={onForward}
                         onViewReaction={onViewReaction}

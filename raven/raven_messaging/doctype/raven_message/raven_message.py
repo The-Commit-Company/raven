@@ -4,8 +4,8 @@ import datetime
 import json
 
 import frappe
+from bs4 import BeautifulSoup
 from frappe import _
-from frappe.core.utils import html2text
 from frappe.model.document import Document
 from frappe.utils import get_datetime, get_system_timezone
 from pytz import timezone, utc
@@ -56,17 +56,6 @@ class RavenMessage(Document):
 	# end: auto-generated types
 
 	def before_validate(self):
-		try:
-			if self.text and not self.message_type == "System":
-				content = html2text(self.text)
-				# Remove trailing new line characters and white spaces
-				self.content = content.rstrip()
-		except Exception:
-			pass
-
-		if self.message_type in ["File", "Image"] and self.file:
-			# Store the file name in the content field
-			self.content = self.file.split("/")[-1]
 
 		if not self.is_new() and not self.flags.is_ai_streaming:
 			# this is not a new message, so it's a previous message being edited
@@ -74,7 +63,70 @@ class RavenMessage(Document):
 			if old_doc.text != self.text:
 				self.is_edited = True
 
-		self.process_mentions()
+		self.parse_html_content()
+
+	def parse_html_content(self):
+		"""
+		Parse the HTML content to do the following:
+		1. Extract all user mentions
+		2. Remove empty trailing paragraphs
+		3. Extract the text content
+		4. TODO: Extract all links
+		"""
+		if not self.text:
+			return
+		if self.message_type == "System":
+			return
+
+		soup = BeautifulSoup(self.text, "html.parser")
+		self.remove_empty_trailing_paragraphs(soup)
+		self.extract_mentions(soup)
+
+		text_content = soup.get_text(" ", strip=True)
+
+		if not text_content:
+			# Check if the content has a GIF
+			for img in soup.find_all("img"):
+				if "media.tenor.com" in img.get("src"):
+					text_content = "Sent a GIF"
+					break
+
+		self.content = text_content
+
+	def extract_mentions(self, soup):
+		"""
+		Extract all user mentions from the HTML content
+		"""
+		self.mentions = []
+		unique_mentions = set()
+		for d in soup.find_all("span", attrs={"data-type": "userMention"}):
+			mention_id = d.get("data-id")
+			if mention_id and mention_id not in unique_mentions:
+				self.append("mentions", {"user": mention_id})
+
+				frappe.publish_realtime(
+					"raven_mention",
+					{
+						"channel_id": self.channel_id,
+						"user_id": mention_id,
+					},
+					user=mention_id,
+					after_commit=True,
+				)
+				unique_mentions.add(mention_id)
+
+	def remove_empty_trailing_paragraphs(self, soup):
+		"""
+		Remove p, br tags that are at the end with no content
+		"""
+		all_tags = soup.find_all(True)
+		all_tags.reverse()
+		for tag in all_tags:
+			if tag.name in ["br", "p"] and not tag.contents:
+				tag.extract()
+			else:
+				break
+		self.text = str(soup)
 
 	def validate(self):
 		"""
@@ -125,8 +177,8 @@ class RavenMessage(Document):
 
 	def after_insert(self):
 		if self.message_type != "System":
-			self.set_last_message_timestamp()
-			self.publish_unread_count_event()
+			last_message_details = self.set_last_message_timestamp()
+			self.publish_unread_count_event(last_message_details)
 
 		if self.message_type == "Text":
 			self.handle_ai_message()
@@ -198,25 +250,29 @@ class RavenMessage(Document):
 	def set_last_message_timestamp(self):
 
 		# Update directly via SQL since we do not want to invalidate the document cache
-		message_details = {
-			"message_id": self.name,
-			"content": self.content,
-			"message_type": self.message_type,
-			"owner": self.owner,
-			"is_bot_message": self.is_bot_message,
-			"bot": self.bot,
-		}
+		message_details = json.dumps(
+			{
+				"message_id": self.name,
+				"content": self.content,
+				"message_type": self.message_type,
+				"owner": self.owner,
+				"is_bot_message": self.is_bot_message,
+				"bot": self.bot,
+			}
+		)
 
 		raven_channel = frappe.qb.DocType("Raven Channel")
 		query = (
 			frappe.qb.update(raven_channel)
 			.where(raven_channel.name == self.channel_id)
 			.set(raven_channel.last_message_timestamp, self.creation)
-			.set(raven_channel.last_message_details, json.dumps(message_details))
+			.set(raven_channel.last_message_details, message_details)
 		)
 		query.run()
 
-	def publish_unread_count_event(self):
+		return message_details
+
+	def publish_unread_count_event(self, last_message_details=None):
 
 		channel_doc = frappe.get_cached_doc("Raven Channel", self.channel_id)
 		# If the message is a direct message, then we can only send it to one user
@@ -236,6 +292,7 @@ class RavenMessage(Document):
 							"sent_by": self.owner,
 							"is_dm_channel": True,
 							"last_message_timestamp": self.creation,
+							"last_message_details": last_message_details,
 						},
 						user=peer_user_doc.user,
 						after_commit=True,
@@ -250,6 +307,7 @@ class RavenMessage(Document):
 					"is_dm_channel": True,
 					"sent_by": self.owner,
 					"last_message_timestamp": self.creation,
+					"last_message_details": last_message_details,
 				},
 				user=self.owner,
 				after_commit=True,
@@ -287,34 +345,6 @@ class RavenMessage(Document):
 				after_commit=True,
 				room="all",
 			)
-
-	def process_mentions(self):
-		if not self.json:
-			return
-
-		try:
-			content = self.json.get("content", [{}])[0].get("content", [])
-		except (IndexError, AttributeError):
-			return
-
-		entered_ids = set()
-		self.mentions = []
-		for item in content:
-			if item.get("type") == "userMention":
-				user_id = item.get("attrs", {}).get("id")
-				if user_id and user_id not in entered_ids:
-					self.append("mentions", {"user": user_id})
-					entered_ids.add(user_id)
-
-					frappe.publish_realtime(
-						"raven_mention",
-						{
-							"channel_id": self.channel_id,
-							"user_id": user_id,
-						},
-						user=user_id,
-						after_commit=True,
-					)
 
 	def send_push_notification(self):
 		# TODO: Send Push Notification for the following:
@@ -474,7 +504,7 @@ class RavenMessage(Document):
 
 		# delete poll if the message is of type poll after deleting the message
 		if self.message_type == "Poll":
-			frappe.delete_doc("Raven Poll", self.poll_id)
+			frappe.delete_doc("Raven Poll", self.poll_id, ignore_permissions=True, delete_permanently=True)
 
 		# TEMP: this is a temp fix for the Desk interface
 		self.publish_deprecated_event_for_desk()
