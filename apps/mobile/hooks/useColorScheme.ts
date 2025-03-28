@@ -3,30 +3,37 @@ import { useColorScheme as useNativewindColorScheme } from 'nativewind';
 import * as React from 'react';
 import { Platform } from 'react-native';
 import { COLORS } from '@theme/colors';
-import { atom, useSetAtom } from 'jotai';
+import { useAtom, useSetAtom } from 'jotai';
+import { atomWithStorage, createJSONStorage, loadable } from 'jotai/utils';
+import AsyncStorage from "@react-native-async-storage/async-storage"
 
-export const themeAtom = atom<'light' | 'dark'>('light');
-
-const writeThemeAtom = atom(null, (get, set, value: 'light' | 'dark') => {
-    set(themeAtom, value);
+const themeAsyncAtom = atomWithStorage<'light' | 'dark' | undefined>('theme', undefined,
+    createJSONStorage(() => AsyncStorage), {
+    getOnInit: true
 });
+
+export const themeAtom = loadable(themeAsyncAtom);
 
 function useColorScheme() {
 
     const { colorScheme, setColorScheme: setNativeWindColorScheme } = useNativewindColorScheme();
 
-    const setThemeAtom = useSetAtom(writeThemeAtom);
+    const [theme] = useAtom(themeAtom);
+
+    const setTheme = useSetAtom(themeAsyncAtom);
 
     React.useEffect(() => {
-        if (colorScheme) {
-            setThemeAtom(colorScheme);
-        } else {
-            setThemeAtom('light');
+        if (theme.state === 'hasData') {
+
+            if (theme.data) {
+                setNativeWindColorScheme(theme.data);
+            }
         }
-    }, [colorScheme]);
+    }, [theme]);
 
     async function setColorScheme(colorScheme: 'light' | 'dark') {
-        setNativeWindColorScheme(colorScheme);
+        setTheme(colorScheme);
+        // setNativeWindColorScheme(colorScheme);
         if (Platform.OS !== 'android') return;
         try {
             await setNavigationBar(colorScheme);
@@ -36,7 +43,7 @@ function useColorScheme() {
     }
 
     function toggleColorScheme() {
-        return setColorScheme(colorScheme === 'light' ? 'dark' : 'light');
+        return setTheme(async (theme) => theme === 'light' ? 'dark' : 'light');
     }
 
     return {

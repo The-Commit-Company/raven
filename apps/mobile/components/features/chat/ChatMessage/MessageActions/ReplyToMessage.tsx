@@ -3,6 +3,9 @@ import { Pressable } from 'react-native'
 import ReplyIcon from "@assets/icons/ReplyIcon.svg"
 import { Text } from '@components/nativewindui/Text'
 import { useColorScheme } from '@hooks/useColorScheme'
+import { useSetAtom } from 'jotai'
+import { selectedReplyMessageAtomFamily } from '@lib/ChatInputUtils'
+import useSiteContext from '@hooks/useSiteContext'
 
 interface ReplyToMessageProps {
     message: Message
@@ -12,8 +15,13 @@ interface ReplyToMessageProps {
 const ReplyToMessage = ({ message, onClose }: ReplyToMessageProps) => {
 
     const { colors } = useColorScheme()
+
+    const siteInfo = useSiteContext()
+
+    const setSelectedReplyMessage = useSetAtom(selectedReplyMessageAtomFamily(siteInfo?.sitename + message.channel_id))
     const onReplyToMessage = () => {
-        console.log('reply to message')
+        setSelectedReplyMessage(message)
+        onClose()
     }
 
     return (

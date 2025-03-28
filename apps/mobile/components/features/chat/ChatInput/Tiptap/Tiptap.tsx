@@ -1,6 +1,6 @@
 "use dom";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useEditor, EditorContent } from "@tiptap/react";
 import Document from "@tiptap/extension-document";
 import Paragraph from "@tiptap/extension-paragraph";
@@ -19,8 +19,6 @@ import ListItem from "@tiptap/extension-list-item"
 import BulletList from '@tiptap/extension-bullet-list'
 import OrderedList from '@tiptap/extension-ordered-list'
 import "./tiptap.css";
-
-import { CustomFile } from "@raven/types/common/File";
 import { cn } from "@lib/cn";
 import styles from "./tiptap.module.css";
 import './tiptap.css'
@@ -29,15 +27,17 @@ import { BiSolidSend } from "react-icons/bi";
 interface TiptapProps {
     content: string;
     dom: import('expo/dom').DOMProps;
-    onSend: (files?: CustomFile[], content?: string, json?: any) => Promise<void>;
+    onBlur: (content: string, json: any) => void;
+    onSend: (content?: string, json?: any) => Promise<void>;
     isKeyboardVisible: boolean;
 }
 
 const Tiptap = ({
     content,
     dom,
+    onBlur,
+    isKeyboardVisible,
     onSend,
-    isKeyboardVisible
 }: TiptapProps) => {
     // Initialize editor with content; ensure content is never undefined.
     const editor = useEditor({
@@ -71,16 +71,25 @@ const Tiptap = ({
                 placeholder: 'Type a message...',
             }),
         ],
-        content: '',
-        autofocus: "end",
+        content: content,
+        onBlur: ({ editor }) => {
+            if (editor?.isEmpty) {
+                onBlur('', null)
+            } else {
+                onBlur(editor.getHTML(), editor.getJSON())
+            }
+        }
     });
 
-    const [isFormattingMenuOpen, setIsFormattingMenuOpen] = useState(false);
+    useEffect(() => {
+        editor?.chain().setContent(content).run()
+    }, [content])
 
-    // Ensure editor remains focused so that the keyboard doesn't dismiss
     const keepEditorFocused = () => {
         editor?.chain().focus().run()
     }
+
+    const [isFormattingMenuOpen, setIsFormattingMenuOpen] = useState(false);
 
     const handleFormattingMenuButtonClick = () => {
         setIsFormattingMenuOpen(!isFormattingMenuOpen)
@@ -92,25 +101,15 @@ const Tiptap = ({
         keepEditorFocused()
     }
 
-
     const handleSend = () => {
-        if (!editor) return
-
-        keepEditorFocused()
-        const hasContent = editor?.getText()?.trim().length > 0
-        if (!hasContent) return
-
-        let content = ''
-        let json = {}
-        content = editor?.getHTML()
-        json = editor?.getJSON()
-
-        onSend([], content, json).then(() => {
-            editor?.commands.clearContent(true)
-            editor?.setEditable(true)
-        }).catch((error) => {
-            editor?.setEditable(true)
-        })
+        if (editor?.isEmpty) {
+            onSend('', null)
+        } else {
+            onSend(editor?.getHTML(), editor?.getJSON())
+                .then(() => {
+                    editor?.commands?.clearContent(true)
+                })
+        }
     }
 
     return (
@@ -125,7 +124,6 @@ const Tiptap = ({
             {isKeyboardVisible && (
                 <div
                     className={styles.menu}
-                    onClick={keepEditorFocused}
                 >
                     {!isFormattingMenuOpen ? (
                         <button
@@ -154,6 +152,6 @@ const Tiptap = ({
             )}
         </div>
     );
-};
+}
 
 export default Tiptap;

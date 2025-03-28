@@ -1,9 +1,9 @@
-import { SiteContext } from 'app/[site_id]/_layout'
-import { useContext, useMemo } from 'react'
+import { useMemo } from 'react'
 import * as dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
 import timezone from 'dayjs/plugin/timezone'
 import advancedFormat from 'dayjs/plugin/advancedFormat'
+import useSiteContext from './useSiteContext'
 
 dayjs.extend(utc)
 dayjs.extend(timezone)
@@ -19,7 +19,7 @@ type DateFormatOptions = 'Do MMMM YYYY, hh:mm A' | 'Do MMMM [at] hh:mm A' | 'hh:
  */
 const useDateFormat = (timestamp: string, format: DateFormatOptions | string = 'Do MMMM YYYY, hh:mm A') => {
 
-  const siteInformation = useContext(SiteContext)
+  const siteInformation = useSiteContext()
 
   const SYSTEM_TIMEZONE = siteInformation?.system_timezone ?? 'Asia/Kolkata'
 

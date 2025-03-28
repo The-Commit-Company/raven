@@ -2,15 +2,17 @@ import { Avatar, AvatarImage } from '@components/nativewindui/Avatar'
 import { Button } from '@components/nativewindui/Button'
 import { Sheet, useSheetRef } from '@components/nativewindui/Sheet'
 import { Text } from '@components/nativewindui/Text'
-import { TextField } from '@components/nativewindui/TextField'
 import { BottomSheetView } from '@gorhom/bottom-sheet'
 import { useCallback, useState } from 'react'
-import { Alert, Keyboard, View } from 'react-native'
+import { Alert, Keyboard, TextInput, View } from 'react-native'
 import * as WebBrowser from 'expo-web-browser'
 import { CodeChallengeMethod, exchangeCodeAsync, makeRedirectUri, ResponseType, TokenResponse, useAuthRequest } from 'expo-auth-session';
 import { router } from 'expo-router'
 import { SiteInformation } from '../../../types/SiteInformation'
 import { addSiteToStorage, discovery, setDefaultSite, storeAccessToken } from '@lib/auth'
+import { FormLabel } from '@components/layout/Form'
+import { useColorScheme } from '@hooks/useColorScheme'
+import { ActivityIndicator } from '@components/nativewindui/ActivityIndicator'
 
 WebBrowser.maybeCompleteAuthSession();
 
@@ -18,9 +20,13 @@ type Props = {}
 
 const AddSite = (props: Props) => {
 
+    const { colors } = useColorScheme()
+
     const [siteURL, setSiteURL] = useState('')
 
     const bottomSheetRef = useSheetRef()
+
+    const [isLoading, setIsLoading] = useState(false)
 
     const [siteInformation, setSiteInformation] = useState<SiteInformation | null>(null)
 
@@ -40,6 +46,8 @@ const AddSite = (props: Props) => {
         if (!url.startsWith('https://') && !url.startsWith('http://')) {
             url = 'https://' + url
         }
+
+        setIsLoading(true)
 
         fetch(`${url}/api/method/raven.api.raven_mobile.get_client_id`)
             .then(res => res.json())
@@ -61,6 +69,9 @@ const AddSite = (props: Props) => {
                 Alert.alert('Error', 'Failed to fetch site information. Please check the URL and try again.')
                 console.error(err)
             })
+            .finally(() => {
+                setIsLoading(false)
+            })
     }
 
     const clearSiteInformation = useCallback(() => {
@@ -69,15 +80,24 @@ const AddSite = (props: Props) => {
 
     return (
         <View className='flex-1 gap-3'>
-            <TextField
-                placeholder='https://ravenchat.ai'
-                inputMode='url'
-                autoCapitalize='none'
-                autoComplete='off'
-                autoCorrect={false}
-                label='Site URL'
-                onChangeText={setSiteURL} />
-            <Button onPress={handleAddSite}>
+            <View className="flex-col gap-2">
+                <View className="flex-row items-center gap-0">
+                    <FormLabel className='text-base'>Site URL</FormLabel>
+                </View>
+                <TextInput
+                    className="w-full border py-3 text-[16px] border-border rounded-md px-3 text-foreground"
+                    numberOfLines={1}
+                    inputMode='url'
+                    autoCapitalize='none'
+                    placeholder='raven.frappe.cloud'
+                    placeholderTextColor={colors.grey2}
+                    autoCorrect={false}
+                    autoComplete='off'
+                    onChangeText={setSiteURL}
+                    value={siteURL}
+                />
+            </View>
+            <Button onPress={handleAddSite} disabled={isLoading}>
                 <Text>Add Site</Text>
             </Button>
             <Sheet snapPoints={[400]} ref={bottomSheetRef} onDismiss={clearSiteInformation}>
@@ -89,13 +109,15 @@ const AddSite = (props: Props) => {
     )
 }
 
-const SiteAuthFlowSheet = ({ siteInformation, onDismiss }: { siteInformation: SiteInformation, onDismiss: () => void }) => {
+export const SiteAuthFlowSheet = ({ siteInformation, onDismiss }: { siteInformation: SiteInformation, onDismiss: () => void }) => {
 
     const discoveryWithURL = {
         authorizationEndpoint: siteInformation.url + discovery.authorizationEndpoint,
         tokenEndpoint: siteInformation.url + discovery.tokenEndpoint,
         revocationEndpoint: siteInformation.url + discovery.revocationEndpoint,
     }
+
+    const [loading, setLoading] = useState(false)
 
     const [request, response, promptAsync] = useAuthRequest({
         responseType: ResponseType.Code,
@@ -108,6 +130,7 @@ const SiteAuthFlowSheet = ({ siteInformation, onDismiss }: { siteInformation: Si
 
     const onLoginClick = () => {
         // If the user clicks the login button, we need to initiate the OAuth flow
+        setLoading(true)
         promptAsync()
             .then(res => {
                 if (res.type === 'success') {
@@ -126,6 +149,9 @@ const SiteAuthFlowSheet = ({ siteInformation, onDismiss }: { siteInformation: Si
                 } else if (res.type === "error") {
                     Alert.alert("Authentication Error", res.error?.message ?? "Unknown error")
                 }
+            })
+            .finally(() => {
+                setLoading(false)
             })
     }
 
@@ -148,12 +174,14 @@ const SiteAuthFlowSheet = ({ siteInformation, onDismiss }: { siteInformation: Si
                 <AvatarImage source={{ uri: (siteInformation.url) + (siteInformation.logo) }} width={100} height={100} />
             </Avatar>
             <View className='flex-1'>
-                <Text>{siteInformation?.app_name}</Text>
-                <Text>{siteInformation?.url}</Text>
+                <Text className='text-base font-medium'>{siteInformation?.app_name}</Text>
+                <Text className='text-sm text-muted-foreground'>{siteInformation?.url}</Text>
             </View>
         </View>
-        <Button onPress={onLoginClick} disabled={!request}>
-            <Text>Login</Text>
+        <Button onPress={onLoginClick} style={{
+            minHeight: 40
+        }} disabled={!request || loading}>
+            {loading ? <ActivityIndicator color={"#FFFFFF"} /> : <Text>Login</Text>}
         </Button>
     </View>
 }

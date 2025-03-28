@@ -1,5 +1,5 @@
 import CreateChannelForm, { ChannelCreationForm } from '@components/features/channels/CreateChannel/CreateChannelForm';
-import { Link, router, Stack } from 'expo-router';
+import { Link, Stack } from 'expo-router';
 import { Button } from '@components/nativewindui/Button';
 import { Text } from '@components/nativewindui/Text';
 import CrossIcon from '@assets/icons/CrossIcon.svg';
@@ -7,11 +7,9 @@ import { useColorScheme } from '@hooks/useColorScheme';
 import { FormProvider, useForm } from 'react-hook-form';
 import { useFrappeCreateDoc } from "frappe-react-sdk";
 import { ActivityIndicator } from '@components/nativewindui/ActivityIndicator';
-import { useContext } from 'react';
-import { SiteContext } from 'app/[site_id]/_layout';
 import { useGetCurrentWorkspace } from '@hooks/useGetCurrentWorkspace';
 import { toast } from 'sonner-native';
-
+import { useRouteToChannel } from '@hooks/useRouting';
 export default function CreateChannel() {
 
     const { colors } = useColorScheme()
@@ -23,8 +21,7 @@ export default function CreateChannel() {
         }
     })
 
-    const siteInfo = useContext(SiteContext)
-    const siteID = siteInfo?.sitename
+    const goToChannel = useRouteToChannel()
     const { workspace } = useGetCurrentWorkspace()
 
     const { handleSubmit, reset: resetForm } = methods
@@ -43,7 +40,7 @@ export default function CreateChannel() {
             if (result) {
                 toast.success("Channel created", result)
                 // Navigate to channel
-                router.replace(`${siteID}/chat/${result.name}`)
+                goToChannel(result.name, 'replace')
                 reset()
                 resetForm()
             }
@@ -54,7 +51,7 @@ export default function CreateChannel() {
 
     return <>
         <Stack.Screen options={{
-            title: 'Add channel',
+            title: 'Add Channel',
             headerLeft() {
                 return (
                     <Link asChild href="../" relativeToDirectory>

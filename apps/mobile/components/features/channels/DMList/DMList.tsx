@@ -45,7 +45,13 @@ export const DMListRow = ({ dm }: { dm: DMChannelListItem }) => {
                 // Add a subtle ripple effect on Android
                 android_ripple={{ color: 'rgba(0,0,0,0.1)', borderless: false }}
             >
-                <UserAvatar src={user?.user_image} alt={user?.full_name ?? user?.name ?? ''} avatarProps={{ className: 'h-8 w-8' }} />
+                <UserAvatar
+                    src={user?.user_image ?? ""}
+                    alt={user?.full_name ?? ""}
+                    availabilityStatus={user?.availability_status}
+                    avatarProps={{ className: "w-8 h-8" }}
+                    textProps={{ className: "text-sm font-medium" }}
+                    isBot={user?.type === 'Bot'} />
                 <Text style={styles.dmChannelText}>{user?.full_name}</Text>
             </Pressable>
         </Link>

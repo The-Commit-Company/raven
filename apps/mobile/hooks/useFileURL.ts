@@ -1,7 +1,7 @@
 import { FrappeConfig, FrappeContext } from 'frappe-react-sdk'
 import { useContext } from 'react'
 
-type UseFileURLReturnType = {
+export type UseFileURLReturnType = {
   /**
   * `uri` is a string representing the resource identifier for the image, which
   * could be an http address, a local file path, or the name of a static image

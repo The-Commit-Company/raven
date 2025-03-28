@@ -60,7 +60,7 @@ const CreatePollForm = () => {
                         rules={{ required: 'Poll question is required' }}
                         render={({ field }) => (
                             <TextInput
-                                className="w-full border border-border rounded-md px-3 pt-0.5 pb-2 h-12 text-sm"
+                                className="w-full border border-border rounded-md px-3 py-3 text-[16px] leading-5 text-foreground"
                                 placeholder="Ask a question"
                                 onChangeText={field.onChange}
                                 onBlur={field.onBlur}
@@ -74,7 +74,7 @@ const CreatePollForm = () => {
                 </View>
 
                 <View className='flex-col gap-2'>
-                    <FormLabel>Options</FormLabel>
+                    <FormLabel isRequired>Options</FormLabel>
                     {fields.map((field, index) => (
                         <View key={field.id} className="flex-col gap-1">
                             <View className='flex-row justify-between items-center gap-2'>
@@ -84,7 +84,7 @@ const CreatePollForm = () => {
                                     rules={{ required: `Option ${index + 1} is required` }}
                                     render={({ field }) => (
                                         <TextInput
-                                            className="flex-1 border border-border rounded-md px-3 pt-0.5 pb-2 h-12 text-sm"
+                                            className="flex-1 border border-border rounded-md px-3 py-3 text-[16px] leading-5 text-foreground"
                                             placeholder={`Option ${index + 1}`}
                                             onChangeText={field.onChange}
                                             onBlur={field.onBlur}

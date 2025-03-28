@@ -16,40 +16,56 @@ const TAG_BASE_STYLES: TRenderEngineConfig['tagsStyles'] = {
         paddingBottom: 2,
         fontStyle: 'italic',
         marginLeft: 4,
+        lineHeight: 24,
+        fontSize: 16,
     },
     'code': {
         padding: 4,
         borderRadius: 4,
+        lineHeight: 24,
+        fontSize: 16,
     },
     'p': {
         marginBottom: 0,
+        fontSize: 16,
         marginTop: 0,
         whiteSpace: 'pre',
         paddingBottom: 4,
+        lineHeight: 24,
     },
     'ol': {
         marginTop: 2,
         marginBottom: 2,
+        lineHeight: 24,
+        fontSize: 16,
     },
     'ul': {
         marginTop: 2,
         marginBottom: 2,
+        lineHeight: 24,
+        fontSize: 16,
     },
     'img': {
         width: '200px',
         height: 'auto',
+        display: 'flex',
+        justifyContent: 'flex-start',
         margin: 0,
-        padding: 0
+        padding: 0,
     },
     'a': {
         textDecorationLine: 'none',
         borderBottomWidth: 1,
+        lineHeight: 24,
+        fontSize: 16,
     },
     'pre': {
         padding: 8,
         marginTop: 2,
         marginBottom: 2,
         borderRadius: 4,
+        lineHeight: 24,
+        fontSize: 16,
     }
 }
 
@@ -108,13 +124,18 @@ const darkThemeStyles: TRenderEngineConfig['tagsStyles'] = Object.keys(TAG_BASE_
 // Create a read only theme atom value for the tagStyles
 
 const tagStylesAtom = atom((get) => {
-    return get(themeAtom) === 'light' ? lightThemeStyles : darkThemeStyles
+    const theme = get(themeAtom)
+    return theme.state === 'hasData' ? theme.data === 'light' ? lightThemeStyles : darkThemeStyles : lightThemeStyles
 })
 
-const baseStylesAtom = atom((get) => ({
-    fontSize: 16,
-    color: get(themeAtom) === 'light' ? 'rgb(0, 0, 0)' : 'rgb(255, 255, 255)',
-}))
+const baseStylesAtom = atom((get) => {
+    const theme = get(themeAtom)
+    return {
+        fontSize: 16,
+        color: theme.state === 'hasData' ? theme.data === 'light' ? 'rgb(0, 0, 0)' : 'rgb(255, 255, 255)' : 'rgb(0, 0, 0)',
+    }
+}
+)
 
 const renderers = {
     span: CustomMentionRenderer
@@ -133,7 +154,8 @@ const classesStylesDark = {
 }
 
 const classesStylesAtom = atom((get) => {
-    return get(themeAtom) === 'light' ? classesStylesLight : classesStylesDark
+    const theme = get(themeAtom)
+    return theme.state === 'hasData' ? theme.data === 'light' ? classesStylesLight : classesStylesDark : classesStylesLight
 })
 
 const MessageTextRenderer = ({ text }: Props) => {
@@ -148,7 +170,7 @@ const MessageTextRenderer = ({ text }: Props) => {
     const paddingWidth = width - 160
 
     return (
-        <View className='flex-1'>
+        <View className='flex-1 pt-0.5'>
             <RenderHtml
                 baseStyle={baseStyles}
                 contentWidth={paddingWidth}

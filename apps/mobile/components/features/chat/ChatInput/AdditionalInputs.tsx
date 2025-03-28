@@ -1,7 +1,6 @@
 import { Button } from "@components/nativewindui/Button"
 import { useSheetRef, Sheet } from "@components/nativewindui/Sheet"
 import { BottomSheetModal, BottomSheetView } from "@gorhom/bottom-sheet"
-import { useColorScheme } from "@hooks/useColorScheme"
 import { View } from "react-native"
 import PlusIcon from "@assets/icons/PlusIcon.svg"
 import FilePickerButton from "@components/common/FilePickerButton"
@@ -9,25 +8,29 @@ import ImagePickerButton from "@components/common/ImagePickerButton"
 import GIFPickerButton from "@components/common/GIFPicker/GIFPickerButton"
 import { useKeyboardVisible } from "@hooks/useKeyboardVisible"
 import { CustomFile } from "@raven/types/common/File"
-import { useAtom } from 'jotai'
-import { filesAtom } from "@lib/filesAtom"
+import { useSetAtom } from 'jotai'
+import { filesAtomFamily } from "@lib/ChatInputUtils"
 import CreatePollButton from "@components/common/CreatePollButton"
+import useSiteContext from "@hooks/useSiteContext"
+import { useColorScheme } from "@hooks/useColorScheme"
 
-const AdditionalInputs = () => {
+const AdditionalInputs = ({ channelID, onMessageContentSend }: { channelID: string, onMessageContentSend: (content: string) => void }) => {
 
     const bottomSheetRef = useSheetRef()
-    const { colors } = useColorScheme()
     const { isKeyboardVisible, keyboardHeight } = useKeyboardVisible()
+
+    const { colors } = useColorScheme()
 
     return (
         <View>
-            <Button size='icon' variant="tonal" style={{ borderRadius: '100%' }}
+            <Button size='icon' style={{ borderRadius: '100%' }} className="bg-card-background h-8 w-8 mb-1"
+                hitSlop={10}
                 onPress={() => bottomSheetRef.current?.present()}>
-                <PlusIcon fill={colors.foreground} />
+                <PlusIcon fill={colors.grey} width={22} height={22} />
             </Button>
             <Sheet ref={bottomSheetRef} bottomInset={isKeyboardVisible ? keyboardHeight : 0} keyboardBehavior='interactive' keyboardBlurBehavior="restore" android_keyboardInputMode="adjustPan">
                 <BottomSheetView className='pb-16'>
-                    <AdditionalInputsSheetContent bottomSheetRef={bottomSheetRef} />
+                    <AdditionalInputsSheetContent bottomSheetRef={bottomSheetRef} channelID={channelID} onMessageContentSend={onMessageContentSend} />
                 </BottomSheetView>
             </Sheet>
         </View>
@@ -36,9 +39,12 @@ const AdditionalInputs = () => {
 
 export default AdditionalInputs
 
-const AdditionalInputsSheetContent = ({ bottomSheetRef }: { bottomSheetRef: React.RefObject<BottomSheetModal> }) => {
+const AdditionalInputsSheetContent = ({ bottomSheetRef, channelID, onMessageContentSend }: { bottomSheetRef: React.RefObject<BottomSheetModal>, channelID: string, onMessageContentSend: (content: string) => void }) => {
 
-    const [, setFiles] = useAtom(filesAtom)
+    const siteInfo = useSiteContext()
+    const siteID = siteInfo?.sitename ?? ''
+
+    const setFiles = useSetAtom(filesAtomFamily(siteID + channelID))
 
     const handlePick = (files: CustomFile[]) => {
         setFiles((prevFiles) => {
@@ -48,15 +54,18 @@ const AdditionalInputsSheetContent = ({ bottomSheetRef }: { bottomSheetRef: Reac
     }
 
     const handleGIFSelect = (gif: any) => {
-        console.log(gif)
+
+        const content = `<p class="rt-Text text-sm"><img src="${gif.media_formats.gif.url}"><br></p>`
+        onMessageContentSend(content)
+        onSheetClose()
     }
 
     const onSheetClose = () => {
-        bottomSheetRef.current?.close()
+        bottomSheetRef.current?.dismiss()
     }
 
     return (
-        <View className="flex-col justify-start items-start px-3 w-full">
+        <View className="flex-col justify-start items-start px-3 w-full gap-1">
             <FilePickerButton onPick={handlePick} />
             <ImagePickerButton onPick={handlePick} />
             <GIFPickerButton onSelect={handleGIFSelect} />

@@ -37,8 +37,18 @@ export const formatDate = (date: string) => {
 }
 
 export const formatDateAndTime = (date: string) => {
-    const time = dayjs(date).format('hh:mm A')
-    const formattedDate = formatDate(date)
+
+    if (!date) {
+        return ''
+    }
+
+    const dateObj = dayjs(date)
+    if (!dateObj.isValid()) {
+        return date
+    }
+
+    const time = dateObj.format('hh:mm A')
+    const formattedDate = dateObj.format('MMM Do, YYYY')
     return `${formattedDate}, ${time}`
 }
 

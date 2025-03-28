@@ -1,5 +1,5 @@
 import { FrappeError, useFrappeDocTypeEventListener, useFrappeGetCall, SWRConfiguration } from 'frappe-react-sdk'
-import { createContext, useMemo } from 'react'
+import { createContext, useContext, useMemo } from 'react'
 import { KeyedMutator } from 'swr'
 import { useSWRConfig } from 'frappe-react-sdk'
 import { ChannelList } from '@raven/types/common/ChannelListItem'
@@ -11,6 +11,16 @@ export interface ChannelListContextType extends ChannelList {
     isLoading: boolean
 }
 export const ChannelListContext = createContext<ChannelListContextType | null>(null)
+
+
+/** Use this hook to get the channel list */
+export const useChannelList = (): ChannelListContextType => {
+    const context = useContext(ChannelListContext)
+    if (!context) {
+        throw new Error('useChannelList must be used within a ChannelListProvider')
+    }
+    return context
+}
 
 /**
  * Hook to fetch the channel list - all channels + DM's + other users if any. The channel list is sorted by the last message timestamp.

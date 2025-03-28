@@ -1,23 +1,22 @@
-import { Button, ButtonProps } from "@components/nativewindui/Button"
 import ShareIcon from "@assets/icons/ShareIcon.svg"
 import { toast } from 'sonner-native'
 import { useColorScheme } from "@hooks/useColorScheme"
 import { SvgProps } from "react-native-svg"
 import useFileShare from "@hooks/useFileShare"
+import { TouchableOpacity } from "react-native-gesture-handler"
 
 interface ShareButtonProps {
     uri: string
-    buttonProps?: ButtonProps
     iconProps?: SvgProps
 }
 
-const ShareButton = ({ uri, buttonProps, iconProps }: ShareButtonProps) => {
+const ShareButton = ({ uri, iconProps }: ShareButtonProps) => {
 
     const { colors } = useColorScheme()
 
     const { shareFile, loading, error } = useFileShare(uri)
 
-    const handleShare = async () => {
+    const handleShare = () => {
         shareFile()
         if (error) {
             toast.error(error)
@@ -25,9 +24,9 @@ const ShareButton = ({ uri, buttonProps, iconProps }: ShareButtonProps) => {
     }
 
     return (
-        <Button variant="plain" size="icon" onPress={handleShare} {...buttonProps} disabled={loading} >
+        <TouchableOpacity hitSlop={10} className="m-4" onPress={handleShare} disabled={loading} >
             <ShareIcon height={20} width={20} color={colors.icon} {...iconProps} />
-        </Button>
+        </TouchableOpacity>
     )
 }
 

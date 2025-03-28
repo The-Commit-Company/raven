@@ -10,6 +10,7 @@ import CheckFilledIcon from '@assets/icons/CheckFilledIcon.svg';
 import { useColorScheme } from '@hooks/useColorScheme';
 import ChevronDownIcon from '@assets/icons/ChevronDownIcon.svg'
 import { COLORS } from '@theme/colors'
+import useSiteContext from '@hooks/useSiteContext'
 
 const WorkspaceSwitcher = ({ workspace, setWorkspace }: { workspace: string, setWorkspace: (workspace: string) => Promise<void> }) => {
 
@@ -37,6 +38,12 @@ const WorkSpaceSwitcherMenu = ({ selectedWorkspace, workspaces, setWorkspace }: 
 
     const logo = getLogo(selectedWorkspace)
 
+    const siteInfo = useSiteContext()
+
+    const urlWithoutProtocol = useMemo(() => {
+        return siteInfo?.url?.replace('https://', '').replace('http://', '').replace('www.', '').split('/')[0]
+    }, [siteInfo])
+
     return (
         <View className='flex-1 gap-3'>
             <TouchableOpacity onPress={() => bottomSheetRef.current?.present()}>
@@ -45,11 +52,14 @@ const WorkSpaceSwitcherMenu = ({ selectedWorkspace, workspaces, setWorkspace }: 
                         key={logo}
                         alt={selectedWorkspace?.workspace_name ?? 'Workspace Logo'}
                         src={logo}
-                        avatarProps={{ className: 'h-8 w-8' }}
+                        avatarProps={{ className: 'h-10 w-10' }}
                     />
-                    <View className='flex-row items-center gap-1'>
-                        <Text className="text-white font-bold">{selectedWorkspace?.workspace_name}</Text>
-                        <ChevronDownIcon height={20} width={20} fill={COLORS.white} />
+                    <View>
+                        <View className='flex-row items-center gap-1'>
+                            <Text className="text-white font-bold">{selectedWorkspace?.workspace_name}</Text>
+                            <ChevronDownIcon height={20} width={20} fill={COLORS.white} />
+                        </View>
+                        <Text className='text-xs text-white/90 overflow-hidden text-ellipsis line-clamp-1'>{urlWithoutProtocol}</Text>
                     </View>
                 </View>
             </TouchableOpacity>
@@ -151,7 +161,7 @@ const WorkspaceRow = ({ workspace, isLast, setWorkspace, isOtherWorkspace = fals
                     </View>
                 }
             </View>
-            {!isLast && <Divider marginHorizontal={0} />}
+            {!isLast && <Divider className='mx-0' />}
         </Pressable>
     )
 }

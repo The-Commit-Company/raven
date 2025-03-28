@@ -1,6 +1,5 @@
 import { useCallback, useMemo } from 'react'
-import { View, Text, TouchableOpacity, Pressable } from 'react-native'
-import { useFrappePostCall } from 'frappe-react-sdk'
+import { View, Text, TouchableOpacity } from 'react-native'
 import useCurrentRavenUser from '@raven/lib/hooks/useCurrentRavenUser'
 import { Sheet, useSheetRef } from '@components/nativewindui/Sheet'
 import { BottomSheetView } from '@gorhom/bottom-sheet'
@@ -10,6 +9,13 @@ import EmojiPicker from '@components/common/EmojiPicker/EmojiPicker'
 import ReactionAnalytics from './ReactionsAnalytics'
 import useFileURL from '@hooks/useFileURL'
 import { Image } from 'expo-image'
+import clsx from 'clsx'
+import { ImpactFeedbackStyle } from 'expo-haptics'
+import { impactAsync } from 'expo-haptics'
+import useReactToMessage from '@raven/lib/hooks/useReactToMessage'
+import { Message } from '@raven/types/common/Message'
+import { Gesture, GestureDetector, LongPressGesture } from 'react-native-gesture-handler'
+import { runOnJS } from 'react-native-reanimated'
 
 export interface ReactionObject {
     // The emoji
@@ -25,25 +31,22 @@ export interface ReactionObject {
 }
 
 interface MessageReactionsProps {
-    messageID: string
-    message_reactions: string | null | undefined
+    message: Message,
+    longPressGesture: LongPressGesture
 }
-export default function MessageReactions({ messageID, message_reactions }: MessageReactionsProps) {
+export default function MessageReactions({ message, longPressGesture }: MessageReactionsProps) {
+
+    const message_reactions = message.message_reactions
 
     const { myProfile: currentUser } = useCurrentRavenUser()
 
-    const { call: reactToMessage } = useFrappePostCall('raven.api.reactions.react')
+    const reactToMessage = useReactToMessage()
 
     const saveReaction = useCallback((emoji: string, is_custom: boolean, emoji_name?: string) => {
-        if (messageID) {
-            return reactToMessage({
-                message_id: messageID,
-                reaction: emoji,
-                is_custom,
-                emoji_name
-            })
+        if (message) {
+            return reactToMessage(message, emoji, is_custom, emoji_name)
         }
-    }, [messageID, reactToMessage])
+    }, [message, reactToMessage])
 
     const reactions: ReactionObject[] = useMemo(() => {
         const parsed_json = JSON.parse(message_reactions ?? '{}') as Record<string, ReactionObject>
@@ -55,67 +58,88 @@ export default function MessageReactions({ messageID, message_reactions }: Messa
 
     }, [message_reactions])
 
-    if (reactions.length === 0) return null
-
     const reactionsSheetRef = useSheetRef()
 
-    const openReactions = () => reactionsSheetRef.current?.present()
+    const openReactions = () => {
+        impactAsync(ImpactFeedbackStyle.Light)
+        reactionsSheetRef.current?.present()
+    }
+
+    if (reactions.length === 0) return null
 
     return (
-        <View>
-            <Pressable className='flex-row gap-1.5 flex-wrap items-center py-2'>
+        <>
+            <View className='flex-row gap-x-1.5 gap-y-1 flex-wrap items-center py-2'>
                 {reactions.map((reaction: ReactionObject) => {
-                    return <ReactionButton key={reaction.emoji_name} viewAnalytics={openReactions} reaction={reaction} currentUser={currentUser?.name} saveReaction={saveReaction} />
+                    return <ReactionButton
+                        key={reaction.emoji_name}
+                        onLongPress={openReactions}
+                        longPressGesture={longPressGesture}
+                        reaction={reaction}
+                        currentUser={currentUser?.name}
+                        saveReaction={saveReaction} />
                 })}
 
                 <AddEmojiButton saveReaction={saveReaction} />
-            </Pressable>
+            </View>
 
             <ReactionAnalytics reactionsSheetRef={reactionsSheetRef} reactions={reactions} />
-        </View>
+        </>
     )
 }
 
 interface ReactionButtonProps {
     reaction: ReactionObject
     currentUser: string | undefined
-    saveReaction: (emoji: string, is_custom: boolean, emoji_name?: string) => void
-    viewAnalytics: () => void
+    saveReaction: (emoji: string, is_custom: boolean, emoji_name?: string) => void,
+    onLongPress: () => void,
+    longPressGesture: LongPressGesture
 }
-const ReactionButton = ({ reaction, currentUser, saveReaction, viewAnalytics }: ReactionButtonProps) => {
-
-    const { colors } = useColorScheme()
-
-    const source = useFileURL(reaction.reaction)
+const ReactionButton = ({ reaction, currentUser, saveReaction, onLongPress, longPressGesture }: ReactionButtonProps) => {
 
     const { currentUserReacted } = useMemo(() => {
         return { currentUserReacted: reaction.users.includes(currentUser ?? "") }
     }, [currentUser, reaction])
 
     const onReact = useCallback(() => {
+        impactAsync(ImpactFeedbackStyle.Light)
         saveReaction(reaction.reaction, reaction?.is_custom ?? false, reaction.emoji_name)
     }, [saveReaction, reaction])
 
+    /** Route to file viewer on single tap - but wait for double tap to fail */
+    const reactionLongPressGesture = useMemo(() => {
+        return Gesture.LongPress()
+            .hitSlop(10)
+            .minDuration(250)
+            .onStart(() => {
+                runOnJS(onLongPress)()
+            }).blocksExternalGesture(longPressGesture)
+    }, [onLongPress, longPressGesture])
+
     return (
-        <TouchableOpacity
-            onLongPress={viewAnalytics}
-            onPress={onReact}
-            activeOpacity={0.7}
-            style={{
-                borderColor: currentUserReacted ? colors.primary : "transparent",
-                borderWidth: 0.5
-            }}
-            className={`flex-row rounded-md py-1 px-2 gap-2 bg-gray-100 dark:bg-gray-800`}
-        >
-            {reaction.is_custom ? (
-                <Image source={source} style={{ width: 16, height: 16 }} />
-            ) : (
-                <Text className='text-xs'>{reaction.reaction}</Text>
-            )}
-            <Text className='text-xs font-bold text-gray-500'>{reaction.count}</Text>
-        </TouchableOpacity>
+        <GestureDetector gesture={reactionLongPressGesture}>
+            <TouchableOpacity
+                onPress={onReact}
+                activeOpacity={0.7}
+                className={clsx(`flex-row rounded-xl py-1 px-2 gap-2 border`,
+                    currentUserReacted ? "bg-blue-50/80 border-blue-600 dark:border-muted-foreground/40 dark:bg-muted" : "bg-card dark:bg-muted/50 border-muted/50")}
+            >
+                {reaction.is_custom ? (
+                    <CustomEmojiView emoji={reaction.reaction} />
+                ) : (
+                    <Text className='text-sm'>{reaction.reaction}</Text>
+                )}
+                <Text className={clsx('text-sm font-bold', currentUserReacted ? "text-foreground dark:text-foreground" : "text-foreground")}>{reaction.count}</Text>
+            </TouchableOpacity>
+        </GestureDetector>
 
     )
+}
+
+const CustomEmojiView = ({ emoji }: { emoji: string }) => {
+    const source = useFileURL(emoji)
+
+    return <Image source={source} style={{ width: 20, height: 20, borderRadius: 2 }} contentFit='scale-down' contentPosition={'center'} />
 }
 
 interface AddEmojiButtonProps {
@@ -136,8 +160,8 @@ const AddEmojiButton = ({ saveReaction }: AddEmojiButtonProps) => {
 
     return (
         <View>
-            <TouchableOpacity onPress={openEmojiPicker} activeOpacity={0.7} className='flex-row flex-1 items-center bg-gray-100 dark:bg-gray-800 rounded-md py-1 px-2.5 gap-2'>
-                <SmilePlus width={16} height={16} color={colors.icon} />
+            <TouchableOpacity onPress={openEmojiPicker} activeOpacity={0.7} className='flex-row items-center bg-card border-card dark:border-muted/50 dark:bg-muted/50 border rounded-xl py-1 px-3 min-w-[5ch]'>
+                <SmilePlus width={20} height={20} color={colors.icon} />
             </TouchableOpacity>
 
             <Sheet ref={emojiPickerRef} snapPoints={["65%"]}>

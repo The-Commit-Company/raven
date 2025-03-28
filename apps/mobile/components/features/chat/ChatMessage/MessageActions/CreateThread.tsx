@@ -2,10 +2,10 @@ import { Message } from '@raven/types/common/Message'
 import { Pressable } from 'react-native'
 import { Text } from '@components/nativewindui/Text'
 import { useColorScheme } from '@hooks/useColorScheme'
-import { useState } from "react"
 import { useFrappePostCall } from "frappe-react-sdk"
 import { toast } from "sonner-native"
 import MessageIcon from "@assets/icons/MessageIcon.svg"
+import { router } from 'expo-router'
 
 interface CreateThreadProps {
     message: Message
@@ -17,9 +17,19 @@ const CreateThread = ({ message, onClose }: CreateThreadProps) => {
     const { colors } = useColorScheme()
     const { createThread } = useCreateThread(message)
 
+    const onPress = () => {
+        createThread()
+            .then((thread) => {
+                onClose()
+                if (thread) {
+                    router.push(`../thread/${thread.thread_id}`)
+                }
+            })
+    }
+
     return (
         <Pressable
-            onPress={() => createThread(onClose)}
+            onPress={onPress}
             className='flex flex-row items-center gap-3 p-2 rounded-lg ios:active:bg-linkColor'
             android_ripple={{ color: 'rgba(0,0,0,0.1)', borderless: false }}>
             <MessageIcon width={18} height={18} fill={colors.icon} />
@@ -32,26 +42,22 @@ export default CreateThread
 
 const useCreateThread = (message: Message) => {
 
-    const { call } = useFrappePostCall("raven.api.threads.create_thread")
-    const [isLoading, setIsLoading] = useState(false)
+    const { call, loading } = useFrappePostCall<{ message: { channel_id: string, thread_id: string } }>("raven.api.threads.create_thread")
 
-    const handleCreateThread = (onSuccess: () => void) => {
-        setIsLoading(true)
+    const handleCreateThread = () => {
         return call({ message_id: message?.name })
             .then((res) => {
                 toast.success("Thread created successfully!")
-                onSuccess()
+
+                return res.message
             })
-            .catch(() => {
+            .catch((error) => {
                 toast.error("Failed to create thread")
-                throw new Error("Failed to create thread")
-            })
-            .finally(() => {
-                setIsLoading(false)
             })
     }
 
     return {
-        createThread: handleCreateThread
+        createThread: handleCreateThread,
+        loading
     }
 }

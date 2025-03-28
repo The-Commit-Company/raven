@@ -1,4 +1,4 @@
-import { Link, router, Stack } from 'expo-router';
+import { Link, Stack } from 'expo-router';
 import { Button } from '@components/nativewindui/Button';
 import { useColorScheme } from '@hooks/useColorScheme';
 import { Pressable, View } from 'react-native';
@@ -11,14 +11,11 @@ import { useCallback, useContext, useMemo } from 'react';
 import { RavenChannel } from '@raven/types/RavenChannelManagement/RavenChannel';
 import { RavenMessage } from '@raven/types/RavenMessaging/RavenMessage';
 import { getTimePassed } from '@raven/lib/utils/dateConversions';
-import { SiteContext } from 'app/[site_id]/_layout';
-import { DMChannelListItem } from '@raven/types/common/ChannelListItem';
-import { useCurrentChannelData } from '@hooks/useCurrentChannelData';
-import { useGetUserRecords } from '@raven/lib/hooks/useGetUserRecords';
 import { ChannelIcon } from '@components/features/channels/ChannelList/ChannelIcon';
 import { BaseMessageItem } from '@components/features/chat-stream/BaseMessageItem';
 import { Message } from '@raven/types/common/Message';
 import ChevronLeftIcon from '@assets/icons/ChevronLeftIcon.svg';
+import { useRouteToChannel } from '@hooks/useRouting';
 
 interface MentionObject {
     /** ID of the message */
@@ -115,50 +112,47 @@ const MentionsList = () => {
         data={mentions}
         ListEmptyComponent={<MentionsEmptyState />}
         renderItem={({ item }) => <MentionListItem message={item} />}
-        keyExtractor={(item) => item.name}
+        keyExtractor={(item, index) => `${item.name}-${index}`}
         onEndReached={loadMore}
-        contentContainerStyle={{ paddingTop: 8, backgroundColor: colors.background }}
+        estimatedItemSize={300}
+        contentContainerStyle={{ paddingTop: 8, paddingBottom: 64, backgroundColor: colors.background }}
     />
 }
 
 const MentionListItem = ({ message }: { message: MentionObject }) => {
 
-    const { creation, channel_id } = message
-    const users = useGetUserRecords()
+    const goToChannel = useRouteToChannel()
 
-    const siteInfo = useContext(SiteContext)
-    const siteID = siteInfo?.sitename
-    const handleNavigateToChannel = (channelID: string) => {
-        router.push(`/${siteID}/chat/${channelID}`)
+    const handleNavigateToChannel = () => {
+        goToChannel(message.channel_id, 'push', message.is_thread === 0 ? 'Channel' : 'Thread')
     }
 
-    const { channel } = useCurrentChannelData(channel_id)
-    const channelData = channel?.channelData
-
     const channelName = useMemo(() => {
-        if (channelData) {
-            if (channelData.is_direct_message) {
-                const peer_user_name = users[(channelData as DMChannelListItem).peer_user_id]?.full_name ?? (channelData as DMChannelListItem).peer_user_id
-                return `DM with ${peer_user_name}`
-            } else {
-                return channelData.channel_name
-            }
+
+        if (message.is_thread) {
+            return `Thread`
         }
-    }, [channelData])
+
+        if (message.is_direct_message) {
+            return ''
+        }
+
+        return message.channel_name
+    }, [message])
 
     const { colors } = useColorScheme()
 
     return <Pressable
         className='pb-2 rounded-md ios:active:bg-linkColor ios:active:dark:bg-linkColor'
-        onPress={() => handleNavigateToChannel(channel_id)}>
+        onPress={handleNavigateToChannel}>
         <View>
             <View className='flex flex-row items-center px-3 pt-2 gap-2'>
                 <View className='flex flex-row items-center gap-1'>
-                    {channelData && <ChannelIcon type={channelData.type} fill={colors.icon} size={16} />}
+                    {message.is_thread === 0 && message.is_direct_message === 0 && <ChannelIcon type={message.channel_type} fill={colors.icon} size={16} />}
                     <Text className='text-sm'>{channelName}</Text>
                 </View>
                 <Text className='text-[13px] text-muted'>|</Text>
-                <TimeStamp creation={creation} />
+                <TimeStamp creation={message.creation} />
             </View>
             <BaseMessageItem message={message as unknown as Message} />
         </View>

@@ -2,9 +2,9 @@ import clsx from 'clsx';
 import MessageAvatar from '../chat-stream/MessageItemElements/MessageAvatar';
 import { useGetUser } from '@raven/lib/hooks/useGetUser';
 import MessageHeader from '../chat-stream/MessageItemElements/MessageHeader';
-import { ImageMessageRenderer } from '../chat/ChatMessage/Renderers/ImageMessage';
+import { ImageMessageView } from '../chat/ChatMessage/Renderers/ImageMessage';
 import { PollMessageBlock } from '../chat/ChatMessage/Renderers/PollMessage';
-import FileMessageRenderer from '../chat/ChatMessage/Renderers/FileMessageRenderer';
+import { FileMessageView } from '../chat/ChatMessage/Renderers/FileMessageRenderer';
 import MessageTextRenderer from '../chat-stream/MessageItemElements/MessageTextRenderer';
 import DocTypeLinkRenderer from '../chat/ChatMessage/Renderers/DocTypeLinkRenderer';
 import { MessageLinkRenderer } from '../chat-stream/MessageItemElements/MessageLinkRenderer';
@@ -32,7 +32,7 @@ export const BaseMessageItem = ({ message }: { message: Message }) => {
                 botID={message.bot}
                 is_continuation={message.is_continuation}
             />
-            <View className='flex-1 items-start gap-1'>
+            <View className='flex-1 items-start gap-0'>
                 <MessageHeader
                     is_continuation={message.is_continuation}
                     userFullName={userFullName}
@@ -54,8 +54,8 @@ export const BaseMessageItem = ({ message }: { message: Message }) => {
                 {linked_message && replied_message_details && <ReplyMessageBox message={message} />}
 
                 {message.text ? <MessageTextRenderer text={message.text} /> : null}
-                {message.message_type === 'Image' && <ImageMessageRenderer message={message} />}
-                {message.message_type === 'File' && <FileMessageRenderer message={message} />}
+                {message.message_type === 'Image' && <ImageMessageView message={message} />}
+                {message.message_type === 'File' && <FileMessageView message={message} />}
                 {message.message_type === 'Poll' && <PollMessageBlock message={message} />}
 
                 {message.link_doctype && message.link_document && <View className={clsx(message.is_continuation ? 'ml-0.5' : '-ml-0.5')}>

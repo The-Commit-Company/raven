@@ -1,29 +1,39 @@
 import { useGetUser } from "@raven/lib/hooks/useGetUser"
 import { View, Pressable, StyleSheet } from 'react-native';
 import { Text } from '@components/nativewindui/Text';
-import { Link } from 'expo-router';
+import { router } from 'expo-router';
 import UserAvatar from "@components/layout/UserAvatar";
 import { DMChannelWithUnreadCount } from "@raven/lib/hooks/useGetChannelUnreadCounts";
+import { useFrappePrefetchCall } from "frappe-react-sdk";
 
 const DirectMessageItemElement = ({ dm }: { dm: DMChannelWithUnreadCount }) => {
     const user = useGetUser(dm.peer_user_id)
+
+    const prefetchChannel = useFrappePrefetchCall('raven.api.chat_stream.get_messages', {
+        channel_id: dm.name,
+        limit: 20
+    }, { path: `get_messages_for_channel_${dm.name}` })
+
+    const handlePress = () => {
+        prefetchChannel()
+        router.push(`../chat/${dm.name}`)
+    }
     return (
-        <Link href={`../chat/${dm.name}`} asChild>
-            <Pressable
-                // Use tailwind classes for layout and ios:active state
-                className='flex-row items-center px-3 py-1.5 rounded-lg ios:active:bg-linkColor'
-                // Add a subtle ripple effect on Android
-                android_ripple={{ color: 'rgba(0,0,0,0.1)', borderless: false }}
-            >
-                <View className="flex-row items-center w-full justify-between">
-                    <View className="flex-row items-center">
-                        <UserAvatar src={user?.user_image} alt={user?.full_name ?? user?.name ?? ''} avatarProps={{ className: 'h-8 w-8' }} />
-                        <Text style={styles.dmChannelText}>{user?.full_name}</Text>
-                    </View>
-                    <Text style={styles.unreadCount} className="bg-card-background">{dm.unread_count}</Text>
+        <Pressable
+            onPress={handlePress}
+            // Use tailwind classes for layout and ios:active state
+            className='flex-row items-center px-3 py-1.5 rounded-lg ios:active:bg-linkColor'
+            // Add a subtle ripple effect on Android
+            android_ripple={{ color: 'rgba(0,0,0,0.1)', borderless: false }}
+        >
+            <View className="flex-row items-center w-full justify-between">
+                <View className="flex-row items-center">
+                    <UserAvatar src={user?.user_image} alt={user?.full_name ?? user?.name ?? ''} avatarProps={{ className: 'h-8 w-8' }} />
+                    <Text style={styles.dmChannelText}>{user?.full_name}</Text>
                 </View>
-            </Pressable>
-        </Link>
+                <Text style={styles.unreadCount} className="bg-card-background">{dm.unread_count}</Text>
+            </View>
+        </Pressable>
     )
 }
 

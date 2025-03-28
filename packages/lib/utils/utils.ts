@@ -11,7 +11,8 @@ export const getInitials = (name?: string) => {
 }
 
 // ----- Avatar Color Generation ----
-const getHashOfString = (str: string) => {
+// Hashing function to convert a string to a number
+export const getHashOfString = (str: string) => {
     let hash = 0;
     for (let i = 0; i < str.length; i++) {
         hash = str.charCodeAt(i) + ((hash << 5) - hash)
@@ -20,15 +21,8 @@ const getHashOfString = (str: string) => {
     return hash
 }
 
-const normalizeHash = (hash: number, min: number, max: number) => {
+export const normalizeHash = (hash: number, min: number, max: number) => {
     return Math.floor((hash % (max - min)) + min)
-}
-
-export const getColorIndexForAvatar = (id?: string, length: number = 10): number => {
-    const hash = getHashOfString(id || 'random')
-    const index = normalizeHash(hash, 0, length)
-
-    return index
 }
 
 export const colorToRgba = (color: string, alpha: number) => {

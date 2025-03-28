@@ -1,10 +1,21 @@
 import { View } from 'react-native';
-import { Text } from '@components/nativewindui/Text';
+import { Stack } from 'expo-router';
+import ThreadTabs from '@components/features/threads/ThreadTabs';
+import { useColorScheme } from '@hooks/useColorScheme';
 
 export default function Threads() {
+    const { colors } = useColorScheme()
+
     return (
-        <View className="flex flex-1 items-center justify-center">
-            <Text className="text-2xl font-bold">Threads</Text>
-        </View>
+        <>
+            <Stack.Screen options={{
+                title: 'Threads',
+                headerLargeTitle: false,
+                headerStyle: { backgroundColor: colors.background },
+            }} />
+            <View className='flex-1 pb-24'>
+                <ThreadTabs />
+            </View>
+        </>
     )
 }
