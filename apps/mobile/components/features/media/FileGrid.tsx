@@ -14,7 +14,6 @@ import { Text } from '@components/nativewindui/Text';
 import { Divider } from '@components/layout/Divider';
 import { formatBytes, getFileName } from '@raven/lib/utils/operations';
 import UniversalFileIcon from '@components/common/UniversalFileIcon';
-import HollowFilesIcon from "@assets/icons/HollowFilesIcon.svg"
 import DotIcon from "@assets/icons/DotIcon.svg"
 import { getStandardDateFormat } from '@raven/lib/utils/dateConversions';
 
@@ -76,7 +75,7 @@ const FileGrid = ({ searchQuery }: { searchQuery: string }) => {
     }
 
     if (isEmpty) {
-        return <EmptyStateForDocGrid searchQuery={searchQuery} />;
+        return <EmptyStateForDocGrid />;
     }
 
     return (
@@ -170,15 +169,12 @@ const Preview = ({ file }: { file: MediaInChannel }) => {
     )
 }
 
-const EmptyStateForDocGrid = ({ searchQuery }: { searchQuery: string }) => {
-
-    const { colors } = useColorScheme()
+const EmptyStateForDocGrid = () => {
 
     return (
         <View className="flex flex-row items-center gap-2 py-2 px-3">
-            <HollowFilesIcon fill={colors.icon} height={25} width={25} />
-            <Text className="text-foreground text-base font-medium">
-                No Documents found {searchQuery ? `for "${searchQuery}"` : ''}. Want to try a different search?
+            <Text className="text-muted-foreground text-center w-full text-base font-medium">
+                No documents found
             </Text>
         </View>
     )
