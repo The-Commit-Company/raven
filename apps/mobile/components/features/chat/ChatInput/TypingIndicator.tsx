@@ -135,7 +135,7 @@ const TypingIndicator = ({ channel }: Props) => {
 
     return (
         <Animated.View
-            className='flex flex-row gap-2 px-4 items-center'
+            className='flex flex-row gap-2 px-4 pt-1 items-center bg-background'
             entering={FadeInDown}
             exiting={FadeOutDown}>
             <View className="flex flex-row gap-1 items-center py-1 rounded-full">

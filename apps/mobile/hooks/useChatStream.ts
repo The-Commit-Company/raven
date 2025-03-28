@@ -1,7 +1,7 @@
 import { LegendListRef } from '@legendapp/list'
 import { Message } from '@raven/types/common/Message'
 import { useFrappeDocumentEventListener, useFrappeEventListener, useFrappeGetCall, useFrappePostCall } from 'frappe-react-sdk'
-import { useMemo } from 'react'
+import { useMemo, useRef } from 'react'
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
 import advancedFormat from 'dayjs/plugin/advancedFormat'
@@ -41,6 +41,8 @@ const useChatStream = (channelID: string, listRef?: React.RefObject<LegendListRe
 
     const siteInformation = useSiteContext()
 
+    const isDataFetched = useRef(false)
+
     const SYSTEM_TIMEZONE = siteInformation?.system_timezone ? siteInformation.system_timezone : 'Asia/Kolkata'
 
     /**
@@ -66,7 +68,7 @@ const useChatStream = (channelID: string, listRef?: React.RefObject<LegendListRe
                     animated
                 })
             }
-        }, 100)
+        }, 250)
 
         // Final backup attempt after longer delay
         const backupTimer = setTimeout(() => {
@@ -75,7 +77,7 @@ const useChatStream = (channelID: string, listRef?: React.RefObject<LegendListRe
                     animated
                 })
             }
-        }, 500)
+        }, 800)
 
         return () => {
             clearTimeout(shortDelayTimer)
@@ -91,17 +93,18 @@ const useChatStream = (channelID: string, listRef?: React.RefObject<LegendListRe
     }, { path: `get_messages_for_channel_${channelID}` }, {
         onSuccess: () => {
 
-            listRef?.current?.scrollToEnd()
+            if (!isDataFetched.current) {
+                isDataFetched.current = true
+                let cleanup = scrollToBottom(false)
 
-            let cleanup = scrollToBottom(false)
-
-            if (cleanup) {
-                cleanup()
+                if (cleanup) {
+                    cleanup()
+                }
             }
+
+
         }
     })
-
-    // TODO: Add websocket connection and message parsing
 
     useFrappeDocumentEventListener('Raven Channel', channelID ?? '', () => { })
 
