@@ -16,7 +16,7 @@ import useSiteContext from '@hooks/useSiteContext';
 
 export function ChannelListRow({ channel }: { channel: ChannelListItem }) {
 
-    const colors = useColorScheme()
+    const { colors } = useColorScheme()
 
     const handleMuteChannel = () => {
         console.log(`Muting channel: ${channel.name}`)
@@ -70,7 +70,7 @@ export function ChannelListRow({ channel }: { channel: ChannelListItem }) {
                     // Add a subtle ripple effect on Android
                     android_ripple={{ color: 'rgba(0,0,0,0.1)', borderless: false }}
                 >
-                    <ChannelIcon type={channel.type} fill={colors.colors.icon} />
+                    <ChannelIcon type={channel.type} fill={colors.icon} />
                     <Text className="ml-2 text-base">{channel.channel_name}</Text>
                 </Pressable>
             </ContextMenu.Trigger>
@@ -86,14 +86,14 @@ export function ChannelListRow({ channel }: { channel: ChannelListItem }) {
                             scale: 'medium',
                             // can also be a color string. Requires iOS 15+
                             hierarchicalColor: {
-                                dark: colors.colors.icon,
-                                light: colors.colors.icon,
+                                dark: colors.icon,
+                                light: colors.icon,
                             },
                             // alternative to hierarchical color. Requires iOS 15+
                             paletteColors: [
                                 {
-                                    dark: colors.colors.icon,
-                                    light: colors.colors.icon,
+                                    dark: colors.icon,
+                                    light: colors.icon,
                                 },
                             ],
                         }}
@@ -110,14 +110,14 @@ export function ChannelListRow({ channel }: { channel: ChannelListItem }) {
                             scale: 'medium',
                             // can also be a color string. Requires iOS 15+
                             hierarchicalColor: {
-                                dark: colors.colors.icon,
-                                light: colors.colors.icon,
+                                dark: colors.icon,
+                                light: colors.icon,
                             },
                             // alternative to hierarchical color. Requires iOS 15+
                             paletteColors: [
                                 {
-                                    dark: colors.colors.icon,
-                                    light: colors.colors.icon,
+                                    dark: colors.icon,
+                                    light: colors.icon,
                                 },
                             ],
                         }}
@@ -134,14 +134,14 @@ export function ChannelListRow({ channel }: { channel: ChannelListItem }) {
                             scale: 'medium',
                             // can also be a color string. Requires iOS 15+
                             hierarchicalColor: {
-                                dark: colors.colors.icon,
-                                light: colors.colors.icon,
+                                dark: colors.icon,
+                                light: colors.icon,
                             },
                             // alternative to hierarchical color. Requires iOS 15+
                             paletteColors: [
                                 {
-                                    dark: colors.colors.icon,
-                                    light: colors.colors.icon,
+                                    dark: colors.icon,
+                                    light: colors.icon,
                                 },
                             ],
                         }}

@@ -4,8 +4,8 @@ import { useGetUser } from '@raven/lib/hooks/useGetUser'
 import clsx from 'clsx'
 import MessageReactions from './MessageItemElements/Reactions/MessageReactions'
 import ShareForward from '@assets/icons/ShareForward.svg'
-import { memo, useCallback, useMemo } from 'react';
-import PushPin from '@assets/icons/PushPin.svg'
+import { useMemo, memo, useCallback } from 'react';
+import PinIcon from '@assets/icons/PinIcon.svg'
 import { FileMessage, ImageMessage, PollMessage, TextMessage } from '@raven/types/common/Message'
 import MessageAvatar from '@components/features/chat-stream/MessageItemElements/MessageAvatar'
 import MessageHeader from '@components/features/chat-stream/MessageItemElements/MessageHeader'
@@ -24,12 +24,14 @@ import { messageActionsSelectedMessageAtom } from '@lib/ChatInputUtils';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import { runOnJS } from 'react-native-reanimated';
 import ViewThreadButton from './MessageItemElements/ViewThreadButton';
-
+import { useColorScheme } from '@hooks/useColorScheme';
 type Props = {
     message: FileMessage | PollMessage | TextMessage | ImageMessage
 }
 
 const MessageItem = memo(({ message }: Props) => {
+
+    const { colors } = useColorScheme()
 
     const { linked_message, replied_message_details } = message
 
@@ -129,8 +131,8 @@ const MessageItem = memo(({ message }: Props) => {
                                 </View>}
                             {message.is_pinned === 1 &&
                                 <View className='flex-row items-center gap-1'>
-                                    <PushPin width={12} height={12} />
-                                    <Text className='text-sm text-accent'>Pinned</Text>
+                                    <PinIcon width={12} height={12} fill={colors.primary} />
+                                    <Text className='text-sm text-primary'>Pinned</Text>
                                 </View>}
 
                             {linked_message && replied_message_details && <ReplyMessageBox

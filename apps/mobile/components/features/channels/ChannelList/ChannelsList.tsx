@@ -29,7 +29,7 @@ const ChannelsList = ({ channels }: { channels: ChannelListItem[] }) => {
 export const ChannelListUI = ({ channels }: { channels: ChannelListItem[] }) => {
 
     const [isExpanded, setIsExpanded] = useState(true)
-    const colors = useColorScheme()
+    const { colors } = useColorScheme()
 
     const toggleAccordion = () => {
         setIsExpanded((prev) => !prev)
@@ -42,16 +42,16 @@ export const ChannelListUI = ({ channels }: { channels: ChannelListItem[] }) => 
                 <View className="flex-row items-center gap-1">
                     <Pressable className='active:bg-card-background px-1.5 py-1 rounded-md'
                         onPress={() => router.push('../home/create-channel', { relativeToDirectory: true })}>
-                        <PlusIcon fill={colors.colors.icon} height={18} width={18} />
+                        <PlusIcon fill={colors.icon} height={18} width={18} />
                     </Pressable>
-                    {isExpanded ? <ChevronDownIcon fill={colors.colors.icon} /> : <ChevronRightIcon fill={colors.colors.icon} />}
+                    {isExpanded ? <ChevronDownIcon fill={colors.icon} /> : <ChevronRightIcon fill={colors.icon} />}
                 </View>
             </TouchableOpacity>
             {isExpanded && <>
                 {channels.map((channel) => <ChannelListRow key={channel.name} channel={channel} />)}
                 <Pressable style={styles.addChannelButton} className='ios:active:bg-linkColor'
                     onPress={() => router.push('../home/create-channel', { relativeToDirectory: true })}>
-                    <PlusIcon fill={colors.colors.icon} height={18} width={18} />
+                    <PlusIcon fill={colors.icon} height={18} width={18} />
                     <Text style={styles.addChannelText}>Add channel</Text>
                 </Pressable>
             </>}

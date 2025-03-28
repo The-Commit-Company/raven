@@ -9,6 +9,7 @@ import SaveMessage from './SaveMessage'
 import CreateThread from './CreateThread'
 import CopyMessage from './CopyMessage'
 import RetractVote from './RetractVote'
+import PinMessage from './PinMessage'
 import CopyFileMessageLink from './CopyFileMessageLink'
 import ShareMessageFile from './ShareMessageFile'
 
@@ -41,6 +42,8 @@ const MessageActions = ({ message, onClose, quickReactionEmojis }: MessageAction
                 {(message && !message.is_thread) && <CreateThread message={message} onClose={onClose} />}
 
                 {(message && message.message_type === 'Text') && <CopyMessage message={message} onClose={onClose} />}
+
+                {message && <PinMessage message={message} onClose={onClose} />}
 
                 {(message && ['File', 'Image'].includes(message.message_type)) && (message as FileMessage).file &&
                     <View className='flex flex-col gap-0'>

@@ -8,7 +8,6 @@ import ChannelHistoryFirstMessage from './FirstMessageBlock'
 import { useAtomValue } from 'jotai'
 import { doubleTapMessageEmojiAtom } from '@lib/preferences'
 import { NativeScrollEvent, NativeSyntheticEvent, View } from 'react-native'
-import Skeleton from '@components/layout/Skeleton'
 import ChatStreamSkeletonLoader from './ChatStreamSkeletonLoader'
 import ErrorBanner from '@components/common/ErrorBanner'
 
@@ -17,10 +16,11 @@ type Props = {
     isThread?: boolean,
     scrollRef?: RefObject<LegendListRef>,
     onMomentumScrollEnd?: (event: NativeSyntheticEvent<NativeScrollEvent>) => void,
-    onScrollBeginDrag?: (event: NativeSyntheticEvent<NativeScrollEvent>) => void
+    onScrollBeginDrag?: (event: NativeSyntheticEvent<NativeScrollEvent>) => void,
+    pinnedMessagesString?: string
 }
 
-const ChatStream = ({ channelID, isThread = false, scrollRef, onMomentumScrollEnd, onScrollBeginDrag }: Props) => {
+const ChatStream = ({ channelID, isThread = false, scrollRef, onMomentumScrollEnd, onScrollBeginDrag, pinnedMessagesString }: Props) => {
 
 
     /** Fetching this here to avoid blank screen when the user opens the chat. 
@@ -30,7 +30,7 @@ const ChatStream = ({ channelID, isThread = false, scrollRef, onMomentumScrollEn
      */
     const doubleTapMessageEmoji = useAtomValue(doubleTapMessageEmojiAtom)
 
-    const { data, isLoading, error, loadOlderMessages, loadNewerMessages } = useChatStream(channelID, scrollRef, isThread)
+    const { data, isLoading, error, loadOlderMessages, loadNewerMessages } = useChatStream(channelID, scrollRef, isThread, pinnedMessagesString)
 
     if (isLoading) {
         return <ChatStreamSkeletonLoader />
