@@ -103,7 +103,7 @@ const styles = StyleSheet.create({
 })
 
 const Channels = ({ channels }: { channels: ChannelListItem[] }) => {
-    const colors = useColorScheme();
+    const { colors } = useColorScheme();
     return (
         <View>
             <Text className='text-xs px-3 py-1 text-muted-foreground'>Channels</Text>
@@ -117,7 +117,7 @@ const Channels = ({ channels }: { channels: ChannelListItem[] }) => {
                         }}
                         className='flex flex-row gap-2 items-center px-3 py-2 rounded-lg ios:active:bg-linkColor'
                         android_ripple={{ color: 'rgba(0,0,0,0.1)', borderless: false }}>
-                        <ChannelIcon type={channel.type} fill={colors.colors.icon} />
+                        <ChannelIcon type={channel.type} fill={colors.icon} />
                         <Text className="text-base">{channel.channel_name}</Text>
                         {channel.is_archived ?
                             <View className='px-1 mt-0.5 py-0.5 rounded-sm bg-red-100'>
