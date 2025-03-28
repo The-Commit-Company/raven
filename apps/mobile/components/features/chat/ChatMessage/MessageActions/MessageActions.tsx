@@ -9,6 +9,7 @@ import SaveMessage from './SaveMessage'
 import CreateThread from './CreateThread'
 import CopyMessage from './CopyMessage'
 import RetractVote from './RetractVote'
+import EditMessageAction from './EditMessageAction'
 import PinMessage from './PinMessage'
 import CopyFileMessageLink from './CopyFileMessageLink'
 import ShareMessageFile from './ShareMessageFile'
@@ -51,6 +52,9 @@ const MessageActions = ({ message, onClose, quickReactionEmojis }: MessageAction
                         <CopyFileMessageLink message={message as FileMessage} onClose={onClose} />
                     </View>
                 }
+
+                {(message && isOwner) && message.message_type === 'Text' && <EditMessageAction message={message} onClose={onClose} />}
+
                 {(message && isOwner) && <DeleteMessage message={message} onClose={onClose} />}
             </View>
 
