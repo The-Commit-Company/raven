@@ -32,12 +32,13 @@ export interface DateBlock {
 export interface HeaderBlock {
     message_type: 'header',
     name: string,
-    isOpenInThread: boolean
+    isOpenInThread: boolean,
+    pinnedMessagesString?: string
 }
 
 export type MessageDateBlock = Message | DateBlock | HeaderBlock
 
-const useChatStream = (channelID: string, listRef?: React.RefObject<LegendListRef>, isThread: boolean = false) => {
+const useChatStream = (channelID: string, listRef?: React.RefObject<LegendListRef>, isThread: boolean = false, pinnedMessagesString?: string) => {
 
     const siteInformation = useSiteContext()
 
@@ -361,6 +362,9 @@ const useChatStream = (channelID: string, listRef?: React.RefObject<LegendListRe
         // Loop through the messages array and add a date block before each date change
         // Also format the date to be displayed in the chat interface
 
+        let pinnedMessageIDs = pinnedMessagesString?.split('\n') ?? []
+        pinnedMessageIDs = pinnedMessageIDs.map(messageID => messageID.trim())
+
         // Messages are already sorted by date - from latest to oldest
         // Date separator is added whenever the date changes
         // Add `is_continuation` to the messages that are only apart by 2 minutes
@@ -395,6 +399,7 @@ const useChatStream = (channelID: string, listRef?: React.RefObject<LegendListRe
                 formattedTime: dayjs(lastMessage.creation).local().format('hh:mm A'),
                 is_continuation: 0,
                 isOpenInThread: isThread,
+                is_pinned: pinnedMessageIDs.includes(lastMessage.name) ? 1 : 0
             })
 
             // Loop through the messages and add date separators if the date changes
@@ -420,11 +425,11 @@ const useChatStream = (channelID: string, listRef?: React.RefObject<LegendListRe
                 const nextMessageSender = nextMessage.message_type === "System" ? null : nextMessage.is_bot_message ? nextMessage.bot : nextMessage.owner
 
                 if (nextMessageSender !== currentMessageSender) {
-                    messagesWithDateSeparators.push({ ...message, isOpenInThread: isThread, is_continuation: 0, formattedTime: formattedMessageTime, might_contain_link_preview })
+                    messagesWithDateSeparators.push({ ...message, isOpenInThread: isThread, is_continuation: 0, formattedTime: formattedMessageTime, might_contain_link_preview, is_pinned: pinnedMessageIDs.includes(message.name) ? 1 : 0 })
                 } else if (messageDateTime - currentDateTime > 120000) {
-                    messagesWithDateSeparators.push({ ...message, isOpenInThread: isThread, is_continuation: 0, formattedTime: formattedMessageTime, might_contain_link_preview })
+                    messagesWithDateSeparators.push({ ...message, isOpenInThread: isThread, is_continuation: 0, formattedTime: formattedMessageTime, might_contain_link_preview, is_pinned: pinnedMessageIDs.includes(message.name) ? 1 : 0 })
                 } else {
-                    messagesWithDateSeparators.push({ ...message, isOpenInThread: isThread, is_continuation: 1, formattedTime: formattedMessageTime, might_contain_link_preview })
+                    messagesWithDateSeparators.push({ ...message, isOpenInThread: isThread, is_continuation: 1, formattedTime: formattedMessageTime, might_contain_link_preview, is_pinned: pinnedMessageIDs.includes(message.name) ? 1 : 0 })
                 }
 
                 currentDate = messageDate
@@ -439,7 +444,7 @@ const useChatStream = (channelID: string, listRef?: React.RefObject<LegendListRe
 
 
 
-    }, [data, isThread, SYSTEM_TIMEZONE])
+    }, [data, isThread, SYSTEM_TIMEZONE, pinnedMessagesString])
 
     return {
         data: messages,

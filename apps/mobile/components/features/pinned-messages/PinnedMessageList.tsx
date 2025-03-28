@@ -6,6 +6,7 @@ import { useFrappeGetCall } from "frappe-react-sdk"
 import { View } from "react-native"
 import { Text } from '@components/nativewindui/Text';
 import PinnedMessageItem from "./PinnedMessageItem"
+import ErrorBanner from "@components/common/ErrorBanner"
 
 const PinnedMessageList = () => {
 
@@ -15,7 +16,13 @@ const PinnedMessageList = () => {
         revalidateOnFocus: false
     })
 
-    console.log(data)
+    if (error) {
+        return (
+            <View className="p-4">
+                <ErrorBanner error={error} />
+            </View>
+        )
+    }
 
     return (
         <LegendList
@@ -29,7 +36,6 @@ const PinnedMessageList = () => {
 }
 
 const PinnedMessagesEmptyState = () => {
-    const { colors } = useColorScheme()
     return (
         <View className="flex-1 justify-center items-center h-full">
             <Text className="text-foreground text-base font-medium">No pinned messages</Text>

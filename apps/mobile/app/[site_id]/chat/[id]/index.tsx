@@ -32,7 +32,7 @@ const Chat = () => {
                 }
             }} />
 
-            <ChatLayout channelID={id as string} />
+            <ChatLayout channelID={id as string} pinnedMessagesString={channel?.channelData.pinned_messages_string} />
 
         </>
     )

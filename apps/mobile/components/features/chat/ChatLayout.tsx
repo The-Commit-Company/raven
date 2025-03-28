@@ -29,10 +29,11 @@ export const useGradualAnimation = () => {
 }
 type Props = {
     channelID: string,
-    isThread?: boolean
+    isThread?: boolean,
+    pinnedMessagesString?: string
 }
 
-const ChatLayout = ({ channelID, isThread = false }: Props) => {
+const ChatLayout = ({ channelID, isThread = false, pinnedMessagesString }: Props) => {
     const { height } = useGradualAnimation()
     const scrollRef = useRef<LegendListRef>(null)
     const isNearBottomRef = useRef(true)
@@ -112,6 +113,7 @@ const ChatLayout = ({ channelID, isThread = false }: Props) => {
                     isThread={isThread}
                     onScrollBeginDrag={checkIfNearBottom}
                     onMomentumScrollEnd={checkIfNearBottom}
+                    pinnedMessagesString={pinnedMessagesString}
                 />
                 <ChatInput channelID={channelID} onSendMessage={onSendMessage} />
                 <Animated.View style={fakeView} />

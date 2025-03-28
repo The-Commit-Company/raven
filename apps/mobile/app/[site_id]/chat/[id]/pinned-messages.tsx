@@ -3,10 +3,9 @@ import { Text } from "@components/nativewindui/Text";
 import { useColorScheme } from "@hooks/useColorScheme";
 import { Link, Stack } from "expo-router";
 import CrossIcon from '@assets/icons/CrossIcon.svg';
-import PinIcon from '@assets/icons/PinIcon.svg';
 import { View } from "react-native";
 import PinnedMessageList from "@components/features/pinned-messages/PinnedMessageList";
-
+import PinOutlineIcon from "@assets/icons/PinOutlineIcon.svg";
 const PinnedMessages = () => {
 
     const { colors } = useColorScheme()
@@ -27,7 +26,7 @@ const PinnedMessages = () => {
                     },
                     headerTitle: () => (
                         <View className='flex-row items-center'>
-                            <PinIcon height={20} width={20} color={colors.foreground} />
+                            <PinOutlineIcon height={18} width={18} stroke={colors.foreground} />
                             <Text className='ml-2 text-base font-semibold'>Pinned messages</Text>
                         </View>
                     ),
