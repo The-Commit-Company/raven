@@ -14,7 +14,7 @@ import { useMemo } from 'react';
  * - channelData: ChannelData | null - the data of the channel - can be used to check if the channel is archived or not
  * - myProfile: UserFields | null - the profile of the current user
  */
-const useShouldJoinChannel = (channelID: string) => {
+const useShouldJoinChannel = (channelID: string, isThread: boolean) => {
     const { channel } = useCurrentChannelData(channelID)
     const channelData = channel?.channelData
 
@@ -54,7 +54,7 @@ const useShouldJoinChannel = (channelID: string) => {
         const isDM = channelData?.is_direct_message === 1 || channelData?.is_self_message === 1
 
         // If the channel data is loaded and the member profile is loaded, then check for this, else don't show anything.
-        if (!channelMemberProfile && !isDM && channelData && !isLoading) {
+        if (!channelMemberProfile && !isDM && (channelData || isThread) && !isLoading) {
             return {
                 shouldShowJoinBox: true,
                 canUserSendMessage: false
@@ -63,7 +63,7 @@ const useShouldJoinChannel = (channelID: string) => {
 
         return { canUserSendMessage: false, shouldShowJoinBox: false }
 
-    }, [channelMemberProfile, channelData, isLoading])
+    }, [channelMemberProfile, channelData, isLoading, isThread])
 
     return { canUserSendMessage, shouldShowJoinBox, channelMemberProfile, channelData, myProfile }
 

@@ -72,7 +72,7 @@ const ChatLayout = ({ channelID, isThread = false }: Props) => {
         }
     }, [])
 
-    const { canUserSendMessage, shouldShowJoinBox, channelMemberProfile, channelData, myProfile } = useShouldJoinChannel(channelID)
+    const { canUserSendMessage, shouldShowJoinBox, channelData, myProfile, channelMemberProfile } = useShouldJoinChannel(channelID, isThread)
 
     const fakeView = useAnimatedStyle(() => {
         return {
@@ -119,28 +119,30 @@ const ChatLayout = ({ channelID, isThread = false }: Props) => {
                     onMomentumScrollEnd={checkIfNearBottom}
                 />
                 {
-                    canUserSendMessage &&
-                    <>
+                    canUserSendMessage ?
                         <ChatInput channelID={channelID} onSendMessage={onSendMessage} />
-                        <Animated.View style={fakeView} />
-                    </>
+                        : null
                 }
+
+                {
+                    shouldShowJoinBox ?
+                        <JoinChannelBox
+                            channelID={channelID}
+                            isThread={isThread}
+                            user={myProfile?.name ?? ""} />
+                        : null
+                }
+                {
+                    channelData?.is_archived ?
+                        <ArchivedChannelBox
+                            channelID={channelID}
+                            isMemberAdmin={channelMemberProfile?.is_admin}
+                        />
+                        : null
+                }
+                <Animated.View style={fakeView} />
             </View>
-            {
-                shouldShowJoinBox &&
-                <JoinChannelBox
-                    channelData={channelData}
-                    user={myProfile?.name ?? ""} />
-            }
-            {
-                channelData?.is_archived ?
-                    <ArchivedChannelBox
-                        channelID={channelID}
-                        isMemberAdmin={channelMemberProfile?.is_admin}
-                    />
-                    : null
-            }
-            </View>
+
             <MessageActionsBottomSheet
                 messageActionsSheetRef={messageActionsSheetRef}
                 message={selectedMessage}

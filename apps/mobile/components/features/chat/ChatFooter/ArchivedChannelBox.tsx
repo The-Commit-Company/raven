@@ -12,7 +12,7 @@ interface ArchivedChannelBoxProps {
 
 export const ArchivedChannelBox = ({ channelID, isMemberAdmin }: ArchivedChannelBoxProps) => {
     return (
-        <View className="flex-col gap-2 items-center min-h-32 border border-border rounded-md px-4 py-4">
+        <View className="flex-col gap-2 items-center border-t border-l border-r border-border rounded-2xl px-4 py-4">
             <Text className="text-sm text-muted-foreground">This channel has been archived.</Text>
             {isMemberAdmin === 1 ? <UnArchiveButton channelID={channelID} /> : null}
         </View>
