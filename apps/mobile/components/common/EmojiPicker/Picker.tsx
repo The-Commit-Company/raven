@@ -10,7 +10,7 @@ import { ActivityIndicator } from '@components/nativewindui/ActivityIndicator';
 
 const DEFAULT_X_PADDING = 6;
 
-export type CategoryType = 'people' | 'nature' | 'foods' | 'activity' | 'places' | 'objects' | 'symbols' | 'flags';
+export type CategoryType = 'people' | 'nature' | 'foods' | 'activity' | 'places' | 'objects' | 'symbols' | 'flags' | "custom"
 
 export interface Emoji {
     id: string;
@@ -160,7 +160,7 @@ const EmojiItem = ({ emoji, onSelect, perLine }: { emoji: Emoji, onSelect: (emoj
                 onPress={onReact}
                 hitSlop={10}
             >
-                <Image source={source} style={{ width: emojiSize, height: emojiSize }} contentFit='cover' />
+                <Image source={source} style={{ width: emojiSize, height: emojiSize }} contentFit='scale-down' contentPosition={'center'} />
             </Pressable>
         );
     }

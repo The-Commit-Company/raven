@@ -3,6 +3,7 @@ import { View, Text, Dimensions, Pressable } from 'react-native';
 import Animated, { useAnimatedReaction, useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
 import { useColorScheme } from '@hooks/useColorScheme';
 import { CategoryType } from './Picker';
+import SmileIcon from "@assets/icons/SmileIcon.svg"
 
 interface CategoryItem {
     category: CategoryType;
@@ -52,20 +53,40 @@ const Categories = ({ items, onCategorySelect, activeCategory, disabledActiveCat
     return (
         <View>
             <View className="flex-row border-b-1 pb-2">
-                {items.map((item, index) => (
-                    <Pressable
-                        key={item.category}
-                        onPress={() => handleTabPress(index, item.category)}
-                        hitSlop={10}
-                        style={{
-                            width: tabWidth,
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                        }}
-                    >
-                        <Text className="text-center text-2xl">{item.categoryIcon}</Text>
-                    </Pressable>
-                ))}
+                {items.map((item, index) => {
+
+                    if (item.category === "custom") {
+                        return (
+                            <Pressable
+                                className='ios:active:bg-linkColor rounded-sm'
+                                onPress={() => handleTabPress(index, item.category)}
+                                hitSlop={10}
+                                style={{
+                                    width: tabWidth,
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                }}
+                            >
+                                <SmileIcon fill={colors.icon} width="100%" />
+                            </Pressable>
+                        )
+                    }
+
+                    return (
+                        <Pressable
+                            className='ios:active:bg-linkColor rounded-sm'
+                            onPress={() => handleTabPress(index, item.category)}
+                            hitSlop={10}
+                            style={{
+                                width: tabWidth,
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                            }}
+                        >
+                            <Text className="text-center text-2xl">{item.categoryIcon}</Text>
+                        </Pressable>
+                    )
+                })}
             </View>
 
             <View className="relative">
