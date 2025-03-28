@@ -27,7 +27,9 @@ const NotificationSetting = () => {
     const onToggle = useCallback((enabled: boolean) => {
         if (enabled) {
             messaging.requestPermission().then((authorizationStatus) => {
-                console.log('authorizationStatus', authorizationStatus)
+                if (authorizationStatus !== AuthorizationStatus.AUTHORIZED && authorizationStatus !== AuthorizationStatus.EPHEMERAL) {
+                    throw new Error('User has not granted permission to receive notifications.')
+                }
             }).then(() => {
                 messaging.getToken().then((token) => {
                     if (token) {
@@ -44,7 +46,6 @@ const NotificationSetting = () => {
                     } else {
                         toast.error('Failed to get token to subscribe.')
                     }
-                    console.log('token', token)
                 })
             })
         } else {

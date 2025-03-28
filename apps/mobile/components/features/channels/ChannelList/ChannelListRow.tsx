@@ -29,7 +29,8 @@ export function ChannelListRow({ channel }: { channel: ChannelListItem }) {
 
     const handleCopyLink = async () => {
         try {
-            const link = `https://${siteID}/chat/${channel.name}`
+            const workspace = channel.workspace ?? 'channels'
+            const link = `${siteID}/raven/${workspace}/${channel.name}`
             await Clipboard.setStringAsync(link)
             toast.success('Channel link copied to clipboard!')
         } catch (error) {
@@ -147,7 +148,7 @@ export function ChannelListRow({ channel }: { channel: ChannelListItem }) {
                     />
                 </ContextMenu.Item>
 
-                <ContextMenu.Item key="leave" destructive onSelect={showAlert}>
+                {channel.member_id && <ContextMenu.Item key="leave" destructive onSelect={showAlert}>
                     <ContextMenu.ItemTitle>Leave channel</ContextMenu.ItemTitle>
                     <ContextMenu.ItemIcon
                         ios={{
@@ -169,7 +170,7 @@ export function ChannelListRow({ channel }: { channel: ChannelListItem }) {
                             ],
                         }}
                     />
-                </ContextMenu.Item>
+                </ContextMenu.Item>}
 
                 <ContextMenu.Arrow />
             </ContextMenu.Content>

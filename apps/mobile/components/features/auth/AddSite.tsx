@@ -54,7 +54,6 @@ const AddSite = (props: Props) => {
             .then(res => res.json())
             .then(data => {
                 if (data.message && data.message.client_id) {
-                    console.log(data.message)
                     setSiteInformation({
                         url,
                         ...data.message

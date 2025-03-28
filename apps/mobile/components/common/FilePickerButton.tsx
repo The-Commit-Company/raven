@@ -30,8 +30,6 @@ const FilePickerButton = ({ onPick }: FilePickerButtonProps) => {
                 })
 
                 onPick(parsedFiles)
-            } else {
-                console.log('Document picking was canceled.')
             }
         } catch (error) {
             console.error('Error picking documents:', error)
