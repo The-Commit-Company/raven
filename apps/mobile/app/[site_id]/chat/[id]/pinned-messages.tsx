@@ -1,0 +1,40 @@
+import { Button } from "@components/nativewindui/Button";
+import { Text } from "@components/nativewindui/Text";
+import { useColorScheme } from "@hooks/useColorScheme";
+import { Link, Stack } from "expo-router";
+import CrossIcon from '@assets/icons/CrossIcon.svg';
+import PinIcon from '@assets/icons/PinIcon.svg';
+import { View } from "react-native";
+import PinnedMessageList from "@components/features/pinned-messages/PinnedMessageList";
+
+const PinnedMessages = () => {
+
+    const { colors } = useColorScheme()
+
+    return (
+        <>
+            <Stack.Screen
+                options={{
+                    headerStyle: { backgroundColor: colors.background },
+                    headerLeft() {
+                        return (
+                            <Link asChild href="../" relativeToDirectory>
+                                <Button variant="plain" className="ios:px-0" hitSlop={10}>
+                                    <CrossIcon color={colors.icon} height={24} width={24} />
+                                </Button>
+                            </Link>
+                        )
+                    },
+                    headerTitle: () => (
+                        <View className='flex-row items-center'>
+                            <PinIcon height={20} width={20} color={colors.foreground} />
+                            <Text className='ml-2 text-base font-semibold'>Pinned messages</Text>
+                        </View>
+                    ),
+                }} />
+            <PinnedMessageList />
+        </>
+    )
+}
+
+export default PinnedMessages;

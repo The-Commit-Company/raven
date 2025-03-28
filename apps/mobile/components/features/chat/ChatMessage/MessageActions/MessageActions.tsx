@@ -11,6 +11,7 @@ import CopyMessage from './CopyMessage'
 import RetractVote from './RetractVote'
 import CopyMessageLink from './CopyMessageLink'
 import DownloadMessageFile from './DownloadMessageFile'
+import PinMessage from './PinMessage'
 
 interface MessageActionsProps {
     message: Message
@@ -40,6 +41,8 @@ const MessageActions = ({ message, onClose }: MessageActionsProps) => {
                 {(message && !message.is_thread) && <CreateThread message={message} onClose={onClose} />}
 
                 {(message && message.message_type === 'Text') && <CopyMessage message={message} onClose={onClose} />}
+
+                {message && <PinMessage message={message} onClose={onClose} />}
 
                 {(message && ['File', 'Image'].includes(message.message_type)) &&
                     <View className='flex flex-col gap-0'>

@@ -100,6 +100,11 @@ export default function SiteLayout() {
                                         presentation: 'modal',
                                     }}
                                 />
+                                <Stack.Screen
+                                    name="chat/[id]/pinned-messages"
+                                    options={{
+                                        presentation: 'modal',
+                                    }} />
                             </Stack>
                         </BottomSheetModalProvider>
                     </Providers>

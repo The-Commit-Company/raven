@@ -47,6 +47,13 @@ const ChannelInfoModal = ({ channel, isModalVisible, setModalVisible }: ChannelI
         })
     }
 
+    const handleGoToPins = () => {
+        setModalVisible(false)
+        router.push('./pinned-messages', {
+            relativeToDirectory: true
+        })
+    }
+
     // Animated styles for the modal
     const animatedModalStyle = useAnimatedStyle(() => {
         return {
@@ -99,7 +106,7 @@ const ChannelInfoModal = ({ channel, isModalVisible, setModalVisible }: ChannelI
                             <ChevronRightIcon height={24} width={24} fill={colors.colors.foreground} strokeWidth={'1px'} />
                         </View>
                     </Pressable>
-                    <Pressable onPress={() => { }}
+                    <Pressable onPress={handleGoToPins}
                         className='rounded-xl ios:active:bg-linkColor'
                         android_ripple={{ color: 'rgba(0,0,0,0.1)', borderless: false }}>
                         <View className='flex-row items-center justify-between px-2'>
