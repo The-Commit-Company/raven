@@ -143,13 +143,15 @@ const renderers = {
 
 const classesStylesLight = {
     'mention': {
-        color: 'rgb(87, 83, 198)',
+        color: '#3A5BC7',
+        backgroundColor: '#EDF2FE',
     }
 }
 
 const classesStylesDark = {
     'mention': {
-        color: '#B1A9FF',
+        color: '#8DA4EF',
+        backgroundColor: '#182449',
     }
 }
 

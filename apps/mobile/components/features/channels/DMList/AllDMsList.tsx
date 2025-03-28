@@ -44,13 +44,12 @@ const AllDMsList = () => {
 
     return (
         <View className="flex flex-col">
-            <View className="p-3">
+            <View className="px-3 pt-3 pb-1.5">
                 <SearchInput
                     onChangeText={setSearchQuery}
                     value={searchQuery}
                 />
             </View>
-            <Divider />
             <View className='flex-1'>
                 <FlashList
                     data={filteredDMs ?? []}
