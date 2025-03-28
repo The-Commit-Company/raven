@@ -67,6 +67,7 @@ const Categories = ({ onCategorySelect, activeCategory, disabledActiveCategory =
                     if (item.category === "custom") {
                         return (
                             <Pressable
+                                key={item.category}
                                 className='ios:active:bg-linkColor rounded-sm'
                                 onPress={() => handleTabPress(index, item.category)}
                                 hitSlop={10}
@@ -83,6 +84,7 @@ const Categories = ({ onCategorySelect, activeCategory, disabledActiveCategory =
 
                     return (
                         <Pressable
+                            key={item.category}
                             className='ios:active:bg-linkColor rounded-sm'
                             onPress={() => handleTabPress(index, item.category)}
                             hitSlop={10}
