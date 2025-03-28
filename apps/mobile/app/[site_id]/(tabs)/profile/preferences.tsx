@@ -8,10 +8,11 @@ import HeaderBackButton from '@components/common/HeaderBackButton';
 import { useAtom } from 'jotai';
 import { doubleTapMessageEmojiAtom, quickReactionEmojisAtom } from '@lib/preferences';
 import { Pressable, View } from 'react-native';
-import EmojiPickerComponent from '@components/common/EmojiPicker/EmojiPicker';
+import EmojiPicker from '@components/common/EmojiPicker/EmojiPicker';
 import { useState } from 'react';
 import { Sheet, useSheetRef } from '@components/nativewindui/Sheet';
 import { BottomSheetView } from '@gorhom/bottom-sheet';
+import { Emoji } from '@components/common/EmojiPicker/Picker';
 
 const REACTION_PRESSABLE_STYLES = 'w-12 h-12 flex items-center justify-center p-2 bg-card dark:bg-card rounded-full active:bg-muted/20'
 
@@ -30,13 +31,13 @@ export default function PreferencesScreen() {
     const [isEmojiPickerOpen, setIsEmojiPickerOpen] = useState<false | 'doubleTapMessageEmoji' | 'quickReactionEmojis-1' | 'quickReactionEmojis-2' | 'quickReactionEmojis-3' | 'quickReactionEmojis-4' | 'quickReactionEmojis-5'>(false)
 
 
-    const onEmojiSelect = (emoji: string) => {
+    const onEmojiSelect = (emoji: Emoji) => {
         if (isEmojiPickerOpen === 'doubleTapMessageEmoji') {
-            setDoubleTapMessageEmoji(emoji)
+            setDoubleTapMessageEmoji(emoji.native)
         } else if (isEmojiPickerOpen && isEmojiPickerOpen.includes('quickReactionEmojis')) {
             const index = parseInt(isEmojiPickerOpen.split('-')[1]) - 1
             const newEmojis = [...quickReactionEmojis]
-            newEmojis[index] = emoji
+            newEmojis[index] = emoji.native
             setQuickReactionEmojis(newEmojis)
         }
 
@@ -131,7 +132,7 @@ export default function PreferencesScreen() {
                 </Form>
                 <Sheet enableDynamicSizing={false} ref={emojiBottomSheetRef} snapPoints={["80"]}>
                     <BottomSheetView className='flex-1'>
-                        <EmojiPickerComponent onReact={onEmojiSelect} />
+                        <EmojiPicker allowCustomEmojis={false} onReact={onEmojiSelect} />
                     </BottomSheetView>
                 </Sheet>
             </KeyboardAwareScrollView>
