@@ -116,9 +116,6 @@ const ReactionButton = ({ reaction, currentUser, saveReaction, onLongPress, long
             }).blocksExternalGesture(longPressGesture)
     }, [onLongPress, longPressGesture])
 
-    console.log(reaction);
-
-
     return (
         <GestureDetector gesture={reactionLongPressGesture}>
             <TouchableOpacity
