@@ -4,7 +4,7 @@ import { FlashList } from '@shopify/flash-list';
 import SearchInput from '../SearchInput/SearchInput';
 import { Image } from 'expo-image';
 import useFileURL from '@hooks/useFileURL';
-import Categories, { CATEGORIES } from './Categories';
+import Categories from './Categories';
 import { emojis as EMOJIS, categories as EMOJI_CATEGORIES } from "./emojis.json";
 import { ActivityIndicator } from '@components/nativewindui/ActivityIndicator';
 import { useDebounce } from '@raven/lib/hooks/useDebounce';
