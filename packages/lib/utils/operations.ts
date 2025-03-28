@@ -71,6 +71,24 @@ export const getFileMimeType = (fileName: string) => {
 // list of mostly used file extensions
 export const ALLOWED_FILE_EXTENSIONS = ['pdf', 'doc', 'docx', 'xls', 'xlsx', 'csv', 'ppt', 'pptx', 'txt', 'jpg', 'jpeg', 'png', 'gif', 'bmp', 'tiff', 'ico', 'webp', 'mp4', 'webm', 'mp3', 'wav', 'ogg', 'avi', 'mov', 'wmv', 'flv', 'mkv', 'webm']
 
+/**
+ * Function to format bytes to human readable format
+ * @param bytes size in bytes
+ * @param decimals number of decimal places
+ * @returns string of human readable size
+ */
+export const formatBytes = (bytes: number, decimals = 0) => {
+
+    if (bytes === 0) return '0 Bytes'
+
+    const k = 1024
+    const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB']
+
+    const i = Math.floor(Math.log(bytes) / Math.log(k))
+
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(decimals)) + ' ' + sizes[i]
+}
+
 export const getSiteNameFromUrl = (url?: string) => {
     if (!url) return ''
     return url.replace('https://', '').replace('http://', '').replace('www.', '').split('/')[0]
