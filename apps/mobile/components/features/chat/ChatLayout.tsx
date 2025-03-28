@@ -9,6 +9,9 @@ import { messageActionsSelectedMessageAtom } from '@lib/ChatInputUtils';
 import { NativeScrollEvent, NativeSyntheticEvent, Platform, View } from 'react-native';
 import ChatStream from '../chat-stream/ChatStream';
 import ChatInput from './ChatInput/ChatInput';
+import { JoinChannelBox } from '@components/features/chat/ChatFooter/JoinChannelBox';
+import { ArchivedChannelBox } from '@components/features/chat/ChatFooter/ArchivedChannelBox';
+import useShouldJoinChannel from '@hooks/useShouldJoinChannel';
 
 const PADDING_BOTTOM = Platform.OS === 'ios' ? 20 : 0;
 
@@ -69,6 +72,8 @@ const ChatLayout = ({ channelID, isThread = false }: Props) => {
         }
     }, [])
 
+    const { canUserSendMessage, shouldShowJoinBox, channelMemberProfile, channelData, myProfile } = useShouldJoinChannel(channelID)
+
     const fakeView = useAnimatedStyle(() => {
         return {
             height: Math.abs(height.value),
@@ -113,8 +118,28 @@ const ChatLayout = ({ channelID, isThread = false }: Props) => {
                     onScrollBeginDrag={checkIfNearBottom}
                     onMomentumScrollEnd={checkIfNearBottom}
                 />
-                <ChatInput channelID={channelID} onSendMessage={onSendMessage} />
-                <Animated.View style={fakeView} />
+                {
+                    canUserSendMessage &&
+                    <>
+                        <ChatInput channelID={channelID} onSendMessage={onSendMessage} />
+                        <Animated.View style={fakeView} />
+                    </>
+                }
+            </View>
+            {
+                shouldShowJoinBox &&
+                <JoinChannelBox
+                    channelData={channelData}
+                    user={myProfile?.name ?? ""} />
+            }
+            {
+                channelData?.is_archived ?
+                    <ArchivedChannelBox
+                        channelID={channelID}
+                        isMemberAdmin={channelMemberProfile?.is_admin}
+                    />
+                    : null
+            }
             </View>
             <MessageActionsBottomSheet
                 messageActionsSheetRef={messageActionsSheetRef}
