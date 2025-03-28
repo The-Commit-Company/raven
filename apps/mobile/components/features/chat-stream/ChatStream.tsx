@@ -7,16 +7,18 @@ import MessageItem from './MessageItem'
 import ChannelHistoryFirstMessage from './FirstMessageBlock'
 import { useAtomValue } from 'jotai'
 import { doubleTapMessageEmojiAtom } from '@lib/preferences'
-import { View } from 'react-native'
+import { NativeScrollEvent, NativeSyntheticEvent, View } from 'react-native'
 import FullPageLoader from '@components/layout/FullPageLoader'
 
 type Props = {
     channelID: string,
     isThread?: boolean,
-    scrollRef?: RefObject<LegendListRef>
+    scrollRef?: RefObject<LegendListRef>,
+    onMomentumScrollEnd?: (event: NativeSyntheticEvent<NativeScrollEvent>) => void,
+    onScrollBeginDrag?: (event: NativeSyntheticEvent<NativeScrollEvent>) => void
 }
 
-const ChatStream = ({ channelID, isThread = false, scrollRef }: Props) => {
+const ChatStream = ({ channelID, isThread = false, scrollRef, onMomentumScrollEnd, onScrollBeginDrag }: Props) => {
 
 
     /** Fetching this here to avoid blank screen when the user opens the chat. 
@@ -33,36 +35,6 @@ const ChatStream = ({ channelID, isThread = false, scrollRef }: Props) => {
             <FullPageLoader title='' description='Fetching messages...' />
         </View>
     }
-
-    // return <FlatList
-    //     data={data}
-    //     ref={listRef}
-    //     inverted
-    //     maintainVisibleContentPosition={{
-    //         minIndexForVisible: 0
-    //     }}
-    //     keyboardDismissMode='on-drag'
-    //     // onContentSizeChange={() => {
-    //     //     setTimeout(() => {
-    //     //         listRef.current?.scrollToEnd({ animated: false })
-    //     //     }, 100)
-    //     // }}
-    //     ListEmptyComponent={isLoading ? <View>
-    //         {/* TODO: Add skeleton loader here */}
-    //         <Text>Loading...</Text>
-    //     </View> : null}
-    //     onStartReached={() => {
-    //         // TODO: Load newer messages
-    //         console.log('onStartReached')
-    //     }}
-    //     onEndReached={() => {
-    //         // TODO: Load older messages
-    //         console.log('onEndReached')
-    //     }}
-    //     renderItem={MessageContentRenderer}
-    //     keyExtractor={messageKeyExtractor}
-    //     ListFooterComponent={<ChannelHistoryFirstMessage channelID={channelID} />}
-    // />
 
     return (
         <LegendList
@@ -83,13 +55,10 @@ const ChatStream = ({ channelID, isThread = false, scrollRef }: Props) => {
             contentContainerStyle={{
                 paddingBottom: 32
             }}
+            onMomentumScrollEnd={onMomentumScrollEnd}
+            onScrollBeginDrag={onScrollBeginDrag}
             onStartReached={loadOlderMessages}
             onEndReached={loadNewerMessages}
-        // contentContainerStyle={{
-        //     paddingHorizontal: 4,
-        //     // Add bottom padding to prevent last message from being hidden under ChatInput
-        //     paddingBottom: 0
-        // }}
         />
     )
 
