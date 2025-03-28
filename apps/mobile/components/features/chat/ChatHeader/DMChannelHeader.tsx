@@ -22,6 +22,7 @@ const DMChannelHeader = ({ channelData }: { channelData: DMChannelListItem }) =>
                 fallbackProps={{ className: "rounded-[4px]" }}
                 textProps={{ className: "text-xs font-medium" }}
                 imageProps={{ className: "rounded-[4px]" }}
+                indicatorProps={{ className: "h-2 w-2" }}
             />
             <Text className='text-base font-semibold text-foreground'>{user?.full_name ?? peer}</Text>
         </View>

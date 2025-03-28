@@ -60,7 +60,7 @@ const FileMessageRenderer = ({ message, doubleTapGesture }: Props) => {
 export const FileMessageView = ({ message }: { message: FileMessage }) => {
 
     const fileName = getFileName(message.file)
-    return <View className='rounded-md mb-1 p-2 border border-linkColor dark:border-border bg-background w-full'>
+    return <View className='rounded-lg mb-1 p-2 border border-linkColor dark:border-border bg-background w-full'>
         <View className='flex-row items-center gap-2 w-full'>
             <UniversalFileIcon fileName={fileName} height={28} width={28} />
             <Text className='text-base text-foreground line-clamp-1 truncate flex-1' numberOfLines={1}>

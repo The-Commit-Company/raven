@@ -58,7 +58,7 @@ const ReplyMessageBox = ({ message, onPress }: ReplyMessageBoxProps) => {
     return (
         <Pressable
             onPress={onPress}
-            className='flex-1 p-2 w-full border border-border bg-background rounded-md ios:active:bg-linkColor/50'
+            className='flex-1 p-2 w-full border border-border bg-background rounded-lg ios:active:bg-linkColor/50'
             android_ripple={{ color: 'rgba(0,0,0,0.1)', borderless: false }}>
             <View className="border-l-2 border-border pl-2 gap-2">
                 <View className="flex-row items-center gap-2">

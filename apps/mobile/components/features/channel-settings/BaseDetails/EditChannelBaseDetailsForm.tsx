@@ -64,7 +64,7 @@ const EditChannelBaseDetailsForm = () => {
                                 },
                             }}
                             render={({ field: { onBlur, value }, fieldState: { error } }) => (
-                                <View className={`mt-2.5 flex-row items-center rounded-md border ${error ? "border-red-600" : "border-border"}`}>
+                                <View className={`mt-2.5 flex-row items-center rounded-lg border ${error ? "border-red-600" : "border-border"}`}>
                                     <View className="ml-3 mr-1 items-center">
                                         <ChannelIcon type={channel?.channelData.type ?? ""} fill={colors.icon} />
                                     </View>
@@ -104,7 +104,7 @@ const EditChannelBaseDetailsForm = () => {
                                 required: "Please add a channel description",
                             }}
                             render={({ field: { onBlur, value, onChange }, fieldState: { error } }) => (
-                                <View className={`mt-2.5 flex-row items-center rounded-md border ${error ? "border-red-600" : "border-border"}`}>
+                                <View className={`mt-2.5 flex-row items-center rounded-lg border ${error ? "border-red-600" : "border-border"}`}>
                                     <View className="flex-1">
                                         <TextField
                                             className="px-3"

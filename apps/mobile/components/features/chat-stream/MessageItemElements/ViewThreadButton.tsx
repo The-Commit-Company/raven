@@ -10,7 +10,7 @@ type Props = {
 
 const ViewThreadButton = ({ message }: Props) => {
     return <Link href={`../../thread/${message.name}`} relativeToDirectory asChild>
-        <Pressable hitSlop={10} className='flex flex-row items-center gap-3 border border-border bg-background rounded-md px-3 py-2 active:bg-card-background/40'>
+        <Pressable hitSlop={10} className='flex flex-row items-center gap-3 border border-border bg-background rounded-lg px-3 py-2 active:bg-card-background/40'>
             <ThreadReplyCount message={message} />
             <Text className='text-sm text-muted-foreground/80'>View Thread</Text>
         </Pressable>

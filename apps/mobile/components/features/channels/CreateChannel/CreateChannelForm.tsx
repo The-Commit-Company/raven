@@ -83,7 +83,7 @@ const CreateChannelForm = () => {
                             },
                         }}
                         render={({ field: { onBlur, value }, fieldState: { error } }) => (
-                            <View className={`flex-row items-center rounded-md border ${error ? "border-red-600" : "border-border"}`}>
+                            <View className={`flex-row items-center rounded-lg border ${error ? "border-red-600" : "border-border"}`}>
                                 {/* Channel Icon */}
                                 <View className="mx-3">
                                     <ChannelIcon type={channelType} fill={colors.icon} />
@@ -130,7 +130,7 @@ const CreateChannelForm = () => {
                         }}
                         render={({ field: { onChange, onBlur, value } }) => (
                             <TextInput
-                                className="w-full min-h-24 border border-border rounded-md px-3 pt-2 pb-2 text-[16px] leading-5 text-foreground"
+                                className="w-full min-h-24 border border-border rounded-lg px-3 pt-2 pb-2 text-[16px] leading-5 text-foreground"
                                 placeholder="Discuss the latest features and ideas and keep track of the deliverables"
                                 multiline
                                 numberOfLines={6}

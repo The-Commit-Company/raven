@@ -11,7 +11,7 @@ const UnreadFilter = ({ onlyShowUnread, setOnlyShowUnread }: { onlyShowUnread: b
         <View>
             <DropdownMenu.Root>
                 <DropdownMenu.Trigger>
-                    <View className={`items-center p-2 border border-border rounded-md w-fit ${onlyShowUnread ? 'border-primary bg-primary/5' : ''}`}>
+                    <View className={`items-center p-2 border border-border rounded-lg w-fit ${onlyShowUnread ? 'border-primary bg-primary/5' : ''}`}>
                         <FilterIcon color={colors.icon} height={18} width={18} />
                     </View>
                 </DropdownMenu.Trigger>

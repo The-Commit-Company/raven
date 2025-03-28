@@ -138,7 +138,7 @@ const ChannelMemberRow = ({ member }: { member: Member }) => {
             rightThreshold={40}
             renderRightActions={(prog, drag) => RightAction(prog, drag, member)}>
             <View>
-                <Pressable onLongPress={showActions} className='ios:active:bg-linkColor flex-row items-center justify-between rounded-md'>
+                <Pressable onLongPress={showActions} className='ios:active:bg-linkColor flex-row items-center justify-between rounded-lg'>
                     <View className='gap-3 px-4 py-3 flex-row items-center'>
                         <UserAvatar
                             src={member.user_image ?? ""}

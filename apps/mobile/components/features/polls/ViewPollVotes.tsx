@@ -99,7 +99,7 @@ const VotesBlock = ({ votesData, poll }: { votesData: PollVotesResponse; poll: P
                                 {option.count} vote{option.count > 1 ? 's' : ''}
                             </Text>
                         </View>
-                        <View className="bg-card rounded-md p-2.5">
+                        <View className="bg-card rounded-lg p-2.5">
                             {option.users.map((user, index) => (
                                 <View key={user}>
                                     <UserVote user_id={user} />

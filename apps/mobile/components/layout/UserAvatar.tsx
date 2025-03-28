@@ -116,7 +116,7 @@ const ImageComponent = ({ status, source, alt, onDisplay, onError, rounded, ...p
             flex: 1,
             width: '100%',
             height: '100%',
-            borderRadius: rounded ? 40 : 4,
+            borderRadius: rounded ? 40 : 6,
             aspectRatio: 1,
         }}
         onDisplay={onDisplay}

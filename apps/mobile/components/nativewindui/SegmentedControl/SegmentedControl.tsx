@@ -4,7 +4,6 @@ import { Pressable, View } from 'react-native';
 import { SegmentControlProps } from './types';
 
 import { Text } from '@components/nativewindui/Text';
-import { Button } from '@components/nativewindui/Button';
 import { cn } from '@lib/cn';
 import clsx from 'clsx';
 
@@ -14,7 +13,6 @@ function SegmentedControl({
   onIndexChange,
   onValueChange,
   enabled = true,
-  materialTextClassName,
   iosMomentary: _iosMomentary,
 }: SegmentControlProps) {
   const id = React.useId();

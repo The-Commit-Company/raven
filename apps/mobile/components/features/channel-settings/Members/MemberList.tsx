@@ -23,14 +23,14 @@ configureReanimatedLogger({
 })
 
 const MemberList: React.FC<MemberListProps> = ({ filteredMembers, selectedMembers, handleSelectMember, debouncedText }) => {
-    const { colors, isDarkColorScheme } = useColorScheme()
+    const { isDarkColorScheme } = useColorScheme()
     return (
         <FlashList
             data={filteredMembers}
             renderItem={({ item }) => {
                 const isMemberSelected = selectedMembers.find(member => member.name === item.name);
                 return (
-                    <Pressable onPress={() => handleSelectMember(item as Member)} className='ios:active:bg-background dark:ios:active:bg-linkColor flex-row items-center justify-between rounded-md px-2.5'>
+                    <Pressable onPress={() => handleSelectMember(item as Member)} className='ios:active:bg-background dark:ios:active:bg-linkColor flex-row items-center justify-between rounded-lg px-2.5'>
                         <View className='gap-3 px-2 py-2.5 flex-row items-center'>
                             <View className='relative'>
                                 <UserAvatar
