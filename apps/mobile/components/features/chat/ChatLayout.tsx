@@ -1,6 +1,6 @@
 import Animated, { useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
 import { useKeyboardHandler } from 'react-native-keyboard-controller';
-import { useEffect, useMemo, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import { LegendListRef } from '@legendapp/list';
 import MessageActionsBottomSheet from '@components/features/chat/ChatMessage/MessageActions/MessageActionsBottomSheet';
 import { useSheetRef } from '@components/nativewindui/Sheet';
@@ -9,10 +9,9 @@ import { messageActionsSelectedMessageAtom } from '@lib/ChatInputUtils';
 import { Platform, View } from 'react-native';
 import ChatStream from '../chat-stream/ChatStream';
 import ChatInput from './ChatInput/ChatInput';
-import { useCurrentChannelData } from '@hooks/useCurrentChannelData';
-import { Member, useFetchChannelMembers } from '@raven/lib/hooks/useFetchChannelMembers';
-import useCurrentRavenUser from '@raven/lib/hooks/useCurrentRavenUser';
-import { JoinChannelBox } from './ChatFooter/JoinChannelBox';
+import { JoinChannelBox } from '@components/features/chat/ChatFooter/JoinChannelBox';
+import { ArchivedChannelBox } from '@components/features/chat/ChatFooter/ArchivedChannelBox';
+import useShouldJoinChannel from '@hooks/useShouldJoinChannel';
 
 const PADDING_BOTTOM = Platform.OS === 'ios' ? 20 : 0;
 
@@ -36,12 +35,7 @@ const ChatLayout = ({ channelID, isThread = false }: Props) => {
 
     const { height } = useGradualAnimation()
 
-    const { channel } = useCurrentChannelData(channelID)
-    const channelData = channel?.channelData
-    const type = channel?.type
-
-    const { myProfile } = useCurrentRavenUser()
-    const { channelMembers, isLoading } = useFetchChannelMembers(channelID)
+    const { canUserSendMessage, shouldShowJoinBox, channelMemberProfile, channelData, myProfile } = useShouldJoinChannel(channelID)
 
     const fakeView = useAnimatedStyle(() => {
         return {
@@ -69,50 +63,6 @@ const ChatLayout = ({ channelID, isThread = false }: Props) => {
     const handleSheetClose = () => {
         setSelectedMessage(null)
     }
-
-    const channelMemberProfile: Member | null = useMemo(() => {
-        if (myProfile?.name && channelMembers) {
-            return channelMembers[myProfile?.name] ?? null
-        }
-        return null
-    }, [myProfile?.name, channelMembers])
-
-    const { canUserSendMessage, shouldShowJoinBox } = useMemo(() => {
-
-        if (channelData?.is_archived) {
-            return {
-                canUserSendMessage: false,
-                shouldShowJoinBox: false
-            }
-        }
-
-        if (channelData?.type === 'Open') {
-            return {
-                canUserSendMessage: true,
-                shouldShowJoinBox: false
-            }
-        }
-
-        if (channelMemberProfile) {
-            return {
-                canUserSendMessage: true,
-                shouldShowJoinBox: false
-            }
-        }
-
-        const isDM = channelData?.is_direct_message === 1 || channelData?.is_self_message === 1
-
-        // If the channel data is loaded and the member profile is loaded, then check for this, else don't show anything.
-        if (!channelMemberProfile && !isDM && channelData && !isLoading) {
-            return {
-                shouldShowJoinBox: true,
-                canUserSendMessage: false
-            }
-        }
-
-        return { canUserSendMessage: false, shouldShowJoinBox: false }
-
-    }, [channelMemberProfile, channelData, isLoading])
 
     useEffect(() => {
         return () => {
@@ -144,6 +94,14 @@ const ChatLayout = ({ channelID, isThread = false }: Props) => {
                 <JoinChannelBox
                     channelData={channelData}
                     user={myProfile?.name ?? ""} />
+            }
+            {
+                channelData?.is_archived ?
+                    <ArchivedChannelBox
+                        channelID={channelID}
+                        isMemberAdmin={channelMemberProfile?.is_admin}
+                    />
+                    : null
             }
             <MessageActionsBottomSheet
                 messageActionsSheetRef={messageActionsSheetRef}

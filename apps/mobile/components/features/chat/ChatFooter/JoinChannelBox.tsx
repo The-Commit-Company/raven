@@ -5,6 +5,7 @@ import { Button } from "@components/nativewindui/Button"
 import ErrorBanner from "@components/common/ErrorBanner"
 import { Text } from "@components/nativewindui/Text"
 import { View } from "react-native"
+
 interface JoinChannelBoxProps {
     channelData?: ChannelListItem,
     user: string,
