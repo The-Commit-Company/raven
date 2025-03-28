@@ -25,12 +25,13 @@ export const useLogout = () => {
                 router.replace('/landing')
             })
             .then(() => {
-                deleteAccessToken(siteInformation?.sitename || '')
+                return deleteAccessToken(siteInformation?.sitename || '')
             })
             .catch((error) => {
                 console.error(error)
                 toast.error('Failed to log out')
-            }).then(() => {
+            })
+            .then(() => {
                 revokeAsync({
                     clientId: siteInformation?.client_id || '',
                     token: tokenParams?.token?.() || ''

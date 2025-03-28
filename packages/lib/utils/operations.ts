@@ -88,3 +88,8 @@ export const formatBytes = (bytes: number, decimals = 0) => {
 
     return parseFloat((bytes / Math.pow(k, i)).toFixed(decimals)) + ' ' + sizes[i]
 }
+
+export const getSiteNameFromUrl = (url?: string) => {
+    if (!url) return ''
+    return url.replace('https://', '').replace('http://', '').replace('www.', '').split('/')[0]
+}
