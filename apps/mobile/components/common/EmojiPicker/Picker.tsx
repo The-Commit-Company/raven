@@ -7,6 +7,7 @@ import useFileURL from '@hooks/useFileURL';
 import Categories, { CATEGORIES } from './Categories';
 import { emojis as EMOJIS, categories as EMOJI_CATEGORIES } from "./emojis.json";
 import { ActivityIndicator } from '@components/nativewindui/ActivityIndicator';
+import { useDebounce } from '@raven/lib/hooks/useDebounce';
 
 const DEFAULT_X_PADDING = 6;
 
@@ -46,6 +47,8 @@ const EmojiPicker = ({ customEmojis, onSelect, perLine, defaultCategory = "peopl
     const [category, setCategory] = useState<CategoryType>(defaultCategory);
     const [emojis, setEmojis] = useState<{ [key: string]: Emoji[] }>({});
     const [searchText, setSearchText] = useState<string>('');
+    const debouncedText = useDebounce(searchText)
+
     const [loading, setLoading] = useState<boolean>(true);
 
     useEffect(() => {
@@ -90,10 +93,10 @@ const EmojiPicker = ({ customEmojis, onSelect, perLine, defaultCategory = "peopl
 
     const filteredEmojis = useMemo(() => {
         const emojisByCategory = emojis[category];
-        if (!searchText) return emojisByCategory;
+        if (!debouncedText) return emojisByCategory;
         const allEmojis = Object.values(emojis).flat();
         return allEmojis.filter((emoji) => {
-            const searchLower = searchText.toLowerCase();
+            const searchLower = debouncedText.toLowerCase();
             return (
                 (emoji.keywords?.some((keyword) => keyword.toLowerCase().includes(searchLower)) || false) ||
                 ((emoji.emoticons || []).some((emoticon) => emoticon.toLowerCase().includes(searchLower))) ||
@@ -103,7 +106,7 @@ const EmojiPicker = ({ customEmojis, onSelect, perLine, defaultCategory = "peopl
                 (emoji.native?.includes(searchLower) || false)
             );
         });
-    }, [emojis, searchText, category]);
+    }, [emojis, debouncedText, category]);
 
     const { emojiContainerSize } = getEmojiDimensions(DEFAULT_X_PADDING, perLine);
 

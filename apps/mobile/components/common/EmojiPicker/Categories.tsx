@@ -1,23 +1,31 @@
 import { useMemo, useCallback } from 'react';
-import { View, Text, Dimensions, Pressable } from 'react-native';
+import { View, Dimensions, Pressable } from 'react-native';
 import Animated, { useAnimatedReaction, useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
 import { useColorScheme } from '@hooks/useColorScheme';
 import { CategoryType } from './Picker';
-import SmileIcon from "@assets/icons/SmileIcon.svg"
+import PeopleIcon from "@assets/icons/emoji-picker-icons/PeopleIcon.svg"
+import NatureIcon from "@assets/icons/emoji-picker-icons/NatureIcon.svg"
+import FoodsIcon from "@assets/icons/emoji-picker-icons/FoodsIcon.svg"
+import ActivityIcon from "@assets/icons/emoji-picker-icons/ActivityIcon.svg"
+import PlacesIcon from "@assets/icons/emoji-picker-icons/PlacesIcon.svg"
+import ObjectsIcon from "@assets/icons/emoji-picker-icons/ObjectsIcon.svg"
+import SymbolsIcon from "@assets/icons/emoji-picker-icons/SymbolsIcon.svg"
+import FlagsIcon from "@assets/icons/emoji-picker-icons/FlagsIcon.svg"
+import CustomIcon from "@assets/icons/emoji-picker-icons/CustomIcon.svg"
 
 export const CATEGORIES = [
-    { category: 'people', categoryIcon: '😊' },
-    { category: 'nature', categoryIcon: '🌍' },
-    { category: 'foods', categoryIcon: '🍔' },
-    { category: 'activity', categoryIcon: '🎉' },
-    { category: 'places', categoryIcon: '📍' },
-    { category: 'objects', categoryIcon: '💡' },
-    { category: 'symbols', categoryIcon: '❤️' },
-    { category: 'flags', categoryIcon: '🌐' },
-    { category: 'custom', categoryIcon: '✏️' }
+    { category: 'people', categoryIcon: PeopleIcon },
+    { category: 'nature', categoryIcon: NatureIcon },
+    { category: 'foods', categoryIcon: FoodsIcon },
+    { category: 'activity', categoryIcon: ActivityIcon },
+    { category: 'places', categoryIcon: PlacesIcon },
+    { category: 'objects', categoryIcon: ObjectsIcon },
+    { category: 'symbols', categoryIcon: SymbolsIcon },
+    { category: 'flags', categoryIcon: FlagsIcon },
+    { category: 'custom', categoryIcon: CustomIcon }
 ] as {
     category: CategoryType
-    categoryIcon: string
+    categoryIcon: any
 }[]
 
 interface CategoriesProps {
@@ -30,7 +38,7 @@ const Categories = ({ onCategorySelect, activeCategory, disabledActiveCategory =
     const { colors } = useColorScheme();
     const { width } = Dimensions.get('window');
 
-    const screenWidth = width - 40
+    const screenWidth = width - 27
 
     const tabWidth = useMemo(() => screenWidth / Math.max(CATEGORIES.length, 1), [CATEGORIES.length, screenWidth]);
 
@@ -61,40 +69,27 @@ const Categories = ({ onCategorySelect, activeCategory, disabledActiveCategory =
 
     return (
         <View>
-            <View className="flex-row border-b-1 pb-2">
+            <View className="flex-row border-b-1">
                 {CATEGORIES.map((item, index) => {
 
-                    if (item.category === "custom") {
-                        return (
-                            <Pressable
-                                key={item.category}
-                                className='ios:active:bg-linkColor rounded-sm'
-                                onPress={() => handleTabPress(index, item.category)}
-                                hitSlop={10}
-                                style={{
-                                    width: tabWidth,
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                }}
-                            >
-                                <SmileIcon fill={colors.icon} width="100%" />
-                            </Pressable>
-                        )
-                    }
+                    const CategoryIcon = item.categoryIcon
+
+                    const CategoryIconSize = tabWidth * 0.50
 
                     return (
                         <Pressable
                             key={item.category}
-                            className='ios:active:bg-linkColor rounded-sm'
+                            className='ios:active:bg-linkColor rounded-t-lg'
                             onPress={() => handleTabPress(index, item.category)}
                             hitSlop={10}
                             style={{
                                 width: tabWidth,
+                                height: tabWidth,
                                 alignItems: 'center',
                                 justifyContent: 'center',
                             }}
                         >
-                            <Text className="text-center text-2xl">{item.categoryIcon}</Text>
+                            <CategoryIcon fill={colors.grey} width={CategoryIconSize} height={CategoryIconSize} />
                         </Pressable>
                     )
                 })}
