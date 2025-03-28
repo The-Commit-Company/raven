@@ -68,8 +68,8 @@ const HowToSetupMobileContent = ({ onDismiss }: { onDismiss: () => void }) => {
                 This will create an OAuth client that users can use to authenticate securely on the mobile app.
             </Text>
 
-            <Text className='text-base text-foreground'>
-                Only System Administrators can do this.
+            <Text className='text-base text-muted-foreground'>
+                PS: Only System Administrators can do this.
             </Text>
         </View>
 
