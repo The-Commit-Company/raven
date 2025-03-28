@@ -68,16 +68,11 @@ export default function RootLayout() {
                     position="top-center"
                     duration={2000}
                     visibleToasts={4}
-                    closeButton={false}
-                    icons={{
-                        error: <Text>💥</Text>,
-                        loading: <Text>🔄</Text>,
-                    }}
+                    closeButton={true}
                     toastOptions={{}}
                     pauseWhenPageIsHidden
-                    richColors
-                    theme='light'
-                    swipeToDismissDirection='left'
+                    theme={isDarkColorScheme ? 'dark' : 'light'}
+                    swipeToDismissDirection='up'
                 />
             </GestureHandlerRootView>
         </>

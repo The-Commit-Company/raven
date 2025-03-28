@@ -3,7 +3,7 @@ import { useEffect, useState, useRef, useCallback } from "react";
 import { SiteInformation } from "../../types/SiteInformation";
 import { revokeAsync, TokenResponse } from "expo-auth-session";
 import FullPageLoader from "@components/layout/FullPageLoader";
-import { getAccessToken, getRevocationEndpoint, getSiteFromStorage, getTokenEndpoint, storeAccessToken } from "@lib/auth";
+import { clearDefaultSite, getAccessToken, getRevocationEndpoint, getSiteFromStorage, getTokenEndpoint, storeAccessToken } from "@lib/auth";
 import Providers from "@lib/Providers";
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 import FrappeNativeProvider from "@lib/FrappeNativeProvider";
@@ -139,7 +139,9 @@ export default function SiteLayout() {
                 if (!siteInfo) {
                     router.replace('/landing')
 
-                    // TODO: Show the user a toast saying that the site is not found
+                    // Show the user a toast saying that the site is not found
+                    clearDefaultSite()
+                    toast.error("We could not find the site you were looking for. Please login again.")
 
                     return null
                 }
@@ -158,6 +160,7 @@ export default function SiteLayout() {
                     router.replace('/landing')
 
                     // Show the user a toast saying that the site is not found
+                    clearDefaultSite()
 
                     toast.error("We could not find the stored credentials for this site. Please try logging in again.")
 
@@ -191,13 +194,25 @@ export default function SiteLayout() {
                         }
 
                         return tokenResponse
+                    }).catch(error => {
+                        console.error("Error refreshing token:", error);
+                        return null
                     })
                 } else {
                     return tokenResponse
                 }
             })
             .then(tokenResponse => {
-                if (!tokenResponse) return
+                if (!tokenResponse) {
+                    router.replace('/landing')
+
+                    // Show the user a toast saying that the site is not found
+                    clearDefaultSite()
+
+                    toast.error("We could not find the stored credentials for this site. Please try logging in again.")
+
+                    return
+                }
                 accessTokenRef.current = tokenResponse
             })
             .then(() => {
