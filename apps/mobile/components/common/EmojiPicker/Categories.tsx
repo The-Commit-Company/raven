@@ -1,4 +1,4 @@
-import { useMemo, useCallback } from 'react';
+import { useMemo, useCallback, SVGProps } from 'react';
 import { View, Dimensions, Pressable } from 'react-native';
 import Animated, { useAnimatedReaction, useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
 import { useColorScheme } from '@hooks/useColorScheme';
@@ -14,27 +14,29 @@ import FlagsIcon from "@assets/icons/emoji-picker-icons/FlagsIcon.svg"
 import CustomIcon from "@assets/icons/emoji-picker-icons/CustomIcon.svg"
 
 export const CATEGORIES = [
-    { category: 'people', categoryIcon: PeopleIcon },
-    { category: 'nature', categoryIcon: NatureIcon },
-    { category: 'foods', categoryIcon: FoodsIcon },
-    { category: 'activity', categoryIcon: ActivityIcon },
-    { category: 'places', categoryIcon: PlacesIcon },
-    { category: 'objects', categoryIcon: ObjectsIcon },
-    { category: 'symbols', categoryIcon: SymbolsIcon },
-    { category: 'flags', categoryIcon: FlagsIcon },
-    { category: 'custom', categoryIcon: CustomIcon }
+    { category: 'people', categoryIcon: PeopleIcon, title: "Smileys & People" },
+    { category: 'nature', categoryIcon: NatureIcon, title: "Animals & Nature" },
+    { category: 'foods', categoryIcon: FoodsIcon, title: "Food & Drink" },
+    { category: 'activity', categoryIcon: ActivityIcon, title: "Activity" },
+    { category: 'places', categoryIcon: PlacesIcon, title: "Travel & Places" },
+    { category: 'objects', categoryIcon: ObjectsIcon, title: "Objects" },
+    { category: 'symbols', categoryIcon: SymbolsIcon, title: "Symbols" },
+    { category: 'flags', categoryIcon: FlagsIcon, title: "Flags" },
+    { category: 'custom', categoryIcon: CustomIcon, title: "Custom" }
 ] as {
     category: CategoryType
-    categoryIcon: any
+    categoryIcon: (props: SVGProps<SVGSVGElement>) => JSX.Element;
+    title: string
 }[]
 
 interface CategoriesProps {
     onCategorySelect: (category: CategoryType) => void;
     activeCategory: CategoryType;
     disabledActiveCategory?: boolean;
+    isCustomEmojis?: boolean
 }
 
-const Categories = ({ onCategorySelect, activeCategory, disabledActiveCategory = false }: CategoriesProps) => {
+const Categories = ({ onCategorySelect, activeCategory, disabledActiveCategory = false, isCustomEmojis }: CategoriesProps) => {
     const { colors } = useColorScheme();
     const { width } = Dimensions.get('window');
 
@@ -75,6 +77,8 @@ const Categories = ({ onCategorySelect, activeCategory, disabledActiveCategory =
                     const CategoryIcon = item.categoryIcon
 
                     const CategoryIconSize = tabWidth * 0.50
+
+                    if (item.category === "custom" && !isCustomEmojis) return null
 
                     return (
                         <Pressable
