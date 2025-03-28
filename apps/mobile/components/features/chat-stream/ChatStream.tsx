@@ -8,7 +8,9 @@ import ChannelHistoryFirstMessage from './FirstMessageBlock'
 import { useAtomValue } from 'jotai'
 import { doubleTapMessageEmojiAtom } from '@lib/preferences'
 import { NativeScrollEvent, NativeSyntheticEvent, View } from 'react-native'
-import FullPageLoader from '@components/layout/FullPageLoader'
+import Skeleton from '@components/layout/Skeleton'
+import ChatStreamSkeletonLoader from './ChatStreamSkeletonLoader'
+import ErrorBanner from '@components/common/ErrorBanner'
 
 type Props = {
     channelID: string,
@@ -28,11 +30,15 @@ const ChatStream = ({ channelID, isThread = false, scrollRef, onMomentumScrollEn
      */
     const doubleTapMessageEmoji = useAtomValue(doubleTapMessageEmojiAtom)
 
-    const { data, isLoading, error, mutate, loadOlderMessages, loadNewerMessages } = useChatStream(channelID, scrollRef, isThread)
+    const { data, isLoading, error, loadOlderMessages, loadNewerMessages } = useChatStream(channelID, scrollRef, isThread)
 
     if (isLoading) {
-        return <View className='flex-1 justify-center items-center'>
-            <FullPageLoader title='' description='Fetching messages...' />
+        return <ChatStreamSkeletonLoader />
+    }
+
+    if (error) {
+        return <View className='px-2 flex-1 justify-center items-center'>
+            <ErrorBanner error={error} />
         </View>
     }
 
