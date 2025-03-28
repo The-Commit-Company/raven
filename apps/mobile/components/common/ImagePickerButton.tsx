@@ -33,8 +33,6 @@ const ImagePickerButton = ({ allowsMultipleSelection, mediaTypes, onPick }: Imag
                 })
 
                 onPick(parsedFiles)
-            } else {
-                console.log('Image picking was canceled.')
             }
         } catch (error) {
             console.error('Error picking images:', error)

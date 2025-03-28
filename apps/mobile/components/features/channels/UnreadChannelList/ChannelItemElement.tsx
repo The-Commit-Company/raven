@@ -7,7 +7,7 @@ import { ChannelWithUnreadCount } from "@raven/lib/hooks/useGetChannelUnreadCoun
 import { useFrappePrefetchCall } from "frappe-react-sdk"
 
 const ChannelItemElement = ({ channel }: { channel: ChannelWithUnreadCount }) => {
-    const colors = useColorScheme()
+    const { colors } = useColorScheme()
 
     const prefetchChannel = useFrappePrefetchCall('raven.api.chat_stream.get_messages', {
         channel_id: channel.name,
@@ -22,15 +22,13 @@ const ChannelItemElement = ({ channel }: { channel: ChannelWithUnreadCount }) =>
         <Pressable
             // short press -> navigate
             onPress={handlePress}
-            // long press -> show context menu
-            onLongPress={() => console.log(`channel long pressed - ${channel.name}`)}
             // Use tailwind classes for layout and ios:active state
             className='flex-row items-center px-3 py-2 rounded-lg ios:active:bg-linkColor'
             // Add a subtle ripple effect on Android
             android_ripple={{ color: 'rgba(0,0,0,0.1)', borderless: false }}>
             <View className="flex-row items-center w-full justify-between">
                 <View className="flex-row items-center">
-                    <ChannelIcon type={channel.type} fill={colors.colors.icon} />
+                    <ChannelIcon type={channel.type} fill={colors.icon} />
                     <Text className="ml-2 text-base font-medium">{channel.channel_name}</Text>
                 </View>
                 <Text style={styles.unreadCount} className="bg-card-background">{channel.unread_count}</Text>

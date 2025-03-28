@@ -8,7 +8,7 @@ import { toast } from 'sonner-native'
 
 const UnreadChannelListMoreActions = ({ channelIDs }: { channelIDs: string[] }) => {
 
-    const colors = useColorScheme()
+    const { colors } = useColorScheme()
 
     const { mutate } = useSWRConfig()
     const { call } = useFrappePostCall('raven.api.raven_channel.mark_all_messages_as_read')
@@ -47,7 +47,7 @@ const UnreadChannelListMoreActions = ({ channelIDs }: { channelIDs: string[] }) 
         <DropdownMenu.Root>
             <DropdownMenu.Trigger>
                 <Button variant="plain" size="none" className='active:bg-card-background px-1.5 py-1 rounded-md'>
-                    <ThreeDotsVerticalIcon width={18} height={18} fill={colors.colors.icon} />
+                    <ThreeDotsVerticalIcon width={18} height={18} fill={colors.icon} />
                 </Button>
             </DropdownMenu.Trigger>
             <DropdownMenu.Content>

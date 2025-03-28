@@ -13,6 +13,7 @@ import { addSiteToStorage, discovery, setDefaultSite, storeAccessToken } from '@
 import { FormLabel } from '@components/layout/Form'
 import { useColorScheme } from '@hooks/useColorScheme'
 import { ActivityIndicator } from '@components/nativewindui/ActivityIndicator'
+import HowToSetupMobile from './HowToSetupMobile'
 
 WebBrowser.maybeCompleteAuthSession();
 
@@ -53,7 +54,6 @@ const AddSite = (props: Props) => {
             .then(res => res.json())
             .then(data => {
                 if (data.message && data.message.client_id) {
-                    console.log(data.message)
                     setSiteInformation({
                         url,
                         ...data.message
@@ -105,6 +105,8 @@ const AddSite = (props: Props) => {
                     {siteInformation && <SiteAuthFlowSheet siteInformation={siteInformation} onDismiss={clearSiteInformation} />}
                 </BottomSheetView>
             </Sheet>
+
+            <HowToSetupMobile />
         </View>
     )
 }
