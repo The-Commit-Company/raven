@@ -1,4 +1,4 @@
-import { TouchableOpacity, View } from 'react-native'
+import { Pressable, View } from 'react-native'
 import SmilePlus from "@assets/icons/SmilePlus.svg"
 import { Text } from '@components/nativewindui/Text'
 import { Message } from '@raven/types/common/Message'
@@ -37,22 +37,19 @@ const QuickReactions = ({ message, onClose, quickReactionEmojis }: MessageReacti
         <>
             <View className="flex flex-row justify-between">
                 {quickReactionEmojis.map((reaction) => (
-                    <TouchableOpacity
+                    <Pressable
                         key={reaction}
                         hitSlop={10}
                         onPress={() => onReact(reaction)}
-                        className='p-3 bg-card rounded-full'
-                        activeOpacity={0.6}>
-                        <Text>{reaction}</Text>
-                    </TouchableOpacity>
+                        className='w-12 h-12 items-center justify-center bg-card rounded-full active:scale-90 transition-all duration-100 active:bg-card/70 active:border active:border-border/30'>
+                        <Text className="text-lg">{reaction}</Text>
+                    </Pressable>
                 ))}
-                <TouchableOpacity
-                    className='p-3 bg-card rounded-full'
-                    activeOpacity={0.6}
-                    onPress={() => emojiBottomSheetRef.current?.present()}
-                >
+                <Pressable
+                    className='w-12 h-12 items-center justify-center bg-card rounded-full active:scale-90 transition-all duration-100 active:bg-card/70 active:border active:border-border/30'
+                    onPress={() => emojiBottomSheetRef.current?.present()}>
                     <SmilePlus width={24} height={24} color={colors.icon} />
-                </TouchableOpacity>
+                </Pressable>
             </View>
 
             <Sheet enableDynamicSizing={true} ref={emojiBottomSheetRef} snapPoints={["80"]}>
