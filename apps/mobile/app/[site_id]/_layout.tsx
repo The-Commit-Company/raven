@@ -236,8 +236,6 @@ export default function SiteLayout() {
             .then(res => res.json())
             .then(data => {
                 if (data.message && data.message.client_id) {
-
-                    console.log("Site information refreshed from the server", site_id, data.message)
                     setSiteInfo({
                         ...siteInfo,
                         ...data.message

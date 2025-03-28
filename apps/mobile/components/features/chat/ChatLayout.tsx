@@ -120,28 +120,31 @@ const ChatLayout = ({ channelID, isThread = false, pinnedMessagesString }: Props
                     onMomentumScrollEnd={checkIfNearBottom}
                     pinnedMessagesString={pinnedMessagesString}
                 />
-                {
-                    canUserSendMessage ?
-                        <ChatInput channelID={channelID} onSendMessage={onSendMessage} />
-                        : null
-                }
+                <View className='min-h-16'>
+                    {
+                        canUserSendMessage ?
+                            <ChatInput channelID={channelID} onSendMessage={onSendMessage} />
+                            : null
+                    }
 
-                {
-                    shouldShowJoinBox ?
-                        <JoinChannelBox
-                            channelID={channelID}
-                            isThread={isThread}
-                            user={myProfile?.name ?? ""} />
-                        : null
-                }
-                {
-                    channelData?.is_archived ?
-                        <ArchivedChannelBox
-                            channelID={channelID}
-                            isMemberAdmin={channelMemberProfile?.is_admin}
-                        />
-                        : null
-                }
+                    {
+                        shouldShowJoinBox ?
+                            <JoinChannelBox
+                                channelID={channelID}
+                                isThread={isThread}
+                                user={myProfile?.name ?? ""} />
+                            : null
+                    }
+                    {
+                        channelData?.is_archived ?
+                            <ArchivedChannelBox
+                                channelID={channelID}
+                                isMemberAdmin={channelMemberProfile?.is_admin}
+                            />
+                            : null
+                    }
+                </View>
+
                 <Animated.View style={fakeView} />
             </View>
 
