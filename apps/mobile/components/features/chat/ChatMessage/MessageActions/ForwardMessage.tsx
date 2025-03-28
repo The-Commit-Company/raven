@@ -1,9 +1,8 @@
 import { useColorScheme } from '@hooks/useColorScheme'
 import { Message } from '@raven/types/common/Message'
 import { router } from 'expo-router'
-import { Pressable } from 'react-native'
 import ForwardIcon from "@assets/icons/ForwardIcon.svg"
-import { Text } from '@components/nativewindui/Text'
+import { ActionButtonLarge } from '@components/common/Buttons/ActionButtonLarge'
 
 interface ForwardMessageProps {
     message: Message
@@ -23,13 +22,11 @@ const ForwardMessage = ({ message, onClose }: ForwardMessageProps) => {
     const { colors } = useColorScheme()
 
     return (
-        <Pressable
+        <ActionButtonLarge
+            icon={<ForwardIcon width={18} height={18} color={colors.icon} />}
+            text="Forward"
             onPress={forwardMessage}
-            className='flex-1 flex flex-col items-center gap-3 px-2 py-3 rounded-lg bg-card'
-            android_ripple={{ color: 'rgba(0,0,0,0.1)', borderless: false }}>
-            <ForwardIcon width={18} height={18} color={colors.icon} />
-            <Text className='text-[15px] font-medium text-foreground/80'>Forward</Text>
-        </Pressable>
+        />
     )
 }
 

@@ -28,7 +28,7 @@ const MessageActions = ({ message, onClose, quickReactionEmojis }: MessageAction
 
             <QuickReactions message={message} onClose={onClose} quickReactionEmojis={quickReactionEmojis} />
 
-            <View className='flex flex-row gap-4 w-full'>
+            <View className='flex flex-row gap-4 w-full justify-between'>
                 <ReplyToMessage message={message} onClose={onClose} />
                 <ForwardMessage message={message} onClose={onClose} />
                 <SaveMessage message={message} onClose={onClose} />
