@@ -8,6 +8,7 @@ import { BottomSheetView } from '@gorhom/bottom-sheet'
 import EmojiPicker from '@components/common/EmojiPicker/EmojiPicker'
 import { toast } from 'sonner-native'
 import useReactToMessage from '@raven/lib/hooks/useReactToMessage'
+import { Emoji } from '@components/common/EmojiPicker/Picker'
 
 interface MessageReactionsProps {
     message: Message | null
@@ -20,17 +21,41 @@ const QuickReactions = ({ message, onClose, quickReactionEmojis }: MessageReacti
     const { colors } = useColorScheme()
     const emojiBottomSheetRef = useSheetRef()
 
-    const react = useReactToMessage()
+    const saveReaction = useReactToMessage()
 
-    const onReact = (emoji: string) => {
+    const onReactNatively = (emoji: string) => {
         if (message) {
-            react(message, emoji).then(() => {
+            saveReaction(message, emoji).then(() => {
                 emojiBottomSheetRef.current?.close({ duration: 450 })
                 onClose();
             }).catch(() => {
                 toast.error("Could not react to message.")
             })
         }
+    }
+
+    const onReactEmoji = (emoji: Emoji) => {
+
+        if (message) {
+            if (emoji.native) {
+                saveReaction(message, emoji.native)
+                    .then(() => {
+                        emojiBottomSheetRef.current?.close({ duration: 450 })
+                        onClose();
+                    }).catch(() => {
+                        toast.error("Could not react to message.")
+                    })
+            } else {
+                saveReaction(message, emoji?.src ?? "", true, emoji.id)
+                    .then(() => {
+                        emojiBottomSheetRef.current?.close({ duration: 450 })
+                        onClose();
+                    }).catch(() => {
+                        toast.error("Could not react to message.")
+                    })
+            }
+        }
+
     }
 
     return (
@@ -40,7 +65,7 @@ const QuickReactions = ({ message, onClose, quickReactionEmojis }: MessageReacti
                     <TouchableOpacity
                         key={reaction}
                         hitSlop={10}
-                        onPress={() => onReact(reaction)}
+                        onPress={() => onReactNatively(reaction)}
                         className='p-3 bg-card rounded-full'
                         activeOpacity={0.6}>
                         <Text>{reaction}</Text>
@@ -55,9 +80,9 @@ const QuickReactions = ({ message, onClose, quickReactionEmojis }: MessageReacti
                 </TouchableOpacity>
             </View>
 
-            <Sheet enableDynamicSizing={true} ref={emojiBottomSheetRef} snapPoints={["80"]}>
+            <Sheet ref={emojiBottomSheetRef} enableDynamicSizing={false} snapPoints={["65"]}>
                 <BottomSheetView className='flex-1'>
-                    <EmojiPicker onReact={onReact} />
+                    <EmojiPicker onReact={onReactEmoji} />
                 </BottomSheetView>
             </Sheet>
         </>

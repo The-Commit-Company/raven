@@ -16,6 +16,7 @@ import useReactToMessage from '@raven/lib/hooks/useReactToMessage'
 import { Message } from '@raven/types/common/Message'
 import { Gesture, GestureDetector, LongPressGesture } from 'react-native-gesture-handler'
 import { runOnJS } from 'react-native-reanimated'
+import { Emoji } from '@components/common/EmojiPicker/Picker'
 
 export interface ReactionObject {
     // The emoji
@@ -50,7 +51,6 @@ export default function MessageReactions({ message, longPressGesture }: MessageR
 
     const reactions: ReactionObject[] = useMemo(() => {
         const parsed_json = JSON.parse(message_reactions ?? '{}') as Record<string, ReactionObject>
-
         return Object.entries(parsed_json).map(([key, value]) => ({
             ...value,
             emoji_name: key
@@ -125,7 +125,7 @@ const ReactionButton = ({ reaction, currentUser, saveReaction, onLongPress, long
                     currentUserReacted ? "bg-blue-50/80 border-blue-600 dark:border-muted-foreground/40 dark:bg-muted" : "bg-card dark:bg-muted/50 border-muted/50")}
             >
                 {reaction.is_custom ? (
-                    <CustomEmojiView emoji={reaction.reaction} />
+                    <CustomEmojiView emoji_src={reaction.reaction} />
                 ) : (
                     <Text className='text-sm'>{reaction.reaction}</Text>
                 )}
@@ -136,10 +136,10 @@ const ReactionButton = ({ reaction, currentUser, saveReaction, onLongPress, long
     )
 }
 
-const CustomEmojiView = ({ emoji }: { emoji: string }) => {
-    const source = useFileURL(emoji)
+const CustomEmojiView = ({ emoji_src }: { emoji_src: string }) => {
+    const source = useFileURL(emoji_src ?? "")
 
-    return <Image source={source} style={{ width: 20, height: 20, borderRadius: 2 }} contentFit='scale-down' contentPosition={'center'} />
+    return <Image transition={100} source={source} style={{ width: 20, height: 20, borderRadius: 2 }} contentFit='scale-down' contentPosition={'center'} />
 }
 
 interface AddEmojiButtonProps {
@@ -153,8 +153,14 @@ const AddEmojiButton = ({ saveReaction }: AddEmojiButtonProps) => {
 
     const openEmojiPicker = () => emojiPickerRef.current?.present()
 
-    const onReact = (emoji: string) => {
-        saveReaction(emoji, false)
+    const onReact = (emoji: Emoji) => {
+
+        if (emoji.native) {
+            saveReaction(emoji.native, false)
+        } else {
+            saveReaction(emoji?.src ?? "", true, emoji.id)
+        }
+
         emojiPickerRef.current?.close({ duration: 450 })
     }
 
@@ -164,7 +170,7 @@ const AddEmojiButton = ({ saveReaction }: AddEmojiButtonProps) => {
                 <SmilePlus width={20} height={20} color={colors.icon} />
             </TouchableOpacity>
 
-            <Sheet ref={emojiPickerRef} snapPoints={["65%"]}>
+            <Sheet ref={emojiPickerRef} enableDynamicSizing={false} snapPoints={["65"]}>
                 <BottomSheetView className='flex-1'>
                     <EmojiPicker onReact={onReact} />
                 </BottomSheetView>
