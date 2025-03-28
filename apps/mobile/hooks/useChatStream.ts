@@ -1,13 +1,14 @@
 import { LegendListRef } from '@legendapp/list'
 import { Message } from '@raven/types/common/Message'
 import { useFrappeDocumentEventListener, useFrappeEventListener, useFrappeGetCall, useFrappePostCall } from 'frappe-react-sdk'
-import { useMemo, useRef } from 'react'
+import { useEffect, useMemo, useRef } from 'react'
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
 import advancedFormat from 'dayjs/plugin/advancedFormat'
 import { formatDate } from '@raven/lib/utils/dateConversions'
 import useSiteContext from './useSiteContext'
 import { GetMessagesResponse } from '@raven/types/common/ChatStream'
+import { useTrackChannelVisit } from './useUnreadMessageCount'
 
 dayjs.extend(utc)
 dayjs.extend(advancedFormat)
@@ -32,16 +33,18 @@ export interface DateBlock {
 export interface HeaderBlock {
     message_type: 'header',
     name: string,
-    isOpenInThread: boolean
+    isOpenInThread: boolean,
+    pinnedMessagesString?: string
 }
 
 export type MessageDateBlock = Message | DateBlock | HeaderBlock
 
-const useChatStream = (channelID: string, listRef?: React.RefObject<LegendListRef>, isThread: boolean = false) => {
+const useChatStream = (channelID: string, listRef?: React.RefObject<LegendListRef>, isThread: boolean = false, pinnedMessagesString?: string) => {
 
     const siteInformation = useSiteContext()
 
     const isDataFetched = useRef(false)
+    const latestMessagesLoaded = useRef(false)
 
     const SYSTEM_TIMEZONE = siteInformation?.system_timezone ? siteInformation.system_timezone : 'Asia/Kolkata'
 
@@ -91,7 +94,7 @@ const useChatStream = (channelID: string, listRef?: React.RefObject<LegendListRe
 
         // TODO: Add base message
     }, { path: `get_messages_for_channel_${channelID}` }, {
-        onSuccess: () => {
+        onSuccess: (data) => {
 
             if (!isDataFetched.current) {
                 isDataFetched.current = true
@@ -102,6 +105,9 @@ const useChatStream = (channelID: string, listRef?: React.RefObject<LegendListRe
                 }
             }
 
+            if (!data.message.has_new_messages) {
+                latestMessagesLoaded.current = true
+            }
 
         }
     })
@@ -264,6 +270,20 @@ const useChatStream = (channelID: string, listRef?: React.RefObject<LegendListRe
 
     })
 
+    const trackVisit = useTrackChannelVisit(channelID)
+    /**
+     * Track visit when unmounting if new messages were loaded.
+     * We are using a ref since the hook is not re-executed when the data is updated
+     */
+    useEffect(() => {
+        /** Call */
+        return () => {
+            if (latestMessagesLoaded.current) {
+                trackVisit()
+            }
+        }
+    }, [channelID, trackVisit])
+
     const { call: fetchOlderMessages, loading: loadingOlderMessages } = useFrappePostCall('raven.api.chat_stream.get_older_messages')
     const { call: fetchNewerMessages, loading: loadingNewerMessages } = useFrappePostCall('raven.api.chat_stream.get_newer_messages')
 
@@ -354,6 +374,10 @@ const useChatStream = (channelID: string, listRef?: React.RefObject<LegendListRe
             return d
         }, {
             revalidate: false,
+        }).then((res) => {
+            if (res?.message.has_new_messages === false) {
+                latestMessagesLoaded.current = true
+            }
         })
     }
 
@@ -363,6 +387,9 @@ const useChatStream = (channelID: string, listRef?: React.RefObject<LegendListRe
 
         // Loop through the messages array and add a date block before each date change
         // Also format the date to be displayed in the chat interface
+
+        let pinnedMessageIDs = pinnedMessagesString?.split('\n') ?? []
+        pinnedMessageIDs = pinnedMessageIDs.map(messageID => messageID.trim())
 
         // Messages are already sorted by date - from latest to oldest
         // Date separator is added whenever the date changes
@@ -398,6 +425,7 @@ const useChatStream = (channelID: string, listRef?: React.RefObject<LegendListRe
                 formattedTime: dayjs(lastMessage.creation).local().format('hh:mm A'),
                 is_continuation: 0,
                 isOpenInThread: isThread,
+                is_pinned: pinnedMessageIDs.includes(lastMessage.name) ? 1 : 0
             })
 
             // Loop through the messages and add date separators if the date changes
@@ -423,11 +451,11 @@ const useChatStream = (channelID: string, listRef?: React.RefObject<LegendListRe
                 const nextMessageSender = nextMessage.message_type === "System" ? null : nextMessage.is_bot_message ? nextMessage.bot : nextMessage.owner
 
                 if (nextMessageSender !== currentMessageSender) {
-                    messagesWithDateSeparators.push({ ...message, isOpenInThread: isThread, is_continuation: 0, formattedTime: formattedMessageTime, might_contain_link_preview })
+                    messagesWithDateSeparators.push({ ...message, isOpenInThread: isThread, is_continuation: 0, formattedTime: formattedMessageTime, might_contain_link_preview, is_pinned: pinnedMessageIDs.includes(message.name) ? 1 : 0 })
                 } else if (messageDateTime - currentDateTime > 120000) {
-                    messagesWithDateSeparators.push({ ...message, isOpenInThread: isThread, is_continuation: 0, formattedTime: formattedMessageTime, might_contain_link_preview })
+                    messagesWithDateSeparators.push({ ...message, isOpenInThread: isThread, is_continuation: 0, formattedTime: formattedMessageTime, might_contain_link_preview, is_pinned: pinnedMessageIDs.includes(message.name) ? 1 : 0 })
                 } else {
-                    messagesWithDateSeparators.push({ ...message, isOpenInThread: isThread, is_continuation: 1, formattedTime: formattedMessageTime, might_contain_link_preview })
+                    messagesWithDateSeparators.push({ ...message, isOpenInThread: isThread, is_continuation: 1, formattedTime: formattedMessageTime, might_contain_link_preview, is_pinned: pinnedMessageIDs.includes(message.name) ? 1 : 0 })
                 }
 
                 currentDate = messageDate
@@ -442,7 +470,7 @@ const useChatStream = (channelID: string, listRef?: React.RefObject<LegendListRe
 
 
 
-    }, [data, isThread, SYSTEM_TIMEZONE])
+    }, [data, isThread, SYSTEM_TIMEZONE, pinnedMessagesString])
 
     return {
         data: messages,

@@ -1,5 +1,5 @@
 import { View, Text } from 'react-native';
-import { FrappeError as Error, FrappeError } from 'frappe-react-sdk'
+import { FrappeError } from 'frappe-react-sdk'
 
 interface BaseProps {
     heading?: string
@@ -72,9 +72,15 @@ const ErrorBanner = ({ heading, message, error }: ErrorBannerProps) => {
                             {error?.message}
                         </Text>
                     )}
-                    {messages.map((m, i) => <Text key={i} className="text-error mb-2">
-                        {m.message}
-                    </Text>)}
+                    {message ? (
+                        <Text className="text-error mb-2">
+                            {message}
+                        </Text>
+                    ) : (
+                        messages.map((m, i) => <Text key={i} className="text-error mb-2">
+                            {m.message}
+                        </Text>)
+                    )}
                 </View>
             </View>
         </View>

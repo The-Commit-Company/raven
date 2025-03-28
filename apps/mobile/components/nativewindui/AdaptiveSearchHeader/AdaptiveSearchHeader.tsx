@@ -14,7 +14,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import SearchIcon from '@assets/icons/SearchIcon.svg';
-import ArrowBackIcon from '@assets/icons/ArrowBack.svg';
+import ArrowBackIcon from '@assets/icons/ArrowBackIcon.svg';
 import CrossIcon from '@assets/icons/CrossIcon.svg';
 
 import type {

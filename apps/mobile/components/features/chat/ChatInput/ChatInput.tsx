@@ -65,8 +65,6 @@ const ChatInput = ({ channelID, onSendMessage }: ChatInputProps) => {
             return mention.original
         })
 
-        // console.log('parsedContent - ExpensiMark', parsedContent)
-
         // We can allow HTML tags since this is only on the client side. XSS Protection is handled by Frappe on the server side.
         const md = markdownit({ breaks: true, linkify: true, html: true })
 

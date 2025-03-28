@@ -57,7 +57,7 @@ const UnreadChannelsList = ({ unreadChannels, unreadDMs }: UnreadChannelsListPro
 const UnreadChannelListUI = ({ totalUnreadCount, unreadDMs, unreadChannels, channelIDs }: { totalUnreadCount: number, unreadDMs: DMChannelWithUnreadCount[], unreadChannels: ChannelWithUnreadCount[], channelIDs: string[] }) => {
 
     const [isExpanded, setIsExpanded] = useState(true)
-    const colors = useColorScheme()
+    const { colors } = useColorScheme()
 
     const toggleAccordion = () => {
         setIsExpanded((prev) => !prev)
@@ -72,7 +72,7 @@ const UnreadChannelListUI = ({ totalUnreadCount, unreadDMs, unreadChannels, chan
                 </View>
                 <View className="flex-row items-center gap-1">
                     <UnreadChannelListMoreActions channelIDs={channelIDs} />
-                    {isExpanded ? <ChevronDownIcon fill={colors.colors.icon} /> : <ChevronRightIcon fill={colors.colors.icon} />}
+                    {isExpanded ? <ChevronDownIcon fill={colors.icon} /> : <ChevronRightIcon fill={colors.icon} />}
                 </View>
             </TouchableOpacity>
             {isExpanded && <View className="flex gap-0.5 flex-col fade-in">

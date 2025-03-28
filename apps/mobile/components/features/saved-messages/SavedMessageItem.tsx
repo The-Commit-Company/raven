@@ -8,8 +8,15 @@ import { useGetUserRecords } from '@raven/lib/hooks/useGetUserRecords';
 import { formatDateAndTime } from '@raven/lib/utils/dateConversions';
 import { BaseMessageItem } from '../chat-stream/BaseMessageItem';
 import { useRouteToChannel } from '@hooks/useRouting';
+import * as ContextMenu from 'zeego/context-menu';
+import { useColorScheme } from '@hooks/useColorScheme';
+import useSaveMessage from '@hooks/useSaveMessage';
 
 const SavedMessageItem = ({ message }: { message: Message & { workspace?: string } }) => {
+
+    const { save } = useSaveMessage(message)
+
+    const { colors } = useColorScheme()
 
     const { creation, channel_id } = message
     const users = useGetUserRecords()
@@ -34,20 +41,49 @@ const SavedMessageItem = ({ message }: { message: Message & { workspace?: string
     }
 
     return (
-        <Pressable
-            className='pb-2 rounded-md ios:active:bg-linkColor ios:active:dark:bg-linkColor'
-            onPress={() => handleNavigateToChannel(channel_id)}>
-            <View>
-                <View className='flex flex-row items-center px-3 pt-2 gap-2'>
-                    <Text className='text-sm'>{channelName}</Text>
-                    <Text className='text-[13px] text-muted'>|</Text>
-                    <Text className='text-[13px] text-muted-foreground'>
-                        {formatDateAndTime(creation)}
-                    </Text>
-                </View>
-                <BaseMessageItem message={message} />
-            </View>
-        </Pressable>
+        <ContextMenu.Root>
+            <ContextMenu.Trigger>
+                <Pressable
+                    className='pb-2 rounded-md ios:active:bg-linkColor ios:active:dark:bg-linkColor'
+                    onPress={() => handleNavigateToChannel(channel_id)}>
+                    <View>
+                        <View className='flex flex-row items-center px-3 pt-2 gap-2'>
+                            <Text className='text-sm'>{channelName}</Text>
+                            <Text className='text-[13px] text-muted'>|</Text>
+                            <Text className='text-[13px] text-muted-foreground'>
+                                {formatDateAndTime(creation)}
+                            </Text>
+                        </View>
+                        <BaseMessageItem message={message} />
+                    </View>
+                </Pressable>
+            </ContextMenu.Trigger>
+            <ContextMenu.Content>
+                <ContextMenu.Item key="unsave" onSelect={save}>
+                    <ContextMenu.ItemTitle>Unsave message</ContextMenu.ItemTitle>
+                    <ContextMenu.ItemIcon
+                        ios={{
+                            name: 'bookmark.slash',
+                            pointSize: 14,
+                            weight: 'semibold',
+                            scale: 'medium',
+                            // can also be a color string. Requires iOS 15+
+                            hierarchicalColor: {
+                                dark: colors.icon,
+                                light: colors.icon,
+                            },
+                            // alternative to hierarchical color. Requires iOS 15+
+                            paletteColors: [
+                                {
+                                    dark: colors.icon,
+                                    light: colors.icon,
+                                },
+                            ],
+                        }}
+                    />
+                </ContextMenu.Item>
+            </ContextMenu.Content>
+        </ContextMenu.Root>
     )
 }
 

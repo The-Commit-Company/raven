@@ -17,7 +17,7 @@ const DMList = ({ dms }: { dms: DMChannelListItem[] }) => {
 const DMListUI = ({ dms }: { dms: DMChannelListItem[] }) => {
 
     const [isExpanded, setIsExpanded] = useState(true)
-    const colors = useColorScheme()
+    const { colors } = useColorScheme()
 
     const toggleAccordion = () => {
         setIsExpanded((prev) => !prev)
@@ -27,7 +27,7 @@ const DMListUI = ({ dms }: { dms: DMChannelListItem[] }) => {
         <View style={styles.container}>
             <TouchableOpacity onPress={toggleAccordion} style={styles.header} activeOpacity={0.7}>
                 <Text style={styles.headerText}>Direct Messages</Text>
-                {isExpanded ? <ChevronDownIcon fill={colors.colors.icon} /> : <ChevronRightIcon fill={colors.colors.icon} />}
+                {isExpanded ? <ChevronDownIcon fill={colors.icon} /> : <ChevronRightIcon fill={colors.icon} />}
             </TouchableOpacity>
             {isExpanded && <>
                 {dms.map((dm) => <DMListRow key={dm.name} dm={dm} />)}
