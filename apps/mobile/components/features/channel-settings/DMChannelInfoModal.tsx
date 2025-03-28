@@ -12,7 +12,7 @@ import Animated, { Easing, useAnimatedStyle, useSharedValue, withTiming } from '
 import { useEffect } from 'react';
 import { DMChannelListItem } from '@raven/types/common/ChannelListItem';
 import { useGetUser } from '@raven/lib/hooks/useGetUser';
-
+import PinOutlineIcon from '@assets/icons/PinOutlineIcon.svg';
 type DMChannelInfoModalProps = {
     channel: DMChannelListItem
     isModalVisible: boolean
@@ -39,6 +39,13 @@ const DMChannelInfoModal = ({ channel, isModalVisible, setModalVisible }: DMChan
         })
     }
 
+    const handleGoToPins = () => {
+        setModalVisible(false)
+        router.push('./pinned-messages', {
+            relativeToDirectory: true
+        })
+    }
+
     // Animated styles for the modal
     const animatedModalStyle = useAnimatedStyle(() => {
         return {
@@ -50,12 +57,14 @@ const DMChannelInfoModal = ({ channel, isModalVisible, setModalVisible }: DMChan
     // Start animation when modal becomes visible
     useEffect(() => {
         if (isModalVisible) {
-            modalHeight.value = withTiming(120, { duration: 250, easing: Easing.out(Easing.ease) })
+            modalHeight.value = withTiming(165, { duration: 250, easing: Easing.out(Easing.ease) })
             modalOpacity.value = withTiming(1, { duration: 250 })
         }
     }, [isModalVisible])
 
-    const colors = useColorScheme()
+    const { colors } = useColorScheme()
+
+    const pinnedMessages = channel.pinned_messages_string ? channel.pinned_messages_string.split('\n').length : 0
 
     return (
         <Modal
@@ -74,10 +83,27 @@ const DMChannelInfoModal = ({ channel, isModalVisible, setModalVisible }: DMChan
                         android_ripple={{ color: 'rgba(0,0,0,0.1)', borderless: false }}>
                         <View className='flex-row items-center justify-between px-2'>
                             <View className='flex-row items-center'>
-                                <HollowFilesIcon height={20} width={20} fill={colors.colors.foreground} />
+                                <HollowFilesIcon height={20} width={20} fill={colors.foreground} />
                                 <Text style={styles.modalOption}>Images and Files</Text>
                             </View>
-                            <ChevronRightIcon height={24} width={24} fill={colors.colors.foreground} strokeWidth={'1px'} />
+                            <ChevronRightIcon height={24} width={24} fill={colors.foreground} strokeWidth={'1px'} />
+                        </View>
+                    </Pressable>
+                    <Pressable onPress={handleGoToPins}
+                        className='rounded-xl ios:active:bg-linkColor'
+                        android_ripple={{ color: 'rgba(0,0,0,0.1)', borderless: false }}>
+                        <View className='flex-row items-center justify-between px-2'>
+                            <View className='flex-row items-center'>
+                                <PinOutlineIcon height={20} width={20} stroke={colors.foreground} />
+                                <Text style={styles.modalOption}>Pins</Text>
+                            </View>
+                            <View className='flex-row items-center gap-1'>
+                                {pinnedMessages > 0 ?
+                                    <Text className='text-sm text-foreground font-semibold'>{pinnedMessages}</Text>
+                                    : null
+                                }
+                                <ChevronRightIcon height={24} width={24} fill={colors.foreground} strokeWidth={'1px'} />
+                            </View>
                         </View>
                     </Pressable>
                 </Animated.View>
@@ -87,7 +113,7 @@ const DMChannelInfoModal = ({ channel, isModalVisible, setModalVisible }: DMChan
 }
 
 const ModalHeader = ({ channel, handleCloseModal }: { channel: DMChannelListItem, handleCloseModal: () => void }) => {
-    const colors = useColorScheme()
+    const { colors } = useColorScheme()
 
     const peer = channel.peer_user_id
     const user = useGetUser(peer)
@@ -96,15 +122,15 @@ const ModalHeader = ({ channel, handleCloseModal }: { channel: DMChannelListItem
         <View className='flex-row items-center justify-between p-2'>
             <View className='flex-row items-center'>
                 <TouchableOpacity onPress={handleCloseModal} hitSlop={10}>
-                    <CrossIcon height={20} width={20} color={colors.colors.foreground} />
+                    <CrossIcon height={20} width={20} color={colors.foreground} />
                 </TouchableOpacity>
                 {channel && <View className='flex-row items-center ml-3'>
-                    <ChannelIcon type={channel.type} fill={colors.colors.foreground} />
+                    <ChannelIcon type={channel.type} fill={colors.foreground} />
                     <Text className='ml-2 text-base font-semibold'>{user?.full_name ?? peer}</Text>
                 </View>}
             </View>
             <TouchableOpacity hitSlop={10}>
-                <ThreeHorizontalDots height={20} width={20} color={colors.colors.foreground} />
+                <ThreeHorizontalDots height={20} width={20} color={colors.foreground} />
             </TouchableOpacity>
         </View>
     )
