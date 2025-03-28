@@ -99,8 +99,8 @@ const useChatStream = (channelID: string, listRef?: React.RefObject<LegendListRe
                 // Single attempt with RAF to ensure we're in the next frame
                 requestAnimationFrame(() => {
                     // Check if we have both the ref and data
-                    if (listRef?.current && data.message.messages?.length) {
-                        listRef.current.scrollToEnd({
+                    if (data.message.messages?.length) {
+                        listRef?.current?.scrollToEnd({
                             animated: false
                         })
 
