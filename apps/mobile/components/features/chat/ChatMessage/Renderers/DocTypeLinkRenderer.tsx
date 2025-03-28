@@ -80,7 +80,7 @@ const DocTypeCard = memo(({
     }, [sheetRef, data]);
 
     return <>
-        <Pressable className='p-2.5 flex gap-1 bg-background dark:bg-card-background/40 shadow-card border border-border dark:border-border/50 rounded-md overflow-hidden' onPress={onPress}>
+        <Pressable className='p-2.5 flex gap-1 bg-background dark:bg-card-background/40 shadow-card border border-border dark:border-border/50 rounded-lg overflow-hidden' onPress={onPress}>
             <View className='flex flex-row gap-2 w-full overflow-hidden'>
                 {data.preview_image && <View className='mt-0.5'>
                     <UserAvatar
@@ -287,19 +287,19 @@ const DocTypeBadge = ({ doctype }: { doctype: string }) => {
 
 const DocTypeCardSkeleton = () => {
     return (
-        <View className="bg-background dark:bg-card-background/40 shadow-card border border-border dark:border-border/50 rounded-md min-w-80 p-2.5">
+        <View className="bg-background dark:bg-card-background/40 shadow-card border border-border dark:border-border/50 rounded-lg min-w-80 p-2.5">
             <View className="gap-2 w-full">
                 <View className="flex-row justify-between items-start w-full">
                     <View className="flex-row gap-2 w-full">
-                        <View className="w-10 h-10 rounded-md bg-gray-200 dark:bg-grayText/20" />
-                        <View className="flex-1 rounded-md bg-gray-200 dark:bg-grayText/20" />
+                        <View className="w-10 h-10 rounded-lg bg-gray-200 dark:bg-grayText/20" />
+                        <View className="flex-1 rounded-lg bg-gray-200 dark:bg-grayText/20" />
                     </View>
                 </View>
                 <View className="gap-2">
-                    <View className="w-full h-4 rounded-md bg-gray-200 dark:bg-grayText/20" />
-                    <View className="w-3/6 h-4 rounded-md bg-gray-200 dark:bg-grayText/20" />
-                    <View className="w-3/6 h-4 rounded-md bg-gray-200 dark:bg-grayText/20" />
-                    <View className="w-3/6 h-4 rounded-md bg-gray-200 dark:bg-grayText/20" />
+                    <View className="w-full h-4 rounded-lg bg-gray-200 dark:bg-grayText/20" />
+                    <View className="w-3/6 h-4 rounded-lg bg-gray-200 dark:bg-grayText/20" />
+                    <View className="w-3/6 h-4 rounded-lg bg-gray-200 dark:bg-grayText/20" />
+                    <View className="w-3/6 h-4 rounded-lg bg-gray-200 dark:bg-grayText/20" />
                 </View>
             </View>
         </View>
@@ -316,7 +316,7 @@ const DocTypeCardError = ({
     error: FrappeError
 }) => {
     return (
-        <View className="bg-background dark:bg-card-background/40 shadow-card border border-border dark:border-border/50 rounded-md gap-1 p-2.5">
+        <View className="bg-background dark:bg-card-background/40 shadow-card border border-border dark:border-border/50 rounded-lg gap-1 p-2.5">
             {/* TODO: Insert Error Banner  here later*/}
             <View className='flex gap-1'>
                 <View className='bg-[#0011EE0F] dark:bg-[#525BFF3B] rounded-sm px-1.5 py-0.5 self-start'>

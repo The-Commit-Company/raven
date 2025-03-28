@@ -112,7 +112,7 @@ const ImageSkeleton = ({ width, height }: { width: number, height: number }) => 
             }}
         >
             <View
-                className="bg-gray-3 z-0 dark:bg-gray-5 rounded-md"
+                className="bg-gray-3 z-0 dark:bg-gray-5 rounded-lg"
                 style={{
                     height: height,
                     width: width,

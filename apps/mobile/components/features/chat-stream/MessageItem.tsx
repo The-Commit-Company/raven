@@ -82,7 +82,7 @@ const MessageItem = memo(({ message }: Props) => {
         <GestureDetector gesture={Gesture.Exclusive(doubleTapGesture, longPressGesture)}>
             <Pressable
                 hitSlop={10}
-                className='relative rounded-md ios:active:bg-linkColor/60'
+                className='relative rounded-lg ios:active:bg-linkColor/60'
                 // onLongPress={onLongPress}
                 android_ripple={{ color: 'rgba(0,0,0,0.1)', borderless: false }
                 }

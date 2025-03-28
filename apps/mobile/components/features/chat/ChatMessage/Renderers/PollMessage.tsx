@@ -50,7 +50,7 @@ export const PollMessageBlock = ({ message, ...props }: PollMessageBlockProps) =
 
 const PollMessageBox = ({ data, messageID }: { data: Poll; messageID: string }) => {
     return (
-        <View className="bg-card rounded-md p-3">
+        <View className="bg-card/80 rounded-xl p-3">
             <View className="flex-col gap-1 pb-3">
                 <Text className="text-base font-medium">{data.poll.question} {data.poll.is_anonymous ? <Text className="text-primary dark:text-secondary font-medium text-xs py-1 px-2">(Anonymous)</Text> : null}</Text>
             </View>
@@ -131,7 +131,7 @@ const PollResults = ({ data }: { data: Poll }) => {
             {data.poll.options.map((option) => (
                 <PollOption key={option.name} data={data} option={option} />
             ))}
-            <Text className="pl-2 text-sm text-muted-foreground">
+            <Text className="pl-2 text-sm font-medium text-muted-foreground">
                 {`${data.poll.total_votes || 0} vote${data.poll.total_votes === 1 ? '' : 's'}`}
             </Text>
         </View>

@@ -62,7 +62,6 @@ const ChannelMembers = () => {
                     value={searchQuery}
                 />
             </View>
-            <Divider className='mx-0' prominent />
             <KeyboardAwareScrollView
                 bottomOffset={8}
                 keyboardShouldPersistTaps="handled"
@@ -82,7 +81,7 @@ const ChannelMembers = () => {
                         showsVerticalScrollIndicator={false}
                         ListEmptyComponent={!debouncedText.length ? () => {
                             return (
-                                <View className="flex-1 items-center justify-center pt-10">
+                                <View className="flex-1 items-center justify-center">
                                     <Text className="text-[15px] text-center text-muted-foreground">
                                         No channel members found
                                     </Text>

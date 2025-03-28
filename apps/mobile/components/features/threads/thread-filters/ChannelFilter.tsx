@@ -14,7 +14,7 @@ const ChannelFilter = ({ channel, setChannel }: { channel: string, setChannel: (
         <View>
             <DropdownMenu.Root>
                 <DropdownMenu.Trigger>
-                    <View className={`items-center p-2 border border-border rounded-md w-fit ${channel !== 'all' ? 'border-primary bg-primary/5' : ''}`}>
+                    <View className={`items-center p-2 border border-border rounded-lg w-fit ${channel !== 'all' ? 'border-primary bg-primary/5' : ''}`}>
                         <HashIcon fill={colors.icon} height={18} width={18} />
                     </View>
                 </DropdownMenu.Trigger>

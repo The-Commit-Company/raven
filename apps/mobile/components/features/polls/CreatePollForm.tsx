@@ -60,7 +60,7 @@ const CreatePollForm = () => {
                         rules={{ required: 'Poll question is required' }}
                         render={({ field }) => (
                             <TextInput
-                                className="w-full border border-border rounded-md px-3 py-3 text-[16px] leading-5 text-foreground"
+                                className="w-full border border-border rounded-lg px-3 py-3 text-[16px] leading-5 text-foreground"
                                 placeholder="Ask a question"
                                 onChangeText={field.onChange}
                                 onBlur={field.onBlur}
@@ -84,7 +84,7 @@ const CreatePollForm = () => {
                                     rules={{ required: `Option ${index + 1} is required` }}
                                     render={({ field }) => (
                                         <TextInput
-                                            className="flex-1 border border-border rounded-md px-3 py-3 text-[16px] leading-5 text-foreground"
+                                            className="flex-1 border border-border rounded-lg px-3 py-3 text-[16px] leading-5 text-foreground"
                                             placeholder={`Option ${index + 1}`}
                                             onChangeText={field.onChange}
                                             onBlur={field.onBlur}

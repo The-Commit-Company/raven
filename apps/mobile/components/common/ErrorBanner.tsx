@@ -62,7 +62,7 @@ const ErrorBanner = ({ heading, message, error }: ErrorBannerProps) => {
     const messages = getErrorMessages(error)
     return (
         <View className="container">
-            <View className="border-l-[5px] border-error-border bg-error-background flex w-full rounded-md px-6 py-3 md:p-9">
+            <View className="border-l-[5px] border-error-border bg-error-background flex w-full rounded-lg px-6 py-3 md:p-9">
                 <View className="w-full">
                     {(heading || error) && (heading ?
                         <Text className="mb-2 text-base font-semibold text-error-heading">

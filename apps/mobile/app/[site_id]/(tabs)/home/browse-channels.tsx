@@ -89,15 +89,15 @@ const ChannelFilter = ({ channel, setChannel }: { channel: string, setChannel: (
     const { colors } = useColorScheme()
     return <DropdownMenu.Root>
         <DropdownMenu.Trigger>
-            <View className={`items-center p-2 border border-border rounded-md w-fit ${channel !== 'All' ? 'border-primary bg-primary/5' : ''}`}>
+            <View className={`items-center p-2 border border-border rounded-lg w-fit ${channel !== 'All' ? 'border-primary bg-primary/5' : ''}`}>
                 {
                     channel === 'Public' ?
-                        <HashIcon fill={colors.icon} height={18} width={18} />
+                        <HashIcon fill={colors.icon} height={20} width={20} />
                         : channel === 'Open' ?
-                            <GlobeIcon fill={colors.icon} height={18} width={18} />
+                            <GlobeIcon fill={colors.icon} height={20} width={20} />
                             : channel === 'Private' ?
-                                <LockIcon fill={colors.icon} height={18} width={18} />
-                                : <FilterIcon color={colors.icon} height={18} width={18} />
+                                <LockIcon fill={colors.icon} height={20} width={20} />
+                                : <FilterIcon color={colors.icon} height={20} width={20} />
                 }
             </View>
         </DropdownMenu.Trigger>
