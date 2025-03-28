@@ -46,10 +46,12 @@ export const useSiteSwitcher = () => {
         let tokenResponse = new TokenResponse(accessToken)
 
         if (tokenResponse.shouldRefresh()) {
+
+            const url = siteInformation?.url ?? ''
             tokenResponse.refreshAsync({
                 clientId: siteInformation?.client_id || '',
             }, {
-                tokenEndpoint: getTokenEndpoint(siteInformation?.url || ''),
+                tokenEndpoint: getTokenEndpoint(url),
             }).then(async (tokenResponse) => {
                 await storeAccessToken(siteName, tokenResponse)
 
@@ -59,7 +61,7 @@ export const useSiteSwitcher = () => {
                         clientId: siteInformation?.client_id || '',
                         token: accessToken.accessToken,
                     }, {
-                        revocationEndpoint: getRevocationEndpoint(siteInformation?.url || ''),
+                        revocationEndpoint: getRevocationEndpoint(url),
                     })
                 } catch (error) {
                     // Can ignore this error
