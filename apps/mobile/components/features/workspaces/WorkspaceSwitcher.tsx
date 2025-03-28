@@ -1,6 +1,6 @@
 import { Sheet, useSheetRef } from '@components/nativewindui/Sheet'
 import { Text } from '@components/nativewindui/Text'
-import { BottomSheetView } from '@gorhom/bottom-sheet'
+import { BottomSheetScrollView, BottomSheetView } from '@gorhom/bottom-sheet'
 import { Pressable, TouchableOpacity, View } from 'react-native'
 import UserAvatar from '@components/layout/UserAvatar'
 import useFetchWorkspaces, { WorkspaceFields } from '@raven/lib/hooks/useFetchWorkspaces';
@@ -11,6 +11,10 @@ import { useColorScheme } from '@hooks/useColorScheme';
 import ChevronDownIcon from '@assets/icons/ChevronDownIcon.svg'
 import { COLORS } from '@theme/colors'
 import useSiteContext from '@hooks/useSiteContext'
+import SiteSwitcher from '../auth/SiteSwitcher'
+import { getSiteNameFromUrl } from '@raven/lib/utils/operations'
+import GlobeIcon from '@assets/icons/GlobeIcon.svg'
+import AddSite from '../auth/AddSite'
 
 const WorkspaceSwitcher = ({ workspace, setWorkspace }: { workspace: string, setWorkspace: (workspace: string) => Promise<void> }) => {
 
@@ -41,8 +45,15 @@ const WorkSpaceSwitcherMenu = ({ selectedWorkspace, workspaces, setWorkspace }: 
     const siteInfo = useSiteContext()
 
     const urlWithoutProtocol = useMemo(() => {
-        return siteInfo?.url?.replace('https://', '').replace('http://', '').replace('www.', '').split('/')[0]
+        return getSiteNameFromUrl(siteInfo?.url)
     }, [siteInfo])
+
+    const addSiteSheetRef = useSheetRef()
+
+    const openAddSiteSheet = useCallback(() => {
+        bottomSheetRef.current?.dismiss()
+        addSiteSheetRef.current?.present()
+    }, [addSiteSheetRef])
 
     return (
         <View className='flex-1 gap-3'>
@@ -63,12 +74,25 @@ const WorkSpaceSwitcherMenu = ({ selectedWorkspace, workspaces, setWorkspace }: 
                     </View>
                 </View>
             </TouchableOpacity>
-            <Sheet snapPoints={[500]} ref={bottomSheetRef}>
-                <BottomSheetView className='pb-16'>
-                    <SelectWorkspaceSheet
-                        selectedWorkspace={selectedWorkspace}
-                        setWorkspace={onSetWorkspace}
-                        workspaces={workspaces} />
+            <Sheet enableDynamicSizing ref={bottomSheetRef}>
+                <BottomSheetScrollView>
+                    <View className='flex flex-col gap-4 px-4 pb-24'>
+                        <SelectWorkspaceSheet
+                            selectedWorkspace={selectedWorkspace}
+                            setWorkspace={onSetWorkspace}
+                            workspaces={workspaces} />
+                        <Divider />
+                        <SiteSwitcher openAddSiteSheet={openAddSiteSheet} />
+                    </View>
+                </BottomSheetScrollView>
+            </Sheet>
+
+            <Sheet enableDynamicSizing ref={addSiteSheetRef}>
+                <BottomSheetView className='flex-1 pb-16'>
+                    <View className='flex-1 gap-2 px-4'>
+                        <Text className='text-lg font-semibold'>Add a new site</Text>
+                        <AddSite />
+                    </View>
                 </BottomSheetView>
             </Sheet>
         </View>
@@ -103,21 +127,36 @@ const SelectWorkspaceSheet = ({ selectedWorkspace, workspaces, setWorkspace }: S
         return { myWorkspaces, otherWorkspaces }
     }, [workspaces, selectedWorkspace])
 
+    const siteInfo = useSiteContext()
+
+    const urlWithoutProtocol = useMemo(() => {
+        return getSiteNameFromUrl(siteInfo?.url)
+    }, [siteInfo])
+
+    const { colors } = useColorScheme()
+
     return (
-        <View className='flex flex-col gap-5 px-4'>
-            <View className='flex flex-col gap-2 border border-border p-2 rounded-xl'>
-                {myWorkspaces.map((workspace, index) => (
-                    <WorkspaceRow
-                        key={workspace.name}
-                        workspace={workspace}
-                        setWorkspace={setWorkspace}
-                        isLast={index === myWorkspaces.length - 1}
-                    />
-                ))}
+        <View className='flex flex-col gap-2'>
+            <View className='flex flex-col gap-2'>
+                <View className='flex flex-row items-center gap-2'>
+                    <GlobeIcon height={16} width={16} fill={colors.grey} />
+                    <Text className='text-sm font-medium text-muted-foreground'>{urlWithoutProtocol}</Text>
+                </View>
+                <View className='flex flex-col gap-2 border border-border p-2 rounded-xl'>
+
+                    {myWorkspaces.map((workspace, index) => (
+                        <WorkspaceRow
+                            key={workspace.name}
+                            workspace={workspace}
+                            setWorkspace={setWorkspace}
+                            isLast={index === myWorkspaces.length - 1}
+                        />
+                    ))}
+                </View>
             </View>
             {otherWorkspaces.length > 0 &&
                 <View className='flex flex-col gap-2'>
-                    <Text className='text-xs font-medium text-grayText'>Other workspaces</Text>
+                    <Text className='text-sm font-medium text-muted-foreground'>Other workspaces</Text>
                     <View className='flex flex-col gap-2 border border-border p-2 rounded-xl'>
                         {otherWorkspaces.map((workspace, index) => (
                             <WorkspaceRow key={workspace.name}

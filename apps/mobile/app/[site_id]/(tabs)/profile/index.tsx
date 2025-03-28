@@ -11,6 +11,7 @@ import CustomStatus from '@components/features/profile/profile-settings/CustomSt
 import ProfilePicture from '@components/features/profile/upload-profile/ProfilePicture';
 import { nativeApplicationVersion, nativeBuildVersion } from 'expo-application';
 import Preferences from '@components/features/profile/profile-settings/Preferences';
+import SwitchSitesSetting from '@components/features/profile/profile-settings/SwitchSitesSetting';
 
 const SCREEN_OPTIONS = {
     title: 'Profile',
@@ -43,6 +44,7 @@ export default function Profile() {
                             <NotificationSetting />
                             <AppearanceSetting />
                             <Preferences />
+                            <SwitchSitesSetting />
                         </View>
                         <LogOutButton />
                         <View className='flex flex-col justify-center items-center pt-2 gap-1'>

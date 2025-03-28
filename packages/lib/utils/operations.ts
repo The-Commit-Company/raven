@@ -70,3 +70,8 @@ export const getFileMimeType = (fileName: string) => {
 
 // list of mostly used file extensions
 export const ALLOWED_FILE_EXTENSIONS = ['pdf', 'doc', 'docx', 'xls', 'xlsx', 'csv', 'ppt', 'pptx', 'txt', 'jpg', 'jpeg', 'png', 'gif', 'bmp', 'tiff', 'ico', 'webp', 'mp4', 'webm', 'mp3', 'wav', 'ogg', 'avi', 'mov', 'wmv', 'flv', 'mkv', 'webm']
+
+export const getSiteNameFromUrl = (url?: string) => {
+    if (!url) return ''
+    return url.replace('https://', '').replace('http://', '').replace('www.', '').split('/')[0]
+}
