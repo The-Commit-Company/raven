@@ -28,6 +28,8 @@ const Providers = (props: PropsWithChildren) => {
 const UserListProvider = ({ children }: PropsWithChildren) => {
     const { users, enabledUsers, isLoading, error } = useUserListProvider()
 
+    useActiveSocketConnection()
+
     if (isLoading) {
         return <FullPageLoader />
     }
