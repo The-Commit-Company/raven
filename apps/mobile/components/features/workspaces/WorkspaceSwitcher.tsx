@@ -13,7 +13,7 @@ import { COLORS } from '@theme/colors'
 import useSiteContext from '@hooks/useSiteContext'
 import SiteSwitcher from '../auth/SiteSwitcher'
 import { getSiteNameFromUrl } from '@raven/lib/utils/operations'
-import GlobeIcon from '@assets/icons/GlobeIcon.svg'
+import ServerIcon from '@assets/icons/ServerIcon.svg'
 import AddSite from '../auth/AddSite'
 
 const WorkspaceSwitcher = ({ workspace, setWorkspace }: { workspace: string, setWorkspace: (workspace: string) => Promise<void> }) => {
@@ -139,7 +139,7 @@ const SelectWorkspaceSheet = ({ selectedWorkspace, workspaces, setWorkspace }: S
         <View className='flex flex-col gap-2'>
             <View className='flex flex-col gap-2'>
                 <View className='flex flex-row items-center gap-2'>
-                    <GlobeIcon height={16} width={16} fill={colors.grey} />
+                    <ServerIcon height={16} width={16} color={colors.grey} />
                     <Text className='text-sm font-medium text-muted-foreground'>{urlWithoutProtocol}</Text>
                 </View>
                 <View className='flex flex-col gap-2 border border-border p-2 rounded-xl'>
