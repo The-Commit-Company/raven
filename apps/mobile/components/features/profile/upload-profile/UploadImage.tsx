@@ -43,7 +43,7 @@ const UploadImage = ({ onSheetClose }: UploadImageProps) => {
                     otherData: {
                         optimize: '1',
                     },
-                    isPrivate: true,
+                    isPrivate: false,
                 })
                 await uploadImage(res.file_url)
             } catch (error) {
