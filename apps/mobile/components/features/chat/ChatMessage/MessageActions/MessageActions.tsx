@@ -11,6 +11,7 @@ import CopyMessage from './CopyMessage'
 import RetractVote from './RetractVote'
 import CopyMessageLink from './CopyMessageLink'
 import DownloadMessageFile from './DownloadMessageFile'
+import EditMessageAction from './EditMessageAction'
 
 interface MessageActionsProps {
     message: Message
@@ -48,6 +49,8 @@ const MessageActions = ({ message, onClose, quickReactionEmojis }: MessageAction
                         <DownloadMessageFile message={message as FileMessage} onClose={onClose} />
                     </View>
                 }
+
+                {(message && isOwner) && message.message_type === 'Text' && <EditMessageAction message={message} onClose={onClose} />}
 
                 {(message && isOwner) && <DeleteMessage message={message} onClose={onClose} />}
 
