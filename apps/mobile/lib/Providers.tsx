@@ -15,6 +15,7 @@ import { useFrappeEventListener, useSWRConfig } from 'frappe-react-sdk'
 import { useUnreadThreadsCountEventListener } from '@hooks/useUnreadThreadsCount'
 import useCurrentRavenUser from '@raven/lib/hooks/useCurrentRavenUser'
 import { useActiveSocketConnection } from '@hooks/useActiveSocketConnection'
+import { useFetchActiveUsersRealtime } from '@hooks/useFetchActiveUsers'
 
 const Providers = (props: PropsWithChildren) => {
 
@@ -83,6 +84,8 @@ const WorkspaceProvider = ({ children }: PropsWithChildren) => {
     const { data } = useFetchWorkspaces()
 
     useFetchUnreadMessageCount()
+
+    useFetchActiveUsersRealtime()
 
     // Listen to channel members updated events and invalidate the channel members cache
     const { mutate } = useSWRConfig()
