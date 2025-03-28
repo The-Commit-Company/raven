@@ -145,7 +145,7 @@ const MessageItem = memo(({ message }: Props) => {
                             {message.message_type === 'File' && <FileMessageRenderer message={message} doubleTapGesture={doubleTapGesture} />}
                             {message.message_type === 'Poll' && <PollMessageBlock message={message} />}
 
-                            {message.link_doctype && message.link_document && <View className={clsx('pt-0.5', message.is_continuation ? 'ml-0.5' : '-ml-0.5')}>
+                            {message.link_doctype && message.link_document && <View className={clsx('pt-1.5', message.is_continuation ? 'ml-0.5' : '-ml-0.5')}>
                                 <DocTypeLinkRenderer doctype={message.link_doctype} docname={message.link_document} />
                             </View>}
 
