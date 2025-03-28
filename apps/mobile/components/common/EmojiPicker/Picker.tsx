@@ -4,8 +4,8 @@ import { FlashList } from '@shopify/flash-list';
 import SearchInput from '../SearchInput/SearchInput';
 import { Image } from 'expo-image';
 import useFileURL from '@hooks/useFileURL';
-import Categories from './Categories';
-import { CATEGORIES, EMOJI_CATEGORIES, EMOJIS } from './utils';
+import Categories, { CATEGORIES } from './Categories';
+import { emojis as EMOJIS, categories as EMOJI_CATEGORIES } from "./emojis.json";
 import { ActivityIndicator } from '@components/nativewindui/ActivityIndicator';
 
 const DEFAULT_X_PADDING = 6;
@@ -118,7 +118,6 @@ const EmojiPicker = ({ customEmojis, onSelect, perLine, defaultCategory = "peopl
     return (
         <View className="flex-1">
             <Categories
-                items={CATEGORIES}
                 onCategorySelect={setCategory}
                 activeCategory={category}
                 disabledActiveCategory={!!searchText}

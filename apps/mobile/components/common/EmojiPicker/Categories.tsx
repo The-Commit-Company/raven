@@ -5,33 +5,42 @@ import { useColorScheme } from '@hooks/useColorScheme';
 import { CategoryType } from './Picker';
 import SmileIcon from "@assets/icons/SmileIcon.svg"
 
-interface CategoryItem {
-    category: CategoryType;
-    categoryIcon: string;
-}
+export const CATEGORIES = [
+    { category: 'people', categoryIcon: '😊' },
+    { category: 'nature', categoryIcon: '🌍' },
+    { category: 'foods', categoryIcon: '🍔' },
+    { category: 'activity', categoryIcon: '🎉' },
+    { category: 'places', categoryIcon: '📍' },
+    { category: 'objects', categoryIcon: '💡' },
+    { category: 'symbols', categoryIcon: '❤️' },
+    { category: 'flags', categoryIcon: '🌐' },
+    { category: 'custom', categoryIcon: '✏️' }
+] as {
+    category: CategoryType
+    categoryIcon: string
+}[]
 
 interface CategoriesProps {
-    items: CategoryItem[];
     onCategorySelect: (category: CategoryType) => void;
     activeCategory: CategoryType;
     disabledActiveCategory?: boolean;
 }
 
-const Categories = ({ items, onCategorySelect, activeCategory, disabledActiveCategory = false }: CategoriesProps) => {
+const Categories = ({ onCategorySelect, activeCategory, disabledActiveCategory = false }: CategoriesProps) => {
     const { colors } = useColorScheme();
     const { width } = Dimensions.get('window');
 
     const screenWidth = width - 40
 
-    const tabWidth = useMemo(() => screenWidth / Math.max(items.length, 1), [items.length, screenWidth]);
+    const tabWidth = useMemo(() => screenWidth / Math.max(CATEGORIES.length, 1), [CATEGORIES.length, screenWidth]);
 
     const activeTabShared = useSharedValue(0);
     const tabIndicatorAnim = useSharedValue(0);
 
     useMemo(() => {
-        const initialIndex = items.findIndex(item => item.category === activeCategory);
+        const initialIndex = CATEGORIES.findIndex(item => item.category === activeCategory);
         activeTabShared.value = initialIndex >= 0 ? initialIndex : 0;
-    }, [activeCategory, items]);
+    }, [activeCategory, CATEGORIES]);
 
     const handleTabPress = useCallback((index: number, category: CategoryType) => {
         activeTabShared.value = index;
@@ -53,7 +62,7 @@ const Categories = ({ items, onCategorySelect, activeCategory, disabledActiveCat
     return (
         <View>
             <View className="flex-row border-b-1 pb-2">
-                {items.map((item, index) => {
+                {CATEGORIES.map((item, index) => {
 
                     if (item.category === "custom") {
                         return (
