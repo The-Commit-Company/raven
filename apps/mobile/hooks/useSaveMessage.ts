@@ -22,13 +22,14 @@ const useSaveMessage = (message: Message, user?: string, saved = true) => {
 
             if (!response?.message) return
 
-            setIsSaved(!isSaved)
-
             if (isSaved) {
                 toast('Message unsaved')
             } else {
                 toast.success('Message saved')
             }
+
+            setIsSaved(!isSaved)
+
         }).catch((e: unknown) => {
             console.error(e)
             toast.error('Could not perform the action')
