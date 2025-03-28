@@ -37,8 +37,8 @@ const PinnedMessageList = () => {
 
 const PinnedMessagesEmptyState = () => {
     return (
-        <View className="flex-1 justify-center items-center h-full">
-            <Text className="text-foreground text-base font-medium">No pinned messages</Text>
+        <View className="flex-1 justify-center items-center p-4">
+            <Text className="text-muted-foreground">No pinned messages</Text>
         </View>
     )
 }
