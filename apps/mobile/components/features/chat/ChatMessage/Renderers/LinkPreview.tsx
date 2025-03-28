@@ -1,3 +1,4 @@
+import Skeleton from '@components/layout/Skeleton';
 import { useLinkPreview } from '@hooks/useLinkPreview';
 import { memo } from 'react';
 import { View, Text, TouchableOpacity, Linking, Image } from 'react-native';
@@ -9,7 +10,7 @@ type LinkPreviewProps = {
 
 const LinkPreview = memo(({ messageID, href }: LinkPreviewProps) => {
 
-    const linkPreview = useLinkPreview(href);
+    const { linkPreview, isLoading } = useLinkPreview(href);
 
     const handleLinkPress = async () => {
         if (href) {
@@ -19,6 +20,8 @@ const LinkPreview = memo(({ messageID, href }: LinkPreviewProps) => {
             }
         }
     };
+
+    if (isLoading) return <LinkPreviewSkeleton />
 
     if (!href || !linkPreview) return null;
 
@@ -51,4 +54,19 @@ const LinkPreview = memo(({ messageID, href }: LinkPreviewProps) => {
     );
 });
 
+const LinkPreviewSkeleton = () => {
+    return <View className='w-full border border-border bg-card-background/40 rounded-lg overflow-hidden relative'>
+        <Skeleton className='h-36 w-full' />
+        <View className='w-full p-2 pt-2.5'>
+            <View className='gap-2'>
+                <Skeleton className='h-4 w-3/4' />
+                <Skeleton className='h-3 w-1/3' />
+            </View>
+            <View className='gap-1.5 pt-2'>
+                <Skeleton className='h-3 w-full' />
+                <Skeleton className='h-3 w-3/4' />
+            </View>
+        </View>
+    </View>
+}
 export default LinkPreview;

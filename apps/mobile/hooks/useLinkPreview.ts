@@ -11,7 +11,7 @@ export type LinkPreviewDetails = {
 
 
 export const useLinkPreview = (href: string) => {
-    const { data } = useFrappeGetCall<{ message: LinkPreviewDetails[] }>(
+    const { data, isLoading } = useFrappeGetCall<{ message: LinkPreviewDetails[] }>(
         'raven.api.preview_links.get_preview_link',
         {
             urls: JSON.stringify([href])
@@ -24,7 +24,10 @@ export const useLinkPreview = (href: string) => {
         }
     )
 
-    return data?.message?.[0]
+    return {
+        linkPreview: data?.message?.[0],
+        isLoading
+    }
 
 }
 

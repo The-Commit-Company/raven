@@ -1,3 +1,4 @@
+import { useColorScheme } from '@hooks/useColorScheme'
 import React from 'react'
 import { DimensionValue, StyleSheet, View } from 'react-native'
 import Animated, {
@@ -20,9 +21,13 @@ const Skeleton = ({
     // width = '100%',
     // height = 20,
     borderRadius = 4,
-    backgroundColor = '#D9D9E0',
+    backgroundColor,
     className = '',
 }: Props) => {
+
+    const { isDarkColorScheme } = useColorScheme()
+
+    const bgColor = backgroundColor ?? (isDarkColorScheme ? '#363A3F' : '#D9D9E0')
     const opacity = useSharedValue(0.5);
 
     React.useEffect(() => {
@@ -42,7 +47,7 @@ const Skeleton = ({
             <Animated.View
                 style={[
                     styles.skeleton,
-                    { backgroundColor },
+                    { backgroundColor: bgColor },
                     animatedStyle
                 ]}
             />
