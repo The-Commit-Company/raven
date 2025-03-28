@@ -22,8 +22,6 @@ const ChannelItemElement = ({ channel }: { channel: ChannelWithUnreadCount }) =>
         <Pressable
             // short press -> navigate
             onPress={handlePress}
-            // long press -> show context menu
-            onLongPress={() => console.log(`channel long pressed - ${channel.name}`)}
             // Use tailwind classes for layout and ios:active state
             className='flex-row items-center px-3 py-2 rounded-lg ios:active:bg-linkColor'
             // Add a subtle ripple effect on Android

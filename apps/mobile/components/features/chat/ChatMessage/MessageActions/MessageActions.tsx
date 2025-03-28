@@ -9,9 +9,9 @@ import SaveMessage from './SaveMessage'
 import CreateThread from './CreateThread'
 import CopyMessage from './CopyMessage'
 import RetractVote from './RetractVote'
-import CopyMessageLink from './CopyMessageLink'
-import DownloadMessageFile from './DownloadMessageFile'
 import PinMessage from './PinMessage'
+import CopyFileMessageLink from './CopyFileMessageLink'
+import ShareMessageFile from './ShareMessageFile'
 
 interface MessageActionsProps {
     message: Message
@@ -45,15 +45,13 @@ const MessageActions = ({ message, onClose, quickReactionEmojis }: MessageAction
 
                 {message && <PinMessage message={message} onClose={onClose} />}
 
-                {(message && ['File', 'Image'].includes(message.message_type)) &&
+                {(message && ['File', 'Image'].includes(message.message_type)) && (message as FileMessage).file &&
                     <View className='flex flex-col gap-0'>
-                        <CopyMessageLink message={message as FileMessage} onClose={onClose} />
-                        <DownloadMessageFile message={message as FileMessage} onClose={onClose} />
+                        <ShareMessageFile message={message as FileMessage} onClose={onClose} />
+                        <CopyFileMessageLink message={message as FileMessage} onClose={onClose} />
                     </View>
                 }
-
                 {(message && isOwner) && <DeleteMessage message={message} onClose={onClose} />}
-
             </View>
 
         </View>

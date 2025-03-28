@@ -129,7 +129,6 @@ export const useFetchUnreadMessageCount = () => {
     const { updateLastMessageInChannelList } = useUpdateLastMessageInChannelList()
 
     useFrappeEventListener('raven:unread_channel_count_updated', (event) => {
-        console.log('event', event)
         // If the event is published by the current user, then update the unread count to 0
         if (event.sent_by !== currentUser) {
             // If the user is already on the channel and is at the bottom of the chat (no base message), then update the unread count to 0
@@ -145,8 +144,6 @@ export const useFetchUnreadMessageCount = () => {
         } else {
             updateUnreadCountToZero(event.channel_id)
         }
-
-        console.log('event', event)
 
         updateLastMessageInChannelList(event.channel_id, event.last_message_timestamp, event.last_message_details)
     })
