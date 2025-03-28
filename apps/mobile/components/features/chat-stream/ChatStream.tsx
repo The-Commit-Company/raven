@@ -132,7 +132,7 @@ const getEstimatedItemSize = (index: number, item: MessageDateBlock) => {
     if (item?.is_thread) estimatedHeight += THREAD_BLOCK_HEIGHT
 
     if (item?.text) {
-        estimatedHeight += (item.content?.length || 0) * 1.5 || 100
+        estimatedHeight += ((item.content?.length || 0) * 1.5 + 100) || 100
     }
 
     if (item?.message_reactions) {
