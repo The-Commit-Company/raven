@@ -9,7 +9,7 @@ import { TouchableOpacity } from '@gorhom/bottom-sheet'
 
 const ChannelHeader = ({ channelData }: { channelData: ChannelListItem }) => {
 
-    const colors = useColorScheme()
+    const { colors } = useColorScheme()
     const [isModalVisible, setModalVisible] = useState(false)
     const handleOnTitlePress = () => {
         setModalVisible(true)
@@ -24,7 +24,7 @@ const ChannelHeader = ({ channelData }: { channelData: ChannelListItem }) => {
                 className='flex-1'
                 activeOpacity={0.5}>
                 <View className='flex-row items-center rounded-md p-1'>
-                    <ChannelIcon type={channelData.type} fill={colors.colors.foreground} />
+                    <ChannelIcon type={channelData.type} fill={colors.foreground} />
                     <Text className='ml-2 text-base font-semibold'>{channelData.channel_name}</Text>
                 </View>
             </TouchableOpacity>
