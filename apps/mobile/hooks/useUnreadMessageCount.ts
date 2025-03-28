@@ -1,5 +1,5 @@
 import { UnreadCountData } from "@raven/lib/hooks/useGetChannelUnreadCounts"
-import { useFrappeGetCall, FrappeContext, FrappeConfig, useFrappeEventListener } from "frappe-react-sdk"
+import { useFrappeGetCall, FrappeContext, FrappeConfig, useFrappeEventListener, useFrappePostCall } from "frappe-react-sdk"
 import { useContext } from "react"
 import { useUpdateLastMessageInChannelList } from "./useUpdateLastMessageInChannelList"
 import useCurrentRavenUser from "@raven/lib/hooks/useCurrentRavenUser"
@@ -129,7 +129,6 @@ export const useFetchUnreadMessageCount = () => {
     const { updateLastMessageInChannelList } = useUpdateLastMessageInChannelList()
 
     useFrappeEventListener('raven:unread_channel_count_updated', (event) => {
-        console.log('event', event)
         // If the event is published by the current user, then update the unread count to 0
         if (event.sent_by !== currentUser) {
             // If the user is already on the channel and is at the bottom of the chat (no base message), then update the unread count to 0
@@ -145,8 +144,6 @@ export const useFetchUnreadMessageCount = () => {
         } else {
             updateUnreadCountToZero(event.channel_id)
         }
-
-        console.log('event', event)
 
         updateLastMessageInChannelList(event.channel_id, event.last_message_timestamp, event.last_message_details)
     })
@@ -177,4 +174,47 @@ export const useFetchUnreadMessageCount = () => {
     }
 
     return unread_count
+}
+
+
+export const useTrackChannelVisit = (channelID: string) => {
+
+    /** If the user has already loaded all the latest messages and exits the channel, we update the timestamp of last visit  */
+
+    const { call } = useFrappePostCall('raven.api.raven_channel_member.track_visit')
+
+    const { unread_count, updateCount } = useUnreadMessageCount()
+
+    const updateUnreadCountToZero = (channel_id?: string) => {
+
+        updateCount(d => {
+            if (d) {
+                const newChannels = d.message.map(c => {
+                    if (c.name === channel_id)
+                        return {
+                            ...c,
+                            unread_count: 0
+                        }
+                    return c
+                })
+
+                return {
+                    message: newChannels
+                }
+
+            } else {
+                return d
+            }
+
+        }, { revalidate: false })
+
+    }
+
+
+    const trackVisit = () => {
+        updateUnreadCountToZero(channelID)
+        call({ channel_id: channelID })
+    }
+
+    return trackVisit
 }

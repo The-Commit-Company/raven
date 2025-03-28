@@ -12,6 +12,8 @@ import { SiteInformation } from '../../../types/SiteInformation'
 import { addSiteToStorage, discovery, setDefaultSite, storeAccessToken } from '@lib/auth'
 import { FormLabel } from '@components/layout/Form'
 import { useColorScheme } from '@hooks/useColorScheme'
+import { ActivityIndicator } from '@components/nativewindui/ActivityIndicator'
+import HowToSetupMobile from './HowToSetupMobile'
 
 WebBrowser.maybeCompleteAuthSession();
 
@@ -52,7 +54,6 @@ const AddSite = (props: Props) => {
             .then(res => res.json())
             .then(data => {
                 if (data.message && data.message.client_id) {
-                    console.log(data.message)
                     setSiteInformation({
                         url,
                         ...data.message
@@ -104,6 +105,8 @@ const AddSite = (props: Props) => {
                     {siteInformation && <SiteAuthFlowSheet siteInformation={siteInformation} onDismiss={clearSiteInformation} />}
                 </BottomSheetView>
             </Sheet>
+
+            <HowToSetupMobile />
         </View>
     )
 }
@@ -116,6 +119,8 @@ export const SiteAuthFlowSheet = ({ siteInformation, onDismiss }: { siteInformat
         revocationEndpoint: siteInformation.url + discovery.revocationEndpoint,
     }
 
+    const [loading, setLoading] = useState(false)
+
     const [request, response, promptAsync] = useAuthRequest({
         responseType: ResponseType.Code,
         clientId: siteInformation.client_id,
@@ -127,6 +132,7 @@ export const SiteAuthFlowSheet = ({ siteInformation, onDismiss }: { siteInformat
 
     const onLoginClick = () => {
         // If the user clicks the login button, we need to initiate the OAuth flow
+        setLoading(true)
         promptAsync()
             .then(res => {
                 if (res.type === 'success') {
@@ -145,6 +151,9 @@ export const SiteAuthFlowSheet = ({ siteInformation, onDismiss }: { siteInformat
                 } else if (res.type === "error") {
                     Alert.alert("Authentication Error", res.error?.message ?? "Unknown error")
                 }
+            })
+            .finally(() => {
+                setLoading(false)
             })
     }
 
@@ -171,8 +180,10 @@ export const SiteAuthFlowSheet = ({ siteInformation, onDismiss }: { siteInformat
                 <Text className='text-sm text-muted-foreground'>{siteInformation?.url}</Text>
             </View>
         </View>
-        <Button onPress={onLoginClick} disabled={!request}>
-            <Text>Login</Text>
+        <Button onPress={onLoginClick} style={{
+            minHeight: 40
+        }} disabled={!request || loading}>
+            {loading ? <ActivityIndicator color={"#FFFFFF"} /> : <Text>Login</Text>}
         </Button>
     </View>
 }

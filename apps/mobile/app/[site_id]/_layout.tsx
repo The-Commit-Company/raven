@@ -3,7 +3,7 @@ import { useEffect, useState, useRef, useCallback } from "react";
 import { SiteInformation } from "../../types/SiteInformation";
 import { revokeAsync, TokenResponse } from "expo-auth-session";
 import FullPageLoader from "@components/layout/FullPageLoader";
-import { getAccessToken, getRevocationEndpoint, getSiteFromStorage, getTokenEndpoint, storeAccessToken } from "@lib/auth";
+import { addSiteToStorage, clearDefaultSite, getAccessToken, getRevocationEndpoint, getSiteFromStorage, getTokenEndpoint, storeAccessToken } from "@lib/auth";
 import Providers from "@lib/Providers";
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 import FrappeNativeProvider from "@lib/FrappeNativeProvider";
@@ -139,7 +139,9 @@ export default function SiteLayout() {
                 if (!siteInfo) {
                     router.replace('/landing')
 
-                    // TODO: Show the user a toast saying that the site is not found
+                    // Show the user a toast saying that the site is not found
+                    clearDefaultSite()
+                    toast.error("We could not find the site you were looking for. Please login again.")
 
                     return null
                 }
@@ -158,6 +160,7 @@ export default function SiteLayout() {
                     router.replace('/landing')
 
                     // Show the user a toast saying that the site is not found
+                    clearDefaultSite()
 
                     toast.error("We could not find the stored credentials for this site. Please try logging in again.")
 
@@ -191,13 +194,25 @@ export default function SiteLayout() {
                         }
 
                         return tokenResponse
+                    }).catch(error => {
+                        console.error("Error refreshing token:", error);
+                        return null
                     })
                 } else {
                     return tokenResponse
                 }
             })
             .then(tokenResponse => {
-                if (!tokenResponse) return
+                if (!tokenResponse) {
+                    router.replace('/landing')
+
+                    // Show the user a toast saying that the site is not found
+                    clearDefaultSite()
+
+                    toast.error("We could not find the stored credentials for this site. Please try logging in again.")
+
+                    return
+                }
                 accessTokenRef.current = tokenResponse
             })
             .then(() => {
@@ -208,6 +223,35 @@ export default function SiteLayout() {
     const getToken = useCallback(() => {
         return accessTokenRef.current?.accessToken || ''
     }, [])
+
+    const siteInfoRefreshedRef = useRef(false)
+
+
+    useEffect(() => {
+        // Fetch latest site information from the server
+        // This is not a priority, so we can do it on the background
+        if (!siteInfo || !site_id || siteInfoRefreshedRef.current) return
+
+        fetch(`${siteInfo.url}/api/method/raven.api.raven_mobile.get_client_id`)
+            .then(res => res.json())
+            .then(data => {
+                if (data.message && data.message.client_id) {
+
+                    console.log("Site information refreshed from the server", site_id, data.message)
+                    setSiteInfo({
+                        ...siteInfo,
+                        ...data.message
+                    })
+
+                    addSiteToStorage(site_id, {
+                        ...siteInfo,
+                        ...data.message
+                    })
+                    siteInfoRefreshedRef.current = true
+                }
+            })
+
+    }, [siteInfo, site_id])
 
     return <>
         {loading ? <FullPageLoader /> :
@@ -224,6 +268,12 @@ export default function SiteLayout() {
                                 />
                                 <Stack.Screen
                                     name="thread/[id]/create-poll"
+                                    options={{
+                                        presentation: 'modal',
+                                    }}
+                                />
+                                <Stack.Screen
+                                    name="chat/[id]/pinned-messages"
                                     options={{
                                         presentation: 'modal',
                                     }}

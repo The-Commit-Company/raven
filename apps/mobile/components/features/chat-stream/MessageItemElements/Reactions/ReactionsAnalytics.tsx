@@ -1,8 +1,8 @@
-import React, { useCallback, useMemo, useRef, useState } from 'react'
+import React, { useCallback, useMemo, useState } from 'react'
 import { Dimensions, Pressable, View } from 'react-native'
-import { State, PanGestureHandler } from 'react-native-gesture-handler'
+import { Gesture, GestureDetector } from 'react-native-gesture-handler'
 import Animated, { useSharedValue, useAnimatedStyle, withSpring, runOnJS, useAnimatedReaction } from 'react-native-reanimated'
-import { BottomSheetModal, BottomSheetView } from '@gorhom/bottom-sheet'
+import { BottomSheetFlashList, BottomSheetModal, BottomSheetView } from '@gorhom/bottom-sheet'
 import { Text } from '@components/nativewindui/Text'
 import { useColorScheme } from '@hooks/useColorScheme'
 import UserAvatar from '@components/layout/UserAvatar'
@@ -12,7 +12,6 @@ import { Sheet } from '@components/nativewindui/Sheet'
 import { ReactionObject } from './MessageReactions'
 import useFileURL from '@hooks/useFileURL'
 import { Image } from 'expo-image'
-import { LegendList } from '@legendapp/list'
 
 const { width } = Dimensions.get('window');
 
@@ -39,7 +38,6 @@ const ReactionAnalyticsContent = ({ reactions }: { reactions: ReactionObject[] }
 
     const activeTabShared = useSharedValue(0);
     const tabIndicatorAnim = useSharedValue(0);
-    const panRef = useRef(null);
 
     const all_reacted_members = useMemo(() => {
         return reactions.flatMap(({ reaction, users, is_custom, emoji_name }: ReactionObject) =>
@@ -68,20 +66,6 @@ const ReactionAnalyticsContent = ({ reactions }: { reactions: ReactionObject[] }
         activeTabShared.value = index;
     }, []);
 
-    const handleSwipe = useCallback((event: any) => {
-        const { translationX, state } = event.nativeEvent;
-
-        if (state === State.END) {
-            if (translationX > 50 && activeTabShared.value > 0) {
-                // Swipe right
-                runOnJS(handleTabPress)(activeTabShared.value - 1);
-            } else if (translationX < -50 && activeTabShared.value < tabs.length - 1) {
-                // Swipe left
-                runOnJS(handleTabPress)(activeTabShared.value + 1);
-            }
-        }
-    }, [tabs.length, handleTabPress]);
-
     const tabWidth = useMemo(() => width / Math.max(tabs.length, 1), [tabs.length]);
 
     useAnimatedReaction(() => activeTabShared.value, (currentValue) => {
@@ -107,8 +91,23 @@ const ReactionAnalyticsContent = ({ reactions }: { reactions: ReactionObject[] }
         runOnJS(setCurrentTabIndex)(currentValue);
     }, [tabWidth]);
 
+    const xSwipeGesture = Gesture.Pan()
+        .activeOffsetX([-20, 20]) // Start capturing after 20px movement
+        .onEnd((event) => {
+            'worklet';
+            const translation = event.translationX;
 
-    return <BottomSheetView className='flex-1'>
+            if (translation > 50 && activeTabShared.value > 0) {
+                // Swipe right - previous tab
+                activeTabShared.value = activeTabShared.value - 1;
+            } else if (translation < -50 && activeTabShared.value < tabs.length - 1) {
+                // Swipe left - next tab
+                activeTabShared.value = activeTabShared.value + 1;
+            }
+        });
+
+
+    return <BottomSheetView className='flex-1 pb-4'>
         <View className="flex-row border-3">
             {tabs.map((tab, index) => {
                 return (
@@ -136,11 +135,7 @@ const ReactionAnalyticsContent = ({ reactions }: { reactions: ReactionObject[] }
             />
         </View>
 
-        <PanGestureHandler
-            ref={panRef}
-            onGestureEvent={handleSwipe}
-            onHandlerStateChange={handleSwipe}
-        >
+        <GestureDetector gesture={xSwipeGesture}>
             <Animated.View className="flex-1">
                 <UserList
                     users={tabs[currentTabIndex].users.map((user) => ({
@@ -151,7 +146,7 @@ const ReactionAnalyticsContent = ({ reactions }: { reactions: ReactionObject[] }
                     }))}
                 />
             </Animated.View>
-        </PanGestureHandler>
+        </GestureDetector>
     </BottomSheetView>
 }
 
@@ -176,7 +171,7 @@ const UserList = ({ users }: { users: UserItemProps[] }) => {
     );
 
     return (
-        <LegendList
+        <BottomSheetFlashList
             data={users}
             renderItem={renderItem}
             estimatedItemSize={57}

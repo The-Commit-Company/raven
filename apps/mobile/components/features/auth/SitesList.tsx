@@ -1,36 +1,15 @@
 import { Divider } from '@components/layout/Divider'
-import { Sheet, useSheetRef } from '@components/nativewindui/Sheet'
+import { Sheet } from '@components/nativewindui/Sheet'
 import { BottomSheetView } from '@gorhom/bottom-sheet'
-import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Pressable, View } from 'react-native'
 import { SiteAuthFlowSheet } from './AddSite'
-import { SiteInformation } from 'types/SiteInformation'
-import { getSitesFromStorage } from '@lib/auth'
 import { Text } from '@components/nativewindui/Text'
 import { Avatar, AvatarImage } from '@components/nativewindui/Avatar'
+import { useSiteSwitcher } from '@hooks/useSiteSwitcher'
 
 const SitesList = () => {
 
-    const bottomSheetRef = useSheetRef()
-
-    const [sites, setSites] = useState<Record<string, SiteInformation>>({})
-
-    useEffect(() => {
-        getSitesFromStorage().then(setSites)
-    }, [])
-
-    const [siteInformation, setSiteInformation] = useState<SiteInformation | null>(null)
-
-    const clearSiteInformation = useCallback(() => {
-        setSiteInformation(null)
-    }, [])
-
-    const hasSites = useMemo(() => Object.keys(sites).length > 0, [sites])
-
-    const handleSitePress = useCallback((siteName: string) => {
-        setSiteInformation(sites[siteName])
-        bottomSheetRef.current?.present()
-    }, [sites])
+    const { sites, siteInformation, handleSitePress, clearSiteInformation, hasSites, bottomSheetRef } = useSiteSwitcher()
 
     if (!hasSites) {
         return (

@@ -23,7 +23,7 @@ const ArchiveChannel = ({ channel }: { channel: FrappeDoc<ChannelListItem> | und
         updateDoc('Raven Channel', channel?.name ?? '', {
             is_archived: 1
         }).then(() => {
-            toast.success(`You have left ${channel?.channel_name} channel`)
+            toast.success(`Channel archived.`)
             goToHome()
             mutate()
         }).catch(() => {

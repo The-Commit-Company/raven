@@ -8,7 +8,7 @@ import { FileMessageView } from '../chat/ChatMessage/Renderers/FileMessageRender
 import MessageTextRenderer from '../chat-stream/MessageItemElements/MessageTextRenderer';
 import DocTypeLinkRenderer from '../chat/ChatMessage/Renderers/DocTypeLinkRenderer';
 import { MessageLinkRenderer } from '../chat-stream/MessageItemElements/MessageLinkRenderer';
-import PushPin from '@assets/icons/PushPin.svg'
+import PinIcon from '@assets/icons/PinIcon.svg'
 import ShareForward from '@assets/icons/ShareForward.svg'
 import ReplyMessageBox from '../chat/ChatMessage/Renderers/ReplyMessageBox';
 import { Message } from '@raven/types/common/Message';
@@ -47,7 +47,7 @@ export const BaseMessageItem = ({ message }: { message: Message }) => {
                     </View>}
                 {message.is_pinned === 1 &&
                     <View className='flex-row items-center gap-1'>
-                        <PushPin width={12} height={12} />
+                        <PinIcon width={12} height={12} />
                         <Text className='text-xs text-accent'>Pinned</Text>
                     </View>}
 
