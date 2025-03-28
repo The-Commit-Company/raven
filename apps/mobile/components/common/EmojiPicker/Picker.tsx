@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { View, Text, Dimensions, Pressable } from 'react-native';
 import { FlashList } from '@shopify/flash-list';
 import SearchInput from '../SearchInput/SearchInput';
@@ -6,12 +6,24 @@ import { Image } from 'expo-image';
 import useFileURL from '@hooks/useFileURL';
 import Categories from './Categories';
 import { emojis as EMOJIS, categories as EMOJI_CATEGORIES } from "./emojis.json";
-import { ActivityIndicator } from '@components/nativewindui/ActivityIndicator';
 import { useDebounce } from '@raven/lib/hooks/useDebounce';
 
 const DEFAULT_X_PADDING = 6;
 
 export type CategoryType = 'people' | 'nature' | 'foods' | 'activity' | 'places' | 'objects' | 'symbols' | 'flags' | "custom"
+
+interface EmojiData {
+    id: string,
+    name: string,
+    keywords: string[],
+    skins: {
+        unified: string,
+        native: string
+    }[],
+    version: number,
+    emoticons?: string[]
+
+}
 
 export interface Emoji {
     id: string;
@@ -19,7 +31,7 @@ export interface Emoji {
     unified: string;
     native: string;
     keywords: string[];
-    emoticons: string[];
+    emoticons?: string[];
     src?: string;
 }
 
@@ -45,61 +57,59 @@ interface EmojiPickerProps {
 
 const EmojiPicker = ({ customEmojis, onSelect, perLine, defaultCategory = "people" }: EmojiPickerProps) => {
     const [category, setCategory] = useState<CategoryType>(defaultCategory);
-    const [emojis, setEmojis] = useState<{ [key: string]: Emoji[] }>({});
     const [searchText, setSearchText] = useState<string>('');
     const debouncedText = useDebounce(searchText)
 
-    const [loading, setLoading] = useState<boolean>(true);
+    const emojis: Record<string, Emoji[]> = useMemo(() => {
 
-    useEffect(() => {
-        try {
-            const emojisByCategory = EMOJI_CATEGORIES.reduce((acc: any, category) => {
-                const categoryId = category.id;
-                const categoryEmojis = category.emojis.map((emojiId) => {
-                    const emoji = EMOJIS[emojiId as keyof typeof EMOJIS];
-                    if (!emoji) return;
-                    return {
-                        id: emoji.id,
-                        name: emoji.name,
-                        native: emoji.skins[0].native,
-                        unified: emoji.skins[0].unified,
-                        keywords: emoji.keywords,
-                    };
-                }).filter(Boolean);
+        const emojisByCategory = EMOJI_CATEGORIES.reduce((acc: any, category) => {
+            const categoryId = category.id;
+            const categoryEmojis: Emoji[] = []
+            category.emojis.forEach((emojiId) => {
+                const emoji = (EMOJIS as Record<string, EmojiData>)[emojiId as keyof typeof EMOJIS];
+                if (!emoji) return;
+                categoryEmojis.push({
+                    id: emoji.id,
+                    name: emoji.name,
+                    native: emoji.skins[0].native,
+                    unified: emoji.skins[0].unified,
+                    keywords: emoji.keywords,
+                    emoticons: emoji.emoticons
+                })
+            })
 
-                acc[categoryId] = categoryEmojis;
-                return acc;
-            }, {});
+            acc[categoryId] = categoryEmojis;
+            return acc;
+        }, {});
 
-            if (customEmojis && customEmojis.length > 0) {
-                const customCategoryEmojis = customEmojis.flatMap(customCat =>
-                    customCat.emojis.map(emoji => ({
-                        id: emoji.id,
-                        name: emoji.name,
-                        keywords: emoji.keywords,
-                        src: emoji.skins[0].src,
-                    }))
-                );
-                emojisByCategory['custom'] = customCategoryEmojis;
-            }
-
-            setEmojis(emojisByCategory);
-        } catch (error) {
-            console.error('Failed to load emojis:', error);
-        } finally {
-            setLoading(false);
+        if (customEmojis && customEmojis.length > 0) {
+            const customCategoryEmojis = customEmojis.flatMap(customCat =>
+                customCat.emojis.map(emoji => ({
+                    id: emoji.id,
+                    name: emoji.name,
+                    keywords: emoji.keywords,
+                    src: emoji.skins[0].src,
+                }))
+            );
+            emojisByCategory['custom'] = customCategoryEmojis;
         }
-    }, []);
+
+
+        return emojisByCategory
+    }, [])
 
     const filteredEmojis = useMemo(() => {
         const emojisByCategory = emojis[category];
+
         if (!debouncedText) return emojisByCategory;
+
         const allEmojis = Object.values(emojis).flat();
-        return allEmojis.filter((emoji) => {
+
+        return allEmojis.filter((emoji: Emoji) => {
             const searchLower = debouncedText.toLowerCase();
             return (
-                (emoji.keywords?.some((keyword) => keyword.toLowerCase().includes(searchLower)) || false) ||
-                ((emoji.emoticons || []).some((emoticon) => emoticon.toLowerCase().includes(searchLower))) ||
+                (emoji.keywords?.some((keyword: string) => keyword.toLowerCase().includes(searchLower)) || false) ||
+                ((emoji.emoticons || []).some((emoticon: string) => emoticon.toLowerCase().includes(searchLower))) ||
                 (emoji.name?.toLowerCase().includes(searchLower) || false) ||
                 (emoji.id?.includes(searchLower) || false) ||
                 (emoji.unified?.includes(searchLower) || false) ||
@@ -109,14 +119,6 @@ const EmojiPicker = ({ customEmojis, onSelect, perLine, defaultCategory = "peopl
     }, [emojis, debouncedText, category]);
 
     const { emojiContainerSize } = getEmojiDimensions(DEFAULT_X_PADDING, perLine);
-
-    if (loading) {
-        return (
-            <View className="flex-1 items-center justify-center">
-                <ActivityIndicator />
-            </View>
-        );
-    }
 
     return (
         <View className="flex-1">

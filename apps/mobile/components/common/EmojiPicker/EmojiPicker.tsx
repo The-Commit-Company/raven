@@ -3,9 +3,6 @@ import Picker, { CustomEmoji, Emoji } from "./Picker";
 import { useFrappeGetCall } from "frappe-react-sdk";
 import { RavenCustomEmoji } from "@raven/types/RavenMessaging/RavenCustomEmoji";
 import { useMemo } from "react";
-import { ActivityIndicator } from "@components/nativewindui/ActivityIndicator";
-import ErrorBanner from "../ErrorBanner";
-
 interface EmojiPickerProps {
     onReact: (emoji: Emoji) => void;
     allowCustomEmojis?: boolean;
@@ -14,13 +11,15 @@ interface EmojiPickerProps {
 const EmojiPicker = ({ onReact, allowCustomEmojis = true }: EmojiPickerProps) => {
 
     const { data, mutate, error, isLoading } = useFrappeGetCall<{ message: RavenCustomEmoji[] }>(
-        "frappe.client.get_list",
-        {
-            doctype: "Raven Custom Emoji",
-            fields: ["name", "image", "keywords"],
-            limit: 1000,
-        }
-    );
+        "frappe.client.get_list", {
+        doctype: "Raven Custom Emoji",
+        fields: ["name", "image", "keywords"],
+        limit: 1000,
+    }, allowCustomEmojis ? 'custom-emojis' : null, {
+        revalidateOnFocus: false,
+        revalidateIfStale: false,
+        revalidateOnReconnect: false
+    });
 
     const customEmojis = useMemo(() => {
         if (!allowCustomEmojis || !data) {
@@ -38,16 +37,6 @@ const EmojiPicker = ({ onReact, allowCustomEmojis = true }: EmojiPickerProps) =>
             })),
         }];
     }, [data, allowCustomEmojis]);
-
-    if (isLoading) {
-        return <View className="flex-1 justify-center items-center h-full">
-            <ActivityIndicator />
-        </View>
-    }
-
-    if (error) {
-        return <ErrorBanner error={error} />
-    }
 
     return (
         <View className="flex-1 px-3">
