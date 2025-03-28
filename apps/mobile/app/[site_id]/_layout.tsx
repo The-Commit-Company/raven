@@ -3,7 +3,7 @@ import { useEffect, useState, useRef, useCallback } from "react";
 import { SiteInformation } from "../../types/SiteInformation";
 import { revokeAsync, TokenResponse } from "expo-auth-session";
 import FullPageLoader from "@components/layout/FullPageLoader";
-import { clearDefaultSite, getAccessToken, getRevocationEndpoint, getSiteFromStorage, getTokenEndpoint, storeAccessToken } from "@lib/auth";
+import { addSiteToStorage, clearDefaultSite, getAccessToken, getRevocationEndpoint, getSiteFromStorage, getTokenEndpoint, storeAccessToken } from "@lib/auth";
 import Providers from "@lib/Providers";
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 import FrappeNativeProvider from "@lib/FrappeNativeProvider";
@@ -223,6 +223,35 @@ export default function SiteLayout() {
     const getToken = useCallback(() => {
         return accessTokenRef.current?.accessToken || ''
     }, [])
+
+    const siteInfoRefreshedRef = useRef(false)
+
+
+    useEffect(() => {
+        // Fetch latest site information from the server
+        // This is not a priority, so we can do it on the background
+        if (!siteInfo || !site_id || siteInfoRefreshedRef.current) return
+
+        fetch(`${siteInfo.url}/api/method/raven.api.raven_mobile.get_client_id`)
+            .then(res => res.json())
+            .then(data => {
+                if (data.message && data.message.client_id) {
+
+                    console.log("Site information refreshed from the server", site_id, data.message)
+                    setSiteInfo({
+                        ...siteInfo,
+                        ...data.message
+                    })
+
+                    addSiteToStorage(site_id, {
+                        ...siteInfo,
+                        ...data.message
+                    })
+                    siteInfoRefreshedRef.current = true
+                }
+            })
+
+    }, [siteInfo, site_id])
 
     return <>
         {loading ? <FullPageLoader /> :

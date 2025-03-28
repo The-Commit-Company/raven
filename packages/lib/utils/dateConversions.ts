@@ -59,3 +59,16 @@ export const getDateObject = (timestamp: string): dayjs.Dayjs => {
 export const getTimePassed = (date: string) => {
     return getDateObject(date).fromNow()
 }
+
+export const getStandardDateFormat = (inputDate: string | Date = new Date()): string => {
+    const date = new Date(inputDate);
+    if (isNaN(date.getTime())) {
+        throw new Error("Invalid date format");
+    }
+
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are zero-based
+    const year = String(date.getFullYear()).slice(-2); // Get last 2 digits of the year
+
+    return `${month}/${day}/${year}`;
+};

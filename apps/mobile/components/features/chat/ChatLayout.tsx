@@ -9,6 +9,9 @@ import { messageActionsSelectedMessageAtom } from '@lib/ChatInputUtils';
 import { NativeScrollEvent, NativeSyntheticEvent, Platform, View } from 'react-native';
 import ChatStream from '../chat-stream/ChatStream';
 import ChatInput from './ChatInput/ChatInput';
+import { JoinChannelBox } from '@components/features/chat/ChatFooter/JoinChannelBox';
+import { ArchivedChannelBox } from '@components/features/chat/ChatFooter/ArchivedChannelBox';
+import useShouldJoinChannel from '@hooks/useShouldJoinChannel';
 
 const PADDING_BOTTOM = Platform.OS === 'ios' ? 20 : 0;
 
@@ -70,6 +73,8 @@ const ChatLayout = ({ channelID, isThread = false, pinnedMessagesString }: Props
         }
     }, [])
 
+    const { canUserSendMessage, shouldShowJoinBox, channelData, myProfile, channelMemberProfile } = useShouldJoinChannel(channelID, isThread)
+
     const fakeView = useAnimatedStyle(() => {
         return {
             height: Math.abs(height.value),
@@ -115,9 +120,31 @@ const ChatLayout = ({ channelID, isThread = false, pinnedMessagesString }: Props
                     onMomentumScrollEnd={checkIfNearBottom}
                     pinnedMessagesString={pinnedMessagesString}
                 />
-                <ChatInput channelID={channelID} onSendMessage={onSendMessage} />
+                {
+                    canUserSendMessage ?
+                        <ChatInput channelID={channelID} onSendMessage={onSendMessage} />
+                        : null
+                }
+
+                {
+                    shouldShowJoinBox ?
+                        <JoinChannelBox
+                            channelID={channelID}
+                            isThread={isThread}
+                            user={myProfile?.name ?? ""} />
+                        : null
+                }
+                {
+                    channelData?.is_archived ?
+                        <ArchivedChannelBox
+                            channelID={channelID}
+                            isMemberAdmin={channelMemberProfile?.is_admin}
+                        />
+                        : null
+                }
                 <Animated.View style={fakeView} />
             </View>
+
             <MessageActionsBottomSheet
                 messageActionsSheetRef={messageActionsSheetRef}
                 message={selectedMessage}

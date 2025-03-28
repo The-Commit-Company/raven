@@ -8,6 +8,7 @@ import ChevronRightIcon from '@assets/icons/ChevronRightIcon.svg';
 import { useGetUser } from '@raven/lib/hooks/useGetUser';
 import UserAvatar from '@components/layout/UserAvatar';
 import { Link } from 'expo-router';
+import { useIsUserActive } from '@hooks/useIsUserActive';
 
 const DMList = ({ dms }: { dms: DMChannelListItem[] }) => {
     return <DMListUI dms={dms} />
@@ -37,6 +38,9 @@ const DMListUI = ({ dms }: { dms: DMChannelListItem[] }) => {
 
 export const DMListRow = ({ dm }: { dm: DMChannelListItem }) => {
     const user = useGetUser(dm.peer_user_id)
+
+    const isActive = useIsUserActive(dm.peer_user_id)
+
     return (
         <Link href={`../chat/${dm.name}`} asChild>
             <Pressable
@@ -48,6 +52,7 @@ export const DMListRow = ({ dm }: { dm: DMChannelListItem }) => {
                 <UserAvatar
                     src={user?.user_image ?? ""}
                     alt={user?.full_name ?? ""}
+                    isActive={isActive}
                     availabilityStatus={user?.availability_status}
                     avatarProps={{ className: "w-8 h-8" }}
                     textProps={{ className: "text-sm font-medium" }}

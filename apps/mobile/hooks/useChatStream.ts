@@ -1,13 +1,14 @@
 import { LegendListRef } from '@legendapp/list'
 import { Message } from '@raven/types/common/Message'
 import { useFrappeDocumentEventListener, useFrappeEventListener, useFrappeGetCall, useFrappePostCall } from 'frappe-react-sdk'
-import { useMemo } from 'react'
+import { useEffect, useMemo, useRef } from 'react'
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
 import advancedFormat from 'dayjs/plugin/advancedFormat'
 import { formatDate } from '@raven/lib/utils/dateConversions'
 import useSiteContext from './useSiteContext'
 import { GetMessagesResponse } from '@raven/types/common/ChatStream'
+import { useTrackChannelVisit } from './useUnreadMessageCount'
 
 dayjs.extend(utc)
 dayjs.extend(advancedFormat)
@@ -42,6 +43,9 @@ const useChatStream = (channelID: string, listRef?: React.RefObject<LegendListRe
 
     const siteInformation = useSiteContext()
 
+    const isDataFetched = useRef(false)
+    const latestMessagesLoaded = useRef(false)
+
     const SYSTEM_TIMEZONE = siteInformation?.system_timezone ? siteInformation.system_timezone : 'Asia/Kolkata'
 
     /**
@@ -67,7 +71,7 @@ const useChatStream = (channelID: string, listRef?: React.RefObject<LegendListRe
                     animated
                 })
             }
-        }, 100)
+        }, 250)
 
         // Final backup attempt after longer delay
         const backupTimer = setTimeout(() => {
@@ -76,7 +80,7 @@ const useChatStream = (channelID: string, listRef?: React.RefObject<LegendListRe
                     animated
                 })
             }
-        }, 500)
+        }, 800)
 
         return () => {
             clearTimeout(shortDelayTimer)
@@ -90,19 +94,23 @@ const useChatStream = (channelID: string, listRef?: React.RefObject<LegendListRe
 
         // TODO: Add base message
     }, { path: `get_messages_for_channel_${channelID}` }, {
-        onSuccess: () => {
+        onSuccess: (data) => {
 
-            listRef?.current?.scrollToEnd()
+            if (!isDataFetched.current) {
+                isDataFetched.current = true
+                let cleanup = scrollToBottom(false)
 
-            let cleanup = scrollToBottom(false)
-
-            if (cleanup) {
-                cleanup()
+                if (cleanup) {
+                    cleanup()
+                }
             }
+
+            if (!data.message.has_new_messages) {
+                latestMessagesLoaded.current = true
+            }
+
         }
     })
-
-    // TODO: Add websocket connection and message parsing
 
     useFrappeDocumentEventListener('Raven Channel', channelID ?? '', () => { })
 
@@ -262,6 +270,20 @@ const useChatStream = (channelID: string, listRef?: React.RefObject<LegendListRe
 
     })
 
+    const trackVisit = useTrackChannelVisit(channelID)
+    /**
+     * Track visit when unmounting if new messages were loaded.
+     * We are using a ref since the hook is not re-executed when the data is updated
+     */
+    useEffect(() => {
+        /** Call */
+        return () => {
+            if (latestMessagesLoaded.current) {
+                trackVisit()
+            }
+        }
+    }, [channelID, trackVisit])
+
     const { call: fetchOlderMessages, loading: loadingOlderMessages } = useFrappePostCall('raven.api.chat_stream.get_older_messages')
     const { call: fetchNewerMessages, loading: loadingNewerMessages } = useFrappePostCall('raven.api.chat_stream.get_newer_messages')
 
@@ -352,6 +374,10 @@ const useChatStream = (channelID: string, listRef?: React.RefObject<LegendListRe
             return d
         }, {
             revalidate: false,
+        }).then((res) => {
+            if (res?.message.has_new_messages === false) {
+                latestMessagesLoaded.current = true
+            }
         })
     }
 

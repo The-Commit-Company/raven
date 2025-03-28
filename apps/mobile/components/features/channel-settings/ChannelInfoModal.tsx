@@ -4,6 +4,7 @@ import { Text } from '@components/nativewindui/Text';
 import ChevronRightIcon from '@assets/icons/ChevronRightIcon.svg';
 import SettingsIcon from '@assets/icons/SettingsIcon.svg';
 import MembersIcon from '@assets/icons/MembersIcon.svg';
+import HollowFilesIcon from '@assets/icons/HollowFilesIcon.svg';
 import { useColorScheme } from '@hooks/useColorScheme';
 import { Divider } from '@components/layout/Divider';
 import CrossIcon from '@assets/icons/CrossIcon.svg';
@@ -49,6 +50,13 @@ const ChannelInfoModal = ({ channel, isModalVisible, setModalVisible }: ChannelI
     const handleGoToPins = () => {
         setModalVisible(false)
         router.push('./pinned-messages', {
+            relativeToDirectory: true
+        })
+    }
+
+    const handleGoToSharedMedia = () => {
+        setModalVisible(false)
+        router.push('./view-media', {
             relativeToDirectory: true
         })
     }
@@ -122,6 +130,17 @@ const ChannelInfoModal = ({ channel, isModalVisible, setModalVisible }: ChannelI
                                 }
                                 <ChevronRightIcon height={24} width={24} fill={colors.foreground} strokeWidth={'1px'} />
                             </View>
+                        </View>
+                    </Pressable>
+                    <Pressable onPress={handleGoToSharedMedia}
+                        className='rounded-xl ios:active:bg-linkColor'
+                        android_ripple={{ color: 'rgba(0,0,0,0.1)', borderless: false }}>
+                        <View className='flex-row items-center justify-between px-2'>
+                            <View className='flex-row items-center'>
+                                <HollowFilesIcon height={20} width={20} fill={colors.foreground} />
+                                <Text style={styles.modalOption}>Images and Files</Text>
+                            </View>
+                            <ChevronRightIcon height={24} width={24} fill={colors.foreground} strokeWidth={'1px'} />
                         </View>
                     </Pressable>
                 </Animated.View>
