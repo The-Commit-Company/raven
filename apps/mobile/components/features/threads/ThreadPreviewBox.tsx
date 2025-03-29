@@ -53,7 +53,7 @@ const ThreadPreviewBox = ({ thread, unreadCount }: { thread: ThreadMessage, unre
     return (
         <View className='flex flex-col'>
             <Pressable
-                className='pb-3.5 pt-2 ios:active:bg-linkColor ios:active:dark:bg-linkColor'
+                className='pb-3.5 pt-2 active:bg-linkColor active:dark:bg-linkColor'
                 onPress={handleNavigateToThread}>
                 <View>
                     <View className='flex flex-row items-center justify-between'>

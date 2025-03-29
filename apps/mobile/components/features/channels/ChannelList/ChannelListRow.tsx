@@ -63,8 +63,9 @@ export function ChannelListRow({ channel }: { channel: ChannelListItem }) {
                 <Pressable
                     // short press -> navigate
                     onPress={() => router.push(`../chat/${channel.name}`)}
-                    // long press -> show context menu
-                    // onLongPress={() => impactAsync(ImpactFeedbackStyle.Light)}
+                    // long press -> this is a workaround to prevent a press to register on long press (esp on Android)
+                    // Ref: https://github.com/nandorojo/zeego/issues/145
+                    onLongPress={() => { }}
                     // Use tailwind classes for layout and ios:active state
                     className='flex-row items-center px-3 py-2 rounded-lg ios:active:bg-linkColor'
                     // Add a subtle ripple effect on Android

@@ -44,8 +44,12 @@ const SavedMessageItem = ({ message }: { message: Message & { workspace?: string
         <ContextMenu.Root>
             <ContextMenu.Trigger>
                 <Pressable
-                    className='pb-2 rounded-md ios:active:bg-linkColor ios:active:dark:bg-linkColor'
-                    onPress={() => handleNavigateToChannel(channel_id)}>
+                    className='pb-2 rounded-md active:bg-linkColor active:dark:bg-linkColor'
+                    onPress={() => handleNavigateToChannel(channel_id)}
+                    // long press -> this is a workaround to prevent a press to register on long press (esp on Android)
+                    // Ref: https://github.com/nandorojo/zeego/issues/145
+                    onLongPress={() => { }}
+                >
                     <View>
                         <View className='flex flex-row items-center px-3 pt-2 gap-2'>
                             <Text className='text-sm'>{channelName}</Text>
