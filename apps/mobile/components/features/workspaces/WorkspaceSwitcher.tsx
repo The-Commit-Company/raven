@@ -74,7 +74,7 @@ const WorkSpaceSwitcherMenu = ({ selectedWorkspace, workspaces, setWorkspace }: 
                     </View>
                 </View>
             </TouchableOpacity>
-            <Sheet enableDynamicSizing snapPoints={['60%', '90%']} ref={bottomSheetRef}>
+            <Sheet enableDynamicSizing snapPoints={['60%', '80%']} ref={bottomSheetRef}>
                 <BottomSheetScrollView>
                     <View className='flex flex-col gap-4 px-4 pb-24'>
                         <SelectWorkspaceSheet
