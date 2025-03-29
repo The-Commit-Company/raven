@@ -2,8 +2,9 @@ import { Stack, useLocalSearchParams } from 'expo-router';
 import { FormProvider } from 'react-hook-form';
 import { useColorScheme } from '@hooks/useColorScheme';
 import CreatePollForm from '@components/features/polls/CreatePollForm';
-import { CloseCreatePollButton, CreatePollHeader, PollCreateButton, useCreatePoll } from '@components/features/polls/CreatePollComponents';
+import { CloseCreatePollButton, PollCreateButton, useCreatePoll } from '@components/features/polls/CreatePollComponents';
 import CommonErrorBoundary from '@components/common/CommonErrorBoundary';
+import { Platform } from 'react-native';
 
 export default function CreatePollPage() {
 
@@ -17,8 +18,8 @@ export default function CreatePollPage() {
         <>
             <Stack.Screen options={{
                 headerStyle: { backgroundColor: colors.background },
-                headerLeft: () => <CloseCreatePollButton />,
-                headerTitle: () => <CreatePollHeader />,
+                headerLeft: () => Platform.OS === 'ios' ? <CloseCreatePollButton /> : undefined,
+                headerTitle: "Create Poll",
                 headerRight() {
                     return (
                         <PollCreateButton onPress={onPress} isCreating={creatingPoll} />

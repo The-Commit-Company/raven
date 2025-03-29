@@ -1,7 +1,7 @@
 import { Link, Stack } from 'expo-router';
 import { Button } from '@components/nativewindui/Button';
 import { useColorScheme } from '@hooks/useColorScheme';
-import { Pressable, View } from 'react-native';
+import { Platform, Pressable, View } from 'react-native';
 import { Text } from '@components/nativewindui/Text';
 import { FrappeConfig, FrappeContext, useSWRInfinite } from 'frappe-react-sdk';
 import { ActivityIndicator } from '@components/nativewindui/ActivityIndicator';
@@ -52,7 +52,7 @@ export default function Mentions() {
         <Stack.Screen options={{
             title: 'Mentions',
             headerStyle: { backgroundColor: colors.background },
-            headerLeft() {
+            headerLeft: Platform.OS === 'ios' ? () => {
                 return (
                     <Link asChild href="../" relativeToDirectory>
                         <Button variant="plain" className="ios:px-0" hitSlop={10}>
@@ -60,7 +60,7 @@ export default function Mentions() {
                         </Button>
                     </Link>
                 )
-            }
+            } : undefined,
         }} />
         <View className='flex-1 bg-background'>
             <MentionsList />

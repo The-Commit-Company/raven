@@ -2,7 +2,7 @@ import { Link, router, Stack } from 'expo-router';
 import { Button } from '@components/nativewindui/Button';
 import CrossIcon from '@assets/icons/CrossIcon.svg';
 import { useColorScheme } from '@hooks/useColorScheme';
-import { Pressable, ScrollView, View } from 'react-native';
+import { Platform, Pressable, ScrollView, View } from 'react-native';
 import { Text } from '@components/nativewindui/Text';
 import SearchInput from '@components/common/SearchInput/SearchInput';
 import { ChannelIcon } from '@components/features/channels/ChannelList/ChannelIcon';
@@ -35,7 +35,7 @@ export default function BrowseChannels() {
     return <>
         <Stack.Screen options={{
             title: 'Browse Channels',
-            headerLeft() {
+            headerLeft: Platform.OS === 'ios' ? () => {
                 return (
                     <Link asChild href="../" relativeToDirectory>
                         <Button variant="plain" className="ios:px-0" hitSlop={10}>
@@ -43,7 +43,7 @@ export default function BrowseChannels() {
                         </Button>
                     </Link>
                 )
-            }
+            } : undefined,
         }} />
         <View className="flex-1 flex-col gap-2">
             <View className="flex flex-row items-center gap-2 px-3 pt-3">

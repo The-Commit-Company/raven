@@ -2,7 +2,7 @@ import { Link, router, Stack } from 'expo-router';
 import { Button } from '@components/nativewindui/Button';
 import CrossIcon from '@assets/icons/CrossIcon.svg';
 import { useColorScheme } from '@hooks/useColorScheme';
-import { Pressable, ScrollView, View } from 'react-native';
+import { Platform, Pressable, ScrollView, View } from 'react-native';
 import SearchInput from '@components/common/SearchInput/SearchInput';
 import useGetDirectMessageChannels from '@raven/lib/hooks/useGetDirectMessageChannels';
 import { useContext, useState } from 'react';
@@ -30,7 +30,7 @@ export default function CreateDM() {
     return <>
         <Stack.Screen options={{
             title: 'Create DM',
-            headerLeft() {
+            headerLeft: Platform.OS === 'ios' ? () => {
                 return (
                     <Link asChild href="../" relativeToDirectory>
                         <Button variant="plain" className="ios:px-0" hitSlop={10}>
@@ -38,7 +38,7 @@ export default function CreateDM() {
                         </Button>
                     </Link>
                 )
-            }
+            } : undefined,
         }} />
         <View className="flex flex-col">
             <View className='p-3'>

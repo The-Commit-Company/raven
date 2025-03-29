@@ -61,7 +61,7 @@ const SwitchSitesSetting = () => {
                 <BottomSheetView className='flex-1 pb-16'>
                     <View className='flex-1 gap-2 px-4'>
                         <Text className='text-lg font-semibold'>Add a new site</Text>
-                        <AddSite />
+                        <AddSite useBottomSheet={true} />
                     </View>
                 </BottomSheetView>
             </Sheet>

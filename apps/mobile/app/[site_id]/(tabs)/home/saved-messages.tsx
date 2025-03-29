@@ -1,7 +1,7 @@
 import { Link, Stack } from 'expo-router';
 import { Button } from '@components/nativewindui/Button';
 import { useColorScheme } from '@hooks/useColorScheme';
-import { View } from 'react-native';
+import { Platform, View } from 'react-native';
 import { Text } from '@components/nativewindui/Text';
 import BookMarkIcon from '@assets/icons/BookmarkIcon.svg';
 import { useFrappeGetCall } from 'frappe-react-sdk';
@@ -20,7 +20,7 @@ export default function SavedMessages() {
         <Stack.Screen options={{
             title: 'Saved Messages',
             headerStyle: { backgroundColor: colors.background },
-            headerLeft() {
+            headerLeft: Platform.OS === 'ios' ? () => {
                 return (
                     <Link asChild href="../" relativeToDirectory>
                         <Button variant="plain" className="ios:px-0" hitSlop={10}>
@@ -28,7 +28,7 @@ export default function SavedMessages() {
                         </Button>
                     </Link>
                 )
-            }
+            } : undefined,
         }} />
         <View className='flex-1 bg-background'>
             <SavedMessagesContent />

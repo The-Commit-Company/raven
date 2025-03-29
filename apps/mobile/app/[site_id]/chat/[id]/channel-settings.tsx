@@ -1,4 +1,4 @@
-import { View, TouchableOpacity } from "react-native";
+import { View, TouchableOpacity, Platform } from "react-native";
 import { Text } from "@components/nativewindui/Text";
 import { router, useLocalSearchParams } from "expo-router";
 import { Stack } from "expo-router";
@@ -33,7 +33,7 @@ const ChannelSettings = () => {
         <>
             <Stack.Screen options={{
                 headerStyle: { backgroundColor: isDarkColorScheme ? colors.background : colors.card },
-                headerLeft: () => <HeaderBackButton />,
+                headerLeft: Platform.OS === 'ios' ? () => <HeaderBackButton /> : undefined,
                 headerTitle: () => <Text className='ml-2 text-base font-semibold'>Channel Info</Text>,
                 // headerRight: () => (
                 //     <TouchableOpacity hitSlop={10}>

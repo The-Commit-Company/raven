@@ -9,6 +9,7 @@ import { toast } from 'sonner-native';
 import { RavenPoll } from '@raven/types/RavenMessaging/RavenPoll';
 import { useForm } from 'react-hook-form';
 import { useFrappePostCall } from 'frappe-react-sdk';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 
 type Props = {
     onPress: () => void,
@@ -20,18 +21,14 @@ export const PollCreateButton = ({ onPress, isCreating }: Props) => {
     const { colors } = useColorScheme()
 
     return (
-        <Button variant="plain" className="ios:px-0"
+        <TouchableOpacity className="ios:px-0"
             onPress={onPress}
             disabled={isCreating}>
             {isCreating ?
                 <ActivityIndicator size="small" color={colors.primary} /> :
-                <Text className="text-primary dark:text-secondary">Create</Text>}
-        </Button>
+                <Text className="text-primary font-medium dark:text-secondary">Create</Text>}
+        </TouchableOpacity>
     )
-}
-
-export const CreatePollHeader = () => {
-    return <Text className='ml-2 text-base font-semibold'>Create Poll</Text>
 }
 
 export const CloseCreatePollButton = () => {

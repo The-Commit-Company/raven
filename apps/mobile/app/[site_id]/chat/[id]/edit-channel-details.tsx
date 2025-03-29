@@ -9,8 +9,9 @@ import { ActivityIndicator } from '@components/nativewindui/ActivityIndicator';
 import { toast } from 'sonner-native';
 import { useCurrentChannelData } from '@hooks/useCurrentChannelData';
 import EditChannelBaseDetailsForm, { EditChannelDetailsForm } from '@components/features/channel-settings/BaseDetails/EditChannelBaseDetailsForm';
-import { View } from 'react-native';
+import { Platform, View } from 'react-native';
 import CommonErrorBoundary from '@components/common/CommonErrorBoundary';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 
 export default function EditChannelDetails() {
 
@@ -48,7 +49,7 @@ export default function EditChannelDetails() {
         <Stack.Screen options={{
             title: 'Edit Channel Details',
             headerStyle: { backgroundColor: colors.background },
-            headerLeft() {
+            headerLeft: Platform.OS === 'ios' ? () => {
                 return (
                     <Link asChild href="../" relativeToDirectory>
                         <Button variant="plain" className="ios:px-0" hitSlop={10}>
@@ -56,16 +57,16 @@ export default function EditChannelDetails() {
                         </Button>
                     </Link>
                 )
-            },
+            } : undefined,
             headerRight() {
                 return (
-                    <Button variant="plain" className="ios:px-0"
+                    <TouchableOpacity className="ios:px-0"
                         onPress={handleSubmit(onSubmit)}
                         disabled={updatingChannel}>
                         {updatingChannel ?
                             <ActivityIndicator size="small" color={colors.primary} /> :
-                            <Text className="text-primary dark:text-secondary">Save</Text>}
-                    </Button>
+                            <Text className="text-primary font-medium dark:text-secondary">Save</Text>}
+                    </TouchableOpacity>
                 )
             },
         }} />

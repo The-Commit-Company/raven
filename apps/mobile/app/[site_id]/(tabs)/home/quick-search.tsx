@@ -2,7 +2,7 @@ import { Link, router, Stack } from 'expo-router';
 import { Button } from '@components/nativewindui/Button';
 import CrossIcon from '@assets/icons/CrossIcon.svg';
 import { useColorScheme } from '@hooks/useColorScheme';
-import { Pressable, View, StyleSheet, ScrollView } from 'react-native';
+import { Pressable, View, StyleSheet, ScrollView, Platform } from 'react-native';
 import { Text } from '@components/nativewindui/Text';
 import HashIcon from '@assets/icons/HashIcon.svg';
 import PlusIcon from '@assets/icons/PlusIcon.svg';
@@ -46,7 +46,7 @@ export default function QuickSearch() {
     return <>
         <Stack.Screen options={{
             title: 'Quick Search',
-            headerLeft() {
+            headerLeft: Platform.OS === 'ios' ? () => {
                 return (
                     <Link asChild href="../" relativeToDirectory>
                         <Button variant="plain" className="ios:px-0" hitSlop={10}>
@@ -54,7 +54,7 @@ export default function QuickSearch() {
                         </Button>
                     </Link>
                 )
-            }
+            } : undefined,
         }} />
         <View className="flex flex-col gap-3 p-3">
             <View>

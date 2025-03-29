@@ -104,6 +104,10 @@ interface LastMessageTimestampProps {
 const LastMessageTimestamp = ({ timestamp }: LastMessageTimestampProps) => {
     const displayTimestamp = useMemo(() => {
 
+        if (!timestamp) {
+            return ''
+        }
+
         const dateObj = dayjs(timestamp)
 
         if (!dateObj.isValid()) {
