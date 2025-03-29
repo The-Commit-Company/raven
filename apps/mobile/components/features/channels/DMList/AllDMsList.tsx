@@ -7,10 +7,10 @@ import DMRow from "./DMRow"
 import ChatOutlineIcon from "@assets/icons/ChatOutlineIcon.svg"
 import ErrorBanner from "@components/common/ErrorBanner"
 import { Divider } from "@components/layout/Divider"
-import { FlashList } from "@shopify/flash-list"
 import SearchInput from "@components/common/SearchInput/SearchInput"
 import { useDebounce } from "@raven/lib/hooks/useDebounce"
 import { Text } from "@components/nativewindui/Text"
+import { LegendList } from "@legendapp/list"
 
 const AllDMsList = () => {
 
@@ -51,7 +51,7 @@ const AllDMsList = () => {
                 />
             </View>
             <View className='flex-1'>
-                <FlashList
+                <LegendList
                     data={filteredDMs ?? []}
                     renderItem={({ item }) => {
                         return <DMRow dm={item} />
