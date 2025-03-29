@@ -14,9 +14,10 @@ interface UploadImageModalProps {
     doctype: string,
     docname: string,
     fieldname: string,
+    isPrivate?: boolean,
 }
 
-export const UploadImageModal = ({ uploadImage, label = 'Upload Image', doctype, docname, fieldname }: UploadImageModalProps) => {
+export const UploadImageModal = ({ uploadImage, label = 'Upload Image', doctype, docname, fieldname, isPrivate = true }: UploadImageModalProps) => {
 
     const [file, setFile] = useState<CustomFile | undefined>()
     const [fileError, setFileError] = useState<FrappeError>()
@@ -36,9 +37,9 @@ export const UploadImageModal = ({ uploadImage, label = 'Upload Image', doctype,
                 otherData: {
                     optimize: '1',
                 },
-                isPrivate: true,
+                isPrivate: isPrivate,
             }).then((res) => {
-                uploadImage(res.file_url + "?fid=" + res.name)
+                uploadImage(res.file_url)
             }).catch((e) => {
                 setFileError(e)
             })
