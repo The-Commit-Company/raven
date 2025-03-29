@@ -18,14 +18,14 @@ const AllDMsList = () => {
     const { unread_count } = useUnreadMessageCount()
 
     const allDMs = useMemo(() => {
-        return dm_channels.map(dm => ({
+        return dm_channels?.map(dm => ({
             ...dm,
             unread_count: unread_count?.message.find(item => item.name === dm.name)?.unread_count ?? 0
-        }))
+        })) ?? []
     }, [dm_channels, unread_count])
 
     const [searchQuery, setSearchQuery] = useState('')
-    const debouncedSearchQuery = useDebounce(searchQuery, 500)
+    const debouncedSearchQuery = useDebounce(searchQuery, 250)
     const filteredDMs = useMemo(() => {
         return allDMs.filter(dm => dm.peer_user_id.toLowerCase().includes(debouncedSearchQuery.toLowerCase()))
     }, [allDMs, debouncedSearchQuery])
@@ -52,7 +52,7 @@ const AllDMsList = () => {
             </View>
             <View className='flex-1'>
                 <LegendList
-                    data={filteredDMs ?? []}
+                    data={filteredDMs}
                     renderItem={({ item }) => {
                         return <DMRow dm={item} />
                     }}
