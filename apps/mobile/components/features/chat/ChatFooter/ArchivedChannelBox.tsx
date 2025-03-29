@@ -47,7 +47,7 @@ const UnArchiveButton = ({ channelID }: { channelID: string }) => {
             className="w-full rounded-full"
             disabled={loading}
         >
-            {loading ? <Text className="inline-flex gap-1 font-semibold text-base">Restoring</Text> : <Text className="inline-flex gap-1 font-semibold text-base">Restore Channel</Text>}
+            {loading ? <Text className="gap-1 text-center w-full font-semibold text-base">Restoring</Text> : <Text className="gap-1 text-center w-full font-semibold text-base">Restore Channel</Text>}
         </Button>
     )
 }
