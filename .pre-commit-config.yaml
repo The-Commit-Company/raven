@@ -13,6 +13,7 @@ repos:
       - id: check-merge-conflict
       - id: check-ast
       - id: check-json
+        files: "raven.*"
       - id: check-toml
       - id: debug-statements
 
@@ -20,18 +21,21 @@ repos:
     rev: v2.34.0
     hooks:
       - id: pyupgrade
+        files: "raven.*"
         args: ["--py310-plus"]
 
   - repo: https://github.com/adityahase/black
     rev: 9cb0a69f4d0030cdf687eddf314468b39ed54119
     hooks:
       - id: black
+        files: "raven.*"
         additional_dependencies: ["click==8.0.4"]
 
   - repo: https://github.com/PyCQA/flake8
     rev: 6.0.0
     hooks:
       - id: flake8
+        files: "raven.*"
         additional_dependencies: ["flake8-bugbear", "flake8-tuple"]
         args: ["--config", ".github/helper/flake8.conf"]
 
@@ -39,6 +43,7 @@ repos:
     rev: 5.12.0
     hooks:
       - id: isort
+        files: "raven.*"
         exclude: ".*setup.py$"
 
 ci:
