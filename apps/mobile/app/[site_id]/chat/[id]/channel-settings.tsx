@@ -18,6 +18,7 @@ import HeaderBackButton from "@components/common/HeaderBackButton";
 import useCurrentRavenUser from "@raven/lib/hooks/useCurrentRavenUser";
 import { useFetchChannelMembers } from "@raven/lib/hooks/useFetchChannelMembers";
 import { ChangeChannelType } from "@components/features/channel-settings/ChangeChannelType";
+import CommonErrorBoundary from "@components/common/CommonErrorBoundary";
 
 const ChannelSettings = () => {
 
@@ -80,3 +81,5 @@ const ChannelSettings = () => {
 }
 
 export default ChannelSettings
+
+export const ErrorBoundary = CommonErrorBoundary

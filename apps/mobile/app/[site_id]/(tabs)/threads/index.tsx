@@ -2,6 +2,7 @@ import { View } from 'react-native';
 import { Stack } from 'expo-router';
 import ThreadTabs from '@components/features/threads/ThreadTabs';
 import { useColorScheme } from '@hooks/useColorScheme';
+import CommonErrorBoundary from '@components/common/CommonErrorBoundary';
 
 export default function Threads() {
     const { colors } = useColorScheme()
@@ -19,3 +20,5 @@ export default function Threads() {
         </>
     )
 }
+
+export const ErrorBoundary = CommonErrorBoundary

@@ -13,6 +13,7 @@ import { useState } from 'react';
 import { Sheet, useSheetRef } from '@components/nativewindui/Sheet';
 import { BottomSheetView } from '@gorhom/bottom-sheet';
 import { Emoji } from '@components/common/EmojiPicker/Picker';
+import CommonErrorBoundary from '@components/common/CommonErrorBoundary';
 
 const REACTION_PRESSABLE_STYLES = 'w-12 h-12 flex items-center justify-center p-2 bg-card dark:bg-card rounded-full active:bg-muted/20'
 
@@ -139,3 +140,5 @@ export default function PreferencesScreen() {
         </>
     )
 }
+
+export const ErrorBoundary = CommonErrorBoundary

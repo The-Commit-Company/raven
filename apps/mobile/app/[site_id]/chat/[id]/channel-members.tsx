@@ -13,6 +13,7 @@ import { useColorScheme } from '@hooks/useColorScheme';
 import ChevronLeftIcon from '@assets/icons/ChevronLeftIcon.svg';
 import ChannelMemberRow from '@components/features/channel-settings/Members/ChannelMemberRow';
 import SearchInput from '@components/common/SearchInput/SearchInput';
+import CommonErrorBoundary from '@components/common/CommonErrorBoundary';
 
 const ChannelMembers = () => {
 
@@ -105,3 +106,5 @@ const ChannelMembers = () => {
 }
 
 export default ChannelMembers
+
+export const ErrorBoundary = CommonErrorBoundary

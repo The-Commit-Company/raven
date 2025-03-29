@@ -13,6 +13,7 @@ import { toast } from 'sonner-native';
 import { useColorScheme } from '@hooks/useColorScheme';
 import { ActivityIndicator } from '@components/nativewindui/ActivityIndicator';
 import HeaderBackButton from '@components/common/HeaderBackButton';
+import CommonErrorBoundary from '@components/common/CommonErrorBoundary';
 
 export default function CustomStatusScreen() {
 
@@ -88,3 +89,6 @@ export default function CustomStatusScreen() {
         </>
     )
 }
+
+
+export const ErrorBoundary = CommonErrorBoundary

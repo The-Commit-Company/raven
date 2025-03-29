@@ -3,6 +3,7 @@ import { FormProvider } from 'react-hook-form';
 import { useColorScheme } from '@hooks/useColorScheme';
 import CreatePollForm from '@components/features/polls/CreatePollForm';
 import { CloseCreatePollButton, CreatePollHeader, PollCreateButton, useCreatePoll } from '@components/features/polls/CreatePollComponents';
+import CommonErrorBoundary from '@components/common/CommonErrorBoundary';
 
 export default function CreatePollPage() {
 
@@ -30,4 +31,6 @@ export default function CreatePollPage() {
             </FormProvider>
         </>
     )
-} 
+}
+
+export const ErrorBoundary = CommonErrorBoundary

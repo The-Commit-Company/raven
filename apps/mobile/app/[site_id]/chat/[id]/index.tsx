@@ -5,6 +5,7 @@ import DMChannelHeader from '@components/features/chat/ChatHeader/DMChannelHeade
 import ChannelHeader from '@components/features/chat/ChatHeader/ChannelHeader';
 import HeaderBackButton from '@components/common/HeaderBackButton';
 import ChatLayout from '@components/features/chat/ChatLayout';
+import CommonErrorBoundary from '@components/common/CommonErrorBoundary';
 
 const Chat = () => {
 
@@ -39,3 +40,5 @@ const Chat = () => {
 }
 
 export default Chat
+
+export const ErrorBoundary = CommonErrorBoundary

@@ -19,6 +19,7 @@ import SelectedMembers from '@components/features/channel-settings/Members/Selec
 import MemberList from '@components/features/channel-settings/Members/MemberList';
 import { toast } from 'sonner-native';
 import SearchInput from '@components/common/SearchInput/SearchInput';
+import CommonErrorBoundary from '@components/common/CommonErrorBoundary';
 
 export default function AddNewChannelMembers() {
 
@@ -153,3 +154,5 @@ export default function AddNewChannelMembers() {
         </View>
     );
 }
+
+export const ErrorBoundary = CommonErrorBoundary

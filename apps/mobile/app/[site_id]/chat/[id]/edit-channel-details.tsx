@@ -10,6 +10,7 @@ import { toast } from 'sonner-native';
 import { useCurrentChannelData } from '@hooks/useCurrentChannelData';
 import EditChannelBaseDetailsForm, { EditChannelDetailsForm } from '@components/features/channel-settings/BaseDetails/EditChannelBaseDetailsForm';
 import { View } from 'react-native';
+import CommonErrorBoundary from '@components/common/CommonErrorBoundary';
 
 export default function EditChannelDetails() {
 
@@ -75,3 +76,5 @@ export default function EditChannelDetails() {
         </View>
     </>
 }
+
+export const ErrorBoundary = CommonErrorBoundary

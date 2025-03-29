@@ -6,6 +6,7 @@ import CrossIcon from '@assets/icons/CrossIcon.svg';
 import { View } from "react-native";
 import PinnedMessageList from "@components/features/pinned-messages/PinnedMessageList";
 import PinOutlineIcon from "@assets/icons/PinOutlineIcon.svg";
+import CommonErrorBoundary from "@components/common/CommonErrorBoundary";
 const PinnedMessages = () => {
 
     const { colors } = useColorScheme()
@@ -37,3 +38,6 @@ const PinnedMessages = () => {
 }
 
 export default PinnedMessages;
+
+
+export const ErrorBoundary = CommonErrorBoundary

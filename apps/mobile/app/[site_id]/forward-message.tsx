@@ -18,6 +18,7 @@ import { formatDate } from "@raven/lib/utils/dateConversions"
 import { toast } from "sonner-native"
 import HeaderBackButton from "@components/common/HeaderBackButton"
 import CrossIcon from '@assets/icons/CrossIcon.svg';
+import CommonErrorBoundary from "@components/common/CommonErrorBoundary"
 
 type DMChannelListItemWithUser = DMChannelListItem & {
     user: UserFields
@@ -255,3 +256,5 @@ const ChannelRow = React.memo(({ item, handleChannelSelect, currentUserInfo }: a
 })
 
 export default ForwardMessage
+
+export const ErrorBoundary = CommonErrorBoundary
