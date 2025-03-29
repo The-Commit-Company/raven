@@ -12,11 +12,10 @@ def send_notification_to_user(user_id, title, message, data=None, user_image_id=
 		push_notification = PushNotification("raven")
 
 		if data is None:
-			data = {
-				"base_url": frappe.utils.get_url(),
-			}
+			data = {"base_url": frappe.utils.get_url(), "sitename": frappe.local.site}
 		else:
 			data["base_url"] = frappe.utils.get_url()
+			data["sitename"] = frappe.local.site
 
 		if push_notification.is_enabled():
 			icon_url = None
