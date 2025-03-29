@@ -6,7 +6,7 @@ const HomeLayout = () => {
     const { colors } = useColorScheme()
 
     return (
-        <Stack>
+        <Stack initialRouteName='index'>
             <Stack.Screen name='index'
                 options={{
                     title: 'Home',
