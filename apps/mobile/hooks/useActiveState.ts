@@ -22,7 +22,7 @@ export const useActiveState = () => {
     const lastRefreshedOn = lastRefreshedRef.current;
     const now = Date.now();
 
-    if (now - lastRefreshedOn > 1000 * 60 * 5) {
+    if (now - lastRefreshedOn > 1000 * 60 * 5 || !lastRefreshedOn) {
       lastRefreshedRef.current = now;
       return call
         .get("raven.api.user_availability.refresh_user_active_state", {
@@ -55,6 +55,17 @@ export const useActiveState = () => {
       }
     };
   }, [isUserActive, onPresenceChange]);
+
+  useEffect(() => {
+
+    return () => {
+      call
+        .get("raven.api.user_availability.refresh_user_active_state", {
+          deactivate: true,
+        })
+    }
+
+  }, [])
 
   return isActive;
 };
