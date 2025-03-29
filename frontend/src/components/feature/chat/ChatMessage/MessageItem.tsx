@@ -187,7 +187,7 @@ export const MessageItem = ({ message, setDeleteMessage, isHighlighted, onReplyM
                             px-1
                             py-1.5
                             sm:p-1.5
-                            rounded-md`, is_continuation ? '' : 'py-2.5 sm:py-3', isHighlighted ? 'bg-yellow-50 hover:bg-yellow-50 dark:bg-yellow-300/20 dark:hover:bg-yellow-300/20' : !isDesktop && isHovered ? 'bg-gray-2 dark:bg-gray-3' : '', isEmojiPickerOpen ? 'bg-gray-2 dark:bg-gray-3' : '')}>
+                            rounded-md`, is_continuation ? '' : 'pt-2.5 sm:pt-3', isHighlighted ? 'bg-yellow-50 hover:bg-yellow-50 dark:bg-yellow-300/20 dark:hover:bg-yellow-300/20' : !isDesktop && isHovered ? 'bg-gray-2 dark:bg-gray-3' : '', isEmojiPickerOpen ? 'bg-gray-2 dark:bg-gray-3' : '')}>
                             <Flex className='gap-2.5 sm:gap-3 items-start'>
                                 <MessageLeftElement message={message} user={user} isActive={isActive} />
                                 <Flex direction='column' className='gap-0.5 w-[90%]' justify='center'>
