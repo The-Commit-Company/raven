@@ -11,6 +11,7 @@ import { addNetworkStateListener, useNetworkState } from 'expo-network';
 import { toast } from "sonner-native";
 import { SiteContext } from "@hooks/useSiteContext";
 import { AppState } from "react-native";
+import OfflineBanner from "@components/features/auth/OfflineBanner";
 
 export default function SiteLayout() {
 
@@ -45,6 +46,16 @@ export default function SiteLayout() {
             return timeUntilExpiry <= REFRESH_THRESHOLD;
         };
 
+        const isTokenExpired = (token: TokenResponse): boolean => {
+            if (!token.expiresIn) return false;
+
+            const expirationTime = (token.issuedAt + token.expiresIn) * 1000; // Convert expiresIn to milliseconds
+            const currentTime = Date.now();
+            const timeUntilExpiry = expirationTime - currentTime;
+
+            return timeUntilExpiry <= 0;
+        }
+
         const refreshTokenIfNeeded = async () => {
             if (!accessTokenRef.current || !siteInfo) return;
 
@@ -52,6 +63,10 @@ export default function SiteLayout() {
             if (!isOnline) {
                 console.log("Skipping token refresh - device is offline");
                 return;
+            }
+
+            if (isTokenExpired(accessTokenRef.current)) {
+                setLoading(true)
             }
 
             // Check if token needs refresh based on our proactive threshold
@@ -72,6 +87,8 @@ export default function SiteLayout() {
 
                     // Store the new token in the ref before revoking the old token since some API calls might be in-flight
                     accessTokenRef.current = newToken;
+
+                    setLoading(false)
 
                     console.log("Token refreshed successfully");
                     // Now we need to revoke the old token
@@ -109,6 +126,7 @@ export default function SiteLayout() {
 
         const focusSubscription = AppState.addEventListener('change', (state) => {
             if (state === 'active') {
+                console.log("App in focus")
                 refreshTokenIfNeeded()
             }
         })
@@ -126,9 +144,6 @@ export default function SiteLayout() {
             networkSubscription.remove()
         }
     }, [siteInfo, networkState]);
-
-
-
 
     useEffect(() => {
 
@@ -236,8 +251,6 @@ export default function SiteLayout() {
             .then(res => res.json())
             .then(data => {
                 if (data.message && data.message.client_id) {
-
-                    console.log("Site information refreshed from the server", site_id, data.message)
                     setSiteInfo({
                         ...siteInfo,
                         ...data.message
@@ -253,9 +266,12 @@ export default function SiteLayout() {
 
     }, [siteInfo, site_id])
 
+    const isOffline = !networkState.isConnected || !networkState.isInternetReachable
+
     return <>
         {loading ? <FullPageLoader /> :
             <SiteContext.Provider value={siteInfo}>
+                {isOffline ? <OfflineBanner /> : null}
                 <FrappeNativeProvider siteInfo={siteInfo} getAccessToken={getToken}>
                     <Providers>
                         <BottomSheetModalProvider>

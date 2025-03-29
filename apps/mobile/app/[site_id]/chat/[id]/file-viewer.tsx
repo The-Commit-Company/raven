@@ -3,6 +3,7 @@ import { Stack, useLocalSearchParams } from "expo-router"
 import HeaderBackButton from "@components/common/HeaderBackButton"
 import { useColorScheme } from "@hooks/useColorScheme"
 import { RenderFile, useFileViewerAttributes } from "@components/features/file-viewer/FileViewerComponents"
+import CommonErrorBoundary from "@components/common/CommonErrorBoundary"
 
 const FileViewer = () => {
   const { uri } = useLocalSearchParams() as { uri: string }
@@ -28,3 +29,5 @@ const FileViewer = () => {
 }
 
 export default FileViewer
+
+export const ErrorBoundary = CommonErrorBoundary

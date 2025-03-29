@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { View, Text, TouchableOpacity } from 'react-native';
+import { View, Text } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { router, Stack, useLocalSearchParams } from 'expo-router';
@@ -13,6 +13,8 @@ import { useColorScheme } from '@hooks/useColorScheme';
 import ChevronLeftIcon from '@assets/icons/ChevronLeftIcon.svg';
 import ChannelMemberRow from '@components/features/channel-settings/Members/ChannelMemberRow';
 import SearchInput from '@components/common/SearchInput/SearchInput';
+import CommonErrorBoundary from '@components/common/CommonErrorBoundary';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 
 const ChannelMembers = () => {
 
@@ -105,3 +107,5 @@ const ChannelMembers = () => {
 }
 
 export default ChannelMembers
+
+export const ErrorBoundary = CommonErrorBoundary

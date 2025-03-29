@@ -8,7 +8,7 @@ type Props = {
 
 const FullPageLoader = ({ title = 'raven', description = 'Setting up your workspace...' }: Props) => {
     return (
-        <View className="flex-1 justify-center items-center gap-2">
+        <View className="flex-1 bg-background justify-center items-center gap-2">
             <Text className="text-4xl text-foreground font-cal-sans">{title}</Text>
             <Text className='text-muted-foreground'>{description}</Text>
         </View>

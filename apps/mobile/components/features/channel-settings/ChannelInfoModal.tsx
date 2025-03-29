@@ -72,7 +72,7 @@ const ChannelInfoModal = ({ channel, isModalVisible, setModalVisible }: ChannelI
     // Start animation when modal becomes visible
     useEffect(() => {
         if (isModalVisible) {
-            modalHeight.value = withTiming(210, { duration: 250, easing: Easing.out(Easing.ease) })
+            modalHeight.value = withTiming(252, { duration: 250, easing: Easing.out(Easing.ease) })
             modalOpacity.value = withTiming(1, { duration: 250 })
         }
     }, [isModalVisible])

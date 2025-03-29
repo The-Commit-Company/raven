@@ -1,6 +1,7 @@
 import { ScrollView } from 'react-native';
 import { useColorScheme } from '@hooks/useColorScheme';
 import AllDMsList from '@components/features/channels/DMList/AllDMsList';
+import CommonErrorBoundary from '@components/common/CommonErrorBoundary';
 
 export default function DirectMessages() {
     const { colors } = useColorScheme()
@@ -14,3 +15,5 @@ export default function DirectMessages() {
         </ScrollView>
     )
 }
+
+export const ErrorBoundary = CommonErrorBoundary

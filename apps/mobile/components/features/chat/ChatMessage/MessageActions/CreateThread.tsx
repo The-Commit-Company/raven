@@ -47,7 +47,7 @@ const useCreateThread = (message: Message) => {
     const handleCreateThread = () => {
         return call({ message_id: message?.name })
             .then((res) => {
-                toast.success("Thread created successfully!")
+                toast.success("Thread created.")
 
                 return res.message
             })

@@ -55,7 +55,7 @@ const UserListProvider = ({ children }: PropsWithChildren) => {
 
 const ChannelListProvider = ({ children }: PropsWithChildren) => {
 
-    const channelListContextData = useChannelListProvider({})
+    const channelListContextData = useChannelListProvider()
 
     if (channelListContextData.isLoading) {
         return <FullPageLoader />

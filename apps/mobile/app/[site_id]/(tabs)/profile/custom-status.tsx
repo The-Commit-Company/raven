@@ -13,6 +13,7 @@ import { toast } from 'sonner-native';
 import { useColorScheme } from '@hooks/useColorScheme';
 import { ActivityIndicator } from '@components/nativewindui/ActivityIndicator';
 import HeaderBackButton from '@components/common/HeaderBackButton';
+import CommonErrorBoundary from '@components/common/CommonErrorBoundary';
 
 export default function CustomStatusScreen() {
 
@@ -72,10 +73,9 @@ export default function CustomStatusScreen() {
                             <TextField
                                 autoFocus
                                 className="pl-0.5"
-                                label={Platform.select({ ios: undefined, default: 'First' })}
                                 leftView={
-                                    <View className="ios:w-36 ios:justify-between flex-row items-center pl-2">
-                                        {Platform.OS === 'ios' && <Text className="font-medium">Custom Status</Text>}
+                                    <View className="w-36 justify-between flex-row items-center pl-2">
+                                        <Text className="font-medium">Custom Status</Text>
                                     </View>
                                 }
                                 placeholder="e.g. Out of Office"
@@ -89,3 +89,6 @@ export default function CustomStatusScreen() {
         </>
     )
 }
+
+
+export const ErrorBoundary = CommonErrorBoundary

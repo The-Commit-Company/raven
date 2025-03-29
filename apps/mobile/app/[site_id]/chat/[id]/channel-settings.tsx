@@ -1,4 +1,4 @@
-import { View, TouchableOpacity } from "react-native";
+import { View, TouchableOpacity, Platform } from "react-native";
 import { Text } from "@components/nativewindui/Text";
 import { router, useLocalSearchParams } from "expo-router";
 import { Stack } from "expo-router";
@@ -18,6 +18,7 @@ import HeaderBackButton from "@components/common/HeaderBackButton";
 import useCurrentRavenUser from "@raven/lib/hooks/useCurrentRavenUser";
 import { useFetchChannelMembers } from "@raven/lib/hooks/useFetchChannelMembers";
 import { ChangeChannelType } from "@components/features/channel-settings/ChangeChannelType";
+import CommonErrorBoundary from "@components/common/CommonErrorBoundary";
 
 const ChannelSettings = () => {
 
@@ -32,7 +33,7 @@ const ChannelSettings = () => {
         <>
             <Stack.Screen options={{
                 headerStyle: { backgroundColor: isDarkColorScheme ? colors.background : colors.card },
-                headerLeft: () => <HeaderBackButton />,
+                headerLeft: Platform.OS === 'ios' ? () => <HeaderBackButton /> : undefined,
                 headerTitle: () => <Text className='ml-2 text-base font-semibold'>Channel Info</Text>,
                 // headerRight: () => (
                 //     <TouchableOpacity hitSlop={10}>
@@ -80,3 +81,5 @@ const ChannelSettings = () => {
 }
 
 export default ChannelSettings
+
+export const ErrorBoundary = CommonErrorBoundary

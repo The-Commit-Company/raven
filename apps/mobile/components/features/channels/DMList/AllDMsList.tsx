@@ -7,10 +7,10 @@ import DMRow from "./DMRow"
 import ChatOutlineIcon from "@assets/icons/ChatOutlineIcon.svg"
 import ErrorBanner from "@components/common/ErrorBanner"
 import { Divider } from "@components/layout/Divider"
-import { FlashList } from "@shopify/flash-list"
 import SearchInput from "@components/common/SearchInput/SearchInput"
 import { useDebounce } from "@raven/lib/hooks/useDebounce"
 import { Text } from "@components/nativewindui/Text"
+import { LegendList } from "@legendapp/list"
 
 const AllDMsList = () => {
 
@@ -18,14 +18,14 @@ const AllDMsList = () => {
     const { unread_count } = useUnreadMessageCount()
 
     const allDMs = useMemo(() => {
-        return dm_channels.map(dm => ({
+        return dm_channels?.map(dm => ({
             ...dm,
             unread_count: unread_count?.message.find(item => item.name === dm.name)?.unread_count ?? 0
-        }))
+        })) ?? []
     }, [dm_channels, unread_count])
 
     const [searchQuery, setSearchQuery] = useState('')
-    const debouncedSearchQuery = useDebounce(searchQuery, 500)
+    const debouncedSearchQuery = useDebounce(searchQuery, 250)
     const filteredDMs = useMemo(() => {
         return allDMs.filter(dm => dm.peer_user_id.toLowerCase().includes(debouncedSearchQuery.toLowerCase()))
     }, [allDMs, debouncedSearchQuery])
@@ -51,8 +51,8 @@ const AllDMsList = () => {
                 />
             </View>
             <View className='flex-1'>
-                <FlashList
-                    data={filteredDMs ?? []}
+                <LegendList
+                    data={filteredDMs}
                     renderItem={({ item }) => {
                         return <DMRow dm={item} />
                     }}

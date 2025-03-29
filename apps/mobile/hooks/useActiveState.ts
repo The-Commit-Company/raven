@@ -1,4 +1,4 @@
-import { useContext, useEffect } from "react";
+import { useContext, useEffect, useRef } from "react";
 import { FrappeContext, FrappeConfig } from "frappe-react-sdk";
 import { useActiveUser } from "@lib/UserInactivityProvider";
 import { useBoolean } from "@raven/lib/hooks/useBoolean";
@@ -16,12 +16,22 @@ export const useActiveState = () => {
 
   const { isActive: isUserActive } = useActiveUser();
 
+  const lastRefreshedRef = useRef<number>(0);
+
   const updateUserActiveState = async (deactivate = false) => {
-    return call
-      .get("raven.api.user_availability.refresh_user_active_state", {
-        deactivate,
-      })
-      .catch(console.log);
+    const lastRefreshedOn = lastRefreshedRef.current;
+    const now = Date.now();
+
+    if (now - lastRefreshedOn > 1000 * 60 * 5 || !lastRefreshedOn) {
+      lastRefreshedRef.current = now;
+      return call
+        .get("raven.api.user_availability.refresh_user_active_state", {
+          deactivate,
+        }).then(() => {
+          lastRefreshedRef.current = now;
+        })
+        .catch(console.log);
+    }
   };
 
   const onPresenceChange = (presence: Presence) => {
@@ -45,6 +55,17 @@ export const useActiveState = () => {
       }
     };
   }, [isUserActive, onPresenceChange]);
+
+  useEffect(() => {
+
+    return () => {
+      call
+        .get("raven.api.user_availability.refresh_user_active_state", {
+          deactivate: true,
+        })
+    }
+
+  }, [])
 
   return isActive;
 };

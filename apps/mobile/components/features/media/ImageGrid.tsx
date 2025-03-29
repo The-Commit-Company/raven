@@ -12,7 +12,6 @@ import useFileURL from '@hooks/useFileURL';
 import { WebViewSourceUri } from 'react-native-webview/lib/WebViewTypes';
 import { Text } from '@components/nativewindui/Text';
 import ErrorBanner from '@components/common/ErrorBanner';
-import ImageIcon from "@assets/icons/ImageIcon.svg"
 
 const PAGE_SIZE = 18
 
@@ -74,7 +73,7 @@ const ImageGrid = ({ searchQuery, gap = 6, columns = 3 }: { searchQuery: string,
     }
 
     if (isEmpty) {
-        return <EmptyStateForImageGrid searchQuery={searchQuery} />;
+        return <EmptyStateForImageGrid />;
     }
 
     return (
@@ -146,15 +145,12 @@ const ImageListItem = ({ file }: { file: MediaInChannel }) => {
     )
 }
 
-const EmptyStateForImageGrid = ({ searchQuery }: { searchQuery: string }) => {
-
-    const { colors } = useColorScheme()
+const EmptyStateForImageGrid = () => {
 
     return (
         <View className="flex flex-row items-center gap-2 py-2 px-3">
-            <ImageIcon fill={colors.icon} height={25} width={25} />
-            <Text className="text-foreground text-base font-medium">
-                No Images found {searchQuery ? `for "${searchQuery}"` : ''}. Want to try a different search?
+            <Text className="text-muted-foreground text-center w-full text-base font-medium">
+                No images found
             </Text>
         </View>
     )

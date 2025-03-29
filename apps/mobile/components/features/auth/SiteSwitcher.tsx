@@ -10,7 +10,7 @@ import useSiteContext from '@hooks/useSiteContext'
 import ChevronRightIcon from '@assets/icons/ChevronRightIconThin.svg'
 import { useColorScheme } from '@hooks/useColorScheme'
 import PlusIcon from '@assets/icons/PlusIcon.svg'
-import GlobeIcon from '@assets/icons/GlobeIcon.svg'
+import ServerIcon from '@assets/icons/ServerIcon.svg'
 
 const SiteSwitcher = ({ openAddSiteSheet }: { openAddSiteSheet: () => void }) => {
 
@@ -62,7 +62,7 @@ const SiteSwitcher = ({ openAddSiteSheet }: { openAddSiteSheet: () => void }) =>
                     <View className='flex flex-row pr-2 items-center justify-between'>
                         <View className='flex-row items-center gap-2'>
                             <View className='h-10 w-10 flex items-center justify-center'>
-                                <GlobeIcon height={22} width={22} fill={colors.grey} />
+                                <ServerIcon height={22} width={22} color={colors.grey} />
                             </View>
 
                             <Text className='text-base'>Add a new site</Text>

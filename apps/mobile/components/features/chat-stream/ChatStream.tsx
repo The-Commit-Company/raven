@@ -36,7 +36,7 @@ const ChatStream = ({ channelID, isThread = false, scrollRef, onMomentumScrollEn
         return <ChatStreamSkeletonLoader />
     }
 
-    if (error) {
+    if (!data && error) {
         return <View className='px-2 flex-1 justify-center items-center'>
             <ErrorBanner error={error} />
         </View>

@@ -126,6 +126,7 @@ const EmojiPicker = ({ customEmojis, onSelect, perLine, defaultCategory = "peopl
                 onCategorySelect={setCategory}
                 activeCategory={category}
                 disabledActiveCategory={!!searchText}
+                isCustomEmojis={!!customEmojis?.length}
             />
             <View className='py-3'>
                 <SearchInput

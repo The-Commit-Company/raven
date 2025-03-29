@@ -72,7 +72,7 @@ export const UploadImage = ({ open, setOpen, uploadImage, userID }: { open: bool
                 </Dialog.Trigger>
             </Tooltip>
             <Dialog.Content className={DIALOG_CONTENT_CLASS}>
-                <UploadImageModal uploadImage={uploadImage} doctype={"Raven User"} docname={userID} fieldname={"user_image"} />
+                <UploadImageModal isPrivate={false} uploadImage={uploadImage} doctype={"Raven User"} docname={userID} fieldname={"user_image"} />
             </Dialog.Content>
         </Dialog.Root>
     )

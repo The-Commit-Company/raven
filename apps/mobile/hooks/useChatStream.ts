@@ -52,41 +52,39 @@ const useChatStream = (channelID: string, listRef?: React.RefObject<LegendListRe
      * Ensures scroll to bottom happens after all content is loaded
      * Uses both RAF and a backup timeout for reliability
      */
-    const scrollToBottom = (animated: boolean = false) => {
-        if (!listRef?.current) return
+    // const scrollToBottom = (animated: boolean = false) => {
+    //     console.log("Called scrolling")
+    //     if (!listRef?.current) return
 
-        // // First immediate scroll attempt
-        requestAnimationFrame(() => {
-            if (listRef.current) {
-                listRef.current.scrollToEnd({
-                    animated
-                })
-            }
-        })
+    //     console.log('Scrolling to bottom')
 
-        // Second attempt after a short delay
-        const shortDelayTimer = setTimeout(() => {
-            if (listRef.current) {
-                listRef.current.scrollToEnd({
-                    animated
-                })
-            }
-        }, 250)
+    //     // First immediate scroll attempt
+    //     requestAnimationFrame(() => {
+    //         if (listRef.current) {
+    //             listRef.current.scrollToEnd({
+    //                 animated
+    //             })
+    //         }
+    //     })
 
-        // Final backup attempt after longer delay
-        const backupTimer = setTimeout(() => {
-            if (listRef.current) {
-                listRef.current.scrollToEnd({
-                    animated
-                })
-            }
-        }, 800)
+    //     // Second attempt after a short delay
+    //     const shortDelayTimer = setTimeout(() => {
+    //         if (listRef.current) {
+    //             listRef.current.scrollToEnd({
+    //                 animated
+    //             })
+    //         }
+    //     }, 250)
 
-        return () => {
-            clearTimeout(shortDelayTimer)
-            clearTimeout(backupTimer)
-        }
-    }
+    //     // Final backup attempt after longer delay
+    //     const backupTimer = setTimeout(() => {
+    //         if (listRef.current) {
+    //             listRef.current.scrollToEnd({
+    //                 animated
+    //             })
+    //         }
+    //     }, 800)
+    // }
 
     const { data, isLoading, error, mutate } = useFrappeGetCall<GetMessagesResponse>('raven.api.chat_stream.get_messages', {
         channel_id: channelID,
@@ -95,20 +93,32 @@ const useChatStream = (channelID: string, listRef?: React.RefObject<LegendListRe
         // TODO: Add base message
     }, { path: `get_messages_for_channel_${channelID}` }, {
         onSuccess: (data) => {
-
             if (!isDataFetched.current) {
                 isDataFetched.current = true
-                let cleanup = scrollToBottom(false)
 
-                if (cleanup) {
-                    cleanup()
-                }
+                // Single attempt with RAF to ensure we're in the next frame
+                requestAnimationFrame(() => {
+                    // Check if we have both the ref and data
+                    if (data.message.messages?.length) {
+                        listRef?.current?.scrollToEnd({
+                            animated: false
+                        })
+
+                        // One backup attempt after a short delay
+                        setTimeout(() => {
+                            if (listRef?.current) {
+                                listRef.current.scrollToEnd({
+                                    animated: false
+                                })
+                            }
+                        }, 250)
+                    }
+                })
             }
 
             if (!data.message.has_new_messages) {
                 latestMessagesLoaded.current = true
             }
-
         }
     })
 

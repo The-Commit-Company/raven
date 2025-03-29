@@ -180,6 +180,8 @@ def get_saved_messages():
 			raven_message.message_reactions,
 			raven_message._liked_by,
 			raven_channel.workspace,
+			raven_message.thumbnail_width,
+			raven_message.thumbnail_height
 		)
 		.where(raven_message._liked_by.like("%" + frappe.session.user + "%"))
 		.where(
@@ -449,6 +451,8 @@ def get_all_files_shared_in_channel(
 	if file_type:
 		if file_type == "image":
 			query = query.where(message.message_type == "Image")
+		elif file_type == "file":
+			query = query.where(message.message_type == "File")
 		elif file_type == "pdf":
 			query = query.where(file.file_type == "pdf")
 		else:

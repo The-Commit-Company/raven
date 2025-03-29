@@ -4,6 +4,7 @@ import { Text } from '@components/nativewindui/Text';
 import AddSite from '@components/features/auth/AddSite';
 import SitesList from '@components/features/auth/SitesList';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import CommonErrorBoundary from '@components/common/CommonErrorBoundary';
 
 export default function LandingScreen() {
 
@@ -21,3 +22,5 @@ export default function LandingScreen() {
         </>
     );
 }
+
+export const ErrorBoundary = CommonErrorBoundary

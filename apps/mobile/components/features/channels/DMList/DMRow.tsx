@@ -38,7 +38,7 @@ const DMRow = ({ dm }: { dm: DMChannelWithUnreadCount }) => {
     return (
         <Link href={`../chat/${dm.name}`} asChild>
             <Pressable
-                className='flex flex-row relative items-center gap-3 py-3 px-4 ios:active:bg-linkColor'
+                className='flex flex-row relative items-center gap-3 py-2.5 px-4 ios:active:bg-linkColor'
                 android_ripple={{ color: 'rgba(0,0,0,0.1)', borderless: false }}>
                 {({ pressed, hovered }) => <>
                     <View
@@ -103,6 +103,10 @@ interface LastMessageTimestampProps {
 
 const LastMessageTimestamp = ({ timestamp }: LastMessageTimestampProps) => {
     const displayTimestamp = useMemo(() => {
+
+        if (!timestamp) {
+            return ''
+        }
 
         const dateObj = dayjs(timestamp)
 

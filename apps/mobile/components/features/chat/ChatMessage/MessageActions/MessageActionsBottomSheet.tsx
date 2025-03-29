@@ -19,9 +19,9 @@ const MessageActionsBottomSheet: React.FC<MessageActionsBottomSheetProps> = ({ m
     const quickReactionEmojis = useAtomValue(quickReactionEmojisAtom)
 
     return (
-        <Sheet ref={messageActionsSheetRef} snapPoints={['50%']} onDismiss={handleClose}>
+        <Sheet ref={messageActionsSheetRef} snapPoints={['60%']} onDismiss={handleClose}>
             <BottomSheetView>
-                <View className="flex-col px-4 mt-2 mb-16">
+                <View className="flex-col px-4 mt-2 pb-16">
                     {message && <MessageActions
                         message={message}
                         quickReactionEmojis={quickReactionEmojis}

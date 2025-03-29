@@ -29,7 +29,7 @@ export const JoinChannelBox = ({ channelID, isThread, user }: JoinChannelBoxProp
     }
 
     return (
-        <View className="flex-col gap-2 items-center border-t border-l border-r border-border rounded-2xl px-4 py-4">
+        <View className="flex-col gap-2 items-center border-t border-l border-r border-border rounded-2xl px-4 py-4 android:pb-6">
             {error && <ErrorBanner error={error} />}
             <Text className="text-sm text-muted-foreground">You are not a member of this {isThread ? 'thread' : 'channel'}.</Text>
             <Button
@@ -39,7 +39,8 @@ export const JoinChannelBox = ({ channelID, isThread, user }: JoinChannelBoxProp
                 className="w-full rounded-full"
                 disabled={loading}
             >
-                {loading ? <Text className="inline-flex gap-1 font-semibold text-base">Joining</Text> : <Text className="inline-flex gap-1 font-semibold text-base">Join</Text>}
+                {loading ? <Text className="gap-1 text-center w-full font-semibold text-base">Joining</Text> :
+                    <Text className="gap-1 text-center w-full font-semibold text-base">Join</Text>}
             </Button>
         </View>
     )

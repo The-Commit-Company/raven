@@ -28,7 +28,9 @@ export const useSiteSwitcher = () => {
     }, [bottomSheetRef])
 
     const handleSitePress = useCallback(async (siteName: string) => {
-        setSiteInformation(sites[siteName])
+
+        const siteInfo = sites[siteName]
+        setSiteInformation(siteInfo)
 
         // We need to see if we have an Access Token for this site in SecureStore
         // If yes, we need to check if it's expired
@@ -47,9 +49,9 @@ export const useSiteSwitcher = () => {
 
         if (tokenResponse.shouldRefresh()) {
 
-            const url = siteInformation?.url ?? ''
+            const url = siteInfo?.url ?? ''
             tokenResponse.refreshAsync({
-                clientId: siteInformation?.client_id || '',
+                clientId: siteInfo?.client_id || '',
             }, {
                 tokenEndpoint: getTokenEndpoint(url),
             }).then(async (tokenResponse) => {
@@ -58,7 +60,7 @@ export const useSiteSwitcher = () => {
                 // Revoke the old token
                 try {
                     await revokeAsync({
-                        clientId: siteInformation?.client_id || '',
+                        clientId: siteInfo?.client_id || '',
                         token: accessToken.accessToken,
                     }, {
                         revocationEndpoint: getRevocationEndpoint(url),

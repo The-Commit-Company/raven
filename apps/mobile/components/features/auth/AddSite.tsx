@@ -2,7 +2,7 @@ import { Avatar, AvatarImage } from '@components/nativewindui/Avatar'
 import { Button } from '@components/nativewindui/Button'
 import { Sheet, useSheetRef } from '@components/nativewindui/Sheet'
 import { Text } from '@components/nativewindui/Text'
-import { BottomSheetView } from '@gorhom/bottom-sheet'
+import { BottomSheetTextInput, BottomSheetView } from '@gorhom/bottom-sheet'
 import { useCallback, useState } from 'react'
 import { Alert, Keyboard, TextInput, View } from 'react-native'
 import * as WebBrowser from 'expo-web-browser'
@@ -17,9 +17,11 @@ import HowToSetupMobile from './HowToSetupMobile'
 
 WebBrowser.maybeCompleteAuthSession();
 
-type Props = {}
+type Props = {
+    useBottomSheet?: boolean
+}
 
-const AddSite = (props: Props) => {
+const AddSite = ({ useBottomSheet = false }: Props) => {
 
     const { colors } = useColorScheme()
 
@@ -84,18 +86,33 @@ const AddSite = (props: Props) => {
                 <View className="flex-row items-center gap-0">
                     <FormLabel className='text-base'>Site URL</FormLabel>
                 </View>
-                <TextInput
-                    className="w-full border py-3 text-[16px] border-border rounded-lg px-3 text-foreground"
-                    numberOfLines={1}
-                    inputMode='url'
-                    autoCapitalize='none'
-                    placeholder='raven.frappe.cloud'
-                    placeholderTextColor={colors.grey2}
-                    autoCorrect={false}
-                    autoComplete='off'
-                    onChangeText={setSiteURL}
-                    value={siteURL}
-                />
+                {useBottomSheet ?
+                    <BottomSheetTextInput
+                        className="w-full border py-3 text-[16px] border-border rounded-lg px-3 text-foreground"
+                        numberOfLines={1}
+                        inputMode='url'
+                        autoCapitalize='none'
+                        placeholder='raven.frappe.cloud'
+                        placeholderTextColor={colors.grey2}
+                        autoCorrect={false}
+                        autoComplete='off'
+                        onChangeText={setSiteURL}
+                        value={siteURL}
+                    />
+                    :
+                    <TextInput
+                        className="w-full border py-3 text-[16px] border-border rounded-lg px-3 text-foreground"
+                        numberOfLines={1}
+                        inputMode='url'
+                        autoCapitalize='none'
+                        placeholder='raven.frappe.cloud'
+                        placeholderTextColor={colors.grey2}
+                        autoCorrect={false}
+                        autoComplete='off'
+                        onChangeText={setSiteURL}
+                        value={siteURL}
+                    />
+                }
             </View>
             <Button onPress={handleAddSite} disabled={isLoading}>
                 <Text>Add Site</Text>

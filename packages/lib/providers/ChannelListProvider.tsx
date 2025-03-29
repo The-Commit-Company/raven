@@ -1,9 +1,8 @@
-import { FrappeError, useFrappeDocTypeEventListener, useFrappeGetCall, SWRConfiguration } from 'frappe-react-sdk'
-import { createContext, useContext, useMemo } from 'react'
+import { FrappeError, useFrappeGetCall, SWRConfiguration, useFrappeEventListener } from 'frappe-react-sdk'
+import { createContext, useContext, useEffect, useMemo, useState } from 'react'
 import { KeyedMutator } from 'swr'
 import { useSWRConfig } from 'frappe-react-sdk'
 import { ChannelList } from '@raven/types/common/ChannelListItem'
-
 
 export interface ChannelListContextType extends ChannelList {
     mutate: KeyedMutator<{ message: ChannelList }>,
@@ -28,21 +27,39 @@ export const useChannelList = (): ChannelListContextType => {
  * 
  * This is supposed to be used in the ChannelListContext and only once in the app since it has realtime event listeners
  */
-export const useChannelListProvider = ({ swrConfig }: { swrConfig?: SWRConfiguration }): ChannelListContextType => {
+export const useChannelListProvider = (swrConfig?: SWRConfiguration): ChannelListContextType => {
 
     const { mutate: globalMutate } = useSWRConfig()
     const { data, mutate, ...rest } = useFrappeGetCall<{ message: ChannelList }>("raven.api.raven_channel.get_all_channels", {
         hide_archived: false
     }, `channel_list`, {
-        revalidateOnFocus: false,
-        ...swrConfig
+        revalidateOnFocus: true,
+        ...(swrConfig || {})
     })
 
-    useFrappeDocTypeEventListener('Raven Channel', () => {
-        mutate()
+    const [newUpdatesAvailable, setNewUpdatesAvailable] = useState(0)
 
-        // Also update the unread channel count
-        globalMutate('unread_channel_count')
+    useEffect(() => {
+        let timeout: NodeJS.Timeout | undefined
+        if (newUpdatesAvailable) {
+            timeout = setTimeout(() => {
+                mutate()
+                // Also update the unread channel count
+                globalMutate('unread_channel_count')
+                setNewUpdatesAvailable(0)
+            }, 1000) // 1 second
+        }
+        return () => clearTimeout(timeout)
+    }, [newUpdatesAvailable])
+
+    /** 
+     * If a bulk import happens, this gets called multiple times potentially causing the server to go down.
+     * Instead, throttle this - wait for all events to subside
+     */
+    useFrappeEventListener('channel_list_updated', () => {
+        if (!rest.isValidating) {
+            setNewUpdatesAvailable((n) => n + 1)
+        }
     })
 
     const { sortedChannels, sortedDMChannels } = useMemo(() => {

@@ -91,6 +91,7 @@ const CreateChannelForm = () => {
                                 <TextInput
                                     className={`flex-1 pt-2 pb-2 text-[16px] text-foreground`}
                                     placeholder="dev-team"
+                                    placeholderTextColor={colors.grey}
                                     maxLength={50}
                                     value={value}
                                     onBlur={onBlur}
@@ -130,8 +131,11 @@ const CreateChannelForm = () => {
                         }}
                         render={({ field: { onChange, onBlur, value } }) => (
                             <TextInput
-                                className="w-full min-h-24 border border-border rounded-lg px-3 pt-2 pb-2 text-[16px] leading-5 text-foreground"
+                                className="w-full border min-h-24 border-border rounded-lg px-3 pt-2 pb-2 text-[16px] leading-5 text-foreground"
                                 placeholder="Discuss the latest features and ideas and keep track of the deliverables"
+                                placeholderTextColor={colors.grey}
+                                placeholderClassName="leading-5"
+                                textAlignVertical="top"
                                 multiline
                                 numberOfLines={6}
                                 onChangeText={onChange}

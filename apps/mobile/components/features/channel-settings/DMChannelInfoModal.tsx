@@ -1,4 +1,4 @@
-import { TouchableOpacity, View, StyleSheet, Modal, Pressable } from 'react-native';
+import { TouchableOpacity, View, StyleSheet, Modal, Pressable, Platform } from 'react-native';
 import { router } from 'expo-router';
 import { Text } from '@components/nativewindui/Text';
 import ChevronRightIcon from '@assets/icons/ChevronRightIcon.svg';
@@ -6,13 +6,14 @@ import HollowFilesIcon from '@assets/icons/HollowFilesIcon.svg';
 import { useColorScheme } from '@hooks/useColorScheme';
 import { Divider } from '@components/layout/Divider';
 import CrossIcon from '@assets/icons/CrossIcon.svg';
-import { ChannelIcon } from '../channels/ChannelList/ChannelIcon';
 import ThreeHorizontalDots from '@assets/icons/ThreeHorizontalDots.svg';
 import Animated, { Easing, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import { useEffect } from 'react';
 import { DMChannelListItem } from '@raven/types/common/ChannelListItem';
 import { useGetUser } from '@raven/lib/hooks/useGetUser';
 import PinOutlineIcon from '@assets/icons/PinOutlineIcon.svg';
+import UserAvatar from '@components/layout/UserAvatar';
+
 type DMChannelInfoModalProps = {
     channel: DMChannelListItem
     isModalVisible: boolean
@@ -125,13 +126,19 @@ const ModalHeader = ({ channel, handleCloseModal }: { channel: DMChannelListItem
                     <CrossIcon height={20} width={20} color={colors.foreground} />
                 </TouchableOpacity>
                 {channel && <View className='flex-row items-center ml-3'>
-                    <ChannelIcon type={channel.type} fill={colors.foreground} />
+                    <UserAvatar src={user?.user_image} alt={user?.full_name ?? peer}
+                        avatarProps={{ className: "w-6 h-6" }}
+                        fallbackProps={{ className: "rounded-[4px]" }}
+                        textProps={{ className: "text-xs font-medium" }}
+                        imageProps={{ className: "rounded-[4px]" }}
+                        indicatorProps={{ className: "h-2 w-2" }}
+                        isBot={user?.type === 'Bot'} />
                     <Text className='ml-2 text-base font-semibold'>{user?.full_name ?? peer}</Text>
                 </View>}
             </View>
-            <TouchableOpacity hitSlop={10}>
+            {/* <TouchableOpacity hitSlop={10}>
                 <ThreeHorizontalDots height={20} width={20} color={colors.foreground} />
-            </TouchableOpacity>
+            </TouchableOpacity> */}
         </View>
     )
 }
@@ -142,7 +149,7 @@ const styles = StyleSheet.create({
         justifyContent: 'flex-start',
         alignItems: 'flex-end',
         backgroundColor: 'rgba(0, 0, 0, 0.5)',
-        paddingTop: 60,
+        paddingTop: Platform.OS === 'ios' ? 60 : 8,
     },
     modalContent: {
         width: '95%',

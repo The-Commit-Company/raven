@@ -1,9 +1,9 @@
 import { useMemo, useCallback } from "react";
 import { useSWRInfinite } from "frappe-react-sdk";
 import { TouchableOpacity, Dimensions } from "react-native";
-import { FlashList } from "@shopify/flash-list";
 import { TENOR_API_KEY, TENOR_CLIENT_KEY, TENOR_FEATURED_API_ENDPOINT_BASE } from "./GIFPickerKeys";
 import { Image } from "expo-image";
+import { BottomSheetFlashList } from "@gorhom/bottom-sheet";
 
 export interface Props {
     onSelect: (gif: Result) => void;
@@ -80,7 +80,7 @@ const GIFFeaturedResults = ({ onSelect }: Props) => {
     if (!GIFS?.results?.length) return null
 
     return (
-        <FlashList
+        <BottomSheetFlashList
             data={GIFS.results}
             renderItem={renderItem}
             keyExtractor={(item, index) => item.id + "_" + index}

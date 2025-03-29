@@ -41,7 +41,10 @@ export const ImageMessageRenderer = ({ message, doubleTapGesture }: ImageMessage
 
     return (
         <GestureDetector gesture={singleTapGesture}>
-            <View collapsable={false} className='flex-1 pt-0.5 w-full'>
+            <View collapsable={false} className='flex-1 pt-0.5' style={{
+                width: otherAttributes.width,
+                height: otherAttributes.height,
+            }}>
                 <ImageMessageLayout source={source} {...otherAttributes} />
             </View>
         </GestureDetector>
@@ -68,7 +71,11 @@ export const ImageMessageView = ({ message }: { message: ImageMessage }) => {
     const attributes = useGetImageAttributes(message)
 
     return <View
-        className="flex-row items-center gap-1"
+        className="flex-row items-center pt-1 gap-1"
+        style={{
+            width: attributes.width,
+            height: attributes.height,
+        }}
     >
         <ImageMessageLayout {...attributes} />
     </View>
@@ -80,6 +87,10 @@ const ImageMessageLayout = ({ source, width, height, alt }: { source?: UseFileUR
 
     return <View
         className="flex-row items-center gap-1"
+        style={{
+            width: width,
+            height: height,
+        }}
     >
         <ImageSkeleton width={width} height={height} />
 

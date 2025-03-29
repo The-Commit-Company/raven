@@ -7,6 +7,7 @@ import { ViewSavedMessagesButton } from '@components/features/saved-messages/Vie
 import QuickSearchButton from '@components/features/search/QuickSearchButton';
 import AllChannelsList from '@components/features/channels/ChannelList/AllChannelsList';
 import { ViewMentionsButton } from '@components/features/mentions/ViewMentionsButton';
+import CommonErrorBoundary from '@components/common/CommonErrorBoundary';
 
 export default function Home() {
 
@@ -38,3 +39,5 @@ export default function Home() {
         </SafeAreaView>
     )
 }
+
+export const ErrorBoundary = CommonErrorBoundary

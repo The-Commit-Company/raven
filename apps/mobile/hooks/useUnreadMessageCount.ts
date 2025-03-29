@@ -1,6 +1,6 @@
 import { UnreadCountData } from "@raven/lib/hooks/useGetChannelUnreadCounts"
 import { useFrappeGetCall, FrappeContext, FrappeConfig, useFrappeEventListener, useFrappePostCall } from "frappe-react-sdk"
-import { useContext } from "react"
+import { useCallback, useContext } from "react"
 import { useUpdateLastMessageInChannelList } from "./useUpdateLastMessageInChannelList"
 import useCurrentRavenUser from "@raven/lib/hooks/useCurrentRavenUser"
 import { DMChannelListItem } from "@raven/types/common/ChannelListItem"
@@ -183,9 +183,9 @@ export const useTrackChannelVisit = (channelID: string) => {
 
     const { call } = useFrappePostCall('raven.api.raven_channel_member.track_visit')
 
-    const { unread_count, updateCount } = useUnreadMessageCount()
+    const { updateCount } = useUnreadMessageCount()
 
-    const updateUnreadCountToZero = (channel_id?: string) => {
+    const updateUnreadCountToZero = useCallback((channel_id?: string) => {
 
         updateCount(d => {
             if (d) {
@@ -208,13 +208,13 @@ export const useTrackChannelVisit = (channelID: string) => {
 
         }, { revalidate: false })
 
-    }
+    }, [updateCount])
 
 
-    const trackVisit = () => {
+    const trackVisit = useCallback(() => {
         updateUnreadCountToZero(channelID)
         call({ channel_id: channelID })
-    }
+    }, [channelID, call, updateUnreadCountToZero])
 
     return trackVisit
 }

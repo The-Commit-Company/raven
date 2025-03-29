@@ -62,6 +62,9 @@ const CreatePollForm = () => {
                             <TextInput
                                 className="w-full border border-border rounded-lg px-3 py-3 text-[16px] leading-5 text-foreground"
                                 placeholder="Ask a question"
+                                placeholderTextColor={colors.grey}
+                                placeholderClassName="leading-5"
+                                textAlignVertical="top"
                                 onChangeText={field.onChange}
                                 onBlur={field.onBlur}
                                 value={field.value}
@@ -86,6 +89,9 @@ const CreatePollForm = () => {
                                         <TextInput
                                             className="flex-1 border border-border rounded-lg px-3 py-3 text-[16px] leading-5 text-foreground"
                                             placeholder={`Option ${index + 1}`}
+                                            placeholderTextColor={colors.grey}
+                                            placeholderClassName="leading-5"
+                                            textAlignVertical="top"
                                             onChangeText={field.onChange}
                                             onBlur={field.onBlur}
                                             value={field.value}
