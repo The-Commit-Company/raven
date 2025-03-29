@@ -76,12 +76,12 @@ export const TiptapRenderer = ({ message, user, isScrolling = false, showMiniIma
         },
         listItem: {
           HTMLAttributes: {
-            class: 'rt-Text leading-relaxed text-sm'
+            class: 'rt-Text leading-relaxed text-base sm:text-sm'
           }
         },
         paragraph: {
           HTMLAttributes: {
-            class: 'rt-Text text-sm'
+            class: 'rt-Text text-base sm:text-sm'
           }
         },
         code: {

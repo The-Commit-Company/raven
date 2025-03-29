@@ -47,7 +47,10 @@ export const UserMentionRenderer = ({ node }: NodeViewRendererProps) => {
         <NodeViewWrapper as={'span'}>
             <HoverCard.Root>
                 <HoverCard.Trigger>
-                    <Link size='2' onClick={onClick} className='cursor-pointer'>
+                    <Link size={{
+                        sm: '3',
+                        md: '2'
+                    }} onClick={onClick} className='cursor-pointer'>
                         @{user?.full_name ?? node.attrs.label}
                     </Link>
                 </HoverCard.Trigger>
@@ -86,7 +89,10 @@ export const ChannelMentionRenderer = ({ node }: NodeViewRendererProps) => {
 
     return (
         <NodeViewWrapper as={'span'}>
-            <Link asChild>
+            <Link asChild size={{
+                sm: '3',
+                md: '2'
+            }}>
                 <RouterLink to={`/channel/${node.attrs.id}`}>
                     #{node.attrs.label}
                 </RouterLink>
