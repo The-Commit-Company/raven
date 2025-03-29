@@ -29,8 +29,6 @@ export const useActiveSocketConnection = () => {
 
         },
         errorRetryCount: 3,
-        errorRetryInterval: 1000,
-        refreshInterval: 120000
     })
 
     return data
