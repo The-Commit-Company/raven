@@ -68,7 +68,7 @@ export const ImageMessageView = ({ message }: { message: ImageMessage }) => {
     const attributes = useGetImageAttributes(message)
 
     return <View
-        className="flex-row items-center gap-1"
+        className="flex-row items-center pt-1 gap-1"
     >
         <ImageMessageLayout {...attributes} />
     </View>
