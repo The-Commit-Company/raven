@@ -72,10 +72,9 @@ export default function CustomStatusScreen() {
                             <TextField
                                 autoFocus
                                 className="pl-0.5"
-                                label={Platform.select({ ios: undefined, default: 'First' })}
                                 leftView={
-                                    <View className="ios:w-36 ios:justify-between flex-row items-center pl-2">
-                                        {Platform.OS === 'ios' && <Text className="font-medium">Custom Status</Text>}
+                                    <View className="w-36 justify-between flex-row items-center pl-2">
+                                        <Text className="font-medium">Custom Status</Text>
                                     </View>
                                 }
                                 placeholder="e.g. Out of Office"

@@ -72,10 +72,9 @@ export default function FullNameScreen() {
                             <TextField
                                 autoFocus
                                 className="pl-0.5"
-                                label={Platform.select({ ios: undefined, default: 'First' })}
                                 leftView={
-                                    <View className="ios:w-36 ios:justify-between flex-row items-center pl-2">
-                                        {Platform.OS === 'ios' && <Text className="font-medium">Full Name</Text>}
+                                    <View className="w-36 justify-between flex-row items-center pl-2">
+                                        <Text className="font-medium">Full Name</Text>
                                     </View>
                                 }
                                 placeholder="Full Name"

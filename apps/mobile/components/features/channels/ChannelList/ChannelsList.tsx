@@ -40,9 +40,11 @@ export const ChannelListUI = ({ channels }: { channels: ChannelListItem[] }) => 
             <TouchableOpacity onPress={toggleAccordion} style={styles.header} activeOpacity={0.7}>
                 <Text style={styles.headerText}>Channels</Text>
                 <View className="flex-row items-center gap-1">
-                    <Pressable className='active:bg-card-background px-1.5 py-1 rounded-lg'
+                    <Pressable
+                        hitSlop={10}
+                        className='active:bg-card-background px-1.5 py-1 rounded-lg'
                         onPress={() => router.push('../home/create-channel', { relativeToDirectory: true })}>
-                        <PlusIcon fill={colors.icon} height={18} width={18} />
+                        <PlusIcon fill={colors.icon} height={20} width={20} />
                     </Pressable>
                     {isExpanded ? <ChevronDownIcon fill={colors.icon} /> : <ChevronRightIcon fill={colors.icon} />}
                 </View>
