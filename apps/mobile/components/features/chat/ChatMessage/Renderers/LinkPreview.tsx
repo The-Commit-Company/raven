@@ -30,8 +30,6 @@ const LinkPreview = memo(({ href }: LinkPreviewProps) => {
 
     if (!image && !linkPreview.title && !linkPreview.description) return null;
 
-    console.log(image)
-
     return (
         <View className="w-full border border-border bg-card-background/40 rounded-lg overflow-hidden relative">
             <TouchableOpacity onPress={handleLinkPress} activeOpacity={0.7}>

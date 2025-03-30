@@ -40,7 +40,7 @@ export default function EditChannelDetails() {
             toast.success("Channel details updated")
             router.back()
         }).catch((err) => {
-            console.log(err)
+            console.error(err)
             toast.error("Error while updating channel details")
         })
     }

@@ -81,7 +81,7 @@ export default function RootLayout() {
 
         // Handle notification open when app is in background
         const unsubscribeOnNotificationOpen = messaging.onNotificationOpenedApp(async (remoteMessage) => {
-            console.log('Notification opened app from background state:', remoteMessage);
+            // console.log('Notification opened app from background state:', remoteMessage);
             if (remoteMessage.data?.channel_id && remoteMessage.data?.sitename) {
                 setDefaultSite(remoteMessage.data.sitename as string)
                 let path = 'chat'
