@@ -9,29 +9,25 @@ import { CombinedChannel } from './ForwardMessage'
 
 interface SelectedChannelsProps {
     selectedChannels: CombinedChannel[]
-    isDropdownVisible: boolean
     searchInput: string
     setSearchInput: (value: string) => void
     handleRemoveChannel: (channel: CombinedChannel) => void
     handleBackspace: () => void
     currentUserInfo: RavenUser | undefined
-    setDropdownVisible: (value: boolean) => void
 }
 
 export const SelectedChannels = ({
     selectedChannels,
-    isDropdownVisible,
     searchInput,
     setSearchInput,
     handleRemoveChannel,
     handleBackspace,
     currentUserInfo,
-    setDropdownVisible
 }: SelectedChannelsProps) => {
     const { colors } = useColorScheme()
 
     return (
-        <View className={`flex-row items-center justify-start gap-2.5 border-b-2 ${isDropdownVisible ? "border-gray-200 dark:border-gray-600" : "border-gray-300 dark:border-gray-700"} px-3 py-4`}>
+        <View className={`flex-row items-center justify-start gap-2.5 border border-transparent border-b-border px-3 py-3`}>
             <Text>To:</Text>
             <View className="flex-row flex-wrap items-center gap-2 mr-5">
                 {selectedChannels.map((channel: CombinedChannel) => {
@@ -74,11 +70,11 @@ export const SelectedChannels = ({
                     )
                 })}
                 <TextInput
+                    autoFocus
                     className="flex-1 dark:text-gray-300"
                     placeholder={selectedChannels.length === 0 ? "Add a channel or DM" : ""}
                     value={searchInput}
                     onChangeText={setSearchInput}
-                    onFocus={() => setDropdownVisible(true)}
                     onKeyPress={({ nativeEvent }) => {
                         if (nativeEvent.key === "Backspace") handleBackspace()
                     }}
