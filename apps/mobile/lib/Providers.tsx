@@ -16,6 +16,7 @@ import { useUnreadThreadsCountEventListener } from '@hooks/useUnreadThreadsCount
 import useCurrentRavenUser from '@raven/lib/hooks/useCurrentRavenUser'
 import { useActiveSocketConnection } from '@hooks/useActiveSocketConnection'
 import { useFetchActiveUsersRealtime } from '@hooks/useFetchActiveUsers'
+import useFirebasePushTokenListener from '@hooks/useFirebasePushTokenListener'
 
 const Providers = (props: PropsWithChildren) => {
 
@@ -86,6 +87,8 @@ const WorkspaceProvider = ({ children }: PropsWithChildren) => {
     useFetchUnreadMessageCount()
 
     useFetchActiveUsersRealtime()
+
+    useFirebasePushTokenListener()
 
     // Listen to channel members updated events and invalidate the channel members cache
     const { mutate } = useSWRConfig()
