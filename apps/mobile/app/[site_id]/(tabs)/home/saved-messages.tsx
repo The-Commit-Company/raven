@@ -50,7 +50,7 @@ const SavedMessagesContent = () => {
         </View>
     }
 
-    if (error) {
+    if (!data && error) {
         return (
             <View className='p-4'>
                 <ErrorBanner error={error} />

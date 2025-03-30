@@ -47,7 +47,7 @@ const AddWorkspaceForm = ({ onClose }: { onClose: (workspaceID?: string) => void
                         isPrivate: false,
                     }).then((fileRes) => {
                         return updateDoc("Raven Workspace", res.name, {
-                            logo: fileRes.file_url + "?fid=" + fileRes.name
+                            logo: fileRes.file_url
                         })
                     })
                 }

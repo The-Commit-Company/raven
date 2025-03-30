@@ -275,7 +275,7 @@ export default function SiteLayout() {
                 <FrappeNativeProvider siteInfo={siteInfo} getAccessToken={getToken}>
                     <Providers>
                         <BottomSheetModalProvider>
-                            <Stack>
+                            <Stack initialRouteName="(tabs)">
                                 <Stack.Screen
                                     name="chat/[id]/create-poll"
                                     options={{
