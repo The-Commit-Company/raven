@@ -2,8 +2,6 @@
   <a href="https://github.com/The-Commit-Company/Raven">
   <img src="raven_logo.png" alt="Raven logo" height="100" />
      </a>
-
-   <h1 align="center" style="display:none">Raven</h1>
    <hr />
   <p align="center">Enterprise-first messaging platform that seamlessly integrates with your ERP
      <br />
@@ -29,15 +27,6 @@
      <a href="https://github.com/The-Commit-Company/Raven/pulse"><img src="https://img.shields.io/github/commit-activity/m/The-Commit-Company/Raven" alt="Commits-per-month"></a>
 </p>
 
-<p align="center">
-<img src="screenshots/RavenUIGraphic.png" alt="A graphic showing how the Raven interface looks on the web" />
-</p>
-
-<video autoplay controls width="100%" poster="screenshots/HeroVideoCover.webp">
-<source src="https://firebasestorage.googleapis.com/v0/b/raven-dev-frappe.appspot.com/o/public%2FHeroVideo.mp4?alt=media" type="video/mp4">
-</video>
-<br>
-<br>
 
 ​Raven is an open-source messaging platform that brings your team's conversations and information into one centralized place, enhancing collaboration and productivity. Whether you're at your desk or on the move, Raven keeps you connected on any device.​
 
@@ -249,7 +238,7 @@ yarn run android
 This *should* start the emulators with the app running. For more info, please refer to the [Expo documentation](https://docs.expo.dev/get-started/introduction/)
 
 
-## Learn and Support
+## Forum and Support
 
 - [Community Forum & Support](https://community.ravenapp.cloud)
 - [YouTube](https://www.youtube.com/@TheCommitCompany)
