@@ -150,8 +150,11 @@ const WorkspaceProvider = ({ children }: PropsWithChildren) => {
     })
 
     useEffect(() => {
-        if (data && data.message.length > 0 && !selectedWorkspace) {
-            setSelectedWorkspace(data.message[0].name)
+        if (data && data.message.length > 0) {
+            if (!selectedWorkspace || !data.message.find((w) => w.name === selectedWorkspace)) {
+                // If there's no selected workspace, or if the selected workspace is not in the list of workspaces, set the first workspace as the selected workspace
+                setSelectedWorkspace(data.message[0].name)
+            }
         }
     }, [data])
 
