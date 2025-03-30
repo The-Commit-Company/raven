@@ -14,56 +14,57 @@ import { Divider } from '@components/layout/Divider';
 import { formatBytes, getFileName } from '@raven/lib/utils/operations';
 import UniversalFileIcon from '@components/common/UniversalFileIcon';
 import DotIcon from "@assets/icons/DotIcon.svg"
-import { getStandardDateFormat } from '@raven/lib/utils/dateConversions';
+import { formatDate } from '@raven/lib/utils/dateConversions';
 import { LegendList } from '@legendapp/list';
 
 const PAGE_SIZE = 12
 
 const FileGrid = ({ searchQuery }: { searchQuery: string }) => {
-    const { colors } = useColorScheme();
-    const { id: channelID } = useLocalSearchParams();
-    const { call } = useContext(FrappeContext) as FrappeConfig;
+
+    const { colors } = useColorScheme()
+    const { id: channelID } = useLocalSearchParams()
+    const { call } = useContext(FrappeContext) as FrappeConfig
 
     const { data, size, isLoading, setSize, error } = useSWRInfinite<MediaInChannel[]>(
         (pageIndex: number, previousPageData: MediaInChannel[] | null) => {
-            if (previousPageData && previousPageData.length === 0) return null;
+            if (previousPageData && previousPageData.length === 0) return null
             return {
                 channel_id: channelID,
                 file_name: searchQuery,
                 file_type: "file",
                 page_length: PAGE_SIZE,
                 start_after: pageIndex * PAGE_SIZE,
-            };
+            }
         },
         async (params) => {
-            const response = await call.get("raven.api.raven_message.get_all_files_shared_in_channel", params);
+            const response = await call.get("raven.api.raven_message.get_all_files_shared_in_channel", params)
             return response.message;
         },
         {
             revalidateIfStale: true,
             revalidateOnFocus: true,
         }
-    );
+    )
 
-    const documents = data ? data.flat() : [];
-    const isEmpty = documents?.length === 0;
-    const isLoadingMore = isLoading || (size > 0 && data && typeof data[size - 1] === "undefined");
-    const isReachingEnd = isEmpty || (data && data[data.length - 1]?.length < PAGE_SIZE);
+    const documents = data ? data.flat() : []
+    const isEmpty = documents?.length === 0
+    const isLoadingMore = isLoading || (size > 0 && data && typeof data[size - 1] === "undefined")
+    const isReachingEnd = isEmpty || (data && data[data.length - 1]?.length < PAGE_SIZE)
 
     const loadMore = useCallback(() => {
         if (!isReachingEnd && !isLoadingMore) {
             setSize((prevSize) => {
-                return prevSize + 1;
-            });
+                return prevSize + 1
+            })
         }
-    }, [isReachingEnd, isLoadingMore, setSize]);
+    }, [isReachingEnd, isLoadingMore, setSize])
 
     if (isLoading) {
         return (
             <View className="flex-1 justify-center items-center h-full">
                 <ActivityIndicator />
             </View>
-        );
+        )
     }
 
     if (error) {
@@ -71,11 +72,7 @@ const FileGrid = ({ searchQuery }: { searchQuery: string }) => {
             <View className="p-4">
                 <ErrorBanner error={error} />
             </View>
-        );
-    }
-
-    if (isEmpty) {
-        return <EmptyStateForDocGrid />;
+        )
     }
 
     return (
@@ -89,6 +86,7 @@ const FileGrid = ({ searchQuery }: { searchQuery: string }) => {
             onEndReached={loadMore}
             onEndReachedThreshold={0.5}
             ItemSeparatorComponent={() => <Divider prominent />}
+            ListEmptyComponent={<EmptyStateForDocGrid />}
             ListFooterComponent={
                 isLoadingMore ? (
                     <View className="py-4">
@@ -98,8 +96,8 @@ const FileGrid = ({ searchQuery }: { searchQuery: string }) => {
             }
             recycleItems
         />
-    );
-};
+    )
+}
 
 export default FileGrid
 
@@ -133,45 +131,40 @@ const FileListItem = ({ file }: { file: MediaInChannel }) => {
     return (
         <Pressable onPress={openFileAction}
             // Use tailwind classes for layout and ios:active state
-            className='flex-row items-center px-3 py-2 rounded ios:active:bg-linkColor'
+            className='flex-row items-center px-3 py-2.5 rounded active:bg-linkColor'
             // Add a subtle ripple effect on Android
-            android_ripple={{ color: 'rgba(0,0,0,0.1)', borderless: false }}
-        >
-            <View className="flex-row gap-2 items-center">
+            android_ripple={{ color: 'rgba(0,0,0,0.1)', borderless: false }}>
+            <View className="flex-row gap-3 items-center">
                 <Preview file={file} />
-
                 <View className="gap-1 flex-1">
-                    <Text className="text-foreground text-sm">
-                        {file.file_name.length < 32 ? file.file_name : file.file_name.substring(0, 32) + "..."}
+                    <Text className="text-foreground text-sm line-clamp-1">
+                        {file.file_name}
                     </Text>
-                    <View className="flex-row items-center gap-1.5">
-                        <Text className='text-muted-foreground text-xs'>{formatBytes(file.file_size)}</Text>
-                        <DotIcon fill={colors.foreground} width={4} height={4} />
-                        <Text className='text-muted-foreground text-xs'>
-                            {file.full_name ?? file.owner}
-                        </Text>
-                        <DotIcon fill={colors.foreground} width={4} height={4} />
-                        <Text className='text-muted-foreground text-xs'>{file.file_type}</Text>
+                    <View className='flex-row justify-between'>
+                        <View className="flex-row items-center gap-1.5">
+                            <Text className='text-muted-foreground text-xs'>
+                                Sent by {file.full_name ?? file.owner}
+                            </Text>
+                            <DotIcon fill={colors.foreground} width={2.5} height={2.5} />
+                            <Text className='text-muted-foreground/90 text-xs'>{formatBytes(file.file_size)}</Text>
+                            <Text className='text-muted-foreground/90 text-xs'>{file.file_type}</Text>
+                        </View>
+                        <Text className='text-muted-foreground text-xs'>{formatDate(file.creation)}</Text>
                     </View>
                 </View>
-
-                <Text className='text-muted-foreground text-xs self-end'>{getStandardDateFormat(file.creation)}</Text>
             </View>
         </Pressable>
     )
 }
 
 const Preview = ({ file }: { file: MediaInChannel }) => {
-
     const fileName = useMemo(() => getFileName(file.file_url ?? ""), [file])
-
     return (
         <UniversalFileIcon fileName={fileName} width={35} height={35} />
     )
 }
 
 const EmptyStateForDocGrid = () => {
-
     return (
         <View className="flex flex-row items-center gap-2 py-2 px-3">
             <Text className="text-muted-foreground text-center w-full text-base font-medium">

@@ -15,15 +15,17 @@ const MediaTabs = ({ searchQuery }: { searchQuery: string }) => {
     }
 
     return (
-        <View className='flex-1 flex-col gap-3'>
-            <View className='px-3'>
-                <SegmentedControl
-                    values={values}
-                    selectedIndex={selectedIndex}
-                    onIndexChange={handleIndexChange}
-                />
+        <View className='flex-1 flex-col'>
+            <View className='flex flex-col gap-3'>
+                <View className='px-3'>
+                    <SegmentedControl
+                        values={values}
+                        selectedIndex={selectedIndex}
+                        onIndexChange={handleIndexChange}
+                    />
+                </View>
+                <Divider prominent />
             </View>
-            <Divider className='mx-0' prominent />
             <View className='flex-1'>
                 {selectedIndex === 0 && <ImageGrid searchQuery={searchQuery} />}
                 {selectedIndex === 1 && <FileGrid searchQuery={searchQuery} />}
