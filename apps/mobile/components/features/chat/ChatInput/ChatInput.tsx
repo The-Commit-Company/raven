@@ -15,6 +15,7 @@ import useSiteContext from "@hooks/useSiteContext"
 import TypingIndicator from "./TypingIndicator"
 import { UserMentions } from "./mentions"
 import ReplyMessagePreview from "./ReplyMessagePreview"
+import AIEventIndicator from "./AIEventIndicator"
 
 interface ChatInputProps {
     channelID: string
@@ -83,6 +84,7 @@ const ChatInput = ({ channelID, onSendMessage }: ChatInputProps) => {
     }
 
     return <View className="flex flex-col gap-1 bg-background">
+        <AIEventIndicator channelID={channelID} />
         <TypingIndicator channel={channelID} />
         {siteID && <ReplyMessagePreview channelID={channelID} siteID={siteID} />}
         {siteID && <FileScroller channelID={channelID} siteID={siteID} />}
