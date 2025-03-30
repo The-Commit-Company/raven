@@ -1,12 +1,12 @@
 import { Message } from '@raven/types/common/Message'
 import { useFrappeDeleteDoc, useSWRConfig } from 'frappe-react-sdk'
 import { useCallback } from 'react'
-import { Alert, Pressable, View } from 'react-native'
+import { Alert } from 'react-native'
 import { toast } from 'sonner-native'
-import { Text } from '@components/nativewindui/Text'
 import TrashIcon from "@assets/icons/TrashIcon.svg"
 import { useColorScheme } from '@hooks/useColorScheme'
 import { GetMessagesResponse } from '@raven/types/common/ChatStream'
+import ActionButton from '@components/common/Buttons/ActionButton'
 
 interface DeleteMessageProps {
     message: Message
@@ -15,7 +15,6 @@ interface DeleteMessageProps {
 
 const DeleteMessage = ({ message, onClose }: DeleteMessageProps) => {
 
-    // const deleteAlertRef = React.useRef<AlertRef>(null)
     const { deleteMessage, loading } = useMessageDelete(message)
 
     const onDelete = () => {
@@ -33,17 +32,13 @@ const DeleteMessage = ({ message, onClose }: DeleteMessageProps) => {
     const { isDarkColorScheme } = useColorScheme()
 
     return (
-        <View>
-            <Pressable
-                onPress={onMessageDelete}
-                hitSlop={10}
-                className='flex flex-row items-center gap-3 p-2 rounded-lg ios:active:bg-destructive/5 dark:ios:active:bg-destructive/10'
-                android_ripple={{ color: 'rgba(0,0,0,0.1)', borderless: false }}
-                disabled={loading}>
-                <TrashIcon width={18} height={18} fill={isDarkColorScheme ? '#f87171' : '#dc2626'} />
-                <Text className='text-base text-red-600 dark:text-red-400'>Delete message</Text>
-            </Pressable>
-        </View>
+        <ActionButton
+            onPress={onMessageDelete}
+            icon={<TrashIcon width={18} height={18} fill={isDarkColorScheme ? '#f87171' : '#dc2626'} />}
+            text='Delete message'
+            isDestructive={true}
+            disabled={loading}
+        />
     )
 }
 
