@@ -1,7 +1,6 @@
-import { TouchableOpacity, View, StyleSheet, Modal, Pressable, Platform } from 'react-native';
+import { TouchableOpacity, View, StyleSheet, Modal, Platform } from 'react-native';
 import { router } from 'expo-router';
 import { Text } from '@components/nativewindui/Text';
-import ChevronRightIcon from '@assets/icons/ChevronRightIcon.svg';
 import SettingsIcon from '@assets/icons/SettingsIcon.svg';
 import MembersIcon from '@assets/icons/MembersIcon.svg';
 import HollowFilesIcon from '@assets/icons/HollowFilesIcon.svg';
@@ -13,6 +12,7 @@ import Animated, { Easing, useAnimatedStyle, useSharedValue, withTiming } from '
 import { useEffect } from 'react';
 import { ChannelListItem } from '@raven/types/common/ChannelListItem';
 import PinOutlineIcon from '@assets/icons/PinOutlineIcon.svg';
+import ActionButton from '@components/common/Buttons/ActionButton';
 
 type ChannelInfoModalProps = {
     channel: ChannelListItem
@@ -93,56 +93,27 @@ const ChannelInfoModal = ({ channel, isModalVisible, setModalVisible }: ChannelI
                 <Animated.View style={[styles.modalContent, animatedModalStyle]} className='bg-card dark:border dark:border-border'>
                     <ModalHeader channel={channel} handleCloseModal={handleCloseModal} />
                     <Divider className='my-2 mx-1' prominent />
-                    <Pressable onPress={handleGoToViewMembers}
-                        className='rounded-xl ios:active:bg-linkColor'
-                        android_ripple={{ color: 'rgba(0,0,0,0.1)', borderless: false }}>
-                        <View className='flex-row items-center justify-between px-2'>
-                            <View className='flex-row items-center'>
-                                <MembersIcon height={20} width={20} color={colors.foreground} />
-                                <Text style={styles.modalOption}>Members</Text>
-                            </View>
-                            <ChevronRightIcon height={24} width={24} fill={colors.foreground} strokeWidth={'1px'} />
-                        </View>
-                    </Pressable>
-                    <Pressable onPress={handleGoToSettings}
-                        className='rounded-xl ios:active:bg-linkColor'
-                        android_ripple={{ color: 'rgba(0,0,0,0.1)', borderless: false }}>
-                        <View className='flex-row items-center justify-between px-2'>
-                            <View className='flex-row items-center'>
-                                <SettingsIcon height={20} width={20} color={colors.foreground} />
-                                <Text style={styles.modalOption}>Settings & Details</Text>
-                            </View>
-                            <ChevronRightIcon height={24} width={24} fill={colors.foreground} strokeWidth={'1px'} />
-                        </View>
-                    </Pressable>
-                    <Pressable onPress={handleGoToPins}
-                        className='rounded-xl ios:active:bg-linkColor'
-                        android_ripple={{ color: 'rgba(0,0,0,0.1)', borderless: false }}>
-                        <View className='flex-row items-center justify-between px-2'>
-                            <View className='flex-row items-center'>
-                                <PinOutlineIcon height={20} width={20} stroke={colors.foreground} />
-                                <Text style={styles.modalOption}>Pins</Text>
-                            </View>
-                            <View className='flex-row items-center gap-1'>
-                                {pinnedMessages > 0 ?
-                                    <Text className='text-sm text-foreground font-semibold'>{pinnedMessages}</Text>
-                                    : null
-                                }
-                                <ChevronRightIcon height={24} width={24} fill={colors.foreground} strokeWidth={'1px'} />
-                            </View>
-                        </View>
-                    </Pressable>
-                    <Pressable onPress={handleGoToSharedMedia}
-                        className='rounded-xl ios:active:bg-linkColor'
-                        android_ripple={{ color: 'rgba(0,0,0,0.1)', borderless: false }}>
-                        <View className='flex-row items-center justify-between px-2'>
-                            <View className='flex-row items-center'>
-                                <HollowFilesIcon height={20} width={20} fill={colors.foreground} />
-                                <Text style={styles.modalOption}>Images and Files</Text>
-                            </View>
-                            <ChevronRightIcon height={24} width={24} fill={colors.foreground} strokeWidth={'1px'} />
-                        </View>
-                    </Pressable>
+                    <ActionButton
+                        onPress={handleGoToViewMembers}
+                        icon={<MembersIcon height={20} width={20} color={colors.foreground} />}
+                        text='Members'
+                        showChevron />
+                    <ActionButton
+                        onPress={handleGoToSettings}
+                        icon={<SettingsIcon height={20} width={20} color={colors.foreground} />}
+                        text='Settings & Details'
+                        showChevron />
+                    <ActionButton
+                        onPress={handleGoToPins}
+                        icon={<PinOutlineIcon height={20} width={20} color={colors.foreground} />}
+                        text='Pins'
+                        count={pinnedMessages}
+                        showChevron />
+                    <ActionButton
+                        onPress={handleGoToSharedMedia}
+                        icon={<HollowFilesIcon height={20} width={20} fill={colors.foreground} />}
+                        text='Images and Files'
+                        showChevron />
                 </Animated.View>
             </TouchableOpacity>
         </Modal>
