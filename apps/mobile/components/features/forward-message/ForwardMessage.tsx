@@ -6,7 +6,6 @@ import { useDebounce } from "@raven/lib/hooks/useDebounce"
 import { useChannelList } from "@raven/lib/providers/ChannelListProvider"
 import useCurrentRavenUser from "@raven/lib/hooks/useCurrentRavenUser"
 import { useColorScheme } from "@hooks/useColorScheme"
-import SendIcon from "@assets/icons/SendIcon.svg"
 import { useFrappePostCall } from "frappe-react-sdk"
 import { ActivityIndicator } from "@components/nativewindui/ActivityIndicator"
 import { toast } from "sonner-native"
@@ -36,7 +35,6 @@ export function ForwardMessage({ message }: ForwardMessageProps) {
     const navigation = useNavigation()
     const { channels } = useChannelList()
     const [selectedChannels, setSelectedChannels] = useState<CombinedChannel[]>([])
-    const [isDropdownVisible, setDropdownVisible] = useState(true)
     const [searchInput, setSearchInput] = useState("")
     const debouncedSearchInput = useDebounce(searchInput, 200)
 
@@ -55,7 +53,7 @@ export function ForwardMessage({ message }: ForwardMessageProps) {
 
         const usersList = nonBotUsers.map((user): CombinedChannel => ({
             name: user.name,
-            channel_name: user.full_name || user.first_name || user.name,
+            channel_name: user.full_name,
             is_direct_message: true,
             user: user
         }));
@@ -86,6 +84,8 @@ export function ForwardMessage({ message }: ForwardMessageProps) {
                 return [...prev, channel];
             }
         });
+
+        setSearchInput('')
     }, []);
 
     const handleBackspace = useCallback(() => {
@@ -148,13 +148,11 @@ export function ForwardMessage({ message }: ForwardMessageProps) {
             <View className="flex-1">
                 <SelectedChannels
                     selectedChannels={selectedChannels}
-                    isDropdownVisible={isDropdownVisible}
                     searchInput={searchInput}
                     setSearchInput={setSearchInput}
                     handleRemoveChannel={handleRemoveChannel}
                     handleBackspace={handleBackspace}
                     currentUserInfo={currentUserInfo}
-                    setDropdownVisible={setDropdownVisible}
                 />
 
                 <FilteredChannels
