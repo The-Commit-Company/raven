@@ -27,6 +27,10 @@
      <a href="https://github.com/The-Commit-Company/Raven/pulse"><img src="https://img.shields.io/github/commit-activity/m/The-Commit-Company/Raven" alt="Commits-per-month"></a>
 </p>
 
+<p align="center">
+<img src="screenshots/RavenUIGraphic.png" alt="A graphic showing how the Raven interface looks on the web" />
+</p>
+
 
 ​Raven is an open-source messaging platform that brings your team's conversations and information into one centralized place, enhancing collaboration and productivity. Whether you're at your desk or on the move, Raven keeps you connected on any device.​
 
