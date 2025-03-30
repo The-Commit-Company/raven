@@ -84,7 +84,7 @@ const ImageGrid = ({ searchQuery, gap = 6, columns = 3 }: { searchQuery: string,
                 numColumns={columns}
                 estimatedItemSize={imageSize}
                 keyExtractor={(item, index) => `${item?.name}-${index}`}
-                contentContainerStyle={{ backgroundColor: colors.background, paddingBottom: 10 }}
+                contentContainerStyle={{ backgroundColor: colors.background, paddingBottom: 40 }}
                 columnWrapperStyle={{ gap }}
                 showsVerticalScrollIndicator={false}
                 onEndReached={loadMore}

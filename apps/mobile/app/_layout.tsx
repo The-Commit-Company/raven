@@ -15,14 +15,16 @@ import { Toaster } from 'sonner-native';
 import { LogBox } from 'react-native';
 import { getMessaging } from '@react-native-firebase/messaging';
 import { setDefaultSite } from '@lib/auth';
-import * as dayjs from 'dayjs'
+import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
 import timezone from 'dayjs/plugin/timezone'
 import advancedFormat from 'dayjs/plugin/advancedFormat'
+import relativeTime from 'dayjs/plugin/relativeTime';
 
 dayjs.extend(utc)
 dayjs.extend(timezone)
 dayjs.extend(advancedFormat)
+dayjs.extend(relativeTime)
 
 /** Suppressing this for now - see https://github.com/meliorence/react-native-render-html/issues/661 */
 LogBox.ignoreLogs([
