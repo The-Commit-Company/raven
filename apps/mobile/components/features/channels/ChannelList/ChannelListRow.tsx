@@ -18,9 +18,9 @@ export function ChannelListRow({ channel }: { channel: ChannelListItem }) {
 
     const { colors } = useColorScheme()
 
-    const handleMuteChannel = () => {
-        console.log(`Muting channel: ${channel.name}`)
-    }
+    // const handleMuteChannel = () => {
+    //     console.log(`Muting channel: ${channel.name}`)
+    // }
 
     const { onMoveToStarred, isStarred } = useMoveToStarred(channel)
 
@@ -77,7 +77,7 @@ export function ChannelListRow({ channel }: { channel: ChannelListItem }) {
             </ContextMenu.Trigger>
 
             <ContextMenu.Content>
-                <ContextMenu.Item key="mute" onSelect={handleMuteChannel}>
+                {/* <ContextMenu.Item key="mute" onSelect={handleMuteChannel}>
                     <ContextMenu.ItemTitle>Mute channel</ContextMenu.ItemTitle>
                     <ContextMenu.ItemIcon
                         ios={{
@@ -99,7 +99,7 @@ export function ChannelListRow({ channel }: { channel: ChannelListItem }) {
                             ],
                         }}
                     />
-                </ContextMenu.Item>
+                </ContextMenu.Item> */}
 
                 <ContextMenu.Item key="star" onSelect={onMoveToStarred}>
                     <ContextMenu.ItemTitle>{isStarred ? 'Remove from starred' : 'Move to starred'}</ContextMenu.ItemTitle>
