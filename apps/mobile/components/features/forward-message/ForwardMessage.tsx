@@ -17,6 +17,7 @@ import { FilteredChannels } from "./FilteredChannels"
 import clsx from "clsx"
 import { Message } from "@raven/types/common/Message"
 import { UserFields } from "@raven/types/common/UserFields"
+import ForwardMessageIcon from '@assets/icons/HollowSendIcon.svg'
 
 export type CombinedChannel = {
     name: string
@@ -131,7 +132,7 @@ export function ForwardMessage({ message }: ForwardMessageProps) {
                     android_ripple={{ color: 'rgba(0,0,0,0.1)', borderless: false }}
                     hitSlop={10}
                 >
-                    {isForwarding && !error ? <ActivityIndicator size={20} className='text-gray-800 dark:text-white' /> : <SendIcon fill={colors.primary} height={22} width={22} />}
+                    {isForwarding && !error ? <ActivityIndicator size="small" color={colors.primary} /> : <ForwardMessageIcon fill={colors.icon} height={22} width={22} />}
                 </Pressable>
             ),
             headerLeft: () => <HeaderBackButton />,

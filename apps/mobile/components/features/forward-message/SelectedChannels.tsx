@@ -31,9 +31,9 @@ export const SelectedChannels = ({
     const { colors } = useColorScheme()
 
     return (
-        <View className={`flex-row items-center justify-start gap-2 border-b-2 ${isDropdownVisible ? "border-gray-200 dark:border-gray-600" : "border-gray-300 dark:border-gray-700"} px-3 py-4`}>
+        <View className={`flex-row items-center justify-start gap-2.5 border-b-2 ${isDropdownVisible ? "border-gray-200 dark:border-gray-600" : "border-gray-300 dark:border-gray-700"} px-3 py-4`}>
             <Text>To:</Text>
-            <View className="flex-row flex-wrap items-center gap-2">
+            <View className="flex-row flex-wrap items-center gap-2 mr-5">
                 {selectedChannels.map((channel: CombinedChannel) => {
                     const isDMChannel = channel.is_direct_message
                     const user = channel.user
@@ -41,35 +41,36 @@ export const SelectedChannels = ({
                     if (isDMChannel && !user?.enabled) return null
 
                     return (
-                        <View
+                        <TouchableOpacity
                             key={channel.name}
-                            className="rounded-full py-1 pl-1 pr-2 flex-row items-center gap-1 border border-border"
+                            className="rounded-md h-7 pr-2.5 flex-row items-center gap-2.5 bg-primary/10"
+                            onPress={() => handleRemoveChannel(channel)}
+                            activeOpacity={0.7}
                         >
                             {isDMChannel ? (
                                 <UserAvatar
                                     src={user?.user_image ?? ""}
                                     alt={user?.full_name ?? ""}
-                                    avatarProps={{ className: "w-6 h-6" }}
+                                    avatarProps={{ className: "w-7 h-full" }}
                                     textProps={{ className: 'text-xs' }}
-                                    fallbackProps={{ className: "rounded-full" }}
-                                    imageProps={{ className: "rounded-full" }}
-                                    rounded
+                                    fallbackProps={{ className: "rounded-l-md rounded-r-none" }}
+                                    imageProps={{ className: "rounded-l-full rounded-r-none" }}
                                 />
                             ) : (
-                                <View className="w-6 h-6 rounded-full justify-center items-center">
+                                <View className="rounded-l-md h-full w-7 justify-center items-center bg-primary/15">
                                     <ChannelIcon size={15} type={channel.type as string} fill={colors.icon} />
                                 </View>
                             )}
 
-                            <Text className="text-sm">
+                            <Text className="text-xs">
                                 {isDMChannel
                                     ? `${user?.full_name}${currentUserInfo?.name === user?.name ? " (You)" : ""}`
                                     : channel.channel_name}
                             </Text>
-                            <TouchableOpacity activeOpacity={0.7} onPress={() => handleRemoveChannel(channel)} className="flex justify-center items-center w-5 h-5 rounded-full bg-card ml-1">
+                            {/* <TouchableOpacity activeOpacity={0.7} onPress={() => handleRemoveChannel(channel)} className="flex justify-center items-center w-5 h-5 rounded-full bg-card ml-1">
                                 <CrossIcon color={colors.icon} height={11} width={11} />
-                            </TouchableOpacity>
-                        </View>
+                            </TouchableOpacity> */}
+                        </TouchableOpacity>
                     )
                 })}
                 <TextInput
