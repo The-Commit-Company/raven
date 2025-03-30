@@ -58,6 +58,7 @@ def get_context(context):
 	context["icon_16"] = favicon or "/assets/raven/manifest/favicon-16x16.png"
 	context["apple_touch_icon"] = favicon or "/assets/raven/manifest/apple-touch-icon.png"
 	context["mask_icon"] = favicon or "/assets/raven/manifest/safari-pinned-tab.svg"
+	context["sitename"] = boot.get("sitename")
 
 	if frappe.session.user != "Guest":
 		capture("active_site", "raven")
