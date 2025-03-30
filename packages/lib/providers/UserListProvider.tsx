@@ -67,8 +67,10 @@ export const useUserListProvider = () => {
     }, [data])
 
     return {
+        hasData: !!data,
         users,
         enabledUsers,
+        mutate,
         ...rest
     }
 }

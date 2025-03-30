@@ -7,7 +7,8 @@ import { ChannelList } from '@raven/types/common/ChannelListItem'
 export interface ChannelListContextType extends ChannelList {
     mutate: KeyedMutator<{ message: ChannelList }>,
     error?: FrappeError,
-    isLoading: boolean
+    isLoading: boolean,
+    hasData: boolean
 }
 export const ChannelListContext = createContext<ChannelListContextType | null>(null)
 
@@ -82,6 +83,7 @@ export const useChannelListProvider = (swrConfig?: SWRConfiguration): ChannelLis
     }, [data])
 
     return {
+        hasData: !!data,
         channels: sortedChannels,
         dm_channels: sortedDMChannels,
         mutate,
