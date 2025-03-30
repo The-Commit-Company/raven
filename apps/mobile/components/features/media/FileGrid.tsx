@@ -3,7 +3,6 @@ import { router, useLocalSearchParams } from 'expo-router';
 import { FrappeConfig, FrappeContext, useSWRInfinite } from 'frappe-react-sdk';
 import { ActivityIndicator } from '@components/nativewindui/ActivityIndicator';
 import { useColorScheme } from '@hooks/useColorScheme';
-import { LegendList } from '@legendapp/list';
 import { MediaInChannel } from './Media';
 import { useOpenFileOnAndroid } from '@hooks/useOpenFileOnAndroid';
 import useFileURL from '@hooks/useFileURL';
@@ -16,6 +15,7 @@ import { formatBytes, getFileName } from '@raven/lib/utils/operations';
 import UniversalFileIcon from '@components/common/UniversalFileIcon';
 import DotIcon from "@assets/icons/DotIcon.svg"
 import { getStandardDateFormat } from '@raven/lib/utils/dateConversions';
+import { LegendList } from '@legendapp/list';
 
 const PAGE_SIZE = 12
 
@@ -84,7 +84,7 @@ const FileGrid = ({ searchQuery }: { searchQuery: string }) => {
             renderItem={({ item }) => <FileListItem file={item} />}
             estimatedItemSize={56}
             keyExtractor={(item, index) => `${item?.name}-${index}`}
-            contentContainerStyle={{ backgroundColor: colors.background, paddingBottom: 10 }}
+            contentContainerStyle={{ backgroundColor: colors.background, paddingBottom: 40 }}
             showsVerticalScrollIndicator={false}
             onEndReached={loadMore}
             onEndReachedThreshold={0.5}
@@ -96,6 +96,7 @@ const FileGrid = ({ searchQuery }: { searchQuery: string }) => {
                     </View>
                 ) : undefined
             }
+            recycleItems
         />
     );
 };
