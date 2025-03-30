@@ -1,14 +1,15 @@
 import Skeleton from '@components/layout/Skeleton';
 import { useLinkPreview } from '@hooks/useLinkPreview';
 import { memo } from 'react';
-import { View, Text, TouchableOpacity, Linking, Image } from 'react-native';
+import { View, Text, TouchableOpacity, Linking } from 'react-native';
+import { Image } from 'expo-image';
 
 type LinkPreviewProps = {
     messageID: string;
     href: string;
 };
 
-const LinkPreview = memo(({ messageID, href }: LinkPreviewProps) => {
+const LinkPreview = memo(({ href }: LinkPreviewProps) => {
 
     const { linkPreview, isLoading } = useLinkPreview(href);
 
@@ -27,14 +28,20 @@ const LinkPreview = memo(({ messageID, href }: LinkPreviewProps) => {
 
     const image = linkPreview.absolute_image || linkPreview.image;
 
+    if (!image && !linkPreview.title && !linkPreview.description) return null;
+
+    console.log(image)
+
     return (
         <View className="w-full border border-border bg-card-background/40 rounded-lg overflow-hidden relative">
             <TouchableOpacity onPress={handleLinkPress} activeOpacity={0.7}>
                 <View>
-                    <Image
+                    {image && <Image
                         source={{ uri: image }}
-                        className="w-full h-36 min-w-[100%] bg-card-background/20"
-                    />
+                        contentFit="cover"
+                        contentPosition={'center'}
+                        style={{ width: '100%', height: 144 }}
+                    />}
                     <View className="p-2 pt-2.5">
                         <View className='gap-1'>
                             <Text className="text-md text-foreground font-bold" numberOfLines={1}>
