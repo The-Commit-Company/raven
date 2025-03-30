@@ -16,6 +16,7 @@ import ErrorBanner from '@components/common/ErrorBanner';
 const PAGE_SIZE = 18
 
 const ImageGrid = ({ searchQuery, gap = 6, columns = 3 }: { searchQuery: string, gap?: number, columns?: number }) => {
+
     const { colors } = useColorScheme();
     const { id: channelID } = useLocalSearchParams();
     const { call } = useContext(FrappeContext) as FrappeConfig;
@@ -69,15 +70,15 @@ const ImageGrid = ({ searchQuery, gap = 6, columns = 3 }: { searchQuery: string,
             <View className="pt-4">
                 <ErrorBanner error={error} />
             </View>
-        );
+        )
     }
 
     if (isEmpty) {
-        return <EmptyStateForImageGrid />;
+        return <EmptyStateForImageGrid />
     }
 
     return (
-        <View className='flex-1 px-3'>
+        <View className='flex-1 px-3 mt-3'>
             <LegendList
                 data={images}
                 renderItem={({ item }) => <ImageListItem file={item} />}
@@ -128,13 +129,18 @@ const ImageListItem = ({ file }: { file: MediaInChannel }) => {
         }
     }
 
+    const { colors } = useColorScheme()
+
     return (
         <Pressable onPress={openFileAction}>
             <Image
                 source={source}
                 style={{
-                    borderRadius: 4,
+                    borderRadius: 6,
                     aspectRatio: 1,
+                    backgroundColor: colors.grey6,
+                    borderWidth: 1,
+                    borderColor: colors.grey6,
                 }}
                 contentFit="cover"
                 transition={200}
@@ -146,9 +152,8 @@ const ImageListItem = ({ file }: { file: MediaInChannel }) => {
 }
 
 const EmptyStateForImageGrid = () => {
-
     return (
-        <View className="flex flex-row items-center gap-2 py-2 px-3">
+        <View className="flex flex-row items-center gap-2 py-6 px-3">
             <Text className="text-muted-foreground text-center w-full text-base font-medium">
                 No images found
             </Text>

@@ -75,6 +75,10 @@ const FileGrid = ({ searchQuery }: { searchQuery: string }) => {
         )
     }
 
+    if (isEmpty) {
+        return <EmptyStateForDocGrid />
+    }
+
     return (
         <LegendList
             data={documents}
@@ -86,7 +90,6 @@ const FileGrid = ({ searchQuery }: { searchQuery: string }) => {
             onEndReached={loadMore}
             onEndReachedThreshold={0.5}
             ItemSeparatorComponent={() => <Divider prominent />}
-            ListEmptyComponent={<EmptyStateForDocGrid />}
             ListFooterComponent={
                 isLoadingMore ? (
                     <View className="py-4">
@@ -166,7 +169,7 @@ const Preview = ({ file }: { file: MediaInChannel }) => {
 
 const EmptyStateForDocGrid = () => {
     return (
-        <View className="flex flex-row items-center gap-2 py-2 px-3">
+        <View className="flex flex-row items-center gap-2 py-6 px-3">
             <Text className="text-muted-foreground text-center w-full text-base font-medium">
                 No documents found
             </Text>
