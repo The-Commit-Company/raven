@@ -6,7 +6,7 @@ import { useColorScheme } from "@hooks/useColorScheme"
 import SendItem from "./SendItem"
 import { useAtom, useSetAtom } from 'jotai'
 import { CustomFile } from "@raven/types/common/File"
-import { useState } from "react"
+import { useCallback, useState } from "react"
 import { filesAtomFamily, selectedReplyMessageAtomFamily } from "@lib/ChatInputUtils"
 import { useSendMessage } from "@hooks/useSendMessage"
 import { MentionInput, replaceMentionValues } from 'react-native-controlled-mentions'
@@ -16,6 +16,7 @@ import TypingIndicator from "./TypingIndicator"
 import { UserMentions } from "./mentions"
 import ReplyMessagePreview from "./ReplyMessagePreview"
 import AIEventIndicator from "./AIEventIndicator"
+import { useTyping } from "@raven/lib/hooks/useTypingIndicator"
 
 interface ChatInputProps {
     channelID: string
@@ -23,8 +24,8 @@ interface ChatInputProps {
 }
 
 const ChatInput = ({ channelID, onSendMessage }: ChatInputProps) => {
-    // const { id } = useLocalSearchParams()
-    // const { uploadFiles } = useFileUpload(id as string)
+
+    const { onUserType, stopTyping } = useTyping(channelID)
 
     const [content, setContent] = useState('')
 
@@ -33,14 +34,15 @@ const ChatInput = ({ channelID, onSendMessage }: ChatInputProps) => {
 
     const setSelectedMessage = useSetAtom(selectedReplyMessageAtomFamily(siteID + channelID))
 
-    const handleCancelReply = () => {
+    const cleanupAfterSendingMessage = useCallback(() => {
         setContent('')
         onSendMessage?.()
+        stopTyping()
         setSelectedMessage(null)
-    }
+    }, [onSendMessage, setSelectedMessage, stopTyping])
 
 
-    const { sendMessage, loading } = useSendMessage(siteID, channelID as string, handleCancelReply)
+    const { sendMessage, loading } = useSendMessage(siteID, channelID as string, cleanupAfterSendingMessage)
 
     const { colors } = useColorScheme()
 
@@ -83,6 +85,11 @@ const ChatInput = ({ channelID, onSendMessage }: ChatInputProps) => {
         sendMessage(content, true)
     }
 
+    const onContentChange = useCallback((text: string) => {
+        onUserType()
+        setContent(text)
+    }, [onUserType])
+
     return <View className="flex flex-col gap-1 bg-background">
         <AIEventIndicator channelID={channelID} />
         <TypingIndicator channel={channelID} />
@@ -99,7 +106,7 @@ const ChatInput = ({ channelID, onSendMessage }: ChatInputProps) => {
                     multiline
                     placeholderTextColor={colors.grey}
                     placeholder="Type a message..."
-                    onChange={setContent}
+                    onChange={onContentChange}
                     partTypes={[
                         {
                             isBottomMentionSuggestionsRender: false,
