@@ -3,6 +3,7 @@ import { Stack, useLocalSearchParams } from "expo-router"
 import HeaderBackButton from "@components/common/HeaderBackButton"
 import { useColorScheme } from "@hooks/useColorScheme"
 import { RenderFile, useFileViewerAttributes } from "@components/features/file-viewer/FileViewerComponents"
+import { Platform } from "react-native"
 
 const FileViewer = () => {
     const { uri } = useLocalSearchParams() as { uri: string }
@@ -15,7 +16,7 @@ const FileViewer = () => {
         <>
             <Stack.Screen options={{
                 headerStyle: { backgroundColor: colors.background },
-                headerLeft: () => <HeaderBackButton />,
+                headerLeft: Platform.OS === 'ios' ? () => <HeaderBackButton /> : undefined,
                 headerTransparent: isImage,
                 title: 'File Viewer',
                 headerShown: showHeader,
