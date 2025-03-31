@@ -2,10 +2,9 @@ import { View, TextInput, TouchableOpacity } from 'react-native'
 import { Text } from '@components/nativewindui/Text'
 import UserAvatar from '@components/layout/UserAvatar'
 import { ChannelIcon } from '@components/features/channels/ChannelList/ChannelIcon'
-import CrossIcon from '@assets/icons/CrossIcon.svg'
 import { useColorScheme } from '@hooks/useColorScheme'
-import { RavenUser } from '@raven/types/Raven/RavenUser'
 import { CombinedChannel } from './ForwardMessage'
+import CrossIcon from '@assets/icons/CrossIcon.svg'
 
 interface SelectedChannelsProps {
     selectedChannels: CombinedChannel[]
@@ -13,23 +12,17 @@ interface SelectedChannelsProps {
     setSearchInput: (value: string) => void
     handleRemoveChannel: (channel: CombinedChannel) => void
     handleBackspace: () => void
-    currentUserInfo: RavenUser | undefined
 }
 
-export const SelectedChannels = ({
-    selectedChannels,
-    searchInput,
-    setSearchInput,
-    handleRemoveChannel,
-    handleBackspace,
-    currentUserInfo,
-}: SelectedChannelsProps) => {
+export const SelectedChannels = ({ selectedChannels, searchInput, setSearchInput, handleRemoveChannel, handleBackspace }: SelectedChannelsProps) => {
+
     const { colors } = useColorScheme()
 
     return (
-        <View className={`flex-row items-center justify-start gap-2.5 border border-transparent border-b-border px-3 py-3`}>
-            <Text>To:</Text>
+        <View className={`flex-row justify-start gap-2.5 border border-transparent border-b-border px-3 py-3`}>
+            <Text className="text-base text-foreground">To:</Text>
             <View className="flex-row flex-wrap items-center gap-2 mr-5">
+
                 {selectedChannels.map((channel: CombinedChannel) => {
                     const isDMChannel = channel.is_direct_message
                     const user = channel.user
@@ -39,10 +32,9 @@ export const SelectedChannels = ({
                     return (
                         <TouchableOpacity
                             key={channel.name}
-                            className="rounded-md h-7 pr-2.5 flex-row items-center gap-2.5 bg-primary/10"
+                            className="rounded-md h-7 pr-2.5 flex-row items-center gap-2.5 bg-linkColor/50"
                             onPress={() => handleRemoveChannel(channel)}
-                            activeOpacity={0.7}
-                        >
+                            activeOpacity={0.7}>
                             {isDMChannel ? (
                                 <UserAvatar
                                     src={user?.user_image ?? ""}
@@ -53,25 +45,22 @@ export const SelectedChannels = ({
                                     imageProps={{ className: "rounded-l-full rounded-r-none" }}
                                 />
                             ) : (
-                                <View className="rounded-l-md h-full w-7 justify-center items-center bg-primary/15">
+                                <View className="rounded-l-md h-full w-7 justify-center items-center bg-linkColor">
                                     <ChannelIcon size={15} type={channel.type as string} fill={colors.icon} />
                                 </View>
                             )}
-
                             <Text className="text-xs">
                                 {isDMChannel
-                                    ? `${user?.full_name}${currentUserInfo?.name === user?.name ? " (You)" : ""}`
+                                    ? `${user?.full_name}`
                                     : channel.channel_name}
                             </Text>
-                            {/* <TouchableOpacity activeOpacity={0.7} onPress={() => handleRemoveChannel(channel)} className="flex justify-center items-center w-5 h-5 rounded-full bg-card ml-1">
-                                <CrossIcon color={colors.icon} height={11} width={11} />
-                            </TouchableOpacity> */}
+                            <CrossIcon color={colors.icon} height={11} width={11} />
                         </TouchableOpacity>
                     )
                 })}
                 <TextInput
                     autoFocus
-                    className="flex-1 dark:text-gray-300"
+                    className="flex-1 text-foreground"
                     placeholder={selectedChannels.length === 0 ? "Add a channel or DM" : ""}
                     value={searchInput}
                     onChangeText={setSearchInput}

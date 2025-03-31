@@ -4,7 +4,6 @@ import { useNavigation } from "expo-router"
 import { router } from "expo-router"
 import { useDebounce } from "@raven/lib/hooks/useDebounce"
 import { useChannelList } from "@raven/lib/providers/ChannelListProvider"
-import useCurrentRavenUser from "@raven/lib/hooks/useCurrentRavenUser"
 import { useColorScheme } from "@hooks/useColorScheme"
 import { useFrappePostCall } from "frappe-react-sdk"
 import { ActivityIndicator } from "@components/nativewindui/ActivityIndicator"
@@ -38,7 +37,6 @@ export function ForwardMessage({ message }: ForwardMessageProps) {
     const [searchInput, setSearchInput] = useState("")
     const debouncedSearchInput = useDebounce(searchInput, 200)
 
-    const { myProfile: currentUserInfo } = useCurrentRavenUser()
     const users = useContext(UserListContext)
 
     const combinedChannels = useMemo((): CombinedChannel[] => {
@@ -124,6 +122,9 @@ export function ForwardMessage({ message }: ForwardMessageProps) {
     useEffect(() => {
         navigation.setOptions({
             headerTitle: "Forward Message",
+            headerStyle: {
+                backgroundColor: colors.background
+            },
             headerRight: () => (
                 <Pressable
                     className={clsx(isForwarding || !selectedChannels.length ? "opacity-45" : "rounded-full ios:active:bg-linkColor", "p-2.5")}
@@ -152,13 +153,11 @@ export function ForwardMessage({ message }: ForwardMessageProps) {
                     setSearchInput={setSearchInput}
                     handleRemoveChannel={handleRemoveChannel}
                     handleBackspace={handleBackspace}
-                    currentUserInfo={currentUserInfo}
                 />
 
                 <FilteredChannels
                     filteredChannels={filteredChannels}
                     handleChannelSelect={handleChannelSelect}
-                    currentUserInfo={currentUserInfo}
                 />
             </View>
         </KeyboardAvoidingView>
