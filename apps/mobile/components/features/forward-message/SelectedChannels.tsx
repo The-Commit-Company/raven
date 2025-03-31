@@ -19,7 +19,7 @@ export const SelectedChannels = ({ selectedChannels, searchInput, setSearchInput
     const { colors } = useColorScheme()
 
     return (
-        <View className={`flex-row justify-start gap-2.5 border border-transparent border-b-border px-3 py-3`}>
+        <View className={`flex-row justify-start gap-2.5 px-3 py-3`}>
             <Text className="text-base text-foreground">To:</Text>
             <View className="flex-row flex-wrap items-center gap-2 mr-5">
 
@@ -32,7 +32,7 @@ export const SelectedChannels = ({ selectedChannels, searchInput, setSearchInput
                     return (
                         <TouchableOpacity
                             key={channel.name}
-                            className="rounded-md h-7 pr-2.5 flex-row items-center gap-2.5 bg-linkColor/50"
+                            className="rounded-md h-7 pr-2.5 flex-row items-center gap-2.5 bg-linkColor/50 dark:bg-card-background"
                             onPress={() => handleRemoveChannel(channel)}
                             activeOpacity={0.7}>
                             {isDMChannel ? (
@@ -45,7 +45,7 @@ export const SelectedChannels = ({ selectedChannels, searchInput, setSearchInput
                                     imageProps={{ className: "rounded-l-full rounded-r-none" }}
                                 />
                             ) : (
-                                <View className="rounded-l-md h-full w-7 justify-center items-center bg-linkColor">
+                                <View className="rounded-l-md h-full w-7 justify-center items-center bg-linkColor dark:bg-grayText/20">
                                     <ChannelIcon size={15} type={channel.type as string} fill={colors.icon} />
                                 </View>
                             )}

@@ -16,6 +16,7 @@ import clsx from "clsx"
 import { Message } from "@raven/types/common/Message"
 import { UserFields } from "@raven/types/common/UserFields"
 import ForwardMessageIcon from '@assets/icons/HollowSendIcon.svg'
+import { Divider } from "@components/layout/Divider"
 
 export type CombinedChannel = {
     name: string
@@ -154,7 +155,7 @@ export function ForwardMessage({ message }: ForwardMessageProps) {
                     handleRemoveChannel={handleRemoveChannel}
                     handleBackspace={handleBackspace}
                 />
-
+                <Divider prominent />
                 <FilteredChannels
                     filteredChannels={filteredChannels}
                     handleChannelSelect={handleChannelSelect}
