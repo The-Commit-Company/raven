@@ -2,19 +2,22 @@ import { Link, router, Stack } from 'expo-router';
 import { Button } from '@components/nativewindui/Button';
 import CrossIcon from '@assets/icons/CrossIcon.svg';
 import { useColorScheme } from '@hooks/useColorScheme';
-import { Pressable, View, StyleSheet, ScrollView, Platform } from 'react-native';
-import { Text } from '@components/nativewindui/Text';
+import { View, Platform } from 'react-native';
 import HashIcon from '@assets/icons/HashIcon.svg';
 import PlusIcon from '@assets/icons/PlusIcon.svg';
 import UserIcon from '@assets/icons/UserIcon.svg';
 import useGetChannels from '@raven/lib/hooks/useGetChannels';
 import useGetDirectMessageChannels from '@raven/lib/hooks/useGetDirectMessageChannels';
-import { ChannelIcon } from '@components/features/channels/ChannelList/ChannelIcon';
 import { useGetUser } from '@raven/lib/hooks/useGetUser';
-import UserAvatar from '@components/layout/UserAvatar';
 import { useState } from 'react';
-import { ChannelListItem, DMChannelListItem } from '@raven/types/common/ChannelListItem';
 import SearchInput from '@components/common/SearchInput/SearchInput';
+import { useDebounce } from '@raven/lib/hooks/useDebounce';
+import { ActionButtonLarge } from '@components/common/Buttons/ActionButtonLarge';
+import { ChannelListItem, DMChannelListItem } from '@raven/types/common/ChannelListItem';
+import ChannelRowItem from '@components/common/CommonListItems/ChannelRowItem';
+import DMRowItem from '@components/common/CommonListItems/DMRowItem';
+import { Text } from '@components/nativewindui/Text';
+import { LegendList } from '@legendapp/list';
 
 export default function QuickSearch() {
 
@@ -26,22 +29,12 @@ export default function QuickSearch() {
     }
 
     const [searchQuery, setSearchQuery] = useState('')
+    const combinedList = useCombinedChannelAndDMList(searchQuery)
 
-    const { channels } = useGetChannels({ showArchived: false })
-    const { dmChannels } = useGetDirectMessageChannels()
-
-    // Filter channels based on search query
-    const filteredChannels = channels.filter(channel =>
-        channel.channel_name.toLowerCase().includes(searchQuery.toLowerCase())
-    )
-
-    // Filter direct messages based on search query
-    const filteredDms = dmChannels.filter(dm => {
-        const user = useGetUser(dm.peer_user_id);
-        return (
-            (user?.full_name?.toLowerCase().includes(searchQuery.toLowerCase()))
-        )
-    })
+    const onChannelPress = (channel: ChannelListItem | DMChannelListItem) => {
+        router.back()
+        router.push(`../../chat/${channel.name}`)
+    }
 
     return <>
         <Stack.Screen options={{
@@ -64,109 +57,70 @@ export default function QuickSearch() {
                 />
             </View>
             <View className='flex flex-row justify-center gap-2'>
-                <Pressable style={styles.button} className='ios:active:bg-linkColor bg-card'
-                    onPress={() => openMenuItemSheet('../home/browse-channels')}>
-                    <HashIcon fill={colors.grey} height={20} width={20} />
-                    <Text className='text-sm text-muted-foreground'>View Channels</Text>
-                </Pressable>
-                <Pressable style={styles.button} className='ios:active:bg-linkColor bg-card'
-                    onPress={() => openMenuItemSheet('../home/create-dm')}>
-                    <UserIcon fill={colors.grey} height={20} width={20} />
-                    <Text className='text-sm text-muted-foreground'>Create DM</Text>
-                </Pressable>
-                <Pressable style={styles.button} className='ios:active:bg-linkColor bg-card'
-                    onPress={() => openMenuItemSheet('../home/create-channel')}>
-                    <PlusIcon fill={colors.grey} height={20} width={20} />
-                    <Text className='text-sm text-muted-foreground'>New Channel</Text>
-                </Pressable>
+                <ActionButtonLarge
+                    onPress={() => openMenuItemSheet('../home/browse-channels')}
+                    icon={<HashIcon fill={colors.grey} height={20} width={20} />}
+                    text="View Channels"
+                    textProps={{ className: 'text-sm text-muted-foreground' }}
+                />
+                <ActionButtonLarge
+                    onPress={() => openMenuItemSheet('../home/create-dm')}
+                    icon={<UserIcon fill={colors.grey} height={20} width={20} />}
+                    text="Create DM"
+                    textProps={{ className: 'text-sm text-muted-foreground' }}
+                />
+                <ActionButtonLarge
+                    onPress={() => openMenuItemSheet('../home/create-channel')}
+                    icon={<PlusIcon fill={colors.grey} height={20} width={20} />}
+                    text="New Channel"
+                    textProps={{ className: 'text-sm text-muted-foreground' }}
+                />
             </View>
-            <ScrollView className='h-[64vh]' contentContainerStyle={{ paddingBottom: 16 }} showsVerticalScrollIndicator={false}>
-                <View className='flex flex-col gap-2'>
-                    <Channels channels={filteredChannels} />
-                    <Dms dmChannels={filteredDms} />
-                </View>
-            </ScrollView>
+            <LegendList
+                data={combinedList}
+                keyExtractor={(item) => item.name}
+                estimatedItemSize={42}
+                renderItem={({ item }) =>
+                    item.type === 'channel' ? (
+                        <ChannelRowItem key={item.name} channel={item as ChannelListItem} onPress={onChannelPress} />
+                    ) : (
+                        <DMRowItem key={item.name} dmChannel={item as DMChannelListItem} onPress={onChannelPress} />
+                    )
+                }
+                contentContainerStyle={{ paddingBottom: 180 }}
+                showsVerticalScrollIndicator={false}
+                ListEmptyComponent={
+                    <Text className="px-2 py-2 text-sm text-muted-foreground">No results found for "{searchQuery}"</Text>
+                }
+            />
         </View>
     </>
 }
 
-const styles = StyleSheet.create({
-    button: {
-        flexDirection: 'column',
-        justifyContent: 'center',
-        gap: 6,
-        borderRadius: 6,
-        paddingVertical: 12,
-        paddingHorizontal: 17,
-        alignItems: 'center'
-    }
-})
+/**
+ * Combines channels and DMs and filters them based on the search query
+ * @param searchQuery - The search query to filter the channels and DMs by
+ * @returns A list of channels and DMs that match the search query
+ */
+export const useCombinedChannelAndDMList = (searchQuery: string) => {
 
-const Channels = ({ channels }: { channels: ChannelListItem[] }) => {
-    const { colors } = useColorScheme();
-    return (
-        <View>
-            <Text className='text-xs px-3 py-1 text-muted-foreground'>Channels</Text>
-            {channels.length > 0 ? (
-                channels.map((channel) => (
-                    <Pressable
-                        key={channel.name}
-                        onPress={() => {
-                            router.back();
-                            router.push(`../../chat/${channel.name}`);
-                        }}
-                        className='flex flex-row gap-2 items-center px-3 py-2 rounded-lg ios:active:bg-linkColor'
-                        android_ripple={{ color: 'rgba(0,0,0,0.1)', borderless: false }}>
-                        <ChannelIcon type={channel.type} fill={colors.icon} />
-                        <Text className="text-base">{channel.channel_name}</Text>
-                        {channel.is_archived ?
-                            <View className='px-1 mt-0.5 py-0.5 rounded-sm bg-red-100'>
-                                <Text className="text-[11px] text-red-700">Archived</Text>
-                            </View>
-                            : null}
-                    </Pressable>
-                ))
-            ) : (
-                <Text className="px-3 py-2 text-sm text-muted-foreground">
-                    No matching channels found
-                </Text>
-            )}
-        </View>
-    )
-}
+    const debouncedSearchQuery = useDebounce(searchQuery, 200)
+    const { channels } = useGetChannels({ showArchived: false })
+    const { dmChannels } = useGetDirectMessageChannels()
 
-const Dms = ({ dmChannels }: { dmChannels: DMChannelListItem[] }) => {
-    return (
-        <View>
-            <Text className='text-xs px-3 py-1 pb-2 text-muted-foreground'>Direct Messages</Text>
-            {dmChannels.length > 0 ? (
-                dmChannels.map((dm) => {
-                    const user = useGetUser(dm.peer_user_id);
-                    return (
-                        <Pressable
-                            key={dm.name}
-                            onPress={() => {
-                                router.back();
-                                router.push(`../../chat/${dm.name}`);
-                            }}
-                            className='flex-row items-center px-3 py-1.5 rounded-lg ios:active:bg-linkColor'
-                            android_ripple={{ color: 'rgba(0,0,0,0.1)', borderless: false }}>
-                            <UserAvatar
-                                src={user?.user_image}
-                                alt={user?.full_name ?? user?.name ?? ''}
-                                avatarProps={{ className: 'h-8 w-8' }}
-                                textProps={{ className: 'text-sm' }}
-                                isBot={user?.type === 'Bot'}
-                            />
-                            <Text className='ml-2 text-base'>{user?.full_name}</Text>
-                        </Pressable>
-                    );
-                })
-            ) : (
-                <Text className="px-3 py-2 text-sm text-muted-foreground">
-                    No matching direct messages found
-                </Text>
-            )}
-        </View>
-    )
+    // Filter channels
+    const filteredChannels = channels
+        .filter(channel => channel.channel_name.toLowerCase().includes(debouncedSearchQuery.toLowerCase()))
+        .map(channel => ({ ...channel, type: 'channel' }))
+
+    // Filter DMs
+    const filteredDms = dmChannels
+        .map(dm => ({
+            ...dm,
+            user: useGetUser(dm.peer_user_id),
+            type: 'dm',
+        }))
+        .filter(dm => dm.user?.full_name?.toLowerCase().includes(debouncedSearchQuery.toLowerCase()))
+
+    return [...filteredChannels, ...filteredDms]
 }
