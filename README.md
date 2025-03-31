@@ -1,5 +1,5 @@
 <p align="center">
-  <a href="https://github.com/The-Commit-Company/Raven">
+  <a href="https://github.com/The-Commit-Company/raven">
   <img src="raven_logo.png" alt="Raven logo" height="100" />
      </a>
    <hr />
@@ -10,7 +10,7 @@
     <br />
     <a href="https://ravenchat.ai">Website (ravenchat.ai)</a>
     <br />
-    <a href="https://github.com/The-Commit-Company/Raven/issues">Issues</a>
+    <a href="https://github.com/The-Commit-Company/raven/issues">Issues</a>
     ·
     <a href="https://community.ravenapp.cloud">Community & Support</a>
      ·
@@ -23,8 +23,8 @@
   <a href="https://github.com/The-Commit-Company/Raven/blob/main/LICENSE">
     <img alt="license" src="https://img.shields.io/badge/license-AGPLv3-blue">
   </a>
-     <a href="https://github.com/The-Commit-Company/Raven/stargazers"><img src="https://img.shields.io/github/stars/The-Commit-Company/Raven" alt="Github Stars"></a>
-     <a href="https://github.com/The-Commit-Company/Raven/pulse"><img src="https://img.shields.io/github/commit-activity/m/The-Commit-Company/Raven" alt="Commits-per-month"></a>
+     <a href="https://github.com/The-Commit-Company/raven/stargazers"><img src="https://img.shields.io/github/stars/The-Commit-Company/raven" alt="Github Stars"></a>
+     <a href="https://github.com/The-Commit-Company/raven/pulse"><img src="https://img.shields.io/github/commit-activity/m/The-Commit-Company/raven" alt="Commits-per-month"></a>
 </p>
 
 <p align="center">
@@ -250,17 +250,17 @@ This *should* start the emulators with the app running. For more info, please re
 
 ## Repo Activity
 
-![Alt](https://repobeats.axiom.co/api/embed/044c9b441a0b61c450cebe6356051b9bacb4a3b4.svg "Repobeats analytics image")
+![Alt](https://repobeats.axiom.co/api/embed/8e66d9bc24dd93b7a61c804484af54233225d857.svg "Repobeats analytics image")
 
 ## Contributors
 
-<a href="https://github.com/The-Commit-Company/Raven/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=The-Commit-Company/Raven" />
+<a href="https://github.com/The-Commit-Company/raven/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=The-Commit-Company/raven" />
 </a>
 
 
 ## Reporting Bugs
-If you find any bugs, feel free to report them here on [GitHub Issues](https://github.com/The-Commit-Company/Raven/issues). Make sure you share enough information (app screenshots, browser console screenshots, stack traces, etc) for project maintainers to replicate your bug.
+If you find any bugs, feel free to report them here on [GitHub Issues](https://github.com/The-Commit-Company/raven/issues). Make sure you share enough information (app screenshots, browser console screenshots, stack traces, etc) for project maintainers to replicate your bug.
 
 
 <hr>
