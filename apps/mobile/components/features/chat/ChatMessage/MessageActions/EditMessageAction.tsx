@@ -1,11 +1,10 @@
 import { useColorScheme } from '@hooks/useColorScheme'
 import { Message } from '@raven/types/common/Message'
-import { Pressable } from 'react-native'
 import EditIcon from "@assets/icons/EditIcon.svg"
-import { Text } from '@components/nativewindui/Text'
 import EditMessageSheet from './EditMessageSheet'
 import { Sheet, useSheetRef } from '@components/nativewindui/Sheet'
 import { BottomSheetView } from '@gorhom/bottom-sheet'
+import ActionButton from '@components/common/Buttons/ActionButton'
 
 interface EditMessageActionProps {
     message: Message
@@ -31,13 +30,18 @@ const EditMessageAction = ({ message, onClose }: EditMessageActionProps) => {
 
     return (
         <>
-            <Pressable
+            {/* <Pressable
                 onPress={handlePress}
                 className='flex flex-row items-center gap-3 p-2 rounded-lg ios:active:bg-linkColor'
                 android_ripple={{ color: 'rgba(0,0,0,0.1)', borderless: false }}>
                 <EditIcon width={18} height={18} stroke={colors.icon} fillOpacity={0} />
                 <Text className='text-base text-foreground'>Edit</Text>
-            </Pressable>
+            </Pressable> */}
+            <ActionButton
+                onPress={handlePress}
+                icon={<EditIcon width={18} height={18} stroke={colors.icon} fillOpacity={0} />}
+                text='Edit'
+            />
 
             <Sheet enableDynamicSizing={false} ref={editSheetRef} snapPoints={['90']}>
                 <BottomSheetView className='pb-8'>

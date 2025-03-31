@@ -13,8 +13,8 @@ const ForwardMessage = ({ message, onClose }: ForwardMessageProps) => {
 
     const forwardMessage = () => {
         router.push({
-            pathname: "../../forward-message",
-            params: { ...message }
+            pathname: "./forward-message",
+            params: { ...message } as any
         }, { relativeToDirectory: true })
         onClose()
     }

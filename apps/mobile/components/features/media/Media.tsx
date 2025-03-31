@@ -25,10 +25,11 @@ export type MediaInChannel = {
 };
 
 export default function Media() {
+
     const { colors } = useColorScheme()
 
-    const [searchText, setSearchText] = useState("");
-    const debouncedText = useDebounce(searchText, 400);
+    const [searchText, setSearchText] = useState("")
+    const debouncedText = useDebounce(searchText, 400)
 
     return (
         <>
