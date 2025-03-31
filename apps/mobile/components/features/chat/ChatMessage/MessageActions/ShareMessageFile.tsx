@@ -1,10 +1,9 @@
 import { useColorScheme } from '@hooks/useColorScheme'
 import { FileMessage } from '@raven/types/common/Message'
-import { Pressable } from 'react-native'
-import { Text } from '@components/nativewindui/Text'
 import useFileShare from '@hooks/useFileShare'
 import { toast } from 'sonner-native'
 import ShareIcon from "@assets/icons/ShareIcon.svg"
+import ActionButton from '@components/common/Buttons/ActionButton'
 
 interface DownloadMessageFileProps {
     message: FileMessage
@@ -28,13 +27,11 @@ const ShareMessageFile = ({ message, onClose }: DownloadMessageFileProps) => {
     }
 
     return (
-        <Pressable
+        <ActionButton
+            icon={<ShareIcon width={18} height={18} color={colors.icon} />}
+            text='Share'
             onPress={downloadFile}
-            className='flex flex-row items-center gap-3 p-2 rounded-lg ios:active:bg-linkColor'
-            android_ripple={{ color: 'rgba(0,0,0,0.1)', borderless: false }}>
-            <ShareIcon width={18} height={18} color={colors.icon} />
-            <Text className='text-base text-foreground'>Share</Text>
-        </Pressable>
+        />
     )
 }
 

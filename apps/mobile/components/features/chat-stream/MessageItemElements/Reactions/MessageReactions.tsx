@@ -69,7 +69,7 @@ export default function MessageReactions({ message, longPressGesture }: MessageR
 
     return (
         <>
-            <View className='flex-row gap-x-1.5 gap-y-1 flex-wrap items-center py-2'>
+            <View className='flex-row gap-x-1.5 gap-y-1 flex-wrap items-center py-0.5'>
                 {reactions.map((reaction: ReactionObject) => {
                     return <ReactionButton
                         key={reaction.emoji_name}

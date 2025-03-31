@@ -31,7 +31,7 @@ type Props = {
 
 const MessageItem = memo(({ message }: Props) => {
 
-    const { colors } = useColorScheme()
+    const { colors, isDarkColorScheme } = useColorScheme()
 
     const { linked_message, replied_message_details } = message
 
@@ -128,8 +128,8 @@ const MessageItem = memo(({ message }: Props) => {
                                 </View>}
                             {message.is_pinned === 1 &&
                                 <View className='flex-row items-center gap-1'>
-                                    <PinIcon width={12} height={12} fill={colors.primary} />
-                                    <Text className='text-sm text-primary'>Pinned</Text>
+                                    <PinIcon width={12} height={12} fill={isDarkColorScheme ? '#5753C6' : '#787BE3'} />
+                                    <Text className='text-sm text-primary dark:text-secondary'>Pinned</Text>
                                 </View>}
 
                             {linked_message && replied_message_details && <ReplyMessageBox

@@ -7,6 +7,7 @@ import { useColorScheme } from '@hooks/useColorScheme'
 import { useRef } from 'react'
 import { useFrappeUpdateDoc } from 'frappe-react-sdk'
 import { toast } from 'sonner-native'
+import ErrorBanner from '@components/common/ErrorBanner'
 
 interface EditMessageSheetProps {
     message: Message;
@@ -19,7 +20,7 @@ const EditMessageSheet = ({ message, onClose }: EditMessageSheetProps) => {
 
     const { colors } = useColorScheme()
 
-    const { updateDoc, error, loading: updatingDoc, reset } = useFrappeUpdateDoc()
+    const { updateDoc, error, loading: updatingDoc } = useFrappeUpdateDoc()
 
     // store message text in a ref
     const messageTextRef = useRef(message.text || '')
@@ -37,10 +38,11 @@ const EditMessageSheet = ({ message, onClose }: EditMessageSheetProps) => {
             })
     };
     return (
-        <View
-            className="flex flex-col gap-2 px-4 pt-2"
-        >
-            <Text className='text-lg font-medium'>Edit Message</Text>
+        <View className="flex flex-col gap-3 px-4 pt-2">
+
+            <Text className='text-lg font-cal-sans ml-0.5'>Edit Message</Text>
+
+            {error ? <ErrorBanner error={error} /> : null}
 
             <TiptapEditor
                 content={message.text || ''}
@@ -52,25 +54,22 @@ const EditMessageSheet = ({ message, onClose }: EditMessageSheetProps) => {
                         height: 'auto',
                         minHeight: 200,
                         borderWidth: 1,
-                        borderRadius: 6,
+                        borderRadius: 10,
                         borderColor: colors.grey4,
                         overflowX: 'hidden',
                     },
                 }}
                 onUpdate={handleUpdate}
             />
-            <View className='flex flex-row justify-end'>
-                <Button
-                    variant='primary'
-                    size='md'
-                    onPress={handleSave}
-                    disabled={updatingDoc}
-                >
-                    <Text>Save</Text>
-                </Button>
-            </View>
+            <Button
+                variant='primary'
+                size='lg'
+                onPress={handleSave}
+                disabled={updatingDoc}>
+                <Text>{updatingDoc ? 'Updating...' : 'Update'}</Text>
+            </Button>
         </View>
-    );
+    )
 }
 
-export default EditMessageSheet; 
+export default EditMessageSheet

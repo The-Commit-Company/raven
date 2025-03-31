@@ -1,6 +1,4 @@
 import { useFrappeCreateDoc, useSWRConfig } from "frappe-react-sdk"
-import { useLocalSearchParams } from "expo-router"
-import { ChannelListItem } from "@raven/types/common/ChannelListItem"
 import { Button } from "@components/nativewindui/Button"
 import ErrorBanner from "@components/common/ErrorBanner"
 import { Text } from "@components/nativewindui/Text"
@@ -15,7 +13,6 @@ interface JoinChannelBoxProps {
 export const JoinChannelBox = ({ channelID, isThread, user }: JoinChannelBoxProps) => {
 
     const { mutate } = useSWRConfig()
-    const { id: threadID } = useLocalSearchParams()
 
     const { createDoc, error, loading } = useFrappeCreateDoc()
 
@@ -36,7 +33,7 @@ export const JoinChannelBox = ({ channelID, isThread, user }: JoinChannelBoxProp
                 onPress={joinChannel}
                 size="md"
                 variant="primary"
-                className="w-full rounded-full"
+                className="w-full rounded-lg"
                 disabled={loading}
             >
                 {loading ? <Text className="gap-1 text-center w-full font-semibold text-base">Joining</Text> :

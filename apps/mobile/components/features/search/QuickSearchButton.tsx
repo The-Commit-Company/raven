@@ -10,10 +10,10 @@ const QuickSearchButton = () => {
     const searchIconColor = isDarkColorScheme ? '#9ca3af' : '#d1d5db'
 
     return (
-        <View className='pt-1 pb-1'>
+        <View>
             <TouchableOpacity onPress={() => router.push('../home/quick-search', { relativeToDirectory: true })}>
-                <View className={'flex-row items-center gap-2 rounded-lg px-2.5 py-2 bg-[#6c69cd] dark:bg-[#4c49ad]'}>
-                    <SearchIcon width={18} height={18} fill={searchIconColor} />
+                <View className={'flex-row items-center gap-2 rounded-lg px-3 py-1.5 bg-[#6c69cd] dark:bg-[#4c49ad]'}>
+                    <SearchIcon width={16} height={16} fill={searchIconColor} />
                     <Text className='text-base text-gray-300 dark:text-gray-400'>Jump to or search...</Text>
                 </View>
             </TouchableOpacity>

@@ -1,10 +1,9 @@
 import * as Clipboard from 'expo-clipboard'
 import { Message } from '@raven/types/common/Message'
 import { toast } from 'sonner-native'
-import { Pressable } from 'react-native'
-import { Text } from '@components/nativewindui/Text'
 import { useColorScheme } from '@hooks/useColorScheme'
 import CopyIcon from "@assets/icons/CopyIcon.svg"
+import ActionButton from '@components/common/Buttons/ActionButton'
 
 interface CopyMessageProps {
     message: Message
@@ -17,13 +16,11 @@ const CopyMessage = ({ message, onClose }: CopyMessageProps) => {
     const copy = useMessageCopy(message)
 
     return (
-        <Pressable
+        <ActionButton
             onPress={() => copy(onClose)}
-            className='flex flex-row items-center gap-3 p-2 rounded-lg ios:active:bg-linkColor'
-            android_ripple={{ color: 'rgba(0,0,0,0.1)', borderless: false }}>
-            <CopyIcon width={18} height={18} fill={colors.icon} />
-            <Text className='text-base text-foreground'>Copy</Text>
-        </Pressable>
+            icon={<CopyIcon width={18} height={18} fill={colors.icon} />}
+            text='Copy'
+        />
     )
 }
 
