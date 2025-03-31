@@ -1,0 +1,13 @@
+{
+  "name": "@raven/lib",
+  "version": "0.0.0",
+  "main": "index.js",
+  "devDependencies": {
+    "@raven/types": "*"
+  },
+  "peerDependencies": {
+    "frappe-react-sdk": "*",
+    "react": "*",
+    "@types/react": "*"
+  }
+}
