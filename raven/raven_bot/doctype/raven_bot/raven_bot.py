@@ -7,7 +7,7 @@ import frappe
 from frappe import _
 from frappe.model.document import Document
 
-from raven.ai.openai_client import get_open_ai_client
+from raven.ai.openai_client import get_open_ai_client, get_openai_models
 from raven.utils import get_raven_user
 
 
@@ -34,6 +34,7 @@ class RavenBot(Document):
 		instruction: DF.LongText | None
 		is_ai_bot: DF.Check
 		is_standard: DF.Check
+		model: DF.Data | None
 		module: DF.Link | None
 		openai_assistant_id: DF.Data | None
 		raven_user: DF.Link | None
@@ -110,25 +111,31 @@ class RavenBot(Document):
 		# This is usually because the user has not added funds to their OpenAI account.
 		# We need to show this error to the user if the openAI API returns an error for "model_not_found"
 
+		# Use the selected model or gpt-4o-mini by default
+		model_to_use = self.model or "gpt-4o-mini"
+
 		try:
 			assistant = client.beta.assistants.create(
 				instructions=self.instruction,
-				model="gpt-4o",
+				model=model_to_use,
 				name=self.bot_name,
 				description=self.description or "",
 				tools=self.get_tools_for_assistant(),
 			)
+			
+			# After creation, get the assistant to check which tools have been actually activated
+			self.db_set("openai_assistant_id", assistant.id)
+			self.check_and_update_enabled_tools(assistant)
+			
 		except Exception as e:
 			if "model_not_found" in str(e):
 				frappe.throw(
 					_(
-						f"<strong>There was an error creating the agent in OpenAI.</strong><br/>It is possible that your OpenAI account does not have enough funds. Please add funds to your OpenAI account and try again.<br><br/>Error: {e}"
+						f"<strong>There was an error creating the agent in OpenAI.</strong><br/>It is possible that your OpenAI account does not have enough funds or the selected model ({model_to_use}) is not available. Please check your account and try again.<br><br/>Error: {e}"
 					)
 				)
 			else:
 				frappe.throw(e)
-
-		self.db_set("openai_assistant_id", assistant.id)
 
 	def update_openai_assistant(self):
 		# Update the OpenAI Assistant for the bot
@@ -139,14 +146,70 @@ class RavenBot(Document):
 
 		client = get_open_ai_client()
 
-		assistant = client.beta.assistants.update(
-			self.openai_assistant_id,
-			instructions=self.instruction,
-			name=self.bot_name,
-			description=self.description or "",
-			tools=self.get_tools_for_assistant(),
-			model="gpt-4o",
-		)
+		# Use the selected model or gpt-4o-mini by default
+		model_to_use = self.model or "gpt-4o-mini"
+
+		try:
+			assistant = client.beta.assistants.update(
+				self.openai_assistant_id,
+				instructions=self.instruction,
+				name=self.bot_name,
+				description=self.description or "",
+				tools=self.get_tools_for_assistant(),
+				model=model_to_use,
+			)
+			
+			# After update, get the assistant to check which tools have been actually activated
+			self.check_and_update_enabled_tools(assistant)
+			
+		except Exception as e:
+			if "model_not_found" in str(e):
+				frappe.throw(
+					_(
+						f"<strong>There was an error updating the agent in OpenAI.</strong><br/>It is possible that your OpenAI account does not have enough funds or the selected model ({model_to_use}) is not available. Please check your account and try again.<br><br/>Error: {e}"
+					)
+				)
+			else:
+				frappe.throw(e)
+				
+	def check_and_update_enabled_tools(self, assistant):
+		"""
+		Check the tools actually activated in the OpenAI assistant and update the bot fields accordingly
+		"""
+		try:
+			# Get the list of tool types available in the assistant
+			available_tools = [tool.type for tool in assistant.tools]
+			
+			# Check if code_interpreter and file_search are available
+			code_interpreter_available = "code_interpreter" in available_tools
+			file_search_available = "file_search" in available_tools
+			
+			# If the tools are not available but were enabled, disable them
+			updates_needed = False
+			update_fields = {}
+			
+			if self.enable_code_interpreter and not code_interpreter_available:
+				update_fields["enable_code_interpreter"] = 0
+				updates_needed = True
+				frappe.msgprint(_(f"The model {self.model} does not support Code Interpreter. This feature has been disabled."))
+			
+			if self.enable_file_search and not file_search_available:
+				update_fields["enable_file_search"] = 0
+				updates_needed = True
+				frappe.msgprint(_(f"The model {self.model} does not support File Search. This feature has been disabled."))
+			
+			# Update the fields if needed
+			if updates_needed:
+				# Update the database directly without triggering hooks
+				for field, value in update_fields.items():
+					self.db_set(field, value, update_modified=False)
+				
+		except Exception as e:
+				# In case of error during the check, log but do not block the process
+			frappe.log_error(
+				"Raven Bot Tool Check Error",
+				f"Error checking available tools for Raven Bot {self.name}: {str(e)}",
+			)
 
 	def get_tools_for_assistant(self):
 		# Add the function to the assistant
@@ -381,3 +444,150 @@ class RavenBot(Document):
 			filters["creation"] = [">", date]
 
 		return frappe.get_all("Raven Message", filters=filters, order_by="creation desc", pluck="name")
+
+@frappe.whitelist()
+def create_or_update_raven_bot(
+	bot_name,
+	description=None,
+	image=None,
+	is_ai_bot=False,
+	instruction=None,
+	model="gpt-4o-mini",
+	enable_code_interpreter=False,
+	enable_file_search=False,
+	allow_bot_to_write_documents=False,
+	dynamic_instructions=False,
+	debug_mode=False,
+	is_standard=False,
+	module=None,
+	bot_functions=None,
+	openai_assistant_id=None,
+	bot_id=None
+):
+	"""
+	Create or update a Raven Bot with OpenAI settings
+	
+	Args:
+		bot_name (str): Name of the bot to create or update
+		description (str, optional): Description of the bot
+		image (str, optional): Image/avatar of the bot
+		is_ai_bot (bool, optional): If the bot uses OpenAI's AI
+		instruction (str, optional): Instructions for the OpenAI assistant
+		model (str, optional): OpenAI model to use (default: gpt-4o-mini)
+		enable_code_interpreter (bool, optional): Enable the code interpreter
+		enable_file_search (bool, optional): Enable the file search
+		allow_bot_to_write_documents (bool, optional): Allow the bot to write documents
+		dynamic_instructions (bool, optional): Use dynamic instructions
+		debug_mode (bool, optional): Enable the debug mode
+		is_standard (bool, optional): If the bot is a standard bot
+		module (str, optional): Frappe module associated
+		bot_functions (list, optional): List of functions to add to the bot
+		openai_assistant_id (str, optional): ID of the existing OpenAI assistant
+		bot_id (str, optional): ID of the existing bot to update
+		
+	Returns:
+		dict: Information about the bot created or updated
+	"""
+	# Convert the boolean parameters if necessary
+	if isinstance(is_ai_bot, str):
+		is_ai_bot = is_ai_bot.lower() == 'true'
+	if isinstance(enable_code_interpreter, str):
+		enable_code_interpreter = enable_code_interpreter.lower() == 'true'
+	if isinstance(enable_file_search, str):
+		enable_file_search = enable_file_search.lower() == 'true'
+	if isinstance(allow_bot_to_write_documents, str):
+		allow_bot_to_write_documents = allow_bot_to_write_documents.lower() == 'true'
+	if isinstance(dynamic_instructions, str):
+		dynamic_instructions = dynamic_instructions.lower() == 'true'
+	if isinstance(debug_mode, str):
+		debug_mode = debug_mode.lower() == 'true'
+	if isinstance(is_standard, str):
+		is_standard = is_standard.lower() == 'true'
+	
+	# Validate the essential parameters
+	if is_ai_bot and not instruction:
+		frappe.throw(_("Please provide an instruction for this AI bot."))
+	
+	# Parse bot_functions if it's a string
+	if bot_functions and isinstance(bot_functions, str):
+		bot_functions = json.loads(bot_functions)
+	
+	# Check if bot already exists with this name
+	existing_bot_id = bot_id
+	if not existing_bot_id:
+		existing_bot_id = frappe.db.exists("Raven Bot", {"bot_name": bot_name})
+	
+	# Function to set common fields on bot document
+	def set_bot_fields(bot_doc):
+		bot_doc.bot_name = bot_name
+		bot_doc.description = description
+		if image:
+			bot_doc.image = image
+		bot_doc.is_ai_bot = is_ai_bot
+		bot_doc.model = model
+		bot_doc.instruction = instruction
+		bot_doc.enable_code_interpreter = enable_code_interpreter
+		bot_doc.enable_file_search = enable_file_search
+		bot_doc.allow_bot_to_write_documents = allow_bot_to_write_documents
+		bot_doc.dynamic_instructions = dynamic_instructions
+		bot_doc.debug_mode = debug_mode
+		bot_doc.is_standard = is_standard
+		
+		if is_standard and module:
+			bot_doc.module = module
+		
+		if openai_assistant_id:
+			bot_doc.openai_assistant_id = openai_assistant_id
+			
+		# Handle the bot functions if specified
+		if bot_functions:
+			# Clear existing functions
+			bot_doc.bot_functions = []
+			
+			# Add the new functions
+			for func in bot_functions:
+				bot_doc.append("bot_functions", {
+					"function": func.get("function")
+				})
+		
+		return bot_doc
+	
+	try:
+		if existing_bot_id:
+			# Update an existing bot
+			bot = frappe.get_doc("Raven Bot", existing_bot_id)
+			bot = set_bot_fields(bot)
+			bot.save()
+			
+			return {
+				"bot_id": bot.name,
+				"bot_name": bot.bot_name,
+				"raven_user": bot.raven_user,
+				"openai_assistant_id": bot.openai_assistant_id,
+				"success": True,
+				"message": _("Bot updated successfully"),
+				"is_update": True
+			}
+		else:
+			# Check if a bot with this name already exists before trying to create
+			name_exists = frappe.db.exists("Raven Bot", {"bot_name": bot_name})
+			if name_exists:
+				frappe.throw(_("A bot with the name '{0}' already exists. Please use a different name or update the existing bot.").format(bot_name))
+				
+			# Create a new bot
+			bot = frappe.new_doc("Raven Bot")
+			bot = set_bot_fields(bot)
+			bot.insert()
+			
+			return {
+				"bot_id": bot.name,
+				"bot_name": bot.bot_name,
+				"raven_user": bot.raven_user,
+				"openai_assistant_id": bot.openai_assistant_id,
+				"success": True,
+				"message": _("Bot created successfully"),
+				"is_new": True
+			}
+	except Exception as e:
+		frappe.log_error(f"Error in create_or_update_raven_bot", e)
+		frappe.throw(_("Error processing bot: ") + str(e))

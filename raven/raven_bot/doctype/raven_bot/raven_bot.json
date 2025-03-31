@@ -21,6 +21,7 @@
   "debug_mode",
   "ai_section",
   "openai_assistant_id",
+  "model",
   "enable_code_interpreter",
   "column_break_khmi",
   "allow_bot_to_write_documents",
@@ -95,6 +96,14 @@
    "fieldname": "openai_assistant_id",
    "fieldtype": "Data",
    "label": "OpenAI Assistant ID"
+  },
+  {
+   "default": "gpt-4o-mini",
+   "depends_on": "eval: doc.is_ai_bot",
+   "fieldname": "model",
+   "fieldtype": "Data",
+   "label": "OpenAI Model",
+   "description": "The OpenAI model to use for the assistant (e.g. gpt-4o, gpt-4o-mini, gpt-3.5-turbo)"
   },
   {
    "fieldname": "column_break_khmi",

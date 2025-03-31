@@ -313,4 +313,5 @@ def get_variables_for_instructions():
 		"employee_id": employee_id,
 		"department": department,
 		"employee_company": employee_company,
+		"lang": user.language.upper() if user.language else "EN",
 	}
