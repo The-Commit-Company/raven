@@ -19,10 +19,9 @@ export const SelectedChannels = ({ selectedChannels, searchInput, setSearchInput
     const { colors } = useColorScheme()
 
     return (
-        <View className={`flex-row justify-start gap-2.5 px-3 py-3`}>
-            <Text className="text-base text-foreground">To:</Text>
-            <View className="flex-row flex-wrap items-center gap-2 mr-5">
-
+        <View className={`flex-row items-center gap-2.5 px-3 py-3`}>
+            <Text className="self-start text-base text-foreground">To:</Text>
+            <View className="flex-1 flex-row flex-wrap items-center gap-2 mr-5">
                 {selectedChannels.map((channel: CombinedChannel) => {
                     const isDMChannel = channel.is_direct_message
                     const user = channel.user
@@ -49,7 +48,7 @@ export const SelectedChannels = ({ selectedChannels, searchInput, setSearchInput
                                     <ChannelIcon size={15} type={channel.type as string} fill={colors.icon} />
                                 </View>
                             )}
-                            <Text className="text-xs">
+                            <Text className="text-sm">
                                 {isDMChannel
                                     ? `${user?.full_name}`
                                     : channel.channel_name}
@@ -60,7 +59,7 @@ export const SelectedChannels = ({ selectedChannels, searchInput, setSearchInput
                 })}
                 <TextInput
                     autoFocus
-                    className="flex-1 text-foreground"
+                    className="flex-1"
                     placeholder={selectedChannels.length === 0 ? "Add a channel or DM" : ""}
                     value={searchInput}
                     onChangeText={setSearchInput}
