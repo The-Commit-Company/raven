@@ -148,6 +148,13 @@ const router = createBrowserRouter(
     </>
   ), {
   basename: import.meta.env.VITE_BASE_NAME ? `/${import.meta.env.VITE_BASE_NAME}` : '',
+  future: {
+    v7_relativeSplatPath: true,
+    v7_fetcherPersist: true,
+    v7_normalizeFormMethod: true,
+    v7_partialHydration: true,
+    v7_skipActionErrorRevalidation: true
+  }
 }
 )
 function App() {
@@ -187,7 +194,7 @@ function App() {
           accentColor='iris'
           panelBackground='translucent'
           setAppearance={setAppearance}>
-          <RouterProvider router={router} />
+          <RouterProvider router={router} future={{ v7_startTransition: true }} />
           <AppUpdateProvider />
         </ThemeProvider>
       </UserProvider>
