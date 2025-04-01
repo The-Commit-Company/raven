@@ -30,7 +30,7 @@ export function ChannelListRow({ channel }: { channel: ChannelListItem }) {
     const handleCopyLink = async () => {
         try {
             const workspace = channel.workspace ?? 'channels'
-            const link = `${siteID}/raven/${workspace}/${channel.name}`
+            const link = `${siteID}/raven/${encodeURIComponent(workspace)}/${encodeURIComponent(channel.name)}`
             await Clipboard.setStringAsync(link)
             toast.success('Channel link copied to clipboard!')
         } catch (error) {
