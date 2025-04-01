@@ -53,15 +53,13 @@ const ErrorPage = () => {
                 }
                 <HStack justify='center'>
                     <Button
-                        // variant='ghost'
-                        variant='soft'
                         size='2'
                         className='not-cal'
                         onClick={reloadPage}>
                         {errorDueToUpdate ? "Upgrade to a better experience" : "Reload the Page"}
                     </Button>
                     {!errorDueToUpdate && <Button
-                        // variant='ghost' 
+                        variant='soft'
                         color='gray'
                         size='2' className='not-cal' onClick={goToChannels}>
                         Back to Channels
