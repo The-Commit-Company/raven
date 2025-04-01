@@ -46,8 +46,8 @@
     "jotai": "^2.10.3",
     "js-cookie": "^3.0.5",
     "lowlight": "^3.1.0",
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
     "react-dropzone": "^14.2.3",
     "react-error-boundary": "^5.0.0",
     "react-hook-form": "^7.55.0",
@@ -70,8 +70,8 @@
   },
   "devDependencies": {
     "@types/js-cookie": "^3.0.6",
-    "@types/react": "^18.3.3",
-    "@types/react-dom": "^18.2.19",
+    "@types/react": "^19.0.12",
+    "@types/react-dom": "^19.0.4",
     "@types/turndown": "^5.0.4",
     "typescript": "^5.3.3"
   },
