@@ -10,7 +10,20 @@ import { VitePWA } from "vite-plugin-pwa"
 export default defineConfig(({ command, mode }) => {
 	const env = loadEnv(mode, process.cwd(), "")
 	return {
-		plugins: [react(), svgr(), VitePWA({
+		plugins: [react({
+			babel: {
+				plugins: [
+					["babel-plugin-react-compiler", {
+						"reactCompiler": true,
+						"reactCompilerOptions": {
+							"development": true,
+
+						}
+					}]
+				]
+			}
+		}), svgr(),
+		VitePWA({
 			registerType: "autoUpdate",
 			strategies: "injectManifest",
 			injectRegister: null,
