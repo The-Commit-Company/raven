@@ -1,13 +1,11 @@
 import { useFrappeUpdateDoc } from "frappe-react-sdk"
-import { Suspense, lazy, useEffect } from "react"
+import { useEffect } from "react"
 import { ErrorBanner } from "../../../../layout/AlertBanner/ErrorBanner"
 import { IconButton, Dialog, Flex, Text, VisuallyHidden } from "@radix-ui/themes"
 import { BiX } from "react-icons/bi"
-import { Loader } from "@/components/common/Loader"
 import { TextMessage } from "../../../../../../../types/Messaging/Message"
 import { toast } from "sonner"
-
-const Tiptap = lazy(() => import("../../ChatInput/Tiptap"))
+import Tiptap from "../../ChatInput/Tiptap"
 
 interface EditMessageModalProps {
     onClose: (refresh?: boolean) => void,
@@ -46,9 +44,7 @@ export const EditMessageModal = ({ onClose, message }: EditMessageModalProps) =>
 
             <Flex gap='2' direction='column'>
                 <ErrorBanner error={error} />
-                <Suspense fallback={<Loader />}>
-                    <Tiptap onMessageSend={onSubmit} isEdit disableSessionStorage messageSending={updatingDoc} defaultText={message.text} />
-                </Suspense>
+                <Tiptap onMessageSend={onSubmit} isEdit disableSessionStorage messageSending={updatingDoc} defaultText={message.text} />
                 <Flex justify='end' className="hidden sm:block">
                     <Text size='1' color='gray'>Press <b>Enter</b> to save</Text>
                 </Flex>
