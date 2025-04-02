@@ -56,7 +56,7 @@ const DMRow = ({ dm }: { dm: DMChannelWithUnreadCount }) => {
                             height: 7,
                             position: 'absolute',
                             left: 6,
-                            top: 36,
+                            top: 28,
                             borderRadius: '100%',
                             backgroundColor: isUnread ? colors.primary : 'transparent',
                         }}
@@ -67,13 +67,12 @@ const DMRow = ({ dm }: { dm: DMChannelWithUnreadCount }) => {
                         isActive={isActive}
                         isBot={user?.type === 'Bot'}
                         availabilityStatus={user?.availability_status}
-                        avatarProps={{ className: 'h-11 w-11' }}
+                        avatarProps={{ className: 'h-10 w-10' }}
                     />
                     <View className='flex-1 flex-col overflow-hidden'>
                         <View className='flex flex-row justify-between items-center'>
                             <Text
-                                className='text-lg text-foreground'
-                                style={{ fontWeight: isUnread ? '600' : '400' }}>
+                                className={'text-base font-medium text-foreground'}>
                                 {user?.full_name ?? dm.peer_user_id} {myProfile?.name === dm.peer_user_id && '(You)'}
                             </Text>
                             {dm.last_message_timestamp ? (
@@ -87,8 +86,9 @@ const DMRow = ({ dm }: { dm: DMChannelWithUnreadCount }) => {
                             <View
                                 style={{ maxHeight: 30, maxWidth: dm.unread_count > 0 ? '90%' : '100%', }}
                                 className='flex flex-row items-center gap-1'>
-                                {isSentByUser ? <Text className='text-base text-muted-foreground'>You:</Text> : null}
-                                <Text className='text-base text-muted-foreground line-clamp-1'>{lastMessageContent}</Text>
+                                {isSentByUser ? <Text className='text-sm text-muted-foreground'>You:</Text> : null}
+                                <Text className='text-sm text-muted-foreground line-clamp-1'
+                                    style={{ fontWeight: isUnread ? '600' : '500' }}>{lastMessageContent}</Text>
                             </View>
                             {(dm.unread_count && dm.unread_count > 0) ?
                                 <View className='px-1.5 py-0.5 rounded-md bg-primary/20 dark:bg-primary'>
