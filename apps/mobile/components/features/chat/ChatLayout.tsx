@@ -121,7 +121,7 @@ const ChatLayout = ({ channelID, isThread = false, pinnedMessagesString }: Props
                     onMomentumScrollEnd={checkIfNearBottom}
                     pinnedMessagesString={pinnedMessagesString}
                 />
-                <SafeAreaView edges={['bottom']} className='min-h-16'>
+                <View className='min-h-16'>
                     {
                         canUserSendMessage ?
                             <ChatInput channelID={channelID} onSendMessage={onSendMessage} />
@@ -144,7 +144,7 @@ const ChatLayout = ({ channelID, isThread = false, pinnedMessagesString }: Props
                             />
                             : null
                     }
-                </SafeAreaView>
+                </View>
 
                 <Animated.View style={fakeView} />
             </View>
