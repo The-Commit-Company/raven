@@ -12,6 +12,7 @@ import ChatInput from './ChatInput/ChatInput';
 import { JoinChannelBox } from '@components/features/chat/ChatFooter/JoinChannelBox';
 import { ArchivedChannelBox } from '@components/features/chat/ChatFooter/ArchivedChannelBox';
 import useShouldJoinChannel from '@hooks/useShouldJoinChannel';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const PADDING_BOTTOM = Platform.OS === 'ios' ? 20 : 0;
 
@@ -120,7 +121,7 @@ const ChatLayout = ({ channelID, isThread = false, pinnedMessagesString }: Props
                     onMomentumScrollEnd={checkIfNearBottom}
                     pinnedMessagesString={pinnedMessagesString}
                 />
-                <View className='min-h-16'>
+                <SafeAreaView edges={['bottom']} className='min-h-16'>
                     {
                         canUserSendMessage ?
                             <ChatInput channelID={channelID} onSendMessage={onSendMessage} />
@@ -143,7 +144,7 @@ const ChatLayout = ({ channelID, isThread = false, pinnedMessagesString }: Props
                             />
                             : null
                     }
-                </View>
+                </SafeAreaView>
 
                 <Animated.View style={fakeView} />
             </View>
