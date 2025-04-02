@@ -47,7 +47,7 @@ const DMRow = ({ dm }: { dm: DMChannelWithUnreadCount }) => {
     return (
         <Link href={`../chat/${dm.name}`} asChild>
             <Pressable
-                className='flex flex-row relative items-center gap-3 py-2.5 px-4 ios:active:bg-linkColor'
+                className='flex flex-row relative items-center gap-3 py-3 px-4 ios:active:bg-linkColor'
                 android_ripple={{ color: 'rgba(0,0,0,0.1)', borderless: false }}>
                 {({ pressed, hovered }) => <>
                     <View
@@ -86,9 +86,9 @@ const DMRow = ({ dm }: { dm: DMChannelWithUnreadCount }) => {
                             <View
                                 style={{ maxHeight: 30, maxWidth: dm.unread_count > 0 ? '90%' : '100%', }}
                                 className='flex flex-row items-center gap-1'>
-                                {isSentByUser ? <Text className='text-sm text-muted-foreground'>You:</Text> : null}
+                                {isSentByUser ? <Text className='text-sm text-muted-foreground' style={{ fontWeight: isUnread ? '500' : '400' }}>You:</Text> : null}
                                 <Text className='text-sm text-muted-foreground line-clamp-1'
-                                    style={{ fontWeight: isUnread ? '600' : '500' }}>{lastMessageContent}</Text>
+                                    style={{ fontWeight: isUnread ? '500' : '400' }}>{lastMessageContent}</Text>
                             </View>
                             {(dm.unread_count && dm.unread_count > 0) ?
                                 <View className='px-1.5 py-0.5 rounded-md bg-primary/20 dark:bg-primary'>
