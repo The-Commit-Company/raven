@@ -43,8 +43,8 @@ const messaging = getMessaging()
 
 export default function RootLayout() {
 
-    const path = usePathname()
-    console.log(path)
+    // const path = usePathname()
+    // console.log(path)
 
     const { getItem } = useAsyncStorage(`default-site`)
 
@@ -87,7 +87,7 @@ export default function RootLayout() {
             if (remoteMessage.data?.channel_id && remoteMessage.data?.sitename) {
                 setDefaultSite(remoteMessage.data.sitename as string)
                 let path = 'chat'
-                if (remoteMessage.data.is_thread) {
+                if (remoteMessage.data.is_thread === '1') {
                     path = 'thread'
                 }
                 router.navigate(`/${remoteMessage.data.sitename}/${path}/${remoteMessage.data.channel_id}`, {
