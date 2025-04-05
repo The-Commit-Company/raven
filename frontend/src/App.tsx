@@ -13,6 +13,7 @@ import ErrorPage from './pages/ErrorPage'
 import WorkspaceSwitcher from './pages/WorkspaceSwitcher'
 import WorkspaceSwitcherGrid from './components/layout/WorkspaceSwitcherGrid'
 import { init } from 'emoji-mart'
+import AppUpdateProvider from './utils/AppUpdateProvider'
 
 /** Following keys will not be cached in app cache */
 // const NO_CACHE_KEYS = [
@@ -187,6 +188,7 @@ function App() {
           panelBackground='translucent'
           setAppearance={setAppearance}>
           <RouterProvider router={router} />
+          <AppUpdateProvider />
         </ThemeProvider>
       </UserProvider>
     </FrappeProvider>

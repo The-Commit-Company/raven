@@ -8,6 +8,8 @@ const ErrorPage = () => {
     let error = useRouteError();
 
     const errorDueToUpdate = (error as Error).message?.includes('Failed to fetch dynamically imported module:')
+        || (error as Error).message?.includes('Importing a module script failed.')
+        || (error as Error).message?.includes('error loading dynamically imported module')
 
     const navigate = useNavigate()
 
@@ -51,16 +53,12 @@ const ErrorPage = () => {
                 }
                 <HStack justify='center'>
                     <Button
-                        // variant='ghost'
-                        variant='soft'
                         size='2'
-                        color='gray'
                         className='not-cal'
                         onClick={reloadPage}>
                         {errorDueToUpdate ? "Upgrade to a better experience" : "Reload the Page"}
                     </Button>
                     {!errorDueToUpdate && <Button
-                        // variant='ghost' 
                         variant='soft'
                         color='gray'
                         size='2' className='not-cal' onClick={goToChannels}>

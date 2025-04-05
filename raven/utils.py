@@ -179,6 +179,16 @@ def get_thread_reply_count(thread_id: str) -> int:
 	)
 
 
+def refresh_thread_reply_count(thread_id: str):
+	"""
+	Refresh the thread reply count
+	"""
+	new_count = frappe.db.count("Raven Message", {"channel_id": thread_id})
+	frappe.cache().hset("raven:thread_reply_count", thread_id, new_count)
+
+	return new_count
+
+
 def clear_thread_reply_count_cache(thread_id: str):
 	"""
 	Clear the thread reply count cache

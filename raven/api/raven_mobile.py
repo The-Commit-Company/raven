@@ -52,6 +52,10 @@ def create_oauth_client():
 	oauth_client.default_redirect_uri = "raven.thecommit.company:"
 	oauth_client.grant_type = "Authorization Code"
 	oauth_client.response_type = "Code"
+	oauth_client.allowed_roles = []
+	oauth_client.append("allowed_roles", {
+		"role": "Raven User"
+	})
 	oauth_client.save()
 	raven_settings.oauth_client = oauth_client.name
 	raven_settings.save()
