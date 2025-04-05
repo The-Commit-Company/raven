@@ -6,7 +6,7 @@ import MessageActionsBottomSheet from '@components/features/chat/ChatMessage/Mes
 import { useSheetRef } from '@components/nativewindui/Sheet';
 import { useAtom } from 'jotai';
 import { messageActionsSelectedMessageAtom } from '@lib/ChatInputUtils';
-import { NativeScrollEvent, NativeSyntheticEvent, Platform, View } from 'react-native';
+import { Keyboard, NativeScrollEvent, NativeSyntheticEvent, Platform, View } from 'react-native';
 import ChatStream from '../chat-stream/ChatStream';
 import ChatInput from './ChatInput/ChatInput';
 import { JoinChannelBox } from '@components/features/chat/ChatFooter/JoinChannelBox';
@@ -105,6 +105,8 @@ const ChatLayout = ({ channelID, isThread = false, pinnedMessagesString }: Props
 
     useEffect(() => {
         if (selectedMessage) {
+            // If the keyboard is open, we need to close it before opening the bottom sheet
+            Keyboard.dismiss()
             messageActionsSheetRef.current?.present()
         } else {
             messageActionsSheetRef.current?.dismiss()
