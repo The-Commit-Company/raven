@@ -112,7 +112,7 @@ wget https://frappe.io/easy-install.py
 python3 ./easy-install.py deploy \
     --project=learning_prod_setup \
     --email=your_email.example.com \
-    --image=ghcr.io/The-Commit-Company/raven \
+    --image=ghcr.io/the-commit-company/raven \
     --version=stable \
     --app=raven \
     --sitename subdomain.domain.tld
