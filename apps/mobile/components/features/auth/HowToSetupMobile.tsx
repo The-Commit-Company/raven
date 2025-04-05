@@ -24,7 +24,7 @@ const HowToSetupMobile = () => {
     return (
         <View>
             <TouchableOpacity className='flex-row items-center gap-1' onPress={onPress}>
-                <InfoIcon height={16} width={16} color={colors.icon} />
+                <InfoIcon height={16} width={16} fill={colors.icon} />
                 <Text className='text-sm text-muted-foreground'>How do I setup my site for Raven mobile?</Text>
             </TouchableOpacity>
 
