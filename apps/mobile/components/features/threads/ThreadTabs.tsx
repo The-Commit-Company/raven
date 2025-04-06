@@ -40,7 +40,7 @@ const ThreadTabs = () => {
 
     return (
         <View className='flex-1 flex-col gap-3 pt-4'>
-            <View className='px-4'>
+            <View className='px-3'>
                 <SegmentedControl
                     values={values}
                     selectedIndex={selectedIndex}

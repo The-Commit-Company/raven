@@ -9,6 +9,7 @@ import { Divider } from "@components/layout/Divider"
 import DirectMessageItemElement from './DirectMessageItemElement'
 import ChannelItemElement from './ChannelItemElement'
 import UnreadChannelListMoreActions from './UnreadChannelListMoreActions'
+import UnreadCountBadge from '@components/common/Badge/UnreadCountBadge'
 
 interface UnreadChannelsListProps {
     unreadChannels: ChannelWithUnreadCount[]
@@ -68,7 +69,7 @@ const UnreadChannelListUI = ({ totalUnreadCount, unreadDMs, unreadChannels, chan
             <TouchableOpacity onPress={toggleAccordion} style={styles.header} activeOpacity={0.7}>
                 <View className="flex-row items-center gap-2">
                     <Text style={styles.headerText}>Unread</Text>
-                    {!isExpanded && <Text style={styles.unreadCount} className="bg-card-background">{totalUnreadCount}</Text>}
+                    {!isExpanded ? <UnreadCountBadge count={totalUnreadCount} /> : null}
                 </View>
                 <View className="flex-row items-center gap-1">
                     <UnreadChannelListMoreActions channelIDs={channelIDs} />
@@ -109,12 +110,6 @@ const styles = StyleSheet.create({
     headerText: {
         fontWeight: '600',
         fontSize: 16,
-    },
-    unreadCount: {
-        borderRadius: 6,
-        fontWeight: '700',
-        fontSize: 12,
-        paddingHorizontal: 10,
     }
 })
 
