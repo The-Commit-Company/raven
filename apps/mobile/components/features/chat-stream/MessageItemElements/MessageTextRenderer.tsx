@@ -1,8 +1,7 @@
 import RenderHtml, { TRenderEngineConfig } from 'react-native-render-html';
 import { useWindowDimensions, View } from 'react-native';
 import { useMemo } from 'react';
-import { useAtomValue, atom } from 'jotai';
-import { themeAtom } from '@hooks/useColorScheme';
+import { useColorScheme } from '@hooks/useColorScheme';
 import { CustomMentionRenderer } from './MentionRenderer';
 type Props = {
     text: string
@@ -121,22 +120,6 @@ const darkThemeStyles: TRenderEngineConfig['tagsStyles'] = Object.keys(TAG_BASE_
     return acc
 }, {} as TRenderEngineConfig['tagsStyles'])
 
-// Create a read only theme atom value for the tagStyles
-
-const tagStylesAtom = atom((get) => {
-    const theme = get(themeAtom)
-    return theme.state === 'hasData' ? theme.data === 'light' ? lightThemeStyles : darkThemeStyles : lightThemeStyles
-})
-
-const baseStylesAtom = atom((get) => {
-    const theme = get(themeAtom)
-    return {
-        fontSize: 16,
-        color: theme.state === 'hasData' ? theme.data === 'light' ? 'rgb(0, 0, 0)' : 'rgb(255, 255, 255)' : 'rgb(0, 0, 0)',
-    }
-}
-)
-
 const renderers = {
     span: CustomMentionRenderer
 }
@@ -155,18 +138,33 @@ const classesStylesDark = {
     }
 }
 
-const classesStylesAtom = atom((get) => {
-    const theme = get(themeAtom)
-    return theme.state === 'hasData' ? theme.data === 'light' ? classesStylesLight : classesStylesDark : classesStylesLight
-})
-
 const MessageTextRenderer = ({ text }: Props) => {
 
     const { width } = useWindowDimensions()
 
-    const tagStyles = useAtomValue(tagStylesAtom)
-    const baseStyles = useAtomValue(baseStylesAtom)
-    const classesStyles = useAtomValue(classesStylesAtom)
+    const { colorScheme } = useColorScheme()
+
+    const { tagStyles, baseStyles, classesStyles } = useMemo(() => {
+        if (colorScheme === 'light') {
+            return {
+                tagStyles: lightThemeStyles,
+                baseStyles: {
+                    fontSize: 16,
+                    color: 'rgb(0, 0, 0)'
+                },
+                classesStyles: classesStylesLight
+            }
+        } else {
+            return {
+                tagStyles: darkThemeStyles,
+                baseStyles: {
+                    fontSize: 16,
+                    color: 'rgb(255, 255, 255)'
+                },
+                classesStyles: classesStylesDark
+            }
+        }
+    }, [colorScheme])
 
     const source = useMemo(() => ({ html: text }), [text])
     const paddingWidth = width - 160
