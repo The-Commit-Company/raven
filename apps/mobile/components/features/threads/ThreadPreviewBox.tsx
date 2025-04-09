@@ -13,6 +13,7 @@ import { useColorScheme } from '@hooks/useColorScheme'
 import ViewThreadParticipants from './ViewThreadParticipants'
 import { Divider } from '@components/layout/Divider'
 import { useRouteToThread } from '@hooks/useRouting'
+import UnreadCountBadge from '@components/common/Badge/UnreadCountBadge'
 
 const ThreadPreviewBox = ({ thread, unreadCount }: { thread: ThreadMessage, unreadCount?: number }) => {
 
@@ -53,11 +54,11 @@ const ThreadPreviewBox = ({ thread, unreadCount }: { thread: ThreadMessage, unre
     return (
         <View className='flex flex-col'>
             <Pressable
-                className='pb-3.5 pt-2 active:bg-linkColor active:dark:bg-linkColor'
+                className='pt-3 pb-3.5 active:bg-linkColor active:dark:bg-linkColor'
                 onPress={handleNavigateToThread}>
                 <View>
-                    <View className='flex flex-row items-center justify-between'>
-                        <View className={`flex flex-row items-center px-3 gap-2 ${unreadCount && unreadCount > 0 ? 'pt-0' : 'pt-2'}`}>
+                    <View className='flex flex-row px-3 items-center justify-between'>
+                        <View className={`flex flex-row items-center gap-2`}>
                             <View className='flex flex-row items-center gap-1'>
                                 {channelDetails?.channelIcon && <ChannelIcon type={channelDetails?.channelIcon as "Private" | "Public" | "Open"} fill={colors.icon} size={14} />}
                                 <Text className='text-sm'>{channelDetails?.channelName}</Text>
@@ -67,7 +68,7 @@ const ThreadPreviewBox = ({ thread, unreadCount }: { thread: ThreadMessage, unre
                                 {formatDateAndTime(thread.creation)}
                             </Text>
                         </View>
-                        {unreadCount && unreadCount > 0 ? <Text className='font-bold text-xs text-primary bg-primary/10 rounded-md px-1.5 py-0.5 mx-2 mt-2'>{unreadCount}</Text> : null}
+                        {unreadCount && unreadCount > 0 ? <UnreadCountBadge count={unreadCount} prominent /> : null}
                     </View>
                     <BaseMessageItem message={thread as unknown as Message} />
                     <View className='flex flex-row items-center gap-2 pl-16 pt-2'>
@@ -76,7 +77,7 @@ const ThreadPreviewBox = ({ thread, unreadCount }: { thread: ThreadMessage, unre
                     </View>
                 </View>
             </Pressable>
-            <Divider prominent className='mx-0' />
+            <Divider prominent />
         </View>
     )
 }

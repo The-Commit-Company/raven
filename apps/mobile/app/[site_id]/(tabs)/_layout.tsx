@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Stack, Tabs } from 'expo-router';
 import { SvgProps } from 'react-native-svg';
 import HomeIcon from '@assets/icons/HomeIcon.svg';
@@ -11,6 +11,18 @@ import ThreadsIcon from '@assets/icons/ThreadsIcon.svg';
 import ThreadsOutlineIcon from '@assets/icons/ThreadsOutlineIcon.svg';
 import { useColorScheme } from '@hooks/useColorScheme'
 import { Platform } from 'react-native';
+import useUnreadThreadsCount from '@hooks/useUnreadThreadsCount';
+import useUnreadMessageCount from '@hooks/useUnreadMessageCount';
+
+const tabBarBadgeStyle = {
+    maxWidth: 8,
+    maxHeight: 8,
+    marginRight: 4,
+    marginTop: 2,
+    fontSize: 8,
+    lineHeight: 9,
+    alignSelf: undefined,
+}
 
 export default function TabLayout() {
 
@@ -36,6 +48,17 @@ export default function TabLayout() {
         borderBottomWidth: 1,
         borderBottomColor: dark ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0)',
     }
+
+    const { data: unreadThreads } = useUnreadThreadsCount()
+
+    const { unread_count } = useUnreadMessageCount()
+
+    const { hasUnreadMessages, hasUnreadDMs } = useMemo(() => {
+        return {
+            hasUnreadMessages: unread_count?.message.some(item => item.unread_count > 0),
+            hasUnreadDMs: unread_count?.message.some(item => item.unread_count > 0 && item.is_direct_message === 1),
+        }
+    }, [unread_count])
 
     const tabBarIconStyle = (focused: boolean) => ({
         opacity: focused ? 1 : dark ? 0.8 : 0.7,
@@ -76,6 +99,8 @@ export default function TabLayout() {
                         title: 'Home',
                         headerShown: false,
                         headerStyle,
+                        tabBarBadge: hasUnreadMessages ? '' : undefined,
+                        tabBarBadgeStyle,
                         tabBarIcon: getTabBarIcon(HomeIcon, HomeOutlineIcon),
                     }}
                 />
@@ -85,6 +110,8 @@ export default function TabLayout() {
                         title: 'DMs',
                         headerShown: false,
                         headerStyle,
+                        tabBarBadge: hasUnreadDMs ? '' : undefined,
+                        tabBarBadgeStyle,
                         tabBarIcon: getTabBarIcon(ChatIcon, ChatOutlineIcon),
                     }}
                 />
@@ -94,6 +121,8 @@ export default function TabLayout() {
                         title: 'Threads',
                         headerShown: false,
                         headerStyle,
+                        tabBarBadge: unreadThreads?.message.length ? '' : undefined,
+                        tabBarBadgeStyle,
                         tabBarIcon: getTabBarIcon(ThreadsIcon, ThreadsOutlineIcon),
                     }}
                 />

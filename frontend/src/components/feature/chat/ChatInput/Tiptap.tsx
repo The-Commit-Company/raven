@@ -353,7 +353,6 @@ const Tiptap = forwardRef(({ isEdit, slotBefore, fileProps, onMessageSend, onUpA
         }),
         Link.extend({ inclusive: false }).configure({
             autolink: true,
-            protocols: ['mailto', 'https', 'http'],
         }),
         Placeholder.configure({
             // Pick a random placeholder from the list.

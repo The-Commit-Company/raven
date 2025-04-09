@@ -5,7 +5,7 @@ import { ChannelIcon } from './ChannelIcon';
 import { Text } from '@components/nativewindui/Text';
 import { useColorScheme } from '@hooks/useColorScheme';
 import { ChannelListItem } from '@raven/types/common/ChannelListItem';
-import { router } from 'expo-router';
+import { Link } from 'expo-router';
 import { ChannelListContext, ChannelListContextType } from '@raven/lib/providers/ChannelListProvider';
 import { FrappeConfig, FrappeContext, useFrappePostCall } from 'frappe-react-sdk';
 import { useContext, useMemo } from 'react';
@@ -30,7 +30,7 @@ export function ChannelListRow({ channel }: { channel: ChannelListItem }) {
     const handleCopyLink = async () => {
         try {
             const workspace = channel.workspace ?? 'channels'
-            const link = `${siteID}/raven/${workspace}/${channel.name}`
+            const link = `${siteID}/raven/${encodeURIComponent(workspace)}/${encodeURIComponent(channel.name)}`
             await Clipboard.setStringAsync(link)
             toast.success('Channel link copied to clipboard!')
         } catch (error) {
@@ -60,20 +60,20 @@ export function ChannelListRow({ channel }: { channel: ChannelListItem }) {
     return (
         <ContextMenu.Root>
             <ContextMenu.Trigger>
-                <Pressable
-                    // short press -> navigate
-                    onPress={() => router.push(`../chat/${channel.name}`)}
-                    // long press -> this is a workaround to prevent a press to register on long press (esp on Android)
-                    // Ref: https://github.com/nandorojo/zeego/issues/145
-                    onLongPress={() => { }}
-                    // Use tailwind classes for layout and ios:active state
-                    className='flex-row items-center px-3 py-2 rounded-lg ios:active:bg-linkColor'
-                    // Add a subtle ripple effect on Android
-                    android_ripple={{ color: 'rgba(0,0,0,0.1)', borderless: false }}
-                >
-                    <ChannelIcon type={channel.type} fill={colors.icon} />
-                    <Text className="ml-2 text-base">{channel.channel_name}</Text>
-                </Pressable>
+                <Link href={`../chat/${channel.name}`} asChild>
+                    <Pressable
+                        // long press -> this is a workaround to prevent a press to register on long press (esp on Android)
+                        // Ref: https://github.com/nandorojo/zeego/issues/145
+                        onLongPress={() => { }}
+                        // Use tailwind classes for layout and ios:active state
+                        className='flex-row items-center px-3 py-2 rounded-lg ios:active:bg-linkColor'
+                        // Add a subtle ripple effect on Android
+                        android_ripple={{ color: 'rgba(0,0,0,0.1)', borderless: false }}
+                    >
+                        <ChannelIcon type={channel.type} fill={colors.icon} />
+                        <Text className="ml-2 text-base">{channel.channel_name}</Text>
+                    </Pressable>
+                </Link>
             </ContextMenu.Trigger>
 
             <ContextMenu.Content>

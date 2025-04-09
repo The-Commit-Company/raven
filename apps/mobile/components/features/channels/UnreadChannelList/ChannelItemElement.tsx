@@ -1,12 +1,14 @@
-import { Pressable, View, StyleSheet } from "react-native"
+import { Pressable, View } from "react-native"
 import { Text } from "@components/nativewindui/Text"
 import { router } from "expo-router"
 import { ChannelIcon } from "../ChannelList/ChannelIcon"
 import { useColorScheme } from "@hooks/useColorScheme"
 import { ChannelWithUnreadCount } from "@raven/lib/hooks/useGetChannelUnreadCounts"
 import { useFrappePrefetchCall } from "frappe-react-sdk"
+import UnreadCountBadge from "@components/common/Badge/UnreadCountBadge"
 
 const ChannelItemElement = ({ channel }: { channel: ChannelWithUnreadCount }) => {
+
     const { colors } = useColorScheme()
 
     const prefetchChannel = useFrappePrefetchCall('raven.api.chat_stream.get_messages', {
@@ -31,20 +33,11 @@ const ChannelItemElement = ({ channel }: { channel: ChannelWithUnreadCount }) =>
                     <ChannelIcon type={channel.type} fill={colors.icon} />
                     <Text className="ml-2 text-base font-medium">{channel.channel_name}</Text>
                 </View>
-                <Text style={styles.unreadCount} className="bg-card-background">{channel.unread_count}</Text>
+                {channel.unread_count > 0 ? <UnreadCountBadge count={channel.unread_count} /> : null}
             </View>
         </Pressable>
     )
 }
-
-const styles = StyleSheet.create({
-    unreadCount: {
-        borderRadius: 6,
-        fontWeight: '700',
-        fontSize: 12,
-        paddingHorizontal: 10,
-    }
-})
 
 export default ChannelItemElement
 
