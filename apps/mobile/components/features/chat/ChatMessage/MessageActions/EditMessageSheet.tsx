@@ -18,7 +18,7 @@ interface EditMessageSheetProps {
 
 const EditMessageSheet = ({ message, onClose }: EditMessageSheetProps) => {
 
-    const { colors } = useColorScheme()
+    const { colors, isDarkColorScheme } = useColorScheme()
 
     const { updateDoc, error, loading: updatingDoc } = useFrappeUpdateDoc()
 
@@ -59,6 +59,7 @@ const EditMessageSheet = ({ message, onClose }: EditMessageSheetProps) => {
                         overflowX: 'hidden',
                     },
                 }}
+                isDarkMode={isDarkColorScheme}
                 onUpdate={handleUpdate}
             />
             <Button
