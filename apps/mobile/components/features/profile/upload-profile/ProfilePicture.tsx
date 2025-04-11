@@ -34,6 +34,7 @@ const ProfilePicture = () => {
                     textProps={{ className: 'text-5xl' }}
                     indicatorProps={{ className: 'w-3 h-3 border-2 border-background' }}
                     avatarProps={{ className: "w-40 h-40" }}
+                    borderRadius={16}
                 />
             </TouchableOpacity>
 

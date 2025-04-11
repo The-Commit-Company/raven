@@ -2,7 +2,7 @@ import { Link, router, Stack } from 'expo-router';
 import { Button } from '@components/nativewindui/Button';
 import CrossIcon from '@assets/icons/CrossIcon.svg';
 import { useColorScheme } from '@hooks/useColorScheme';
-import { Platform, Pressable, ScrollView, View } from 'react-native';
+import { Platform, Pressable, View } from 'react-native';
 import SearchInput from '@components/common/SearchInput/SearchInput';
 import useGetDirectMessageChannels from '@raven/lib/hooks/useGetDirectMessageChannels';
 import { useContext, useState } from 'react';
@@ -13,6 +13,7 @@ import { toast } from 'sonner-native';
 import UserAvatar from '@components/layout/UserAvatar';
 import { Text } from '@components/nativewindui/Text';
 import ErrorBanner from '@components/common/ErrorBanner';
+import { LegendList } from '@legendapp/list';
 
 export default function CreateDM() {
 
@@ -40,22 +41,21 @@ export default function CreateDM() {
                 )
             } : undefined,
         }} />
-        <View className="flex flex-col">
-            <View className='p-3'>
+        <View className="flex flex-col flex-1 gap-2 p-3">
+            <View>
                 <SearchInput
                     onChangeText={setSearchQuery}
                     value={searchQuery}
                 />
             </View>
-            <ScrollView className='h-[64vh]' contentContainerStyle={{ paddingBottom: 16 }} showsVerticalScrollIndicator={false}>
-                <View className='flex flex-col gap-2 px-2'>
-                    {filteredUsers.map((user) => (
-                        <UserWithoutDMItem key={user.name} userID={user.name} />
-                    ))}
-                </View>
-                {filteredUsers.length === 0 && searchQuery.length === 0 && <Text className='text-center text-sm text-muted-foreground'>There are no users that you do not already have a DM channel with</Text>}
-                {filteredUsers.length === 0 && searchQuery.length > 0 && <Text className='text-center text-sm text-muted-foreground'>No users found with '{searchQuery}' in their name</Text>}
-            </ScrollView>
+            <LegendList
+                data={filteredUsers}
+                renderItem={({ item }) => <UserWithoutDMItem userID={item.name} />}
+                keyExtractor={(item) => item.name}
+                ListEmptyComponent={<EmptyState searchQuery={searchQuery} />}
+                estimatedItemSize={60}
+                contentContainerStyle={{ paddingBottom: 16 }}
+            />
         </View>
     </>
 }
@@ -80,7 +80,6 @@ const UserWithoutDMItem = ({ userID }: { userID: string }) => {
         <View>
             {error ? <ErrorBanner error={error} /> : null}
             <Pressable
-                key={userID}
                 onPress={onSelect}
                 className='flex flex-row gap-2 items-center px-1.5 py-1.5 rounded-lg ios:active:bg-linkColor'
                 android_ripple={{ color: 'rgba(0,0,0,0.1)', borderless: false }}>
@@ -99,5 +98,20 @@ const UserWithoutDMItem = ({ userID }: { userID: string }) => {
                     : null}
             </Pressable>
         </View>
+    )
+}
+
+const EmptyState = ({ searchQuery }: { searchQuery: string }) => {
+    if (searchQuery.length > 0) {
+        return (
+            <Text className='p-2 text-sm text-muted-foreground'>
+                No users found with '{searchQuery}' in their name
+            </Text>
+        )
+    }
+    return (
+        <Text className='p-2text-sm text-muted-foreground'>
+            There are no users that you do not already have a DM channel with
+        </Text>
     )
 }
