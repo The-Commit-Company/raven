@@ -26,7 +26,7 @@ const ProfilePicture = () => {
         <View className="items-center py-3">
             <TouchableOpacity activeOpacity={0.8} onPress={() => bottomSheetRef.current?.present()} className='relative'>
                 <UserAvatar
-                    src={myProfile?.user_image ?? ""}
+                    src={myProfile?.user_image}
                     alt={`${myProfile?.full_name}`}
                     availabilityStatus={myProfile?.availability_status ? myProfile?.availability_status : 'Available'}
                     imageProps={{ className: 'w-40 h-40' }}
@@ -43,8 +43,8 @@ const ProfilePicture = () => {
                         <Text className="text-xl font-cal-sans px-5">Update profile picture</Text>
                         <View className="flex-col justify-start items-start px-3 w-full">
                             <UploadImage onSheetClose={onSheetClose} />
-                            <ViewImage uri={source?.uri ?? ""} onSheetClose={onSheetClose} />
-                            <RemoveImage onSheetClose={onSheetClose} />
+                            {source ? <ViewImage uri={source?.uri ?? ""} onSheetClose={onSheetClose} /> : null}
+                            {source ? <RemoveImage onSheetClose={onSheetClose} /> : null}
                         </View>
                     </View>
                 </BottomSheetView>

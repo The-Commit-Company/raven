@@ -13,6 +13,7 @@ import { DMChannelListItem } from '@raven/types/common/ChannelListItem';
 import { useGetUser } from '@raven/lib/hooks/useGetUser';
 import PinOutlineIcon from '@assets/icons/PinOutlineIcon.svg';
 import UserAvatar from '@components/layout/UserAvatar';
+import { useIsUserActive } from '@hooks/useIsUserActive';
 
 type DMChannelInfoModalProps = {
     channel: DMChannelListItem
@@ -117,6 +118,7 @@ const ModalHeader = ({ channel, handleCloseModal }: { channel: DMChannelListItem
     const { colors } = useColorScheme()
 
     const peer = channel.peer_user_id
+    const isActive = useIsUserActive(peer)
     const user = useGetUser(peer)
 
     return (
@@ -125,15 +127,19 @@ const ModalHeader = ({ channel, handleCloseModal }: { channel: DMChannelListItem
                 <TouchableOpacity onPress={handleCloseModal} hitSlop={10}>
                     <CrossIcon height={20} width={20} color={colors.foreground} />
                 </TouchableOpacity>
-                {channel && <View className='flex-row items-center ml-3'>
+                {channel && <View className='flex-row items-center ml-3 gap-2'>
                     <UserAvatar src={user?.user_image} alt={user?.full_name ?? peer}
+                        isActive={isActive}
+                        availabilityStatus={user?.availability_status}
                         avatarProps={{ className: "w-6 h-6" }}
                         fallbackProps={{ className: "rounded-[4px]" }}
                         textProps={{ className: "text-xs font-medium" }}
                         imageProps={{ className: "rounded-[4px]" }}
-                        indicatorProps={{ className: "h-2 w-2" }}
-                        isBot={user?.type === 'Bot'} />
-                    <Text className='ml-2 text-base font-semibold'>{user?.full_name ?? peer}</Text>
+                        indicatorProps={{ className: "h-2 w-2" }} />
+                    <View className='flex-row items-center gap-1.5'>
+                        <Text className='text-base font-semibold'>{user?.full_name ?? peer}</Text>
+                        {user?.type === 'Bot' ? <Text className='text-xs bg-card-background font-medium text-foreground/65 rounded-md px-1.5 py-0.5'>{user?.type}</Text> : null}
+                    </View>
                 </View>}
             </View>
             {/* <TouchableOpacity hitSlop={10}>

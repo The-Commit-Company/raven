@@ -54,6 +54,7 @@ export default function QuickSearch() {
                 <SearchInput
                     onChangeText={setSearchQuery}
                     value={searchQuery}
+                    autoFocus
                 />
             </View>
             <View className='flex flex-row justify-center gap-2'>

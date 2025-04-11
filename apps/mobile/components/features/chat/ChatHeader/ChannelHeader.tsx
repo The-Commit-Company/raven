@@ -6,6 +6,7 @@ import { View } from 'react-native'
 import { Text } from '@components/nativewindui/Text'
 import ChannelInfoModal from '@components/features/channel-settings/ChannelInfoModal'
 import { TouchableOpacity } from '@gorhom/bottom-sheet'
+import ChevronDownIcon from '@assets/icons/ChevronDownIcon.svg'
 
 const ChannelHeader = ({ channelData }: { channelData: ChannelListItem }) => {
 
@@ -23,9 +24,10 @@ const ChannelHeader = ({ channelData }: { channelData: ChannelListItem }) => {
                 onPress={handleOnTitlePress}
                 className='flex-1'
                 activeOpacity={0.5}>
-                <View className='flex-row items-center rounded-md p-1'>
+                <View className='flex-row items-center rounded-md p-1 gap-1.5'>
                     <ChannelIcon type={channelData.type} fill={colors.foreground} />
-                    <Text className='ml-2 text-base font-semibold'>{channelData.channel_name}</Text>
+                    <Text className='text-base font-semibold'>{channelData.channel_name}</Text>
+                    <ChevronDownIcon height={22} width={22} fill={colors.icon} />
                 </View>
             </TouchableOpacity>
             <ChannelInfoModal

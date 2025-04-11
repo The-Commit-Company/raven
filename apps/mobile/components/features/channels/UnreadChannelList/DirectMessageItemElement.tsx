@@ -5,6 +5,7 @@ import { router } from 'expo-router';
 import UserAvatar from "@components/layout/UserAvatar";
 import { DMChannelWithUnreadCount } from "@raven/lib/hooks/useGetChannelUnreadCounts";
 import { useFrappePrefetchCall } from "frappe-react-sdk";
+import UnreadCountBadge from "@components/common/Badge/UnreadCountBadge";
 
 const DirectMessageItemElement = ({ dm }: { dm: DMChannelWithUnreadCount }) => {
     const user = useGetUser(dm.peer_user_id)
@@ -31,7 +32,7 @@ const DirectMessageItemElement = ({ dm }: { dm: DMChannelWithUnreadCount }) => {
                     <UserAvatar src={user?.user_image} alt={user?.full_name ?? user?.name ?? ''} avatarProps={{ className: 'h-8 w-8' }} />
                     <Text style={styles.dmChannelText}>{user?.full_name}</Text>
                 </View>
-                <Text style={styles.unreadCount} className="bg-card-background">{dm.unread_count}</Text>
+                {dm.unread_count > 0 ? <UnreadCountBadge count={dm.unread_count} /> : null}
             </View>
         </Pressable>
     )
@@ -56,12 +57,6 @@ const styles = StyleSheet.create({
         marginLeft: 12,
         fontSize: 16,
         fontWeight: '500',
-    },
-    unreadCount: {
-        borderRadius: 6,
-        fontWeight: '700',
-        fontSize: 12,
-        paddingHorizontal: 10,
     }
 })
 

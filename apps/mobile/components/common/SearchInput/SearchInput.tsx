@@ -15,6 +15,7 @@ interface SearchInputProps {
   inputClassName?: string // Custom class names for the input
   iconColor?: string // Custom color for the search icon
   clearIconColor?: string // Custom color for the clear icon
+  autoFocus?: boolean
 }
 
 const SearchInput: React.FC<SearchInputProps> = ({
@@ -25,6 +26,7 @@ const SearchInput: React.FC<SearchInputProps> = ({
   className,
   inputClassName,
   iconColor,
+  autoFocus,
   clearIconColor
 }) => {
 
@@ -58,6 +60,7 @@ const SearchInput: React.FC<SearchInputProps> = ({
           onChangeText={onChangeText}
           autoCorrect={false}
           autoCapitalize="none"
+          autoFocus={autoFocus}
           className={clsx('text-foreground', inputClassName)}
         />
       </View>

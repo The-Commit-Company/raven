@@ -2,7 +2,7 @@ import { Text } from '@components/nativewindui/Text'
 import useFileURL from '@hooks/useFileURL'
 import { cn } from '@lib/cn'
 import { RavenUser } from '@raven/types/Raven/RavenUser'
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { TextProps, View, ViewProps } from 'react-native'
 import { Image, ImageSource, ImageProps } from 'expo-image'
 import BotIcon from '@assets/icons/BotIcon.svg'
@@ -68,6 +68,15 @@ const UserAvatar = ({ src, isActive, alt, availabilityStatus, isBot, imageProps,
 
     // If there is no source, we need to show the fallback immediately - most common use case of there being a fallback
     const [status, setStatus] = useState<'error' | 'loaded' | 'loading'>(source ? 'loading' : 'error')
+
+    // Update status when source changes
+    useEffect(() => {
+        if (!source) {
+            setStatus('error')
+        } else {
+            setStatus('loading')
+        }
+    }, [source])
 
     const onDisplay = useCallback(() => {
         setStatus('loaded')

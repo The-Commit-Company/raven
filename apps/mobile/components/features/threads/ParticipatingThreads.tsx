@@ -25,7 +25,7 @@ const ParticipatingThreads = () => {
 
     return (
         <View className="flex flex-col">
-            <View className='flex flex-col gap-3 px-4'>
+            <View className='flex flex-col gap-3 px-3'>
                 <View className="flex flex-row items-center gap-2">
                     <View className="flex-1 max-w-[80%]">
                         <SearchInput
