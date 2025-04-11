@@ -181,7 +181,7 @@ def get_saved_messages():
 			raven_message._liked_by,
 			raven_channel.workspace,
 			raven_message.thumbnail_width,
-			raven_message.thumbnail_height
+			raven_message.thumbnail_height,
 		)
 		.where(raven_message._liked_by.like("%" + frappe.session.user + "%"))
 		.where(
