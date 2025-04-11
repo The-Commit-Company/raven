@@ -28,6 +28,10 @@ const EditMessageAction = ({ message, onClose }: EditMessageActionProps) => {
         }, 100)
     }
 
+    const handleDismiss = () => {
+        onClose()
+    }
+
     return (
         <>
             {/* <Pressable
@@ -43,7 +47,7 @@ const EditMessageAction = ({ message, onClose }: EditMessageActionProps) => {
                 text='Edit'
             />
 
-            <Sheet enableDynamicSizing={false} ref={editSheetRef} snapPoints={['90']}>
+            <Sheet enableDynamicSizing={false} ref={editSheetRef} snapPoints={['90']} enableDismissOnClose onDismiss={handleDismiss}>
                 <BottomSheetView className='pb-8'>
                     <EditMessageSheet
                         message={message}

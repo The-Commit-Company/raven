@@ -25,12 +25,14 @@ interface TiptapProps {
     content: string;
     dom: import('expo/dom').DOMProps;
     onUpdate: (html: string) => void;
+    isDarkMode: boolean;
 }
 
 const TiptapEditor = ({
     content,
     dom,
     onUpdate,
+    isDarkMode,
 }: TiptapProps) => {
 
     // Initialize editor with content; ensure content is never undefined.
@@ -74,7 +76,7 @@ const TiptapEditor = ({
     });
 
     return (
-        <div className="tiptap-editor-container">
+        <div className={`tiptap-editor-container ${isDarkMode ? 'dark' : ''}`}>
             {editor && (
                 <BubbleMenu
                     editor={editor}
