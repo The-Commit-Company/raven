@@ -2,7 +2,7 @@ import { Link, router, Stack } from 'expo-router';
 import { Button } from '@components/nativewindui/Button';
 import CrossIcon from '@assets/icons/CrossIcon.svg';
 import { useColorScheme } from '@hooks/useColorScheme';
-import { Platform, Pressable, ScrollView, View } from 'react-native';
+import { Platform, Pressable, View } from 'react-native';
 import { Text } from '@components/nativewindui/Text';
 import SearchInput from '@components/common/SearchInput/SearchInput';
 import { ChannelIcon } from '@components/features/channels/ChannelList/ChannelIcon';
@@ -13,6 +13,8 @@ import HashIcon from '@assets/icons/HashIcon.svg';
 import GlobeIcon from '@assets/icons/GlobeIcon.svg';
 import LockIcon from '@assets/icons/LockIcon.svg';
 import FilterIcon from '@assets/icons/FilterIcon.svg';
+import { LegendList } from '@legendapp/list';
+import { ChannelListItem } from '@raven/types/common/ChannelListItem';
 
 export default function BrowseChannels() {
 
@@ -32,6 +34,11 @@ export default function BrowseChannels() {
         return channel.type === channelType
     })
 
+    const handleChannelPress = (channel: ChannelListItem) => {
+        router.back()
+        router.push(`../../chat/${channel.name}`)
+    }
+
     return <>
         <Stack.Screen options={{
             title: 'Browse Channels',
@@ -45,8 +52,8 @@ export default function BrowseChannels() {
                 )
             } : undefined,
         }} />
-        <View className="flex-1 flex-col gap-2">
-            <View className="flex flex-row items-center gap-2 px-3 pt-3">
+        <View className="flex-1 flex-col gap-2 px-3 pt-3">
+            <View className="flex flex-row items-center gap-2">
                 <View className="flex-1 max-w-[90%]">
                     <SearchInput
                         onChangeText={setSearchQuery}
@@ -55,32 +62,33 @@ export default function BrowseChannels() {
                 </View>
                 <ChannelFilter channel={channelType} setChannel={setChannelType} />
             </View>
-            <ScrollView className="px-1" contentContainerStyle={{ paddingBottom: 16 }}>
-                {filteredChannelsByType.length > 0 ? (
-                    filteredChannelsByType.map((channel) => (
-                        <Pressable
-                            key={channel.name}
-                            onPress={() => {
-                                router.back();
-                                router.push(`../../chat/${channel.name}`);
-                            }}
-                            className='flex flex-row gap-2 items-center px-3 py-2 rounded-lg ios:active:bg-linkColor'
-                            android_ripple={{ color: 'rgba(0,0,0,0.1)', borderless: false }}>
-                            <ChannelIcon type={channel.type} fill={colors.icon} />
-                            <Text className="text-base">{channel.channel_name}</Text>
-                            {channel.is_archived ?
-                                <View className='px-1 mt-0.5 py-0.5 rounded-sm bg-red-100 dark:bg-red-900/40'>
-                                    <Text className="text-[11px] text-red-700 dark:text-red-300">Archived</Text>
-                                </View>
-                                : null}
-                        </Pressable>
-                    ))
-                ) : (
-                    <Text className="px-3 py-2 text-sm text-muted-foreground">
-                        No matching channels found
-                    </Text>
+
+            <LegendList
+                data={filteredChannelsByType}
+                renderItem={({ item }) => (
+                    <Pressable
+                        onPress={() => handleChannelPress(item)}
+                        className='flex flex-row gap-2 items-center p-2 rounded-lg ios:active:bg-linkColor'
+                        android_ripple={{ color: 'rgba(0,0,0,0.1)', borderless: false }}>
+                        <ChannelIcon type={item.type} fill={colors.icon} />
+                        <Text className="text-base">{item.channel_name}</Text>
+                        {item.is_archived ?
+                            <View className='px-1 mt-0.5 py-0.5 rounded-sm bg-red-100 dark:bg-red-900/40'>
+                                <Text className="text-[11px] text-red-700 dark:text-red-300">Archived</Text>
+                            </View> : null}
+                    </Pressable>
                 )}
-            </ScrollView>
+                keyExtractor={(item) => item.name}
+                ListEmptyComponent={
+                    <View className="p-2">
+                        <Text className="text-sm text-muted-foreground">
+                            No matching channels found for "{searchQuery}"
+                        </Text>
+                    </View>
+                }
+                estimatedItemSize={44}
+                contentContainerStyle={{ paddingBottom: 16 }}
+            />
         </View>
     </>
 }

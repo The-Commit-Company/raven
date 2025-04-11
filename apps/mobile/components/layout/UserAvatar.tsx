@@ -20,7 +20,7 @@ type Props = {
     textProps?: TextProps,
     indicatorProps?: ViewProps,
     avatarProps?: ViewProps,
-    rounded?: boolean
+    borderRadius?: number
 }
 
 
@@ -61,7 +61,7 @@ const getColorIndexForAvatar = (name: string): number => {
     return normalizeHash(hash, 0, COLOR_MAP.length) // Map the hash to a valid index
 }
 
-const UserAvatar = ({ src, isActive, alt, availabilityStatus, isBot, imageProps, fallbackProps, textProps, indicatorProps, avatarProps, rounded = false }: Props) => {
+const UserAvatar = ({ src, isActive, alt, availabilityStatus, isBot, imageProps, fallbackProps, textProps, indicatorProps, avatarProps, borderRadius }: Props) => {
 
     const source = useFileURL(src)
     const { bg, text, botColor, botColorDark } = useMemo(() => COLOR_MAP[getColorIndexForAvatar(alt)], [alt])
@@ -106,14 +106,14 @@ const UserAvatar = ({ src, isActive, alt, availabilityStatus, isBot, imageProps,
                 alt={alt}
                 onDisplay={onDisplay}
                 onError={onError}
-                rounded={rounded} />
+                borderRadius={borderRadius} />
             <ActiveIndicator isActive={isActive} availabilityStatus={availabilityStatus} isBot={isBot} botColor={botColor} botColorDark={botColorDark} indicatorProps={indicatorProps} />
         </View>
     )
 }
 
 /** Uses expo-image to handle caching the image */
-const ImageComponent = ({ status, source, alt, onDisplay, onError, rounded, ...props }: ImageProps & { status: 'error' | 'loaded' | 'loading', source?: ImageSource, alt: string, onDisplay: () => void, onError: () => void, rounded?: boolean } & ImageProps) => {
+const ImageComponent = ({ status, source, alt, onDisplay, onError, borderRadius = 6, ...props }: ImageProps & { status: 'error' | 'loaded' | 'loading', source?: ImageSource, alt: string, onDisplay: () => void, onError: () => void, borderRadius?: number } & ImageProps) => {
 
     if (!source) return null
     if (status === 'error') return null
@@ -125,7 +125,7 @@ const ImageComponent = ({ status, source, alt, onDisplay, onError, rounded, ...p
             flex: 1,
             width: '100%',
             height: '100%',
-            borderRadius: rounded ? 40 : 6,
+            borderRadius: borderRadius,
             aspectRatio: 1,
         }}
         onDisplay={onDisplay}

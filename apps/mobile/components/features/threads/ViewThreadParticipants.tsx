@@ -33,7 +33,7 @@ const ViewThreadParticipants = ({ participants }: ViewThreadParticipantsProps) =
                                 avatarProps={{ className: "w-6 h-6 rounded-full" }}
                                 fallbackProps={{ className: "rounded-full" }}
                                 textProps={{ className: "text-xs font-semibold" }}
-                                rounded
+                                borderRadius={40}
                             />
                         </View>
                     )
