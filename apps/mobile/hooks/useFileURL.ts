@@ -1,5 +1,5 @@
 import { FrappeConfig, FrappeContext } from 'frappe-react-sdk'
-import { useContext } from 'react'
+import { useContext, useMemo } from 'react'
 
 export type UseFileURLReturnType = {
   /**
@@ -24,23 +24,32 @@ export type UseFileURLReturnType = {
 const useFileURL = (fileURL?: string): UseFileURLReturnType | undefined => {
   const { tokenParams, url } = useContext(FrappeContext) as FrappeConfig
 
-  if (!fileURL) return undefined
+  const source = useMemo(() => {
+    if (!fileURL) return undefined
 
-  if (fileURL.startsWith('http')) {
+    if (typeof fileURL === 'string') {
+      if (!fileURL.trim()) return undefined
+    }
+
+    if (fileURL.startsWith('http')) {
+      return {
+        uri: fileURL,
+        headers: {
+          Authorization: `bearer ${tokenParams?.token?.()}`
+        }
+      }
+    }
+
     return {
-      uri: fileURL,
+      uri: `${url}${fileURL}`,
       headers: {
         Authorization: `bearer ${tokenParams?.token?.()}`
       }
     }
-  }
 
-  return {
-    uri: `${url}${fileURL}`,
-    headers: {
-      Authorization: `bearer ${tokenParams?.token?.()}`
-    }
-  }
+  }, [fileURL, tokenParams?.token, url])
+
+  return source
 }
 
 export default useFileURL
