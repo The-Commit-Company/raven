@@ -1,6 +1,22 @@
 import frappe
 
 
+def send_notification_for_message(message):
+	"""
+	Send a push notification for a message.
+
+	This is called in the "after_response" hook for user initiated requests.
+	"""
+
+	channel_doc = frappe.get_cached_doc("Raven Channel", message.channel_id)
+
+	if channel_doc.is_direct_message and not channel_doc.is_self_message:
+		message.send_notification_for_direct_message()
+
+	else:
+		message.send_notification_for_channel_message()
+
+
 def send_notification_to_user(user_id, title, message, data=None, user_image_id=None):
 	"""
 	Send a push notification to a user

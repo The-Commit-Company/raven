@@ -4,7 +4,7 @@ import "../global.css";
 import { useEffect } from 'react';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
-import { useColorScheme, useInitialAndroidBarSync } from '@hooks/useColorScheme';
+import { setNavigationBar, themeAtom } from '@hooks/useColorScheme';
 import { NAV_THEME } from '@theme/index';
 import { StatusBar } from 'expo-status-bar';
 import { ActionSheetProvider } from '@expo/react-native-action-sheet';
@@ -12,7 +12,7 @@ import { PortalHost } from '@rn-primitives/portal';
 import { KeyboardProvider } from 'react-native-keyboard-controller';
 import { useAsyncStorage } from '@react-native-async-storage/async-storage';
 import { Toaster } from 'sonner-native';
-import { LogBox } from 'react-native';
+import { LogBox, Platform } from 'react-native';
 import { getMessaging } from '@react-native-firebase/messaging';
 import { setDefaultSite } from '@lib/auth';
 import dayjs from 'dayjs'
@@ -20,6 +20,8 @@ import utc from 'dayjs/plugin/utc'
 import timezone from 'dayjs/plugin/timezone'
 import advancedFormat from 'dayjs/plugin/advancedFormat'
 import relativeTime from 'dayjs/plugin/relativeTime';
+import { useAtom } from 'jotai';
+import { useColorScheme } from 'nativewind';
 
 dayjs.extend(utc)
 dayjs.extend(timezone)
@@ -41,8 +43,8 @@ const messaging = getMessaging()
 
 export default function RootLayout() {
 
-    const path = usePathname()
-    console.log(path)
+    // const path = usePathname()
+    // console.log(path)
 
     const { getItem } = useAsyncStorage(`default-site`)
 
@@ -85,7 +87,7 @@ export default function RootLayout() {
             if (remoteMessage.data?.channel_id && remoteMessage.data?.sitename) {
                 setDefaultSite(remoteMessage.data.sitename as string)
                 let path = 'chat'
-                if (remoteMessage.data.is_thread) {
+                if (remoteMessage.data.is_thread === '1') {
                     path = 'thread'
                 }
                 router.navigate(`/${remoteMessage.data.sitename}/${path}/${remoteMessage.data.channel_id}`, {
@@ -101,8 +103,28 @@ export default function RootLayout() {
         };
     }, []);
 
-    useInitialAndroidBarSync();
-    const { colorScheme, isDarkColorScheme } = useColorScheme();
+    const { colorScheme, setColorScheme } = useColorScheme();
+
+    const isDarkColorScheme = colorScheme === 'dark'
+
+    const [theme] = useAtom(themeAtom);
+
+    useEffect(() => {
+        if (theme.state === 'hasData') {
+            if (theme.data) {
+                setColorScheme(theme.data);
+            }
+        }
+    }, [theme]);
+
+    useEffect(() => {
+        if (Platform.OS !== 'android' || !colorScheme) return;
+        try {
+            setNavigationBar(colorScheme)
+        } catch (error) {
+            console.error('useColorScheme.tsx", "setColorScheme', error);
+        }
+    }, [colorScheme])
 
     return (
         <>
@@ -114,7 +136,7 @@ export default function RootLayout() {
                 <BottomSheetModalProvider>
                     <ActionSheetProvider>
                         <KeyboardProvider statusBarTranslucent navigationBarTranslucent>
-                            <ThemeProvider value={NAV_THEME[colorScheme]}>
+                            <ThemeProvider value={NAV_THEME[colorScheme ?? 'light']}>
                                 <Slot />
                                 <PortalHost />
                             </ThemeProvider>

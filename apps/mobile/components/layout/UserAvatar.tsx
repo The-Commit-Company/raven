@@ -2,7 +2,7 @@ import { Text } from '@components/nativewindui/Text'
 import useFileURL from '@hooks/useFileURL'
 import { cn } from '@lib/cn'
 import { RavenUser } from '@raven/types/Raven/RavenUser'
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { TextProps, View, ViewProps } from 'react-native'
 import { Image, ImageSource, ImageProps } from 'expo-image'
 import BotIcon from '@assets/icons/BotIcon.svg'
@@ -20,7 +20,7 @@ type Props = {
     textProps?: TextProps,
     indicatorProps?: ViewProps,
     avatarProps?: ViewProps,
-    rounded?: boolean
+    borderRadius?: number
 }
 
 
@@ -61,13 +61,22 @@ const getColorIndexForAvatar = (name: string): number => {
     return normalizeHash(hash, 0, COLOR_MAP.length) // Map the hash to a valid index
 }
 
-const UserAvatar = ({ src, isActive, alt, availabilityStatus, isBot, imageProps, fallbackProps, textProps, indicatorProps, avatarProps, rounded = false }: Props) => {
+const UserAvatar = ({ src, isActive, alt, availabilityStatus, isBot, imageProps, fallbackProps, textProps, indicatorProps, avatarProps, borderRadius }: Props) => {
 
     const source = useFileURL(src)
     const { bg, text, botColor, botColorDark } = useMemo(() => COLOR_MAP[getColorIndexForAvatar(alt)], [alt])
 
     // If there is no source, we need to show the fallback immediately - most common use case of there being a fallback
     const [status, setStatus] = useState<'error' | 'loaded' | 'loading'>(source ? 'loading' : 'error')
+
+    // Update status when source changes
+    useEffect(() => {
+        if (!source) {
+            setStatus('error')
+        } else {
+            setStatus('loading')
+        }
+    }, [source])
 
     const onDisplay = useCallback(() => {
         setStatus('loaded')
@@ -97,14 +106,14 @@ const UserAvatar = ({ src, isActive, alt, availabilityStatus, isBot, imageProps,
                 alt={alt}
                 onDisplay={onDisplay}
                 onError={onError}
-                rounded={rounded} />
+                borderRadius={borderRadius} />
             <ActiveIndicator isActive={isActive} availabilityStatus={availabilityStatus} isBot={isBot} botColor={botColor} botColorDark={botColorDark} indicatorProps={indicatorProps} />
         </View>
     )
 }
 
 /** Uses expo-image to handle caching the image */
-const ImageComponent = ({ status, source, alt, onDisplay, onError, rounded, ...props }: ImageProps & { status: 'error' | 'loaded' | 'loading', source?: ImageSource, alt: string, onDisplay: () => void, onError: () => void, rounded?: boolean } & ImageProps) => {
+const ImageComponent = ({ status, source, alt, onDisplay, onError, borderRadius = 6, ...props }: ImageProps & { status: 'error' | 'loaded' | 'loading', source?: ImageSource, alt: string, onDisplay: () => void, onError: () => void, borderRadius?: number } & ImageProps) => {
 
     if (!source) return null
     if (status === 'error') return null
@@ -116,7 +125,7 @@ const ImageComponent = ({ status, source, alt, onDisplay, onError, rounded, ...p
             flex: 1,
             width: '100%',
             height: '100%',
-            borderRadius: rounded ? 40 : 6,
+            borderRadius: borderRadius,
             aspectRatio: 1,
         }}
         onDisplay={onDisplay}

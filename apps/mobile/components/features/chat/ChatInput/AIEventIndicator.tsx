@@ -44,7 +44,7 @@ const AIEventIndicator = ({ channelID }: Props) => {
             entering={FadeInDown}
             exiting={FadeOutDown}>
             <SpinningLoader size={20} />
-            <Text className='text-base text-muted-foreground'>AI is thinking...</Text>
+            <Text className='text-base text-muted-foreground'>{aiEvent}</Text>
         </Animated.View>
     )
 }

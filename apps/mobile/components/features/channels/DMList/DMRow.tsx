@@ -13,6 +13,7 @@ import utc from 'dayjs/plugin/utc'
 import timezone from 'dayjs/plugin/timezone'
 import advancedFormat from 'dayjs/plugin/advancedFormat'
 import relativeTime from 'dayjs/plugin/relativeTime';
+import UnreadCountBadge from "@components/common/Badge/UnreadCountBadge"
 
 dayjs.extend(utc)
 dayjs.extend(timezone)
@@ -90,12 +91,7 @@ const DMRow = ({ dm }: { dm: DMChannelWithUnreadCount }) => {
                                 <Text className='text-sm text-muted-foreground line-clamp-1'
                                     style={{ fontWeight: isUnread ? '500' : '400' }}>{lastMessageContent}</Text>
                             </View>
-                            {(dm.unread_count && dm.unread_count > 0) ?
-                                <View className='px-1.5 py-0.5 rounded-md bg-primary/20 dark:bg-primary'>
-                                    <Text className='text-[13px] text-primary dark:text-white font-semibold'>{dm.unread_count}</Text>
-                                </View>
-                                : null
-                            }
+                            {dm.unread_count && dm.unread_count > 0 ? <UnreadCountBadge count={dm.unread_count} prominent /> : null}
                         </View>
                     </View>
                 </>}

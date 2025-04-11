@@ -15,11 +15,10 @@ interface DeleteMessageProps {
 
 const DeleteMessage = ({ message, onClose }: DeleteMessageProps) => {
 
-    const { deleteMessage, loading } = useMessageDelete(message)
+    const { deleteMessage, loading } = useMessageDelete(message, onClose)
 
     const onDelete = () => {
         deleteMessage()
-            .then(() => onClose())
     }
 
     const onMessageDelete = useCallback(() => {
@@ -44,7 +43,7 @@ const DeleteMessage = ({ message, onClose }: DeleteMessageProps) => {
 
 export default DeleteMessage
 
-const useMessageDelete = (message: Message) => {
+const useMessageDelete = (message: Message, onDelete: () => void) => {
 
     const { mutate } = useSWRConfig()
 
@@ -52,11 +51,14 @@ const useMessageDelete = (message: Message) => {
 
     const deleteMessage = async () => {
 
+        const messageID = message.name
+        const channelID = message.channel_id
+
         const removeMessageFromCache = (data?: GetMessagesResponse): GetMessagesResponse => {
 
             const existingMessages = data?.message.messages ?? []
 
-            const newMessages = existingMessages.filter((m) => m.name !== message.name)
+            const newMessages = existingMessages.filter((m) => m.name !== messageID)
 
             return {
                 message: {
@@ -67,10 +69,15 @@ const useMessageDelete = (message: Message) => {
             }
         }
 
+
+
         // Delete the message optimistically
-        return mutate({ path: `get_messages_for_channel_${message.channel_id}` }, async (data?: GetMessagesResponse) => {
+        return mutate({ path: `get_messages_for_channel_${channelID}` }, async (data?: GetMessagesResponse) => {
             // Make the request
-            return deleteDoc('Raven Message', message.name).then(() => {
+            // Call the onDelete callback after the request is made
+            // This is because we can close the bottom sheet since we have optimistic updates anyway
+            onDelete()
+            return deleteDoc('Raven Message', messageID).then(() => {
                 toast.success('Message deleted', {
                     duration: 500,
                 })

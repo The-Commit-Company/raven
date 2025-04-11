@@ -11,7 +11,7 @@ import { NavLink } from 'react-router-dom'
 
 export const SettingsSidebar = () => {
     return (
-        <Box className="h-[calc(100vh-57px)] fixed w-64 border-r pt-2 border-gray-4 dark:border-gray-4">
+        <Box className="h-[calc(100vh-57px)] overflow-y-auto fixed w-64 border-r pt-2 border-gray-4 dark:border-gray-4">
             <Flex direction="column" gap='2' className='px-4'>
                 <SettingsGroup title="My Account" icon={LuCircleUserRound}>
                     <SettingsSidebarItem title="Profile" to='profile' />

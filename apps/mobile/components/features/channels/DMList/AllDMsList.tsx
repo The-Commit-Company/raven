@@ -27,7 +27,10 @@ const AllDMsList = () => {
     const [searchQuery, setSearchQuery] = useState('')
     const debouncedSearchQuery = useDebounce(searchQuery, 250)
     const filteredDMs = useMemo(() => {
-        return allDMs.filter(dm => dm.peer_user_id.toLowerCase().includes(debouncedSearchQuery.toLowerCase()))
+        return allDMs.filter(dm => {
+            if (!dm.peer_user_id) return false
+            return dm.peer_user_id?.toLowerCase().includes(debouncedSearchQuery.toLowerCase())
+        })
     }, [allDMs, debouncedSearchQuery])
 
     if (isLoading) {
