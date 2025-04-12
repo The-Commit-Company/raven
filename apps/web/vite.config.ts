@@ -11,6 +11,13 @@ export default defineConfig({
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
+      "@lib": path.resolve(__dirname, "./src/lib"),
+      "@components": path.resolve(__dirname, "./src/components"),
+      "@hooks": path.resolve(__dirname, "./src/hooks"),
+      "@pages": path.resolve(__dirname, "./src/pages"),
+      "@assets": path.resolve(__dirname, "./src/assets"),
+      "@raven/types": path.resolve(__dirname, "../../packages/types"),
+      "@raven/lib": path.resolve(__dirname, "../../packages/lib"),
     },
   },
   server: {

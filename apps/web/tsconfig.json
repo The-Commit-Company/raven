@@ -11,8 +11,27 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "@/*": [
-        "./src/*"
+      /** Add all packages to the paths */
+      "@raven/types/*": [
+        "../../packages/types/*"
+      ],
+      "@raven/lib/*": [
+        "../../packages/lib/*"
+      ],
+      "@assets/*": [
+        "./src/assets/*"
+      ],
+      "@components/*": [
+        "./src/components/*"
+      ],
+      "@hooks/*": [
+        "./src/hooks/*"
+      ],
+      "@lib/*": [
+        "./src/lib/*"
+      ],
+      "@pages/*": [
+        "./src/pages/*"
       ]
     }
   }
