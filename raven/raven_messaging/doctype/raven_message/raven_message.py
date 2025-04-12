@@ -97,6 +97,9 @@ class RavenMessage(Document):
 
 		self.content = text_content
 
+		if not self.content and self.link_doctype and self.link_document:
+			self.content = f"{self.link_doctype} - {self.link_document}"
+
 	def extract_mentions(self, soup):
 		"""
 		Extract all user mentions from the HTML content
