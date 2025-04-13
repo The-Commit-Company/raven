@@ -21,6 +21,8 @@ export interface RavenDocumentNotification{
 	send_alert_on: "New Document" | "Update" | "Submit" | "Cancel" | "Delete"
 	/**	Document Type : Link - DocType	*/
 	document_type: string
+	/**	Do not attach document with message : Check - If enabled, the message won't have a document preview	*/
+	do_not_attach_doc?: 0 | 1
 	/**	Condition : Code - Optional: The alert will be sent if this expression is true	*/
 	condition?: string
 	/**	Recipients : Table - Raven Document Notification Recipients	*/

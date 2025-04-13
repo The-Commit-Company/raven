@@ -1,9 +1,9 @@
-import { Box, Button, Dialog, Flex, IconButton, Tooltip } from '@radix-ui/themes'
+import { Box, Button, Dialog, Flex, IconButton, Text, TextArea, Tooltip } from '@radix-ui/themes'
 import { DEFAULT_BUTTON_STYLE, ICON_PROPS } from './ToolPanel'
 import { LuFileBox } from 'react-icons/lu'
 import { FormProvider, useForm } from 'react-hook-form'
 import LinkFormField from '@/components/common/LinkField/LinkFormField'
-import { ErrorText } from '@/components/common/Form'
+import { ErrorText, Label } from '@/components/common/Form'
 import { useBoolean } from '@/hooks/useBoolean'
 import clsx from 'clsx'
 import { useFrappeCreateDoc } from 'frappe-react-sdk'
@@ -43,7 +43,8 @@ const DocumentLinkButton = ({ channelID }: { channelID: string }) => {
 
 interface DocumentLinkFormData {
     doctype: string
-    docname: string
+    docname: string,
+    message: string
 }
 
 const DocumentLinkForm = ({ channelID, onClose }: { channelID: string, onClose: () => void }) => {
@@ -71,6 +72,7 @@ const DocumentLinkForm = ({ channelID, onClose }: { channelID: string, onClose: 
         createDoc('Raven Message', {
             message_type: 'Text',
             channel_id: channelID,
+            text: data.message,
             link_doctype: data.doctype,
             link_document: data.docname
         } as RavenMessage)
@@ -88,6 +90,7 @@ const DocumentLinkForm = ({ channelID, onClose }: { channelID: string, onClose: 
         <FormProvider {...methods}>
             <Stack gap='2'>
                 {error && <ErrorBanner error={error} />}
+
                 <Box width='100%'>
                     <Flex direction='column' gap='2'>
                         <LinkFormField
@@ -126,6 +129,13 @@ const DocumentLinkForm = ({ channelID, onClose }: { channelID: string, onClose: 
                 <div className={clsx('transition-all duration-500', docname ? 'opacity-100' : 'opacity-0')}>
                     {doctype && docname && <DoctypeLinkRenderer doctype={doctype} docname={docname} />}
                 </div>
+
+                <Box width='100%'>
+                    <Flex direction='column' gap='0'>
+                        <Label>Message <Text as='span' size='1' color='gray'>(Optional)</Text></Label>
+                        <TextArea {...methods.register('message')} placeholder='Enter a message to send with the document' />
+                    </Flex>
+                </Box>
 
                 <Flex gap="3" mt="6" justify="end" align='center'>
                     <Dialog.Close disabled={loading}>
