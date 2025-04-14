@@ -204,7 +204,7 @@ export const MessageItem = ({ message, setDeleteMessage, isHighlighted, onReplyM
                                     {message.is_pinned === 1 && <Flex className='text-accent-9 text-xs' gap={'1'} align={'center'}><RiPushpinFill size='12' /> Pinned</Flex>}
                                     {/* If it's a reply, then show the linked message */}
                                     {linked_message && replied_message_details && <ReplyMessageBox
-                                        className='sm:min-w-[32rem] cursor-pointer mb-1'
+                                        className='sm:min-w-[28rem] cursor-pointer mb-1'
                                         role='button'
                                         onClick={() => onReplyMessageClick(linked_message)}
                                         message={replyMessageDetails} />
