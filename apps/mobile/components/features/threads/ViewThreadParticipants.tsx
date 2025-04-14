@@ -18,7 +18,6 @@ const ViewThreadParticipants = ({ participants }: ViewThreadParticipantsProps) =
     return (
         <View className={'flex flex-row items-center animate-fadein'}>
             {participants.map((member, index) => {
-                const user = useGetUser(member.user_id)
                 if (index < 3)
                     return (
                         <View
@@ -27,14 +26,7 @@ const ViewThreadParticipants = ({ participants }: ViewThreadParticipantsProps) =
                                 marginLeft: index === 0 ? 0 : -4,
                                 zIndex: index
                             }}>
-                            <UserAvatar
-                                src={user?.user_image ?? undefined}
-                                alt={user?.full_name ?? member.user_id}
-                                avatarProps={{ className: "w-6 h-6 rounded-full" }}
-                                fallbackProps={{ className: "rounded-full" }}
-                                textProps={{ className: "text-xs font-semibold" }}
-                                borderRadius={40}
-                            />
+                            <ThreadParticipant participant={member} />
                         </View>
                     )
             })}
@@ -51,4 +43,19 @@ const ViewThreadParticipants = ({ participants }: ViewThreadParticipantsProps) =
     )
 }
 
+const ThreadParticipant = ({ participant }: { participant: { user_id: string } }) => {
+    const user = useGetUser(participant.user_id)
+    return (
+        <View>
+            <UserAvatar
+                src={user?.user_image ?? undefined}
+                alt={user?.full_name ?? participant.user_id}
+                avatarProps={{ className: "w-6 h-6 rounded-full" }}
+                fallbackProps={{ className: "rounded-full" }}
+                textProps={{ className: "text-xs font-semibold" }}
+                borderRadius={40}
+            />
+        </View>
+    )
+}
 export default ViewThreadParticipants
