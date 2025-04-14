@@ -2609,10 +2609,10 @@
   resolved "https://registry.yarnpkg.com/@jsamr/react-native-li/-/react-native-li-2.3.1.tgz#12a5b5f6e3971cec77b96bee58104eed0ae9314a"
   integrity sha512-Qbo4NEj48SQ4k8FZJHFE2fgZDKTWaUGmVxcIQh3msg5JezLdTMMHuRRDYctfdHI6L0FZGObmEv3haWbIvmol8w==
 
-"@legendapp/list@^1.0.0-beta.34":
-  version "1.0.0-beta.35"
-  resolved "https://registry.yarnpkg.com/@legendapp/list/-/list-1.0.0-beta.35.tgz#60cb7c3cb31bcecaffd2944a3fc963457ed77466"
-  integrity sha512-ydrT/LcQqEsIaPzYk9BmV+rFr40LFQ/0DySRGml9koQ4LwlGHcBsu6wQkQUBanSViFmMSzzRKL5plsDN219iHg==
+"@legendapp/list@^1.0.0-beta.42":
+  version "1.0.0-beta.42"
+  resolved "https://registry.yarnpkg.com/@legendapp/list/-/list-1.0.0-beta.42.tgz#ad3150909220a012c3e0fbd8d555a9efe2187d5e"
+  integrity sha512-lkjp+ZBuwGwkv4EbMDTXC0ZVHHptSFiQWxP1+2xZ9n69c4s/JEnnAm9wiDYsXvb1WOSbgnvXxc2qQ3cmiSsV5Q==
 
 "@mixmark-io/domino@^2.2.0":
   version "2.2.0"

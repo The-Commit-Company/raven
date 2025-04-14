@@ -122,6 +122,7 @@ const ChatInput = ({ channelID, onSendMessage }: ChatInputProps) => {
                     style={{
                         padding: 12,
                         color: colors.foreground,
+                        maxHeight: 250,
                         fontSize: 16,
                     }}
                     containerStyle={{

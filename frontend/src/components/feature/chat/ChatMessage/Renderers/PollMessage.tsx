@@ -52,7 +52,7 @@ const PollMessageBox = ({ data, messageID }: { data: Poll, messageID: string }) 
         group-hover:transition-all
         group-hover:delay-100
         min-w-64
-        max-w-96
+        max-w-[420px]
         w-full
         rounded-md">
             <Flex direction='column' gap='2' p='2' className="w-full">
@@ -116,7 +116,7 @@ const PollOption = ({ data, option }: { data: Poll, option: RavenPollOption }) =
     const width = `${percentage}%`
 
     return (
-        <Flex key={option.name} justify='between' align='center' width='100%' className={'relative'}>
+        <Flex key={option.name} justify='between' align='center' className={'relative'}>
             <Box position='absolute' top='0' left='0'
                 data-is-current-user-vote={isCurrentUserVote}
                 className={`bg-gray-5
@@ -127,8 +127,8 @@ const PollOption = ({ data, option }: { data: Poll, option: RavenPollOption }) =
                             dark:data-[is-current-user-vote=true]:bg-accent-a6`}
                 style={{ width: triggerAnimation ? width : 0, transition: 'width 0.5s ease-in-out' }}>
             </Box>
-            <Text as='span' size='2' className="px-2 py-1 z-10" weight={isCurrentUserVote ? 'bold' : 'regular'}>{option.option}</Text>
-            <Text as='span' size='2' className="px-2 py-1 z-10" weight={isCurrentUserVote ? 'bold' : 'regular'}>{percentage.toFixed(1)}%</Text>
+            <Text as='span' size='2' className="px-2 py-1 z-10 overflow-hidden text-ellipsis" weight={isCurrentUserVote ? 'bold' : 'regular'}>{option.option}</Text>
+            <Text as='span' size='2' className="px-2 py-1 z-10 w-[5ch] text-right" weight={isCurrentUserVote ? 'bold' : 'regular'}>{percentage.toFixed(1)}%</Text>
         </Flex>
     )
 }
@@ -153,10 +153,17 @@ const SingleChoicePoll = ({ data, messageID }: { data: Poll, messageID: string }
         <RadioGroup.Root>
             {data.poll.options.map(option => (
                 <div key={option.name}>
-                    <Text as="label" size="2">
-                        <Flex gap="2" p='2' className="rounded-sm hover:bg-accent-a2 dark:hover:bg-gray-5">
-                            <RadioGroup.Item disabled={data.poll.is_disabled ? true : false} value={option.name} onClick={() => onVoteSubmit(option)} />
-                            {option.option}
+                    <Text as="label" size="2" className="block w-full">
+                        <Flex gap="2" p='2' className="rounded-sm hover:bg-accent-a2 dark:hover:bg-gray-5 w-full">
+                            <RadioGroup.Item
+                                disabled={data.poll.is_disabled ? true : false}
+                                value={option.name}
+                                onClick={() => onVoteSubmit(option)}
+                                className="shrink-0"
+                            />
+                            <div className="min-w-0 flex-1">
+                                <span className="break-words overflow-hidden block">{option.option}</span>
+                            </div>
                         </Flex>
                     </Text>
                 </div>
@@ -199,10 +206,17 @@ const MultiChoicePoll = ({ data, messageID }: { data: Poll, messageID: string })
         <div>
             {data.poll.options.map(option => (
                 <div key={option.name}>
-                    <Text as="label" size="2">
-                        <Flex gap="2" p='2' className="rounded-sm hover:bg-accent-a2 dark:hover:bg-gray-5">
-                            <Checkbox disabled={data.poll.is_disabled ? true : false} value={option.name} onCheckedChange={(v) => handleCheckboxChange(option.name, v)} />
-                            {option.option}
+                    <Text as="label" size="2" className="block w-full">
+                        <Flex gap="2" p='2' className="rounded-sm hover:bg-accent-a2 dark:hover:bg-gray-5 w-full">
+                            <Checkbox
+                                disabled={data.poll.is_disabled ? true : false}
+                                value={option.name}
+                                onCheckedChange={(v) => handleCheckboxChange(option.name, v)}
+                                className="shrink-0"
+                            />
+                            <div className="min-w-0 flex-1">
+                                <span className="break-words overflow-hidden block">{option.option}</span>
+                            </div>
                         </Flex>
                     </Text>
                 </div>
