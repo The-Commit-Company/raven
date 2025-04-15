@@ -12,7 +12,11 @@ from pytz import timezone, utc
 
 from raven.ai.ai import handle_ai_thread_message, handle_bot_dm
 from raven.api.raven_channel import get_peer_user
-from raven.notification import send_notification_to_topic, send_notification_to_user
+from raven.notification import (
+	send_notification_for_message,
+	send_notification_to_topic,
+	send_notification_to_user,
+)
 from raven.utils import refresh_thread_reply_count, track_channel_visit
 
 
@@ -92,6 +96,9 @@ class RavenMessage(Document):
 					break
 
 		self.content = text_content
+
+		if not self.content and self.link_doctype and self.link_document:
+			self.content = f"{self.link_doctype} - {self.link_document}"
 
 	def extract_mentions(self, soup):
 		"""
@@ -182,6 +189,8 @@ class RavenMessage(Document):
 
 		if self.message_type == "Text":
 			self.handle_ai_message()
+
+		self.send_push_notification()
 
 	def handle_ai_message(self):
 
@@ -354,34 +363,23 @@ class RavenMessage(Document):
 		if self.message_type == "System":
 			return
 
-		channel_doc = frappe.get_cached_doc("Raven Channel", self.channel_id)
-
-		if channel_doc.is_direct_message:
-			if not channel_doc.is_self_message:
-				# The message was sent on a direct message channel
-				self.send_notification_for_direct_message()
+		if frappe.request and hasattr(frappe.request, "after_response"):
+			frappe.request.after_response.add(lambda: send_notification_for_message(self))
 		else:
-			# The message was sent on a channel
-			self.send_notification_for_channel_message()
-			# channel_type = frappe.get_cached_value("Raven Channel", self.channel_id, "channel_type")
+			send_notification_for_message(self)
 
 	def get_notification_message_content(self):
 		"""
 		Gets the content of the message for the push notification
 		"""
 		if self.message_type == "File":
-			file_name = self.file.split("/")[-1]
-			return f"📄 Sent a file - {file_name}"
+			return f"📄 Sent a file - {self.content}"
 		elif self.message_type == "Image":
 			return "📷 Sent a photo"
 		elif self.message_type == "Poll":
 			return "📊 Sent a poll"
 		elif self.text:
-			# Check if the message is a GIF
-			if "<img src=https://media.tenor.com" in self.text:
-				return "Sent a GIF"
-			else:
-				return self.text
+			return self.content
 
 	def get_message_owner_name(self):
 		"""
@@ -619,8 +617,6 @@ class RavenMessage(Document):
 				# track the visit of the user to the channel if a new message is created
 				track_channel_visit(channel_id=self.channel_id, user=self.owner)
 				# frappe.enqueue(method=track_channel_visit, channel_id=self.channel_id, user=self.owner)
-
-			self.send_push_notification()
 
 			# If this is a new messagge (only applicable for files in on_update), then handle the AI message
 			if self.message_type == "File" or self.message_type == "Image":

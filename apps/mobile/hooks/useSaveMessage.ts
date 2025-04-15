@@ -7,7 +7,7 @@ const useSaveMessage = (message: Message, user?: string, saved = true) => {
 
     const { call } = useContext(FrappeContext) as FrappeConfig
 
-    const [isSaved, setIsSaved] = useState(user ? JSON.parse(message?._liked_by ?? '[]').includes(user) : saved)
+    const [isSaved, setIsSaved] = useState(user ? JSON.parse(message?._liked_by ? message?._liked_by : '[]').includes(user) : saved)
     const [isLoading, setIsLoading] = useState(false)
 
     const save = useCallback(() => {

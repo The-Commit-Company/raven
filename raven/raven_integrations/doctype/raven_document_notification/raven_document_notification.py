@@ -14,6 +14,8 @@ FORBIDDEN_DOCUMENT_TYPES = frozenset("Raven Message")
 
 class RavenDocumentNotification(Document):
 	# begin: auto-generated types
+	# ruff: noqa
+
 	# This code is auto-generated. Do not modify anything in this block.
 
 	from typing import TYPE_CHECKING
@@ -26,6 +28,7 @@ class RavenDocumentNotification(Document):
 		)
 
 		condition: DF.Code | None
+		do_not_attach_doc: DF.Check
 		document_type: DF.Link
 		enabled: DF.Check
 		message: DF.Code
@@ -33,6 +36,7 @@ class RavenDocumentNotification(Document):
 		recipients: DF.Table[RavenDocumentNotificationRecipients]
 		send_alert_on: DF.Literal["New Document", "Update", "Submit", "Cancel", "Delete"]
 		sender: DF.Link
+	# ruff: noqa
 	# end: auto-generated types
 
 	def validate(self):
@@ -109,8 +113,8 @@ class RavenDocumentNotification(Document):
 			bot.send_message(
 				channel_id=channel,
 				text=message,
-				link_doctype=link_doctype,
-				link_document=link_document,
+				link_doctype=link_doctype if not self.do_not_attach_doc else None,
+				link_document=link_document if not self.do_not_attach_doc else None,
 				markdown=True,
 				notification_name=self.name,
 			)
@@ -119,8 +123,8 @@ class RavenDocumentNotification(Document):
 			bot.send_direct_message(
 				user_id=user,
 				text=message,
-				link_doctype=link_doctype,
-				link_document=link_document,
+				link_doctype=link_doctype if not self.do_not_attach_doc else None,
+				link_document=link_document if not self.do_not_attach_doc else None,
 				markdown=True,
 				notification_name=self.name,
 			)
