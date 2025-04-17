@@ -27,7 +27,11 @@ def after_insert(doc, method):
 
 	# Get the workspace based on the company of the department else use the default workspace
 	workspace = frappe.get_list(
-		"Raven HR Company Workspace", {"company": doc.company}, pluck="raven_workspace", limit=1
+		"Raven HR Company Workspace",
+		{"company": doc.company},
+		pluck="raven_workspace",
+		limit=1,
+		parent_doctype="Raven Settings",
 	)
 
 	if workspace:
