@@ -26,8 +26,8 @@ def after_insert(doc, method):
 	department_channel.linked_document = doc.name
 
 	# Get the workspace based on the company of the department else use the default workspace
-	workspace = frappe.get_list(
-		"Raven HR Company Workspace", {"company": doc.company}, pluck="raven_workspace", limit=1
+	workspace = frappe.get_all(
+		"Raven HR Company Workspace", filters={"company": doc.company}, pluck="raven_workspace", limit=1
 	)
 
 	if workspace:
