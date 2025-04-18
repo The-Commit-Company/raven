@@ -340,7 +340,12 @@ def raven_workspace_query(user):
 		"Raven Workspace Member", filters={"user": user}, fields=["workspace"]
 	)
 
-	return f"`tabRaven Workspace`.name in ({', '.join([frappe.db.escape(member.workspace) for member in workspace_members])}) OR `tabRaven Workspace`.type = 'Public'"
+	workspace_names = [frappe.db.escape(member.workspace) for member in workspace_members]
+
+	if workspace_names:
+		return f"`tabRaven Workspace`.name in ({', '.join(workspace_names)}) OR `tabRaven Workspace`.type = 'Public'"
+	else:
+		return "`tabRaven Workspace`.type = 'Public'"
 
 
 def raven_workspace_member_query(user):
@@ -352,7 +357,12 @@ def raven_workspace_member_query(user):
 		"Raven Workspace Member", filters={"user": user}, fields=["workspace"]
 	)
 
-	return f"`tabRaven Workspace Member`.workspace in ({', '.join([frappe.db.escape(member.workspace) for member in workspace_members])})"
+	workspace_names = [frappe.db.escape(member.workspace) for member in workspace_members]
+
+	if workspace_names:
+		return f"`tabRaven Workspace Member`.workspace in ({', '.join(workspace_names)})"
+	else:
+		return "`tabRaven Workspace`.type = 'Public'"
 
 
 def raven_channel_query(user):
