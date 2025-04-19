@@ -3,7 +3,7 @@
 
 frappe.ui.form.on("Raven Incoming Webhook", {
 	refresh(frm) {
-		const url = new URL(`/api/method/raven.api.raven_incoming_webhook.ingest/${frm.doc.name}`, window.location.origin);
+		const url = new URL(`/api/method/raven.webhook/${frm.doc.name}`, window.location.origin);
 		frm.set_value("webhook_url", url.toString());
 	},
 });
