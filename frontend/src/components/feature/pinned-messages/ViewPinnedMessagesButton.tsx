@@ -3,6 +3,7 @@ import { RiPushpinLine } from 'react-icons/ri'
 import { useState } from 'react'
 import { DIALOG_CONTENT_CLASS } from '@/utils/layout/dialog'
 import { PinnedMessageModalContent } from './PinnedMessageModalContent'
+import clsx from 'clsx'
 
 interface ViewPinnedMessagesButtonProps {
     pinnedMessagesString: string
@@ -30,7 +31,7 @@ export const ViewPinnedMessagesButton = ({ pinnedMessagesString }: ViewPinnedMes
                     <RiPushpinLine size='14' />{pinnedMessages}
                 </Button>
             </Dialog.Trigger>
-            <Dialog.Content className={DIALOG_CONTENT_CLASS}>
+            <Dialog.Content className={clsx(DIALOG_CONTENT_CLASS, 'sm:min-w-[720px]')}>
                 <PinnedMessageModalContent onClose={onClose} />
             </Dialog.Content>
         </Dialog.Root>

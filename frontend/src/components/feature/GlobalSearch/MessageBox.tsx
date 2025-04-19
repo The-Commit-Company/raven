@@ -18,7 +18,7 @@ export const MessageBox = ({ message, handleScrollToMessage }: MessageBoxProps) 
     const { owner, creation, channel_id } = message
     const users = useGetUserRecords()
 
-    const user = useGetUser(owner)
+    const user = useGetUser(message.is_bot_message && message.bot ? message.bot : message.owner)
     const { channel } = useCurrentChannelData(channel_id)
     const channelData = channel?.channelData
 
