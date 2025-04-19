@@ -98,7 +98,7 @@ It takes care of installation, setup, upgrades, monitoring, maintenance and supp
 
 ### Self Hosting
 
-Follow these steps to set up Frappe Learning in production:
+Follow these steps to set up Raven in production:
 
 **Step 1**: Download the easy install script
 
@@ -110,9 +110,9 @@ wget https://frappe.io/easy-install.py
 
 ```bash
 python3 ./easy-install.py deploy \
-    --project=learning_prod_setup \
+    --project=raven_prod_setup \
     --email=your_email.example.com \
-    --image=ghcr.io/The-Commit-Company/raven \
+    --image=ghcr.io/the-commit-company/raven \
     --version=stable \
     --app=raven \
     --sitename subdomain.domain.tld
