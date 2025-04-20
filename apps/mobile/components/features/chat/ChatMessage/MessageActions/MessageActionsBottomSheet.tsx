@@ -9,10 +9,11 @@ import { quickReactionEmojisAtom } from "@lib/preferences";
 interface MessageActionsBottomSheetProps {
     messageActionsSheetRef: React.RefObject<BottomSheetModal>
     message: Message | null
-    handleClose: () => void
+    handleClose: () => void,
+    isThread?: boolean
 }
 
-const MessageActionsBottomSheet: React.FC<MessageActionsBottomSheetProps> = ({ messageActionsSheetRef, message, handleClose }) => {
+const MessageActionsBottomSheet: React.FC<MessageActionsBottomSheetProps> = ({ messageActionsSheetRef, message, handleClose, isThread = false }) => {
 
     // Loading this here since the app crashes if it's loaded inside the sheet
     // App crash message: "Handler for tag <number> does not exist"
@@ -25,7 +26,8 @@ const MessageActionsBottomSheet: React.FC<MessageActionsBottomSheetProps> = ({ m
                     {message && <MessageActions
                         message={message}
                         quickReactionEmojis={quickReactionEmojis}
-                        onClose={handleClose} />}
+                        onClose={handleClose}
+                        isThread={isThread} />}
                 </View>
             </BottomSheetView>
         </Sheet>

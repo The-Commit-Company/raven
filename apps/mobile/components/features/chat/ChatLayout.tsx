@@ -154,6 +154,7 @@ const ChatLayout = ({ channelID, isThread = false, pinnedMessagesString }: Props
             <MessageActionsBottomSheet
                 messageActionsSheetRef={messageActionsSheetRef}
                 message={selectedMessage}
+                isThread={isThread}
                 handleClose={handleSheetClose}
             />
         </>
