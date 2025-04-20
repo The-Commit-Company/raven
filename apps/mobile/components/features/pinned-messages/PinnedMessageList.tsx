@@ -31,7 +31,7 @@ const PinnedMessageList = () => {
             renderItem={({ item }) => <PinnedMessageItem message={item} />}
             keyExtractor={(item) => item.name}
             estimatedItemSize={100}
-            contentContainerStyle={{ paddingTop: 8, backgroundColor: colors.background }}
+            contentContainerStyle={{ paddingTop: 8, paddingBottom: 32, backgroundColor: colors.background }}
         />
     )
 }

@@ -6,6 +6,7 @@ import useCurrentRavenUser from "@raven/lib/hooks/useCurrentRavenUser"
 import { DMChannelListItem } from "@raven/types/common/ChannelListItem"
 import { useLocalSearchParams } from "expo-router"
 import { useChannelList } from "@raven/lib/providers/ChannelListProvider"
+import useUnreadThreadsCount from "./useUnreadThreadsCount"
 
 /**
  * Hook to read the unread message count for all channels
@@ -177,7 +178,7 @@ export const useFetchUnreadMessageCount = () => {
 }
 
 
-export const useTrackChannelVisit = (channelID: string) => {
+export const useTrackChannelVisit = (channelID: string, isThread: boolean = false) => {
 
     /** If the user has already loaded all the latest messages and exits the channel, we update the timestamp of last visit  */
 
@@ -185,34 +186,62 @@ export const useTrackChannelVisit = (channelID: string) => {
 
     const { updateCount } = useUnreadMessageCount()
 
-    const updateUnreadCountToZero = useCallback((channel_id?: string) => {
+    const { mutate: updateUnreadThreadsCount } = useUnreadThreadsCount()
 
-        updateCount(d => {
-            if (d) {
-                const newChannels = d.message.map(c => {
-                    if (c.name === channel_id)
-                        return {
-                            ...c,
-                            unread_count: 0
-                        }
-                    return c
-                })
+    const updateUnreadCountToZero = useCallback((channel_id?: string, isThread: boolean = false) => {
 
-                return {
-                    message: newChannels
+        if (!isThread) {
+            updateCount(d => {
+                if (d) {
+                    const newChannels = d.message.map(c => {
+                        if (c.name === channel_id)
+                            return {
+                                ...c,
+                                unread_count: 0
+                            }
+                        return c
+                    })
+
+                    return {
+                        message: newChannels
+                    }
+
+                } else {
+                    return d
                 }
 
-            } else {
-                return d
-            }
+            }, { revalidate: false })
+        } else {
+            updateUnreadThreadsCount(d => {
+                if (d) {
+                    const newThreads = d.message.map(c => {
+                        if (c.name === channel_id)
+                            return {
+                                ...c,
+                                unread_count: 0
+                            }
+                        return c
+                    })
 
-        }, { revalidate: false })
+                    return {
+                        message: newThreads
+                    }
+
+                } else {
+                    return d
+                }
+            }, {
+                revalidate: false
+            })
+        }
+
+
 
     }, [updateCount])
 
 
     const trackVisit = useCallback(() => {
-        updateUnreadCountToZero(channelID)
+        updateUnreadCountToZero(channelID, isThread)
         call({ channel_id: channelID })
     }, [channelID, call, updateUnreadCountToZero])
 

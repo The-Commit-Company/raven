@@ -11,6 +11,7 @@ import UserAvatar from "@components/layout/UserAvatar"
 import { getFileName } from "@raven/lib/utils/operations"
 import UniversalFileIcon from "@components/common/UniversalFileIcon"
 import BarChart from "@assets/icons/BarChart.svg"
+import { useMemo } from "react"
 
 
 const ReplyMessagePreview = ({ channelID, siteID }: { channelID: string, siteID: string }) => {
@@ -47,7 +48,23 @@ const ReplyMessagePreview = ({ channelID, siteID }: { channelID: string, siteID:
 }
 
 const TextMessageBlock = ({ text }: { text: string }) => {
-    return <Text className="text-card-foreground text-base line-clamp-3 text-ellipsis">{text}</Text>
+
+    // If the text is too long without any spaces, it will break the layout
+    // SO we need to add a space somewhere in the text to break it
+    const textWithSpace = useMemo(() => {
+        if (text.length > 32) {
+            // If there's no space in the text, add a space
+            if (!text.includes(" ")) {
+                return text.slice(0, 32) + " " + text.slice(32)
+            } else {
+                return text
+            }
+        }
+
+        return text
+
+    }, [text])
+    return <Text className="text-card-foreground text-base line-clamp-3 text-ellipsis">{textWithSpace}</Text>
 }
 
 const ImageMessageBlock = ({ message }: { message: ImageMessage }) => {
