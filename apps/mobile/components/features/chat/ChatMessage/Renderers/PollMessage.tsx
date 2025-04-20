@@ -115,10 +115,10 @@ const PollOption = ({ data, option }: { data: Poll; option: RavenPollOption }) =
                 className={`absolute top-0 left-0 h-full rounded-l ${Math.round(percentage) === 100 ? 'rounded-r' : ''}`}
                 style={animatedStyle}
             />
-            <Text className={`px-2.5 py-1.5 w-[76%] text-sm ${isCurrentUserVote ? 'font-semibold' : ''}`}>
+            <Text className={`px-2.5 py-1.5 w-[70%] text-sm ${isCurrentUserVote ? 'font-semibold' : ''}`}>
                 {option.option}
             </Text>
-            <Text className={`px-2.5 py-1.5 text-sm w-[24%] text-right ${isCurrentUserVote ? 'font-semibold' : ''}`}>
+            <Text className={`px-2.5 py-1.5 text-sm w-[30%] text-right ${isCurrentUserVote ? 'font-semibold' : ''}`}>
                 {percentage.toFixed(1)}%
             </Text>
         </View>
