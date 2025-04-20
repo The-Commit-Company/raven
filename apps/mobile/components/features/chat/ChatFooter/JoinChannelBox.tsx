@@ -26,7 +26,7 @@ export const JoinChannelBox = ({ channelID, isThread, user }: JoinChannelBoxProp
     }
 
     return (
-        <View className="flex-col gap-2 items-center border-t border-l border-r border-border rounded-2xl px-4 py-4 android:pb-6">
+        <View className="flex-col gap-2 items-center border-t border-l border-r border-border rounded-2xl px-4 py-4">
             {error && <ErrorBanner error={error} />}
             <Text className="text-sm text-muted-foreground">You are not a member of this {isThread ? 'thread' : 'channel'}.</Text>
             <Button
