@@ -126,7 +126,7 @@ class RavenBot(Document):
 					)
 				)
 			else:
-				frappe.throw(e)
+				frappe.throw(str(e))
 
 		self.db_set("openai_assistant_id", assistant.id)
 
