@@ -3,10 +3,9 @@ import { BsTrash } from "react-icons/bs"
 import useCurrentRavenUser from "@/hooks/useCurrentRavenUser"
 import { useGetUser } from "@/hooks/useGetUser"
 import dayjs from "dayjs"
-import { useFrappePostCall } from "frappe-react-sdk"
+import { useFrappeGetDoc, useFrappePostCall } from "frappe-react-sdk"
 import { useFrappeDeleteDoc } from "frappe-react-sdk"
-import { useFrappeGetCall, useSWRConfig } from "frappe-react-sdk"
-import { Message } from "../../../../../types/Messaging/Message"
+import { useSWRConfig } from "frappe-react-sdk";
 import { Badge, Flex, Separator, Text } from "@radix-ui/themes"
 import { toast } from "sonner"
 import { QuickActionButton } from "../chat/ChatMessage/MessageActions/QuickActions/QuickActionButton"
@@ -23,6 +22,7 @@ export interface Reminder {
     message_id: string
     channel_name: string
     is_direct_message: boolean
+    creation: string
 }
 
 const Reminder = ({
@@ -138,16 +138,16 @@ export default Reminder
 
 const ReminderWithMessage = ({ message_id, description }: { message_id: string, description: string }) => {
 
-    const { data } = useFrappeGetCall<{ message: Message }>("raven.api.raven_message.get_message", { message_id })
+    const { data: message, error } = useFrappeGetDoc('Raven Message', message_id)
 
-    const user = useGetUser(data?.message?.owner)
+    const user = useGetUser(message?.owner)
 
     return (
         <Flex gap='3'>
-            <MessageSenderAvatar userID={data?.message?.owner ?? ""} user={user} isActive={false} />
+            <MessageSenderAvatar userID={message?.owner ?? ""} user={user} isActive={false} />
             <Flex direction='column' gap='0' justify='center'>
-                <UserHoverCard user={user} userID={data?.message?.owner ?? ""} isActive={false} />
-                {data?.message && <MessageContent message={data?.message} user={user} />}
+                <UserHoverCard user={user} userID={message?.owner ?? ""} isActive={false} />
+                {message && <MessageContent message={message} user={user} />}
                 <Text as='span' size='1' color='gray' className='pt-1'>{description}</Text>
             </Flex>
         </Flex>

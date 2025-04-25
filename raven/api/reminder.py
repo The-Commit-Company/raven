@@ -85,6 +85,7 @@ def get_reminders(is_complete: bool):
 			raven_reminder.message_id,
 			raven_channel.channel_name,
 			raven_channel.is_direct_message,
+			raven_reminder.creation,
 		)
 		.where(raven_reminder.user_id == user)
 	)
