@@ -24,6 +24,7 @@ class RavenSettings(Document):
 		auto_add_system_users: DF.Check
 		auto_create_department_channel: DF.Check
 		company_workspace_mapping: DF.Table[RavenHRCompanyWorkspace]
+		config: DF.SmallText | None
 		department_channel_type: DF.Literal["Public", "Private"]
 		enable_ai_integration: DF.Check
 		enable_video_calling_via_livekit: DF.Check
@@ -41,6 +42,7 @@ class RavenSettings(Document):
 		show_if_a_user_is_on_leave: DF.Check
 		show_raven_on_desk: DF.Check
 		tenor_api_key: DF.Data | None
+		vapid_public_key: DF.Data | None
 	# ruff: noqa
 	# end: auto-generated types
 

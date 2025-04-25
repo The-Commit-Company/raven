@@ -129,6 +129,7 @@ const router = createBrowserRouter(
               <Route path=":ID" lazy={() => import('./pages/settings/MessageActions/ViewMessageAction')} />
             </Route>
             <Route path="mobile-app" lazy={() => import('./pages/settings/MobileApp')} />
+            <Route path="push-notifications" lazy={() => import('./pages/settings/PushNotifications')} />
             <Route path="help" lazy={() => import('./pages/settings/HelpAndSupport')} />
           </Route>
           <Route path=":workspaceID" element={<MainPage />}>

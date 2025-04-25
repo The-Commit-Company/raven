@@ -31,6 +31,8 @@
   "push_notification_server_url",
   "push_notification_api_key",
   "push_notification_api_secret",
+  "config",
+  "vapid_public_key",
   "video_calling_tab",
   "livekit_settings_section",
   "enable_video_calling_via_livekit",
@@ -172,6 +174,7 @@
    "fieldname": "push_notification_server_url",
    "fieldtype": "Data",
    "label": "Push Notification Server URL",
+   "length": 300,
    "mandatory_depends_on": "eval: doc.push_notification_service == \"Raven\";"
   },
   {
@@ -225,13 +228,28 @@
    "fieldtype": "Password",
    "label": "Push Notification API Secret",
    "mandatory_depends_on": "eval: doc.push_notification_service == \"Raven\";"
+  },
+  {
+   "fieldname": "config",
+   "fieldtype": "Small Text",
+   "hidden": 1,
+   "label": "Config",
+   "read_only": 1
+  },
+  {
+   "fieldname": "vapid_public_key",
+   "fieldtype": "Data",
+   "hidden": 1,
+   "label": "VAPID Public Key",
+   "length": 300,
+   "read_only": 1
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2025-04-25 15:33:38.275516",
+ "modified": "2025-04-25 20:17:56.336393",
  "modified_by": "Administrator",
  "module": "Raven",
  "name": "Raven Settings",

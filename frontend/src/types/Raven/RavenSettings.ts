@@ -43,6 +43,10 @@ export interface RavenSettings{
 	push_notification_api_key?: string
 	/**	Push Notification API Secret : Password	*/
 	push_notification_api_secret?: string
+	/**	Config : Small Text	*/
+	config?: string
+	/**	VAPID Public Key : Data	*/
+	vapid_public_key?: string
 	/**	Enable Video Calling via LiveKit : Check	*/
 	enable_video_calling_via_livekit?: 0 | 1
 	/**	LiveKit URL : Data	*/
