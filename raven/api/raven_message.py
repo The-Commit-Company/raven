@@ -93,11 +93,6 @@ def get_messages(channel_id):
 
 
 @frappe.whitelist()
-def get_message(message_id):
-	return frappe.get_doc("Raven Message", message_id)
-
-
-@frappe.whitelist()
 def save_message(message_id, add=False):
 	"""
 	Save the message as a bookmark
