@@ -3,7 +3,7 @@ import { useCurrentChannelData } from '@hooks/useCurrentChannelData';
 import { useColorScheme } from '@hooks/useColorScheme';
 import DMChannelHeader from '@components/features/chat/ChatHeader/DMChannelHeader';
 import ChannelHeader from '@components/features/chat/ChatHeader/ChannelHeader';
-import HeaderBackButton from '@components/common/HeaderBackButton';
+import HeaderBackButton from '@components/common/Buttons/HeaderBackButton';
 import ChatLayout from '@components/features/chat/ChatLayout';
 import CommonErrorBoundary from '@components/common/CommonErrorBoundary';
 
