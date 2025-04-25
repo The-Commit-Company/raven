@@ -9,7 +9,7 @@ import { RetractVote } from './RetractVote'
 import { toast } from 'sonner'
 import { getErrorMessage } from '@/components/layout/AlertBanner/ErrorBanner'
 import { AiOutlineEdit } from 'react-icons/ai'
-import { LuForward, LuLink, LuReply } from 'react-icons/lu'
+import { LuCalendarClock, LuForward, LuReply } from 'react-icons/lu'
 import { MdOutlineEmojiEmotions } from "react-icons/md";
 import { CreateThreadContextItem } from './QuickActions/CreateThreadButton'
 import { RiPushpinLine, RiUnpinLine } from 'react-icons/ri'
@@ -25,9 +25,10 @@ export interface MessageContextMenuProps {
     onViewReaction?: VoidFunction,
     onAttachDocument: VoidFunction,
     showThreadButton?: boolean,
-    selectedText?: string
+    selectedText?: string,
+    onRemindMe: VoidFunction
 }
-export const MessageContextMenu = ({ message, onDelete, onEdit, onReply, onForward, showThreadButton, onAttachDocument, onViewReaction, selectedText }: MessageContextMenuProps) => {
+export const MessageContextMenu = ({ message, onDelete, onEdit, onReply, onForward, showThreadButton, onAttachDocument, onViewReaction, selectedText, onRemindMe }: MessageContextMenuProps) => {
 
     const copy = useMessageCopy(message, selectedText)
     const { currentUser } = useContext(UserContext)
@@ -57,6 +58,14 @@ export const MessageContextMenu = ({ message, onDelete, onEdit, onReply, onForwa
                 </ContextMenu.Item>
                 {message && !message.is_thread && showThreadButton && <CreateThreadContextItem messageID={message.name} />}
                 <CopyMessageLink message={message} />
+
+                <ContextMenu.Item>
+                    <Flex gap='2' width='100%' onClick={onRemindMe}>
+                        <LuCalendarClock size='18' />
+                        Remind me about this
+                    </Flex>
+                </ContextMenu.Item>
+
                 <ContextMenu.Separator />
                 <ContextMenu.Group>
                     {(message.text || selectedText) &&

@@ -93,6 +93,11 @@ def get_messages(channel_id):
 
 
 @frappe.whitelist()
+def get_message(message_id):
+	return frappe.get_doc("Raven Message", message_id)
+
+
+@frappe.whitelist()
 def save_message(message_id, add=False):
 	"""
 	Save the message as a bookmark
@@ -181,7 +186,7 @@ def get_saved_messages():
 			raven_message._liked_by,
 			raven_channel.workspace,
 			raven_message.thumbnail_width,
-			raven_message.thumbnail_height
+			raven_message.thumbnail_height,
 		)
 		.where(raven_message._liked_by.like("%" + frappe.session.user + "%"))
 		.where(
