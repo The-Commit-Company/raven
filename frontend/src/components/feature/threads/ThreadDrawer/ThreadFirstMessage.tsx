@@ -11,6 +11,7 @@ import { MdOutlineBarChart } from 'react-icons/md'
 import { getFileExtension, getFileName } from '@/utils/operations'
 import { FileExtensionIcon } from '@/utils/layout/FileExtIcon'
 import { DateTooltip } from '../../chat/ChatMessage/Renderers/DateTooltip'
+import { DoctypeLinkRenderer } from '../../chat/ChatMessage/Renderers/DoctypeLinkRenderer'
 
 type MessageContentProps = BoxProps & {
     user?: UserFields
@@ -67,6 +68,11 @@ export const ThreadFirstMessage = ({ message, user, ...props }: MessageContentPr
                             </Flex>
                             : null
                     }
+
+                    {message.link_doctype && message.link_document && <DoctypeLinkRenderer
+                        doctype={message.link_doctype}
+                        docname={message.link_document}
+                    />}
 
                 </Box>
                 {showButton &&

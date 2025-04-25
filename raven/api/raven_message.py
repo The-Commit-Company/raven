@@ -136,6 +136,7 @@ def get_pinned_messages(channel_id):
 			"name",
 			"owner",
 			"creation",
+			"bot",
 			"text",
 			"file",
 			"message_type",
@@ -148,6 +149,8 @@ def get_pinned_messages(channel_id):
 			"link_doctype",
 			"link_document",
 			"replied_message_details",
+			"hide_link_preview",
+			"is_bot_message",
 			"content",
 			"is_edited",
 			"is_thread",
@@ -187,6 +190,8 @@ def get_saved_messages():
 			raven_channel.workspace,
 			raven_message.thumbnail_width,
 			raven_message.thumbnail_height,
+			raven_message.is_bot_message,
+			raven_message.bot,
 		)
 		.where(raven_message._liked_by.like("%" + frappe.session.user + "%"))
 		.where(

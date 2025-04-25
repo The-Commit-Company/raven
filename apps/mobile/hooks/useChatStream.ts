@@ -280,7 +280,7 @@ const useChatStream = (channelID: string, listRef?: React.RefObject<LegendListRe
 
     })
 
-    const trackVisit = useTrackChannelVisit(channelID)
+    const trackVisit = useTrackChannelVisit(channelID, isThread)
     /**
      * Track visit when unmounting if new messages were loaded.
      * We are using a ref since the hook is not re-executed when the data is updated

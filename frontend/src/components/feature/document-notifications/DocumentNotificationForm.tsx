@@ -137,7 +137,7 @@ const GeneralTab = ({ isEdit }: { isEdit: boolean }) => {
             </Stack>
 
         </Grid>
-        <Stack>
+        <Stack width={'fit-content'} gap='4'>
             <Text as="label" size="2">
                 <HStack>
                     <Controller
@@ -152,6 +152,29 @@ const GeneralTab = ({ isEdit }: { isEdit: boolean }) => {
 
                     Enabled
                 </HStack>
+            </Text>
+
+            <Text as="label" size="2">
+                <HStack>
+                    <Controller
+                        control={control}
+                        name='do_not_attach_doc'
+                        render={({ field }) => (
+                            <Checkbox
+                                checked={field.value ? true : false}
+                                onCheckedChange={(v) => field.onChange(v ? 1 : 0)}
+                            />
+                        )} />
+
+                    <Stack gap='1'>
+                        Hide document preview in the notification message
+                        <HelperText>
+                            If checked, the document preview will not be attached to the notification message.
+                        </HelperText>
+                    </Stack>
+
+                </HStack>
+
             </Text>
         </Stack>
 
