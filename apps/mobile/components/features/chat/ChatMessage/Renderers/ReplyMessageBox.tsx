@@ -80,6 +80,22 @@ const ImageFileReplyBlock = ({ file, messageType, owner }: { file: string, messa
     const source = useFileURL(file ?? "")
     const fileName = useMemo(() => getFileName(file ?? ""), [file])
 
+    // If the text is too long without any spaces, it will break the layout
+    // SO we need to add a space somewhere in the text to break it
+    const fileNameWithSpace = useMemo(() => {
+        if (fileName.length > 32) {
+            // If there's no space in the text, add a space
+            if (!fileName.includes(" ")) {
+                return (fileName.slice(0, 32) + " " + fileName.slice(32))
+            } else {
+                return fileName
+            }
+        }
+
+        return fileName
+
+    }, [fileName])
+
     return (
         <View className={`flex-row items-start ${messageType === 'Image' ? 'gap-2' : 'gap-1'}`}>
             {messageType === 'Image' ? (
@@ -99,7 +115,7 @@ const ImageFileReplyBlock = ({ file, messageType, owner }: { file: string, messa
             )}
             <View className="flex-row items-start gap-1">
                 <Text className="text-base line-clamp-2 text-ellipsis overflow-hidden">
-                    {fileName}
+                    {fileNameWithSpace}
                 </Text>
             </View>
         </View>

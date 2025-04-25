@@ -1,5 +1,5 @@
 import frappe
-from frappe import _
+from frappe import _, client
 
 
 def get_document(doctype: str, document_id: str):
@@ -7,7 +7,7 @@ def get_document(doctype: str, document_id: str):
 	Get a document from the database
 	"""
 	# Use the frappe.client.get method to get the document with permissions (both read and field level read)
-	return frappe.client.get(doctype, name=document_id)
+	return client.get(doctype, name=document_id)
 
 
 def get_documents(doctype: str, document_ids: list):
@@ -17,7 +17,7 @@ def get_documents(doctype: str, document_ids: list):
 	docs = []
 	for document_id in document_ids:
 		# Use the frappe.client.get method to get the document with permissions applied
-		docs.append(frappe.client.get(doctype, name=document_id))
+		docs.append(client.get(doctype, name=document_id))
 	return docs
 
 
@@ -149,5 +149,15 @@ def get_list(doctype: str, filters: dict = None, fields: list = None, limit: int
 	if fields is None:
 		fields = ["*"]
 
+	else:
+		meta = frappe.get_meta(doctype)
+		filtered_fields = ["name as document_id"]
+		if "title" in fields:
+			filtered_fields.append(meta.get_title_field())
+
+		for field in fields:
+			if meta.has_field(field) and field not in filtered_fields:
+				filtered_fields.append(field)
+
 	# Use the frappe.get_list method to get the list of documents
-	return frappe.get_list(doctype, filters=filters, fields=fields, limit=limit)
+	return frappe.get_list(doctype, filters=filters, fields=filtered_fields, limit=limit)

@@ -18,9 +18,11 @@ interface MessageActionsProps {
     message: Message
     onClose: () => void,
     quickReactionEmojis: string[]
+    /** Whether the message is in a thread */
+    isThread?: boolean
 }
 
-const MessageActions = ({ message, onClose, quickReactionEmojis }: MessageActionsProps) => {
+const MessageActions = ({ message, onClose, quickReactionEmojis, isThread = false }: MessageActionsProps) => {
 
     const { myProfile } = useCurrentRavenUser()
     const isOwner = myProfile?.name === message?.owner && !message?.is_bot_message
@@ -40,7 +42,7 @@ const MessageActions = ({ message, onClose, quickReactionEmojis }: MessageAction
 
                 {(message && message.message_type === 'Poll') && <RetractVote message={message} onClose={onClose} />}
 
-                {(message && !message.is_thread) && <CreateThread message={message} onClose={onClose} />}
+                {(!isThread && message && !message.is_thread) && <CreateThread message={message} onClose={onClose} />}
 
                 {(message && message.message_type === 'Text') && <CopyMessage message={message} onClose={onClose} />}
 
