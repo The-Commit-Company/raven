@@ -303,7 +303,7 @@ class RavenMessage(Document):
 							"last_message_timestamp": self.creation,
 							"last_message_details": last_message_details,
 						},
-						user=peer_user_doc.user,
+						user=peer_user_doc.user_id,
 						after_commit=True,
 					)
 
@@ -363,10 +363,10 @@ class RavenMessage(Document):
 		if self.message_type == "System":
 			return
 
-		if self.is_bot_message:
-			send_notification_for_message(self)
-		else:
+		if frappe.request and hasattr(frappe.request, "after_response"):
 			frappe.request.after_response.add(lambda: send_notification_for_message(self))
+		else:
+			send_notification_for_message(self)
 
 	def get_notification_message_content(self):
 		"""

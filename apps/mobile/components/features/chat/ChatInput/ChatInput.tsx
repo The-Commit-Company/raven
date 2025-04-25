@@ -90,13 +90,13 @@ const ChatInput = ({ channelID, onSendMessage }: ChatInputProps) => {
         setContent(text)
     }, [onUserType])
 
-    return <View className="flex flex-col gap-1 bg-background">
+    return <View className="flex flex-col gap-1 pt-1 bg-background">
         <AIEventIndicator channelID={channelID} />
         <TypingIndicator channel={channelID} />
         {siteID && <ReplyMessagePreview channelID={channelID} siteID={siteID} />}
         {siteID && <FileScroller channelID={channelID} siteID={siteID} />}
 
-        <View className={`flex-row items-end px-4 pt-2 pb-4 gap-2 
+        <View className={`flex-row items-end px-4 gap-2 
             min-h-16 justify-between`}>
             <AdditionalInputs channelID={channelID} onMessageContentSend={onMessageContentSend} />
             <View className="flex-1  border border-border rounded-lg">
@@ -122,6 +122,7 @@ const ChatInput = ({ channelID, onSendMessage }: ChatInputProps) => {
                     style={{
                         padding: 12,
                         color: colors.foreground,
+                        maxHeight: 250,
                         fontSize: 16,
                     }}
                     containerStyle={{
@@ -132,7 +133,7 @@ const ChatInput = ({ channelID, onSendMessage }: ChatInputProps) => {
 
             </View>
             <View>
-                <Button disabled={loading} size='icon' variant="plain" className="w-8 h-8 rounded-full mb-1" hitSlop={10} onPress={onSend}>
+                <Button disabled={loading} size='icon' variant="plain" className="w-8 h-8 rounded-full mb-2" hitSlop={15} onPress={onSend}>
                     <SendIcon fill={colors.primary} />
                 </Button>
             </View>

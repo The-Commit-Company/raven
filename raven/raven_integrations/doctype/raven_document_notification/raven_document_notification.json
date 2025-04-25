@@ -14,6 +14,7 @@
   "send_alert_on",
   "column_break_rxyz",
   "document_type",
+  "do_not_attach_doc",
   "conditions_tab",
   "condition",
   "recipients_tab",
@@ -106,11 +107,19 @@
    "label": "Sender",
    "options": "Raven Bot",
    "reqd": 1
+  },
+  {
+   "default": "0",
+   "description": "If enabled, the message won't have a document preview",
+   "fieldname": "do_not_attach_doc",
+   "fieldtype": "Check",
+   "label": "Do not attach document with message"
   }
  ],
+ "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-12-15 19:21:43.452516",
+ "modified": "2025-04-13 16:44:11.691220",
  "modified_by": "Administrator",
  "module": "Raven Integrations",
  "name": "Raven Document Notification",
@@ -142,6 +151,7 @@
    "write": 1
   }
  ],
+ "row_format": "Dynamic",
  "sort_field": "creation",
  "sort_order": "DESC",
  "states": []
