@@ -29,6 +29,8 @@ export interface RavenBot{
 	debug_mode?: 0 | 1
 	/**	OpenAI Assistant ID : Data	*/
 	openai_assistant_id?: string
+	/**	OpenAI Model : Data - The OpenAI model to use for the assistant (e.g. gpt-4o, gpt-4o-mini, gpt-3.5-turbo)	*/
+	model?: string
 	/**	Enable Code Interpreter : Check -  Enable this if you want the bot to be able to process files like Excel sheets or data from Insights.
                     <br>
                     OpenAI Assistants run code in a sandboxed environment (on OpenAI servers) to do this.	*/
