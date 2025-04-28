@@ -207,7 +207,7 @@ class RavenAIFunction(Document):
 				"additionalProperties": False,
 			}
 		elif self.type == "Custom Function":
-			params = json.loads(self.params)
+			params = self.get_params_as_dict()
 		elif self.type == "Get List":
 			params = {
 				"type": "object",
@@ -375,11 +375,7 @@ class RavenAIFunction(Document):
 
 	def before_save(self):
 		# Generate the function definition from the variables + function name + description
-		if isinstance(self.params, str):
-			params = json.loads(self.params)
-
-		else:
-			params = self.params
+		params = self.get_params_as_dict()
 
 		function_definition = {
 			"name": self.function_name,
@@ -398,3 +394,10 @@ class RavenAIFunction(Document):
 		for bot in bots:
 			bot = frappe.get_doc("Raven Bot", bot)
 			bot.update_openai_assistant()
+
+	def get_params_as_dict(self):
+		if isinstance(self.params, dict):
+			return self.params
+		if isinstance(self.params, str):
+			return json.loads(self.params)
+		return {}
