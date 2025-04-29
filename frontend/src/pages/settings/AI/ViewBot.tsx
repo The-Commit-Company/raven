@@ -102,23 +102,35 @@ const OpenChatButton = ({ bot }: { bot: RavenBot }) => {
 
     const currentWorkspace = localStorage.getItem('ravenLastWorkspace')
 
-    const openChat = () => {
-        call.post("raven.api.raven_channel.create_direct_message_channel", {
-            user_id: bot.raven_user
-        }).then((res) => {
-            if (currentWorkspace) {
-                navigate(`/${currentWorkspace}/${res.message}`)
-            } else {
-                navigate(`/channel/${res.message}`)
-            }
-        })
-    }
+    const createChatUrl = async (): Promise<string> => {
+        const res = await call.post("raven.api.raven_channel.create_direct_message_channel", {
+            user_id: bot.raven_user,
+        });
+
+        return currentWorkspace
+            ? `/${currentWorkspace}/${res.message}`
+            : `/channel/${res.message}`;
+    };
+
+    const handleButtonClick = async () => {
+        const url = await createChatUrl();
+        navigate(url);
+    };
+
+    const handleIconClick = async (e: React.MouseEvent) => {
+        e.stopPropagation();
+        const url = await createChatUrl();
+        window.open(url, "_blank");
+    };
 
     return <Button variant='surface' color='gray'
         type='button'
-        className="not-cal" onClick={openChat}>
+        className="not-cal" onClick={handleButtonClick}>
         Open Chat
-        <FiExternalLink />
+        <FiExternalLink
+            className="cursor-pointer rounded p-1 hover:bg-gray-150"
+            onClick={handleIconClick}
+        />
     </Button>
 }
 
