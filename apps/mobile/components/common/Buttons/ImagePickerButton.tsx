@@ -3,6 +3,7 @@ import { useColorScheme } from "@hooks/useColorScheme"
 import * as ImagePicker from 'expo-image-picker'
 import { CustomFile } from "@raven/types/common/File"
 import { ActionButtonLarge } from "./ActionButtonLarge"
+import { Platform } from "react-native"
 
 interface ImagePickerButtonProps {
     allowsMultipleSelection?: boolean
@@ -22,9 +23,14 @@ const ImagePickerButton = ({ allowsMultipleSelection, mediaTypes, onPick }: Imag
 
             if (!result.canceled) {
                 const parsedFiles = result.assets.map((asset) => {
+
+                    let fileName = asset.fileName
+                    if (Platform.OS === 'ios' && (fileName?.endsWith('.heic') || fileName?.endsWith('.heif') || fileName?.endsWith('.HEIC') || fileName?.endsWith('.HEIF'))) {
+                        fileName = fileName.replace('.heic', '.jpg').replace('.heif', '.jpg').replace('.HEIC', '.jpg').replace('.HEIF', '.jpg')
+                    }
                     return {
                         uri: asset.uri,
-                        name: asset.fileName,
+                        name: fileName,
                         type: asset.mimeType,
                         size: asset.fileSize,
                         fileID: asset.assetId,
