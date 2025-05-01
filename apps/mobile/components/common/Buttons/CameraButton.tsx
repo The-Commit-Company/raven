@@ -3,6 +3,7 @@ import CameraIcon from "@assets/icons/CameraIcon.svg"
 import { CustomFile } from "@raven/types/common/File"
 import * as ImagePicker from 'expo-image-picker'
 import { ActionButtonLarge } from "./ActionButtonLarge"
+import { toast } from "sonner-native"
 
 const CameraButton = ({ onPick }: { onPick: (files: CustomFile[]) => void }) => {
 
@@ -30,6 +31,9 @@ const CameraButton = ({ onPick }: { onPick: (files: CustomFile[]) => void }) => 
             }
         } catch (error) {
             console.error('Error taking picture:', error)
+            toast.error("There was an error while launching the camera", {
+                description: error instanceof Error ? error.message : "Unknown error"
+            })
         }
     }
 

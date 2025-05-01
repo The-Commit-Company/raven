@@ -3,7 +3,7 @@ import { useColorScheme } from "@hooks/useColorScheme"
 import * as ImagePicker from 'expo-image-picker'
 import { CustomFile } from "@raven/types/common/File"
 import { ActionButtonLarge } from "./ActionButtonLarge"
-import { Platform } from "react-native"
+import { toast } from "sonner-native"
 
 interface ImagePickerButtonProps {
     allowsMultipleSelection?: boolean
@@ -36,6 +36,9 @@ const ImagePickerButton = ({ allowsMultipleSelection, mediaTypes, onPick }: Imag
             }
         } catch (error) {
             console.error('Error picking images:', error)
+            toast.error("There was an error while selecting images", {
+                description: error instanceof Error ? error.message : "Unknown error"
+            })
         }
     }
 
