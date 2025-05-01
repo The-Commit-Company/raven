@@ -6,6 +6,7 @@ import json
 import frappe
 from frappe import _
 from frappe.model.document import Document
+from openai import APIConnectionError
 
 from raven.ai.openai_client import get_open_ai_client
 from raven.utils import get_raven_user
@@ -118,6 +119,12 @@ class RavenBot(Document):
 				description=self.description or "",
 				tools=self.get_tools_for_assistant(),
 			)
+		except APIConnectionError as e:
+			frappe.throw(
+				_(
+					"Connection to OpenAI API failed. Please check your Organization ID and API Key for any extra spaces. Error: {0}"
+				).format(e)
+			)
 		except Exception as e:
 			if "model_not_found" in str(e):
 				frappe.throw(
@@ -126,7 +133,7 @@ class RavenBot(Document):
 					)
 				)
 			else:
-				frappe.throw(e)
+				frappe.throw(str(e))
 
 		self.db_set("openai_assistant_id", assistant.id)
 

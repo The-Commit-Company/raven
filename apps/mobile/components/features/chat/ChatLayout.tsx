@@ -14,14 +14,12 @@ import { ArchivedChannelBox } from '@components/features/chat/ChatFooter/Archive
 import useShouldJoinChannel from '@hooks/useShouldJoinChannel';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-const PADDING_BOTTOM = Platform.OS === 'ios' ? 20 : 0;
-
 export const useGradualAnimation = () => {
-    const height = useSharedValue(PADDING_BOTTOM)
+    const height = useSharedValue(0)
     useKeyboardHandler({
         onMove: (event) => {
             "worklet";
-            height.value = Math.max(event.height, PADDING_BOTTOM)
+            height.value = event.height
         },
         onEnd: (event) => {
             "worklet";
@@ -79,7 +77,7 @@ const ChatLayout = ({ channelID, isThread = false, pinnedMessagesString }: Props
     const fakeView = useAnimatedStyle(() => {
         return {
             height: Math.abs(height.value),
-            marginBottom: height.value > 0 ? 0 : PADDING_BOTTOM,
+            marginBottom: 0,
         }
     }, [])
 
@@ -114,7 +112,7 @@ const ChatLayout = ({ channelID, isThread = false, pinnedMessagesString }: Props
     }, [selectedMessage])
     return (
         <>
-            <View className='flex-1'>
+            <SafeAreaView edges={['bottom']} className='flex-1'>
                 <ChatStream
                     channelID={channelID}
                     scrollRef={scrollRef}
@@ -149,11 +147,12 @@ const ChatLayout = ({ channelID, isThread = false, pinnedMessagesString }: Props
                 </View>
 
                 <Animated.View style={fakeView} />
-            </View>
+            </SafeAreaView>
 
             <MessageActionsBottomSheet
                 messageActionsSheetRef={messageActionsSheetRef}
                 message={selectedMessage}
+                isThread={isThread}
                 handleClose={handleSheetClose}
             />
         </>

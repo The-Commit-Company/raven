@@ -303,7 +303,7 @@ class RavenMessage(Document):
 							"last_message_timestamp": self.creation,
 							"last_message_details": last_message_details,
 						},
-						user=peer_user_doc.user,
+						user=peer_user_doc.user_id,
 						after_commit=True,
 					)
 
