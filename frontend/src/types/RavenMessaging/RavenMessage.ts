@@ -37,6 +37,8 @@ export interface RavenMessage {
 	image_width?: string
 	/**	Image Height : Data	*/
 	image_height?: string
+	/**	Blurhash : Small Text	*/
+	blurhash?: string
 	/**	File Thumbnail : Attach	*/
 	file_thumbnail?: string
 	/**	Thumbnail Width : Data	*/
