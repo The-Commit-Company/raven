@@ -73,6 +73,16 @@ const MainPageContent = () => {
             }, {
                 revalidate: false
             })
+
+            // Dispatch a custom event that ThreadsList can listen to if it's mounted
+            window.dispatchEvent(new CustomEvent('thread_updated', {
+                detail: {
+                    threadId: event.channel_id,
+                    sentBy: event.sent_by,
+                    lastMessageTimestamp: event.last_message_timestamp,
+                    numberOfReplies: event.number_of_replies
+                }
+            }))
         }
 
         // Unread count only needs to be fetched for certain conditions

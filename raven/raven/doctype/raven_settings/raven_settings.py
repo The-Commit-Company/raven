@@ -63,3 +63,8 @@ class RavenSettings(Document):
 				frappe.throw(_("Please enter the Push Notification API Key"))
 			if not self.push_notification_api_secret:
 				frappe.throw(_("Please enter the Push Notification API Secret"))
+		if self.openai_organisation_id:
+			self.openai_organisation_id = self.openai_organisation_id.strip()
+
+		if self.openai_project_id:
+			self.openai_project_id = self.openai_project_id.strip()
