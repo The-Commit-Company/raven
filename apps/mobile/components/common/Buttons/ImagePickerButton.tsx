@@ -23,14 +23,9 @@ const ImagePickerButton = ({ allowsMultipleSelection, mediaTypes, onPick }: Imag
 
             if (!result.canceled) {
                 const parsedFiles = result.assets.map((asset) => {
-
-                    let fileName = asset.fileName
-                    if (Platform.OS === 'ios' && (fileName?.endsWith('.heic') || fileName?.endsWith('.heif') || fileName?.endsWith('.HEIC') || fileName?.endsWith('.HEIF'))) {
-                        fileName = fileName.replace('.heic', '.jpg').replace('.heif', '.jpg').replace('.HEIC', '.jpg').replace('.HEIF', '.jpg')
-                    }
                     return {
                         uri: asset.uri,
-                        name: fileName,
+                        name: asset.fileName,
                         type: asset.mimeType,
                         size: asset.fileSize,
                         fileID: asset.assetId,
