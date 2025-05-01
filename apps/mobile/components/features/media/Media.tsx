@@ -5,7 +5,7 @@ import { useState } from 'react';
 import { useDebounce } from '@raven/lib/hooks/useDebounce';
 import SearchInput from '@components/common/SearchInput/SearchInput';
 import MediaTabs from './MediaTabs';
-import HeaderBackButton from '@components/common/HeaderBackButton';
+import HeaderBackButton from '@components/common/Buttons/HeaderBackButton';
 
 export type MediaInChannel = {
     name: string;

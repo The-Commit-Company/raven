@@ -43,3 +43,9 @@ class RavenSettings(Document):
 				# Check if the company exists since it's a Data field
 				if not frappe.db.exists("Company", row.company):
 					frappe.throw(f"Company {row.company} does not exist.")
+
+		if self.openai_organisation_id:
+			self.openai_organisation_id = self.openai_organisation_id.strip()
+
+		if self.openai_project_id:
+			self.openai_project_id = self.openai_project_id.strip()
