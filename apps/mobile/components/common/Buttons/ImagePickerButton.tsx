@@ -4,6 +4,7 @@ import * as ImagePicker from 'expo-image-picker'
 import { CustomFile } from "@raven/types/common/File"
 import { ActionButtonLarge } from "./ActionButtonLarge"
 import { toast } from "sonner-native"
+import { ImageManipulator, SaveFormat } from 'expo-image-manipulator'
 
 interface ImagePickerButtonProps {
     allowsMultipleSelection?: boolean
@@ -14,6 +15,19 @@ interface ImagePickerButtonProps {
 const ImagePickerButton = ({ allowsMultipleSelection, mediaTypes, onPick }: ImagePickerButtonProps) => {
 
     const { colors } = useColorScheme()
+
+    const convertHEICtoJPEG = async (uri: string): Promise<string> => {
+        try {
+            const result = (await ImageManipulator.manipulate(uri).renderAsync()).saveAsync({
+                format: SaveFormat.JPEG,
+            })
+            return (await result).uri
+        } catch (error) {
+            console.error('Error converting HEIC to JPEG:', error)
+            throw error
+        }
+    }
+
     const pickImage = async () => {
         try {
             let result = await ImagePicker.launchImageLibraryAsync({
@@ -22,15 +36,20 @@ const ImagePickerButton = ({ allowsMultipleSelection, mediaTypes, onPick }: Imag
             })
 
             if (!result.canceled) {
-                const parsedFiles = result.assets.map((asset) => {
+                const parsedFiles = await Promise.all(result.assets.map(async (asset) => {
+
+                    // Check if the image is HEIC format
+                    const isHEIC = asset.mimeType?.toLowerCase().includes('heic')
+                    const uri = isHEIC ? await convertHEICtoJPEG(asset.uri) : asset.uri
+
                     return {
-                        uri: asset.uri,
-                        name: asset.fileName,
-                        type: asset.mimeType,
+                        uri,
+                        name: isHEIC ? asset.fileName?.replace(/\.heic$/i, '.jpg') ?? 'image.jpg' : asset.fileName,
+                        type: isHEIC ? 'image/jpeg' : asset.mimeType,
                         size: asset.fileSize,
                         fileID: asset.assetId,
                     } as any as CustomFile
-                })
+                }))
 
                 onPick(parsedFiles)
             }
