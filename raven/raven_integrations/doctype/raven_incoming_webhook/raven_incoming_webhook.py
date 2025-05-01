@@ -5,8 +5,8 @@ import secrets
 from typing import TYPE_CHECKING, TypedDict
 
 import frappe
-from frappe.utils import md_to_html
 from frappe.model.document import Document
+from frappe.utils import md_to_html
 from werkzeug import Response
 
 if TYPE_CHECKING:
