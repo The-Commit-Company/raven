@@ -24,7 +24,6 @@ export const useFileViewerAttributes = (uri: string) => {
     return { isVideo, isImage, fileExtension, showHeader, handleShowHeader }
 }
 
-
 export const RenderFile = ({ uri, handleShowHeader, isVideo, isImage }: { uri: string, handleShowHeader: () => void, isVideo: boolean, isImage: boolean }) => {
     if (isVideo) {
         return <VideoPlayer uri={uri} />
@@ -46,8 +45,6 @@ const FileView = ({ uri }: { uri: string }) => {
         />
     )
 }
-
-
 
 const VideoPlayer = ({ uri }: { uri: string }) => {
 
@@ -95,7 +92,7 @@ const ImageComponent = ({ source, handleShowHeader }: { source: Source, handleSh
     const { isFetching, resolution, error } = useImageResolution(source)
     if (isFetching || resolution === undefined || error) {
         return <View className="p-2">
-            {error && <ErrorBanner error={error} />}
+            {error && <ErrorBanner message={error.message} />}
         </View>
     }
 

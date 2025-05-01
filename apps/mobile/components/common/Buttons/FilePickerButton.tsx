@@ -4,6 +4,7 @@ import * as DocumentPicker from 'expo-document-picker'
 import { CustomFile } from "@raven/types/common/File"
 import { Text } from '@components/nativewindui/Text'
 import { Pressable } from "react-native"
+import { toast } from "sonner-native"
 
 interface FilePickerButtonProps {
     onPick: (files: CustomFile[]) => void
@@ -33,6 +34,9 @@ const FilePickerButton = ({ onPick }: FilePickerButtonProps) => {
             }
         } catch (error) {
             console.error('Error picking documents:', error)
+            toast.error("There was an error while selecting documents", {
+                description: error instanceof Error ? error.message : "Unknown error"
+            })
         }
     }
 

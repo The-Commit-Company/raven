@@ -2,8 +2,8 @@ import ImageUpIcon from "@assets/icons/ImageUpIcon.svg"
 import { useColorScheme } from "@hooks/useColorScheme"
 import * as ImagePicker from 'expo-image-picker'
 import { CustomFile } from "@raven/types/common/File"
-import { Text } from '@components/nativewindui/Text'
-import { Pressable } from "react-native"
+import { ActionButtonLarge } from "./ActionButtonLarge"
+import { toast } from "sonner-native"
 
 interface ImagePickerButtonProps {
     allowsMultipleSelection?: boolean
@@ -36,18 +36,18 @@ const ImagePickerButton = ({ allowsMultipleSelection, mediaTypes, onPick }: Imag
             }
         } catch (error) {
             console.error('Error picking images:', error)
+            toast.error("There was an error while selecting images", {
+                description: error instanceof Error ? error.message : "Unknown error"
+            })
         }
     }
 
     return (
-        <Pressable
+        <ActionButtonLarge
+            icon={<ImageUpIcon height={20} width={20} color={colors.icon} />}
+            text="Gallery"
             onPress={pickImage}
-            hitSlop={10}
-            className='flex flex-row w-full items-center gap-2 p-2 rounded-lg ios:active:bg-linkColor'
-            android_ripple={{ color: 'rgba(0,0,0,0.1)', borderless: false }}>
-            <ImageUpIcon height={20} width={20} color={colors.icon} />
-            <Text className='text-base text-foreground'>Upload Image</Text>
-        </Pressable>
+        />
     )
 }
 

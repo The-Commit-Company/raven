@@ -1,7 +1,8 @@
 import { Label, ErrorText, HelperText } from '@/components/common/Form'
 import { Stack, HStack } from '@/components/layout/Stack'
 import { RavenBot } from '@/types/RavenBot/RavenBot'
-import { Box, TextField, Checkbox, Text, Separator, Tooltip, Heading } from '@radix-ui/themes'
+import { Box, TextField, Checkbox, Text, Separator, Tooltip, Heading, Select } from '@radix-ui/themes'
+import { useFrappeGetCall } from 'frappe-react-sdk'
 import { useFormContext, Controller } from 'react-hook-form'
 import { BiInfoCircle } from 'react-icons/bi'
 
@@ -9,8 +10,6 @@ type Props = {}
 
 const AIFeaturesBotForm = (props: Props) => {
     const { register, control, formState: { errors }, watch } = useFormContext<RavenBot>()
-
-    const isAiBot = watch('is_ai_bot')
 
     const openAIAssistantID = watch('openai_assistant_id')
 
@@ -29,6 +28,11 @@ const AIFeaturesBotForm = (props: Props) => {
                 </Box>
                 {errors.openai_assistant_id && <ErrorText>{errors.openai_assistant_id?.message}</ErrorText>}
             </Stack>
+            <HStack gap='8'>
+                <ModelSelector />
+                <ReasoningEffortSelector />
+            </HStack>
+            <Separator className='w-full' />
             <Stack maxWidth={'480px'}>
                 <Text as="label" size="2">
                     <HStack>
@@ -137,6 +141,84 @@ const AIFeaturesBotForm = (props: Props) => {
 
         </Stack>
     )
+}
+
+const ModelSelector = () => {
+
+    const { data: models } = useFrappeGetCall('raven.api.ai_features.get_openai_available_models', undefined, undefined, {
+        revalidateOnFocus: false,
+        revalidateIfStale: false
+    })
+    const { control, formState: { errors }, watch } = useFormContext<RavenBot>()
+
+    const is_ai_bot = watch('is_ai_bot')
+
+
+    return <Stack maxWidth={'480px'}>
+        <Box>
+            <Label htmlFor='model' isRequired>Model</Label>
+            <Controller control={control} name='model'
+                rules={{
+                    required: is_ai_bot ? true : false
+                }}
+                defaultValue='gpt-4o'
+                render={({ field }) => (
+                    <Select.Root
+                        value={field.value}
+                        name={field.name}
+                        onValueChange={(value) => field.onChange(value)}>
+                        <Select.Trigger placeholder='Select Model' className='w-full' />
+                        <Select.Content>
+                            {models?.message.map((model: string) => (
+                                <Select.Item key={model} value={model}>{model}</Select.Item>
+                            ))}
+                        </Select.Content>
+                    </Select.Root>
+                )} />
+        </Box>
+        {errors.model && <ErrorText>{errors.model?.message}</ErrorText>}
+        <HelperText>
+            The model you select will be used to run the agent.
+            <br />
+            The model should be compatible with the OpenAI Assistants API. We recomment using models in the GPT-4 family for best results.
+        </HelperText>
+    </Stack>
+}
+
+const ReasoningEffortSelector = () => {
+    const { control, watch } = useFormContext<RavenBot>()
+
+    const model = watch('model')
+
+    const is_ai_bot = watch('is_ai_bot')
+
+    if (!model) return null
+
+    if (model.startsWith("o")) {
+        return <Stack maxWidth={'480px'}>
+            <Box>
+                <Label htmlFor='reasoning_effort' isRequired>Reasoning Effort</Label>
+                <Controller control={control}
+                    rules={{
+                        required: model.startsWith("o") && is_ai_bot ? true : false
+                    }}
+                    name='reasoning_effort' render={({ field }) => (
+                        <Select.Root value={field.value} name={field.name} onValueChange={(value) => field.onChange(value)}>
+                            <Select.Trigger placeholder='Select Reasoning Effort' className='w-full' />
+                            <Select.Content>
+                                <Select.Item value='low'>Low</Select.Item>
+                                <Select.Item value='medium'>Medium</Select.Item>
+                                <Select.Item value='high'>High</Select.Item>
+                            </Select.Content>
+                        </Select.Root>
+                    )} />
+            </Box>
+            <HelperText>
+                The reasoning effort will be used to determine the depth of the reasoning process. This is only applicable for OpenAI's o-series models.
+            </HelperText>
+        </Stack>
+    }
+    return null
 }
 
 export default AIFeaturesBotForm
