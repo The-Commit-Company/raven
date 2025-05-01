@@ -22,3 +22,11 @@ def get_open_ai_client():
 		client_args["project"] = openai_project_id
 
 	return OpenAI(**client_args)
+
+
+def get_openai_models():
+	"""
+	Get the available OpenAI models
+	"""
+	client = get_open_ai_client()
+	return client.models.list()

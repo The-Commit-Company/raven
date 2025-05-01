@@ -19,6 +19,8 @@
   "ai_tab",
   "is_ai_bot",
   "debug_mode",
+  "model",
+  "reasoning_effort",
   "ai_section",
   "openai_assistant_id",
   "enable_code_interpreter",
@@ -159,12 +161,26 @@
    "fieldname": "debug_mode",
    "fieldtype": "Check",
    "label": "Debug Mode"
+  },
+  {
+   "default": "gpt-4o",
+   "fieldname": "model",
+   "fieldtype": "Data",
+   "label": "Model"
+  },
+  {
+   "description": "Only applicable for OpenAI o-series models",
+   "fieldname": "reasoning_effort",
+   "fieldtype": "Select",
+   "label": "Reasoning Effort",
+   "options": "low\nmedium\nhigh"
   }
  ],
+ "grid_page_length": 50,
  "image_field": "image",
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-12-07 23:26:46.772229",
+ "modified": "2025-05-01 15:40:21.137142",
  "modified_by": "Administrator",
  "module": "Raven Bot",
  "name": "Raven Bot",
@@ -196,6 +212,7 @@
    "write": 1
   }
  ],
+ "row_format": "Dynamic",
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": []
