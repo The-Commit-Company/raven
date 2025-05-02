@@ -358,13 +358,20 @@ class RavenMessage(Document):
 			)
 
 	def send_push_notification(self):
-		# TODO: Send Push Notification for the following:
+		# Send Push Notification for the following:
 		# 1. If the message is a direct message, send a push notification to the other user
 		# 2. If the message has mentions, send a push notification to the mentioned users if they belong to the channel
 		# 3. If the message is a reply, send a push notification to the user who is being replied to
 		# 4. If the message is in a channel, send a push notification to all the users in the channel (topic)
 
-		if self.message_type == "System":
+		if (
+			self.message_type == "System"
+			or self.flags.send_silently
+			or frappe.flags.in_test
+			or frappe.flags.in_install
+			or frappe.flags.in_patch
+			or frappe.flags.in_import
+		):
 			return
 
 		if frappe.request and hasattr(frappe.request, "after_response"):
@@ -385,14 +392,16 @@ class RavenMessage(Document):
 		elif self.text:
 			return self.content
 
-	def get_message_owner_name(self):
+	def get_message_owner_details(self):
 		"""
 		Get the full name of the message owner
 		"""
 		if self.is_bot_message:
-			return frappe.get_cached_value("Raven User", self.bot, "full_name")
+			doc = frappe.get_cached_doc("Raven User", self.bot)
+			return doc.full_name, doc.user_image
 		else:
-			return frappe.get_cached_value("Raven User", self.owner, "full_name")
+			doc = frappe.get_cached_doc("Raven User", self.owner)
+			return doc.full_name, doc.user_image
 
 	def send_notification_for_direct_message(self):
 		"""
@@ -415,11 +424,11 @@ class RavenMessage(Document):
 
 		message = self.get_notification_message_content()
 
-		owner_name = self.get_message_owner_name()
+		owner_name, owner_image = self.get_message_owner_details()
 
 		send_notification_to_user(
 			user_id=peer_raven_user_doc.user,
-			user_image_id=self.owner,
+			user_image_path=owner_image,
 			title=owner_name,
 			message=message,
 			data={
@@ -442,7 +451,7 @@ class RavenMessage(Document):
 
 		is_thread = frappe.get_cached_value("Raven Channel", self.channel_id, "is_thread")
 
-		owner_name = self.get_message_owner_name()
+		owner_name, owner_image = self.get_message_owner_details()
 
 		if is_thread:
 			title = f"{owner_name} in thread"
@@ -452,7 +461,7 @@ class RavenMessage(Document):
 
 		send_notification_to_topic(
 			channel_id=self.channel_id,
-			user_image_id=self.owner,
+			user_image_path=owner_image,
 			title=title,
 			message=message,
 			data={
@@ -467,25 +476,6 @@ class RavenMessage(Document):
 				"creation": get_milliseconds_since_epoch(self.creation),
 			},
 		)
-
-	def send_notification_for_mentions(self, user):
-		try:
-			from frappe.push_notification import PushNotification
-
-			push_notification = PushNotification("raven")
-
-			if push_notification.is_enabled():
-				push_notification.send_notification_to_user(
-					user,
-					"You were mentioned",
-					self.content
-					# icon=f"{frappe.utils.get_url()}/assets/hrms/manifest/favicon-196.png",
-				)
-		except ImportError:
-			# push notifications are not supported in the current framework version
-			pass
-		except Exception:
-			frappe.log_error(frappe.get_traceback())
 
 	def after_delete(self):
 		frappe.publish_realtime(
