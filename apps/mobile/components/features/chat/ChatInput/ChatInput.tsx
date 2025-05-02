@@ -182,7 +182,7 @@ const FileScroller = ({ channelID, siteID }: { channelID: string, siteID: string
     const [files, setFiles] = useAtom(filesAtomFamily(siteID + channelID))
 
     const removeFile = (file: CustomFile) => {
-        setFiles((prevFiles) => {
+        setFiles((prevFiles: CustomFile[]) => {
             return prevFiles.filter((f) => f.fileID !== file.fileID)
         })
     }
@@ -191,7 +191,7 @@ const FileScroller = ({ channelID, siteID }: { channelID: string, siteID: string
         {files.length > 0 && <View className="px-2 pt-2 border-t border-border">
             <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
                 <View className="flex-row gap-4 justify-start items-start py-2 pr-2">
-                    {files.map((file) => (
+                    {files.map((file: CustomFile) => (
                         <SendItem
                             key={file.fileID}
                             file={file}
