@@ -4,7 +4,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Form, FormItem, FormSection } from '@components/nativewindui/Form';
 import { Text } from '@components/nativewindui/Text';
 import { useColorScheme } from '@hooks/useColorScheme';
-import HeaderBackButton from '@components/common/HeaderBackButton';
+import HeaderBackButton from '@components/common/Buttons/HeaderBackButton';
 import { useAtom } from 'jotai';
 import { doubleTapMessageEmojiAtom, quickReactionEmojisAtom } from '@lib/preferences';
 import { Pressable, View } from 'react-native';

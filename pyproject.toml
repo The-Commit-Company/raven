@@ -9,7 +9,8 @@ readme = "README.md"
 dynamic = ["version"]
 dependencies = [
  "linkpreview~=0.9.0",
- "openai"
+ "openai",
+ "blurhash-python"
 ]
 
 [build-system]

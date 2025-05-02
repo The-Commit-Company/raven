@@ -44,6 +44,7 @@ export interface ImageMessage extends BaseMessage {
     thumbnail_width?: number,
     thumbnail_height?: number,
     image_thumbnail?: string,
+    blurhash?: string
 }
 
 export interface TextMessage extends BaseMessage {

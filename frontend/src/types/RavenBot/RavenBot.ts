@@ -27,6 +27,10 @@ export interface RavenBot{
 	is_ai_bot?: 0 | 1
 	/**	Debug Mode : Check - If enabled, stack traces of errors will be sent as messages by the bot 	*/
 	debug_mode?: 0 | 1
+	/**	Model : Data	*/
+	model?: string
+	/**	Reasoning Effort : Select - Only applicable for OpenAI o-series models	*/
+	reasoning_effort?: "low" | "medium" | "high"
 	/**	OpenAI Assistant ID : Data	*/
 	openai_assistant_id?: string
 	/**	Enable Code Interpreter : Check -  Enable this if you want the bot to be able to process files like Excel sheets or data from Insights.

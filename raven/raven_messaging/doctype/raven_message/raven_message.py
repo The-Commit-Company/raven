@@ -22,6 +22,8 @@ from raven.utils import refresh_thread_reply_count, track_channel_visit
 
 class RavenMessage(Document):
 	# begin: auto-generated types
+	# ruff: noqa
+
 	# This code is auto-generated. Do not modify anything in this block.
 
 	from typing import TYPE_CHECKING
@@ -31,6 +33,7 @@ class RavenMessage(Document):
 
 		from raven.raven_messaging.doctype.raven_mention.raven_mention import RavenMention
 
+		blurhash: DF.SmallText | None
 		bot: DF.Link | None
 		channel_id: DF.Link
 		content: DF.LongText | None
@@ -57,6 +60,7 @@ class RavenMessage(Document):
 		text: DF.LongText | None
 		thumbnail_height: DF.Data | None
 		thumbnail_width: DF.Data | None
+	# ruff: noqa
 	# end: auto-generated types
 
 	def before_validate(self):

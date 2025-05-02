@@ -1,6 +1,6 @@
 import { useFrappeFileUpload, useFrappePostCall } from 'frappe-react-sdk'
 import { toast } from 'sonner-native'
-import ImagePickerButton from '@components/common/ImagePickerButton'
+import ImagePickerButton from '@components/common/Buttons/ImagePickerButton'
 import { CustomFile } from '@raven/types/common/File'
 import useCurrentRavenUser from '@raven/lib/hooks/useCurrentRavenUser'
 
