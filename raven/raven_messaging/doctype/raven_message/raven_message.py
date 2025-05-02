@@ -364,7 +364,14 @@ class RavenMessage(Document):
 		# 3. If the message is a reply, send a push notification to the user who is being replied to
 		# 4. If the message is in a channel, send a push notification to all the users in the channel (topic)
 
-		if self.message_type == "System" or self.flags.send_silently:
+		if (
+			self.message_type == "System"
+			or self.flags.send_silently
+			or frappe.flags.in_test
+			or frappe.flags.in_install
+			or frappe.flags.in_patch
+			or frappe.flags.in_import
+		):
 			return
 
 		if frappe.request and hasattr(frappe.request, "after_response"):
