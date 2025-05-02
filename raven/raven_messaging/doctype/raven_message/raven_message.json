@@ -22,6 +22,7 @@
   "file",
   "image_width",
   "image_height",
+  "blurhash",
   "file_thumbnail",
   "thumbnail_width",
   "thumbnail_height",
@@ -196,11 +197,16 @@
    "fieldtype": "Data",
    "label": "Notification",
    "read_only": 1
+  },
+  {
+   "fieldname": "blurhash",
+   "fieldtype": "Small Text",
+   "label": "Blurhash"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-12-15 19:08:54.605919",
+ "modified": "2025-05-01 21:10:41.094172",
  "modified_by": "Administrator",
  "module": "Raven Messaging",
  "name": "Raven Message",
@@ -237,6 +243,7 @@
    "role": "Raven User"
   }
  ],
+ "row_format": "Dynamic",
  "search_fields": "text",
  "sort_field": "modified",
  "sort_order": "DESC",
