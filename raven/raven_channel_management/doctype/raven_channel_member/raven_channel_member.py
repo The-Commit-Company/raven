@@ -5,7 +5,11 @@ import frappe
 from frappe import _
 from frappe.model.document import Document
 
-from raven.notification import subscribe_user_to_topic, unsubscribe_user_to_topic
+from raven.notification import (
+	clear_push_tokens_for_channel_cache,
+	subscribe_user_to_topic,
+	unsubscribe_user_to_topic,
+)
 from raven.utils import delete_channel_members_cache
 
 
@@ -214,18 +218,17 @@ class RavenChannelMember(Document):
 		"""
 		Check if the notification preference is changed and update the subscription
 		"""
-		old_doc = self.get_doc_before_save()
-		if old_doc:
-			if old_doc.allow_notifications != self.allow_notifications:
-				is_direct_message = frappe.get_cached_value(
-					"Raven Channel", self.channel_id, "is_direct_message"
-				)
+		if self.has_value_changed("allow_notifications"):
+			is_direct_message = frappe.get_cached_value(
+				"Raven Channel", self.channel_id, "is_direct_message"
+			)
 
-				if not is_direct_message:
-					if self.allow_notifications:
-						subscribe_user_to_topic(self.channel_id, self.user_id)
-					else:
-						unsubscribe_user_to_topic(self.channel_id, self.user_id)
+			if not is_direct_message:
+				clear_push_tokens_for_channel_cache(self.channel_id)
+				if self.allow_notifications:
+					subscribe_user_to_topic(self.channel_id, self.user_id)
+				else:
+					unsubscribe_user_to_topic(self.channel_id, self.user_id)
 
 		if self.has_value_changed("is_admin") and not self.flags.in_insert and not self.is_thread():
 			# Send a system message to the channel mentioning the member who became admin
@@ -242,7 +245,9 @@ class RavenChannelMember(Document):
 				}
 			).insert(ignore_permissions=True)
 
-		self.invalidate_channel_members_cache()
+		# Do not clear the push tokens on update since we are not changing the channel members
+		# If allow notifications is changed, then the push tokens will be cleared above
+		self.invalidate_channel_members_cache(clear_push_tokens=False)
 
 	def get_admin_count(self):
 		return frappe.db.count("Raven Channel Member", {"channel_id": self.channel_id, "is_admin": 1})
@@ -250,9 +255,9 @@ class RavenChannelMember(Document):
 	def is_thread(self):
 		return frappe.get_cached_value("Raven Channel", self.channel_id, "is_thread")
 
-	def invalidate_channel_members_cache(self):
+	def invalidate_channel_members_cache(self, clear_push_tokens=True):
 		if not self.flags.ignore_cache_invalidation:
-			delete_channel_members_cache(self.channel_id)
+			delete_channel_members_cache(self.channel_id, clear_push_tokens)
 
 
 def on_doctype_update():

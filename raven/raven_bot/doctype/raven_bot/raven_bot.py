@@ -6,6 +6,7 @@ import json
 import frappe
 from frappe import _
 from frappe.model.document import Document
+from openai import APIConnectionError
 
 from raven.ai.openai_client import get_open_ai_client
 from raven.utils import get_raven_user
@@ -13,6 +14,8 @@ from raven.utils import get_raven_user
 
 class RavenBot(Document):
 	# begin: auto-generated types
+	# ruff: noqa
+
 	# This code is auto-generated. Do not modify anything in this block.
 
 	from typing import TYPE_CHECKING
@@ -34,9 +37,12 @@ class RavenBot(Document):
 		instruction: DF.LongText | None
 		is_ai_bot: DF.Check
 		is_standard: DF.Check
+		model: DF.Data | None
 		module: DF.Link | None
 		openai_assistant_id: DF.Data | None
 		raven_user: DF.Link | None
+		reasoning_effort: DF.Literal["low", "medium", "high"]
+	# ruff: noqa
 	# end: auto-generated types
 
 	def validate(self):
@@ -110,25 +116,38 @@ class RavenBot(Document):
 		# This is usually because the user has not added funds to their OpenAI account.
 		# We need to show this error to the user if the openAI API returns an error for "model_not_found"
 
+		model = self.model or "gpt-4o"
+
+		reasoning_effort = self.reasoning_effort or "medium"
+
 		try:
 			assistant = client.beta.assistants.create(
 				instructions=self.instruction,
-				model="gpt-4o",
+				model=model,
 				name=self.bot_name,
 				description=self.description or "",
 				tools=self.get_tools_for_assistant(),
+				reasoning_effort=reasoning_effort if model.startswith("o") else None,
+			)
+			# Update the tools which were activated for the bot
+			self.db_set("openai_assistant_id", assistant.id)
+			self.check_and_update_enabled_tools(assistant)
+
+		except APIConnectionError as e:
+			frappe.throw(
+				_(
+					"Connection to OpenAI API failed. Please check your Organization ID and API Key for any extra spaces. Error: {0}"
+				).format(e)
 			)
 		except Exception as e:
 			if "model_not_found" in str(e):
 				frappe.throw(
 					_(
-						f"<strong>There was an error creating the agent in OpenAI.</strong><br/>It is possible that your OpenAI account does not have enough funds. Please add funds to your OpenAI account and try again.<br><br/>Error: {e}"
+						f"<strong>There was an error creating the agent in OpenAI.</strong><br/>It is possible that your OpenAI account does not have enough funds or the model {model} is not available. Please add funds to your OpenAI account and try again.<br><br/>Error: {e}"
 					)
 				)
 			else:
-				frappe.throw(e)
-
-		self.db_set("openai_assistant_id", assistant.id)
+				frappe.throw(str(e))
 
 	def update_openai_assistant(self):
 		# Update the OpenAI Assistant for the bot
@@ -139,14 +158,59 @@ class RavenBot(Document):
 
 		client = get_open_ai_client()
 
-		assistant = client.beta.assistants.update(
-			self.openai_assistant_id,
-			instructions=self.instruction,
-			name=self.bot_name,
-			description=self.description or "",
-			tools=self.get_tools_for_assistant(),
-			model="gpt-4o",
-		)
+		model = self.model or "gpt-4o"
+		reasoning_effort = self.reasoning_effort or "medium"
+
+		try:
+			assistant = client.beta.assistants.update(
+				self.openai_assistant_id,
+				instructions=self.instruction,
+				name=self.bot_name,
+				description=self.description or "",
+				tools=self.get_tools_for_assistant(),
+				model=model,
+				reasoning_effort=reasoning_effort if model.startswith("o") else None,
+			)
+			self.check_and_update_enabled_tools(assistant)
+		except Exception as e:
+			if "model_not_found" in str(e):
+				frappe.throw(
+					_(
+						f"<strong>There was an error updating the agent in OpenAI.</strong><br/>It is possible that your OpenAI account does not have enough funds or the model {model} is not available. Please check your account and try again.<br><br/>Error: {e}"
+					)
+				)
+			else:
+				frappe.throw(str(e))
+
+	def check_and_update_enabled_tools(self, assistant):
+		# Check if the tools which were activated for the bot are still available
+		# If not, deactivate them
+		try:
+			available_tools = [tool.type for tool in assistant.tools]
+
+			code_interpreter_enabled = "code_interpreter" in available_tools
+			file_search_enabled = "file_search" in available_tools
+
+			if self.enable_code_interpreter and not code_interpreter_enabled:
+				self.db_set("enable_code_interpreter", 0)
+				frappe.msgprint(
+					_(
+						"The code interpreter tool is not available for the model {0}, hence it has been disabled."
+					).format(self.model)
+				)
+
+			if self.enable_file_search and not file_search_enabled:
+				self.db_set("enable_file_search", 0)
+				frappe.msgprint(
+					_(
+						"The file search tool is not available for the model {0}, hence it has been disabled."
+					).format(self.model)
+				)
+		except Exception as e:
+			frappe.log_error(
+				f"Raven AI Bot Tool Check Error for {self.name}",
+				str(e),
+			)
 
 	def get_tools_for_assistant(self):
 		# Add the function to the assistant

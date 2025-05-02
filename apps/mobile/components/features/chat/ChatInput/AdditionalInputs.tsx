@@ -3,16 +3,18 @@ import { useSheetRef, Sheet } from "@components/nativewindui/Sheet"
 import { BottomSheetModal, BottomSheetView } from "@gorhom/bottom-sheet"
 import { View } from "react-native"
 import PlusIcon from "@assets/icons/PlusIcon.svg"
-import FilePickerButton from "@components/common/FilePickerButton"
-import ImagePickerButton from "@components/common/ImagePickerButton"
+import FilePickerButton from "@components/common/Buttons/FilePickerButton"
+import ImagePickerButton from "@components/common/Buttons/ImagePickerButton"
 import GIFPickerButton from "@components/common/GIFPicker/GIFPickerButton"
 import { useKeyboardVisible } from "@hooks/useKeyboardVisible"
 import { CustomFile } from "@raven/types/common/File"
 import { useSetAtom } from 'jotai'
 import { filesAtomFamily } from "@lib/ChatInputUtils"
-import CreatePollButton from "@components/common/CreatePollButton"
+import CreatePollButton from "@components/common/Buttons/CreatePollButton"
 import useSiteContext from "@hooks/useSiteContext"
 import { useColorScheme } from "@hooks/useColorScheme"
+import CameraButton from "@components/common/Buttons/CameraButton"
+import VideoButton from "@components/common/Buttons/VideoButton"
 
 const AdditionalInputs = ({ channelID, onMessageContentSend }: { channelID: string, onMessageContentSend: (content: string) => void }) => {
 
@@ -65,11 +67,17 @@ const AdditionalInputsSheetContent = ({ bottomSheetRef, channelID, onMessageCont
     }
 
     return (
-        <View className="flex-col justify-start items-start px-3 w-full gap-1">
-            <FilePickerButton onPick={handlePick} />
-            <ImagePickerButton onPick={handlePick} />
-            <GIFPickerButton onSelect={handleGIFSelect} />
-            <CreatePollButton onSheetClose={onSheetClose} />
+        <View className="flex-col justify-start items-start px-3 w-full gap-4">
+            <View className='flex flex-row gap-4 w-full justify-between'>
+                <ImagePickerButton onPick={handlePick} />
+                <CameraButton onPick={handlePick} />
+                <VideoButton onPick={handlePick} />
+            </View>
+            <View className='flex flex-col gap-0'>
+                <FilePickerButton onPick={handlePick} />
+                <GIFPickerButton onSelect={handleGIFSelect} />
+                <CreatePollButton onSheetClose={onSheetClose} />
+            </View>
         </View>
     )
 }

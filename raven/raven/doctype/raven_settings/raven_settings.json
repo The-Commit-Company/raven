@@ -27,7 +27,18 @@
   "raven_mobile_tab",
   "oauth_client",
   "push_notifications_tab",
-  "push_notification_service"
+  "push_notification_service",
+  "push_notification_server_url",
+  "push_notification_api_key",
+  "push_notification_api_secret",
+  "config",
+  "vapid_public_key",
+  "video_calling_tab",
+  "livekit_settings_section",
+  "enable_video_calling_via_livekit",
+  "livekit_url",
+  "livekit_api_key",
+  "livekit_api_secret"
  ],
  "fields": [
   {
@@ -157,12 +168,88 @@
    "fieldtype": "Select",
    "label": "Push Notification Service",
    "options": "Frappe Cloud\nRaven"
+  },
+  {
+   "depends_on": "eval: doc.push_notification_service == \"Raven\";",
+   "fieldname": "push_notification_server_url",
+   "fieldtype": "Data",
+   "label": "Push Notification Server URL",
+   "length": 300,
+   "mandatory_depends_on": "eval: doc.push_notification_service == \"Raven\";"
+  },
+  {
+   "fieldname": "video_calling_tab",
+   "fieldtype": "Tab Break",
+   "label": "Video Calling"
+  },
+  {
+   "fieldname": "livekit_settings_section",
+   "fieldtype": "Section Break",
+   "label": "LiveKit Settings"
+  },
+  {
+   "default": "0",
+   "fieldname": "enable_video_calling_via_livekit",
+   "fieldtype": "Check",
+   "label": "Enable Video Calling via LiveKit"
+  },
+  {
+   "depends_on": "eval: doc.enable_video_calling_via_livekit;",
+   "fieldname": "livekit_url",
+   "fieldtype": "Data",
+   "label": "LiveKit URL",
+   "length": 300,
+   "mandatory_depends_on": "eval: doc.enable_video_calling_via_livekit;"
+  },
+  {
+   "depends_on": "eval: doc.enable_video_calling_via_livekit;",
+   "fieldname": "livekit_api_key",
+   "fieldtype": "Data",
+   "label": "LiveKit API Key",
+   "mandatory_depends_on": "eval: doc.enable_video_calling_via_livekit;"
+  },
+  {
+   "depends_on": "eval: doc.enable_video_calling_via_livekit;",
+   "fieldname": "livekit_api_secret",
+   "fieldtype": "Password",
+   "label": "LiveKit API Secret",
+   "mandatory_depends_on": "eval: doc.enable_video_calling_via_livekit;"
+  },
+  {
+   "depends_on": "eval: doc.push_notification_service == \"Raven\";",
+   "fieldname": "push_notification_api_key",
+   "fieldtype": "Data",
+   "label": "Push Notification API Key",
+   "mandatory_depends_on": "eval: doc.push_notification_service == \"Raven\";"
+  },
+  {
+   "depends_on": "eval: doc.push_notification_service == \"Raven\";",
+   "fieldname": "push_notification_api_secret",
+   "fieldtype": "Password",
+   "label": "Push Notification API Secret",
+   "mandatory_depends_on": "eval: doc.push_notification_service == \"Raven\";"
+  },
+  {
+   "fieldname": "config",
+   "fieldtype": "Small Text",
+   "hidden": 1,
+   "label": "Config",
+   "read_only": 1
+  },
+  {
+   "fieldname": "vapid_public_key",
+   "fieldtype": "Data",
+   "hidden": 1,
+   "label": "VAPID Public Key",
+   "length": 300,
+   "read_only": 1
   }
  ],
+ "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2025-02-07 14:27:46.335513",
+ "modified": "2025-04-25 20:17:56.336393",
  "modified_by": "Administrator",
  "module": "Raven",
  "name": "Raven Settings",
@@ -202,6 +289,7 @@
    "write": 1
   }
  ],
+ "row_format": "Dynamic",
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": [],
