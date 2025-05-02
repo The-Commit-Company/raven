@@ -48,7 +48,6 @@ function Button({
   const Comp = asChild ? Slot : "button"
 
   return (
-    // @ts-expect-error - This is related to a type def error in radix-ui/React 19
     <Comp
       data-slot="button"
       className={cn(buttonVariants({ variant, size, className }))}
