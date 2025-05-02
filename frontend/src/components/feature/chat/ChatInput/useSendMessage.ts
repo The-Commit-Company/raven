@@ -6,7 +6,7 @@ export const useSendMessage = (channelID: string, uploadFiles: (selectedMessage?
 
     const { call, loading } = useFrappePostCall<{ message: RavenMessage }>('raven.api.raven_message.send_message')
 
-    const sendMessage = async (content: string, json?: any): Promise<void> => {
+    const sendMessage = async (content: string, json?: any, sendSilently: boolean = false): Promise<void> => {
 
         if (content) {
             return call({
@@ -14,7 +14,8 @@ export const useSendMessage = (channelID: string, uploadFiles: (selectedMessage?
                 text: content,
                 json_content: json,
                 is_reply: selectedMessage ? 1 : 0,
-                linked_message: selectedMessage ? selectedMessage.name : null
+                linked_message: selectedMessage ? selectedMessage.name : null,
+                send_silently: sendSilently ? true : false
             })
                 .then((res) => onMessageSent([res.message]))
                 .then(() => uploadFiles())
