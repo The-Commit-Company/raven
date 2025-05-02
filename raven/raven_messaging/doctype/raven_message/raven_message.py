@@ -358,13 +358,13 @@ class RavenMessage(Document):
 			)
 
 	def send_push_notification(self):
-		# TODO: Send Push Notification for the following:
+		# Send Push Notification for the following:
 		# 1. If the message is a direct message, send a push notification to the other user
 		# 2. If the message has mentions, send a push notification to the mentioned users if they belong to the channel
 		# 3. If the message is a reply, send a push notification to the user who is being replied to
 		# 4. If the message is in a channel, send a push notification to all the users in the channel (topic)
 
-		if self.message_type == "System":
+		if self.message_type == "System" or self.flags.send_silently:
 			return
 
 		if frappe.request and hasattr(frappe.request, "after_response"):

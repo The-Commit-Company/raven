@@ -37,13 +37,7 @@ def send_push_notification_via_raven_cloud(message, raven_settings):
 	if channel_doc.is_self_message:
 		return
 
-	if channel_doc.is_direct_message:
-		# TODO: Send push notification to the peer user
-		return
-
 	push_tokens = get_push_tokens_for_channel(message.channel_id)
-
-	print(push_tokens)
 
 	mentioned_users = [user.get("user") for user in message.mentions]
 
@@ -61,8 +55,10 @@ def send_push_notification_via_raven_cloud(message, raven_settings):
 	replied_tokens = []
 	final_tokens = []
 
-	# Filter out the push tokens of the message owner
-	push_tokens = [token for token in push_tokens if token.user != message.owner]
+	# If this is a bot message, then we should not filter out the push tokens of the message owner since we need to send the notification to the owner as well (it's coming from the bot)
+	if not message.is_bot_message:
+		# Filter out the push tokens of the message owner
+		push_tokens = [token for token in push_tokens if token.user != message.owner]
 
 	for token in push_tokens:
 		if token.user == replied_to:
@@ -79,7 +75,13 @@ def send_push_notification_via_raven_cloud(message, raven_settings):
 
 	messages = []
 
-	channel_name = "thread" if channel_doc.is_thread else f"#{channel_doc.channel_name}"
+	channel_name = f" in #{channel_doc.channel_name}"
+
+	if channel_doc.is_thread:
+		channel_name = " in thread"
+
+	if channel_doc.is_direct_message:
+		channel_name = ""
 
 	content = message.get_notification_message_content()
 
@@ -106,7 +108,7 @@ def send_push_notification_via_raven_cloud(message, raven_settings):
 		"message_id": message.name,
 		"channel_id": message.channel_id,
 		"raven_message_type": message.message_type,
-		"channel_type": "Channel",
+		"channel_type": "DM" if channel_doc.is_direct_message else "Channel",
 		"content": message.content,
 		"from_user": message.owner,
 		"type": "New message",
@@ -118,7 +120,7 @@ def send_push_notification_via_raven_cloud(message, raven_settings):
 		messages.append(
 			{
 				"tokens": replied_tokens,
-				"notification": {"title": f"{message_owner} replied in {channel_name}", "body": content},
+				"notification": {"title": f"{message_owner} replied{channel_name}", "body": content},
 				"data": data,
 				"tag": message.channel_id,
 				"click_action": url,
@@ -130,7 +132,7 @@ def send_push_notification_via_raven_cloud(message, raven_settings):
 		messages.append(
 			{
 				"tokens": mentioned_tokens,
-				"notification": {"title": f"{message_owner} mentioned you in {channel_name}", "body": content},
+				"notification": {"title": f"{message_owner} mentioned you{channel_name}", "body": content},
 				"data": data,
 				"tag": message.channel_id,
 				"click_action": url,
@@ -142,13 +144,21 @@ def send_push_notification_via_raven_cloud(message, raven_settings):
 		messages.append(
 			{
 				"tokens": final_tokens,
-				"notification": {"title": f"{message_owner} in {channel_name}", "body": content},
+				"notification": {"title": f"{message_owner}{channel_name}", "body": content},
 				"data": data,
 				"tag": message.channel_id,
 				"click_action": url,
 				"image": image,
 			}
 		)
+
+	make_post_call_for_notification(messages, raven_settings)
+
+
+def make_post_call_for_notification(messages, raven_settings):
+	"""
+	Make a post call to the push notification server to send the notification
+	"""
 
 	client = FrappeClient(
 		url=raven_settings.push_notification_server_url,
