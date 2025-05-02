@@ -1,3 +1,5 @@
+from urllib.parse import urlparse
+
 import frappe
 from frappe import _
 from frappe.frappeclient import FrappeClient
@@ -28,9 +30,10 @@ def register_site_on_raven_cloud() -> None:
 			api_secret=raven_settings.get_password("push_notification_api_secret"),
 		)
 
-		response = client.post_api("raven_cloud.api.notification.register_site")
-
-		print(response, type(response))
+		response = client.post_api(
+			"raven_cloud.api.notification.register_site",
+			params={"site_name": urlparse(frappe.utils.get_url()).hostname},
+		)
 
 		raven_settings.config = response.get("config")
 		raven_settings.vapid_public_key = response.get("vapid_public_key")
