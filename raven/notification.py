@@ -1,4 +1,5 @@
 import json
+from urllib.parse import urlparse
 
 import frappe
 from frappe.frappeclient import FrappeClient
@@ -166,7 +167,13 @@ def make_post_call_for_notification(messages, raven_settings):
 		api_secret=raven_settings.get_password("push_notification_api_secret"),
 	)
 
-	client.post_api("raven_cloud.api.notification.send", params={"messages": json.dumps(messages)})
+	client.post_api(
+		"raven_cloud.api.notification.send",
+		params={
+			"messages": json.dumps(messages),
+			"site_name": urlparse(frappe.utils.get_url()).hostname,
+		},
+	)
 
 
 def get_push_tokens_for_channel(channel_id):
