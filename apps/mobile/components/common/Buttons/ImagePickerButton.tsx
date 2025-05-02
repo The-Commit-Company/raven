@@ -30,6 +30,7 @@ const ImagePickerButton = ({ allowsMultipleSelection, mediaTypes, onPick }: Imag
 
     const pickImage = async () => {
         try {
+            await ImagePicker.requestMediaLibraryPermissionsAsync()
             let result = await ImagePicker.launchImageLibraryAsync({
                 allowsMultipleSelection: allowsMultipleSelection ?? true,
                 mediaTypes: mediaTypes ?? ['videos', 'images', 'livePhotos'],

@@ -11,6 +11,7 @@ const VideoButton = ({ onPick }: { onPick: (files: CustomFile[]) => void }) => {
 
     const takeVideo = async () => {
         try {
+            await ImagePicker.requestCameraPermissionsAsync()
             let result = await ImagePicker.launchCameraAsync({
                 mediaTypes: 'videos',
                 allowsEditing: true,

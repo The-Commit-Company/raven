@@ -11,6 +11,7 @@ const CameraButton = ({ onPick }: { onPick: (files: CustomFile[]) => void }) => 
 
     const takePicture = async () => {
         try {
+            await ImagePicker.requestCameraPermissionsAsync()
             let result = await ImagePicker.launchCameraAsync({
                 mediaTypes: 'images',
                 allowsEditing: true,
