@@ -7,6 +7,7 @@ import { ErrorBanner, getErrorMessage } from '@/components/layout/AlertBanner/Er
 import PageContainer from '@/components/layout/Settings/PageContainer'
 import SettingsContentContainer from '@/components/layout/Settings/SettingsContentContainer'
 import SettingsPageHeader from '@/components/layout/Settings/SettingsPageHeader'
+import { Stack } from '@/components/layout/Stack'
 import useRavenSettings from '@/hooks/fetchers/useRavenSettings'
 import { RavenSettings } from '@/types/Raven/RavenSettings'
 import { isSystemManager } from '@/utils/roles'
@@ -101,10 +102,6 @@ const PushNotifications = () => {
                                     <Strong>Frappe Cloud</Strong> - if you are using Frappe Cloud, you can use this option.
                                 </li>
                             </ol>
-
-                            <br />
-
-                            To get started with Raven Cloud, you need to first <Link href="https://cloud.ravenchat.ai" target='_blank'>create an account <FiExternalLink /></Link> and get your API Key and API Secret.
                         </Text>
 
                         <Box className='max-w-96'>
@@ -141,79 +138,74 @@ const PushNotifications = () => {
                         </Box>
 
                         {isRavenCloud ?
-                            <Box className='max-w-96'>
-                                <Label htmlFor='push_notification_server_url' isRequired>Push Notification Server URL</Label>
-                                <TextField.Root
-                                    autoFocus
-                                    maxLength={140}
-                                    className={'w-48 sm:w-96'}
-                                    id='push_notification_server_url'
-                                    autoComplete='off'
-                                    required
-                                    placeholder='https://push.raven.chat'
-                                    {...register('push_notification_server_url', {
-                                        required: isRavenCloud ? "Please add your Push Notification Server URL" : false,
-                                        maxLength: {
-                                            value: 300,
-                                            message: "URL cannot be more than 300 characters."
-                                        }
-                                    })}
-                                    aria-invalid={errors.push_notification_server_url ? 'true' : 'false'}
-                                />
-                                {errors?.push_notification_server_url && <ErrorText>{errors.push_notification_server_url?.message}</ErrorText>}
-                                <HelperText size='2'>
-                                    You can keep this as "https://cloud.ravenchat.ai" if you are using the default Raven Cloud instance.
-                                    <br />
-                                    Only change this if you are using a custom Raven Cloud instance.
-                                </HelperText>
-                            </Box>
+                            <Stack gap='3'>
+                                <Text size='2'>
+                                    To get started with Raven Cloud, you need to first <Link href="https://cloud.ravenchat.ai" target='_blank'>create an account <FiExternalLink /></Link> and get your API Key and API Secret.
+                                </Text>
+                                <Box>
+                                    <Label htmlFor='push_notification_server_url' isRequired>Push Notification Server URL</Label>
+                                    <TextField.Root
+                                        autoFocus
+                                        maxLength={140}
+                                        className={'w-48 sm:w-96'}
+                                        id='push_notification_server_url'
+                                        autoComplete='off'
+                                        required
+                                        placeholder='https://push.raven.chat'
+                                        {...register('push_notification_server_url', {
+                                            required: isRavenCloud ? "Please add your Push Notification Server URL" : false,
+                                            maxLength: {
+                                                value: 300,
+                                                message: "URL cannot be more than 300 characters."
+                                            }
+                                        })}
+                                        aria-invalid={errors.push_notification_server_url ? 'true' : 'false'}
+                                    />
+                                    {errors?.push_notification_server_url && <ErrorText>{errors.push_notification_server_url?.message}</ErrorText>}
+                                    <HelperText size='2'>
+                                        You can keep this as "https://cloud.ravenchat.ai" if you are using the default Raven Cloud instance.
+                                        <br />
+                                        Only change this if you are using a custom Raven Cloud instance.
+                                    </HelperText>
+                                </Box>
+
+                                <Box>
+                                    <Label htmlFor='push_notification_api_key'>Push Notification API Key</Label>
+                                    <TextField.Root
+                                        maxLength={140}
+                                        className={'w-48 sm:w-96'}
+                                        id='push_notification_api_key'
+                                        autoComplete='off'
+                                        placeholder='Your API Key'
+                                        {...register('push_notification_api_key', {
+                                            maxLength: {
+                                                value: 140,
+                                                message: "API Key cannot be more than 140 characters."
+                                            }
+                                        })}
+                                        aria-invalid={errors.push_notification_api_key ? 'true' : 'false'}
+                                    />
+                                    {errors?.push_notification_api_key && <ErrorText>{errors.push_notification_api_key?.message}</ErrorText>}
+                                </Box>
+                                <Box>
+                                    <Label htmlFor='push_notification_api_secret' isRequired>API Secret</Label>
+                                    <TextField.Root
+                                        className={'w-48 sm:w-96'}
+                                        id='push_notification_api_secret'
+                                        required
+                                        type='password'
+                                        autoComplete='off'
+                                        placeholder='••••••••••••••••••••••••••••••••'
+                                        {...register('push_notification_api_secret', {
+                                            required: isRavenCloud ? "Please add your Push Notification API Secret" : false,
+                                        })}
+                                        aria-invalid={errors.push_notification_api_secret ? 'true' : 'false'}
+                                    />
+                                    {errors?.push_notification_api_secret && <ErrorText>{errors.push_notification_api_secret?.message}</ErrorText>}
+                                </Box>
+                            </Stack>
                             : null
                         }
-
-
-
-                        {isRavenCloud ?
-                            <Box>
-                                <Label htmlFor='push_notification_api_key'>Push Notification API Key</Label>
-                                <TextField.Root
-                                    maxLength={140}
-                                    className={'w-48 sm:w-96'}
-                                    id='push_notification_api_key'
-                                    autoComplete='off'
-                                    placeholder='Your API Key'
-                                    {...register('push_notification_api_key', {
-                                        maxLength: {
-                                            value: 140,
-                                            message: "API Key cannot be more than 140 characters."
-                                        }
-                                    })}
-                                    aria-invalid={errors.push_notification_api_key ? 'true' : 'false'}
-                                />
-                                {errors?.push_notification_api_key && <ErrorText>{errors.push_notification_api_key?.message}</ErrorText>}
-                            </Box>
-                            : null
-                        }
-
-                        {isRavenCloud ?
-                            <Box>
-                                <Label htmlFor='push_notification_api_secret' isRequired>API Secret</Label>
-                                <TextField.Root
-                                    className={'w-48 sm:w-96'}
-                                    id='push_notification_api_secret'
-                                    required
-                                    type='password'
-                                    autoComplete='off'
-                                    placeholder='••••••••••••••••••••••••••••••••'
-                                    {...register('push_notification_api_secret', {
-                                        required: isRavenCloud ? "Please add your Push Notification API Secret" : false,
-                                    })}
-                                    aria-invalid={errors.push_notification_api_secret ? 'true' : 'false'}
-                                />
-                                {errors?.push_notification_api_secret && <ErrorText>{errors.push_notification_api_secret?.message}</ErrorText>}
-                            </Box>
-                            : null
-                        }
-
 
 
                         <div className='flex gap-2'>
