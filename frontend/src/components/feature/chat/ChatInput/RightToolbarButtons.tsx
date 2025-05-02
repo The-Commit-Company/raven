@@ -1,8 +1,8 @@
 import { useCurrentEditor } from '@tiptap/react'
-import { BiAt, BiHash, BiSmile, BiPaperclip, BiSolidSend } from 'react-icons/bi'
+import { BiAt, BiHash, BiSmile, BiPaperclip, BiSolidSend, BiChevronDown, BiBellOff } from 'react-icons/bi'
 import { DEFAULT_BUTTON_STYLE, ICON_PROPS } from './ToolPanel'
 import { ToolbarFileProps } from './Tiptap'
-import { Dialog, Flex, IconButton, Inset, Popover, Separator } from '@radix-ui/themes'
+import { Dialog, DropdownMenu, Flex, FlexProps, IconButton, Inset, Popover, Separator } from '@radix-ui/themes'
 import { Loader } from '@/components/common/Loader'
 import { Suspense, lazy } from 'react'
 import { HiOutlineGif } from "react-icons/hi2";
@@ -12,6 +12,8 @@ import { MdOutlineBarChart } from 'react-icons/md'
 import { DIALOG_CONTENT_CLASS } from '@/utils/layout/dialog'
 import AISavedPromptsButton from './AISavedPromptsButton'
 import DocumentLinkButton from './DocumentLinkButton'
+import { HStack } from '@/components/layout/Stack'
+import clsx from 'clsx'
 
 
 const EmojiPicker = lazy(() => import('@/components/common/EmojiPicker/EmojiPicker'))
@@ -20,7 +22,7 @@ const GIFPicker = lazy(() => import('@/components/common/GIFPicker/GIFPicker'))
 
 export type RightToolbarButtonsProps = {
     fileProps?: ToolbarFileProps,
-    sendMessage: (html: string, json: any) => Promise<void>,
+    sendMessage: (html: string, json: any, sendSilently?: boolean) => Promise<void>,
     messageSending: boolean,
     setContent: (content: string) => void,
     channelID?: string,
@@ -54,8 +56,9 @@ export const RightToolbarButtons = ({ fileProps, channelID, isEdit, ...sendProps
                 <EmojiPickerButton />
                 <GIFPickerButton />
                 {fileProps && <FilePickerButton fileProps={fileProps} />}
-                <SendButton {...sendProps} />
             </Flex>
+            <Separator orientation='vertical' />
+            <SendButton {...sendProps} />
         </Flex >
     )
 }
@@ -197,13 +200,14 @@ const FilePickerButton = ({ fileProps }: { fileProps: ToolbarFileProps }) => {
 interface SendButtonProps extends IconButtonProps {
     sendMessage: RightToolbarButtonsProps['sendMessage'],
     messageSending: boolean,
-    setContent: RightToolbarButtonsProps['setContent']
+    setContent: RightToolbarButtonsProps['setContent'],
+    boxProps?: FlexProps
 }
 
 
-export const SendButton = ({ sendMessage, messageSending, setContent, ...props }: SendButtonProps) => {
+export const SendButton = ({ sendMessage, messageSending, setContent, boxProps, ...props }: SendButtonProps) => {
     const { editor } = useCurrentEditor()
-    const onClick = () => {
+    const onClick = (sendSilently: boolean = false) => {
         if (editor) {
 
             const hasContent = editor.getText().trim().length > 0
@@ -234,7 +238,7 @@ export const SendButton = ({ sendMessage, messageSending, setContent, ...props }
                 html = editor.getHTML()
             }
             editor.setEditable(false)
-            sendMessage(html, json)
+            sendMessage(html, json, sendSilently)
                 .then(() => {
                     setContent('')
                     editor.chain().focus().clearContent(true).run()
@@ -246,18 +250,42 @@ export const SendButton = ({ sendMessage, messageSending, setContent, ...props }
         }
     }
 
-    return <IconButton
-        aria-label='send message'
-        title='Send message'
-        variant='ghost'
-        size='1'
-        onClick={onClick}
-        {...props}
-    >
-        {messageSending ? <Loader /> :
-            <BiSolidSend {...ICON_PROPS} />
-        }
-    </IconButton>
+    return <HStack gap='2' align='center' {...boxProps} className={clsx('bg-accent-a2 py-1 px-1 rounded-radius2', boxProps?.className)}>
+        <IconButton
+            aria-label='send message'
+            title='Send message'
+            size='1'
+            variant='ghost'
+            onClick={() => onClick()}
+            {...props}
+            className={clsx('rounded-r-none', props?.className)}
+        >
+            {messageSending ? <Loader /> :
+                <BiSolidSend {...ICON_PROPS} />
+            }
+        </IconButton>
+        <DropdownMenu.Root>
+            <DropdownMenu.Trigger>
+                <IconButton
+                    aria-label='send message'
+                    title='Other options'
+                    variant='ghost'
+                    size='1'
+                    {...props}
+                    className={clsx('rounded-l-none', props?.className)}
+                >
+                    <BiChevronDown {...ICON_PROPS} className='text-accent-a8' />
+                </IconButton>
+            </DropdownMenu.Trigger>
+            <DropdownMenu.Content>
+                <DropdownMenu.Item onClick={() => onClick(true)}>
+                    <BiBellOff />
+                    Send without notification
+                </DropdownMenu.Item>
+            </DropdownMenu.Content>
+        </DropdownMenu.Root>
+
+    </HStack>
 }
 
 const CreatePollButton = ({ channelID }: { channelID: string }) => {

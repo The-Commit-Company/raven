@@ -128,7 +128,7 @@ const PollOption = ({ data, option }: { data: Poll, option: RavenPollOption }) =
                 style={{ width: triggerAnimation ? width : 0, transition: 'width 0.5s ease-in-out' }}>
             </Box>
             <Text as='span' size='2' className="px-2 py-1 z-10 overflow-hidden text-ellipsis" weight={isCurrentUserVote ? 'bold' : 'regular'}>{option.option}</Text>
-            <Text as='span' size='2' className="px-2 py-1 z-10 w-[5ch] text-right" weight={isCurrentUserVote ? 'bold' : 'regular'}>{percentage.toFixed(1)}%</Text>
+            <Text as='span' size='2' className="px-2 py-1 z-10 w-[6ch] text-right" weight={isCurrentUserVote ? 'bold' : 'regular'}>{percentage.toFixed(1)}%</Text>
         </Flex>
     )
 }

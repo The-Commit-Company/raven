@@ -14,17 +14,19 @@ def get_open_ai_client():
 		frappe.throw(_("AI Integration is not enabled"))
 
 	openai_api_key = raven_settings.get_password("openai_api_key")
+	openai_organisation_id = (raven_settings.openai_organisation_id or "").strip()
+	openai_project_id = (raven_settings.openai_project_id or "").strip()
 
-	if raven_settings.openai_project_id:
-		client = OpenAI(
-			organization=raven_settings.openai_organisation_id,
-			project=raven_settings.openai_project_id,
-			api_key=openai_api_key,
-		)
+	client_args = {"api_key": openai_api_key.strip(), "organization": openai_organisation_id}
+	if openai_project_id:
+		client_args["project"] = openai_project_id
 
-		return client
+	return OpenAI(**client_args)
 
-	else:
-		client = OpenAI(api_key=openai_api_key, organization=raven_settings.openai_organisation_id)
 
-		return client
+def get_openai_models():
+	"""
+	Get the available OpenAI models
+	"""
+	client = get_open_ai_client()
+	return client.models.list()

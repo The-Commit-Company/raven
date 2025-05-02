@@ -1,5 +1,7 @@
 import frappe
 
+from raven.notification import clear_push_tokens_for_channel_cache
+
 
 def track_channel_visit(channel_id, user=None, commit=False, publish_event_for_user=False):
 	"""
@@ -125,9 +127,17 @@ def get_channel_members(channel_id: str):
 	return data
 
 
-def delete_channel_members_cache(channel_id: str):
+def delete_channel_members_cache(channel_id: str, clear_push_tokens=True):
+	"""
+	Delete the channel members cache and clear the push tokens for the channel if the flag is set to True
+
+	By default, the push tokens are cleared when the channel members cache is deleted
+	"""
 	cache_key = f"raven:channel_members:{channel_id}"
 	frappe.cache().delete_value(cache_key)
+
+	if clear_push_tokens:
+		clear_push_tokens_for_channel_cache(channel_id)
 
 	frappe.publish_realtime(
 		"channel_members_updated",

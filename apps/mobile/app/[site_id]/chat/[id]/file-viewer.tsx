@@ -1,6 +1,6 @@
-import ShareButton from "@components/common/ShareButton"
+import ShareButton from "@components/common/Buttons/ShareButton"
 import { Stack, useLocalSearchParams } from "expo-router"
-import HeaderBackButton from "@components/common/HeaderBackButton"
+import HeaderBackButton from "@components/common/Buttons/HeaderBackButton"
 import { useColorScheme } from "@hooks/useColorScheme"
 import { RenderFile, useFileViewerAttributes } from "@components/features/file-viewer/FileViewerComponents"
 import CommonErrorBoundary from "@components/common/CommonErrorBoundary"
