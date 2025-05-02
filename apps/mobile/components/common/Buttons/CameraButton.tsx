@@ -11,20 +11,26 @@ const CameraButton = ({ onPick }: { onPick: (files: CustomFile[]) => void }) => 
 
     const takePicture = async () => {
         try {
-            await ImagePicker.requestCameraPermissionsAsync()
-            let result = await ImagePicker.launchCameraAsync({
-                mediaTypes: 'images',
-                allowsEditing: true,
+            let result = await ImagePicker.requestCameraPermissionsAsync().then((r) => {
+                if (r.granted) {
+                    return ImagePicker.launchCameraAsync({
+                        mediaTypes: 'images',
+                    })
+                } else {
+                    toast.error("Camera permission not granted")
+                    return null
+                }
             })
 
-            if (!result.canceled) {
+            if (result && !result.canceled) {
                 const parsedFiles = result.assets.map((asset) => {
+                    const id = `captured_image_${Date.now()}.jpg`
                     return {
                         uri: asset.uri,
-                        name: asset.fileName,
+                        name: asset.fileName ?? id,
                         type: asset.mimeType,
                         size: asset.fileSize,
-                        fileID: asset.assetId,
+                        fileID: asset.assetId ?? id,
                     } as any as CustomFile
                 })
 

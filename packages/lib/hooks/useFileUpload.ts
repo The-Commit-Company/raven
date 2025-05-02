@@ -4,6 +4,7 @@ import { filesAtomFamily } from '@lib/ChatInputUtils'
 import { useAtom } from 'jotai'
 import { RavenMessage } from '@raven/types/RavenMessaging/RavenMessage'
 import { GetMessagesResponse } from '@raven/types/common/ChatStream'
+import { CustomFile } from '@raven/types/common/File'
 export interface FileUploadProgress {
   progress: number,
   isComplete: boolean,
@@ -72,6 +73,14 @@ export default function useFileUpload(siteID: string, channelID: string) {
     for (const f of files) {
       try {
 
+        setFiles((prevFiles: CustomFile[]) => {
+          return prevFiles.map((file: CustomFile) => {
+            if (file.fileID === f.fileID) {
+              return { ...file, uploadProgress: 0, uploading: true }
+            }
+            return file
+          })
+        })
         await file.uploadFile(f,
           {
             isPrivate: true,
@@ -84,7 +93,7 @@ export default function useFileUpload(siteID: string, channelID: string) {
           },
           (bytesUploaded, totalBytes) => {
             const percentage = Math.round((bytesUploaded / (totalBytes ?? f.size)) * 100)
-            setFiles((prevFiles) => {
+            setFiles((prevFiles: CustomFile[]) => {
               return prevFiles.map((file) => {
                 if (file.fileID === f.fileID) {
                   return { ...file, uploadProgress: percentage, uploading: true }
@@ -96,8 +105,8 @@ export default function useFileUpload(siteID: string, channelID: string) {
           'raven.api.upload_file.upload_file_with_message'
         ).then((res) => {
           onMessageSendCompleted([res.data.message])
-          setFiles((prevFiles) => {
-            return prevFiles.map((file) => {
+          setFiles((prevFiles: CustomFile[]) => {
+            return prevFiles.map((file: CustomFile) => {
               if (file.fileID === f.fileID) {
                 return { ...file, uploadProgress: 100, uploading: false }
               }
@@ -105,13 +114,13 @@ export default function useFileUpload(siteID: string, channelID: string) {
             })
           })
         })
-        setFiles((prevFiles) => {
-          return prevFiles.filter((file) => file.fileID !== f.fileID)
+        setFiles((prevFiles: CustomFile[]) => {
+          return prevFiles.filter((file: CustomFile) => file.fileID !== f.fileID)
         })
       } catch (error) {
         console.error(`Error uploading file ${f.name}`, error)
-        setFiles((prevFiles) => {
-          return prevFiles.filter((file) => file.fileID !== f.fileID)
+        setFiles((prevFiles: CustomFile[]) => {
+          return prevFiles.filter((file: CustomFile) => file.fileID !== f.fileID)
         })
       }
     }

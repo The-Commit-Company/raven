@@ -19,9 +19,9 @@ const SendItem = ({ file, numberOfFiles, removeFile }: { file: CustomFile, numbe
             {isImage ?
                 <View>
                     <Image source={{ uri: file.uri }} style={{ width: 64, height: 64, borderRadius: '20%' }} />
-                    {file.uploading &&
-                        <View className='bg-card absolute left-0 bottom-0 opacity-50' style={{ width: 64, height: 64, borderRadius: '20%' }}>
-                            <ActivityIndicator size='large' color={colors.foreground} className="absolute left-2 bottom-1.5 z-50" />
+                    {!file.uploading &&
+                        <View className='bg-card absolute left-0 bottom-0 opacity-50 flex items-center justify-center' style={{ width: 64, height: 64, borderRadius: '20%' }}>
+                            <ActivityIndicator size='large' color={colors.foreground} className="z-50" />
                         </View>
                     }
                 </View>
