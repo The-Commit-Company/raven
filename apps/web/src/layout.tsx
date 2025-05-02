@@ -5,7 +5,7 @@ import {
     SidebarProvider,
     SidebarTrigger,
 } from "@components/ui/sidebar"
-import { ChevronDown, FileText, Hash, Headset, Info, Star } from "lucide-react"
+import { ChevronDown, FileText, Hash, Headset, Settings, Star } from "lucide-react"
 
 export default function Page() {
     return (
@@ -18,7 +18,7 @@ export default function Page() {
         >
             <AppSidebar />
             <SidebarInset>
-                <header className="sticky top-0 flex shrink-0 items-center gap-2 border-b bg-background p-4">
+                <header className="sticky top-0 flex shrink-0 items-center gap-2 border-b bg-background p-3">
                     <SidebarTrigger className="-ml-1" />
                     <Separator orientation="vertical" className="mr-2 h-4" />
                     <div className="flex flex-row items-center gap-4">
@@ -32,9 +32,11 @@ export default function Page() {
                         </div>
                     </div>
                     <FileText className="size-4" />
-                    <Headset className="size-4" />
-                    <span className="text-sm" >Start call</span>
-                    <Info className="size-4" />
+                    <div className="flex flex-row items-center gap-2 bg-accent py-2 px-3 rounded-md">
+                        <Headset className="size-4" />
+                        <span className="text-sm" >Start call</span>
+                    </div>
+                    <Settings className="size-4" />
                 </header>
                 <div className="flex flex-1 flex-col gap-4 p-4">
                     {Array.from({ length: 24 }).map((_, index) => (
