@@ -5,10 +5,10 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build --base=/assets/raven/raven/ && yarn copy-html-entry",
+    "build": "tsc -b && vite build --base=/assets/raven/raven_v3/ && yarn copy-html-entry",
     "lint": "eslint .",
     "preview": "vite preview",
-    "copy-html-entry": "cp ../../raven/public/raven/index.html ../../raven/www/raven.html"
+    "copy-html-entry": "cp ../../raven/public/raven_v3/index.html ../../raven/www/raven_v3.html"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.0.1",

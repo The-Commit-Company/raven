@@ -25,7 +25,7 @@ export default defineConfig({
     proxy: proxyOptions
   },
   build: {
-    outDir: "../../raven/public/raven",
+    outDir: "../../raven/public/raven_v3",
     emptyOutDir: true,
     target: "es2015",
     rollupOptions: {

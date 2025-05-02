@@ -12,10 +12,13 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "cd frontend && yarn dev",
-    "build": "cd frontend && yarn build",
+    "build": "yarn build-web && yarn build-web-v3",
     "postinstall": "yarn install-web && yarn install-desk",
     "install-desk": "cd raven && yarn install",
-    "install-web": "cd frontend && yarn install"
+    "install-web": "cd frontend && yarn install",
+    "build-web": "cd frontend && yarn build",
+    "build-web-v3": "cd apps/web && yarn build",
+    "install-web-v3": "cd apps/web && yarn install"
   },
   "keywords": [],
   "author": "",
