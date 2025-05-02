@@ -38,122 +38,127 @@ def send_push_notification_via_raven_cloud(message, raven_settings):
 	if channel_doc.is_self_message:
 		return
 
-	push_tokens = get_push_tokens_for_channel(message.channel_id)
+	try:
 
-	mentioned_users = [user.get("user") for user in message.mentions]
+		push_tokens = get_push_tokens_for_channel(message.channel_id)
 
-	replied_to = None
+		mentioned_users = [user.get("user") for user in message.mentions]
 
-	if message.linked_message:
-		replied_message_details = message.replied_message_details
+		replied_to = None
 
-		if isinstance(replied_message_details, str):
-			replied_message_details = json.loads(message.replied_message_details)
+		if message.linked_message:
+			replied_message_details = message.replied_message_details
 
-		replied_to = replied_message_details.get("owner")
+			if isinstance(replied_message_details, str):
+				replied_message_details = json.loads(message.replied_message_details)
 
-	mentioned_tokens = []
-	replied_tokens = []
-	final_tokens = []
+			replied_to = replied_message_details.get("owner")
 
-	# If this is a bot message, then we should not filter out the push tokens of the message owner since we need to send the notification to the owner as well (it's coming from the bot)
-	if not message.is_bot_message:
-		# Filter out the push tokens of the message owner
-		push_tokens = [token for token in push_tokens if token.user != message.owner]
+		mentioned_tokens = []
+		replied_tokens = []
+		final_tokens = []
 
-	for token in push_tokens:
-		if token.user == replied_to:
-			replied_tokens.append(token.fcm_token)
-		elif token.user in mentioned_users:
-			mentioned_tokens.append(token.fcm_token)
+		# If this is a bot message, then we should not filter out the push tokens of the message owner since we need to send the notification to the owner as well (it's coming from the bot)
+		if not message.is_bot_message:
+			# Filter out the push tokens of the message owner
+			push_tokens = [token for token in push_tokens if token.user != message.owner]
+
+		for token in push_tokens:
+			if token.user == replied_to:
+				replied_tokens.append(token.fcm_token)
+			elif token.user in mentioned_users:
+				mentioned_tokens.append(token.fcm_token)
+			else:
+				final_tokens.append(token.fcm_token)
+
+		# We now need to construct the payload for the push notification
+
+		if not mentioned_tokens and not replied_tokens and not final_tokens:
+			return
+
+		messages = []
+
+		channel_name = f" in #{channel_doc.channel_name}"
+
+		if channel_doc.is_thread:
+			channel_name = " in thread"
+
+		if channel_doc.is_direct_message:
+			channel_name = ""
+
+		content = message.get_notification_message_content()
+
+		message_owner, message_owner_image = message.get_message_owner_details()
+
+		workspace = "" if channel_doc.is_dm_thread else channel_doc.workspace
+
+		url = frappe.utils.get_url() + "/raven/"
+		if workspace:
+			url += f"{workspace}/"
 		else:
-			final_tokens.append(token.fcm_token)
+			url += "channels/"
 
-	# We now need to construct the payload for the push notification
+		if channel_doc.is_thread:
+			url += f"thread/{channel_doc.name}/"
+		else:
+			url += f"{channel_doc.name}/"
 
-	if not mentioned_tokens and not replied_tokens and not final_tokens:
-		return
+		image = get_image_absolute_url(message_owner_image)
 
-	messages = []
+		data = {
+			"base_url": frappe.utils.get_url(),
+			"sitename": frappe.local.site,
+			"message_id": message.name,
+			"channel_id": message.channel_id,
+			"raven_message_type": message.message_type,
+			"channel_type": "DM" if channel_doc.is_direct_message else "Channel",
+			"content": message.content,
+			"from_user": message.owner,
+			"type": "New message",
+			"is_thread": "1" if channel_doc.is_thread else "0",
+			"creation": get_milliseconds_since_epoch(message.creation),
+		}
 
-	channel_name = f" in #{channel_doc.channel_name}"
+		if replied_tokens:
+			messages.append(
+				{
+					"tokens": replied_tokens,
+					"notification": {"title": f"{message_owner} replied{channel_name}", "body": content},
+					"data": data,
+					"tag": message.channel_id,
+					"click_action": url,
+					"image": image,
+				}
+			)
 
-	if channel_doc.is_thread:
-		channel_name = " in thread"
+		if mentioned_tokens:
+			messages.append(
+				{
+					"tokens": mentioned_tokens,
+					"notification": {"title": f"{message_owner} mentioned you{channel_name}", "body": content},
+					"data": data,
+					"tag": message.channel_id,
+					"click_action": url,
+					"image": image,
+				}
+			)
 
-	if channel_doc.is_direct_message:
-		channel_name = ""
+		if final_tokens:
+			messages.append(
+				{
+					"tokens": final_tokens,
+					"notification": {"title": f"{message_owner}{channel_name}", "body": content},
+					"data": data,
+					"tag": message.channel_id,
+					"click_action": url,
+					"image": image,
+				}
+			)
 
-	content = message.get_notification_message_content()
+		make_post_call_for_notification(messages, raven_settings)
 
-	message_owner, message_owner_image = message.get_message_owner_details()
-
-	workspace = "" if channel_doc.is_dm_thread else channel_doc.workspace
-
-	url = frappe.utils.get_url() + "/raven/"
-	if workspace:
-		url += f"{workspace}/"
-	else:
-		url += "channels/"
-
-	if channel_doc.is_thread:
-		url += f"thread/{channel_doc.name}/"
-	else:
-		url += f"{channel_doc.name}/"
-
-	image = get_image_absolute_url(message_owner_image)
-
-	data = {
-		"base_url": frappe.utils.get_url(),
-		"sitename": frappe.local.site,
-		"message_id": message.name,
-		"channel_id": message.channel_id,
-		"raven_message_type": message.message_type,
-		"channel_type": "DM" if channel_doc.is_direct_message else "Channel",
-		"content": message.content,
-		"from_user": message.owner,
-		"type": "New message",
-		"is_thread": "1" if channel_doc.is_thread else "0",
-		"creation": get_milliseconds_since_epoch(message.creation),
-	}
-
-	if replied_tokens:
-		messages.append(
-			{
-				"tokens": replied_tokens,
-				"notification": {"title": f"{message_owner} replied{channel_name}", "body": content},
-				"data": data,
-				"tag": message.channel_id,
-				"click_action": url,
-				"image": image,
-			}
-		)
-
-	if mentioned_tokens:
-		messages.append(
-			{
-				"tokens": mentioned_tokens,
-				"notification": {"title": f"{message_owner} mentioned you{channel_name}", "body": content},
-				"data": data,
-				"tag": message.channel_id,
-				"click_action": url,
-				"image": image,
-			}
-		)
-
-	if final_tokens:
-		messages.append(
-			{
-				"tokens": final_tokens,
-				"notification": {"title": f"{message_owner}{channel_name}", "body": content},
-				"data": data,
-				"tag": message.channel_id,
-				"click_action": url,
-				"image": image,
-			}
-		)
-
-	make_post_call_for_notification(messages, raven_settings)
+	except Exception as e:
+		frappe.log_error(title="Raven Cloud Push Notification Error")
 
 
 def make_post_call_for_notification(messages, raven_settings):
