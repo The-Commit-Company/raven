@@ -5,14 +5,16 @@ import { CustomFile } from "@raven/types/common/File"
 import { ActionButtonLarge } from "./ActionButtonLarge"
 import { toast } from "sonner-native"
 import { ImageManipulator, SaveFormat } from 'expo-image-manipulator'
-
+import { Pressable } from "react-native"
+import { Text } from "@components/nativewindui/Text"
 interface ImagePickerButtonProps {
     allowsMultipleSelection?: boolean
     mediaTypes?: ImagePicker.MediaType
     onPick: (files: CustomFile[]) => void
+    isLarge?: boolean
 }
 
-const ImagePickerButton = ({ allowsMultipleSelection, mediaTypes, onPick }: ImagePickerButtonProps) => {
+const ImagePickerButton = ({ allowsMultipleSelection, mediaTypes, onPick, isLarge = false }: ImagePickerButtonProps) => {
 
     const { colors } = useColorScheme()
 
@@ -63,11 +65,21 @@ const ImagePickerButton = ({ allowsMultipleSelection, mediaTypes, onPick }: Imag
     }
 
     return (
-        <ActionButtonLarge
-            icon={<ImageUpIcon height={20} width={20} color={colors.icon} />}
-            text="Gallery"
-            onPress={pickImage}
-        />
+        isLarge ? (
+            <ActionButtonLarge
+                icon={<ImageUpIcon height={20} width={20} color={colors.icon} />}
+                text="Gallery"
+                onPress={pickImage}
+            />
+        ) : (
+            <Pressable
+                onPress={pickImage}
+                className='flex flex-row w-full items-center gap-2 p-2 rounded-lg ios:active:bg-linkColor'
+                android_ripple={{ color: 'rgba(0,0,0,0.1)', borderless: false }}>
+                <ImageUpIcon height={20} width={20} color={colors.icon} />
+                <Text className='text-base text-foreground'>Upload</Text>
+            </Pressable>
+        )
     )
 }
 
