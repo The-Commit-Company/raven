@@ -11,10 +11,18 @@ import SavedMessageItem from '@components/features/saved-messages/SavedMessageIt
 import ChevronLeftIcon from '@assets/icons/ChevronLeftIcon.svg';
 import { LegendList } from '@legendapp/list';
 import ErrorBanner from '@components/common/ErrorBanner';
+import { SegmentedControl } from '@components/nativewindui/SegmentedControl';
+import { useState } from 'react';
+import { Divider } from '@components/layout/Divider';
+import InProgressReminders from '@components/features/remind-me/InProgressReminders';
+import CompletedReminders from '@components/features/remind-me/CompletedReminders';
+import PlusIcon from '@assets/icons/PlusIcon.svg';
+import ClearCompletedRemindersButton from '@components/features/remind-me/ClearCompletedRemindersButton';
+import { COLORS } from '@theme/colors';
 
 export default function SavedMessages() {
-
     const { colors } = useColorScheme()
+    const [activetab, setActiveTab] = useState('Saved Messages')
 
     return <>
         <Stack.Screen options={{
@@ -29,11 +37,53 @@ export default function SavedMessages() {
                     </Link>
                 )
             } : undefined,
+            headerRight: () => {
+                return activetab === 'Completed' ? <ClearCompletedRemindersButton /> : null;
+            }
         }} />
-        <View className='flex-1 bg-background'>
-            <SavedMessagesContent />
-        </View>
+        <Tabs setActiveTab={setActiveTab} activeTab={activetab} />
     </>
+}
+
+const Tabs = ({ setActiveTab, activeTab }: { setActiveTab: (tab: string) => void, activeTab: string }) => {
+    const [selectedIndex, setSelectedIndex] = useState(0)
+    const values = ['Saved Messages', 'In Progress', 'Completed']
+
+    const handleIndexChange = (index: number) => {
+        setSelectedIndex(index)
+    }
+
+    return (
+        <View className='flex-1 flex-col'>
+            <View className='flex flex-col gap-3'>
+                <View className='p-3 pb-0'>
+                    <SegmentedControl
+                        values={values}
+                        selectedIndex={selectedIndex}
+                        onIndexChange={handleIndexChange}
+                        onValueChange={setActiveTab}
+                    />
+                </View>
+                <Divider prominent />
+            </View>
+            <View className='flex-1 relative'>
+                {selectedIndex === 0 && <SavedMessagesContent />}
+                {selectedIndex === 1 && <InProgressReminders />}
+                {selectedIndex === 2 && <CompletedReminders />}
+
+                {/* Floating Action Button */}
+                {activeTab !== 'Saved Messages' ? (
+                    <View className='absolute bottom-6 right-6'>
+                        <Link asChild href="./new-reminder">
+                            <Button variant="primary" className='w-12 h-12 rounded-full justify-center items-center'>
+                                <PlusIcon fill={COLORS.white} height={24} width={24} />
+                            </Button>
+                        </Link>
+                    </View>
+                ) : null}
+            </View>
+        </View>
+    )
 }
 
 const SavedMessagesContent = () => {
@@ -64,6 +114,7 @@ const SavedMessagesContent = () => {
         renderItem={({ item }) => <SavedMessageItem message={item} />}
         keyExtractor={(item) => item.name}
         contentContainerStyle={{ paddingTop: 8, backgroundColor: colors.background }}
+        estimatedItemSize={154}
     />
 }
 

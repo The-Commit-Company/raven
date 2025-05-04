@@ -78,6 +78,7 @@ def get_reminders(is_complete: bool):
 		.on(raven_message.channel_id == raven_channel.name)
 		.select(
 			raven_reminder.name,
+			raven_reminder.creation,
 			raven_reminder.remind_at,
 			raven_reminder.description,
 			raven_reminder.is_complete,

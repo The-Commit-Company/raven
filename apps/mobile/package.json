@@ -18,6 +18,7 @@
     "@legendapp/list": "^1.0.7",
     "@raven/lib": "*",
     "@react-native-async-storage/async-storage": "1.23.1",
+    "@react-native-community/datetimepicker": "8.2.0",
     "@react-native-firebase/app": "^21.11.0",
     "@react-native-firebase/crashlytics": "^21.11.0",
     "@react-native-firebase/messaging": "^21.11.0",
