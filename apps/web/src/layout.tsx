@@ -1,10 +1,10 @@
-import { ChannelHeader } from "@components/features/header/channel-header"
 import { AppSidebar } from "./components/app-sidebar"
 import {
     SidebarInset,
     SidebarProvider,
 } from "@components/ui/sidebar"
-import { AppHeader } from "@components/features/header/app-header"
+import AppHeader from "@components/features/header/AppHeader"
+import ChannelHeader from "@components/features/header/ChannelHeader"
 
 export default function Page() {
     return (

@@ -1,51 +1,23 @@
 import { Button } from "@components/ui/button";
-import { Input } from "@components/ui/input";
-import { AtSignIcon, BookmarkIcon, Clock, HelpCircle, Search, Settings } from "lucide-react";
-import { NavUserMenu } from "../user-avatar-button/nav-user-menu";
+import { AtSignIcon, BookmarkIcon, Settings } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@components/ui/tooltip";
+import UserHelpMenu from "./UserHelpMenu/UserHelpMenu";
+import Recents from "./RecentlyVisitedChannels/Recents";
+import SearchBar from "./QuickSearch/SearchBar";
+import NavUserMenu from "./NavUserMenu/NavUserMenu";
 
-export function AppHeader() {
+const AppHeader = () => {
     return (
-        <header className="flex items-center justify-between border-b bg-white z-50 px-4 fixed top-0 w-full h-(--app-header-height)">
+        <header className="flex items-center justify-between border-b bg-background z-50 px-2 fixed top-0 w-full h-(--app-header-height)">
+
             {/* Left section - empty for balance */}
             <div className="flex-1" />
 
             {/* Centered search bar section */}
-            <div className="flex items-center justify-center flex-1">
-                <div className="flex items-center max-w-xl w-full gap-1">
-                    <Tooltip>
-                        <TooltipTrigger asChild>
-                            <Button variant="ghost" size="icon" className="h-8 w-8">
-                                <Clock className="h-4 w-4" />
-                                <span className="sr-only">Recents</span>
-                            </Button>
-                        </TooltipTrigger>
-                        <TooltipContent>
-                            <p>Recents</p>
-                        </TooltipContent>
-                    </Tooltip>
-
-                    <div className="relative flex-1 min-w-[200px]">
-                        <Search className="absolute left-2 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                        <Input
-                            type="search"
-                            placeholder="Search"
-                            className="pl-8 bg-gray-100 border-none h-8 w-full"
-                        />
-                    </div>
-
-                    <Tooltip>
-                        <TooltipTrigger asChild>
-                            <Button variant="ghost" size="icon" className="h-8 w-8">
-                                <HelpCircle className="h-4 w-4" />
-                                <span className="sr-only">Help</span>
-                            </Button>
-                        </TooltipTrigger>
-                        <TooltipContent>
-                            <p>Help</p>
-                        </TooltipContent>
-                    </Tooltip>
-                </div>
+            <div className="flex flex-1 items-center justify-center max-w-xl w-full gap-1">
+                <Recents />
+                <SearchBar />
+                <UserHelpMenu />
             </div>
 
             {/* Right section - actions and user menu */}
@@ -97,5 +69,7 @@ export function AppHeader() {
                 />
             </div>
         </header>
-    );
+    )
 }
+
+export default AppHeader

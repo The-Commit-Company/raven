@@ -1,17 +1,25 @@
 import { BadgeCheck, Bell, CreditCard, LogOut } from "lucide-react"
 import { Avatar, AvatarFallback, AvatarImage } from "@components/ui/avatar"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@components/ui/dropdown-menu"
 import { Button } from "@components/ui/button"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@components/ui/dropdown-menu"
+import { Tooltip, TooltipContent, TooltipTrigger } from "@components/ui/tooltip"
 
-export function NavUserMenu({ user }: { user: { name: string, email: string, avatar: string } }) {
+const NavUserMenu = ({ user }: { user: { name: string, email: string, avatar: string } }) => {
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="icon" className="h-8 w-8">
-                    <Avatar className="h-8 w-8 rounded-lg">
-                        <AvatarImage src={user.avatar} alt={user.name} />
-                        <AvatarFallback className="rounded-lg">CN</AvatarFallback>
-                    </Avatar>
+                    <Tooltip>
+                        <TooltipTrigger asChild>
+                            <Avatar className="h-8 w-8 rounded-lg">
+                                <AvatarImage src={user.avatar} alt={user.name} />
+                                <AvatarFallback className="rounded-lg">CN</AvatarFallback>
+                            </Avatar>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                            <p>Your Profile</p>
+                        </TooltipContent>
+                    </Tooltip>
                 </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent
@@ -55,3 +63,5 @@ export function NavUserMenu({ user }: { user: { name: string, email: string, ava
         </DropdownMenu>
     )
 }
+
+export default NavUserMenu
