@@ -1,7 +1,5 @@
 import * as React from "react"
-import { ArchiveX, Command, File, Inbox, Send, Trash2, User } from "lucide-react"
-
-import { NavUser } from "./nav-user"
+import { ArchiveX, Command, File, Inbox, PlusIcon, Send, Trash2, User } from "lucide-react"
 import { Label } from "@components/ui/label"
 import {
     Sidebar,
@@ -10,7 +8,6 @@ import {
     SidebarGroup,
     SidebarGroupContent,
     SidebarHeader,
-    SidebarInput,
     SidebarMenu,
     SidebarMenuButton,
     SidebarMenuItem,
@@ -18,6 +15,7 @@ import {
 } from "@components/ui/sidebar"
 import { Switch } from "@components/ui/switch"
 import { Avatar, AvatarFallback, AvatarImage } from "@components/ui/avatar"
+import { SearchForm } from "./sidebar-search"
 
 // This is sample data
 const data = {
@@ -142,7 +140,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     return (
         <Sidebar
             collapsible="icon"
-            className="overflow-hidden [&>[data-sidebar=sidebar]]:flex-row"
+            className="overflow-hidden [&>[data-sidebar=sidebar]]:flex-row pt-[42px]"
             {...props}
         >
             {/* This is the first sidebar */}
@@ -204,7 +202,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                     </SidebarGroup>
                 </SidebarContent>
                 <SidebarFooter>
-                    <NavUser user={data.user} />
+                    <div>
+                        <PlusIcon />
+                    </div>
                 </SidebarFooter>
             </Sidebar>
 
@@ -221,7 +221,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                             <Switch className="shadow-none" />
                         </Label>
                     </div>
-                    <SidebarInput placeholder="Type to search..." />
+                    <SearchForm />
                 </SidebarHeader>
                 <SidebarContent>
                     <SidebarGroup className="px-0">

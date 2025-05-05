@@ -1,52 +1,35 @@
+import { ChannelHeader } from "@components/features/header/channel-header"
 import { AppSidebar } from "./components/app-sidebar"
-import { Separator } from "@components/ui/separator"
 import {
     SidebarInset,
     SidebarProvider,
-    SidebarTrigger,
 } from "@components/ui/sidebar"
-import { ChevronDown, FileText, Hash, Headset, Settings, Star } from "lucide-react"
+import { AppHeader } from "@components/features/header/app-header"
 
 export default function Page() {
     return (
-        <SidebarProvider
-            style={
-                {
-                    "--sidebar-width": "360px",
-                } as React.CSSProperties
-            }
-        >
-            <AppSidebar />
-            <SidebarInset>
-                <header className="sticky top-0 flex shrink-0 items-center gap-2 border-b bg-background p-3">
-                    <SidebarTrigger className="-ml-1" />
-                    <Separator orientation="vertical" className="mr-2 h-4" />
-                    <div className="flex flex-row items-center gap-4">
-                        <Star className="size-4" />
-                        <div className="flex flex-row items-center gap-1">
-                            <Hash className="size-4" strokeWidth={2.4} />
-                            <span className="text-md font-medium">Channel Name</span>
-                            <div className="mt-0.5">
-                                <ChevronDown className="size-4" strokeWidth={2} />
-                            </div>
-                        </div>
+        <div className="flex flex-col h-screen">
+            <AppHeader />
+            <SidebarProvider
+                style={
+                    {
+                        "--sidebar-width": "360px",
+                        paddingTop: "var(--app-header-height)",
+                    } as React.CSSProperties
+                }>
+                <AppSidebar />
+                <SidebarInset>
+                    <ChannelHeader />
+                    <div className="flex flex-1 flex-col gap-4 p-4">
+                        {Array.from({ length: 24 }).map((_, index) => (
+                            <div
+                                key={index}
+                                className="aspect-video h-12 w-full rounded-lg bg-muted/50"
+                            />
+                        ))}
                     </div>
-                    <FileText className="size-4" />
-                    <div className="flex flex-row items-center gap-2 bg-accent py-2 px-3 rounded-md">
-                        <Headset className="size-4" />
-                        <span className="text-sm" >Start call</span>
-                    </div>
-                    <Settings className="size-4" />
-                </header>
-                <div className="flex flex-1 flex-col gap-4 p-4">
-                    {Array.from({ length: 24 }).map((_, index) => (
-                        <div
-                            key={index}
-                            className="aspect-video h-12 w-full rounded-lg bg-muted/50"
-                        />
-                    ))}
-                </div>
-            </SidebarInset>
-        </SidebarProvider>
+                </SidebarInset>
+            </SidebarProvider>
+        </div>
     )
 }
