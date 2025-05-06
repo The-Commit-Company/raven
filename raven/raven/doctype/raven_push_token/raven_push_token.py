@@ -90,7 +90,7 @@ class RavenPushToken(Document):
 		channel_ids = query.run(as_list=True)
 
 		for channel_id in channel_ids:
-			clear_push_tokens_for_channel_cache(channel_id)
+			clear_push_tokens_for_channel_cache(channel_id[0])
 
 	def get_push_service(self) -> str:
 		"""
