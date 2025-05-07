@@ -1,6 +1,6 @@
 {
   "name": "raven-app",
-  "version": "2.2.4",
+  "version": "2.2.5",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -21,7 +21,7 @@
     "@tiptap/suggestion": "2.5.9",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "swr": "^2.2.4",
+    "swr": "^2.2.5",
     "tippy.js": "^6.3.7"
   }
 }
