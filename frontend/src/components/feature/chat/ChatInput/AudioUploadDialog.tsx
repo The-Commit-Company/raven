@@ -38,14 +38,19 @@ export const AudioUploadDialog = ({ open, onOpenChange, mode }: AudioUploadDialo
             )
             const text = result?.message?.message || '[No text returned from Whisper]'
 
-            editor?.chain().focus().insertContent({
-                type: 'paragraph',
-                content: [{ type: 'text', text }]
-            }).run()
+            editor?.commands.setContent({
+                type: 'doc',
+                content: [
+                  {
+                    type: 'paragraph',
+                    content: [{ type: 'text', text }]
+                  }
+                ]
+              })
 
             setFile(undefined)
             onOpenChange(false)
-            
+
         } catch (err: any) {
             setError(err)
         } finally {
