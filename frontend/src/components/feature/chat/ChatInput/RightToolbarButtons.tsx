@@ -13,6 +13,7 @@ import { DIALOG_CONTENT_CLASS } from '@/utils/layout/dialog'
 import AISavedPromptsButton from './AISavedPromptsButton'
 import DocumentLinkButton from './DocumentLinkButton'
 import { HStack } from '@/components/layout/Stack'
+import { AudioToolButton } from './AudioToolButton'
 import clsx from 'clsx'
 
 
@@ -57,6 +58,8 @@ export const RightToolbarButtons = ({ fileProps, channelID, isEdit, ...sendProps
                 <GIFPickerButton />
                 {fileProps && <FilePickerButton fileProps={fileProps} />}
             </Flex>
+            <Separator orientation='vertical' />
+            <AudioToolButton/>
             <Separator orientation='vertical' />
             <SendButton {...sendProps} />
         </Flex >
