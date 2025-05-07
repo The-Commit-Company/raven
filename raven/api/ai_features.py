@@ -39,3 +39,28 @@ def get_open_ai_version():
 	"""
 	frappe.has_permission(doctype="Raven Bot", ptype="read", throw=True)
 	return openai.__version__
+
+
+@frappe.whitelist()
+def get_openai_available_models():
+	"""
+	API to get the available OpenAI models for assistants
+	"""
+	frappe.has_permission(doctype="Raven Bot", ptype="read", throw=True)
+	from raven.ai.openai_client import get_openai_models
+
+	models = get_openai_models()
+
+	valid_prefixes = ["gpt-4", "gpt-3.5", "o1", "o3-mini"]
+
+	# Model should not contain these words
+	invalid_models = ["realtime", "transcribe", "search", "audio"]
+
+	compatible_models = []
+
+	for model in models:
+		if any(model.id.startswith(prefix) for prefix in valid_prefixes):
+			if not any(word in model.id for word in invalid_models):
+				compatible_models.append(model.id)
+
+	return compatible_models

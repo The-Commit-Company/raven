@@ -83,11 +83,14 @@ const SupportRequestForm = ({ onClose }: SupportRequestFormProps) => {
     const { call, error, loading } = useFrappePostCall('raven.api.support_request.submit_support_request')
 
     const onSubmit = (data: SupportRequestFormFields) => {
+
+        // @ts-expect-error
+        const context = `Raven: v${frappe?.boot.versions.raven}, Frappe: v${frappe?.boot.versions.frappe}, ERPNext: v${frappe?.boot.versions.erpnext ?? "N/A"}`
         call({
             email: data.email,
             ticket_type: data.ticket_type,
             subject: data.description.substring(0, 140),
-            description: data.description
+            description: data.description + `<br><br>${context}`,
         })
             .then(() => {
                 toast.success("Form submitted successfully!")

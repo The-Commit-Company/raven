@@ -52,7 +52,7 @@ const ThreadsList = ({ aiThreads, content, channel, endpoint = "raven.api.thread
 
     const { call } = useContext(FrappeContext) as FrappeConfig
 
-    const { data, size, isLoading, setSize, error } = useSWRInfinite<GetThreadsReturnType, FrappeError>(
+    const { data, size, isLoading, setSize, error, mutate } = useSWRInfinite<GetThreadsReturnType, FrappeError>(
         (pageIndex, previousPageData) => {
             if (previousPageData && !previousPageData.message.length) return null
             const startAfter = pageIndex * PAGE_SIZE
@@ -86,7 +86,42 @@ const ThreadsList = ({ aiThreads, content, channel, endpoint = "raven.api.thread
 
     const isReachingEnd = isEmpty || (data && data[data.length - 1]?.message?.length < PAGE_SIZE)
 
-    const threads = data?.flatMap((page) => page.message) ?? []
+    const threads = useMemo(() => data?.flatMap((page) => page.message).sort((a, b) => new Date(b.last_message_timestamp).getTime() - new Date(a.last_message_timestamp).getTime()) ?? [], [data])
+
+    useEffect(() => {
+        const handleThreadUpdate = (event: CustomEvent) => {
+            // Revalidate the thread reply count when we receive a thread update
+            // Only update locally, do not refetch from the server
+            mutate((d) => {
+
+                if (!d) return d
+
+                const mutatedData = d.map((page) => {
+                    return {
+                        ...page,
+                        message: page.message.map((message) => {
+                            if (message.name === event.detail.threadId) {
+                                return { ...message, reply_count: event.detail.numberOfReplies, last_message_timestamp: event.detail.lastMessageTimestamp }
+                            }
+                            return message
+                        })
+                    }
+                })
+
+                return mutatedData
+
+            }, {
+                revalidate: false
+            })
+        }
+
+        // Need to cast to any due to TypeScript's DOM event types
+        window.addEventListener('thread_updated', handleThreadUpdate as any)
+
+        return () => {
+            window.removeEventListener('thread_updated', handleThreadUpdate as any)
+        }
+    }, [mutate])
 
     const observerTarget = useRef<HTMLDivElement>(null)
 

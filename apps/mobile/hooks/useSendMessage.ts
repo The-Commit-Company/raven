@@ -15,7 +15,7 @@ export const useSendMessage = (siteID: string, channelID: string, onSend: VoidFu
 
     const onMessageSendCompleted = useOnMessageSendCompleted(channelID)
 
-    const sendMessage = async (content: string, sendWithoutFiles = false): Promise<void> => {
+    const sendMessage = async (content: string, sendWithoutFiles = false, sendSilently = false): Promise<void> => {
 
         if (content) {
 
@@ -23,7 +23,8 @@ export const useSendMessage = (siteID: string, channelID: string, onSend: VoidFu
                 channel_id: channelID,
                 text: content,
                 is_reply: selectedMessage ? 1 : 0,
-                linked_message: selectedMessage ? selectedMessage.name : null
+                linked_message: selectedMessage ? selectedMessage.name : null,
+                send_silently: sendSilently
             })
                 .then((res) => {
                     onMessageSendCompleted([res.message])

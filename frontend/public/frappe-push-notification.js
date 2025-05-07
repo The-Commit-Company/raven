@@ -88,6 +88,10 @@ class FrappePushNotification {
             return this.webConfig
         }
         try {
+            if (window.frappe?.boot.push_notification_service === "Raven") {
+                this.webConfig = JSON.parse(window.frappe?.boot.firebase_client_config)
+                return this.webConfig
+            }
             let url = `${FrappePushNotification.relayServerBaseURL}/api/method/notification_relay.api.get_config?project_name=${this.projectName}`
             let response = await fetch(url)
             let response_json = await response.json()
@@ -110,6 +114,10 @@ class FrappePushNotification {
             return this.vapidPublicKey
         }
         try {
+            if (window.frappe?.boot.push_notification_service === "Raven") {
+                this.vapidPublicKey = window.frappe?.boot.vapid_public_key
+                return this.vapidPublicKey
+            }
             let url = `${FrappePushNotification.relayServerBaseURL}/api/method/notification_relay.api.get_config?project_name=${this.projectName}`
             let response = await fetch(url)
             let response_json = await response.json()

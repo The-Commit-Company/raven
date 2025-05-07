@@ -362,7 +362,7 @@ def raven_workspace_member_query(user):
 	if workspace_names:
 		return f"`tabRaven Workspace Member`.workspace in ({', '.join(workspace_names)})"
 	else:
-		return "`tabRaven Workspace`.type = 'Public'"
+		return f"`tabRaven Workspace Member`.owner = {frappe.db.escape(user)}"
 
 
 def raven_channel_query(user):

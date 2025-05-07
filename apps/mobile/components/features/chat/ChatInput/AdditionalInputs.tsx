@@ -69,7 +69,7 @@ const AdditionalInputsSheetContent = ({ bottomSheetRef, channelID, onMessageCont
     return (
         <View className="flex-col justify-start items-start px-3 w-full gap-4">
             <View className='flex flex-row gap-4 w-full justify-between'>
-                <ImagePickerButton onPick={handlePick} />
+                <ImagePickerButton onPick={handlePick} isLarge />
                 <CameraButton onPick={handlePick} />
                 <VideoButton onPick={handlePick} />
             </View>
