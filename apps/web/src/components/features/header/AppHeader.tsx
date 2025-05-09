@@ -22,7 +22,7 @@ const AppHeader = () => {
 
             {/* Right section - actions and user menu */}
             <div className="flex items-center justify-end gap-2 flex-1">
-                <div className="flex items-center gap-1">
+                <div className="flex items-center">
                     <Tooltip>
                         <TooltipTrigger asChild>
                             <Button variant="ghost" size="icon" className="h-8 w-8">

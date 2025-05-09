@@ -14,7 +14,7 @@ const UserHelpMenu = () => {
             <DropdownMenuContent align="start" className="w-64">
                 <DropdownMenuItem className="flex cursor-pointer items-center gap-2 py-2 text-sm">
                     <BookOpen className="h-4 w-4" />
-                    <span>Raven user guide</span>
+                    <span>User guide</span>
                 </DropdownMenuItem>
                 <DropdownMenuItem className="flex cursor-pointer items-center gap-2 py-2 text-sm">
                     <AlertTriangle className="h-4 w-4" />

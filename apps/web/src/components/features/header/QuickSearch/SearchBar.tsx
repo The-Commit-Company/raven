@@ -10,6 +10,9 @@ const SearchBar = () => {
                 placeholder="Search"
                 className="pl-8 bg-muted border-none h-8 w-full"
             />
+            <span className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground/60 text-sm">
+                ⌘+K
+            </span>
         </div>
     )
 }

@@ -2,7 +2,9 @@ import { Button } from "@components/ui/button"
 import { Separator } from "@components/ui/separator"
 import { SidebarTrigger } from "@components/ui/sidebar"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@components/ui/tooltip"
-import { ChevronDown, FileText, Hash, Headset, Info, Pin, Star, User } from "lucide-react"
+import { FileText, Headset, Info, Link, Pin, Star } from "lucide-react"
+import ChannelMembers from "./ChannelMembers"
+import ChannelMenu from "./ChannelMenu"
 
 const ChannelHeader = () => {
     return (
@@ -17,11 +19,11 @@ const ChannelHeader = () => {
                     </div>
                 </div>
 
-                <div className="flex items-center gap-2">
+                <div className="flex items-center">
                     <Tooltip>
                         <TooltipTrigger asChild>
                             <Button variant="ghost" size="icon" className="h-8 w-8">
-                                <Star className="h-3 w-3 text-muted-foreground" />
+                                <Star className="h-3 w-3 text-foreground/80" />
                                 <span className="sr-only">Star</span>
                             </Button>
                         </TooltipTrigger>
@@ -30,18 +32,12 @@ const ChannelHeader = () => {
                         </TooltipContent>
                     </Tooltip>
 
-                    <div className="flex items-center gap-1">
-                        <Hash className="size-3.5" strokeWidth={2.4} />
-                        <span className="text-md font-medium">general</span>
-                        <ChevronDown className="size-3.5" />
-                    </div>
-                </div>
+                    <ChannelMenu />
 
-                <div className="flex items-center">
                     <Tooltip>
                         <TooltipTrigger asChild>
                             <Button variant="ghost" size="icon" className="h-8 w-8">
-                                <FileText className="h-3 w-3 text-muted-foreground" />
+                                <FileText className="h-3 w-3 text-foreground/80" />
                                 <span className="sr-only">Files</span>
                             </Button>
                         </TooltipTrigger>
@@ -51,37 +47,37 @@ const ChannelHeader = () => {
                     </Tooltip>
                     <Tooltip>
                         <TooltipTrigger asChild>
-                            <Button variant="ghost" size="default" className="h-8 px-1 gap-2">
-                                <User className="h-3 w-3 text-muted-foreground" />
-                                <span className="sr-only">Members</span>
-                                <span className="text-muted-foreground text-sm font-normal">587</span>
+                            <Button variant="ghost" size="icon" className="h-8 w-8">
+                                <Link className="h-3 w-3 text-foreground/80" />
+                                <span className="sr-only">Link</span>
                             </Button>
                         </TooltipTrigger>
                         <TooltipContent>
-                            <p>Members</p>
+                            <p>Links</p>
                         </TooltipContent>
                     </Tooltip>
                     <Tooltip>
                         <TooltipTrigger asChild>
-                            <Button variant="ghost" size="default" className="h-8 px-1 gap-2">
-                                <Pin className="h-3 w-3 text-muted-foreground" />
+                            <Button variant="ghost" size="default" className="h-8 gap-2">
+                                <Pin className="h-3 w-3 text-foreground/80" />
                                 <span className="sr-only">Pinned</span>
                                 <span className="text-muted-foreground text-sm font-normal">3</span>
                             </Button>
                         </TooltipTrigger>
                         <TooltipContent>
-                            <p>Pinned</p>
+                            <p>Pinned Messages</p>
                         </TooltipContent>
                     </Tooltip>
                 </div>
             </div>
 
             {/* Right side */}
-            <div className="flex items-center gap-2">
-                <Button variant="ghost" size="default" className="h-8 px-1 gap-2">
+            <div className="flex items-center gap-1">
+                <Button variant="ghost" size="default" className="h-8 gap-2">
                     <Headset className="size-3.5" />
                     <span className="text-sm">Start call</span>
                 </Button>
+                <ChannelMembers />
                 <Tooltip>
                     <TooltipTrigger asChild>
                         <Button variant="ghost" size="icon" className="h-8 w-8">

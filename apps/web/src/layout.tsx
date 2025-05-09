@@ -4,7 +4,7 @@ import {
     SidebarProvider,
 } from "@components/ui/sidebar"
 import AppHeader from "@components/features/header/AppHeader"
-import ChannelHeader from "@components/features/header/ChannelHeader"
+import ChannelHeader from "@components/features/header/ChannelHeader/ChannelHeader"
 
 export default function Page() {
     return (
