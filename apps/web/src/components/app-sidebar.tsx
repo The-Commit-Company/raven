@@ -1,7 +1,5 @@
 import * as React from "react"
-import { ArchiveX, Command, File, Inbox, Send, Trash2, User } from "lucide-react"
-
-import { NavUser } from "./nav-user"
+import { Command, Inbox, PlusIcon, Box, User } from "lucide-react"
 import { Label } from "@components/ui/label"
 import {
     Sidebar,
@@ -10,7 +8,6 @@ import {
     SidebarGroup,
     SidebarGroupContent,
     SidebarHeader,
-    SidebarInput,
     SidebarMenu,
     SidebarMenuButton,
     SidebarMenuItem,
@@ -18,6 +15,7 @@ import {
 } from "@components/ui/sidebar"
 import { Switch } from "@components/ui/switch"
 import { Avatar, AvatarFallback, AvatarImage } from "@components/ui/avatar"
+import { SearchForm } from "./sidebar-search"
 
 // This is sample data
 const data = {
@@ -28,35 +26,29 @@ const data = {
     },
     navMain: [
         {
-            title: "Inbox",
+            title: "DMs",
             url: "#",
             icon: Inbox,
             isActive: true,
         },
         {
-            title: "Drafts",
+            title: "Workspace 1",
             url: "#",
-            icon: File,
+            icon: Box,
             isActive: false,
         },
         {
-            title: "Sent",
+            title: "Workspace 2",
             url: "#",
-            icon: Send,
+            icon: Box,
             isActive: false,
         },
         {
-            title: "Junk",
+            title: "Workspace 3",
             url: "#",
-            icon: ArchiveX,
+            icon: Box,
             isActive: false,
-        },
-        {
-            title: "Trash",
-            url: "#",
-            icon: Trash2,
-            isActive: false,
-        },
+        }
     ],
     mails: [
         {
@@ -142,7 +134,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     return (
         <Sidebar
             collapsible="icon"
-            className="overflow-hidden [&>[data-sidebar=sidebar]]:flex-row"
+            className="overflow-hidden [&>[data-sidebar=sidebar]]:flex-row pt-[42px]"
             {...props}
         >
             {/* This is the first sidebar */}
@@ -204,7 +196,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                     </SidebarGroup>
                 </SidebarContent>
                 <SidebarFooter>
-                    <NavUser user={data.user} />
+                    <SidebarMenuButton>
+                        <PlusIcon />
+                    </SidebarMenuButton>
                 </SidebarFooter>
             </Sidebar>
 
@@ -221,7 +215,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                             <Switch className="shadow-none" />
                         </Label>
                     </div>
-                    <SidebarInput placeholder="Type to search..." />
+                    <SearchForm />
                 </SidebarHeader>
                 <SidebarContent>
                     <SidebarGroup className="px-0">
