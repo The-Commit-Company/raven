@@ -4,6 +4,8 @@ import { Link, router, Stack, useLocalSearchParams } from 'expo-router';
 import { Button } from '@components/nativewindui/Button';
 import { useColorScheme } from '@hooks/useColorScheme';
 import ChevronLeftIcon from '@assets/icons/ChevronLeftIcon.svg';
+import SunIcon from '@assets/icons/SunIcon.svg';
+import MoonIcon from '@assets/icons/MoonIcon.svg';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { useFrappePostCall, useSWRConfig } from 'frappe-react-sdk';
 import { toast } from 'sonner-native';
@@ -109,6 +111,11 @@ const NewReminder = () => {
         setDate(newDate)
     }
 
+    const isDaytime = (date: Date) => {
+        const hours = date.getHours();
+        return hours >= 6 && hours < 18;
+    };
+
     return (
         <View className="flex-1">
             <Stack.Screen options={{
@@ -148,7 +155,14 @@ const NewReminder = () => {
                 <DropdownMenu.Root>
                     <DropdownMenu.Trigger>
                         <Pressable className="px-4 py-4 flex flex-row justify-between items-center active:bg-linkColor active:dark:bg-linkColor">
-                            <Text className="text-base">Time</Text>
+                            <View className="flex flex-row items-center gap-2.5">
+                                <Text className="text-base">Time</Text>
+                                {isDaytime(date) ? (
+                                    <SunIcon width={20} height={20} color={colors.icon} />
+                                ) : (
+                                    <MoonIcon width={20} height={20} color={colors.icon} />
+                                )}
+                            </View>
                             <Text className="text-base">{dayjs(date).format('HH:mm')}</Text>
                         </Pressable>
                     </DropdownMenu.Trigger>
@@ -169,14 +183,15 @@ const NewReminder = () => {
             </View>
 
             {/* Description */}
-            <View className="px-4 pt-4">
+            <View className="px-4 pt-4 h-full">
                 <Text className="text-base">Description</Text>
                 <TextInput
-                    className="text-base text-muted-foreground mt-2 p-0 border-b-0"
+                    className="text-base text-muted-foreground"
                     placeholder="Set a Reminder"
                     value={description}
                     onChangeText={setDescription}
                     placeholderTextColor="#aaa"
+                    multiline={true}
                 />
             </View>
         </View>

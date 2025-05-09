@@ -67,8 +67,8 @@ const ReminderItem = ({
                     </Text>
                     {!isCompleted ? (
                         <>
-                            <Text className='text-[13px] text-muted'>|</Text>
-                            <Text className={`text-[13px] ${status.status === 'overdue' ? 'text-destructive/80' : 'text-muted-foreground'}`}>
+                            <Text className='text-sm text-muted'>|</Text>
+                            <Text className={`text-sm font-medium ${status.status === 'overdue' ? 'text-red-700' : 'text-muted-foreground'}`}>
                                 {status.text}
                             </Text>
                         </>
@@ -125,7 +125,7 @@ const ReminderActions = ({ reminder, isCompleted }: { reminder: Reminder, isComp
                 className='rounded-lg bg-primary/10 dark:bg-primary/20'
                 size="sm"
             >
-                <Text className='text-sm px-3 py-1 text-primary font-medium'>Mark as complete</Text>
+                <Text className='text-sm px-3 py-0.5 text-primary font-medium'>Mark as complete</Text>
             </Button>
             <Link asChild href={`./new-reminder?reminder=${encodeURIComponent(JSON.stringify(reminder))}`}>
                 <Button
