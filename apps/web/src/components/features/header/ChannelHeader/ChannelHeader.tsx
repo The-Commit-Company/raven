@@ -2,7 +2,7 @@ import { Button } from "@components/ui/button"
 import { Separator } from "@components/ui/separator"
 import { SidebarTrigger } from "@components/ui/sidebar"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@components/ui/tooltip"
-import { FileText, Headset, Info, Link, Pin, Star } from "lucide-react"
+import { FileText, Headset, Info, Link, MessageSquareText, Pin, Star } from "lucide-react"
 import ChannelMembers from "./ChannelMembers"
 import ChannelMenu from "./ChannelMenu"
 
@@ -19,7 +19,7 @@ const ChannelHeader = () => {
                     </div>
                 </div>
 
-                <div className="flex items-center">
+                <div className="flex items-center gap-0.5">
                     <Tooltip>
                         <TooltipTrigger asChild>
                             <Button variant="ghost" size="icon" className="h-8 w-8">
@@ -49,11 +49,22 @@ const ChannelHeader = () => {
                         <TooltipTrigger asChild>
                             <Button variant="ghost" size="icon" className="h-8 w-8">
                                 <Link className="h-3 w-3 text-foreground/80" />
-                                <span className="sr-only">Link</span>
+                                <span className="sr-only">Links</span>
                             </Button>
                         </TooltipTrigger>
                         <TooltipContent>
                             <p>Links</p>
+                        </TooltipContent>
+                    </Tooltip>
+                    <Tooltip>
+                        <TooltipTrigger asChild>
+                            <Button variant="ghost" size="icon" className="h-8 w-8">
+                                <MessageSquareText className="h-3 w-3 text-foreground/80" />
+                                <span className="sr-only">Threads</span>
+                            </Button>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                            <p>Threads</p>
                         </TooltipContent>
                     </Tooltip>
                     <Tooltip>
