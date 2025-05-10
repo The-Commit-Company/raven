@@ -220,11 +220,18 @@ def get_content_attachment_for_file(message_type: str, file_id: str, file_url: s
 	attachments = None
 
 	if message_type == "File":
-		content = f"Uploaded a file. URL of the file is '{file_url}'"
+		content = f"Uploaded a file. URL of the file is '{file_url}'."
+
+		file_extension = file_url.split(".")[-1].lower()
+
+		if file_extension == "pdf":
+			content += (
+				" The file is a PDF. If it's not machine readable, you can extract the text via images."
+			)
 
 		attachments = []
 
-		if file_url.split(".")[-1].lower() in code_interpreter_file_types:
+		if file_extension in code_interpreter_file_types:
 			attachments.append(
 				{
 					"file_id": file_id,
@@ -232,7 +239,7 @@ def get_content_attachment_for_file(message_type: str, file_id: str, file_url: s
 				}
 			)
 
-		if file_url.split(".")[-1].lower() in file_search_file_types:
+		if file_extension in file_search_file_types:
 			attachments.append(
 				{
 					"file_id": file_id,
