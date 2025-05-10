@@ -1,7 +1,11 @@
 import frappe
 
 from raven.ai.handler import stream_response
-from raven.ai.openai_client import get_open_ai_client
+from raven.ai.openai_client import (
+	code_interpreter_file_types,
+	file_search_file_types,
+	get_open_ai_client,
+)
 
 
 def handle_bot_dm(message, bot):
@@ -218,21 +222,24 @@ def get_content_attachment_for_file(message_type: str, file_id: str, file_url: s
 	if message_type == "File":
 		content = f"Uploaded a file. URL of the file is '{file_url}'"
 
-		FILE_SEARCH_EXCLUSIONS = [".xlsx", ".csv", ".json", ".xls"]
+		attachments = []
 
-		tool_type = "file_search"
+		if file_url.split(".")[-1].lower() in code_interpreter_file_types:
+			attachments.append(
+				{
+					"file_id": file_id,
+					"tools": [{"type": "code_interpreter"}],
+				}
+			)
 
-		for exclusion in FILE_SEARCH_EXCLUSIONS:
-			if file_url.endswith(exclusion):
-				tool_type = "code_interpreter"
-				break
+		if file_url.split(".")[-1].lower() in file_search_file_types:
+			attachments.append(
+				{
+					"file_id": file_id,
+					"tools": [{"type": "file_search"}],
+				}
+			)
 
-		attachments = [
-			{
-				"file_id": file_id,
-				"tools": [{"type": tool_type}],
-			}
-		]
 	else:
 		content = [
 			{"type": "text", "text": f"Uploaded an image. URL of the image is '{file_url}'"},

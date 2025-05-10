@@ -30,3 +30,22 @@ def get_openai_models():
 	"""
 	client = get_open_ai_client()
 	return client.models.list()
+
+
+code_interpreter_file_types = [
+	"pdf",
+	"csv",
+	"docx",
+	"doc",
+	"xlsx",
+	"pptx",
+	"txt",
+	"png",
+	"jpg",
+	"jpeg",
+	"md",
+	"json",
+	"html",
+]
+
+file_search_file_types = ["pdf", "csv", "doc", "docx", "json", "txt", "md", "html", "pptx"]

@@ -8,7 +8,11 @@ from frappe import _
 from frappe.model.document import Document
 from openai import APIConnectionError
 
-from raven.ai.openai_client import get_open_ai_client
+from raven.ai.openai_client import (
+	code_interpreter_file_types,
+	file_search_file_types,
+	get_open_ai_client,
+)
 from raven.utils import get_raven_user
 
 
@@ -257,21 +261,6 @@ class RavenBot(Document):
 		)
 
 		# Some files can be added as a resource for both file search and code interpreter
-		code_interpreter_file_types = [
-			"pdf",
-			"csv",
-			"docx",
-			"doc",
-			"xlsx",
-			"pptx",
-			"txt",
-			"png",
-			"jpg",
-			"jpeg",
-			"md",
-			"json",
-			"html",
-		]
 
 		code_interpreter_files = [
 			f.openai_file_id for f in files if f.file_type.lower() in code_interpreter_file_types
@@ -281,8 +270,6 @@ class RavenBot(Document):
 
 		if code_interpreter_files:
 			tool_resources["code_interpreter"] = {"file_ids": code_interpreter_files}
-
-		file_search_file_types = ["pdf", "csv", "doc", "docx", "json", "txt", "md", "html", "pptx"]
 
 		file_search_files = [
 			f.openai_file_id for f in files if f.file_type.lower() in file_search_file_types
