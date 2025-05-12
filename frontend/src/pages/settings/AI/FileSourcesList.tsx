@@ -38,7 +38,7 @@ const FileSourcesList = (props: Props) => {
                 <SettingsPageHeader
                     title='File Sources'
                     description='Add files that can be used by AI Agents.'
-                    actions={isRavenAdmin ? <FileSourceUploadDialog mutate={mutate} /> : undefined}
+                    actions={isRavenAdmin ? <FileSourceUploadDialog onUpload={() => mutate()} /> : undefined}
                 />
                 {isLoading && !error && <TableLoader columns={2} />}
                 <ErrorBanner error={error} />
