@@ -6,7 +6,7 @@ import { TableLoader } from '@/components/layout/Loaders/TableLoader'
 import PageContainer from '@/components/layout/Settings/PageContainer'
 import SettingsContentContainer from '@/components/layout/Settings/SettingsContentContainer'
 import SettingsPageHeader from '@/components/layout/Settings/SettingsPageHeader'
-import { HStack } from '@/components/layout/Stack'
+import { HStack, Stack } from '@/components/layout/Stack'
 import { RavenAIFileSource } from '@/types/RavenAI/RavenAIFileSource'
 import { getTimePassed } from '@/utils/dateConversions'
 import { hasRavenAdminRole, isSystemManager } from '@/utils/roles'
@@ -121,16 +121,19 @@ const FileSourceTable = ({ data, mutate }: { data: RavenAIFileSource[], mutate: 
                     <AlertDialog.Description>
                         Are you sure you want to delete the file <strong>{selected?.file_name}</strong>?
                     </AlertDialog.Description>
-                    <HStack justify='end' gap='2' pt='6'>
-                        <AlertDialog.Cancel>
-                            <Button variant='soft' color='gray' className='not-cal'>
-                                Cancel
+                    <Stack gap='2' pt='4'>
+                        {deleteError && <ErrorBanner error={deleteError} />}
+                        <HStack justify='end' gap='2' pt='2'>
+                            <AlertDialog.Cancel>
+                                <Button variant='soft' color='gray' className='not-cal'>
+                                    Cancel
+                                </Button>
+                            </AlertDialog.Cancel>
+                            <Button color='red' className='not-cal' onClick={onDelete} disabled={deleteLoading}>
+                                {deleteLoading ? <Spinner /> : 'Delete'}
                             </Button>
-                        </AlertDialog.Cancel>
-                        <Button color='red' className='not-cal' onClick={onDelete} disabled={deleteLoading}>
-                            {deleteLoading ? <Spinner /> : 'Delete'}
-                        </Button>
-                    </HStack>
+                        </HStack>
+                    </Stack>
                 </AlertDialog.Content>
             </AlertDialog.Root>
         </>

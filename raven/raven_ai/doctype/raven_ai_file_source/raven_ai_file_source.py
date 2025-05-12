@@ -45,7 +45,10 @@ class RavenAIFileSource(Document):
 
 		self.openai_file_id = response.id
 
-	def on_trash(self):
+	def after_delete(self):
 		if self.openai_file_id:
-			client = get_open_ai_client()
-			client.files.delete(self.openai_file_id)
+			try:
+				client = get_open_ai_client()
+				client.files.delete(self.openai_file_id)
+			except Exception as e:
+				frappe.log_error(f"Error deleting file from OpenAI: {e}")
