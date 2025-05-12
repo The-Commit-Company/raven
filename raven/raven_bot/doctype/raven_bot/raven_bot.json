@@ -30,7 +30,9 @@
   "section_break_lwkx",
   "instruction",
   "dynamic_instructions",
-  "bot_functions"
+  "bot_functions",
+  "openai_vector_store_id",
+  "file_sources"
  ],
  "fields": [
   {
@@ -174,13 +176,25 @@
    "fieldtype": "Select",
    "label": "Reasoning Effort",
    "options": "low\nmedium\nhigh"
+  },
+  {
+   "fieldname": "file_sources",
+   "fieldtype": "Table",
+   "label": "File Sources",
+   "options": "Raven AI Bot Files"
+  },
+  {
+   "fieldname": "openai_vector_store_id",
+   "fieldtype": "Data",
+   "label": "OpenAI Vector Store ID",
+   "read_only": 1
   }
  ],
  "grid_page_length": 50,
  "image_field": "image",
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-05-01 15:40:21.137142",
+ "modified": "2025-05-10 19:07:45.493080",
  "modified_by": "Administrator",
  "module": "Raven Bot",
  "name": "Raven Bot",
