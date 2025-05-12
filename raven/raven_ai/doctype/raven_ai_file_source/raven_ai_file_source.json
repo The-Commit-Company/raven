@@ -48,7 +48,7 @@
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-05-10 16:48:30.559705",
+ "modified": "2025-05-12 08:45:43.188440",
  "modified_by": "Administrator",
  "module": "Raven AI",
  "name": "Raven AI File Source",
@@ -64,6 +64,18 @@
    "read": 1,
    "report": 1,
    "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Raven Admin",
    "share": 1,
    "write": 1
   }

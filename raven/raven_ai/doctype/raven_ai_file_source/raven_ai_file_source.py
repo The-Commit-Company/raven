@@ -25,7 +25,8 @@ class RavenAIFileSource(Document):
 	def before_validate(self):
 		# Populate file_name and file_type from file
 		if self.file:
-			self.file_name = self.file.split("/")[-1]
+			if not self.file_name:
+				self.file_name = self.file.split("/")[-1]
 			self.file_type = self.file.split(".")[-1]
 
 	def before_insert(self):

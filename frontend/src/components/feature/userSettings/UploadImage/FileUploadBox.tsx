@@ -9,6 +9,7 @@ import { CustomFile } from "../../file-upload/FileDrop";
 import { FileUploadProgress } from "../../chat/ChatInput/FileInput/useFileUpload";
 import { getFileSize } from "../../file-upload/FileListItem";
 import { __ } from "@/utils/translations";
+import { FileExtensionIcon } from "@/utils/layout/FileExtIcon";
 
 export type FileUploadBoxProps = FlexProps & {
     /** File to be uploaded */
@@ -127,14 +128,15 @@ const FileItem = ({ file, removeFile, uploadProgress }: FileItemProps) => {
     const progress = uploadProgress?.[file.fileID]?.progress ?? 0
 
     return (
-        <Flex width='100%' gap='2' mt='2' px='4' className='border rounded-md border-slate-8' justify={'between'}>
+        <Flex width='100%' gap='2' mt='2' px='4' py='1' className='border rounded-md border-slate-8' justify={'between'}>
 
             <Flex align='center' justify='center' gap='2'>
                 <Flex align='center' justify='center' className='w-12 h-12'>
-                    {previewURL && <img src={previewURL} alt='File preview' className='w-10 h-10 aspect-square object-cover rounded-md' />}
+                    {previewURL ? <img src={previewURL} alt='File preview' className='w-10 h-10 aspect-square object-cover rounded-md' /> :
+                        <FileExtensionIcon ext={file.name.split('.').pop() ?? ''} size='24' />}
                 </Flex>
                 <Flex direction='column' width='100%' className='overflow-hidden whitespace-nowrap gap-0.5'>
-                    <Text as="span" size="1" className='overflow-hidden text-ellipsis whitespace-nowrap'>{file.name}</Text>
+                    <Text as="span" size="2" className='overflow-hidden text-ellipsis whitespace-nowrap'>{file.name}</Text>
                     <Text size='1' color='gray'>
                         {fileSizeString}
                     </Text>
