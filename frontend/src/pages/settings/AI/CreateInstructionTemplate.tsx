@@ -12,55 +12,57 @@ import { FormProvider, useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router-dom'
 
 const CreateInstructionTemplate = () => {
+  const { createDoc, loading, error } = useFrappeCreateDoc<RavenBotInstructionTemplate>()
 
-    const { createDoc, loading, error } = useFrappeCreateDoc<RavenBotInstructionTemplate>()
+  const methods = useForm<RavenBotInstructionTemplate>({
+    disabled: loading
+  })
 
-    const methods = useForm<RavenBotInstructionTemplate>({
-        disabled: loading
+  const navigate = useNavigate()
+
+  const onSubmit = (data: RavenBotInstructionTemplate) => {
+    createDoc('Raven Bot Instruction Template', data).then((doc) => {
+      navigate(`../${doc.name}`)
     })
+  }
 
-    const navigate = useNavigate()
-
-    const onSubmit = (data: RavenBotInstructionTemplate) => {
-        createDoc("Raven Bot Instruction Template", data)
-            .then((doc) => {
-                navigate(`../${doc.name}`)
-            })
+  useEffect(() => {
+    const down = (e: KeyboardEvent) => {
+      if (e.key === 's' && (e.metaKey || e.ctrlKey)) {
+        e.preventDefault()
+        methods.handleSubmit(onSubmit)()
+      }
     }
 
-    useEffect(() => {
+    document.addEventListener('keydown', down)
+    return () => document.removeEventListener('keydown', down)
+  }, [])
 
-        const down = (e: KeyboardEvent) => {
-            if (e.key === 's' && (e.metaKey || e.ctrlKey)) {
-                e.preventDefault()
-                methods.handleSubmit(onSubmit)()
-            }
-        }
-
-        document.addEventListener('keydown', down)
-        return () => document.removeEventListener('keydown', down)
-    }, [])
-
-    return (
-        <PageContainer>
-            <form onSubmit={methods.handleSubmit(onSubmit)}>
-                <FormProvider {...methods}>
-                    <SettingsContentContainer>
-                        <SettingsPageHeader
-                            title='Create an Instruction Template'
-                            actions={<Button type='submit' disabled={loading}>
-                                {loading && <Loader className="text-white" />}
-                                {loading ? "Creating" : "Create"}
-                            </Button>}
-                            breadcrumbs={[{ label: 'Instruction Templates', href: '../' }, { label: 'New Instruction Template', href: '' }]}
-                        />
-                        <ErrorBanner error={error} />
-                        <InstructionTemplateForm />
-                    </SettingsContentContainer>
-                </FormProvider>
-            </form>
-        </PageContainer>
-    )
+  return (
+    <PageContainer>
+      <form onSubmit={methods.handleSubmit(onSubmit)}>
+        <FormProvider {...methods}>
+          <SettingsContentContainer>
+            <SettingsPageHeader
+              title='Create an Instruction Template'
+              actions={
+                <Button type='submit' disabled={loading}>
+                  {loading && <Loader className='text-white' />}
+                  {loading ? 'Creating' : 'Create'}
+                </Button>
+              }
+              breadcrumbs={[
+                { label: 'Instruction Templates', href: '../' },
+                { label: 'New Instruction Template', href: '' }
+              ]}
+            />
+            <ErrorBanner error={error} />
+            <InstructionTemplateForm />
+          </SettingsContentContainer>
+        </FormProvider>
+      </form>
+    </PageContainer>
+  )
 }
 
 export const Component = CreateInstructionTemplate

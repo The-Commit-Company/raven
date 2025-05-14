@@ -1,9 +1,9 @@
-import { IconButton } from "@radix-ui/themes"
-import { BiDownArrowAlt, BiUpArrowAlt } from "react-icons/bi"
+import { IconButton } from '@radix-ui/themes'
+import { BiDownArrowAlt, BiUpArrowAlt } from 'react-icons/bi'
 
 export interface SortProps {
-    sortOrder: string,
-    onSortOrderChange: (order: "asc" | "desc") => void,
+  sortOrder: string
+  onSortOrderChange: (order: 'asc' | 'desc') => void
 }
 
 /**
@@ -15,20 +15,18 @@ export interface SortProps {
  * @returns fields & callbacks to control sorting.
  */
 export const Sort = ({ sortOrder, onSortOrderChange }: SortProps) => {
+  const handleSortOrder = () => (sortOrder === 'asc' ? onSortOrderChange('desc') : onSortOrderChange('asc'))
 
-    const handleSortOrder = () => {
-        sortOrder === "asc" ? onSortOrderChange("desc") : onSortOrderChange("asc")
-    }
-
-    return (
-        <IconButton
-            size='1'
-            color='gray'
-            variant="soft"
-            title={sortOrder === "asc" ? "newest first" : "oldest first"}
-            onClick={handleSortOrder}
-            aria-label={sortOrder === "asc" ? "click to sort by newest first" : "click to sort by oldest first"}>
-            {sortOrder === "asc" ? <BiUpArrowAlt /> : <BiDownArrowAlt />}
-        </IconButton>
-    )
+  return (
+    <IconButton
+      size='1'
+      color='gray'
+      variant='soft'
+      title={sortOrder === 'asc' ? 'newest first' : 'oldest first'}
+      onClick={handleSortOrder}
+      aria-label={sortOrder === 'asc' ? 'click to sort by newest first' : 'click to sort by oldest first'}
+    >
+      {sortOrder === 'asc' ? <BiUpArrowAlt /> : <BiDownArrowAlt />}
+    </IconButton>
+  )
 }

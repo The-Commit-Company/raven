@@ -19,7 +19,7 @@ import { CustomLink } from './Link'
 import { CustomUnderline } from './Underline'
 import { Image } from '@tiptap/extension-image'
 import { clsx } from 'clsx'
-import Italic from '@tiptap/extension-italic';
+import Italic from '@tiptap/extension-italic'
 import './tiptap-renderer.styles.css'
 import Mention from '@tiptap/extension-mention'
 import { PluginKey } from '@tiptap/pm/state'
@@ -40,21 +40,27 @@ lowlight.register('ts', ts)
 lowlight.register('json', json)
 lowlight.register('python', python)
 type TiptapRendererProps = BoxProps & {
-  message: TextMessage,
-  user?: UserFields,
-  showLinkPreview?: boolean,
-  isScrolling?: boolean,
-  showMiniImage?: boolean,
+  message: TextMessage
+  user?: UserFields
+  showLinkPreview?: boolean
+  isScrolling?: boolean
+  showMiniImage?: boolean
 }
 
-export const TiptapRenderer = ({ message, user, isScrolling = false, showMiniImage = false, showLinkPreview = true, ...props }: TiptapRendererProps) => {
-
+export const TiptapRenderer = ({
+  message,
+  user,
+  isScrolling = false,
+  showMiniImage = false,
+  showLinkPreview = true,
+  ...props
+}: TiptapRendererProps) => {
   const editor = useEditor({
     content: message.text,
     editable: false,
     editorProps: {
       attributes: {
-        class: clsx('tiptap-renderer'),
+        class: clsx('tiptap-renderer')
       }
     },
     enableCoreExtensions: true,
@@ -86,7 +92,8 @@ export const TiptapRenderer = ({ message, user, isScrolling = false, showMiniIma
         },
         code: {
           HTMLAttributes: {
-            class: 'pt-0.5 px-1 pb-px bg-[var(--gray-a3)] dark:bg-[#0d0d0d] text-[var(--ruby-a11)] dark-[var(--accent-a3)] text text-xs font-mono rounded border border-gray-4 dark:border-gray-6'
+            class:
+              'pt-0.5 px-1 pb-px bg-[var(--gray-a3)] dark:bg-[#0d0d0d] text-[var(--ruby-a11)] dark-[var(--accent-a3)] text text-xs font-mono rounded border border-gray-4 dark:border-gray-6'
           }
         }
       }),
@@ -110,9 +117,17 @@ export const TiptapRenderer = ({ message, user, isScrolling = false, showMiniIma
       }).extend({
         renderHTML({ node, HTMLAttributes }) {
           // Wrap the table in a div with a class that will be styled in CSS
-          return ['div', { class: 'table-wrapper rt-TableRoot rt-r-size-1 rt-variant-ghost' }, ['table', mergeAttributes(HTMLAttributes, node.attrs, {
-            class: 'rt-TableRootTable border-l border-r border-t border-gray-4 dark:border-gray-7 my-2'
-          }), 0]]
+          return [
+            'div',
+            { class: 'table-wrapper rt-TableRoot rt-r-size-1 rt-variant-ghost' },
+            [
+              'table',
+              mergeAttributes(HTMLAttributes, node.attrs, {
+                class: 'rt-TableRootTable border-l border-r border-t border-gray-4 dark:border-gray-7 my-2'
+              }),
+              0
+            ]
+          ]
         }
       }),
       TableRow.configure({
@@ -122,7 +137,8 @@ export const TiptapRenderer = ({ message, user, isScrolling = false, showMiniIma
       }),
       TableHeader.configure({
         HTMLAttributes: {
-          class: 'rt-TableHeader px-2 py-1 bg-accent-2 dark:bg-gray-3 border-r border-b border-gray-4 dark:border-gray-7'
+          class:
+            'rt-TableHeader px-2 py-1 bg-accent-2 dark:bg-gray-3 border-r border-b border-gray-4 dark:border-gray-7'
         }
       }),
       TableCell.configure({
@@ -144,13 +160,13 @@ export const TiptapRenderer = ({ message, user, isScrolling = false, showMiniIma
       }).configure({
         suggestion: {
           char: '@',
-          pluginKey: new PluginKey('userMention'),
-        },
+          pluginKey: new PluginKey('userMention')
+        }
       }),
       Mention.extend({
         name: 'channelMention',
         HTMLAttributes: {
-          class: 'mention',
+          class: 'mention'
         },
         addNodeView() {
           return ReactNodeViewRenderer(ChannelMentionRenderer)
@@ -158,8 +174,8 @@ export const TiptapRenderer = ({ message, user, isScrolling = false, showMiniIma
       }).configure({
         suggestion: {
           char: '#',
-          pluginKey: new PluginKey('channelMention'),
-        },
+          pluginKey: new PluginKey('channelMention')
+        }
       }),
       Details,
       TimestampRenderer
@@ -169,10 +185,7 @@ export const TiptapRenderer = ({ message, user, isScrolling = false, showMiniIma
   return (
     <Box className={clsx('overflow-x-hidden text-ellipsis', props.className)} {...props}>
       <EditorContext.Provider value={{ editor }}>
-        <EditorContent
-          contentEditable={false}
-          editor={editor}
-          readOnly />
+        <EditorContent contentEditable={false} editor={editor} readOnly />
         {showLinkPreview && <LinkPreview messageID={message.name} />}
       </EditorContext.Provider>
     </Box>

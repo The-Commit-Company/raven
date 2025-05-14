@@ -1,60 +1,58 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import App from './App'
-import '@radix-ui/themes/styles.css';
+import '@radix-ui/themes/styles.css'
 import './index.css'
 
 // @ts-ignore
-import FrappePushNotification from "../public/frappe-push-notification";
-
+import FrappePushNotification from '../public/frappe-push-notification'
 
 const registerServiceWorker = () => {
   // @ts-ignore
-  window.frappePushNotification = new FrappePushNotification("raven")
+  window.frappePushNotification = new FrappePushNotification('raven')
 
-  if ("serviceWorker" in navigator) {
+  if ('serviceWorker' in navigator) {
     // @ts-ignore
     window.frappePushNotification
-      .appendConfigToServiceWorkerURL("/assets/raven/raven/sw.js")
+      .appendConfigToServiceWorkerURL('/assets/raven/raven/sw.js')
       .then((url: string) => {
         navigator.serviceWorker
           .register(url, {
-            type: "classic",
+            type: 'classic'
           })
           .then((registration) => {
             // @ts-ignore
             window.frappePushNotification.initialize(registration).then(() => {
-              console.info("Frappe Push Notification initialized")
+              console.info('Frappe Push Notification initialized')
             })
           })
       })
       .catch((err: any) => {
-        console.error("Failed to register service worker", err)
+        console.error('Failed to register service worker', err)
       })
   } else {
-    console.error("Service worker not enabled/supported by browser")
+    console.error('Service worker not enabled/supported by browser')
   }
 }
 
 if (import.meta.env.DEV) {
   fetch('/api/method/raven.www.raven.get_context_for_dev', {
-    method: 'POST',
+    method: 'POST'
   })
-    .then(response => response.json())
+    .then((response) => response.json())
     .then((values) => {
       const v = JSON.parse(values.message)
       //@ts-expect-error
-      if (!window.frappe) window.frappe = {};
+      if (!window.frappe) window.frappe = {}
       //@ts-ignore
       window.frappe.boot = v
       registerServiceWorker()
       ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
         <React.StrictMode>
           <App />
-        </React.StrictMode>,
+        </React.StrictMode>
       )
-    }
-    )
+    })
 } else {
   registerServiceWorker()
   ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
@@ -63,4 +61,3 @@ if (import.meta.env.DEV) {
     </React.StrictMode>
   )
 }
-

@@ -12,62 +12,63 @@ import { FormProvider, useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router-dom'
 
 const CreateBot = () => {
+  const { createDoc, loading, error } = useFrappeCreateDoc<RavenBot>()
 
-    const { createDoc, loading, error } = useFrappeCreateDoc<RavenBot>()
+  const methods = useForm<RavenBot>({
+    disabled: loading,
+    defaultValues: {
+      is_ai_bot: 0,
+      enable_file_search: 1,
+      enable_code_interpreter: 1
+    }
+  })
 
-    const methods = useForm<RavenBot>({
-        disabled: loading,
-        defaultValues: {
-            is_ai_bot: 0,
-            enable_file_search: 1,
-            enable_code_interpreter: 1
-        }
+  const navigate = useNavigate()
+
+  const onSubmit = (data: RavenBot) => {
+    createDoc('Raven Bot', data).then((doc) => {
+      navigate(`../${doc.name}`)
     })
+  }
 
-    const navigate = useNavigate()
-
-
-    const onSubmit = (data: RavenBot) => {
-        createDoc("Raven Bot", data)
-            .then((doc) => {
-                navigate(`../${doc.name}`)
-            })
+  useEffect(() => {
+    const down = (e: KeyboardEvent) => {
+      if (e.key === 's' && (e.metaKey || e.ctrlKey)) {
+        e.preventDefault()
+        methods.handleSubmit(onSubmit)()
+      }
     }
 
-    useEffect(() => {
+    document.addEventListener('keydown', down)
+    return () => document.removeEventListener('keydown', down)
+  }, [])
 
-        const down = (e: KeyboardEvent) => {
-            if (e.key === 's' && (e.metaKey || e.ctrlKey)) {
-                e.preventDefault()
-                methods.handleSubmit(onSubmit)()
-            }
-        }
-
-        document.addEventListener('keydown', down)
-        return () => document.removeEventListener('keydown', down)
-    }, [])
-
-    return (
-        <PageContainer>
-            <form onSubmit={methods.handleSubmit(onSubmit)}>
-                <FormProvider {...methods}>
-                    <SettingsContentContainer>
-                        <SettingsPageHeader
-                            title='Create an Agent'
-                            // description='Bots can be used to send reminders, run AI assistants, and more.'
-                            actions={<Button type='submit' disabled={loading}>
-                                {loading && <Loader className="text-white" />}
-                                {loading ? "Creating" : "Create"}
-                            </Button>}
-                            breadcrumbs={[{ label: 'Agents', href: '../' }, { label: 'New Agent', href: '' }]}
-                        />
-                        <ErrorBanner error={error} />
-                        <BotForm isEdit={false} />
-                    </SettingsContentContainer>
-                </FormProvider>
-            </form>
-        </PageContainer>
-    )
+  return (
+    <PageContainer>
+      <form onSubmit={methods.handleSubmit(onSubmit)}>
+        <FormProvider {...methods}>
+          <SettingsContentContainer>
+            <SettingsPageHeader
+              title='Create an Agent'
+              // description='Bots can be used to send reminders, run AI assistants, and more.'
+              actions={
+                <Button type='submit' disabled={loading}>
+                  {loading && <Loader className='text-white' />}
+                  {loading ? 'Creating' : 'Create'}
+                </Button>
+              }
+              breadcrumbs={[
+                { label: 'Agents', href: '../' },
+                { label: 'New Agent', href: '' }
+              ]}
+            />
+            <ErrorBanner error={error} />
+            <BotForm isEdit={false} />
+          </SettingsContentContainer>
+        </FormProvider>
+      </form>
+    </PageContainer>
+  )
 }
 
 export const Component = CreateBot

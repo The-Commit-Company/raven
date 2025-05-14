@@ -1,33 +1,33 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect } from 'react'
 
 const useMediaQuery = (query: string) => {
-    const [value, setValue] = useState(false)
+  const [value, setValue] = useState(false)
 
-    useEffect(() => {
-        function onChange(event: MediaQueryListEvent) {
-            setValue(event.matches)
-        }
+  useEffect(() => {
+    function onChange(event: MediaQueryListEvent) {
+      setValue(event.matches)
+    }
 
-        const result = matchMedia(query)
-        result.addEventListener("change", onChange)
-        setValue(result.matches)
+    const result = matchMedia(query)
+    result.addEventListener('change', onChange)
+    setValue(result.matches)
 
-        return () => result.removeEventListener("change", onChange)
-    }, [query])
+    return () => result.removeEventListener('change', onChange)
+  }, [query])
 
-    return value
+  return value
 }
 
-export default useMediaQuery;
+export default useMediaQuery
 
 export const useIsDesktop = () => {
-    const isDesktop = useMediaQuery('(min-width: 768px)')
+  const isDesktop = useMediaQuery('(min-width: 768px)')
 
-    return isDesktop
+  return isDesktop
 }
 
 export const useIsMobile = () => {
-    const isMobile = useMediaQuery('(max-width: 768px)')
+  const isMobile = useMediaQuery('(max-width: 768px)')
 
-    return isMobile
+  return isMobile
 }

@@ -12,62 +12,63 @@ import { FormProvider, useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router-dom'
 
 const CreateFunction = () => {
+  const { createDoc, loading, error } = useFrappeCreateDoc<RavenAIFunction>()
 
-    const { createDoc, loading, error } = useFrappeCreateDoc<RavenAIFunction>()
+  const methods = useForm<RavenAIFunction>({
+    disabled: loading,
+    defaultValues: {
+      params: {
+        type: 'object',
+        properties: {}
+      }
+    }
+  })
 
-    const methods = useForm<RavenAIFunction>({
-        disabled: loading,
-        defaultValues: {
-            params: {
-                type: 'object',
-                properties: {},
-            }
-        }
+  const navigate = useNavigate()
+
+  const onSubmit = (data: RavenAIFunction) => {
+    createDoc('Raven AI Function', data).then((doc) => {
+      navigate(`../${doc.name}`)
     })
+  }
 
-    const navigate = useNavigate()
-
-
-    const onSubmit = (data: RavenAIFunction) => {
-        createDoc("Raven AI Function", data)
-            .then((doc) => {
-                navigate(`../${doc.name}`)
-            })
+  useEffect(() => {
+    const down = (e: KeyboardEvent) => {
+      if (e.key === 's' && (e.metaKey || e.ctrlKey)) {
+        e.preventDefault()
+        methods.handleSubmit(onSubmit)()
+      }
     }
 
-    useEffect(() => {
+    document.addEventListener('keydown', down)
+    return () => document.removeEventListener('keydown', down)
+  }, [])
 
-        const down = (e: KeyboardEvent) => {
-            if (e.key === 's' && (e.metaKey || e.ctrlKey)) {
-                e.preventDefault()
-                methods.handleSubmit(onSubmit)()
-            }
-        }
-
-        document.addEventListener('keydown', down)
-        return () => document.removeEventListener('keydown', down)
-    }, [])
-
-    return (
-        <PageContainer>
-            <form onSubmit={methods.handleSubmit(onSubmit)}>
-                <FormProvider {...methods}>
-                    <SettingsContentContainer>
-                        <SettingsPageHeader
-                            title='Create a Function'
-                            actions={<Button type='submit' disabled={loading}>
-                                {loading && <Loader className="text-white" />}
-                                {loading ? "Creating" : "Create"}
-                            </Button>}
-                            breadcrumbs={[{ label: 'Functions', href: '../' }, { label: 'New Function', href: '' }]}
-                        />
-                        <ErrorBanner error={error} />
-                        <FunctionForm />
-                    </SettingsContentContainer>
-                </FormProvider>
-            </form>
-        </PageContainer>
-    )
+  return (
+    <PageContainer>
+      <form onSubmit={methods.handleSubmit(onSubmit)}>
+        <FormProvider {...methods}>
+          <SettingsContentContainer>
+            <SettingsPageHeader
+              title='Create a Function'
+              actions={
+                <Button type='submit' disabled={loading}>
+                  {loading && <Loader className='text-white' />}
+                  {loading ? 'Creating' : 'Create'}
+                </Button>
+              }
+              breadcrumbs={[
+                { label: 'Functions', href: '../' },
+                { label: 'New Function', href: '' }
+              ]}
+            />
+            <ErrorBanner error={error} />
+            <FunctionForm />
+          </SettingsContentContainer>
+        </FormProvider>
+      </form>
+    </PageContainer>
+  )
 }
 
 export const Component = CreateFunction

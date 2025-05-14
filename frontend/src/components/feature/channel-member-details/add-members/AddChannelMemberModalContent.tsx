@@ -20,13 +20,12 @@ interface AddChannelMemberModalContentProps {
   // channelID: string,
   // channel_name: string,
   // type: RavenChannel['type'],
-  onClose: () => void,
+  onClose: () => void
   // updateMembers: () => void,
   // channelMembers?: ChannelMembers
 }
 
 export const AddChannelMembersModalContent = ({ onClose }: AddChannelMemberModalContentProps) => {
-
   const { channelID } = useParams<{ channelID: string }>()
 
   const { channel } = useCurrentChannelData(channelID ?? '')
@@ -48,32 +47,34 @@ export const AddChannelMembersModalContent = ({ onClose }: AddChannelMemberModal
       call({
         channel_id: channelID,
         members: data.add_members.map((member) => member.name)
+      }).then(() => {
+        toast.success('Members added')
+        mutate(['channel_members', channelID])
+        onClose()
       })
-        .then(() => {
-          toast.success("Members added")
-          mutate(["channel_members", channelID])
-          onClose()
-        })
     }
   }
 
   return (
     <>
-      {channelID && channel &&
+      {channelID && channel && (
         <FormProvider {...methods}>
           <form onSubmit={handleSubmit(onSubmit)}>
             <Dialog.Title>
-              <Text as='span'>Add members to <ChannelIcon type={channel?.channelData.type} size='18' className='inline-block -mb-0.5' />{channel?.channelData.channel_name}</Text>
+              <Text as='span'>
+                Add members to{' '}
+                <ChannelIcon type={channel?.channelData.type} size='18' className='inline-block -mb-0.5' />
+                {channel?.channelData.channel_name}
+              </Text>
             </Dialog.Title>
             <Dialog.Description size='2'>
-              New members will be able to see all of <strong>{channel?.channelData.channel_name}</strong>'s history, including any files that have been shared in the channel.
+              New members will be able to see all of <strong>{channel?.channelData.channel_name}</strong>'s history,
+              including any files that have been shared in the channel.
             </Dialog.Description>
 
             <Flex gap='2' pt='2' direction='column' width='100%'>
               <ErrorBanner error={error} />
-              <Text size='2'>
-                You can only add members from your workspace to this channel.
-              </Text>
+              <Text size='2'>You can only add members from your workspace to this channel.</Text>
               <Box width='100%'>
                 <Flex direction='column' gap='2'>
                   <Flex direction='column' gap='2'>
@@ -95,7 +96,8 @@ export const AddChannelMembersModalContent = ({ onClose }: AddChannelMemberModal
                             workspaceID={channel?.channelData.workspace ?? ''}
                             selectedUsers={value ?? []}
                             channelID={channelID}
-                            label='' />
+                            label=''
+                          />
                         )}
                       />
                     </Suspense>
@@ -105,20 +107,20 @@ export const AddChannelMembersModalContent = ({ onClose }: AddChannelMemberModal
               </Box>
             </Flex>
 
-            <Flex gap="3" mt="6" justify="end" align='center'>
+            <Flex gap='3' mt='6' justify='end' align='center'>
               <Dialog.Close disabled={loading}>
-                <Button variant="soft" color="gray">Cancel</Button>
+                <Button variant='soft' color='gray'>
+                  Cancel
+                </Button>
               </Dialog.Close>
               <Button type='submit' disabled={loading}>
-                {loading && <Loader className="text-white" />}
-                {loading ? "Saving" : "Save"}
+                {loading && <Loader className='text-white' />}
+                {loading ? 'Saving' : 'Save'}
               </Button>
             </Flex>
-
           </form>
         </FormProvider>
-      }
+      )}
     </>
   )
-
 }

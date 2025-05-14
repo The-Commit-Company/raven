@@ -91,79 +91,95 @@ import clsx from 'clsx'
 //     )
 // }
 
-export const ThreadPreviewBox = ({ thread, unreadCount }: { thread: ThreadMessage, unreadCount: number }) => {
-
-    const user = useGetUser(thread.owner)
-    const users = useGetUserRecords()
-    const { channel } = useCurrentChannelData(thread.channel_id)
-    const channelData = channel?.channelData
-    const channelDetails = useMemo(() => {
-        if (channelData) {
-            if (channelData.is_direct_message) {
-                const peer_user_name = users[(channelData as DMChannelListItem).peer_user_id]?.full_name ?? (channelData as DMChannelListItem).peer_user_id
-                return {
-                    channelIcon: '',
-                    channelName: `DM with ${peer_user_name}`
-                }
-            } else {
-                return {
-                    channelIcon: channelData.type,
-                    channelName: channelData.channel_name
-                }
-            }
+export const ThreadPreviewBox = ({ thread, unreadCount }: { thread: ThreadMessage; unreadCount: number }) => {
+  const user = useGetUser(thread.owner)
+  const users = useGetUserRecords()
+  const { channel } = useCurrentChannelData(thread.channel_id)
+  const channelData = channel?.channelData
+  const channelDetails = useMemo(() => {
+    if (channelData) {
+      if (channelData.is_direct_message) {
+        const peer_user_name =
+          users[(channelData as DMChannelListItem).peer_user_id]?.full_name ??
+          (channelData as DMChannelListItem).peer_user_id
+        return {
+          channelIcon: '',
+          channelName: `DM with ${peer_user_name}`
         }
-    }, [channelData, users])
+      } else {
+        return {
+          channelIcon: channelData.type,
+          channelName: channelData.channel_name
+        }
+      }
+    }
+  }, [channelData, users])
 
-    const { workspaceID } = useParams()
+  const { workspaceID } = useParams()
 
-    // const lastMessageDetails = useMemo(() => {
-    //     if (thread.last_message_details) {
-    //         return parseLastMessageDetails(thread.last_message_details)
-    //     }
-    //     return null
-    // }, [thread.last_message_details])
+  // const lastMessageDetails = useMemo(() => {
+  //     if (thread.last_message_details) {
+  //         return parseLastMessageDetails(thread.last_message_details)
+  //     }
+  //     return null
+  // }, [thread.last_message_details])
 
-    return (
-        <NavLink
-            to={`/${workspaceID}/threads/${thread.name}`}
-            tabIndex={0}
-            className={({ isActive }) => clsx(
-                "group block hover:bg-gray-2 dark:hover:bg-gray-4 px-4 py-4 border-b border-gray-4 overflow-hidden",
-                "focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-8 focus-visible:ring-inset",
-                isActive && "bg-gray-3 dark:bg-gray-3"
-            )}>
-            {({ isActive }) => (
-                <div className='flex w-full justify-between items-center gap-2'>
-                    <Flex direction='column' gap='2'>
-                        <Flex gap='2' align={'center'}>
-                            <Flex gap='1' align={'center'} justify={'center'}>
-                                {channelDetails?.channelIcon && <ChannelIcon type={channelDetails?.channelIcon as "Private" | "Public" | "Open"} size='14' />}
-                                <Text as='span' size='1' className={'font-semibold'}>{channelDetails?.channelName}</Text>
-                            </Flex>
-                            <Text as='span' size='1' color='gray'><DateMonthYear date={thread.creation} /></Text>
-                        </Flex>
-                        <Flex gap='3'>
-                            <MessageSenderAvatar userID={thread.owner} user={user} isActive={false} />
-                            <Flex direction='column' gap='0.5' justify='center'>
-                                <Box>
-                                    <UserHoverCard user={user} userID={thread.owner} isActive={false} />
-                                </Box>
-                                <MessageContent message={thread as unknown as Message} user={user} forceHideLinkPreview />
-                            </Flex>
-                        </Flex>
-                        <Flex align={'center'} gap='2' className='pl-11'>
-                            <ViewThreadParticipants participants={thread.participants ?? []} />
-                            <Text as='div' size='1' className={'font-medium text-accent-a11'}>{thread.reply_count ?? 0} {thread.reply_count && thread.reply_count === 1 ? 'Reply' : 'Replies'}</Text>
-                        </Flex>
-                        {/* {lastMessageDetails && <LastMessagePreview
+  return (
+    <NavLink
+      to={`/${workspaceID}/threads/${thread.name}`}
+      tabIndex={0}
+      className={({ isActive }) =>
+        clsx(
+          'group block hover:bg-gray-2 dark:hover:bg-gray-4 px-4 py-4 border-b border-gray-4 overflow-hidden',
+          'focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-8 focus-visible:ring-inset',
+          isActive && 'bg-gray-3 dark:bg-gray-3'
+        )
+      }
+    >
+      {({ isActive }) => (
+        <div className='flex w-full justify-between items-center gap-2'>
+          <Flex direction='column' gap='2'>
+            <Flex gap='2' align={'center'}>
+              <Flex gap='1' align={'center'} justify={'center'}>
+                {channelDetails?.channelIcon && (
+                  <ChannelIcon type={channelDetails?.channelIcon as 'Private' | 'Public' | 'Open'} size='14' />
+                )}
+                <Text as='span' size='1' className={'font-semibold'}>
+                  {channelDetails?.channelName}
+                </Text>
+              </Flex>
+              <Text as='span' size='1' color='gray'>
+                <DateMonthYear date={thread.creation} />
+              </Text>
+            </Flex>
+            <Flex gap='3'>
+              <MessageSenderAvatar userID={thread.owner} user={user} isActive={false} />
+              <Flex direction='column' gap='0.5' justify='center'>
+                <Box>
+                  <UserHoverCard user={user} userID={thread.owner} isActive={false} />
+                </Box>
+                <MessageContent message={thread as unknown as Message} user={user} forceHideLinkPreview />
+              </Flex>
+            </Flex>
+            <Flex align={'center'} gap='2' className='pl-11'>
+              <ViewThreadParticipants participants={thread.participants ?? []} />
+              <Text as='div' size='1' className={'font-medium text-accent-a11'}>
+                {thread.reply_count ?? 0} {thread.reply_count && thread.reply_count === 1 ? 'Reply' : 'Replies'}
+              </Text>
+            </Flex>
+            {/* {lastMessageDetails && <LastMessagePreview
                             details={lastMessageDetails}
                             timestamp={thread.last_message_timestamp}
                             isActive={isActive}
                         />} */}
-                    </Flex>
-                    {unreadCount > 0 && <Badge variant='soft' className='font-bold' size='2'>{unreadCount}</Badge>}
-                </div>
-            )}
-        </NavLink>
-    )
+          </Flex>
+          {unreadCount > 0 && (
+            <Badge variant='soft' className='font-bold' size='2'>
+              {unreadCount}
+            </Badge>
+          )}
+        </div>
+      )}
+    </NavLink>
+  )
 }

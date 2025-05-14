@@ -21,57 +21,54 @@ lowlight.register('ts', ts)
 lowlight.register('html', html)
 lowlight.register('json', json)
 
-
 type Props = {
-    code: string,
+  code: string
 }
 
 const CodeBlock = ({ code }: Props) => {
+  const editor = useEditor({
+    editorProps: {
+      attributes: {
+        class: 'tiptap'
+      }
+    },
+    editable: false,
+    extensions: [
+      StarterKit,
+      CodeBlockLowlight.configure({
+        lowlight
+      })
+    ],
+    content: `<pre><code>${code}</code></pre>`
+  })
 
-    const editor = useEditor({
-        editorProps: {
-            attributes: {
-                class: 'tiptap'
-            }
-        },
-        editable: false,
-        extensions: [
-            StarterKit,
-            CodeBlockLowlight.configure({
-                lowlight
-            })
-        ],
-        content: `<pre><code>${code}</code></pre>`
+  const onCopy = () => {
+    navigator.clipboard.writeText(code)
+
+    toast.success('Copied to clipboard', {
+      duration: 800
     })
+  }
 
-    const onCopy = () => {
-        navigator.clipboard.writeText(code)
+  if (!editor) return null
 
-        toast.success('Copied to clipboard', {
-            duration: 800
-        })
-    }
-
-    if (!editor) return null
-
-    return (
-        <div className='relative'>
-            <EditorContent editor={editor} />
-            <Tooltip content='Copy'>
-                <IconButton
-                    variant='ghost'
-                    size='2'
-                    color='gray'
-                    type='button'
-                    className='absolute right-3 top-7 text-gray-8 hover:text-gray-1'
-                    onClick={onCopy}
-                >
-                    <BiCopy />
-                </IconButton>
-            </Tooltip>
-        </div>
-
-    )
+  return (
+    <div className='relative'>
+      <EditorContent editor={editor} />
+      <Tooltip content='Copy'>
+        <IconButton
+          variant='ghost'
+          size='2'
+          color='gray'
+          type='button'
+          className='absolute right-3 top-7 text-gray-8 hover:text-gray-1'
+          onClick={onCopy}
+        >
+          <BiCopy />
+        </IconButton>
+      </Tooltip>
+    </div>
+  )
 }
 
 export default CodeBlock

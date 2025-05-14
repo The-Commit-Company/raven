@@ -5,17 +5,16 @@ import { ChannelHeader } from '../../chat-header/ChannelHeader'
 import { useParams } from 'react-router-dom'
 
 interface ChannelSpaceProps {
-    channelData: ChannelListItem
+  channelData: ChannelListItem
 }
 
 export const ChannelSpace = ({ channelData }: ChannelSpaceProps) => {
+  // const { threadID } = useParams()
 
-    // const { threadID } = useParams()
-
-    return (
-        <Box>
-            <ChannelHeader channelData={channelData} />
-            <ChatBoxBody channelData={channelData} />
-        </Box>
-    )
+  return (
+    <Box>
+      <ChannelHeader channelData={channelData} />
+      <ChatBoxBody channelData={channelData} />
+    </Box>
+  )
 }

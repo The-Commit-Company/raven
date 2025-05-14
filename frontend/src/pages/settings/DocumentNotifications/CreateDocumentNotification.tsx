@@ -12,59 +12,60 @@ import { FormProvider, useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router-dom'
 
 const CreateDocumentNotification = () => {
+  const { createDoc, loading, error } = useFrappeCreateDoc<RavenDocumentNotification>()
 
-    const { createDoc, loading, error } = useFrappeCreateDoc<RavenDocumentNotification>()
+  const methods = useForm<RavenDocumentNotification>({
+    disabled: loading,
+    defaultValues: {
+      enabled: 1
+    }
+  })
 
-    const methods = useForm<RavenDocumentNotification>({
-        disabled: loading,
-        defaultValues: {
-            enabled: 1,
-        }
+  const navigate = useNavigate()
+
+  const onSubmit = (data: RavenDocumentNotification) => {
+    createDoc('Raven Document Notification', data).then((doc) => {
+      navigate(`../${doc.name}`)
     })
+  }
 
-    const navigate = useNavigate()
-
-
-    const onSubmit = (data: RavenDocumentNotification) => {
-        createDoc("Raven Document Notification", data)
-            .then((doc) => {
-                navigate(`../${doc.name}`)
-            })
+  useEffect(() => {
+    const down = (e: KeyboardEvent) => {
+      if (e.key === 's' && (e.metaKey || e.ctrlKey)) {
+        e.preventDefault()
+        methods.handleSubmit(onSubmit)()
+      }
     }
 
-    useEffect(() => {
+    document.addEventListener('keydown', down)
+    return () => document.removeEventListener('keydown', down)
+  }, [])
 
-        const down = (e: KeyboardEvent) => {
-            if (e.key === 's' && (e.metaKey || e.ctrlKey)) {
-                e.preventDefault()
-                methods.handleSubmit(onSubmit)()
-            }
-        }
-
-        document.addEventListener('keydown', down)
-        return () => document.removeEventListener('keydown', down)
-    }, [])
-
-    return (
-        <PageContainer>
-            <form onSubmit={methods.handleSubmit(onSubmit)}>
-                <FormProvider {...methods}>
-                    <SettingsContentContainer>
-                        <SettingsPageHeader
-                            title='Create a Document Notification'
-                            actions={<Button type='submit' disabled={loading}>
-                                {loading && <Loader className="text-white" />}
-                                {loading ? "Creating" : "Create"}
-                            </Button>}
-                            breadcrumbs={[{ label: 'Document Notification', href: '../' }, { label: 'New Document Notification', href: '' }]}
-                        />
-                        <ErrorBanner error={error} />
-                        <DocumentNotificationForm />
-                    </SettingsContentContainer>
-                </FormProvider>
-            </form>
-        </PageContainer>
-    )
+  return (
+    <PageContainer>
+      <form onSubmit={methods.handleSubmit(onSubmit)}>
+        <FormProvider {...methods}>
+          <SettingsContentContainer>
+            <SettingsPageHeader
+              title='Create a Document Notification'
+              actions={
+                <Button type='submit' disabled={loading}>
+                  {loading && <Loader className='text-white' />}
+                  {loading ? 'Creating' : 'Create'}
+                </Button>
+              }
+              breadcrumbs={[
+                { label: 'Document Notification', href: '../' },
+                { label: 'New Document Notification', href: '' }
+              ]}
+            />
+            <ErrorBanner error={error} />
+            <DocumentNotificationForm />
+          </SettingsContentContainer>
+        </FormProvider>
+      </form>
+    </PageContainer>
+  )
 }
 
 export const Component = CreateDocumentNotification

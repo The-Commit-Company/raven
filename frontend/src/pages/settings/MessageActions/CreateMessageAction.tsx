@@ -12,60 +12,61 @@ import { FormProvider, useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router-dom'
 
 const CreateMessageAction = () => {
+  const { createDoc, loading, error } = useFrappeCreateDoc<RavenMessageAction>()
 
-    const { createDoc, loading, error } = useFrappeCreateDoc<RavenMessageAction>()
+  const methods = useForm<RavenMessageAction>({
+    disabled: loading,
+    defaultValues: {
+      enabled: 1,
+      action: 'Create Document'
+    }
+  })
 
-    const methods = useForm<RavenMessageAction>({
-        disabled: loading,
-        defaultValues: {
-            enabled: 1,
-            action: 'Create Document'
-        }
+  const navigate = useNavigate()
+
+  const onSubmit = (data: RavenMessageAction) => {
+    createDoc('Raven Message Action', data).then((doc) => {
+      navigate(`../${doc.name}`)
     })
+  }
 
-    const navigate = useNavigate()
-
-
-    const onSubmit = (data: RavenMessageAction) => {
-        createDoc("Raven Message Action", data)
-            .then((doc) => {
-                navigate(`../${doc.name}`)
-            })
+  useEffect(() => {
+    const down = (e: KeyboardEvent) => {
+      if (e.key === 's' && (e.metaKey || e.ctrlKey)) {
+        e.preventDefault()
+        methods.handleSubmit(onSubmit)()
+      }
     }
 
-    useEffect(() => {
+    document.addEventListener('keydown', down)
+    return () => document.removeEventListener('keydown', down)
+  }, [])
 
-        const down = (e: KeyboardEvent) => {
-            if (e.key === 's' && (e.metaKey || e.ctrlKey)) {
-                e.preventDefault()
-                methods.handleSubmit(onSubmit)()
-            }
-        }
-
-        document.addEventListener('keydown', down)
-        return () => document.removeEventListener('keydown', down)
-    }, [])
-
-    return (
-        <PageContainer>
-            <form onSubmit={methods.handleSubmit(onSubmit)}>
-                <FormProvider {...methods}>
-                    <SettingsContentContainer>
-                        <SettingsPageHeader
-                            title='Create a Message Action'
-                            actions={<Button type='submit' disabled={loading}>
-                                {loading && <Loader className="text-white" />}
-                                {loading ? "Creating" : "Create"}
-                            </Button>}
-                            breadcrumbs={[{ label: 'Message Action', href: '../' }, { label: 'New Message Action', href: '' }]}
-                        />
-                        <ErrorBanner error={error} />
-                        <MessageActionForm />
-                    </SettingsContentContainer>
-                </FormProvider>
-            </form>
-        </PageContainer>
-    )
+  return (
+    <PageContainer>
+      <form onSubmit={methods.handleSubmit(onSubmit)}>
+        <FormProvider {...methods}>
+          <SettingsContentContainer>
+            <SettingsPageHeader
+              title='Create a Message Action'
+              actions={
+                <Button type='submit' disabled={loading}>
+                  {loading && <Loader className='text-white' />}
+                  {loading ? 'Creating' : 'Create'}
+                </Button>
+              }
+              breadcrumbs={[
+                { label: 'Message Action', href: '../' },
+                { label: 'New Message Action', href: '' }
+              ]}
+            />
+            <ErrorBanner error={error} />
+            <MessageActionForm />
+          </SettingsContentContainer>
+        </FormProvider>
+      </form>
+    </PageContainer>
+  )
 }
 
 export const Component = CreateMessageAction

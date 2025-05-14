@@ -10,29 +10,32 @@ import useThreadPageActive from '@/hooks/useThreadPageActive'
 
 /**
  * Component to view a thread within the Thread Manager. Similar to the ThreadDrawer, but without the border and better header.
- * @returns 
+ * @returns
  */
 const ViewThread = () => {
+  const { threadID } = useParams()
+  const { data, error, isLoading } = useFrappeGetDoc<Message>('Raven Message', threadID, threadID, {
+    revalidateOnFocus: false,
+    shouldRetryOnError: false,
+    keepPreviousData: false
+  })
 
-    const { threadID } = useParams()
-    const { data, error, isLoading } = useFrappeGetDoc<Message>('Raven Message', threadID, threadID, {
-        revalidateOnFocus: false,
-        shouldRetryOnError: false,
-        keepPreviousData: false
-    })
+  useThreadPageActive(threadID)
 
-    useThreadPageActive(threadID)
-
-    return (
-        <div>
-            <Flex direction='column' gap='0' className='w-full h-screen'>
-                <ThreadHeader />
-                {isLoading && <FullPageLoader />}
-                {error && <Box p='4'><ErrorBanner error={error} /></Box>}
-                {data && <ThreadMessages threadMessage={data} key={threadID} />}
-            </Flex>
-        </div>
-    )
+  return (
+    <div>
+      <Flex direction='column' gap='0' className='w-full h-screen'>
+        <ThreadHeader />
+        {isLoading && <FullPageLoader />}
+        {error && (
+          <Box p='4'>
+            <ErrorBanner error={error} />
+          </Box>
+        )}
+        {data && <ThreadMessages threadMessage={data} key={threadID} />}
+      </Flex>
+    </div>
+  )
 }
 
 export const Component = ViewThread

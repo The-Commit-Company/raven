@@ -6,6 +6,9 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "lint:fix": "eslint . --fix",
+    "prettier": "prettier --check \"src/**/(*.tsx|*.ts|*.css|*.scss)\"",
+    "prettier:fix": "prettier --write \"src/**/(*.tsx|*.ts|*.css|*.scss)\"",
     "build": "vite build --base=/assets/raven/raven/ && yarn copy-html-entry",
     "preview": "vite preview",
     "copy-html-entry": "cp ../raven/public/raven/index.html ../raven/www/raven.html"
@@ -71,10 +74,19 @@
     "vite-plugin-svgr": "^4.2.0"
   },
   "devDependencies": {
+    "@eslint/js": "^9.26.0",
     "@types/js-cookie": "^3.0.6",
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.2.19",
     "@types/turndown": "^5.0.4",
-    "typescript": "^5.3.3"
+    "eslint": "^9.26.0",
+    "eslint-config-prettier": "^10.1.5",
+    "eslint-plugin-prettier": "^5.4.0",
+    "eslint-plugin-react-hooks": "^5.2.0",
+    "eslint-plugin-react-refresh": "^0.4.20",
+    "globals": "^16.1.0",
+    "prettier": "^3.5.3",
+    "typescript": "^5.3.3",
+    "typescript-eslint": "^8.32.1"
   }
 }
