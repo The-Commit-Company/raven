@@ -1,19 +1,19 @@
+import 'cal-sans'
+import { init } from 'emoji-mart'
 import { FrappeProvider } from 'frappe-react-sdk'
+import Cookies from 'js-cookie'
 import { Navigate, Route, RouterProvider, createBrowserRouter, createRoutesFromElements } from 'react-router-dom'
+import { Toaster } from 'sonner'
+import WorkspaceSwitcherGrid from './components/layout/WorkspaceSwitcherGrid'
+import { useStickyState } from './hooks/useStickyState'
+import ErrorPage from './pages/ErrorPage'
 import { MainPage } from './pages/MainPage'
+import MobileTabsPage from './pages/MobileTabsPage'
+import WorkspaceSwitcher from './pages/WorkspaceSwitcher'
+import { ThemeProvider } from './ThemeProvider'
+import AppUpdateProvider from './utils/AppUpdateProvider'
 import { ProtectedRoute } from './utils/auth/ProtectedRoute'
 import { UserProvider } from './utils/auth/UserProvider'
-import 'cal-sans'
-import { ThemeProvider } from './ThemeProvider'
-import { Toaster } from 'sonner'
-import { useStickyState } from './hooks/useStickyState'
-import MobileTabsPage from './pages/MobileTabsPage'
-import Cookies from 'js-cookie'
-import ErrorPage from './pages/ErrorPage'
-import WorkspaceSwitcher from './pages/WorkspaceSwitcher'
-import WorkspaceSwitcherGrid from './components/layout/WorkspaceSwitcherGrid'
-import { init } from 'emoji-mart'
-import AppUpdateProvider from './utils/AppUpdateProvider'
 
 /** Following keys will not be cached in app cache */
 // const NO_CACHE_KEYS = [
@@ -46,11 +46,13 @@ init({
 const router = createBrowserRouter(
   createRoutesFromElements(
     <>
-      <Route path='/login' lazy={() => import('@/pages/auth/Login')} />
-      <Route path='/login-with-email' lazy={() => import('@/pages/auth/LoginWithEmail')} />
-      <Route path='/signup' lazy={() => import('@/pages/auth/SignUp')} />
-      <Route path='/forgot-password' lazy={() => import('@/pages/auth/ForgotPassword')} />
-      <Route path='/' element={<ProtectedRoute />} errorElement={<ErrorPage />}>
+      <Route element={<ProtectedRoute requireAuth={false} />}>
+        <Route path='/login' lazy={() => import('@/pages/auth/Login')} />
+        <Route path='/login-with-email' lazy={() => import('@/pages/auth/LoginWithEmail')} />
+        <Route path='/signup' lazy={() => import('@/pages/auth/SignUp')} />
+        <Route path='/forgot-password' lazy={() => import('@/pages/auth/ForgotPassword')} />
+      </Route>
+      <Route path='/' element={<ProtectedRoute requireAuth={true} />} errorElement={<ErrorPage />}>
         <Route path='/' element={<WorkspaceSwitcher />}>
           <Route
             index
