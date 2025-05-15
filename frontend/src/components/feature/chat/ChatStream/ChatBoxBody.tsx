@@ -237,7 +237,7 @@ export const ChatBoxBody = ({ channelData }: ChatBoxBodyProps) => {
 
   return (
     <ChatBoxBodyContainer>
-      <FileDrop
+      <FileDrop // Component cho phép kéo thả file.
         files={files}
         ref={fileInputRef}
         onFileChange={setFiles}
@@ -245,7 +245,7 @@ export const ChatBoxBody = ({ channelData }: ChatBoxBodyProps) => {
         maxFiles={10}
         maxFileSize={10000000}
       >
-        <ChatStream
+        <ChatStream // Component hiển thị danh sách các tin nhắn.
           channelID={channelData.name}
           scrollRef={scrollRef}
           ref={chatStreamRef}
@@ -253,6 +253,7 @@ export const ChatBoxBody = ({ channelData }: ChatBoxBodyProps) => {
           pinnedMessagesString={channelData.pinned_messages_string}
           replyToMessage={handleReplyAction}
         />
+        {/* Chỉ hiển thị khu vực nhập liệu nếu người dùng có quyền gửi tin nhắn. */}
         {canUserSendMessage && (
           <Stack>
             <TypingIndicator channel={channelData.name} />
@@ -297,7 +298,9 @@ export const ChatBoxBody = ({ channelData }: ChatBoxBodyProps) => {
             />
           </Stack>
         )}
+        {/* Hiển thị hộp "Tham gia kênh" nếu cần. */}
         {shouldShowJoinBox ? <JoinChannelBox channelData={channelData} user={user} /> : null}
+        {/* Hiển thị hộp thông báo kênh đã được lưu trữ nếu cần. */}
         <ArchivedChannelBox
           channelID={channelData.name}
           isArchived={channelData.is_archived}
@@ -308,6 +311,7 @@ export const ChatBoxBody = ({ channelData }: ChatBoxBodyProps) => {
   )
 }
 
+// Checkbox để chọn xem có muốn nén ảnh không
 const CompressImageCheckbox = ({
   compressImages,
   setCompressImages
@@ -332,8 +336,7 @@ const CompressImageCheckbox = ({
   )
 }
 
-// Separate container to prevent re-rendering when the threadID changes
-
+// Container để chứa chat box body
 const ChatBoxBodyContainer = ({ children }: { children: React.ReactNode }) => {
   const { threadID } = useParams()
 
