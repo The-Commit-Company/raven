@@ -1,29 +1,29 @@
-import { Message } from '../../../../../../types/Messaging/Message'
-import { useCallback, useMemo, useRef, useState } from 'react'
-import { ArchivedChannelBox } from '../chat-footer/ArchivedChannelBox'
-import { ChannelListItem, DMChannelListItem } from '@/utils/channel/ChannelListProvider'
-import { JoinChannelBox } from '../chat-footer/JoinChannelBox'
+import { Label } from '@/components/common/Form'
+import { HStack, Stack } from '@/components/layout/Stack'
+import useFetchChannelMembers, { Member } from '@/hooks/fetchers/useFetchChannelMembers'
+import { useIsMobile } from '@/hooks/useMediaQuery'
 import { useUserData } from '@/hooks/useUserData'
-import useFileUpload from '../ChatInput/FileInput/useFileUpload'
+import { RavenMessage } from '@/types/RavenMessaging/RavenMessage'
+import { ChannelListItem, DMChannelListItem } from '@/utils/channel/ChannelListProvider'
+import { Box, Checkbox, Flex, IconButton } from '@radix-ui/themes'
+import clsx from 'clsx'
+import { useSWRConfig } from 'frappe-react-sdk'
+import { useCallback, useMemo, useRef, useState } from 'react'
+import { BiX } from 'react-icons/bi'
+import { useParams } from 'react-router-dom'
+import { Message } from '../../../../../../types/Messaging/Message'
 import { CustomFile, FileDrop } from '../../file-upload/FileDrop'
 import { FileListItem } from '../../file-upload/FileListItem'
-import { useSendMessage } from '../ChatInput/useSendMessage'
-import { Flex, Box, IconButton, Checkbox } from '@radix-ui/themes'
-import { ReplyMessageBox } from '../ChatMessage/ReplyMessageBox/ReplyMessageBox'
-import { BiX } from 'react-icons/bi'
-import ChatStream from './ChatStream'
+import { ArchivedChannelBox } from '../chat-footer/ArchivedChannelBox'
+import { JoinChannelBox } from '../chat-footer/JoinChannelBox'
+import useFileUpload from '../ChatInput/FileInput/useFileUpload'
 import Tiptap from '../ChatInput/Tiptap'
-import useFetchChannelMembers, { Member } from '@/hooks/fetchers/useFetchChannelMembers'
-import { useParams } from 'react-router-dom'
-import clsx from 'clsx'
-import { HStack, Stack } from '@/components/layout/Stack'
 import TypingIndicator from '../ChatInput/TypingIndicator/TypingIndicator'
 import { useTyping } from '../ChatInput/TypingIndicator/useTypingIndicator'
-import { Label } from '@/components/common/Form'
-import { RavenMessage } from '@/types/RavenMessaging/RavenMessage'
-import { useSWRConfig } from 'frappe-react-sdk'
+import { useSendMessage } from '../ChatInput/useSendMessage'
+import { ReplyMessageBox } from '../ChatMessage/ReplyMessageBox/ReplyMessageBox'
+import ChatStream from './ChatStream'
 import { GetMessagesResponse } from './useChatStream'
-import { useIsMobile } from '@/hooks/useMediaQuery'
 
 const COOL_PLACEHOLDERS = [
   'Delivering messages atop dragons 🐉 is available on a chargeable basis.',
@@ -40,34 +40,45 @@ interface ChatBoxBodyProps {
   channelData: ChannelListItem | DMChannelListItem
 }
 
+// Component chính hiển thị khung nội dung chat của một kênh (channel)
 export const ChatBoxBody = ({ channelData }: ChatBoxBodyProps) => {
+  // Lấy thông tin user hiện tại (đặc biệt là name để xác định user trong danh sách thành viên)
   const { name: user } = useUserData()
+
+  // Fetch danh sách thành viên của channel hiện tại, cũng như trạng thái loading
   const { channelMembers, isLoading } = useFetchChannelMembers(channelData.name)
 
+  // Hook để xử lý trạng thái typing (người dùng đang gõ)
   const { onUserType, stopTyping } = useTyping(channelData.name)
 
+  // State để lưu thông tin message được chọn để reply
   const [selectedMessage, setSelectedMessage] = useState<Message | null>(null)
 
+  // Hàm xử lý khi người dùng chọn reply vào một message
   const handleReplyAction = (message: Message) => {
     setSelectedMessage(message)
   }
 
+  // Hàm reset selected message
   const clearSelectedMessage = () => {
     setSelectedMessage(null)
   }
 
+  // Hook để mutate SWR cache
   const { mutate } = useSWRConfig()
 
+  // Ref để scroll đến cuối khi có message mới
   const scrollRef = useRef<HTMLDivElement>(null)
 
+  // Hàm xử lý khi message được gửi thành công
   const onMessageSendCompleted = (messages: RavenMessage[]) => {
-    // Update the messages in the cache
+    // Cập nhật cache các tin nhắn của channel
 
     mutate(
       { path: `get_messages_for_channel_${channelData.name}` },
       (data?: GetMessagesResponse) => {
         if (data && data?.message.has_new_messages) {
-          return data
+          return data // Không thay đổi nếu có tin nhắn mới đang được xử lý
         }
 
         const existingMessages = data?.message.messages ?? []
@@ -75,11 +86,11 @@ export const ChatBoxBody = ({ channelData }: ChatBoxBodyProps) => {
         const newMessages = [...existingMessages]
 
         messages.forEach((message) => {
-          // Check if the message is already present in the messages array
+          // Kiểm tra nếu tin nhắn đã tồn tại trong mảng tin nhắn hiện có
           const messageIndex = existingMessages.findIndex((m) => m.name === message.name)
 
           if (messageIndex !== -1) {
-            // If the message is already present, update the message
+            // Nếu tin nhắn đã tồn tại, cập nhật tin nhắn
             // @ts-ignore
             newMessages[messageIndex] = {
               ...message,
@@ -88,7 +99,7 @@ export const ChatBoxBody = ({ channelData }: ChatBoxBodyProps) => {
               is_continuation: 0
             }
           } else {
-            // If the message is not present, add the message to the array
+            // Nếu tin nhắn không tồn tại, thêm tin nhắn vào mảng
             // @ts-ignore
             newMessages.push({
               ...message,
@@ -98,7 +109,7 @@ export const ChatBoxBody = ({ channelData }: ChatBoxBodyProps) => {
             })
           }
         })
-
+        // Trả về danh sách tin nhắn mới đã sort theo thời gian (mới nhất đầu tiên)
         return {
           message: {
             messages: newMessages.sort((a, b) => {
@@ -111,17 +122,18 @@ export const ChatBoxBody = ({ channelData }: ChatBoxBodyProps) => {
       },
       { revalidate: false }
     ).then(() => {
-      // If the user is focused on the page, then we also need to
-      // If the user is the sender of the message, scroll to the bottom
+      // Nếu người dùng đang xem trang, thì chúng ta cũng cần phải
+      // Nếu người dùng là người gửi tin nhắn, thì scroll đến cuối
       scrollRef.current?.scrollTo(0, scrollRef.current?.scrollHeight)
     })
 
-    // Stop the typing indicator
+    // Dừng indicator typing
     stopTyping()
-    // Clear the selected message
+    // Reset tin nhắn được chọn
     clearSelectedMessage()
   }
 
+  // Lấy thông tin thành viên của user hiện tại trong channel
   const channelMemberProfile: Member | null = useMemo(() => {
     if (user && channelMembers) {
       return channelMembers[user] ?? null
@@ -132,7 +144,7 @@ export const ChatBoxBody = ({ channelData }: ChatBoxBodyProps) => {
   const chatStreamRef = useRef<any>(null)
 
   const onUpArrowPressed = useCallback(() => {
-    // Call the up arrow function inside the ChatStream component
+    // Hàm gọi khi người dùng nhấn phím ↑ (dùng để mở lại tin nhắn trước)
     chatStreamRef.current?.onUpArrow()
   }, [])
 
@@ -140,8 +152,8 @@ export const ChatBoxBody = ({ channelData }: ChatBoxBodyProps) => {
 
   const isMobile = useIsMobile()
 
-  // When the edit modal is closed, we need to focus the editor again
-  // Don't do this on mobile since that would open the keyboard
+  // Khi modal chỉnh sửa đóng, chúng ta cần focus lại editor
+  // Không làm điều này trên mobile vì vậy sẽ mở bàn phím
   const onModalClose = useCallback(() => {
     if (!isMobile) {
       setTimeout(() => {
@@ -150,6 +162,7 @@ export const ChatBoxBody = ({ channelData }: ChatBoxBodyProps) => {
     }
   }, [isMobile])
 
+  // Quản lý toàn bộ quá trình upload file đính kèm
   const {
     fileInputRef,
     files,
@@ -162,6 +175,7 @@ export const ChatBoxBody = ({ channelData }: ChatBoxBodyProps) => {
     setCompressImages
   } = useFileUpload(channelData.name)
 
+  // Gửi tin nhắn (có kèm file và reply message nếu có)
   const { sendMessage, loading } = useSendMessage(
     channelData.name,
     uploadFiles,
@@ -169,6 +183,7 @@ export const ChatBoxBody = ({ channelData }: ChatBoxBodyProps) => {
     selectedMessage
   )
 
+  // Component hiển thị preview của tin nhắn đang được trả lời
   const PreviousMessagePreview = ({ selectedMessage }: { selectedMessage: any }) => {
     if (selectedMessage) {
       return (
@@ -182,6 +197,7 @@ export const ChatBoxBody = ({ channelData }: ChatBoxBodyProps) => {
     return null
   }
 
+  // Xác định xem người dùng có thể gửi tin nhắn không và có nên hiển thị hộp tham gia không
   const { canUserSendMessage, shouldShowJoinBox } = useMemo(() => {
     if (channelData.is_archived) {
       return {
@@ -206,7 +222,7 @@ export const ChatBoxBody = ({ channelData }: ChatBoxBodyProps) => {
 
     const isDM = channelData?.is_direct_message === 1 || channelData?.is_self_message === 1
 
-    // If the channel data is loaded and the member profile is loaded, then check for this, else don't show anything.
+    // Nếu thông tin thành viên không tồn tại và không phải là DM, thì hiển thị hộp tham gia
     if (!channelMemberProfile && !isDM && channelData && !isLoading) {
       return {
         shouldShowJoinBox: true,
