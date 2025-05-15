@@ -1,4 +1,5 @@
 import { RavenBotFunctions } from '../RavenAI/RavenBotFunctions'
+import { RavenAIBotFiles } from '../RavenAI/RavenAIBotFiles'
 
 export interface RavenBot{
 	creation: string
@@ -49,4 +50,8 @@ File search enables the assistant with knowledge from files that you upload. Onc
 	dynamic_instructions?: 0 | 1
 	/**	Bot Functions : Table - Raven Bot Functions	*/
 	bot_functions?: RavenBotFunctions[]
+	/**	OpenAI Vector Store ID : Data	*/
+	openai_vector_store_id?: string
+	/**	File Sources : Table - Raven AI Bot Files	*/
+	file_sources?: RavenAIBotFiles[]
 }
