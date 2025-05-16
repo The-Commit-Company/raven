@@ -10,6 +10,42 @@ from raven.api.raven_channel import create_direct_message_channel, get_peer_user
 from raven.utils import get_channel_member, is_channel_member, track_channel_visit
 
 
+import frappe
+import traceback
+
+@frappe.whitelist()
+def get_last_messages_all_channels():
+    try:
+        all_channels = frappe.get_all(
+            "Raven Channel",
+            fields=["name"]
+        )
+
+        results = []
+
+        for channel in all_channels:
+            last_message = frappe.get_all(
+                "Raven Message",
+                filters={"channel_id": channel.name},
+                fields=[
+                    "name", "owner", "creation", "text", "content", "message_type"
+                ],
+                order_by="creation desc",
+                limit_page_length=1
+            )
+            if last_message:
+                results.append({
+                    "channel_id": channel.name,
+                    "last_message": last_message[0]
+                })
+
+        return results
+
+    except Exception as e:
+        frappe.log_error(title="get_last_messages_all_channels failed", message=traceback.format_exc())
+        frappe.throw("Internal Server Error: " + str(e))
+
+
 @frappe.whitelist(methods=["POST"])
 def send_message(
 	channel_id, text, is_reply=False, linked_message=None, json_content=None, send_silently=False

@@ -20,7 +20,7 @@ const ThreadDrawer = () => {
 
   return (
     <div>
-      <Flex direction='column' gap='0' className='w-full h-[100vh] border-l border-gray-4 sm:dark:border-gray-6'>
+      <Flex direction='column' gap='0' className='relative h-[100vh] border-l border-gray-4 sm:dark:border-gray-6'>
         <ThreadHeader />
         {isLoading && <FullPageLoader />}
         {error && (
