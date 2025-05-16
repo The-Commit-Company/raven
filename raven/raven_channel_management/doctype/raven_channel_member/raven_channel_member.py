@@ -5,11 +5,7 @@ import frappe
 from frappe import _
 from frappe.model.document import Document
 
-from raven.notification import (
-	clear_push_tokens_for_channel_cache,
-	subscribe_user_to_topic,
-	unsubscribe_user_to_topic,
-)
+from raven.notification import subscribe_user_to_topic, unsubscribe_user_to_topic
 from raven.utils import delete_channel_members_cache
 
 
@@ -224,7 +220,6 @@ class RavenChannelMember(Document):
 			)
 
 			if not is_direct_message:
-				clear_push_tokens_for_channel_cache(self.channel_id)
 				if self.allow_notifications:
 					subscribe_user_to_topic(self.channel_id, self.user_id)
 				else:
@@ -245,9 +240,7 @@ class RavenChannelMember(Document):
 				}
 			).insert(ignore_permissions=True)
 
-		# Do not clear the push tokens on update since we are not changing the channel members
-		# If allow notifications is changed, then the push tokens will be cleared above
-		self.invalidate_channel_members_cache(clear_push_tokens=False)
+		self.invalidate_channel_members_cache()
 
 	def get_admin_count(self):
 		return frappe.db.count("Raven Channel Member", {"channel_id": self.channel_id, "is_admin": 1})
@@ -255,9 +248,9 @@ class RavenChannelMember(Document):
 	def is_thread(self):
 		return frappe.get_cached_value("Raven Channel", self.channel_id, "is_thread")
 
-	def invalidate_channel_members_cache(self, clear_push_tokens=True):
+	def invalidate_channel_members_cache(self):
 		if not self.flags.ignore_cache_invalidation:
-			delete_channel_members_cache(self.channel_id, clear_push_tokens)
+			delete_channel_members_cache(self.channel_id)
 
 
 def on_doctype_update():
