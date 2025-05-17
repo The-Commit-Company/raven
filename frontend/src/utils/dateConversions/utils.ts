@@ -8,11 +8,9 @@ dayjs.extend(timezone)
 dayjs.extend(advancedFormat)
 dayjs.extend(relativeTime)
 
-const DEFAULT_TIME_ZONE = 'Asia/Kolkata'
-//@ts-expect-error
+const DEFAULT_TIME_ZONE = 'Asia/Ho_Chi_Minh'
 export const SYSTEM_TIMEZONE = window.frappe?.boot?.time_zone?.system || DEFAULT_TIME_ZONE
 
-//@ts-expect-error
 export const USER_DATE_FORMAT =
   window.frappe?.boot?.user?.defaults?.date_format?.toUpperCase() ||
   window.frappe?.boot?.sysdefaults?.date_format?.toUpperCase() ||

@@ -1,53 +1,39 @@
-import {
-  Avatar,
-  Badge,
-  Box,
-  BoxProps,
-  Button,
-  ContextMenu,
-  Flex,
-  HoverCard,
-  IconButton,
-  Link,
-  Text,
-  Theme
-} from '@radix-ui/themes'
-import { Message, MessageBlock } from '../../../../../../types/Messaging/Message'
-import { MessageContextMenu } from './MessageActions/MessageActions'
-import { DateTooltip, DateTooltipShort } from './Renderers/DateTooltip'
-import { clsx } from 'clsx'
 import { UserAvatar, getInitials } from '@/components/common/UserAvatar'
-import { useGetUser } from '@/hooks/useGetUser'
-import { useIsUserActive } from '@/hooks/useIsUserActive'
-import { UserFields } from '@/utils/users/UserListProvider'
-import { BsFillCircleFill } from 'react-icons/bs'
-import { MessageReactions } from './MessageReactions'
-import { ImageMessageBlock } from './Renderers/ImageMessage'
-import { FileMessageBlock } from './Renderers/FileMessage'
-import { PollMessageBlock } from './Renderers/PollMessage'
-import { TiptapRenderer } from './Renderers/TiptapRenderer/TiptapRenderer'
-import { QuickActions } from './MessageActions/QuickActions/QuickActions'
-import { memo, useContext, useMemo, useState } from 'react'
-import { ReplyMessageBox } from './ReplyMessageBox/ReplyMessageBox'
-import { generateAvatarColor } from '../../selectDropdowns/GenerateAvatarColor'
-import { DoctypeLinkRenderer } from './Renderers/DoctypeLinkRenderer'
-import { useDebounce } from '@/hooks/useDebounce'
-import { RiPushpinFill, RiRobot2Fill, RiShareForwardFill } from 'react-icons/ri'
-import { useIsDesktop } from '@/hooks/useMediaQuery'
-import { useDoubleTap } from 'use-double-tap'
-import useOutsideClick from '@/hooks/useOutsideClick'
-import { getStatusText } from '../../userSettings/AvailabilityStatus/SetUserAvailabilityMenu'
-import { ThreadMessage } from './Renderers/ThreadMessage'
 import OnLeaveBadge from '@/components/common/UserLeaveBadge'
-import { LeftRightLayout } from './LeftRightLayout/LeftRightLayout'
-import { useParams } from 'react-router-dom'
-import { FrappeConfig } from 'frappe-react-sdk'
-import { FrappeContext } from 'frappe-react-sdk'
-import { useNavigate } from 'react-router-dom'
-import { toast } from 'sonner'
 import { getErrorMessage } from '@/components/layout/AlertBanner/ErrorBanner'
 import { Stack } from '@/components/layout/Stack'
-import { BiChat } from 'react-icons/bi'
+import { useDebounce } from '@/hooks/useDebounce'
+import { useGetUser } from '@/hooks/useGetUser'
+import { useIsUserActive } from '@/hooks/useIsUserActive'
+import { useIsDesktop } from '@/hooks/useMediaQuery'
+import useOutsideClick from '@/hooks/useOutsideClick'
+import { useSeenMessage } from '@/hooks/useSeenMessage'
+import { UserFields } from '@/utils/users/UserListProvider'
+import { Avatar, Badge, Box, BoxProps, Button, ContextMenu, Flex, HoverCard, Text, Theme } from '@radix-ui/themes'
+import { clsx } from 'clsx'
+import { FrappeConfig, FrappeContext, useFrappeAuth } from 'frappe-react-sdk'
+import { memo, useContext, useEffect, useMemo, useRef, useState } from 'react'
+import { BiChat, BiCheck, BiCheckDouble } from 'react-icons/bi'
+import { BsFillCircleFill } from 'react-icons/bs'
+import { RiPushpinFill, RiRobot2Fill, RiShareForwardFill } from 'react-icons/ri'
+import { useNavigate, useParams } from 'react-router-dom'
+import { toast } from 'sonner'
+import { useDoubleTap } from 'use-double-tap'
+import { Message, MessageBlock } from '../../../../../../types/Messaging/Message'
+import { generateAvatarColor } from '../../selectDropdowns/GenerateAvatarColor'
+import { getStatusText } from '../../userSettings/AvailabilityStatus/SetUserAvailabilityMenu'
+import { LeftRightLayout } from './LeftRightLayout/LeftRightLayout'
+import { MessageContextMenu } from './MessageActions/MessageActions'
+import { QuickActions } from './MessageActions/QuickActions/QuickActions'
+import { MessageReactions } from './MessageReactions'
+import { DateTooltip, DateTooltipShort } from './Renderers/DateTooltip'
+import { DoctypeLinkRenderer } from './Renderers/DoctypeLinkRenderer'
+import { FileMessageBlock } from './Renderers/FileMessage'
+import { ImageMessageBlock } from './Renderers/ImageMessage'
+import { PollMessageBlock } from './Renderers/PollMessage'
+import { ThreadMessage } from './Renderers/ThreadMessage'
+import { TiptapRenderer } from './Renderers/TiptapRenderer/TiptapRenderer'
+import { ReplyMessageBox } from './ReplyMessageBox/ReplyMessageBox'
 
 interface MessageBlockProps {
   message: Message
@@ -60,32 +46,34 @@ interface MessageBlockProps {
   isHighlighted?: boolean
   setReactionMessage: (message: Message) => void
   showThreadButton?: boolean
+  channelID: string
 }
 
 // Component chính hiển thị một tin nhắn trong cuộc trò chuyện
 export const MessageItem = ({
-  message,                // Đối tượng tin nhắn
-  setDeleteMessage,       // Hàm xử lý xóa tin nhắn
-  isHighlighted,          // Có đang được làm nổi bật không
-  onReplyMessageClick,    // Sự kiện khi nhấn vào nút trả lời
-  setEditMessage,         // Hàm xử lý chỉnh sửa tin nhắn
-  replyToMessage,         // Hàm trả lời tin nhắn
-  forwardMessage,         // Hàm chuyển tiếp tin nhắn
-  onAttachDocument,       // Hàm đính kèm tài liệu
-  setReactionMessage,     // Hàm xử lý reaction
-  showThreadButton = true // Có hiển thị nút luồng không (mặc định là có)
+  message, // Đối tượng tin nhắn
+  setDeleteMessage, // Hàm xử lý xóa tin nhắn
+  isHighlighted, // Có đang được làm nổi bật không
+  onReplyMessageClick, // Sự kiện khi nhấn vào nút trả lời
+  setEditMessage, // Hàm xử lý chỉnh sửa tin nhắn
+  replyToMessage, // Hàm trả lời tin nhắn
+  forwardMessage, // Hàm chuyển tiếp tin nhắn
+  onAttachDocument, // Hàm đính kèm tài liệu
+  setReactionMessage, // Hàm xử lý reaction
+  showThreadButton = true, // Có hiển thị nút luồng không (mặc định là có)
+  channelID
 }: MessageBlockProps) => {
   // Trích xuất các thuộc tính từ đối tượng message
   const {
-    name,                     // ID của tin nhắn
-    owner: userID,             // ID người gửi
-    is_bot_message,           // Có phải là tin nhắn từ bot không
-    bot,                      // Thông tin bot (nếu là tin nhắn từ bot)
-    creation: timestamp,      // Thời gian tạo tin nhắn
-    message_reactions,        // Các reaction của tin nhắn
-    is_continuation,          // Có phải là tin nhắn tiếp nối không
-    linked_message,           // Tin nhắn được liên kết
-    replied_message_details   // Chi tiết tin nhắn được trả lời
+    name, // ID của tin nhắn
+    owner: userID, // ID người gửi
+    is_bot_message, // Có phải là tin nhắn từ bot không
+    bot, // Thông tin bot (nếu là tin nhắn từ bot)
+    creation: timestamp, // Thời gian tạo tin nhắn
+    message_reactions, // Các reaction của tin nhắn
+    is_continuation, // Có phải là tin nhắn tiếp nối không
+    linked_message, // Tin nhắn được liên kết
+    replied_message_details // Chi tiết tin nhắn được trả lời
   } = message
 
   // Lấy thông tin người dùng và trạng thái hoạt động
@@ -93,32 +81,32 @@ export const MessageItem = ({
 
   // Xử lý sự kiện xóa tin nhắn
   const onDelete = () => {
-    setDeleteMessage(message)  // Gọi hàm xóa tin nhắn với tin nhắn hiện tại
+    setDeleteMessage(message) // Gọi hàm xóa tin nhắn với tin nhắn hiện tại
   }
 
   // Xử lý sự kiện chỉnh sửa tin nhắn
   const onEdit = () => {
-    setEditMessage(message)  // Gọi hàm chỉnh sửa tin nhắn với tin nhắn hiện tại
+    setEditMessage(message) // Gọi hàm chỉnh sửa tin nhắn với tin nhắn hiện tại
   }
 
   // Xử lý sự kiện trả lời tin nhắn
   const onReply = () => {
-    replyToMessage(message)  // Gọi hàm trả lời tin nhắn với tin nhắn hiện tại
+    replyToMessage(message) // Gọi hàm trả lời tin nhắn với tin nhắn hiện tại
   }
 
   // Xử lý sự kiện chuyển tiếp tin nhắn
   const onForward = () => {
-    forwardMessage(message)  // Gọi hàm chuyển tiếp tin nhắn với tin nhắn hiện tại
+    forwardMessage(message) // Gọi hàm chuyển tiếp tin nhắn với tin nhắn hiện tại
   }
 
   // Xử lý sự kiện đính kèm vào tài liệu
   const onAttachToDocument = () => {
-    onAttachDocument(message)  // Gọi hàm đính kèm tài liệu với tin nhắn hiện tại
+    onAttachDocument(message) // Gọi hàm đính kèm tài liệu với tin nhắn hiện tại
   }
 
   // Xử lý sự kiện xem reaction
   const onViewReaction = () => {
-    setReactionMessage(message)  // Gọi hàm hiển thị reaction với tin nhắn hiện tại
+    setReactionMessage(message) // Gọi hàm hiển thị reaction với tin nhắn hiện tại
   }
 
   // Kiểm tra xem có phải là thiết bị desktop không
@@ -131,37 +119,38 @@ export const MessageItem = ({
 
   // Xử lý sự kiện khi di chuột vào
   const onMouseEnter = () => {
-    if (isDesktop) {  // Chỉ xử lý hover trên desktop
+    if (isDesktop) {
+      // Chỉ xử lý hover trên desktop
       setIsHovered(true)
     }
   }
 
-
   // Xử lý sự kiện khi di chuột ra
   const onMouseLeave = () => {
-    if (isDesktop) {  // Chỉ xử lý hover trên desktop
+    if (isDesktop) {
+      // Chỉ xử lý hover trên desktop
       setIsHovered(false)
     }
   }
 
   // Cho thiết bị di động: hiển thị quick actions khi nhấn đúp
   const bind = useDoubleTap((event) => {
-    if (!isDesktop) setIsHovered(!isHovered)  // Đảo trạng thái hiển thị quick actions
+    if (!isDesktop) setIsHovered(!isHovered) // Đảo trạng thái hiển thị quick actions
   })
 
   // Xử lý sự kiện click bên ngoài để đóng quick actions trên mobile
   const ref = useOutsideClick(() => {
-    if (!isDesktop) setIsHovered(false)  // Ẩn quick actions khi click ra ngoài
+    if (!isDesktop) setIsHovered(false) // Ẩn quick actions khi click ra ngoài
   })
 
   // Xử lý chi tiết tin nhắn được trả lời
   const replyMessageDetails = useMemo(() => {
     if (typeof replied_message_details === 'string') {
-      return JSON.parse(replied_message_details)  // Parse nếu là chuỗi JSON
+      return JSON.parse(replied_message_details) // Parse nếu là chuỗi JSON
     } else {
-      return replied_message_details  // Trả về nguyên bản nếu không phải chuỗi
+      return replied_message_details // Trả về nguyên bản nếu không phải chuỗi
     }
-  }, [replied_message_details])  // Chỉ tính toán lại khi replied_message_details thay đổi
+  }, [replied_message_details]) // Chỉ tính toán lại khi replied_message_details thay đổi
 
   // State cho emoji picker
   const [isEmojiPickerOpen, setEmojiPickerOpen] = useState(false)
@@ -179,32 +168,53 @@ export const MessageItem = ({
       // Lấy văn bản đang được chọn
       const selection = document.getSelection()
       if (selection) {
-        setSelectedText(selection.toString().trim())  // Lưu văn bản được chọn
+        setSelectedText(selection.toString().trim()) // Lưu văn bản được chọn
       }
     } else {
-      setSelectedText('')  // Xóa văn bản được chọn khi đóng menu
+      setSelectedText('') // Xóa văn bản được chọn khi đóng menu
     }
   }
 
+  const messageRef = useRef<HTMLDivElement>(null)
+  const { getSeenUsers } = useSeenMessage()
+  // Trạng thái kiểm soát xem tin nhắn này đã được đánh dấu là đã xem chưa
+  const [hasBeenSeen, setHasBeenSeen] = useState(false)
+  // Lấy người dùng hiện tại đang đăng nhập từ Frappe
+  const { currentUser } = useFrappeAuth()
+
+  useEffect(() => {
+    const checkIfSeen = async () => {
+      if (currentUser && message.owner !== currentUser) {
+        const seenUsers = await getSeenUsers(channelID)
+        const isSeen = seenUsers.some(
+          (user: any) =>
+            user.user === currentUser && new Date(user.last_visit).getTime() >= new Date(message.creation).getTime()
+        )
+        setHasBeenSeen(isSeen)
+      }
+    }
+    checkIfSeen()
+  }, [currentUser, message.name, message.owner, message.creation, getSeenUsers])
+
   // Render component MessageItem
   return (
-    <>
+    <div ref={messageRef}>
       {/* Kiểm tra kiểu chat để hiển thị layout phù hợp */}
       {CHAT_STYLE === 'Left-Right' ? (
         // Sử dụng LeftRightLayout nếu kiểu chat là 'Left-Right'
         <LeftRightLayout
-          message={message}  // Truyền đối tượng tin nhắn
-          user={user}  // Thông tin người dùng
-          isActive={isActive}  // Trạng thái hoạt động
-          isHighlighted={isHighlighted}  // Có đang được làm nổi bật không
-          onReplyMessageClick={onReplyMessageClick}  // Xử lý khi nhấn trả lời
-          onDelete={onDelete}  // Xử lý xóa tin nhắn
-          showThreadButton={showThreadButton}  // Có hiển thị nút luồng không
-          onEdit={onEdit}  // Xử lý chỉnh sửa tin nhắn
-          onReply={onReply}  // Xử lý trả lời tin nhắn
-          onForward={onForward}  // Xử lý chuyển tiếp tin nhắn
-          onViewReaction={onViewReaction}  // Xem các reaction
-          onAttachToDocument={onAttachToDocument}  // Đính kèm vào tài liệu
+          message={message} // Truyền đối tượng tin nhắn
+          user={user} // Thông tin người dùng
+          isActive={isActive} // Trạng thái hoạt động
+          isHighlighted={isHighlighted} // Có đang được làm nổi bật không
+          onReplyMessageClick={onReplyMessageClick} // Xử lý khi nhấn trả lời
+          onDelete={onDelete} // Xử lý xóa tin nhắn
+          showThreadButton={showThreadButton} // Có hiển thị nút luồng không
+          onEdit={onEdit} // Xử lý chỉnh sửa tin nhắn
+          onReply={onReply} // Xử lý trả lời tin nhắn
+          onForward={onForward} // Xử lý chuyển tiếp tin nhắn
+          onViewReaction={onViewReaction} // Xem các reaction
+          onAttachToDocument={onAttachToDocument} // Đính kèm vào tài liệu
         />
       ) : (
         // Sử dụng layout mặc định nếu không phải 'Left-Right'
@@ -212,14 +222,14 @@ export const MessageItem = ({
           {/* Hiển thị đường kẻ chỉ thị luồng nếu đây là tin nhắn trong luồng và không phải là tin nhắn tiếp nối */}
           {!message.is_continuation && message.is_thread ? (
             <div
-              className={`absolute 
+              className={`absolute
                         border-l
                         border-b
-                        border-gray-5 
-                        h-[calc(100%-66px)] 
+                        border-gray-5
+                        h-[calc(100%-66px)]
                         rounded-bl-lg
                         w-6
-                        top-[42px] 
+                        top-[42px]
                         left-6 z-0`}
             ></div>
           ) : null}
@@ -227,10 +237,10 @@ export const MessageItem = ({
           <ContextMenu.Root modal={false} onOpenChange={onContextMenuChange}>
             {/* Kích hoạt context menu */}
             <ContextMenu.Trigger
-              {...bind}  // Bind sự kiện nhấn đúp cho mobile
-              ref={ref}  // Ref để phát hiện click bên ngoài
-              onMouseEnter={onMouseEnter}  // Xử lý khi di chuột vào
-              onMouseLeave={onMouseLeave}  // Xử lý khi di chuột ra
+              {...bind} // Bind sự kiện nhấn đúp cho mobile
+              ref={ref} // Ref để phát hiện click bên ngoài
+              onMouseEnter={onMouseEnter} // Xử lý khi di chuột vào
+              onMouseLeave={onMouseLeave} // Xử lý khi di chuột ra
               className={clsx(
                 // Các class CSS áp dụng cho tin nhắn
                 `group
@@ -279,6 +289,15 @@ export const MessageItem = ({
                       <DateTooltip timestamp={timestamp} />
                     </Flex>
                   ) : null}
+                  {message.owner === currentUser && (
+                    <Box className='ml-1'>
+                      {hasBeenSeen ? (
+                        <BiCheckDouble className='text-blue-500' /> // Đã xem: 2 dấu tick xanh
+                      ) : (
+                        <BiCheck className='text-gray-400' /> // Chưa xem: 1 dấu tick xám
+                      )}
+                    </Box>
+                  )}
                   {/* Nội dung tin nhắn */}
                   {/* Hiển thị biểu tượng nếu là tin nhắn được chuyển tiếp */}
                   {message.is_forwarded === 1 && (
@@ -297,8 +316,8 @@ export const MessageItem = ({
                     <ReplyMessageBox
                       className='sm:min-w-[28rem] cursor-pointer mb-1'
                       role='button'
-                      onClick={() => onReplyMessageClick(linked_message)}  // Xử lý khi nhấn vào tin nhắn được trả lời
-                      message={replyMessageDetails}  // Chi tiết tin nhắn được trả lời
+                      onClick={() => onReplyMessageClick(linked_message)} // Xử lý khi nhấn vào tin nhắn được trả lời
+                      message={replyMessageDetails} // Chi tiết tin nhắn được trả lời
                     />
                   )}
 
@@ -308,10 +327,7 @@ export const MessageItem = ({
                   {/* Hiển thị liên kết tài liệu nếu có */}
                   {message.link_doctype && message.link_document && (
                     <Box className={clsx(message.is_continuation ? 'ml-0.5' : '-ml-0.5')}>
-                      <DoctypeLinkRenderer 
-                        doctype={message.link_doctype} 
-                        docname={message.link_document} 
-                      />
+                      <DoctypeLinkRenderer doctype={message.link_doctype} docname={message.link_document} />
                     </Box>
                   )}
                   {/* Hiển thị dấu hiệu đã chỉnh sửa nếu tin nhắn được sửa */}
@@ -331,15 +347,15 @@ export const MessageItem = ({
                 {/* Hiển thị các hành động nhanh khi hover hoặc mở emoji picker */}
                 {(isHoveredDebounced || isEmojiPickerOpen) && (
                   <QuickActions
-                    message={message}  // Đối tượng tin nhắn
-                    onDelete={onDelete}  // Xử lý xóa
-                    isEmojiPickerOpen={isEmojiPickerOpen}  // Trạng thái mở emoji picker
-                    setIsEmojiPickerOpen={setEmojiPickerOpen}  // Hàm đóng/mở emoji picker
-                    onEdit={onEdit}  // Xử lý chỉnh sửa
-                    onReply={onReply}  // Xử lý trả lời
-                    onForward={onForward}  // Xử lý chuyển tiếp
-                    showThreadButton={showThreadButton}  // Có hiển thị nút luồng không
-                    onAttachDocument={onAttachToDocument}  // Xử lý đính kèm tài liệu
+                    message={message} // Đối tượng tin nhắn
+                    onDelete={onDelete} // Xử lý xóa
+                    isEmojiPickerOpen={isEmojiPickerOpen} // Trạng thái mở emoji picker
+                    setIsEmojiPickerOpen={setEmojiPickerOpen} // Hàm đóng/mở emoji picker
+                    onEdit={onEdit} // Xử lý chỉnh sửa
+                    onReply={onReply} // Xử lý trả lời
+                    onForward={onForward} // Xử lý chuyển tiếp
+                    showThreadButton={showThreadButton} // Có hiển thị nút luồng không
+                    onAttachDocument={onAttachToDocument} // Xử lý đính kèm tài liệu
                   />
                 )}
               </Flex>
@@ -347,28 +363,28 @@ export const MessageItem = ({
 
             {/* Menu ngữ cảnh khi click chuột phải */}
             <MessageContextMenu
-              message={message}  // Đối tượng tin nhắn
-              onDelete={onDelete}  // Xử lý xóa
-              showThreadButton={showThreadButton}  // Có hiển thị nút luồng không
-              onEdit={onEdit}  // Xử lý chỉnh sửa
-              onReply={onReply}  // Xử lý trả lời
-              onForward={onForward}  // Xử lý chuyển tiếp
-              onViewReaction={onViewReaction}  // Xem các reaction
-              selectedText={selectedText}  // Văn bản được chọn
-              onAttachDocument={onAttachToDocument}  // Xử lý đính kèm tài liệu
+              message={message} // Đối tượng tin nhắn
+              onDelete={onDelete} // Xử lý xóa
+              showThreadButton={showThreadButton} // Có hiển thị nút luồng không
+              onEdit={onEdit} // Xử lý chỉnh sửa
+              onReply={onReply} // Xử lý trả lời
+              onForward={onForward} // Xử lý chuyển tiếp
+              onViewReaction={onViewReaction} // Xem các reaction
+              selectedText={selectedText} // Văn bản được chọn
+              onAttachDocument={onAttachToDocument} // Xử lý đính kèm tài liệu
             />
           </ContextMenu.Root>
         </Box>
       )}
-    </>
+    </div>
   )
 }
 
 // Props cho component MessageLeftElement
 type MessageLeftElementProps = BoxProps & {
-  message: MessageBlock['data']  // Dữ liệu tin nhắn
-  user?: UserFields  // Thông tin người dùng
-  isActive?: boolean  // Trạng thái hoạt động
+  message: MessageBlock['data'] // Dữ liệu tin nhắn
+  user?: UserFields // Thông tin người dùng
+  isActive?: boolean // Trạng thái hoạt động
 }
 
 /**
@@ -417,8 +433,8 @@ export const useGetUserDetails = (userID: string) => {
 
 // Định nghĩa props cho các component liên quan đến người dùng
 interface UserProps {
-  user?: UserFields  // Thông tin người dùng (tùy chọn)
-  userID: string    // ID của người dùng (bắt buộc)
+  user?: UserFields // Thông tin người dùng (tùy chọn)
+  userID: string // ID của người dùng (bắt buộc)
   isActive?: boolean // Trạng thái hoạt động (tùy chọn)
 }
 /**
@@ -443,12 +459,12 @@ export const MessageSenderAvatar = memo(({ user, userID, isActive = false }: Use
       <span className='relative inline-block'>
         {/* Avatar chính */}
         <Avatar
-          src={user?.user_image}  // URL ảnh đại diện
-          alt={alt}  // Văn bản thay thế
-          loading='lazy'  // Tải ảnh một cách lười biếng
-          fallback={getInitials(alt)}  // Hiển thị chữ cái đầu nếu không có ảnh
-          size={'2'}  // Kích thước trung bình
-          radius={'medium'}  // Bo tròn vừa phải
+          src={user?.user_image} // URL ảnh đại diện
+          alt={alt} // Văn bản thay thế
+          loading='lazy' // Tải ảnh một cách lười biếng
+          fallback={getInitials(alt)} // Hiển thị chữ cái đầu nếu không có ảnh
+          size={'2'} // Kích thước trung bình
+          radius={'medium'} // Bo tròn vừa phải
         />
 
         {/* Hiển thị chỉ báo trạng thái "Away" (vàng) */}
@@ -456,7 +472,7 @@ export const MessageSenderAvatar = memo(({ user, userID, isActive = false }: Use
           <span
             className={clsx(
               'absolute block translate-x-1/2 translate-y-1/2 transform rounded-full',
-              'bottom-0.5 right-0.5'  // Vị trí góc dưới bên phải
+              'bottom-0.5 right-0.5' // Vị trí góc dưới bên phải
             )}
           >
             <span className='block h-2 w-2 rounded-full border border-slate-2 bg-[#FFAA33] shadow-md' />
@@ -468,7 +484,7 @@ export const MessageSenderAvatar = memo(({ user, userID, isActive = false }: Use
           <span
             className={clsx(
               'absolute block translate-x-1/2 translate-y-1/2 transform rounded-full',
-              'bottom-0.5 right-0.5'  // Vị trí góc dưới bên phải
+              'bottom-0.5 right-0.5' // Vị trí góc dưới bên phải
             )}
           >
             <span className='block h-2 w-2 rounded-full border border-slate-2 bg-[#D22B2B] shadow-md' />
@@ -480,7 +496,7 @@ export const MessageSenderAvatar = memo(({ user, userID, isActive = false }: Use
           <span
             className={clsx(
               'absolute block translate-x-1/2 translate-y-1/2 transform rounded-full',
-              'bottom-0.5 right-0.5'  // Vị trí góc dưới bên phải
+              'bottom-0.5 right-0.5' // Vị trí góc dưới bên phải
             )}
           >
             <span className='block h-2 w-2 rounded-full border border-slate-2 bg-green-600 shadow-md' />
@@ -508,21 +524,20 @@ export const UserHoverCard = memo(({ user, userID, isActive }: UserProps) => {
   // Sử dụng useMemo để tối ưu hiệu năng, chỉ tính toán lại khi user hoặc userID thay đổi
   const { isBot, fullName, userImage, availabilityStatus, customStatus } = useMemo(() => {
     return {
-      fullName: user?.full_name ?? userID,  // Tên đầy đủ hoặc userID nếu không có tên
-      availabilityStatus: user?.availability_status,  // Trạng thái hiện tại
-      customStatus: user?.custom_status,  // Trạng thái tùy chỉnh
-      userImage: user?.user_image ?? '',  // URL ảnh đại diện
-      isBot: user?.type === 'Bot'  // Có phải là bot không
+      fullName: user?.full_name ?? userID, // Tên đầy đủ hoặc userID nếu không có tên
+      availabilityStatus: user?.availability_status, // Trạng thái hiện tại
+      customStatus: user?.custom_status, // Trạng thái tùy chỉnh
+      userImage: user?.user_image ?? '', // URL ảnh đại diện
+      isBot: user?.type === 'Bot' // Có phải là bot không
     }
   }, [user, userID])
-  
+
   return (
     <HoverCard.Root>
       {/* Kích hoạt khi hover */}
       <HoverCard.Trigger>
         <Text className='text-gray-12 flex items-center gap-1' weight='medium' size='2'>
-          {fullName}{' '}
-          {/* Hiển thị badge nếu là bot */}
+          {fullName} {/* Hiển thị badge nếu là bot */}
           {isBot && (
             <Badge color='gray' className='font-semibold px-1 py-0'>
               Bot
@@ -530,7 +545,7 @@ export const UserHoverCard = memo(({ user, userID, isActive }: UserProps) => {
           )}
         </Text>
       </HoverCard.Trigger>
-      
+
       {/* Nội dung hiển thị khi hover */}
       <HoverCard.Content size='1'>
         <Stack>
@@ -538,21 +553,21 @@ export const UserHoverCard = memo(({ user, userID, isActive }: UserProps) => {
           <Flex gap='2' align='center'>
             {/* Avatar lớn hơn */}
             <UserAvatar src={userImage} alt={fullName} size='4' isBot={isBot} />
-            
+
             <Flex direction='column'>
               {/* Tên và trạng thái */}
               <Flex gap='3' align='center'>
                 <Text className='text-gray-12' weight='bold' size='3'>
                   {fullName}
                 </Text>
-                
+
                 {/* Hiển thị trạng thái nếu được đặt và không phải là 'Invisible' */}
                 {availabilityStatus && availabilityStatus !== 'Invisible' && (
                   <Flex className='text-gray-10 text-xs flex gap-1 items-center'>
                     {getStatusText(availabilityStatus)}
                   </Flex>
                 )}
-                
+
                 {/* Chỉ hiển thị trạng thái online nếu người dùng không đặt trạng thái tùy chỉnh */}
                 {!availabilityStatus && isActive && (
                   <Flex gap='1' align='center'>
@@ -563,10 +578,10 @@ export const UserHoverCard = memo(({ user, userID, isActive }: UserProps) => {
                   </Flex>
                 )}
               </Flex>
-              
+
               {/* Hiển thị thông tin nghỉ phép nếu có */}
               {user && !isBot && <OnLeaveBadge userID={user.name} />}
-              
+
               {/* Hiển thị trạng thái tùy chỉnh hoặc tên đăng nhập */}
               {customStatus ? (
                 <Text className='text-gray-11' size='1'>
@@ -599,10 +614,10 @@ export const UserHoverCard = memo(({ user, userID, isActive }: UserProps) => {
 const StartDMButton = ({ userID }: { userID: string }) => {
   // Lấy hàm call từ FrappeContext để thực hiện API calls
   const { call } = useContext(FrappeContext) as FrappeConfig
-  
+
   // Hook để điều hướng giữa các trang
   const navigate = useNavigate()
-  
+
   // Lấy workspaceID từ URL hiện tại
   const { workspaceID } = useParams()
 
@@ -612,7 +627,7 @@ const StartDMButton = ({ userID }: { userID: string }) => {
       // Gọi API để tạo kênh chat riêng
       call
         .post('raven.api.raven_channel.create_direct_message_channel', {
-          user_id: userID  // ID của người dùng muốn nhắn tin
+          user_id: userID // ID của người dùng muốn nhắn tin
         })
         .then((res) => {
           // Chuyển hướng đến kênh chat mới tạo
@@ -628,13 +643,13 @@ const StartDMButton = ({ userID }: { userID: string }) => {
   }
 
   return (
-    <Button 
-      variant='soft'  // Kiểu nút mềm
-      className='not-cal'  // Loại trừ khỏi lịch (nếu có)
-      size='1'  // Kích thước nhỏ
-      onClick={onClick}  // Xử lý khi nhấn
+    <Button
+      variant='soft' // Kiểu nút mềm
+      className='not-cal' // Loại trừ khỏi lịch (nếu có)
+      size='1' // Kích thước nhỏ
+      onClick={onClick} // Xử lý khi nhấn
     >
-      <BiChat size='14' /> Message  {/* Icon chat và văn bản */}
+      <BiChat size='14' /> Message {/* Icon chat và văn bản */}
     </Button>
   )
 }
@@ -644,9 +659,9 @@ const StartDMButton = ({ userID }: { userID: string }) => {
  * @extends BoxProps - Các thuộc tính cơ bản của Box
  */
 type MessageContentProps = BoxProps & {
-  user?: UserFields  // Thông tin người gửi (tùy chọn)
-  message: Message  // Đối tượng tin nhắn
-  forceHideLinkPreview?: boolean  // Có ẩn xem trước liên kết không (tùy chọn, mặc định là false)
+  user?: UserFields // Thông tin người gửi (tùy chọn)
+  message: Message // Đối tượng tin nhắn
+  forceHideLinkPreview?: boolean // Có ẩn xem trước liên kết không (tùy chọn, mặc định là false)
 }
 
 /**
@@ -661,22 +676,22 @@ export const MessageContent = ({ message, user, forceHideLinkPreview = false, ..
       {message.text ? (
         <TiptapRenderer
           message={{
-            ...message,  // Giữ nguyên tất cả thuộc tính của tin nhắn
-            message_type: 'Text'  // Đảm bảo loại tin nhắn là Text
+            ...message, // Giữ nguyên tất cả thuộc tính của tin nhắn
+            message_type: 'Text' // Đảm bảo loại tin nhắn là Text
           }}
-          user={user}  // Thông tin người gửi
+          user={user} // Thông tin người gửi
           // Quyết định có hiển thị xem trước liên kết không
           // Nếu forceHideLinkPreview = true hoặc message.hide_link_preview = true thì ẩn, ngược lại hiển thị
           showLinkPreview={forceHideLinkPreview ? false : message.hide_link_preview ? false : true}
         />
       ) : null}
-      
+
       {/* Hiển thị hình ảnh nếu loại tin nhắn là Image */}
       {message.message_type === 'Image' && <ImageMessageBlock message={message} user={user} />}
-      
+
       {/* Hiển thị file đính kèm nếu loại tin nhắn là File */}
       {message.message_type === 'File' && <FileMessageBlock message={message} user={user} />}
-      
+
       {/* Hiển thị khảo sát nếu loại tin nhắn là Poll */}
       {message.message_type === 'Poll' && <PollMessageBlock message={message} user={user} />}
     </Box>

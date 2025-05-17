@@ -1,27 +1,26 @@
+import { Loader } from '@/components/common/Loader'
+import { ErrorBanner } from '@/components/layout/AlertBanner/ErrorBanner'
+import { DateSeparator } from '@/components/layout/Divider/DateSeparator'
+import { ChannelHistoryFirstMessage } from '@/components/layout/EmptyState/EmptyState'
+import { useUserData } from '@/hooks/useUserData'
+import { Button } from '@radix-ui/themes'
+import clsx from 'clsx'
+import { forwardRef, MutableRefObject, useEffect, useImperativeHandle } from 'react'
+import { FiArrowDown } from 'react-icons/fi'
+import { useInView } from 'react-intersection-observer'
 import { Message } from '../../../../../../types/Messaging/Message'
+import AttachFileToDocumentDialog, { useAttachFileToDocument } from '../ChatMessage/MessageActions/AttachFileToDocument'
 import { DeleteMessageDialog, useDeleteMessage } from '../ChatMessage/MessageActions/DeleteMessage'
 import { EditMessageDialog, useEditMessage } from '../ChatMessage/MessageActions/EditMessage'
-import { MessageItem } from '../ChatMessage/MessageItem'
-import { ChannelHistoryFirstMessage } from '@/components/layout/EmptyState/EmptyState'
-import useChatStream from './useChatStream'
-import { forwardRef, MutableRefObject, useEffect, useImperativeHandle } from 'react'
-import { Loader } from '@/components/common/Loader'
-import ChatStreamLoader from './ChatStreamLoader'
-import clsx from 'clsx'
-import { DateSeparator } from '@/components/layout/Divider/DateSeparator'
-import { useInView } from 'react-intersection-observer'
-import { Button } from '@radix-ui/themes'
-import { FiArrowDown } from 'react-icons/fi'
-import { ErrorBanner } from '@/components/layout/AlertBanner/ErrorBanner'
 import { ForwardMessageDialog, useForwardMessage } from '../ChatMessage/MessageActions/ForwardMessage'
-import AttachFileToDocumentDialog, { useAttachFileToDocument } from '../ChatMessage/MessageActions/AttachFileToDocument'
 import {
   ReactionAnalyticsDialog,
   useMessageReactionAnalytics
 } from '../ChatMessage/MessageActions/MessageReactionAnalytics'
+import { MessageItem } from '../ChatMessage/MessageItem'
 import SystemMessageBlock from '../ChatMessage/SystemMessageBlock'
-import { useUserData } from '@/hooks/useUserData'
-
+import ChatStreamLoader from './ChatStreamLoader'
+import useChatStream from './useChatStream'
 
 type Props = {
   channelID: string
@@ -186,6 +185,7 @@ const ChatStream = forwardRef(
                       onAttachDocument={setAttachDocument}
                       setDeleteMessage={setDeleteMessage}
                       setReactionMessage={setReactionMessage}
+                      channelID={channelID}
                     />
                   </div>
                 </div>

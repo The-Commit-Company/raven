@@ -27,6 +27,38 @@ def track_visit(channel_id):
 	return True
 
 
+@frappe.whitelist()
+def get_seen_info(channel_id: str):
+	# Lấy tất cả member của kênh
+    channel_members = frappe.get_all(
+        "Raven Channel Member",
+        filters={"channel_id": channel_id},
+        fields=["user_id", "last_visit"]
+    )
+
+    # Lấy danh sách user_id
+    user_ids = [m["user_id"] for m in channel_members]
+    users = frappe.get_all(
+        "Raven User",
+        filters={"name": ["in", user_ids]},
+        fields=["name", "full_name", "user_image"]
+    )
+    user_info_map = {u["name"]: u for u in users}
+
+    # Gộp thông tin
+    result = []
+    for member in channel_members:
+        user = user_info_map.get(member["user_id"])
+        if user:
+            result.append({
+                "user": member["user_id"],
+                "last_visit": member["last_visit"],
+                "full_name": user["full_name"],
+                "user_image": user["user_image"]
+            })
+    return result
+
+
 @frappe.whitelist(methods=["POST"])
 def add_channel_members(channel_id: str, members: list[str]):
 	"""
