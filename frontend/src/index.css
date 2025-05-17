@@ -83,6 +83,39 @@ html header button {
     scrollbar-width: none;
     /* Firefox */
   }
+  @keyframes slideInLeft {
+    from {
+      z-index: -1;
+      opacity: 0;
+      transform: translateX(-100%);
+    }
+    to {
+      z-index: 9999;
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  @keyframes slideOutLeft {
+    from {
+      z-index: 1;
+      opacity: 1;
+      transform: translateX(0);
+    }
+    to {
+      z-index: -1;
+      opacity: 0;
+      transform: translateX(-100%);
+    }
+  }
+
+  .animate-slide-in-left {
+    animation: slideInLeft 0.25s ease-out forwards;
+  }
+
+  .animate-slide-out-left {
+    animation: slideOutLeft 0.2s ease-in forwards;
+  }
 }
 
 /* animations */

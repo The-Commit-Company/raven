@@ -9,17 +9,20 @@ import { HStack } from '../Stack'
 import { getKeyboardMetaKeyString } from '@/utils/layout/keyboardKey'
 import { useIsDesktop } from '@/hooks/useMediaQuery'
 import MentionsButton from './MentionsButton'
+import { useSidebarMode } from '@/utils/layout/sidebar'
 
 export const SidebarHeader = () => {
   const isDesktop = useIsDesktop()
+  const { mode, title } = useSidebarMode()
 
   if (isDesktop) {
     return (
-      <header>
-        <Flex justify='between' px='2' align='center' pt='2'>
+<header style={{ padding: mode === 'hide-filter' ? '20px 60px' : '20px' }}>
+        {/* <Flex justify='between' px='2' align='center' pt='2'>
           <CommandMenuButton />
           <MentionsButton />
-        </Flex>
+        </Flex> */}
+        <>{title}</>
       </header>
     )
   }

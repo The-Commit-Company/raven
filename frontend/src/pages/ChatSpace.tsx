@@ -80,7 +80,7 @@ const ChatSpaceArea = ({ channelID }: { channelID: string }) => {
       className='dark:bg-gray-2 bg-white h-screen'
     >
       {threadID && isMobile ? null : (
-        <Box>
+        <Box className='relative'>
           {isLoading && <FullPageLoader />}
           <ErrorBanner error={error} />
           {channel ? (

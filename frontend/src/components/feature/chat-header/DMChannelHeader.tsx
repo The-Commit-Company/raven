@@ -106,7 +106,7 @@ export const DMChannelHeader = ({ channelData }: DMChannelHeaderProps) => {
           </div>
         </Heading>
       </Flex>
-      <Flex gap='4' align='center'>
+      <Flex className='mr-3' gap='4' align='center'>
         <ChannelHeaderMenu channelData={channelData} />
       </Flex>
     </PageHeader>
