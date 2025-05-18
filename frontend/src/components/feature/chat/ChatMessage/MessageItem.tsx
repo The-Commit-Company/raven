@@ -7,27 +7,9 @@ import { useGetUser } from '@/hooks/useGetUser'
 import { useIsUserActive } from '@/hooks/useIsUserActive'
 import { useIsDesktop } from '@/hooks/useMediaQuery'
 import useOutsideClick from '@/hooks/useOutsideClick'
-import { useSeenMessage } from '@/hooks/useSeenMessage'
 import { UserFields } from '@/utils/users/UserListProvider'
-import {
-  Avatar,
-  Badge,
-  Box,
-  BoxProps,
-  Button,
-  ContextMenu,
-  Flex,
-  HoverCard,
-  Text,
-  Theme
-} from '@radix-ui/themes'
-import {
-  TooltipProvider,
-  Tooltip,
-  TooltipTrigger,
-  TooltipContent,
-  TooltipArrow
-} from '@radix-ui/react-tooltip'
+import { Tooltip, TooltipArrow, TooltipContent, TooltipProvider, TooltipTrigger } from '@radix-ui/react-tooltip'
+import { Avatar, Badge, Box, BoxProps, Button, ContextMenu, Flex, HoverCard, Text, Theme } from '@radix-ui/themes'
 import { clsx } from 'clsx'
 import { FrappeConfig, FrappeContext, useFrappeAuth } from 'frappe-react-sdk'
 import { memo, useContext, useEffect, useMemo, useRef, useState } from 'react'
@@ -65,7 +47,7 @@ interface MessageBlockProps {
   isHighlighted?: boolean
   setReactionMessage: (message: Message) => void
   showThreadButton?: boolean
-  channelID: string
+  seenUsers: UserFields[]
 }
 
 // Component chính hiển thị một tin nhắn trong cuộc trò chuyện
@@ -80,11 +62,9 @@ export const MessageItem = ({
   onAttachDocument, // Hàm đính kèm tài liệu
   setReactionMessage, // Hàm xử lý reaction
   showThreadButton = true, // Có hiển thị nút luồng không (mặc định là có)
-  channelID
+  seenUsers
 }: MessageBlockProps) => {
-  // Trích xuất các thuộc tính từ đối tượng message
   const {
-    name, // ID của tin nhắn
     owner: userID, // ID người gửi
     is_bot_message, // Có phải là tin nhắn từ bot không
     bot, // Thông tin bot (nếu là tin nhắn từ bot)
@@ -195,35 +175,19 @@ export const MessageItem = ({
   }
 
   const messageRef = useRef<HTMLDivElement>(null)
-  const { getSeenUsers } = useSeenMessage()
-  // Trạng thái kiểm soát xem tin nhắn này đã được đánh dấu là đã xem chưa
-  const [hasBeenSeen, setHasBeenSeen] = useState(false)
-  // Lấy người dùng hiện tại đang đăng nhập từ Frappe
   const { currentUser } = useFrappeAuth()
+  const [hasBeenSeen, setHasBeenSeen] = useState(false)
 
   useEffect(() => {
-    const checkIfSeen = async () => {
-      if (!currentUser) return
-      const seenUsers = await getSeenUsers(channelID)
+    if (!currentUser || message.owner !== currentUser) return
 
-      const isSeen = seenUsers.some((user: any) => {
-        const seenTime = new Date(user.last_visit).getTime()
-        const messageTime = new Date(message.creation).getTime()
+    const messageTime = new Date(message.creation).getTime()
+    const isSeen = seenUsers.some(
+      (user: any) => user.user !== currentUser && new Date(user.last_visit).getTime() >= messageTime
+    )
 
-        // Nếu tôi là người gửi → check người khác đã xem
-        if (message.owner === currentUser) {
-          return user.user !== currentUser && seenTime >= messageTime
-        }
-
-        // Nếu người khác gửi → check tôi đã xem chưa
-        return user.user === currentUser && seenTime >= messageTime
-      })
-
-      setHasBeenSeen(isSeen)
-    }
-
-    checkIfSeen()
-  }, [currentUser, message.name, message.owner, message.creation, getSeenUsers])
+    setHasBeenSeen(isSeen)
+  }, [message.creation, message.owner, currentUser, seenUsers])
 
   // Render component MessageItem
   return (

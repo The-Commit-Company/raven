@@ -2,8 +2,9 @@ import { Loader } from '@/components/common/Loader'
 import { ErrorBanner } from '@/components/layout/AlertBanner/ErrorBanner'
 import { DateSeparator } from '@/components/layout/Divider/DateSeparator'
 import { ChannelHistoryFirstMessage } from '@/components/layout/EmptyState/EmptyState'
+import { useChannelSeenUsers } from '@/hooks/useChannelSeenUsers'
 import { useUserData } from '@/hooks/useUserData'
-import { Button } from '@radix-ui/themes'
+import { Button, Spinner } from '@radix-ui/themes'
 import clsx from 'clsx'
 import { forwardRef, MutableRefObject, useEffect, useImperativeHandle } from 'react'
 import { FiArrowDown } from 'react-icons/fi'
@@ -130,6 +131,10 @@ const ChatStream = forwardRef(
       }
     }, []) // Only run once on mount since we're just observing the container
 
+    const { seenUsers, loading } = useChannelSeenUsers(channelID)
+
+    if (loading) return <Spinner />
+
     return (
       <div className='relative h-full flex flex-col overflow-y-auto pb-16 sm:pb-0' ref={scrollRef}>
         <div ref={oldLoaderRef}>
@@ -185,7 +190,7 @@ const ChatStream = forwardRef(
                       onAttachDocument={setAttachDocument}
                       setDeleteMessage={setDeleteMessage}
                       setReactionMessage={setReactionMessage}
-                      channelID={channelID}
+                      seenUsers={seenUsers}
                     />
                   </div>
                 </div>
