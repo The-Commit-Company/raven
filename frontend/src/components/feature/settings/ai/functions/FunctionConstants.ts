@@ -54,6 +54,24 @@ export const FUNCTION_TYPES = [
         type: "Bulk Operations"
     },
     {
+        value: "Submit Document",
+        description: "Submit any document in the system.",
+        requires_write_permissions: true,
+        type: "Standard"
+    },
+    {
+        value: "Cancel Document",
+        description: "Cancel any document in the system.",
+        requires_write_permissions: true,
+        type: "Standard"
+    },
+    {
+        value: "Get Amended Document",
+        description: "Get the amended document for a given document. This function is only available for documents that have been cancelled and then amended.",
+        requires_write_permissions: false,
+        type: "Standard"
+    },
+    {
         value: "Custom Function",
         description: "Custom function to be used in the system.",
         type: "Other"

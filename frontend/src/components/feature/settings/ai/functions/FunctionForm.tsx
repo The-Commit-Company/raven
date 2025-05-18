@@ -26,7 +26,7 @@ const FunctionForm = ({ isEdit }: { isEdit?: boolean }) => {
         <Tabs.Root defaultValue='function_details'>
             <Tabs.List>
                 <Tabs.Trigger value='function_details'><LuSquareFunction {...ICON_PROPS} /> Details</Tabs.Trigger>
-                <Tabs.Trigger value='variables' disabled={in_list(["Get Document", "Get Multiple Documents", "Delete Document", "Delete Multiple Documents", "Attach File to Document"], type)}><LuVariable {...ICON_PROPS} /> Variables</Tabs.Trigger>
+                <Tabs.Trigger value='variables' disabled={in_list(["Get Document", "Get Multiple Documents", "Delete Document", "Delete Multiple Documents", "Attach File to Document", "Submit Document", "Cancel Document", "Get Amended Document"], type)}><LuVariable {...ICON_PROPS} /> Variables</Tabs.Trigger>
             </Tabs.List>
             <Stack pt='4'>
                 <AINotEnabledCallout />
@@ -278,7 +278,7 @@ const ReferenceDoctypeField = () => {
 
     const type = watch('type')
 
-    const DOCUMENT_REF_FUNCTIONS = ["Get Document", "Get Multiple Documents", "Get List", "Create Document", "Create Multiple Documents", "Update Document", "Update Multiple Documents", "Delete Document", "Delete Multiple Documents"]
+    const DOCUMENT_REF_FUNCTIONS = ["Get Document", "Get Multiple Documents", "Get List", "Create Document", "Create Multiple Documents", "Update Document", "Update Multiple Documents", "Delete Document", "Delete Multiple Documents", "Submit Document", "Cancel Document", "Get Amended Document"]
 
     const onReferenceDoctypeChange = (e: ChangeEvent<HTMLInputElement>) => {
 
@@ -323,6 +323,19 @@ const ReferenceDoctypeField = () => {
             if (type === 'Delete Multiple Documents') {
                 description = `This function deletes multiple ${e.target.value} from the system.`
                 function_name = `delete_${e.target.value.toLowerCase().replace(/\s/g, '_')}s`
+            }
+            if (type === 'Submit Document') {
+                description = `This function submits a ${e.target.value} in the system.`
+                function_name = `submit_${e.target.value.toLowerCase().replace(/\s/g, '_')}`
+            }
+            if (type === 'Cancel Document') {
+                description = `This function cancels a ${e.target.value} in the system.`
+                function_name = `cancel_${e.target.value.toLowerCase().replace(/\s/g, '_')}`
+            }
+
+            if (type === 'Get Amended Document') {
+                description = `This function gets the amended document for a ${e.target.value} in the system.`
+                function_name = `get_amended_${e.target.value.toLowerCase().replace(/\s/g, '_')}`
             }
 
             if (function_name && !function_name_exists) {
