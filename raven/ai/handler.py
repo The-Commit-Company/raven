@@ -8,13 +8,16 @@ from typing_extensions import override
 
 from raven.ai.functions import (
 	attach_file_to_document,
+	cancel_document,
 	create_document,
 	create_documents,
 	delete_document,
 	delete_documents,
+	get_amended_document,
 	get_document,
 	get_documents,
 	get_list,
+	submit_document,
 	update_document,
 	update_documents,
 )
@@ -139,6 +142,20 @@ def stream_response(ai_thread_id: str, bot, channel_id: str):
 					if function.type == "Get Multiple Documents":
 						self.publish_event(f"Fetching multiple {function.reference_doctype}s...")
 						function_output = get_documents(function.reference_doctype, **args)
+
+					if function.type == "Submit Document":
+						self.publish_event(f"Submitting {function.reference_doctype} {args.get('document_id')}...")
+						function_output = submit_document(function.reference_doctype, **args)
+
+					if function.type == "Cancel Document":
+						self.publish_event(f"Cancelling {function.reference_doctype} {args.get('document_id')}...")
+						function_output = cancel_document(function.reference_doctype, **args)
+
+					if function.type == "Get Amended Document":
+						self.publish_event(
+							f"Fetching amended document for {function.reference_doctype} {args.get('document_id')}..."
+						)
+						function_output = get_amended_document(function.reference_doctype, **args)
 
 					if function.type == "Delete Document":
 						self.publish_event(

@@ -48,7 +48,7 @@
    "fieldname": "type",
    "fieldtype": "Select",
    "label": "Type",
-   "options": "Get Document\nGet Multiple Documents\nGet List\nCreate Document\nCreate Multiple Documents\nUpdate Document\nUpdate Multiple Documents\nDelete Document\nDelete Multiple Documents\nCustom Function\nSend Message\nAttach File to Document\nGet Report Result",
+   "options": "Get Document\nGet Multiple Documents\nGet List\nCreate Document\nCreate Multiple Documents\nUpdate Document\nUpdate Multiple Documents\nDelete Document\nDelete Multiple Documents\nSubmit Document\nCancel Document\nGet Amended Document\nCustom Function\nSend Message\nAttach File to Document\nGet Report Result",
    "reqd": 1
   },
   {
@@ -103,9 +103,10 @@
    "label": "Strict"
   }
  ],
+ "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-12-07 23:32:48.633167",
+ "modified": "2025-05-18 17:42:22.628503",
  "modified_by": "Administrator",
  "module": "Raven AI",
  "name": "Raven AI Function",
@@ -137,6 +138,7 @@
    "write": 1
   }
  ],
+ "row_format": "Dynamic",
  "search_fields": "description",
  "sort_field": "creation",
  "sort_order": "DESC",
