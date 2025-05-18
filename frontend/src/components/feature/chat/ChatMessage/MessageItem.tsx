@@ -9,12 +9,31 @@ import { useIsDesktop } from '@/hooks/useMediaQuery'
 import useOutsideClick from '@/hooks/useOutsideClick'
 import { useSeenMessage } from '@/hooks/useSeenMessage'
 import { UserFields } from '@/utils/users/UserListProvider'
-import { Avatar, Badge, Box, BoxProps, Button, ContextMenu, Flex, HoverCard, Text, Theme } from '@radix-ui/themes'
+import {
+  Avatar,
+  Badge,
+  Box,
+  BoxProps,
+  Button,
+  ContextMenu,
+  Flex,
+  HoverCard,
+  Text,
+  Theme
+} from '@radix-ui/themes'
+import {
+  TooltipProvider,
+  Tooltip,
+  TooltipTrigger,
+  TooltipContent,
+  TooltipArrow
+} from '@radix-ui/react-tooltip'
 import { clsx } from 'clsx'
 import { FrappeConfig, FrappeContext, useFrappeAuth } from 'frappe-react-sdk'
 import { memo, useContext, useEffect, useMemo, useRef, useState } from 'react'
 import { BiChat, BiCheck } from 'react-icons/bi'
 import { BsFillCircleFill } from 'react-icons/bs'
+import { LuCircleCheck } from 'react-icons/lu'
 import { RiPushpinFill, RiRobot2Fill, RiShareForwardFill } from 'react-icons/ri'
 import { useNavigate, useParams } from 'react-router-dom'
 import { toast } from 'sonner'
@@ -34,7 +53,6 @@ import { PollMessageBlock } from './Renderers/PollMessage'
 import { ThreadMessage } from './Renderers/ThreadMessage'
 import { TiptapRenderer } from './Renderers/TiptapRenderer/TiptapRenderer'
 import { ReplyMessageBox } from './ReplyMessageBox/ReplyMessageBox'
-import { LuCircleCheck } from 'react-icons/lu'
 
 interface MessageBlockProps {
   message: Message
@@ -301,13 +319,27 @@ export const MessageItem = ({
                     </Flex>
                   ) : null}
                   {message.owner === currentUser && (
-                    <Box className='ml-1'>
-                      {hasBeenSeen ? (
-                        <LuCircleCheck className='text-green-500' /> // Đã xem: 2 dấu tick xanh
-                      ) : (
-                        <BiCheck className='text-gray-400' /> // Chưa xem: 1 dấu tick xám
-                      )}
-                    </Box>
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Box className='ml-1 cursor-pointer'>
+                            {hasBeenSeen ? (
+                              <LuCircleCheck className='text-green-500' />
+                            ) : (
+                              <BiCheck className='text-gray-400' />
+                            )}
+                          </Box>
+                        </TooltipTrigger>
+                        <TooltipContent
+                          side='top'
+                          align='start'
+                          className='px-2 py-1 text-sm text-white bg-neutral-600 rounded shadow-md'
+                        >
+                          {hasBeenSeen ? `Đã xem` : 'Chưa xem'}
+                          <TooltipArrow className='fill-neutral-600' />
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
                   )}
                   {/* Nội dung tin nhắn */}
                   {/* Hiển thị biểu tượng nếu là tin nhắn được chuyển tiếp */}
@@ -331,10 +363,8 @@ export const MessageItem = ({
                       message={replyMessageDetails} // Chi tiết tin nhắn được trả lời
                     />
                   )}
-
                   {/* Hiển thị nội dung tin nhắn tùy theo loại */}
                   <MessageContent message={message} user={user} />
-
                   {/* Hiển thị liên kết tài liệu nếu có */}
                   {message.link_doctype && message.link_document && (
                     <Box className={clsx(message.is_continuation ? 'ml-0.5' : '-ml-0.5')}>
@@ -351,7 +381,6 @@ export const MessageItem = ({
                   {message_reactions?.length && (
                     <MessageReactions message={message} message_reactions={message_reactions} />
                   )}
-
                   {/* Hiển thị thông tin luồng nếu đây là tin nhắn trong luồng */}
                   {message.is_thread === 1 ? <ThreadMessage thread={message} /> : null}
                 </Flex>
