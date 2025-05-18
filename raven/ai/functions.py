@@ -107,6 +107,54 @@ def delete_documents(doctype: str, document_ids: list):
 	return {"document_ids": document_ids, "message": "Documents deleted", "doctype": doctype}
 
 
+def submit_document(doctype: str, document_id: str):
+	"""
+	Submit a document in the database
+	"""
+	doc = frappe.get_doc(doctype, document_id)
+	doc.submit()
+	return {
+		"document_id": document_id,
+		"message": f"{doctype} {document_id} submitted",
+		"doctype": doctype,
+	}
+
+
+def cancel_document(doctype: str, document_id: str):
+	"""
+	Cancel a document in the database
+	"""
+	doc = frappe.get_doc(doctype, document_id)
+	doc.cancel()
+	return {
+		"document_id": document_id,
+		"message": f"{doctype} {document_id} cancelled",
+		"doctype": doctype,
+	}
+
+
+def get_amended_document_id(doctype: str, document_id: str):
+	"""
+	Get the amended document for a given document
+	"""
+	amended_doc = frappe.db.exists(doctype, {"amended_from": document_id})
+	if amended_doc:
+		return amended_doc
+	else:
+		return {"message": f"{doctype} {document_id} is not amended"}
+
+
+def get_amended_document(doctype: str, document_id: str):
+	"""
+	Get the amended document for a given document
+	"""
+	amended_doc = frappe.db.exists(doctype, {"amended_from": document_id})
+	if amended_doc:
+		return client.get(doctype, name=document_id)
+	else:
+		return {"message": f"{doctype} {document_id} is not amended", "doctype": doctype}
+
+
 def attach_file_to_document(doctype: str, document_id: str, file_path: str):
 	"""
 	Attach a file to a document in the database
