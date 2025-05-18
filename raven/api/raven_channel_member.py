@@ -19,12 +19,21 @@ def remove_channel_member(user_id, channel_id):
 
 @frappe.whitelist(methods=["POST"])
 def track_visit(channel_id):
-	"""
-	Track the last visit of the user to the channel.
-	This is usually called when the user exits the channel (unmounts the component) after loading the latest messages in it.
-	"""
-	track_channel_visit(channel_id=channel_id, commit=True)
-	return True
+    track_channel_visit(channel_id=channel_id, commit=True)
+
+    # Lấy tất cả user trong channel
+    # members = frappe.get_all("Raven Channel Member", filters={"channel_id": channel_id}, pluck="user_id")
+
+    # # Gửi realtime đến từng user
+    # for member in members:
+    #     if member != frappe.session.user:  # Không gửi cho chính mình nếu không cần thiết
+    #         frappe.publish_realtime(
+    #             event="channel_visit_updated",
+    #             message={"channel_id": channel_id, "user": frappe.session.user},
+    #             user=member
+    #         )
+
+    return True
 
 
 @frappe.whitelist()
