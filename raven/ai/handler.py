@@ -129,7 +129,7 @@ def stream_response(ai_thread_id: str, bot, channel_id: str):
 
 							# Save the file content
 							file_doc = frappe.new_doc("File")
-							file_doc.file_name = file.filename
+							file_doc.file_name = file.filename + ".png"
 							file_doc.content = file_content.read()
 							file_doc.is_private = True
 							file_doc.insert()
