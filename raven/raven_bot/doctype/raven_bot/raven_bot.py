@@ -415,6 +415,7 @@ class RavenBot(Document):
 		link_document: str = None,
 		markdown: bool = False,
 		notification_name: str = None,
+		file: str = None,
 	) -> str:
 		"""
 		Send a text message to a channel
@@ -428,9 +429,19 @@ class RavenBot(Document):
 		link_doctype: The doctype of the document to link the message to
 		link_document: The name of the document to link the message to
 		markdown: If True, the text will be converted to HTML.
+		file: The file to send to the user.
 
 		Returns the message ID of the message sent
 		"""
+
+		message_type = "Text"
+
+		if file:
+			fileExt = ["jpg", "JPG", "jpeg", "JPEG", "png", "PNG", "gif", "GIF", "webp", "WEBP"]
+			if file.split(".")[-1] in fileExt:
+				message_type = "Image"
+			else:
+				message_type = "File"
 
 		if markdown:
 			text = frappe.utils.md_to_html(text)
@@ -441,7 +452,8 @@ class RavenBot(Document):
 				"doctype": "Raven Message",
 				"channel_id": channel_id,
 				"text": text,
-				"message_type": "Text",
+				"message_type": message_type,
+				"file": file,
 				"is_bot_message": 1,
 				"bot": self.raven_user,
 				"link_doctype": link_doctype,
@@ -490,6 +502,7 @@ class RavenBot(Document):
 		link_document: str = None,
 		markdown: bool = False,
 		notification_name: str = None,
+		file: str = None,
 	) -> str:
 		"""
 		Send a text message to a user in a Direct Message channel
@@ -503,6 +516,7 @@ class RavenBot(Document):
 		link_doctype: The doctype of the document to link the message to
 		link_document: The name of the document to link the message to
 		markdown: If True, the text will be converted to HTML.
+		file: The file to send to the user.
 
 		Returns the message ID of the message sent
 		"""
@@ -511,7 +525,7 @@ class RavenBot(Document):
 
 		if channel_id:
 			return self.send_message(
-				channel_id, text, link_doctype, link_document, markdown, notification_name
+				channel_id, text, link_doctype, link_document, markdown, notification_name, file
 			)
 
 	def get_last_message(self, channel_id: str = None, message_type: str = None) -> Document | None:
