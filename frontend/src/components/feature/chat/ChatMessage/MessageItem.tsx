@@ -7,14 +7,15 @@ import { useGetUser } from '@/hooks/useGetUser'
 import { useIsUserActive } from '@/hooks/useIsUserActive'
 import { useIsDesktop } from '@/hooks/useMediaQuery'
 import useOutsideClick from '@/hooks/useOutsideClick'
-import { useSeenMessage } from '@/hooks/useSeenMessage'
 import { UserFields } from '@/utils/users/UserListProvider'
+import { Tooltip, TooltipArrow, TooltipContent, TooltipProvider, TooltipTrigger } from '@radix-ui/react-tooltip'
 import { Avatar, Badge, Box, BoxProps, Button, ContextMenu, Flex, HoverCard, Text, Theme } from '@radix-ui/themes'
 import { clsx } from 'clsx'
 import { FrappeConfig, FrappeContext, useFrappeAuth } from 'frappe-react-sdk'
 import { memo, useContext, useEffect, useMemo, useRef, useState } from 'react'
-import { BiChat, BiCheck, BiCheckDouble } from 'react-icons/bi'
+import { BiChat, BiCheck } from 'react-icons/bi'
 import { BsFillCircleFill } from 'react-icons/bs'
+import { LuCircleCheck } from 'react-icons/lu'
 import { RiPushpinFill, RiRobot2Fill, RiShareForwardFill } from 'react-icons/ri'
 import { useNavigate, useParams } from 'react-router-dom'
 import { toast } from 'sonner'
@@ -46,7 +47,7 @@ interface MessageBlockProps {
   isHighlighted?: boolean
   setReactionMessage: (message: Message) => void
   showThreadButton?: boolean
-  channelID: string
+  seenUsers: UserFields[]
 }
 
 // Component chính hiển thị một tin nhắn trong cuộc trò chuyện
@@ -61,11 +62,9 @@ export const MessageItem = ({
   onAttachDocument, // Hàm đính kèm tài liệu
   setReactionMessage, // Hàm xử lý reaction
   showThreadButton = true, // Có hiển thị nút luồng không (mặc định là có)
-  channelID
+  seenUsers
 }: MessageBlockProps) => {
-  // Trích xuất các thuộc tính từ đối tượng message
   const {
-    name, // ID của tin nhắn
     owner: userID, // ID người gửi
     is_bot_message, // Có phải là tin nhắn từ bot không
     bot, // Thông tin bot (nếu là tin nhắn từ bot)
@@ -176,25 +175,19 @@ export const MessageItem = ({
   }
 
   const messageRef = useRef<HTMLDivElement>(null)
-  const { getSeenUsers } = useSeenMessage()
-  // Trạng thái kiểm soát xem tin nhắn này đã được đánh dấu là đã xem chưa
-  const [hasBeenSeen, setHasBeenSeen] = useState(false)
-  // Lấy người dùng hiện tại đang đăng nhập từ Frappe
   const { currentUser } = useFrappeAuth()
+  const [hasBeenSeen, setHasBeenSeen] = useState(false)
 
   useEffect(() => {
-    const checkIfSeen = async () => {
-      if (currentUser && message.owner !== currentUser) {
-        const seenUsers = await getSeenUsers(channelID)
-        const isSeen = seenUsers.some(
-          (user: any) =>
-            user.user === currentUser && new Date(user.last_visit).getTime() >= new Date(message.creation).getTime()
-        )
-        setHasBeenSeen(isSeen)
-      }
-    }
-    checkIfSeen()
-  }, [currentUser, message.name, message.owner, message.creation, getSeenUsers])
+    if (!currentUser || message.owner !== currentUser) return
+
+    const messageTime = new Date(message.creation).getTime()
+    const isSeen = seenUsers.some(
+      (user: any) => user.user !== currentUser && new Date(user.last_visit).getTime() >= messageTime
+    )
+
+    setHasBeenSeen(isSeen)
+  }, [message.creation, message.owner, currentUser, seenUsers])
 
   // Render component MessageItem
   return (
@@ -290,13 +283,27 @@ export const MessageItem = ({
                     </Flex>
                   ) : null}
                   {message.owner === currentUser && (
-                    <Box className='ml-1'>
-                      {hasBeenSeen ? (
-                        <BiCheckDouble className='text-blue-500' /> // Đã xem: 2 dấu tick xanh
-                      ) : (
-                        <BiCheck className='text-gray-400' /> // Chưa xem: 1 dấu tick xám
-                      )}
-                    </Box>
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Box className='ml-1 cursor-pointer'>
+                            {hasBeenSeen ? (
+                              <LuCircleCheck className='text-green-500' />
+                            ) : (
+                              <BiCheck className='text-gray-400' />
+                            )}
+                          </Box>
+                        </TooltipTrigger>
+                        <TooltipContent
+                          side='top'
+                          align='start'
+                          className='px-2 py-1 text-sm text-white bg-neutral-600 rounded shadow-md'
+                        >
+                          {hasBeenSeen ? `Đã xem` : 'Chưa xem'}
+                          <TooltipArrow className='fill-neutral-600' />
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
                   )}
                   {/* Nội dung tin nhắn */}
                   {/* Hiển thị biểu tượng nếu là tin nhắn được chuyển tiếp */}
@@ -320,10 +327,8 @@ export const MessageItem = ({
                       message={replyMessageDetails} // Chi tiết tin nhắn được trả lời
                     />
                   )}
-
                   {/* Hiển thị nội dung tin nhắn tùy theo loại */}
                   <MessageContent message={message} user={user} />
-
                   {/* Hiển thị liên kết tài liệu nếu có */}
                   {message.link_doctype && message.link_document && (
                     <Box className={clsx(message.is_continuation ? 'ml-0.5' : '-ml-0.5')}>
@@ -340,7 +345,6 @@ export const MessageItem = ({
                   {message_reactions?.length && (
                     <MessageReactions message={message} message_reactions={message_reactions} />
                   )}
-
                   {/* Hiển thị thông tin luồng nếu đây là tin nhắn trong luồng */}
                   {message.is_thread === 1 ? <ThreadMessage thread={message} /> : null}
                 </Flex>
