@@ -13,7 +13,7 @@ import { Avatar, Badge, Box, BoxProps, Button, ContextMenu, Flex, HoverCard, Tex
 import { clsx } from 'clsx'
 import { FrappeConfig, FrappeContext, useFrappeAuth } from 'frappe-react-sdk'
 import { memo, useContext, useEffect, useMemo, useRef, useState } from 'react'
-import { BiChat, BiCheck, BiCheckDouble } from 'react-icons/bi'
+import { BiChat, BiCheck } from 'react-icons/bi'
 import { BsFillCircleFill } from 'react-icons/bs'
 import { RiPushpinFill, RiRobot2Fill, RiShareForwardFill } from 'react-icons/ri'
 import { useNavigate, useParams } from 'react-router-dom'
@@ -34,6 +34,7 @@ import { PollMessageBlock } from './Renderers/PollMessage'
 import { ThreadMessage } from './Renderers/ThreadMessage'
 import { TiptapRenderer } from './Renderers/TiptapRenderer/TiptapRenderer'
 import { ReplyMessageBox } from './ReplyMessageBox/ReplyMessageBox'
+import { LuCircleCheck } from 'react-icons/lu'
 
 interface MessageBlockProps {
   message: Message
@@ -184,15 +185,25 @@ export const MessageItem = ({
 
   useEffect(() => {
     const checkIfSeen = async () => {
-      if (currentUser && message.owner !== currentUser) {
-        const seenUsers = await getSeenUsers(channelID)
-        const isSeen = seenUsers.some(
-          (user: any) =>
-            user.user === currentUser && new Date(user.last_visit).getTime() >= new Date(message.creation).getTime()
-        )
-        setHasBeenSeen(isSeen)
-      }
+      if (!currentUser) return
+      const seenUsers = await getSeenUsers(channelID)
+
+      const isSeen = seenUsers.some((user: any) => {
+        const seenTime = new Date(user.last_visit).getTime()
+        const messageTime = new Date(message.creation).getTime()
+
+        // Nếu tôi là người gửi → check người khác đã xem
+        if (message.owner === currentUser) {
+          return user.user !== currentUser && seenTime >= messageTime
+        }
+
+        // Nếu người khác gửi → check tôi đã xem chưa
+        return user.user === currentUser && seenTime >= messageTime
+      })
+
+      setHasBeenSeen(isSeen)
     }
+
     checkIfSeen()
   }, [currentUser, message.name, message.owner, message.creation, getSeenUsers])
 
@@ -292,7 +303,7 @@ export const MessageItem = ({
                   {message.owner === currentUser && (
                     <Box className='ml-1'>
                       {hasBeenSeen ? (
-                        <BiCheckDouble className='text-blue-500' /> // Đã xem: 2 dấu tick xanh
+                        <LuCircleCheck className='text-green-500' /> // Đã xem: 2 dấu tick xanh
                       ) : (
                         <BiCheck className='text-gray-400' /> // Chưa xem: 1 dấu tick xám
                       )}
