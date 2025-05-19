@@ -7,6 +7,7 @@ import { useCurrentChannelData } from '@/hooks/useCurrentChannelData'
 import { useUserData } from '@/hooks/useUserData'
 import { Button } from '@radix-ui/themes'
 import clsx from 'clsx'
+import { useFrappeEventListener } from 'frappe-react-sdk'
 import { forwardRef, MutableRefObject, useEffect, useImperativeHandle } from 'react'
 import { FiArrowDown } from 'react-icons/fi'
 import { useInView } from 'react-intersection-observer'
@@ -132,9 +133,15 @@ const ChatStream = forwardRef(
       }
     }, []) // Only run once on mount since we're just observing the container
 
-    const { seenUsers } = useChannelSeenUsers(channelID)
+    const { seenUsers, refetch } = useChannelSeenUsers(channelID)
 
     const { channel } = useCurrentChannelData(channelID)
+
+    useFrappeEventListener('channel_visit_updated', (data) => {
+      if (data.channel_id === channelID) {
+        refetch()
+      }
+    })
 
     return (
       <div className='relative h-full flex flex-col overflow-y-auto pb-16 sm:pb-0' ref={scrollRef}>

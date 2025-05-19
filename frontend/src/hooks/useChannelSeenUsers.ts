@@ -1,26 +1,29 @@
 import { useFrappePostCall } from 'frappe-react-sdk'
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 
 export const useChannelSeenUsers = (channelId: string) => {
   const { call: getSeenCall } = useFrappePostCall('raven.api.raven_channel_member.get_seen_info')
   const [seenUsers, setSeenUsers] = useState<any[]>([])
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(false)
+
+  const fetchSeenUsers = useCallback(async () => {
+    if (!channelId) return
+
+    setLoading(true)
+    try {
+      const { message = [] } = await getSeenCall({ channel_id: channelId })
+      setSeenUsers(Array.isArray(message) ? message : [])
+    } catch (err) {
+      console.error('Failed to fetch seen users:', err)
+      setSeenUsers([])
+    } finally {
+      setLoading(false)
+    }
+  }, [channelId, getSeenCall])
 
   useEffect(() => {
-    const fetchSeenUsers = async () => {
-      try {
-        if (!channelId) return
-        const result = await getSeenCall({ channel_id: channelId })
-        setSeenUsers(result.message || [])
-      } catch (err) {
-        console.error('Failed to fetch seen users:', err)
-      } finally {
-        setLoading(false)
-      }
-    }
-
     fetchSeenUsers()
-  }, [channelId])
+  }, [fetchSeenUsers])
 
-  return { seenUsers, loading }
+  return { seenUsers, loading, refetch: fetchSeenUsers }
 }

@@ -200,9 +200,6 @@ export const MessageItem = ({
     )
   }, [seenUsers, message.creation, currentUser])
 
-  console.log('seenByOthers', seenByOthers)
-  console.log('channel', channel.type === 'channel')
-
   // Render component MessageItem
   return (
     <div ref={messageRef}>
