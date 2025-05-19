@@ -21,17 +21,19 @@ def remove_channel_member(user_id, channel_id):
 def track_visit(channel_id):
     track_channel_visit(channel_id=channel_id, commit=True)
 
-    # Lấy tất cả user trong channel
-    # members = frappe.get_all("Raven Channel Member", filters={"channel_id": channel_id}, pluck="user_id")
+    members = frappe.get_all("Raven Channel Member", filters={"channel_id": channel_id}, pluck="user_id")
 
-    # # Gửi realtime đến từng user
-    # for member in members:
-    #     if member != frappe.session.user:  # Không gửi cho chính mình nếu không cần thiết
-    #         frappe.publish_realtime(
-    #             event="channel_visit_updated",
-    #             message={"channel_id": channel_id, "user": frappe.session.user},
-    #             user=member
-    #         )
+    for member in members:
+        if member != frappe.session.user:
+            frappe.publish_realtime(
+                event="channel_visit_updated",
+                message={
+                    "channel_id": channel_id,
+                    "user": frappe.session.user,
+                    "last_visit": frappe.utils.now_datetime()
+                },
+                user=member
+            )
 
     return True
 
