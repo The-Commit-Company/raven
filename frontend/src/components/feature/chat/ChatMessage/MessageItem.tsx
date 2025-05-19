@@ -185,7 +185,7 @@ export const MessageItem = ({
 
     const messageTime = new Date(message.creation).getTime()
     const isSeen = seenUsers.some(
-      (user: any) => user.user !== currentUser && new Date(user.last_visit).getTime() >= messageTime
+      (user: any) => user.user !== currentUser && new Date(user.seen_at).getTime() >= messageTime
     )
 
     setHasBeenSeen(isSeen)
@@ -196,7 +196,7 @@ export const MessageItem = ({
 
     return seenUsers.filter(
       (user: any) =>
-        user.user !== currentUser && new Date(user.last_visit).getTime() >= new Date(message.creation).getTime()
+        user.user !== currentUser && new Date(user.seen_at).getTime() >= new Date(message.creation).getTime()
     )
   }, [seenUsers, message.creation, currentUser])
 

@@ -1,16 +1,15 @@
+import { useIsMobile } from '@/hooks/useMediaQuery'
+import { UserContext } from '@/utils/auth/UserProvider'
+import { getDateObject } from '@/utils/dateConversions/utils'
 import {
   useFrappeDocumentEventListener,
   useFrappeEventListener,
   useFrappeGetCall,
   useFrappePostCall
 } from 'frappe-react-sdk'
-import { MutableRefObject, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
-import { useBeforeUnload, useLocation, useNavigate, useSearchParams } from 'react-router-dom'
+import { MutableRefObject, useContext, useEffect, useMemo, useRef, useState } from 'react'
+import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 import { Message } from '../../../../../../types/Messaging/Message'
-import { getDateObject } from '@/utils/dateConversions/utils'
-import { useDebounce } from '@/hooks/useDebounce'
-import { UserContext } from '@/utils/auth/UserProvider'
-import { useIsMobile } from '@/hooks/useMediaQuery'
 
 export interface GetMessagesResponse {
   message: {
@@ -193,6 +192,7 @@ const useChatStream = (
   /** If the user has already loaded all the latest messages and exits the channel, we update the timestamp of last visit  */
 
   const { call: trackVisit } = useFrappePostCall('raven.api.raven_channel_member.track_visit')
+
   /**
    * Track visit when unmounting if new messages were loaded.
    * We are using a ref since the hook is not re-executed when the data is updated
