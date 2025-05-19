@@ -60,5 +60,12 @@ export const useChannelSeenUsers = (channelId: string) => {
     }
   })
 
+  useFrappeEventListener('new_message', (data) => {
+    if (data.channel_id === debouncedChannelId) {
+      trackSeen({ channel_id: data.channel_id })
+      fetchSeenUsers(true) // Force refetch nếu có socket update
+    }
+  })
+
   return { seenUsers, loading, refetch: () => fetchSeenUsers(true) }
 }
